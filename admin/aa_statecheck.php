@@ -4,8 +4,9 @@
  * State Check - one page that says whether this installation is healthy: the
  * findings of every Optimize class tagged as a check (AbstractOptimize::CHECK_*),
  * worst first, with counts, evidence and what to do. Basic checks run on every
- * load; extended ones on request. Optimize (aa_optimize.php) stays the workshop
- * with every action; this page is the overview.
+ * load; extended ones daily and on request, slow ones on request only.
+ * Optimize (aa_optimize.php) stays the workshop with every action; this page
+ * is the overview.
  *
  * PHP version 8.2+
  *
@@ -45,6 +46,7 @@ require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
 try {
     $run_extended = InputVars::boolPOST('run_extended');
+    $run_slow     = InputVars::boolPOST('run_slow');
     $repair       = InputVars::stringPOST('repair');
     $token        = InputVars::stringPOST('token');
     $recheck      = InputVars::stringPOST('recheck');
@@ -58,7 +60,7 @@ if (!IsSuperadmin()) {
     exit;
 }
 
-const STATECHECK_TAGS = [AbstractOptimize::CHECK_BASIC, AbstractOptimize::CHECK_EXTENDED, AbstractOptimize::CHECK_SECURITY];
+const STATECHECK_TAGS = [AbstractOptimize::CHECK_BASIC, AbstractOptimize::CHECK_EXTENDED, AbstractOptimize::CHECK_SLOW, AbstractOptimize::CHECK_SECURITY];
 const STATECHECK_TOKEN = 'aa_statecheck';
 
 /** severity as a word in a wash - never a red frame or stripe (Reserved-Red Rule) */
@@ -145,9 +147,9 @@ if ($repair !== '') {
 $started       = microtime(true);
 $findings      = CheckRunner::run([AbstractOptimize::CHECK_BASIC]);
 $basic_seconds = microtime(true) - $started;
-// every POST carries the same token: repair writes, the other two only run checks, but extended ones are minutes of DB time
+// every POST carries the same token: repair writes, the others only run checks, but extended and slow ones are minutes of DB time
 $posted = FormToken::check(STATECHECK_TOKEN, $token);
-// a stale token means the extended run was refused - the summary must not claim it ran
+// a stale token means the extended/slow run was refused - the summary must not claim it ran
 $extended_ran     = $run_extended && $posted;
 $extended_seconds = 0.0;
 if ($extended_ran) {
@@ -156,11 +158,20 @@ if ($extended_ran) {
     $findings         = CheckRunner::sort(array_merge($findings, CheckRunner::run([AbstractOptimize::CHECK_EXTENDED])));
     $extended_seconds = microtime(true) - $started;
 }
-// Recheck of one row: the basic checks re-ran with this load anyway, so only an extended one has to be run on its own.
+$slow_ran     = $run_slow && $posted;
+$slow_seconds = 0.0;
+if ($slow_ran) {
+    MoreTimeLimit();
+    $started      = microtime(true);
+    $findings     = CheckRunner::sort(array_merge($findings, CheckRunner::run([AbstractOptimize::CHECK_SLOW])));
+    $slow_seconds = microtime(true) - $started;
+}
+// Recheck of one row: only a check that did not already run with this load has to be run on its own.
 // The answer is about that one problem (check + key), not the page: still there, or gone.
 $toast = [];
 if ($recheck !== '' && $posted && isset(($classes = CheckRunner::classes(STATECHECK_TAGS))[$recheck])) {
-    if (!in_array(AbstractOptimize::CHECK_BASIC, $classes[$recheck]::types()) && !$extended_ran) {
+    $ran_tags = array_keys(array_filter([AbstractOptimize::CHECK_BASIC => true, AbstractOptimize::CHECK_EXTENDED => $extended_ran, AbstractOptimize::CHECK_SLOW => $slow_ran]));
+    if (!array_intersect($ran_tags, $classes[$recheck]::types())) {
         MoreTimeLimit();
         $findings = CheckRunner::sort(array_merge($findings, CheckRunner::runClass($recheck, $classes[$recheck])));
     }
@@ -216,6 +227,7 @@ echo '<p class="aa-statecheck-summary">'
     . _m('%1 problems, %2 warnings, %3 recommendations, %4 checks passed.', [$summary[Finding::ERROR], $summary[Finding::WARNING], $summary[Finding::INFO], $summary[Finding::OK]])
     . ' ' . _m('Basic checks ran now in %1 s.', [sprintf('%.1f', $basic_seconds)])
     . ' ' . ($extended_ran ? _m('Extended checks ran now in %1 s.', [sprintf('%.1f', $extended_seconds)]) : _m('Extended checks were not run.'))
+    . ($slow_ran ? ' ' . _m('Slow checks ran now in %1 s.', [sprintf('%.1f', $slow_seconds)]) : '')
     . ' ' . ($last_snapshot ? _m('The daily snapshot last ran %1.', [date('Y-m-d H:i', (int) $last_snapshot['time'])]) : _m('No daily snapshot yet.'))
     . '</p>';
 
@@ -247,6 +259,14 @@ statecheck_section(
     . '<p>' . safe(implode(', ', $extended_names)) . '</p>'
     . '<form method="post">' . FormToken::field(STATECHECK_TOKEN) . '<button class="aa-button-run" type="submit" name="run_extended" value="1">' . _m('Run extended checks now') . '</button></form>',
     $extended_ran,
+);
+$slow_names = array_map(static fn(string $class) => $class::name(), CheckRunner::classes([AbstractOptimize::CHECK_SLOW]));
+statecheck_section(
+    _m('Slow checks'),
+    '<p>' . _m('Full scans of the largest tables; on a big installation they take many minutes and load the database server, so they are not part of the daily snapshot. Run them now and then, preferably outside peak hours. Their findings are merged into the sections above once run.') . '</p>'
+    . '<p>' . safe(implode(', ', $slow_names)) . '</p>'
+    . '<form method="post">' . FormToken::field(STATECHECK_TOKEN) . '<button class="aa-button-run" type="submit" name="run_slow" value="1">' . _m('Run slow checks now') . '</button></form>',
+    $slow_ran,
 );
 statecheck_section(_m('Environment'), statecheck_table($environment), false);
 

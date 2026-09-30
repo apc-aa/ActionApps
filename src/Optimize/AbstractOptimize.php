@@ -19,6 +19,9 @@ abstract class AbstractOptimize implements NamedInterface
     public const CHECK_BASIC = 'check_basic';
     /** full scans - on request and in the daily snapshot */
     public const CHECK_EXTENDED = 'check_extended';
+    /** full scans of the biggest tables (content: tens of millions of rows) - minutes of DB time,
+     *  the DB watchdog kills them, so only on request, never in the daily snapshot */
+    public const CHECK_SLOW = 'check_slow';
     public const CHECK_SECURITY = 'check_security';
 
     /** @var array used in the manager to store test results in order we can use it in alias _#RESULT__ */
@@ -136,7 +139,7 @@ abstract class AbstractOptimize implements NamedInterface
      *    opt_feature    - optional features, which could be added to AA
      *    add_field      - just tag the add field optimizers
      *    private_fix    - private_fix for site specific repairs - probably not useful for others
-     *    check_basic, check_extended, check_security - shown on State Check, see the CHECK_* constants
+     *    check_basic, check_extended, check_slow, check_security - shown on State Check, see the CHECK_* constants
      */
     public static function types(): array
     {

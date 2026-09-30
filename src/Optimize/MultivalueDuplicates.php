@@ -9,7 +9,7 @@ class MultivalueDuplicates extends AbstractOptimize
     /** shown on State Check - see AbstractOptimize::CHECK_* */
     public static function types(): array
     {
-        return [self::CHECK_EXTENDED];
+        return [self::CHECK_SLOW];
     }
 
     /** Name function
