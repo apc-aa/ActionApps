@@ -33,6 +33,11 @@ final readonly class ImportPlan
      *                                                         a new slice, the new ones of an existing slice
      * @param string                            $owner         slice_owner id of the modules an install creates;
      *                                                         '' = none (a transfer brings the source's)
+     * @param array{name: string, email: string}|null $newOwner the owner the writer creates (or finds by name and
+     *                                                         e-mail) for the modules an install creates, instead of $owner
+     * @param array<string, array<string, array<int, array{value: string, flag: int}>>> $settingsOfApp
+     *                                                         the settings values of the app itself - $settingDefaults
+     *                                                         before the values typed in the preview
      */
     public function __construct(
         public Package $package,
@@ -47,6 +52,8 @@ final readonly class ImportPlan
         public array $existing = [],
         public array $settingDefaults = [],
         public string $owner = '',
+        public ?array $newOwner = null,
+        public array $settingsOfApp = [],
     ) {}
 
     /** no E: the writer may start once the S findings were confirmed and the rights checked */

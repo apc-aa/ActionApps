@@ -92,7 +92,7 @@ final class FindingTextTest extends TestCase
             'setting-field', 'settings-dropped', 'slice-state-kept', 'slice-type-differs', 'source-count-unknown', 'spot-markup', 'spot-tree', 'spot-unused', 'state-file', 'subobject',
             'table-not-allowed', 'target-slice', 'too-long', 'transfer-only', 'unique-field', 'unknown-form', 'view-differs', 'view-exists', 'view-outside', 'view-unmatched',
             'export-failed', 'export-denied', 'invalid-bytes', 'unknown-column', 'unknown-element', 'unknown-attribute', 'unknown-class', 'newer-format', 'schema-location',
-            'spot-markup-stripped', 'no-spot-tree', 'debug', 'version', 'serverload', 'header', 'user', 'img'];
+            'spot-markup-stripped', 'no-spot-tree', 'owner-invalid', 'reader-left-out', 'group-owner-left-out', 'debug', 'version', 'serverload', 'header', 'user', 'img'];
         return array_combine($codes, array_map(static fn(string $c): array => [$c], $codes));
     }
 

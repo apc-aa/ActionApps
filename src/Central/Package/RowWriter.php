@@ -112,7 +112,11 @@ final class RowWriter
             $this->settingValues($m, $id, $this->plan->settingDefaults[$m->id] ?? []);
             return;
         }
-        $owner = isset($m->transfer['owner']) ? $this->owner($m, $m->transfer['owner']) : $this->plan->owner;
+        $owner = match (true) {
+            isset($m->transfer['owner'])   => $this->owner($m, $m->transfer['owner']),
+            $this->plan->newOwner !== null => $this->owner($m, $this->plan->newOwner),       // the first module creates it, the rest find it
+            default                        => $this->plan->owner,
+        };
         $this->insert($m, 'module', $m->rows['module'][0] ?? [], 0, [
             'id'         => $id,
             'type'       => array_search($m->type, Module::TYPES, true),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Central;
 
 use AA\Central\Package\IdMap;
+use AA\Central\Package\ImportChoices;
 use AA\Util\Crypt;
 use AA\Util\Secret;
 use AA_Object;
@@ -87,6 +88,8 @@ final class InstallRun extends AA_Object
     protected $report = '';
     /** JSON source slice => slice of this AA it goes into, as the preview chose; the write plans with it */
     protected $targets = '';
+    /** JSON of the other choices of the preview (ImportChoices); the write plans with them */
+    protected $choices = '';
 
     /** read by lockForUpdate() - only such an instance may change the run */
     private bool $locked = false;
@@ -97,7 +100,7 @@ final class InstallRun extends AA_Object
         foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'source_time', 'same_aa', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
         }
-        foreach (['id_map', 'slices', 'written', 'warnings', 'report', 'targets'] as $id) {
+        foreach (['id_map', 'slices', 'written', 'warnings', 'report', 'targets', 'choices'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -106,7 +109,7 @@ final class InstallRun extends AA_Object
     /** a new run in the preview state; forgotten previews go away on the way
      *  @param string $fingerprint sha256 of the definitions package the preview showed - the write compares it
      *  @param array<string, string> $targets source slice => slice of this AA it goes into */
-    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now, string $fingerprint = '', array $targets = []): self
+    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now, string $fingerprint = '', array $targets = [], ?ImportChoices $choices = null): self
     {
         if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
             throw new InvalidArgumentException("Unknown mode $mode");
@@ -131,6 +134,7 @@ final class InstallRun extends AA_Object
         $run->fingerprint = $fingerprint;
         $run->token       = ($token === '') ? '' : Crypt::encryptAesGcm($token, Secret::key('install-run'));
         $run->targets     = self::targetsJson($targets);
+        $run->choices     = $choices?->toJson() ?? '';
         $run->save();
         return $run;
     }
@@ -238,14 +242,15 @@ final class InstallRun extends AA_Object
      *  the write compares. The run stays in preview.
      *  @param bool $sameAa the source reported the AA_ID of this AA (AppSource::sameAa())
      *  @param array<string, string> $targets source slice => slice of this AA it goes into */
-    public function previewed(string $fingerprint, int $sourceNow, bool $sameAa, array $targets = []): void
+    public function previewed(string $fingerprint, int $sourceNow, bool $sameAa, array $targets = [], ?ImportChoices $choices = null): void
     {
         $this->move([self::PREVIEW], self::PREVIEW);
         $this->fingerprint = $fingerprint;
         $this->source_time = (string) $sourceNow;
         $this->same_aa     = $sameAa ? '1' : '';
         $this->targets     = self::targetsJson($targets);
-        $this->update(['fingerprint', 'source_time', 'same_aa', 'targets']);
+        $this->choices     = $choices?->toJson() ?? '';
+        $this->update(['fingerprint', 'source_time', 'same_aa', 'targets', 'choices']);
     }
 
     /** @param array<string, string> $targets */
@@ -472,6 +477,18 @@ final class InstallRun extends AA_Object
     public function warnings(): array
     {
         return ($this->warnings === '') ? [] : json_decode($this->warnings, true, 3, JSON_THROW_ON_ERROR);
+    }
+
+    /** the choices of the preview besides the targets */
+    public function choices(): ImportChoices
+    {
+        return ImportChoices::fromJson($this->choices);
+    }
+
+    /** what a write form of this preview sends back: a form of an older preview of the run has another */
+    public function choicesSum(): string
+    {
+        return hash('sha256', $this->choices);
     }
 
     /** @return array<string, string> source slice => slice of this AA it goes into */

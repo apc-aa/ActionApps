@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Central\Package\Model\ConstantGroup;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Optimize\Convert2innodb;
@@ -42,6 +43,13 @@ final class Planner
     /** E: the owner chosen for the new modules of an install is none of this AA's (slice_owner), or none
      *  was chosen though it has some; ref = the id */
     public const OWNER_UNKNOWN = 'owner-unknown';
+    /** E: the new owner chosen in the preview has no name or no valid e-mail; ref = the e-mail */
+    public const OWNER_INVALID = 'owner-invalid';
+    /** W: an Alerts module using a slice the preview left out - its readers, the view of a filter or an
+     *  e-mail: it gets none; ref = the slice id, the view or e-mail number */
+    public const READER_LEFT_OUT = 'reader-left-out';
+    /** W: a constant group of a slice the preview left out stays, used by the rest - it gets no owner; ref = the slice id */
+    public const GROUP_OWNER_LEFT_OUT = 'group-owner-left-out';
 
     /** tables only a transfer writes: the item batches, the owners of the modules */
     private const TRANSFER_TABLES = ['item', 'content', 'slice_owner'];
@@ -67,10 +75,13 @@ final class Planner
      *  @param string       $owner        slice_owner id for the modules an install creates (defaultOwner());
      *                                    E unless it is one of this AA's - '' only when it has none; the plan
      *                                    keeps '' when no module is created
+     *  @param ImportChoices|null $choices a new owner and typed settings values; the names and the slices
+     *                                    left out are choose()'s, before the validation
      *  @throws InvalidArgumentException the validation has an E - such a package is never planned; an owner in a transfer
      *  @throws RewriteFailed a regex of the length check failed */
-    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false, string $owner = ''): ImportPlan
+    public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false, string $owner = '', ?ImportChoices $choices = null): ImportPlan
     {
+        $choices ??= new ImportChoices();
         if (!$validation->importable()) {
             throw new InvalidArgumentException('The package did not pass the validation - no import plan');
         }
@@ -139,22 +150,32 @@ final class Planner
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
         (new ImportLint($this->schema))->check($fixed, $this->findings, $whole);
         $this->readers($readerLogins);
-        if (!$transfer && array_diff_key($modules, $targets)) {
-            $this->owner($owner);
-        } else {
+        $new_owner = null;
+        if ($transfer || !array_diff_key($modules, $targets)) {
             $owner = '';            // no module gets it - the writer need not check it
+        } elseif ($choices->newOwner !== null) {
+            [$owner, $new_owner] = ['', $choices->newOwner];
+            if (($new_owner['name'] === '') || !filter_var($new_owner['email'], FILTER_VALIDATE_EMAIL)) {
+                $this->add(self::TARGET, LintFinding::ERROR, self::OWNER_INVALID, $new_owner['email']);
+            }
+        } else {
+            $this->owner($owner);
         }
-        $defaults = [];
+        $defaults = $of_app = [];
         if (!$transfer) {           // a transfer brings the values of the source
             foreach ($fixed->modules as $m) {
                 // an existing slice: $m holds only the fields it lacks
-                if (($m->type === Module::SLICE) && ($values = SettingDefaults::of($m, $this->schema, $this->findings, $targets[$m->id]->settings ?? []))) {
+                if ($m->type !== Module::SLICE) {
+                    continue;
+                }
+                $of_app[$m->id] = SettingDefaults::of($m, $this->schema, $this->findings, $targets[$m->id]->settings ?? []);
+                if ($values = $this->typed($m, $choices, $of_app[$m->id])) {
                     $defaults[$m->id] = $values;
                 }
             }
         }
-        $this->engines($transfer, (bool) $defaults);
-        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner);
+        $this->engines($transfer, (bool) $defaults, $new_owner !== null);
+        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner, $new_owner, array_filter($of_app));
     }
 
     /** The owner the preview offers first: the one most of the modules the user may edit have; with none
@@ -188,9 +209,9 @@ final class Planner
 
     /** E NO_TRANSACTION for the tables the import writes without a transaction - the whole list (a short
      *  one: the tables of AA), not cut to ReferenceLint::MAX_REF */
-    private function engines(bool $transfer, bool $settingValues): void
+    private function engines(bool $transfer, bool $settingValues, bool $newOwner = false): void
     {
-        $not = $this->target->nonTransactional(self::tables($this->schema, $transfer, $settingValues));
+        $not = $this->target->nonTransactional(array_values(array_unique([...self::tables($this->schema, $transfer, $settingValues), ...($newOwner ? ['slice_owner'] : [])])));
         if ($not) {
             $this->findings->add(self::TARGET, new LintFinding(LintFinding::ERROR, self::NO_TRANSACTION, self::noTransaction($not), 0));
         }
@@ -303,6 +324,102 @@ final class Planner
             $id = $this->target->newCollectionId();
         } while (in_array($id, $planned, true));
         return $id;
+    }
+
+    /** The package as the preview chose it, to be validated and planned: new names of the modules, the
+     *  slices left out. What names a left-out slice structurally goes with it or is cut off: the site's
+     *  "uses" row, the reader slice of an Alerts module (W - it stays without readers), the owner of a
+     *  constant group the rest still uses (W), a group only it used (left out); a reference in a text stays
+     *  and the plan reports it (W).
+     *  @return array{Package, list<array{string, LintFinding}>} */
+    public function choose(Package $package, ImportChoices $choices): array
+    {
+        $this->findings = new FindingList();
+        return [$this->chosen($package, $choices), $this->findings->all()];
+    }
+
+    private function chosen(Package $package, ImportChoices $choices): Package
+    {
+        $skip = array_flip(array_map(static fn(Module $m): string => $m->id, array_filter(
+            $package->modules,
+            static fn(Module $m): bool => ($m->type === Module::SLICE) && $choices->skips($m->id),
+        )));
+        if (!$skip && !$choices->names) {
+            return $package;
+        }
+        $gone = ['view' => [], 'email' => []];      // what the Alerts may use of a slice left out
+        foreach ($package->modules as $m) {
+            foreach (isset($skip[$m->id]) ? array_keys($gone) : [] as $element) {
+                $gone[$element] += array_fill_keys(array_map(static fn(array $r): string => ValueCodec::bytes($r['id'] ?? ''), $m->rows[$element] ?? []), true);
+            }
+        }
+        $modules = [];
+        foreach ($package->modules as $m) {
+            if (isset($skip[$m->id])) {
+                continue;
+            }
+            $rows = $m->rows;
+            if (($name = $choices->names[strtolower($m->id)] ?? null) !== null) {
+                foreach (($m->type === Module::SLICE) ? ['module', 'slice'] : ['module'] as $element) {
+                    if (isset($rows[$element][0])) {
+                        $rows[$element][0]['name'] = $name;
+                    }
+                }
+            }
+            $rows['uses'] = array_values(array_filter($rows['uses'] ?? [], static fn(array $r): bool => !isset($skip[ValueCodec::bytes($r['destination_id'] ?? '')])));
+            if (($reader = ValueCodec::bytes($rows['alerts_collection'][0]['slice_id'] ?? '')) !== '' && isset($skip[$reader])) {
+                $rows['alerts_collection'][0]['slice_id'] = '';
+                $this->add("$m->type[$m->id]/alerts_collection/slice_id", LintFinding::WARNING, self::READER_LEFT_OUT, $reader);
+            }
+            foreach (['emailid_welcome', 'emailid_alert'] as $column) {
+                if (isset($rows['alerts_collection'][0][$column], $gone['email'][ValueCodec::bytes($rows['alerts_collection'][0][$column])])) {
+                    $this->add("$m->type[$m->id]/alerts_collection/$column", LintFinding::WARNING, self::READER_LEFT_OUT, ValueCodec::bytes($rows['alerts_collection'][0][$column]));
+                    $rows['alerts_collection'][0][$column] = '0';
+                }
+            }
+            foreach ($rows['alerts_filter'] ?? [] as $i => $row) {
+                if (isset($row['vid'], $gone['view'][ValueCodec::bytes($row['vid'])])) {
+                    $this->add($this->schema->rowPath("$m->type[$m->id]", 'alerts_filter', $row, $i) . '/vid', LintFinding::WARNING, self::READER_LEFT_OUT, ValueCodec::bytes($row['vid']));
+                    $rows['alerts_filter'][$i]['vid'] = '0';
+                }
+            }
+            $rows = array_filter($rows, static fn(array $r, string $element): bool => ($r !== []) || isset($m->rows[$element]), ARRAY_FILTER_USE_BOTH);
+            $modules[] = new Module($m->type, $m->id, $rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, $m->transfer);
+        }
+        $kept   = new Package(...array_merge(get_object_vars($package), ['modules' => $modules]));
+        $used   = (new GroupPlan($this->target, new LintTexts($this->schema)))->usedNames($kept);
+        $groups = [];
+        foreach ($package->constantGroups as $g) {
+            if (!isset($skip[$g->owner])) {
+                $groups[] = $g;
+            } elseif (isset($used[$g->name])) {
+                $this->add("constant-group[$g->name]", LintFinding::WARNING, self::GROUP_OWNER_LEFT_OUT, $g->owner);
+                $groups[] = new ConstantGroup($g->name, '', $g->rows);
+            }
+        }
+        return new Package(...array_merge(get_object_vars($kept), ['constantGroups' => $groups]));
+    }
+
+    /** the values typed in the preview over the defaults of the app, each through the security lint (a
+     *  setting is a template like any other); only fields the slice writes
+     *  @param array<string, array<int, array{value: string, flag: int}>> $defaults
+     *  @return array<string, array<int, array{value: string, flag: int}>> */
+    private function typed(Module $m, ImportChoices $choices, array $defaults): array
+    {
+        $lint = null;
+        foreach ($m->rows['field'] ?? [] as $row) {
+            $id = ValueCodec::bytes($row['id'] ?? '');
+            if (($value = $choices->settings[strtolower($m->id)][$id] ?? null) === null) {
+                continue;
+            }
+            $column = fn(string $c): string => ValueCodec::bytes(array_key_exists($c, $row) ? $row[$c] : $this->schema->columnDefault('field', $c));
+            $flag   = ((int) $column('html_default') > 0 ? FLAG_HTML : 0) | ((int) $column('text_stored') !== 0 ? FLAG_TEXT_STORED : 0);
+            $defaults[$id] = [0 => ['value' => $value, 'flag' => $flag]];
+            foreach (($lint ??= new SecurityLint($this->schema))->lint($value) as $finding) {
+                $this->findings->add("$m->type[$m->id]/setting-values/{$id}[0]", $finding);
+            }
+        }
+        return $defaults;
     }
 
     private function add(string $path, string $level, string $code, string $ref): void

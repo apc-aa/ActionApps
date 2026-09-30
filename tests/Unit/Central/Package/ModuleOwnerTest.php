@@ -68,6 +68,29 @@ final class ModuleOwnerTest extends TestCase
         self::assertSame([], TableDb::rows('slice_owner'), 'no owner created');
     }
 
+    public function test_a_new_owner_is_created_once_and_given_to_every_new_module(): void
+    {
+        $this->owners();
+        $package = self::example();
+        $plan    = (new Planner($this->target))->plan(
+            $package,
+            (new Validator())->validate($package),
+            false,
+            [],
+            [],
+            false,
+            '',
+            new \AA\Central\Package\ImportChoices(newOwner: ['name' => 'Delta', 'email' => 'delta@ecn.cz']),
+        );
+
+        $this->import($plan);
+
+        $created = TableDb::rows('slice_owner');
+        self::assertCount(1, $created);
+        self::assertSame(['Delta', 'delta@ecn.cz'], [$created[0]['name'], $created[0]['email']]);
+        self::assertSame(array_fill(0, 3, $created[0]['id']), array_values(array_column(TableDb::rows('module'), 'owner')));
+    }
+
     public function test_a_new_module_has_an_empty_slice_url_and_fileman_dir_not_null(): void
     {
         $this->import($this->plan());
