@@ -9,7 +9,7 @@ reference; the code is in `central/*.php`, `src/Central/**` and `src/Util/LoginT
 `central/index.php` (superadmin only) lists the rows of the `central_conf` table - one row per remote
 AA: `ORG_NAME`, `AA_HTTP_DOMAIN`, `AA_BASE_DIR` and a login token. The responder of a row is
 `AA_HTTP_DOMAIN` + `AA_BASE_DIR` + `central/responder.php`. Rows live in three bins (1 = approved,
-2 = hold, 3 = trash); **only approved rows** are offered by Synchronize, Install an app and Copy an app.
+2 = hold, 3 = trash); **only approved rows** are offered by Synchronize and Install an app.
 
 Columns and actions:
 
@@ -69,7 +69,7 @@ view or e-mail gets its own number ("... inserted ... as N").
 
 Synchronize writes into live slices. Review every checked box, and try it on a copy first.
 
-## Install an app / Copy an app between AAs
+## Install an app
 
 An **app** is a site with the modules in its "uses modules" list, or a set of slices and Alerts
 modules chosen without a site. Its constant groups go with it.
@@ -100,11 +100,7 @@ The Central menu (and so its "Install an app..." item) is shown to superadmins o
   `scope=apps`, `ttl=86400` and keeps only the resulting short token (below). Then choose the app from
   the modules the source lists (`Get_Modules`).
 
-`copyapp.php` ("Copy an app between AAs...") is a signpost: choose a source and a target from
-"This AA" + the Central list. Target = this AA: it opens the local install page with the source row.
-Target = another AA: it links to that AA's own `installapp.php`, and you pick the source there (it
-must be in that AA's Central list; a row id of ours means nothing there). Users without superadmin
-see only "This AA" -> "This AA".
+To copy an app into another AA, open "Install an app" there and choose this AA as the source.
 
 A row of the Central list that names this same installation is detected (the source sends its
 `AA_ID`): the copy then behaves as one in the same AA.
@@ -315,7 +311,7 @@ Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 
 | Action | Needs |
 |---|---|
-| Central list, Get Token, Synchronize, Copy an app between AAs (another AA), CSV import | superadmin |
+| Central list, Get Token, Synchronize, CSV import | superadmin |
 | Install an app from this AA | `PS_INSTALL_APP` (letter `U`, superadmin by default) + `PS_EDIT` on the exported modules |
 | Install from another AA | superadmin here and a superadmin login of the source |
 | Transfer (items, readers, hashes, 2FA) | superadmin here and on the source |

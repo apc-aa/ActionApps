@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/central/**copyapp.php**, /src/Central/**TransferLink.php**, /tests/Unit/Central/**TransferLinkTest.php**  
+"Copy an app between AAs" - a signpost that chose a source and a target AA and sent the admin to the install page of the target.  
+_It only confused: a copy into another AA is "Install an app" there, with this AA as the source. Removed 2026-09-30 - honzam_
+
 /**INSTALL**  
 /doc/**install.html**, **install-1.html** … **install-8.html**, **install-3-old.html**  
 Installation guide from 2000–2003 (RedHat 7, PHP 4, register_globals, SSI, LDAP setup) and a short plain-text pointer to it.  

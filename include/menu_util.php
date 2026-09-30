@@ -122,10 +122,9 @@ function GetCommonMenu(AA_Profile $profile): array {
             "trash"       => ["cond"=>1,                           "href"=>"central/index.php?Tab3=1",                                'ico'=>'ico-trashbin.png', "label"=>_m("Trash bin")." <span class='aa-bin-cnt'>". (int)$r_state['bin_cnt']['folder3'] ."</span>"],
 
             "header2"     => _m("Misc"),
-            "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
             "installapp"  => ["cond"=>\AA\Central\Package\Importer::hasInstallPermission((string) AuthGetUid()), "href"=>"central/installapp.php",   "label"=>_m("Install an app...")],
-            "copyapp"     => ["cond"=>IsSuperadmin(),              "href"=>"central/copyapp.php",                                       "label"=>_m("Copy an app between AAs...")],
             "appstore"    => ["cond"=>IsSuperadmin(),              "href"=>"central/appstore.php",                                      "label"=>_m("App store...")],
+            "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
             "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php?DeleteTrash=1",                           "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are you sure you want to empty trash?")."')"],
             "importcsv"   => ["cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")],
         ]
