@@ -101,8 +101,8 @@ final class AppRequest
             return self::bad('modules');
         }
         [$xml, , $now] = $this->export->definitions($modules, $transfer, $allBins, $started);
-        if ($transfer) {
-            $this->logged('transfer definitions ' . implode(',', $modules), 'modules=' . count($modules));
+        if ($transfer || $this->export->carriesSettings($transfer)) {      // both hand out what may be secret
+            $this->logged(($transfer ? 'transfer' : 'install with settings') . ' definitions ' . implode(',', $modules), 'modules=' . count($modules));
         }
         return new AA_Response(['package' => $xml, 'now' => $now, 'aa' => $this->aa]);
     }

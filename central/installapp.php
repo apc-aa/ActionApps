@@ -101,6 +101,7 @@ try {
     $choice   = InstallRun::choiceMade(InputVars::arrayPOST('into'));
     $choices  = ImportChoices::fromPost($_POST);             // names, slices left out, owner, settings - the planner checks them
     $sum      = InputVars::stringPOST('choices_sum');
+    $into     = array_diff_key($into, array_flip($choices->skip));     // a slice left out goes nowhere
     // the choice between a site and modules: the other one is still in the form, only not shown
     match (InputVars::stringPOST('what')) {
         'site'    => $modules = [],
@@ -608,12 +609,16 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         return;
     }
     try {
-        DB_AA::transaction(static fn() => (InstallRun::lockForUpdate($run_id) ?? throw new LogicException('The run is gone'))->previewed(hash('sha256', $prepared['xml']), $prepared['now'], $prepared['same'], $prepared['into'], $prepared['choices']));
+        $locked = DB_AA::transaction(static function () use ($run_id, $prepared): InstallRun {
+            $locked = InstallRun::lockForUpdate($run_id) ?? throw new LogicException('The run is gone');
+            $locked->previewed(hash('sha256', $prepared['xml']), $prepared['now'], $prepared['same'], $prepared['into'], $prepared['choices']);
+            return $locked;
+        });
     } catch (LogicException) {              // another tab wrote it meanwhile
         echo '<div class="aa-err">' . _m('The run has moved on meanwhile.') . ' ' . a_href(installapp_url(['run' => $run_id]), _m('Show the run')) . '</div>';
         return;
     }
-    installapp_write_form(InstallRun::get($run_id) ?? $run, $site, $modules, $prepared['plan'], $uid);       // as previewed() left it: its targets
+    installapp_write_form($locked, $site, $modules, $prepared['plan'], $uid);       // this preview's choices, not those of another tab since
 }
 
 /** the hidden mode fields of the preview of this AA sent again */
@@ -693,7 +698,7 @@ function installapp_choices_form(AppSource $from, array $prepared, ImportPlan $p
             : '<input type="checkbox" checked disabled aria-label="' . safe(_m('Install %1', [$name])) . '">';
         echo '<tr' . ($skipped ? ' class="aa-installapp-skipped"' : '') . '><td>' . $keep . '</td>'
             . '<td><input type="text" name="name[' . safe($old) . ']" value="' . safe($name) . '" maxlength="100" size="40" aria-label="' . safe(_m('Name')) . '"'
-            . ($skipped ? ' disabled' : '') . '><br><small><code>' . safe($old) . '</code></small></td>'
+            . ($skipped ? ' readonly' : '') . '><br><small><code>' . safe($old) . '</code></small></td>'
             . '<td>' . safe($types[$m->type] ?? $m->type) . '</td><td>'
             . match (true) {
                 $skipped                                => safe(_m('not installed')),
@@ -706,7 +711,7 @@ function installapp_choices_form(AppSource $from, array $prepared, ImportPlan $p
     if (!$transfer && array_diff_key($plan->map->modules(), $plan->existing)) {
         installapp_owner_rows($plan->owner, $choices->newOwner, (bool) $plan->existing);
     }
-    installapp_setting_rows($plan, $choices);
+    installapp_setting_rows($plan, $choices, $transfer);
     echo '<p><button class="btn" type="submit">' . _m('Check the changes') . '</button> <span class="tabhlp">' . _m('After a change, check it before installing.') . '</span></p></form>';
     // the write takes what this preview checked - after a change the Install button waits for the check
     echo '<script>document.querySelector(\'[data-role="installapp-choices"]\').addEventListener(\'input\', () => {'
@@ -728,22 +733,25 @@ function installapp_owner_rows(string $chosen, ?array $new, bool $existing): voi
         echo '</select> ';
     }
     echo '<details' . (($new || !$owners) ? ' open' : '') . '><summary>' . _m('+ Add new owner') . '</summary>'
-        . '<label>' . _m('New Owner') . ' <input type="text" name="new_owner" value="' . safe($new['name'] ?? '') . '" maxlength="255"></label> '
-        . '<label>' . _m("New Owner's E-mail") . ' <input type="email" name="new_owner_email" value="' . safe($new['email'] ?? '') . '" maxlength="255"></label></details></div>';
+        . '<label>' . _m('New Owner') . ' <input type="text" name="new_owner" value="' . safe($new['name'] ?? '') . '" maxlength="' . ImportChoices::OWNER_MAX . '"></label> '
+        . '<label>' . _m("New Owner's E-mail") . ' <input type="email" name="new_owner_email" value="' . safe($new['email'] ?? '') . '" maxlength="' . ImportChoices::OWNER_MAX . '"></label></details></div>';
     if ($existing) {
         echo '<p class="tabhlp">' . _m('A slice going into an existing slice keeps the owner of that slice.') . '</p>';
     }
-    // a new owner wins over the list - the list is off while the new owner is being written
-    echo '<script>(() => { const d = document.querySelector(\'.aa-installapp-owner details\'), s = document.querySelector(\'.aa-installapp-owner select\');'
-        . ' if (d && s) { d.addEventListener(\'toggle\', () => { s.disabled = d.open; if (!d.open) { d.querySelectorAll(\'input\').forEach(i => { i.value = \'\'; }); } }); } })();</script>';
+    // a new owner wins over the list - the list is off while a new name is written
+    echo '<script>(() => { const d = document.querySelector(\'.aa-installapp-owner details\'), s = document.querySelector(\'.aa-installapp-owner select\'), n = d?.querySelector(\'[name="new_owner"]\');'
+        . ' if (d && s && n) { const sync = () => { s.disabled = d.open && (n.value.trim() !== \'\'); }; n.addEventListener(\'input\', sync);'
+        . ' d.addEventListener(\'toggle\', () => { if (!d.open) { d.querySelectorAll(\'input\').forEach(i => { i.value = \'\'; }); } sync(); }); } })();</script>';
 }
 
 /** the settings fields of the slices the app writes: what the app brings, and a value to write instead */
-function installapp_setting_rows(ImportPlan $plan, ImportChoices $choices): void
+function installapp_setting_rows(ImportPlan $plan, ImportChoices $choices, bool $transfer): void
 {
     $html = '';
     foreach ($plan->package->modules as $m) {
-        $fields = array_filter($m->rows['field'] ?? [], static fn(array $row): bool => str_starts_with(ValueCodec::bytes($row['id'] ?? ''), '_'));
+        // an existing slice keeps the values it has; in a transfer it takes none
+        $has    = isset($plan->existing[$m->id]) ? ($transfer ? null : $plan->existing[$m->id]->settings) : [];
+        $fields = ($has === null) ? [] : array_filter($m->rows['field'] ?? [], static fn(array $row): bool => str_starts_with($id = ValueCodec::bytes($row['id'] ?? ''), '_') && !in_array($id, $has, true));
         if (($m->type !== Module::SLICE) || !$fields) {
             continue;
         }
@@ -753,6 +761,7 @@ function installapp_setting_rows(ImportPlan $plan, ImportChoices $choices): void
             $id    = ValueCodec::bytes($row['id'] ?? '');
             $app   = $plan->settingsOfApp[$m->id][$id][0]['value'] ?? $m->transfer['setting-values'][$id][0]['value'] ?? '';
             $app   = is_string($app) ? $app : ValueCodec::bytes($app);
+            $app   = (($app !== '') && preg_match('/pass|secret/i', $id)) ? '••••••' : $app;       // as the export never quotes them
             $help  = ValueCodec::bytes($row['input_help'] ?? '');
             $html .= '<tr><td><label for="installapp-set-' . safe($old . $id) . '">' . safe(ValueCodec::bytes($row['name'] ?? '') ?: $id) . '</label>'
                 . (((int) ValueCodec::bytes($row['required'] ?? '0')) ? ' <span class="aa-required">*</span>' : '') . '<br><small><code>' . safe($id) . '</code></small>'

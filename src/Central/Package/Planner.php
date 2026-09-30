@@ -48,6 +48,8 @@ final class Planner
     /** W: an Alerts module using a slice the preview left out - its readers, the view of a filter or an
      *  e-mail: it gets none; ref = the slice id, the view or e-mail number */
     public const READER_LEFT_OUT = 'reader-left-out';
+    /** E: a value typed in the preview for a settings field of numbers is no number; ref = the value */
+    public const SETTING_NUMBER = 'setting-not-number';
     /** W: a constant group of a slice the preview left out stays, used by the rest - it gets no owner; ref = the slice id */
     public const GROUP_OWNER_LEFT_OUT = 'group-owner-left-out';
 
@@ -155,7 +157,8 @@ final class Planner
             $owner = '';            // no module gets it - the writer need not check it
         } elseif ($choices->newOwner !== null) {
             [$owner, $new_owner] = ['', $choices->newOwner];
-            if (($new_owner['name'] === '') || !filter_var($new_owner['email'], FILTER_VALIDATE_EMAIL)) {
+            if (($new_owner['name'] === '') || !filter_var($new_owner['email'], FILTER_VALIDATE_EMAIL)
+                || (mb_strlen($new_owner['name']) > ImportChoices::OWNER_MAX) || (mb_strlen($new_owner['email']) > ImportChoices::OWNER_MAX)) {
                 $this->add(self::TARGET, LintFinding::ERROR, self::OWNER_INVALID, $new_owner['email']);
             }
         } else {
@@ -170,17 +173,22 @@ final class Planner
                 }
                 // the values of the source (a superadmin's export), else the defaults of the fields
                 $source         = array_intersect_key($m->transfer['setting-values'] ?? [], array_flip(array_map(static fn(array $r): string => ValueCodec::bytes($r['id'] ?? ''), $m->rows['field'] ?? [])));
-                $source         = array_map(static fn(array $values): array => array_map(static fn(array $v): array => ['value' => ValueCodec::bytes($v['value'] ?? ''), 'flag' => (int) ($v['flag'] ?? 0)], $values), $source);
+                $source         = array_map(static fn(array $values): array => array_map(static fn(array $v): array => ['value' => ValueCodec::bytes($v['value'] ?? ''), 'flag' => (int) ($v['flag'] ?? 0) & (FLAG_HTML | FLAG_TEXT_STORED)], $values), $source);
+                $source         = array_diff_key($source, array_flip($targets[$m->id]->settings ?? []));   // an existing slice keeps its values
                 $of_app[$m->id] = $source + SettingDefaults::of($m, $this->schema, $this->findings, [...($targets[$m->id]->settings ?? []), ...array_keys($source)]);
-                if ($values = $this->typed($m, $choices, $of_app[$m->id])) {
+                if ($values = $this->typed($m, $choices, $of_app[$m->id], $charsets[$m->id] ?? 'utf-8', $targets[$m->id]->settings ?? [])) {
                     $defaults[$m->id] = $values;
                 }
             }
         }
-        if (!$transfer) {           // the values of the source went into the defaults - the writer takes those
-            $fixed = new Package(...array_merge(get_object_vars($fixed), ['modules' => array_map(static fn(Module $m): Module => ($m->transfer === [])
-                ? $m : new Module($m->type, $m->id, $m->rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, []), $fixed->modules)]));
-        }
+        // an install: the values of the source went into the defaults - the writer takes those; a transfer
+        // writes the values of the source, those typed in the preview instead
+        $fixed = new Package(...array_merge(get_object_vars($fixed), ['modules' => array_map(fn(Module $m): Module => match (true) {
+            !$transfer                                              => ($m->transfer === []) ? $m : self::withTransfer($m, []),
+            ($m->type !== Module::SLICE) || isset($targets[$m->id]) => $m,
+            !($typed = $this->typed($m, $choices, [], $charsets[$m->id] ?? 'utf-8'))  => $m,
+            default                                                 => self::withTransfer($m, ['setting-values' => $typed + ($m->transfer['setting-values'] ?? [])] + $m->transfer),
+        }, $fixed->modules)]));
         $this->engines($transfer, (bool) $defaults, $new_owner !== null);
         return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner, $new_owner, array_filter($of_app));
     }
@@ -408,25 +416,41 @@ final class Planner
     }
 
     /** the values typed in the preview over the defaults of the app, each through the security lint (a
-     *  setting is a template like any other); only fields the slice writes
-     *  @param array<string, array<int, array{value: string, flag: int}>> $defaults
+     *  setting is a template like any other); only fields the slice writes and has no value of. E for a
+     *  value the slice cannot store: a character of no $charset, a text in a field of numbers
+     *  @param array<string, array<int, array{value: string, flag: int}>> $defaults @param list<string> $has
      *  @return array<string, array<int, array{value: string, flag: int}>> */
-    private function typed(Module $m, ImportChoices $choices, array $defaults): array
+    private function typed(Module $m, ImportChoices $choices, array $defaults, string $charset, array $has = []): array
     {
         $lint = null;
         foreach ($m->rows['field'] ?? [] as $row) {
             $id = ValueCodec::bytes($row['id'] ?? '');
-            if (($value = $choices->settings[strtolower($m->id)][$id] ?? null) === null) {
+            if ((($value = $choices->settings[strtolower($m->id)][$id] ?? null) === null) || in_array($id, $has, true)) {
                 continue;
             }
             $column = fn(string $c): string => ValueCodec::bytes(array_key_exists($c, $row) ? $row[$c] : $this->schema->columnDefault('field', $c));
             $flag   = ((int) $column('html_default') > 0 ? FLAG_HTML : 0) | ((int) $column('text_stored') !== 0 ? FLAG_TEXT_STORED : 0);
-            $defaults[$id] = [0 => ['value' => $value, 'flag' => $flag]];
+            $at     = "$m->type[$m->id]/setting-values/{$id}[0]";
+            if (!($flag & FLAG_TEXT_STORED) && !is_numeric(trim($value))) {
+                $this->add($at, LintFinding::ERROR, self::SETTING_NUMBER, $value);
+                continue;
+            }
+            if ((strcasecmp($charset, 'utf-8') !== 0) && (@iconv('UTF-8', $charset, $value) === false)) {
+                $this->add($at, LintFinding::ERROR, TargetCharset::CHARSET, $value);
+                continue;
+            }
+            $defaults[$id] = [0 => ['value' => ($flag & FLAG_TEXT_STORED) ? $value : trim($value), 'flag' => $flag]];
             foreach (($lint ??= new SecurityLint($this->schema))->lint($value) as $finding) {
-                $this->findings->add("$m->type[$m->id]/setting-values/{$id}[0]", $finding);
+                $this->findings->add($at, $finding);
             }
         }
         return $defaults;
+    }
+
+    /** @param array<string, mixed> $transfer */
+    private static function withTransfer(Module $m, array $transfer): Module
+    {
+        return new Module($m->type, $m->id, $m->rows, $m->settings, $m->objects, $m->spotTree, $m->items, $m->doc, $transfer);
     }
 
     private function add(string $path, string $level, string $code, string $ref): void

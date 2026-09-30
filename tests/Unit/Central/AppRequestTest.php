@@ -183,7 +183,8 @@ final class AppRequestTest extends TestCase
             ['transfer definitions ' . self::SLICE_A . ',' . self::READERS, 'user=source-uid modules=2'],
             ['transfer batch ' . self::READERS, 'user=source-uid items=2'],
             ['transfer logins ' . self::READERS, 'user=source-uid logins=2'],
-        ], $this->log, 'an install is not logged');
+            ['install with settings definitions ' . self::SLICE_A, 'user=source-uid modules=1'],
+        ], $this->log, "a superadmin's install carries the settings values - logged too");
         $all = json_encode($this->log);
         foreach ([self::HASH, self::SECRET, 'alice', 'slice-reading-password'] as $secret) {
             self::assertStringNotContainsString($secret, $all);

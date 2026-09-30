@@ -124,6 +124,7 @@ final class ImportChoicesTest extends TestCase
         $good = self::plan(new ImportChoices(newOwner: ['name' => 'Ecn', 'email' => 'ecn@ecn.cz']));
 
         self::assertContains('E owner-invalid target', self::findings($bad));
+        self::assertContains('E owner-invalid target', self::findings(self::plan(new ImportChoices(newOwner: ['name' => str_repeat('x', 81), 'email' => 'ecn@ecn.cz']))), 'slice_owner.name is char(80)');
         self::assertSame(['', ['name' => 'Ecn', 'email' => 'ecn@ecn.cz']], [$good->owner, $good->newOwner]);
         self::assertTrue($good->importable());
     }
@@ -151,6 +152,18 @@ final class ImportChoicesTest extends TestCase
         self::assertSame([], self::planned($kept, self::SLICE)->transfer, 'the writer takes the defaults - an install carries no transfer part');
         self::assertSame('jiny@example.org', $typed->settingDefaults[self::SLICE]['_email..........'][0]['value']);
         self::assertSame('redakce@example.org', $typed->settingsOfApp[self::SLICE]['_email..........'][0]['value']);
+    }
+
+    public function test_a_transfer_writes_a_typed_setting_over_the_value_of_the_source(): void
+    {
+        $package    = self::module2(self::example(), self::SLICE, ['setting-values' => ['_email..........' => [['value' => 'redakce@example.org', 'flag' => 64]]]]);
+        $choices    = new ImportChoices(settings: [self::SLICE => ['_email..........' => 'jiny@example.org']]);
+        $validation = (new Validator())->validate($package, true);
+
+        $plan = (new Planner(new FakeImportTarget()))->plan($package, $validation, true, [], [], false, '', $choices);
+
+        self::assertSame('jiny@example.org', self::planned($plan, self::SLICE)->transfer['setting-values']['_email..........'][0]['value']);
+        self::assertSame([], $plan->settingDefaults, 'a transfer writes no defaults');
     }
 
     /** @param array<string, mixed> $transfer */

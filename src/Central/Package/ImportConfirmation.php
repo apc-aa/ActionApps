@@ -30,7 +30,8 @@ final class ImportConfirmation
         }
         $lines = array_map(static fn(array $f): string => self::fields($f[1]->level, $f[1]->code, $f[0], $f[1]->ref, (string) $f[1]->offset), $security);
         sort($lines, SORT_STRING);
-        $data = self::fields('aa-app-install-confirmation', $user, hash('sha256', serialize($plan->package)), ...$lines);
+        // the settings values and a new owner are written beside the package
+        $data = self::fields('aa-app-install-confirmation', $user, hash('sha256', serialize([$plan->package, $plan->settingDefaults, $plan->newOwner])), ...$lines);
         return hash_hmac('sha256', $data, $this->key());
     }
 

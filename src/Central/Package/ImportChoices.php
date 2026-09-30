@@ -13,8 +13,8 @@ use JsonException;
  *  All strings are request text - the planner checks them as package text (charset, length, lint). */
 final readonly class ImportChoices
 {
-    /** longest name of a new owner or its e-mail - slice_owner columns */
-    private const OWNER_MAX = 255;
+    /** longest name of a new owner or its e-mail - slice_owner columns, char(80) */
+    public const OWNER_MAX = 80;
 
     /**
      * @param array<string, string>                $names    source module id => its new name (trimmed, not empty)
@@ -77,7 +77,7 @@ final readonly class ImportChoices
         $owner     = is_string($post['owner'] ?? null) && $long($post['owner']) ? strtolower($post['owner']) : '';
         $new_name  = is_string($post['new_owner'] ?? null) ? trim($post['new_owner']) : '';
         $new_email = is_string($post['new_owner_email'] ?? null) ? trim($post['new_owner_email']) : '';
-        $new_owner = ($new_name === '') ? null : ['name' => mb_substr($new_name, 0, self::OWNER_MAX), 'email' => mb_substr($new_email, 0, self::OWNER_MAX)];
+        $new_owner = ($new_name === '') ? null : ['name' => $new_name, 'email' => $new_email];      // the planner says what is too long
         sort($skip);
         return new self($names, array_values(array_unique($skip)), $new_owner ? '' : $owner, $new_owner, $settings);
     }
