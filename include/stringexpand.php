@@ -7682,7 +7682,7 @@ class AA_Requires {
             'aa-jslib@2'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php', ['v'=>AA_JS_VERSION],false), '', ['jquery@3']),
             'aa-jslib@1'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-legacy.min.js', ['v'=>AA_JS_VERSION],false)),
             'jquery-ui@1'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', ['jquery@3','_css-jquery-ui@1']),
-            'jquery@3'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js', 'sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4='),
+            'jquery@3'                    => new AA_Req_Lib(get_aa_url('javascript/jquery.min.js', ['v'=>'3.7.1'],false)),  // own origin - a CDN costs a connection on the render-blocking path; v = jQuery version, not AA_JS_VERSION, so browsers keep it across AA releases
             'vue@2'                       => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js', 'sha256-kXTEJcRFN330VirZFl6gj9+UM6gIKW195fYZeR3xDhc='),
             'vue-test@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js', 'sha256-abdUg7JwQh4aiUJt1ZOHugkHcjE1YcPp+kFTlqeOiTY='),
             '_css-jquery-ui@1'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
