@@ -31,10 +31,13 @@ final class SecurityLint
     public const INFO_COMMANDS = ['debug', 'version', 'serverload'];
     /** S `user`: {user:password} (PHP_AUTH_PW) or a computed argument; any other {user..} is I */
     private const USER_S = '~^\{user[:(]\s*(?:password\s*[:)}]|[^:)}]*(?:\{|_#|\x1E))~i';
-    /** I `header`: a status, a content type, a file name or X-Content-Type-Options / X-Xss-Protection /
-     *  Referrer-Policy - they allow a browser nothing more; S is CSP, CORS, Report-To, NEL (what the browser
-     *  runs, who reads the answer, where the reports go) or a computed name */
-    private const HEADER_I = '~^\{header[:(]\s*(?:\d{3}|plain|css|html|bin|js|xml|gif|jpg|png|ico|svg|json|csv|ical|filename|utf-8|XCTO|XSS|RP)\s*(?:[:)}]|\z)~i';
+    /** I `header`: a status, a content type, a file name, X-Content-Type-Options / X-Xss-Protection, a
+     *  Referrer-Policy that sends other sites the origin at most, or an empty one (browsers ignore it) -
+     *  they allow a browser nothing more; S is
+     *  CSP, CORS, Report-To, NEL, any other Referrer-Policy (what the browser runs, who reads the answer,
+     *  where the reports and the addresses of the pages go) or a computed name or value */
+    private const HEADER_I = '~^\{header[:(]\s*(?:(?:\d{3}|plain|css|html|bin|js|xml|gif|jpg|png|ico|svg|json|csv|ical|filename|utf-8|XCTO|XSS)\s*(?:[:)}]|\z)'
+        . '|RP\s*(?::\s*(?:no-referrer|same-origin|origin|strict-origin|origin-when-cross-origin|strict-origin-when-cross-origin)?)?\s*(?:[)}]|\z))~i';
     /** S `img`: a first argument with a scheme or `//` (a fetch by the target), or computed other than one
      *  bare field reference; a relative path or a field is I */
     private const IMG_S = '~^\s*(?:[a-z][a-z0-9+.-]*#?:)?//|^[^:)}]*(?:\{|_#|\x1E)~i';
