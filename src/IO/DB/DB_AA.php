@@ -379,6 +379,7 @@ final class DB_AA
      *     s        - string (default)  =                single or array    ['field_id',$id]
      *     i        - integer           =                single or array    ['id', $task_id, 'i']
      *     l        - longid            =                single or array    ['item_id', $ids_arr, 'l']
+     *     b        - bytes             =                single or array    ['item_id', $packed_id, 'b'] - any length, as 0x…
      *     set      - flag is set       fld & val = val  single             ['flag', REL_FLAG_FEED, 'set'] - good for bitfields
      *     unset    - flag is not set   fld & val = 0    single             ['flag', 64, 'unset'] - good for bitfields
      *     j        - JOIN              =                single             ['slice.id', 'module.id', 'j'] - for table join  (SELECT ... FROM `slice`, `module`', '', [['slice.id', 'module.id', 'j'], a..
@@ -482,6 +483,9 @@ final class DB_AA
                     case "l":
                         $where[] = "$name = " . xpack_id($value);
                         break;
+                    case "b":
+                        $where[] = "$name = " . self::bytesLiteral((string) $value);
+                        break;
                     case "j":
                         $where[] = "$name = " . quote($value);
                         break;
@@ -501,6 +505,7 @@ final class DB_AA
                 $arr = match ($type) {
                     "i"     => array_map('intval', $value),
                     "l"     => array_map('xpack_id', $value),
+                    "b"     => array_map(static fn($v): string => self::bytesLiteral((string) $v), $value),
                     default => array_map('qquote', $value),
                 };
                 switch (count($arr)) {
@@ -516,6 +521,12 @@ final class DB_AA
             }
         }
         return count($where) ? "WHERE " . implode(' AND ', $where) : '';
+    }
+
+    /** bytes as an SQL literal, exactly - also a packed id shorter than 16 bytes, which `l` cannot name */
+    private static function bytesLiteral(string $bytes): string
+    {
+        return ($bytes === '') ? "''" : '0x' . bin2hex($bytes);
     }
 
     /** generate order phrase

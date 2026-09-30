@@ -48,6 +48,14 @@ final class DbAaMakeWhereTest extends TestCase
         );
     }
 
+    public function test_bytes_type_names_any_length_exactly(): void
+    {
+        $this->assertSame('WHERE item_id = 0x0123456789abcdef0123456789abcd', DB_AA::makeWhere([['item_id', hex2bin('0123456789abcdef0123456789abcd'), 'b']]));
+        $this->assertSame("WHERE item_id = ''", DB_AA::makeWhere([['item_id', '', 'b']]));
+        $this->assertSame('WHERE item_id = 0x30', DB_AA::makeWhere([['item_id', '0', 'b']]), "no '0' shortcut of unpack_id()");
+        $this->assertSame("WHERE id IN (0x27,0x2720)", DB_AA::makeWhere([['id', ["'", "' "], 'b']]));
+    }
+
     /** the cursor of an item batch: ids in order, packed as they are stored */
     public function test_long_id_after_the_cursor(): void
     {
