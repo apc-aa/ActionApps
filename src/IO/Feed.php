@@ -212,6 +212,11 @@ class FeedUtil
      */
     public static function http_fetch($url, $d = null): string
     {
+        // the fetch would read a local path or php:// stream as well - feed sources are web only
+        $url = trim((string) $url);
+        if (!preg_match('~^https?://~i', $url)) {
+            return '';
+        }
         if (isset($d)) {
             $param = [];
             foreach ($d as $k => $v) {
