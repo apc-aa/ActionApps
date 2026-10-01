@@ -1,0 +1,11 @@
+table.sortable th>div {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAMCAMAAACHgmeRAAAALVBMVEV2dnb///92dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnZ2dnaTkpKigSGBAAAAD3RSTlMAAAUHCSMnUlRhbnJ0d5UgQfy5AAAAOklEQVQIW02NSQ4AIAwCx7qv/3+uRtPUOUEIACBLuEgr7UrfE6l7CCMeG0eg5sfEKZ+y1Bq28i3r2wZjuAGpoaoXgAAAAABJRU5ErkJggg==) no-repeat right;
+    padding-right: 17px;
+    cursor: pointer;
+}
+table.sortable th.sortdown>div {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAMCAYAAACwXJejAAAAbklEQVQY02MoKytjQMLskydNOg6ikcVRFADxZCAugNLs6Io4gXgGEJtA+SZQPidMEQ8QzwZifTSr9aHiPCBOExDn4sHzGf7//08QE6cIZBwQ/8eD58MciUvhfPRwmo9NAboiZIXzcYU4DJ9EFwMAjW/SMEbSKoIAAAAASUVORK5CYII=) no-repeat right;
+}
+table.sortable th.sortup>div {
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAMCAYAAACwXJejAAAAbUlEQVQY02MoKytjQMMn0cXQFcwH4v9QGqsimIL/6ApxKUBRiE8BXCHD////CWLiFAGNawLiXDx4PkgRDxDPBmJ9tODQh4rzwAQ4gXgGEJtA+SZQPid6OLED8WQgLoDS7LhCnH3ypEnHkRWAMABlAtIw8KtX1gAAAABJRU5ErkJggg==) no-repeat right;
+}
