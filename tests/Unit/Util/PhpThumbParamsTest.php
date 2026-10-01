@@ -87,11 +87,12 @@ final class PhpThumbParamsTest extends TestCase
     public static function formats(): array
     {
         return [
-            'appended'             => ['w=150&h=99', 'avif', 'w=150&h=99&f=avif'],
-            'replaced'             => ['w=150&f=png&h=99', 'avif', 'w=150&f=avif&h=99'],
+            'appended'             => ['w=150&h=99', 'webp', 'w=150&h=99&f=webp'],
+            'replaced'             => ['w=150&f=png&h=99', 'webp', 'w=150&f=webp&h=99'],
             'replaced at the end'  => ['w=150&f=png', 'webp', 'w=150&f=webp'],
-            'escaped separator'    => ['w=150&amp;h=99', 'avif', 'w=150&amp;h=99&amp;f=avif'],
-            'escaped and replaced' => ['w=150&amp;f=png', 'avif', 'w=150&amp;f=avif'],
+            'escaped separator'    => ['w=150&amp;h=99', 'webp', 'w=150&amp;h=99&amp;f=webp'],
+            'escaped and replaced' => ['w=150&amp;f=png', 'webp', 'w=150&amp;f=webp'],
+            'webp keeps its q'     => ['w=150&q=90', 'webp', 'w=150&q=90&f=webp'],
         ];
     }
 
@@ -99,6 +100,31 @@ final class PhpThumbParamsTest extends TestCase
     public function test_set_format_keeps_one_output_format_and_the_separator(string $params, string $format, string $expected): void
     {
         $this->assertSame($expected, PhpThumbParams::setFormat($params, $format));
+    }
+
+    /** @return array<string, array{0: string, 1: string}> */
+    public static function avifQualities(): array
+    {
+        return [
+            'default q added'        => ['w=150&h=99', 'w=150&h=99&f=avif&q=83'],
+            'higher q lowered'       => ['w=150&q=90&h=99', 'w=150&q=83&h=99&f=avif'],
+            'lower q kept'           => ['w=150&q=60', 'w=150&q=60&f=avif'],
+            'empty q replaced'       => ['w=150&q=', 'w=150&q=83&f=avif'],
+            'escaped and replaced'   => ['w=150&amp;f=png', 'w=150&amp;f=avif&amp;q=83'],
+            'q-like name untouched'  => ['w=150&sq=90', 'w=150&sq=90&f=avif&q=83'],
+            'q first'                => ['q=95&w=1', 'q=83&w=1&f=avif'],
+            'every q replaced'       => ['w=1&q=40&q=95', 'w=1&q=83&q=83&f=avif'],
+            'last lower q kept'      => ['w=1&q=95&q=40', 'w=1&q=95&q=40&f=avif'],
+            'non-numeric q'          => ['w=1&q=abc', 'w=1&q=83&f=avif'],
+            'spaced name appended'   => ['w=1& q=95', 'w=1& q=95&f=avif&q=83'],
+            'encoded name appended'  => ['w=1&%71=95', 'w=1&%71=95&f=avif&q=83'],
+        ];
+    }
+
+    #[DataProvider('avifQualities')]
+    public function test_set_format_caps_avif_quality(string $params, string $expected): void
+    {
+        $this->assertSame($expected, PhpThumbParams::setFormat($params, 'avif'));
     }
 
     public function test_clean_drops_control_bytes_only(): void
