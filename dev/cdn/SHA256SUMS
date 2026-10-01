@@ -4,10 +4,10 @@ e9eb992e8833438c6482bf90aef2292e0586335b5604a56c0cd59a1e9f30d0cd  gh/honzito/sma
 799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd  npm/font-awesome@4.7.0/css/font-awesome.min.css
 ba0c59deb5450f5cb41b3f93609ee2d0d995415877ddfa223e8a8a7533474f07  npm/font-awesome@4.7.0/fonts/fontawesome-webfont.woff
 2adefcbc041e7d18fcf2d417879dc5a09997aa64d675b7a3c4b6ce33da13f3fe  npm/font-awesome@4.7.0/fonts/fontawesome-webfont.woff2
-5319bf3c7da17b57898c38cbf46a594aac4edfe89bc85b1b846ba955373da8b8  npm/lightgallery@2.2.1/css/lightgallery-bundle.min.css
-fefc5c0d765c26cc5a1779fe4aaab9e0dabb0c14eef068aaf1ad8804592099a1  npm/lightgallery@2.2.1/fonts/lg.woff
-965a0e5f2e07c67826f284b3eb66d4e27865363a43bcdb1ad2b3c37af4bf1a30  npm/lightgallery@2.2.1/fonts/lg.woff2
-298ad3ffc38de0d78a845bf1b70f0dd317a3836af385ae9fcf94ed457d9aa1da  npm/lightgallery@2.2.1/images/loading.gif
-0dac28eac868bdcea647e3aba670b18e71d8629d3ae7956b0742d285300f337e  npm/lightgallery@2.2.1/lightgallery.min.js
+ea3f210e2dc2bba0e811377631613838087acad80d924b07ada71ea6faec9076  npm/lightgallery@2.9.0/css/lightgallery-bundle.min.css
+fefc5c0d765c26cc5a1779fe4aaab9e0dabb0c14eef068aaf1ad8804592099a1  npm/lightgallery@2.9.0/fonts/lg.woff
+965a0e5f2e07c67826f284b3eb66d4e27865363a43bcdb1ad2b3c37af4bf1a30  npm/lightgallery@2.9.0/fonts/lg.woff2
+298ad3ffc38de0d78a845bf1b70f0dd317a3836af385ae9fcf94ed457d9aa1da  npm/lightgallery@2.9.0/images/loading.gif
+6ca44e8cb5996c4439ec9845304cbdc9a04e2d3c4b4af0672997d8cd3d7ee1f3  npm/lightgallery@2.9.0/lightgallery.min.js
 90ba5a3f8c982366e34467af25ce59d1757539391397cc535bd95908831bea05  npm/normalize.css@7.0.0/normalize.min.css
 f0a95a55ad9285f44bd09655f6906b3613b54ce422b1135411ae905afc4f54b8  npm/normalize.css@8.0.1/normalize.min.css
