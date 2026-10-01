@@ -40,11 +40,16 @@ class Feed
         $this->fire                 = $fire;
     }
 
+    /** Unpacked id of the slice the feed stores into; '' for a feed that does not exist */
+    public function getDestinationSliceId(): string
+    {
+        return (string) $this->destination_slice_id;
+    }
+
     /** loadRSSFeed function
-     * @param             $id
-     * @param string|null $url = null
+     * @param $id
      */
-    public function loadRSSFeed($id, ?string $url = null): void
+    public function loadRSSFeed($id): void
     {
         $this->id   = $id;
         $this->type = self::FEEDTYPE_RSS;
@@ -58,10 +63,6 @@ class Feed
 
         $this->grabber              = new AA\IO\Grabber\AARSS($id, $feeddata, $this->fire);
         $this->destination_slice_id = unpack_id($feeddata['slice_id']);
-
-        if ($url) {
-            $this->grabber->setUrl($url);
-        }
     }
 
     /** loadAAFeed function
