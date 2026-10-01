@@ -7668,7 +7668,7 @@ class AA_Requires {
             'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js', 'sha256-gtZlnMWqbrBdDWvmCQCgfiA3kq8J4FMqQ4a8Tvmgopk=', ['jquery@3','_css-select2@4']),
             'select2@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.min.js', 'sha256-xd6tWPqy/mxhxXcvyda/fncm94RXOR6918/lDx6Ckb8=', ['jquery@3','_css-select2@3']),
             'eucookies@1'                 => new AA_Req_Footlib(self::mirror('gh/honzito/smart-eu-cookies@0.9.2/src/smart-eu-cookies.min.js').' async'),
-            'sortable@1'                  => new AA_Req_Footlib(self::mirror('gh/honzito/plain.sortable@1.3.0/sortable.min.js'), '', ['_css-sortable@1']),  // no async - script needs to be loaded to run Sortable.find()... // see orderable for sortablejs
+            'sortable@1'                  => new AA_Req_Footlib(self::mirror('gh/honzito/plain.sortable@1.3.1/sortable.min.js'), '', ['_css-sortable@1']),  // no async - script needs to be loaded to run Sortable.find()... // see orderable for sortablejs
             'orderable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js', 'sha256-bQqDH8GbS66FF5etM5MVfoYa+3hiRZwRImNZsn4sQzc='),  // another sortable for drag&drop ordering
             'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.11.3/js/jquery.dataTables.min.js', 'sha256-gOJ/T3VMQ0Brwz7VYrLoVAQ+NE0a5vHoj1vXI1HUIzY=', ['jquery@3']),
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js', ['ver'=>AA_JS_VERSION],false), '', ['deserialize@2']),
@@ -7705,7 +7705,7 @@ class AA_Requires {
             '_css-lightgallery@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css', 'sha256-gU66VAEd73/e6tBq5c+WSiRcNH0PSXLnHMPeFIKxtHM='),
             '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='),
             '_css-leaflet-draw@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css', 'sha256-XzD3RpaHPv7lzX9qt+2n1j5cWj48O24KsgaGYpKN8x8='),
-            '_css-sortable@1'             => new AA_Req_Css(self::mirror('gh/honzito/plain.sortable@1.2.1/sortable.css')),  // 1.3.0 CSS moves the arrow up
+            '_css-sortable@1'             => new AA_Req_Css(self::mirror('gh/honzito/plain.sortable@1.3.1/sortable.css')),  // jsDelivr's .min is bigger: base64 icons
             'css-aa-system@1'             => new AA_Req_Css(get_aa_url('css/aa-system.css', ['v'=>AA_JS_VERSION],false)),
             'css-normalize@7'             => new AA_Req_Css(self::mirror('npm/normalize.css@7.0.0/normalize.min.css')),
             'css-normalize@8'             => new AA_Req_Css(self::mirror('npm/normalize.css@8.0.1/normalize.min.css')),
