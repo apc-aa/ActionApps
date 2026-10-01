@@ -45,12 +45,15 @@ use AA\Central\AppExport;
 use AA\Central\AppSource;
 use AA\Central\AppStore;
 use AA\Central\ExportRefused;
+use AA\Central\FindingText;
 use AA\Central\InstallRun;
 use AA\Central\ItemIdCheck;
 use AA\Central\Package\AaAfterCommit;
 use AA\Central\Package\DbImportTarget;
 use AA\Central\Package\DbSource;
 use AA\Central\Package\ExistingSlices;
+use AA\Central\Package\FindingList;
+use AA\Central\Package\ImportChoices;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
@@ -59,8 +62,11 @@ use AA\Central\Package\ImportReport;
 use AA\Central\Package\ItemLint;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
+use AA\Central\Package\Model\Package;
 use AA\Central\Package\Planner;
 use AA\Central\Package\Reader;
+use AA\Central\Package\Schema;
+use AA\Central\Package\SettingDefaults;
 use AA\Central\Package\SliceRoles;
 use AA\Central\Package\Validator;
 use AA\Central\Package\ValueCodec;
@@ -96,7 +102,22 @@ try {
     $login    = [InputVars::stringPOST('source_username'), InputVars::stringPOST('source_password'), InputVars::stringPOST('source_code2fa')];
     $into     = InstallRun::targetsFrom(InputVars::arrayPOST('into'));
     $choice   = InstallRun::choiceMade(InputVars::arrayPOST('into'));
-    $owner    = strtolower(InputVars::idPOST('owner'));       // the planner refuses an id of no owner
+    $choices  = ImportChoices::fromPost([       // the planner checks them
+        'name'            => InputVars::arrayPOST('name'),
+        'skip'            => InputVars::arrayPOST('skip'),
+        'setting'         => InputVars::arrayPOST('setting'),
+        'owner'           => InputVars::stringPOST('owner'),
+        'new_owner'       => InputVars::stringPOST('new_owner'),
+        'new_owner_email' => InputVars::stringPOST('new_owner_email'),
+    ]);
+    $sum      = InputVars::stringPOST('choices_sum');
+    $into     = array_diff_key($into, array_flip($choices->skip));     // a slice left out goes nowhere
+    // the choice between a site and modules: the other one is still in the form, only not shown
+    match (InputVars::stringPOST('what')) {
+        'site'    => $modules = [],
+        'modules' => $site = '',
+        default   => null,
+    };
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -166,8 +187,32 @@ $apage->addRequire('
     .aa-installapp-findings td, .aa-installapp-findings th { padding: 0.2em 0.6em; text-align: left; vertical-align: top; border-bottom: 1px solid var(--clr-border, #ddd); }
     .aa-installapp-findings .aa-num { text-align: right; font-variant-numeric: tabular-nums; }
     .aa-installapp-findings code { word-break: break-all; }
+    .aa-installapp-findings small code { color: var(--clr-muted, #777); }
+    .aa-installapp-code { margin: 0.5em 0 1em; max-width: 60em; }
+    .aa-installapp-code h4 { margin: 0.8em 0 0.2em; }
+    .aa-installapp-code p { margin: 0.2em 0; }
     .aa-installapp fieldset { border: 0; padding: 0; margin: 0 0 1em; }
+    .aa-installapp h3 { margin: 1.2em 0 0.3em; }
+    .aa-installapp-plan input[type="text"] { width: 100%; max-width: 30em; box-sizing: border-box; }
+    .aa-installapp-skipped td { color: var(--clr-muted, #777); }
+    .aa-installapp-skipped input[type="text"] { text-decoration: line-through; }
+    .aa-installapp-settings th.aa-installapp-group { padding-top: 0.8em; }
+    .aa-installapp-settings td:first-child { max-width: 24em; }
+    .aa-installapp-owner { display: flex; flex-wrap: wrap; gap: 0.5em 1em; align-items: baseline; }
+    .aa-installapp-owner details { display: inline-block; }
+    .aa-installapp-owner details[open] label { display: inline-block; margin: 0.3em 1em 0 0; }
     .aa-installapp [hidden] { display: none; }
+    .aa-installapp td.tabtxt { width: 11em; }
+    .aa-installapp-what { display: inline-flex; border: 1px solid var(--clr-basic-darker, #A8977A); border-radius: 4px; overflow: hidden; background: #fff; }
+    .aa-installapp-what label { position: relative; padding: 0.35em 1em; cursor: pointer; }
+    .aa-installapp-what label + label { border-left: 1px solid var(--clr-basic-darker, #A8977A); }
+    .aa-installapp-what label:hover { background: var(--clr-surface-selected, #f3e6c3); }
+    .aa-installapp-what input { position: absolute; opacity: 0; }
+    .aa-installapp-what label:has(:checked) { background: var(--clr-dark, #1f1f1f); color: #fff; }
+    .aa-installapp-what label:has(:focus-visible) { outline: 2px solid var(--clr-border-hover, #a59850); outline-offset: -3px; }
+    form:has([name="what"][value="site"]:checked) .aa-installapp-modules,
+    form:has([name="what"][value="modules"]:checked) .aa-installapp-site,
+    form:has([name="mode"][value="install"]:checked) .aa-installapp-bins { display: none; }
 ', 'AA_Req_CSScode');
 $apage->printHead();
 echo '<div class="aa-installapp">';
@@ -178,11 +223,10 @@ switch ($action) {
         installapp_connect($aa, $mode, $all_bins, $login, $uid);
         break;
     case 'preview':
-        $kept = ($owner === '') ? null : $owner;         // a preview sent again keeps the owner chosen
-        ($run_id !== '') ? installapp_remote_preview($run_id, $site, $modules, $into, !$choice, $kept, $uid) : installapp_preview($site, $modules, $mode, $all_bins, $into, !$choice, $kept, $uid);
+        ($run_id !== '') ? installapp_remote_preview($run_id, $site, $modules, $into, !$choice, $choices, $uid) : installapp_preview($site, $modules, $mode, $all_bins, $into, !$choice, $choices, $uid);
         break;
     case 'write':
-        installapp_write($run_id, $site, $modules, $into, $owner, ($confirm === '') ? null : $confirm, $uid);
+        installapp_write($run_id, $site, $modules, $into, $sum, ($confirm === '') ? null : $confirm, $uid);
         break;
     default:
         ($run_id !== '') ? installapp_progress($run_id, $uid) : installapp_form($aa, $uid);
@@ -342,30 +386,43 @@ function installapp_login_form(int $aa): void
     echo '<p><button class="btn-l" type="submit">' . _m('Log in and choose the app') . '</button></p></form>';
 }
 
-/** @param array<string, string> $sites id => name @param array<string, string> $others slices and Alerts, id => name */
+/** a site, or slices and Alerts modules - a switch shows one of them, the request drops the other (`what`)
+ *  @param array<string, string> $sites id => name @param array<string, string> $others slices and Alerts, id => name */
 function installapp_module_rows(array $sites, array $others): void
 {
-    echo '<tr><td class="tabtxt"><label for="installapp-site">' . _m('Site') . '</label></td><td><select name="site" id="installapp-site">';
-    foreach (['' => _m('- no site, the modules below -')] + $sites as $id => $name) {
-        echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+    if ($sites && $others) {
+        echo '<tr><td class="tabtxt">' . _m('Install') . '</td><td><div class="aa-installapp-what" role="radiogroup" aria-label="' . safe(_m('Install')) . '">'
+            . '<label><input type="radio" name="what" value="site" checked> ' . _m('a site') . '</label>'
+            . '<label><input type="radio" name="what" value="modules"> ' . _m('slices and Alerts') . '</label></div></td></tr>';
     }
-    echo '</select><div class="tabhlp">' . _m('The site brings the slices and Alerts modules it uses.') . '</div></td></tr>';
-    echo '<tr><td class="tabtxt"><label for="installapp-modules">' . _m('Slices and Alerts') . '</label></td><td><select name="modules[]" id="installapp-modules" multiple size="10">';
-    foreach ($others as $id => $name) {
-        echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+    if ($sites) {
+        echo '<tr class="aa-installapp-site"><td class="tabtxt"><label for="installapp-site">' . _m('Site') . '</label></td><td><select name="site" id="installapp-site">';
+        foreach ($sites as $id => $name) {
+            echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+        }
+        echo '</select><div class="tabhlp">' . _m('The site brings the slices and Alerts modules it uses.') . '</div></td></tr>';
     }
-    echo '</select><div class="tabhlp">' . _m('Only when no site is chosen.') . '</div></td></tr>';
+    if ($others) {
+        echo '<tr class="aa-installapp-modules"><td class="tabtxt"><label for="installapp-modules">' . _m('Slices and Alerts') . '</label></td><td><select name="modules[]" id="installapp-modules" multiple size="10">';
+        foreach ($others as $id => $name) {
+            echo '<option value="' . safe((string) $id) . '">' . safe((string) $name) . '</option>';
+        }
+        echo '</select><div class="tabhlp">' . _m('Hold Ctrl to choose more of them.') . '</div></td></tr>';
+    }
 }
 
+/** a transfer is a superadmin's (it hands out the readers' passwords) - others install without asking */
 function installapp_mode_rows(): void
 {
+    if (!IsSuperadmin()) {
+        return;
+    }
     echo '<tr><td class="tabtxt">' . _m('Mode') . '</td><td><fieldset>'
         . '<label><input type="radio" name="mode" value="install" checked> ' . _m('Install - a clean app, no items') . '</label><br>'
         . '<label><input type="radio" name="mode" value="transfer"> ' . _m('Transfer - a copy with the items and readers') . '</label></fieldset></td></tr>';
-    echo '<tr><td class="tabtxt">' . _m('Items of') . '</td><td><fieldset>'
+    echo '<tr class="aa-installapp-bins"><td class="tabtxt">' . _m('Items of') . '</td><td><fieldset>'
         . '<label><input type="radio" name="bins" value="active" checked> ' . _m('the active bin') . '</label><br>'
-        . '<label><input type="radio" name="bins" value="all"> ' . _m('all bins') . '</label></fieldset>'
-        . '<div class="tabhlp">' . _m('A transfer only.') . '</div></td></tr>';
+        . '<label><input type="radio" name="bins" value="all"> ' . _m('all bins') . '</label></fieldset></td></tr>';
 }
 
 /** Logs in to the other AA and opens the run in preview with its token - the only place the token is
@@ -433,46 +490,65 @@ function installapp_slice_choices(): array
  *  @param list<string>          $modules
  *  @param array<string, string> $into    source slice => slice of this AA it goes into; the others get new slices
  *  @param bool                  $preselect no choice made yet: SliceRoles makes it
- *  @param string|null           $owner   the owner of the new modules of an install; null = Planner::defaultOwner()
+ *  @param ImportChoices|null    $choices names, slices left out, the owner ('' = Planner::defaultOwner()), settings values
  *  @return array{error: string, login: bool, xml: string, now: int, same: bool, findings: list<array{string, LintFinding}>, plan: ?ImportPlan,
- *                into: array<string, string>, roles: array<string, string>, package: ?\AA\Central\Package\Model\Package}
+ *                into: array<string, string>, roles: array<string, string>, package: ?\AA\Central\Package\Model\Package,
+ *                all: ?\AA\Central\Package\Model\Package, choices: ImportChoices}
  *          login: the source refused its token; now: the time of the source; same: the source is this AA;
- *          roles: source slice => the role its target was preselected by */
-function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false, ?string $owner = null): array
+ *          roles: source slice => the role its target was preselected by; choices: as planned, the default owner filled in;
+ *          all: the app as the source gave it, package: as chosen (names, slices left out) */
+function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false, ?ImportChoices $choices = null): array
 {
-    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null];
+    $choices ??= new ImportChoices();
+    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null, 'all' => null, 'choices' => $choices];
     $transfer = ($mode === InstallRun::TRANSFER);
     try {
         [$out['xml'], $out['findings'], $out['now']] = $from->definitions(($site !== '') ? [$site] : $modules, $transfer, $all_bins, $started);
         $out['same']     = $from->sameAa();
         $read            = (new Reader())->read($out['xml']);
         $out['findings'] = [...$out['findings'], ...$read->findings];
+        $out['all']      = $read->package;
+        $target          = new DbImportTarget();
+        $planner         = new Planner($target);
+        // a slice going into an existing one keeps the settings fields it has - a value typed for one is no choice;
+        // only a slice of the app into one the user may edit is read, the plan refuses the others anyway
+        $app_slices      = array_flip(array_map(static fn(Module $m): string => strtolower($m->id), array_filter($read->package->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
+        $editable        = array_filter(array_intersect_key($into, $app_slices), $target->mayEditSlice(...));
+        $choices         = $choices->withoutSettings(array_map(static fn(string $id): array => array_keys($target->existingSlice($id)->fields ?? []), $editable));
+        // the names and the slices left out come first: the check and the plan see the app as it will be
+        [$package, $chosen] = $planner->choose($read->package, $choices);
+        // the source's findings of what is not written: a slice left out, a setting value typed over
+        $skipped   = array_map(static fn(string $id): string => Module::SLICE . "[$id]", $choices->skip);
+        // the translations of a typed-over value stay (Planner::typed())
+        $typed_over = static fn(string $path): bool => (bool) preg_match('~^' . Module::SLICE . '\[([0-9a-f]{32})\]/setting-values/([^/\[]+)\[(\d+)\]~i', $path, $p)
+            && isset($choices->settings[strtolower($p[1])][$p[2]]) && ((int) $p[3] < AA_Value::MAX_INDEX);
+        $out['findings'] = [...array_values(array_filter($out['findings'], static fn(array $f): bool => !installapp_under($f[0], $skipped) && !$typed_over($f[0]))), ...$chosen];
         $readers         = [];
-        foreach ($read->package->modules as $m) {
+        foreach ($package->modules as $m) {
             if (($m->type === Module::SLICE) && (ValueCodec::bytes($m->rows['slice'][0]['type'] ?? '') === ItemLint::READER_SLICE)) {
                 $readers[] = $m->id;
             }
         }
         $logins     = ($transfer && $readers) ? $from->logins($readers, $all_bins) : [];
-        $validation = (new Validator())->validate($read->package, $transfer);
-        $out['package'] = $read->package;
+        $validation = (new Validator())->validate($package, $transfer, array_map('array_keys', $choices->settings));
+        $out['package'] = $package;
         $out['into']    = $into;
         if (!$validation->importable()) {
             $out['findings'] = [...$out['findings'], ...$validation->findings];
             return $out;
         }
-        $planner = new Planner(new DbImportTarget());
-        $owner   = $transfer ? '' : ($owner ?? $planner->defaultOwner());
-        $plan    = static fn(array $targets): ImportPlan => $planner->plan($read->package, $validation, $transfer, $logins, $targets, $out['same'], $owner);
+        $owner   = ($transfer || ($choices->newOwner !== null)) ? '' : ($choices->owner ?: $planner->defaultOwner());
+        $out['choices'] = new ImportChoices($choices->names, $choices->skip, $owner, $transfer ? null : $choices->newOwner, $choices->settings);
+        $plan    = static fn(array $targets): ImportPlan => $planner->plan($package, $validation, $transfer, $logins, $targets, $out['same'], $owner, $out['choices']);
         if ($preselect) {           // stored with the preview as any choice - the write writes what it showed
-            [$out['plan'], $out['into'], $preselected, $out['roles']] = SliceRoles::plan($read->package, new DbImportTarget(), $out['same'], $transfer, $plan);
+            [$out['plan'], $out['into'], $preselected, $out['roles']] = SliceRoles::plan($package, new DbImportTarget(), $out['same'], $transfer, $plan);
             $out['findings'] = [...$out['findings'], ...$preselected];
         } else {
             $out['plan'] = $plan($into);
         }
         $out['findings'] = [...$out['findings'], ...$out['plan']->allFindings()];
         if ($transfer && !$out['same']) {        // another AA keeps the item ids: none may be here already
-            $slices          = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($read->package->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
+            $slices          = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($package->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
             $out['findings'] = [...$out['findings'], ...(new ItemIdCheck($from, new DbImportTarget()))->check($slices, $all_bins)];
         }
     } catch (ExportRefused $e) {
@@ -492,6 +568,17 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
     return $out;
 }
 
+/** the path is of one of the modules (their paths, `slice-module[<id>]`), any case @param list<string> $modules */
+function installapp_under(string $path, array $modules): bool
+{
+    foreach ($modules as $module) {
+        if (strncasecmp($path, $module, strlen($module)) === 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 /** no E anywhere - the definitions may be written */
 function installapp_importable(array $prepared): bool
 {
@@ -499,8 +586,8 @@ function installapp_importable(array $prepared): bool
 }
 
 /** the preview of an app of this AA: the run is created with it
- *  @param list<string> $modules @param array<string, string> $into @param string|null $owner null = the default */
-function installapp_preview(string $site, array $modules, string $mode, bool $all_bins, array $into, bool $preselect, ?string $owner, string $uid): void
+ *  @param list<string> $modules @param array<string, string> $into */
+function installapp_preview(string $site, array $modules, string $mode, bool $all_bins, array $into, bool $preselect, ImportChoices $choices, string $uid): void
 {
     if (($site === '') === !$modules) {
         echo '<div class="aa-err">' . _m('Choose a site, or slices and Alerts modules - not both.') . '</div>';
@@ -509,16 +596,16 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
     }
     $now      = time();
     $from     = installapp_local_source();
-    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect, $owner);
+    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect, $choices);
     if (installapp_show_preview($from, $prepared, $mode, $all_bins, installapp_hidden('preview', $site, $modules) . installapp_mode_hidden($mode, $all_bins))) {
-        $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into']);
+        $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into'], $prepared['choices']);
         installapp_write_form($run, $site, $modules, $prepared['plan'], $uid);
     }
 }
 
 /** the preview of an app of another AA: the run of the login takes its fingerprint
- *  @param list<string> $modules @param array<string, string> $into @param string|null $owner null = the default */
-function installapp_remote_preview(string $run_id, string $site, array $modules, array $into, bool $preselect, ?string $owner, string $uid): void
+ *  @param list<string> $modules @param array<string, string> $into */
+function installapp_remote_preview(string $run_id, string $site, array $modules, array $into, bool $preselect, ImportChoices $choices, string $uid): void
 {
     $run = InstallRun::get($run_id);
     if (($run === null) || ($run->user() !== $uid) || ($run->state() !== InstallRun::PREVIEW) || ($run->source() === InstallRun::LOCAL)) {
@@ -536,18 +623,22 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         return;
     }
-    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect, $owner);
+    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect, $choices);
     if (!installapp_show_preview($from, $prepared, $run->mode(), $run->allBins(), installapp_hidden('preview', $site, $modules, $run_id))) {
         echo '<p>' . ($prepared['login'] ? installapp_relogin($run) : a_href(installapp_url(['run' => $run_id]), _m('Choose another app'))) . '</p>';
         return;
     }
     try {
-        DB_AA::transaction(static fn() => (InstallRun::lockForUpdate($run_id) ?? throw new LogicException('The run is gone'))->previewed(hash('sha256', $prepared['xml']), $prepared['now'], $prepared['same'], $prepared['into']));
+        $locked = DB_AA::transaction(static function () use ($run_id, $prepared): InstallRun {
+            $locked = InstallRun::lockForUpdate($run_id) ?? throw new LogicException('The run is gone');
+            $locked->previewed(hash('sha256', $prepared['xml']), $prepared['now'], $prepared['same'], $prepared['into'], $prepared['choices']);
+            return $locked;
+        });
     } catch (LogicException) {              // another tab wrote it meanwhile
         echo '<div class="aa-err">' . _m('The run has moved on meanwhile.') . ' ' . a_href(installapp_url(['run' => $run_id]), _m('Show the run')) . '</div>';
         return;
     }
-    installapp_write_form(InstallRun::get($run_id) ?? $run, $site, $modules, $prepared['plan'], $uid);       // as previewed() left it: its targets
+    installapp_write_form($locked, $site, $modules, $prepared['plan'], $uid);       // this preview's choices, not those of another tab since
 }
 
 /** the hidden mode fields of the preview of this AA sent again */
@@ -567,39 +658,9 @@ function installapp_show_preview(AppSource $from, array $prepared, string $mode,
     }
     $plan = $prepared['plan'];
     if ($plan) {
-        $preview = $plan->preview();
-        $slices  = array_column(array_filter($preview['modules'], static fn(array $m): bool => $m['type'] === Module::SLICE), 'old');
-        $counts  = ($mode === InstallRun::TRANSFER) ? installapp_counts($from, $slices, $all_bins) : [];
-        $names   = [];              // the package's names - $preview names an existing slice by its own
-        foreach ($prepared['package']->modules as $m) {
-            $names[$m->id] = ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
-        }
-        $choices = $slices ? installapp_slice_choices() : [];
-        echo '<h2>' . safe($preview['name']) . ' - ' . safe(($mode === InstallRun::TRANSFER) ? _m('transfer with the items') : _m('install, no items')) . '</h2>';
-        echo '<form method="post" action="' . safe(installapp_url()) . '">' . $again;
-        if ($plan->owner !== '') {          // kept in step with the owner select of the write form
-            echo '<input type="hidden" name="owner" value="' . safe($plan->owner) . '" data-role="installapp-owner">';
-        }
-        echo '<table class="aa-installapp-findings"><tr><th>' . _m('Module') . '</th><th>' . _m('Type') . '</th><th>' . _m('Source id') . '</th><th>' . _m('Into') . '</th>'
-            . (($mode === InstallRun::TRANSFER) ? '<th class="aa-num">' . _m('Items') . '</th>' : '') . '</tr>';
-        foreach ($preview['modules'] as $m) {
-            echo '<tr><td>' . safe($names[$m['old']] ?? $m['name']) . '</td><td>' . safe($m['type']) . '</td><td><code>' . safe($m['old']) . '</code></td><td>'
-                . ((($m['type'] === Module::SLICE) && $choices) ? installapp_into_select($m['old'], $prepared['into'][strtolower($m['old'])] ?? '', $choices) . installapp_role_note($prepared['roles'][strtolower($m['old'])] ?? null) : safe(_m('a new module'))) . '</td>'
-                . (($mode === InstallRun::TRANSFER) ? '<td class="aa-num">' . (($m['type'] === Module::SLICE) ? (isset($counts[$m['old']]) ? (int) $counts[$m['old']] : '?') : '') . '</td>' : '') . '</tr>';
-        }
-        echo '</table>';
-        installapp_settings($preview['settings']);
-        if ($choices) {
-            echo '<p><button class="btn" type="submit">' . _m('Preview again with these slices') . '</button></p>';
-        }
-        echo '</form>';
-        if ($choices) {         // the write takes the choice of this preview - another one must be previewed first
-            echo '<script>document.querySelectorAll(\'.aa-installapp select[name^="into["]\').forEach(s => s.addEventListener(\'change\', () => {'
-                . ' const b = document.querySelector(\'[data-role="installapp-write"]\'); if (b) { b.disabled = true; b.textContent = '
-                . json_encode(_m('Preview again first'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '; } }));</script>';
-        }
+        installapp_choices_form($from, $prepared, $plan, $mode, $all_bins, $again);
     }
-    installapp_findings($prepared['findings']);
+    installapp_findings($prepared['findings'], $prepared['package']);
     if (!installapp_importable($prepared)) {
         echo '<div class="aa-err">' . _m('The app cannot be installed - see the errors (E) above.') . '</div>';
         return false;
@@ -629,16 +690,144 @@ function installapp_role_note(?string $role): string
         : '<div class="tabhlp">' . safe($note) . '</div>';
 }
 
+/** the form of the choices of the preview: what is imported and under which name, into which slice, the
+ *  owner of the new modules, the values of the slice settings; sent again it is checked by a new preview -
+ *  the write takes only what a preview checked (the run keeps it)
+ *  @param array<string, mixed> $prepared installapp_prepare() */
+function installapp_choices_form(AppSource $from, array $prepared, ImportPlan $plan, string $mode, bool $all_bins, string $again): void
+{
+    $preview  = $plan->preview();
+    $choices  = $prepared['choices'];
+    $transfer = ($mode === InstallRun::TRANSFER);
+    $planned  = array_column($preview['modules'], null, 'old');
+    $slices   = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($prepared['all']->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
+    $counts   = $transfer ? installapp_counts($from, array_values(array_intersect($slices, array_keys($planned))), $all_bins) : [];
+    $into     = $slices ? installapp_slice_choices() : [];
+    $types    = [Module::SITE => _m('Site'), Module::SLICE => _m('Slice'), Module::ALERTS => _m('Alerts')];
+
+    echo '<h2>' . safe($preview['name']) . ' - ' . safe($transfer ? _m('transfer with the items') : _m('install, no items')) . '</h2>';
+    // UTF-8 whatever the charset of the admin: the choices are text of the app, which is UTF-8
+    echo '<form method="post" action="' . safe(installapp_url()) . '" accept-charset="UTF-8" class="aa-installapp-choices" data-role="installapp-choices">' . $again;
+    echo '<h3>' . _m('What to install') . '</h3><table class="aa-installapp-findings aa-installapp-plan"><tr><th>' . _m('Install') . '</th><th>' . _m('Name') . '</th><th>' . _m('Type') . '</th><th>' . _m('Into') . '</th>'
+        . ($transfer ? '<th class="aa-num">' . _m('Items') . '</th>' : '') . '</tr>';
+    foreach ($prepared['all']->modules as $m) {
+        $old     = strtolower($m->id);
+        $skipped = !isset($planned[$m->id]);
+        $name    = $choices->names[$old] ?? ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
+        $keep    = ($m->type === Module::SLICE)       // unchecked, the hidden field says "left out"
+            ? '<input type="hidden" name="skip[' . safe($old) . ']" value="1"><input type="checkbox" name="skip[' . safe($old) . ']" value=""' . ($skipped ? '' : ' checked') . ' aria-label="' . safe(_m('Install %1', [$name])) . '">'
+            : '<input type="checkbox" checked disabled aria-label="' . safe(_m('Install %1', [$name])) . '">';
+        echo '<tr' . ($skipped ? ' class="aa-installapp-skipped"' : '') . '><td>' . $keep . '</td>'
+            . '<td><input type="text" name="name[' . safe($old) . ']" value="' . safe($name) . '" maxlength="100" size="40" aria-label="' . safe(_m('Name')) . '"'
+            . ($skipped ? ' readonly' : '') . '><br><small><code>' . safe($old) . '</code></small></td>'
+            . '<td>' . safe($types[$m->type] ?? $m->type) . '</td><td>'
+            . match (true) {
+                $skipped                                => safe(_m('not installed')),
+                ($m->type === Module::SLICE) && $into   => installapp_into_select($m->id, $prepared['into'][$old] ?? '', $into) . installapp_role_note($prepared['roles'][$old] ?? null),
+                default                                 => safe(_m('a new module')),
+            } . '</td>'
+            . ($transfer ? '<td class="aa-num">' . ((($m->type === Module::SLICE) && !$skipped) ? (isset($counts[$m->id]) ? (int) $counts[$m->id] : '?') : '') . '</td>' : '') . '</tr>';
+    }
+    echo '</table><p class="tabhlp">' . _m('A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice.') . '</p>';
+    if (!$transfer && array_diff_key($plan->map->modules(), $plan->existing)) {
+        installapp_owner_rows($plan->owner, $choices->newOwner, (bool) $plan->existing);
+    }
+    installapp_setting_rows($plan, $choices, $transfer, $prepared['all']);
+    echo '<p><button class="btn" type="submit">' . _m('Check the changes') . '</button> <span class="tabhlp">' . _m('After a change, check it before installing.') . '</span></p></form>';
+    // the write takes what this preview checked - after a change the Install button waits for the check
+    echo '<script>document.querySelector(\'[data-role="installapp-choices"]\').addEventListener(\'input\', () => {'
+        . ' const b = document.querySelector(\'[data-role="installapp-write"]\'); if (b && !b.disabled) { b.disabled = true; b.textContent = '
+        . json_encode(_m('Check the changes first'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '; } });</script>';
+}
+
+/** the owner of the new modules of an install: one of this AA's, or a new one (name and e-mail) the
+ *  install creates @param array{name: string, email: string}|null $new @param bool $existing some slice goes into an existing one */
+function installapp_owner_rows(string $chosen, ?array $new, bool $existing): void
+{
+    $owners = (new DbImportTarget())->owners();
+    $limits = (new Schema())->tableLimits('slice_owner');
+    echo '<h3>' . _m('Owner of the new modules') . '</h3><div class="aa-installapp-owner">';
+    if ($owners) {
+        echo '<select name="owner" aria-label="' . safe(_m('Owner of the new modules')) . '"' . ($new ? ' disabled' : '') . '>';
+        foreach ($owners as $id => $name) {
+            echo '<option value="' . safe((string) $id) . '"' . (((string) $id === $chosen) ? ' selected' : '') . '>' . safe((string) $name) . '</option>';
+        }
+        echo '</select> ';
+    }
+    echo '<details' . (($new || !$owners) ? ' open' : '') . '><summary>' . _m('+ Add new owner') . '</summary>'
+        . '<label>' . _m('New Owner') . ' <input type="text" name="new_owner" value="' . safe($new['name'] ?? '') . '" maxlength="' . (int) ($limits['name'][0] ?? 80) . '"></label> '
+        . '<label>' . _m("New Owner's E-mail") . ' <input type="email" name="new_owner_email" value="' . safe($new['email'] ?? '') . '" maxlength="' . (int) ($limits['email'][0] ?? 80) . '"></label></details></div>';
+    if ($existing) {
+        echo '<p class="tabhlp">' . _m('A slice going into an existing slice keeps the owner of that slice.') . '</p>';
+    }
+    // a new owner wins over the list - the list is off while a new name is written
+    echo '<script>(() => { const d = document.querySelector(\'.aa-installapp-owner details\'), s = document.querySelector(\'.aa-installapp-owner select\'), n = d?.querySelector(\'[name="new_owner"]\');'
+        . ' if (d && s && n) { const sync = () => { s.disabled = d.open && (n.value.trim() !== \'\'); }; n.addEventListener(\'input\', sync);'
+        . ' d.addEventListener(\'toggle\', () => { if (!d.open) { d.querySelectorAll(\'input\').forEach(i => { if (i.value !== \'\') { i.value = \'\'; i.dispatchEvent(new Event(\'input\', { bubbles: true })); } }); } sync(); }); } })();</script>';
+}
+
+/** the settings fields of the slices the app writes: what the app brings - the value of the source, else the
+ *  default of the field - and a value to write instead; none for a field whose insert function changes the
+ *  value (Planner::SETTING_INSERT) @param Package $all the app as the source gave it, before the choices */
+function installapp_setting_rows(ImportPlan $plan, ImportChoices $choices, bool $transfer, Package $all): void
+{
+    $schema = new Schema();
+    $source = array_column($all->modules, null, 'id');
+    $html   = '';
+    foreach ($plan->package->modules as $m) {
+        // an existing slice keeps the values it has; in a transfer it takes none
+        $has    = isset($plan->existing[$m->id]) ? ($transfer ? null : $plan->existing[$m->id]->settings) : [];
+        $fields = ($has === null) ? [] : array_filter($m->rows['field'] ?? [], static fn(array $row): bool => str_starts_with($id = ValueCodec::bytes($row['id'] ?? ''), '_') && !in_array($id, $has, true));
+        if (($m->type !== Module::SLICE) || !$fields) {
+            continue;
+        }
+        $app_m  = $source[$m->id] ?? $m;
+        $of_app = $transfer ? ($app_m->transfer['setting-values'] ?? []) : SettingDefaults::values($app_m, $schema, new FindingList());
+        $old    = strtolower($m->id);
+        $html  .= '<tr><th colspan="3" class="aa-installapp-group">' . safe($plan->moduleName($m)) . '</th></tr>';
+        foreach ($fields as $row) {
+            $id     = ValueCodec::bytes($row['id'] ?? '');
+            $insert = SettingDefaults::insert($row, $schema);
+            $secret = SettingDefaults::secret($id) || !SettingDefaults::plainInsert($insert);     // a pwd field holds a hash
+            $app    = ValueCodec::bytes((array_values($of_app[$id] ?? [])[0] ?? [])['value'] ?? '');     // a translation when the value has none
+            $app    = (($app !== '') && $secret) ? '••••••' : $app;         // as the export never quotes them
+            $help   = ValueCodec::bytes($row['input_help'] ?? '');
+            $for    = 'installapp-set-' . safe($old . $id);
+            $name   = 'setting[' . safe($old) . '][' . safe($id) . ']';
+            $typed  = $choices->settings[$old][$id] ?? '';
+            if (!SettingDefaults::plainInsert($insert)) {
+                $input = '<span class="tabhlp">' . _m('The field changes the value when it is saved - fill it in the slice after installing.') . '</span>';
+            } elseif ($insert === 'boo') {
+                $input = '<select name="' . $name . '" id="' . $for . '"><option value="">' . safe(_m('keep the value of the app')) . '</option>';
+                foreach (['1' => _m('Yes'), '0' => _m('No')] as $v => $label) {
+                    $input .= '<option value="' . $v . '"' . (($typed === (string) $v) ? ' selected' : '') . '>' . safe($label) . '</option>';
+                }
+                $input .= '</select>';
+            } else {
+                $attrs = $secret ? ' type="password" autocomplete="new-password"' : ' type="text"' . ((SettingDefaults::flag($row, $schema) & FLAG_TEXT_STORED) ? '' : ' inputmode="numeric"');
+                $input = '<input' . $attrs . ' name="' . $name . '" id="' . $for . '" value="' . safe($typed) . '" size="30" placeholder="' . safe(_m('keep the value of the app')) . '">';
+            }
+            $html  .= '<tr><td><label for="' . $for . '">' . safe(ValueCodec::bytes($row['name'] ?? '') ?: $id) . '</label>'
+                . (((int) ValueCodec::bytes($row['required'] ?? '0')) ? ' <span class="aa-required">*</span>' : '') . '<br><small><code>' . safe($id) . '</code></small>'
+                . (($help !== '') ? '<div class="tabhlp">' . safe($help) . '</div>' : '') . '</td>'
+                . '<td>' . (($app === '') ? '<span class="tabhlp">' . _m('(empty)') . '</span>' : '<code>' . safe(mb_strimwidth($app, 0, 200, '…')) . '</code>') . '</td>'
+                . '<td>' . $input . '</td></tr>';
+        }
+    }
+    if ($html !== '') {
+        echo '<h3>' . _m('Slice settings') . '</h3><p class="tabhlp">' . _m('Values that hold for the whole slice, not for single items. Leave a field empty to keep the value of the app; you can change them later in the slice under Setting.') . '</p>'
+            . '<table class="aa-installapp-findings aa-installapp-settings"><tr><th>' . _m('Setting') . '</th><th>' . _m('Value of the app') . '</th><th>' . _m('New value') . '</th></tr>' . $html . '</table>';
+    }
+}
+
 /** @param list<string> $modules */
 function installapp_write_form(InstallRun $run, string $site, array $modules, ImportPlan $plan, string $uid): void
 {
     // one write per preview: the second click of a double click would only fail
-    echo '<form method="post" action="' . safe(installapp_url()) . '" onsubmit="this.querySelector(\'button[type=submit]\').disabled = true">' . installapp_hidden('write', $site, $modules, $run->getId());
+    echo '<form method="post" action="' . safe(installapp_url()) . '" onsubmit="this.querySelector(\'button[type=submit]\').disabled = true">' . installapp_hidden('write', $site, $modules, $run->getId())
+        . '<input type="hidden" name="choices_sum" value="' . safe($run->choicesSum()) . '">';
     foreach ($run->targets() as $old => $new) {         // compared with the run: a form of an older preview is refused
         echo '<input type="hidden" name="into[' . safe($old) . ']" value="' . safe($new) . '">';
-    }
-    if (($run->mode() === InstallRun::INSTALL) && array_diff_key($plan->map->modules(), $plan->existing)) {
-        echo installapp_owner_select($plan->owner, (bool) $plan->existing);
     }
     if ($plan->preview()['confirm']) {
         echo '<p><label><input type="checkbox" name="confirm" value="' . safe((string) (new ImportConfirmation())->token($plan, $uid)) . '" required> '
@@ -650,28 +839,9 @@ function installapp_write_form(InstallRun $run, string $site, array $modules, Im
     echo '<p><button class="btn-l" type="submit" data-role="installapp-write">' . (($run->mode() === InstallRun::TRANSFER) ? _m('Write the definitions and transfer the items') : _m('Install')) . '</button></p></form>';
 }
 
-/** the owner of the new modules of an install: in the write form, as it changes no finding of the preview;
- *  none to offer - a note, the modules get none
- *  @param bool $existing some slice of the app goes into an existing slice */
-function installapp_owner_select(string $chosen, bool $existing): string
-{
-    $owners = (new DbImportTarget())->owners();
-    if (!$owners) {
-        return '<div class="aa-info">' . safe(_m('This AA has no module owners - the new modules get none. To give them one, add an owner in the settings of a module and preview the app again.')) . '</div>';
-    }
-    $html = '<p><label for="installapp-owner">' . safe(_m('Owner of the new modules')) . '</label> <select name="owner" id="installapp-owner">';
-    foreach ($owners as $id => $name) {
-        $html .= '<option value="' . safe((string) $id) . '"' . (((string) $id === $chosen) ? ' selected' : '') . '>' . safe((string) $name) . '</option>';
-    }
-    $html .= '</select></p>' . ($existing ? '<div class="tabhlp">' . safe(_m('A slice going into an existing slice keeps the owner of that slice.')) . '</div>' : '');
-    // "Preview again with these slices" is another form
-    return $html . '<script>document.getElementById(\'installapp-owner\').addEventListener(\'change\', e => {'
-        . ' const kept = document.querySelector(\'.aa-installapp input[data-role="installapp-owner"]\'); if (kept) { kept.value = e.target.value; } });</script>';
-}
-
 /** @param list<string> $modules @param array<string, string> $into the targets the write form sends
- *  @param string $owner the owner the write form chose for the new modules of an install */
-function installapp_write(string $run_id, string $site, array $modules, array $into, string $owner, ?string $confirm, string $uid): void
+ *  @param string $sum InstallRun::choicesSum() of the preview the write form comes from */
+function installapp_write(string $run_id, string $site, array $modules, array $into, string $sum, ?string $confirm, string $uid): void
 {
     $run = InstallRun::get($run_id);
     if (($run === null) || ($run->user() !== $uid) || ($run->state() !== InstallRun::PREVIEW)) {
@@ -681,8 +851,12 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         }
         return;
     }
+    if (!$run->chose($into) || !hash_equals($run->choicesSum(), $sum)) {       // before the source is read again
+        echo '<div class="aa-err">' . _m('The choice changed since the preview - preview again.') . '</div>';
+        return;
+    }
     try {
-        $prepared = installapp_prepare(installapp_run_source($run), $site, $modules, $run->mode(), $run->allBins(), $run->started(), $run->targets(), false, $owner);
+        $prepared = installapp_prepare(installapp_run_source($run), $site, $modules, $run->mode(), $run->allBins(), $run->started(), $run->targets(), false, $run->choices());
     } catch (SourceFailed $e) {
         $prepared = ['error' => $e->getMessage(), 'login' => false, 'xml' => '', 'same' => false];
     }
@@ -690,16 +864,12 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         echo '<div class="aa-err">' . safe($prepared['error']) . ($prepared['login'] ? ' ' . installapp_relogin($run) : '') . '</div>';
         return;
     }
-    if (!$run->chose($into)) {
-        echo '<div class="aa-err">' . _m('The choice changed since the preview - preview again.') . '</div>';
-        return;
-    }
     if (!$run->matchesPreview($prepared['xml'], $prepared['same'], $into)) {
         echo '<div class="aa-err">' . _m('The source changed since the preview - preview again.') . '</div>';
         return;
     }
     if (!installapp_importable($prepared)) {
-        installapp_findings($prepared['findings']);
+        installapp_findings($prepared['findings'], $prepared['package']);
         echo '<div class="aa-err">' . _m('The app cannot be installed - see the errors (E) above.') . '</div>';
         return;
     }
@@ -714,13 +884,13 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         echo '<div class="aa-err">' . safe(installapp_error(_m('Writing the app'), $e)) . '</div>';
         return;
     }
-    installapp_report($report);
+    installapp_report($report, $prepared['package']);
     if ($run->mode() === InstallRun::TRANSFER) {
         installapp_progress($run_id, $uid, true);
     }
 }
 
-function installapp_report(ImportReport $report): void
+function installapp_report(ImportReport $report, ?Package $package): void
 {
     echo '<div class="aa-ok">' . _m('The definitions are written.') . '</div><table class="aa-installapp-findings"><tr><th>' . _m('Module') . '</th><th>' . _m('Type') . '</th><th>' . _m('Id') . '</th></tr>';
     foreach ($report->modules as $m) {
@@ -731,40 +901,67 @@ function installapp_report(ImportReport $report): void
     foreach ($report->failures() as [$step, $errors]) {
         echo '<div class="aa-err">' . safe($step . ': ' . implode('; ', $errors)) . '</div>';
     }
-    installapp_findings($report->findings);
+    installapp_findings($report->findings, $package);
 }
 
-/** the slices with settings fields left empty: "N settings to fill in", linked to the settings page once
- *  the slice exists; the names are package text
- *  @param list<array{name: string, fields: array<string, string>, url?: string}> $settings */
+/** the slices with settings fields left empty, linked to the settings page of the slice; the names are
+ *  package text @param list<array{name: string, fields: array<string, string>, url: string}> $settings */
 function installapp_settings(array $settings): void
 {
-    foreach ($settings as $s) {
-        $label = safe(_m('%1 settings to fill in', [count($s['fields'])]));
-        echo '<p>' . safe($s['name']) . ': ' . (isset($s['url']) ? a_href(get_aa_url($s['url']), $label) : $label)
-            . ' <small>(' . safe(implode(', ', array_map(static fn(string $id, string $name): string => ($name !== '') ? $name : $id, array_keys($s['fields']), $s['fields']))) . ')</small></p>';
+    if (!$settings) {
+        return;
     }
+    echo '<div class="aa-installapp-code"><h4>' . _m('Slice settings to fill in') . '</h4><p>'
+        . safe(_m('Some slices have settings - values that hold for the whole slice, not for single items (an address, a version, a switch shown on the pages). These got no value: neither the app nor you gave one, so the pages that show them show nothing.'))
+        . '</p><p><strong>' . _m('What to do') . ':</strong> '
+        . safe(_m('Fill them in by the links below, or later: in the slice open Setting in the menu of the item manager.'))
+        . '</p><ul>';
+    foreach ($settings as $s) {
+        $names = implode(', ', array_map(static fn(string $id, string $name): string => ($name !== '') ? $name : $id, array_keys($s['fields']), $s['fields']));
+        echo '<li>' . safe($s['name']) . ': ' . safe($names) . ' - ' . a_href(get_aa_url($s['url']), safe(_m('fill them in'))) . '</li>';
+    }
+    echo '</ul></div>';
 }
 
-/** findings by level; every text is package text
- *  @param list<array{string, LintFinding}> $findings */
-function installapp_findings(array $findings): void
+/** findings by level, a level by code - a security code with what it means and what to check; every
+ *  text is package text
+ *  @param list<array{string, LintFinding}> $findings @param Package|null $package names the places */
+function installapp_findings(array $findings, ?Package $package = null): void
 {
     $levels = [LintFinding::SECURITY => _m('Security findings (S)'), LintFinding::ERROR => _m('Errors (E)'), LintFinding::WARNING => _m('Warnings (W)'), LintFinding::INFO => _m('Notes (I)')];
     $unique = [];
     foreach ($findings as $f) {                  // the export lint and the import lint read the same texts
         $unique[implode("\0", [$f[1]->level, $f[1]->code, $f[0], $f[1]->ref])] ??= $f;
     }
+    $text = new FindingText($package);
     foreach ($levels as $level => $label) {
-        $of = array_filter($unique, static fn(array $f): bool => $f[1]->level === $level);
-        if (!$of) {
+        $by_code = [];
+        foreach ($unique as $f) {
+            if ($f[1]->level === $level) {
+                $by_code[$f[1]->code][] = $f;
+            }
+        }
+        if (!$by_code) {
             continue;
         }
-        echo '<details' . (in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true) ? ' open' : '') . '><summary>' . $label . ' - ' . count($of) . '</summary><table class="aa-installapp-findings">';
-        foreach ($of as [$path, $finding]) {
-            echo '<tr><td>' . safe($finding->code) . '</td><td><code>' . safe($path) . '</code></td><td><code>' . safe($finding->ref) . '</code></td></tr>';
+        echo '<details' . (in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true) ? ' open' : '') . '><summary>' . $label . ' - ' . array_sum(array_map('count', $by_code)) . '</summary>'
+            . '<p class="tabhlp">' . safe(FindingText::level($level)) . '</p>';
+        foreach ($by_code as $code => $of) {
+            $explained = FindingText::explain($of[0][1]);
+            echo '<div class="aa-installapp-code"><h4>' . safe($explained['title'] ?? (string) $code) . ' - ' . count($of) . ($explained ? ' <small><code>' . safe((string) $code) . '</code></small>' : '') . '</h4>';
+            if ($explained) {
+                echo '<p>' . safe($explained['what']) . '</p><p><strong>' . _m('What to do') . ':</strong> ' . safe($explained['todo']) . '</p>';
+            }
+            $any_ref = (bool) array_filter($of, static fn(array $f): bool => FindingText::found($f[1], $f[0]) !== '');
+            echo '<table class="aa-installapp-findings"><tr><th>' . _m('Where') . '</th>' . ($any_ref ? '<th>' . safe($explained['found'] ?? _m('Found')) . '</th>' : '') . '</tr>';
+            foreach ($of as [$path, $finding]) {
+                $place = $text->place($path);
+                echo '<tr><td>' . safe($place) . (($place !== $path) ? '<br><small><code>' . safe($path) . '</code></small>' : '') . '</td>'
+                    . ($any_ref ? '<td><code>' . safe(FindingText::found($finding, $path)) . '</code></td>' : '') . '</tr>';
+            }
+            echo '</table></div>';
         }
-        echo '</table></details>';
+        echo '</details>';
     }
 }
 

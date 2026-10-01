@@ -3773,8 +3773,8 @@ if (false) {
 				$ParametersString .= '_'.$key.substr(md5($this->$key), 0, 4);
 			}
 		}
-        if (in_array($this->thumbnailFormat, ['jpeg','webp'])) {
-            // only JPEG and WEBP output has variable quality option
+        if (in_array($this->thumbnailFormat, ['jpeg','webp','avif'])) {
+            // only JPEG, WEBP and AVIF output has variable quality option
 			$ParametersString .= '_q'. (int) $this->thumbnailQuality;
 		}
 		$this->DebugMessage('SetCacheFilename() _par set from md5('.$ParametersString.')', __FILE__, __LINE__);

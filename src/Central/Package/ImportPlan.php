@@ -29,10 +29,14 @@ final readonly class ImportPlan
      *                                                         into ($package holds only what that slice lacks)
      * @param array<string, array<string, array<int, array{value: string, flag: int}>>> $settingDefaults
      *                                                         source slice id => the values an install gives the
-     *                                                         settings fields it writes (SettingDefaults): all of
-     *                                                         a new slice, the new ones of an existing slice
+     *                                                         settings fields it writes: the source's (a superadmin's
+     *                                                         export), those typed in the preview, else the
+     *                                                         SettingDefaults - of a new slice all, of an existing
+     *                                                         slice the fields it gets
      * @param string                            $owner         slice_owner id of the modules an install creates;
      *                                                         '' = none (a transfer brings the source's)
+     * @param array{name: string, email: string}|null $newOwner the owner the writer creates (or finds by name and
+     *                                                         e-mail) for the modules an install creates, instead of $owner
      */
     public function __construct(
         public Package $package,
@@ -47,6 +51,7 @@ final readonly class ImportPlan
         public array $existing = [],
         public array $settingDefaults = [],
         public string $owner = '',
+        public ?array $newOwner = null,
     ) {}
 
     /** no E: the writer may start once the S findings were confirmed and the rights checked */

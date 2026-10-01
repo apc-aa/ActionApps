@@ -51,6 +51,12 @@ final class AppExport implements AppSource
         return [$xml, $findings, time()];
     }
 
+    /** an install of this user carries the values of the slices' settings (they may hold keys): a superadmin's, never the store's */
+    public function carriesSettings(bool $transfer): bool
+    {
+        return !$transfer && !$this->store && $this->superadmin;
+    }
+
     /** @throws InvalidArgumentException not a slice, a cursor of no id */
     public function batch(string $slice, string $after, bool $allBins, int $started): array
     {
@@ -133,7 +139,15 @@ final class AppExport implements AppSource
     private function options(bool $transfer, bool $allBins, int $started, bool $published = false, ?string $description = null, ?string $version = null): CollectOptions
     {
         $source = $this->attributes + ['exported' => gmdate('Y-m-d\TH:i:s\Z', $started)];
-        return new CollectOptions($source, $transfer ? CollectOptions::TRANSFER : CollectOptions::INSTALL, $allBins, description: $description, version: $version, published: $published);
+        return new CollectOptions(
+            $source,
+            $transfer ? CollectOptions::TRANSFER : CollectOptions::INSTALL,
+            $allBins,
+            description: $description,
+            version: $version,
+            published: $published,
+            settingValues: !$published && $this->carriesSettings($transfer),
+        );
     }
 
     /** @param list<array{string, \AA\Central\Package\LintFinding}> $more findings beside the collector's

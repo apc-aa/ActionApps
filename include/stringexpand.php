@@ -7613,6 +7613,16 @@ class AA_Requires {
         return  $scripts. implode("\n",$external);
     }
 
+    /** Url of a file of the local jsDelivr mirror cdn/ - <path> is the part after
+     *  https://cdn.jsdelivr.net/. AA serves it itself: no connection to one more host on the
+     *  render-blocking path, and the CDN does not see the visitors. The version is in the path,
+     *  so no ?v= is needed. New files: dev/cdn/fetch.sh <path>.
+     */
+    static function mirror(string $path): string
+    {
+        return AA_INSTAL_PATH . "cdn/$path";
+    }
+
     /**
      * @param $string
      * @return string
@@ -7657,14 +7667,14 @@ class AA_Requires {
             'dropzone@5'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.js', 'sha256-uCdT6FLkY6+68Xzm4f9O0usHnJPdKv0Q0rsoXvLchP4=', ['_css-dropzone@5']),
             'select2@4'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.full.min.js', 'sha256-gtZlnMWqbrBdDWvmCQCgfiA3kq8J4FMqQ4a8Tvmgopk=', ['jquery@3','_css-select2@4']),
             'select2@3'                   => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.min.js', 'sha256-xd6tWPqy/mxhxXcvyda/fncm94RXOR6918/lDx6Ckb8=', ['jquery@3','_css-select2@3']),
-            'eucookies@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/smart-eu-cookies@0.9.2/src/smart-eu-cookies.min.js async', 'sha384-zoVmFcp060tXD33v8RW5gAyVr8JV6p42dOucvqkNWbXZuJvwQAGhu1Ld9/dSbFXk'),
-            'sortable@1'                  => new AA_Req_Footlib('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.3.0/sortable.min.js', 'sha384-Ykq5gOjnWMRB6SAvIl0EnfHZLxYXGM0NIVT6GKOfpIidUn1nhK0EIAHxDqhIAoTF', ['_css-sortable@1']),  // no async - script needs to be loaded to run Sortable.find()... // see orderable for sortablejs
+            'eucookies@1'                 => new AA_Req_Footlib(self::mirror('gh/honzito/smart-eu-cookies@0.9.2/src/smart-eu-cookies.min.js').' async'),
+            'sortable@1'                  => new AA_Req_Footlib(self::mirror('gh/honzito/plain.sortable@1.3.1/sortable.min.js'), '', ['_css-sortable@1']),  // no async - script needs to be loaded to run Sortable.find()... // see orderable for sortablejs
             'orderable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js', 'sha256-bQqDH8GbS66FF5etM5MVfoYa+3hiRZwRImNZsn4sQzc='),  // another sortable for drag&drop ordering
             'datatable@1'                 => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/datatables.net@1.11.3/js/jquery.dataTables.min.js', 'sha256-gOJ/T3VMQ0Brwz7VYrLoVAQ+NE0a5vHoj1vXI1HUIzY=', ['jquery@3']),
             'form-saver@1'                => new AA_Req_Footlib(get_aa_url('javascript/form-saver/form-saver.min.js', ['ver'=>AA_JS_VERSION],false), '', ['deserialize@2']),
             'deserialize@2'               => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/jquery-deserialize@2.0.0/src/jquery.deserialize.js', 'sha256-iQpPGsHQZs7cuArBkNIa6QOJlnnf8A1RBfMLxp/MLVI=', ['jquery@3']),
             //'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/lib/js/lightgallery.js', 'sha256-LwSUsCCIlbq0+vHbSFFbyO+BeMLnJ8gQecxLfgieuKM=', array('_css-lightgallery@1')),
-            'lightgallery@2'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/lightgallery.min.js', 'sha256-Dawo6shovc6mR+OrpnCxjnHYYp0655VrB0LShTAPM34=', ['_css-lightgallery@2']),  // async do not work for foot lib - it is used before it is loaded
+            'lightgallery@2'              => new AA_Req_Footlib(self::mirror('npm/lightgallery@2.9.0/lightgallery.min.js'), '', ['_css-lightgallery@2']),  // async do not work for foot lib - it is used before it is loaded
             'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', ['_css-lightgallery@1']), // v 1.1.1 do not work
             'tippy@6'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js', 'sha256-Pw/nDrJszyj2iHoZLinTjdfvfC8HmnMwStQt3HvtN94=', ['popper@2']),
             'tippy@2'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
@@ -7682,7 +7692,7 @@ class AA_Requires {
             'aa-jslib@2'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-jquery.php', ['v'=>AA_JS_VERSION],false), '', ['jquery@3']),
             'aa-jslib@1'                  => new AA_Req_Lib(get_aa_url('javascript/aajslib-legacy.min.js', ['v'=>AA_JS_VERSION],false)),
             'jquery-ui@1'                 => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.js', 'sha256-KM512VNnjElC30ehFwehXjx1YCHPiQkOPmqnrWtpccM=', ['jquery@3','_css-jquery-ui@1']),
-            'jquery@3'                    => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js', 'sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4='),
+            'jquery@3'                    => new AA_Req_Lib(get_aa_url('javascript/jquery.min.js', ['v'=>'3.7.1'],false)),  // templates have linked this path since 2016, so jQuery 3 stays here; v = jQuery version, browsers keep it across AA releases
             'vue@2'                       => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.min.js', 'sha256-kXTEJcRFN330VirZFl6gj9+UM6gIKW195fYZeR3xDhc='),
             'vue-test@2'                  => new AA_Req_Lib('https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js', 'sha256-abdUg7JwQh4aiUJt1ZOHugkHcjE1YcPp+kFTlqeOiTY='),
             '_css-jquery-ui@1'            => new AA_Req_Css('https://cdn.jsdelivr.net/npm/jquery-ui-dist@1.12.1/jquery-ui.min.css', 'sha256-rByPlHULObEjJ6XQxW/flG2r+22R5dKiAoef+aXWfik='),
@@ -7691,15 +7701,15 @@ class AA_Requires {
             '_css-dropzone@5'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/dropzone@5.9.3/dist/min/dropzone.min.css', 'sha256-n/Cuyrm+v15Nim0mJ2ZrElHlCk8raJs/57WeCsIzDr4='),
             '_css-select2@4'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css', 'sha256-zaSoHBhwFdle0scfGEFUCwggPN7F+ip9XRglo8IWb4w='),
             '_css-select2@3'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/Select2@3.5.7/select2.css', 'sha256-YxoY/Ov8dU2zQTW3WNFp25v+U1SBgVrOkiB8w3rupb4='),
-            '_css-lightgallery@2'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery@2.2.1/css/lightgallery-bundle.min.css async', 'sha256-Uxm/PH2he1eJjDjL9GpZSqxO3+ibyFsbhGupVTc9qLg='),
+            '_css-lightgallery@2'         => new AA_Req_Css(self::mirror('npm/lightgallery@2.9.0/css/lightgallery-bundle.min.css').' async'),
             '_css-lightgallery@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/dist/css/lightgallery.min.css', 'sha256-gU66VAEd73/e6tBq5c+WSiRcNH0PSXLnHMPeFIKxtHM='),
             '_css-leaflet@1'              => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css', 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='),
             '_css-leaflet-draw@1'         => new AA_Req_Css('https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css', 'sha256-XzD3RpaHPv7lzX9qt+2n1j5cWj48O24KsgaGYpKN8x8='),
-            '_css-sortable@1'             => new AA_Req_Css('https://cdn.jsdelivr.net/gh/honzito/plain.sortable@1.2.1/sortable.css', 'sha256-TNKOtdeH1MmRdsujDukp9lYyndNf5qPvBHbWfKWGoX8='),
+            '_css-sortable@1'             => new AA_Req_Css(self::mirror('gh/honzito/plain.sortable@1.3.1/sortable.css')),  // jsDelivr's .min is bigger: base64 icons
             'css-aa-system@1'             => new AA_Req_Css(get_aa_url('css/aa-system.css', ['v'=>AA_JS_VERSION],false)),
-            'css-normalize@7'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@7.0.0/normalize.css', 'sha384-Y+IEavQyTjgXgt7TL5nxVHI/DEuF6yoysy50puRyQDKmjfOZjY7+QvoRelSV4XvZ'),
-            'css-normalize@8'             => new AA_Req_Css('https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css', 'sha256-WAgYcAck1C1/zEl5sBl5cfyhxtLgKGdpI3oKyJffVRI='),
-            'css-fontawesome@4'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css', 'sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0='),
+            'css-normalize@7'             => new AA_Req_Css(self::mirror('npm/normalize.css@7.0.0/normalize.min.css')),
+            'css-normalize@8'             => new AA_Req_Css(self::mirror('npm/normalize.css@8.0.1/normalize.min.css')),
+            'css-fontawesome@4'           => new AA_Req_Css(self::mirror('npm/font-awesome@4.7.0/css/font-awesome.min.css')),  // fonts/ holds only woff2 and woff - browsers of the Baseline target never ask for the rest
             '_css-codemirror@5'           => new AA_Req_Css('https://cdn.jsdelivr.net/npm/codemirror@5.63.3/lib/codemirror.css', 'sha256-utW7LD90DZW8tsURpPq7cabUGkha4Bf++sK4e7NC0+8='),
             'htm-aa-system@1'             => new AA_Req_Htm('AA_Tools::getBottomCode'),
 
@@ -8459,6 +8469,11 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"        // iar - ignore aspect ratio - deform the image to exact size
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
  *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
+ *     {img:_#this:w=800&h=450&zc=1:picture:_#HEADLINE:loading=eager}  // the hero image at the top of the page
+ *
+ *  'im', 'img', 'imgb' and 'picture' are lazy loaded (loading=lazy) unless <param2> sets
+ *  loading itself. Give loading=eager to the hero image - lazy delays its paint (LCP).
+ *  Inside {rotator} only the first frame keeps it; hidden frames are always lazy.
  *
  *  Performance: every <info> which prints the size ('img', 'imgb', 'picture', 'width',
  *  'height', 'hw', 'html') normally has to measure the generated image over HTTP, which
@@ -8507,7 +8522,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'rawurl':
                 return self::getUrl($image, $phpthumb_params, 'abs_raw');
             case 'im':      //  quick version - img without width and height
-                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped')."\" $param2 loading=lazy". (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
+                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped')."\" $param2 ".\AA\Util\LazyLoad::attr($param2). (($param1 = safe(strip_tags($param1))) ? " title=\"$param1\" alt=\"$param1\" />" : ' />');
         }
 
         // all remaining $info values need the size of the generated image - 'width' and
@@ -8535,7 +8550,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'imgb':    $param2 .= ' border=0';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                 $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
-                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped').'" loading=lazy '.$a[3] ." $alt $param2 />";
+                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped').'" '.\AA\Util\LazyLoad::attr($param2).' '.$a[3] ." $alt $param2 />";
         }
         return '';
     }
@@ -8557,7 +8572,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
 
         return "<picture class=aa-picture>"
              . "\n  <source srcset=\"$format_src\" type=\"image/$format\">"
-             . "\n  <img src=\"$src\" width=$w height=$h $add loading=lazy $alt_title>"  // lazy is enough on img for <picture> element
+             . "\n  <img src=\"$src\" width=$w height=$h $add ".\AA\Util\LazyLoad::attr($add)." $alt_title>"  // lazy is enough on img for <picture> element
              . "\n</picture>";
     }
 
@@ -8612,7 +8627,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     public static function getUrl($image, $phpthumb_params, string $type): string
     {
         if (empty($phpthumb_params = \AA\Util\PhpThumbParams::clean((string) $phpthumb_params))) {
-            return $image;
+            return (($type === 'abs_raw') || ($type === 'measure')) ? $image : safe($image);
         }
         $phpthumb_params = \AA\Util\PhpThumbParams::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
         $own_host        = self::isOwnHost($image);                  // the normalisation below deletes the host, so ask now
@@ -8642,10 +8657,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (($type === 'abs_raw') || ($type === 'measure')) {
             return str_replace('&amp;', '&', AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params");
         }
-        if (!str_contains($phpthumb_params, '&amp;')) {
-            $phpthumb_params = str_replace('&', '&amp;', $phpthumb_params);
-        }
-        return AA_INSTAL_PATH. 'img.php?src=/'.safe($image)."&amp;$phpthumb_params";  // safe(): this url is put straight into <img src="...">
+        // safe(): this url is put straight into <img src="..."> - the parameters too, a template may build them from item content
+        return AA_INSTAL_PATH. 'img.php?src=/'.safe($image).'&amp;'.safe(str_replace('&amp;', '&', $phpthumb_params));
     }
 
     /** Whether the resized image may be served from MissCache instead of img.php - decided
@@ -10403,28 +10416,35 @@ class AA_Stringexpand_Rotator extends AA_Stringexpand_Nevercache {
 
         $interval   = (int)$interval ?: 3000;
         $extrastyle = ($effect === 'fade') ? 'position:absolute;' : '';
-        $showfirst  = '';
         $div_id     = 'rot'.get_hash($ids, $code, $interval, $speed, $effect);
 
         $items = AA_Items::getItems($zids);
         $i = 0;
+        $first_frame = '';
         foreach($items as $long_id=>$item) {
             $frame = trim(AA::Un($code, '', $item));
             if ($frame) {
-                $frames[]  = "<div class=rot-hide style=\"$showfirst $extrastyle\">$frame</div>";
-                $showfirst = 'display:none;';
+                if ($frames) {
+                    $frame = \AA\Util\LazyLoad::markup($frame);  // starts hidden - display:none alone does not stop the image downloads
+                    $hide  = 'display:none;';
+                } else {
+                    $first_frame = $frame;
+                    $hide        = '';
+                }
+                $frames[]  = "<div class=rot-hide style=\"$hide $extrastyle\">$frame</div>";
                 if ($li_code) {
                     $active = $i ? '' : ' active';
                     $lis[]  = "<li class=\"rot-active$active\" onclick=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id'); \" onmouseover=\"AA_Rotator.rotators['$div_id'].index=$i;AA_Rotator('$div_id');\">".trim(AA::Un($li_code, '', $item))."</li>";
                 }
+                ++$i;  // counts the frames shown - an empty one is skipped, and AA_Rotator's index must not count it
             }
-            ++$i;
         }
         if (!count($frames)) {
             return '';
         }
 
-        $extrahightdiv = ($effect === 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$frame</div>" : '';
+        // keeps the height of the absolutely positioned frames; copies the visible first frame, so its images are not fetched twice
+        $extrahightdiv = ($effect === 'fade') ? "<div class=rot-hight style=\"visibility:hidden\">$first_frame</div>" : '';
         $liswitcher    = $li_code ? "<ul class=\"rot-switcher\">".implode("\n",$lis)."</ul>" : '';
 
         $framesdiv = '<div class="rot-frames">'.implode("\n",$frames).'</div>';

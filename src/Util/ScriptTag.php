@@ -23,7 +23,7 @@ final class ScriptTag
      * HEX_QUOT does the same for the double-quoted variant, and HEX_TAG plus
      * HEX_AMP keep "</script>" from ending the block the snippet lives in.
      */
-    private const JS_JSON = JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP;
+    public const JS_JSON = JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP;
 
     /** <script> tag for the page head. */
     public static function head(string $url, string $integrity = '', string $loadtype = ''): string
@@ -95,7 +95,7 @@ final class ScriptTag
     }
 
     /** Quotes a value for use inside a single-quoted JavaScript string literal. */
-    private static function jsString(string $value): string
+    public static function jsString(string $value): string
     {
         // Slice the JSON delimiters rather than trimming them - trim('"') would
         // also eat an escaped quote at the end of the value and leave the

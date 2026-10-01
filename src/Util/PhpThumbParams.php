@@ -15,6 +15,12 @@ final class PhpThumbParams
     /** <info> of {img} which prints just the url - it never needs the size */
     public const URL_INFOS = ['' => true, 'url' => true, 'cache' => true, 'rawurl' => true, 'im' => true];
 
+    /** Highest quality for AVIF, also img.php's default for it - looks about like the JPEG
+     *  at img.php's default q=90 (ssimulacra2). GD maps q linearly to the AV1 quantizer and
+     *  from 90 up keeps full colour resolution: q=90 gave 3.4x the bytes of q=83, on photos
+     *  as big as the JPEG. */
+    public const AVIF_QUALITY = 83;
+
     /** Parameters which make the output size depend on the source image, so it can't
      *  be predicted from the parameters alone:
      *    wp,hp,wl,hl,ws,hs - replace w/h based on the orientation of the source
@@ -134,14 +140,25 @@ final class PhpThumbParams
     }
 
     /** Sets (or replaces) the phpThumb output format in a parameter string, keeping
-     *  whichever separator it uses - '&' or the HTML escaped '&amp;'.
+     *  whichever separator it uses - '&' or the HTML escaped '&amp;'. AVIF also gets
+     *  its quality capped at AVIF_QUALITY; a lower q of the template is kept.
      */
     public static function setFormat(string $params, string $format): string
     {
-        if (!isset(self::parse($params)['f'])) {
-            return $params . (str_contains($params, '&amp;') ? '&amp;' : '&') . "f=$format";
+        $q      = (int) (self::parse($params)['q'] ?? 0);
+        $params = self::set($params, 'f', $format);
+        if (($format === 'avif') && (($q < 1) || ($q > self::AVIF_QUALITY))) {
+            $params = self::set($params, 'q', (string) self::AVIF_QUALITY);
         }
-        return (string) preg_replace('~(^|&(?:amp;)?)f=[^&]*~', "\\1f=$format", $params);
+        return $params;
+    }
+
+    /** Replaces every value of the parameter, or appends it. Appending also covers
+     *  spellings the regex misses (" q=95", "%71=95") - the last value wins in phpThumb. */
+    private static function set(string $params, string $name, string $value): string
+    {
+        $params = (string) preg_replace("~(^|&(?:amp;)?)$name=[^&]*~", "\\1$name=$value", $params, -1, $count);
+        return $count ? $params : $params . (str_contains($params, '&amp;') ? '&amp;' : '&') . "$name=$value";
     }
 
     /** True when any parameter makes the output size depend on the source image */

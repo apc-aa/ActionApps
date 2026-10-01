@@ -496,11 +496,10 @@ function GetFeedManaged(bool $extended = false): Managed
 
 function GetAAFeedManaged(): Managed
 {
-    $base_feed_url = AA_INSTAL_URL . 'admin/xmlclient.php?feed_id={feed_id}&time={rawurlencode:{newest_item}}';
+    $base_feed_url = get_admin_url('xmlclient.php', ['feed_id={feed_id}&time={rawurlencode:{newest_item}}']);
     $buttons  = [
         'Test'     => a_href(get_url($base_feed_url, ['fill' => 0, 'debugfeed' => 9]), _m('Test'), ['class' => 'aa-button-test']),
         'Source'   => a_href(get_url($base_feed_url, ['display' => 1 ]), _m('Source'), ['class' => 'aa-button-show']),
-        'Validate' => a_href(get_url('https://validator.w3.org/feed/check.cgi?url=' . str_replace(['?','&'], ['%3F','%26'], get_url($base_feed_url, ['display' => 1]))), _m('Validate'), ['class' => 'aa-button-test']),
         'Queue'    => a_href($base_feed_url, _m('Run (queue)'), ['class' => 'aa-button-run']),
         'Map'      => a_href(get_admin_url('se_mapping.php', ['feed_id={feed_id}']), _m('Map'), ['class' => 'aa-button']),
         'Edit'     => false,

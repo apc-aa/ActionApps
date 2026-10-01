@@ -36,6 +36,8 @@ final class RowWriter
     /** @var list<array{string, int, array<string, mixed>, array<string, int|string|null>, string, string, array<string, mixed>}>
      *       rows numbered() wrote: [element, number, package row, fixed, charset, path, values written] */
     private array $numbered = [];
+    /** the slice_owner id of ImportPlan::$newOwner once the first module created it */
+    private ?string $newOwner = null;
 
     public function __construct(
         private readonly RowStore $store,
@@ -50,7 +52,7 @@ final class RowWriter
      *  @throws WriteError|RewriteFailed|LogicException|\InvalidArgumentException (sitetree::fromArray()) */
     public function write(ImportPlan $plan, IdMap $map): IdMap
     {
-        [$this->plan, $this->map, $this->numbered] = [$plan, $map, []];
+        [$this->plan, $this->map, $this->numbered, $this->newOwner] = [$plan, $map, [], null];
         $this->rewrite = new ImportRewrite($this->map);          // no numbers yet; renumber() fixes the texts
         $numbers       = ['view' => $map->views(), 'email' => $map->emails()];      // those an existing slice has
         foreach ($plan->package->modules as $m) {
@@ -112,7 +114,11 @@ final class RowWriter
             $this->settingValues($m, $id, $this->plan->settingDefaults[$m->id] ?? []);
             return;
         }
-        $owner = isset($m->transfer['owner']) ? $this->owner($m, $m->transfer['owner']) : $this->plan->owner;
+        $owner = match (true) {
+            isset($m->transfer['owner'])   => $this->owner($m, $m->transfer['owner']),
+            $this->plan->newOwner !== null => $this->newOwner ??= $this->owner($m, $this->plan->newOwner),     // created once, in the charset of the first module
+            default                        => $this->plan->owner,
+        };
         $this->insert($m, 'module', $m->rows['module'][0] ?? [], 0, [
             'id'         => $id,
             'type'       => array_search($m->type, Module::TYPES, true),

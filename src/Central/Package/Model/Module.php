@@ -48,7 +48,7 @@ final readonly class Module
      *                                                                          field id => [key => {value, flag?}]}, the key a
      *                                                                          position or a translation number (>= AA_Value::MAX_INDEX)
      * @param string|null                                             $doc      author's note shown before installation
-     * @param array<string, mixed>                                    $transfer state of the source installation, only in a
+     * @param array<string, mixed>                                    $transfer state of the source installation, in a
      *                                                                          transfer (self::TRANSFER): owner {name, email},
      *                                                                          reading-password, alternate-url (list),
      *                                                                          setting-values (the slice's settings fields,

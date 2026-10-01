@@ -60,6 +60,7 @@ https://www.apc.org/
 
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
+use AA\Widget\FilWidget;
 
 // ----- input variables normalization - start --------------------------------
 
@@ -258,12 +259,12 @@ function SendOkPage($txt, $new_ids = []): void
                     $ret[$long_id] = $text;
                 }
             }
-            $ret = json_encode($ret);
-            if ($_REQUEST["ret_code_js"]) {
-                echo getFrmJavascript(str_replace('AA_ITEM_JSON', $ret, $_REQUEST["ret_code_js"]));
+            $form_id = $_REQUEST['upload_form_id'] ?? '';
+            if (is_string($form_id) && ($form_id !== '')) {   // the AJAX upload form posts into a hidden iframe
+                echo getFrmJavascript(FilWidget::uploadCallback($form_id, $ret));
             } else {
                 header("Content-type: application/json");  // standard header based on IANA
-                echo $ret;
+                echo json_encode($ret);
             }
         }
         exit;

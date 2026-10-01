@@ -125,15 +125,6 @@ class AARSS extends AbstractGrabber
         return _m("Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)");
     }
 
-    /** setUrl function
-     * @param $url
-     */
-
-    public function setUrl($url): void
-    {
-        $this->feed['server_url'] = $url;
-    }
-
     /** setTime function
      * @param $time
      */

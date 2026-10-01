@@ -120,7 +120,7 @@ final class Importer
         if ($transfer && $record->sameAa()) {
             $plan = self::withoutDomains($plan);            // they are the source site's - still in use here
         }
-        $not = $this->target->nonTransactional(Planner::tables($this->schema, $transfer, (bool) $plan->settingDefaults));
+        $not = $this->target->nonTransactional(Planner::tables($this->schema, $transfer, (bool) $plan->settingDefaults, $plan->newOwner !== null));
         if ($not) {
             throw new ImportFailed(new WriteError(WriteError::ENGINE, 'import', Planner::noTransaction($not)));
         }

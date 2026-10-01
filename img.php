@@ -7,6 +7,7 @@
 */
 
 require_once __DIR__ . "/include/config.php";   // we use some constants from AA in the config
+require_once __DIR__ . "/src/Util/PhpThumbParams.php";   // just the AVIF quality - the whole autoloader would include 16 files more
 const AA_PHPTHUMB__DIR__ = __DIR__ . "/vendor/honzito/phpthumb";
 
 // This endpoint emits raw image bytes — a printed warning/notice/deprecation
@@ -333,7 +334,8 @@ $PHPTHUMB_DEFAULTS_DISABLEGETPARAMS  = false; // if true, GETstring parameters w
 
 //$PHPTHUMB_DEFAULTS['w']    = 200;
 //$PHPTHUMB_DEFAULTS['fltr'] = array('blur|10');
-$PHPTHUMB_DEFAULTS['q'] = 90; // for jpeg
+// 90 suits JPEG and WebP; AVIF at 90 is nearly lossless in GD and as big as the JPEG
+$PHPTHUMB_DEFAULTS['q'] = (is_string($_GET['f'] ?? null) && (strtolower($_GET['f']) === 'avif')) ? \AA\Util\PhpThumbParams::AVIF_QUALITY : 90;
 //$PHPTHUMB_DEFAULTS['q'] = 80;   // 80-85 for webp should be the same as 90 for jpeg
 //$PHPTHUMB_DEFAULTS['f'] = 'webp';
 

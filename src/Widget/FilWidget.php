@@ -11,6 +11,7 @@ namespace AA\Widget;
 
 use AA;
 use AA\FormArray;
+use AA\Util\ScriptTag;
 use AA_Content;
 use AA_Property;
 use AA_Validate;
@@ -191,7 +192,7 @@ class FilWidget extends Widget
         } else {
             $url_params = [
                 'inline' => 1,
-                'ret_code_js' => 'parent.AA_ReloadAjaxResponse(\'' . $base_id . '\', AA_ITEM_JSON)',
+                'upload_form_id' => $base_id,   // filler.php answers with uploadCallback()
             ];
             $widget .= '
                 <form id="fuf' . $base_id . '" method="POST" enctype="multipart/form-data" action="' . safe(get_aa_url('filler.php', $url_params)) . '" target="iframe' . $base_id . '">';
@@ -256,5 +257,17 @@ class FilWidget extends Widget
     public static function description(): string
     {
         return ''; // TODO: Implement description() method.
+    }
+
+    /**
+     * JS which filler.php sends to the hidden iframe of the AJAX upload form - hands the result to the page.
+     * It runs on the AA origin and the form id comes from the request, so neither value may leave
+     * its literal or end the <script> block.
+     * @param string               $form_id base_id of the upload form
+     * @param array<string, mixed> $result  filler's inline result - item texts by long item id
+     */
+    public static function uploadCallback(string $form_id, array $result): string
+    {
+        return 'parent.AA_ReloadAjaxResponse(' . ScriptTag::jsString($form_id) . ', ' . json_encode($result, ScriptTag::JS_JSON | JSON_INVALID_UTF8_SUBSTITUTE) . ')';
     }
 }

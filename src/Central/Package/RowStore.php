@@ -89,7 +89,7 @@ final class RowStore
     /** value() without the reference rewrite - a password or a name is no template
      *  @param array{int, bool}|null $limit Schema::lengthLimits() of its column
      *  @throws WriteError */
-    public function plain(string|RawBytes $value, string $charset, string $path, ?array $limit = null): string
+    public static function plain(string|RawBytes $value, string $charset, string $path, ?array $limit = null): string
     {
         $measured = TargetCharset::measure($value, $charset);
         if ($measured === null) {

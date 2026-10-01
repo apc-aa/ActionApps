@@ -11,7 +11,6 @@ use AA\Util\InputVars;
  *         fill       - if fill=0 no data is written to the database
  *         time       - you can redefine the time for APC feeds from which you
  *                      want to feed items. Format: 2003-05-03T15:31:36+02:00
- *         url        - you can redefine the url of the feed
  *         debugfeed  - display debug messages
  *         display    - display the source of APC RSS feed
  *
@@ -58,9 +57,9 @@ use AA\Util\InputVars;
 // ----- input variables normalization - end ----------------------------------
 
 
-require_once __DIR__ . "/../include/config.php";
-require_once __DIR__ . "/../include/locsess.php";
-require_once __DIR__ . "/../include/util.php";
+// Feeds run from the task queue (AA\Later\FeedsRun); this page only serves
+// the Run / Test / Source buttons, so it is for logged-in admins only.
+require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/varset.php";
 require_once __DIR__ . "/../include/xml_rssparse.php";
 require_once __DIR__ . "/../include/itemfunc.php";
@@ -71,12 +70,9 @@ try {
     $debugfeed  = InputVars::intGET('debugfeed');
     $feed_id    = InputVars::intGET('feed_id');
     $rssfeed_id = InputVars::intGET('rssfeed_id');
-    $cancel = InputVars::boolPOST('cancel');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
-
-($debugfeed >= 8) && print("\n<br>XMLCLIENT STARTING");
 
 // prepare Get variables
 if ($_GET['display']) {
@@ -88,8 +84,7 @@ if ($_GET['display']) {
 }
 
 /** Output the result of Feed::feed(): raw source for 'display' (escaped so the
- *  XML is visible), else the saver report / 'queued' message. (Previously the
- *  return value was silently discarded, so Source showed a blank page.) */
+ *  XML is visible), else the saver report / 'queued' message. */
 function xmlclient_show(string $ret, string $fire): void
 {
     if ($ret === '') {
@@ -100,16 +95,37 @@ function xmlclient_show(string $ret, string $fire): void
 }
 
 
+/** Same rule as the feeding pages with these buttons: superadmin, or PS_FEEDING
+ *  on the slice the feed stores into. All feeds at once only for superadmin. */
+function xmlclient_check_perm(?Feed $feed): void
+{
+    if (IsSuperadmin()) {
+        return;
+    }
+    $dest = $feed?->getDestinationSliceId() ?? '';
+    if (($dest === '') || !IfSlPerm(PS_FEEDING, $dest)) {
+        MsgPage(_m("You do not have permissions to change feeding setting"));
+    }
+}
+
 if ($feed_id) {          // just one specified APC feed
     $feed = new Feed();
     $feed->loadAAFeed($feed_id, $_GET['time']);
-    ($debugfeed > 8) && huhl('aafeed', $fire, $feed);
-    xmlclient_show($feed->feed($fire), $fire);
 } elseif ($rssfeed_id) { // just one specified RSS feed
     $feed = new Feed();
-    $feed->loadRSSFeed($rssfeed_id, $_GET['url']);
-    ($debugfeed > 8) && huhl('rssfeed', $fire, $feed);
-    xmlclient_show($feed->feed($fire), $fire);
-} else {                 // all RSS and APC and general feeds - the same run the queue does every 15 minutes
-    xmlclient_show((new FeedsRun())->run($fire), $fire);
+    $feed->loadRSSFeed($rssfeed_id);
+} else {                 // all RSS and APC feeds - the same run the queue does every 15 minutes
+    $feed = null;
 }
+xmlclient_check_perm($feed);
+
+// debug levels 8+ print the fetch URLs and the feed itself, which carry the node password
+if (!IsSuperadmin()) {
+    $debugfeed = min($debugfeed, 7);
+}
+// a remote fetch may take minutes - do not hold the user's other admin pages meanwhile
+session_write_close();
+
+($debugfeed >= 8) && print("\n<br>XMLCLIENT STARTING");
+($debugfeed > 8) && $feed && huhl('feed', $fire, $feed);
+xmlclient_show($feed ? $feed->feed($fire) : (new FeedsRun())->run($fire), $fire);
