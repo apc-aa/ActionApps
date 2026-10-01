@@ -8617,7 +8617,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     public static function getUrl($image, $phpthumb_params, string $type): string
     {
         if (empty($phpthumb_params = \AA\Util\PhpThumbParams::clean((string) $phpthumb_params))) {
-            return $image;
+            return (($type === 'abs_raw') || ($type === 'measure')) ? $image : safe($image);
         }
         $phpthumb_params = \AA\Util\PhpThumbParams::addAoe4ZoomCrop($phpthumb_params);  // keeps every emitted url (and cache key) consistent with pinnedSize()
         $own_host        = self::isOwnHost($image);                  // the normalisation below deletes the host, so ask now
@@ -8647,10 +8647,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (($type === 'abs_raw') || ($type === 'measure')) {
             return str_replace('&amp;', '&', AA_INSTAL_URL. "img.php?src=/$image&$phpthumb_params");
         }
-        if (!str_contains($phpthumb_params, '&amp;')) {
-            $phpthumb_params = str_replace('&', '&amp;', $phpthumb_params);
-        }
-        return AA_INSTAL_PATH. 'img.php?src=/'.safe($image)."&amp;$phpthumb_params";  // safe(): this url is put straight into <img src="...">
+        // safe(): this url is put straight into <img src="..."> - the parameters too, a template may build them from item content
+        return AA_INSTAL_PATH. 'img.php?src=/'.safe($image).'&amp;'.safe(str_replace('&amp;', '&', $phpthumb_params));
     }
 
     /** Whether the resized image may be served from MissCache instead of img.php - decided

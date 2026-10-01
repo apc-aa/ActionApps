@@ -141,6 +141,19 @@ final class ImgCacheUrlTest extends TestCase
         );
     }
 
+    /** The parameters land in the same attribute - a template may build them from item content. */
+    public function testImgPhpFallbackEscapesTheParameters(): void
+    {
+        self::assertSame(
+            '/apc-aa/img.php?src=/apc-aa-files/x.jpg&amp;w=150&amp;fltr[]=wmt|a&quot; onerror=&quot;alert(1)',
+            $this->url('apc-aa-files/x.jpg', 'w=150&fltr[]=wmt|a" onerror="alert(1)'),
+        );
+        self::assertSame(
+            '/apc-aa/img.php?src=/apc-aa-files/x.jpg&amp;w=150&amp;h=99&amp;q=80',
+            $this->url('apc-aa-files/x.jpg', 'w=150&amp;h=99&q=80'),
+        );
+    }
+
     /** An install which set AA_MISSCACHE_IMG_DISABLE keeps every image on img.php. */
     public function testOptOutConstantKeepsEverythingOnImgPhp(): void
     {
@@ -319,6 +332,13 @@ final class ImgCacheUrlTest extends TestCase
             'https://example.org/apc-aa/img.php?src=/apc-aa-files/a/p.jpg&w=150&h=99',
             $this->url('apc-aa-files/a/p.jpg', 'w=150&h=99', 'abs_raw'),
         );
+    }
+
+    /** Without parameters the source goes to the page as it is, so it is escaped the same way. */
+    public function testNoParametersStillEscapesTheSourceForThePage(): void
+    {
+        self::assertSame('x.jpg&quot; onerror=&quot;alert(1)', $this->url('x.jpg" onerror="alert(1)', ''));
+        self::assertSame('x.jpg" onerror="alert(1)', $this->url('x.jpg" onerror="alert(1)', '', 'abs_raw'));
     }
 
     /** No parameters means no resizing at all - the source url is returned untouched. */
