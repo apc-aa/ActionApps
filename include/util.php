@@ -127,12 +127,13 @@ function endslash(&$s): void
     }
 }
 
-/** backslash quotes, remove newlines, escape </script, which will make the code broken
- *  use as: echo "el.insertAdjacentHTML('afterbegin',".escape4js($code).");";
+/** Text for a single-quoted JS string in a <script> block: backslash quotes, newlines as \n, escape
+ *  every '<' - HTML ends the block on </script in any letter case
+ *  use as: echo "el.insertAdjacentHTML('afterbegin','".escape4js($code)."');";
  */
 function escape4js($code): string
 {
-    return str_replace(["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $code);   // remove newlines ...
+    return str_replace(["\\", "'", "\r\n", "\n", "\r", '<'], ["\\\\", "\\'", '\n', '\n', '\n', '\x3C'], $code);
 }
 
 /** self_server function

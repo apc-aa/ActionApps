@@ -89,8 +89,9 @@ class AA_Debug_Console extends AA_Debug
             if (is_array($a) || is_object($a) && !is_callable([$a,"__toString"])) {
                 $a = print_r($a, true);
             }
-            // we used escape4js, but it is sometimes not defined yet
-            $a = str_replace(["\\", "'","\r\n","\n","\r",'<script','</script'], ["\\\\", "\\'",'\n','\n','\n','\x3Cscript','\x3C/script'], $a);
+            // the same as escape4js(), which is not loaded yet when the first messages come; request data
+            // gets here, so every '<' is escaped - </script in any letter case would end the block
+            $a = str_replace(["\\", "'", "\r\n", "\n", "\r", '<'], ["\\\\", "\\'", '\n', '\n', '\n', '\x3C'], (string) $a);
             $code .= "console.$func('$a');\n";  //str_replace("'", "\'", str_replace('\\', '\\\\', $a)).
         }
         $this->_script($code);
