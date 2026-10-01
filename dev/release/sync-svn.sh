@@ -13,8 +13,9 @@ cd "$wc"
 svn update -q --non-interactive
 rsync -a --delete --exclude=.svn --exclude=.git --exclude=/include/config.php "$built/" "$wc/"
 svn add -q --force --no-ignore --depth infinity .
-# rsync removed the files; tell svn (parents first, children are then already gone)
-svn status | { grep '^!' || true; } | cut -c9- | sort | while IFS= read -r p; do svn rm -q --force -- "$p" 2>/dev/null || true; done
+# rsync removed the files; tell svn (parents first, children are then already gone).
+# The trailing @ keeps svn from reading a cdn/npm/<pkg>@<version> name as a peg revision.
+svn status | { grep '^!' || true; } | cut -c9- | sort | while IFS= read -r p; do svn rm -q --force -- "$p@" 2>/dev/null || true; done
 if svn status | grep -q '^!'; then echo "sync-svn: unresolved missing items:" >&2; svn status | grep '^!' >&2; exit 1; fi
 svn propdel -q -R svn:keywords . 2>/dev/null || true   # git-era files carry a bare $Id$; stop svn expanding it
 if [ -z "$(svn status -q)" ]; then echo "sync-svn: trunk already up to date"; exit 0; fi
