@@ -10,6 +10,7 @@ import 'tinymce/icons/default/index.js';
 // skins as JS modules, so no stylesheet is fetched at run time
 import 'tinymce/skins/ui/oxide/skin.js';
 import 'tinymce/skins/ui/oxide/content.js';
+import 'tinymce/skins/ui/oxide/content.inline.js';
 import 'tinymce/skins/content/default/content.js';
 import 'tinymce/plugins/lists/index.js';
 import 'tinymce/plugins/advlist/index.js';
@@ -148,6 +149,39 @@ function dropOverriddenSides(html) {
     });
 }
 
+/**
+ * Inline, the toolbar floats over whatever the page shows above the element. Moved down
+ * by the toolbar's height, the element leaves it room instead.
+ */
+function makeRoomForToolbar(editor) {
+    const el     = editor.getElement();
+    const own    = el.style.marginTop;      // what the page set, back on remove
+    const margin = parseFloat(getComputedStyle(el).marginTop) || 0;
+    let room = 0;
+    const observer = new ResizeObserver(([entry]) => {
+        const height = entry.target.offsetHeight;
+        // 0 = hidden on blur; the room stays, closing it would move the page under the mouse
+        if (!height || height === room) {
+            return;
+        }
+        room = height;
+        el.style.marginTop = `${margin + room}px`;
+        // TinyMCE places the toolbar on show and on its own events, not when the page reflows
+        editor.ui.show();
+    });
+    editor.on('init', () => {
+        // the header, not the container: docked on scroll, it leaves the container empty
+        const header = editor.getContainer().querySelector('.tox-editor-header');
+        if (header) {
+            observer.observe(header, { box: 'border-box' });
+        }
+    });
+    editor.on('remove', () => {
+        observer.disconnect();
+        el.style.marginTop = own;
+    });
+}
+
 function uploadOptions({ image, imageTypes, file, pick, documentTypes }, onEdit) {
     return {
         // pasted and dropped images go up (the SetContent handler); a data: image already stored stays
@@ -208,7 +242,13 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         style_formats: STYLE_FORMATS,
         browser_spellcheck: true,
         image_caption: true,
-        content_style: 'body { font: 13px/1.6 Arial, Helvetica, Tahoma, Verdana, sans-serif; margin: 20px; color: #333; } table[border] td { border: 1px solid #333; }',
+        ...(inline ? {
+            // 'auto' puts it below an element near the top of the page, away from the room made above
+            toolbar_location: 'top',
+        } : {
+            // only in the iframe: inline, the page styles the content and this body rule would restyle the whole page
+            content_style: 'body { font: 13px/1.6 Arial, Helvetica, Tahoma, Verdana, sans-serif; margin: 20px; color: #333; } table[border] td { border: 1px solid #333; }',
+        }),
         // keep what AA stores: any element, any attribute, URLs as written, entities only where they were
         valid_elements: '*[*]',
         extended_valid_elements: '*[*]',
@@ -237,6 +277,9 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         ...(upload ? uploadOptions(upload, onEdit) : {}),
         setup: (ed) => {
             ed.on('PreInit', () => guardEditView(ed));
+            if (inline) {
+                makeRoomForToolbar(ed);
+            }
             ed.on('BeforeSetContent', (e) => {
                 if (typeof e.content === 'string') {
                     e.content = dropOverriddenSides(e.content);
