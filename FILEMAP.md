@@ -47,6 +47,7 @@
 | IO/DB/DB_AA.php | DB abstraction with type-based SQL escaping (makeWhere s/i/l) | DB_AA | M |
 | IO/DB/DB_PDO.php | PDO driver with prepared statements and quote() | DB_PDO | L |
 | IO/Feed.php | Content feeding/syndication between slices | Feed, FeedUtil, LastEditList | L |
+| IO/ImportFile.php | CSV import data file: only a generated name in the slice upload dir; http(s) download | ImportFile | S |
 | IO/Importer.php | Import data handler | Importer | S |
 | IO/OnPageChanger.php | On-page content modification handler | OnPageChanger | S |
 | IO/Saver.php | Save items to database | Saver | M |

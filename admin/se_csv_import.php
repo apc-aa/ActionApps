@@ -54,6 +54,7 @@
 
 // todo - work with global variable $err??
 
+use AA\IO\ImportFile;
 use AA\Util\InputVars;
 use AA\Util\Txt;
 
@@ -90,8 +91,6 @@ try {
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
 
-const FILE_PREFIX = 'importdata';
-
 
 if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
     MsgPage(_m("You do not have permissions to import files"));
@@ -117,7 +116,7 @@ if ($upload || $preview) {
 
     // create unique file name
     unset($err);
-    $file_name  = Files::getTmpFilename(FILE_PREFIX);
+    $file_name  = Files::getTmpFilename(ImportFile::PREFIX);
 
     switch ($dataType) {
         case 'file':
@@ -128,15 +127,19 @@ if ($upload || $preview) {
                     $err[] = Files::lastErrMsg();
                 }
             } else {
-                $dest_file = $previous_upload;
+                // the file uploaded for the previous preview - only its name comes back from the form
+                $dest_file = ImportFile::path((string) Files::destinationDir($slice), $previous_upload) ?? false;
+                if ($dest_file === false) {
+                    $err[] = _m('The data to import are no longer on the server - load them again');
+                }
             }
             break;
         case 'url':
-            if ( ($handle = fopen($url, 'rb')) === false ) {
+            // downloaded here, so step 2 always reads a file of the slice, the same as for an upload
+            $data      = ImportFile::fetch($url);
+            $dest_file = is_null($data) ? false : Files::createFileFromString($data, Files::destinationDir($slice), $file_name);
+            if ($dest_file === false) {
                 $err[] = _m('Cannot read input url');
-            } else {
-                fclose($handle);
-                $dest_file = $url;
             }
             break;
         default:
@@ -152,7 +155,7 @@ if ($upload || $preview) {
 
 if ($upload) {
     // delete files older than one week in the img_upload directory
-    Files::deleteTmpFiles(FILE_PREFIX, $slice);
+    Files::deleteTmpFiles(ImportFile::PREFIX, $slice);
 
     // create array of additional csv parameters
     $addParams['enclosure'] = $enclosure;
@@ -160,7 +163,7 @@ if ($upload) {
     $addParams['caption']   = $caption;
 
     // continue with settings transformation actions
-    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".rawurlencode($dest_file)."&addParamsSerial=" .Txt::bin2url(serialize($addParams)));
+    go_url(StateUrl(self_base()."se_csv_import2.php"). "&fileName=".rawurlencode(basename($dest_file))."&addParamsSerial=" .Txt::bin2url(serialize($addParams)));
 }
 
 require_once __DIR__ . "/../include/formutil.php";
@@ -186,18 +189,18 @@ if ($preview) { // file preview
             foreach ($csvRec as $i => $singleCsvRec) {
                 $head_row[] = "Field ".($i+1);
             }
-            FrmTabRow($head_row);
-            FrmTabRow($csvRec);
+            echo getFrmTabRow($head_row, 'td', [], true);
+            echo getFrmTabRow($csvRec, 'td', [], true);
             $numRows--;
         } else {
-            FrmTabRow($csvRec);
+            echo getFrmTabRow($csvRec, 'td', [], true);
         }
         while ($numRows-- > 0) {
             $csvRec = getCSV($handle,$delimiter,$enclosure);
             if (!$csvRec) {
                 break;
             }
-            FrmTabRow($csvRec);
+            echo getFrmTabRow($csvRec, 'td', [], true);
         }
         FrmTabEnd();
         fclose($handle);
@@ -258,18 +261,18 @@ if ($preview) { // file preview
                 </tr>
                 <tr>
                     <td><label><input type="radio" <?php if ($dataType === "url") echo "checked"; ?> name="dataType" value="url">&nbsp;URL</label></td>
-                    <td><input type="text" name="url" value="<?php echo $url ?>" placeholder="https://" style="width: 98%;"></td>
+                    <td><input type="text" name="url" value="<?php echo safe($url) ?>" placeholder="https://" style="width: 98%;"></td>
                 </tr>
                 <tr>
                     <td><label><input type="radio" <?php if ($dataType === "text") {
                                 echo "checked";
                             } ?> name="dataType" value="text">&nbsp;text</label></td>
-                    <td><textarea name="text" rows="5"><?php echo $text ?></textarea></td>
+                    <td><textarea name="text" rows="5"><?php echo safe($text) ?></textarea></td>
                 </tr>
             </table>
         </td></tr>
     <tr><td>
-            <input type="hidden" name="previous_upload" value="<?php echo $dest_file ?>">
+            <input type="hidden" name="previous_upload" value="<?php echo safe(basename((string) ($dest_file ?? ''))) ?>">
             <input type="hidden" name="slice_id" value="<?php echo AA::$module_id ?>">
             <input type="submit" name="preview" value="<?php echo _m("Preview")?>">
             <input type="submit" name="upload" value="<?php echo _m("Next") ?>">&nbsp;&nbsp;
