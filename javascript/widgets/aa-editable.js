@@ -33,6 +33,48 @@ function plainEditor(el, saved = el.innerHTML) {
     };
 }
 
+/**
+ * The caret as the count of non-space characters before it: starting the editor rebuilds the
+ * element without the whitespace between blocks, and the clicked position would be lost.
+ * afterChar - right after a character of its text node, else before the next one.
+ */
+function caretIn(el) {
+    const sel  = getSelection();
+    const node = sel.focusNode;
+    // off text (an empty line, by an image) it cannot be counted - TinyMCE's start is no worse
+    if (node?.nodeType !== Node.TEXT_NODE || !el.contains(node)) {
+        return null;
+    }
+    const range = document.createRange();
+    range.setStart(el, 0);
+    range.setEnd(node, sel.focusOffset);
+    return {
+        chars: range.toString().replace(/\s/g, '').length,
+        afterChar: /\S/.test(node.data[sel.focusOffset - 1] ?? ''),
+    };
+}
+
+function placeCaret(el, { chars, afterChar }) {
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+    let n   = 0;
+    let end = null;
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+        for (let i = 0; i < node.length; i++) {
+            if (/\s/.test(node.data[i])) {
+                continue;
+            }
+            if (afterChar ? ++n === chars : ++n > chars) {
+                getSelection().collapse(node, afterChar ? i + 1 : i);
+                return;
+            }
+            end = [node, i + 1];
+        }
+    }
+    if (end) {
+        getSelection().collapse(...end);       // nothing follows: behind the last character
+    }
+}
+
 document.addEventListener('focusin', async (e) => {
     const el = e.target.closest?.('[contenteditable][data-aa-field]');
     if (!el || el.aaEditor || el.aaEditorLoading) {
@@ -46,11 +88,15 @@ document.addEventListener('focusin', async (e) => {
     const before = el.innerHTML;               // what is typed while the editor loads is an edit too
     try {
         const { createRichEditor } = await import(BUNDLE_URL);
+        const caret = caretIn(el);
         el.aaEditor = await createRichEditor(el, {
             inline: true,
             uiLang: document.documentElement.lang,
             onEdit: () => changed(el),
         });
+        if (caret) {
+            placeCaret(el, caret);
+        }
         el.aaEditor.focus();
     } catch (error) {
         console.error('aa-editable: could not start the editor', error);
