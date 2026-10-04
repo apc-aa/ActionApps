@@ -131,6 +131,13 @@ class Managed
         return null;
     }
 
+    /** Why the edit form of $id may not open on a page of $module - a translated message; null = it
+     *  may. The form shows what is stored at $id, which the id from a link alone does not limit. */
+    public function formRefusal(?string $id, ?string $module): ?string
+    {
+        return null;
+    }
+
     /** Grabs and saves the data submitted by the AA_Form
      *  necessary for Edit and Add
      * @param string|null $owner  the module the page works on
@@ -438,6 +445,19 @@ class Managed_Object extends Managed
             return _m('The object was not saved - it changed meanwhile. Reload and try again.');
         }
         return null;
+    }
+
+    /** Only a new object, or an object of this class the module owns: an id of a stale or forged link
+     *  would show the name and properties of an object of another module.
+     *  @inheritDoc */
+    public function formRefusal(?string $id, ?string $module): ?string
+    {
+        $id     = (string) $id;
+        $module = strtolower((string) $module);
+        if (($id === '') || (is_long_id($id) && is_long_id($module) && self::isOwn($id, $module, $this->class))) {
+            return null;
+        }
+        return _m('This object can not be edited here - it is not an object of this module.');
     }
 
     /** the object $id is stored, owned by $owner and of $class */
@@ -1080,9 +1100,7 @@ class Manager extends AA_Storable
     {
         /** used for AJAX display of action parameters */
         if ($_GET['display_params'] ?? '') {
-            if ($action2display = $this->actions?->getAction((string) $_GET['display_params'])) {
-                echo $action2display->htmlSettings();
-            }
+            echo $this->actionSettingsHtml((string) $_GET['display_params']);
             exit;
         }
 
@@ -1163,6 +1181,13 @@ class Manager extends AA_Storable
         }
     }
 
+    /** the settings form of action $id; '' - no such action, or one without settings */
+    public function actionSettingsHtml(string $id): string
+    {
+        $action = $this->actions?->getAction($id);
+        return ($action?->isSetting()) ? (string) $action->htmlSettings() : '';
+    }
+
     /** zids directly from manager, which is a right way! */
     public function getZids(): ?zids
     {
@@ -1215,6 +1240,10 @@ class Manager extends AA_Storable
 
         if (!$this->form_posted && (($_GET['id'] && $this->managed->isAction('edit')) || ($_GET['add'] && $this->managed->isAction('add')))) {
 
+            if (($refusal = $this->managed->formRefusal($_GET['id'] ?? '', $this->module_id)) !== null) {
+                $r_state['manager'][$this->_manager_id] = $this->getState();
+                return $this->getAndClearMessages() . MsgErr($refusal);
+            }
             $form = $this->managed->getForm($_GET['id'], $this->module_id);
             $form_buttons = [ "update", "cancel"];
 
@@ -1228,7 +1257,8 @@ class Manager extends AA_Storable
                 $html .= getFrmTabEnd($form_buttons);
                 $html .= '</form>';
             } catch (Exception $e) {
-                $html = MsgErr($e->getMessage());
+                // the message may carry the id of the request
+                $html = MsgErr(safe($e->getMessage()));
             }
             // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
