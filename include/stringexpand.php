@@ -9252,7 +9252,7 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
      * @param string $key
      * @param null $output_type - no longer used - previously used 'url' to encode result in url-friendly base64_url, now it is always
      */
-    function expand($text='', $key='', $output_type=null): string
+    function expand(#[\SensitiveParameter] $text='', #[\SensitiveParameter] $key='', $output_type=null): string
     {
         return AA\Util\Crypt::encryptAesGcm($text,$key);
     }
@@ -9296,7 +9296,7 @@ class AA_Stringexpand_Decrypt extends AA_Stringexpand {
      * @return string|void
      * @see {encode}
      */
-    function expand($text='', $key='', $output_type=null): string
+    function expand($text='', #[\SensitiveParameter] $key='', $output_type=null): string
     {
         if (false !== ($ret = AA\Util\Crypt::decryptAesGcm($text,$key))) {
             return $ret;

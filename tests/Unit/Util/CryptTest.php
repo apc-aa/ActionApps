@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Util;
 
 use AA\Util\Crypt;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
+use SensitiveParameter;
 
 final class CryptTest extends TestCase
 {
@@ -85,5 +88,28 @@ final class CryptTest extends TestCase
 
         $this->assertSame($plain, Crypt::decryptAesGcm(Crypt::encryptAesGcm($plain, $shortPw), $shortPw));
         $this->assertSame($plain, Crypt::decryptAesGcm(Crypt::encryptAesGcm($plain, $longPw), $longPw));
+    }
+
+    /** @return array<string, array{class-string, string, string}> */
+    public static function secretParameters(): array
+    {
+        return [
+            'encrypt text'   => [Crypt::class, 'encryptAesGcm', 'text'],
+            'encrypt key'    => [Crypt::class, 'encryptAesGcm', 'pass'],
+            'decrypt key'    => [Crypt::class, 'decryptAesGcm', 'pass'],
+            'key derivation' => [Crypt::class, 'createKey', 'pass'],
+        ];
+    }
+
+    /** AA's error handler keeps the arguments of every stack frame - a plaintext or key must show as redacted */
+    #[DataProvider('secretParameters')]
+    public function test_secret_parameter_is_kept_out_of_stack_traces(string $class, string $method, string $name): void
+    {
+        $params = [];
+        foreach ((new ReflectionMethod($class, $method))->getParameters() as $param) {
+            $params[$param->getName()] = $param;
+        }
+        $this->assertArrayHasKey($name, $params);
+        $this->assertNotEmpty($params[$name]->getAttributes(SensitiveParameter::class), "$class::$method \$$name");
     }
 }

@@ -173,7 +173,7 @@ class Actionapps
 
     /** Keeps the token encrypted, bound to the responder URL it was given for
      *  @throws RuntimeException no AES-GCM in this PHP */
-    public function setAuthToken(string $jwt): void
+    public function setAuthToken(#[\SensitiveParameter] string $jwt): void
     {
         if (!static::aesGcmAvailable()) {
             throw new RuntimeException(_m('This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted'));
@@ -184,7 +184,7 @@ class Actionapps
     /** setAuthToken() and the central_conf row of this AA
      *  @throws RuntimeException no AES-GCM in this PHP
      *  @throws LogicException an AA of no central_conf row */
-    public function saveAuthToken(string $jwt): void
+    public function saveAuthToken(#[\SensitiveParameter] string $jwt): void
     {
         $id = $this->getId() ?? throw new LogicException('The AA has no central_conf row - the token cannot be saved');
         $this->setAuthToken($jwt);

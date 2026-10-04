@@ -89,7 +89,7 @@ final class TransferProgress
     /** Continue after an error - from the position of the run
      *  @param string $token a new login token of the source (its old one was refused); '' = keep it
      *  @return array<string, mixed> state() @throws ImportFailed */
-    public function resume(string $id, string $token = ''): array
+    public function resume(string $id, #[\SensitiveParameter] string $token = ''): array
     {
         $this->own($id);
         $moved = DB_AA::transaction(static function () use ($id, $token): bool {

@@ -88,5 +88,15 @@ namespace Tests\Unit\Legacy {
             $this->assertFalse(AA_Password_Manager_Reader::keyMatches(self::resetKey('u1a', '@example.org', $now), 'u1', 'a@example.org', $now), 'the parts do not run into each other');
             $this->assertFalse(AA_Password_Manager_Reader::keyMatches(md5('u1a@example.org' . AA_ID . $now), 'u1', 'a@example.org', $now), 'the old AA_ID key is refused');
         }
+
+        /** {encrypt}/{decrypt} hand the text and key to Crypt - AA's error handler keeps the arguments of every stack frame */
+        public function test_secret_parameters_are_kept_out_of_stack_traces(): void
+        {
+            foreach ([[AA_Stringexpand_Encrypt::class, 'expand', 'text'], [AA_Stringexpand_Encrypt::class, 'expand', 'key'], [\AA_Stringexpand_Decrypt::class, 'expand', 'key']] as [$class, $method, $name]) {
+                $param = array_values(array_filter((new \ReflectionMethod($class, $method))->getParameters(), static fn(\ReflectionParameter $p): bool => $p->getName() === $name))[0] ?? null;
+                $this->assertNotNull($param, "$class::$method \${$name}");
+                $this->assertNotEmpty($param->getAttributes(\SensitiveParameter::class), "$class::$method \${$name}");
+            }
+        }
     }
 }

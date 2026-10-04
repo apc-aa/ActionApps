@@ -589,5 +589,15 @@ namespace Tests\Unit\Central {
             $this->assertNotSame([], self::stored($other));
             $this->assertNotSame([], self::stored($fresh->getId()));
         }
+
+        /** AA's error handler keeps the arguments of every stack frame - a token or key must show as redacted */
+        public function test_secret_parameters_are_kept_out_of_stack_traces(): void
+        {
+            foreach ([[InstallRun::class, 'preview', 'token'], [InstallRun::class, 'resume', 'token']] as [$class, $method, $name]) {
+                $param = array_values(array_filter((new \ReflectionMethod($class, $method))->getParameters(), static fn(\ReflectionParameter $p): bool => $p->getName() === $name))[0] ?? null;
+                $this->assertNotNull($param, "$class::$method \${$name}");
+                $this->assertNotEmpty($param->getAttributes(\SensitiveParameter::class), "$class::$method \${$name}");
+            }
+        }
     }
 }

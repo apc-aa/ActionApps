@@ -112,7 +112,7 @@ final class InstallRun extends AA_Object
     /** a new run in the preview state; forgotten previews go away on the way
      *  @param string $fingerprint sha256 of the definitions package the preview showed - the write compares it
      *  @param array<string, string> $targets source slice => slice of this AA it goes into */
-    public static function preview(string $mode, bool $allBins, string $source, string $user, string $token, int $now, string $fingerprint = '', array $targets = [], ?ImportChoices $choices = null): self
+    public static function preview(string $mode, bool $allBins, string $source, string $user, #[\SensitiveParameter] string $token, int $now, string $fingerprint = '', array $targets = [], ?ImportChoices $choices = null): self
     {
         if (!in_array($mode, [self::INSTALL, self::TRANSFER], true)) {
             throw new InvalidArgumentException("Unknown mode $mode");
@@ -328,7 +328,7 @@ final class InstallRun extends AA_Object
 
     /** Continue after an error - from the stored position
      *  @param string $token a new login token of the source, when it refused the old one; '' = keep it */
-    public function resume(string $token = ''): void
+    public function resume(#[\SensitiveParameter] string $token = ''): void
     {
         $this->move([self::ERROR], self::ITEMS);
         $this->moved = (string) time();
