@@ -36,10 +36,17 @@ final class Registry
     /** where installation directories must lie; null = include/custom */
     private static ?string $customRoot = null;
 
-    /** @internal for tests only, which cannot write into include/custom; null = back to include/custom */
-    public static function setCustomRootForTests(?string $root): void
+    /** the installation directory read when a caller gives none; null = from AA_CUSTOM_DIR */
+    private static ?string $defaultDir = null;
+
+    /**
+     * @internal for tests only, which cannot write into include/custom; null = back to include/custom
+     * @param ?string $defaultDir read by every sources(), rejected() and create() given no directory
+     */
+    public static function setCustomRootForTests(?string $root, ?string $defaultDir = null): void
     {
         self::$customRoot = $root;
+        self::$defaultDir = ($root === null) ? null : $defaultDir;
     }
 
     /**
@@ -112,7 +119,7 @@ final class Registry
             }
         }
 
-        $customDir ??= defined('AA_CUSTOM_DIR') ? constant('AA_BASE_PATH') . 'include/custom/' . constant('AA_CUSTOM_DIR') . '/import' : null;
+        $customDir ??= self::$defaultDir ?? (defined('AA_CUSTOM_DIR') ? constant('AA_BASE_PATH') . 'include/custom/' . constant('AA_CUSTOM_DIR') . '/import' : null);
         $failed = [];
         if ($customDir !== null) {
             [$custom, $failed] = self::loadDir($customDir);

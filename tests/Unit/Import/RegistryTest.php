@@ -71,6 +71,17 @@ namespace Tests\Unit\Import {
             self::assertSame([], self::custom(Registry::sources()));
         }
 
+        public function test_sources_defaultDirOfTestsReadWithoutDir(): void
+        {
+            Registry::setCustomRootForTests(dirname(self::FIXTURES), self::FIXTURES);
+
+            self::assertSame(['custom:good' => \GoodSource::class], self::custom(Registry::sources()));
+            self::assertSame(\GoodSource::class, get_class(Registry::create('custom:good', [])));
+
+            Registry::setCustomRootForTests(null, self::FIXTURES);
+            self::assertSame([], self::custom(Registry::sources()), 'no root, no default directory');
+        }
+
         public function test_sources_customDirFound(): void
         {
             self::assertSame(['custom:good' => \GoodSource::class], self::custom(Registry::sources($this->fixtures())));
