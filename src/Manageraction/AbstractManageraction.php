@@ -98,6 +98,13 @@ abstract class AbstractManageraction extends AA_Storable
         return false;
     }
 
+    /** As a switch (Manager::performActions()): true - read only from GET, for a switch which only changes
+     *  the view (a tab, a bookmark) and so may be a link; false - only from a POST, it changes data. */
+    public function allowGet(): bool
+    {
+        return false;
+    }
+
     /** for adding button to manager redefine rather getButtonDef method
      *  A button, not a link: the action writes, and a link would run it for a prefetch, a crawler
      *  or an <img src> too. javascript/manager.js POSTs the data-aa-* values to the Manager page.

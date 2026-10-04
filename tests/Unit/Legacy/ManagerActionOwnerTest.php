@@ -12,6 +12,7 @@ namespace Tests\Unit\Legacy {
     use AA\Managed_Table;
     use AA\Manager;
     use AA\Manageraction\Item_Move2Slice;
+    use AA\Manageraction\Item_Tab;
     use AA\Manageraction\Manageractions;
     use AA\Manageraction\Object_Delete;
     use AA\Manageraction\Object_Move2slice;
@@ -22,6 +23,7 @@ namespace Tests\Unit\Legacy {
     use AA\Optimize\CheckObjectFormRefusals;
     use AA\Util\LogOnce;
     use AA_Condition;
+    use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Legacy\Fixtures\FakeStore;
     use Tests\Unit\Legacy\Fixtures\FormTarget;
@@ -111,6 +113,7 @@ namespace Tests\Unit\Legacy {
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
             [$_GET, $_POST, $_REQUEST] = [[], [], []];
+            unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_ORIGIN'], $_SERVER['HTTP_HOST']);
             unset($GLOBALS['r_state'], $GLOBALS['permission_uid'], $GLOBALS['permission_to']);
             AA::$module_id = null;
         }
@@ -123,28 +126,29 @@ namespace Tests\Unit\Legacy {
         }
 
         /** a Manager page of $module over $managed; $all_modules - it lists the objects of all modules (aa_tasks.php) */
-        private static function manager(Managed $managed, ?Manageractions $actions = null, bool $all_modules = false, ?string $module = self::MODULE): Manager
+        private static function manager(Managed $managed, ?Manageractions $actions = null, bool $all_modules = false, ?string $module = self::MODULE, ?Manageractions $switches = null): Manager
         {
             $GLOBALS['r_state'] = ['manager' => ['test' => null]];
-            $settings = ['module_id' => $module, 'actions' => $actions, 'actions_hint' => '', 'actions_hint_url' => '', 'switches' => null, 'searchbar' => null, 'use_profile' => false, 'scroller' => ['listlen' => 10]];
+            $settings = ['module_id' => $module, 'actions' => $actions, 'actions_hint' => '', 'actions_hint_url' => '', 'switches' => $switches, 'searchbar' => null, 'use_profile' => false, 'scroller' => ['listlen' => 10]];
             $managed->setSettings(array_merge($managed->getSettings(), $settings));
             $manager = new SearchlessManager('test', $managed);
             return $all_modules ? $manager->setAllModules() : $manager;
         }
 
         /** the request the Manager reads besides the posted data */
-        private static function request(array $get, array $post, array $request): void
+        private static function request(array $get, array $post): void
         {
-            $_GET     = $get + ['display_params' => '', 'listlen' => '', 'scr_st_Go' => '', 'scr_st_Mv' => ''];
-            $_POST    = $post + ['aa' => [], 'aa_akce_all' => ''];
-            $_REQUEST = $request + ['chb' => [], 'akce' => '', 'akce_param' => [], 'srchbr_akce' => ''];
+            $_GET     = $get + ['scr_st_Go' => '', 'scr_st_Mv' => ''];
+            $_POST    = $post;
+            $_REQUEST = $post + $get + ['srchbr_akce' => ''];
         }
 
         /** the page posts the checked rows with an action (performActions()) */
         private static function act(Manager $manager, string $akce, array $ids, array|string $param = []): string
         {
-            $chb = array_fill_keys(array_map(static fn($id) => "x$id", $ids), '');
-            self::request([], ['chb' => $chb], ['chb' => $chb, 'akce' => $akce, 'akce_param' => $param]);
+            $chb  = array_fill_keys(array_map(static fn($id) => "x$id", $ids), '');
+            $post = ['chb' => $chb, 'akce' => $akce, 'akce_param' => $param];
+            self::request([], $post);
             $manager->performActions();
             return trim(strip_tags((string) $manager->getAndClearMessages()));
         }
@@ -152,7 +156,7 @@ namespace Tests\Unit\Legacy {
         /** the edit form of the row $id ('' - the Add form) posted to the Manager */
         private static function postForm(Manager $manager, string $id, array $aa): string
         {
-            self::request(['id' => $id], ['aa' => $aa], []);
+            self::request(['id' => $id], ['aa' => $aa]);
             $manager->performActions();
             return trim(strip_tags((string) $manager->getAndClearMessages()));
         }
@@ -424,7 +428,7 @@ namespace Tests\Unit\Legacy {
             $manager = self::manager($managed, $actions);
             $manager->setRestrictionConds([new AA_Condition('slice_id', '==', pack_id(self::MODULE))]);
 
-            self::request([], ['aa_akce_all' => '1'], ['chb' => null, 'akce' => 'DeleteTRow']);
+            self::request([], ['aa_akce_all' => '1', 'akce' => 'DeleteTRow']);
             $manager->performActions();
 
             $this->assertSame('', trim(strip_tags((string) $manager->getAndClearMessages())));
@@ -521,6 +525,121 @@ namespace Tests\Unit\Legacy {
             $this->assertCount(1, $deletes);
             $this->assertStringContainsString(self::POLL_OWN, $deletes[0]);
             $this->assertStringNotContainsString(self::POLL_OTHER, $deletes[0]);
+        }
+
+        // ------------------------------------------------------------------ only a POST writes
+
+        /** a link (prefetch, crawler, <img src>) carrying an action and its rows does nothing */
+        public function test_an_action_by_get_does_nothing(): void
+        {
+            $get = ['akce' => 'DeleteTRow', 'chb' => ['x7' => '']];
+            self::request($get, []);
+            $manager = self::viewManager();
+            $manager->performActions();
+
+            $this->assertSame([], self::writes('view'));
+            $this->assertStringContainsString('use the button on the page', (string) $manager->getAndClearMessages());
+        }
+
+        /** the rows come with the action - rows in the URL of a posted form are not taken */
+        public function test_rows_by_get_are_not_taken(): void
+        {
+            self::request(['chb' => ['x7' => '']], ['akce' => 'DeleteTRow']);
+            self::viewManager()->performActions();
+
+            $this->assertSame([], self::writes('view'));
+        }
+
+        /** the polls page: "Empty trash" writes, the bin tab only shows */
+        private static function pollPageManager(): Manager
+        {
+            self::perms([self::MODULE => PS_DELETE_ITEMS, self::OTHER => '']);
+            $switches = new Manageractions();
+            $switches->addAction(new Item_Tab('Folder1a', 'app'));
+            $switches->addAction(new Polls_DeleteTrash('DeleteTrash', false));
+            $manager = self::manager(new Managed_Table('polls'), null, switches: $switches);
+            $manager->setBin('folder3');
+            return $manager;
+        }
+
+        public function test_emptying_the_trash_by_get_does_nothing(): void
+        {
+            self::request(['DeleteTrash' => '1'], []);
+            $manager = self::pollPageManager();
+            $manager->performActions();
+
+            $this->assertSame([], self::writes('polls'));
+            $this->assertStringContainsString('use the button on the page', (string) $manager->getAndClearMessages());
+        }
+
+        public function test_emptying_the_trash_by_post_deletes(): void
+        {
+            self::request([], ['DeleteTrash' => '1']);
+            self::pollPageManager()->performActions();
+
+            $this->assertCount(1, self::writes('polls'));
+            $this->assertStringContainsString(self::POLL_OWN, self::writes('polls')[0]);
+        }
+
+        public function test_a_view_switch_works_by_get(): void
+        {
+            $manager = self::pollPageManager();
+            self::request(['Folder1a' => '1'], []);
+            $manager->performActions();
+
+            $this->assertSame('app', $manager->getBin());
+            $this->assertSame([], self::writes('polls'));
+            $this->assertSame('', trim(strip_tags((string) $manager->getAndClearMessages())));
+        }
+
+        // ------------------------------------------------------------------ only a page of this site writes
+
+        /** [request headers, may write] - SameSite=Lax cookies ride a POST of a sibling subdomain too
+         *  @return array<string, array{array<string, string>, bool}> */
+        public static function origins(): array
+        {
+            return [
+                'same origin'             => [['HTTP_SEC_FETCH_SITE' => 'same-origin'], true],
+                'old browser, own Origin' => [['HTTP_ORIGIN' => 'https://aa.test'], true],
+                'no headers (a script)'   => [[], true],
+                'sibling subdomain'       => [['HTTP_SEC_FETCH_SITE' => 'same-site'], false],
+                'another site'            => [['HTTP_SEC_FETCH_SITE' => 'cross-site'], false],
+                'foreign Origin'          => [['HTTP_ORIGIN' => 'https://evil.test'], false],
+            ];
+        }
+
+        private static function from(array $headers): void
+        {
+            $_SERVER = $headers + ['HTTP_HOST' => 'aa.test'] + $_SERVER;
+        }
+
+        #[DataProvider('origins')]
+        public function test_an_action_runs_only_from_this_site(array $headers, bool $writes): void
+        {
+            self::from($headers);
+            $msg = self::act(self::viewManager(), 'DeleteTRow', ['7']);
+
+            $this->assertCount($writes ? 1 : 0, self::writes('view'));
+            $this->assertSame(!$writes, str_contains($msg, 'use the button on the page'));
+        }
+
+        #[DataProvider('origins')]
+        public function test_emptying_the_trash_runs_only_from_this_site(array $headers, bool $writes): void
+        {
+            self::from($headers);
+            self::request([], ['DeleteTrash' => '1']);
+            self::pollPageManager()->performActions();
+
+            $this->assertCount($writes ? 1 : 0, self::writes('polls'));
+        }
+
+        #[DataProvider('origins')]
+        public function test_the_form_is_saved_only_from_this_site(array $headers, bool $writes): void
+        {
+            self::from($headers);
+            self::postForm(self::viewManager(), '7', ['u7' => ['name' => ['renamed']]]);
+
+            $this->assertCount($writes ? 1 : 0, self::writes('view'));
         }
 
         // ------------------------------------------------------------------ export to slice (admin/index.php)

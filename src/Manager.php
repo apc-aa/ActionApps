@@ -38,6 +38,7 @@ namespace AA;
 
 // require_once __DIR__ . "/menu_util.php";  // for showMenu()
 use AA;
+use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Manageraction\Manageractions;
@@ -1036,37 +1037,42 @@ class Manager extends AA_Storable
         }
     }
 
-    /**
+    /** the checked rows: chb[x<id>] => value - only from the POST, a link must not pick them */
+    public function getPostedChb(): array
+    {
+        $chb = $_POST['chb'] ?? null;
+        return is_array($chb) ? $chb : [];
+    }
+
+    /** the rows an action works on; no checked row and "all rows" chosen - all rows of the list
      * @return zids
      */
     public function getPostedItems(): zids
     {
-        if (!is_array($_REQUEST['chb']) && $_POST['aa_akce_all'] == '1') {
+        if (!isset($_POST['chb']) && ($_POST['aa_akce_all'] ?? '') === '1') {
             return $this->getZids();
         }
-        return (new zids([], $this->managed->getZidsType()))->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);
+        return (new zids([], $this->managed->getZidsType()))->setFromItemArr($this->getPostedChb());
     }
 
     /** performActions function
+     *  Writes (actions, switches like Empty trash, the edit form) run only from a POST of a page of this
+     *  site: a link runs for a prefetch, a crawler or an <img src>, and SameSite=Lax still lets
+     *  a sibling subdomain POST with the session cookie.
      */
     public function performActions(): void
     {
-
         /** used for AJAX display of action parameters */
-        if ($_GET['display_params']) {
+        if ($_GET['display_params'] ?? '') {
             if ($action2display = $this->actions?->getAction((string) $_GET['display_params'])) {
                 echo $action2display->htmlSettings();
             }
             exit;
         }
 
-        /* if (!isset($akce)) { $akce = $_GET['akce']; }
-           if (!isset($chb))  { $akce = $_GET['chb'];  }
-        */
-
         // call custom searchbar function (if searchbar action invoked)
         // used for additional search functions like 'category search' in Links
-        if ($this->searchbar_funct && $_REQUEST['srchbr_akce']) {
+        if ($this->searchbar_funct && ($_REQUEST['srchbr_akce'] ?? '')) {
             $function2call = $this->searchbar_funct;
             $function2call();
         }
@@ -1078,20 +1084,31 @@ class Manager extends AA_Storable
 
         $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
 
-        // new approach uses AA\Manageractions
-        $akce = (string) $_REQUEST['akce'];
+        $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER);
+        $refused   = isset($_GET['akce']);
+
+        $akce = is_string($_POST['akce'] ?? null) ? $_POST['akce'] : '';
         if ($akce && $this->actions) {
-            $action2do = $this->actions->getAction($akce);
-            if ($action2do && $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
-                $this->msg[] = $action2do->perform($this, $item_zids, $_REQUEST['akce_param']);
+            $action2do  = $this->actions->getAction($akce);
+            $akce_param = $_POST['akce_param'] ?? null;
+            if (!$may_write) {
+                $refused = true;
+            } elseif ($action2do && $action2do->isPerm4Perform($this, $item_zids, $akce_param)) {
+                $this->msg[] = $action2do->perform($this, $item_zids, $akce_param);
             }
         }
 
-        // new approach uses AA\Manageractions
+        // switches of the view (tabs, bookmarks) are links; the ones which write come only by POST
         if ($this->switches) {
             foreach ($this->switches as $sw => $switch) {
-                if (isset($_GET[$sw]) && $switch->isPerm4Perform($this, $item_zids, $_GET[$sw])) {
-                    $this->msg[] = $switch->perform($this, $item_zids, $_GET[$sw]);
+                if ($switch->allowGet()) {
+                    $input = $_GET;
+                } else {
+                    $refused = $refused || isset($_GET[$sw]) || (isset($_POST[$sw]) && !$may_write);
+                    $input   = $may_write ? $_POST : [];
+                }
+                if (isset($input[$sw]) && $switch->isPerm4Perform($this, $item_zids, $input[$sw])) {
+                    $this->msg[] = $switch->perform($this, $item_zids, $input[$sw]);
                 }
             }
         }
@@ -1099,19 +1116,21 @@ class Manager extends AA_Storable
         // update scroller (items could be deleted, moved, ...)
         if ($this->scroller) {
             $this->scroller->update();
-            if ($_GET['listlen']) {
+            if ($_GET['listlen'] ?? '') {
                 $this->setListlen($_GET['listlen']);
             }
             // new search - go to first page
-            if ($_REQUEST['srchbr_akce']) {
+            if ($_REQUEST['srchbr_akce'] ?? '') {
                 $this->go2page(1);
             }
         }
 
 
         // for managed class
-        if ($this->managed->isAction('edit') || $this->managed->isAction('add')) {
-            if ($_POST['aa']) {
+        if (($_POST['aa'] ?? null) && ($this->managed->isAction('edit') || $this->managed->isAction('add'))) {
+            if (!$may_write) {
+                $refused = true;
+            } else {
                 $form = $this->managed->getForm($_GET['id'], $this->module_id);
                 // the managed of the page - with its actions, not the defaults (add, edit)
                 if ($form->process($_POST['aa'], $this->managed) === AA_Form::REFUSED) {
@@ -1119,6 +1138,10 @@ class Manager extends AA_Storable
                 }
                 $this->form_posted = true;
             }
+        }
+
+        if ($refused) {
+            $this->msg[] = MsgErr(_m('The action was not performed - use the button on the page.'));
         }
     }
 
@@ -1179,7 +1202,7 @@ class Manager extends AA_Storable
 
             try {
                 // the id goes back with the post - the form saves only the object it was built for
-                $html = '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $_GET['id'] ? ['id' => $_GET['id']] : []))) . '">';
+                $html = $this->getAndClearMessages() . '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $_GET['id'] ? ['id' => $_GET['id']] : []))) . '">';
                 $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($_GET['id']), $form_buttons);
                 $html .= '<tr><td colspan="2">';
                 $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();

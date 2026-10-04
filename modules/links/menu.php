@@ -123,7 +123,7 @@ function get_aamenus(): array
             "header2"     => _m("Misc"),
             "empty_trash" => ["cond" => IsSuperadmin(),
                 "hide" => !IsSuperadmin(),
-                "href" => $module_location . "index.php?DeleteTrash=1",
+                "href" => $module_location . "index.php",
                 "label" => _m("Empty trash"),
                 "js" => "EmptyTrashQuestion('{href}','" . _m("Are you sure you want to empty trash?") . "')"],
             "debug" => ["cond" => IsSuperadmin(),

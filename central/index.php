@@ -30,7 +30,6 @@
 // Then it could be used as AJAX call for this action!
 
 use AA\Central\Actionapps;
-use AA\Central\ManagerActionPolicy;
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Manager;
@@ -159,19 +158,6 @@ $settings['itemview']['get_content_funct'] = [[Actionapps::class, 'listContent']
 $managed->setSettings($settings);
 $manager = new Manager('central', $managed);
 
-// Manager takes akce from GET too; here actions reach remote AAs with the stored superadmin login.
-// Manager reads $_REQUEST - pinned to POST/GET, so a cookie named akce cannot pass the check below.
-$akce_id           = (string) ($_POST['akce'] ?? $_GET['akce'] ?? '');
-$_REQUEST['akce']  = $akce_id;
-if ($akce_id !== '' && ($akce = $actions->getAction($akce_id)) && !ManagerActionPolicy::mayPerform($_SERVER, (bool) $akce->getButton('', '', ''))) {
-    unset($_GET['akce'], $_POST['akce'], $_REQUEST['akce']);
-    $err = _m('The action was not performed - start it from the ActionApps Central page');
-}
-// the Empty trash switch deletes by a GET link of this page - like a row button
-if (isset($_GET['DeleteTrash']) && !ManagerActionPolicy::mayPerform($_SERVER, true)) {
-    unset($_GET['DeleteTrash'], $_REQUEST['DeleteTrash']);
-    $err = _m('The action was not performed - start it from the ActionApps Central page');
-}
 $manager->performActions();
 
 // need for menu

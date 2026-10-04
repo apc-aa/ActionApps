@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/src/Central/**ManagerActionPolicy.php**, /tests/Unit/Central/**ManagerActionPolicyTest.php**  
+When central/index.php and admin/aa_optimize.php let a Manager action or Empty trash run - a POST from this site, and a row button or Empty trash also by a GET link of the same page.  
+_The Manager now takes actions and writing switches only by POST and refuses a request sent by a page of another site itself (Manager::performActions() with ResponderPolicy::isForeignBrowserRequest()), on every Manager page. Removed 2026-10-04 - honzam_
+
 /central/**copyapp.php**, /src/Central/**TransferLink.php**, /tests/Unit/Central/**TransferLinkTest.php**  
 "Copy an app between AAs" - a signpost that chose a source and a target AA and sent the admin to the install page of the target.  
 _It only confused: a copy into another AA is "Install an app" there, with this AA as the source. Removed 2026-09-30 - honzam_

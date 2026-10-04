@@ -12,11 +12,22 @@ namespace Tests\Unit\Manageraction;
 
 use AA\Managed;
 use AA\Manageraction\AbstractManageraction;
+use AA\Manageraction\Central_DeleteTrash;
 use AA\Manageraction\Central_MoveItem;
+use AA\Manageraction\Central_Tab;
+use AA\Manageraction\Item_DeleteTrash;
+use AA\Manageraction\Item_Gobookmark;
+use AA\Manageraction\Item_Tab;
+use AA\Manageraction\Links_DeleteTrash;
+use AA\Manageraction\Links_GoBookmark;
+use AA\Manageraction\Links_GoCateg;
+use AA\Manageraction\Links_Tab;
 use AA\Manageraction\Manageractions;
 use AA\Manageraction\Object_Delete;
+use AA\Manageraction\Polls_DeleteTrash;
 use AA\Manageraction\Table_Row_Delete;
 use AA\Manageraction\Taskmanager_Execute;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class AbstractManageractionTest extends TestCase
@@ -96,12 +107,6 @@ final class AbstractManageractionTest extends TestCase
         $this->assertSame([], $action->getButton('', self::KEY_ALIAS, self::MODULE));
     }
 
-    /** central/index.php and admin/aa_optimize.php tell a row action by a non-empty getButton('', '', '') */
-    public function test_getButton_emptyArgumentsStillReportButton(): void
-    {
-        $this->assertNotSame([], (new Table_Row_Delete('DeleteTRow'))->getButton('', '', ''));
-    }
-
     public function test_getManagerButtonsGrouped_secondaryAreButtonsToo(): void
     {
         $actions = new Manageractions();
@@ -113,6 +118,32 @@ final class AbstractManageractionTest extends TestCase
         $this->assertSame(['DeleteTRow'], array_keys($grouped['primary']));
         $this->assertSame(['Folder3'], array_keys($grouped['secondary']));
         $this->assertStringContainsString('<button', $grouped['secondary']['Folder3']);
+    }
+
+    /** [class, constructor arguments, read from GET] - every switch a Manager page registers
+     *  @return array<string, array{class-string<AbstractManageraction>, list<mixed>, bool}> */
+    public static function switches(): array
+    {
+        return [
+            'Item_Tab'            => [Item_Tab::class, ['Tab1a', 'app'], true],
+            'Central_Tab'         => [Central_Tab::class, ['Tab1', 'app'], true],
+            'Links_Tab'           => [Links_Tab::class, ['Tab'], true],
+            'Links_GoCateg'       => [Links_GoCateg::class, ['GoCateg'], true],
+            'Links_GoBookmark'    => [Links_GoBookmark::class, ['GoBookmark'], true],
+            'Item_Gobookmark'     => [Item_Gobookmark::class, ['GoBookmark'], true],
+            'Item_DeleteTrash'    => [Item_DeleteTrash::class, ['DeleteTrash', false], false],
+            'Central_DeleteTrash' => [Central_DeleteTrash::class, ['DeleteTrash', false], false],
+            'Links_DeleteTrash'   => [Links_DeleteTrash::class, ['DeleteTrash'], false],
+            'Polls_DeleteTrash'   => [Polls_DeleteTrash::class, ['DeleteTrash', false], false],
+            'an action'           => [Table_Row_Delete::class, ['DeleteTRow'], false],
+        ];
+    }
+
+    /** a switch which changes data must not run from a link */
+    #[DataProvider('switches')]
+    public function test_allowGet_onlyForViewSwitches(string $class, array $args, bool $get): void
+    {
+        $this->assertSame($get, (new $class(...$args))->allowGet());
     }
 
     private static function rowDeleteButton(): string
