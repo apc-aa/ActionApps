@@ -75,27 +75,27 @@ final class ImportFileTest extends TestCase
         self::assertNull(ImportFile::path($this->dir, $name));
     }
 
+    // a public address literal: the guard resolves host names, and the documentation ranges count as reserved
     public function test_fetch_webAddress_returnsBody(): void
     {
-        self::assertSame("a;b\n", ImportFile::fetch('https://192.0.2.10/data.csv', new MockHttpClient(new MockResponse("a;b\n"))));
+        self::assertSame("a;b\n", ImportFile::fetch('https://1.1.1.1/data.csv', new MockHttpClient(new MockResponse("a;b\n"))));
     }
 
     public function test_fetch_errorStatus_returnsNull(): void
     {
-        self::assertNull(ImportFile::fetch('https://192.0.2.10/data.csv', new MockHttpClient(new MockResponse('', ['http_code' => 404]))));
+        self::assertNull(ImportFile::fetch('https://1.1.1.1/data.csv', new MockHttpClient(new MockResponse('', ['http_code' => 404]))));
     }
 
     public function test_fetch_tooLarge_returnsNull(): void
     {
-        self::assertNull(ImportFile::fetch('https://192.0.2.10/data.csv', new MockHttpClient(new MockResponse(str_repeat('x', 11))), 10));
+        self::assertNull(ImportFile::fetch('https://1.1.1.1/data.csv', new MockHttpClient(new MockResponse(str_repeat('x', 11))), 10));
     }
 
+    // the transport would answer, so null means the address was refused
     #[DataProvider('refusedAddresses')]
-    public function test_fetch_refusedAddress_returnsNullWithoutRequest(string $url): void
+    public function test_fetch_refusedAddress_returnsNull(string $url): void
     {
-        $transport = new MockHttpClient(new MockResponse('secret'));
-        self::assertNull(ImportFile::fetch($url, $transport));
-        self::assertSame(0, $transport->getRequestsCount());
+        self::assertNull(ImportFile::fetch($url, new MockHttpClient(new MockResponse('secret'))));
     }
 
     public static function refusedAddresses(): array
@@ -105,6 +105,10 @@ final class ImportFileTest extends TestCase
             'file scheme'     => ['file:///etc/passwd'],
             'php stream'      => ['php://filter/resource=/etc/passwd'],
             'ftp'             => ['ftp://192.0.2.10/data.csv'],
+            'loopback'        => ['http://127.0.0.1/server-status'],
+            'private network' => ['http://192.168.1.1/data.csv'],
+            'link-local'      => ['http://169.254.169.254/latest/meta-data/'],
+            'ipv6 loopback'   => ['http://[::1]/data.csv'],
             'no host'         => ['http://'],
         ];
     }

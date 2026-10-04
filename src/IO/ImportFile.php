@@ -8,6 +8,8 @@ use AA\Http\Client;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
 use InvalidArgumentException;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -44,8 +46,10 @@ final class ImportFile
 
     /**
      * Content of a CSV at an http(s) address; null when it cannot be read. Other schemes would let
-     * the stream wrappers read local files (file://, php://filter).
-     * @param ?HttpClientInterface $transport the connection under AA\Http\Client; another one for tests only
+     * the stream wrappers read local files (file://, php://filter), and addresses of the local and
+     * private networks are refused, also after a redirect - an editor must not read the server's
+     * internal services through the import.
+     * @param ?HttpClientInterface $transport the connection under the guard; another one for tests only
      * @param int                  $max_bytes larger data are refused
      */
     public static function fetch(string $url, ?HttpClientInterface $transport = null, int $max_bytes = self::FETCH_MAX_BYTES): ?string
@@ -53,9 +57,10 @@ final class ImportFile
         if (!preg_match('~^https?://~i', $url)) {
             return null;
         }
+        $guarded = new NoPrivateNetworkHttpClient($transport ?? HttpClient::create());
         try {
-            $answer = (new Client(timeout: self::FETCH_SECONDS, idle: 30, redirects: 5, http: $transport, maxBytes: $max_bytes))->request('GET', $url);
-        } catch (TransportException|ResponseTooLargeException|InvalidArgumentException) {   // no connection, too large, a malformed URL
+            $answer = (new Client(timeout: self::FETCH_SECONDS, idle: 30, redirects: 5, http: $guarded, maxBytes: $max_bytes))->request('GET', $url);
+        } catch (TransportException|ResponseTooLargeException|InvalidArgumentException) {   // no connection or a refused address, too large, a malformed URL
             return null;
         }
         return $answer->ok() ? $answer->body : null;
