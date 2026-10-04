@@ -426,6 +426,9 @@ class Managed_Object extends Managed
         } elseif (!self::isOwn($id, $owner, $this->class)) {
             return $this->refuse($owner, $id);
         }
+        if (($refusal = $object->formRefusal()) !== null) {
+            return $refusal;
+        }
         $object->save();
         return null;
     }

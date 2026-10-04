@@ -216,6 +216,16 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return (bool) preg_match('/\{import[:(}]/i', $this->task . "\n" . $this->condition);
     }
 
+    /** The page of the tasks also lets in users who only edit the forms, but an import belongs to
+     *  the users who manage the feeding of the slice. */
+    public function formRefusal(): ?string
+    {
+        if ($this->usesImport() && !IfSlPerm(PS_FEEDING, $this->getOwnerId())) {
+            return _m('The task was not saved - only a user who manages the feeding of the slice may save a task with {import}.');
+        }
+        return null;
+    }
+
     /**
      * @param string $id
      * @return string

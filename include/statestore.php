@@ -474,6 +474,14 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return $this;
     }
 
+    /** Why the object posted in a form may not be saved - a translated message; null = it may.
+     *  The form shows the message and stores nothing; saving from code is not checked.
+     */
+    public function formRefusal(): ?string
+    {
+        return null;
+    }
+
     /** AA_iEditable method - save the object to the database
      *
      * @return string|false - id of saved data or false
