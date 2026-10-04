@@ -82,10 +82,11 @@ abstract class AbstractManageraction extends AA_Storable
     }
 
     /** if you want to generate button to manager, redefine this method
-     * @return array   ['label'=>, 'attr'=>, 'cond'] */
+     *  'confirm' - question asked before the action runs; 'cond' - AA expression, the button shows when it gives 1
+     * @return array   ['label'=>, 'attr'=>, 'confirm'=>, 'cond'=>] */
     protected function getButtonDef(): array
     {
-        //return ['label'=>_m('Edit'), attr=>['class'=>'aa-button-edit', 'onclick' =>"return confirm('". _m("Do you really want to delete this object?"). "')"]];
+        //return ['label'=>_m('Delete'), 'attr'=>['class'=>'aa-button-delete'], 'confirm'=>_m("Do you really want to delete this object?")];
         return [];
     }
 
@@ -97,22 +98,31 @@ abstract class AbstractManageraction extends AA_Storable
         return false;
     }
 
-    /** for adding button to manager redefine rather getButtonDef method */
+    /** for adding button to manager redefine rather getButtonDef method
+     *  A button, not a link: the action writes, and a link would run it for a prefetch, a crawler
+     *  or an <img src> too. javascript/manager.js POSTs the data-aa-* values to the Manager page.
+     *  @param string $manager_url  page that runs the action - '' for the current one
+     *  @param string $id_alias     the row id - usually an alias, expanded with the row
+     *  @param string $module_alias module_id of the target page - an id or an alias */
     public function getButton(string $manager_url, string $id_alias, string $module_alias): array
     {
-        $ret = [];
         $b = $this->getButtonDef();
-        if ($b && !$b['attr']['class']) {
-            $b['attr']['class'] = 'aa-button';
+        if (!$b) {
+            return [];
         }
-        if ($b) {
-            $code = a_href(get_url($manager_url, ["chb[x$id_alias]", 'akce=' . $this->id, "module_id=$module_alias",], true), $b['label'], $b['attr'] ?? []);
-            if (array_key_exists('cond', $b)) {
-                $code = "{if1:{$b['cond']}:{$code}}";
-            }
-            $ret = [$this->id => $code];
+        $attr = $b['attr'] ?? [];
+        $attr['class'] = ($attr['class'] ?? '') ?: 'aa-button';
+        $attr = array_merge(['type' => 'button'], $attr, [
+            'data-aa-akce'    => $this->id,
+            'data-aa-url'     => get_url($manager_url, ["module_id=$module_alias"], true),
+            'data-aa-chb'     => $id_alias,
+            'data-aa-confirm' => $b['confirm'] ?? '',
+        ]);
+        $code = htmltag('button', $b['label'], $attr);
+        if (array_key_exists('cond', $b)) {
+            $code = "{if1:{$b['cond']}:{$code}}";
         }
-        return $ret;
+        return [$this->id => $code];
     }
 
     /**

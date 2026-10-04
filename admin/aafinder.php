@@ -171,6 +171,8 @@ function PrintItemInfo($item_id): void
 $apage = new AA_Adminpageutil('aaadmin', 'aafinder');
 $apage->setTitle(_m("AA finder"));
 $apage->setForm();   // do not use form around code
+// the alias list below has row buttons; the head is out before it is built
+$apage->addRequire(get_aa_url('javascript/manager.min.js', ['v' => AA_JS_VERSION]));
 $apage->printHead($err, $Msg);
 
 if (!is_object($db)) {

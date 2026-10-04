@@ -55,11 +55,50 @@ function WriteEmailGo() {
 }
 
 function EmptyTrashQuestion(url, question) {
-    if ( question ) {
-        if (confirm(question)) {
-            open(url,"_parent");
-        }
+    if (question && confirm(question)) {
+        AA_PostForm(url, {DeleteTrash: 1});
     }
+}
+
+/** POSTs fields to url by a throwaway form - not by itemsform, which a row button may lack
+ *  (AA finder) or sit outside of (the row "..." menu) */
+function AA_PostForm(url, fields) {
+    // only to this site - the url comes from the page markup
+    const target = new URL(url || location.href, location.href);
+    if (target.origin !== location.origin || !target.protocol.startsWith('http')) {
+        return;
+    }
+    const form  = document.createElement('form');
+    form.method = 'post';
+    form.action = target.href;
+    form.hidden = true;
+    for (const [name, value] of Object.entries(fields)) {
+        const input = document.createElement('input');
+        input.type  = 'hidden';
+        input.name  = name;
+        input.value = value;
+        form.append(input);
+    }
+    document.body.append(form);
+    form.submit();
+}
+
+/* Row buttons of the Manager (AbstractManageraction::getButton()) run their action by POST.
+ * The chb key is the row id as the itemsform checkbox has it. An inline onclick may veto.
+ * Registered once - a page may load this script twice, and each click would post twice. */
+if (!window.AA_ManagerRowActionsOn) {
+    window.AA_ManagerRowActionsOn = true;
+    document.addEventListener('click', e => {
+        const btn = e.target.closest('button[data-aa-akce]');
+        if (!btn || e.defaultPrevented) {
+            return;
+        }
+        const d = btn.dataset;
+        if (d.aaConfirm && !confirm(d.aaConfirm)) {
+            return;
+        }
+        AA_PostForm(d.aaUrl, {akce: d.aaAkce, [`chb[x${d.aaChb ?? ''}]`]: ''});
+    });
 }
 
 

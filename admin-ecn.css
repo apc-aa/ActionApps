@@ -585,6 +585,10 @@ input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-p
     vertical-align: middle;
     transition: all 0.3s;
 }
+/* Manager row buttons: no default button margin */
+button[data-aa-akce] {
+    margin: 0;
+}
 /* all transparent secondary buttons */
 input[type="submit"].btn-secondary, input[type="button"].btn-secondary, button.btn-secondary, .button.btn-secondary, .btn.btn-secondary, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs {
     background-color: rgb(255 255 255 / 20%);
