@@ -174,6 +174,16 @@ final class ReferenceRewriter
         return ($new === null) ? $value : substr_replace($value, $new, (int) strpos($value, $name), strlen($name));
     }
 
+    /** the prefix of a constant group that is the items of a slice (AA_Field::getRelation()) */
+    public const RELATION_MARK = '#sLiCe-';
+
+    /** the slice a relation widget selects items from, lower case; null when the widget is no relation */
+    public static function relationSlice(string $input_show_func): ?string
+    {
+        $group = self::inputShowFuncGroup($input_show_func);
+        return (($group !== null) && str_starts_with($group, self::RELATION_MARK)) ? strtolower(substr($group, strlen(self::RELATION_MARK))) : null;
+    }
+
     /** the constant group of field.input_show_func; null when the widget has none. `#sLiCe-<id>` (items of
      *  a slice) comes back as it is. */
     public static function inputShowFuncGroup(string $input_show_func): ?string

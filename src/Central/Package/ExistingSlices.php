@@ -390,10 +390,7 @@ final class ExistingSlices
      *  @return array{string, string}|null */
     private static function relation(string|RawBytes $mine, string|RawBytes $theirs): ?array
     {
-        $of = static function (string|RawBytes $value): ?string {
-            $group = ReferenceRewriter::rowGroup('field', ['input_show_func' => ValueCodec::bytes($value)]);
-            return (($group !== null) && str_starts_with($group, '#sLiCe-')) ? strtolower(substr($group, 7)) : null;
-        };
+        $of = static fn(string|RawBytes $value): ?string => ReferenceRewriter::relationSlice(ValueCodec::bytes($value));
         [$to, $from] = [$of($mine), $of($theirs)];
         return (($to !== null) && ($from !== null) && ($to !== $from)) ? [$to, $from] : null;
     }

@@ -135,7 +135,7 @@ final class TransferCheckTest extends TestCase
                 return false;
             }
 
-            public function itemIds(string $slice, bool $allBins, string $after): array
+            public function itemIds(string $slice, bool $allBins, string $after, array $filters = []): array
             {
                 throw new \LogicException('not asked');
             }
@@ -145,17 +145,22 @@ final class TransferCheckTest extends TestCase
                 throw new \LogicException('not asked');
             }
 
-            public function batch(string $slice, string $after, bool $allBins, int $started): array
+            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
             {
                 throw new \LogicException('not asked');
             }
 
-            public function logins(array $slices, bool $allBins): array
+            public function logins(array $slices, bool $allBins, array $filters = []): array
             {
                 throw new \LogicException('not asked');
             }
 
-            public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array
+            public function leftOut(array $filters, array $slices, bool $allBins): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0, array $filters = []): array
             {
                 throw new SourceFailed(SourceFailed::UNREACHABLE, 'down');
             }

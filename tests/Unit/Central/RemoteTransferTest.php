@@ -19,6 +19,7 @@ use AA\Central\Package\DbImportTarget;
 use AA\Central\ExportRefused;
 use AA\Central\InstallRun;
 use AA\Central\Package\ImportConfirmation;
+use AA\Central\Package\ItemFilter;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Reader;
 use AA\Central\RemoteAppSource;
@@ -29,6 +30,9 @@ use AA\Central\TransferCheck;
 use AA\Central\TransferProgress;
 use AA_Request;
 use AA_Response;
+use ArrayObject;
+use Closure;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -57,7 +61,7 @@ final class RemoteTransferTest extends TestCase
     /** @var list<string> the commands the source was asked */
     private array $asked = [];
     /** answers instead of the source's own: (request) => response, null = its own */
-    private ?\Closure $answer = null;
+    private ?Closure $answer = null;
     /** the AA_ID the source reports - another AA by default */
     private string $sourceAa = '5ource000000000000000000000000aa';
 
@@ -299,7 +303,7 @@ final class RemoteTransferTest extends TestCase
         ];
     }
 
-    #[\PHPUnit\Framework\Attributes\DataProvider('foreignCounts')]
+    #[DataProvider('foreignCounts')]
     public function test_item_counts_of_a_foreign_form_are_refused(mixed $counts): void
     {
         $this->answer = static fn(AA_Request $r): ?AA_Response => (($r->getParameters()['part'] ?? '') === 'counts') ? new AA_Response($counts) : null;
@@ -401,6 +405,111 @@ final class RemoteTransferTest extends TestCase
         self::assertSame([], (new ItemIdCheck(new RemoteAppSource($this->remote(), self::TOKEN), new DbImportTarget()))->check([self::SLICE], false));
     }
 
+    private const ONLY_B = 'd-headline........-=-B';
+
+    /** the field the filters name, and every Get_App request of the source kept */
+    private function filterable(): ArrayObject
+    {
+        $this->source->tables['field'] = [['id' => 'headline........', 'slice_id' => self::SLICE, 'input_show_func' => 'fld:']];
+        $requests                      = new ArrayObject();
+        $this->answer                  = static function (AA_Request $r) use ($requests): ?AA_Response {
+            $requests[] = $r->getParameters();
+            return null;
+        };
+        return $requests;
+    }
+
+    public function test_filtered_requests_come_over_the_wire_and_the_echo_is_checked(): void
+    {
+        $requests = $this->filterable();
+        $remote   = new RemoteAppSource($this->remote(), self::TOKEN);
+        $filters  = [self::SLICE => self::ONLY_B];
+
+        self::assertSame([self::ITEM_B], $remote->itemIds(self::SLICE, false, '', $filters));
+        self::assertSame([self::SLICE => 1], $remote->itemCounts([self::SLICE], false, 0, $filters));
+        self::assertSame([self::ITEM_B], array_column((new Reader())->read($remote->batch(self::SLICE, '', false, self::NOW, $filters)[0])->package->modules[0]->items, 'id'));
+        self::assertSame([self::SLICE => 0], $remote->leftOut($filters, [self::SLICE], false));
+        self::assertSame([self::SLICE => 2], $remote->itemCounts([self::SLICE], false), 'without filters as before');
+        self::assertSame([$filters, null], [$requests[1]['filters'], $requests[4]['filters'] ?? null], 'no filters, no parameter - an older source gets the request it knows');
+    }
+
+    /** a call takes the filters of its own slices only - the local source and the remote one alike */
+    public function test_filters_of_other_slices_are_left_out(): void
+    {
+        $requests = $this->filterable();
+        $other    = 'f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0';
+        $filters  = [$other => 'd-no.field.......-=-x', strtoupper(self::SLICE) => self::ONLY_B];
+        $local    = new AppExport($this->source, ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'], static fn(): bool => true, true);
+        $remote   = new RemoteAppSource($this->remote(), self::TOKEN);
+
+        self::assertSame([self::ITEM_B], $local->itemIds(self::SLICE, false, '', $filters));
+        self::assertSame([self::ITEM_B], $remote->itemIds(self::SLICE, false, '', $filters));
+        self::assertSame([self::SLICE => self::ONLY_B], $requests[0]['filters']);
+        self::assertSame([self::SLICE => 0], $local->leftOut([$other => self::ONLY_B], [self::SLICE], false));
+        self::assertSame([self::SLICE => 0], $remote->leftOut([$other => self::ONLY_B], [self::SLICE], false));
+        self::assertCount(1, $requests, 'no filter of its slices, no question');
+    }
+
+    /** @return array<string, array{Closure(array<string, string>): mixed}> */
+    public static function noEcho(): array
+    {
+        return [
+            'an older source'   => [static fn(array $filters): mixed => [self::ITEM_A, self::ITEM_B]],
+            'another digest'    => [static fn(array $filters): mixed => ['filters' => ItemFilter::digest([self::SLICE => 'd-headline........-=-A']), 'answer' => [self::ITEM_B]]],
+            'no answer'         => [static fn(array $filters): mixed => ['filters' => ItemFilter::digest($filters)]],
+            'a digest no text'  => [static fn(array $filters): mixed => ['filters' => 1, 'answer' => [self::ITEM_B]]],
+        ];
+    }
+
+    /** a source that ignores the filters answers for all the items - every request on its own is refused */
+    #[DataProvider('noEcho')]
+    public function test_an_answer_without_the_echo_of_the_filters_is_refused(Closure $answer): void
+    {
+        $filters      = [self::SLICE => self::ONLY_B];
+        $this->answer = static fn(AA_Request $r): AA_Response => new AA_Response($answer($filters));
+
+        try {
+            (new RemoteAppSource($this->remote(), self::TOKEN))->itemIds(self::SLICE, false, '', $filters);
+            self::fail('an answer without the echo');
+        } catch (SourceFailed $e) {
+            self::assertSame([SourceFailed::FAILED, 'The source AA cannot filter items - update it first'], [$e->reason, $e->getMessage()]);
+        }
+    }
+
+    public function test_left_out_of_a_source_that_knows_no_such_part(): void
+    {
+        $this->answer = static fn(AA_Request $r): AA_Response => new AA_Response('Get_App needs part, mode or started of the right form', ResponderPolicy::ERR_APP_REQUEST);
+
+        try {
+            (new RemoteAppSource($this->remote(), self::TOKEN))->leftOut([self::SLICE => self::ONLY_B], [self::SLICE], false);
+            self::fail('an older source');
+        } catch (SourceFailed $e) {
+            self::assertSame('The source AA cannot filter items - update it first', $e->getMessage());
+        }
+    }
+
+    public function test_left_out_without_filters_asks_nothing(): void
+    {
+        self::assertSame([self::SLICE => 0], (new RemoteAppSource($this->remote(), self::TOKEN))->leftOut([], [self::SLICE], false));
+        self::assertSame([], $this->asked);
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function foreignLeftOut(): array
+    {
+        return ['a negative count' => [[self::SLICE => -1]], 'a slice missing' => [[]], 'no map' => ['1']];
+    }
+
+    #[DataProvider('foreignLeftOut')]
+    public function test_left_out_of_a_foreign_form_is_refused(mixed $counts): void
+    {
+        $filters      = [self::SLICE => self::ONLY_B];
+        $this->answer = static fn(AA_Request $r): AA_Response => new AA_Response(['filters' => ItemFilter::digest($filters), 'answer' => $counts]);
+
+        $this->expectException(SourceFailed::class);
+        (new RemoteAppSource($this->remote(), self::TOKEN))->leftOut($filters, [self::SLICE], false);
+    }
+
     /** a source may page on forever (ids ascending, the space is 2^128) - pages beyond its own count are its error */
     public function test_item_id_pages_beyond_the_count_of_the_source_are_refused(): void
     {
@@ -413,13 +522,13 @@ final class RemoteTransferTest extends TestCase
                 return false;
             }
 
-            public function itemIds(string $slice, bool $allBins, string $after): array
+            public function itemIds(string $slice, bool $allBins, string $after, array $filters = []): array
             {
                 $start = ++$this->page * AppSource::ID_PAGE;
                 return array_map(static fn(int $i): string => sprintf('%032x', $start + $i), range(1, AppSource::ID_PAGE));
             }
 
-            public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array
+            public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0, array $filters = []): array
             {
                 return array_fill_keys($slices, 3);
             }
@@ -429,12 +538,17 @@ final class RemoteTransferTest extends TestCase
                 throw new \LogicException('not asked');
             }
 
-            public function batch(string $slice, string $after, bool $allBins, int $started): array
+            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
             {
                 throw new \LogicException('not asked');
             }
 
-            public function logins(array $slices, bool $allBins): array
+            public function logins(array $slices, bool $allBins, array $filters = []): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function leftOut(array $filters, array $slices, bool $allBins): array
             {
                 throw new \LogicException('not asked');
             }

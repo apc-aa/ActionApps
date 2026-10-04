@@ -7,6 +7,10 @@ namespace AA\Central;
 use AA\Central\Package\CollectOptions;
 use AA\Central\Package\CollectResult;
 use AA\Central\Package\Collector;
+use AA\Central\Package\FilteredSource;
+use AA\Central\Package\FilterInvalid;
+use AA\Central\Package\ItemFilter;
+use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Source;
 use AA\Central\Package\Writer;
@@ -18,7 +22,8 @@ use InvalidArgumentException;
  *  get the same: PS_EDIT on every module the package takes data from; a transfer hands out password
  *  hashes and 2FA secrets of the readers, so it needs a superadmin as well. The export the app store gives
  *  ($store) is the install of one site as a published package: strict - no warnings, no constant group
- *  of a slice outside the published sites. Any other export is not published, of a published site too. */
+ *  of a slice outside the published sites. Any other export is not published, of a published site too.
+ *  Item filters are a superadmin's in any mode: a count of the items a condition selects tells what they hold. */
 final class AppExport implements AppSource
 {
     /**
@@ -58,26 +63,28 @@ final class AppExport implements AppSource
     }
 
     /** @throws InvalidArgumentException not a slice, a cursor of no id */
-    public function batch(string $slice, string $after, bool $allBins, int $started): array
+    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
     {
-        return array_slice($this->batchOf($slice, $after, $allBins, $started), 0, 2);
+        return array_slice($this->batchOf($slice, $after, $allBins, $started, $filters), 0, 2);
     }
 
     /** batch() and the number of its items - Get_App logs it
-     *  @return array{string, list<array{string, \AA\Central\Package\LintFinding}>, int} @throws InvalidArgumentException */
-    public function batchOf(string $slice, string $after, bool $allBins, int $started): array
+     *  @param array<string, string> $filters
+     *  @return array{string, list<array{string, LintFinding}>, int} @throws InvalidArgumentException */
+    public function batchOf(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
     {
         $this->admit(true);
-        return $this->xml((new Collector($this->source))->itemBatch($slice, $after, $this->options(true, $allBins, $started)));
+        $this->check([$slice]);
+        return $this->xml((new Collector($this->sourceFor($filters, [$slice])))->itemBatch($slice, $after, $this->options(true, $allBins, $started)));
     }
 
     /** A login that does not convert to UTF-8 refuses them all: the target could not check it against its users.
      *  @throws InvalidArgumentException a module that is no Reader Management slice */
-    public function logins(array $slices, bool $allBins): array
+    public function logins(array $slices, bool $allBins, array $filters = []): array
     {
         $this->admit(true);
         $this->check($slices);
-        [$logins, $findings] = (new Collector($this->source))->readerLogins($slices, $allBins);
+        [$logins, $findings] = (new Collector($this->sourceFor($filters, $slices)))->readerLogins($slices, $allBins);
         if ($findings) {
             throw ExportRefused::failed($findings);
         }
@@ -90,21 +97,52 @@ final class AppExport implements AppSource
     }
 
     /** @throws InvalidArgumentException a cursor of no id */
-    public function itemIds(string $slice, bool $allBins, string $after): array
+    public function itemIds(string $slice, bool $allBins, string $after, array $filters = []): array
     {
         $this->admit(true);
         $this->check([$slice]);
-        return $this->source->itemIds($slice, $allBins, $after, self::ID_PAGE);
+        return $this->sourceFor($filters, [$slice])->itemIds($slice, $allBins, $after, self::ID_PAGE);
     }
 
-    public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array
+    public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0, array $filters = []): array
     {
+        $filters = ItemFilter::ofSlices($filters, $slices);
+        $this->admit((bool) $filters);
         $this->check($slices);
+        $source = $filters ? $this->filtered($filters) : $this->source;
         $counts = [];
         foreach ($slices as $slice) {
-            $counts[$slice] = $this->source->itemCount($slice, $allBins, $editedAfter);
+            $counts[$slice] = $source->itemCount($slice, $allBins, $editedAfter);
         }
         return $counts;
+    }
+
+    public function leftOut(array $filters, array $slices, bool $allBins): array
+    {
+        $this->admit(true);
+        $this->check($slices);
+        $filters = ItemFilter::ofSlices($filters, $slices);
+        return $filters ? $this->filtered($filters)->leftOut($slices, $allBins) : array_fill_keys($slices, 0);
+    }
+
+    /** the source narrowed by the filters of the slices - the caller has checked the rights on them
+     *  @param array<string, string> $filters @param list<string> $slices @throws ExportRefused */
+    private function sourceFor(array $filters, array $slices): Source
+    {
+        $filters = ItemFilter::ofSlices($filters, $slices);
+        return $filters ? $this->filtered($filters) : $this->source;
+    }
+
+    /** The source of the items the filters select. Read only after the rights on the slices: even the
+     *  error about an unknown field tells something of a slice.
+     *  @param array<string, string> $filters slice id => text @throws ExportRefused */
+    private function filtered(array $filters): FilteredSource
+    {
+        try {
+            return FilteredSource::of($this->source, $filters);
+        } catch (FilterInvalid $e) {
+            throw ExportRefused::failed([[Module::SLICE . "[$e->slice]", new LintFinding(LintFinding::ERROR, ItemFilter::INVALID, $e->reason, 0)]]);
+        }
     }
 
     /** @throws ExportRefused */
@@ -150,8 +188,8 @@ final class AppExport implements AppSource
         );
     }
 
-    /** @param list<array{string, \AA\Central\Package\LintFinding}> $more findings beside the collector's
-     *  @return array{string, list<array{string, \AA\Central\Package\LintFinding}>, int} @throws ExportRefused */
+    /** @param list<array{string, LintFinding}> $more findings beside the collector's
+     *  @return array{string, list<array{string, LintFinding}>, int} @throws ExportRefused */
     private function xml(CollectResult $collected, array $more = []): array
     {
         $this->check($collected->checkPermissions);

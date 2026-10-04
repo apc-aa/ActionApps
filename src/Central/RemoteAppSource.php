@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
+use AA\Central\Package\ItemFilter;
 use AA\Central\Package\LintFinding;
 use AA_Request;
 
@@ -18,6 +19,8 @@ final class RemoteAppSource implements AppSource
     private const MAX_FINDINGS = 50;
     /** bytes of a path or ref of such an error */
     private const MAX_TEXT = 255;
+    /** the source gave no echo of the filters: an older AA answers for all the items */
+    private const CANNOT_FILTER = 'The source AA cannot filter items - update it first';
 
     private readonly string $ownAa;
     /** the source reported the AA_ID of this AA with the definitions */
@@ -34,9 +37,9 @@ final class RemoteAppSource implements AppSource
         return $this->same;
     }
 
-    public function itemIds(string $slice, bool $allBins, string $after): array
+    public function itemIds(string $slice, bool $allBins, string $after, array $filters = []): array
     {
-        $ids = $this->get('item_ids', ['slice' => $slice, 'after' => $after], true, $allBins);
+        $ids = $this->get('item_ids', ['slice' => $slice, 'after' => $after], true, $allBins, filters: ItemFilter::ofSlices($filters, [$slice]));
         $bad = !is_array($ids) || !array_is_list($ids) || (count($ids) > self::ID_PAGE)
             || array_filter($ids, static fn(mixed $id): bool => !is_string($id) || !preg_match('/^[0-9a-f]{32}\z/', $id) || (strcmp($id, $after) <= 0));
         return $bad ? throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no list of item ids - update the source AA') : $ids;
@@ -52,26 +55,35 @@ final class RemoteAppSource implements AppSource
         return [self::xml($answer['package'] ?? null), [], $answer['now']];
     }
 
-    public function batch(string $slice, string $after, bool $allBins, int $started): array
+    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
     {
-        return [self::xml($this->get('batch', ['slice' => $slice, 'after' => $after, 'started' => $started], true, $allBins, RemoteSource::MAX_BYTES)), []];
+        return [self::xml($this->get('batch', ['slice' => $slice, 'after' => $after, 'started' => $started], true, $allBins, RemoteSource::MAX_BYTES, ItemFilter::ofSlices($filters, [$slice]))), []];
     }
 
-    public function logins(array $slices, bool $allBins): array
+    public function logins(array $slices, bool $allBins, array $filters = []): array
     {
-        $logins = $this->get('logins', ['slices' => $slices], true, $allBins);
+        $logins = $this->get('logins', ['slices' => $slices], true, $allBins, filters: ItemFilter::ofSlices($filters, $slices));
         if (!is_array($logins) || !array_is_list($logins) || array_filter($logins, static fn(mixed $l): bool => !is_string($l))) {
             throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no list of logins');
         }
         return $logins;
     }
 
-    public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array
+    public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0, array $filters = []): array
     {
-        $counts = $this->get('counts', ['slices' => $slices, 'edited_after' => $editedAfter], false, $allBins);
-        $keys   = is_array($counts) ? array_map('strval', array_keys($counts)) : null;
-        $valid  = ($keys !== null) && !array_diff($keys, $slices) && !array_diff($slices, $keys) && !array_filter($counts, static fn(mixed $n): bool => !is_int($n) || ($n < 0));
-        return $valid ? $counts : throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no item counts');
+        $counts = $this->get('counts', ['slices' => $slices, 'edited_after' => $editedAfter], false, $allBins, filters: ItemFilter::ofSlices($filters, $slices));
+        return self::counts($counts, $slices) ?? throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no item counts');
+    }
+
+    /** without filters nothing is left out - no question to the source, which may be older */
+    public function leftOut(array $filters, array $slices, bool $allBins): array
+    {
+        $filters = ItemFilter::ofSlices($filters, $slices);
+        if (!$filters) {
+            return array_fill_keys($slices, 0);
+        }
+        $counts = $this->get('left_out', ['slices' => $slices], true, $allBins, filters: $filters);
+        return self::counts($counts, $slices) ?? throw new SourceFailed(SourceFailed::FAILED, 'The source AA gave no counts of the links left out');
     }
 
     /** The modules of the source for the choice of the app - by the same short token as the app itself.
@@ -129,19 +141,38 @@ final class RemoteAppSource implements AppSource
         };
     }
 
-    /** @param array<string, mixed> $params @throws ExportRefused|SourceFailed */
-    private function get(string $part, array $params, bool $transfer, bool $allBins, int $maxBytes = RemoteSource::SMALL_BYTES): mixed
+    /** The answer of a part. Narrowed by filters, it must echo them (AppRequest) - else the source answered
+     *  for all the items.
+     *  @param array<string, mixed> $params @param array<string, string> $filters of the part's slices only
+     *  @throws ExportRefused|SourceFailed */
+    private function get(string $part, array $params, bool $transfer, bool $allBins, int $maxBytes = RemoteSource::SMALL_BYTES, array $filters = []): mixed
     {
-        $request  = new AA_Request('Get_App', ['part' => $part, 'mode' => $transfer ? 'transfer' : 'install', 'bins' => $allBins ? 'all' : 'active'] + $params);
-        $response = $this->remote->ask($request, [], $this->token, $maxBytes);
+        $params   = ['part' => $part, 'mode' => $transfer ? 'transfer' : 'install', 'bins' => $allBins ? 'all' : 'active'] + $params + ($filters ? ['filters' => $filters] : []);
+        $response = $this->remote->ask(new AA_Request('Get_App', $params), [], $this->token, $maxBytes);
         if (!$response->isError()) {
-            return $response->getResponse();
+            $answer = $response->getResponse();
+            if (!$filters) {
+                return $answer;
+            }
+            $echoed = is_array($answer) && is_string($answer['filters'] ?? null) && hash_equals(ItemFilter::digest($filters), $answer['filters']) && array_key_exists('answer', $answer);
+            return $echoed ? $answer['answer'] : throw new SourceFailed(SourceFailed::FAILED, self::CANNOT_FILTER);
         }
         throw match ($response->getError()) {
             ResponderPolicy::ERR_APP_DENIED   => ExportRefused::denied(),
             ResponderPolicy::ERR_APP_EXPORT   => ExportRefused::failed(self::findings($response->getResponse())),
+            // an older source knows no such part
+            ResponderPolicy::ERR_APP_REQUEST  => ($part === 'left_out') ? new SourceFailed(SourceFailed::FAILED, self::CANNOT_FILTER) : self::failed(ResponderPolicy::ERR_APP_REQUEST),
             default => self::failed($response->getError()),
         };
+    }
+
+    /** a count per asked slice, nothing else; null for anything else
+     *  @param list<string> $slices @return array<string, int>|null */
+    private static function counts(mixed $counts, array $slices): ?array
+    {
+        $keys  = is_array($counts) ? array_map('strval', array_keys($counts)) : null;
+        $valid = ($keys !== null) && !array_diff($keys, $slices) && !array_diff($slices, $keys) && !array_filter($counts, static fn(mixed $n): bool => !is_int($n) || ($n < 0));
+        return $valid ? $counts : null;
     }
 
     /** @throws SourceFailed */

@@ -6,6 +6,7 @@ namespace AA\Central;
 
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
+use AA\Central\Package\ReferenceRewriter;
 use AA\IO\DB\DB_AA;
 
 /** What the end of a transfer checks: the items of each slice on the source and on the target, the items
@@ -22,9 +23,6 @@ final class TransferCheck
     public const DANGLING = 'relation-dangling';
     /** W: the source did not tell its counts (unreachable, its login expired); ref = why */
     public const SOURCE_UNKNOWN = 'source-count-unknown';
-
-    /** input_show_func of a field that selects items (AA_Field::getRelation()): its constants are `#sLiCe-<slice id>` */
-    private const RELATION_MARK = '#sLiCe-';
 
     /** @param ?AppSource $source null = it cannot be asked any more (its Central row is gone) */
     public function __construct(private readonly ?AppSource $source) {}
@@ -75,6 +73,6 @@ final class TransferCheck
         $sql = 'SELECT COUNT(*) AS cnt FROM `content` INNER JOIN `item` ON `item`.`id` = `content`.`item_id`'
             . ' INNER JOIN `field` ON `field`.`slice_id` = `item`.`slice_id` AND `field`.`id` = `content`.`field_id`'
             . ' LEFT JOIN `item` AS `related` ON `related`.`id` = UNHEX(`content`.`text`)';
-        return (int) DB_AA::select1('cnt', $sql, [['item.slice_id', $slices, 'l'], ['field.input_show_func', self::RELATION_MARK, 'CONTAIN'], ['content.text', '', 'FILLED'], ['related.id', '', 'ISNULL']]);
+        return (int) DB_AA::select1('cnt', $sql, [['item.slice_id', $slices, 'l'], ['field.input_show_func', ReferenceRewriter::RELATION_MARK, 'CONTAIN'], ['content.text', '', 'FILLED'], ['related.id', '', 'ISNULL']]);
     }
 }

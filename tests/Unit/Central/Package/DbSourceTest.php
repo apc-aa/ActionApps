@@ -28,9 +28,13 @@ namespace {
 namespace Tests\Unit\Central\Package {
 
     use AA\Central\Package\DbSource;
+    use AA\Central\Package\ItemFilter;
+    use AA_Field;
     use InvalidArgumentException;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
+    use Tests\Unit\Legacy\Fixtures\FakeFields;
+    use Tests\Unit\Legacy\Fixtures\FakeSlice;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
     final class DbSourceTest extends TestCase
@@ -38,6 +42,10 @@ namespace Tests\Unit\Central\Package {
         private const SLICE = 'b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2';
         private const OTHER = 'c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3';
         private const ITEM  = '0123456789abcdef0123456789abcdef';
+        private const ITEM_2 = '1123456789abcdef0123456789abcdef';
+        /** a slice of its own: QueryZids() finds it in the module cache of AA_Slice::getModule() */
+        private const FILTERED = 'e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4e4';
+        private const RELATED  = 'f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5f5';
 
         public static function setUpBeforeClass(): void
         {
@@ -55,6 +63,81 @@ namespace Tests\Unit\Central\Package {
         {
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
+        }
+
+        /** the slices QueryZids() reads the fields of: a headline in content, the status and the publish date in
+         *  item, a relation to a slice of headlines */
+        private static function filteredSlice(): void
+        {
+            require_once __DIR__ . '/../../fixtures/util_shims.php';
+            $field = static fn(string $id, array $data = []): AA_Field => new AA_Field($data + ['id' => $id, 'text_stored' => 1, 'in_item_tbl' => '', 'input_show_func' => 'fld', 'multiple' => 0]);
+            (new FakeSlice(self::FILTERED))->setFields(new FakeFields(self::FILTERED, [
+                $field('headline........'), $field('status_code.....', ['in_item_tbl' => 'status_code']), $field('publish_date....', ['in_item_tbl' => 'publish_date']),
+                $field('relation.......1', ['input_show_func' => 'mse:#sLiCe-' . self::RELATED . ':']),
+            ]));
+            (new FakeSlice(self::RELATED))->setFields(new FakeFields(self::RELATED, [$field('headline........')]));
+            foreach (['slice_info', 'vid', 'view_info'] as $global) {         // the comment QueryZids() adds to its SQL
+                $GLOBALS[$global] ??= null;
+            }
+        }
+
+        /** a condition QueryZids() would drop leaves nothing (neverAllItems) - among others it would be dropped unseen */
+        public function test_matching_asks_QueryZids_a_condition_at_a_time_within_the_ids_kept(): void
+        {
+            self::filteredSlice();
+            RecordingDb::$answer = static fn(string $sql): array => [['itemid' => hex2bin(self::ITEM_2)]];
+
+            $filter = ItemFilter::parse('d-headline........-=-"a" OR "b"-status_code.....-==-1');
+            $found  = (new DbSource())->matching(self::FILTERED, $filter, [self::ITEM, self::ITEM_2]);
+
+            $this->assertSame([self::ITEM_2], $found);
+            $this->assertCount(2, RecordingDb::$log);
+            [$first, $second] = RecordingDb::$log;
+            $this->assertStringContainsString('item.slice_id = 0x' . self::FILTERED, $first);
+            $this->assertStringContainsString('item.id IN (0x' . self::ITEM . ',0x' . self::ITEM_2 . ')', $first);
+            $this->assertStringContainsString("c0.field_id='headline........'", $first);
+            $this->assertStringContainsString("(\"c0\".\"text\"= 'a' or \"c0\".\"text\"= 'b')", $first);
+            $this->assertStringContainsString(' 1=1 ', $first, 'every bin - the caller pages through the bins of the run');
+            $this->assertStringNotContainsString('status_code', $first);
+            $this->assertStringContainsString('item.id = 0x' . self::ITEM_2, $second, 'within the ids the first one kept');
+            $this->assertStringContainsString("(\"item\".\"status_code\" = '1')", $second);
+        }
+
+        public function test_matching_reads_a_date_and_a_field_of_the_related_slice_as_views_do(): void
+        {
+            self::filteredSlice();
+            RecordingDb::$answer = static fn(string $sql): array => [['itemid' => hex2bin(self::ITEM)]];
+
+            $filter = ItemFilter::parse('d-publish_date....-d:>-1.1.2020-headline........@relation.......1-=-x');
+            (new DbSource())->matching(self::FILTERED, $filter, [self::ITEM]);
+
+            $this->assertStringContainsString('("item"."publish_date" > ' . strtotime('1.1.2020') . ')', RecordingDb::$log[0]);
+            $this->assertStringContainsString('LEFT JOIN content as c1 ON (c1.item_id=UNHEX(c0.text)', RecordingDb::$log[1]);
+            $this->assertStringContainsString("(\"c1\".\"text\"= 'x')", RecordingDb::$log[1]);
+        }
+
+        public function test_matching_of_the_items_edited_after_narrows_the_ids_first(): void
+        {
+            self::filteredSlice();
+            RecordingDb::$answer = static fn(string $sql): array => str_contains($sql, 'last_edit') ? [['unpackid' => self::ITEM_2]] : [['itemid' => hex2bin(self::ITEM_2)]];
+
+            $filter = ItemFilter::parse('d-headline........-=-a');
+            $this->assertSame([self::ITEM_2], (new DbSource())->matching(self::FILTERED, $filter, [self::ITEM, self::ITEM_2], 1_790_000_000));
+            $this->assertSame('SELECT LOWER(HEX("id")) AS unpackid FROM "item" WHERE id IN (0x' . self::ITEM . ',0x' . self::ITEM_2 . ') AND last_edit > 1790000000', RecordingDb::$log[0]);
+            $this->assertStringContainsString('item.id = 0x' . self::ITEM_2, RecordingDb::$log[1]);
+        }
+
+        public function test_matching_asks_no_more_once_no_id_is_left(): void
+        {
+            $filter = ItemFilter::parse('d-headline........-=-a-headline........-=-b');
+
+            $this->assertSame([], (new DbSource())->matching(self::FILTERED, $filter, []));
+            $this->assertSame([], RecordingDb::$log);
+            $this->assertSame([], (new DbSource())->matching(self::FILTERED, $filter, [self::ITEM], 1_790_000_000));
+            $this->assertCount(1, RecordingDb::$log, 'no item edited after');
+            self::filteredSlice();
+            $this->assertSame([], (new DbSource())->matching(self::FILTERED, $filter, [self::ITEM]));
+            $this->assertCount(2, RecordingDb::$log, 'the first condition kept none');
         }
 
         public function test_select_sends_the_conditions_and_unpacks_the_ids(): void

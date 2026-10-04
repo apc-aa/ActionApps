@@ -13,6 +13,7 @@ namespace Tests\Unit\Central;
 
 use AA\Central\AppExport;
 use AA\Central\AppRequest;
+use AA\Central\Package\ItemFilter;
 use AA\Central\Package\Reader;
 use AA\Central\Package\Source;
 use AA\Central\ResponderPolicy;
@@ -34,10 +35,12 @@ final class AppRequestTest extends TestCase
     private const READERS = 'c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3';
     private const ITEM_1  = '0123456789abcdef0123456789abcdef';
     private const ITEM_2  = '1123456789abcdef0123456789abcdef';
+    private const LINK    = '2123456789abcdef0123456789abcdef';
     private const HASH    = '$2y$10$readerpasswordhashreaderpasswordhash';
     private const SECRET  = 'JBSWY3DPEHPK3PXP';
     private const STARTED = 1_790_000_000;
     private const SOURCE_AA = '5ource000000000000000000000000aa';
+    private const BOB       = 'd-headline........-=-bob';
 
     private FakeSource|FailingSource $source;
     /** @var list<string> modules the user may edit (PS_EDIT) */
@@ -254,6 +257,128 @@ final class AppRequestTest extends TestCase
         self::assertSame(ResponderPolicy::ERR_APP_DENIED, $this->answer(['part' => 'counts', 'mode' => 'install', 'slices' => [self::SLICE_A, self::READERS]])->getError());
     }
 
+    /** the fields a filter may name; a slice of links to the readers */
+    private function withFields(): void
+    {
+        $this->source->tables['field'] = [
+            ['id' => 'headline........', 'slice_id' => self::READERS, 'input_show_func' => 'fld:'],
+            ['id' => 'relation.......1', 'slice_id' => self::SLICE_A, 'input_show_func' => 'mse:#sLiCe-' . self::READERS . ':'],
+        ];
+        $this->source->items[self::SLICE_A] = [['id' => self::LINK, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]], 'relation.......1' => [['value' => self::ITEM_1, 'flag' => 0], ['value' => self::ITEM_2, 'flag' => 0]]]]];
+        $this->source->tables['content']    = [
+            ['item_id' => self::LINK, 'field_id' => 'relation.......1', 'number' => 0, 'text' => self::ITEM_1, 'flag' => 0],
+            ['item_id' => self::LINK, 'field_id' => 'relation.......1', 'number' => 1, 'text' => self::ITEM_2, 'flag' => 0],
+            ['item_id' => self::ITEM_1, 'field_id' => 'headline........', 'number' => 0, 'text' => 'alice', 'flag' => 0],
+            ['item_id' => self::ITEM_2, 'field_id' => 'headline........', 'number' => 0, 'text' => 'bob', 'flag' => 0],
+        ];
+    }
+
+    /** the echo and the answers come over the wire in RemoteTransferTest; here the log and the rights */
+    public function test_filtered_answers_are_logged_without_their_texts(): void
+    {
+        $this->withFields();
+        $filters = [self::READERS => self::BOB];
+
+        $this->answer(['filters' => [strtoupper(self::READERS) => self::BOB]] + self::batch());
+        self::assertSame(['filters' => ItemFilter::digest($filters), 'answer' => ['bob']], $this->answer(['filters' => $filters] + self::logins())->getResponse());
+        $this->answer(['part' => 'item_ids', 'mode' => 'transfer', 'slice' => self::READERS, 'after' => '', 'filters' => $filters]);
+        $this->answer(['part' => 'counts', 'mode' => 'install', 'slices' => [self::READERS, self::SLICE_A], 'filters' => $filters]);
+        $this->answer(['part' => 'left_out', 'mode' => 'transfer', 'slices' => [self::SLICE_A, self::READERS], 'filters' => $filters]);
+
+        self::assertSame([
+            ['transfer batch ' . self::READERS, 'user=source-uid items=1 filters=1'],
+            ['transfer logins ' . self::READERS, 'user=source-uid logins=1 filters=1'],
+            ['transfer item_ids ' . self::READERS, 'user=source-uid ids=1 filters=1'],
+            ['filtered counts ' . self::READERS . ',' . self::SLICE_A, 'user=source-uid slices=2 filters=1'],
+            ['transfer left_out ' . self::SLICE_A . ',' . self::READERS, 'user=source-uid values=1 filters=1'],
+        ], $this->log);
+        self::assertStringNotContainsString('bob', json_encode($this->log));
+    }
+
+    /** the counts of the items a condition selects tell what the items hold */
+    public function test_filters_are_a_superadmins_in_any_mode(): void
+    {
+        $this->withFields();
+        $this->superadmin = false;
+        $counts           = ['part' => 'counts', 'mode' => 'install', 'slices' => [self::READERS]];
+
+        self::assertSame(ResponderPolicy::ERR_APP_DENIED, $this->answer($counts + ['filters' => [self::READERS => self::BOB]])->getError());
+        self::assertSame([self::READERS => 2], $this->answer($counts)->getResponse(), 'without filters an editor counts as before');
+    }
+
+    /** @return array<string, array{array<string, mixed>}> */
+    public static function filteredParts(): array
+    {
+        $unknown = [self::READERS => 'd-category........-=-x'];
+        return [
+            'batch'  => [['filters' => $unknown] + self::batch()],
+            'logins' => [['filters' => $unknown] + self::logins()],
+        ];
+    }
+
+    /** even the error about a field would tell something of a slice the user may not edit */
+    #[DataProvider('filteredParts')]
+    public function test_the_rights_come_before_the_filter_is_read(array $param): void
+    {
+        $this->withFields();
+        $this->editable = [self::SLICE_A];
+
+        self::assertSame(ResponderPolicy::ERR_APP_DENIED, $this->answer($param)->getError());
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function invalidFilters(): array
+    {
+        return [
+            'no field of the slice'   => ['d-category........-=-x', 'field:category........'],
+            'a text the parser refuses' => ['d-headline........-=-a\b', 'characters'],
+        ];
+    }
+
+    #[DataProvider('invalidFilters')]
+    public function test_a_filter_that_cannot_be_used_is_an_export_error(string $text, string $reason): void
+    {
+        $this->withFields();
+
+        $response = $this->answer(['filters' => [self::READERS => $text]] + self::batch());
+
+        self::assertSame(ResponderPolicy::ERR_APP_EXPORT, $response->getError());
+        self::assertSame([ItemFilter::INVALID . ' slice-module[' . self::READERS . "] $reason"], $response->getResponse());
+    }
+
+    public function test_left_out_counts_the_links_to_items_the_filter_leaves_out(): void
+    {
+        $this->withFields();
+        $filters = [self::READERS => self::BOB];
+        $param   = ['part' => 'left_out', 'mode' => 'transfer', 'bins' => 'active', 'slices' => [self::SLICE_A, self::READERS], 'filters' => $filters];
+
+        self::assertSame(['filters' => ItemFilter::digest($filters), 'answer' => [self::SLICE_A => 1, self::READERS => 0]], $this->answer($param)->getResponse(), 'alice is left out');
+        self::assertSame(ResponderPolicy::ERR_APP_REQUEST, $this->answer(['mode' => 'install'] + $param)->getError(), 'a transfer only');
+    }
+
+    /** @return array<string, array{array<string, mixed>}> */
+    public static function badFilters(): array
+    {
+        $item  = ['part' => 'item_ids', 'mode' => 'transfer', 'slice' => self::READERS, 'after' => ''];
+        $count = ['part' => 'counts', 'mode' => 'transfer', 'slices' => [self::READERS]];
+        return [
+            'a slice not of the part' => [['filters' => [self::SLICE_A => self::BOB]] + $item],
+            'no map'                  => [['filters' => self::BOB] + $item],
+            'a text no string'        => [['filters' => [self::READERS => [self::BOB]]] + $count],
+            'a slice twice'           => [['filters' => [self::READERS => self::BOB, strtoupper(self::READERS) => self::BOB]] + $count],
+            'left_out without slices' => [['part' => 'left_out', 'mode' => 'transfer', 'filters' => [self::READERS => self::BOB]]],
+            'the definitions'         => [['filters' => [self::SLICE_A => self::BOB], 'slices' => [self::SLICE_A]] + self::definitions('transfer')],
+        ];
+    }
+
+    #[DataProvider('badFilters')]
+    public function test_filters_of_a_wrong_form_are_a_bad_request(array $param): void
+    {
+        $this->withFields();
+
+        self::assertSame(ResponderPolicy::ERR_APP_REQUEST, $this->answer($param)->getError());
+    }
+
     public function test_an_unknown_module_is_answered_as_a_denied_one(): void
     {
         self::assertSame(ResponderPolicy::ERR_APP_DENIED, $this->answer(self::definitions('install', ['0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f']))->getError());
@@ -302,6 +427,11 @@ final class FailingSource implements Source
     public function items(array $ids, bool $with_secrets): iterable
     {
         self::fail('content');
+    }
+
+    public function matching(string $slice_id, ItemFilter $filter, array $ids, int $edited_after = 0): array
+    {
+        self::fail('item');
     }
 
     public function logins(string $slice_id, bool $all_bins): array

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Central\Package\Fixtures;
 
+use AA\Central\Package\ItemFilter;
 use AA\Central\Package\Source;
 use Generator;
 use InvalidArgumentException;
@@ -83,6 +84,39 @@ final class FakeSource implements Source
         $this->log[] = ['itemCount', [$slice_id, $all_bins, $edited_after]];
         return count(array_filter($this->items[$slice_id] ?? [], static fn(array $item): bool => self::inBins($item, $all_bins)
             && (($edited_after === 0) || ((int) ($item['last_edit'] ?? 0) > $edited_after))));
+    }
+
+    /** In memory, far less than QueryZids(): plain fields of the item content only; = and == as an exact
+     *  value (no phrases), ISNULL, NOTNULL; any value of any field of a condition, the conditions joined by
+     *  AND, last_edit as itemCount(). Anything else throws. */
+    public function matching(string $slice_id, ItemFilter $filter, array $ids, int $edited_after = 0): array
+    {
+        $this->log[] = ['matching', [$slice_id, $filter->conditions(), $ids, $edited_after]];
+        $asked       = array_flip($ids);
+        $found       = [];
+        foreach ($this->items[$slice_id] ?? [] as $item) {
+            if (!isset($asked[$item['id']]) || ($edited_after && ((int) ($item['last_edit'] ?? 0) <= $edited_after))) {
+                continue;
+            }
+            foreach ($filter->conditions() as ['fields' => $fields, 'operator' => $operator, 'value' => $value]) {
+                $values = [];
+                foreach ($fields as $field) {
+                    $values = [...$values, ...array_map('strval', array_column($item['content'][$field] ?? [], 'value'))];
+                }
+                $filled = array_filter($values, static fn(string $v): bool => $v !== '');
+                $match  = match ($operator) {
+                    '=', '==' => in_array($value, $values, true),
+                    'ISNULL'  => !$filled,
+                    'NOTNULL' => (bool) $filled,
+                    default   => throw new InvalidArgumentException("FakeSource: operator $operator"),
+                };
+                if (!$match) {
+                    continue 2;
+                }
+            }
+            $found[] = $item['id'];
+        }
+        return $found;
     }
 
     /** @var list<string> items itemIds() still lists, items() no more (deleted meanwhile) */
