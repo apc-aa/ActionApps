@@ -53,6 +53,8 @@ abstract class BatchRun extends AA_Object
     /** what toError() changes */
     private const ERROR_PROPS = ['state', 'error_code', 'error_path', 'next_at'];
     private const LEASE_PROPS = ['lease', 'lease_tok'];
+    /** the token of a dead step Continue forgave: no step holds it, the next claim still cleans up after it */
+    private const FORGIVEN = 'forgiven';
 
     /** a state name of states(): its active role means queued or working */
     protected $state = '';
@@ -165,6 +167,12 @@ abstract class BatchRun extends AA_Object
     /** After the commit of done or ended; an exception becomes a warning, the state stays. Must be
      *  idempotent: after an end it comes from the queue (CLOSE_ROW), late, and maybe more than once. */
     protected function afterClose(string $state): void {}
+
+    /** After a step took over the lease of a step that died (also one Continue forgave), before its
+     *  own work, called outside any transaction of its own: what the dead step left half done outside
+     *  the database (import: the page cache of the items it stored). An exception is counted in
+     *  warnings as AFTER_DEAD_STEP, the step goes on. */
+    protected function afterDeadStep(): void {}
 
     /** MAX_FAILURES steps without progress; outside any transaction, so it may ask the source. A position
      *  other than $last->position goes on from there (import: skips the task); null ends the run in error
@@ -428,9 +436,10 @@ abstract class BatchRun extends AA_Object
             $this->moveTo($states->active);
         }
         if (!$this->hasLiveLease($now)) {
-            // a lease that ran out belongs to a dead step - the user goes on, so it counts no failure
+            // a lease that ran out belongs to a dead step - the user goes on, so it counts no failure,
+            // yet the next claim cleans up after it (afterDeadStep())
             $this->lease     = '';
-            $this->lease_tok = '';
+            $this->lease_tok = ((string) $this->lease_tok === '') ? '' : self::FORGIVEN;
         }
         $this->failures   = '0';
         $this->error_code = '';
@@ -800,6 +809,9 @@ abstract class BatchRun extends AA_Object
         if ($inTx && DB_AA::inTransaction()) {
             throw new \LogicException('A batch step that works in a transaction does not start inside another one');
         }
+        if (in_array($claim, ['revived', 'died'], true)) {
+            $run->deadStepLeft();
+        }
         if ($run->closing === '1') {
             return ($claim === 'died') ? $run->finalFailed() : $run->finalPhase();
         }
@@ -807,32 +819,37 @@ abstract class BatchRun extends AA_Object
     }
 
     /** The claim: a lease long enough for the step and a token only this step knows.
-     *  @return string stale, leased (another step holds a live lease), claimed, or died (the step before
-     *                 died holding its lease, and that spends the retries) */
+     *  @return string stale, leased (another step holds a live lease), claimed, revived (the step before
+     *                 died holding its lease) or died (that, and it spends the retries) */
     private function claim(string $expected, BatchBudget $budget, int $overrun, int $priority): string
     {
         if (!$this->isAt($expected)) {
             return 'stale';
         }
-        $now  = static::now();
-        $died = false;
+        $now     = static::now();
+        $died    = false;
+        $revived = false;
         if ((string) $this->lease_tok !== '') {
             if ((int) $this->lease > $now) {
                 // a step works (a hand-run Execute, the queue's own retry); should it die, this row finds it
                 $this->requeue((int) $this->lease + 1, $priority);
                 return 'leased';
             }
-            // a step died holding the lease: a step without progress, this row works in its place
-            $died = ($this->failures() + 1 >= self::MAX_FAILURES);
-            if (!$died) {
-                $this->failures = (string) ($this->failures() + 1);
+            // a step died holding the lease: this row works in its place, and unless Continue forgave
+            // that step, it counts as a step without progress
+            $revived = true;
+            if ($this->lease_tok !== self::FORGIVEN) {
+                $died = ($this->failures() + 1 >= self::MAX_FAILURES);
+                if (!$died) {
+                    $this->failures = (string) ($this->failures() + 1);
+                }
             }
         }
         // as leaseUntil(), with the overrun read before the lock, where its failure can still be shown
         $this->lease     = (string) ($now + (int) ceil($budget->secondsLeft()) + $overrun);
         $this->lease_tok = bin2hex(random_bytes(16));
         $this->update(['lease', 'lease_tok', 'failures']);
-        return $died ? 'died' : 'claimed';
+        return $died ? 'died' : ($revived ? 'revived' : 'claimed');
     }
 
     /** fetch() and work() - outside any transaction, or work() in the one of the end of the step */
@@ -1081,6 +1098,20 @@ abstract class BatchRun extends AA_Object
             $this->whileLocked(static function (self $run): bool {
                 $run->progress = self::encode(['warning' => 'after_close'] + $run->json('progress'));
                 $run->update(['progress']);
+                return true;
+            });
+        }
+    }
+
+    /** afterDeadStep(); its failure counted in warnings, which the end of the step adds to - never its text */
+    private function deadStepLeft(): void
+    {
+        try {
+            $this->afterDeadStep();
+        } catch (\Throwable) {
+            $this->whileLocked(static function (self $run): bool {
+                $run->warnings = self::encode(self::add($run->json('warnings'), ['AFTER_DEAD_STEP' => 1]));
+                $run->update(['warnings']);
                 return true;
             });
         }

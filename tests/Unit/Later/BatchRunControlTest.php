@@ -340,7 +340,9 @@ final class BatchRunControlTest extends TestCase
         self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
 
         $stored = self::stored($id);
-        $this->assertSame(['', ''], [$stored['lease'], $stored['lease_tok']], 'a dead step\'s lease is no failure once the user goes on');
+        $this->assertSame('', $stored['lease'], 'a dead step\'s lease is no failure once the user goes on');
+        $this->assertNotSame('died-long-ago', $stored['lease_tok'], 'nor may that step write any more');
+        $this->assertFalse(self::fresh($id)->hasLiveLease(ScriptedBatchRun::$now));
         $this->assertCount(1, self::queue());
         $this->assertFalse(self::fresh($id)->isStuck(ScriptedBatchRun::$now), 'its step is due now');
         $this->assertSame([], ScriptedBatchRun::stuck(ScriptedBatchRun::$now));
