@@ -22,6 +22,7 @@ namespace Tests\Unit\Later {
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Central\Package\Fixtures\TableDb;
     use Tests\Unit\Later\Fixtures\BatchRunTables;
+    use Tests\Unit\Later\Fixtures\BothStepModes;
     use Tests\Unit\Later\Fixtures\QueueRefusingDb;
     use Tests\Unit\Later\Fixtures\ScriptedBatchRun;
 
@@ -31,6 +32,7 @@ namespace Tests\Unit\Later {
     final class BatchRunStepTest extends TestCase
     {
         use BatchRunTables;
+        use BothStepModes;
 
         // ---------------------------------------------------------------- start
 
@@ -150,8 +152,10 @@ namespace Tests\Unit\Later {
             self::start(null, ['position' => ['d' => [$deep]]]);
         }
 
-        public function test_start_queue_refusal_runs_nothing(): void
+        #[DataProvider('bothModes')]
+        public function test_start_queue_refusal_runs_nothing(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $GLOBALS['spareDBs'] = [new QueueRefusingDb(), new QueueRefusingDb(), new QueueRefusingDb(), new QueueRefusingDb()];
             try {
                 self::start();
@@ -243,8 +247,10 @@ namespace Tests\Unit\Later {
 
         // ---------------------------------------------------------------- a step that moves on
 
-        public function test_runStep_success_with_work_left_queues_next_step(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_success_with_work_left_queues_next_step(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $id = self::start()->getId();
             ScriptedBatchRun::$script = [
                 new BatchStepResult(['n' => 5], false, ['read' => 3, 'jobs' => ['ok' => 1]], ['W1' => 1], 'stream 1', 1, 4),
@@ -290,8 +296,10 @@ namespace Tests\Unit\Later {
             $this->assertSame(['n' => 3, 'job' => 'a'], $work['arg']);
         }
 
-        public function test_runStep_success_finished_runs_final_phase_to_done(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_success_finished_runs_final_phase_to_done(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $id = self::start()->getId();
             self::storedSet($id, 'sealed', 'encrypted-secret');
             self::storedSet($id, 'sealed_until', (string) (self::NOW + 3600));
@@ -320,8 +328,10 @@ namespace Tests\Unit\Later {
             $this->assertSame(['work', 'commitStep', 'finalCheck', 'afterClose'], ScriptedBatchRun::hooks());
         }
 
-        public function test_runStep_final_phase_keeps_lease_and_safety_row(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_final_phase_keeps_lease_and_safety_row(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $id   = self::start()->getId();
             $seen = [];
             ScriptedBatchRun::$script       = [new BatchStepResult(['n' => 7], true)];
@@ -361,8 +371,10 @@ namespace Tests\Unit\Later {
             $this->assertNotContains('commitStep', ScriptedBatchRun::hooks());
         }
 
-        public function test_runStep_without_progress_keeps_moved(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_without_progress_keeps_moved(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $id = self::start()->getId();
             self::storedSet($id, 'moved', '123');
             ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'NO_PROGRESS')];
@@ -375,8 +387,10 @@ namespace Tests\Unit\Later {
             $this->assertSame(BatchPosition::fingerprint(1, ['n' => 0]), self::stepOf(self::queue()[0])->expected);
         }
 
-        public function test_runStep_queue_refusal_keeps_the_step_unwritten(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_queue_refusal_keeps_the_step_unwritten(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $id = self::start()->getId();
             ScriptedBatchRun::$script = [new BatchStepResult(['n' => 5], false)];
             $GLOBALS['spareDBs']      = [new QueueRefusingDb(), new QueueRefusingDb(), new QueueRefusingDb(), new QueueRefusingDb()];
@@ -429,8 +443,10 @@ namespace Tests\Unit\Later {
             $this->assertSame('done', self::stored($id)['state']);
         }
 
-        public function test_runStep_commit_step_runs_under_lock(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_commit_step_runs_under_lock(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             self::start();
             ScriptedBatchRun::$script = [new BatchStepResult(['n' => 5], false, extra: ['stream' => 'a'])];
 
@@ -442,10 +458,13 @@ namespace Tests\Unit\Later {
             $this->assertNotSame('', $work['token']);
             $this->assertSame($work['token'], $commit['token'], 'on the instance whose token was checked');
             $this->assertSame(['stream' => 'a'], $commit['arg']);
+            $this->assertSame([$inTransaction, $inTransaction], [$work['tx'], $work['locked']], 'work() under the lock only in its mode');
         }
 
-        public function test_runStep_claim_takes_a_lease(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_claim_takes_a_lease(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $id = self::start()->getId();
             $seen = [];
             ScriptedBatchRun::$script = [static function () use ($id, &$seen): BatchStepResult {
@@ -459,8 +478,10 @@ namespace Tests\Unit\Later {
             $this->assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $seen['lease_tok']);
         }
 
-        public function test_runStep_after_close_exception_becomes_warning(): void
+        #[DataProvider('bothModes')]
+        public function test_runStep_after_close_exception_becomes_warning(bool $inTransaction): void
         {
+            self::mode($inTransaction);
             $id = self::start()->getId();
             ScriptedBatchRun::$script           = [new BatchStepResult(['n' => 7], true)];
             ScriptedBatchRun::$afterCloseThrows = new \RuntimeException('cache purge failed: password=hunter2');

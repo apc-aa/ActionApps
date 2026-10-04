@@ -21,6 +21,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
+use Tests\Unit\Later\Fixtures\BothStepModes;
 use Tests\Unit\Later\Fixtures\QueueRefusingDb;
 use Tests\Unit\Later\Fixtures\ScriptedBatchRun;
 
@@ -29,6 +30,7 @@ require_once __DIR__ . '/Fixtures/BatchRunTables.php';
 final class BatchRunRetryTest extends TestCase
 {
     use BatchRunTables;
+    use BothStepModes;
 
     private const DELAYS = [0 => 60, 1 => 300, 2 => 900];
 
@@ -73,8 +75,10 @@ final class BatchRunRetryTest extends TestCase
 
     // ---------------------------------------------------------------- progress, but the source failed
 
-    public function test_network_error_with_progress_queues_after_retry_delay(): void
+    #[DataProvider('bothModes')]
+    public function test_network_error_with_progress_queues_after_retry_delay(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         self::storedSet($id, 'failures', '2');
         ScriptedBatchRun::$retryDelays = self::DELAYS;
@@ -103,9 +107,16 @@ final class BatchRunRetryTest extends TestCase
         return ['network error' => ['TRANSPORT'], 'a source that does not settle' => ['SOURCE_UNSTABLE'], 'a source going round' => ['SOURCE_CYCLE']];
     }
 
-    #[DataProvider('retryReasons')]
-    public function test_no_progress_increments_failures_and_waits(string $reason): void
+    /** @return array<string, array{bool, string}> */
+    public static function retryReasonsInBothModes(): array
     {
+        return self::inBothModes(self::retryReasons());
+    }
+
+    #[DataProvider('retryReasonsInBothModes')]
+    public function test_no_progress_increments_failures_and_waits(bool $inTransaction, string $reason): void
+    {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         self::storedSet($id, 'moved', '123');
         ScriptedBatchRun::$retryDelays = self::DELAYS;
@@ -137,9 +148,16 @@ final class BatchRunRetryTest extends TestCase
         return ['the step ran out of time' => ['NO_PROGRESS'], 'no reason given' => ['']];
     }
 
-    #[DataProvider('noRetryReasons')]
-    public function test_no_progress_without_source_error_queues_at_once(string $reason): void
+    /** @return array<string, array{bool, string}> */
+    public static function noRetryReasonsInBothModes(): array
     {
+        return self::inBothModes(self::noRetryReasons());
+    }
+
+    #[DataProvider('noRetryReasonsInBothModes')]
+    public function test_no_progress_without_source_error_queues_at_once(bool $inTransaction, string $reason): void
+    {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: $reason)];
 
@@ -151,8 +169,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame(self::NOW, self::queue()[0]['execute_after']);
     }
 
-    public function test_no_progress_same_position_different_encoding_is_no_progress(): void
+    #[DataProvider('bothModes')]
+    public function test_no_progress_same_position_different_encoding_is_no_progress(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start(null, ['position' => ['n' => '5', 'job' => false]])->getId();
         ScriptedBatchRun::$script = [new BatchStepResult(['job' => 0, 'n' => 5], false, retry: 'TRANSPORT')];
 
@@ -257,8 +277,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame(self::NOW + 101, self::queue()[0]['execute_after']);
     }
 
-    public function test_valid_lease_queue_refusal_does_not_recurse(): void
+    #[DataProvider('bothModes')]
+    public function test_valid_lease_queue_refusal_does_not_recurse(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         self::storedSet($id, 'lease', (string) (self::NOW + 100));
         self::storedSet($id, 'lease_tok', 'another-step');
@@ -273,8 +295,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame(1, QueueRefusingDb::$refused);
     }
 
-    public function test_dead_step_expired_lease_counts_failure_and_continues(): void
+    #[DataProvider('bothModes')]
+    public function test_dead_step_expired_lease_counts_failure_and_continues(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id   = self::start(null, ['position' => ['n' => 3]])->getId();
         $seen = [];
         self::diedHolding($id, 1);
@@ -293,8 +317,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame('0', self::stored($id)['failures'], 'its progress clears them');
     }
 
-    public function test_dead_step_in_final_phase_repeats_final_phase(): void
+    #[DataProvider('bothModes')]
+    public function test_dead_step_in_final_phase_repeats_final_phase(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         self::diedHolding($id, 0, true);
 
@@ -345,8 +371,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame(self::NOW, self::queue()[0]['execute_after'], 'at once');
     }
 
-    public function test_retries_exhausted_hook_null_errors(): void
+    #[DataProvider('bothModes')]
+    public function test_retries_exhausted_hook_null_errors(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         self::storedSet($id, 'failures', '2');
         ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'SOURCE_UNSTABLE')];
@@ -364,8 +392,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertNotContains('afterClose', ScriptedBatchRun::hooks());
     }
 
-    public function test_retries_exhausted_hook_returns_start_position_errors(): void
+    #[DataProvider('bothModes')]
+    public function test_retries_exhausted_hook_returns_start_position_errors(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start(null, ['position' => ['n' => 2]])->getId();
         self::storedSet($id, 'failures', '2');
         ScriptedBatchRun::$script      = [new BatchStepResult(['n' => 2], false, retry: 'SOURCE_CYCLE')];
@@ -402,8 +432,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame('task 4', self::stored($id)['error_path']);
     }
 
-    public function test_dead_step_exhausted_asks_the_hook(): void
+    #[DataProvider('bothModes')]
+    public function test_dead_step_exhausted_asks_the_hook(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         self::diedHolding($id, 2);
 
@@ -418,8 +450,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame('', $stored['lease_tok']);
     }
 
-    public function test_dead_step_exhausted_hook_moves_on(): void
+    #[DataProvider('bothModes')]
+    public function test_dead_step_exhausted_hook_moves_on(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         self::diedHolding($id, 2);
         ScriptedBatchRun::$onExhausted = static fn(BatchStepResult $last): array => ['n' => 1];
@@ -464,8 +498,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame([], self::queue());
     }
 
-    public function test_long_task_repeated_network_error_does_not_loop_forever(): void
+    #[DataProvider('bothModes')]
+    public function test_long_task_repeated_network_error_does_not_loop_forever(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         ScriptedBatchRun::$retryDelays = self::DELAYS;
         for ($n = 1; $n <= 5; ++$n) {
@@ -485,8 +521,10 @@ final class BatchRunRetryTest extends TestCase
 
     // ---------------------------------------------------------------- permanent failures
 
-    public function test_batch_failed_errors_with_code_and_where_not_message(): void
+    #[DataProvider('bothModes')]
+    public function test_batch_failed_errors_with_code_and_where_not_message(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         ScriptedBatchRun::$script = [new BatchFailed('SOURCE_LOGIN', 'stream 3')];
 
@@ -504,8 +542,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame(['work'], ScriptedBatchRun::hooks(), 'no commitStep(), no afterClose()');
     }
 
-    public function test_other_exception_errors_internal_without_its_text(): void
+    #[DataProvider('bothModes')]
+    public function test_other_exception_errors_internal_without_its_text(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         ScriptedBatchRun::$script = [new \RuntimeException('GET https://api/?token=hunter2 failed')];
 
@@ -518,8 +558,10 @@ final class BatchRunRetryTest extends TestCase
         $this->assertStringNotContainsString('hunter2', implode("\n", $stored));
     }
 
-    public function test_php_error_errors_internal_and_logs_the_place(): void
+    #[DataProvider('bothModes')]
+    public function test_php_error_errors_internal_and_logs_the_place(bool $inTransaction): void
     {
+        self::mode($inTransaction);
         $id = self::start()->getId();
         ScriptedBatchRun::$script = [new \TypeError('token=hunter2 is no int')];
 
@@ -546,11 +588,21 @@ final class BatchRunRetryTest extends TestCase
         ];
     }
 
-    #[DataProvider('endOfStepFailures')]
-    public function test_end_of_step_failure_errors_and_keeps_nothing_of_the_step(\Throwable $e, string $code, string $where): void
+    /** @return array<string, array{bool, \Throwable, string, string}> */
+    public static function endOfStepFailuresInBothModes(): array
     {
+        return self::inBothModes(self::endOfStepFailures());
+    }
+
+    #[DataProvider('endOfStepFailuresInBothModes')]
+    public function test_end_of_step_failure_errors_and_keeps_nothing_of_the_step(bool $inTransaction, \Throwable $e, string $code, string $where): void
+    {
+        self::mode($inTransaction);
         $id = self::start()->getId();
-        ScriptedBatchRun::$script       = [new BatchStepResult(['n' => 5], false, ['read' => 3])];
+        ScriptedBatchRun::$script       = [static function (): BatchStepResult {
+            self::writeBatch('batch 1');
+            return new BatchStepResult(['n' => 5], false, ['read' => 3]);
+        }];
         ScriptedBatchRun::$commitThrows = $e;
 
         $this->assertSame("error $code", self::runQueued());
@@ -563,6 +615,7 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame('', $stored['counts']);
         $this->assertSame('', $stored['lease_tok']);
         $this->assertSame([], self::queue(), 'nor its next step');
+        $this->assertSame($inTransaction ? [] : ['batch 1'], self::batches(), 'the batch goes with the end of the step only in its transaction');
         $this->assertStringNotContainsString('hunter2', implode("\n", $stored));
     }
 

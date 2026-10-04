@@ -13,11 +13,17 @@ use AA\Later\BatchStepResult;
 use AA_Property;
 
 /** A batch run whose steps the test scripts: work() hands out the prepared results (or throws the
- *  prepared exceptions, or runs a prepared closure), every hook logs its call, the clock is the test's. */
+ *  prepared exceptions, or runs a prepared closure), every hook logs its call, the clock is the test's.
+ *  $inTransaction switches the step mode, so one test runs in both. */
 class ScriptedBatchRun extends BatchRun
 {
-    /** @var list<BatchStepResult|\Throwable|\Closure(self, array, BatchBudget): BatchStepResult> what the next work() calls give */
+    /** @var list<BatchStepResult|\Throwable|\Closure(self, array, BatchBudget, mixed): BatchStepResult> what the next work() calls give */
     public static array $script = [];
+    /** @var ?list<mixed> what the next fetch() calls give (a Throwable is thrown, a Closure(self, array) run);
+     *                    null = the core's own fetch(), not logged - the core calls it in every step */
+    public static ?array $fetchScript = null;
+    /** what stepInTransaction() answers */
+    public static bool $inTransaction = false;
     /** @var list<array{hook: string, tx: bool, running: ?string, token: string, locked: bool, arg: mixed}> the hook calls, in order */
     public static array $calls = [];
     public static ?int $now = null;
@@ -35,7 +41,7 @@ class ScriptedBatchRun extends BatchRun
     /** @var array<int, int> failures => seconds; a missing count = the core's own */
     public static array $retryDelays = [];
     /** @var array<string, mixed> hook => value that replaces the core's own, or a Throwable it throws
-     *                           (overrun, minStepSeconds, stepPriority, budgetLimits, sealPurpose) */
+     *                           (overrun, minStepSeconds, stepPriority, budgetLimits, sealPurpose, transactionalTables) */
     public static array $hookValues = [];
     /** @var list<int> the times expireExtra() was called with - kept out of $calls, start() calls it */
     public static array $expiredAt = [];
@@ -48,6 +54,8 @@ class ScriptedBatchRun extends BatchRun
     public static function reset(): void
     {
         self::$script           = [];
+        self::$fetchScript      = null;
+        self::$inTransaction    = false;
         self::$calls            = [];
         self::$now              = null;
         self::$microNow         = null;
@@ -107,7 +115,25 @@ class ScriptedBatchRun extends BatchRun
         if ($next instanceof \Throwable) {
             throw $next;
         }
-        return ($next instanceof \Closure) ? $next($this, $from, $budget) : $next;
+        return ($next instanceof \Closure) ? $next($this, $from, $budget, $fetched) : $next;
+    }
+
+    protected function stepInTransaction(): bool
+    {
+        return self::$inTransaction;
+    }
+
+    protected function fetch(array $from, BatchBudget $budget): mixed
+    {
+        if (self::$fetchScript === null) {
+            return parent::fetch($from, $budget);
+        }
+        $this->log('fetch', $from);
+        $next = array_shift(self::$fetchScript);
+        if ($next instanceof \Throwable) {
+            throw $next;
+        }
+        return ($next instanceof \Closure) ? $next($this, $from) : $next;
     }
 
     protected function commitStep(BatchStepResult $r): void
@@ -172,6 +198,11 @@ class ScriptedBatchRun extends BatchRun
     protected function budgetLimits(): array
     {
         return self::hookValue('budgetLimits') ?? parent::budgetLimits();
+    }
+
+    protected function transactionalTables(): array
+    {
+        return self::hookValue('transactionalTables') ?? parent::transactionalTables();
     }
 
     /** the sealed secret, as the user's own code reads it */

@@ -32,6 +32,7 @@ namespace Tests\Unit\Later\Fixtures {
     require_once __DIR__ . '/../../Legacy/fixtures/store_fixtures.php';
     require_once __DIR__ . '/ScriptedBatchRun.php';
     require_once __DIR__ . '/QueueRefusingDb.php';
+    require_once __DIR__ . '/BothStepModes.php';
 
     /** A ScriptedBatchRun over TableDb's object_text and toexecute, and the ways a test reads and changes them. */
     trait BatchRunTables

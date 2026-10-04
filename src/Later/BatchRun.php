@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Later;
 
+use AA;
 use AA\IO\DB\DB_AA;
 use AA\Util\Crypt;
 use AA\Util\Secret;
@@ -19,6 +20,8 @@ use AA_Property;
  *  step number and position it was queued for; a row that no longer matches is stale and does nothing.
  *  A claimed step holds a lease and a random token, and only the holder of the token writes the end
  *  of the step - a step of a run ended, resumed or claimed again meanwhile writes nothing.
+ *  work() runs outside any transaction (import), or with stepInTransaction() inside the one that ends
+ *  the step (Central), so what it writes commits with the cursor or not at all.
  *
  *  @phpstan-consistent-constructor
  */
@@ -105,10 +108,48 @@ abstract class BatchRun extends AA_Object
      *  the request (its module, its parameters), which the user chooses. */
     abstract public function mayControl(string $uid): bool;
 
-    /** The work of one step from $from. Returns where the next step continues - never before $from,
-     *  and after the last work stored, even when the step fails. It keeps to $budget, a request too
-     *  (HTTP timeout ≤ secondsLeft()): a longer step holds up the whole queue and outlives its lease. */
+    /** The work of one step from $from over what fetch() got. Returns where the next step continues -
+     *  never before $from, and after the last work stored, even when the step fails. It keeps to $budget:
+     *  it returns once spent(), and takes every request timeout from httpTimeout() only - a longer step
+     *  holds up the whole queue and outlives its lease. Once it has stored work, it catches the
+     *  BatchBudgetSpent of httpTimeout() itself and returns the position after that work: left to the
+     *  core, the step goes on from $from and the work is done again. With stepInTransaction() it runs on the instance
+     *  of lockForUpdate(), and a result without progress ends in error once the retries are spent:
+     *  onRetriesExhausted() is not asked then, it may ask the source. */
     abstract protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult;
+
+    /** True = work() and the end of the step in one transaction, under the run's lock - for a batch that
+     *  must commit with its cursor or not at all. Then work():
+     *  - waits for no source (fetch() does that before) and ends fast even with its budget spent: it holds
+     *    the run's lock, and whoever waits for it gives up after innodb_lock_wait_timeout;
+     *  - runs no DDL - it commits the transaction implicitly, half a batch with it;
+     *  - lets a failed write throw: an exception it catches leaves the half batch to commit with the
+     *    cursor (a nested DB_AA::transaction() joins this one, there is no savepoint);
+     *  - writes only tables of transactionalTables() and the run's own;
+     *  - knows that what it does outside the database (events and mails of storeItem(), caches, files)
+     *    stays when the transaction rolls back. */
+    protected function stepInTransaction(): bool
+    {
+        return false;
+    }
+
+    /** the tables work() writes with stepInTransaction(); start() refuses them when not InnoDB, where a
+     *  rollback would leave half a batch without its cursor
+     *  @return list<string> */
+    protected function transactionalTables(): array
+    {
+        return [];
+    }
+
+    /** The data of the step, after the claim and outside any transaction; work() gets it. Any
+     *  BatchStepResult it returns is the step's result and work() is not called - a source that failed
+     *  says retry, but progress and finished count too. A permanent failure throws BatchFailed, its
+     *  where masked (AA\Import\Context::redact()) - it is shown. Keeps to $budget as work() does,
+     *  timeouts from httpTimeout() only. */
+    protected function fetch(array $from, BatchBudget $budget): mixed
+    {
+        return null;
+    }
 
     /** The user's own writes at the end of a step, under the lock, after the token was checked. Also
      *  called with the made-up result of a step that kept dying (retry STEP_DIED): work() did not run
@@ -127,7 +168,8 @@ abstract class BatchRun extends AA_Object
 
     /** MAX_FAILURES steps without progress; outside any transaction, so it may ask the source. A position
      *  other than $last->position goes on from there (import: skips the task); null ends the run in error
-     *  with the code of $last->retry. Never called in the final phase. */
+     *  with the code of $last->retry. Never called in the final phase, nor for a result work() returns
+     *  with stepInTransaction() - that one ends in error at once. */
     protected function onRetriesExhausted(BatchStepResult $last): ?array
     {
         return null;
@@ -215,20 +257,21 @@ abstract class BatchRun extends AA_Object
      *  ($state) with no step until enqueueFrom(). It checks no rights - the caller has made sure the
      *  user may control the subject (mayControl()) before.
      *  @param array<string, mixed> $props subject (a long id), user, position (array) and the user's own properties
-     *  @throws BatchFailed NO_TRANSACTION when object_text or toexecute is not InnoDB */
+     *  @throws BatchFailed NO_TRANSACTION when object_text, toexecute or (with stepInTransaction()) a table
+     *                      of transactionalTables() is not InnoDB */
     final public static function start(array $props, ?string $state = null): static
     {
         if (!DB_AA::inTransaction()) {
             throw new \LogicException('A batch run starts inside the caller\'s transaction');
         }
-        self::requireTransactional();
+        $run = new static();
+        self::requireTransactional($run->stepInTransaction() ? $run->transactionalTables() : []);
         static::expireExtra(static::now());
         $states = static::states();
         if (($state !== null) && !isset($states->extra[$state])) {
             throw new \InvalidArgumentException('A batch run starts active or in an own state');
         }
         $allowed = ['subject', 'user', ...self::ownProperties()];
-        $run     = new static();
         foreach ($props as $name => $value) {
             if ($name === 'position') {
                 continue;
@@ -669,13 +712,13 @@ abstract class BatchRun extends AA_Object
     /** object_text for the lock; toexecute because a step row on MyISAM is visible to another runner
      *  before the run's record commits - that runner finds the record stale, drops the row, and the
      *  run then waits for a step that never comes */
-    private static function requireTransactional(): void
+    private static function requireTransactional(array $more): void
     {
-        $tables  = ['object_text', 'toexecute'];
+        $tables  = array_values(array_unique(['object_text', 'toexecute', ...$more]));
         $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], 'SELECT TABLE_NAME, ENGINE FROM information_schema.tables', [['TABLE_SCHEMA', (string) constant('DB_NAME')], ['TABLE_NAME', $tables]]);
         $engines = array_change_key_case($engines);         // lower_case_table_names
         foreach ($tables as $table) {
-            if (strtolower((string) ($engines[$table] ?? '')) !== 'innodb') {
+            if (strtolower((string) ($engines[strtolower($table)] ?? '')) !== 'innodb') {
                 throw new BatchFailed('NO_TRANSACTION', $table);
             }
         }
@@ -719,6 +762,7 @@ abstract class BatchRun extends AA_Object
     {
         try {
             $valid    = $this->stillValid();
+            $inTx     = $this->stepInTransaction();
             $min      = $this->minStepSeconds();
             $limits   = $this->budgetLimits();
             $overrun  = $this->overrun();
@@ -751,10 +795,14 @@ abstract class BatchRun extends AA_Object
         if (!$run || ($claim === 'leased')) {
             return $claim;
         }
+        // work() would join that transaction, its batch committed or rolled back by someone else
+        if ($inTx && DB_AA::inTransaction()) {
+            throw new \LogicException('A batch step that works in a transaction does not start inside another one');
+        }
         if ($run->closing === '1') {
             return ($claim === 'died') ? $run->finalFailed() : $run->finalPhase();
         }
-        return $run->stepWork($budget, $claim === 'died');
+        return $run->stepWork($budget, $claim === 'died', $inTx, $priority);
     }
 
     /** The claim: a lease long enough for the step and a token only this step knows.
@@ -786,19 +834,46 @@ abstract class BatchRun extends AA_Object
         return $died ? 'died' : 'claimed';
     }
 
-    /** the work outside any transaction - it may take the whole budget */
-    private function stepWork(BatchBudget $budget, bool $died): string
+    /** fetch() and work() - outside any transaction, or work() in the one of the end of the step */
+    private function stepWork(BatchBudget $budget, bool $died, bool $inTx, int $priority): string
     {
-        $from = $this->position();
+        $from    = $this->position();
+        $fetched = null;
+        $run     = null;
         try {
-            $result = $died
-                ? new BatchStepResult($from, false, retry: 'STEP_DIED')
-                : BatchStep::during($this, fn(): BatchStepResult => $this->work($from, $budget, null));
-            if (!$result->finished && BatchPosition::same($from, $result->position) && ($this->failures() + 1 >= self::MAX_FAILURES)) {
-                $next   = BatchStep::during($this, fn(): ?array => $this->onRetriesExhausted($result));
-                $result = (($next === null) || BatchPosition::same($result->position, $next)) ? $result : $result->withPosition($next);
+            if ($died) {
+                $result = new BatchStepResult($from, false, retry: 'STEP_DIED');
+            } elseif ($budget->spent()) {
+                // the claim took what was left - a request now would get no timeout
+                $result = self::spentResult($from);
+            } else {
+                $fetched = $this->spending($from, fn(): mixed => $this->fetch($from, $budget));
+                $result  = ($fetched instanceof BatchStepResult) ? $fetched : null;
             }
-            $run = $this->whileHolding((string) $this->lease_tok, static fn(self $run) => $run->applyStep($from, $result));
+            if (($result === null) && !$inTx) {
+                // ended, resumed or claimed again while fetch() waited: its data must not be written
+                $held = self::get($this->getId());
+                if (!$held || !$held->holds((string) $this->lease_tok)) {
+                    return $this->lostText();
+                }
+                if ((int) $held->lease <= static::now()) {
+                    // no one has claimed it yet, but may any moment; this row claims it again - as a step that died
+                    $this->requeue(static::now(), $priority);
+                    return 'lease out';
+                }
+                $result = $this->spending($from, fn(): BatchStepResult => $this->work($from, $budget, $fetched));
+            }
+            if ($result === null) {
+                // a step that lost its lease drops what it fetched unwritten
+                [$run, $result] = $this->workInTransaction($from, $budget, $fetched);
+            }
+            if ($result !== null) {
+                if (!$result->finished && BatchPosition::same($from, $result->position) && ($this->failures() + 1 >= self::MAX_FAILURES)) {
+                    $next   = BatchStep::during($this, fn(): ?array => $this->onRetriesExhausted($result));
+                    $result = (($next === null) || BatchPosition::same($result->position, $next)) ? $result : $result->withPosition($next);
+                }
+                $run = $this->whileHolding((string) $this->lease_tok, static fn(self $run) => $run->applyStep($from, $result));
+            }
         } catch (\Throwable $e) {
             // the end of the step rolled back with its next step - left active, the run would wait for ever
             return $this->failStep($e);
@@ -811,6 +886,43 @@ abstract class BatchRun extends AA_Object
         }
         // the final phase may ask the source - only after the end of the step is committed
         return ($run->closing === '1') ? $run->finalPhase() : ('step ' . $run->step());
+    }
+
+    /** work() and the end of the step in one transaction while the step holds its lease.
+     *  @return array{?self, ?BatchStepResult} the run when written; else a step without progress to write
+     *                                        after the rollback, as work() asked for time it had not */
+    private function workInTransaction(array $from, BatchBudget $budget, mixed $fetched): array
+    {
+        try {
+            return [$this->whileHolding((string) $this->lease_tok, static function (self $run) use ($from, $budget, $fetched): void {
+                $run->applyStep($from, BatchStep::during($run, static fn(): BatchStepResult => $run->work($from, $budget, $fetched)));
+            }), null];
+        } catch (\Throwable $e) {
+            // what the request has cached in memory may come from the writes just rolled back
+            AA::Contentcache()->clear_soft();
+            if ($e instanceof BatchBudgetSpent) {
+                return [null, self::spentResult($from)];
+            }
+            throw $e;
+        }
+    }
+
+    /** $do with the run as running(); a request the budget had no time for makes a step without progress
+     *  @template T
+     *  @param \Closure(): T $do
+     *  @return T|BatchStepResult */
+    private function spending(array $from, \Closure $do): mixed
+    {
+        try {
+            return BatchStep::during($this, $do);
+        } catch (BatchBudgetSpent) {
+            return self::spentResult($from);
+        }
+    }
+
+    private static function spentResult(array $from): BatchStepResult
+    {
+        return new BatchStepResult($from, false, retry: 'NO_PROGRESS');
     }
 
     /** The end of a step, on the run locked in the caller's transaction while the step holds its lease. */
@@ -990,7 +1102,7 @@ abstract class BatchRun extends AA_Object
 
     /** whileLocked() only while the step with $token still owns the run
      *  @param \Closure(self): void $write */
-    private function whileHolding(string $token, \Closure $write): ?self
+    private function whileHolding(#[\SensitiveParameter] string $token, \Closure $write): ?self
     {
         return $this->whileLocked(static function (self $run) use ($token, $write): bool {
             if (!$run->holds($token)) {
@@ -1069,8 +1181,9 @@ abstract class BatchRun extends AA_Object
         return ($this->state === static::states()->active) && hash_equals(BatchPosition::fingerprint($this->step(), $this->position()), $expected);
     }
 
-    /** the step with $token still owns the run */
-    private function holds(string $token): bool
+    /** The step with $token still owns the run. Not the lease's time: under the lock, a step past its
+     *  lease may still write as long as no other step claimed the run - that one would have a new token. */
+    private function holds(#[\SensitiveParameter] string $token): bool
     {
         return ($this->state === static::states()->active) && ($token !== '') && hash_equals((string) $this->lease_tok, $token);
     }

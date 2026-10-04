@@ -32,6 +32,20 @@ final class BatchBudget
         return max(0.0, $this->deadline - $this->now());
     }
 
+    /** The timeout of a request made now - a step takes its timeouts only from here, so no request
+     *  outlives the budget and the lease.
+     *  @throws BatchBudgetSpent when nothing is left: a timeout of 0 means none at all to curl, so
+     *                           nothing must be sent */
+    public function httpTimeout(): float
+    {
+        $left = $this->secondsLeft();
+        // curl counts in milliseconds - less would round to 0
+        if ($left < 0.001) {
+            throw new BatchBudgetSpent('The budget of the batch step is spent');
+        }
+        return $left;
+    }
+
     private function now(): float
     {
         return ($this->now === null) ? microtime(true) : (float) ($this->now)();
