@@ -13,8 +13,9 @@ use InvalidArgumentException;
  */
 final class Job
 {
-    /** printable ASCII: the key is stored in the cursor and shown */
-    public const KEY = '/^[\x21-\x7E]{1,200}$/D';
+    /** The characters of a stream key, ':' after it and '|' between parts (var|per). A key is stored
+     *  in the cursor and shown, so it never carries a URL or a secret - the class leaves no room for one. */
+    public const KEY = '/^[A-Za-z0-9_.:|-]{1,200}$/D';
 
     /** @var array<string, string> */
     public readonly array $params;

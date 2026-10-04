@@ -65,12 +65,20 @@ final class JobTest extends TestCase
             'newline'   => ["ind7:2024\n"],
             'non ascii' => ['ind7:č'],
             'too long'  => ['ind7:' . str_repeat('x', 196)],
+            'url'       => ['ind7:https://example.org/data?key=abc'],
+            'query'     => ['ind7:page=2&key=abc'],
+            'slash'     => ['ind7:a/b'],
         ];
     }
 
-    public function test_job_acceptsLongPrintableKey(): void
+    public function test_job_acceptsLongKey(): void
     {
-        self::assertSame(200, strlen((new Job('ind7:' . str_repeat('?', 195), self::grabber(), []))->key));
+        self::assertSame(200, strlen((new Job('ind7:' . str_repeat('x', 195), self::grabber(), []))->key));
+    }
+
+    public function test_job_acceptsPartsOfAKey(): void
+    {
+        self::assertSame('ind7:DEM0026|2|12|31.p-2_x', (new Job('ind7:DEM0026|2|12|31.p-2_x', self::grabber(), []))->key);
     }
 
     public function test_job_rejectsBadParamName(): void
