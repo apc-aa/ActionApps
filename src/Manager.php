@@ -434,7 +434,9 @@ class Managed_Object extends Managed
         if (($refusal = $object->formRefusal()) !== null) {
             return $refusal;
         }
-        $object->save();
+        if ($object->save() === false) {
+            return _m('The object was not saved - it changed meanwhile. Reload and try again.');
+        }
         return null;
     }
 

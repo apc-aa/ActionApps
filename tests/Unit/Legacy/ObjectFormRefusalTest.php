@@ -36,6 +36,22 @@ namespace Tests\Unit\Legacy {
         }
     }
 
+    /** an object whose store fails - as a definition whose stored record changed under the form */
+    final class UnsavedFormTarget extends AA_Object
+    {
+        public $code;
+
+        public static function getClassProperties(): array
+        {
+            return ['code' => new AA_Property('code', 'Code', 'string', false)];
+        }
+
+        public function save(): false|string
+        {
+            return false;
+        }
+    }
+
     /**
      * An object may refuse to be saved from a form (AA_Object::formRefusal()) - the form then shows why
      * and nothing is written, not even the delete an edit starts with. A planned task with {import} is
@@ -47,6 +63,7 @@ namespace Tests\Unit\Legacy {
         private const MODULE  = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
         private const OWN     = 'c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1';
         private const TASK    = 'c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9';
+        private const UNSAVED = 'd1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1';
 
         protected function setUp(): void
         {
@@ -56,6 +73,7 @@ namespace Tests\Unit\Legacy {
             FakeStore::install([
                 self::OWN  => [self::MODULE, RefusingFormTarget::class],
                 self::TASK => [self::MODULE, AA_Plannedtask::class],
+                self::UNSAVED => [self::MODULE, UnsavedFormTarget::class],
             ]);
             self::perms(PS_FORMS);
         }
@@ -82,6 +100,20 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame('Not saved - the probe refuses.', $error);
             $this->assertSame([], self::objectWrites());
+        }
+
+        /** @return array<string, array{string}> the id the form was built for ('' - a new object) */
+        public static function unsavedTargets(): array
+        {
+            return ['new object' => [''], 'edited object' => [self::UNSAVED]];
+        }
+
+        #[DataProvider('unsavedTargets')]
+        public function test_save_failed_store_is_reported(string $id): void
+        {
+            $error = self::save(UnsavedFormTarget::class, $id, ['code' => ['x']]);
+
+            $this->assertSame('The object was not saved - it changed meanwhile. Reload and try again.', $error);
         }
 
         public function test_save_object_without_refusal_is_stored(): void
