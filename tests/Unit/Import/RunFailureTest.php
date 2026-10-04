@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Import;
 
 use AA\Import\CheckResult;
-use AA\Import\Run;
+use AA\Import\RunCursor;
 use AA\Import\StreamState;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
@@ -72,7 +72,7 @@ final class RunFailureTest extends TestCase
                 yield ['key' => 's1:b', 'items' => [['key' => 'k-b', 'val' => 'v']]];
             }
         };
-        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => Run::MAX_PAGES - 3, 'cur' => sha1('s1:a')] + Run::START]);
+        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 3, 'cur' => sha1('s1:a')] + RunCursor::START]);
 
         self::runAll($run->getId());
 
@@ -147,7 +147,7 @@ final class RunFailureTest extends TestCase
         $skip = TestRun::$committed[3];
         self::assertSame('', $skip->retry);
         self::assertSame(
-            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1] + Run::START),
+            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1] + RunCursor::START),
             self::sorted($skip->position),
             'the next job, not started yet',
         );
@@ -163,7 +163,7 @@ final class RunFailureTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(self::sorted(['i' => 1] + Run::START), self::sorted(TestRun::$committed[3]->position));
+        self::assertSame(self::sorted(['i' => 1] + RunCursor::START), self::sorted(TestRun::$committed[3]->position));
         self::assertSame(['k-s1:a-1', 'k-s2:a-1', 'k-s2:b-1'], TestRun::storedValues('relation........'));
         self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
         self::assertSame('v-old', StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'the next changed run imports the stream again');
@@ -180,7 +180,7 @@ final class RunFailureTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(self::sorted(['i' => 1] + Run::START), self::sorted(TestRun::$committed[2]->position), 'the third step without progress skips; failed belongs to the stream skipped');
+        self::assertSame(self::sorted(['i' => 1] + RunCursor::START), self::sorted(TestRun::$committed[2]->position), 'the third step without progress skips; failed belongs to the stream skipped');
         self::assertSame(['k-s2:a-1'], TestRun::storedValues('relation........'));
         self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
         $s1 = array_filter($source->jobCalls, static fn(array $call): bool => $call['stream'] === 's1');
@@ -248,7 +248,7 @@ final class RunFailureTest extends TestCase
 
         self::assertSame(['JOB_GONE' => 1], self::warnings($run->getId()), 'the cursor\'s job is not among the first MAX_PAGES');
         self::assertSame('SOURCE_CYCLE', TestRun::$committed[0]->retry, 'the restarted stream ends at the cap');
-        self::assertLessThan(3 * Run::MAX_PAGES, $yields);
+        self::assertLessThan(3 * RunCursor::MAX_PAGES, $yields);
     }
 
     public function test_retriesExhausted_lostJobInAnEndlessGenerator_isBounded(): void
@@ -260,8 +260,8 @@ final class RunFailureTest extends TestCase
 
         self::runOne();
 
-        self::assertSame(self::sorted(['i' => 1] + Run::START), self::sorted(TestRun::get($run->getId())?->position()));
-        self::assertSame(Run::MAX_PAGES, $yields);
+        self::assertSame(self::sorted(['i' => 1] + RunCursor::START), self::sorted(TestRun::get($run->getId())?->position()));
+        self::assertSame(RunCursor::MAX_PAGES, $yields);
     }
 
     public function test_retriesExhausted_lookingForTheNextJob_keepsToItsBudget(): void
@@ -327,14 +327,14 @@ final class RunFailureTest extends TestCase
                 yield ['key' => 's1:b', 'items' => [['key' => 'k-b', 'val' => 'v']], 'error' => $dead];
             }
         };
-        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => Run::MAX_PAGES - 2, 'cur' => sha1('s1:a')] + Run::START]);
+        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 2, 'cur' => sha1('s1:a')] + RunCursor::START]);
 
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
         $skips = array_values(array_filter(TestRun::$committed, static fn($r): bool => ($r->retry === '') && !$r->finished));
         self::assertSame(
-            [['s1:b', Run::MAX_PAGES - 1, 0], ['s1:a', Run::MAX_PAGES, 0], ['', 0, 1]],
+            [['s1:b', RunCursor::MAX_PAGES - 1, 0], ['s1:a', RunCursor::MAX_PAGES, 0], ['', 0, 1]],
             array_map(static fn($r): array => [$r->position['job'], $r->position['pages'], $r->position['i']], $skips),
             'each skip starts a job - the cap ends the stream',
         );
@@ -502,7 +502,7 @@ final class RunFailureTest extends TestCase
     #[DataProvider('jobsCountedOnce')]
     public function test_counts_eachJobOnce(int $items, float $seconds, array $position): void
     {
-        $run = self::startRun(self::source(streams: 1, jobs: 1, items: $items, seconds: $seconds), ['position' => $position + Run::START]);
+        $run = self::startRun(self::source(streams: 1, jobs: 1, items: $items, seconds: $seconds), ['position' => $position + RunCursor::START]);
 
         self::runAll($run->getId());
 

@@ -6,7 +6,7 @@ namespace Tests\Unit\Import;
 
 use AA\Import\Definition;
 use AA\Import\Probe;
-use AA\Import\Run;
+use AA\Import\RunCursor;
 use AA\Import\Stream;
 use AA\IO\Grabber\CSV;
 use AA\IO\SourceRefused;
@@ -482,13 +482,13 @@ final class RunWorkTest extends TestCase
     {
         $source         = self::source(streams: 1, jobs: 3, items: 1);
         $source->minJob = 0;
-        $from           = ['job' => 's1:a', 'pages' => Run::MAX_PAGES - 1, 'cur' => sha1('s1:a')] + Run::START;
+        $from           = ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 1, 'cur' => sha1('s1:a')] + RunCursor::START;
         $run            = self::startRun($source, ['position' => $from]);
 
         self::runOne();
 
         $position = TestRun::get($run->getId())?->position();
-        self::assertSame(['s1:b', Run::MAX_PAGES], [$position['job'], $position['pages']], 'the 1000th job may start, the 1001st not');
+        self::assertSame(['s1:b', RunCursor::MAX_PAGES], [$position['job'], $position['pages']], 'the 1000th job may start, the 1001st not');
         self::assertSame('SOURCE_CYCLE', TestRun::$committed[0]->retry);
         self::assertSame(2, TestRun::get($run->getId())?->counts()['read'], 'what got stored before counts');
 

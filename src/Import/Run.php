@@ -30,9 +30,10 @@ use JsonException;
  * through ParamsGrabber and the Saver into the target slice. It works only with its snapshot of
  * the definition, so editing the definition changes the next run, not this one.
  *
- * The position is the cursor of the source: the stream (index in stream_keys), the job and how far
- * into it (offset and the fingerprint of its first items), plus what a stream carries from step to
- * step until it ends - pages and cur (jobs started and the last one), wrote, failed, vmax, restarts.
+ * The position is the cursor of the source (RunCursor): the stream (index in stream_keys), the
+ * job and how far into it (offset and the fingerprint of its first items), plus what a stream
+ * carries from step to step until it ends - pages and cur (jobs started and the last one), wrote,
+ * failed, vmax, restarts.
  * A step always returns the cursor after the last work it stored, also when the source fails.
  * Moving the cursor onto a job not yet started (the first one of a stream, or the next one) counts
  * as progress before that job stored anything, so a source failing at a new job costs at most one
@@ -40,23 +41,6 @@ use JsonException;
  */
 class Run extends BatchRun
 {
-    /** jobs of one stream (pages of a catalog) at most - a source may hand out its pages in a cycle */
-    public const MAX_PAGES = 1000;
-
-    /**
-     * Where a run starts; a new stream starts with all but i, checked and after of it.
-     * - failed: the stream skipped a job or lost items to errors - its version stays the old one;
-     * - probed, pv: the changed mode asked probe() at the stream's start, and the version it gave;
-     * - end: the jobs of the stream are done, its version is pending;
-     * - after: the key of a closed stream whose expression is due;
-     * - checked: the check mode asked check(); ccode: what ends a check in its next step.
-     */
-    public const START = [
-        'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',
-        'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '', 'end' => 0,
-        'after' => '', 'checked' => 0, 'ccode' => '',
-    ];
-
     /** what a run counts, all of them in this order */
     private const COUNTS = [
         'read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0,
@@ -205,7 +189,7 @@ class Run extends BatchRun
         $this->checkResult   = null;
         $this->catalog       = null;
         try {
-            return $this->walk(self::cursor($from), $budget);
+            return $this->walk(RunCursor::fromPosition($from), $budget);
         } finally {
             // the Saver of an import leaves the page cache alone; also items stored before a failure count
             $this->invalidatePages(array_keys($this->touched));
@@ -291,7 +275,7 @@ class Run extends BatchRun
      */
     protected function onRetriesExhausted(BatchStepResult $last): ?BatchStepResult
     {
-        $pos  = self::cursor($last->position);
+        $pos  = RunCursor::fromPosition($last->position);
         $keys = $this->streamKeys();
         $ctx  = null;
         // a check has nothing to skip: its cycle, its failed check() end it
@@ -300,11 +284,11 @@ class Run extends BatchRun
         }
         try {
             if ($last->retry === 'SOURCE_CYCLE') {
-                return $this->skipped($last, $pos, self::nextStream($pos), $keys);
+                return $this->skipped($last, $pos, RunCursor::nextStream($pos), $keys);
             }
             if ($pos['end'] === 1) {
                 // the jobs went well, only the version could not be had: the stream closes without it
-                return $this->skipped($last, $pos, self::nextStream($pos), $keys, 'VERSION_UNKNOWN');
+                return $this->skipped($last, $pos, RunCursor::nextStream($pos), $keys, 'VERSION_UNKNOWN');
             }
             $source = $this->source();
             if (!($source instanceof Checkable)) {
@@ -322,9 +306,9 @@ class Run extends BatchRun
             $gone    = false;
             try {
                 // a stream failing before its first job has no job to skip
-                $next = ($pos['job'] === '') ? self::nextStream($pos) : $this->jobAfter($source, $ctx, $budget, $streams[$keys[$pos['i']] ?? ''] ?? null, $pos);
+                $next = ($pos['job'] === '') ? RunCursor::nextStream($pos) : $this->jobAfter($source, $ctx, $budget, $streams[$keys[$pos['i']] ?? ''] ?? null, $pos);
                 $gone = ($next === null);
-                $next ??= self::nextStream($pos);
+                $next ??= RunCursor::nextStream($pos);
             } catch (SourceRefused $e) {
                 throw $e;
             } catch (SourceFailure|TransportException) {
@@ -333,7 +317,7 @@ class Run extends BatchRun
                     return null;
                 }
                 // the source is up, a page of this stream is not: the rest of the stream cannot be reached
-                $next = self::nextStream($pos);
+                $next = RunCursor::nextStream($pos);
             }
             return $this->skipped($last, $pos, $next, $keys, gone: $gone);
         } catch (BatchBudgetSpent|SourceUnavailable|TransportException) {
@@ -393,7 +377,7 @@ class Run extends BatchRun
                 $stream = $streams[$key] ?? null;
                 if ($stream === null) {
                     $this->note('STREAM_GONE');
-                    $pos = self::nextStream($pos);
+                    $pos = RunCursor::nextStream($pos);
                     continue;
                 }
                 $known = $state?->versionOf($key);
@@ -407,7 +391,7 @@ class Run extends BatchRun
                     $this->streamRecords[$key] = ['probed' => static::now()];
                     if ($probe->state === Probe::UNCHANGED) {
                         $this->tally['unchanged']++;
-                        $pos = self::nextStream($pos);
+                        $pos = RunCursor::nextStream($pos);
                         continue;
                     }
                     $pos['probed'] = 1;
@@ -458,7 +442,7 @@ class Run extends BatchRun
         if ($e instanceof BatchFailed) {
             return $e;
         }
-        $where = self::where($keys[$pos['i']] ?? '', $pos['job'], $ctx);
+        $where = RunCursor::where($keys[$pos['i']] ?? '', $pos['job'], $ctx);
         if ($e instanceof SourceRefused) {
             // a parameter that makes two rows fill one field is a fault of the definition
             return new BatchFailed(($e->reason === 'DUPLICATE_TARGET') ? 'DEFINITION' : $e->reason, $where);
@@ -531,11 +515,11 @@ class Run extends BatchRun
                     $this->tally['streams']++;
                     $this->tally['unchanged'] += $unchanged ? 1 : 0;
                 }
-                $pos = self::nextStream($pos);
+                $pos = RunCursor::nextStream($pos);
             }
             $pos['i'] = count($keys);
             while (($source instanceof Cataloged) && (($pos['pages'] === 0) || ($pos['cat'] !== ''))) {
-                if (self::cycles($pos, $pos['cat'])) {
+                if (RunCursor::cycles($pos, $pos['cat'])) {
                     throw new SourceRefused('SOURCE_CYCLE', 'The catalog cursor goes round');
                 }
                 if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
@@ -546,7 +530,7 @@ class Run extends BatchRun
                 // a fill starts anew on its first page; later pages add to what the steps before stored
                 $this->catalog ??= (($pos['pages'] === 0) ? null : Catalog::forDefinition($this->definitionId())) ?? Catalog::create($this->definitionId());
                 $this->catalog->addPage($page, static::now());
-                $pos = ['cat' => $page->next, 'pages' => $pos['pages'] + 1, 'cur' => sha1($pos['cat'])] + $pos;
+                $pos = RunCursor::pageRead($pos, $page->next);
             }
         } catch (SourceRefused $e) {
             $pos['ccode'] = $e->reason;
@@ -575,7 +559,7 @@ class Run extends BatchRun
             $this->streamRecords[$stream->key] = $record + ($this->streamRecords[$stream->key] ?? []);
         }
         $this->tally['streams']++;
-        return ['after' => $this->afterDue($pos, $stream->key)] + self::nextStream($pos);
+        return ['after' => $this->afterDue($pos, $stream->key)] + RunCursor::nextStream($pos);
     }
 
     /** the key of a stream just closed when its expression is due: a live run that stored something */
@@ -671,17 +655,17 @@ class Run extends BatchRun
             if ($seek !== '') {
                 if ($job->key !== $seek) {
                     // the cursor's job was the pages-th at most: a source that has not handed it out by now lost it
-                    if (++$passed >= self::MAX_PAGES) {
+                    if (++$passed >= RunCursor::MAX_PAGES) {
                         break;
                     }
                     continue;
                 }
                 $seek = '';
             } else {
-                if (self::cycles($pos, $job->key)) {
+                if (RunCursor::cycles($pos, $job->key)) {
                     return 'SOURCE_CYCLE';
                 }
-                $pos = self::started($pos, $job->key);
+                $pos = RunCursor::started($pos, $job->key);
                 if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
                     return self::STOP;
                 }
@@ -692,8 +676,7 @@ class Run extends BatchRun
             if ($halt !== '') {
                 return $halt;
             }
-            // a job the cursor was on and that read nothing more was counted by the step that ended it
-            if (($from['fp'] === '') || ($pos['offset'] > $from['offset']) || ($pos['restarts'] > $from['restarts'])) {
+            if (RunCursor::jobCounts($from, $pos)) {
                 $this->tally['jobs']++;
             }
         }
@@ -704,7 +687,7 @@ class Run extends BatchRun
             return 'SOURCE_UNSTABLE';
         }
         $this->note('JOB_GONE');
-        $pos = ['job' => '', 'offset' => 0, 'fp' => '', 'restarts' => $pos['restarts'] + 1] + $pos;
+        $pos = RunCursor::restarted($pos);
         return $this->walkJobs($source, $ctx, $stream, $known, $mapping, $budget, $pos, $first);
     }
 
@@ -718,7 +701,7 @@ class Run extends BatchRun
         $inner = $job->grabber;
         // past the guard of Context::http(), items stored as the source gives them, a wait the budget does not know
         if (!$inner->fetchesViaLoadData() || $inner->isDirectfill() || (($inner->loadFrequency() ?? 0.0) > 0)) {
-            throw new BatchFailed('DEFINITION', self::where($stream->key, $pos['job'], $ctx));
+            throw new BatchFailed('DEFINITION', RunCursor::where($stream->key, $pos['job'], $ctx));
         }
         $params  = $job->params($stream);
         // a stream that started over once already cannot be followed: refused before anything is stored
@@ -804,18 +787,18 @@ class Run extends BatchRun
         $passed = 0;
         foreach ($source->jobs($stream, $ctx, $this->streamState()?->versionOf($stream->key)) as $job) {
             if ($found) {
-                return self::cycles($pos, $job->key) ? self::nextStream($pos) : (['failed' => 1] + self::started($pos, $job->key));
+                return RunCursor::cycles($pos, $job->key) ? RunCursor::nextStream($pos) : (['failed' => 1] + RunCursor::started($pos, $job->key));
             }
             if ($budget->spent()) {
                 throw new BatchBudgetSpent('No time left to find the job after the failed one');
             }
             $found = ($job->key === $pos['job']);
             // as in walkJobs(): the cursor's job comes within MAX_PAGES jobs, or it is gone
-            if (!$found && (++$passed >= self::MAX_PAGES)) {
+            if (!$found && (++$passed >= RunCursor::MAX_PAGES)) {
                 break;
             }
         }
-        return self::nextStream($pos);
+        return RunCursor::nextStream($pos);
     }
 
     /**
@@ -968,41 +951,5 @@ class Run extends BatchRun
             throw new BatchFailed('DEFINITION', 'stream_keys');
         }
         return $keys;
-    }
-
-    /** the stored position in the shape of START, the types of START */
-    private static function cursor(array $position): array
-    {
-        $pos = [];
-        foreach (self::START as $name => $default) {
-            $value      = $position[$name] ?? $default;
-            $pos[$name] = is_int($default) ? (int) $value : (string) $value;
-        }
-        return $pos;
-    }
-
-    private static function nextStream(array $pos): array
-    {
-        return ['i' => $pos['i'] + 1, 'checked' => $pos['checked']] + self::START;
-    }
-
-    /** a source handing out the cursor's job again, or more than MAX_PAGES jobs, goes round in a cycle */
-    private static function cycles(array $pos, string $job): bool
-    {
-        return ($pos['pages'] >= self::MAX_PAGES) || (sha1($job) === $pos['cur']);
-    }
-
-    /** the cursor on $job, a job not started yet */
-    private static function started(array $pos, string $job): array
-    {
-        return ['job' => $job, 'offset' => 0, 'fp' => '', 'pages' => $pos['pages'] + 1, 'cur' => sha1($job)] + $pos;
-    }
-
-    /** the stream and the job of the cursor, as BatchFailed takes them (no URL, no data) */
-    private static function where(string $stream, string $job, ?Context $ctx): string
-    {
-        $where = (($job === $stream) || str_starts_with($job, "$stream:")) ? $job : trim("$stream $job");
-        $where = $ctx?->redact($where) ?? $where;
-        return mb_strcut((string) preg_replace('~[^\w .:/#-]~u', '_', $where), 0, 200);
     }
 }

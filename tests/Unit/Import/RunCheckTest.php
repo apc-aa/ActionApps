@@ -9,7 +9,7 @@ use AA\Import\CatalogEntry;
 use AA\Import\CatalogPage;
 use AA\Import\CheckResult;
 use AA\Import\Probe;
-use AA\Import\Run;
+use AA\Import\RunCursor;
 use AA\Import\Stream;
 use AA\Import\StreamState;
 use AA\IO\DB\DB_AA;
@@ -614,8 +614,8 @@ final class RunCheckTest extends TestCase
         $source = self::cataloged(streams: 1);
         $run    = TestRun::get(self::startRun($source, ['mode' => 'check'])->getId());
 
-        $first  = $run?->workOnce(Run::START);
-        $second = $run?->workOnce(['checked' => 1] + Run::START);
+        $first  = $run?->workOnce(RunCursor::START);
+        $second = $run?->workOnce(['checked' => 1] + RunCursor::START);
 
         self::assertInstanceOf(CheckResult::class, $first?->extra['check']);
         self::assertNull($second?->extra['check'], 'check() was not asked in that step');
@@ -658,7 +658,7 @@ final class RunCheckTest extends TestCase
         TestRun::$evaluate = static function (): void {
             TestRun::$microNow = (TestRun::$microNow ?? 0.0) + 20.0;
         };
-        $run = self::startRun($source, ['position' => ['i' => 1, 'after' => 's1'] + Run::START], ['after_stream' => '{x}']);
+        $run = self::startRun($source, ['position' => ['i' => 1, 'after' => 's1'] + RunCursor::START], ['after_stream' => '{x}']);
 
         self::runOne();
 
@@ -686,7 +686,7 @@ final class RunCheckTest extends TestCase
         $source              = self::source(streams: 3, jobs: 1, items: 1, source: $checked);
         $source->failStreams = 3;   // every step fails, the hook gets the streams
         TestRun::$evaluate   = static function (): void {};
-        $run = self::startRun($source, ['position' => ['i' => 1, 'after' => 's1'] + Run::START], ['after_stream' => '{x}']);
+        $run = self::startRun($source, ['position' => ['i' => 1, 'after' => 's1'] + RunCursor::START], ['after_stream' => '{x}']);
 
         self::runAll($run->getId());
 

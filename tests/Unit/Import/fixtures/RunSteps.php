@@ -7,7 +7,7 @@ namespace Tests\Unit\Import\Fixtures;
 use AA;
 use AA\Cache\PageCache;
 use AA\Import\Definition;
-use AA\Import\Run;
+use AA\Import\RunCursor;
 use AA\Import\Stream;
 use AA\Import\StreamState;
 use AA\IO\DB\DB_AA;
@@ -111,7 +111,7 @@ trait RunSteps
     /** a cursor already on $job, the stream's first, as a step before left it */
     private static function onJob(string $job): array
     {
-        return ['job' => $job, 'pages' => 1, 'cur' => sha1($job)] + Run::START;
+        return ['job' => $job, 'pages' => 1, 'cur' => sha1($job)] + RunCursor::START;
     }
 
     /** a source of $streams streams s1.. of $jobs jobs a, b, .. of $items items each - $source when given */
@@ -169,7 +169,7 @@ trait RunSteps
         return DB_AA::transaction(static fn() => TestRun::start($props + [
             'subject'     => self::DEF,
             'user'        => self::USER,
-            'position'    => Run::START,
+            'position'    => RunCursor::START,
             'mode'        => 'run',
             'dry'         => '',
             'limit'       => '',
