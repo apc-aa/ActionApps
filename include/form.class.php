@@ -319,6 +319,9 @@ class AA_Form extends AA_Object implements NamedInterface
     /** why process() did not save the posted data */
     protected string $error = '';
 
+    /** property id => value a new object's form shows instead of the default */
+    protected array $prefill = [];
+
     /** allows storing form in database
      *  AA_Object's method
      * @return array
@@ -377,6 +380,15 @@ class AA_Form extends AA_Object implements NamedInterface
         $this->object_type  = $otype;
         $this->object_id    = $oid;
         $this->object_owner = $oowner;
+    }
+
+    /** values the form of a new object shows - an edited object always shows what is stored
+     *  @param array<string, string> $values  property id => value
+     */
+    public function prefill(array $values): static
+    {
+        $this->prefill = $values;
+        return $this;
     }
 
     public static function factoryForm($otype, $oid, $oowner): AA_Form
@@ -522,6 +534,9 @@ class AA_Form extends AA_Object implements NamedInterface
                 if ($prop && ($default = $prop->getDefault()) && !$default->isEmpty()) {
                     $content->setAaValue($prop->getId(), $default);
                 }
+            }
+            foreach ($this->prefill as $prop_id => $value) {
+                $content->setAaValue($prop_id, new AA_Value($value));
             }
         } else {
             $managed  = Managed::factoryFromType($this->object_type);

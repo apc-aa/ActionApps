@@ -402,7 +402,12 @@ class Managed_Object extends Managed
     /** @inheritDoc */
     public function getForm(?string $id, ?string $module_id): ?AA_Form
     {
-        return AA_Form::factoryForm($this->getType(), $id, $module_id);
+        $form = AA_Form::factoryForm($this->getType(), $id, $module_id);
+        if ((string) $id === '') {
+            // a link may fill in a new object's form; it is saved only when the user posts it
+            $form->prefill($this->class::formPrefill($_GET['prefill'] ?? null));
+        }
+        return $form;
     }
 
     /** Saves the object the form was built for - the object id comes from the POSTed keys, so it is

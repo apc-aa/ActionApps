@@ -482,6 +482,16 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return null;
     }
 
+    /** The values a link may fill into the form of a new object, picked from the raw request
+     *  $requested (any type). None by default: a value the user would just click through to save
+     *  must be one the class can vouch for.
+     *  @return array<string, string>  property id => value
+     */
+    public static function formPrefill(mixed $requested): array
+    {
+        return [];
+    }
+
     /** AA_iEditable method - save the object to the database
      *
      * @return string|false - id of saved data or false
@@ -1214,11 +1224,11 @@ class AA_Aliasgenerator_Object extends AbstractAliasgenerator
         $aliases = new AA_Aliases();
 
         // the order is important - must be in the same order as search fields (for getManagerConf)
-        $aliases->addAlias(new AA_Alias('_#AA_NAME_', 'f_1', 'aa_name', 'aa_name'));
+        $aliases->addAlias(new AA_Alias('_#AA_NAME_', 'f_h', 'aa_name', 'aa_name'));
         $aliases->addFromProperties($params['object_type']::getClassProperties());   // do not move up or down - must be in the same order as search fields (for getManagerConf)
         $aliases->addAlias(new AA_Alias('_#AA_ID___', 'f_1', 'aa_id', 'aa_id'));
         $aliases->addAlias(new AA_Alias('_#AA_OWNER', 'f_1', 'aa_owner', 'aa_owner'));
-        $aliases->addAlias(new AA_Alias('_#AA_OW_NM', 'f_t:{modulefield:{_#AA_OWNER}:name}', 'aa_owner', 'aa_owner'));
+        $aliases->addAlias(new AA_Alias('_#AA_OW_NM', 'f_t:{safe:{modulefield:{_#AA_OWNER}:name}}', 'aa_owner', 'aa_owner'));
         return $aliases;
     }
 }

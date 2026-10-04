@@ -226,6 +226,31 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return null;
     }
 
+    /** A link may open a new task with a name, a time and a plain {import} call - another
+     *  expression from a link is dropped, the user would save it without reading it.
+     *  @inheritDoc
+     */
+    public static function formPrefill(mixed $requested): array
+    {
+        if (!is_array($requested)) {
+            return [];
+        }
+        $valid = [
+            // the name is shown in lists - no markup, no expression
+            'aa_name' => static fn(string $v): bool => (bool) preg_match('/\A[^<>&"{}\x00-\x1f]{1,100}\z/u', $v),
+            'task'    => static fn(string $v): bool => (bool) preg_match('/\A\{import:[0-9a-f]{32}:(?:run|changed|check)\}\z/', $v),
+            // strtotime() reads only up to a NUL byte, so control characters are refused first
+            'time'    => static fn(string $v): bool => !preg_match('/[\x00-\x1f]/', $v) && (strtotime($v) !== false),
+        ];
+        $prefill = [];
+        foreach ($valid as $key => $is_valid) {
+            if (is_string($requested[$key] ?? null) && $is_valid($requested[$key])) {
+                $prefill[$key] = $requested[$key];
+            }
+        }
+        return $prefill;
+    }
+
     /**
      * @param string $id
      * @return string
