@@ -20,7 +20,7 @@ final class RunCursor
      * - probed, pv: the changed mode asked probe() at the stream's start, and the version it gave;
      * - end: the jobs of the stream are done, its version is pending;
      * - after: the key of a closed stream whose expression is due;
-     * - checked: the check mode asked check(); ccode: what ends a check in its next step.
+     * - checked: a check or a live run asked check(); ccode: what ends the run in its next step.
      */
     public const START = [
         'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',

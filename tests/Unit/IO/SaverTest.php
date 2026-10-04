@@ -485,6 +485,43 @@ namespace Tests\Unit\IO {
             $this->assertSame([], $saver->samples());
         }
 
+        public function test_collisions_itemsRepeatingAKeyBeforeThem(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['a', 'b', 'a', '', 'a', ''])), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+
+            $saver->run(false);
+
+            $this->assertSame(2, $saver->collisions(), 'the second and the third a; an empty key is no key');
+            $saver->clear_ids();
+            $this->assertSame(0, $saver->collisions());
+            $saver->run(false);
+            $this->assertSame(2, $saver->collisions(), 'clear_ids() forgets the keys too - else all four would repeat');
+        }
+
+        public function test_collisions_keyOfTwoFieldsComparedAsAWhole(): void
+        {
+            $items = [
+                $this->item(self::ITEM1, ['relation........' => 'a|b', 'text...........1' => 'c']),
+                $this->item(self::ITEM2, ['relation........' => 'a', 'text...........1' => 'b|c']),
+                $this->item(self::ITEM3, ['relation........' => 'a', 'text...........1' => 'b|c']),
+                $this->item(sprintf('%032x', 4), ['relation........' => 'a', 'text...........1' => 'x']),
+            ];
+            $saver = (new RecordingSaver(new ArrayGrabber($items), null, self::SLICE, 'update/insert', '["relation........","text...........1"]'))->setImportMode();
+
+            $saver->run(false);
+
+            $this->assertSame(1, $saver->collisions());
+        }
+
+        public function test_collisions_onlyInImportMode(): void
+        {
+            $saver = new RecordingSaver(new ArrayGrabber($this->keyed(['a', 'a'])), null, self::SLICE, 'update/insert', '["relation........"]');
+
+            $saver->run();
+
+            $this->assertSame(0, $saver->collisions());
+        }
+
         public function test_setContext_paramsVisibleInValidationOnly(): void
         {
             // 'update' stores the item as it is - nothing (unlike complete4Insert()) would drop the parameter

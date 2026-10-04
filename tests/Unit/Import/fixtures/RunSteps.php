@@ -108,10 +108,16 @@ trait RunSteps
         return $position;
     }
 
-    /** a cursor already on $job, the stream's first, as a step before left it */
+    /** a cursor already on $job, the stream's first, as a step before left it - past the check() at the start */
     private static function onJob(string $job): array
     {
-        return ['job' => $job, 'pages' => 1, 'cur' => sha1($job)] + RunCursor::START;
+        return ['job' => $job, 'pages' => 1, 'cur' => sha1($job)] + self::pastCheck();
+    }
+
+    /** the cursor of a run whose check() at the start passed in a step before */
+    private static function pastCheck(): array
+    {
+        return ['checked' => 1] + RunCursor::START;
     }
 
     /** a source of $streams streams s1.. of $jobs jobs a, b, .. of $items items each - $source when given */

@@ -13,7 +13,10 @@ use AA\Import\RunCursor;
 use AA\Import\Stream;
 use AA\Import\StreamState;
 use AA\IO\DB\DB_AA;
+use AA\Http\TransportException;
+use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Import\Fixtures\CatalogSource;
@@ -178,6 +181,358 @@ final class RunCheckTest extends TestCase
         self::assertSame(['check'], $source->calls);
     }
 
+    // ------------------------------------------------------------ check() at the start of a run
+
+    public function test_run_checkAtStartRefusedErrors(): void
+    {
+        $source        = self::cataloged(streams: 1, jobs: 1, items: 1);
+        $source->check = new CheckResult(false, 'AUTH', '401 from the source');
+        $run           = self::startRun($source);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertSame(['error', 'AUTH'], self::errorOf($run->getId()));
+        self::assertSame('check', self::stored($run->getId())['error_path']);
+        self::assertSame(['step 1', 'error AUTH'], $steps, 'stored in one step, the error in the next - at once');
+        self::assertSame(['time' => self::NOW, 'ok' => false, 'code' => 'AUTH', 'msg' => '401 from the source'], StreamState::forDefinition(self::DEF)?->lastCheck());
+        self::assertSame(['check'], $source->calls);
+        self::assertSame([], $source->jobCalls, 'nothing imported');
+    }
+
+    public function test_run_checkAtStartRefusedBySource_errorsWithItsReason(): void
+    {
+        $source        = self::checkedSource(streams: 1);
+        $source->check = new SourceRefused('NO_CREDENTIAL', 'AA_APIKEY_X missing');
+        $run           = self::startRun($source);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertSame(['error', 'NO_CREDENTIAL'], self::errorOf($run->getId()));
+        self::assertSame(['step 1', 'error NO_CREDENTIAL'], $steps);
+        self::assertSame([], $source->jobCalls);
+        $failed = ['ok' => false, 'code' => 'NO_CREDENTIAL', 'msg' => ''];
+        self::assertSame(['time' => self::NOW] + $failed, StreamState::forDefinition(self::DEF)?->lastCheck(), 'recorded as a failed check()');
+        self::assertSame($failed, json_decode(self::stored($run->getId())['check'], true));
+    }
+
+    public function test_check_refusedCheck_recordsTheCodeNotTheText(): void
+    {
+        $source        = self::checkedSource(streams: 1);
+        // a token of the session, not a declared credential: redact() does not know it
+        $source->check = new SourceRefused('AUTH', '401 from https://example.cz/api?session=tok3n7171');
+        $run           = self::startRun($source, ['mode' => 'check']);
+
+        self::assertSame(['step 1', 'error AUTH'], self::runAll($run->getId()));
+
+        self::assertSame(['time' => self::NOW, 'ok' => false, 'code' => 'AUTH', 'msg' => ''], StreamState::forDefinition(self::DEF)?->lastCheck());
+        self::assertStringNotContainsString('tok3n7171', json_encode(self::stored($run->getId()), JSON_THROW_ON_ERROR));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function checkingModes(): array
+    {
+        return ['run' => ['run'], 'check' => ['check']];
+    }
+
+    #[DataProvider('checkingModes')]
+    public function test_resume_afterAFailedCheck_asksItAgain(string $mode): void
+    {
+        $source        = self::cataloged(streams: 1, jobs: 1, items: 1);
+        $source->check = new CheckResult(false, 'AUTH', 'token expired');
+        $run           = self::startRun($source, ['mode' => $mode]);
+        self::runAll($run->getId());
+        self::assertSame(['error', 'AUTH'], self::errorOf($run->getId()));
+
+        $source->check = new CheckResult(true, '', 'a new token');
+        DB_AA::transaction(static fn() => TestRun::lockForUpdate($run->getId())?->resume(AuthGetUid()));
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()), 'Continue after the user fixed the credential');
+        self::assertCount(2, array_filter($source->calls, static fn(string $c): bool => $c === 'check'));
+        self::assertTrue(StreamState::forDefinition(self::DEF)?->lastCheck()['ok']);
+        self::assertSame(($mode === 'run') ? ['k-s1:a-1'] : [], TestRun::storedValues('relation........'));
+    }
+
+    public function test_check_passedCheckThenProbeDown_isProgress(): void
+    {
+        $source                  = self::cataloged(streams: 1);
+        $source->failProbe['s1'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        $run                     = self::startRun($source, ['mode' => 'check']);
+
+        self::runOne();
+        self::assertSame(['0', 1], [self::stored($run->getId())['failures'], TestRun::get($run->getId())?->position()['checked']], 'a check keeps its check()');
+        unset($source->failProbe['s1']);
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s1', 'probe:s1', 'catalog:'], $source->calls);
+    }
+
+    public function test_run_checkAtStartTakingTheBudget_isProgress(): void
+    {
+        $source               = self::cataloged(streams: 1, jobs: 1, items: 1);
+        $source->checkSeconds = 20.0;
+        $run                  = self::startRun($source, ['mode' => 'changed']);
+
+        self::runOne();
+        self::assertSame(['check'], $source->calls, '7 s left - the probe waits for the next step');
+        self::assertSame(self::sorted(self::pastCheck()), self::sorted(TestRun::get($run->getId())?->position()), 'kept, not asked again');
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s1'], $source->calls);
+    }
+
+    public function test_resume_afterAnErrorPastTheCheck_doesNotAskAgain(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 2, items: 1, source: new CheckedSource());
+        $source->jobs['s1'][1]['error'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        $source->onCheck                = static function (CheckedSource $s): void {
+            // the hook's check() finds the source down: the run ends in error
+            if (count($s->checkCalls) === 1) {
+                $s->check = new SourceUnavailable('TRANSPORT', 'No answer');
+            }
+        };
+        $run = self::startRun($source);
+        self::runAll($run->getId());
+        self::assertSame(['error', 'TRANSPORT'], self::errorOf($run->getId()));
+        self::assertSame([1, ''], [TestRun::get($run->getId())?->position()['checked'], TestRun::get($run->getId())?->position()['ccode']]);
+
+        unset($source->jobs['s1'][1]['error']);
+        $source->check = new CheckResult(true, '', '');
+        DB_AA::transaction(static fn() => TestRun::lockForUpdate($run->getId())?->resume(AuthGetUid()));
+        self::assertSame(1, TestRun::get($run->getId())?->position()['checked'], 'Continue keeps a check() that passed');
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertCount(2, $source->checkCalls, 'at the start and by the hook - not again after Continue');
+        self::assertSame(['k-s1:a-1', 'k-s1:b-1'], TestRun::storedValues('relation........'));
+    }
+
+    public function test_run_checkAtStartPassed_isNoProgressOfAFailingStep(): void
+    {
+        $source             = self::checkedSource(streams: 2);
+        $source->jobs['s1'] = static fn(): array => throw new SourceUnavailable('TRANSPORT', 'No answer');
+        $run                = self::startRun($source);
+
+        self::runOne();
+        self::assertSame(['1', RunCursor::START], [self::stored($run->getId())['failures'], TestRun::get($run->getId())?->position()], 'the next step asks again');
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertCount(3, array_filter($source->jobCalls, static fn(array $c): bool => $c['stream'] === 's1'), 'three tries, as without the check');
+        self::assertSame(['k-s2:a-1'], TestRun::storedValues('relation........'), 'the hook skipped s1: its check() passed');
+        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function outages(): array
+    {
+        return ['source unavailable' => ['unavailable'], 'transport' => ['transport']];
+    }
+
+    #[DataProvider('outages')]
+    public function test_run_checkAtStartUnavailableRetries(string $outage): void
+    {
+        $source        = self::checkedSource(streams: 2);
+        $source->check = ($outage === 'transport') ? new TransportException('no route to host') : new SourceUnavailable('TRANSPORT', 'No answer');
+        $run           = self::startRun($source);
+
+        self::runOne();
+        $after = TestRun::get($run->getId());
+        self::assertSame(['running', self::NOW + 1800], [$after?->state(), (int) self::stored($run->getId())['next_at']], 'retried as a transport failure');
+        self::runAll($run->getId());
+
+        self::assertSame(['error', 'TRANSPORT'], self::errorOf($run->getId()));
+        self::assertCount(3, $source->checkCalls, 'three steps; the hook has no job to skip and does not ask again');
+        self::assertSame([], $source->jobCalls);
+        self::assertSame([], self::warnings($run->getId()));
+        self::assertNull(StreamState::forDefinition(self::DEF), 'an outage is no answer of check()');
+    }
+
+    public function test_run_checkAtStartUpAgain_importsEverything(): void
+    {
+        $source          = self::checkedSource(streams: 2);
+        $source->check   = new SourceUnavailable('TRANSPORT', 'No answer');
+        $source->onCheck = static function (CheckedSource $s): void {
+            if (count($s->checkCalls) === 1) {
+                $s->check = new CheckResult(true, '', 'fine now');
+            }
+        };
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(self::keys(2, 1, 1), TestRun::storedValues('relation........'));
+        self::assertCount(2, $source->checkCalls);
+        self::assertSame([], self::warnings($run->getId()), 'no stream skipped');
+        self::assertTrue(StreamState::forDefinition(self::DEF)?->lastCheck()['ok']);
+    }
+
+    public function test_run_checkAtStart_stepsDyingThere_skipTheFirstStream(): void
+    {
+        $source = self::checkedSource(streams: 2);
+        $run    = self::startRun($source);
+        // two steps died before their end, each maybe past the check() and in the first job
+        self::storedSet($run->getId(), 'lease', (string) (self::NOW - 1));
+        self::storedSet($run->getId(), 'lease_tok', 'dead-step');
+        self::storedSet($run->getId(), 'failures', '2');
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['k-s2:a-1'], TestRun::storedValues('relation........'), 's1 skipped as before the check at the start');
+        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+        self::assertCount(2, $source->checkCalls, 'by the hook, then at the start of the next step');
+    }
+
+    public function test_run_checkAtStartOnceAcrossSteps(): void
+    {
+        $source = self::cataloged(streams: 3, jobs: 1, items: 1, seconds: 15.0);
+        $run    = self::startRun($source);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertGreaterThan(2, count($steps));
+        self::assertSame(['check'], array_values(array_filter($source->calls, static fn(string $c): bool => $c === 'check')));
+        self::assertSame('check', $source->calls[0], 'before any job');
+        self::assertSame(['time' => self::NOW, 'ok' => true, 'code' => '', 'msg' => ''], StreamState::forDefinition(self::DEF)?->lastCheck());
+    }
+
+    /** @return array<string, array{string, string, int}> */
+    public static function startModes(): array
+    {
+        return [
+            'run'         => ['run', '', 1],
+            'changed'     => ['changed', '', 1],
+            'dry run'     => ['run', '1', 0],
+            'dry changed' => ['changed', '1', 0],
+        ];
+    }
+
+    #[DataProvider('startModes')]
+    public function test_run_checkAtStartOfALiveRunOnly(string $mode, string $dry, int $checks): void
+    {
+        $source = self::cataloged(streams: 1, jobs: 1, items: 1);
+        $run    = self::startRun($source, ['mode' => $mode, 'dry' => $dry]);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertCount($checks, array_filter($source->calls, static fn(string $c): bool => $c === 'check'));
+    }
+
+    public function test_run_checkAtStartTakesTimeFromTheFirstJob(): void
+    {
+        $source               = self::cataloged(streams: 1, jobs: 1, items: 1);
+        $source->checkSeconds = 20.0;
+        $run                  = self::startRun($source);
+
+        self::runOne();
+
+        self::assertSame([], TestRun::$savers, '7 s left - the job waits for the next step');
+        self::assertSame(1, TestRun::get($run->getId())?->position()['checked']);
+        self::runAll($run->getId());
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['k-s1:a-1'], TestRun::storedValues('relation........'));
+    }
+
+    public function test_run_uncheckableSourceImportsAsBefore(): void
+    {
+        $source = self::source(streams: 1, jobs: 1, items: 1);
+        $run    = self::startRun($source);
+
+        self::assertSame(['done'], self::runAll($run->getId()));
+        self::assertSame(['k-s1:a-1'], TestRun::storedValues('relation........'));
+        self::assertNull(StreamState::forDefinition(self::DEF)?->lastCheck());
+    }
+
+    // ------------------------------------------------------------ key collisions
+
+    public function test_report_keyCollisionsWithinJob(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 2, items: 0);
+        $source->jobs['s1'][0]['items'] = [['key' => 'k1', 'val' => '01'], ['key' => 'k1', 'val' => '02'], ['key' => 'k2', 'val' => 'x'], ['key' => 'k1', 'val' => '03']];
+        $source->jobs['s1'][1]['items'] = [['key' => 'k1', 'val' => 'the same key in another job']];
+        $run                            = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()), 'no error');
+        $report = json_decode(self::stored($run->getId())['report'], true);
+        self::assertSame(['jobs' => [['stream' => 's1', 'job' => 's1:a', 'count' => 2]], 'more' => 0], $report['collisions']);
+        self::assertSame(0, TestRun::get($run->getId())?->counts()['errors']);
+        self::assertCount(5, TestRun::stored(), 'each one stored - the last one wins');
+    }
+
+    public function test_report_noCollisions_noEntry(): void
+    {
+        $run = self::startRun(self::source(streams: 1, jobs: 2, items: 2), ['dry' => '1']);
+
+        self::runAll($run->getId());
+
+        self::assertArrayNotHasKey('collisions', json_decode(self::stored($run->getId())['report'], true));
+    }
+
+    public function test_report_keyCollisionsOfADryRun(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 1, items: 0);
+        $source->jobs['s1'][0]['items'] = [['key' => 'k1', 'val' => '01'], ['key' => 'k1', 'val' => '02']];
+        $run                            = self::startRun($source, ['dry' => '1']);
+
+        self::runAll($run->getId());
+
+        $report = json_decode(self::stored($run->getId())['report'], true);
+        self::assertSame(['jobs' => [['stream' => 's1', 'job' => 's1:a', 'count' => 1]], 'more' => 0], $report['collisions']);
+    }
+
+    public function test_report_keyCollisionsOfAJobAcrossSteps_addUp(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 1, items: 0, seconds: 10.0);
+        $source->jobs['s1'][0]['items'] = array_map(static fn(string $k): array => ['key' => $k, 'val' => 'v'], ['k1', 'k1', 'k1', 'k2', 'k2']);
+        $run                            = self::startRun($source);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertCount(2, $steps, 'three items fit a step');
+        $report = json_decode(self::stored($run->getId())['report'], true);
+        self::assertSame(['jobs' => [['stream' => 's1', 'job' => 's1:a', 'count' => 3]], 'more' => 0], $report['collisions'], 'one entry of the job');
+    }
+
+    public function test_report_keyCollisions_keptForTwentyJobs(): void
+    {
+        $source = self::source(streams: 1, jobs: 25, items: 0);
+        foreach ($source->jobs['s1'] as $j => $job) {
+            $source->jobs['s1'][$j]['items'] = [['key' => "k$j", 'val' => '1'], ['key' => "k$j", 'val' => '2']];
+        }
+        $source->jobs['s1'][24]['items'][] = ['key' => 'k24', 'val' => '3'];
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        $collisions = json_decode(self::stored($run->getId())['report'], true)['collisions'];
+        self::assertCount(20, $collisions['jobs']);
+        self::assertSame(['stream' => 's1', 'job' => 's1:t', 'count' => 1], $collisions['jobs'][19]);
+        self::assertSame(6, $collisions['more'], 'the five jobs not listed, the last one twice');
+    }
+
+    public function test_report_keyCollisions_jobKeyRedacted(): void
+    {
+        define('AA_APIKEY_RUNCOLL', 'sekret5151');
+        $source              = self::source(streams: 1, jobs: 1, items: 0);
+        $source->credentials = [['vendor' => 'RUNCOLL', 'context' => '']];
+        $source->jobs['s1']  = [['key' => 's1:x.sekret5151', 'items' => [['key' => 'k1', 'val' => '1'], ['key' => 'k1', 'val' => '2']]]];
+        $run                 = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        $collisions = json_decode(self::stored($run->getId())['report'], true)['collisions'];
+        self::assertSame('s1:x.***', $collisions['jobs'][0]['job']);
+        self::assertStringNotContainsString('sekret5151', (string) self::stored($run->getId())['collisions']);
+    }
+
     // ------------------------------------------------------------ versions of the streams
 
     public function test_version_fromVersionFieldMaxAcrossSteps(): void
@@ -202,7 +557,7 @@ final class RunCheckTest extends TestCase
     {
         $source               = self::cataloged(streams: 1, jobs: 1, items: 1);
         $source->probes['s1'] = new Probe(Probe::CHANGED, 'v-7');
-        $run                  = self::startRun($source);
+        $run                  = self::startRun($source, ['position' => self::pastCheck()]);
 
         self::runAll($run->getId());
 
@@ -215,7 +570,7 @@ final class RunCheckTest extends TestCase
         $source               = self::cataloged(streams: 1, jobs: 2, items: 1, seconds: 5.0);
         $source->minJob       = 25;
         $source->probes['s1'] = new Probe(Probe::CHANGED, 'v-start');
-        $run                  = self::startRun($source, ['mode' => 'changed']);
+        $run                  = self::startRun($source, ['mode' => 'changed', 'position' => self::pastCheck()]);
 
         self::runOne();
         $source->probes['s1'] = new Probe(Probe::CHANGED, 'v-later');
@@ -459,7 +814,7 @@ final class RunCheckTest extends TestCase
         $steps = self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()), 'the hook closed the stream - the run did not go round');
-        self::assertSame(['probe:s1', 'check'], $source->calls, 'probed once; then the hook asked check()');
+        self::assertSame(['check', 'probe:s1', 'check'], $source->calls, 'checked at the start, probed once; then the hook asked check()');
         self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
         self::assertLessThanOrEqual(5, count($steps));
     }
@@ -543,7 +898,7 @@ final class RunCheckTest extends TestCase
     public function test_versionProbe_keepsToTheBudget(): void
     {
         $source              = self::cataloged(streams: 1, jobs: 1, items: 1, seconds: 20.0);
-        $run                 = self::startRun($source);
+        $run                 = self::startRun($source, ['position' => self::pastCheck()]);
 
         self::runOne();
 
@@ -686,7 +1041,7 @@ final class RunCheckTest extends TestCase
         $source              = self::source(streams: 3, jobs: 1, items: 1, source: $checked);
         $source->failStreams = 3;   // every step fails, the hook gets the streams
         TestRun::$evaluate   = static function (): void {};
-        $run = self::startRun($source, ['position' => ['i' => 1, 'after' => 's1'] + RunCursor::START], ['after_stream' => '{x}']);
+        $run = self::startRun($source, ['position' => ['i' => 1, 'after' => 's1'] + self::pastCheck()], ['after_stream' => '{x}']);
 
         self::runAll($run->getId());
 
@@ -750,7 +1105,7 @@ final class RunCheckTest extends TestCase
             $s->streams = array_values(array_filter($s->streams, static fn(Stream $st): bool => $st->key !== 's1'));
         };
         TestRun::$evaluate = static function (): void {};
-        $run               = self::startRun($source, [], ['after_stream' => '{x}']);
+        $run               = self::startRun($source, ['position' => self::pastCheck()], ['after_stream' => '{x}']);
 
         self::runAll($run->getId());
 
@@ -773,6 +1128,14 @@ final class RunCheckTest extends TestCase
     private static function warnings(string $id): array
     {
         return (array) json_decode(self::stored($id)['warnings'] ?? '[]', true);
+    }
+
+    /** source() of one-item jobs over a CheckedSource whose check() passes */
+    private static function checkedSource(int $streams): CheckedSource
+    {
+        $source = new CheckedSource();
+        self::source($streams, 1, 1, source: $source);
+        return $source;
     }
 
     /** source() over a CatalogSource that checks, probes and has an empty catalog */

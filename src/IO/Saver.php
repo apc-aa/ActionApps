@@ -117,6 +117,12 @@ class Saver implements AA\Later\LaterInterface
     /** @var list<array<string, list<string>>> the first SAMPLES_KEPT items of an import dry run */
     private array $samples = [];
 
+    /** @var array<string, true> hashes of the keys an import met since clear_ids() */
+    private array $keys_seen = [];
+
+    /** items of an import whose key an item before them had */
+    private int $collisions = 0;
+
     private const NO_COUNTS = ['new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0];
 
     /** errors() and samples() keep this many - the rest is only counted */
@@ -169,6 +175,8 @@ class Saver implements AA\Later\LaterInterface
         $this->counts  = self::NO_COUNTS;
         $this->errors  = [];
         $this->samples = [];
+        $this->keys_seen  = [];
+        $this->collisions = 0;
     }
 
     /** An import run: an exception from prepare() is thrown, not swallowed - the import tells a
@@ -220,6 +228,15 @@ class Saver implements AA\Later\LaterInterface
     public function counts(): array
     {
         return $this->counts;
+    }
+
+    /** Items of an import since clear_ids() whose key fields hold the values of an item before
+     *  them, so both may end in one item. A lower bound: values compare exactly (the key lookup in the
+     *  slice may not), only items of this Saver are compared, and an earlier item counts even when it
+     *  was skipped or failed. An item with an empty key field has no key. */
+    public function collisions(): int
+    {
+        return $this->collisions;
     }
 
     /** run function
@@ -359,6 +376,9 @@ class Saver implements AA\Later\LaterInterface
 
                             $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
                         }
+                        if ($this->import_mode) {
+                            $this->noteKey($content4id, $flds);
+                        }
                         $zids = $this->findByKey($set);
                         $key_found = !$zids->isEmpty();
                         if ($report) {
@@ -496,6 +516,14 @@ class Saver implements AA\Later\LaterInterface
         if (!$this->import_mode) {
             $this->message(['err' => $report_message]);
         }
+    }
+
+    /** counts a key met before; a hash, so a long job keeps no source data */
+    private function noteKey(ItemContent $content, array $fields): void
+    {
+        $hash = sha1(serialize(array_map(static fn($fld): string => (string) $content->getValue($fld), $fields)), true);
+        $this->collisions += isset($this->keys_seen[$hash]) ? 1 : 0;
+        $this->keys_seen[$hash] = true;
     }
 
     /** "field=value, ..." of the key fields, each value shortened */

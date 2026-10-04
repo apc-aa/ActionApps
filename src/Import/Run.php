@@ -53,6 +53,9 @@ class Run extends BatchRun
     /** items a dry run shows */
     private const SAMPLES_KEPT = 5;
 
+    /** jobs whose key collisions the run lists; the rest it only counts */
+    private const COLLISIONS_KEPT = 20;
+
     private const MODES = ['run', 'changed', 'check'];
 
     /** what walkJobs() and runJob() return when the step stops at the cursor */
@@ -77,8 +80,12 @@ class Run extends BatchRun
     protected $errors = '';
     /** JSON list of the first items a dry run would store, for its report */
     protected $samples = '';
-    /** JSON {ok, code, msg} of the check() of a check run, for its report */
+    /** JSON {ok, code, msg} of the run's check(), for the report of a check */
     protected $check = '';
+    /** JSON {jobs: [{stream, job, count}] of the first jobs whose items repeat a key, more: the repeats
+     *  in jobs not listed}, for the report. Saver::collisions() of each step's part of a job - a lower
+     *  bound; a job read again after JOB_GONE may count twice. */
+    protected $collisions = '';
 
     /** @var array<string, int> what the step counted so far */
     private array $tally = self::COUNTS;
@@ -92,6 +99,8 @@ class Run extends BatchRun
     private array $streamRecords = [];
     /** @var list<array<string, list<string>>> what the dry run of the step would store */
     private array $stepSamples = [];
+    /** @var list<array{stream: string, job: string, count: int}> the key collisions of the step */
+    private array $stepCollisions = [];
     /** the check() of the step, its message redacted */
     private ?CheckResult $checkResult = null;
     /** the catalog with the pages of the step, stored at its end */
@@ -100,7 +109,7 @@ class Run extends BatchRun
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check'] as $id) {
+        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -180,14 +189,15 @@ class Run extends BatchRun
 
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult
     {
-        $this->tally         = self::COUNTS;
-        $this->notes         = [];
-        $this->itemErrors    = [];
-        $this->touched       = [];
-        $this->streamRecords = [];
-        $this->stepSamples   = [];
-        $this->checkResult   = null;
-        $this->catalog       = null;
+        $this->tally          = self::COUNTS;
+        $this->notes          = [];
+        $this->itemErrors     = [];
+        $this->touched        = [];
+        $this->streamRecords  = [];
+        $this->stepSamples    = [];
+        $this->stepCollisions = [];
+        $this->checkResult    = null;
+        $this->catalog        = null;
         try {
             return $this->walk(RunCursor::fromPosition($from), $budget);
         } finally {
@@ -211,9 +221,10 @@ class Run extends BatchRun
     }
 
     /**
-     * What the step leaves besides its items, under the lock of the end of the step: item errors and
-     * samples into the run; versions, probe times, check() and catalog pages, not in a dry run. A run
-     * ended meanwhile never gets here - the core does not end a step it no longer holds.
+     * What the step leaves besides its items, under the lock of the end of the step: item errors,
+     * key collisions and samples into the run; versions, probe times, check() and catalog pages, not
+     * in a dry run. A run ended meanwhile never gets here - the core does not end a step it no longer
+     * holds.
      */
     protected function commitStep(BatchStepResult $r): void
     {
@@ -226,6 +237,10 @@ class Run extends BatchRun
         if ($extra['samples'] ?? []) {
             $this->samples = self::addUpTo((string) $this->samples, $extra['samples'], self::SAMPLES_KEPT);
             $write[]       = 'samples';
+        }
+        if ($extra['collisions'] ?? []) {
+            $this->collisions = self::addCollisions((string) $this->collisions, $extra['collisions']);
+            $write[]          = 'collisions';
         }
         if ($write) {
             $this->update($write);
@@ -251,10 +266,15 @@ class Run extends BatchRun
         }
     }
 
-    /** the report of a done run: its check() and probes of a check, the samples of a dry run */
+    /** the report of a done run: its check() and probes of a check, the samples of a dry run, the
+     *  jobs whose items repeat a key */
     protected function finalCheck(): array
     {
-        $report = [];
+        $report     = [];
+        $collisions = self::collisionsOf((string) $this->collisions);
+        if ($collisions['jobs']) {
+            $report['collisions'] = $collisions;
+        }
         if ($this->mode() === 'check') {
             $report['check'] = json_decode((string) $this->check, true);
             $report['probe'] = ['probed' => $this->counts()['streams'], 'unchanged' => $this->counts()['unchanged']];
@@ -291,7 +311,10 @@ class Run extends BatchRun
                 return $this->skipped($last, $pos, RunCursor::nextStream($pos), $keys, 'VERSION_UNKNOWN');
             }
             $source = $this->source();
-            if (!($source instanceof Checkable)) {
+            // a check() at the start that never answered leaves no job to skip; a step that passed it
+            // (its cursor stayed, see stopped()) or died may have got past it
+            $passed = (($last->extra['check'] ?? null) instanceof CheckResult);
+            if (!($source instanceof Checkable) || ($this->checksAtStart($source, $pos) && !$passed && ($last->retry !== 'STEP_DIED'))) {
                 return null;
             }
             // the step's budget may be spent by now; the lease must outlast the decision
@@ -343,6 +366,9 @@ class Run extends BatchRun
         $pos     = $from;
         $ctx     = null;
         try {
+            if ($pos['ccode'] !== '') {
+                throw new BatchFailed($pos['ccode'], 'check');
+            }
             $source  = $this->source();
             $ctx     = $this->context($source, $budget);
             if ($this->mode() === 'check') {
@@ -353,10 +379,13 @@ class Run extends BatchRun
                 return $this->walkCheck($source, $ctx, $budget, $from, $pos, $keys);
             }
             $mapping = $this->mapping();
+            $first   = true;   // the first call of a step always goes
+            if ($this->checksAtStart($source, $pos) && !$this->checkSource($source, $ctx, $pos, $first)) {
+                return $this->result($pos, false, $keys);
+            }
             $streams = self::streamsOf($source);
             $changed = ($this->mode() === 'changed');
             $state   = $this->streamState();
-            $first   = true;   // the first call of a step always goes
             while (true) {
                 if ($pos['after'] !== '') {
                     if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
@@ -478,24 +507,10 @@ class Run extends BatchRun
      */
     private function walkCheck(SourceInterface $source, Context $ctx, BatchBudget $budget, array $from, array &$pos, array $keys): BatchStepResult
     {
-        if ($pos['ccode'] !== '') {
-            throw new BatchFailed($pos['ccode'], 'check');
-        }
         $first = true;   // the first call of a step always goes
         try {
-            if ($pos['checked'] === 0) {
-                if ($source instanceof Checkable) {
-                    $check             = $source->check($ctx);
-                    $this->checkResult = new CheckResult($check->ok, $check->code, $ctx->redact($check->message));
-                    $first             = false;
-                    if (!$check->ok) {
-                        $pos['ccode'] = $check->code;
-                    }
-                }
-                $pos['checked'] = 1;
-                if ($pos['ccode'] !== '') {
-                    return $this->result($pos, false, $keys);
-                }
+            if (($pos['checked'] === 0) && !$this->checkSource($source, $ctx, $pos, $first)) {
+                return $this->result($pos, false, $keys);
             }
             $streams = ($source instanceof Probeable) ? self::streamsOf($source) : [];
             // the versions imported so far tell probe() what is new
@@ -537,6 +552,41 @@ class Run extends BatchRun
             return $this->result($pos, false, $keys);
         }
         return $this->result($pos, true, $keys);
+    }
+
+    /**
+     * check() once, at the start of a check or of a live run; $first is false once it asked. A
+     * failure goes into the cursor and ends the run in the next step, after this one stored the
+     * check(); a refusal thrown is kept by its reason only - its text may carry a URL with a token
+     * redact() does not know. An outage is thrown and retried as any failure to reach the source.
+     * @return bool whether the run goes on
+     */
+    private function checkSource(SourceInterface $source, Context $ctx, array &$pos, bool &$first): bool
+    {
+        if ($source instanceof Checkable) {
+            $first = false;
+            try {
+                $check = $source->check($ctx);
+            } catch (SourceRefused $e) {
+                $check = new CheckResult(false, $e->reason, '');
+            }
+            $this->checkResult = new CheckResult($check->ok, $check->code, $ctx->redact($check->message));
+            $pos['ccode']      = $check->ok ? '' : $check->code;
+        }
+        $pos['checked'] = 1;
+        return $pos['ccode'] === '';
+    }
+
+    /** a live run checks the source before its first job; a dry one stores nothing a failure would spoil */
+    private function checksAtStart(SourceInterface $source, array $pos): bool
+    {
+        return !$this->isDry() && ($pos['checked'] === 0) && ($source instanceof Checkable);
+    }
+
+    /** Continue asks check() again: the user may have fixed what it refused */
+    protected function positionOnResume(array $position): array
+    {
+        return (($position['ccode'] ?? '') === '') ? $position : (['ccode' => '', 'checked' => 0] + $position);
     }
 
     /** run mode, a stream versioned by probe(): it is asked when the stream is done */
@@ -745,6 +795,9 @@ class Run extends BatchRun
         foreach ($saver->errors() as $error) {
             $this->itemError($stream, $job, $error, $base, $ctx);
         }
+        if ($saver->collisions() > 0) {
+            $this->stepCollisions[] = ['stream' => $stream, 'job' => $ctx->redact($job), 'count' => $saver->collisions()];
+        }
         if ($this->isDry()) {
             $this->stepSamples = array_slice(array_merge($this->stepSamples, $saver->samples()), 0, self::SAMPLES_KEPT);
         }
@@ -854,7 +907,7 @@ class Run extends BatchRun
             min($pos['i'], count($keys)),
             count($keys),
             $retry,
-            ['errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog],
+            ['errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog, 'collisions' => $this->stepCollisions],
         );
     }
 
@@ -862,6 +915,11 @@ class Run extends BatchRun
      *  @param list<string> $keys */
     private function stopped(array $pos, array $from, array $keys, string $retry): BatchStepResult
     {
+        if (($retry !== '') && ($this->mode() !== 'check') && BatchPosition::same($from, ['checked' => $from['checked']] + $pos)) {
+            // a check() passed is no progress of a step that failed before any job started (streams(),
+            // jobs(), probe()): those get their three tries; the next step asks again
+            $pos = $from;
+        }
         if (($retry === '') && BatchPosition::same($from, $pos)) {
             $retry = 'NO_PROGRESS';
         }
@@ -901,6 +959,41 @@ class Run extends BatchRun
     private static function addUpTo(string $json, array $more, int $max): string
     {
         return json_encode(array_slice(array_merge(self::listOf($json), array_values($more)), 0, $max), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    }
+
+    /**
+     * The key collisions $json with $more added: a job split over steps adds up in its entry, a new
+     * job gets one while fewer than COLLISIONS_KEPT are listed, else it counts in more.
+     * @param list<array{stream: string, job: string, count: int}> $more
+     */
+    private static function addCollisions(string $json, array $more): string
+    {
+        $collisions = self::collisionsOf($json);
+        foreach ($more as $entry) {
+            foreach ($collisions['jobs'] as $i => $kept) {
+                if (is_array($kept) && (($kept['stream'] ?? null) === $entry['stream']) && (($kept['job'] ?? null) === $entry['job'])) {
+                    $collisions['jobs'][$i]['count'] = (int) ($kept['count'] ?? 0) + $entry['count'];
+                    continue 2;
+                }
+            }
+            if (count($collisions['jobs']) < self::COLLISIONS_KEPT) {
+                $collisions['jobs'][] = $entry;
+            } else {
+                $collisions['more'] += $entry['count'];
+            }
+        }
+        return json_encode($collisions, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    }
+
+    /** @return array{jobs: list<mixed>, more: int} the key collisions $json; none when it cannot be read */
+    private static function collisionsOf(string $json): array
+    {
+        $collisions = json_decode($json, true);
+        $jobs       = $collisions['jobs'] ?? null;
+        return [
+            'jobs' => (is_array($jobs) && array_is_list($jobs)) ? $jobs : [],
+            'more' => (int) ($collisions['more'] ?? 0),
+        ];
     }
 
     /** @return list<mixed> the JSON list $json; [] when it cannot be read */

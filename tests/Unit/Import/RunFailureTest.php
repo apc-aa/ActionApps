@@ -157,11 +157,11 @@ final class RunFailureTest extends TestCase
         self::assertSame(['k-s1:a-1', 'k-s1:c-1'], TestRun::storedValues('relation........'));
         self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
         self::assertSame(1, TestRun::get($run->getId())?->counts()['skipped_jobs']);
-        self::assertSame([false], array_column($source->checkCalls, 'tx'), 'asked once, outside any transaction');
+        self::assertSame([false, false], array_column($source->checkCalls, 'tx'), 'at the start and by the hook, outside any transaction');
         $skip = TestRun::$committed[3];
         self::assertSame('', $skip->retry);
         self::assertSame(
-            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1] + RunCursor::START),
+            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1] + self::pastCheck()),
             self::sorted($skip->position),
             'the next job, not started yet',
         );
@@ -177,7 +177,7 @@ final class RunFailureTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(self::sorted(['i' => 1] + RunCursor::START), self::sorted(TestRun::$committed[3]->position));
+        self::assertSame(self::sorted(['i' => 1] + self::pastCheck()), self::sorted(TestRun::$committed[3]->position));
         self::assertSame(['k-s1:a-1', 'k-s2:a-1', 'k-s2:b-1'], TestRun::storedValues('relation........'));
         self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
         self::assertSame('v-old', StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'the next changed run imports the stream again');
@@ -274,7 +274,7 @@ final class RunFailureTest extends TestCase
 
         self::runOne();
 
-        self::assertSame(self::sorted(['i' => 1] + RunCursor::START), self::sorted(TestRun::get($run->getId())?->position()));
+        self::assertSame(self::sorted(['i' => 1] + self::pastCheck()), self::sorted(TestRun::get($run->getId())?->position()));
         self::assertSame(RunCursor::MAX_PAGES, $yields);
     }
 
@@ -341,7 +341,7 @@ final class RunFailureTest extends TestCase
                 yield ['key' => 's1:b', 'items' => [['key' => 'k-b', 'val' => 'v']], 'error' => $dead];
             }
         };
-        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 2, 'cur' => sha1('s1:a')] + RunCursor::START]);
+        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 2, 'cur' => sha1('s1:a')] + self::pastCheck()]);
 
         self::runAll($run->getId());
 
@@ -383,7 +383,7 @@ final class RunFailureTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['error', 'NO_PROGRESS'], self::errorOf($run->getId()), 'skipping what does not fit a round would lose data quietly');
-        self::assertSame([], $source->checkCalls);
+        self::assertCount(1, $source->checkCalls, 'at the start only - the hook asks nothing');
         self::assertSame(['hint' => 'TOEXECUTE_ALLOWED_TIME'], TestRun::get($run->getId())?->progress((string) $GLOBALS['permission_uid'])['extra']);
     }
 
@@ -403,7 +403,7 @@ final class RunFailureTest extends TestCase
             'down'    => new SourceUnavailable('TRANSPORT', 'No answer'),
             'refused' => new SourceRefused('AUTH', '401 from the source'),
         };
-        $run = self::startRun($source);
+        $run = self::startRun($source, ['position' => self::pastCheck()]);
 
         self::runAll($run->getId());
 
