@@ -36,6 +36,8 @@ class ScriptedBatchRun extends BatchRun
     /** @var ?\Closure(BatchStepResult): (array|BatchStepResult|null) what onRetriesExhausted() answers - a position
      *  goes on via withPosition(); null = the core's own */
     public static ?\Closure $onExhausted = null;
+    /** @var ?\Closure(array): array the position Continue goes on from, logged; null = the core's own, not logged */
+    public static ?\Closure $onResume = null;
     /** what stillValid() answers, or throws */
     public static bool|\Throwable $valid = true;
     public static ?\Throwable $commitThrows = null;
@@ -64,6 +66,7 @@ class ScriptedBatchRun extends BatchRun
         self::$afterCloseThrows = null;
         self::$onFinalCheck     = null;
         self::$onExhausted      = null;
+        self::$onResume         = null;
         self::$valid            = true;
         self::$commitThrows     = null;
         self::$retryDelays      = [];
@@ -170,6 +173,15 @@ class ScriptedBatchRun extends BatchRun
         }
         $next = (self::$onExhausted)($last);
         return is_array($next) ? $last->withPosition($next) : $next;
+    }
+
+    protected function positionOnResume(array $position): array
+    {
+        if (!self::$onResume) {
+            return parent::positionOnResume($position);
+        }
+        $this->log('positionOnResume', $position);
+        return (self::$onResume)($position);
     }
 
     protected function stillValid(): bool

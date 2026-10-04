@@ -186,6 +186,13 @@ abstract class BatchRun extends AA_Object
         return null;
     }
 
+    /** The position Continue goes on from, under the lock of resume(): the user may have fixed what
+     *  the run stopped at (import: check() is asked again). */
+    protected function positionOnResume(array $position): array
+    {
+        return $position;
+    }
+
     /** seconds before the next try after a step the source failed; $failures after that step - 0 = it
      *  moved on even so, 1-2 = it did not. A final phase without its report waits the same way. */
     protected function retryDelay(int $failures): int
@@ -447,11 +454,12 @@ abstract class BatchRun extends AA_Object
         $this->failures   = '0';
         $this->error_code = '';
         $this->error_path = '';
+        $this->position   = self::positionJson($this->positionOnResume($this->position()));
         // when the step is due: until it has had its chance the run does not hang (isStuck())
         $this->next_at    = (string) $now;
         $this->step       = (string) ($this->step() + 1);
         $this->enqueue($now);
-        $this->update(['failures', 'step', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
+        $this->update(['failures', 'step', 'position', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
     }
 
     /** Keeps a secret the steps need (Central: the source's login token) encrypted with the server's

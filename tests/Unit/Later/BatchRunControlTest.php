@@ -283,6 +283,23 @@ final class BatchRunControlTest extends TestCase
         $this->assertSame('step 2', self::runQueued());
     }
 
+    public function test_resume_goes_on_from_the_position_of_the_hook(): void
+    {
+        $id = self::start()->getId();
+        TableDb::$tables['toexecute'] = [];
+        foreach (['state' => 'error', 'error_code' => 'AUTH', 'failures' => '1'] as $prop => $value) {
+            self::storedSet($id, $prop, $value);
+        }
+        ScriptedBatchRun::$onResume = static fn(array $position): array => ['n' => 7] + $position;
+
+        self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+
+        $call = ScriptedBatchRun::call('positionOnResume');
+        $this->assertSame([['n' => 0], true], [$call['arg'], $call['locked']], 'the stored position, under the lock');
+        $this->assertSame(['n' => 7], self::fresh($id)->position());
+        $this->assertSame([BatchPosition::fingerprint(1, ['n' => 7])], self::queued(), 'the step queued for it');
+    }
+
     public function test_resume_from_final_check_error_repeats_final_phase(): void
     {
         $id = self::start()->getId();
