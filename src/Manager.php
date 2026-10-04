@@ -1167,7 +1167,7 @@ class Manager extends AA_Storable
             if (!$may_write) {
                 $refused = true;
             } else {
-                $form = $this->managed->getForm($_GET['id'], $this->module_id);
+                $form = $this->managed->getForm(self::requestedId(), $this->module_id);
                 // the managed of the page - with its actions, not the defaults (add, edit)
                 if ($form->process($_POST['aa'], $this->managed) === AA_Form::REFUSED) {
                     $this->msg[] = MsgErr($form->getError());
@@ -1227,6 +1227,13 @@ class Manager extends AA_Storable
     }
 
 
+    /** the object of the edit form, ?id=; '' = none - ?id[]=x is an array, which names no object */
+    private static function requestedId(): string
+    {
+        $id = $_GET['id'] ?? '';
+        return is_string($id) ? $id : '';
+    }
+
     /**
      * @param zids|null $zids  @deprecated - manager should generate the zids from its own settings
      * @return string
@@ -1237,20 +1244,21 @@ class Manager extends AA_Storable
         global $r_state;
 
         $zids = $zids ?? $this->getZids();
+        $id   = self::requestedId();
 
-        if (!$this->form_posted && (($_GET['id'] && $this->managed->isAction('edit')) || ($_GET['add'] && $this->managed->isAction('add')))) {
+        if (!$this->form_posted && (($id && $this->managed->isAction('edit')) || (($_GET['add'] ?? '') && $this->managed->isAction('add')))) {
 
-            if (($refusal = $this->managed->formRefusal($_GET['id'] ?? '', $this->module_id)) !== null) {
+            if (($refusal = $this->managed->formRefusal($id, $this->module_id)) !== null) {
                 $r_state['manager'][$this->_manager_id] = $this->getState();
                 return $this->getAndClearMessages() . MsgErr($refusal);
             }
-            $form = $this->managed->getForm($_GET['id'], $this->module_id);
+            $form = $this->managed->getForm($id, $this->module_id);
             $form_buttons = [ "update", "cancel"];
 
             try {
                 // the id goes back with the post - the form saves only the object it was built for
-                $html = $this->getAndClearMessages() . '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $_GET['id'] ? ['id' => $_GET['id']] : []))) . '">' . FormToken::field(self::FORM_TOKEN);
-                $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($_GET['id']), $form_buttons);
+                $html = $this->getAndClearMessages() . '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $id ? ['id' => $id] : []))) . '">' . FormToken::field(self::FORM_TOKEN);
+                $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($id), $form_buttons);
                 $html .= '<tr><td colspan="2">';
                 $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();
                 $html .= '</td></tr>';

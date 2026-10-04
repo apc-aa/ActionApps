@@ -100,6 +100,15 @@ namespace Tests\Unit\Legacy {
             $this->assertStringNotContainsString('<script>', $html);
         }
 
+        /** ?id[]=x names no object: the list, not a TypeError of the form */
+        public function test_an_array_id_opens_no_form(): void
+        {
+            $html = self::page(['id' => [self::OWN]]);
+
+            $this->assertStringNotContainsString('[code]', $html);
+            $this->assertStringNotContainsString('Array', $html);
+        }
+
         /** a failing form reports its exception - whose message may carry the id of the request */
         public function test_the_error_of_the_form_is_escaped(): void
         {
