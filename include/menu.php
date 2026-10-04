@@ -209,7 +209,7 @@ function get_aamenus(): array
         $searchbar = new AA_Searchbar(AA::$module_id);
 
         foreach ((array) $bookmarks as $bookid => $bookname) {
-            $aamenus["itemmanager_submenu"]['items']['bookmark' . $bookid] = ["href" => "admin/index.php?GoBookmark=$bookid", "label" => "$bookname <span class='aa-bin-cnt'>" . count($searchbar->getBookmarkZids($bookid)) . "</span>"];
+            $aamenus["itemmanager_submenu"]['items']['bookmark' . $bookid] = ["href" => "admin/index.php?GoBookmark=$bookid", "label" => safe($bookname) . " <span class='aa-bin-cnt'>" . count($searchbar->getBookmarkZids($bookid)) . "</span>"];
         }
     }
 

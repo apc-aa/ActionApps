@@ -738,7 +738,7 @@ class AA_Searchbar extends AA_Storable
             if (empty($row)) {
                 $ret .= "   ChangeOperators('" . $this->form_name . "','$i','');\n";
             } elseif (!$row->isReadonly()) {
-                $ret .= "   ChangeOperators('" . $this->form_name . "','$i','" . $row->getOperator() . "');\n";
+                $ret .= "   ChangeOperators('" . $this->form_name . "','$i'," . json_encode((string) $row->getOperator(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ");\n";   // the operator comes from the URL
             }
         }
         if ($this->show & MGR_SB_BOOKMARKS) {

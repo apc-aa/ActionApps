@@ -137,7 +137,7 @@ function get_aamenus(): array
         $aamenus['linkmanager_submenu']['items']['bookmark' . $bookid]
             = [
                 "href" => $module_location . "index.php?GoBookmark=$bookid",
-                "label" => $bookname,
+                "label" => safe($bookname),
             ];
     }
     /*    $aamenus['linkmanager_submenu']['items']['header3'] = _m('Misc');
