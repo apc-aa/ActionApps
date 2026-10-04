@@ -272,6 +272,18 @@ namespace Tests\Unit\Later {
             $this->assertNull(Toexecute::roundSeconds());
         }
 
+        public function test_cancel_all_removes_only_rows_of_the_selector(): void
+        {
+            $this->seed(new RecordingTask('a'), 'COUNT_LINKS', 100);
+            $other = $this->seed(new RecordingTask('o'), 'Plan_1', 100);
+            $this->seed(new RecordingTask('b'), 'COUNT_LINKS', 50, Toexecute::TOEXECUTE_USER_TASK_TIME);
+            $longer = $this->seed(new RecordingTask('l'), 'COUNT_LINKS:now', 100);
+
+            (new Toexecute())->cancel_all('COUNT_LINKS');
+
+            $this->assertSame([$other, $longer], array_keys($this->queue()), 'every row of the selector, parked ones too, and only those');
+        }
+
         public function test_timeLeft_nested_round_gives_the_outer_one_back(): void
         {
             $this->requireDefaultRoundSize();

@@ -220,13 +220,12 @@ class Toexecute
         $this->later($object, $params, $selector, $priority, self::TOEXECUTE_USER_TASK_TIME);
     }
 
-    /** cancel_all function
-     * @param $selector
+    /** removes every queued row of $selector, parked user-queue rows too
+     * @param string $selector
      */
     public function cancel_all($selector): void
     {
-        $varset = new Cvarset();
-        $varset->doDeleteWhere('toexecute', "selector='" . quote($selector) . "'");
+        DB_AA::delete('toexecute', [['selector', (string) $selector]]);
     }
 
     /** One queue run as the cron entry points do it: plan the AA maintenance
@@ -477,8 +476,9 @@ class Toexecute
     /** The FAILED_EVENT row: "#id Class file:line", never the message (it may carry
      *  passwords). The AA-relative path gives up its head first, so the file name and
      *  line survive the log.params width.
+     *  @param int|string $id the queue row, or the batch run whose step failed
      */
-    public static function failureParams(int $id, \Throwable $e): string
+    public static function failureParams(int|string $id, \Throwable $e): string
     {
         $head  = "#$id " . $e::class . ' ';
         $where = FatalLogger::format('', $e->getFile(), $e->getLine(), defined('AA_BASE_PATH') ? (string) constant('AA_BASE_PATH') : '')['selector'];

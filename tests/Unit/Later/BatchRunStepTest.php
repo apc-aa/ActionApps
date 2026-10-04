@@ -7,30 +7,9 @@ declare(strict_types=1);
  * through the final phase. The record lives in TableDb's object_text, the steps in its toexecute.
  */
 
-// AA_Object (include/statestore.php) and the queue need the config constants include/config.php gives
-
-namespace {
-    foreach ([
-        'AA_INSTAL_URL'   => 'http://localhost/aa/',
-        'AA_INSTAL_PATH'  => '/aa/',
-        'IMG_UPLOAD_PATH' => sys_get_temp_dir() . '/',
-        'AA_BASE_PATH'    => dirname(__DIR__, 3) . '/',
-        'PERM_LIB'        => 'sql',
-        'DB_HOST'         => 'localhost',
-        'DB_NAME'         => 'aa_test',
-        'DB_USER'         => 'aa',
-        'DB_PASSWORD'     => '',
-    ] as $k => $v) {
-        if (!defined($k)) {
-            define($k, $v);
-        }
-    }
-}
-
 namespace Tests\Unit\Later {
 
     use AA\IO\DB\DB_AA;
-    use AA\IO\DB\DB_PDO;
     use AA\Later\BatchFailed;
     use AA\Later\BatchPosition;
     use AA\Later\BatchStep;
@@ -42,91 +21,16 @@ namespace Tests\Unit\Later {
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Central\Package\Fixtures\TableDb;
+    use Tests\Unit\Later\Fixtures\BatchRunTables;
+    use Tests\Unit\Later\Fixtures\QueueRefusingDb;
     use Tests\Unit\Later\Fixtures\ScriptedBatchRun;
 
-    // the helper classes at the end extend the fixture, so it loads with the file, not in setUpBeforeClass()
-    require_once __DIR__ . '/../Legacy/fixtures/store_fixtures.php';
-    require_once __DIR__ . '/Fixtures/ScriptedBatchRun.php';
+    // the helper class at the end extends the fixture, so it loads with the file, not in setUpBeforeClass()
+    require_once __DIR__ . '/Fixtures/BatchRunTables.php';
 
     final class BatchRunStepTest extends TestCase
     {
-        /** after the real clock, so the queue keeps the times the run asks for */
-        private const NOW     = 1_900_000_000;
-        private const SUBJECT = '5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a';
-        private const USER    = 'uid-1';
-
-        public static function setUpBeforeClass(): void
-        {
-            require_once __DIR__ . '/../../../include/constants.php';
-            require_once __DIR__ . '/../../../include/util.php';
-            require_once __DIR__ . '/../Central/Package/fixtures/TableDb.php';
-        }
-
-        protected function setUp(): void
-        {
-            TableDb::reset();
-            TableDb::$engines    = ['object_text' => 'InnoDB', 'toexecute' => 'InnoDB'];
-            $GLOBALS['spareDBs'] = [new TableDb(), new TableDb(), new TableDb(), new TableDb()];
-            ScriptedBatchRun::reset();
-            ScriptedBatchRun::$now      = self::NOW;
-            ScriptedBatchRun::$microNow = (float) self::NOW;
-        }
-
-        protected function tearDown(): void
-        {
-            $GLOBALS['spareDBs'] = [];
-            TableDb::reset();
-            ScriptedBatchRun::reset();
-            QueueRefusingDb::$refused = 0;
-            set_time_limit(0);   // a task later() runs at once sets a 30 s limit - it must not outlive the test
-        }
-
-        /** a run started as its users start it - in their own transaction */
-        private static function start(?string $state = null, array $props = []): ScriptedBatchRun
-        {
-            return DB_AA::transaction(static fn() => ScriptedBatchRun::start($props + ['subject' => self::SUBJECT, 'user' => self::USER, 'position' => ['n' => 0], 'note' => 'mine'], $state));
-        }
-
-        /** @return array<string, string> property => value of the stored record */
-        private static function stored(string $id): array
-        {
-            $rows = array_filter(TableDb::rows('object_text'), static fn(array $r): bool => $r['object_id'] === $id);
-            return array_map('strval', array_column($rows, 'value', 'property'));
-        }
-
-        /** changes a stored property behind the run's back, as another process would */
-        private static function storedSet(string $id, string $property, string $value): void
-        {
-            foreach (TableDb::$tables['object_text'] as $i => $row) {
-                if (($row['object_id'] === $id) && ($row['property'] === $property)) {
-                    TableDb::$tables['object_text'][$i]['value'] = $value;
-                    return;
-                }
-            }
-            TableDb::$tables['object_text'][] = ['id' => 999, 'object_id' => $id, 'property' => $property, 'priority' => 0, 'value' => $value, 'flag' => null];
-        }
-
-        /** @return list<array<string, mixed>> the queue rows */
-        private static function queue(): array
-        {
-            return TableDb::rows('toexecute');
-        }
-
-        private static function stepOf(array $row): BatchStep
-        {
-            $step = unserialize((string) $row['object']);
-            self::assertInstanceOf(BatchStep::class, $step);
-            return $step;
-        }
-
-        /** runs the oldest queued step as the queue does: the row goes away after the step */
-        private static function runQueued(): string
-        {
-            $row = self::queue()[0] ?? throw new LogicException('Nothing queued');
-            $ret = self::stepOf($row)->toexecutelater();
-            TableDb::$tables['toexecute'] = array_values(array_filter(TableDb::rows('toexecute'), static fn(array $r): bool => $r['id'] !== $row['id']));
-            return $ret;
-        }
+        use BatchRunTables;
 
         // ---------------------------------------------------------------- start
 
@@ -477,18 +381,13 @@ namespace Tests\Unit\Later {
             ScriptedBatchRun::$script = [new BatchStepResult(['n' => 5], false)];
             $GLOBALS['spareDBs']      = [new QueueRefusingDb(), new QueueRefusingDb(), new QueueRefusingDb(), new QueueRefusingDb()];
 
-            try {
-                self::runQueued();
-                $this->fail('A step ended without its next step queued');
-            } catch (\RuntimeException) {
-                $this->addToAssertionCount(1);
-            }
+            $this->assertSame('error INTERNAL', self::runQueued(), 'a run without its next step would wait for ever');
 
             $this->assertSame(1, QueueRefusingDb::$refused);
             $this->assertSame(['work', 'commitStep'], ScriptedBatchRun::hooks(), 'the next step later() ran at once found the old record - stale');
             $stored = self::stored($id);
-            $this->assertSame('0', $stored['step']);
-            $this->assertSame(['n' => 0], json_decode($stored['position'], true));
+            $this->assertSame('error', $stored['state']);
+            $this->assertSame(['n' => 0], json_decode($stored['position'], true), 'the end of the step rolled back');
         }
 
         public function test_runStep_final_phase_refused_when_lease_token_changed(): void
@@ -507,27 +406,26 @@ namespace Tests\Unit\Later {
             $this->assertNotContains('afterClose', ScriptedBatchRun::hooks());
         }
 
-        public function test_runStep_safety_row_repeats_failed_final_phase(): void
+        public function test_runStep_safety_row_repeats_final_phase_of_dead_process(): void
         {
-            $id = self::start()->getId();
+            $id   = self::start()->getId();
+            $died = [];
             ScriptedBatchRun::$script       = [new BatchStepResult(['n' => 7], true)];
-            ScriptedBatchRun::$onFinalCheck = static function (): void {
+            ScriptedBatchRun::$onFinalCheck = static function () use (&$died): void {
                 ScriptedBatchRun::$onFinalCheck = null;
-                throw new \RuntimeException('source down');
+                $died = TableDb::$tables;            // the process dies here, past any catch
             };
-            try {
-                self::runQueued();
-                $this->fail('finalCheck() did not throw');
-            } catch (\RuntimeException) {
-                $this->assertSame('running', self::stored($id)['state']);
-            }
+            self::runQueued();
+            TableDb::$tables        = $died;
+            ScriptedBatchRun::$calls = [];
+            $this->assertSame('running', self::stored($id)['state']);
 
             // the queue keeps the dead step's own row until its lease; the safety row runs the phase again
             $safety                = self::queue()[1];
             ScriptedBatchRun::$now = (int) $safety['execute_after'];
 
             $this->assertSame('done', self::stepOf($safety)->toexecutelater());
-            $this->assertSame(['work', 'commitStep', 'finalCheck', 'finalCheck', 'afterClose'], ScriptedBatchRun::hooks());
+            $this->assertSame(['finalCheck', 'afterClose'], ScriptedBatchRun::hooks());
             $this->assertSame('done', self::stored($id)['state']);
         }
 
@@ -703,72 +601,6 @@ namespace Tests\Unit\Later {
         public static function getClassProperties(): array
         {
             return parent::getClassProperties() + self::$odd;
-        }
-    }
-
-    /** TableDb whose queue INSERT fails without halting, as a DB_PDO in the 'no' halt mode does - so
-     *  Toexecute::later() runs the task at once */
-    final class QueueRefusingDb extends DB_PDO
-    {
-        public static int $refused = 0;
-
-        private TableDb $db;
-
-        public function __construct()
-        {
-            parent::__construct(['type' => 'db_pdo:sqlite', 'database' => ':memory:']);
-            $this->db = new TableDb();
-        }
-
-        public function query($Query_String): bool
-        {
-            if (str_starts_with($Query_String, 'INSERT INTO `toexecute`')) {
-                ++self::$refused;
-                return false;
-            }
-            return $this->db->query($Query_String);
-        }
-
-        public function query_halt(string $Query_String, string $mode): bool
-        {
-            return $this->query($Query_String);
-        }
-
-        public function next_record(): bool
-        {
-            $more         = $this->db->next_record();
-            $this->Record = $this->db->record();
-            return $more;
-        }
-
-        public function num_rows(): int
-        {
-            return $this->db->num_rows();
-        }
-
-        public function affected_rows(): int
-        {
-            return $this->db->affected_rows();
-        }
-
-        public function last_insert_id(): false|string
-        {
-            return $this->db->last_insert_id();
-        }
-
-        public function beginTransaction(): bool
-        {
-            return $this->db->beginTransaction();
-        }
-
-        public function commit(): bool
-        {
-            return $this->db->commit();
-        }
-
-        public function rollback(): bool
-        {
-            return $this->db->rollback();
         }
     }
 }

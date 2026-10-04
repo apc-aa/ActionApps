@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Later;
 
 use AA\IO\DB\DB_AA;
+use AA_Log;
 use AA_Object;
 use AA_Property;
 
@@ -28,14 +29,18 @@ abstract class BatchRun extends AA_Object
         'report', 'sealed', 'sealed_until',
     ];
 
-    /** what one step may work: 30 s less a margin for the end of the step */
-    private const STEP_SECONDS = 27;
-    /** how much longer than its budget a step may take before it counts as dead */
-    private const LEASE_OVERRUN = 60;
-    /** under the AA maintenance and feeds (10), which a run of weeks must not hold up */
-    private const STEP_PRIORITY = 5;
+    /** steps in a row without progress after which onRetriesExhausted() decides - nothing goes round for ever */
+    public const MAX_FAILURES = 3;
+
+    /** the longest step: a cron round lasts about 30 s */
+    private const STEP_SECONDS = 30;
+    /** left of the budget for the end of the step */
+    private const STEP_MARGIN = 3;
     /** JSON nesting written - what is stored can always be read back */
-    private const JSON_DEPTH = 16;
+    private const JSON_DEPTH = BatchStepResult::MAX_DEPTH;
+    /** what toError() changes */
+    private const ERROR_PROPS = ['state', 'error_code', 'error_path', 'next_at'];
+    private const LEASE_PROPS = ['lease', 'lease_tok'];
 
     /** a state name of states(): its active role means queued or working */
     protected $state = '';
@@ -76,20 +81,28 @@ abstract class BatchRun extends AA_Object
      *  it was read in: the lock ends with that transaction, this flag does not */
     private bool $locked = false;
 
+    /** set while a step queues its own row again: when the queue refuses the row, later() runs the step
+     *  at once, and that step would queue it again, without end */
+    private static bool $requeueing = false;
+
     /** the core's roles (active, error, done, ended) under the user's names, and its own states */
     abstract protected static function states(): BatchStates;
 
-    /** the queue selector of the run's steps */
+    /** The queue selector of the run's steps. Unique among unfinished runs (import: Import_<definition>,
+     *  one unfinished run per definition) - ending a run removes every queued row of it. */
     abstract public function selector(): string;
 
     /** may the user see and control the run */
     abstract public function mayControl(string $uid): bool;
 
     /** The work of one step from $from. Returns where the next step continues - never before $from,
-     *  and after the last work stored, even when the step fails. */
+     *  and after the last work stored, even when the step fails. It keeps to $budget, a request too
+     *  (HTTP timeout ≤ secondsLeft()): a longer step holds up the whole queue and outlives its lease. */
     abstract protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult;
 
-    /** the user's own writes at the end of a step, under the lock, after the token was checked */
+    /** The user's own writes at the end of a step, under the lock, after the token was checked. Also
+     *  called with the made-up result of a step that kept dying (retry STEP_DIED): work() did not run
+     *  then, and extra is empty. */
     protected function commitStep(BatchStepResult $r): void {}
 
     /** the final phase, outside any transaction (it may ask the source); returns the report */
@@ -100,6 +113,52 @@ abstract class BatchRun extends AA_Object
 
     /** after the commit of done or ended; an exception becomes a warning, the state stays */
     protected function afterClose(string $state): void {}
+
+    /** MAX_FAILURES steps without progress; outside any transaction, so it may ask the source. A position
+     *  other than $last->position goes on from there (import: skips the task); null ends the run in error
+     *  with the code of $last->retry. Never called in the final phase. */
+    protected function onRetriesExhausted(BatchStepResult $last): ?array
+    {
+        return null;
+    }
+
+    /** seconds before the next try after a step the source failed; $failures after that step - 0 = it
+     *  moved on even so, 1-2 = it did not. A final phase without its report waits the same way. */
+    protected function retryDelay(int $failures): int
+    {
+        return 1800;
+    }
+
+    /** How much longer than its budget a step may take - a shorter lease would take a live step for a dead
+     *  one. Not a licence to overrun: work() keeps to its budget, this covers the end of the step. */
+    protected function overrun(): int
+    {
+        return 60;
+    }
+
+    /** the shortest rest of a queue round a step is worth starting in */
+    protected function minStepSeconds(): int
+    {
+        return 10;
+    }
+
+    /** false = what the run stands on is gone (import: its definition); the run ends for good */
+    protected function stillValid(): bool
+    {
+        return true;
+    }
+
+    /** under the AA maintenance and feeds (10), which a run of weeks must not hold up */
+    protected function stepPriority(): int
+    {
+        return 5;
+    }
+
+    /** @return array{items: int, bytes: int} what one step may write (0 = no limit) */
+    protected function budgetLimits(): array
+    {
+        return ['items' => 0, 'bytes' => 0];
+    }
 
     protected static function now(): int
     {
@@ -198,13 +257,7 @@ abstract class BatchRun extends AA_Object
         if (!$run || !$run->isAt($expected)) {
             return 'stale';
         }
-        $budget = $class::budget();
-        $run    = DB_AA::transaction(static fn(): ?BatchRun => $class::lockForUpdate($id)?->claim($expected, $budget));
-        if (!$run) {
-            return 'stale';
-        }
-        $run->locked = false;           // the claim committed - work() and the hooks get no lock
-        return ($run->closing === '1') ? $run->finalPhase() : $run->stepWork($budget);
+        return $run->stepAt($expected);
     }
 
     /** From the own state $state to active, its step queued in the caller's transaction (it commits
@@ -277,40 +330,114 @@ abstract class BatchRun extends AA_Object
         return $own;
     }
 
-    /** what one step may spend - counted from now */
-    private static function budget(): BatchBudget
+    /** what one step may spend from now: a cron round's 30 s at most, never past the round running now
+     *  ($left), less a margin for the end of the step */
+    private static function stepSeconds(?float $left): float
     {
-        return new BatchBudget(static::microNow() + self::STEP_SECONDS, 0, 0, static::microNow(...));
+        return max(0.0, min((float) self::STEP_SECONDS, $left ?? (float) self::STEP_SECONDS) - self::STEP_MARGIN);
     }
 
     /** a lease covers the budget and the overrun - a shorter one would take a live step for a dead one */
-    private static function leaseUntil(int $now, BatchBudget $budget): int
+    private function leaseUntil(int $now, float $seconds): int
     {
-        return $now + (int) ceil($budget->secondsLeft()) + self::LEASE_OVERRUN;
+        return $now + (int) ceil($seconds) + $this->overrun();
     }
 
-    /** the claim: a lease long enough for the step and a token only this step knows */
-    private function claim(string $expected, BatchBudget $budget): ?static
+    /** A queued step that is not stale: the checks that need no lock, the claim, then the work or the
+     *  final phase. */
+    private function stepAt(string $expected): string
+    {
+        try {
+            $valid    = $this->stillValid();
+            $min      = $this->minStepSeconds();
+            $limits   = $this->budgetLimits();
+            $overrun  = $this->overrun();
+            $priority = $this->stepPriority();
+        } catch (\Throwable $e) {
+            // the queue drops the row after the step - the run must show why it stopped
+            $this->logFailure($e);
+            return $this->errorAt($expected, ...self::failure($e));
+        }
+        if (!$valid) {
+            return $this->endInvalid($expected);
+        }
+        $round = Toexecute::roundSeconds();
+        if (($round !== null) && ($round < $min)) {
+            // no later round is longer until the config changes - waiting would go round for ever
+            return $this->errorAt($expected, 'ROUND_TOO_SHORT', '');
+        }
+        $left = Toexecute::timeLeft();
+        if (($left !== null) && ($left < $min)) {
+            // at the round's end, not now - the queue would take the row again every second
+            $this->requeue(static::now() + (int) ceil($left) + 1, $priority);
+            return 'round end';
+        }
+        $budget = new BatchBudget(static::microNow() + self::stepSeconds($left), $limits['items'], $limits['bytes'], static::microNow(...));
+        $claim  = 'stale';
+        $run    = $this->whileLocked(static function (self $run) use ($expected, $budget, $overrun, $priority, &$claim): bool {
+            $claim = $run->claim($expected, $budget, $overrun, $priority);
+            return $claim !== 'stale';
+        });
+        if (!$run || ($claim === 'leased')) {
+            return $claim;
+        }
+        if ($run->closing === '1') {
+            return ($claim === 'died') ? $run->finalFailed() : $run->finalPhase();
+        }
+        return $run->stepWork($budget, $claim === 'died');
+    }
+
+    /** The claim: a lease long enough for the step and a token only this step knows.
+     *  @return string stale, leased (another step holds a live lease), claimed, or died (the step before
+     *                 died holding its lease, and that spends the retries) */
+    private function claim(string $expected, BatchBudget $budget, int $overrun, int $priority): string
     {
         if (!$this->isAt($expected)) {
-            return null;
+            return 'stale';
         }
-        $this->lease     = (string) self::leaseUntil(static::now(), $budget);
+        $now  = static::now();
+        $died = false;
+        if ((string) $this->lease_tok !== '') {
+            if ((int) $this->lease > $now) {
+                // a step works (a hand-run Execute, the queue's own retry); should it die, this row finds it
+                $this->requeue((int) $this->lease + 1, $priority);
+                return 'leased';
+            }
+            // a step died holding the lease: a step without progress, this row works in its place
+            $died = ($this->failures() + 1 >= self::MAX_FAILURES);
+            if (!$died) {
+                $this->failures = (string) ($this->failures() + 1);
+            }
+        }
+        // as leaseUntil(), with the overrun read before the lock, where its failure can still be shown
+        $this->lease     = (string) ($now + (int) ceil($budget->secondsLeft()) + $overrun);
         $this->lease_tok = bin2hex(random_bytes(16));
-        $this->update(['lease', 'lease_tok']);
-        return $this;
+        $this->update(['lease', 'lease_tok', 'failures']);
+        return $died ? 'died' : 'claimed';
     }
 
     /** the work outside any transaction - it may take the whole budget */
-    private function stepWork(BatchBudget $budget): string
+    private function stepWork(BatchBudget $budget, bool $died): string
     {
-        $from   = $this->position();
-        $result = BatchStep::during($this, fn(): BatchStepResult => $this->work($from, $budget, null));
-        $run    = $this->whileHolding((string) $this->lease_tok, static function (self $run) use ($from, $result): void {
-            $run->applyStep($from, $result);
-        });
+        $from = $this->position();
+        try {
+            $result = $died
+                ? new BatchStepResult($from, false, retry: 'STEP_DIED')
+                : BatchStep::during($this, fn(): BatchStepResult => $this->work($from, $budget, null));
+            if (!$result->finished && BatchPosition::same($from, $result->position) && ($this->failures() + 1 >= self::MAX_FAILURES)) {
+                $next   = BatchStep::during($this, fn(): ?array => $this->onRetriesExhausted($result));
+                $result = (($next === null) || BatchPosition::same($result->position, $next)) ? $result : $result->withPosition($next);
+            }
+            $run = $this->whileHolding((string) $this->lease_tok, static fn(self $run) => $run->applyStep($from, $result));
+        } catch (\Throwable $e) {
+            // the end of the step rolled back with its next step - left active, the run would wait for ever
+            return $this->failStep($e);
+        }
         if (!$run) {
             return $this->lostText();
+        }
+        if ($run->state() === static::states()->error) {
+            return 'error ' . $run->error_code;
         }
         // the final phase may ask the source - only after the end of the step is committed
         return ($run->closing === '1') ? $run->finalPhase() : ('step ' . $run->step());
@@ -325,48 +452,146 @@ abstract class BatchRun extends AA_Object
         if ($moved) {
             $this->moved = (string) $now;
         }
-        if ($moved || $r->finished) {
-            $this->failures = '0';
-        }
         $this->position = self::positionJson($r->position);
         $this->step     = (string) ($this->step() + 1);
-        $this->next_at  = '';
         $this->counts   = self::encode(self::add($this->json('counts'), $r->counts));
         $this->warnings = self::encode(self::add($this->json('warnings'), $r->warnings));
         $this->progress = self::encode(['label' => $r->label, 'done' => $r->done, 'total' => $r->total]);
         $this->commitStep($r);
         if ($r->finished) {
             // the lease stays for the final phase; if this process dies in it, the safety row repeats it
-            $this->closing = '1';
-            $this->lease   = (string) self::leaseUntil($now, self::budget());
+            $this->failures = '0';
+            $this->closing  = '1';
+            $this->next_at  = '';
+            $this->lease    = (string) $this->leaseUntil($now, self::stepSeconds(null));
             $this->enqueue((int) $this->lease + 1);
         } else {
-            $this->lease     = '';
-            $this->lease_tok = '';
-            $this->enqueue($now);
+            // a step that only ran out of time goes on at once; a failed source gets time to recover
+            $this->retryOrError($moved ? 0 : $this->failures() + 1, !in_array($r->retry, ['', 'NO_PROGRESS'], true), ($r->retry !== '') ? $r->retry : 'NO_PROGRESS');
         }
-        $this->update(['moved', 'failures', 'position', 'step', 'next_at', 'counts', 'warnings', 'progress', 'closing', 'lease', 'lease_tok']);
+        $this->update(['moved', 'failures', 'position', 'step', 'counts', 'warnings', 'progress', 'closing', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
+    }
+
+    /** The lease released, the next step queued - after retryDelay() when $wait - or, once $failures
+     *  reach MAX_FAILURES, error $code. */
+    private function retryOrError(int $failures, bool $wait, string $code): void
+    {
+        $now             = static::now();
+        $this->failures  = (string) $failures;
+        $this->lease     = '';
+        $this->lease_tok = '';
+        if ($failures >= self::MAX_FAILURES) {
+            $this->toError($code, '');
+            return;
+        }
+        $at            = $now + ($wait ? $this->retryDelay($failures) : 0);
+        $this->next_at = ($at > $now) ? (string) $at : '';
+        $this->enqueue($at);
+    }
+
+    /** A permanent failure of the step: error with a code and a place, only while the step owns the run. */
+    private function failStep(\Throwable $e): string
+    {
+        $this->logFailure($e);
+        [$code, $where] = self::failure($e);
+        $run = $this->whileHolding((string) $this->lease_tok, static function (self $run) use ($code, $where): void {
+            $run->toError($code, $where);
+            $run->step      = (string) ($run->step() + 1);
+            $run->lease     = '';
+            $run->lease_tok = '';
+            $run->update(['step', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
+        });
+        return $run ? "error $code" : $this->lostText();
+    }
+
+    /** a final phase that brought no report - a step without progress; with the retries spent, the run
+     *  errs without asking onRetriesExhausted(): there is nothing to skip */
+    private function finalFailed(): string
+    {
+        $run = $this->whileHolding((string) $this->lease_tok, static function (self $run): void {
+            $run->step = (string) ($run->step() + 1);
+            $run->retryOrError($run->failures() + 1, true, 'FINAL_CHECK');
+            $run->update(['failures', 'step', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
+        });
+        if (!$run) {
+            return $this->lostText();
+        }
+        return ($run->state() === static::states()->error) ? 'error FINAL_CHECK' : ('step ' . $run->step());
+    }
+
+    /** error $code without the lease - a step working elsewhere keeps it, and finds the run not active */
+    private function errorAt(string $expected, string $code, string $where): string
+    {
+        $run = $this->whileAt($expected, static function (self $run) use ($code, $where): void {
+            $run->toError($code, $where);
+            $run->update(self::ERROR_PROPS);
+        });
+        return $run ? "error $code" : 'stale';
+    }
+
+    /** what the run stands on is gone: ended for good, its queued steps with it */
+    private function endInvalid(string $expected): string
+    {
+        $run = $this->whileAt($expected, static function (self $run): void {
+            $run->moveTo($run::states()->ended);
+            $run->finished     = (string) $run::now();
+            $run->sealed       = '';
+            $run->sealed_until = '';
+            $run->update(['state', 'finished', 'sealed', 'sealed_until']);
+            (new Toexecute())->cancel_all($run->selector());
+        });
+        if (!$run) {
+            return 'stale';
+        }
+        $run->closed();
+        return $run->state();
     }
 
     /** finalCheck() outside any transaction, then done - only while the lease is still this step's */
     private function finalPhase(): string
     {
-        $report = BatchStep::during($this, fn(): array => $this->finalCheck());
-        $run    = $this->whileHolding((string) $this->lease_tok, static function (self $run) use ($report): void {
-            $run->moveTo($run::states()->done);
-            $run->report       = $report ? json_encode($report, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE, self::JSON_DEPTH) : '';
-            $run->finished     = (string) $run::now();
-            $run->sealed       = '';
-            $run->sealed_until = '';
-            $run->lease        = '';
-            $run->lease_tok    = '';
-            $run->update(['state', 'report', 'finished', 'sealed', 'sealed_until', 'lease', 'lease_tok']);
-        });
+        try {
+            $report = BatchStep::during($this, fn(): array => $this->finalCheck());
+        } catch (\Throwable $e) {
+            // a final phase without its report is a step without progress, retried
+            $this->logFailure($e);
+            return $this->finalFailed();
+        }
+        try {
+            $run = $this->whileHolding((string) $this->lease_tok, static function (self $run) use ($report): void {
+                $run->moveTo($run::states()->done);
+                $run->report       = $report ? json_encode($report, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE, self::JSON_DEPTH) : '';
+                $run->finished     = (string) $run::now();
+                $run->sealed       = '';
+                $run->sealed_until = '';
+                $run->lease        = '';
+                $run->lease_tok    = '';
+                $run->update(['state', 'report', 'finished', 'sealed', 'sealed_until', 'lease', 'lease_tok']);
+            });
+        } catch (\Throwable $e) {
+            // it would fail the same way again (a report too deep, a broken state) - no retry
+            return $this->failStep($e);
+        }
         if (!$run) {
             return $this->lostText();
         }
         $run->closed();
         return $run->state();
+    }
+
+    /** @return array{string, string} the error code and place of $e - its own for a BatchFailed */
+    private static function failure(\Throwable $e): array
+    {
+        return ($e instanceof BatchFailed) ? [$e->reason, $e->where] : ['INTERNAL', get_debug_type($e)];
+    }
+
+    /** the class and the line in the queue's failure log, as the queue logs a task that threw - never the
+     *  text, which may carry source data or a secret; a BatchFailed is no fault, its code says it all */
+    private function logFailure(\Throwable $e): void
+    {
+        if (!($e instanceof BatchFailed)) {
+            AA_Log::write(Toexecute::FAILED_EVENT, $this->selector(), Toexecute::failureParams($this->getId(), $e));
+        }
     }
 
     /** afterClose() after the commit: its failure only marks the progress - never its text, which may carry a secret */
@@ -411,6 +636,19 @@ abstract class BatchRun extends AA_Object
         });
     }
 
+    /** whileLocked() only while the run is still at the step the queue row $expected was made for
+     *  @param \Closure(self): void $write */
+    private function whileAt(string $expected, \Closure $write): ?self
+    {
+        return $this->whileLocked(static function (self $run) use ($expected, $write): bool {
+            if (!$run->isAt($expected)) {
+                return false;
+            }
+            $write($run);
+            return true;
+        });
+    }
+
     /** why a step wrote nothing: another step holds the lease, or the run is no longer active */
     private function lostText(): string
     {
@@ -420,12 +658,40 @@ abstract class BatchRun extends AA_Object
 
     /** Queues the step for the current step number and position. Call it before the record is written:
      *  later() runs a task it cannot queue at once, and such a step must find its row stale. */
-    private function enqueue(int $time): void
+    private function enqueue(int $time, ?int $priority = null): void
     {
         $step = new BatchStep(static::class, $this->getId(), BatchPosition::fingerprint($this->step(), $this->position()));
-        if ((new Toexecute())->later($step, [], $this->selector(), self::STEP_PRIORITY, $time) !== true) {
+        if ((new Toexecute())->later($step, [], $this->selector(), $priority ?? $this->stepPriority(), $time) !== true) {
             throw new \RuntimeException('The queue did not take the step of a batch run');
         }
+    }
+
+    /** queues the row being run once more, unchanged - such a step is not stale, so it must not do it again */
+    private function requeue(int $time, int $priority): void
+    {
+        if (self::$requeueing) {
+            return;
+        }
+        self::$requeueing = true;
+        try {
+            $this->enqueue($time, $priority);
+        } finally {
+            self::$requeueing = false;
+        }
+    }
+
+    /** the run in error, the lease untouched; the caller writes ERROR_PROPS */
+    private function toError(string $code, string $where): void
+    {
+        $this->moveTo(static::states()->error);
+        $this->error_code = $code;
+        $this->error_path = mb_strcut($where, 0, 255);
+        $this->next_at    = '';
+    }
+
+    private function failures(): int
+    {
+        return (int) $this->failures;
     }
 
     /** the queue row of $expected may work: the run is active and still at that step and position */

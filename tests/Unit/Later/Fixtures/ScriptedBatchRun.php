@@ -27,6 +27,16 @@ class ScriptedBatchRun extends BatchRun
     public static ?\Throwable $afterCloseThrows = null;
     /** @var ?\Closure(): void runs inside finalCheck() - a test looks at the run there */
     public static ?\Closure $onFinalCheck = null;
+    /** @var ?\Closure(BatchStepResult): ?array what onRetriesExhausted() answers; null = the core's own */
+    public static ?\Closure $onExhausted = null;
+    /** what stillValid() answers, or throws */
+    public static bool|\Throwable $valid = true;
+    public static ?\Throwable $commitThrows = null;
+    /** @var array<int, int> failures => seconds; a missing count = the core's own */
+    public static array $retryDelays = [];
+    /** @var array<string, mixed> hook => value that replaces the core's own, or a Throwable it throws
+     *                           (overrun, minStepSeconds, stepPriority, budgetLimits) */
+    public static array $hookValues = [];
 
     /** an own property, as a user of the core has */
     protected $note = '';
@@ -40,6 +50,11 @@ class ScriptedBatchRun extends BatchRun
         self::$finalReport      = [];
         self::$afterCloseThrows = null;
         self::$onFinalCheck     = null;
+        self::$onExhausted      = null;
+        self::$valid            = true;
+        self::$commitThrows     = null;
+        self::$retryDelays      = [];
+        self::$hookValues       = [];
     }
 
     /** @return list<string> the names of the hooks called, in order */
@@ -92,6 +107,9 @@ class ScriptedBatchRun extends BatchRun
     protected function commitStep(BatchStepResult $r): void
     {
         $this->log('commitStep', $r->extra);
+        if (self::$commitThrows) {
+            throw self::$commitThrows;
+        }
     }
 
     protected function finalCheck(): array
@@ -109,6 +127,55 @@ class ScriptedBatchRun extends BatchRun
         if (self::$afterCloseThrows) {
             throw self::$afterCloseThrows;
         }
+    }
+
+    protected function onRetriesExhausted(BatchStepResult $last): ?array
+    {
+        $this->log('onRetriesExhausted', $last);
+        return self::$onExhausted ? (self::$onExhausted)($last) : parent::onRetriesExhausted($last);
+    }
+
+    protected function stillValid(): bool
+    {
+        if (self::$valid instanceof \Throwable) {
+            throw self::$valid;
+        }
+        return self::$valid;
+    }
+
+    protected function retryDelay(int $failures): int
+    {
+        return self::$retryDelays[$failures] ?? parent::retryDelay($failures);
+    }
+
+    protected function overrun(): int
+    {
+        return self::hookValue('overrun') ?? parent::overrun();
+    }
+
+    protected function minStepSeconds(): int
+    {
+        return self::hookValue('minStepSeconds') ?? parent::minStepSeconds();
+    }
+
+    protected function stepPriority(): int
+    {
+        return self::hookValue('stepPriority') ?? parent::stepPriority();
+    }
+
+    protected function budgetLimits(): array
+    {
+        return self::hookValue('budgetLimits') ?? parent::budgetLimits();
+    }
+
+    /** the test's value of $hook, null = the core's own; a Throwable is thrown */
+    private static function hookValue(string $hook): mixed
+    {
+        $value = self::$hookValues[$hook] ?? null;
+        if ($value instanceof \Throwable) {
+            throw $value;
+        }
+        return $value;
     }
 
     protected static function now(): int

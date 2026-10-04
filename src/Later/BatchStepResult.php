@@ -9,6 +9,9 @@ namespace AA\Later;
  *  (TRANSPORT, SOURCE_UNSTABLE, SOURCE_CYCLE, NO_PROGRESS; STEP_DIED is set by the core). */
 final class BatchStepResult
 {
+    /** arrays nested in a position at most - the run stores it as JSON of this depth */
+    public const MAX_DEPTH = 16;
+
     /**
      * @param array $counts   deltas added to the run's counts (JSON, two levels at most)
      * @param array $warnings deltas added to the run's warnings
@@ -31,19 +34,46 @@ final class BatchStepResult
         if (($retry !== '') && !BatchFailed::isCode($retry)) {
             throw new \InvalidArgumentException('Batch retry reason must match ' . BatchFailed::CODE);
         }
-        // stored as JSON at the end of the step - invalid UTF-8 must fail here, in work(), not in that transaction
-        if (!mb_check_encoding($label, 'UTF-8') || !self::utf8Keys($counts) || !self::utf8Keys($warnings)) {
-            throw new \InvalidArgumentException('Batch step label and count names must be UTF-8');
+        // added and stored as JSON at the end of the step - a bad value must fail here, in work(), not in that transaction
+        if (!mb_check_encoding($label, 'UTF-8') || !self::tally($counts) || !self::tally($warnings)) {
+            throw new \InvalidArgumentException('Batch step label must be UTF-8, counts whole numbers two levels deep under UTF-8 names');
+        }
+        try {
+            BatchPosition::canonical($position);
+        } catch (\JsonException $e) {
+            throw new \InvalidArgumentException('Batch position must be UTF-8', 0, $e);
+        }
+        if (self::depth($position) > self::MAX_DEPTH) {
+            throw new \InvalidArgumentException('Batch position is nested deeper than ' . self::MAX_DEPTH);
         }
     }
 
-    private static function utf8Keys(array $values): bool
+    /** the same result going on from $position instead - the way on of onRetriesExhausted() */
+    public function withPosition(array $position): self
+    {
+        return new self($position, $this->finished, $this->counts, $this->warnings, $this->label, $this->done, $this->total, '', $this->extra);
+    }
+
+    /** whole numbers, at most two levels, under UTF-8 names */
+    private static function tally(array $values, int $levels = 2): bool
     {
         foreach ($values as $key => $value) {
-            if (!mb_check_encoding((string) $key, 'UTF-8') || (is_array($value) && !self::utf8Keys($value))) {
+            $ok = is_int($value) || (is_array($value) && ($levels > 1) && self::tally($value, $levels - 1));
+            if (!$ok || !mb_check_encoding((string) $key, 'UTF-8')) {
                 return false;
             }
         }
         return true;
+    }
+
+    private static function depth(array $value): int
+    {
+        $inner = 0;
+        foreach ($value as $item) {
+            if (is_array($item)) {
+                $inner = max($inner, self::depth($item));
+            }
+        }
+        return $inner + 1;
     }
 }

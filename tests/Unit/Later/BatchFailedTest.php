@@ -27,6 +27,32 @@ final class BatchFailedTest extends TestCase
         $this->assertSame('DEFINITION', $e->getMessage(), 'the message is the code only, a log never gets source text from it');
     }
 
+    /** @return array<string, array{string}> */
+    public static function badPlaces(): array
+    {
+        return [
+            'a URL with a query'  => ['https://api.example.org/data?token=hunter2'],
+            'source data'         => ['row "Praha, 12 345"'],
+            'a newline'           => ["stream 3\njob 4"],
+            'over 200 characters' => [str_repeat('a', 201)],
+            'a backslash'         => ['AA\\Import\\Run'],
+        ];
+    }
+
+    #[DataProvider('badPlaces')]
+    public function test_construct_rejects_where_that_is_no_own_place(string $where): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new BatchFailed('SOURCE_LOGIN', $where);
+    }
+
+    public function test_construct_accepts_own_places(): void
+    {
+        foreach (['', 'stream 3', 'job#12', 'csu:3/okres-1.2', 'úloha_7', str_repeat('a', 200)] as $where) {
+            $this->assertSame($where, (new BatchFailed('X', $where))->where);
+        }
+    }
+
     /** @return array<string, array{string, bool}> */
     public static function codes(): array
     {
