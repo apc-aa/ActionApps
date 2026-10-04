@@ -62,7 +62,12 @@ final class Client implements ClientInterface
         $this->http = is_null($http) ? HttpClient::create($options) : $http->withOptions($options);
     }
 
-    public function request(string $method, string $url, ?string $body = null, array $headers = []): Response
+    /**
+     * @param  array<string, string>     $headers
+     * @throws TransportException        when there was no answer at all (timeout, DNS, refused)
+     * @throws ResponseTooLargeException when the body is over $maxBytes
+     */
+    public function request(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): Response
     {
         $options = ['headers' => $headers];
         if (!is_null($body)) {
@@ -92,7 +97,7 @@ final class Client implements ClientInterface
      * @param array<string, string> $headers
      * @param bool $has_body HEAD, 204 and 304 carry the length of a body they do not send
      */
-    private function limitedContent(ResponseInterface $answer, array $headers, string $url, bool $has_body): string
+    private function limitedContent(ResponseInterface $answer, array $headers, #[\SensitiveParameter] string $url, bool $has_body): string
     {
         if ($has_body && ((int) ($headers['content-length'] ?? 0) > $this->maxBytes)) {
             $answer->cancel();

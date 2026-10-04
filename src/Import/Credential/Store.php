@@ -20,21 +20,25 @@ final class Store
      *
      * @param string $vendor  the source: 'csu', 'nzis', ...
      * @param string $context which of its keys: 'login', 'password', ...
+     * @throws \UnexpectedValueException when the key holds CR, LF or NUL; the message names the constant only
      */
     public static function resolve(string $vendor, string $context = ''): ?Secret
     {
-        foreach (self::names($vendor, $context) as $name) {
-            if (defined($name) && (string) constant($name) !== '') {
-                return new Secret((string) constant($name));
-            }
+        $name = self::constantName($vendor, $context);
+        if (is_null($name)) {
+            return null;
+        }
+        if (self::damaged($name)) {
+            throw new \UnexpectedValueException("$name holds a line break or NUL - fix it in the configuration");
         }
 
-        return null;
+        return new Secret((string) constant($name));
     }
 
+    /** whether the constant is set, damaged or not - resolve() tells the difference */
     public static function has(string $vendor, string $context = ''): bool
     {
-        return !is_null(self::resolve($vendor, $context));
+        return !is_null(self::constantName($vendor, $context));
     }
 
     /**
@@ -43,9 +47,30 @@ final class Store
      */
     public static function describe(string $vendor, string $context = ''): string
     {
-        $secret = self::resolve($vendor, $context);
+        $name = self::constantName($vendor, $context);
+        return match (true) {
+            is_null($name)       => _m('not set'),
+            self::damaged($name) => _m('damaged (a line break or NUL in %1)', [$name]),
+            default              => _m('set (%1)', [(new Secret((string) constant($name)))->hint()]),
+        };
+    }
 
-        return is_null($secret) ? _m('not set') : _m('set (%1)', [$secret->hint()]);
+    /** the constant that holds the key, most specific first; null when none is set */
+    private static function constantName(string $vendor, string $context): ?string
+    {
+        foreach (self::names($vendor, $context) as $name) {
+            if (defined($name) && (string) constant($name) !== '') {
+                return $name;
+            }
+        }
+
+        return null;
+    }
+
+    /** a key goes into HTTP headers, where a line break would add a header of its own */
+    private static function damaged(string $name): bool
+    {
+        return strpbrk((string) constant($name), "\r\n\0") !== false;
     }
 
     /**

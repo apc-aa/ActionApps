@@ -24,6 +24,9 @@ final class StoreTest extends TestCase
         if (!defined('AA_APIKEY_IMPORTCREDTEST_LOGIN')) {
             define('AA_APIKEY_IMPORTCREDTEST_LOGIN', 'login-value-1234');
         }
+        if (!defined('AA_APIKEY_IMPORTCREDBROKEN')) {
+            define('AA_APIKEY_IMPORTCREDBROKEN', "broken-value-55\r\nX-Injected: 1");
+        }
         if (!defined('AA_APIKEY_IMPORTCREDEMPTY')) {
             define('AA_APIKEY_IMPORTCREDEMPTY', '');
         }
@@ -50,6 +53,24 @@ final class StoreTest extends TestCase
     {
         self::assertNull(Store::resolve('importcredempty'));
         self::assertFalse(Store::has('importcredempty'));
+    }
+
+    public function test_resolve_lineBreakRefusedWithoutValue(): void
+    {
+        try {
+            Store::resolve('importcredbroken');
+            self::fail('UnexpectedValueException expected');
+        } catch (\UnexpectedValueException $e) {
+            self::assertStringContainsString('AA_APIKEY_IMPORTCREDBROKEN', $e->getMessage());
+            self::assertStringNotContainsString('broken-value', $e->getMessage());
+        }
+    }
+
+    // one broken constant must not break State Check or the form listing all keys
+    public function test_hasAndDescribe_damagedKeyDoNotThrow(): void
+    {
+        self::assertTrue(Store::has('importcredbroken'));
+        self::assertSame('damaged (a line break or NUL in AA_APIKEY_IMPORTCREDBROKEN)', Store::describe('importcredbroken'));
     }
 
     public function test_resolve_contextWins(): void
