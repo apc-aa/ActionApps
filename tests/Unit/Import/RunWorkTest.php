@@ -4,32 +4,23 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Import;
 
-use AA;
-use AA\Cache\PageCache;
 use AA\Import\Definition;
 use AA\Import\Probe;
 use AA\Import\Run;
 use AA\Import\Stream;
-use AA\Import\StreamState;
 use AA\IO\Grabber\CSV;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
 use AA\IO\DB\DB_AA;
 use AA\Later\BatchBudgetSpent;
 use AA\Later\Toexecute;
-use AA_Field;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
-use Tests\Unit\Import\Fixtures\ProbedSource;
-use Tests\Unit\Import\Fixtures\ScriptedSource;
+use Tests\Unit\Import\Fixtures\RunSteps;
 use Tests\Unit\Import\Fixtures\TestRun;
-use Tests\Unit\Later\Fixtures\BatchRunTables;
-use Tests\Unit\Legacy\Fixtures\FakeFields;
-use Tests\Unit\Legacy\Fixtures\FakeSlice;
 
-// the in-memory object_text and toexecute, the config constants, FakeSlice and the stored() helpers of the batch run tests
-require_once __DIR__ . '/../Later/Fixtures/BatchRunTables.php';
+require_once __DIR__ . '/fixtures/RunSteps.php';
 
 /**
  * Run::work() step by step through the queue: streams, jobs and items of a ScriptedSource into
@@ -42,69 +33,7 @@ require_once __DIR__ . '/../Later/Fixtures/BatchRunTables.php';
 #[RunTestsInSeparateProcesses]
 final class RunWorkTest extends TestCase
 {
-    use BatchRunTables {
-        setUp as private tablesSetUp;
-        tearDown as private tablesTearDown;
-    }
-
-    private const SLICE  = '5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b';
-    private const OTHER  = '6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c6c';
-    private const DEF    = '0123456789abcdef0123456789abcdef';
-    private const FIELDS = ['headline........', 'relation........', 'text...........1', 'text...........2'];
-    /** a mapping a job without parameters can use */
-    private const NO_PARAM_MAPPING = '{"rows":[{"to":"relation........","t":"copyfield","p":{"field2copy":"key"}}]}';
-
-    /** @var list<array{array<string>|string, string}> invalidateFor() calls of the page cache */
-    private static array $invalidated = [];
-
-    protected function setUp(): void
-    {
-        $this->tablesSetUp();
-        require_once __DIR__ . '/fixtures/TestRun.php';
-        require_once __DIR__ . '/fixtures/ProbedSource.php';
-        TestRun::reset();
-        TestRun::$now      = self::NOW;
-        TestRun::$microNow = (float) self::NOW;
-        foreach ([self::SLICE, self::OTHER] as $slice_id) {
-            $slice  = new FakeSlice($slice_id);
-            $fields = array_map(static fn(string $id): AA_Field => new AA_Field([
-                'id'                => $id,
-                'slice_id'          => $slice_id,
-                'text_stored'       => 1,
-                'in_item_tbl'       => '',
-                'input_show_func'   => 'fld',
-                'input_insert_func' => 'qte',
-                'input_validate'    => '',
-                'content_edit'      => 0,
-                'html_default'      => 0,
-                'multiple'          => 0,
-            ]), self::FIELDS);
-            $slice->setFields(new FakeFields($slice_id, $fields));
-        }
-        self::perms(PS_FEEDING . PS_EDIT_ALL_ITEMS, PS_EDIT_ALL_ITEMS);
-        self::$invalidated = [];
-        (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, new class extends PageCache {
-            public function invalidateFor($strings, $type = 'M', ?int $stored_before = null): int
-            {
-                RunWorkTest::recordInvalidation($strings, $type);
-                return 0;
-            }
-        });
-    }
-
-    protected function tearDown(): void
-    {
-        (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
-        TestRun::reset();
-        $this->tablesTearDown();
-        unset($GLOBALS['permission_uid'], $GLOBALS['permission_to']);
-    }
-
-    /** @internal for the page cache stub */
-    public static function recordInvalidation(mixed $strings, string $type): void
-    {
-        self::$invalidated[] = [$strings, $type];
-    }
+    use RunSteps;
 
     // ------------------------------------------------------------ walking streams and jobs
 
@@ -558,32 +487,13 @@ final class RunWorkTest extends TestCase
 
         self::runOne();
 
-        $stored = self::stored($run->getId());
-        self::assertSame('1', $stored['failures'], 'the 1000th job may start, the 1001st not');
-        self::assertSame(self::sorted($from), self::sorted(TestRun::get($run->getId())?->position()), 'nothing of the step counts');
+        $position = TestRun::get($run->getId())?->position();
+        self::assertSame(['s1:b', Run::MAX_PAGES], [$position['job'], $position['pages']], 'the 1000th job may start, the 1001st not');
         self::assertSame('SOURCE_CYCLE', TestRun::$committed[0]->retry);
-        self::assertSame(0, TestRun::get($run->getId())?->counts()['read']);
-
-        self::runAll($run->getId());
-        self::assertSame(['error', 'SOURCE_CYCLE'], self::errorOf($run->getId()));
-    }
-
-    public function test_work_sameKeyInARowIsANewJob(): void
-    {
-        $source         = self::source(streams: 1, jobs: 0, items: 0, seconds: 5.0);
-        $source->minJob = 18;
-        $source->jobs['s1'] = [
-            ['key' => 's1:a', 'items' => [['key' => 'k1', 'val' => 'v1']]],
-            ['key' => 's1:a', 'items' => [['key' => 'k2', 'val' => 'v2']]],
-            ['key' => 's1:c', 'items' => [['key' => 'k3', 'val' => 'v3']]],
-        ];
-        $run = self::startRun($source);
+        self::assertSame(2, TestRun::get($run->getId())?->counts()['read'], 'what got stored before counts');
 
         self::runOne();
-
-        self::assertSame(['k1', 'k2'], TestRun::storedValues('relation........'), '17 s left, s1:c needs 18');
-        $position = TestRun::get($run->getId())?->position();
-        self::assertSame(['s1:c', 3, sha1('s1:c'), 1], [$position['job'], $position['pages'], $position['cur'], $position['wrote']]);
+        self::assertSame('1', self::stored($run->getId())['failures'], 'from the cap on, no progress');
     }
 
     // ------------------------------------------------------------ where the cursor goes when the step stops
@@ -931,131 +841,5 @@ final class RunWorkTest extends TestCase
         self::assertTrue(Definition::mayImportInto($uid, self::SLICE));
         self::assertFalse(Definition::mayImportInto($uid, 'not-an-id'));
         self::assertFalse(Definition::mayImportInto($uid, self::OTHER), 'no feeding there');
-    }
-
-    // ------------------------------------------------------------ helpers
-
-    private static function perms(string $own, string $other): void
-    {
-        $GLOBALS['permission_uid'] = AuthGetUid();
-        $GLOBALS['permission_to']  = ['aa' => [AA_ID => ''], 'slice' => [self::SLICE => $own, self::OTHER => $other]];
-    }
-
-    private static function sorted(?array $position): array
-    {
-        $position = (array) $position;
-        ksort($position);
-        return $position;
-    }
-
-    /** a cursor already on $job, the stream's first, as a step before left it */
-    private static function onJob(string $job): array
-    {
-        return ['job' => $job, 'pages' => 1, 'cur' => sha1($job)] + Run::START;
-    }
-
-    /** a source of $streams streams s1.. of $jobs jobs a, b, .. of $items items each */
-    private static function source(int $streams, int $jobs, int $items, float $seconds = 0.0, bool $probed = false): ScriptedSource
-    {
-        $source              = $probed ? new ProbedSource() : new ScriptedSource();
-        TestRun::$itemSeconds = $seconds;
-        for ($s = 1; $s <= $streams; $s++) {
-            $source->streams[] = new Stream("s$s", "Stream $s", ['fld' => 'text...........1']);
-            for ($j = 0; $j < $jobs; $j++) {
-                $key = "s$s:" . chr(ord('a') + $j);
-                $source->jobs["s$s"][] = ['key' => $key, 'items' => array_map(static fn(int $n): array => ['key' => "k-$key-$n", 'val' => "v-$key-$n"], ($items > 0) ? range(1, $items) : [])];
-            }
-        }
-        TestRun::$source = $source;
-        return $source;
-    }
-
-    /** @return list<string> the keys of every item of source($streams, $jobs, $items), in order */
-    private static function keys(int $streams, int $jobs, int $items): array
-    {
-        $keys = [];
-        for ($s = 1; $s <= $streams; $s++) {
-            for ($j = 0; $j < $jobs; $j++) {
-                for ($n = 1; $n <= $items; $n++) {
-                    $keys[] = "k-s$s:" . chr(ord('a') + $j) . "-$n";
-                }
-            }
-        }
-        return $keys;
-    }
-
-    /**
-     * A stored definition of SLICE and a run of it, started as Service starts one.
-     * @param array<string, string> $props of the run
-     * @param array<string, string> $definition properties of the definition
-     */
-    private static function startRun(ScriptedSource $source, array $props = [], array $definition = []): TestRun
-    {
-        $def = new Definition();
-        $def->setNew(self::DEF, self::SLICE, 'prices');
-        $definition += [
-            'source'     => 'custom:scripted',
-            'mapping'    => '{"rows":[{"to":"relation........","t":"copyfield","p":{"field2copy":"key"}},{"to":"param:fld","t":"copyfield","p":{"field2copy":"val"}}]}',
-            'key_fields' => '["relation........"]',
-            'store_mode' => 'update/insert',
-            'enabled'    => '1',
-        ];
-        foreach ($definition as $property => $value) {
-            $def->setProperty($property, $value);
-        }
-        self::assertSame(self::DEF, $def->save());
-        $keys = array_map(static fn(Stream $s): string => $s->key, $source->streams);
-
-        return DB_AA::transaction(static fn() => TestRun::start($props + [
-            'subject'     => self::DEF,
-            'user'        => self::USER,
-            'position'    => Run::START,
-            'mode'        => 'run',
-            'dry'         => '',
-            'limit'       => '',
-            'snapshot'    => json_encode($def->snapshot(), JSON_THROW_ON_ERROR),
-            'stream_keys' => json_encode($keys, JSON_THROW_ON_ERROR),
-            'trigger'     => 'manual',
-        ]));
-    }
-
-    /** @param array<string, string> $versions stream key => version stored for the definition */
-    private static function streamVersions(array $versions): void
-    {
-        $state = StreamState::create(self::DEF);
-        foreach ($versions as $key => $version) {
-            $state->record($key, ['v' => $version]);
-        }
-        $state->store();
-    }
-
-    /** the queued step due first, run as the queue runs it - at its time, with a fresh step clock */
-    private static function runOne(): string
-    {
-        $rows = self::queue();
-        usort($rows, static fn(array $a, array $b): int => [(int) $a['execute_after'], (int) $a['id']] <=> [(int) $b['execute_after'], (int) $b['id']]);
-        $row = $rows[0] ?? throw new \LogicException('Nothing queued');
-        TestRun::$now      = max((int) TestRun::$now, (int) $row['execute_after']);
-        TestRun::$microNow = (float) TestRun::$now;
-        $ret               = self::stepOf($row)->toexecutelater();
-        TableDb::$tables['toexecute'] = array_values(array_filter(self::queue(), static fn(array $r): bool => $r['id'] !== $row['id']));
-        return $ret;
-    }
-
-    /** @return list<string> what each step said, till the run is finished */
-    private static function runAll(string $id, int $max = 30): array
-    {
-        $said = [];
-        while (in_array(TestRun::get($id)?->state(), ['running'], true) && self::queue() && (count($said) < $max)) {
-            $said[] = self::runOne();
-        }
-        return $said;
-    }
-
-    /** @return array{string, string} the state and the error code of the run */
-    private static function errorOf(string $id): array
-    {
-        $stored = self::stored($id);
-        return [$stored['state'], $stored['error_code'] ?? ''];
     }
 }

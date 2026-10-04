@@ -40,6 +40,10 @@ final class TestRun extends Run
     public static array $budgets = [];
     /** @var list<BatchStepResult> what each step handed to commitStep() */
     public static array $committed = [];
+    /** @var list<BatchBudget> the budget of each Context made */
+    public static array $contextBudgets = [];
+    /** null = the core's */
+    public static ?int $overrun = null;
 
     public static function reset(): void
     {
@@ -51,6 +55,8 @@ final class TestRun extends Run
         self::$savers    = [];
         self::$budgets   = [];
         self::$committed = [];
+        self::$contextBudgets = [];
+        self::$overrun   = null;
     }
 
     /** @return list<array<string, list<string>>> what the savers stored: field => values of each item */
@@ -95,6 +101,7 @@ final class TestRun extends Run
 
     protected function context(SourceInterface $source, BatchBudget $budget): Context
     {
+        self::$contextBudgets[] = $budget;
         $offline = new MockHttpClient(static fn() => throw new \LogicException('A test run went to the network'));
         return new Context($source->credentials(), $budget, Context::DEFAULT_MAX_BYTES, $offline, static fn(): array => []);
     }
@@ -105,10 +112,21 @@ final class TestRun extends Run
         return parent::work($from, $budget, $fetched);
     }
 
+    /** onRetriesExhausted() called directly, as the core calls it after three steps without progress */
+    public function exhausted(BatchStepResult $last): ?BatchStepResult
+    {
+        return $this->onRetriesExhausted($last);
+    }
+
     protected function commitStep(BatchStepResult $r): void
     {
         self::$committed[] = $r;
         parent::commitStep($r);
+    }
+
+    protected function overrun(): int
+    {
+        return self::$overrun ?? parent::overrun();
     }
 
     protected static function now(): int

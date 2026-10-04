@@ -28,7 +28,7 @@ class ScriptedSource extends AbstractSource
      * value), params, and optionally a grabber of its own, an exception prepare() throws, a grabber
      * that does not fetch via loadData(), fills items directly or waits between requests (ms), a
      * closure run first in prepare(), the item getItem() fails at and with what
-     * @var array<string, list<array<string, mixed>>|\Closure(): list<array<string, mixed>>>
+     * @var array<string, list<array<string, mixed>>|\Closure(): iterable<array<string, mixed>>>
      */
     public array $jobs = [];
 
