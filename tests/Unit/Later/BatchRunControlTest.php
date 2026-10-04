@@ -625,6 +625,26 @@ final class BatchRunControlTest extends TestCase
         $this->assertSame([], array_filter(array_slice(TableDb::$log, $log), static fn(string $sql): bool => str_contains($sql, 'FOR UPDATE')), 'no lock on another run inside the caller\'s transaction');
     }
 
+    public function test_leasedOf_lists_runs_whose_step_may_still_work(): void
+    {
+        $working = self::start()->getId();
+        $ended   = self::start()->getId();
+        $out     = self::start()->getId();
+        $never   = self::start()->getId();
+        self::leased($working);
+        self::leased($ended);
+        self::storedSet($ended, 'state', 'ended');
+        self::leased($out);
+        self::storedSet($out, 'lease', (string) self::NOW);   // runs out this second
+        self::storedSet($never, 'lease', (string) (self::NOW + 100));   // no token: no step holds it
+        $foreign = DB_AA::transaction(static fn() => ScriptedBatchRun::start(['subject' => '6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a6a', 'user' => self::USER, 'position' => []]))->getId();
+        self::leased($foreign);
+        $log = count(TableDb::$log);
+
+        $this->assertEqualsCanonicalizing([$working, $ended], ScriptedBatchRun::leasedOf(self::SUBJECT));
+        $this->assertCount(2, array_slice(TableDb::$log, $log), 'the ids, then the leases of all runs at once - no run is loaded whole');
+    }
+
     public function test_cleanup_inside_a_transaction_throws(): void
     {
         $this->expectException(LogicException::class);

@@ -551,6 +551,17 @@ abstract class BatchRun extends AA_Object
         return ((string) $this->lease_tok !== '') && ((int) $this->lease > $now);
     }
 
+    /** The runs of $subject, finished ones too, whose step may still be working (hasLiveLease()) - read
+     *  without loading them. No rights checked.
+     *  @return list<string> their ids */
+    final public static function leasedOf(string $subject): array
+    {
+        $now     = static::now();
+        $records = self::records('subject', $subject, ['lease', 'lease_tok']);
+        $leased  = array_filter($records, static fn(array $r): bool => (($r['lease_tok'] ?? '') !== '') && ((int) ($r['lease'] ?? 0) > $now));
+        return array_map('strval', array_keys($leased));
+    }
+
     /** The runs neither done nor ended, of $subject or all, read-only. No rights checked - the caller
      *  shows a user only those mayControl() allows.
      *  @return list<static> */
