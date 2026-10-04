@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Central\Package\Fixtures;
 
 use AA\Central\InstallRun;
+use AA\Central\Package\ImportChoices;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
@@ -128,11 +129,12 @@ trait ImportFixture
         return new Importer($target ?? $this->target, self::USER, null, self::NOW, mayInstall: $this->authority->mayInstall(...), confirmation: $confirmation, afterCommit: $this->after);
     }
 
-    /** A new run in preview, as the preview page leaves it; its id. The statement log starts after it. */
-    private function newRun(string $mode = InstallRun::INSTALL, string $source = '7'): string
+    /** A new run in preview, as the preview page leaves it; its id. The statement log starts after it.
+     *  @param array<string, string> $filters source slice => ItemFilter text the preview chose */
+    private function newRun(string $mode = InstallRun::INSTALL, string $source = '7', array $filters = []): string
     {
         [$next, TableDb::$next['object_text']] = [TableDb::$next['object_text'] ?? 1, $this->runRows];
-        $id                                    = InstallRun::preview($mode, false, $source, self::USER, '', self::NOW)->getId();
+        $id                                    = InstallRun::preview($mode, false, $source, self::USER, '', self::NOW, '', [], $filters ? new ImportChoices(filters: $filters) : null)->getId();
         [$this->runRows, TableDb::$next['object_text']] = [TableDb::$next['object_text'], $next];
         [TableDb::$log, TableDb::$sent, TableDb::$handles] = [[], [], []];
         return $this->lastRun = $id;

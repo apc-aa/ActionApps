@@ -17,6 +17,7 @@ use AA\Central\Package\Collector;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\ValueCodec;
 use AA\Central\Package\ImportConfirmation;
+use AA\Central\Package\ImportChoices;
 use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
 use AA\Central\Package\ImportPlan;
@@ -200,6 +201,27 @@ final class BatchWriteTest extends TestCase
         }
 
         self::assertSame($before, self::tables());
+    }
+
+    /** another preview of the run while the write planned (another session): its filters would go to the batches */
+    public function test_choices_changed_since_the_plan_refuse_the_write(): void
+    {
+        $run = $this->newRun(InstallRun::TRANSFER, '7', [self::SLICE => 'd-headline........-==-B']);
+        $sum = InstallRun::get($run)->choicesSum();
+        self::locked($run, static fn(InstallRun $r) => $r->previewed('', self::NOW, false, [], new ImportChoices()));
+        $before = self::tables();
+        [$plan, $importer, $token] = $this->confirmed($this->plan(self::definitions(), true));
+
+        try {
+            $importer->write($plan, $run, self::DEFINITIONS, $token, $sum);
+            self::fail('a write of choices no longer in the run');
+        } catch (ImportFailed) {
+        }
+
+        self::assertSame($before, self::tables());
+        self::assertSame([InstallRun::PREVIEW, []], [InstallRun::get($run)->state(), InstallRun::get($run)->filters()]);
+        $importer->write($plan, $run, self::DEFINITIONS, $token, InstallRun::get($run)->choicesSum());
+        self::assertSame(InstallRun::ITEMS, InstallRun::get($run)->state(), 'the sum of the run as it is now');
     }
 
     /** the owner found by name and e-mail or created, the reading password, the domains of the site */

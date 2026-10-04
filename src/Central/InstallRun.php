@@ -90,6 +90,9 @@ final class InstallRun extends AA_Object
     protected $targets = '';
     /** JSON of the other choices of the preview (ImportChoices); the write plans with them */
     protected $choices = '';
+    /** JSON source slice => ItemFilter text of the preview - unlike the choices kept after the write: the
+     *  batches, the progress page and the check read it */
+    protected $filters = '';
 
     /** read by lockForUpdate() - only such an instance may change the run */
     private bool $locked = false;
@@ -100,7 +103,7 @@ final class InstallRun extends AA_Object
         foreach (['state', 'mode', 'all_bins', 'source', 'user', 'started', 'moved', 'source_time', 'same_aa', 'fingerprint', 'slice', 'cursor', 'error_code', 'error_path', 'token'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'string', false, true, 'string');
         }
-        foreach (['id_map', 'slices', 'written', 'warnings', 'report', 'targets', 'choices'] as $id) {
+        foreach (['id_map', 'slices', 'written', 'warnings', 'report', 'targets', 'choices', 'filters'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -135,6 +138,7 @@ final class InstallRun extends AA_Object
         $run->token       = ($token === '') ? '' : Crypt::encryptAesGcm($token, Secret::key('install-run'));
         $run->targets     = self::targetsJson($targets);
         $run->choices     = $choices?->toJson() ?? '';
+        $run->filters     = self::filtersJson($choices);
         $run->save();
         return $run;
     }
@@ -251,7 +255,13 @@ final class InstallRun extends AA_Object
         $this->same_aa     = $sameAa ? '1' : '';
         $this->targets     = self::targetsJson($targets);
         $this->choices     = $choices?->toJson() ?? '';
-        $this->update(['fingerprint', 'source_time', 'same_aa', 'targets', 'choices']);
+        $this->filters     = self::filtersJson($choices);
+        $this->update(['fingerprint', 'source_time', 'same_aa', 'targets', 'choices', 'filters']);
+    }
+
+    private static function filtersJson(?ImportChoices $choices): string
+    {
+        return $choices?->filters ? json_encode($choices->filters, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) : '';
     }
 
     /** @param array<string, string> $targets */
@@ -484,6 +494,12 @@ final class InstallRun extends AA_Object
     public function choices(): ImportChoices
     {
         return ImportChoices::fromJson($this->choices);
+    }
+
+    /** @return array<string, string> source slice => ItemFilter text; [] = all the items of every slice */
+    public function filters(): array
+    {
+        return ($this->filters === '') ? [] : array_map('strval', json_decode($this->filters, true, 2, JSON_THROW_ON_ERROR));
     }
 
     /** what a write form of this preview sends back: a form of an older preview of the run has another */

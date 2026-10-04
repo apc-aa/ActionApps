@@ -433,6 +433,17 @@ final class RemoteTransferTest extends TestCase
         self::assertSame([$filters, null], [$requests[1]['filters'], $requests[4]['filters'] ?? null], 'no filters, no parameter - an older source gets the request it knows');
     }
 
+    /** an item a filter leaves out stays at the source - its id here stops nothing */
+    public function test_the_item_id_check_of_a_filtered_slice_looks_at_the_matching_items_only(): void
+    {
+        $this->filterable();
+        TableDb::$tables['item'][] = ['id' => self::ITEM_A, 'short_id' => 50, 'slice_id' => self::FS, 'status_code' => 1];
+        $check = new ItemIdCheck(new RemoteAppSource($this->remote(), self::TOKEN), new DbImportTarget());
+
+        self::assertSame([], $check->check([self::SLICE], false, [self::SLICE => self::ONLY_B]));
+        self::assertCount(1, $check->check([self::SLICE], false));
+    }
+
     /** a call takes the filters of its own slices only - the local source and the remote one alike */
     public function test_filters_of_other_slices_are_left_out(): void
     {

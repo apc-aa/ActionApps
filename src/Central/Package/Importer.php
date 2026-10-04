@@ -87,11 +87,13 @@ final class Importer
      *  @param string      $run          the InstallRun in its preview
      *  @param string      $definitions  the definitions package as downloaded - the run keeps its fingerprint
      *  @param string|null $confirmation ImportConfirmation::token(), passed once the user confirmed the S findings
+     *  @param string|null $choicesSum   InstallRun::choicesSum() the plan was made from - another preview of the run
+     *                                   meanwhile (its filters go to the batches) refuses the write; null = not compared
      *  @throws InvalidArgumentException the plan has an E, or items - they come in batches
      *  @throws LogicException inside DB_AA::transaction()
      *  @return ImportReport with the view, e-mail and filter numbers AUTO_INCREMENT gave
      *  @throws ImportFailed nothing was written: refused, or rolled back */
-    public function write(ImportPlan $plan, string $run, string $definitions, ?string $confirmation = null): ImportReport
+    public function write(ImportPlan $plan, string $run, string $definitions, ?string $confirmation = null, ?string $choicesSum = null): ImportReport
     {
         if (!$plan->importable()) {
             throw new InvalidArgumentException('The import plan has errors - it is not written');
@@ -128,13 +130,16 @@ final class Importer
         $rows    = new RowWriter($store, $this->schema, $this->target, $this->user, $this->now ?? time());
         $objects = new ObjectWriter($store);
         try {
-            $map = DB_AA::transaction(function () use ($plan, $run, $definitions, $transfer, $rows, $objects): IdMap {
+            $map = DB_AA::transaction(function () use ($plan, $run, $definitions, $transfer, $rows, $objects, $choicesSum): IdMap {
                 if (!DB_AA::inTransaction()) {          // DB_AA::transaction() runs the block without one when it cannot start it
                     throw new WriteError(WriteError::DB, 'import', 'no database transaction could be started');
                 }
                 $record = InstallRun::lockForUpdate($run);
                 if ($record?->state() !== InstallRun::PREVIEW) {
                     throw new WriteError(WriteError::RUN, 'import', 'the install run is not in its preview - written already, ended or forgotten');
+                }
+                if (($choicesSum !== null) && !hash_equals($record->choicesSum(), $choicesSum)) {
+                    throw new WriteError(WriteError::RUN, 'import', 'the choices of the install run changed since the plan was made - preview again');
                 }
                 $this->recheck($plan);
                 $slices = $transfer ? self::slices($plan->package) : [];

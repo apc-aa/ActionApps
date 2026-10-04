@@ -65,7 +65,7 @@ final class TransferProgress
         }
         $path = Module::SLICE . "[$expected[0]]";
         try {
-            [$xml, $found] = ($this->from)()->batch($expected[0], $expected[1], $run->allBins(), $run->started());
+            [$xml, $found] = ($this->from)()->batch($expected[0], $expected[1], $run->allBins(), $run->started(), $run->filters());
             $read          = (new Reader())->read($xml);
         } catch (ExportRefused $e) {
             $first = $e->errors()[0] ?? null;

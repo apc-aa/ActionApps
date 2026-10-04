@@ -92,7 +92,7 @@ final class FindingTextTest extends TestCase
             'setting-field', 'settings-dropped', 'slice-state-kept', 'slice-type-differs', 'source-count-unknown', 'spot-markup', 'spot-tree', 'spot-unused', 'state-file', 'subobject',
             'table-not-allowed', 'target-slice', 'too-long', 'transfer-only', 'unique-field', 'unknown-form', 'view-differs', 'view-exists', 'view-outside', 'view-unmatched',
             'export-failed', 'export-denied', 'invalid-bytes', 'unknown-column', 'unknown-element', 'unknown-attribute', 'unknown-class', 'newer-format', 'schema-location',
-            'spot-markup-stripped', 'no-spot-tree', 'owner-invalid', 'setting-not-number', 'setting-insert-func', 'setting-invalid', 'reader-left-out', 'group-owner-left-out', 'debug', 'version', 'serverload', 'header', 'user', 'img'];
+            'spot-markup-stripped', 'no-spot-tree', 'owner-invalid', 'setting-not-number', 'setting-insert-func', 'setting-invalid', 'reader-left-out', 'group-owner-left-out', 'filter-invalid', 'filter-matches-all', 'relation-left-out', 'debug', 'version', 'serverload', 'header', 'user', 'img'];
         return array_combine($codes, array_map(static fn(string $c): array => [$c], $codes));
     }
 
@@ -151,6 +151,19 @@ final class FindingTextTest extends TestCase
         }
         foreach (['_capital........', '_email..........', '_author.........', '_keywords.......', '_passage........'] as $plain) {
             self::assertSame('x', FindingText::found(new LintFinding(LintFinding::ERROR, 'charset', 'x', 0), $at($plain)), $plain);
+        }
+    }
+
+    public function test_why_a_filter_cannot_be_used_is_said_in_words(): void
+    {
+        $why = static fn(string $ref): string => FindingText::found(new LintFinding(LintFinding::ERROR, 'filter-invalid', $ref, 0), 'slice-module[' . self::SLICE . ']');
+
+        self::assertStringContainsString('relation......4', $why('field:relation......4'));
+        self::assertStringContainsString('1000', $why('too-long'));
+        self::assertStringContainsString('d-', $why('form'));
+        self::assertSame('something new', $why('something new'), 'a reason of a newer source as it came');
+        foreach (['triples', 'too-many', 'characters', 'operator:~', 'value', 'phrase', 'syntax:headline........', 'charset', 'source'] as $ref) {
+            self::assertNotSame($ref, $why($ref), $ref);
         }
     }
 }

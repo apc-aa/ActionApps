@@ -55,10 +55,11 @@ final class TransferProgressTest extends TestCase
         return ['id' => $id, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]], 'headline........' => [['value' => $headline, 'flag' => 0]]]];
     }
 
-    /** a transfer run of the example with its definitions written; the calls after the import forgotten */
-    private function transferred(): string
+    /** a transfer run of the example with its definitions written; the calls after the import forgotten
+     *  @param array<string, string> $filters source slice => ItemFilter text the preview chose */
+    private function transferred(array $filters = []): string
     {
-        $run          = $this->newRun(InstallRun::TRANSFER);
+        $run          = $this->newRun(InstallRun::TRANSFER, '7', $filters);
         $confirmation = new ImportConfirmation('preview-session');
         $plan         = $this->plan(self::example(), true);
         $this->import($plan, $this->importer(null, $confirmation), $confirmation->token($plan, self::USER), $run);
@@ -122,6 +123,20 @@ final class TransferProgressTest extends TestCase
         $report = InstallRun::get($run)->report();
         self::assertSame([['source' => self::SLICE, 'target' => self::id(2), 'written' => 2, 'sourceCount' => 2, 'targetCount' => 2]], $report['slices']);
         self::assertSame([], $report['findings']);
+    }
+
+    public function test_a_filtered_run_transfers_and_checks_only_the_matching_items(): void
+    {
+        $this->source->tables['field'] = [['id' => 'headline........', 'slice_id' => self::SLICE, 'input_show_func' => 'fld:']];
+        $run = $this->transferred([self::SLICE => 'd-headline........-==-B']);
+
+        $state = $this->progress()->next($run, [self::SLICE, '']);
+
+        self::assertSame([TransferProgress::DONE, [self::SLICE => 1]], [$state['status'], $state['written']]);
+        self::assertSame([self::ITEM_B], self::itemsOfTheSlice());
+        $report = InstallRun::get($run)->report();
+        self::assertSame(1, $report['slices'][0]['sourceCount'], 'the source counts what the filter selects');
+        self::assertSame([], $report['findings'], 'so no count-differs');
     }
 
     public function test_a_multi_slice_transfer_finishes_only_after_the_last_slice(): void

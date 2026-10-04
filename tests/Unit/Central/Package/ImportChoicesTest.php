@@ -91,6 +91,21 @@ final class ImportChoicesTest extends TestCase
         self::assertSame('', (new ImportChoices())->owner);
     }
 
+    public function test_a_filter_is_kept_as_typed_and_never_left_out(): void
+    {
+        [$bytes, $list] = [str_repeat('1', 32), str_repeat('2', 32)];
+        $choices = ImportChoices::fromPost([
+            'skip'   => [self::ALERTS => '1'],
+            'filter' => [strtoupper(self::SLICE) => '  d-headline........-=-a  ', self::ALERTS => 'd-headline........-=-b', self::SITE => '  ', 'x' => 'd-a', $bytes => "d-headline........-=-\xFF", $list => ['d-a']],
+        ]);
+
+        // a slice left out takes its filter along; a filter of no text would take all the items if dropped
+        self::assertSame([self::SLICE => 'd-headline........-=-a', $bytes => ImportChoices::NOT_TEXT, $list => ImportChoices::NOT_TEXT], $choices->filters);
+        self::assertTrue(ImportChoices::fromJson($choices->toJson())->equals($choices));
+        self::assertSame($choices->filters, $choices->withoutSettings([self::SLICE => ['_email..........']])->filters);
+        self::assertFalse($choices->equals(new ImportChoices($choices->names, $choices->skip, $choices->owner, $choices->newOwner, $choices->settings)), 'another filter is another choice');
+    }
+
     public function test_a_new_owner_wins_over_the_list(): void
     {
         $choices = ImportChoices::fromPost(['owner' => self::OWNER, 'new_owner' => ' Ecn ', 'new_owner_email' => 'ecn@ecn.cz']);

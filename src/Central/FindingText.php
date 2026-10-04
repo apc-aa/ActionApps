@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
+use AA\Central\Package\ItemFilter;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
@@ -284,6 +285,18 @@ final class FindingText
             in_array($code, ['item-field', 'item-status'], true) => ['title' => _m('Item values left out'),
                 'what' => ($code === 'item-status') ? _m('An item is in no bin (active, holding, trash) - no list of the slice will show it.') : _m('Items have values of a field the slice does not have - they are left out.'),
                 'todo' => _m('Usually nothing to do.')],
+            $code === ItemFilter::INVALID => ['title' => _m('A condition of "Only items matching" cannot be used'),
+                'what' => _m('AA cannot read the condition as it is written, or the source AA did not check it. A condition read wrongly could take other items than you mean, so no items are counted and the app cannot be installed until the condition passes a check.'),
+                'todo' => _m('Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again.'),
+                'found' => _m('Why')],
+            $code === FilterCheck::MATCHES_ALL => ['title' => _m('A condition that takes every item'),
+                'what' => _m('Every item of the slice matches, so the condition leaves nothing out and the whole slice goes. That is allowed, but a condition is usually written to narrow: it may name a field every item has set, or a value they all share.'),
+                'todo' => _m('If all the items should go, empty the field. If not, change the condition so that it narrows; the count beside the field shows how many items it takes.'),
+                'found' => _m('Items matching')],
+            $code === FilterCheck::LEFT_OUT => ['title' => _m('Links to items a condition leaves behind'),
+                'what' => _m('Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere.'),
+                'todo' => _m('Widen or empty the condition of the slice that leaves items behind; or give the slice with the links a condition that follows the link (printed under its field when there is one); or accept the links and clean them up after the transfer.'),
+                'found' => _m('Links')],
             in_array($code, ['count-differs', 'edited-during-transfer', 'relation-dangling', 'source-count-unknown'], true) => ['title' => _m('Check the transferred items'),
                 'what' => match ($code) {
                     'count-differs'          => _m('The slice here has another number of items than the one it comes from (there => here). Into an existing slice that is expected - its own items stay.'),
@@ -360,6 +373,24 @@ final class FindingText
         if (($ref !== '') && (in_array($finding->code, self::SECRET_CODES, true) || str_starts_with($finding->code, 'changepwd'))) {
             // `{credentials:` or `slice_pwd=` says what it is, the rest may be the secret
             return (preg_match('~^(?:\{\w+[:(]|slice_pwd=)~i', $ref, $head) ? $head[0] : '') . '••••••';
+        }
+        if ($finding->code === ItemFilter::INVALID) {
+            [$why, $what] = array_pad(explode(':', $ref, 2), 2, '');
+            return match ($why) {
+                'too-long'   => _m('Longer than %1 bytes.', [ItemFilter::MAX_BYTES]),
+                'too-many'   => _m('More than %1 conditions.', [ItemFilter::MAX_CONDITIONS]),
+                'form'       => _m('A condition starts with d-.'),
+                'triples'    => _m('Not in threes of field, operator and value - most likely a dash inside a value or a date, which is written doubled: 2026--01--01.'),
+                'characters' => _m('A control character, a line break or a backslash.'),
+                'field'      => _m('No field %1 in this slice.', [$what]),
+                'operator'   => _m('"%1" is not an operator of AA.', [$what]),
+                'value'      => _m('A value is missing, cannot be read, or would match every item.'),
+                'phrase'     => _m('<> takes one exact value - no OR, AND, NOT or quotes.'),
+                'syntax'     => _m('The value compared with %1 cannot be read.', [$what]),
+                'charset'    => _m('A value has a character the slice cannot store.'),
+                FilterCheck::UNCHECKED => _m('The source AA did not answer about it. An older AA cannot filter items and has to be updated first; otherwise check the changes again.'),
+                default      => $ref,
+            };
         }
         if ($finding->code === 'perm-mode') {
             return [

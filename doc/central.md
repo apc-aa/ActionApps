@@ -139,6 +139,21 @@ A transfer preview also checks the readers: logins that collide with an AA user 
 reader are E. From another AA it checks that none of the source item ids exists here
 (`item-id-exists`, E) - e.g. an earlier transfer not yet deleted (items in the trash keep their ids).
 
+**Only items matching.** In a transfer each slice may take only the items matching a condition,
+written as in `{ids}` and views: `d-<field>-<operator>-<value>`, more conditions joined by AND
+(`d-relation.......4-==-<item id>-status_code.....-==-1`). The source evaluates it as any AA search
+(`QueryZids()`, one condition at a time) - all AA operators and field forms, at most 10 conditions and
+1000 bytes. Refused (E `filter-invalid`, nothing transferred) is only what AA would silently read as
+more items than written: a field the slice lacks, a value missing or unreadable, a syntax error, `<>`
+with a phrase, `|`, `BITSET 0`; so is a condition the source did not answer about (an older AA cannot
+filter). Items then shows matching / all; W `filter-matches-all` when the
+condition leaves nothing out; W `relation-left-out` counts the relation values of the transferred
+items naming an item of a filtered slice that stays behind (a lower bound of the later
+`relation-dangling`). Only a superadmin of the source may filter (a count of what a condition selects
+tells what the items hold). The run keeps the conditions after the write: every batch, the progress
+page and the finish report count only the matching items. In a copy within the same AA the ids of the
+items left out stay in the definitions (views, spots), as with the items of the bins left out.
+
 ### Write
 
 "Install" / "Write the definitions and transfer the items" reads the definitions from the source
@@ -310,6 +325,12 @@ the sites whose modules it may edit.
 | `logins` | `slices` (Reader Management) | list of logins | transfer, superadmin |
 | `counts` | `slices`, `edited_after` | `slice => count` | `PS_EDIT` |
 | `item_ids` | `slice`, `after` | up to 5000 ids after the cursor | transfer, superadmin |
+| `left_out` | `slices` | `slice => relation values naming items the filters leave out` | transfer, superadmin |
+
+`filters` (`slice => condition`, the slices of the part only) narrows `batch`, `logins`, `counts`,
+`item_ids` and `left_out` to the matching items; superadmin only, in any mode. Such an answer is
+`['filters' => sha256 of the canonical JSON of the filters, 'answer' => ...]` - the target refuses an
+answer without that echo ("update the source AA"): an older source would answer for all the items.
 
 Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 

@@ -45,6 +45,7 @@ use AA\Central\AppExport;
 use AA\Central\AppSource;
 use AA\Central\AppStore;
 use AA\Central\ExportRefused;
+use AA\Central\FilterCheck;
 use AA\Central\FindingText;
 use AA\Central\InstallRun;
 use AA\Central\ItemIdCheck;
@@ -59,12 +60,14 @@ use AA\Central\Package\ImportFailed;
 use AA\Central\Package\Importer;
 use AA\Central\Package\ImportPlan;
 use AA\Central\Package\ImportReport;
+use AA\Central\Package\ItemFilter;
 use AA\Central\Package\ItemLint;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Planner;
 use AA\Central\Package\Reader;
+use AA\Central\Package\ReferenceRewriter;
 use AA\Central\Package\Schema;
 use AA\Central\Package\SettingDefaults;
 use AA\Central\Package\SliceRoles;
@@ -110,6 +113,7 @@ try {
         'owner'           => InputVars::stringPOST('owner'),
         'new_owner'       => InputVars::stringPOST('new_owner'),
         'new_owner_email' => InputVars::stringPOST('new_owner_email'),
+        'filter'          => InputVars::arrayPOST('filter'),
     ]);
     $sum      = InputVars::stringPOST('choices_sum');
     $into     = array_diff_key($into, array_flip($choices->skip));     // a slice left out goes nowhere
@@ -219,6 +223,69 @@ $apage->addRequire('
     form:has([name="what"][value="site"]:checked) .aa-installapp-modules,
     form:has([name="what"][value="modules"]:checked) .aa-installapp-site,
     form:has([name="mode"][value="install"]:checked) .aa-installapp-bins { display: none; }
+    .aa-installapp { --aa-muted: rgb(31 31 31 / 66%); --aa-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; --aa-ring: 0 0 0 3px rgba(184, 162, 70, .20); }
+    .aa-sr, .aa-plan-lbl { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .aa-plan { container: aa-plan / inline-size; max-width: 70em; }
+    .aa-installapp-plan { width: 100%; table-layout: fixed; }
+    .aa-installapp-plan .aa-c-on { width: 3.4em; }
+    .aa-installapp-plan .aa-c-name { width: 18.5em; }
+    .aa-installapp-plan .aa-c-type { width: 4em; }
+    .aa-installapp-plan td { border-bottom: 0; }
+    .aa-installapp-plan .aa-plan-a > td { padding-top: 8px; }
+    .aa-installapp-plan tbody > tr:last-child > td { padding-bottom: 8px; border-bottom: 1px solid var(--clr-border, #ddd); }
+    .aa-plan-name small { display: block; margin-top: 1px; font-size: var(--sz-xs); }
+    .aa-plan-into select { width: 100%; max-width: 36em; }
+    .aa-installapp-plan .aa-plan-flabel { padding-top: 11px; text-align: right; font-size: var(--sz-s); }
+    .aa-plan-scopebox { display: grid; grid-template-columns: minmax(0, 1fr) 10.8em; grid-template-areas: "field count" "note note"; column-gap: 8px; max-width: 52em; }
+    .aa-cond-in { grid-area: field; box-sizing: border-box; width: 100%; min-height: 2.15em; padding: 4px 6px; font-family: var(--aa-mono); line-height: 1.4; resize: none; field-sizing: content; overflow-wrap: anywhere; }
+    .aa-cond-in::placeholder { font-family: inherit; color: var(--aa-muted); }
+    .aa-cond-in:focus { outline: 0; border-color: var(--clr-border-hover, #a59850); box-shadow: var(--aa-ring); }
+    .aa-cond-in[aria-invalid="true"] { border-color: var(--clr-dark, #1f1f1f); background: var(--clr-surface-selected, #f3e6c3); }
+    .aa-count { grid-area: count; padding-top: 7px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .aa-count strong { font-weight: 600; }
+    .aa-count-of { color: var(--aa-muted); }
+    .aa-count-bar { display: block; height: 3px; margin-top: 4px; background: linear-gradient(to right, var(--clr-dark, #1f1f1f) max(2px, calc(var(--pct) * 1%)), var(--clr-border, #ddd) 0); }
+    .aa-cond-note { grid-area: note; display: flex; gap: 8px; margin-top: 4px; font-size: var(--sz-s); }
+    .aa-cond-note > div { min-width: 0; }
+    .aa-lv { flex: none; box-sizing: border-box; min-width: 1.9em; height: 1.55em; border: 1px solid var(--clr-dark, #1f1f1f); font-size: var(--sz-xs); font-weight: 600; line-height: calc(1.55em - 2px); text-align: center; }
+    .aa-lv-e { background: var(--clr-dark, #1f1f1f); color: var(--clr-body, #f3f3f1); }
+    .aa-installapp code.aa-cond-code { display: block; margin: 4px 0 8px; padding: 4px 8px; background: var(--clr-basic-light, #eeebe3); font-family: var(--aa-mono); overflow-wrap: anywhere; user-select: all; }
+    .aa-filterhint, .aa-filterhelp { max-width: 62em; }
+    .aa-filterhint code { white-space: nowrap; }
+    .aa-filterhelp-body { margin: 8px 0 18px; padding: 2px 18px 12px; background: var(--clr-basic-light, #eeebe3); border: 1px solid var(--clr-border, #ddd); font-size: var(--sz-s); line-height: 1.6; }
+    .aa-filterhelp-body h4 { margin: 18px 0 2px; }
+    .aa-filterhelp-body p { margin: 2px 0; }
+    .aa-filterhelp-body code.aa-cond-code { background: var(--clr-body, #f3f3f1); }
+    .aa-filterhelp-parts { display: grid; grid-template-columns: max-content 1fr; gap: 2px 18px; margin: 2px 0; }
+    .aa-filterhelp-parts dt { font-weight: 600; }
+    .aa-filterhelp-parts dd { margin: 0; }
+    .aa-filterhelp-ops { width: 100%; }
+    .aa-filterhelp-ops td:first-child { white-space: nowrap; }
+    .aa-filterhelp-slice > summary { display: block; padding: 4px 0; background: none; border: 0; border-radius: 0; border-bottom: 1px solid var(--clr-border, #ddd); font-weight: 600; }
+    .aa-filterhelp-slice > summary small { font-weight: 400; color: var(--aa-muted); }
+    .aa-filterhelp-fields { margin: 8px 0 12px; padding: 0; list-style: none; columns: 26em; column-gap: 2em; }
+    .aa-filterhelp-fields li { break-inside: avoid; padding: 1px 0; overflow-wrap: anywhere; }
+    .aa-filterhelp-fields small { margin-left: 8px; color: var(--aa-muted); font-size: var(--sz-xs); }
+    @container aa-plan (max-width: 46em) {
+      .aa-installapp-plan, .aa-installapp-plan tbody, .aa-installapp-plan tr, .aa-installapp-plan td { display: block; }
+      .aa-installapp-plan { box-sizing: border-box; padding-right: 20px; }
+      .aa-installapp-plan colgroup, .aa-installapp-plan thead, .aa-plan-b > td:first-child { display: none; }
+      .aa-installapp-plan tbody > tr > td, .aa-installapp-plan tbody > tr:last-child > td { padding: 0; border: 0; }
+      .aa-installapp-plan tbody { padding: 12px 0; border-bottom: 1px solid var(--clr-border, #ddd); }
+      .aa-installapp-plan .aa-plan-a { display: grid; grid-template-columns: 2.6em 1fr auto; grid-template-areas: "on name type" "into into into"; }
+      .aa-plan-on { grid-area: on; }
+      .aa-plan-name { grid-area: name; }
+      .aa-installapp-plan .aa-plan-type { grid-area: type; padding: 4px 2px 0 8px; font-size: var(--sz-xs); color: var(--aa-muted); }
+      .aa-installapp-plan .aa-plan-into { grid-area: into; margin-top: 8px; }
+      .aa-plan-into .aa-plan-lbl, .aa-installapp-plan .aa-plan-flabel { position: static; width: auto; height: auto; margin: 0 0 2px; padding: 0; clip-path: none; text-align: left; white-space: normal; font-size: var(--sz-s); }
+      .aa-installapp-plan .aa-plan-b { margin-top: 8px; }
+      .aa-plan-scopebox { grid-template-columns: minmax(0, 1fr); grid-template-areas: "field" "note" "count"; }
+      .aa-count { padding-top: 4px; text-align: left; }
+    }
+    @media (max-width: 600px) {
+      .aa-filterhelp-body { padding: 2px 8px 12px; }
+      .aa-filterhelp-ops td:first-child { white-space: normal; }
+    }
 ', 'AA_Req_CSScode');
 $apage->printHead();
 echo '<div class="aa-installapp">';
@@ -305,12 +372,12 @@ function installapp_relogin(InstallRun $run): string
         : a_href(installapp_url(['aa' => $run->source()]), _m('Log in to the source AA again'));
 }
 
-/** the items of the slices on the source; [] when it cannot tell
- *  @param list<string> $slices @return array<string, int> */
-function installapp_counts(AppSource $from, array $slices, bool $all_bins): array
+/** the items of the slices on the source - of a filtered slice those its filter selects; [] when it cannot tell
+ *  @param list<string> $slices @param array<string, string> $filters @return array<string, int> */
+function installapp_counts(AppSource $from, array $slices, bool $all_bins, array $filters = []): array
 {
     try {
-        return $slices ? $from->itemCounts($slices, $all_bins) : [];
+        return $slices ? $from->itemCounts($slices, $all_bins, 0, $filters) : [];
     } catch (ExportRefused | SourceFailed $e) {
         installapp_log('the item counts of the source', $e);
         return [];
@@ -496,17 +563,18 @@ function installapp_slice_choices(): array
  *  @param list<string>          $modules
  *  @param array<string, string> $into    source slice => slice of this AA it goes into; the others get new slices
  *  @param bool                  $preselect no choice made yet: SliceRoles makes it
- *  @param ImportChoices|null    $choices names, slices left out, the owner ('' = Planner::defaultOwner()), settings values
+ *  @param ImportChoices|null    $choices names, slices left out, the owner ('' = Planner::defaultOwner()), settings values, filters
  *  @return array{error: string, login: bool, xml: string, now: int, same: bool, findings: list<array{string, LintFinding}>, plan: ?ImportPlan,
  *                into: array<string, string>, roles: array<string, string>, package: ?\AA\Central\Package\Model\Package,
- *                all: ?\AA\Central\Package\Model\Package, choices: ImportChoices}
+ *                all: ?\AA\Central\Package\Model\Package, choices: ImportChoices, counts: array<string, int>, matching: array<string, int>}
  *          login: the source refused its token; now: the time of the source; same: the source is this AA;
  *          roles: source slice => the role its target was preselected by; choices: as planned, the default owner filled in;
- *          all: the app as the source gave it, package: as chosen (names, slices left out) */
+ *          all: the app as the source gave it, package: as chosen (names, slices left out);
+ *          counts, matching: the items of the transferred slices on the source, of the filtered ones those their filter selects */
 function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false, ?ImportChoices $choices = null): array
 {
     $choices ??= new ImportChoices();
-    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null, 'all' => null, 'choices' => $choices];
+    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null, 'all' => null, 'choices' => $choices, 'counts' => [], 'matching' => []];
     $transfer = ($mode === InstallRun::TRANSFER);
     try {
         [$out['xml'], $out['findings'], $out['now']] = $from->definitions(($site !== '') ? [$site] : $modules, $transfer, $all_bins, $started);
@@ -529,13 +597,6 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
         $typed_over = static fn(string $path): bool => (bool) preg_match('~^' . Module::SLICE . '\[([0-9a-f]{32})\]/setting-values/([^/\[]+)\[(\d+)\]~i', $path, $p)
             && isset($choices->settings[strtolower($p[1])][$p[2]]) && ((int) $p[3] < AA_Value::MAX_INDEX);
         $out['findings'] = [...array_values(array_filter($out['findings'], static fn(array $f): bool => !installapp_under($f[0], $skipped) && !$typed_over($f[0]))), ...$chosen];
-        $readers         = [];
-        foreach ($package->modules as $m) {
-            if (($m->type === Module::SLICE) && (ValueCodec::bytes($m->rows['slice'][0]['type'] ?? '') === ItemLint::READER_SLICE)) {
-                $readers[] = $m->id;
-            }
-        }
-        $logins     = ($transfer && $readers) ? $from->logins($readers, $all_bins) : [];
         $validation = (new Validator())->validate($package, $transfer, array_map('array_keys', $choices->settings));
         $out['package'] = $package;
         $out['into']    = $into;
@@ -543,8 +604,16 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
             $out['findings'] = [...$out['findings'], ...$validation->findings];
             return $out;
         }
-        $owner   = ($transfer || ($choices->newOwner !== null)) ? '' : ($choices->owner ?: $planner->defaultOwner());
-        $out['choices'] = new ImportChoices($choices->names, $choices->skip, $owner, $transfer ? null : $choices->newOwner, $choices->settings);
+        $slices   = $transfer ? array_values(array_map(static fn(Module $m): string => $m->id, array_filter($package->modules, static fn(Module $m): bool => $m->type === Module::SLICE))) : [];
+        $filtered = (new FilterCheck($from))->check($slices, $all_bins, $choices->filters);
+        // null: a filter cannot be used - its E stops the write, the readers and ids of all the items would only add noise
+        $filters  = $filtered['usable'] ? ItemFilter::ofSlices($choices->filters, $slices) : null;
+        [$out['counts'], $out['matching']] = [$filtered['counts'], $filtered['matching']];
+        $readers  = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($package->modules, static fn(Module $m): bool => ($m->type === Module::SLICE) && (ValueCodec::bytes($m->rows['slice'][0]['type'] ?? '') === ItemLint::READER_SLICE))));
+        $logins   = ($transfer && $readers && ($filters !== null)) ? $from->logins($readers, $all_bins, $filters) : [];
+        $owner    = ($transfer || ($choices->newOwner !== null)) ? '' : ($choices->owner ?: $planner->defaultOwner());
+        // the typed text of a filter stays, even one that cannot be used: left out, it would take all the items
+        $out['choices'] = new ImportChoices($choices->names, $choices->skip, $owner, $transfer ? null : $choices->newOwner, $choices->settings, ItemFilter::ofSlices($choices->filters, $slices));
         $plan    = static fn(array $targets): ImportPlan => $planner->plan($package, $validation, $transfer, $logins, $targets, $out['same'], $owner, $out['choices']);
         if ($preselect) {           // stored with the preview as any choice - the write writes what it showed
             [$out['plan'], $out['into'], $preselected, $out['roles']] = SliceRoles::plan($package, new DbImportTarget(), $out['same'], $transfer, $plan);
@@ -552,10 +621,9 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
         } else {
             $out['plan'] = $plan($into);
         }
-        $out['findings'] = [...$out['findings'], ...$out['plan']->allFindings()];
-        if ($transfer && !$out['same']) {        // another AA keeps the item ids: none may be here already
-            $slices          = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($package->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
-            $out['findings'] = [...$out['findings'], ...(new ItemIdCheck($from, new DbImportTarget()))->check($slices, $all_bins)];
+        $out['findings'] = [...$out['findings'], ...$out['plan']->allFindings(), ...$filtered['findings']];
+        if ($transfer && !$out['same'] && ($filters !== null)) {        // another AA keeps the item ids: none may be here already
+            $out['findings'] = [...$out['findings'], ...(new ItemIdCheck($from, new DbImportTarget()))->check($slices, $all_bins, $filters)];
         }
     } catch (ExportRefused $e) {
         if ($e->isDenied()) {
@@ -603,7 +671,7 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
     $now      = time();
     $from     = installapp_local_source();
     $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect, $choices);
-    if (installapp_show_preview($from, $prepared, $mode, $all_bins, installapp_hidden('preview', $site, $modules) . installapp_mode_hidden($mode, $all_bins))) {
+    if (installapp_show_preview($prepared, $mode, installapp_hidden('preview', $site, $modules) . installapp_mode_hidden($mode, $all_bins))) {
         $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into'], $prepared['choices']);
         installapp_write_form($run, $site, $modules, $prepared['plan'], $uid);
     }
@@ -630,7 +698,7 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         return;
     }
     $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect, $choices);
-    if (!installapp_show_preview($from, $prepared, $run->mode(), $run->allBins(), installapp_hidden('preview', $site, $modules, $run_id))) {
+    if (!installapp_show_preview($prepared, $run->mode(), installapp_hidden('preview', $site, $modules, $run_id))) {
         echo '<p>' . ($prepared['login'] ? installapp_relogin($run) : a_href(installapp_url(['run' => $run_id]), _m('Choose another app'))) . '</p>';
         return;
     }
@@ -656,7 +724,7 @@ function installapp_mode_hidden(string $mode, bool $all_bins): string
 /** the preview of installapp_prepare(); each slice goes into a new slice or an existing one - the choice
  *  sends the preview again with $again (the hidden fields of the same selection)
  *  @return bool the app may be written */
-function installapp_show_preview(AppSource $from, array $prepared, string $mode, bool $all_bins, string $again): bool
+function installapp_show_preview(array $prepared, string $mode, string $again): bool
 {
     if ($prepared['error'] !== '') {
         echo '<div class="aa-err">' . safe($prepared['error']) . '</div>';
@@ -664,9 +732,12 @@ function installapp_show_preview(AppSource $from, array $prepared, string $mode,
     }
     $plan = $prepared['plan'];
     if ($plan) {
-        installapp_choices_form($from, $prepared, $plan, $mode, $all_bins, $again);
+        installapp_choices_form($prepared, $plan, $mode, $again);
     }
-    installapp_findings($prepared['findings'], $prepared['package']);
+    // the findings of the conditions answer what was just typed: first, open
+    $of_conditions = static fn(array $f): bool => in_array($f[1]->code, [ItemFilter::INVALID, FilterCheck::MATCHES_ALL, FilterCheck::LEFT_OUT], true);
+    installapp_findings(array_values(array_filter($prepared['findings'], $of_conditions)), $prepared['package'], true);
+    installapp_findings(array_values(array_filter($prepared['findings'], static fn(array $f): bool => !$of_conditions($f))), $prepared['package']);
     if (!installapp_importable($prepared)) {
         echo '<div class="aa-err">' . _m('The app cannot be installed - see the errors (E) above.') . '</div>';
         return false;
@@ -677,7 +748,7 @@ function installapp_show_preview(AppSource $from, array $prepared, string $mode,
 /** the choice of the slice a package slice goes into: a new one, or one of $choices (id => name) */
 function installapp_into_select(string $old, string $chosen, array $choices): string
 {
-    $html = '<select name="into[' . safe($old) . ']" aria-label="' . safe(_m('Into')) . '"><option value="">' . safe(_m('a new slice')) . '</option>';
+    $html = '<select name="into[' . safe($old) . ']" id="installapp-into-' . safe(strtolower($old)) . '"><option value="">' . safe(_m('a new slice')) . '</option>';
     foreach ($choices as $id => $name) {
         $html .= '<option value="' . safe((string) $id) . '"' . (((string) $id === $chosen) ? ' selected' : '') . '>' . safe(_m('existing: %1', [ExistingSlices::choiceLabel((string) $name, (string) $id)])) . '</option>';
     }
@@ -700,50 +771,251 @@ function installapp_role_note(?string $role): string
  *  owner of the new modules, the values of the slice settings; sent again it is checked by a new preview -
  *  the write takes only what a preview checked (the run keeps it)
  *  @param array<string, mixed> $prepared installapp_prepare() */
-function installapp_choices_form(AppSource $from, array $prepared, ImportPlan $plan, string $mode, bool $all_bins, string $again): void
+function installapp_choices_form(array $prepared, ImportPlan $plan, string $mode, string $again): void
 {
     $preview  = $plan->preview();
     $choices  = $prepared['choices'];
     $transfer = ($mode === InstallRun::TRANSFER);
     $planned  = array_column($preview['modules'], null, 'old');
     $slices   = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($prepared['all']->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
-    $counts   = $transfer ? installapp_counts($from, array_values(array_intersect($slices, array_keys($planned))), $all_bins) : [];
     $into     = $slices ? installapp_slice_choices() : [];
     $types    = [Module::SITE => _m('Site'), Module::SLICE => _m('Slice'), Module::ALERTS => _m('Alerts')];
 
     echo '<h2>' . safe($preview['name']) . ' - ' . safe($transfer ? _m('transfer with the items') : _m('install, no items')) . '</h2>';
     // UTF-8 whatever the charset of the admin: the choices are text of the app, which is UTF-8
     echo '<form method="post" action="' . safe(installapp_url()) . '" accept-charset="UTF-8" class="aa-installapp-choices" data-role="installapp-choices">' . $again;
-    echo '<h3>' . _m('What to install') . '</h3><table class="aa-installapp-findings aa-installapp-plan"><tr><th>' . _m('Install') . '</th><th>' . _m('Name') . '</th><th>' . _m('Type') . '</th><th>' . _m('Into') . '</th>'
-        . ($transfer ? '<th class="aa-num">' . _m('Items') . '</th>' : '') . '</tr>';
+    $names    = [];
     foreach ($prepared['all']->modules as $m) {
+        $names[strtolower($m->id)] = $choices->names[strtolower($m->id)] ?? ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
+    }
+    $taken    = $transfer ? array_filter($prepared['all']->modules, static fn(Module $m): bool => ($m->type === Module::SLICE) && isset($planned[$m->id])) : [];
+    $notes    = $transfer ? installapp_filter_notes($prepared['findings'], $taken, $names, $choices->filters) : [];
+    echo '<h3>' . _m('What to install') . '</h3><div class="aa-plan"><table class="aa-installapp-findings aa-installapp-plan">'
+        . '<colgroup><col class="aa-c-on"><col class="aa-c-name"><col class="aa-c-type"><col></colgroup>'
+        . '<thead><tr><th><span class="aa-sr">' . _m('Install') . '</span></th><th>' . _m('Name') . '</th><th>' . _m('Type') . '</th><th>' . _m('Into') . '</th></tr></thead>';
+    foreach ($prepared['all']->modules as $k => $m) {
         $old     = strtolower($m->id);
         $skipped = !isset($planned[$m->id]);
-        $name    = $choices->names[$old] ?? ValueCodec::bytes($m->rows['module'][0]['name'] ?? '');
+        $name    = $names[$old];
         $keep    = ($m->type === Module::SLICE)       // unchecked, the hidden field says "left out"
             ? '<input type="hidden" name="skip[' . safe($old) . ']" value="1"><input type="checkbox" name="skip[' . safe($old) . ']" value=""' . ($skipped ? '' : ' checked') . ' aria-label="' . safe(_m('Install %1', [$name])) . '">'
             : '<input type="checkbox" checked disabled aria-label="' . safe(_m('Install %1', [$name])) . '">';
-        echo '<tr' . ($skipped ? ' class="aa-installapp-skipped"' : '') . '><td>' . $keep . '</td>'
-            . '<td><input type="text" name="name[' . safe($old) . ']" value="' . safe($name) . '" maxlength="100" size="40" aria-label="' . safe(_m('Name')) . '"'
-            . ($skipped ? ' readonly' : '') . '><br><small><code>' . safe($old) . '</code></small></td>'
-            . '<td>' . safe($types[$m->type] ?? $m->type) . '</td><td>'
-            . match (true) {
-                $skipped                                => safe(_m('not installed')),
-                ($m->type === Module::SLICE) && $into   => installapp_into_select($m->id, $prepared['into'][$old] ?? '', $into) . installapp_role_note($prepared['roles'][$old] ?? null),
-                default                                 => safe(_m('a new module')),
-            } . '</td>'
-            . ($transfer ? '<td class="aa-num">' . ((($m->type === Module::SLICE) && !$skipped) ? (isset($counts[$m->id]) ? (int) $counts[$m->id] : '?') : '') . '</td>' : '') . '</tr>';
+        $cell    = match (true) {
+            $skipped                                => safe(_m('not installed')),
+            ($m->type === Module::SLICE) && $into   => '<label class="aa-plan-lbl" for="installapp-into-' . safe($old) . '">' . _m('Into') . '</label>' . installapp_into_select($m->id, $prepared['into'][$old] ?? '', $into) . installapp_role_note($prepared['roles'][$old] ?? null),
+            default                                 => safe(_m('a new module')),
+        };
+        echo '<tbody class="aa-plan-slice' . ($skipped ? ' aa-installapp-skipped' : '') . '"><tr class="aa-plan-a"><td class="aa-plan-on">' . $keep . '</td>'
+            . '<td class="aa-plan-name"><label class="aa-plan-lbl" for="installapp-name-' . safe($old) . '">' . _m('Name') . '</label>'
+            . '<input type="text" id="installapp-name-' . safe($old) . '" name="name[' . safe($old) . ']" value="' . safe($name) . '" maxlength="100" size="40"' . ($skipped ? ' readonly' : '') . '>'
+            . '<small><code>' . safe($old) . '</code></small></td>'
+            . '<td class="aa-plan-type">' . safe($types[$m->type] ?? $m->type) . '</td><td class="aa-plan-into">' . $cell . '</td></tr>'
+            . (isset($taken[$k]) ? installapp_filter_row($old, $choices->filters[$old] ?? '', $prepared['counts'][$m->id] ?? null, $prepared['matching'][$old] ?? null, $notes[$old] ?? null) : '')
+            . '</tbody>';
     }
-    echo '</table><p class="tabhlp">' . _m('A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice.') . '</p>';
+    echo '</table></div><p class="tabhlp">' . _m('A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice.') . '</p>';
+    if ($taken) {
+        installapp_filter_help($taken, $names);
+    }
     if (!$transfer && array_diff_key($plan->map->modules(), $plan->existing)) {
         installapp_owner_rows($plan->owner, $choices->newOwner, (bool) $plan->existing);
     }
     installapp_setting_rows($plan, $choices, $transfer, $prepared['all']);
     echo '<p><button class="btn" type="submit">' . _m('Check the changes') . '</button> <span class="tabhlp">' . _m('After a change, check it before installing.') . '</span></p></form>';
+    // a condition is one line that wraps: Enter checks the changes; the field grows where field-sizing does not
+    echo '<script>document.querySelectorAll(\'.aa-cond-in\').forEach(t => { const fit = () => { t.style.height = \'auto\'; t.style.height = (t.scrollHeight + t.offsetHeight - t.clientHeight) + \'px\'; };'
+        . ' if (!CSS.supports(\'field-sizing\', \'content\')) { t.addEventListener(\'input\', fit); fit(); }'
+        . ' t.addEventListener(\'keydown\', e => { if ((e.key === \'Enter\') && !e.isComposing) { e.preventDefault(); t.form.requestSubmit(); } }); });</script>';
     // the write takes what this preview checked - after a change the Install button waits for the check
     echo '<script>document.querySelector(\'[data-role="installapp-choices"]\').addEventListener(\'input\', () => {'
         . ' const b = document.querySelector(\'[data-role="installapp-write"]\'); if (b && !b.disabled) { b.disabled = true; b.textContent = '
         . json_encode(_m('Check the changes first'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '; } });</script>';
+}
+
+/** The second row of a transferred slice: its condition as typed, its items - matching of all when the
+ *  source read the condition - and the note of a finding of the condition.
+ *  @param array{level: string, html: string}|null $note */
+function installapp_filter_row(string $slice, string $filter, ?int $count, ?int $matching, ?array $note): string
+{
+    $id      = 'installapp-filter-' . safe($slice);
+    $invalid = ($note['level'] ?? '') === LintFinding::ERROR;
+    $number  = static fn(int $n): string => number_format($n, 0, '.', "\u{00A0}");
+    $items   = match (true) {
+        ($count === null) && ($matching !== null) => '<strong>' . $number($matching) . '</strong> <span class="aa-count-of">' . safe(_m('of %1 items', ['?'])) . '</span>',
+        $count === null    => '? ' . _m('items'),
+        $invalid           => '<strong aria-hidden="true">-</strong> <span class="aa-count-of">' . safe(_m('of %1 items', [$number($count)])) . '</span>',
+        ($matching === null) && ($filter !== '') => '<strong>?</strong> <span class="aa-count-of">' . safe(_m('of %1 items', [$number($count)])) . '</span>',
+        $matching !== null => '<strong>' . $number($matching) . '</strong> <span class="aa-count-of">' . safe(_m('of %1 items', [$number($count)])) . '</span>'
+            . '<span class="aa-count-bar" style="--pct:' . ($count ? round(100 * $matching / $count, 1) : 100) . '" aria-hidden="true"></span>',
+        default            => '<strong>' . $number($count) . '</strong> <span class="aa-count-of">' . _m('items') . '</span>',
+    };
+    $html    = $note ? '<div class="aa-cond-note" id="' . $id . '-note"><span class="aa-lv' . ($invalid ? ' aa-lv-e' : '') . '">' . safe($note['level']) . '</span><div>' . $note['html'] . '</div></div>' : '';
+    return '<tr class="aa-plan-b"><td></td><td class="aa-plan-flabel"><label for="' . $id . '">' . _m('Only items matching') . '</label></td><td colspan="2"><div class="aa-plan-scopebox">'
+        . '<textarea class="aa-cond-in" id="' . $id . '" name="filter[' . safe($slice) . ']" rows="1" placeholder="' . safe(_m('all items')) . '"'
+        . ' spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="' . ($html ? "$id-note " : '') . "$id-count\"" . ($invalid ? ' aria-invalid="true"' : '') . '>' . safe($filter) . '</textarea>'
+        . '<span class="aa-count" id="' . $id . '-count">' . $items . '</span>' . $html . '</div></td></tr>';
+}
+
+/** The findings of the conditions as a note under the field they are about: why a condition cannot be
+ *  used (with the field of the slice its typo means), that it takes every item, the links it breaks in
+ *  another slice - with the condition that follows the link when only one relation leads there.
+ *  @param list<array{string, LintFinding}> $findings @param array<int, Module> $taken the transferred slices
+ *  @param array<string, string> $names module => name @param array<string, string> $filters
+ *  @return array<string, array{level: string, html: string}> slice => note */
+function installapp_filter_notes(array $findings, array $taken, array $names, array $filters): array
+{
+    $notes  = [];
+    $fields = [];
+    foreach ($taken as $m) {
+        $fields[strtolower($m->id)] = installapp_slice_fields($m, $names);
+    }
+    foreach ($findings as [$path, $finding]) {
+        $slice = preg_match('/^' . preg_quote(Module::SLICE, '/') . '\[([0-9a-f]{32})\]\z/', $path, $p) ? $p[1] : '';
+        if (!isset($fields[$slice])) {
+            continue;
+        }
+        $html = match ($finding->code) {
+            ItemFilter::INVALID      => '<strong>' . _m('Cannot be used.') . '</strong> ' . safe(FindingText::found($finding, $path)) . installapp_field_meant($finding->ref, $fields[$slice]),
+            FilterCheck::MATCHES_ALL => '<strong>' . _m('Takes every item.') . '</strong> ' . safe(_m('It narrows nothing; empty the field if all the items should go.')),
+            FilterCheck::LEFT_OUT    => installapp_left_out_note((int) $finding->ref, $slice, $fields[$slice], $names, $filters),
+            default                  => null,
+        };
+        if ($html !== null) {
+            $notes[$slice] = isset($notes[$slice])
+                ? ['level' => (($notes[$slice]['level'] === LintFinding::ERROR) ? LintFinding::ERROR : $finding->level), 'html' => $notes[$slice]['html'] . '<br>' . $html]
+                : ['level' => $finding->level, 'html' => $html];
+        }
+    }
+    return $notes;
+}
+
+/** the field of the slice a field id of a filter-invalid means: the same letters and digits, other dots
+ *  @param list<array{id: string, name: string, kind: string, target: string}> $fields */
+function installapp_field_meant(string $reason, array $fields): string
+{
+    if (!str_starts_with($reason, 'field:')) {
+        return '';
+    }
+    $typed = str_replace('.', '', substr($reason, 6));
+    foreach ($fields as $f) {
+        if (($typed !== '') && (str_replace('.', '', $f['id']) === $typed)) {
+            return ' ' . _m('The slice has %1 "%2".', ['<code>' . safe($f['id']) . '</code>', safe($f['name'])]);
+        }
+    }
+    return '';
+}
+
+/** @param string $holder the slice holding the links
+ *  @param list<array{id: string, name: string, kind: string, target: string}> $fields of $holder
+ *  @param array<string, string> $names @param array<string, string> $filters */
+function installapp_left_out_note(int $links, string $holder, array $fields, array $names, array $filters): string
+{
+    $leading = array_values(array_filter($fields, static fn(array $f): bool => isset($filters[$f['target']])));
+    $text    = '<strong>' . _m('Links will point nowhere.') . '</strong> ';
+    if (count($leading) !== 1) {
+        return $text . safe(_m('%1 values link to items a condition leaves behind.', [number_format($links, 0, '.', "\u{00A0}")]));
+    }
+    $target  = $leading[0]['target'];
+    // a link within the slice would need the condition of every item up the chain
+    $follow  = ($target === $holder) ? null : installapp_follow_link($filters[$target], $leading[0]['id'], $filters[$holder] ?? '');
+    return $text . safe(_m('%1 values link to items of %2 that stay behind.', [number_format($links, 0, '.', "\u{00A0}"), $names[$target] ?? $target]))
+        . (($follow === null) ? '' : '<br>' . safe(_m('To take only the items linking to items that go:')) . '<code class="aa-cond-code">' . safe($follow) . '</code>');
+}
+
+/** The condition of the slice holding the links: its own conditions, then the one of the linked slice
+ *  with its field read through the link (`field@link`) - an item linking to several items matches when one
+ *  of them goes. Null for a filter of more conditions (each read through the link on its own, they could
+ *  match different linked items), of other field forms, or too long together.
+ *  @param string $filter the filter of the linked slice @param string $link the relation field leading there
+ *  @param string $own the filter of the slice holding the links, '' = none */
+function installapp_follow_link(string $filter, string $link, string $own = ''): ?string
+{
+    $params = (new AA_View_Commands($filter))->get('d')?->getParameterArray() ?? [];
+    $kept   = ($own === '') ? [] : ((new AA_View_Commands($own))->get('d')?->getParameterArray() ?? []);
+    if ((count($params) !== 3) || (count($kept) % 3) || ((count($kept) / 3 + 1) > ItemFilter::MAX_CONDITIONS)) {
+        return null;
+    }
+    [$fields, $operator, $value] = array_map('strval', $params);
+    // `a,b` matches either field, `a@link,b@link` both - so one field only
+    $field = str_replace(' ', '', $fields);
+    if (!AA_Field::isValidFieldId($field)) {
+        return null;
+    }
+    $follow = 'd-' . implode('-', array_map(static fn(string $part): string => str_replace('-', '--', $part), [...array_map('strval', $kept), "$field@$link", $operator, $value]));
+    return (strlen($follow) > ItemFilter::MAX_BYTES) ? null : $follow;
+}
+
+/** the item fields of a package slice for the help of the conditions: id, name, the kind of value it holds
+ *  @param array<string, string> $names module => name
+ *  @return list<array{id: string, name: string, kind: string, target: string}> target: the slice a relation field links to */
+function installapp_slice_fields(Module $m, array $names): array
+{
+    $fields = [];
+    foreach ($m->rows['field'] ?? [] as $row) {
+        $id = ValueCodec::bytes($row['id'] ?? '');
+        if (($id === '') || str_starts_with($id, '_')) {           // a settings field holds no item value
+            continue;
+        }
+        $widget   = ValueCodec::bytes($row['input_show_func'] ?? '');
+        $target   = (string) ReferenceRewriter::relationSlice($widget);
+        $fields[] = ['id' => $id, 'name' => ValueCodec::bytes($row['name'] ?? ''), 'target' => $target, 'kind' => match (true) {
+            $target !== ''                  => _m('relation to %1, holds the item id', [$names[$target] ?? _m('another slice')]),
+            str_starts_with($widget, 'chb') => _m('checkbox, 1 when ticked'),
+            str_starts_with($widget, 'dte') => _m('date'),
+            default                         => '',
+        }];
+    }
+    return $fields;
+}
+
+/** How to write a condition: a short hint, then on demand the parts, examples from the fields of the app,
+ *  the operators, AND, the doubled dash and the field ids of every transferred slice.
+ *  @param array<int, Module> $taken @param array<string, string> $names */
+function installapp_filter_help(array $taken, array $names): void
+{
+    $fields  = array_map(static fn(Module $m): array => installapp_slice_fields($m, $names), $taken);
+    $code    = static fn(string $c): string => '<code class="aa-cond-code">' . safe($c) . '</code>';
+    $example = '';
+    foreach ($taken as $i => $m) {
+        foreach ($fields[$i] as $f) {
+            if ($f['target'] !== '') {
+                $example = '<p>' . safe(_m('The items of %1 linked to one item of %2: %3 is a relation field, it holds the item id of the linked item (32 characters, the id= in the address of its edit page), not its name.', [$names[strtolower($m->id)], $names[$f['target']] ?? _m('another slice'), $f['name']])) . '</p>'
+                    . $code('d-' . $f['id'] . '-==-<item id>');
+                break 2;
+            }
+        }
+    }
+    $year    = date('Y');
+    $ops     = [['==', _m('equals the value exactly'), '42'], ['=', _m('contains the text; "a" OR "b" for either'), 'energy'], ['<>', _m('differs from the value (one word or number)'), '3'],
+        ['< > <= >=', _m('is smaller or greater (numbers)'), '100'], ['BEGIN', _m('begins with the text'), 'Pra'], ['ISNULL', _m('is not set (write any value)'), '1'],
+        ['NOTNULL', _m('is set (write any value)'), '1'], ['BETWEEN', _m('lies between two numbers'), '1,5'], ['REGEXP', _m('matches the regular expression'), '^CZ[0-9]+'],
+        ['d:< d:>', _m('is before or after a date (any form PHP strtotime reads)'), "$year--01--01"], ['e:< e:>', _m('is before or after a date written dd.mm.yyyy'), "1.1.$year"]];
+    echo '<p class="tabhlp aa-filterhint"><strong>' . _m('Only items matching') . ':</strong> '
+        . _m('empty takes every item. To take only some, write a condition, %1, for example %2. Check the changes then shows beside the field how many items it takes.', ['<code>d-&lt;field id&gt;-&lt;operator&gt;-&lt;value&gt;</code>', '<code>d-headline........-=-energy</code>']) . '</p>';
+    $html = '<details class="aa-filterhelp"><summary>' . _m('How to write a condition, with field ids') . '</summary><div class="aa-filterhelp-body">'
+        . '<h4>' . _m('Parts') . '</h4><dl class="aa-filterhelp-parts">'
+        . '<dt>' . _m('field id') . '</dt><dd>' . safe(_m('16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end.')) . '</dd>'
+        . '<dt>' . _m('operator') . '</dt><dd>' . safe(_m('how to compare, see the operators below.')) . '</dd>'
+        . '<dt>' . _m('value') . '</dt><dd>' . safe(_m('what to compare with. Capitals count. A dash inside a value is written doubled, see below.')) . '</dd></dl>'
+        . '<h4>' . _m('Examples') . '</h4>' . $example
+        . '<p>' . safe(_m('Edited after 1 January %1. d:> is after, d:< before.', [$year])) . '</p>' . $code("d-last_edit.......-d:>-$year--01--01")
+        . '<h4>' . _m('Operators') . '</h4><table class="aa-installapp-findings aa-filterhelp-ops"><tr><th>' . _m('Operator') . '</th><th>' . _m('Keeps the items whose field') . '</th><th>' . _m('Value, e.g.') . '</th></tr>';
+    foreach ($ops as [$op, $means, $value]) {
+        $html .= '<tr><td><code>' . safe($op) . '</code></td><td>' . safe($means) . '</td><td><code>' . safe($value) . '</code></td></tr>';
+    }
+    $html .= '</table><h4>' . _m('More than one condition') . '</h4><p>' . safe(_m('Repeat field, operator and value after the first one, without a second d-. An item must match all of them. Up to %1 conditions and %2 characters.', [ItemFilter::MAX_CONDITIONS, ItemFilter::MAX_BYTES])) . '</p>'
+        . $code("d-last_edit.......-d:>-$year--01--01-status_code.....-==-1")
+        . '<h4>' . _m('A dash inside a value') . '</h4><p>' . safe(_m('A single dash ends the value, so a dash in a date or a name is written doubled (--). Otherwise the condition cannot be used.')) . '</p>'
+        . $code('d-headline........-=-Ústí--nad--Labem')
+        . '<h4>' . _m('Field ids') . '</h4>';
+    foreach ($taken as $i => $m) {
+        $html .= '<details class="aa-filterhelp-slice"><summary>' . safe($names[strtolower($m->id)]) . ' <small>' . safe(_m('%1 fields', [count($fields[$i])])) . '</small></summary><ul class="aa-filterhelp-fields">';
+        foreach ($fields[$i] as $f) {
+            $html .= '<li><code>' . safe($f['id']) . '</code> ' . safe($f['name']) . (($f['kind'] !== '') ? ' <small>' . safe($f['kind']) . '</small>' : '') . '</li>';
+        }
+        $html .= '</ul></details>';
+    }
+    echo $html . '</div></details>';
 }
 
 /** the owner of the new modules of an install: one of this AA's, or a new one (name and e-mail) the
@@ -880,11 +1152,15 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         return;
     }
     try {
-        $report = (new Importer(new DbImportTarget(), $uid))->write($prepared['plan'], $run_id, $prepared['xml'], $confirm);
+        $report = (new Importer(new DbImportTarget(), $uid))->write($prepared['plan'], $run_id, $prepared['xml'], $confirm, $sum);
     } catch (ImportFailed $e) {
         $now = InstallRun::get($run_id);
         if (($now !== null) && ($now->user() === $uid) && ($now->state() !== InstallRun::PREVIEW)) {
             installapp_progress($run_id, $uid);         // another request of this preview wrote it
+            return;
+        }
+        if (($now !== null) && !hash_equals($now->choicesSum(), $sum)) {       // another preview of the run meanwhile
+            echo '<div class="aa-err">' . _m('The choice changed since the preview - preview again.') . '</div>';
             return;
         }
         echo '<div class="aa-err">' . safe(installapp_error(_m('Writing the app'), $e)) . '</div>';
@@ -931,8 +1207,9 @@ function installapp_settings(array $settings): void
 
 /** findings by level, a level by code - a security code with what it means and what to check; every
  *  text is package text
- *  @param list<array{string, LintFinding}> $findings @param Package|null $package names the places */
-function installapp_findings(array $findings, ?Package $package = null): void
+ *  @param list<array{string, LintFinding}> $findings @param Package|null $package names the places
+ *  @param bool $conditions the findings of the item conditions: their groups say so and are open */
+function installapp_findings(array $findings, ?Package $package = null, bool $conditions = false): void
 {
     $levels = FindingText::levels();
     $unique = [];
@@ -950,7 +1227,7 @@ function installapp_findings(array $findings, ?Package $package = null): void
         if (!$by_code) {
             continue;
         }
-        echo '<details' . (in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true) ? ' open' : '') . '><summary>' . $label . ' - ' . array_sum(array_map('count', $by_code)) . '</summary>'
+        echo '<details' . (($conditions || in_array($level, [LintFinding::SECURITY, LintFinding::ERROR], true)) ? ' open' : '') . '><summary>' . $label . ($conditions ? ' ' . _m('in conditions') : '') . ' - ' . array_sum(array_map('count', $by_code)) . '</summary>'
             . '<p class="tabhlp">' . safe(FindingText::level($level)) . '</p>';
         foreach ($by_code as $code => $of) {
             $explained = FindingText::explain($of[0][1]);
@@ -1003,7 +1280,7 @@ function installapp_progress(string $run_id, string $uid, bool $start = false): 
         return;
     }
     try {
-        $counts = installapp_counts(installapp_run_source($run), $run->slices(), $run->allBins());
+        $counts = installapp_counts(installapp_run_source($run), $run->slices(), $run->allBins(), $run->filters());
     } catch (SourceFailed $e) {
         $counts = [];
     }

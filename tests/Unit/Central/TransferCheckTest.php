@@ -126,6 +126,20 @@ final class TransferCheckTest extends TestCase
         self::assertSame(['W ' . TransferCheck::EDITED_DURING . ' source 2'], $this->findings(), 'a and b are after the source time');
     }
 
+    public function test_a_filtered_run_counts_only_the_items_its_filter_selects(): void
+    {
+        self::targetItems(1);
+        $this->source->tables['field'] = [['id' => 'headline........', 'slice_id' => self::SLICE, 'input_show_func' => 'fld:']];
+        $this->source->items[self::SLICE][0]['last_edit'] = self::NOW + 5;          // a and b edited after the start
+        $this->source->items[self::SLICE][1]['content']['headline........'] = [['value' => 'B', 'flag' => 0]];
+        TableDb::$tables['object_text'][] = ['id' => 999_999, 'object_id' => $this->run, 'property' => 'filters', 'priority' => 0, 'value' => json_encode([self::SLICE => 'd-headline........-==-B'])];
+
+        $check = (new TransferCheck(new AppExport($this->source, [], static fn(): bool => true, true)))->check(InstallRun::get($this->run));
+
+        self::assertSame(1, $check['slices'][0]['sourceCount'], 'b only');
+        self::assertSame(['W ' . TransferCheck::EDITED_DURING . ' source 1'], array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $check['findings']));
+    }
+
     public function test_a_source_that_cannot_count_leaves_the_counts_unknown(): void
     {
         self::targetItems(2);

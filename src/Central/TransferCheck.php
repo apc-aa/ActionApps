@@ -11,7 +11,8 @@ use AA\IO\DB\DB_AA;
 
 /** What the end of a transfer checks: the items of each slice on the source and on the target, the items
  *  the source changed since the run started (the source is not frozen during a transfer) and the
- *  relations of the new items that point nowhere. Only reads - it may run again for the report. */
+ *  relations of the new items that point nowhere. On the source only the items the filters of the run
+ *  select count. Only reads - it may run again for the report. */
 final class TransferCheck
 {
     /** W: the slice has another number of items on the target than on the source - an existing slice the
@@ -35,8 +36,8 @@ final class TransferCheck
         $written = $run->written();
         $slices  = $findings = [];
         try {
-            $onSource = ($this->source ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'no source'))->itemCounts($run->slices(), $run->allBins());
-            $edited   = array_sum($this->source->itemCounts($run->slices(), $run->allBins(), $run->sourceStarted()));
+            $onSource = ($this->source ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'no source'))->itemCounts($run->slices(), $run->allBins(), 0, $run->filters());
+            $edited   = array_sum($this->source->itemCounts($run->slices(), $run->allBins(), $run->sourceStarted(), $run->filters()));
         } catch (SourceFailed|ExportRefused $e) {        // the items are written - the run finishes, the counts stay unknown
             $onSource   = null;
             $edited     = 0;

@@ -33,6 +33,7 @@ namespace Tests\Unit\Central {
 
     use AA\Central\InstallRun;
     use AA\Central\Package\IdMap;
+    use AA\Central\Package\ImportChoices;
     use AA\IO\DB\DB_AA;
     use InvalidArgumentException;
     use LogicException;
@@ -170,6 +171,29 @@ namespace Tests\Unit\Central {
             $this->assertSame([self::SLICE1, self::SLICE2], $back->slices());
             $this->assertSame([self::SLICE1, ''], $back->position(), 'nothing written yet');
             $this->assertSame([self::SLICE1 => 0, self::SLICE2 => 0], $back->written());
+        }
+
+        public function test_the_filters_of_the_preview_stay_when_the_definitions_are_written(): void
+        {
+            $filters = [self::SLICE1 => 'd-headline........-=-Česko'];
+            $id      = InstallRun::preview(InstallRun::TRANSFER, false, '7', self::USER, self::TOKEN, self::NOW, '', [], new ImportChoices(filters: $filters))->getId();
+
+            self::locked($id, static fn(InstallRun $run) => $run->definitionsWritten(self::map(), self::DEFINITIONS, [self::SLICE1]));
+
+            $back = InstallRun::get($id);
+            $this->assertSame($filters, $back->filters(), 'the batches, the progress page and the check read them');
+            $this->assertSame([], $back->choices()->filters, 'the choices are cleared');
+        }
+
+        public function test_a_preview_of_another_aa_keeps_its_filters_and_one_without_clears_them(): void
+        {
+            $id = self::preview()->getId();
+
+            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW, false, [], new ImportChoices(filters: [self::SLICE2 => 'd-a-=-1'])));
+            $this->assertSame([self::SLICE2 => 'd-a-=-1'], InstallRun::get($id)->filters());
+
+            self::locked($id, static fn(InstallRun $run) => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW, false));
+            $this->assertSame([], InstallRun::get($id)->filters());
         }
 
         public function test_the_preview_keeps_the_fingerprint_it_showed(): void
