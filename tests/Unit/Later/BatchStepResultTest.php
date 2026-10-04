@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Later;
 
 use AA\Later\BatchStepResult;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /** retry ends up as the run's error code once the retries are spent - the same rule as BatchFailed. */
@@ -30,5 +31,29 @@ final class BatchStepResultTest extends TestCase
     {
         $this->expectException(\InvalidArgumentException::class);
         new BatchStepResult([], false, retry: 'Connection refused');
+    }
+
+    /** @return array<string, array{array<string, mixed>}> */
+    public static function invalidUtf8(): array
+    {
+        return [
+            'label'                => [['label' => "stream \xC3"]],
+            'count name'           => [['counts' => ["read\xFF" => 1]]],
+            'nested warning name'  => [['warnings' => ['W' => ["\xC3(" => 1]]]],
+        ];
+    }
+
+    /** the end of the step stores them as JSON - invalid UTF-8 must fail in work(), not in that transaction */
+    #[DataProvider('invalidUtf8')]
+    public function test_construct_rejects_invalid_utf8(array $args): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new BatchStepResult([], false, ...$args);
+    }
+
+    public function test_construct_accepts_utf8_label_and_names(): void
+    {
+        $r = new BatchStepResult([], false, ['přečteno' => 1], ['Ž' => ['kód' => 2]], 'proud Ústí');
+        $this->assertSame('proud Ústí', $r->label);
     }
 }
