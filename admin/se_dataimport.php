@@ -28,8 +28,28 @@
 */
 
 use AA\Import\Definition;
+use AA\Import\DetailLive;
 use AA\Import\DetailPage;
 use AA\Import\Run;
+
+// The script of the page asks every 5 s while a run goes on, maybe all night (AA\Import\DetailLive):
+// JSON or the live sections, never the login form. It stores nothing - neither the session nor a
+// request log row; only a session left in the middle of a login (uid 'form') logs one LOGIN row, as
+// every AA page does then.
+if ((isset($_GET['progress']) || isset($_GET['sections'])) && (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET')) {
+    // stray output of the bootstrap would turn the answer into HTML: the answer is built inside the buffer
+    ob_start();
+    require_once __DIR__ . "/../include/config.php";
+    require_once __DIR__ . "/../include/mgettext.php";
+    require_once __DIR__ . "/../include/locauth.php";
+    require_once __DIR__ . "/../include/util.php";
+    require_once __DIR__ . "/../include/event.class.php";
+    require_once __DIR__ . "/../include/slice.class.php";
+    $answer = DetailLive::answer($_GET);
+    ob_end_clean();
+    DetailLive::emit($answer);
+    exit;
+}
 
 require_once __DIR__ . "/../include/init_page.php";
 
@@ -66,8 +86,8 @@ $apage->addRequire('
     .aa-import-why { margin: 0.3em 0; }
     .aa-import-sample { margin: 0.3em 0; }
 ', 'AA_Req_CSScode');
-// the page marks a submitted form as updating; a cancelled one is not
-$apage->addRequire("document.querySelectorAll('form[data-aa-confirm]').forEach((f) => f.addEventListener('submit', (e) => { if (!confirm(f.dataset.aaConfirm)) { e.preventDefault(); f.classList.remove('aa-updating'); } }));", 'AA_Req_Load');
+// asks before End, follows a running run
+$apage->addRequire(get_aa_url('javascript/dataimport.min.js', ['v' => AA_JS_VERSION], false));
 $apage->printHead();
 
 echo $page->outcomeOnceHtml();

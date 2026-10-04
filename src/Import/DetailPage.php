@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Import;
 
+use AA\Api\JsonResponse;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Util\FormToken;
@@ -36,6 +37,9 @@ final class DetailPage
     /** an open run no step has worked on for long (BatchRun::isStuck()) - a page's own code, no state */
     private const HANGING = 'HANGING';
 
+    /** an id of the request: 32 lower-case hex */
+    public const ID = '/^[0-9a-f]{32}\z/';
+
     /** @var ?list<Run> newest first, read once per page */
     private ?array $runs = null;
 
@@ -53,11 +57,68 @@ final class DetailPage
      */
     public static function forRequest(string $slice, mixed $id, string $uid): ?self
     {
-        if (!is_string($id) || (preg_match('/^[0-9a-f]{32}\z/', $id) !== 1) || !Definition::mayImportInto($uid, $slice)) {
+        if (!is_string($id) || (preg_match(self::ID, $id) !== 1) || !Definition::mayImportInto($uid, $slice)) {
             return null;
         }
         $def = Definition::byNameOrId($slice, $id);
         return ($def === null) ? null : new self($def, $uid);
+    }
+
+    /**
+     * The progress of run $runId of import $id of $slice for the script of the page, as JSON:
+     * liveFacts(). Not logged in = 401 - a page left open overnight must learn its session is gone,
+     * not get the login form; a run the user may not see = 403, the same for a run of another import
+     * or slice as for none. Reads only.
+     * @param string $uid '' = nobody is logged in
+     */
+    public static function progressJson(mixed $slice, mixed $id, mixed $runId, string $uid): JsonResponse
+    {
+        if ($uid === '') {
+            return self::loggedOut();
+        }
+        $page  = self::ofRequest($slice, $id, $uid);
+        $run   = $page?->runOfThis($runId);
+        $facts = (($page === null) || ($run === null)) ? null : $page->liveFacts($run, Run::clock());
+        return ($facts === null) ? self::refused() : JsonResponse::ok($facts);
+    }
+
+    /**
+     * The sections the script of the page replaces while a run goes on (html()), with the same rights
+     * as the page; never the outcome of an action, which its own page shows once. Reads only.
+     * @param string $uid '' = nobody is logged in
+     * @param ?\Closure(string): void $prepare sets up the rendering for the slice, once the user may see it
+     * @return JsonResponse|string the refusal, or the HTML
+     */
+    public static function sectionsAnswer(mixed $slice, mixed $id, string $uid, int $now, ?\Closure $prepare = null): JsonResponse|string
+    {
+        if ($uid === '') {
+            return self::loggedOut();
+        }
+        $page = self::ofRequest($slice, $id, $uid);
+        if ($page === null) {
+            return self::refused();
+        }
+        if ($prepare !== null) {
+            $prepare($page->slice());
+        }
+        return $page->html($now);
+    }
+
+    /** forRequest() of a slice id from the request */
+    private static function ofRequest(mixed $slice, mixed $id, string $uid): ?self
+    {
+        return (is_string($slice) && (preg_match(self::ID, $slice) === 1)) ? self::forRequest($slice, $id, $uid) : null;
+    }
+
+    private static function loggedOut(): JsonResponse
+    {
+        return JsonResponse::error(401, 'LOGIN');
+    }
+
+    /** the one answer to whatever may not be seen */
+    public static function refused(): JsonResponse
+    {
+        return JsonResponse::error(403, 'FORBIDDEN');
     }
 
     /** the token of the forms of import $id - a token of another import's page does not work here */
@@ -126,7 +187,24 @@ final class DetailPage
     /** the three sections of the page */
     public function html(int $now): string
     {
-        return $this->overviewHtml($now) . $this->actionsHtml($now) . $this->runsHtml($now);
+        return $this->liveHtml($now) . $this->overviewHtml($now) . $this->actionsHtml($now) . $this->runsHtml($now);
+    }
+
+    /** What the script of the page follows a running run by (javascript/dataimport.js): where to ask,
+     *  what the page shows now, what to say when the page cannot follow any more - it fills the empty
+     *  live region then. Nothing when no run goes on by itself. */
+    private function liveHtml(int $now): string
+    {
+        $open = $this->openRun();
+        if (($open === null) || ($open->state() !== Run::RUNNING) || (($facts = $this->liveFacts($open, $now)) === null)) {
+            return '';
+        }
+        $ask = ['change_id' => $this->slice(), 'id' => $this->id()];
+        return '<div id="aa-import-live" role="status"'
+            . ' data-aa-progress="' . safe(get_admin_url('se_dataimport.php', $ask + ['progress' => (string) $open->getId()])) . '"'
+            . ' data-aa-sections="' . safe(get_admin_url('se_dataimport.php', $ask + ['sections' => '1'])) . '"'
+            . ' data-aa-shown="' . safe((string) json_encode($facts, JSON_HEX_TAG | JSON_HEX_AMP | JSON_INVALID_UTF8_SUBSTITUTE)) . '"'
+            . ' data-aa-stale="' . safe(_m('This page is out of date – reload it.')) . '"></div>';
     }
 
     /** source, enabled, status, last run, the open run, next plan, last check, mapping problems */
@@ -152,7 +230,7 @@ final class DetailPage
             $html .= $this->openRunHtml($open, $now);
         }
         $html .= $this->problemsHtml();
-        return self::section(_m('Overview'), $html);
+        return self::section('overview', _m('Overview'), $html);
     }
 
     /** the forms of the actions; a button that cannot be used now is disabled and says why */
@@ -169,7 +247,7 @@ final class DetailPage
         $html .= '<p><small>' . _m('Run changed only skips the streams the source says did not change. Check source asks the source whether it works and stores nothing. A dry run reads up to 500 items and shows what it would store, without storing it.') . '</small></p>';
         $html .= $this->streamFormHtml($why);
         $html .= $this->controlFormHtml($now);
-        return self::section(_m('Actions'), $html);
+        return self::section('actions', _m('Actions'), $html);
     }
 
     /** the last runs, newest first, each with its item errors and what a dry run would store */
@@ -177,7 +255,7 @@ final class DetailPage
     {
         $runs = array_slice($this->runs(), 0, self::RUNS_SHOWN);
         if (!$runs) {
-            return self::section(_m('Runs'), '<p class="aa-empty-note">' . _m('No run yet.') . '</p>');
+            return self::section('runs', _m('Runs'), '<p class="aa-empty-note">' . _m('No run yet.') . '</p>');
         }
         $heads = [_m('Started'), _m('How'), _m('Status'), _m('Took'), _m('Counts'), _m('Error')];
         $html  = '<table class="aa-import-runs"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
@@ -193,13 +271,13 @@ final class DetailPage
                 . '<td>' . self::errorHtml($p['error'] ?? null) . '</td>'
                 . '</tr>';
             $samples = $run->samples();
-            $more    = self::itemErrorsHtml($run->errors()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples) : '');
+            $more    = self::itemErrorsHtml($run->errors(), (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
             if ($more !== '') {
                 $html .= '<tr class="aa-import-run-more"><td colspan="' . count($heads) . '">' . $more . '</td></tr>';
             }
         }
         $html .= '</tbody></table>';
-        return self::section(_m('Runs'), $html);
+        return self::section('runs', _m('Runs'), $html);
     }
 
     // ------------------------------------------------------------ actions
@@ -262,7 +340,7 @@ final class DetailPage
     /** the run $runId of the request, when it is one of this import - never one of another */
     private function runOfThis(mixed $runId): ?Run
     {
-        if (!is_string($runId) || (preg_match('/^[0-9a-f]{32}\z/', $runId) !== 1)) {
+        if (!is_string($runId) || (preg_match(self::ID, $runId) !== 1)) {
             return null;
         }
         $run = Run::get($runId);
@@ -516,8 +594,9 @@ final class DetailPage
 
     // ------------------------------------------------------------ runs parts
 
-    /** @param list<array{stream: string, job: string, code: string, msg: string}> $errors */
-    private static function itemErrorsHtml(array $errors): string
+    /** the ids of the details let a refreshed page keep them open
+     *  @param list<array{stream: string, job: string, code: string, msg: string}> $errors */
+    private static function itemErrorsHtml(array $errors, string $runId): string
     {
         if (!$errors) {
             return '';
@@ -526,18 +605,18 @@ final class DetailPage
         foreach ($errors as $e) {
             $rows .= '<tr><td>' . safe($e['stream']) . '</td><td>' . safe($e['job']) . '</td><td><code>' . safe($e['code']) . '</code></td><td>' . safe($e['msg']) . '</td></tr>';
         }
-        return '<details><summary>' . _m('The first item errors (%1)', [count($errors)]) . '</summary>'
+        return '<details id="aa-import-errors-' . safe($runId) . '"><summary>' . _m('The first item errors (%1)', [count($errors)]) . '</summary>'
             . '<table><thead><tr><th scope="col">' . _m('Stream') . '</th><th scope="col">' . _m('Job') . '</th><th scope="col">' . _m('Code') . '</th><th scope="col">' . _m('Message') . '</th></tr></thead>'
             . '<tbody>' . $rows . '</tbody></table></details>';
     }
 
     /** @param list<array<string, list<string>>> $samples */
-    private static function samplesHtml(array $samples): string
+    private static function samplesHtml(array $samples, string $runId): string
     {
         if (!$samples) {
             return '<p><small>' . _m('The dry run found no item to store.') . '</small></p>';
         }
-        $html = '<details><summary>' . _m('What the dry run would store - the first %1 items', [count($samples)]) . '</summary>';
+        $html = '<details id="aa-import-samples-' . safe($runId) . '"><summary>' . _m('What the dry run would store - the first %1 items', [count($samples)]) . '</summary>';
         foreach ($samples as $item) {
             $html .= '<table class="aa-import-sample"><tbody>';
             foreach ($item as $field => $values) {
@@ -644,6 +723,15 @@ final class DetailPage
         }
     }
 
+    /** progressOf() and what only time changes - a run that hangs, a retry that is due - so the
+     *  script learns of those too
+     *  @return ?array<string, mixed> */
+    private function liveFacts(Run $run, int $now): ?array
+    {
+        $progress = $this->progressOf($run);
+        return ($progress === null) ? null : $progress + ['stuck' => $run->isStuck($now), 'waiting' => $run->isWaiting($now)];
+    }
+
     private function url(): string
     {
         return get_admin_url('se_dataimport.php', ['change_id' => $this->slice(), 'id' => $this->id()]);
@@ -659,8 +747,9 @@ final class DetailPage
         return strtolower((string) $this->def->getOwnerId());
     }
 
-    private static function section(string $title, string $body): string
+    /** data-aa-live: the script replaces the section by the one of a fresh page while a run moves */
+    private static function section(string $name, string $title, string $body): string
     {
-        return '<details class="aa-page-section" open><summary><h2 class="aa-tab-title">' . $title . '</h2></summary>' . $body . '</details>';
+        return '<details id="aa-import-' . $name . '" class="aa-page-section" open data-aa-live><summary><h2 class="aa-tab-title">' . $title . '</h2></summary>' . $body . '</details>';
     }
 }
