@@ -11,6 +11,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Tests\Unit\Api\Fixtures\JsonResponseReader;
+
+require_once __DIR__ . '/Fixtures/JsonResponseReader.php';
 
 /**
  * Fake controller that bypasses the real network call and the AA session, so the
@@ -79,12 +82,7 @@ final class TranslateControllerTest extends TestCase
     /** Reads status + payload out of a JsonResponse without emitting it. */
     private function readResponse(JsonResponse $response): array
     {
-        $ref     = new \ReflectionObject($response);
-        $status  = $ref->getProperty('status');
-        $status->setAccessible(true);
-        $payload = $ref->getProperty('payload');
-        $payload->setAccessible(true);
-        return ['status' => $status->getValue($response), 'body' => $payload->getValue($response)];
+        return JsonResponseReader::read($response);
     }
 
     public function test_rejects_cross_host_request(): void

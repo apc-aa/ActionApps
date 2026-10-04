@@ -7,6 +7,9 @@ namespace Tests\Unit\Api;
 use AA\Api\Controller\SpeechController;
 use AA\Api\JsonResponse;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Api\Fixtures\JsonResponseReader;
+
+require_once __DIR__ . '/Fixtures/JsonResponseReader.php';
 
 /**
  * Fake controller that bypasses the real curl call.
@@ -57,14 +60,7 @@ final class SpeechControllerTest extends TestCase
     /** Reads the status code + JSON body from a JsonResponse by capturing its emit(). */
     private function readResponse(JsonResponse $response): array
     {
-        // Emit into a buffer. http_response_code() at CLI returns 200 by default — we
-        // assert the body content + inspect JsonResponse::$status via reflection.
-        $ref = new \ReflectionObject($response);
-        $status  = $ref->getProperty('status');
-        $status->setAccessible(true);
-        $payload = $ref->getProperty('payload');
-        $payload->setAccessible(true);
-        return ['status' => $status->getValue($response), 'body' => $payload->getValue($response)];
+        return JsonResponseReader::read($response);
     }
 
     public function test_rejects_cross_host_request(): void

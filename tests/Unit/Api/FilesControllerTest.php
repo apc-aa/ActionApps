@@ -10,6 +10,9 @@ use AA\Upload\UploadPolicy;
 use AA\Upload\UploadToken;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Api\Fixtures\JsonResponseReader;
+
+require_once __DIR__ . '/Fixtures/JsonResponseReader.php';
 
 /** Stands in for the request context and the file system calls that need a real upload. */
 final class FakeFilesController extends FilesController
@@ -129,8 +132,7 @@ final class FilesControllerTest extends TestCase
     /** @return array{status: int, body: array<string, mixed>} */
     private function read(JsonResponse $response): array
     {
-        $ref = new \ReflectionObject($response);
-        return ['status' => $ref->getProperty('status')->getValue($response), 'body' => $ref->getProperty('payload')->getValue($response)];
+        return JsonResponseReader::read($response);
     }
 
     private const PDF = "%PDF-1.4\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n";
