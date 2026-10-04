@@ -1070,22 +1070,22 @@ class Manager extends AA_Storable
             exit;
         }
 
+        $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER);
+        $refused   = isset($_GET['akce']);
+
         // call custom searchbar function (if searchbar action invoked)
-        // used for additional search functions like 'category search' in Links
+        // used for additional search functions like 'category search' in Links - it only sets the view
         if ($this->searchbar_funct && ($_REQUEST['srchbr_akce'] ?? '')) {
             $function2call = $this->searchbar_funct;
             $function2call();
         }
 
-        // update searchbar
-        if (isset($this->searchbar)) {
-            $this->searchbar->update();
+        // update searchbar - storing a filter is a write too
+        if (isset($this->searchbar) && !$this->searchbar->update($may_write)) {
+            $refused = true;
         }
 
         $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
-
-        $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER);
-        $refused   = isset($_GET['akce']);
 
         $akce = is_string($_POST['akce'] ?? null) ? $_POST['akce'] : '';
         if ($akce && $this->actions) {

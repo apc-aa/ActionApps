@@ -398,15 +398,27 @@ function AA_FilterDelete(btn) {
 }
 
 /* points srchbr_bookmark at the target row, builds srchbr_akce (mirroring
- * SearchBarAction's ':' / '#:' encoding) and submits the search form */
+ * SearchBarAction's ':' / '#:' encoding) and submits the search form -
+ * by POST when it changes the stored filters - the server refuses those by GET.
+ * The POST goes to the bare page (module_id rides in the form): a query left
+ * from a link (?GoBookmark=) would override the filter just stored. */
 function AA_FilterBookmarkSubmit(formName, akce, key, name, global) {
     const f = document[formName];
-    if (key != null && key !== '') {
-        f.elements['srchbr_bookmark'].value = key;
-    }
     let action = akce;
     if (name != null) { action += ':' + String(name).replace(/:/g, '#:'); }
     if (global)       { action += ':y'; }
+    if (akce !== 'bookmarkgo') {
+        const fields = Object.fromEntries(new FormData(f));
+        fields.srchbr_akce = action;
+        if (key != null && key !== '') {
+            fields.srchbr_bookmark = key;
+        }
+        AA_PostForm(location.pathname, fields);
+        return;
+    }
+    if (key != null && key !== '') {
+        f.elements['srchbr_bookmark'].value = key;
+    }
     f.elements['srchbr_akce'].value = action;
     f.submit();
 }
