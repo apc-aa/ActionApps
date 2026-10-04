@@ -103,7 +103,8 @@ abstract class BatchRun extends AA_Object
     abstract protected static function states(): BatchStates;
 
     /** The queue selector of the run's steps. Unique among unfinished runs (import: Import_<definition>,
-     *  one unfinished run per definition) - ending a run removes every queued row of it. */
+     *  one unfinished run per definition) - ending a run removes every queued row of it. Never shared
+     *  with another subject: deleteOfSubject() cancels it. */
     abstract public function selector(): string;
 
     /** May the user see and control the run - decided by the stored subject, never by the context of
@@ -597,6 +598,38 @@ abstract class BatchRun extends AA_Object
         if ($old) {
             self::deleteObjects($old);
         }
+    }
+
+    /** Deletes every run of $subject whatever its state, with the queued steps of the unfinished ones
+     *  and the close rows of all - for a subject that goes away. In the caller's transaction, with the
+     *  subject's own records. A step working meanwhile finds no run at its end and writes nothing back;
+     *  afterClose() does not run. No rights checked - the caller has.
+     *  @return int the runs deleted */
+    final public static function deleteOfSubject(string $subject): int
+    {
+        if (!DB_AA::inTransaction()) {
+            throw new \LogicException('The runs of a subject are deleted inside the caller\'s transaction');
+        }
+        $records = self::records('subject', $subject, ['state']);
+        if (!$records) {
+            return 0;
+        }
+        $open      = self::unfinishedStates();
+        $selectors = [];
+        foreach ($records as $id => $record) {
+            $selectors[] = self::closeSelector((string) $id);
+            // the selector may depend on the run's own properties - read only for the few that have steps
+            if (in_array($record['state'] ?? '', $open, true) && ($run = static::get((string) $id))) {
+                $selectors[] = $run->selector();
+            }
+        }
+        $ids = array_map('strval', array_keys($records));
+        self::deleteObjects($ids);
+        $queue = new Toexecute();
+        foreach (array_unique($selectors) as $selector) {
+            $queue->cancel_all($selector);
+        }
+        return count($ids);
     }
 
     /** The last $limit runs of $subject, the newest first, read-only. No rights checked - the caller
