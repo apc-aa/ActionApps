@@ -174,11 +174,13 @@ abstract class BatchRun extends AA_Object
      *  warnings as AFTER_DEAD_STEP, the step goes on. */
     protected function afterDeadStep(): void {}
 
-    /** MAX_FAILURES steps without progress; outside any transaction, so it may ask the source. A position
-     *  other than $last->position goes on from there (import: skips the task); null ends the run in error
-     *  with the code of $last->retry. Never called in the final phase, nor for a result work() returns
-     *  with stepInTransaction() - that one ends in error at once. */
-    protected function onRetriesExhausted(BatchStepResult $last): ?array
+    /** MAX_FAILURES steps without progress; outside any transaction, so it may ask the source. A result
+     *  at a position other than $last->position goes on from there - $last->withPosition(), or with
+     *  warnings and counts of its own (import: skips the task, warns JOB_FAILED), never finished nor
+     *  with a retry; null ends the run in error with the code of $last->retry. Never called in the
+     *  final phase, nor for a result work() returns with stepInTransaction() - that one ends in error
+     *  at once. */
+    protected function onRetriesExhausted(BatchStepResult $last): ?BatchStepResult
     {
         return null;
     }
@@ -887,8 +889,12 @@ abstract class BatchRun extends AA_Object
             }
             if ($result !== null) {
                 if (!$result->finished && BatchPosition::same($from, $result->position) && ($this->failures() + 1 >= self::MAX_FAILURES)) {
-                    $next   = BatchStep::during($this, fn(): ?array => $this->onRetriesExhausted($result));
-                    $result = (($next === null) || BatchPosition::same($result->position, $next)) ? $result : $result->withPosition($next);
+                    $next   = BatchStep::during($this, fn(): ?BatchStepResult => $this->onRetriesExhausted($result));
+                    if (($next !== null) && ($next->finished || ($next->retry !== ''))) {
+                        // the way on is a position to go on from, not an end nor another failure
+                        throw new \LogicException('onRetriesExhausted() returned a finished result or one to retry');
+                    }
+                    $result = (($next === null) || BatchPosition::same($result->position, $next->position)) ? $result : $next;
                 }
                 $run = $this->whileHolding((string) $this->lease_tok, static fn(self $run) => $run->applyStep($from, $result));
             }

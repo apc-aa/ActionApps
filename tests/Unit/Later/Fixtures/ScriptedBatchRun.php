@@ -33,7 +33,8 @@ class ScriptedBatchRun extends BatchRun
     public static ?\Throwable $afterCloseThrows = null;
     /** @var ?\Closure(): void runs inside finalCheck() - a test looks at the run there */
     public static ?\Closure $onFinalCheck = null;
-    /** @var ?\Closure(BatchStepResult): ?array what onRetriesExhausted() answers; null = the core's own */
+    /** @var ?\Closure(BatchStepResult): (array|BatchStepResult|null) what onRetriesExhausted() answers - a position
+     *  goes on via withPosition(); null = the core's own */
     public static ?\Closure $onExhausted = null;
     /** what stillValid() answers, or throws */
     public static bool|\Throwable $valid = true;
@@ -161,10 +162,14 @@ class ScriptedBatchRun extends BatchRun
         }
     }
 
-    protected function onRetriesExhausted(BatchStepResult $last): ?array
+    protected function onRetriesExhausted(BatchStepResult $last): ?BatchStepResult
     {
         $this->log('onRetriesExhausted', $last);
-        return self::$onExhausted ? (self::$onExhausted)($last) : parent::onRetriesExhausted($last);
+        if (!self::$onExhausted) {
+            return parent::onRetriesExhausted($last);
+        }
+        $next = (self::$onExhausted)($last);
+        return is_array($next) ? $last->withPosition($next) : $next;
     }
 
     protected function stillValid(): bool

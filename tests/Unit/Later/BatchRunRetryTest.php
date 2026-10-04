@@ -371,6 +371,22 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame(self::NOW, self::queue()[0]['execute_after'], 'at once');
     }
 
+    public function test_retries_exhausted_hook_result_brings_its_warnings(): void
+    {
+        $id = self::start()->getId();
+        self::storedSet($id, 'failures', '2');
+        ScriptedBatchRun::$script      = [new BatchStepResult(['n' => 0], false, ['read' => 1], ['SLOW' => 1], retry: 'TRANSPORT')];
+        ScriptedBatchRun::$onExhausted = static fn(BatchStepResult $last): BatchStepResult => new BatchStepResult(['n' => 1], false, $last->counts, ['SLOW' => 1, 'TASK_FAILED' => 1]);
+
+        $this->assertSame('step 1', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['n' => 1], json_decode($stored['position'], true));
+        $this->assertSame(['SLOW' => 1, 'TASK_FAILED' => 1], json_decode($stored['warnings'], true));
+        $this->assertSame(['read' => 1], json_decode($stored['counts'], true));
+        $this->assertSame('0', $stored['failures']);
+    }
+
     #[DataProvider('bothModes')]
     public function test_retries_exhausted_hook_null_errors(bool $inTransaction): void
     {
@@ -430,6 +446,28 @@ final class BatchRunRetryTest extends TestCase
 
         $this->assertSame('error SOURCE_GONE', self::runQueued());
         $this->assertSame('task 4', self::stored($id)['error_path']);
+    }
+
+    /** @return array<string, array{BatchStepResult}> */
+    public static function wrongWaysOn(): array
+    {
+        return [
+            'finished' => [new BatchStepResult(['n' => 1], true)],
+            'a retry'  => [new BatchStepResult(['n' => 1], false, retry: 'TRANSPORT')],
+        ];
+    }
+
+    #[DataProvider('wrongWaysOn')]
+    public function test_retries_exhausted_hook_result_must_be_a_way_on(BatchStepResult $next): void
+    {
+        $id = self::start()->getId();
+        self::storedSet($id, 'failures', '2');
+        ScriptedBatchRun::$script      = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT')];
+        ScriptedBatchRun::$onExhausted = static fn(BatchStepResult $last): BatchStepResult => $next;
+
+        $this->assertSame('error INTERNAL', self::runQueued());
+        $this->assertSame('LogicException', self::stored($id)['error_path']);
+        $this->assertSame(['n' => 0], json_decode(self::stored($id)['position'], true));
     }
 
     #[DataProvider('bothModes')]
