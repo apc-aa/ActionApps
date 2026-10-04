@@ -34,6 +34,7 @@ use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Managed;
 use AA\Managed_Object;
+use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 use AA\Manageraction\Object_Delete;
 use AA\Util\AbstractAliasgenerator;
@@ -1097,6 +1098,14 @@ class AA_Object extends AA_Storable implements AA_iEditable
             ';
     }
 
+    /** The Delete of a row of the Manager - a class whose objects own records of their own deletes
+     *  them with it; null = the Manager does not delete the objects. The id stays DeleteObject, the
+     *  id of the row button. */
+    protected static function deleteAction(): ?AbstractManageraction
+    {
+        return new Object_Delete('DeleteObject');
+    }
+
     /** generate manager from object structure
      *
      * @static
@@ -1118,7 +1127,10 @@ class AA_Object extends AA_Storable implements AA_iEditable
         if (!is_object($actions)) {
             $actions   = new Manageractions();
         }
-        $actions->addAction(new Object_Delete('DeleteObject'));
+        $delete = static::deleteAction();
+        if ($delete) {
+            $actions->addAction($delete);
+        }
 
         $buttons  = [
             'Edit'   => a_href(get_url(Managed::MANGED_URL, [

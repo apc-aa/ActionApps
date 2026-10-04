@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace AA\Import;
 
+use AA;
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
+use AA\Later\Toexecute;
+use AA\Manageraction\AbstractManageraction;
+use AA\Manageraction\Import_Delete;
 use AA\Widget\ChbWidget;
 use AA_Form;
+use AA_Log;
 use AA_Object;
 use AA_Property;
 use JsonException;
@@ -29,6 +34,9 @@ use Throwable;
  */
 final class Definition extends AA_Object
 {
+    /** log type of a failure of the imports outside a queue step (log.type is varbinary(10)) */
+    public const ERROR_EVENT = 'IMPORT_ERR';
+
     /** what a run works with - the same for its whole life, whatever is changed in the meantime */
     private const SNAPSHOT = ['source', 'settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'];
 
@@ -65,6 +73,12 @@ final class Definition extends AA_Object
             'after_stream' => new AA_Property('after_stream', _m('After a stream'), 'text', false, true, 'text'),
             'enabled'      => new AA_Property('enabled', _m('Enabled'), 'string', false, true, 'text'),
         ];
+    }
+
+    /** the runs, the stream state and the catalog go with the definition */
+    protected static function deleteAction(): AbstractManageraction
+    {
+        return new Import_Delete('DeleteObject');
     }
 
     /** the rest is edited in the import detail, which knows the source */
@@ -183,6 +197,54 @@ final class Definition extends AA_Object
             return (string) $this->getId();
         });
         return is_string($id) ? $id : false;
+    }
+
+    /**
+     * Deletes the definition with what it owns: its runs, its stream state, its catalog and its queued
+     * steps - left behind, they would lie orphaned with nothing to show or delete them. One transaction
+     * under the lock of the definition, which a starting run takes too, so no run starts meanwhile.
+     * A step working during the delete may still store items until its lease ends (the step's 30 s
+     * plus 60 s); its run is gone, so it writes nothing back. Nothing happens when the definition is
+     * no longer stored.
+     * @throws BatchFailed FORBIDDEN when $uid may not manage the imports of the slice
+     */
+    public function deleteWithRuns(string $uid): void
+    {
+        $id    = (string) $this->getId();
+        $slice = DB_AA::transaction(static function () use ($id, $uid): ?string {
+            $def = self::fresh($id, true);
+            if ($def === null) {
+                return null;
+            }
+            // decided by the stored slice under the lock, not by the page that asks
+            if (!$def->mayManage($uid)) {
+                throw new BatchFailed('FORBIDDEN');
+            }
+            $runs = Run::deleteOfSubject($id);
+            StreamState::deleteFor($id);
+            Catalog::deleteFor($id);
+            // the safety row of a finished run's final phase - the core cancels only the steps of unfinished runs
+            (new Toexecute())->cancel_all('Import_' . $id);
+            self::deleteObjects([$id]);
+            // a run's afterClose() no longer comes - a step that died, or the one working meanwhile, stored items;
+            // a definition never run stored nothing
+            return ($runs > 0) ? (string) $def->getOwnerId() : null;
+        });
+        if (is_string($slice)) {
+            // the delete has committed - stale pages are no reason to report it failed
+            try {
+                AA::Pagecache()->invalidateFor([$slice]);
+            } catch (\Throwable $e) {
+                self::logError($id, $e);
+            }
+        }
+    }
+
+    /** A failure of the imports outside a queue step, as a failed step is logged: the class and the
+     *  line, never the text - it may carry source data or a secret. */
+    public static function logError(string $id, \Throwable $e): void
+    {
+        AA_Log::write(self::ERROR_EVENT, 'Import_' . $id, Toexecute::failureParams($id, $e));
     }
 
     /**

@@ -65,6 +65,7 @@ SESSID_USE      client IP:reader|password|session                              /
 APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:source_url  // aa-app package installed (AA\Central\Package\AaAfterCommit)
 APP_DENY        source (central_conf id | store)  reason:error            // an admin's login to another AA for an app install or transfer failed - SourceFailed reason, error number of the source (AA\Central\RemoteSource::login())
 APPSTORE        command:client (IPv4; IPv6 "/48 /64")  command               // a request of the app store's public account - the hourly limits count them, keep it logged (AA\Central\AppStore::admit())
+IMPORT_ERR      Import_{definition_id}          #id Class file:line            // an import failure outside a queue step; never the message - it may carry a secret (AA\Import\Definition::logError())
 AA_WARN
 */
 
