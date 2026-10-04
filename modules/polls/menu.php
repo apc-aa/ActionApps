@@ -100,7 +100,7 @@ function get_aamenus(): array
             "folder3"   => ["cond" => 1,                           "href" => "modules/polls/index.php?Folder3=1",                          "label" => "<img src='../../images/ico-trashbin.png'>" . _m("Trash bin") . " <span class='aa-bin-cnt'>" . $r_state['bin_cnt']['folder3'] . "</span>"],
 
             "header2"     => _m("Misc"),
-            "deletetrash" => ["cond" => IfSlPerm(PS_DELETE_ITEMS),   "href" => "modules/polls/index.php",                                  "label" => _m("Empty trash"), "js" => "EmptyTrashQuestion('{href}','" . _m("Are you sure you want to empty trash?") . "')"],
+            "deletetrash" => ["cond" => IfSlPerm(PS_DELETE_ITEMS),   "href" => "modules/polls/index.php",                                  "label" => _m("Empty trash"), "js" => \AA\Manager::emptyTrashJs('{href}')],
         ],
     ];
 

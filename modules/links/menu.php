@@ -125,7 +125,7 @@ function get_aamenus(): array
                 "hide" => !IsSuperadmin(),
                 "href" => $module_location . "index.php",
                 "label" => _m("Empty trash"),
-                "js" => "EmptyTrashQuestion('{href}','" . _m("Are you sure you want to empty trash?") . "')"],
+                "js" => \AA\Manager::emptyTrashJs('{href}')],
             "debug" => ["cond" => IsSuperadmin(),
                 "hide" => !IsSuperadmin(),
                 "js" => "ToggleCookie('aa_debug','1')",

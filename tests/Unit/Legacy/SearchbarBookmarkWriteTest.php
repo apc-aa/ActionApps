@@ -11,6 +11,8 @@ namespace Tests\Unit\Legacy;
 
 use AA;
 use AA\Managed_Table;
+use AA\Manager;
+use AA\Util\FormToken;
 use AA_Bookmarks;
 use AA_Searchbar;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -30,6 +32,7 @@ final class SearchbarBookmarkWriteTest extends TestCase
 
     protected function setUp(): void
     {
+        session_id('test-session');   // FormToken keys its tokens with the session
         self::$writes = [];
         $GLOBALS['spareDBs'] = [new RecordingDb()];
         $GLOBALS['permission_uid'] = AuthGetUid();
@@ -39,9 +42,10 @@ final class SearchbarBookmarkWriteTest extends TestCase
 
     protected function tearDown(): void
     {
+        session_id('');
         $GLOBALS['spareDBs'] = [];
         [$_GET, $_POST, $_REQUEST] = [[], [], []];
-        unset($_SERVER['HTTP_SEC_FETCH_SITE'], $GLOBALS['r_state'], $GLOBALS['permission_uid'], $GLOBALS['permission_to']);
+        unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['REQUEST_METHOD'], $GLOBALS['r_state'], $GLOBALS['permission_uid'], $GLOBALS['permission_to']);
         AA::$module_id = null;
     }
 
@@ -179,7 +183,7 @@ final class SearchbarBookmarkWriteTest extends TestCase
     }
 
     /** the Manager page decides "of this site" once, for its actions and for the searchbar */
-    private static function managerPost(string $fetch_site): string
+    private static function managerPost(string $fetch_site, ?string $token = null): string
     {
         $GLOBALS['r_state'] = ['manager' => ['test' => null]];
         $managed = new Managed_Table('view');
@@ -190,8 +194,9 @@ final class SearchbarBookmarkWriteTest extends TestCase
 
         $_SERVER['HTTP_SEC_FETCH_SITE'] = $fetch_site;
         $_GET     = ['scr_st_Go' => '', 'scr_st_Mv' => ''];   // the scroller reads them unguarded
-        $_POST    = ['srchbr_akce' => 'bookmarkdelete', 'srchbr_bookmark' => '0'];
+        $_POST    = ['srchbr_akce' => 'bookmarkdelete', 'srchbr_bookmark' => '0', 'token' => $token ?? FormToken::get(Manager::FORM_TOKEN)];
         $_REQUEST = $_POST;
+        $_SERVER['REQUEST_METHOD'] = 'POST';
         $manager->performActions();
         return (string) $manager->getAndClearMessages();
     }
@@ -207,6 +212,14 @@ final class SearchbarBookmarkWriteTest extends TestCase
     public function test_performActions_refusesAFilterPostedByAnotherSite(): void
     {
         $msg = self::managerPost('same-site');
+
+        $this->assertSame([], self::$writes);
+        $this->assertStringContainsString('use the button on the page', $msg);
+    }
+
+    public function test_performActions_refusesAFilterPostedWithoutTheToken(): void
+    {
+        $msg = self::managerPost('same-origin', '');
 
         $this->assertSame([], self::$writes);
         $this->assertStringContainsString('use the button on the page', $msg);

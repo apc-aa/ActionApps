@@ -10,6 +10,7 @@ namespace Tests\Unit\Legacy {
     use AA\Manager;
     use AA\Optimize\CheckObjectFormRefusals;
     use AA\Optimize\Finding;
+    use AA\Util\FormToken;
     use AA\Util\LogOnce;
     use AA_Form;
     use AA_Module;
@@ -50,6 +51,7 @@ namespace Tests\Unit\Legacy {
 
         protected function setUp(): void
         {
+            session_id('test-session');   // FormToken keys its tokens with the session
             RecordingDb::reset();
             LogOnce::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb()];
@@ -58,10 +60,11 @@ namespace Tests\Unit\Legacy {
 
         protected function tearDown(): void
         {
+            session_id('');
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
             [$_GET, $_POST, $_REQUEST] = [[], [], []];
-            unset($GLOBALS['r_state']);
+            unset($GLOBALS['r_state'], $_SERVER['REQUEST_METHOD']);
         }
 
         /** answers the look-ups of aa_owner / aa_type and the loads of $objects; nothing else is stored */
@@ -267,7 +270,8 @@ namespace Tests\Unit\Legacy {
         private static function postToManager(Manager $manager, array $aa): void
         {
             $_GET     = ['id' => self::OWN, 'display_params' => '', 'listlen' => '', 'scr_st_Go' => '', 'scr_st_Mv' => ''];
-            $_POST    = ['aa' => $aa, 'aa_akce_all' => ''];
+            $_POST    = ['aa' => $aa, 'aa_akce_all' => '', 'token' => FormToken::get(Manager::FORM_TOKEN)];
+            $_SERVER['REQUEST_METHOD'] = 'POST';
             $_REQUEST = ['chb' => [], 'akce' => '', 'srchbr_akce' => ''];
             $manager->performActions();
         }

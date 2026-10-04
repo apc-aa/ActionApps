@@ -43,6 +43,7 @@ use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Manageraction\Manageractions;
 use AA\Optimize\CheckObjectFormRefusals;
+use AA\Util\FormToken;
 use AA\Util\LogOnce;
 use AA\Widget\Widget;
 use AA_Condition;
@@ -731,6 +732,10 @@ class Managed_Table extends Managed
  */
 class Manager extends AA_Storable
 {
+    /** FormToken purpose of every write of every Manager page - one, since a row button may post
+     *  to another Manager page (the AA finder lists aliases with the buttons of aliases.php) */
+    public const FORM_TOKEN = 'manager';
+
     protected ?AA_Searchbar $searchbar;
 
     /** @var string searchbar additional function name */
@@ -1056,9 +1061,10 @@ class Manager extends AA_Storable
     }
 
     /** performActions function
-     *  Writes (actions, switches like Empty trash, the edit form) run only from a POST of a page of this
-     *  site: a link runs for a prefetch, a crawler or an <img src>, and SameSite=Lax still lets
-     *  a sibling subdomain POST with the session cookie.
+     *  Writes (actions, switches like Empty trash, the edit form, stored filters) run only from a POST
+     *  of a page of this site which this session rendered: a link runs for a prefetch, a crawler or
+     *  an <img src>, SameSite=Lax still lets a sibling subdomain POST with the session cookie, and
+     *  the token (FORM_TOKEN; JS adds it from data-aa-token) stops a form of another page.
      */
     public function performActions(): void
     {
@@ -1070,7 +1076,9 @@ class Manager extends AA_Storable
             exit;
         }
 
-        $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER);
+        $token     = $_POST['token'] ?? '';
+        $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER)
+            && FormToken::checkPost(self::FORM_TOKEN, is_string($token) ? $token : '', $_SERVER);
         $refused   = isset($_GET['akce']);
 
         // call custom searchbar function (if searchbar action invoked)
@@ -1202,7 +1210,7 @@ class Manager extends AA_Storable
 
             try {
                 // the id goes back with the post - the form saves only the object it was built for
-                $html = $this->getAndClearMessages() . '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $_GET['id'] ? ['id' => $_GET['id']] : []))) . '">';
+                $html = $this->getAndClearMessages() . '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $_GET['id'] ? ['id' => $_GET['id']] : []))) . '">' . FormToken::field(self::FORM_TOKEN);
                 $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($_GET['id']), $form_buttons);
                 $html .= '<tr><td colspan="2">';
                 $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();
@@ -1247,9 +1255,21 @@ class Manager extends AA_Storable
      * to searchbar after calling this function. Then you MUST close the form
      * with getSearchbarEnd() function
      */
+    /** The 'js' of an "Empty trash" menu item: asks, then POSTs DeleteTrash with the token (manager.js).
+     *  The arguments are escaped for JS strings (an apostrophe of a translation would break the call;
+     *  escape4js, not json_encode - some language files are not UTF-8), the whole for the attribute:
+     *  menus put it raw into href="javascript:..." or onclick="...".
+     *  @param string $url the page - '{href}' for the URL the menu computes */
+    public static function emptyTrashJs(string $url): string
+    {
+        $args = array_map(static fn(string $s): string => "'" . escape4js($s) . "'", [$url, _m("Are you sure you want to empty trash?"), FormToken::get(self::FORM_TOKEN)]);
+        return safe('EmptyTrashQuestion(' . implode(',', $args) . ')');
+    }
+
     public function getSearchbarBegin(): string
     {
-        $ret = '<form name="filterform" class="noprint aa-ui-filterform">' . StateHidden();
+        // filtering goes by GET, so the token is not a field (it would land in the URL); JS adds it to a POST
+        $ret = '<form name="filterform" class="noprint aa-ui-filterform" data-aa-token="' . safe(FormToken::get(self::FORM_TOKEN)) . '">' . StateHidden();
         if (isset($this->searchbar)) {
             $ret .= $this->searchbar->getBar();
         }
@@ -1271,7 +1291,8 @@ class Manager extends AA_Storable
     */
     public function getItems($zids): string
     {
-        $ret  = '<form name="itemsform" id="itemsform" method="post" action="' . StateUrl() . '">';
+        // no token field: content of a row (a <button> in it) would submit it natively; JS adds it
+        $ret  = '<form name="itemsform" id="itemsform" method="post" action="' . StateUrl() . '" data-aa-token="' . safe(FormToken::get(self::FORM_TOKEN)) . '">';
         $ret .= '<div class=aa-manager-tab>';
         $ret .= '<input type="submit" disabled style="display: none" aria-hidden="true"> '; // prevents form to be submitted by pressing Enter on any live text field
 
@@ -1356,7 +1377,7 @@ class Manager extends AA_Storable
             }
             $ret .=  '</div>';
             //            $ret .=  '<input type="hidden" name="debug" value="511">';
-            $ret .=  '<div class="aa_manager_actions_all" style="display: none">' . _m("No item selected. Perform action for all filtered items? ") . '<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="AA_$N(\'aa_akce_all\').value=1;MarkedActionGo();">' . _m('Run for %1 items', [$this->scroller->getItemCount()]) . '</button></div>';
+            $ret .=  '<div class="aa_manager_actions_all" style="display: none">' . _m("No item selected. Perform action for all filtered items? ") . '<input type="hidden" name="aa_akce_all" value=""><button type="button" class="aa-button" onclick="AA_$N(\'aa_akce_all\').value=1;MarkedActionGo();">' . _m('Run for %1 items', [$this->scroller->getItemCount()]) . '</button></div>';
             $ret .=  "<div id=\"markedactionparams\"></div>";
             $ret .= '</div>';
         }

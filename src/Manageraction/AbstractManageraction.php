@@ -3,6 +3,7 @@
 namespace AA\Manageraction;
 
 use AA\Manager;
+use AA\Util\FormToken;
 use AA_Property;
 use AA_Storable;
 use zids;
@@ -108,6 +109,7 @@ abstract class AbstractManageraction extends AA_Storable
     /** for adding button to manager redefine rather getButtonDef method
      *  A button, not a link: the action writes, and a link would run it for a prefetch, a crawler
      *  or an <img src> too. javascript/manager.js POSTs the data-aa-* values to the Manager page.
+     *  The button carries its own token: a look-alike button in the content of a row has none.
      *  @param string $manager_url  page that runs the action - '' for the current one
      *  @param string $id_alias     the row id - usually an alias, expanded with the row
      *  @param string $module_alias module_id of the target page - an id or an alias */
@@ -124,6 +126,7 @@ abstract class AbstractManageraction extends AA_Storable
             'data-aa-url'     => get_url($manager_url, ["module_id=$module_alias"], true),
             'data-aa-chb'     => $id_alias,
             'data-aa-confirm' => $b['confirm'] ?? '',
+            'data-aa-token'   => FormToken::get(Manager::FORM_TOKEN),
         ]);
         $code = htmltag('button', $b['label'], $attr);
         if (array_key_exists('cond', $b)) {

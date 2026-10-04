@@ -21,6 +21,7 @@ namespace Tests\Unit\Legacy {
     use AA\Manageraction\Table_Row_Delete;
     use AA\Manageraction\View_Move2slice;
     use AA\Optimize\CheckObjectFormRefusals;
+    use AA\Util\FormToken;
     use AA\Util\LogOnce;
     use AA_Condition;
     use PHPUnit\Framework\Attributes\DataProvider;
@@ -99,6 +100,7 @@ namespace Tests\Unit\Legacy {
 
         protected function setUp(): void
         {
+            session_id('test-session');   // FormToken keys its tokens with the session
             RecordingDb::reset();
             LogOnce::reset();
             RecordingItemFeed::$fed = [];
@@ -110,10 +112,11 @@ namespace Tests\Unit\Legacy {
 
         protected function tearDown(): void
         {
+            session_id('');
             $GLOBALS['spareDBs'] = [];
             RecordingDb::reset();
             [$_GET, $_POST, $_REQUEST] = [[], [], []];
-            unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_ORIGIN'], $_SERVER['HTTP_HOST']);
+            unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_ORIGIN'], $_SERVER['HTTP_HOST'], $_SERVER['REQUEST_METHOD']);
             unset($GLOBALS['r_state'], $GLOBALS['permission_uid'], $GLOBALS['permission_to']);
             AA::$module_id = null;
         }
@@ -135,11 +138,13 @@ namespace Tests\Unit\Legacy {
             return $all_modules ? $manager->setAllModules() : $manager;
         }
 
-        /** the request the Manager reads besides the posted data */
+        /** the request the Manager reads besides the posted data; a POST carries the token of the page
+         *  unless the test sets its own */
         private static function request(array $get, array $post): void
         {
             $_GET     = $get + ['scr_st_Go' => '', 'scr_st_Mv' => ''];
-            $_POST    = $post;
+            $_POST    = $post ? $post + ['token' => FormToken::get(Manager::FORM_TOKEN)] : [];
+            $_SERVER['REQUEST_METHOD'] = $post ? 'POST' : 'GET';
             $_REQUEST = $post + $get + ['srchbr_akce' => ''];
         }
 
@@ -594,7 +599,8 @@ namespace Tests\Unit\Legacy {
 
         // ------------------------------------------------------------------ only a page of this site writes
 
-        /** [request headers, may write] - SameSite=Lax cookies ride a POST of a sibling subdomain too
+        /** [request headers, may write] - SameSite=Lax cookies ride a POST of a sibling subdomain too,
+         *  with a valid token as well - the token does not make a form of another site the page's own
          *  @return array<string, array{array<string, string>, bool}> */
         public static function origins(): array
         {
@@ -611,6 +617,131 @@ namespace Tests\Unit\Legacy {
         private static function from(array $headers): void
         {
             $_SERVER = $headers + ['HTTP_HOST' => 'aa.test'] + $_SERVER;
+        }
+
+        /** [token, may write] - the token of the page's forms and buttons; another one does not open them
+         *  (the Manager is loaded only with the fixtures, so the provider names the tokens)
+         *  @return array<string, array{string, bool}> */
+        public static function tokens(): array
+        {
+            return [
+                'the token of the page'      => ['page', true],
+                'no token'                   => ['', false],
+                'a wrong token'              => ['deadbeef', false],
+                'a token of another form'    => ['other form', false],
+                'a token of another session' => ['other session', false],
+            ];
+        }
+
+        private static function token(string $kind): string
+        {
+            return match ($kind) {
+                'page'          => FormToken::get(Manager::FORM_TOKEN),
+                'other form'    => FormToken::get('statecheck'),
+                // what FormToken::get() gives in another session - another user, or before a login
+                'other session' => hash_hmac('sha256', Manager::FORM_TOKEN, 'another-session' . AA_ID),
+                default         => $kind,
+            };
+        }
+
+        #[DataProvider('tokens')]
+        public function test_an_action_needs_the_token(string $token, bool $writes): void
+        {
+            self::request([], ['chb' => ['x7' => ''], 'akce' => 'DeleteTRow', 'token' => self::token($token)]);
+            $manager = self::viewManager();
+            $manager->performActions();
+
+            $this->assertCount($writes ? 1 : 0, self::writes('view'));
+            $this->assertSame(!$writes, str_contains((string) $manager->getAndClearMessages(), 'use the button on the page'));
+        }
+
+        #[DataProvider('tokens')]
+        public function test_emptying_the_trash_needs_the_token(string $token, bool $writes): void
+        {
+            self::request([], ['DeleteTrash' => '1', 'token' => self::token($token)]);
+            self::pollPageManager()->performActions();
+
+            $this->assertCount($writes ? 1 : 0, self::writes('polls'));
+        }
+
+        #[DataProvider('tokens')]
+        public function test_the_form_needs_the_token(string $token, bool $writes): void
+        {
+            self::request(['id' => '7'], ['aa' => ['u7' => ['name' => ['renamed']]], 'token' => self::token($token)]);
+            self::viewManager()->performActions();
+
+            $this->assertCount($writes ? 1 : 0, self::writes('view'));
+        }
+
+        public function test_the_forms_of_the_page_carry_the_token(): void
+        {
+            $token   = FormToken::get(Manager::FORM_TOKEN);
+            $manager = self::viewManager();
+            self::request(['id' => '7'], []);
+
+            $this->assertStringContainsString('data-aa-token="' . $token . '"', $manager->getSearchbarBegin());
+            // @ - the legacy form helpers warn about the keys the bare test fields lack
+            $this->assertStringContainsString('name="token" value="' . $token . '"', @$manager->getDisplayPage(new zids([], 's')));
+        }
+
+        /** the list form keeps the token only for JS: a <button> in the content of a row would submit
+         *  the form natively - without a token field it sends none */
+        public function test_the_list_form_has_no_token_field(): void
+        {
+            $token = FormToken::get(Manager::FORM_TOKEN);
+            self::request([], []);
+
+            $list = @self::viewManager()->getDisplayPage(new zids([], 's'));   // @ - as above
+
+            $this->assertStringContainsString('<form name="itemsform"', $list);
+            $this->assertStringContainsString('data-aa-token="' . $token . '"', $list);
+            $this->assertStringNotContainsString('name="token"', $list);
+        }
+
+        /** a <button> without type is a submit: after its onclick (MarkedActionGo() adds the token and
+         *  submits) the native submit would win - and go without the token */
+        public function test_the_list_form_has_no_submit_button(): void
+        {
+            self::request([], []);
+            $manager = self::viewManager();
+
+            $list = @$manager->getItems(new zids(['7', '8'], 's'));   // @ - as above
+
+            $this->assertStringContainsString('Run for', $list, 'the actions part is rendered');
+            preg_match_all('/<button\b[^>]*>/i', $list, $buttons);
+            $this->assertNotEmpty($buttons[0]);
+            foreach ($buttons[0] as $button) {
+                $this->assertStringContainsString('type="button"', $button);
+            }
+            $this->assertDoesNotMatchRegularExpression('/<input[^>]*type="?(submit|image)"?(?![^>]*disabled)[^>]*>/i', $list);
+        }
+
+        /** the menu puts it raw into href="javascript:..." - it must be HTML-escaped and stay one call */
+        public function test_emptyTrashJs_escapesForTheAttributeAndTheJsString(): void
+        {
+            $js = Manager::emptyTrashJs("/aa/admin/index.php?a='x\"&b=<i>");
+
+            $this->assertDoesNotMatchRegularExpression('/["<>]/', $js);
+            $this->assertSame(
+                "EmptyTrashQuestion('/aa/admin/index.php?a=\\'x\"&b=\\x3Ci>','Are you sure you want to empty trash?','" . FormToken::get(Manager::FORM_TOKEN) . "')",
+                html_entity_decode($js, ENT_QUOTES | ENT_HTML5),
+            );
+        }
+
+        /** the whole way: the menu fills in its URL (with the module) and writes the raw javascript: href */
+        public function test_the_empty_trash_menu_item_calls_with_the_url_and_the_token(): void
+        {
+            require_once AA_BASE_PATH . 'include/menu_util.php';
+            $GLOBALS['slice_id'] = self::MODULE;
+
+            $html = getSubMenuRows(['empty_trash' => ['href' => 'admin/index.php', 'label' => 'Empty trash', 'js' => Manager::emptyTrashJs('{href}')]], '');
+            unset($GLOBALS['slice_id']);
+
+            $this->assertSame(1, preg_match('/<a href="([^"]*)"/', $html, $m), $html);
+            $this->assertSame(
+                "javascript:EmptyTrashQuestion('" . AA_INSTAL_PATH . 'admin/index.php?module_id=' . self::MODULE . "','Are you sure you want to empty trash?','" . FormToken::get(Manager::FORM_TOKEN) . "')",
+                html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5),
+            );
         }
 
         #[DataProvider('origins')]

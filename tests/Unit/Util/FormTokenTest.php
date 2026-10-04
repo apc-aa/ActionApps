@@ -10,6 +10,25 @@ use PHPUnit\Framework\TestCase;
 
 final class FormTokenTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        session_id('test-session');
+    }
+
+    protected function tearDown(): void
+    {
+        session_id('');
+    }
+
+    /** without a session the key would be AA_ID alone - no secret; so no token, and none checks */
+    public function test_get_without_a_session_gives_no_token(): void
+    {
+        session_id('');
+        $this->assertSame('', FormToken::get('repair'));
+        $this->assertFalse(FormToken::check('repair', ''));
+        $this->assertFalse(FormToken::check('repair', hash_hmac('sha256', 'repair', constant('AA_ID'))));
+    }
+
     public function test_token_is_stable_per_purpose_and_checks(): void
     {
         $a = FormToken::get('repair');
@@ -29,7 +48,7 @@ final class FormTokenTest extends TestCase
             'GET with the token'            => ['GET', null, false],
             'POST without a token'          => ['POST', '', false],
             'POST with a wrong token'       => ['POST', 'deadbeef', false],
-            'POST with another form token'  => ['POST', FormToken::get('note'), false],
+            'POST with another form token'  => ['POST', 'note', false],
             'no method (CLI) with the token' => ['', null, false],
         ];
     }
@@ -38,6 +57,11 @@ final class FormTokenTest extends TestCase
     public function test_checkPost_allows_only_a_post_with_the_token(string $method, ?string $token, bool $allowed): void
     {
         $server = ($method === '') ? [] : ['REQUEST_METHOD' => $method];
-        $this->assertSame($allowed, FormToken::checkPost('replace', $token ?? FormToken::get('replace'), $server));
+        $token = match ($token) {
+            null    => FormToken::get('replace'),
+            'note'  => FormToken::get('note'),
+            default => $token,
+        };
+        $this->assertSame($allowed, FormToken::checkPost('replace', $token, $server));
     }
 }

@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Tests\Unit\Manageraction;
 
 use AA\Managed;
+use AA\Manager;
+use AA\Util\FormToken;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Central_DeleteTrash;
 use AA\Manageraction\Central_MoveItem;
@@ -42,6 +44,16 @@ final class AbstractManageractionTest extends TestCase
         require_once __DIR__ . '/../Legacy/fixtures/object_form_fixtures.php';
     }
 
+    protected function setUp(): void
+    {
+        session_id('test-session');   // FormToken keys its tokens with the session
+    }
+
+    protected function tearDown(): void
+    {
+        session_id('');
+    }
+
     public function test_getButton_rendersPostButtonNotLink(): void
     {
         $code = self::rowDeleteButton();
@@ -51,6 +63,7 @@ final class AbstractManageractionTest extends TestCase
         $this->assertStringContainsString('data-aa-akce="DeleteTRow"', $code);
         $this->assertStringContainsString('data-aa-url="?module_id=' . self::MODULE . '"', $code);
         $this->assertStringContainsString('data-aa-chb="' . self::KEY_ALIAS . '"', $code);   // expanded with the row
+        $this->assertStringContainsString('data-aa-token="' . FormToken::get(Manager::FORM_TOKEN) . '"', $code);
         $this->assertStringNotContainsString('href', $code);
         $this->assertDoesNotMatchRegularExpression('/[?&;]akce=/', $code);   // no action in a URL
     }
