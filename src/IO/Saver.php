@@ -30,6 +30,7 @@ namespace AA\IO;
 
 use AA;
 use AA\IO\Grabber\AbstractGrabber;
+use AA\Later\BatchBudget;
 use AA\Util\ReportTrait;
 use AA_Condition;
 use AA_Item;
@@ -93,6 +94,9 @@ class Saver implements AA\Later\LaterInterface
     /** array of slice ids with rewritten items (after run()) - the long ones */
     private array $_updated_slices = [];
 
+    /** the last run() took items until the grabber had no more */
+    private bool $reached_end = false;
+
     // protected $_messages = [];
 
 
@@ -126,12 +130,24 @@ class Saver implements AA\Later\LaterInterface
     /** run function
      * Now import all items to the slice
      *
-     * @param  bool  $fire
+     * The budget and the limit are checked before prepare() and before each item, so an item
+     * taken is always processed to the end; reachedEnd() tells whether the grabber ran out.
+     * The grabber's finish() follows every regular end, early stops included - not an exception
+     * from the loop, a failed prepare() or a budget spent before prepare(). finish() does not
+     * mean all was read: AARSS stores its newest-item mark there, so do not stop it early.
+     *
+     * @param  bool         $fire
+     * @param ?BatchBudget  $budget its time; no further item is taken once spent() - null = no limit
+     * @param  int          $limit  at most this many items taken from the grabber (stored or not); 0 = all
      *
      * @return int[] count of [changed,error] items
      */
-    public function run(bool $fire = true): array
+    public function run(bool $fire = true, ?BatchBudget $budget = null, int $limit = 0): array
     {
+        $this->reached_end = false;
+        if ($budget?->spent()) {
+            return [0, 0];
+        }
         try {
             $this->grabber->prepare();    // maybe some initialization in grabber
         } catch (Exception $e) {
@@ -144,8 +160,14 @@ class Saver implements AA\Later\LaterInterface
 
         $ok_count = 0;
         $err_count = 0;
+        $taken = 0;
 
-        while ($source_content4id = $this->grabber->getItem()) {
+        while (!$this->outOfBudget($budget, $limit, $taken)) {
+            if (!($source_content4id = $this->grabber->getItem())) {
+                $this->reached_end = true;
+                break;
+            }
+            $taken++;
             if (!$fire) {
                 $this->message("AA\IO\Saver->run(): grabbed item: ", 2);
                 $this->message($source_content4id);
@@ -321,6 +343,19 @@ class Saver implements AA\Later\LaterInterface
             print($this->report());
         }
         return [$ok_count, $err_count];
+    }
+
+    /** true when the last run() took items until the grabber had none left. False after a stop at
+     *  the budget or limit - even one hit at the last item, the grabber is not asked again - and
+     *  after a failed prepare(). */
+    public function reachedEnd(): bool
+    {
+        return $this->reached_end;
+    }
+
+    private function outOfBudget(?BatchBudget $budget, int $limit, int $taken): bool
+    {
+        return (($limit > 0) && ($taken >= $limit)) || ($budget?->spent() ?? false);
     }
 
     /** The item the key fields of an incoming item point to - at most one

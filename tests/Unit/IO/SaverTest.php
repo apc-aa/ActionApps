@@ -27,6 +27,7 @@ namespace Tests\Unit\IO {
 
     use AA;
     use AA\IO\Saver;
+    use AA\Later\BatchBudget;
     use ItemContent;
     use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
     use PHPUnit\Framework\TestCase;
@@ -94,6 +95,20 @@ namespace Tests\Unit\IO {
                 $content->setValue($field_id, $value);
             }
             return $content;
+        }
+
+        /** @return list<ItemContent> items ITEM1, ITEM2, ... */
+        private function items(int $count): array
+        {
+            return array_map(fn(string $id) => $this->item($id), array_slice([self::ITEM1, self::ITEM2, self::ITEM3], 0, $count));
+        }
+
+        /** a clock reading $time as the test advances it */
+        private function clock(float &$time): \Closure
+        {
+            return static function () use (&$time): float {
+                return $time;
+            };
         }
 
         /** the texts of the messages the saver recorded up to $verbosity */
@@ -207,6 +222,129 @@ namespace Tests\Unit\IO {
 
             $this->expectException(\UnexpectedValueException::class);
             $saver->run();
+        }
+
+        // ------------------------------------------------------------ deadline and limit
+
+        public function test_run_stopsAtDeadline_reachedEndFalse(): void
+        {
+            $time    = 0.0;
+            $grabber = new ArrayGrabber($this->items(3), null, static function () use (&$time): void {
+                $time += 1.0;   // each item takes a second
+            });
+            $saver   = new RecordingSaver($grabber, null, self::SLICE);
+            $budget  = new BatchBudget(1.5, 0, 0, $this->clock($time));
+
+            $this->assertSame([2, 0], $saver->run(true, $budget));
+            $this->assertSame([self::ITEM1, self::ITEM2], $saver->storedIds());
+            $this->assertSame(2, $grabber->taken, 'the item after the deadline is not even taken');
+            $this->assertFalse($saver->reachedEnd());
+        }
+
+        public function test_run_stopsAtLimit(): void
+        {
+            $grabber = new ArrayGrabber($this->items(3));
+            $saver   = new RecordingSaver($grabber, null, self::SLICE);
+
+            $this->assertSame([2, 0], $saver->run(true, null, 2));
+            $this->assertSame([self::ITEM1, self::ITEM2], $saver->storedIds());
+            $this->assertSame(2, $grabber->taken);
+            $this->assertFalse($saver->reachedEnd());
+        }
+
+        public function test_run_limitCountsItemsTakenNotItemsStored(): void
+        {
+            $items   = $this->items(3);
+            $items[0]->setValue('relation........', '');   // empty key - an error, not stored
+            $items[1]->setValue('relation........', 'b');
+            $items[2]->setValue('relation........', 'c');
+            $grabber = new ArrayGrabber($items);
+            $saver   = new RecordingSaver($grabber, null, self::SLICE, 'update/insert', '["relation........"]');
+
+            $this->assertSame([1, 1], $saver->run(true, null, 2));
+            $this->assertSame(2, $grabber->taken);
+            $this->assertFalse($saver->reachedEnd());
+        }
+
+        public function test_run_withoutDeadline_reachedEndTrue(): void
+        {
+            $grabber = new ArrayGrabber($this->items(3));
+            $saver   = new RecordingSaver($grabber, null, self::SLICE);
+
+            $this->assertSame([3, 0], $saver->run());
+            $this->assertTrue($saver->reachedEnd());
+
+            // a deadline and a limit not reached leave it so
+            $grabber = new ArrayGrabber($this->items(3));
+            $saver   = new RecordingSaver($grabber, null, self::SLICE);
+            $this->assertSame([3, 0], $saver->run(true, new BatchBudget(microtime(true) + 600), 4));
+            $this->assertTrue($saver->reachedEnd());
+        }
+
+        public function test_run_secondRunResetsReachedEnd(): void
+        {
+            $saver = new RecordingSaver(new ArrayGrabber($this->items(2)), null, self::SLICE);
+
+            $this->assertSame([2, 0], $saver->run());
+            $this->assertTrue($saver->reachedEnd());
+
+            $this->assertSame([1, 0], $saver->run(true, null, 1));
+            $this->assertFalse($saver->reachedEnd());
+        }
+
+        public function test_run_limitHitOnLastItem_reachedEndFalse(): void
+        {
+            // the grabber is not asked once more past the limit, so the end is not known yet
+            $saver = new RecordingSaver(new ArrayGrabber($this->items(2)), null, self::SLICE);
+
+            $this->assertSame([2, 0], $saver->run(true, null, 2));
+            $this->assertFalse($saver->reachedEnd());
+        }
+
+        public function test_run_finishCalledWhenStoppedEarly(): void
+        {
+            $time    = 0.0;
+            $grabber = new ArrayGrabber($this->items(3), null, static function () use (&$time): void {
+                $time += 1.0;
+            });
+            $saver   = new RecordingSaver($grabber, null, self::SLICE);
+
+            $this->assertSame([1, 0], $saver->run(true, new BatchBudget(0.5, 0, 0, $this->clock($time))));
+            $this->assertSame(1, $grabber->finished);
+            $this->assertFalse($saver->reachedEnd());
+
+            $grabber = new ArrayGrabber($this->items(3));
+            (new RecordingSaver($grabber, null, self::SLICE))->run(true, null, 1);
+            $this->assertSame(1, $grabber->finished);
+        }
+
+        public function test_run_budgetSpentBeforePrepare_fetchesNothing(): void
+        {
+            $grabber = new ArrayGrabber($this->items(2));
+            $saver   = new RecordingSaver($grabber, null, self::SLICE);
+
+            $this->assertSame([0, 0], $saver->run(true, new BatchBudget(microtime(true) - 1)));
+            $this->assertSame(0, $grabber->prepared, 'nothing is downloaded');
+            $this->assertSame(0, $grabber->taken);
+            $this->assertSame(0, $grabber->finished);
+            $this->assertFalse($saver->reachedEnd());
+        }
+
+        public function test_run_prepareFailed_reachedEndFalse(): void
+        {
+            $saver = new RecordingSaver(new ArrayGrabber($this->items(1), new \Exception('source down')), null, self::SLICE);
+
+            $this->assertSame([0, 1], $saver->run());
+            $this->assertFalse($saver->reachedEnd());
+        }
+
+        public function test_run_dryRunStoppedEarlyStillPrintsReport(): void
+        {
+            $saver = new RecordingSaver(new ArrayGrabber($this->items(3)), null, self::SLICE);
+
+            $this->expectOutputRegex('/Saver->run\(\): finish - 1 OK, 0 Err\./');
+            $this->assertSame([1, 0], $saver->run(false, null, 1));
+            $this->assertSame([], $saver->stored);
         }
     }
 }
