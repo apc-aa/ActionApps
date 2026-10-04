@@ -854,7 +854,7 @@ class AA_Object extends AA_Storable implements AA_iEditable
             $cond_flds   = [];
             $store       = '';
             foreach ($cond as $fid => $v) {
-                if (AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) {
+                if (isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$fid])) {
                     if ($fid === 'all_fields') {
                         $cond_flds[] = $fid;
                         $store = 'object_text';

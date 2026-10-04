@@ -1288,7 +1288,7 @@ function ProoveFieldNames($slices, $conds): void
             }
             foreach (array_keys($cond) as $key) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
-                if (!AA_Condition::CONDS_NOT_FIELD_NAMES[$key] && !strpos($key, '@') && !$slice->isField($key)) {
+                if (!isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$key]) && !strpos($key, '@') && !$slice->isField($key)) {
                     warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b>.");
                 }
             }
@@ -1776,7 +1776,7 @@ class QueryZidsHelper
                     continue;
                 }
 
-                if (AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) {
+                if (isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$fid])) {
                     continue;      // it is not field_id parameters - skip it for now
                 }
 
