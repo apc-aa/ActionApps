@@ -102,9 +102,10 @@ final class Mapping
 
     public function toJson(): string
     {
-        // empty parameters as {} - the stored JSON keeps one shape
+        // empty parameters as {} - the stored JSON keeps one shape; ASCII, as object_text is cp1250
+        // or utf8mb3 on many installs, where a 4-byte character would break the JSON
         $rows = array_map(static fn(array $row): array => ['to' => $row['to'], 't' => $row['t'], 'p' => (object) $row['p']], $this->rows);
-        return json_encode(['rows' => $rows], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
+        return json_encode(['rows' => $rows], JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
     }
 
     /**

@@ -527,6 +527,16 @@ namespace Tests\Unit\Import {
             self::assertStringContainsString('"p":{}', $json, 'empty parameters stay an object');
         }
 
+        public function test_toJson_nonAsciiStoredAsAscii(): void
+        {
+            $mapping = new Mapping([self::row('headline........', '{index:název} 😀')]);
+
+            $json = $mapping->toJson();
+
+            self::assertMatchesRegularExpression('/^[\x20-\x7e]*\z/', $json, 'only printable ASCII');
+            self::assertSame($mapping->rows, Mapping::fromJson($json)->rows);
+        }
+
         public function test_fromJson_missingParametersAreEmpty(): void
         {
             $mapping = Mapping::fromJson('{"rows":[{"to":"param:fld","t":"setflag"}]}');
