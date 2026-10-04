@@ -152,8 +152,14 @@ final class Definition extends AA_Object
     /** The one check of who may create, change or delete a definition and its settings and mapping. */
     public function mayManage(string $uid): bool
     {
-        $owner = (string) $this->getOwnerId();
-        return is_long_id($owner) && CheckPerms($uid, 'slice', $owner, PS_FEEDING);
+        return self::mayImportInto($uid, (string) $this->getOwnerId());
+    }
+
+    /** The one rule of imports: whoever manages the feeding of a slice imports into it - defines its
+     *  imports and controls their runs. */
+    public static function mayImportInto(string $uid, string $slice): bool
+    {
+        return is_long_id($slice) && CheckPerms($uid, 'slice', $slice, PS_FEEDING);
     }
 
     /**
