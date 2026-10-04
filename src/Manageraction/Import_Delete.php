@@ -61,9 +61,9 @@ class Import_Delete extends AbstractManageraction
         return $msg ? implode(' ', $msg) : false;
     }
 
-    /** the one rule of imports, on the slice of the page */
+    /** the one rule of imports, on the slice of the page - or on the overview of all slices */
     public function isPerm4Action($manager): bool
     {
-        return Definition::mayImportInto(AuthGetUid(), (string) $manager->getModuleId());
+        return Definition::mayActOn($manager);
     }
 }

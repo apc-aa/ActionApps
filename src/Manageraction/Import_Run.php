@@ -58,7 +58,7 @@ class Import_Run extends AbstractManageraction
     public static function startAll(array $ids, string $uid): array
     {
         $queued  = 0;
-        // by what is in the way: a running run, one stopped by an error, an ended one whose last step still works
+        // by what is in the way: a running run, one stopped by an error, a finished one whose last step still works
         $busy    = ['running' => 0, 'error' => 0, 'finishing' => 0];
         $refused = [];
         foreach ($ids as $id) {
@@ -95,7 +95,7 @@ class Import_Run extends AbstractManageraction
             $msg[] = _m('Imports not started - their last run stopped by an error; continue or end it in the import detail: %1.', [$busy['error']]);
         }
         if ($busy['finishing']) {
-            $msg[] = _m('Imports not started - their last run was ended and its last step is still finishing; try again in a few minutes: %1.', [$busy['finishing']]);
+            $msg[] = _m('Imports not started - the last step of their previous run is still finishing; try again in a few minutes: %1.', [$busy['finishing']]);
         }
         if ($refused) {
             $msg[] = _m('Imports not started: %1 (%2). The import detail tells more.', [count($refused), safe(implode(', ', array_unique($refused)))]);
@@ -103,9 +103,9 @@ class Import_Run extends AbstractManageraction
         return $msg;
     }
 
-    /** the one rule of imports, on the slice of the page */
+    /** the one rule of imports, on the slice of the page - or on the overview of all slices */
     public function isPerm4Action($manager): bool
     {
-        return Definition::mayImportInto(AuthGetUid(), (string) $manager->getModuleId());
+        return Definition::mayActOn($manager);
     }
 }

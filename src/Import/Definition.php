@@ -14,6 +14,7 @@ use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
 use AA\Managed;
+use AA\Manager;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Import_Delete;
 use AA\Manageraction\Import_Run;
@@ -209,8 +210,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
         }
         $refs  = [self::nameKey($id), self::nameKey($name)];
         $times = [];
-        foreach (AA::Contentcache()->get_result([self::class, 'plannedTasksFromDb'], [strtolower($slice)]) as $task) {
-            if (!array_intersect($task['calls'], $refs)) {
+        // read once for the installation: a list of the imports of all slices asks for many
+        foreach (AA::Contentcache()->get_result([self::class, 'plannedTasksFromDb']) as $task) {
+            if (($task['slice'] !== strtolower($slice)) || !array_intersect($task['calls'], $refs)) {
                 continue;
             }
             $times[] = $task['queued'] ?? (new AA_Plannedtask(['time' => $task['time'], 'shift' => $task['shift']]))->nextStart($now);
@@ -220,11 +222,11 @@ final class Definition extends AA_Object implements InternalExpandInterface
     }
 
     /**
-     * For the cache of nextPlanned(): the planned tasks of $slice that call {import} - the import
+     * For the cache of nextPlanned(): the planned tasks that call {import} - their slice, the import
      * names and ids they call (nameKey()), their time and the earliest step queued for them.
-     * @return list<array{calls: list<string>, time: string, shift: int, queued: ?int}>
+     * @return list<array{slice: string, calls: list<string>, time: string, shift: int, queued: ?int}>
      */
-    public static function plannedTasksFromDb(string $slice): array
+    public static function plannedTasksFromDb(): array
     {
         $ids = array_values(array_unique(array_map('strval', DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'aa_type'], ['value', AA_Plannedtask::class]]))));
         if (!$ids) {
@@ -238,8 +240,8 @@ final class Definition extends AA_Object implements InternalExpandInterface
         foreach ($rows as $taskId => $task) {
             // a bare {import} names no import
             $calls = array_values(array_unique(array_map(self::nameKey(...), array_filter(AA_Plannedtask::importCalls($task['task'] ?? '')))));
-            if ((strtolower($task['aa_owner'] ?? '') === $slice) && $calls) {
-                $tasks[AA_Plannedtask::toexecuteSelector((string) $taskId)] = ['calls' => $calls, 'time' => $task['time'] ?? '', 'shift' => (int) ($task['shift'] ?? 0), 'queued' => null];
+            if ($calls) {
+                $tasks[AA_Plannedtask::toexecuteSelector((string) $taskId)] = ['slice' => strtolower($task['aa_owner'] ?? ''), 'calls' => $calls, 'time' => $task['time'] ?? '', 'shift' => (int) ($task['shift'] ?? 0), 'queued' => null];
             }
         }
         if (!$tasks) {
@@ -284,6 +286,13 @@ final class Definition extends AA_Object implements InternalExpandInterface
         if ($run === null) {
             return '--';
         }
+        $started = (int) $run->getProperty('started');
+        return ($started ? date('Y-m-d H:i', $started) : '--') . ' <small>' . safe(self::howItRan($run)) . '</small>';
+    }
+
+    /** how $run ran - its mode, dry, its trigger - in words, plain text */
+    public static function howItRan(Run $run): string
+    {
         $trigger = (string) $run->getProperty('trigger');
         $about   = [
             match ($run->mode()) {
@@ -299,8 +308,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
                 default                             => '',
             },
         ];
-        $started = (int) $run->getProperty('started');
-        return ($started ? date('Y-m-d H:i', $started) : '--') . ' <small>' . safe(implode(', ', array_filter($about))) . '</small>';
+        return implode(', ', array_filter($about));
     }
 
     private static function nextPlanHtml(AA_Content $content, int $now): string
@@ -314,7 +322,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
     }
 
     /** the name of source $type, or the type when the source is not available */
-    private static function sourceName(string $type): string
+    public static function sourceName(string $type): string
     {
         $class = ($type === '') ? null : (Registry::sources()[$type] ?? null);
         return ($class === null) ? $type : $class::name();
@@ -420,11 +428,20 @@ final class Definition extends AA_Object implements InternalExpandInterface
         return self::mayImportInto($uid, (string) $this->getOwnerId());
     }
 
+    /** Whether the actions of an imports Manager are offered on its page. The overview of all slices
+     *  is a superadmin's - the module selected in the session may be no slice; the action then checks
+     *  each import on its own slice (actionable(), Service, deleteWithRuns()). */
+    public static function mayActOn(Manager $manager): bool
+    {
+        return $manager->isAllModules() ? IsSuperadmin() : self::mayImportInto(AuthGetUid(), (string) $manager->getModuleId());
+    }
+
     /** The one rule of imports: whoever manages the feeding of a slice imports into it - defines its
-     *  imports and controls their runs. */
+     *  imports and controls their runs. Only a slice: the admin role of a site or alerts module holds
+     *  PS_FEEDING too. */
     public static function mayImportInto(string $uid, string $slice): bool
     {
-        return is_long_id($slice) && CheckPerms($uid, 'slice', $slice, PS_FEEDING);
+        return is_long_id($slice) && CheckPerms($uid, 'slice', $slice, PS_FEEDING) && (\AA_Slice::getOwnModule(strtolower($slice)) !== null);
     }
 
     /**

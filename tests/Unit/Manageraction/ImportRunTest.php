@@ -10,6 +10,7 @@ use AA\Import\Run;
 use AA\IO\DB\DB_AA;
 use AA\Managed_Object;
 use AA\Manager;
+use AA\Manageraction\Import_Delete;
 use AA\Manageraction\Import_Run;
 use AA\Manageraction\Manageractions;
 use AA\Util\FormToken;
@@ -21,6 +22,7 @@ use Tests\Unit\Legacy\Fixtures\FakeStore;
 use Tests\Unit\Legacy\Fixtures\FormTarget;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
 use Tests\Unit\Legacy\Fixtures\SearchlessManager;
+use zids;
 
 require_once __DIR__ . '/../Import/fixtures/RunSteps.php';
 
@@ -43,6 +45,10 @@ final class ImportRunTest extends TestCase
     private const SOURCE  = 'custom:service';
     private const SIBLING = 'fedcba9876543210fedcba9876543210';
     private const FOREIGN = '0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f';
+    /** a site module, selected in the session */
+    private const SITE_SELECTED = 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1';
+    /** an import stored under SITE_SELECTED */
+    private const OF_SITE = 'a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2';
 
     protected function setUp(): void
     {
@@ -64,7 +70,7 @@ final class ImportRunTest extends TestCase
         RecordingDb::reset();
         Registry::setCustomRootForTests(null);
         [$_GET, $_POST, $_REQUEST] = [[], [], []];
-        unset($_SERVER['REQUEST_METHOD'], $GLOBALS['r_state']);
+        unset($_SERVER['REQUEST_METHOD'], $GLOBALS['r_state'], $GLOBALS['r_superuser']);
         $this->stepsTearDown();
     }
 
@@ -116,6 +122,12 @@ final class ImportRunTest extends TestCase
         $this->assertStringContainsString('still finishing', $msg);
         $this->assertStringNotContainsString('still running', $msg);
         $this->assertSame([], Run::unfinished(self::DEF));
+
+        // a done run whose last step still holds its lease keeps it waiting too - it was not ended
+        self::storedSet($run, 'state', Run::DONE);
+        $msg = implode(' ', Import_Run::startAll([self::DEF], AuthGetUid()));
+        $this->assertStringContainsString('still finishing', $msg);
+        $this->assertStringNotContainsString('ended', $msg);
     }
 
     public function test_importRun_runStoppedByErrorSaysSo(): void
@@ -222,13 +234,61 @@ final class ImportRunTest extends TestCase
         $this->assertStringContainsString('data-aa-token=', $code);
     }
 
+    // ------------------------------------------------------------ the overview of all slices
+
+    /** The session may have a site selected while the superadmin looks at the imports of all slices:
+     *  Run and Delete work there, each import checked on its own slice - an import stored under a
+     *  site is refused by Service and deleteWithRuns() themselves. */
+    public function test_overview_runAndDeleteWithSiteSelected(): void
+    {
+        self::definition(self::DEF);
+        self::definition(self::SIBLING);
+        self::definition(self::OF_SITE, [], self::SITE_SELECTED);
+        $GLOBALS['r_superuser'] = [AA_ID => true];
+        $GLOBALS['permission_to']['slice'][self::SITE_SELECTED] = PS_FEEDING;
+        // the type of each module, as AA_Module::getModuleInfo() reads it - TableDb has no HEX()
+        TableDb::$answer = static fn(string $sql): ?array => str_contains($sql, 'LOWER(HEX(`id`))') ? [['unpackid' => self::SITE_SELECTED, 'type' => 'W']] : null;
+
+        $this->assertTrue((new Import_Run(Import_Run::ID))->isPerm4Action(self::overview()));
+        $this->assertTrue((new Import_Delete('DeleteObject'))->isPerm4Action(self::overview()));
+        $msg = self::actOnOverview([self::DEF, self::OF_SITE], Import_Run::ID);
+
+        $this->assertStringContainsString('Imports queued to run: 1', $msg);
+        $this->assertStringContainsString('FORBIDDEN', $msg, 'the import under the site');
+        $this->assertCount(1, Run::unfinished(self::DEF));
+        $this->assertSame([], Run::unfinished(self::OF_SITE));
+
+        $msg = self::actOnOverview([self::SIBLING, self::OF_SITE], 'DeleteObject');
+
+        $this->assertNull(Definition::fresh(self::SIBLING));
+        $this->assertNotNull(Definition::fresh(self::OF_SITE));
+        $this->assertStringContainsString('not deleted', $msg);
+        $this->assertNotNull(Definition::fresh(self::DEF));
+    }
+
+    /** the overview is a superadmin's - a slice admin with the site selected gets no action there */
+    public function test_overview_notSuperadminRefused(): void
+    {
+        self::definition(self::DEF);
+        $GLOBALS['r_superuser'] = [];
+        $GLOBALS['permission_to']['slice'][self::SITE_SELECTED] = PS_FEEDING;
+
+        $this->assertFalse((new Import_Run(Import_Run::ID))->isPerm4Action(self::overview()));
+        $this->assertFalse((new Import_Delete('DeleteObject'))->isPerm4Action(self::overview()));
+        self::actOnOverview([self::DEF], Import_Run::ID);
+        self::actOnOverview([self::DEF], 'DeleteObject');
+
+        $this->assertSame([], Run::unfinished(self::DEF));
+        $this->assertNotNull(Definition::fresh(self::DEF));
+    }
+
     // ------------------------------------------------------------ helpers
 
     /** @param array<string, string> $props */
-    private static function definition(string $id, array $props = []): void
+    private static function definition(string $id, array $props = [], string $slice = self::SLICE): void
     {
         $def = new Definition();
-        $def->setNew($id, self::SLICE, 'prices ' . $id);
+        $def->setNew($id, $slice, 'prices ' . $id);
         $props += ['source' => self::SOURCE, 'mapping' => self::NO_PARAM_MAPPING, 'key_fields' => '["relation........"]', 'store_mode' => 'update/insert', 'enabled' => '1'];
         foreach ($props as $property => $value) {
             $def->setProperty($property, $value);
@@ -254,6 +314,35 @@ final class ImportRunTest extends TestCase
         $_POST    = ($method === 'POST') ? $request : [];
         $_REQUEST = $_POST + $_GET + ['srchbr_akce' => ''];
         $_SERVER['REQUEST_METHOD'] = $method;
+        $manager->performActions();
+        return trim(strip_tags((string) $manager->getAndClearMessages()));
+    }
+
+    /** The Manager of admin/aa_dataimports.php: all slices, with a site selected in the session. Its
+     *  actionable() passes every checked import on - TableDb cannot answer the owner query and
+     *  querySet() of the real one, which ManagerActionOwnerTest covers; the right of each import is
+     *  then up to the action. */
+    private static function overview(): Manager
+    {
+        $GLOBALS['r_state'] = ['manager' => ['test' => null]];
+        $managed = new class (Definition::class) extends Managed_Object {
+            public function actionable(Manager $manager, zids $zids, string $perm): array
+            {
+                return [$zids, false];
+            }
+        };
+        $managed->setSettings(array_merge(Definition::getManagerConf()->getSettings(), ['module_id' => self::SITE_SELECTED, 'searchbar' => null, 'use_profile' => false, 'actions_hint' => '', 'actions_hint_url' => '', 'scroller' => ['listlen' => 10]]));
+        return (new SearchlessManager('test', $managed))->setAllModules();
+    }
+
+    /** posts action $akce on the checked $ids on the overview; the message it shows */
+    private static function actOnOverview(array $ids, string $akce): string
+    {
+        $manager  = self::overview();
+        $_GET     = ['scr_st_Go' => '', 'scr_st_Mv' => ''];
+        $_POST    = ['chb' => array_fill_keys(array_map(static fn(string $id): string => "x$id", $ids), ''), 'akce' => $akce, 'token' => FormToken::get(Manager::FORM_TOKEN)];
+        $_REQUEST = $_POST + $_GET + ['srchbr_akce' => ''];
+        $_SERVER['REQUEST_METHOD'] = 'POST';
         $manager->performActions();
         return trim(strip_tags((string) $manager->getAndClearMessages()));
     }

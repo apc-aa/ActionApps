@@ -177,6 +177,42 @@ class Run extends BatchRun
         return $counts;
     }
 
+    /** The first item errors. Text of the source - escape it, never expand it.
+     *  @return list<array{stream: string, job: string, code: string, msg: string}> */
+    public function errors(): array
+    {
+        $errors = [];
+        foreach (self::listOf((string) $this->errors) as $e) {
+            if (is_array($e)) {
+                $errors[] = ['stream' => self::text($e['stream'] ?? ''), 'job' => self::text($e['job'] ?? ''), 'code' => self::text($e['code'] ?? ''), 'msg' => self::text($e['msg'] ?? '')];
+            }
+        }
+        return $errors;
+    }
+
+    /** What a dry run would store, item by item. Data of the source - escape it, never expand it.
+     *  @return list<array<string, list<string>>> field id => values */
+    public function samples(): array
+    {
+        $samples = [];
+        foreach (self::listOf((string) $this->samples) as $item) {
+            if (is_array($item)) {
+                $fields = [];
+                foreach ($item as $field => $values) {
+                    $fields[(string) $field] = array_values(array_map(self::text(...), is_array($values) ? $values : [$values]));
+                }
+                $samples[] = $fields;
+            }
+        }
+        return $samples;
+    }
+
+    /** a stored JSON value as text - what is no scalar shows empty */
+    private static function text(mixed $value): string
+    {
+        return is_scalar($value) ? (string) $value : '';
+    }
+
     /** the source of the snapshot */
     protected function source(): SourceInterface
     {

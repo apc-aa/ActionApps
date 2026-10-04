@@ -253,8 +253,11 @@ final class DefinitionDeleteTest extends TestCase
         self::store([self::DEF => [self::SLICE, Definition::class], self::FOREIGN => [self::OTHER, Definition::class]]);
         // PS_EDIT would do for Object_Delete
         self::perms(PS_FEEDING, PS_EDIT_ALL_ITEMS . PS_EDIT);
+        // the overview of all slices is a superadmin's page; each import is still checked on its slice
+        $GLOBALS['r_superuser'] = [AA_ID => true];
 
         $msg = self::delete([self::FOREIGN, self::DEF], allModules: true);
+        unset($GLOBALS['r_superuser']);
 
         $this->assertStringContainsString('not deleted', $msg);
         $this->assertSame([self::DEF], self::deleted('object_text', 'object_id'));

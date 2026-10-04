@@ -240,6 +240,25 @@ final class DefinitionManagerTest extends TestCase
         self::assertSame(mktime(23, 0, 0, 10, 4, 2026), Definition::fresh($id)?->nextPlanned($now), 'a time still ahead today');
     }
 
+    /** the planned tasks of the installation are read once a request, whatever number of slices the list shows */
+    public function test_nextPlan_tasksReadOnceForAllSlices(): void
+    {
+        $own   = self::definition('prices');
+        $other = self::definition('rents', self::OTHER);
+        self::task('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', self::SLICE, '{import:prices}', '03:00');
+        self::task('cccccccccccccccccccccccccccccccc', self::OTHER, '{import:rents}', '05:00');
+        self::queued('Plannedtask_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', self::NOW + 60);
+        self::queued('Plannedtask_cccccccccccccccccccccccccccccccc', self::NOW + 90);
+        \AA::Contentcache()->clear_soft();
+        TableDb::$log = [];
+
+        self::assertSame(self::NOW + 60, Definition::fresh($own)?->nextPlanned(self::NOW));
+        self::assertSame(self::NOW + 90, Definition::fresh($other)?->nextPlanned(self::NOW));
+
+        $reads = array_filter(TableDb::$log, static fn(string $sql): bool => str_contains($sql, 'FROM `toexecute`'));
+        self::assertCount(1, $reads, 'one read of the queue for both slices');
+    }
+
     /** a bare {import} names no import - not even one without a name */
     public function test_nextPlan_bareImportCallsNone(): void
     {

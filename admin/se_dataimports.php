@@ -30,7 +30,8 @@ use AA\Manager;
 
 require_once __DIR__ . "/../include/init_page.php";
 
-if (!IfSlPerm(PS_FEEDING)) {
+// imports fill slices only - a site or alerts admin holds the feeding right too
+if (!Definition::mayImportInto(AuthGetUid(), (string) AA::$module_id)) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "index.php", _m("You do not have permissions to manage the imports of this slice"), "admin");
     exit;
 }
