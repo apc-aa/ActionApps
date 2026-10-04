@@ -813,6 +813,23 @@ final class BatchRunControlTest extends TestCase
         $this->assertTrue(self::fresh($id)->isStuck(self::NOW + 10000));
     }
 
+    /** waiting = active, no step works, the next one due later - what Continue may hurry */
+    public function test_isWaiting_onlyActiveWithoutWorkingStepAndDueLater(): void
+    {
+        $id = self::start()->getId();
+        self::storedSet($id, 'next_at', (string) (self::NOW + 60));
+        $this->assertTrue(self::fresh($id)->isWaiting(self::NOW));
+        $this->assertFalse(self::fresh($id)->isWaiting(self::NOW + 60), 'due now');
+
+        self::storedSet($id, 'lease', (string) (self::NOW + 30));
+        self::storedSet($id, 'lease_tok', 'working-step');
+        $this->assertFalse(self::fresh($id)->isWaiting(self::NOW), 'a step works');
+
+        self::storedSet($id, 'lease_tok', '');
+        self::storedSet($id, 'state', 'error');
+        $this->assertFalse(self::fresh($id)->isWaiting(self::NOW), 'not active');
+    }
+
     public function test_is_stuck_not_while_a_step_works_nor_when_finished(): void
     {
         $id = self::start()->getId();

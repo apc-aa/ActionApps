@@ -7,6 +7,8 @@ namespace Tests\Unit\Import;
 use AA\Import\Definition;
 use AA\Import\Mapping;
 use AA\Import\Registry;
+use AA\Import\Run;
+use AA\Import\StreamState;
 use AA\IO\DB\DB_AA;
 use AA\IO\SourceRefused;
 use AA\Managed_Object;
@@ -344,6 +346,38 @@ final class DefinitionTest extends TestCase
         self::assertSame(self::MAPPED, self::stored($id)['source']);
     }
 
+    /** @return iterable<string, array{string}> what a deleted definition may have left at its id */
+    public static function leftovers(): iterable
+    {
+        yield 'stream state' => ['state'];
+        yield 'run'          => ['run'];
+        yield 'queued step'  => ['queue'];
+    }
+
+    /** a stale form of a deleted import, or a forged id, must not bring it back with what it left */
+    #[DataProvider('leftovers')]
+    public function test_save_idWithRecordsOfDeletedDefinitionRefused(string $leftover): void
+    {
+        $def = self::definition('prices');
+        $id  = (string) $def->getId();
+        match ($leftover) {
+            'state' => (static function () use ($id): void {
+                $state = StreamState::create($id);
+                $state->record('s1', ['v' => '2026-10']);
+                $state->store();
+            })(),
+            'run'   => self::storeObject('abababababababababababababababab', [Run::class, $id, '']),
+            'queue' => TableDb::$tables['toexecute'][] = ['id' => 5, 'created' => 0, 'execute_after' => 0, 'aa_user' => '', 'priority' => 5, 'selector' => "Import_$id", 'object' => '', 'params' => ''],
+        };
+        $before = TableDb::rows('object_text');
+
+        self::assertFalse($def->save());
+        self::assertSame($before, TableDb::rows('object_text'), 'nothing stored');
+        self::assertNull(Definition::fresh($id));
+        $logged = array_values(array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Definition::ERROR_EVENT));
+        self::assertSame([["Import_$id", "#$id LEFTOVERS"]], array_map(static fn(array $r): array => [$r['selector'], $r['params']], $logged), 'the class and the id only');
+    }
+
     // ------------------------------------------------------------ fresh()
 
     public function test_fresh_lockOutsideTransactionRefused(): void
@@ -559,7 +593,13 @@ final class DefinitionTest extends TestCase
     /** a planned task of SLICE called $name, stored at $id */
     private static function storeTask(string $id, string $name): void
     {
-        foreach (['aa_type' => 'AA_Plannedtask', 'aa_owner' => self::SLICE, 'aa_name' => $name] as $property => $value) {
+        self::storeObject($id, ['AA_Plannedtask', self::SLICE, $name]);
+    }
+
+    /** @param array{string, string, string} $object aa_type, aa_owner, aa_name of the object stored at $id */
+    private static function storeObject(string $id, array $object): void
+    {
+        foreach (array_combine(['aa_type', 'aa_owner', 'aa_name'], $object) as $property => $value) {
             TableDb::$tables['object_text'][] = ['id' => 900 + count(TableDb::rows('object_text')), 'object_id' => $id, 'property' => $property, 'priority' => 0, 'value' => $value, 'flag' => null];
         }
     }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Import;
 
 use AA;
+use AA\Expand\InternalExpandInterface;
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\IO\SourceFailure;
@@ -12,12 +13,18 @@ use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
+use AA\Managed;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Import_Delete;
+use AA\Manageraction\Import_Run;
+use AA\Manageraction\Manageractions;
+use AA\Util\Searchfields;
 use AA\Widget\ChbWidget;
+use AA_Content;
 use AA_Form;
 use AA_Log;
 use AA_Object;
+use AA_Plannedtask;
 use AA_Property;
 use JsonException;
 use LogicException;
@@ -33,7 +40,7 @@ use Throwable;
  * takes; settings and mapping change through update() in the import detail - so neither a form
  * opened earlier nor a forged field can overwrite them.
  */
-final class Definition extends AA_Object
+final class Definition extends AA_Object implements InternalExpandInterface
 {
     /** log type of a failure of the imports outside a queue step (log.type is varbinary(10)) */
     public const ERROR_EVENT = 'IMPORT_ERR';
@@ -85,13 +92,232 @@ final class Definition extends AA_Object
         return new Import_Delete('DeleteObject');
     }
 
-    /** the rest is edited in the import detail, which knows the source */
+    /** The rest is edited in the import detail, which knows the source. The source of a stored
+     *  definition is offered alone: changing it ends the run and drops the state, which the detail
+     *  says before it does it. The Manager opens the form only for a definition of its slice. */
     public static function addFormrows(AA_Form $form): void
     {
         self::getPropertyObject('aa_name')?->addPropertyFormrows($form);
         $properties = self::getClassProperties();
+        $stored     = self::fresh((string) $form->object_id);
+        if ($stored !== null) {
+            $source = $stored->sourceType();
+            $properties['source'] = new AA_Property('source', _m('Source'), 'string', false, true, ['enum', [$source => self::sourceName($source)]], true, _m('The source is changed in the import detail.'));
+        }
         $properties['source']->addPropertyFormrows($form);
         $properties['enabled']->addPropertyFormrows($form, new ChbWidget());
+    }
+
+    /** The Manager of imports: it may search and list a definition by its name, source and "enabled"
+     *  only - the settings and the expressions are shown by the import detail - and it runs them. */
+    public static function getManagerConf(?Manageractions $actions = null, ?Manageractions $switches = null): Managed
+    {
+        $actions ??= new Manageractions();
+        $actions->addAction(new Import_Run(Import_Run::ID));
+        $managed    = parent::getManagerConf($actions, $switches);
+        $settings   = $managed->getSettings();
+        $properties = self::getClassProperties();
+        $settings['searchbar']['fields'] = Searchfields::factoryFromProperties(['aa_name' => self::getPropertyObject('aa_name'), 'source' => $properties['source'], 'enabled' => $properties['enabled']]);
+        $settings['itemview']['format']['noitem_msg'] = _m('The slice has no import yet.') . '<br>';
+        return $managed->setSettings($settings);
+    }
+
+    protected static function getManagerTopHtml($fields): string
+    {
+        $heads = ['', _m('Action'), _m('Name'), _m('Slice'), _m('Source'), _m('Enabled'), _m('Status'), _m('Last run'), _m('Next plan')];
+        return '
+          <table>
+          <thead>
+            <tr>
+              <th scope=col>' . implode("</th>\n<th scope=col>", $heads) . '</th>
+            </tr>
+          </thead><tbody>
+            ';
+    }
+
+    /** Edit and Detail are links that only read; Run and Delete are buttons that POST. The slice
+     *  tells the imports apart on the overview of all slices. */
+    protected static function getManagerRowHtml($fields, $aliases, $buttons): string
+    {
+        $detail  = a_href(get_admin_url('se_dataimport.php', ['change_id=_#AA_OWNER', 'id=_#AA_ID___']), _m('Detail'), ['class' => 'aa-button-show']);
+        $actions = [$buttons['Edit'] ?? '', $detail, $buttons[Import_Run::ID] ?? '', $buttons['DeleteObject'] ?? ''];
+        $cell    = static fn(string $info): string => '{internal:' . self::class . ':' . $info . '}';
+        return '
+            <tr>
+              <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
+              <td style="white-space:nowrap;">' . implode(' ', array_filter($actions)) . '</td>
+              <td>_#AA_NAME_</td>
+              <td><span title="_#AA_OWNER">_#AA_OW_NM</span></td>
+              <td>' . $cell('source') . '</td>
+              <td>' . $cell('enabled') . '</td>
+              <td>' . $cell('status') . '</td>
+              <td style="font-variant-numeric:tabular-nums">' . $cell('lastrun') . '</td>
+              <td style="font-variant-numeric:tabular-nums">' . $cell('nextplan') . '</td>
+            </tr>
+            ';
+    }
+
+    /** The cells of the imports Manager: source, enabled, status, lastrun, nextplan - text, escaped.
+     *  {internal} works in any template, so it gives only what the list shows. */
+    public static function internal_expand(?AA_Content $content, ...$params): string
+    {
+        $id = (string) $content?->getId();
+        if (($content === null) || (preg_match('/^[0-9a-f]{32}\z/', $id) !== 1)) {
+            return '';
+        }
+        $now = Run::clock();
+        return match ((string) ($params[0] ?? '')) {
+            'source'   => safe(self::sourceName((string) $content->getValue('source'))),
+            'enabled'  => ((string) $content->getValue('enabled') === '1') ? _m('Yes') : _m('No'),
+            'status'   => safe(self::statusWord(self::lastRun($id), $now)),
+            'lastrun'  => self::lastRunHtml(self::lastRun($id)),
+            'nextplan' => self::nextPlanHtml($content, $now),
+            default    => '',
+        };
+    }
+
+    /** The state of $run in words; null = no run. A run that works holds a live lease; one whose next
+     *  step is due later waits for a retry. */
+    public static function statusWord(?Run $run, int $now): string
+    {
+        if ($run === null) {
+            return _m('Never ran');
+        }
+        return match ($run->state()) {
+            Run::RUNNING => $run->hasLiveLease($now) ? _m('Running') : ($run->isWaiting($now) ? _m('Waiting to retry') : _m('Queued')),
+            Run::DONE    => ($run->counts()['errors'] > 0) ? _m('Finished with item errors') : _m('Finished'),
+            Run::ERROR   => _m('Stopped by an error'),
+            Run::ENDED   => _m('Ended'),
+            default      => $run->state(),
+        };
+    }
+
+    /**
+     * When a planned task of the slice starts the import next, at $now or later: the earliest queued
+     * step of each task calling {import} with the id or the name of the import (its "Run now" too),
+     * else when the scheduler queues it (AA_Plannedtask::nextStart()); null = no task does.
+     */
+    public function nextPlanned(int $now): ?int
+    {
+        return self::nextPlannedOf((string) $this->getOwnerId(), (string) $this->getId(), (string) $this->aa_name, $now);
+    }
+
+    private static function nextPlannedOf(string $slice, string $id, string $name, int $now): ?int
+    {
+        if (!is_long_id($slice)) {
+            return null;
+        }
+        $refs  = [self::nameKey($id), self::nameKey($name)];
+        $times = [];
+        foreach (AA::Contentcache()->get_result([self::class, 'plannedTasksFromDb'], [strtolower($slice)]) as $task) {
+            if (!array_intersect($task['calls'], $refs)) {
+                continue;
+            }
+            $times[] = $task['queued'] ?? (new AA_Plannedtask(['time' => $task['time'], 'shift' => $task['shift']]))->nextStart($now);
+        }
+        $times = array_filter($times, static fn(int $at): bool => $at > 0);
+        return $times ? min($times) : null;
+    }
+
+    /**
+     * For the cache of nextPlanned(): the planned tasks of $slice that call {import} - the import
+     * names and ids they call (nameKey()), their time and the earliest step queued for them.
+     * @return list<array{calls: list<string>, time: string, shift: int, queued: ?int}>
+     */
+    public static function plannedTasksFromDb(string $slice): array
+    {
+        $ids = array_values(array_unique(array_map('strval', DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'aa_type'], ['value', AA_Plannedtask::class]]))));
+        if (!$ids) {
+            return [];
+        }
+        $rows = [];
+        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $ids], ['property', ['aa_owner', 'task', 'time', 'shift']]]) as $row) {
+            $rows[(string) $row['object_id']][(string) $row['property']] = (string) $row['value'];
+        }
+        $tasks = [];
+        foreach ($rows as $taskId => $task) {
+            // a bare {import} names no import
+            $calls = array_values(array_unique(array_map(self::nameKey(...), array_filter(AA_Plannedtask::importCalls($task['task'] ?? '')))));
+            if ((strtolower($task['aa_owner'] ?? '') === $slice) && $calls) {
+                $tasks[AA_Plannedtask::toexecuteSelector((string) $taskId)] = ['calls' => $calls, 'time' => $task['time'] ?? '', 'shift' => (int) ($task['shift'] ?? 0), 'queued' => null];
+            }
+        }
+        if (!$tasks) {
+            return [];
+        }
+        // the rows schedule() and "Run now" queue; one of priority 0 never runs
+        $selectors = array_keys($tasks);
+        foreach (DB_AA::select([], 'SELECT selector, execute_after, priority FROM `toexecute`', [['selector', [...$selectors, ...array_map(static fn(string $s): string => "$s:now", $selectors)]]]) as $row) {
+            $selector = preg_replace('/:now\z/', '', (string) $row['selector']);
+            if (((int) $row['priority'] > 0) && isset($tasks[$selector])) {
+                $at = (int) $row['execute_after'];
+                $tasks[$selector]['queued'] = min($tasks[$selector]['queued'] ?? $at, $at);
+            }
+        }
+        return array_values($tasks);
+    }
+
+    /** the newest run of definition $id, by its start - a fresh copy of the cached one */
+    private static function lastRun(string $id): ?Run
+    {
+        $props = AA::Contentcache()->get_result([self::class, 'lastRunFromDb'], [$id]);
+        return $props ? new Run($props) : null;
+    }
+
+    /** For the cache of lastRun(): the properties of the newest run of definition $id; [] = none.
+     *  @return array<string, string> */
+    public static function lastRunFromDb(string $id): array
+    {
+        $run = Run::ofSubject($id, 1)[0] ?? null;
+        if ($run === null) {
+            return [];
+        }
+        $props = [];
+        foreach (array_keys(Run::getClassProperties()) as $property) {
+            $props[$property] = (string) $run->getProperty($property);
+        }
+        return $props;
+    }
+
+    private static function lastRunHtml(?Run $run): string
+    {
+        if ($run === null) {
+            return '--';
+        }
+        $trigger = (string) $run->getProperty('trigger');
+        $about   = [
+            match ($run->mode()) {
+                'changed' => _m('changed only'),
+                'check'   => _m('check'),
+                default   => '',
+            },
+            $run->isDry() ? _m('dry run') : '',
+            match (true) {
+                $trigger === 'manual'               => _m('by hand'),
+                str_starts_with($trigger, 'plan:')  => _m('planned'),
+                str_starts_with($trigger, 'event:') => _m('on an event'),
+                default                             => '',
+            },
+        ];
+        $started = (int) $run->getProperty('started');
+        return ($started ? date('Y-m-d H:i', $started) : '--') . ' <small>' . safe(implode(', ', array_filter($about))) . '</small>';
+    }
+
+    private static function nextPlanHtml(AA_Content $content, int $now): string
+    {
+        // a planned start of a disabled import does nothing
+        if ((string) $content->getValue('enabled') !== '1') {
+            return _m('Off');
+        }
+        $next = self::nextPlannedOf((string) $content->getOwnerId(), (string) $content->getId(), (string) $content->getName(), $now);
+        return ($next === null) ? _m('Not planned') : date('Y-m-d H:i', $next);
+    }
+
+    /** the name of source $type, or the type when the source is not available */
+    private static function sourceName(string $type): string
+    {
+        $class = ($type === '') ? null : (Registry::sources()[$type] ?? null);
+        return ($class === null) ? $type : $class::name();
     }
 
     /**
@@ -213,7 +439,12 @@ final class Definition extends AA_Object
         $id = DB_AA::transaction(function (): false|string {
             $stored = self::textRows((string) $this->getId(), DB_AA::inTransaction());
             if (!$stored) {
-                return parent::save();
+                if (!self::ownsRecords((string) $this->getId())) {
+                    return parent::save();
+                }
+                // what a deleted definition left at the id would become this one's - a stale form or a forged id
+                AA_Log::write(self::ERROR_EVENT, 'Import_' . $this->getId(), '#' . $this->getId() . ' LEFTOVERS');
+                return false;
             }
             if (!$this->isOwn($stored) || (($stored['source'] ?? '') !== (string) $this->source)) {
                 return false;
@@ -274,6 +505,13 @@ final class Definition extends AA_Object
         // the safety row of a finished run's final phase - the core cancels only the steps of unfinished runs
         (new Toexecute())->cancel_all('Import_' . $id);
         return ['runs' => $runs, 'records' => $records];
+    }
+
+    /** whether anything is stored for definition $id: its runs, stream state and catalog are owned
+     *  by it, its queued steps carry its selector */
+    private static function ownsRecords(string $id): bool
+    {
+        return DB_AA::test('object_text', [['property', 'aa_owner'], ['value', $id]]) || DB_AA::test('toexecute', [['selector', 'Import_' . $id]]);
     }
 
     /** How the names of two definitions compare when {import} looks one up - as object_text.value does

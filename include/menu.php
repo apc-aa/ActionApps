@@ -153,6 +153,7 @@ function get_aamenus(): array
             "n_import"      => ["cond" => IfSlPerm(PS_FEEDING),    "href" => "admin/se_inter_import.php",          "label" => _m("Inter Node Import")],
             "n_export"      => ["cond" => IfSlPerm(PS_FEEDING),    "href" => "admin/se_inter_export.php",          "label" => _m("Inter Node Export")],
             "rssfeeds"      => ["cond" => IfSlPerm(PS_FEEDING),    "href" => "admin/se_rssfeeds.php",              "label" => _m("RSS Feeds")],
+            "dataimports"   => ["cond" => IfSlPerm(PS_FEEDING),    "href" => "admin/se_dataimports.php",           "label" => _m("Imports")],
             "filters"       => ["cond" => IfSlPerm(PS_FEEDING),    "href" => "admin/se_filters.php",               "label" => _m("Filters")],
             "mapping"       => ["cond" => IfSlPerm(PS_FEEDING),    "href" => "admin/se_mapping.php",               "label" => _m("Mapping")],
             "CSVimport"     => ["cond" => IfSlPerm(PS_FEEDING),    "href" => "admin/se_csv_import.php",            "label" => _m("Import CSV")],

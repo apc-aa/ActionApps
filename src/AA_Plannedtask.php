@@ -139,13 +139,32 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             ';
     }
 
-    public function nexttime(): int
+    /** the time the task names, read at $now (default the current time); 0 = it names none */
+    public function nexttime(?int $now = null): int
     {
         // every 5 min
         if (!strlen($time = trim($this->getProperty('time')))) {
             return 0;
         }
-        return strtotime($time) + (int) $this->getProperty('shift');
+        return (int) strtotime($time, $now ?? time()) + (int) $this->getProperty('shift');
+    }
+
+    /** When the task is queued to run next, at $now or later. schedule() queues only a time not yet
+     *  past, so a time past today (03:00 at noon) comes on a later day - read here at the start of
+     *  each day, as the scheduler reads it on its rounds. 0 = never within a year. */
+    public function nextStart(int $now): int
+    {
+        if (!strlen(trim($this->getProperty('time')))) {
+            return 0;
+        }
+        for ($day = 0; $day <= 366; ++$day) {
+            $base = ($day === 0) ? $now : (int) strtotime("today +$day days", $now);
+            $at   = $this->nexttime($base);
+            if ($at >= $base) {
+                return $at;
+            }
+        }
+        return 0;
     }
 
     /** Implement internal aliases for Admin interface Such aliases then could be called as {internal:AA_Plannedtask:lastrun:...},

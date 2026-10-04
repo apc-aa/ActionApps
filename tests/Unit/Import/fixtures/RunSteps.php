@@ -169,7 +169,14 @@ trait RunSteps
         foreach ($definition as $property => $value) {
             $def->setProperty($property, $value);
         }
+        // A test may arrange the stream state or catalog first. Saved alongside them, the new definition
+        // would be refused as one taking over the records of a deleted one - so they come back after it.
+        $rows     = TableDb::$tables['object_text'] ?? [];
+        $owned    = array_column(array_filter($rows, static fn(array $r): bool => ($r['property'] === 'aa_owner') && ($r['value'] === self::DEF)), 'object_id');
+        $arranged = array_values(array_filter($rows, static fn(array $r): bool => in_array($r['object_id'], $owned, true)));
+        TableDb::$tables['object_text'] = array_values(array_filter($rows, static fn(array $r): bool => !in_array($r['object_id'], $owned, true)));
         self::assertSame(self::DEF, $def->save());
+        TableDb::$tables['object_text'] = [...TableDb::$tables['object_text'], ...$arranged];
         $keys = array_map(static fn(Stream $s): string => $s->key, $source->streams);
 
         return DB_AA::transaction(static fn() => TestRun::start($props + [

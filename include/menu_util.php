@@ -88,6 +88,7 @@ function GetCommonMenu(AA_Profile $profile): array {
         "rsstest"     => ["label"=>_m("RSS test"),        "cond"=>IsSuperadmin(),        "href"=>"admin/rsstest.php"],
         "aarsstest"   => ["label"=>_m("AA RSS test"),     "cond"=>IsSuperadmin(),        "href"=>"admin/aarsstest.php"],
         "testrss"     => ["label"=>_m("Run feeding"),     "cond"=>IsSuperadmin(),        "href"=>"admin/xmlclient.php?debugfeed=4"],
+        "dataimports" => ["label"=>_m("Imports"),         "cond"=>IsSuperadmin(),        "href"=>"admin/aa_dataimports.php"],
 
         "header5"     =>_m("Slice structure"),
         "sliceexp"    => ["label"=>_m("Export"),          "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceexp.php"],

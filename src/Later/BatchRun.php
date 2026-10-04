@@ -433,7 +433,7 @@ abstract class BatchRun extends AA_Object
         $now     = static::now();
         $states  = static::states();
         $error   = ($this->state === $states->error);
-        $waiting = ($this->state === $states->active) && ((int) $this->next_at > $now) && !$this->hasLiveLease($now);
+        $waiting = $this->isWaiting($now);
         // a step that works or is queued to run now would only be doubled
         if (!$error && !$waiting && !$this->isStuck($now)) {
             throw new BatchFailed('WRONG_STATE');
@@ -557,6 +557,18 @@ abstract class BatchRun extends AA_Object
     final public function idleSince(): int
     {
         return max((int) (((string) $this->moved !== '') ? $this->moved : $this->started), (int) $this->next_at);
+    }
+
+    /** Active, no step works, and the next one is due later than $now - a retry after a failure. */
+    final public function isWaiting(int $now): bool
+    {
+        return ($this->state === static::states()->active) && ((int) $this->next_at > $now) && !$this->hasLiveLease($now);
+    }
+
+    /** the time the runs of this class judge leases and retries by */
+    final public static function clock(): int
+    {
+        return static::now();
     }
 
     /** a step may still be working - also in an ended run, so a new run of the subject waits for it */
