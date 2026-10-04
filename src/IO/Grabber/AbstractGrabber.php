@@ -382,6 +382,13 @@ abstract class AbstractGrabber implements NamedInterface
         return $this;
     }
 
+    /** milliseconds between requests to one domain; null = no wait. An import refuses a grabber
+     *  that waits: the wait (usleep) knows nothing of the step's budget. */
+    public function loadFrequency(): ?float
+    {
+        return $this->load_frequency;
+    }
+
     /** wait in order we do not contact the same domain more often than $protect miliseconds
      * @param string $domain
      */

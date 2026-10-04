@@ -7,6 +7,7 @@ namespace AA\Import;
 use AA\Http\ClientInterface;
 use AA\IO\Grabber\AbstractGrabber;
 use AA\IO\SourceRefused;
+use AA\IO\SourceUnavailable;
 use AA\Later\BatchPosition;
 use AA_Content;
 use AA_Value;
@@ -38,6 +39,8 @@ final class ParamsGrabber extends AbstractGrabber
      * @param int                   $offset        source items the job already handed out in earlier steps
      * @param string                $fp            fingerprint() of the step that reached $offset
      * @param string                $versionField  source field whose maximum is the version of the data; '' = none
+     * @param bool                  $restartAllowed false = a changed fingerprint fails prepare() instead of starting
+     *                                             over, before a single item is handed out (and stored)
      * @throws SourceRefused DEFINITION for a direct-fill grabber with parameters - its items are stored as they are,
      *                       so the parameters would land in the target item instead of serving the mapping
      */
@@ -47,6 +50,7 @@ final class ParamsGrabber extends AbstractGrabber
         private readonly int $offset = 0,
         private readonly string $fp = '',
         private readonly string $versionField = '',
+        private readonly bool $restartAllowed = true,
     ) {
         if (($offset < 0) || (($offset > 0) && ($fp === ''))) {
             // without the fingerprint nobody can tell the skipped items are still the stored ones
@@ -57,7 +61,8 @@ final class ParamsGrabber extends AbstractGrabber
         }
     }
 
-    /** @throws \Exception whatever the inner grabber throws, including while reading ahead */
+    /** @throws \Exception whatever the inner grabber throws, including while reading ahead
+     *  @throws SourceUnavailable SOURCE_UNSTABLE when the job would start over, but may not */
     public function prepare(): void
     {
         // reset first: a failing inner prepare() must not leave the previous run's verdict behind
@@ -71,7 +76,12 @@ final class ParamsGrabber extends AbstractGrabber
         while ((count($this->buffer) < self::FP_ITEMS) && ($item = $this->nextFromInner())) {
             $this->buffer[] = $item;
         }
-        $this->fp_now = $this->fingerprintOf($this->buffer);
+        $fp = $this->fingerprintOf($this->buffer);
+        if (($this->offset > 0) && ($this->fp !== $fp) && !$this->restartAllowed) {
+            // no fingerprint either: the job did not start
+            throw new SourceUnavailable('SOURCE_UNSTABLE', 'The source changed under the job once more');
+        }
+        $this->fp_now = $fp;
         $this->restarted = ($this->offset > 0) && ($this->fp !== $this->fp_now);
         if (!$this->restarted) {
             while (($this->taken < $this->offset) && $this->nextRaw()) {

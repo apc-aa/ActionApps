@@ -170,6 +170,28 @@ namespace Tests\Unit\Import {
             $this->assertSame(1, $g->offset());
         }
 
+        public function test_offset_restartNotAllowedFailsBeforeAnyItem(): void
+        {
+            $old        = self::fingerprintOf(self::items(30));
+            $changed    = self::items(30);
+            $changed[7] = self::item(['n' => '8', 'rok' => '2021']);
+
+            $g = new ParamsGrabber(self::source($changed), [], 25, $old, restartAllowed: false);
+            try {
+                $g->prepare();
+                $this->fail('The job started over though it might not');
+            } catch (SourceUnavailable $e) {
+                $this->assertSame('SOURCE_UNSTABLE', $e->reason);
+            }
+            $this->assertSame(0, $g->offset(), 'nothing handed out');
+
+            // the same source as before goes on from the offset
+            $g = new ParamsGrabber(self::source(self::items(30)), [], 25, $old, restartAllowed: false);
+            $g->prepare();
+            $this->assertFalse($g->restarted());
+            $this->assertSame('26', $g->getItem()->getValue('n'));
+        }
+
         public function test_offset_newJobIsNoRestart(): void
         {
             $g = new ParamsGrabber(self::source(self::items(2)), []);
@@ -394,10 +416,6 @@ namespace Tests\Unit\Import {
                 public function fetchesViaLoadData(): bool
                 {
                     return true;
-                }
-                public function loadFrequency(): ?float
-                {
-                    return $this->load_frequency;
                 }
             };
             $g = new ParamsGrabber($inner, ['geo' => 'CZ']);
