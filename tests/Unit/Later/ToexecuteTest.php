@@ -61,6 +61,8 @@ namespace Tests\Unit\Later {
         protected function setUp(): void
         {
             self::$ran = [];
+            ClockTask::$seen = [];
+            set_time_limit(0);   // the round size comes from the limit - another test may have left one
             $this->pdo = new PDO('sqlite::memory:');
             $this->pdo->exec('CREATE TABLE toexecute (id INTEGER PRIMARY KEY, created INTEGER NOT NULL DEFAULT 0, execute_after INTEGER NOT NULL, aa_user TEXT NOT NULL DEFAULT \'\', priority INTEGER NOT NULL, selector TEXT NOT NULL, object BLOB NOT NULL, params BLOB NOT NULL)');
             $this->pdo->exec('CREATE TABLE log (id INTEGER PRIMARY KEY, time INTEGER NOT NULL, user TEXT, type TEXT, selector TEXT, params TEXT)');
@@ -71,6 +73,14 @@ namespace Tests\Unit\Later {
         {
             $GLOBALS['spareDBs'] = [];
             set_time_limit(0);   // execute_one() sets a 30 s limit - it must not outlive the test
+        }
+
+        /** the tests that expect the default 16 s round cannot run with the constant set */
+        private function requireDefaultRoundSize(): void
+        {
+            if (defined('TOEXECUTE_ALLOWED_TIME')) {
+                $this->markTestSkipped('TOEXECUTE_ALLOWED_TIME is defined - the round has a fixed size');
+            }
         }
 
         /** a DB_PDO handle on the test's SQLite database (injected, so it never connects) */
@@ -199,6 +209,120 @@ namespace Tests\Unit\Later {
             $this->assertStringContainsString("#$failing RuntimeException", json_encode($findings[0]->evidence));
             $this->assertStringContainsString(intdiv(Toexecute::CLAIM_LEASE, 60) . ' minutes', $findings[0]->advice, 'the retry delay comes from the lease');
             $this->assertStringContainsString('Task Manager', $findings[0]->advice, 'a user-queue task is not retried on its own - the advice must say so');
+        }
+
+        public function test_timeLeft_is_null_outside_a_round(): void
+        {
+            $this->assertNull(Toexecute::timeLeft());
+            $this->assertNull(Toexecute::roundSeconds());
+        }
+
+        public function test_timeLeft_inside_a_task_of_execute(): void
+        {
+            $this->requireDefaultRoundSize();
+            $this->seed(new ClockTask(), 'test-clock', 100);
+
+            (new Toexecute())->execute();
+
+            $this->assertCount(1, ClockTask::$seen);
+            [$left, $round] = ClockTask::$seen[0];
+            $this->assertSame(16.0, $round, 'no TOEXECUTE_ALLOWED_TIME and no time limit - the default 16 s round');
+            $this->assertGreaterThan(0.0, $left);
+            $this->assertLessThanOrEqual(16.0, $left);
+            $this->assertNull(Toexecute::timeLeft(), 'the round is closed after execute()');
+        }
+
+        public function test_timeLeft_inside_a_task_of_executeTask(): void
+        {
+            $this->requireDefaultRoundSize();
+            $id = $this->seed(new ClockTask(), 'test-clock', 100, Toexecute::TOEXECUTE_USER_TASK_TIME);
+
+            (new Toexecute())->executeTask([$id]);
+
+            $this->assertCount(1, ClockTask::$seen);
+            [$left, $round] = ClockTask::$seen[0];
+            $this->assertSame(351.0, $round, 'executeTask() raises the time limit to 360 s before it sizes the round');
+            $this->assertGreaterThan(0.0, $left);
+            $this->assertLessThanOrEqual(351.0, $left);
+            $this->assertNull(Toexecute::roundSeconds(), 'the round is closed after executeTask()');
+        }
+
+        public function test_timeLeft_failing_task_still_closes_the_round(): void
+        {
+            $this->seed(new ThrowingTask(\RuntimeException::class), 'test-failing', 100);
+
+            (new Toexecute())->execute();
+
+            $this->assertNull(Toexecute::timeLeft(), 'the round ends normally after a failed task');
+            $this->assertNull(Toexecute::roundSeconds());
+        }
+
+        public function test_timeLeft_exception_out_of_the_round_closes_it(): void
+        {
+            // _exeOne() catches what a task throws, so only the loop itself can throw past the round
+            ThrowingReportToexecute::$round = null;
+            try {
+                (new ThrowingReportToexecute())->executeTask([999]);
+                $this->fail('the report exception must leave executeTask()');
+            } catch (\LogicException) {
+            }
+
+            $this->assertNotNull(ThrowingReportToexecute::$round, 'the exception came from inside the round');
+            $this->assertNull(Toexecute::timeLeft(), 'and the round did not stay open after it');
+            $this->assertNull(Toexecute::roundSeconds());
+        }
+
+        public function test_timeLeft_nested_round_gives_the_outer_one_back(): void
+        {
+            $this->requireDefaultRoundSize();
+            $inner = $this->seed(new ClockTask(), 'test-clock', 100, Toexecute::TOEXECUTE_USER_TASK_TIME);
+            $this->seed(new NestingTask($inner), 'test-nesting', 100);
+
+            (new Toexecute())->execute();
+
+            $this->assertCount(2, ClockTask::$seen, 'the nested task, then the outer one after it');
+            $this->assertSame(351.0, ClockTask::$seen[0][1], 'the nested executeTask() has its own round');
+            $this->assertSame(16.0, ClockTask::$seen[1][1], 'the outer task is back in its own round');
+            $this->assertNull(Toexecute::timeLeft());
+        }
+    }
+
+    /** records the queue round it runs in */
+    final class ClockTask
+    {
+        /** @var list<array{?float, ?float}> [timeLeft(), roundSeconds()] per run */
+        public static array $seen = [];
+
+        public function toexecutelater(array $params): string
+        {
+            self::$seen[] = [Toexecute::timeLeft(), Toexecute::roundSeconds()];
+            return 'ok';
+        }
+    }
+
+    /** fails while reporting, i.e. in the round's own loop rather than in a task */
+    final class ThrowingReportToexecute extends Toexecute
+    {
+        /** roundSeconds() at the moment of the throw */
+        public static ?float $round = null;
+
+        protected function message($row, int $verbosity = 1): void
+        {
+            self::$round = Toexecute::roundSeconds();
+            throw new \LogicException('report failed');
+        }
+    }
+
+    /** runs another queued task by hand from inside the round, then records the round it is back in */
+    final class NestingTask
+    {
+        public function __construct(public int $inner) {}
+
+        public function toexecutelater(array $params): string
+        {
+            (new Toexecute())->executeTask([$this->inner]);
+            ClockTask::$seen[] = [Toexecute::timeLeft(), Toexecute::roundSeconds()];
+            return 'ok';
         }
     }
 

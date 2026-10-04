@@ -90,6 +90,30 @@ class Toexecute
     /** log.type of a task that threw (log.type is 10 bytes); CheckQueue reports them */
     public const FAILED_EVENT = 'TOEXEC_ERR';
 
+    /** The running round as [microtime(true) of its start, allowed seconds]; null outside a round.
+     *  execute() and executeTask() restore the previous value when they end, because a task may
+     *  run another round by hand and the outer round must get its own value back.
+     *  @var array{float, float}|null */
+    private static ?array $round = null;
+
+    /** Seconds left in the queue round that is running now, so a long task can stop in time
+     *  @return float|null null when not called from inside a round */
+    public static function timeLeft(): ?float
+    {
+        if (self::$round === null) {
+            return null;
+        }
+        [$start, $allowed] = self::$round;
+        return max(0.0, $allowed - (microtime(true) - $start));
+    }
+
+    /** The whole allowed duration of the queue round that is running now
+     *  @return float|null null when not called from inside a round */
+    public static function roundSeconds(): ?float
+    {
+        return self::$round[1] ?? null;
+    }
+
     /** later function
      *  Stores the object and params to the database for later execution.
      *  Such task is called from cron (the order depends on priority)
@@ -265,6 +289,8 @@ class Toexecute
         $execute_start = microtime(true);
         $count = 0;
         $started = 0;
+        $outer_round = self::$round;
+        self::$round = [$execute_start, $allowed_time];
 
         // get just ids - the task itself we will grab later, since the objects
         // in the database could be pretty big, so we want to grab it one by one
@@ -272,17 +298,21 @@ class Toexecute
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
 
-        while ($task = DB_AA::select1('', 'SELECT * FROM `toexecute`', [['execute_after', time(), '<'], ['priority', 0, '>']], ['priority-'])) {
-            ++$started;
-            $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
-            if ($ret > 0) {
-                ++$count;
-            } elseif ($ret === 0) {
-                break;
+        try {
+            while ($task = DB_AA::select1('', 'SELECT * FROM `toexecute`', [['execute_after', time(), '<'], ['priority', 0, '>']], ['priority-'])) {
+                ++$started;
+                $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+                if ($ret > 0) {
+                    ++$count;
+                } elseif ($ret === 0) {
+                    break;
+                }
+                // $ret < 0: a concurrent runner claimed the task, or its class is missing and
+                // it stays queued - either way its execute_after moved ahead, so the next
+                // SELECT skips it; just carry on
             }
-            // $ret < 0: a concurrent runner claimed the task, or its class is missing and
-            // it stays queued - either way its execute_after moved ahead, so the next
-            // SELECT skips it; just carry on
+        } finally {
+            self::$round = $outer_round;
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
@@ -312,30 +342,37 @@ class Toexecute
         $count = 0;
         $started = 0;
 
-        foreach ($tasks as $task_id) {
-            $task = DB_AA::select1('', 'SELECT * FROM toexecute', [['id', $task_id, 'i']]);
-            if (!$task) {
-                $this->message("#$task_id: " . _m('task is no longer in the queue'));
-                continue;   // task finished (deleted) meanwhile
+        $outer_round = self::$round;
+        self::$round = [$execute_start, $allowed_time];
+
+        try {
+            foreach ($tasks as $task_id) {
+                $task = DB_AA::select1('', 'SELECT * FROM toexecute', [['id', $task_id, 'i']]);
+                if (!$task) {
+                    $this->message("#$task_id: " . _m('task is no longer in the queue'));
+                    continue;   // task finished (deleted) meanwhile
+                }
+                if (isset($expected[$task_id]) && (int) $expected[$task_id] !== (int) $task['priority']) {
+                    $this->message("#$task_id: " . _m('skipped - the task changed meanwhile (reload the list)'));
+                    continue;   // claimed or executed since the UI list was rendered
+                }
+                // No lease-window check here, deliberately: this is the explicit
+                // "Execute" action in the Task Manager UI - the user may re-run
+                // even a task another runner is just executing (with a reloaded,
+                // matching priority), and a task scheduled for the near future
+                // must stay manually runnable. The CAS in _exeOne() still
+                // collapses two concurrent clicks (same snapshot) into one run.
+                ++$started;
+                $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+                if ($ret > 0) {
+                    ++$count;
+                } elseif ($ret === 0) {
+                    break;
+                }
+                // $ret < 0: claimed by a concurrent runner meanwhile, or its class is missing - skip it
             }
-            if (isset($expected[$task_id]) && (int) $expected[$task_id] !== (int) $task['priority']) {
-                $this->message("#$task_id: " . _m('skipped - the task changed meanwhile (reload the list)'));
-                continue;   // claimed or executed since the UI list was rendered
-            }
-            // No lease-window check here, deliberately: this is the explicit
-            // "Execute" action in the Task Manager UI - the user may re-run
-            // even a task another runner is just executing (with a reloaded,
-            // matching priority), and a task scheduled for the near future
-            // must stay manually runnable. The CAS in _exeOne() still
-            // collapses two concurrent clicks (same snapshot) into one run.
-            ++$started;
-            $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
-            if ($ret > 0) {
-                ++$count;
-            } elseif ($ret === 0) {
-                break;
-            }
-            // $ret < 0: claimed by a concurrent runner meanwhile, or its class is missing - skip it
+        } finally {
+            self::$round = $outer_round;
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
