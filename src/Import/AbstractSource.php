@@ -16,4 +16,10 @@ abstract class AbstractSource implements SourceInterface
     {
         return 15;
     }
+
+    /** no rows - a source that imports overrides this */
+    public function defaultMapping(): Mapping
+    {
+        return new Mapping([]);
+    }
 }

@@ -11,6 +11,10 @@ use AA\Util\NamedInterface;
  * run, and keys and the network only through Context - a source never reads a secret constant
  * or the global configuration itself. Optional abilities are separate interfaces (Checkable,
  * Probeable, Cataloged, CatalogAdoptable).
+ *
+ * A source extends AbstractSource, and every method added here gets a default there: PHP reports
+ * a missing method as a fatal error, not an exception, so a source of an installation that lacks
+ * it would bring down the import pages, State Check and the queue step.
  */
 interface SourceInterface extends NamedInterface
 {
@@ -34,6 +38,12 @@ interface SourceInterface extends NamedInterface
      * @return iterable<Job>
      */
     public function jobs(Stream $stream, Context $ctx, ?string $known): iterable;
+
+    /**
+     * The mapping a new definition starts with, and what "reset mapping" brings back: rows, key,
+     * store mode, validation and the expression after a stream.
+     */
+    public function defaultMapping(): Mapping;
 
     /** @return list<array{vendor: string, context: string}> keys the source needs - names only */
     public function credentials(): array;
