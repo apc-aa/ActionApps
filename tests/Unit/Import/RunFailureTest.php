@@ -288,8 +288,8 @@ final class RunFailureTest extends TestCase
 
         $next = TestRun::get($run->getId())?->exhausted($last);
 
-        self::assertSame(['skipped_jobs' => 2, 'read' => 2], $next?->counts);
-        self::assertSame(['JOB_FAILED' => 3, 'JOB_GONE' => 1], $next->warnings);
+        self::assertEquals(['skipped_jobs' => 2, 'read' => 2, 'streams' => 1], $next?->counts, 'the cycle closed s1');
+        self::assertEquals(['JOB_FAILED' => 3, 'JOB_GONE' => 1], $next->warnings);
         self::assertSame($last->extra, $next->extra);
         self::assertSame(['', false, 's2', 1, 2], [$next->retry, $next->finished, $next->label, $next->done, $next->total]);
     }

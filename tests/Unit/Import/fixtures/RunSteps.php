@@ -50,6 +50,7 @@ trait RunSteps
         require_once __DIR__ . '/TestRun.php';
         require_once __DIR__ . '/ProbedSource.php';
         require_once __DIR__ . '/CheckedSource.php';
+        require_once __DIR__ . '/CatalogSource.php';
         TestRun::reset();
         TestRun::$now      = self::NOW;
         TestRun::$microNow = (float) self::NOW;

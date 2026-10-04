@@ -19,8 +19,10 @@ use AA\Later\BatchRun;
 use AA\Later\BatchStates;
 use AA\Later\BatchStepResult;
 use AA\Later\Toexecute;
+use AA_Item;
 use AA_Log;
 use AA_Property;
+use AA_Value;
 use JsonException;
 
 /**
@@ -41,10 +43,18 @@ class Run extends BatchRun
     /** jobs of one stream (pages of a catalog) at most - a source may hand out its pages in a cycle */
     public const MAX_PAGES = 1000;
 
-    /** where a run starts; a new stream starts with all but i of it */
+    /**
+     * Where a run starts; a new stream starts with all but i, checked and after of it.
+     * - failed: the stream skipped a job or lost items to errors - its version stays the old one;
+     * - probed, pv: the changed mode asked probe() at the stream's start, and the version it gave;
+     * - end: the jobs of the stream are done, its version is pending;
+     * - after: the key of a closed stream whose expression is due;
+     * - checked: the check mode asked check(); ccode: what ends a check in its next step.
+     */
     public const START = [
         'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',
-        'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0,
+        'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '', 'end' => 0,
+        'after' => '', 'checked' => 0, 'ccode' => '',
     ];
 
     /** what a run counts, all of them in this order */
@@ -53,10 +63,13 @@ class Run extends BatchRun
         'jobs' => 0, 'streams' => 0, 'unchanged' => 0, 'skipped_jobs' => 0,
     ];
 
-    /** item errors a step hands over at most */
+    /** item errors a step hands over, and the run keeps, at most */
     private const ERRORS_KEPT = 20;
 
-    private const MODES = ['run', 'changed'];
+    /** items a dry run shows */
+    private const SAMPLES_KEPT = 5;
+
+    private const MODES = ['run', 'changed', 'check'];
 
     /** what walkJobs() and runJob() return when the step stops at the cursor */
     private const STOP = 'stop';
@@ -64,7 +77,7 @@ class Run extends BatchRun
     /** seconds onRetriesExhausted() gives check() and jobs(), ending 30 s before the lease at the latest */
     private const DECIDE_SECONDS = 15;
 
-    /** run (every stream) | changed (streams probe() does not call unchanged) */
+    /** run (every stream) | changed (streams probe() does not call unchanged) | check (check(), probe(), catalog()) */
     protected $mode = '';
     /** '1' = a dry run: nothing stored */
     protected $dry = '';
@@ -78,6 +91,10 @@ class Run extends BatchRun
     protected $trigger = '';
     /** JSON list of the first item errors {stream, job, code, msg} */
     protected $errors = '';
+    /** JSON list of the first items a dry run would store, for its report */
+    protected $samples = '';
+    /** JSON {ok, code, msg} of the check() of a check run, for its report */
+    protected $check = '';
 
     /** @var array<string, int> what the step counted so far */
     private array $tally = self::COUNTS;
@@ -87,11 +104,19 @@ class Run extends BatchRun
     private array $itemErrors = [];
     /** @var array<string, true> slices the step stored items into */
     private array $touched = [];
+    /** @var array<string, array<string, string|int>> stream key => what StreamState records of it */
+    private array $streamRecords = [];
+    /** @var list<array<string, list<string>>> what the dry run of the step would store */
+    private array $stepSamples = [];
+    /** the check() of the step, its message redacted */
+    private ?CheckResult $checkResult = null;
+    /** the catalog with the pages of the step, stored at its end */
+    private ?Catalog $catalog = null;
 
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors'] as $id) {
+        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -171,10 +196,14 @@ class Run extends BatchRun
 
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult
     {
-        $this->tally      = self::COUNTS;
-        $this->notes      = [];
-        $this->itemErrors = [];
-        $this->touched    = [];
+        $this->tally         = self::COUNTS;
+        $this->notes         = [];
+        $this->itemErrors    = [];
+        $this->touched       = [];
+        $this->streamRecords = [];
+        $this->stepSamples   = [];
+        $this->checkResult   = null;
+        $this->catalog       = null;
         try {
             return $this->walk(self::cursor($from), $budget);
         } finally {
@@ -198,6 +227,61 @@ class Run extends BatchRun
     }
 
     /**
+     * What the step leaves besides its items, under the lock of the end of the step: item errors and
+     * samples into the run; versions, probe times, check() and catalog pages, not in a dry run. A run
+     * ended meanwhile never gets here - the core does not end a step it no longer holds.
+     */
+    protected function commitStep(BatchStepResult $r): void
+    {
+        $extra = $r->extra;
+        $write = [];
+        if ($extra['errors'] ?? []) {
+            $this->errors = self::addUpTo((string) $this->errors, $extra['errors'], self::ERRORS_KEPT);
+            $write[]      = 'errors';
+        }
+        if ($extra['samples'] ?? []) {
+            $this->samples = self::addUpTo((string) $this->samples, $extra['samples'], self::SAMPLES_KEPT);
+            $write[]       = 'samples';
+        }
+        if ($write) {
+            $this->update($write);
+        }
+        if ($this->isDry()) {
+            return;
+        }
+        if (($extra['streams'] ?? []) || (($extra['check'] ?? null) instanceof CheckResult)) {
+            $state = StreamState::forDefinition($this->definitionId()) ?? StreamState::create($this->definitionId());
+            foreach ($extra['streams'] ?? [] as $key => $values) {
+                $state->record((string) $key, $values);
+            }
+            if (($extra['check'] ?? null) instanceof CheckResult) {
+                $state->recordCheck($extra['check'], static::now());
+                // the report shows the very form the state keeps: cleaned and cut
+                $this->check = (string) json_encode(array_diff_key((array) $state->lastCheck(), ['time' => 0]), JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES);
+                $this->update(['check']);
+            }
+            $state->store();
+        }
+        if (($extra['catalog'] ?? null) instanceof Catalog) {
+            $extra['catalog']->store();
+        }
+    }
+
+    /** the report of a done run: its check() and probes of a check, the samples of a dry run */
+    protected function finalCheck(): array
+    {
+        $report = [];
+        if ($this->mode() === 'check') {
+            $report['check'] = json_decode((string) $this->check, true);
+            $report['probe'] = ['probed' => $this->counts()['streams'], 'unchanged' => $this->counts()['unchanged']];
+        }
+        if ($this->isDry()) {
+            $report['samples'] = self::listOf((string) $this->samples);
+        }
+        return $report;
+    }
+
+    /**
      * Three steps without progress. A step that never fits a queue round ends in error - skipping
      * what does not fit would lose data quietly. A cycle skips the rest of its stream: skipping one
      * job would let the source hand out the cycle again. Any other failure skips the job (the next
@@ -210,12 +294,17 @@ class Run extends BatchRun
         $pos  = self::cursor($last->position);
         $keys = $this->streamKeys();
         $ctx  = null;
-        if ($last->retry === 'NO_PROGRESS') {
+        // a check has nothing to skip: its cycle, its failed check() end it
+        if (($last->retry === 'NO_PROGRESS') || ($this->mode() === 'check')) {
             return null;
         }
         try {
             if ($last->retry === 'SOURCE_CYCLE') {
-                return $this->skipped($last, self::nextStream($pos), $keys);
+                return $this->skipped($last, $pos, self::nextStream($pos), $keys);
+            }
+            if ($pos['end'] === 1) {
+                // the jobs went well, only the version could not be had: the stream closes without it
+                return $this->skipped($last, $pos, self::nextStream($pos), $keys, 'VERSION_UNKNOWN');
             }
             $source = $this->source();
             if (!($source instanceof Checkable)) {
@@ -228,9 +317,14 @@ class Run extends BatchRun
             if (!$source->check($ctx)->ok) {
                 return null;
             }
+            // streams the source cannot list are the whole source failing, not this stream
+            $streams = self::streamsOf($source);
+            $gone    = false;
             try {
                 // a stream failing before its first job has no job to skip
-                $next = ($pos['job'] === '') ? self::nextStream($pos) : $this->jobAfter($source, $ctx, $budget, $keys[$pos['i']] ?? '', $pos);
+                $next = ($pos['job'] === '') ? self::nextStream($pos) : $this->jobAfter($source, $ctx, $budget, $streams[$keys[$pos['i']] ?? ''] ?? null, $pos);
+                $gone = ($next === null);
+                $next ??= self::nextStream($pos);
             } catch (SourceRefused $e) {
                 throw $e;
             } catch (SourceFailure|TransportException) {
@@ -241,7 +335,7 @@ class Run extends BatchRun
                 // the source is up, a page of this stream is not: the rest of the stream cannot be reached
                 $next = self::nextStream($pos);
             }
-            return $this->skipped($last, $next, $keys);
+            return $this->skipped($last, $pos, $next, $keys, gone: $gone);
         } catch (BatchBudgetSpent|SourceUnavailable|TransportException) {
             return null;
         } catch (\Throwable $e) {
@@ -261,18 +355,37 @@ class Run extends BatchRun
         if (!in_array($this->mode(), self::MODES, true) || ($this->targetSlice() === '')) {
             throw new BatchFailed('DEFINITION', 'run');
         }
-        $mapping = $this->mapping();
         $keys    = $this->streamKeys();
         $pos     = $from;
         $ctx     = null;
         try {
             $source  = $this->source();
             $ctx     = $this->context($source, $budget);
+            if ($this->mode() === 'check') {
+                if ($this->isDry()) {
+                    // a check stores nothing in the slice anyway; dry it would not store what it is for
+                    throw new BatchFailed('DEFINITION', 'run');
+                }
+                return $this->walkCheck($source, $ctx, $budget, $from, $pos, $keys);
+            }
+            $mapping = $this->mapping();
             $streams = self::streamsOf($source);
             $changed = ($this->mode() === 'changed');
             $state   = $this->streamState();
-            $first   = true;   // the first job of a step always starts
+            $first   = true;   // the first call of a step always goes
             while (true) {
+                if ($pos['after'] !== '') {
+                    if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
+                        return $this->stopped($pos, $from, $keys, '');
+                    }
+                    $first  = false;
+                    $closed = $streams[$pos['after']] ?? null;
+                    $pos['after'] = '';
+                    if ($closed !== null) {
+                        $this->afterStream($closed);
+                    }
+                    continue;
+                }
                 if (($pos['i'] >= count($keys)) || $this->limitReached()) {
                     return $this->result($pos, true, $keys);
                 }
@@ -284,27 +397,41 @@ class Run extends BatchRun
                     continue;
                 }
                 $known = $state?->versionOf($key);
-                if (($pos['job'] === '') && ($pos['pages'] === 0) && $changed && ($source instanceof Probeable)) {
+                // probed once: a stream whose jobs keep failing must not count a new probe as progress
+                if (($pos['job'] === '') && ($pos['pages'] === 0) && ($pos['probed'] === 0) && $changed && ($source instanceof Probeable)) {
                     if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
                         return $this->stopped($pos, $from, $keys, '');
                     }
                     $first = false;
-                    if ($source->probe($stream, $ctx, $known)->state === Probe::UNCHANGED) {
+                    $probe = $source->probe($stream, $ctx, $known);
+                    $this->streamRecords[$key] = ['probed' => static::now()];
+                    if ($probe->state === Probe::UNCHANGED) {
                         $this->tally['unchanged']++;
                         $pos = self::nextStream($pos);
                         continue;
                     }
+                    $pos['probed'] = 1;
+                    $pos['pv']     = self::sourceVersion($ctx, $probe->version);
                 }
-                $halt = $this->walkJobs($source, $ctx, $stream, $known, $mapping, $budget, $pos, $first);
-                if ($halt === self::STOP) {
-                    return $this->limitReached() ? $this->result($pos, true, $keys) : $this->stopped($pos, $from, $keys, '');
+                if ($pos['end'] === 0) {
+                    $halt = $this->walkJobs($source, $ctx, $stream, $known, $mapping, $budget, $pos, $first);
+                    if ($halt === self::STOP) {
+                        return $this->limitReached() ? $this->result($pos, true, $keys) : $this->stopped($pos, $from, $keys, '');
+                    }
+                    if ($halt !== '') {
+                        // what got stored before counts; from here on the step makes no progress
+                        return $this->stopped($pos, $from, $keys, $halt);
+                    }
+                    $pos['end'] = 1;
                 }
-                if ($halt !== '') {
-                    // what got stored before counts; from here on the step makes no progress
-                    return $this->stopped($pos, $from, $keys, $halt);
+                if ($this->probesAtEnd($source, $stream, $pos)) {
+                    // the jobs are done and stay done: a probe that does not fit or fails is all that is repeated
+                    if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
+                        return $this->stopped($pos, $from, $keys, '');
+                    }
+                    $first = false;
                 }
-                $this->tally['streams']++;
-                $pos = self::nextStream($pos);
+                $pos = $this->streamDone($source, $ctx, $stream, $pos, $known);
             }
         } catch (BatchBudgetSpent) {
             return $this->stopped($pos, $from, $keys, '');
@@ -354,6 +481,178 @@ class Run extends BatchRun
     private function streamState(): ?StreamState
     {
         return ($this->mode() === 'changed') ? StreamState::forDefinition($this->definitionId()) : null;
+    }
+
+    /**
+     * The check mode from the cursor on: check() once, probe() stream by stream, then the catalog
+     * page by page - its cursor guarded as the jobs of a stream are. Nothing goes into the slice; the
+     * end of the step stores what it found. What ends a check (a failed check(), a refusal, a cycle,
+     * CATALOG_TOO_BIG) goes into the cursor and ends the run in the next step - after this one stored
+     * the check() and the probes. A catalog that failed keeps the pages it got, unfinished (no time),
+     * until a check fills it again.
+     * @param list<string> $keys
+     */
+    private function walkCheck(SourceInterface $source, Context $ctx, BatchBudget $budget, array $from, array &$pos, array $keys): BatchStepResult
+    {
+        if ($pos['ccode'] !== '') {
+            throw new BatchFailed($pos['ccode'], 'check');
+        }
+        $first = true;   // the first call of a step always goes
+        try {
+            if ($pos['checked'] === 0) {
+                if ($source instanceof Checkable) {
+                    $check             = $source->check($ctx);
+                    $this->checkResult = new CheckResult($check->ok, $check->code, $ctx->redact($check->message));
+                    $first             = false;
+                    if (!$check->ok) {
+                        $pos['ccode'] = $check->code;
+                    }
+                }
+                $pos['checked'] = 1;
+                if ($pos['ccode'] !== '') {
+                    return $this->result($pos, false, $keys);
+                }
+            }
+            $streams = ($source instanceof Probeable) ? self::streamsOf($source) : [];
+            // the versions imported so far tell probe() what is new
+            $state   = StreamState::forDefinition($this->definitionId());
+            while (($source instanceof Probeable) && ($pos['i'] < count($keys))) {
+                if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
+                    return $this->stopped($pos, $from, $keys, '');
+                }
+                $first  = false;
+                $key    = $keys[$pos['i']];
+                $stream = $streams[$key] ?? null;
+                if ($stream === null) {
+                    $this->note('STREAM_GONE');
+                } else {
+                    $unchanged = ($source->probe($stream, $ctx, $state?->versionOf($key))->state === Probe::UNCHANGED);
+                    $this->streamRecords[$key] = ['probed' => static::now()];
+                    $this->tally['streams']++;
+                    $this->tally['unchanged'] += $unchanged ? 1 : 0;
+                }
+                $pos = self::nextStream($pos);
+            }
+            $pos['i'] = count($keys);
+            while (($source instanceof Cataloged) && (($pos['pages'] === 0) || ($pos['cat'] !== ''))) {
+                if (self::cycles($pos, $pos['cat'])) {
+                    throw new SourceRefused('SOURCE_CYCLE', 'The catalog cursor goes round');
+                }
+                if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
+                    return $this->stopped($pos, $from, $keys, '');
+                }
+                $first = false;
+                $page  = $source->catalog($ctx, $pos['cat']);
+                // a fill starts anew on its first page; later pages add to what the steps before stored
+                $this->catalog ??= (($pos['pages'] === 0) ? null : Catalog::forDefinition($this->definitionId())) ?? Catalog::create($this->definitionId());
+                $this->catalog->addPage($page, static::now());
+                $pos = ['cat' => $page->next, 'pages' => $pos['pages'] + 1, 'cur' => sha1($pos['cat'])] + $pos;
+            }
+        } catch (SourceRefused $e) {
+            $pos['ccode'] = $e->reason;
+            return $this->result($pos, false, $keys);
+        }
+        return $this->result($pos, true, $keys);
+    }
+
+    /** run mode, a stream versioned by probe(): it is asked when the stream is done */
+    private function probesAtEnd(SourceInterface $source, Stream $stream, array $pos): bool
+    {
+        return !$this->isDry() && ($pos['failed'] === 0) && ($stream->versionField === '') && ($this->mode() === 'run') && ($source instanceof Probeable);
+    }
+
+    /** A stream went through its last job: its version when nothing of it failed, its expression due
+     *  when it stored something - both only in a live run.
+     *  @return array the cursor on the next stream */
+    private function streamDone(SourceInterface $source, Context $ctx, Stream $stream, array $pos, ?string $known): array
+    {
+        if (!$this->isDry() && ($pos['failed'] === 0)) {
+            [$version, $probed] = $this->versionOf($source, $ctx, $stream, $pos, $known);
+            $record = ['imported' => static::now(), 'run' => (string) $this->getId()];
+            // '' says nothing of the data: the version stored stays
+            $record += ($version !== '') ? ['v' => $version] : [];
+            $record += ($probed !== null) ? ['probed' => $probed] : [];
+            $this->streamRecords[$stream->key] = $record + ($this->streamRecords[$stream->key] ?? []);
+        }
+        $this->tally['streams']++;
+        return ['after' => $this->afterDue($pos, $stream->key)] + self::nextStream($pos);
+    }
+
+    /** the key of a stream just closed when its expression is due: a live run that stored something */
+    private function afterDue(array $pos, string $key): string
+    {
+        return (!$this->isDry() && ($pos['wrote'] === 1) && (($this->snapshotData()['after_stream'] ?? '') !== '')) ? $key : '';
+    }
+
+    /**
+     * The data version of a stream done: the maximum of its versionField - in the changed mode not
+     * below the one known, the jobs got only what is newer - else what probe() says, at its start in
+     * the changed mode, now in the run mode; else none.
+     * @return array{string, ?int} the version, and when probe() was asked for it
+     */
+    private function versionOf(SourceInterface $source, Context $ctx, Stream $stream, array $pos, ?string $known): array
+    {
+        if ($stream->versionField !== '') {
+            return [($this->mode() === 'changed') ? ParamsGrabber::laterVersion($known ?? '', $pos['vmax']) : $pos['vmax'], null];
+        }
+        if (!($source instanceof Probeable)) {
+            return ['', null];
+        }
+        if ($this->mode() === 'changed') {
+            return [$pos['pv'], null];
+        }
+        return [self::sourceVersion($ctx, $source->probe($stream, $ctx, null)->version), static::now()];
+    }
+
+    /** a version from the source as the cursor and StreamState keep it - its keys masked, clean, cut */
+    private static function sourceVersion(Context $ctx, string $version): string
+    {
+        return StreamState::cleanVersion($ctx->redact($version));
+    }
+
+    /**
+     * The expression after a stream over the stream's parameters, in the target slice; its output is
+     * dropped. It runs in the step, so its time is the step's; a failure is an error of the run
+     * without its text, which may carry data of the source.
+     */
+    private function afterStream(Stream $stream): void
+    {
+        $expression = $this->snapshotData()['after_stream'] ?? '';
+        if ($expression === '') {
+            return;
+        }
+        $item = new AA_Item();
+        foreach ($stream->params as $name => $value) {
+            // the flag given, AA_Value does not look into the value
+            $item->setAaValue((string) $name, new AA_Value($value, 0));
+        }
+        try {
+            $this->evaluate($expression, $item);
+        } catch (\Throwable $e) {
+            AA_Log::write(Toexecute::FAILED_EVENT, $this->selector(), Toexecute::failureParams($this->getId(), $e));
+            $this->tally['errors']++;
+            if (count($this->itemErrors) < self::ERRORS_KEPT) {
+                $this->itemErrors[] = ['stream' => $stream->key, 'job' => '', 'code' => 'AFTER_STREAM', 'msg' => ''];
+            }
+        }
+    }
+
+    /** $expression over $item as in the target slice */
+    private function evaluate(string $expression, AA_Item $item): void
+    {
+        $slice        = AA::$slice_id;
+        AA::$slice_id = $this->targetSlice();
+        try {
+            $this->unalias($expression, $item);
+        } finally {
+            AA::$slice_id = $slice;
+        }
+    }
+
+    /** the template engine of AA; a test puts a recorder here */
+    protected function unalias(string $expression, AA_Item $item): void
+    {
+        AA::Un($expression, '', $item);
     }
 
     /**
@@ -426,7 +725,7 @@ class Run extends BatchRun
         $grabber = new ParamsGrabber($inner, $params, $pos['offset'], $pos['fp'], $stream->versionField, $pos['restarts'] < 1);
         $t13s    = $mapping->forJob($params, $this->targetSlice());
         $grabber->setHttp($ctx->http());
-        $saver = $this->saver($grabber, $t13s, $mapping)->setImportMode()->setContext($params);
+        $saver = $this->saver($grabber, $t13s, $mapping)->setImportMode()->setContext($params)->setRedact($ctx->redact(...));
         foreach ($mapping->validate as $expression) {
             $saver->addValidate($expression);
         }
@@ -463,9 +762,14 @@ class Run extends BatchRun
         foreach ($saver->errors() as $error) {
             $this->itemError($stream, $job, $error, $base, $ctx);
         }
+        if ($this->isDry()) {
+            $this->stepSamples = array_slice(array_merge($this->stepSamples, $saver->samples()), 0, self::SAMPLES_KEPT);
+        }
         $pos['restarts'] += $grabber->restarted() ? 1 : 0;
         $pos['wrote']     = (($pos['wrote'] === 1) || ($saver->changedIds() !== [])) ? 1 : 0;
-        $pos['vmax']      = ParamsGrabber::laterVersion($pos['vmax'], $grabber->versionMax());
+        // items lost to errors: changed must not skip them next time
+        $pos['failed']    = (($pos['failed'] === 1) || ($saver->counts()['errors'] > 0)) ? 1 : 0;
+        $pos['vmax']      = ParamsGrabber::laterVersion($pos['vmax'], self::sourceVersion($ctx, $grabber->versionMax()));
         $pos['offset']    = $grabber->offset();
         $pos['fp']        = $grabber->fingerprint();
     }
@@ -489,16 +793,16 @@ class Run extends BatchRun
      * The cursor on the job after the one at $pos, a transition as in walkJobs(); the rest of the
      * stream is skipped when there is no such job (the last one, or one gone) or it would cycle -
      * else a source down for good with a cyclic generator would skip A, B, A, .. for ever.
+     * null = the stream is gone.
      */
-    private function jobAfter(SourceInterface $source, Context $ctx, BatchBudget $budget, string $key, array $pos): array
+    private function jobAfter(SourceInterface $source, Context $ctx, BatchBudget $budget, ?Stream $stream, array $pos): ?array
     {
-        $stream = self::streamsOf($source)[$key] ?? null;
         if ($stream === null) {
-            return self::nextStream($pos);
+            return null;
         }
         $found  = false;
         $passed = 0;
-        foreach ($source->jobs($stream, $ctx, $this->streamState()?->versionOf($key)) as $job) {
+        foreach ($source->jobs($stream, $ctx, $this->streamState()?->versionOf($stream->key)) as $job) {
             if ($found) {
                 return self::cycles($pos, $job->key) ? self::nextStream($pos) : (['failed' => 1] + self::started($pos, $job->key));
             }
@@ -514,12 +818,29 @@ class Run extends BatchRun
         return self::nextStream($pos);
     }
 
-    /** $last going on from $pos past a failed job, or the rest of a stream
-     *  @param list<string> $keys */
-    private function skipped(BatchStepResult $last, array $pos, array $keys): BatchStepResult
+    /**
+     * $last going on from $pos past a failed job (JOB_FAILED), or the rest of a stream. A stream
+     * closed here gets its expression due as if walk() closed it - unless it is gone.
+     * @param list<string> $keys
+     */
+    private function skipped(BatchStepResult $last, array $from, array $pos, array $keys, string $warning = 'JOB_FAILED', bool $gone = false): BatchStepResult
     {
-        $counts   = ['skipped_jobs' => ($last->counts['skipped_jobs'] ?? 0) + 1] + $last->counts;
-        $warnings = ['JOB_FAILED' => ($last->warnings['JOB_FAILED'] ?? 0) + 1] + $last->warnings;
+        $counts             = $last->counts;
+        $warnings           = $last->warnings;
+        $warnings[$warning] = ($warnings[$warning] ?? 0) + 1;
+        if ($warning === 'JOB_FAILED') {
+            $counts['skipped_jobs'] = ($counts['skipped_jobs'] ?? 0) + 1;
+        }
+        if ($pos['i'] > $from['i']) {
+            // an expression still due from the stream before must not get lost with the cursor
+            $pos['after'] = $from['after'];
+            if ($gone) {
+                $warnings['STREAM_GONE'] = ($warnings['STREAM_GONE'] ?? 0) + 1;
+            } else {
+                $counts['streams'] = ($counts['streams'] ?? 0) + 1;
+                $pos['after']      = $this->afterDue($from, (string) ($keys[$from['i']] ?? '')) ?: $from['after'];
+            }
+        }
         return new BatchStepResult($pos, false, $counts, $warnings, $keys[$pos['i']] ?? '', min($pos['i'], count($keys)), count($keys), '', $last->extra);
     }
 
@@ -550,7 +871,7 @@ class Run extends BatchRun
             min($pos['i'], count($keys)),
             count($keys),
             $retry,
-            ['errors' => $this->itemErrors],
+            ['errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog],
         );
     }
 
@@ -591,6 +912,19 @@ class Run extends BatchRun
         if (!$this->isDry() && $slices) {
             AA::Pagecache()->invalidateFor($slices);
         }
+    }
+
+    /** the JSON list $json with $more added, $max items at most */
+    private static function addUpTo(string $json, array $more, int $max): string
+    {
+        return json_encode(array_slice(array_merge(self::listOf($json), array_values($more)), 0, $max), JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+    }
+
+    /** @return list<mixed> the JSON list $json; [] when it cannot be read */
+    private static function listOf(string $json): array
+    {
+        $list = json_decode($json, true);
+        return (is_array($list) && array_is_list($list)) ? $list : [];
     }
 
     /** @return array<string, string> the snapshot; [] when it cannot be read */
@@ -649,7 +983,7 @@ class Run extends BatchRun
 
     private static function nextStream(array $pos): array
     {
-        return ['i' => $pos['i'] + 1] + self::START;
+        return ['i' => $pos['i'] + 1, 'checked' => $pos['checked']] + self::START;
     }
 
     /** a source handing out the cursor's job again, or more than MAX_PAGES jobs, goes round in a cycle */

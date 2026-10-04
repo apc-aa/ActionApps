@@ -12,6 +12,8 @@ use AA\IO\Grabber\AbstractGrabber;
 use AA\IO\Saver;
 use AA\Later\BatchBudget;
 use AA\Later\BatchStepResult;
+use AA;
+use AA_Item;
 use AA_Set;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Tests\Unit\IO\Fixtures\RecordingSaver;
@@ -44,6 +46,11 @@ final class TestRun extends Run
     public static array $contextBudgets = [];
     /** null = the core's */
     public static ?int $overrun = null;
+    /** @var ?\Closure(string, AA_Item, string): void runs in place of the expression after a stream:
+     *  expression, its item, AA::$slice_id; null = AA::Un() itself */
+    public static ?\Closure $evaluate = null;
+    /** @var list<array{string, array<string, mixed>, string}> the expressions run: expression, item fields, slice */
+    public static array $evaluated = [];
 
     public static function reset(): void
     {
@@ -57,6 +64,8 @@ final class TestRun extends Run
         self::$committed = [];
         self::$contextBudgets = [];
         self::$overrun   = null;
+        self::$evaluate  = null;
+        self::$evaluated = [];
     }
 
     /** @return list<array<string, list<string>>> what the savers stored: field => values of each item */
@@ -112,6 +121,12 @@ final class TestRun extends Run
         return parent::work($from, $budget, $fetched);
     }
 
+    /** one work() of a step from $from, outside the queue, with the step's 27 s */
+    public function workOnce(array $from): BatchStepResult
+    {
+        return $this->work($from, new BatchBudget((self::$microNow ?? 0.0) + 27.0, 0, 0, static fn(): float => self::$microNow ?? 0.0), null);
+    }
+
     /** onRetriesExhausted() called directly, as the core calls it after three steps without progress */
     public function exhausted(BatchStepResult $last): ?BatchStepResult
     {
@@ -122,6 +137,20 @@ final class TestRun extends Run
     {
         self::$committed[] = $r;
         parent::commitStep($r);
+    }
+
+    protected function unalias(string $expression, AA_Item $item): void
+    {
+        $fields = [];
+        foreach ($item->getContent() as $name => $values) {
+            $fields[(string) $name] = is_array($values) ? array_map(static fn($v) => is_array($v) ? ($v['value'] ?? '') : $v, $values) : $values;
+        }
+        self::$evaluated[] = [$expression, $fields, (string) AA::$slice_id];
+        if (self::$evaluate) {
+            (self::$evaluate)($expression, $item, (string) AA::$slice_id);
+            return;
+        }
+        parent::unalias($expression, $item);
     }
 
     protected function overrun(): int

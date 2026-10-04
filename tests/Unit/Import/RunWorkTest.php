@@ -203,7 +203,7 @@ final class RunWorkTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame([['stream' => 's1', 'known' => null]], $source->jobCalls);
-        self::assertSame([], $source->probeCalls, 'run imports every stream');
+        self::assertSame([['stream' => 's1', 'known' => null]], $source->probeCalls, 'run imports every stream - its version is asked at its end');
     }
 
     public function test_work_singleStream(): void
@@ -703,7 +703,7 @@ final class RunWorkTest extends TestCase
 
     public function test_work_unknownModeIsDefinition(): void
     {
-        $run = self::startRun(self::source(streams: 1, jobs: 1, items: 1), ['mode' => 'check']);
+        $run = self::startRun(self::source(streams: 1, jobs: 1, items: 1), ['mode' => 'every']);
 
         self::runAll($run->getId());
 

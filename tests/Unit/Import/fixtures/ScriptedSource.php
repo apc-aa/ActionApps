@@ -9,6 +9,7 @@ use AA\Import\Context;
 use AA\Import\Job;
 use AA\Import\Stream;
 use AA\IO\Grabber\AbstractGrabber;
+use AA\IO\SourceUnavailable;
 use AA_Content;
 use AA_Value;
 
@@ -31,6 +32,9 @@ class ScriptedSource extends AbstractSource
      * @var array<string, list<array<string, mixed>>|\Closure(): iterable<array<string, mixed>>>
      */
     public array $jobs = [];
+
+    /** how many streams() calls in a row fail as the source being down */
+    public int $failStreams = 0;
 
     /** what each jobs() call spends of the step before its first job */
     public float $jobsSeconds = 0.0;
@@ -68,6 +72,10 @@ class ScriptedSource extends AbstractSource
 
     public function streams(): iterable
     {
+        if ($this->failStreams > 0) {
+            $this->failStreams--;
+            throw new SourceUnavailable('TRANSPORT', 'No answer');
+        }
         return $this->streams;
     }
 

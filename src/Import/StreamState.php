@@ -74,7 +74,7 @@ final class StreamState extends AA_Object
         $entry   = $streams[$streamKey] ?? [];
         foreach ($values as $field => $value) {
             $entry[$field] = match (self::FIELDS[$field] ?? '') {
-                'text'  => is_string($value) ? self::clean($value, self::MAX_VERSION) : throw new InvalidArgumentException('A version is a string'),
+                'text'  => is_string($value) ? self::cleanVersion($value) : throw new InvalidArgumentException('A version is a string'),
                 'time'  => (is_int($value) && ($value >= 0)) ? $value : throw new InvalidArgumentException("Stream $field is a unixtime"),
                 'id'    => (is_string($value) && (preg_match('/^[0-9a-f]{32}\z/', $value) === 1)) ? $value : throw new InvalidArgumentException('A run id is a long id'),
                 default => throw new InvalidArgumentException("Stream state has no field $field"),
@@ -82,6 +82,13 @@ final class StreamState extends AA_Object
         }
         $streams[$streamKey] = $entry;
         $this->decoded       = $streams;
+    }
+
+    /** a version as it is stored: valid UTF-8, clean, cut - a run keeps it in its cursor in the same
+     *  form, so a version compares equal from step to step */
+    public static function cleanVersion(string $version): string
+    {
+        return self::clean($version, self::MAX_VERSION);
     }
 
     /** Stores $r->message as given: the caller (Run) has redacted it with Context::redact() - the
