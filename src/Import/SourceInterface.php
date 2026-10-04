@@ -18,7 +18,19 @@ use AA\Util\NamedInterface;
  */
 interface SourceInterface extends NamedInterface
 {
-    /** @return array<string, \AA_Property> settings of the source (slice ids, years, ...), never a secret */
+    /**
+     * Settings of the source (slice ids, years, ...), never a secret. Each value is checked by the
+     * validator of its property before it is stored; a slice id has SliceIdSetting, which also asks
+     * the user's right to that slice. Only such checked ids and numbers may go into an expression the
+     * source builds (a default mapping, a validation): free text goes there only through QuoteColons(),
+     * or it would run as template code in the rights of the queue. QuoteColons() covers one round of
+     * expansion only - free text never goes inside a command that expands its argument again
+     * ({expand:...}, view parameters) nor where it could form an alias (_#...). A setting that names
+     * slices or items is a SliceIdSetting, one id each: free text never goes where an id goes ({ids:},
+     * {item:}, view or slice parameters), not even quoted, and a source never trims or cuts an id out
+     * of a longer value.
+     * @return array<string, \AA_Property>
+     */
     public static function getClassProperties(): array;
 
     /** @param array<string, string> $settings */

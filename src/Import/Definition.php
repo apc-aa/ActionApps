@@ -7,6 +7,7 @@ namespace AA\Import;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
+use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
@@ -36,6 +37,9 @@ final class Definition extends AA_Object
 {
     /** log type of a failure of the imports outside a queue step (log.type is varbinary(10)) */
     public const ERROR_EVENT = 'IMPORT_ERR';
+
+    /** what applyMapping() sets */
+    public const MAPPING_PROPS = ['mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'];
 
     /** what a run works with - the same for its whole life, whatever is changed in the meantime */
     private const SNAPSHOT = ['source', 'settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'];
@@ -120,7 +124,7 @@ final class Definition extends AA_Object
     public function formRefusal(): ?string
     {
         if (!$this->mayManage(AuthGetUid())) {
-            return _m('Only a user who manages the feeding of the slice may change its imports.');
+            return self::refusal('FORBIDDEN');
         }
         $name = (string) $this->aa_name;
         if ($name === '') {
@@ -136,13 +140,13 @@ final class Definition extends AA_Object
         $stored = self::textRows((string) $this->getId(), false, ['aa_type', 'aa_owner', 'source']);
         if ($stored) {
             if (!$this->isOwn($stored)) {
-                return _m('The import was not saved - it is not an import of this slice.');
+                return self::refusal('NOT_OF_SLICE');
             }
             // a run, the stream state and the catalog belong to the old source - they go with the change
             return (($stored['source'] ?? '') !== (string) $this->source) ? _m('Change the source in the import detail.') : null;
         }
         if (!isset(Registry::sources()[(string) $this->source])) {
-            return _m('The import source is not available.');
+            return self::refusal('NO_SOURCE');
         }
         try {
             BatchRun::requireTransactional([]);
@@ -150,7 +154,7 @@ final class Definition extends AA_Object
             return _m('Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB).');
         }
         if ($this->noDefaultMapping) {
-            return _m('The import source did not give its mapping.');
+            return self::refusal('NO_MAPPING');
         }
         try {
             $problems = $this->mapping()->problems((string) $this->getOwnerId());
@@ -158,13 +162,34 @@ final class Definition extends AA_Object
             return _m('The mapping of the import is not valid.');
         }
         if ($problems) {
-            return _m('The mapping of the import does not fit the slice: %1', [implode(', ', $problems)]);
+            return self::refusal('MAPPING', implode(', ', $problems));
         }
         return null;
     }
 
-    /** The one check of who may create, change or delete a definition and its settings and mapping. */
-    public function mayManage(string $uid): bool
+    /**
+     * Why a definition or a change of it is refused, for the user.
+     * @param string $code FORBIDDEN, NOT_OF_SLICE, NO_SOURCE, NO_MAPPING, MAPPING (with the problem
+     *                     codes in $detail), SETTINGS, SLICE; any other = the source refused the settings
+     */
+    public static function refusal(string $code, string $detail = ''): string
+    {
+        return match ($code) {
+            'FORBIDDEN'    => _m('Only a user who manages the feeding of the slice may change its imports.'),
+            'NOT_OF_SLICE' => _m('The import was not saved - it is not an import of this slice.'),
+            'NO_SOURCE'    => _m('The import source is not available.'),
+            'NO_MAPPING'   => _m('The import source did not give its mapping.'),
+            'MAPPING'      => _m('The mapping of the import does not fit the slice: %1', [$detail]),
+            'SETTINGS'     => _m('A setting of the import source is not valid.'),
+            'SLICE'        => _m('The settings name a slice whose feeding you do not manage.'),
+            default        => _m('The import source refused these settings.'),
+        };
+    }
+
+    /** The one check of who may create, change or delete a definition and its settings and mapping.
+     *  @param ?string $source the source the definition is to have; null = its own. Every source asks
+     *                         the same right now - a stricter rule for some sources belongs here. */
+    public function mayManage(string $uid, ?string $source = null): bool
     {
         return self::mayImportInto($uid, (string) $this->getOwnerId());
     }
@@ -241,10 +266,12 @@ final class Definition extends AA_Object
     }
 
     /** A failure of the imports outside a queue step, as a failed step is logged: the class and the
-     *  line, never the text - it may carry source data or a secret. */
+     *  line, or the code of a source's refusal - never the text, it may carry source data or a secret. */
     public static function logError(string $id, \Throwable $e): void
     {
-        AA_Log::write(self::ERROR_EVENT, 'Import_' . $id, Toexecute::failureParams($id, $e));
+        // a refusal of the source says enough by its code
+        $params = ($e instanceof SourceFailure) ? "#$id " . $e->reason : Toexecute::failureParams($id, $e);
+        AA_Log::write(self::ERROR_EVENT, 'Import_' . $id, $params);
     }
 
     /**
@@ -317,6 +344,30 @@ final class Definition extends AA_Object
             self::listOf($snapshot['validate'] ?? '', 'validation'),
             $snapshot['after_stream'] ?? '',
         );
+    }
+
+    /**
+     * The settings of a snapshot() as the source gets them: text values only.
+     * @param array<string, string> $snapshot
+     * @return array<string, string>
+     * @throws SourceRefused DEFINITION when they are not a JSON object
+     */
+    public static function settingsOf(array $snapshot): array
+    {
+        $json = $snapshot['settings'] ?? '';
+        if ($json === '') {
+            return [];
+        }
+        try {
+            $settings = json_decode($json, true, 4, JSON_THROW_ON_ERROR);
+        } catch (JsonException) {
+            $settings = null;
+        }
+        // a list or numbered keys name no setting
+        if (!is_array($settings) || array_filter(array_keys($settings), 'is_int')) {
+            throw new SourceRefused('DEFINITION', 'Definition: settings are not a JSON object');
+        }
+        return array_map('strval', array_filter($settings, 'is_scalar'));
     }
 
     public function applyMapping(Mapping $m): void

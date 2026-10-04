@@ -15,6 +15,7 @@ use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Import\Fixtures\CheckedSource;
 use Tests\Unit\Import\Fixtures\RunSteps;
+use Tests\Unit\Import\Fixtures\ScriptedSource;
 use Tests\Unit\Import\Fixtures\TestRun;
 
 require_once __DIR__ . '/fixtures/RunSteps.php';
@@ -32,6 +33,19 @@ final class RunFailureTest extends TestCase
     use RunSteps;
 
     // ------------------------------------------------------------ the cursor of the source
+
+    /** settings broken in the snapshot end the run as a fault of the definition, not of a stream */
+    public function test_brokenSettingsInSnapshot_definitionError(): void
+    {
+        self::source(streams: 1, jobs: 1, items: 1);
+        $run = self::startRun(new ScriptedSource(), definition: ['settings' => '{broken']);
+        TestRun::$source = null;   // the source of the snapshot, from its settings
+
+        self::runAll($run->getId());
+
+        self::assertSame(['error', 'DEFINITION'], self::errorOf($run->getId()));
+        self::assertSame('settings', self::stored($run->getId())['error_path']);
+    }
 
     public function test_repeatedJobKey_sourceCycle(): void
     {

@@ -459,6 +459,36 @@ final class DefinitionTest extends TestCase
         $def->mapping();
     }
 
+    // ------------------------------------------------------------ settingsOf()
+
+    public function test_settingsOf_textValues(): void
+    {
+        self::assertSame([], Definition::settingsOf(['settings' => '']));
+        self::assertSame([], Definition::settingsOf(['settings' => '{}']));
+        self::assertSame(['from_year' => '2006', 'slice' => 'abc'], Definition::settingsOf(['settings' => '{"from_year":2006,"slice":"abc","list":[1]}']));
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function brokenSettings(): iterable
+    {
+        yield 'not JSON'       => ['{"slice":'];
+        yield 'a string'       => ['"abc"'];
+        yield 'a list'         => ['["a","b"]'];
+        yield 'a numbered key' => ['{"0":"a"}'];
+    }
+
+    /** broken settings would quietly become none - and the source would run on its defaults */
+    #[DataProvider('brokenSettings')]
+    public function test_settingsOf_brokenRefused(string $json): void
+    {
+        try {
+            Definition::settingsOf(['settings' => $json]);
+            self::fail("$json read as settings");
+        } catch (SourceRefused $e) {
+            self::assertSame('DEFINITION', $e->reason);
+        }
+    }
+
     // ------------------------------------------------------------ mayManage(), isEnabled()
 
     public function test_mayManage_feedingOfTheOwnerSlice(): void

@@ -158,7 +158,7 @@ class Run extends BatchRun
     /** the source of the snapshot */
     protected function source(): SourceInterface
     {
-        return Registry::create((string) ($this->snapshotData()['source'] ?? ''), $this->settings());
+        return Registry::create((string) ($this->snapshot()['source'] ?? ''), $this->settings());
     }
 
     /** the Saver of one job; the run sets the import mode, the job parameters and the validation */
@@ -175,7 +175,7 @@ class Run extends BatchRun
 
     protected function targetSlice(): string
     {
-        return (string) ($this->snapshotData()['slice'] ?? '');
+        return (string) ($this->snapshot()['slice'] ?? '');
     }
 
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult
@@ -451,8 +451,8 @@ class Run extends BatchRun
         return new BatchFailed('SOURCE', $where);
     }
 
-    /** @return array<string, Stream> the streams the source has now, by key */
-    private static function streamsOf(SourceInterface $source): array
+    /** @return array<string, Stream> the streams the source has now, by key - each key once */
+    public static function streamsOf(SourceInterface $source): array
     {
         $streams = [];
         foreach ($source->streams() as $stream) {
@@ -565,7 +565,7 @@ class Run extends BatchRun
     /** the key of a stream just closed when its expression is due: a live run that stored something */
     private function afterDue(array $pos, string $key): string
     {
-        return (!$this->isDry() && ($pos['wrote'] === 1) && (($this->snapshotData()['after_stream'] ?? '') !== '')) ? $key : '';
+        return (!$this->isDry() && ($pos['wrote'] === 1) && (($this->snapshot()['after_stream'] ?? '') !== '')) ? $key : '';
     }
 
     /**
@@ -601,7 +601,7 @@ class Run extends BatchRun
      */
     private function afterStream(Stream $stream): void
     {
-        $expression = $this->snapshotData()['after_stream'] ?? '';
+        $expression = $this->snapshot()['after_stream'] ?? '';
         if ($expression === '') {
             return;
         }
@@ -761,7 +761,7 @@ class Run extends BatchRun
     private function mapping(): Mapping
     {
         try {
-            $mapping = Definition::mappingOf($this->snapshotData());
+            $mapping = Definition::mappingOf($this->snapshot());
         } catch (SourceRefused) {
             throw new BatchFailed('DEFINITION', 'mapping');
         }
@@ -910,8 +910,8 @@ class Run extends BatchRun
         return (is_array($list) && array_is_list($list)) ? $list : [];
     }
 
-    /** @return array<string, string> the snapshot; [] when it cannot be read */
-    private function snapshotData(): array
+    /** @return array<string, string> the copy of the definition the run works with; [] when it cannot be read */
+    public function snapshot(): array
     {
         try {
             $data = json_decode((string) $this->snapshot, true, 4, JSON_THROW_ON_ERROR);
@@ -924,19 +924,11 @@ class Run extends BatchRun
     /** @return array<string, string> */
     private function settings(): array
     {
-        $json = $this->snapshotData()['settings'] ?? '';
-        if ($json === '') {
-            return [];
-        }
         try {
-            $settings = json_decode($json, true, 4, JSON_THROW_ON_ERROR);
-        } catch (JsonException) {
-            $settings = null;
-        }
-        if (!is_array($settings)) {
+            return Definition::settingsOf($this->snapshot());
+        } catch (SourceRefused) {
             throw new BatchFailed('DEFINITION', 'settings');
         }
-        return array_map('strval', array_filter($settings, 'is_scalar'));
     }
 
     /** @return list<string> */
