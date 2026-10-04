@@ -27,6 +27,7 @@
 
 use AA\Manager;
 use AA\Manageraction\Manageractions;
+use AA\Manageraction\Plannedtask_Runnow;
 
 require_once __DIR__ . "/../include/init_page.php";
 
@@ -37,6 +38,7 @@ if (!IfSlPerm(PS_FORMS)) {
 
 $actions   = new Manageractions();
 $actions->addAction(new AA\Manageraction\Object_Move2slice('Move2slice', AA::$module_id));
+$actions->addAction(new Plannedtask_Runnow('Runnow'));
 
 
 $apage = new AA_Adminpageutil('aaadmin', 'tasks');

@@ -45,6 +45,9 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     protected $shift = 0;
     protected $item_id = '';
 
+    /** the task whose toexecutelater() runs now - an expression may act only inside a task */
+    private static ?self $running = null;
+
     /** allows storing form in database
      *  AA_Object's method
      * @return array
@@ -114,6 +117,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
               <td style="white-space:nowrap;">'
             . $buttons['Edit'] . ' '
+            . ($buttons['Runnow'] ?? '') . ' '
             /* `RLIKE` (= "begins with" -> `selector LIKE 'AA_Plannedtask:{id}%'`) so the
                button finds both the rows written before AA_Logentry_Obj
                (`AA_Plannedtask:{id}`) and the ones written since
@@ -171,24 +175,45 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      */
     public function toexecutelater($params = []): string
     {
-        $ret = $this->aa_name;
-        AA::$slice_id = $this->getOwnerId();
-        if (is_long_id($this->item_id)) {
-            AA::Un('{define:aa_event_for:' . $this->item_id . '}');
-        }
-        $condition = trim($this->condition);
-        $condition_res = strlen($condition) ? trim(AA::Un($condition)) : '1';
-        if (!strlen($condition_res) || ($condition_res === '0')) {
-            $ret .= ":Cond not met - $condition ($condition_res)";
-        } else {
+        // a task run by an event inside another task hands the context back when it ends
+        $outer = self::$running;
+        self::$running = $this;
+        try {
+            $ret = $this->aa_name;
+            AA::$slice_id = $this->getOwnerId();
             if (is_long_id($this->item_id)) {
-                $ret .= ':=' . AA::Un($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
-            } else {
-                $ret .= ':=' . AA::Un($this->task);
+                AA::Un('{define:aa_event_for:' . $this->item_id . '}');
             }
+            $condition = trim($this->condition);
+            $condition_res = strlen($condition) ? trim(AA::Un($condition)) : '1';
+            if (!strlen($condition_res) || ($condition_res === '0')) {
+                $ret .= ":Cond not met - $condition ($condition_res)";
+            } else {
+                if (is_long_id($this->item_id)) {
+                    $ret .= ':=' . AA::Un($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
+                } else {
+                    $ret .= ':=' . AA::Un($this->task);
+                }
+            }
+        } finally {
+            self::$running = $outer;
         }
         // AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:x".AA::$slice_id);  // logged in Toexecute
         return $ret;
+    }
+
+    /** The task whose toexecutelater() runs now - from the queue, an event or "Run now"; null outside a task */
+    public static function running(): ?self
+    {
+        return self::$running;
+    }
+
+    /** Whether the task or its condition calls {import} - the admin then asks for the feeding permission.
+     *  A safeguard against a slip in the admin, not a permission boundary: an expression can put the
+     *  command together only when it runs. Command names are case-insensitive. */
+    public function usesImport(): bool
+    {
+        return (bool) preg_match('/\{import[:(}]/i', $this->task . "\n" . $this->condition);
     }
 
     /**
@@ -205,6 +230,8 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     {
         $toexecute = new Toexecute();
         $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
+        // a waiting "Run now" holds a copy of the task as it was - the old version must not run
+        $toexecute->cancel_all(self::toexecuteSelector($this->getId()) . ':now');
         $this->schedule();
     }
 
