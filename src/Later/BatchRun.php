@@ -711,8 +711,9 @@ abstract class BatchRun extends AA_Object
 
     /** object_text for the lock; toexecute because a step row on MyISAM is visible to another runner
      *  before the run's record commits - that runner finds the record stale, drops the row, and the
-     *  run then waits for a step that never comes */
-    private static function requireTransactional(array $more): void
+     *  run then waits for a step that never comes. Public, so a subject can refuse early what start() would.
+     *  @throws BatchFailed NO_TRANSACTION */
+    final public static function requireTransactional(array $more): void
     {
         $tables  = array_values(array_unique(['object_text', 'toexecute', ...$more]));
         $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], 'SELECT TABLE_NAME, ENGINE FROM information_schema.tables', [['TABLE_SCHEMA', (string) constant('DB_NAME')], ['TABLE_NAME', $tables]]);
@@ -1244,7 +1245,7 @@ abstract class BatchRun extends AA_Object
         if (!preg_match('/^[0-9a-f]{32}\z/', $id)) {
             return null;
         }
-        $rows = DB_AA::select(['property' => 'value'], 'SELECT property, value FROM `object_text` ' . DB_AA::makeWhere([['object_id', $id]]) . ($lock ? ' FOR UPDATE' : ''));
+        $rows = self::textRows($id, $lock);
         if (($rows['aa_type'] ?? '') !== static::class) {
             return null;
         }

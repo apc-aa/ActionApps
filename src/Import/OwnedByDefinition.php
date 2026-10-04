@@ -98,11 +98,7 @@ trait OwnedByDefinition
      *  @return array<string, string> property => value */
     private static function rowsOf(string $defId, array $properties): array
     {
-        $where = [['object_id', self::idOf($defId)]];
-        if ($properties) {
-            $where[] = ['property', $properties];
-        }
-        return array_map('strval', DB_AA::select(['property' => 'value'], 'SELECT property, value FROM `object_text`', $where));
+        return self::textRows(self::idOf($defId), false, $properties);
     }
 
     /** @param array<string, string> $rows */

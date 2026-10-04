@@ -678,6 +678,22 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return DB_AA::select(['object_id' => '+value'], 'SELECT object_id, value FROM `object_text`', [['object_id', $ids], ['property', $property]]);
     }
 
+    /** The object_text rows of object $id as stored now - load() caches per request. One value per
+     *  property (the last row of a multi-value one).
+     *  @param bool     $lock        SELECT ... FOR UPDATE - inside the caller's transaction
+     *  @param string[] $properties  only these; [] = all
+     *  @return array<string, string> property => value
+     */
+    protected static function textRows(string $id, bool $lock = false, array $properties = []): array
+    {
+        $where = [['object_id', $id]];
+        if ($properties) {
+            $where[] = ['property', $properties];
+        }
+        $sql = 'SELECT property, value FROM `object_text` ' . DB_AA::makeWhere($where) . ($lock ? ' FOR UPDATE' : '');
+        return array_map('strval', DB_AA::select(['property' => 'value'], $sql));
+    }
+
     /** the tables an object's properties live in - the order matters: load() merges them in it,
      *  so a property with rows in two tables takes the later one's values */
     private const STORAGE_TABLES = ['object_text', 'object_integer', 'object_float'];
