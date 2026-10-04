@@ -101,7 +101,18 @@ final class StreamState extends AA_Object
     /** @return array{time: int, ok: bool, code: string, msg: string}|null null = no check() yet */
     public function lastCheck(): ?array
     {
-        $check = $this->decode((string) $this->check, 1);
+        $check         = self::checkOf((string) $this->check, $damaged);
+        $this->damaged = $this->damaged || $damaged;
+        return $check;
+    }
+
+    /** The check() a stored `check` value holds - read without the record, as State Check reads it.
+     *  @param-out bool $damaged the value cannot be read (and null is returned)
+     *  @return array{time: int, ok: bool, code: string, msg: string}|null null = no check() yet */
+    public static function checkOf(string $json, ?bool &$damaged = null): ?array
+    {
+        $check   = self::decoded($json, 1);
+        $damaged = ($check === null);
         if (!$check) {
             return null;
         }

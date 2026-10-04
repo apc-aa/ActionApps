@@ -245,11 +245,7 @@ final class Definition extends AA_Object
             if (!$def->mayManage($uid)) {
                 throw new BatchFailed('FORBIDDEN');
             }
-            $runs = Run::deleteOfSubject($id);
-            StreamState::deleteFor($id);
-            Catalog::deleteFor($id);
-            // the safety row of a finished run's final phase - the core cancels only the steps of unfinished runs
-            (new Toexecute())->cancel_all('Import_' . $id);
+            $runs = self::deleteRecordsOf($id)['runs'];
             self::deleteObjects([$id]);
             // a run's afterClose() no longer comes - a step that died, or the one working meanwhile, stored items;
             // a definition never run stored nothing
@@ -263,6 +259,28 @@ final class Definition extends AA_Object
                 self::logError($id, $e);
             }
         }
+    }
+
+    /**
+     * What definition $id owns - its runs, stream state, catalog and queued steps - deleted in the
+     * caller's transaction, which holds the lock of the definition (or knows it is gone). A step working
+     * meanwhile finds no run at its end and writes nothing back.
+     * @return array{runs: int, records: int} the runs deleted, and the stream state and catalog
+     */
+    public static function deleteRecordsOf(string $id): array
+    {
+        $runs    = Run::deleteOfSubject($id);
+        $records = (int) StreamState::deleteFor($id) + (int) Catalog::deleteFor($id);
+        // the safety row of a finished run's final phase - the core cancels only the steps of unfinished runs
+        (new Toexecute())->cancel_all('Import_' . $id);
+        return ['runs' => $runs, 'records' => $records];
+    }
+
+    /** How the names of two definitions compare when {import} looks one up - as object_text.value does
+     *  in its case-insensitive collation, trailing spaces ignored. */
+    public static function nameKey(string $name): string
+    {
+        return mb_strtolower(rtrim($name, ' '));
     }
 
     /** A failure of the imports outside a queue step, as a failed step is logged: the class and the

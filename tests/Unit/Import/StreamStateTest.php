@@ -227,6 +227,48 @@ final class StreamStateTest extends TestCase
         self::assertFalse(StreamState::create(self::DEF)->damaged());
     }
 
+    /** State Check reads the stored check without the streams - by the decoder lastCheck() uses */
+    public function test_checkOf_decodesAsLastCheck(): void
+    {
+        $state = StreamState::create(self::DEF);
+        $state->recordCheck(new CheckResult(false, 'AUTH', 'refused'), 7);
+        $state->store();
+
+        $check = StreamState::checkOf(self::stored($state->getId())['check'], $damaged);
+        self::assertSame(StreamState::forDefinition(self::DEF)?->lastCheck(), $check);
+        self::assertSame([7, false, 'AUTH'], [$check['time'] ?? null, $check['ok'] ?? null, $check['code'] ?? null]);
+        self::assertFalse($damaged);
+        self::assertNull(StreamState::checkOf('', $damaged));
+        self::assertFalse($damaged, 'no check yet');
+        self::assertNull(StreamState::checkOf('{"time":', $damaged));
+        self::assertTrue($damaged);
+
+        self::storedSet($state->getId(), 'check', '{"time":');
+        $read = StreamState::forDefinition(self::DEF);
+        self::assertNull($read?->lastCheck());
+        self::assertTrue($read?->damaged(), 'a damaged check alone marks the record');
+    }
+
+    /** @return array<string, array{array<string, string>, bool, bool}> rows at the id, own, foreign */
+    public static function recordsAtTheId(): array
+    {
+        return [
+            'nothing'           => [[], false, false],
+            'own'               => [['aa_type' => StreamState::class, 'aa_owner' => self::DEF], true, false],
+            'half written'      => [['aa_type' => StreamState::class], false, false],
+            'another class'     => [['aa_type' => 'AA\Import\Catalog', 'aa_owner' => self::DEF], false, true],
+            'another owner'     => [['aa_type' => StreamState::class, 'aa_owner' => self::RUN], false, true],
+            'owner without type' => [['aa_owner' => self::DEF], false, true],
+        ];
+    }
+
+    /** @param array<string, string> $rows */
+    #[DataProvider('recordsAtTheId')]
+    public function test_isOwnAndForeignAt(array $rows, bool $own, bool $foreign): void
+    {
+        self::assertSame([$own, $foreign], [StreamState::isOwn($rows, self::DEF), StreamState::foreignAt($rows, self::DEF)]);
+    }
+
     public function test_foreignRecordAtTheId(): void
     {
         $state = StreamState::create(self::DEF);

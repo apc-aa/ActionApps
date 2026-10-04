@@ -123,6 +123,15 @@ final class DefinitionTest extends TestCase
         self::assertNull(self::post('', 'prices', self::MAPPED, self::OTHER), 'another slice may use the name');
     }
 
+    /** names compare as object_text.value does (a case-insensitive collation, trailing spaces ignored) */
+    public function test_nameKey_matchesAsTheColumn(): void
+    {
+        self::assertSame(Definition::nameKey('prices'), Definition::nameKey('Prices '));
+        self::assertSame(Definition::nameKey('cena'), Definition::nameKey('CENA'));
+        self::assertNotSame(Definition::nameKey('prices'), Definition::nameKey('prices2'));
+        self::assertNotSame(Definition::nameKey('prices'), Definition::nameKey(' prices'));
+    }
+
     public function test_formRefusal_unknownSource(): void
     {
         self::assertSame('The import source is not available.', self::post('', 'prices', 'custom:nothing'));

@@ -54,13 +54,16 @@ trait OwnedByDefinition
 
     /** Deletes the record of $defId (or a half-written one) without reading its values; a foreign record
      *  at its id stays. In a transaction the read locks: a plain read sees the transaction's snapshot,
-     *  which misses a record the end of a concurrent step has just created. */
-    public static function deleteFor(string $defId): void
+     *  which misses a record the end of a concurrent step has just created.
+     *  @return bool whether there was one to delete */
+    public static function deleteFor(string $defId): bool
     {
         $rows = self::rowsOf($defId, ['aa_type', 'aa_owner'], DB_AA::inTransaction());
-        if (self::isOwn($rows, $defId) || self::isHalfOwn($rows)) {
-            self::deleteObjects([self::idOf($defId)]);
+        if (!$rows || self::foreignAt($rows, $defId)) {
+            return false;
         }
+        self::deleteObjects([self::idOf($defId)]);
+        return true;
     }
 
     public function damaged(): bool
@@ -87,10 +90,10 @@ trait OwnedByDefinition
             $rows = self::rowsOf($defId, ['aa_type', 'aa_owner']);
             if (self::isOwn($rows, $defId)) {
                 $this->update(static::ownProperties());
-            } elseif (!$rows || self::isHalfOwn($rows)) {
-                $this->save();
-            } else {
+            } elseif (self::foreignAt($rows, $defId)) {
                 throw new UnexpectedValueException('The id of ' . static::class . " of $defId holds another record");
+            } else {
+                $this->save();
             }
         });
     }
@@ -103,10 +106,18 @@ trait OwnedByDefinition
         return self::textRows(self::idOf($defId), $lock, $properties);
     }
 
-    /** @param array<string, string> $rows */
-    private static function isOwn(array $rows, string $defId): bool
+    /** @param array<string, string> $rows aa_type and aa_owner at idOf($defId) */
+    public static function isOwn(array $rows, string $defId): bool
     {
         return (($rows['aa_type'] ?? '') === static::class) && (($rows['aa_owner'] ?? '') === self::defId($defId));
+    }
+
+    /** Another record holds the id of the record of $defId: store() throws on it and deleteFor() leaves
+     *  it. Not a half-written record of this class, which the next store saves whole.
+     *  @param array<string, string> $rows aa_type and aa_owner at idOf($defId) */
+    public static function foreignAt(array $rows, string $defId): bool
+    {
+        return $rows && !self::isOwn($rows, $defId) && !self::isHalfOwn($rows);
     }
 
     /** @param array<string, string> $rows */
@@ -135,6 +146,16 @@ trait OwnedByDefinition
     /** [] for what cannot be read, and the record says damaged() - a broken value must not stop a step */
     private function decode(string $json, int $depth): array
     {
+        $value = self::decoded($json, $depth);
+        if ($value === null) {
+            $this->damaged = true;
+        }
+        return $value ?? [];
+    }
+
+    /** @return ?array null when the JSON cannot be read */
+    private static function decoded(string $json, int $depth): ?array
+    {
         if ($json === '') {
             return [];
         }
@@ -144,11 +165,7 @@ trait OwnedByDefinition
         } catch (JsonException) {
             $value = null;
         }
-        if (!is_array($value)) {
-            $this->damaged = true;
-            return [];
-        }
-        return $value;
+        return is_array($value) ? $value : null;
     }
 
     /** a text from the source as stored: valid UTF-8 of at most $bytes, without control characters

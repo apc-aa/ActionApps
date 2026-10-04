@@ -15,6 +15,8 @@ namespace AA\Import\Credential;
  */
 final class Store
 {
+    private const PREFIX = 'AA_APIKEY_';
+
     /**
      * The key for one vendor, or null when the installation has not got it.
      *
@@ -70,7 +72,28 @@ final class Store
     /** a key goes into HTTP headers, where a line break would add a header of its own */
     private static function damaged(string $name): bool
     {
-        return strpbrk((string) constant($name), "\r\n\0") !== false;
+        return self::breaks((string) constant($name));
+    }
+
+    /**
+     * The key constants among $constants that hold CR, LF or NUL - names only, for State Check.
+     * @param array<string, mixed> $constants name => value, as get_defined_constants(true)['user']
+     * @return list<string>
+     */
+    public static function damagedIn(array $constants): array
+    {
+        $damaged = [];
+        foreach ($constants as $name => $value) {
+            if (str_starts_with((string) $name, self::PREFIX) && is_string($value) && self::breaks($value)) {
+                $damaged[] = (string) $name;
+            }
+        }
+        return $damaged;
+    }
+
+    private static function breaks(string $value): bool
+    {
+        return strpbrk($value, "\r\n\0") !== false;
     }
 
     /**
@@ -87,8 +110,8 @@ final class Store
         }
 
         return $context === ''
-            ? ["AA_APIKEY_$vendor"]
-            : ["AA_APIKEY_{$vendor}_{$context}", "AA_APIKEY_$vendor"];
+            ? [self::PREFIX . $vendor]
+            : [self::PREFIX . "{$vendor}_{$context}", self::PREFIX . $vendor];
     }
 
     private static function part(string $name): string

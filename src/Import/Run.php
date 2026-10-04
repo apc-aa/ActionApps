@@ -41,6 +41,12 @@ use JsonException;
  */
 class Run extends BatchRun
 {
+    /** the states of a run: queued or working, stopped by an error, finished, ended by a user */
+    public const RUNNING = 'running';
+    public const ERROR   = 'error';
+    public const DONE    = 'done';
+    public const ENDED   = 'ended';
+
     /** what a run counts, all of them in this order */
     private const COUNTS = [
         'read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0,
@@ -117,7 +123,7 @@ class Run extends BatchRun
 
     protected static function states(): BatchStates
     {
-        return new BatchStates('running', 'error', 'done', 'ended');
+        return new BatchStates(self::RUNNING, self::ERROR, self::DONE, self::ENDED);
     }
 
     /** one unfinished run per definition, so the selector of the definition is the run's */
@@ -156,7 +162,14 @@ class Run extends BatchRun
     /** @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int} */
     public function counts(): array
     {
-        $stored = json_decode((string) $this->counts, true);
+        return self::countsOf((string) $this->counts);
+    }
+
+    /** the counts a stored `counts` value holds - State Check reads them without loading the run
+     *  @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int} */
+    public static function countsOf(string $json): array
+    {
+        $stored = json_decode($json, true);
         $counts = self::COUNTS;
         foreach ($counts as $name => $zero) {
             $counts[$name] = (int) (is_array($stored) ? ($stored[$name] ?? $zero) : $zero);

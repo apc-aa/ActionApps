@@ -73,6 +73,14 @@ final class StoreTest extends TestCase
         self::assertSame('damaged (a line break or NUL in AA_APIKEY_IMPORTCREDBROKEN)', Store::describe('importcredbroken'));
     }
 
+    /** State Check lists the damaged keys by name, without asking any source which keys it needs */
+    public function test_damagedIn_namesOnlyKeyConstantsWithBreaks(): void
+    {
+        $constants = ['AA_APIKEY_A' => "abc\r\nX: 1", 'AA_APIKEY_B_LOGIN' => "x\0", 'AA_APIKEY_C' => 'fine', 'OTHER_KEY' => "a\nb", 'AA_APIKEY_D' => 5, 'AA_APIKEY_E' => "\n"];
+
+        self::assertSame(['AA_APIKEY_A', 'AA_APIKEY_B_LOGIN', 'AA_APIKEY_E'], Store::damagedIn($constants));
+    }
+
     public function test_resolve_contextWins(): void
     {
         self::assertSame('login-value-1234', Store::resolve('importcredtest', 'login')?->reveal());
