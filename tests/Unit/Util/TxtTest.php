@@ -101,6 +101,36 @@ final class TxtTest extends TestCase
         $this->assertSame('čřž', Txt::shorten('čřž', 10));
     }
 
+    // --- utf8Cut(): valid UTF-8 within a byte limit ---
+
+    /** @return array<string, array{0:string, 1:int, 2:string}> */
+    public static function utf8CutProvider(): array
+    {
+        return [
+            'short text untouched'             => ['Příliš', 255, 'Příliš'],
+            'cut on bytes'                     => ['abcdef', 3, 'abc'],
+            'never splits a character'         => [str_repeat('a', 254) . '€', 255, str_repeat('a', 254)],
+            'a whole character at the limit'   => [str_repeat('a', 252) . '€', 255, str_repeat('a', 252) . '€'],
+            'emoji kept whole or not at all'   => ['ab😀', 5, 'ab'],
+            'zero and negative give nothing'   => ['abc', -1, ''],
+        ];
+    }
+
+    #[DataProvider('utf8CutProvider')]
+    public function test_utf8Cut(string $text, int $bytes, string $expected): void
+    {
+        $this->assertSame($expected, Txt::utf8Cut($text, $bytes));
+    }
+
+    public function test_utf8Cut_replacesInvalidBytes(): void
+    {
+        $cut = Txt::utf8Cut("ab\xffcd\xc3", 100);
+
+        $this->assertTrue(mb_check_encoding($cut, 'UTF-8'));
+        $this->assertSame(mb_scrub("ab\xffcd\xc3", 'UTF-8'), $cut, 'replaced as mb_substitute_character says');
+        $this->assertStringStartsWith('ab', $cut);
+    }
+
     // --- bin2url() / url2bin(): RFC4648 §5 base64url, no padding ---
 
     public function test_bin2url_is_url_safe_and_unpadded(): void
