@@ -100,4 +100,20 @@ final class BatchBudgetTest extends TestCase
         $this->expectException(BatchBudgetSpent::class);
         $budget->httpTimeout();             // 0 would be no timeout at all
     }
+
+    /** @return array<string, array{float, float}> */
+    public static function infiniteBudgets(): array
+    {
+        return ['endless deadline' => [INF, 1000.0], 'deadline not a number' => [NAN, 1000.0], 'clock not a number' => [1027.0, NAN]];
+    }
+
+    // INF or NAN would reach the library as a timeout, and there it means none at all
+    #[\PHPUnit\Framework\Attributes\DataProvider('infiniteBudgets')]
+    public function test_httpTimeout_without_a_finite_limit_throws(float $deadline, float $now): void
+    {
+        $budget = new BatchBudget($deadline, 0, 0, static fn(): float => $now);
+
+        $this->expectException(BatchBudgetSpent::class);
+        $budget->httpTimeout();
+    }
 }

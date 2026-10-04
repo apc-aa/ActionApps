@@ -39,8 +39,9 @@ final class Client implements ClientInterface
     }
 
     /**
-     * @param int $timeout   whole call, seconds - a nightly run must not hang on one service
-     * @param int $idle      seconds of silence before giving up; this is what the library calls
+     * @param float $timeout whole call, seconds - a nightly run must not hang on one service. A
+     *                       fraction stays: 0 would mean no limit to the library
+     * @param float $idle    seconds of silence before giving up; this is what the library calls
      *                       "timeout", and it restarts with every byte that arrives, so it is not
      *                       a ceiling on the call - $timeout is
      * @param string $agent  '' takes AA's own name. There is no way to send none: left out, the
@@ -49,7 +50,7 @@ final class Client implements ClientInterface
      * @param int $maxBytes  largest body accepted, 0 = no limit; over it ResponseTooLargeException,
      *                       decided by Content-Length when sent, else while the body arrives
      */
-    public function __construct(int $timeout = 30, int $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0)
+    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0)
     {
         $options = [
             'max_duration'  => $timeout,

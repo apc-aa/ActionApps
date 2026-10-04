@@ -35,12 +35,13 @@ final class BatchBudget
     /** The timeout of a request made now - a step takes its timeouts only from here, so no request
      *  outlives the budget and the lease.
      *  @throws BatchBudgetSpent when nothing is left: a timeout of 0 means none at all to curl, so
-     *                           nothing must be sent */
+     *                           nothing must be sent; nor when the time left is INF or NAN, which
+     *                           the library would take for no limit either */
     public function httpTimeout(): float
     {
         $left = $this->secondsLeft();
         // curl counts in milliseconds - less would round to 0
-        if ($left < 0.001) {
+        if (!is_finite($left) || ($left < 0.001)) {
             throw new BatchBudgetSpent('The budget of the batch step is spent');
         }
         return $left;

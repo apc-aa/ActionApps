@@ -47,7 +47,8 @@ final class GrabberHttpTest extends TestCase
     protected function setUp(): void
     {
         // safe() for the report of loadData(); util.php boots locsess.php, which wants the config.
-        // Not in setUpBeforeClass(): that one runs in the parent process as well
+        // Not in setUpBeforeClass(): PHPUnit runs that in the parent process too, where util.php
+        // would meet the getDB() stub of tests/Unit/IO/DB
         foreach ([
             'AA_INSTAL_URL'   => 'http://localhost/aa/',
             'AA_INSTAL_PATH'  => '/aa/',
@@ -319,7 +320,19 @@ final class GrabberHttpTest extends TestCase
         $e = $this->failureOf(fn() => $grabber->getSources());
         self::assertInstanceOf(SourceRefused::class, $e);
         self::assertSame('SOURCE', $e->reason);
+        self::assertSame('The next page points away from example.invalid', $e->getMessage());
         self::assertSame([['https://example.invalid/api?page=1', 'Authorization: Bearer test-token']], $seen);
+    }
+
+    // the same host as for the token: scheme and port do not make another place
+    public function test_jsonld_nextPageOnOwnHostOtherPortIsOwnPaging(): void
+    {
+        $grabber = (new JsonLD('https://example.invalid/api?page=1'))->setToken('test-token')
+            ->setHttp(new Client(http: new MockHttpClient([new MockResponse('{"hydra:member":[],"hydra:view":{"hydra:next":"http://EXAMPLE.invalid:8080/api?page=2"}}')])));
+
+        $e = $this->failureOf(fn() => $grabber->getSources());
+        self::assertSame('SOURCE', $e->reason);
+        self::assertStringContainsString('paging of the grabber must be off', $e->getMessage());
     }
 
     public function test_jsonld_ownPagingRefusedWithClient(): void
@@ -370,6 +383,51 @@ final class GrabberHttpTest extends TestCase
             'https://login.example.invalid/refresh' => 'Authorization: Bearer test-token',
             'https://elsewhere.example/api'         => '',
         ], $seen);
+    }
+
+    // over plain http the token would cross the network readable
+    public function test_jsonld_bearerOnlyOverHttps(): void
+    {
+        $seen = [];
+        $mock = new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen[$url] = $options['normalized_headers']['authorization'][0] ?? '';
+            return new MockResponse('[]');
+        });
+        $grabber = new class ('https://example.invalid/api') extends JsonLD {
+            public function get(string $url): string
+            {
+                return $this->loadUrl($url);
+            }
+        };
+        $grabber->setToken('test-token')->setHttp(new Client(http: $mock));
+
+        $grabber->get('HTTPS://example.invalid/a');
+        $grabber->get('http://example.invalid/b');
+        // the library writes the scheme in lower case
+        self::assertSame(['https://example.invalid/a' => 'Authorization: Bearer test-token', 'http://example.invalid/b' => ''], $seen);
+    }
+
+    #[DataProvider('hostPairs')]
+    public function test_sameHost_ignoresSchemeAndPort(string $url, string $other, bool $expected): void
+    {
+        $grabber = new class ('https://example.invalid/data.csv') extends CSV {
+            public static function same(string $url, string $other): bool
+            {
+                return self::sameHost($url, $other);
+            }
+        };
+
+        self::assertSame($expected, $grabber::same($url, $other));
+    }
+
+    public static function hostPairs(): array
+    {
+        return [
+            'other scheme, port and case' => ['https://Example.invalid/a', 'http://example.invalid:8080/b', true],
+            'other host'                  => ['https://example.invalid/a', 'https://attacker.example/a', false],
+            'both without a host'         => ['/api?page=2', '/api?page=2', false],
+            'both empty'                  => ['', '', false],
+        ];
     }
 
     #[DataProvider('tokenAnswers')]

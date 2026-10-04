@@ -9,6 +9,8 @@ use AA\Import\Context;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
+use AA\Later\BatchBudget;
+use AA\Later\BatchBudgetSpent;
 use LogicException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -38,16 +40,24 @@ final class ContextTest extends TestCase
         }
     }
 
-    /** @param list<MockResponse> $responses */
-    private function context(array $responses, float $seconds = 30.0, int $maxBytes = 20 * 1024 * 1024): Context
+    /**
+     * The step's clock stands still at $now unless the test moves it.
+     * @param list<MockResponse> $responses
+     * @param-out float $now
+     */
+    private function context(array $responses, float $seconds = 30.0, int $maxBytes = 20 * 1024 * 1024, ?float &$now = null): Context
     {
+        $now ??= 1000.0;
+        $budget = new BatchBudget($now + $seconds, now: function () use (&$now): float {
+            return $now;
+        });
         $mock = new MockHttpClient(function (string $method, string $url, array $options) use (&$responses): MockResponse {
             $this->requests[] = ['url' => $url, 'options' => $options];
             return array_shift($responses) ?? new MockResponse('', ['http_code' => 500]);
         });
 
         // IP literals never reach the resolver; a call would mean the test asks DNS
-        return new Context(self::CREDENTIALS, microtime(true) + $seconds, $maxBytes, $mock, fn(string $host): array => throw new \LogicException("DNS asked for $host"));
+        return new Context(self::CREDENTIALS, $budget, $maxBytes, $mock, fn(string $host): array => throw new \LogicException("DNS asked for $host"));
     }
 
     private static function redirect(string $to): MockResponse
@@ -137,7 +147,7 @@ final class ContextTest extends TestCase
     // a body over 100 MB would not fit the test's memory, so the limit is read directly
     public function test_context_maxBytesCappedAt100MB(): void
     {
-        $ctx = new Context([], microtime(true) + 30, 500 * 1024 * 1024);
+        $ctx = new Context([], new BatchBudget(microtime(true) + 30), 500 * 1024 * 1024);
 
         self::assertSame(Context::MAX_BYTES_CAP, (new \ReflectionProperty(Context::class, 'maxBytes'))->getValue($ctx));
     }
@@ -145,34 +155,47 @@ final class ContextTest extends TestCase
     public function test_context_rejectsZeroMaxBytes(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        new Context([], microtime(true) + 30, 0);
+        new Context([], new BatchBudget(microtime(true) + 30), 0);
     }
 
-    public function test_http_timeoutFollowsDeadline(): void
+    public function test_http_timeoutIsWhatTheBudgetHasLeft(): void
     {
         $this->context([new MockResponse('a')], 12.5)->http()->request('GET', 'https://1.1.1.1/a');
 
-        self::assertEqualsWithDelta(12.0, $this->requests[0]['options']['max_duration'], 1.0);
+        self::assertSame([12.5, 10.0], [$this->requests[0]['options']['max_duration'], $this->requests[0]['options']['timeout']]);
     }
 
-    public function test_http_lastSecondGetsOneSecond(): void
+    // rounding up would outlive the step, rounding down to 0 would mean no limit
+    public function test_http_lastHalfSecondStaysALimit(): void
     {
         $this->context([new MockResponse('a')], 0.5)->http()->request('GET', 'https://1.1.1.1/a');
 
-        self::assertSame(1.0, (float) $this->requests[0]['options']['max_duration']);
+        self::assertSame([0.5, 0.5], [$this->requests[0]['options']['max_duration'], $this->requests[0]['options']['timeout']]);
     }
 
-    public function test_http_pastDeadlineSendsNothing(): void
+    public function test_http_eachRequestGetsTheTimeLeftThen(): void
+    {
+        $now = 1000.0;
+        $ctx = $this->context([new MockResponse('a'), new MockResponse('b')], 20.0, now: $now);
+
+        $ctx->http()->request('GET', 'https://1.1.1.1/a');
+        $now += 15.0;
+        $ctx->http()->request('GET', 'https://1.1.1.1/b');
+
+        self::assertSame([20.0, 5.0], array_column(array_column($this->requests, 'options'), 'max_duration'));
+    }
+
+    // the step's own end, not a failure of the source: the queue goes on from the stored position
+    public function test_http_spentBudgetSendsNothing(): void
     {
         $ctx = $this->context([new MockResponse('a')], -5.0);
 
         try {
             $ctx->http()->request('GET', 'https://1.1.1.1/a');
-            self::fail('SourceUnavailable expected');
-        } catch (SourceUnavailable $e) {
-            self::assertSame('TRANSPORT', $e->reason);
+            self::fail('BatchBudgetSpent expected');
+        } catch (BatchBudgetSpent) {
+            self::assertSame([], $this->requests);
         }
-        self::assertSame([], $this->requests);
     }
 
     /**
@@ -185,7 +208,7 @@ final class ContextTest extends TestCase
     {
         $asked = [];
         $error = new MockResponse('', ['error' => 'Host "data.example" is blocked for "https://data.example/x".']);
-        $ctx   = new Context([], microtime(true) + 30, transport: new MockHttpClient($error), resolver: function (string $host) use ($ips, &$asked): array {
+        $ctx   = new Context([], new BatchBudget(microtime(true) + 30), transport: new MockHttpClient($error), resolver: function (string $host) use ($ips, &$asked): array {
             $asked[] = $host;
             return $ips;
         });
@@ -211,7 +234,7 @@ final class ContextTest extends TestCase
 
     public function test_http_unresolvableHostIsUnavailable(): void
     {
-        $ctx = new Context([], microtime(true) + 30, transport: new MockHttpClient(new MockResponse('', ['error' => 'Host "no-such.example" is blocked for "https://no-such.example/".'])), resolver: fn(string $host): array => []);
+        $ctx = new Context([], new BatchBudget(microtime(true) + 30), transport: new MockHttpClient(new MockResponse('', ['error' => 'Host "no-such.example" is blocked for "https://no-such.example/".'])), resolver: fn(string $host): array => []);
 
         try {
             $ctx->http()->request('GET', 'https://1.1.1.1/data');
@@ -224,7 +247,7 @@ final class ContextTest extends TestCase
     // the real guard: localhost comes from the hosts file, so it asks no DNS server
     public function test_http_resolvableBlockedHostIsRefused(): void
     {
-        $ctx = new Context([], microtime(true) + 30, transport: new MockHttpClient(new MockResponse('a')), resolver: fn(string $host): array => ['127.0.0.1']);
+        $ctx = new Context([], new BatchBudget(microtime(true) + 30), transport: new MockHttpClient(new MockResponse('a')), resolver: fn(string $host): array => ['127.0.0.1']);
 
         $this->expectRefused(fn() => $ctx->http()->request('GET', 'http://localhost/data'));
     }
@@ -281,7 +304,7 @@ final class ContextTest extends TestCase
             [Context::class, 'redact', ['text']],
             [Client::class, 'request', ['url', 'body', 'headers']],
             [Client::class, 'limitedContent', ['url']],
-            [(new Context([], microtime(true) + 30))->http(), 'request', ['url', 'body', 'headers']],
+            [(new Context([], new BatchBudget(microtime(true) + 30)))->http(), 'request', ['url', 'body', 'headers']],
         ];
         foreach ($marked as [$class, $method, $names]) {
             $params = [];
@@ -298,7 +321,7 @@ final class ContextTest extends TestCase
 
     public function test_secret_damagedKeyIsNoCredential(): void
     {
-        $ctx = new Context([['vendor' => 'ctxbroken', 'context' => '']], microtime(true) + 30);
+        $ctx = new Context([['vendor' => 'ctxbroken', 'context' => '']], new BatchBudget(microtime(true) + 30));
         self::assertSame('nothing to hide', $ctx->redact('nothing to hide'), 'a damaged key does not break the step');
 
         try {
@@ -370,7 +393,7 @@ final class ContextTest extends TestCase
 
     public function test_secret_undeclaredThrows(): void
     {
-        $ctx = new Context(self::CREDENTIALS, microtime(true) + 30);
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
 
         $this->expectException(LogicException::class);
         $ctx->secret('testvendor');
@@ -378,14 +401,14 @@ final class ContextTest extends TestCase
 
     public function test_secret_declaredResolves(): void
     {
-        $ctx = new Context(self::CREDENTIALS, microtime(true) + 30);
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
 
         self::assertSame(self::KEY, $ctx->secret('testvendor', 'ctx')?->reveal());
     }
 
     public function test_secret_declaredButMissingIsNull(): void
     {
-        $ctx = new Context([['vendor' => 'importctxmissing', 'context' => '']], microtime(true) + 30);
+        $ctx = new Context([['vendor' => 'importctxmissing', 'context' => '']], new BatchBudget(microtime(true) + 30));
 
         self::assertNull($ctx->secret('importctxmissing'));
         self::assertSame('nothing to hide', $ctx->redact('nothing to hide'));
@@ -393,14 +416,14 @@ final class ContextTest extends TestCase
 
     public function test_redact_masksValueInUrlQuery(): void
     {
-        $ctx = new Context(self::CREDENTIALS, microtime(true) + 30);
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
 
         self::assertSame('https://1.1.1.1/a?key=***&x=1', $ctx->redact('https://1.1.1.1/a?key=' . self::KEY . '&x=1'));
     }
 
     public function test_redact_masksUrlencodedValue(): void
     {
-        $ctx = new Context(self::CREDENTIALS, microtime(true) + 30);
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
 
         self::assertSame('a=*** b=***', $ctx->redact('a=' . urlencode(self::KEY) . ' b=' . rawurlencode(self::KEY)));
     }

@@ -14,6 +14,8 @@ use AA\Import\Credential\Store;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
+use AA\Later\BatchBudget;
+use AA\Later\BatchBudgetSpent;
 use InvalidArgumentException;
 use LogicException;
 use SensitiveParameter;
@@ -24,9 +26,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * What a source gets from the run for one step: the only way out to the network, its keys and
- * the end of the step. Every exception of http() is SourceRefused or SourceUnavailable whose
- * message is AA's own text with the requested URL masked - the library's text carries the URL
- * re-encoded, and a key in it would slip past redact().
+ * the end of the step. Every exception of http() but BatchBudgetSpent is SourceRefused or
+ * SourceUnavailable whose message is AA's own text with the requested URL masked - the library's
+ * text carries the URL re-encoded, and a key in it would slip past redact().
  */
 final class Context
 {
@@ -37,7 +39,7 @@ final class Context
 
     private const REDIRECTS = 3;
 
-    private const IDLE_SECONDS = 10;
+    private const IDLE_SECONDS = 10.0;
 
     /**
      * How NoPrivateNetworkHttpClient words a refused address - it has no own exception class. If
@@ -64,11 +66,11 @@ final class Context
 
     /**
      * @param list<array{vendor: string, context: string}> $credentials from SourceInterface::credentials()
-     * @param float $deadline microtime of the end of the step
+     * @param BatchBudget $budget of the step; each request takes its timeout from it
      * @param ?HttpClientInterface $transport the connection under the guard; another one for tests only
      * @param ?\Closure(string): list<string> $resolver IP addresses of a host name; another one for tests only
      */
-    public function __construct(array $credentials, private readonly float $deadline, int $maxBytes = self::DEFAULT_MAX_BYTES, private readonly ?HttpClientInterface $transport = null, ?\Closure $resolver = null)
+    public function __construct(array $credentials, private readonly BatchBudget $budget, int $maxBytes = self::DEFAULT_MAX_BYTES, private readonly ?HttpClientInterface $transport = null, ?\Closure $resolver = null)
     {
         $this->resolver = $resolver ?? self::lookup(...);
         // 0 means "no limit" to Client
@@ -83,10 +85,11 @@ final class Context
 
     /**
      * HTTP(S) only to public addresses, also after a redirect, at most 3 redirects; the request
-     * ends with the step, and after the deadline none starts. The port is not restricted: the
-     * source takes its URL from its settings. A non-2xx status is an answer - what it means is up
-     * to the caller. DNS is not limited by the deadline: neither the guard's lookup nor the second
-     * one that sorts a blocked host, so a failing resolver can take up to about twice its timeout.
+     * ends with the step, and once its budget is spent none starts (BatchBudgetSpent - the step's
+     * own end, not a failure of the source). The port is not restricted: the source takes its URL
+     * from its settings. A non-2xx status is an answer - what it means is up to the caller. DNS is
+     * not limited by the budget: neither the guard's lookup nor the second one that sorts a blocked
+     * host, so a failing resolver can take up to about twice its timeout.
      */
     public function http(): ClientInterface
     {
@@ -138,11 +141,6 @@ final class Context
         return str_replace($values, '***', $text);
     }
 
-    public function deadline(): float
-    {
-        return $this->deadline;
-    }
-
     private function read(string $id): Secret|false|null
     {
         if (!array_key_exists($id, $this->secrets)) {
@@ -155,18 +153,17 @@ final class Context
         return $this->secrets[$id];
     }
 
-    /** @param array<string, string> $headers */
+    /**
+     * @param array<string, string> $headers
+     * @throws BatchBudgetSpent
+     */
     private function send(string $method, #[SensitiveParameter] string $url, #[SensitiveParameter] ?string $body, #[SensitiveParameter] array $headers): Response
     {
         // the guard checks this too; kept here so the rule does not depend on the library
         if (preg_match('~^https?://~i', $url) !== 1) {
             throw $this->failure(false, 'Only http(s) addresses are imported', $url);
         }
-        $left = $this->deadline - microtime(true);
-        if ($left <= 0) {
-            throw $this->failure(true, 'The step ran out of time before the request', $url);
-        }
-        $seconds = max(1, (int) floor($left));
+        $seconds = $this->budget->httpTimeout();
         $this->guarded ??= new NoPrivateNetworkHttpClient($this->transport ?? HttpClient::create());
         $client = new Client(timeout: $seconds, idle: min(self::IDLE_SECONDS, $seconds), agent: Client::agent('import'), redirects: self::REDIRECTS, http: $this->guarded, maxBytes: $this->maxBytes);
 
@@ -187,21 +184,19 @@ final class Context
     /** Sorts a failed request into "ask again later" and "refused for good" */
     private function transportFailure(#[SensitiveParameter] TransportException $e, #[SensitiveParameter] string $url): SourceFailure
     {
+        if ($e->malformedAddress()) {
+            return $this->failure(false, 'Only well-formed http(s) addresses are imported', $url);
+        }
         $texts = [];
         for ($cause = $e->getPrevious(); !is_null($cause); $cause = $cause->getPrevious()) {
-            // a malformed URL, or a redirect to another scheme (the guard fails with a TypeError on file://)
-            if (($cause instanceof \InvalidArgumentException) || ($cause instanceof \TypeError)) {
-                return $this->failure(false, 'Only well-formed http(s) addresses are imported', $url);
-            }
-            $texts[] = $cause->getMessage();
-        }
-        foreach ($texts as $text) {
+            $text = $cause->getMessage();
             if (preg_match(self::BLOCKED, $text, $m) === 1) {
                 // the guard reports a host it failed to look up as blocked too; ask again
                 return $this->blockedHost($m[1])
                     ? $this->failure(false, 'Address in a local or private network', $url)
                     : $this->failure(true, 'Host name not found', $url);
             }
+            $texts[] = $text;
         }
         $text = implode(' ', $texts);
         return match (true) {

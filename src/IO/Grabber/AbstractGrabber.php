@@ -205,6 +205,8 @@ abstract class AbstractGrabber implements NamedInterface
      * the URL may carry a key, and SourceFailure messages are stored.
      * @param  array<string, string> $headers
      * @throws SourceFailure
+     * @throws \AA\Later\BatchBudgetSpent from the client of an import step whose time is up -
+     *                                    passed through: it ends the step, it is not the source's fault
      */
     protected function fetch(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): string
     {
@@ -212,7 +214,7 @@ abstract class AbstractGrabber implements NamedInterface
         try {
             $answer = $http->request($method, $url, $body, $headers);
         } catch (TransportException $e) {
-            throw self::malformed($e)
+            throw $e->malformedAddress()
                 ? new SourceRefused('SOURCE', 'Malformed address of ' . self::host($url))
                 : new SourceUnavailable('TRANSPORT', 'No answer from ' . self::host($url));
         } catch (ResponseTooLargeException) {
@@ -225,28 +227,11 @@ abstract class AbstractGrabber implements NamedInterface
         return $answer->body;
     }
 
-    /** a bad URL or scheme - asking again gets the same; the library reports it as a transport failure */
-    private static function malformed(\Throwable $e): bool
+    /** whether both URLs name the same host, whatever the scheme and port; a URL without a host matches none */
+    protected static function sameHost(#[\SensitiveParameter] string $url, #[\SensitiveParameter] string $other): bool
     {
-        for ($cause = $e->getPrevious(); !is_null($cause); $cause = $cause->getPrevious()) {
-            if (($cause instanceof \InvalidArgumentException) || ($cause instanceof \TypeError)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** scheme://host:port, the default port filled in; '' when the URL has no host */
-    protected static function origin(#[\SensitiveParameter] string $url): string
-    {
-        $parts  = parse_url($url);
-        $scheme = strtolower((string) ($parts['scheme'] ?? ''));
-        $host   = strtolower((string) ($parts['host'] ?? ''));
-        if ($host === '') {
-            return '';
-        }
-        $port = $parts['port'] ?? (['http' => 80, 'https' => 443][$scheme] ?? 0);
-        return "$scheme://$host:$port";
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        return ($host !== '') && ($host === strtolower((string) parse_url($other, PHP_URL_HOST)));
     }
 
     protected static function host(#[\SensitiveParameter] string $url): string

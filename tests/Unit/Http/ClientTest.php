@@ -49,6 +49,20 @@ final class ClientTest extends TestCase
         self::assertContains('Authorization: Bearer t', $seen['headers']);
     }
 
+    // a cast to int would turn half a second into 0, which the library reads as no limit at all
+    public function test_aFractionOfASecondStaysALimit(): void
+    {
+        $seen   = null;
+        $client = new Client(timeout: 0.5, idle: 0.25, http: new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen = [$options['max_duration'], $options['timeout']];
+            return new MockResponse('{}');
+        }));
+
+        $client->request('GET', 'https://example.org/x');
+
+        self::assertSame([0.5, 0.25], $seen);
+    }
+
     public function test_noAnswerAtAllIsAnExceptionWorthRetrying(): void
     {
         $client = new Client(http: new MockHttpClient(static fn(): MockResponse => new MockResponse('', ['error' => 'Connection refused'])));

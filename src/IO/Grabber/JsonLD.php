@@ -230,16 +230,14 @@ class JsonLD extends AbstractGrabber
         return file_get_contents($url, false, $context);
     }
 
-    /** the token goes only to the host of the data or of the login - never to where an answer points */
+    /**
+     * The token goes only to the host of the data or of the login - never to where an answer
+     * points - and only over https, so it does not cross the network readable.
+     */
     private function ownHost(#[\SensitiveParameter] string $url): bool
     {
-        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
-        foreach ([(string) $this->file, (string) ($this->authdata['tokenurl'] ?? '')] as $own) {
-            if (($host !== '') && ($host === strtolower((string) parse_url($own, PHP_URL_HOST)))) {
-                return true;
-            }
-        }
-        return false;
+        return (strtolower((string) parse_url($url, PHP_URL_SCHEME)) === 'https')
+            && (self::sameHost($url, (string) $this->file) || self::sameHost($url, (string) ($this->authdata['tokenurl'] ?? '')));
     }
 
     protected function nextPage($json): string
@@ -275,7 +273,7 @@ class JsonLD extends AbstractGrabber
             $next_url = $this->nextPage($json);
             if ($this->hasHttp() && ($next_url !== '')) {
                 // an import fetches each page as its own job; paging here would fetch them all, or loop
-                throw (self::origin($next_url) === self::origin($this->file))
+                throw self::sameHost($next_url, (string) $this->file)
                     ? new SourceRefused('SOURCE', 'The answer has a next page - paging of the grabber must be off (setNextFunc) in an import')
                     : new SourceRefused('SOURCE', 'The next page points away from ' . self::host($this->file));
             }
