@@ -462,48 +462,6 @@ parameters:
 			path: src/IO/Grabber/XMLIekis.php
 
 		-
-			message: '#^Call to an undefined method AA_Content\:\:complete4Insert\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/IO/Saver.php
-
-		-
-			message: '#^Call to an undefined method AA_Content\:\:getItemID\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: src/IO/Saver.php
-
-		-
-			message: '#^Call to an undefined method AA_Content\:\:getSliceID\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/IO/Saver.php
-
-		-
-			message: '#^Call to an undefined method AA_Content\:\:setItemID\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/IO/Saver.php
-
-		-
-			message: '#^Call to an undefined method AA_Content\:\:setSliceID\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/IO/Saver.php
-
-		-
-			message: '#^Call to an undefined method AA_Content\:\:storeItem\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/IO/Saver.php
-
-		-
-			message: '#^Call to an undefined method AA_Content\:\:validate4Update\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: src/IO/Saver.php
-
-		-
 			message: '#^PHPDoc tag @param has invalid value \(AbstractGrabber grabber          \- provides source for item data\)\: Unexpected token "grabber", expected variable at offset 75 on line 2$#'
 			identifier: phpDoc.parseError
 			count: 1

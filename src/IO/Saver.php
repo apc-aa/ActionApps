@@ -37,6 +37,8 @@ use AA_Set;
 use AA_Transformation;
 use Exception;
 use ItemContent;
+use UnexpectedValueException;
+use zids;
 
 /** Saver class - Used for filling items into AA
  * @param AbstractGrabber grabber          - provides source for item data
@@ -151,6 +153,10 @@ class Saver implements AA\Later\LaterInterface
 
             // check, if grabber returns already prepared item
             $content4id = $directfill ? $source_content4id : new ItemContent();
+            if (!($content4id instanceof ItemContent)) {
+                // storing needs ItemContent - a direct-fill grabber must hand it over
+                throw new UnexpectedValueException('Grabber ' . $this->grabber::class . ' returned ' . $content4id::class . ' instead of ItemContent');
+            }
 
             // if we want some Transformations, do them here
             foreach ($this->transformations as $field_id => $transformation) {
@@ -215,7 +221,7 @@ class Saver implements AA\Later\LaterInterface
 
                             $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
                         }
-                        $zids = $set->query(null, 1);
+                        $zids = $this->findByKey($set);
                         if (!$fire) {
                             $this->message("AA\IO\Saver->run(): update/insert - condition:", 2);
                             $this->message($set, 2);
@@ -282,7 +288,7 @@ class Saver implements AA\Later\LaterInterface
             if ($fire) {
                 // id_mode - overwrite or insert_if_new
                 // (the $new_item_id should not be changed by storeItem)
-                if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
+                if (!($new_item_id = $this->store($content4id, $store_mode))) {     // invalidatecache, feed
                     // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
                     $err_count++;
                     $this->message(['err' => 'AA\IO\Saver->run(): storeItem failed or skipped duplicate: ' . ItemContent::lastErrMsg()]);
@@ -315,6 +321,23 @@ class Saver implements AA\Later\LaterInterface
             print($this->report());
         }
         return [$ok_count, $err_count];
+    }
+
+    /** The item the key fields of an incoming item point to - at most one
+     *  @param AA_Set $set the destination slice with one == condition per key field
+     */
+    protected function findByKey(AA_Set $set): zids
+    {
+        return $set->query(null, 1);
+    }
+
+    /** Stores the item
+     *  @param array $flags passed to ItemContent::storeItem()
+     *  @return string|false the id of the stored item, false when nothing was stored
+     */
+    protected function store(ItemContent $content, string $mode, array $flags = []): string|false
+    {
+        return $content->storeItem($mode, $flags);
     }
 
     /** Checks if the item is valid based on custom validate string
