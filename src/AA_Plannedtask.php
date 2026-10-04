@@ -213,7 +213,16 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      *  command together only when it runs. Command names are case-insensitive. */
     public function usesImport(): bool
     {
-        return (bool) preg_match('/\{import[:(}]/i', $this->task . "\n" . $this->condition);
+        return (bool) self::importCalls($this->task . "\n" . $this->condition);
+    }
+
+    /** The first argument of each {import} call in $text - {import:<arg>:..}, {import(<arg>)}, or ''
+     *  for a bare {import}; the import's name or id.
+     *  @return list<string> */
+    public static function importCalls(string $text): array
+    {
+        preg_match_all('/\{import(?:\(([^)}]*)\)?|:([^:}]*)|(?=\}))/i', $text, $calls, PREG_SET_ORDER);
+        return array_map(static fn(array $call): string => ($call[1] ?? '') . ($call[2] ?? ''), $calls);
     }
 
     /** The page of the tasks also lets in users who only edit the forms, but an import belongs to

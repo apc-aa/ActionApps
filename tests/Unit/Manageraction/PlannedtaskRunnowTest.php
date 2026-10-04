@@ -229,6 +229,13 @@ final class PlannedtaskRunnowTest extends TestCase
         $this->assertSame($imports, (new AA_Plannedtask(['task' => $task, 'condition' => $condition]))->usesImport());
     }
 
+    /** the first argument of each call - what State Check matches against an import's name or id */
+    public function test_importCalls_firstArguments(): void
+    {
+        $this->assertSame(['prices', 'rates', '', 'a1b2'], AA_Plannedtask::importCalls("{import:prices:changed} {IMPORT(rates)} {import} {Import:a1b2}"));
+        $this->assertSame([], AA_Plannedtask::importCalls('{importer:prices} import:prices'));
+    }
+
     public function test_allowGet_isFalse(): void
     {
         $this->assertFalse((new Plannedtask_Runnow('Runnow'))->allowGet());
