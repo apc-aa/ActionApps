@@ -147,7 +147,7 @@ final class BatchRunRetryTest extends TestCase
 
         $stored = self::stored($id);
         $this->assertSame('1', $stored['failures']);
-        $this->assertSame('', $stored['next_at']);
+        $this->assertSame((string) self::NOW, $stored['next_at'], 'due now');
         $this->assertSame(self::NOW, self::queue()[0]['execute_after']);
     }
 
@@ -339,7 +339,7 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame(['n' => 1], json_decode($stored['position'], true));
         $this->assertSame('1', $stored['step']);
         $this->assertSame((string) self::NOW, $stored['moved']);
-        $this->assertSame('', $stored['next_at']);
+        $this->assertSame((string) self::NOW, $stored['next_at'], 'due now');
         $this->assertSame(['read' => 1], json_decode($stored['counts'], true));
         $this->assertSame([BatchPosition::fingerprint(1, ['n' => 1])], self::queued());
         $this->assertSame(self::NOW, self::queue()[0]['execute_after'], 'at once');
@@ -648,7 +648,7 @@ final class BatchRunRetryTest extends TestCase
         ScriptedBatchRun::$afterCloseThrows = new \Error('cache gone');
 
         $this->assertSame('done', self::runQueued());
-        $this->assertSame('AFTER_CLOSE', json_decode(self::stored($id)['progress'], true)['warning'] ?? null);
+        $this->assertSame('after_close', json_decode(self::stored($id)['progress'], true)['warning'] ?? null);
     }
 
     public function test_done_write_failure_is_a_permanent_error(): void

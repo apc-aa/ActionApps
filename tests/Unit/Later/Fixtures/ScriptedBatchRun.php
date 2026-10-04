@@ -35,8 +35,12 @@ class ScriptedBatchRun extends BatchRun
     /** @var array<int, int> failures => seconds; a missing count = the core's own */
     public static array $retryDelays = [];
     /** @var array<string, mixed> hook => value that replaces the core's own, or a Throwable it throws
-     *                           (overrun, minStepSeconds, stepPriority, budgetLimits) */
+     *                           (overrun, minStepSeconds, stepPriority, budgetLimits, sealPurpose) */
     public static array $hookValues = [];
+    /** @var list<int> the times expireExtra() was called with - kept out of $calls, start() calls it */
+    public static array $expiredAt = [];
+    /** @var array<string, mixed> what progressExtra() adds */
+    public static array $progressExtra = [];
 
     /** an own property, as a user of the core has */
     protected $note = '';
@@ -55,6 +59,8 @@ class ScriptedBatchRun extends BatchRun
         self::$commitThrows     = null;
         self::$retryDelays      = [];
         self::$hookValues       = [];
+        self::$expiredAt        = [];
+        self::$progressExtra    = [];
     }
 
     /** @return list<string> the names of the hooks called, in order */
@@ -166,6 +172,27 @@ class ScriptedBatchRun extends BatchRun
     protected function budgetLimits(): array
     {
         return self::hookValue('budgetLimits') ?? parent::budgetLimits();
+    }
+
+    /** the sealed secret, as the user's own code reads it */
+    public function secret(): ?string
+    {
+        return $this->unseal();
+    }
+
+    protected static function sealPurpose(): string
+    {
+        return self::hookValue('sealPurpose') ?? parent::sealPurpose();
+    }
+
+    protected function progressExtra(): array
+    {
+        return self::$progressExtra;
+    }
+
+    protected static function expireExtra(int $now): void
+    {
+        self::$expiredAt[] = $now;
     }
 
     /** the test's value of $hook, null = the core's own; a Throwable is thrown */

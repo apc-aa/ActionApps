@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace AA\Later;
 
 use AA\IO\DB\DB_AA;
+use AA\Util\Crypt;
+use AA\Util\Secret;
 use AA_Log;
 use AA_Object;
 use AA_Property;
@@ -31,6 +33,13 @@ abstract class BatchRun extends AA_Object
 
     /** steps in a row without progress after which onRetriesExhausted() decides - nothing goes round for ever */
     public const MAX_FAILURES = 3;
+
+    /** what the queue row of an ended run expects instead of a fingerprint: it runs afterClose() after
+     *  the end has committed - late, and more than once when the queue repeats a row whose process died */
+    public const CLOSE_ROW = 'close';
+
+    /** a run without progress this long past its retries hangs (isStuck()) */
+    private const STUCK_GRACE = 3600;
 
     /** the longest step: a cron round lasts about 30 s */
     private const STEP_SECONDS = 30;
@@ -62,7 +71,7 @@ abstract class BatchRun extends AA_Object
     protected $lease_tok = '';
     /** steps in a row without progress */
     protected $failures = '';
-    /** unixtime of the next try after a step without progress */
+    /** unixtime the next step is due - a retry, or the step after Continue; it waits only while > now */
     protected $next_at = '';
     protected $error_code = '';
     protected $error_path = '';
@@ -92,7 +101,8 @@ abstract class BatchRun extends AA_Object
      *  one unfinished run per definition) - ending a run removes every queued row of it. */
     abstract public function selector(): string;
 
-    /** may the user see and control the run */
+    /** May the user see and control the run - decided by the stored subject, never by the context of
+     *  the request (its module, its parameters), which the user chooses. */
     abstract public function mayControl(string $uid): bool;
 
     /** The work of one step from $from. Returns where the next step continues - never before $from,
@@ -111,7 +121,8 @@ abstract class BatchRun extends AA_Object
         return [];
     }
 
-    /** after the commit of done or ended; an exception becomes a warning, the state stays */
+    /** After the commit of done or ended; an exception becomes a warning, the state stays. Must be
+     *  idempotent: after an end it comes from the queue (CLOSE_ROW), late, and maybe more than once. */
     protected function afterClose(string $state): void {}
 
     /** MAX_FAILURES steps without progress; outside any transaction, so it may ask the source. A position
@@ -146,6 +157,27 @@ abstract class BatchRun extends AA_Object
     protected function stillValid(): bool
     {
         return true;
+    }
+
+    /** what the progress page shows besides the core's data - plain data, it goes out as JSON */
+    protected function progressExtra(): array
+    {
+        return [];
+    }
+
+    /** cleanup of the user's own states (Central: old previews); start() calls it */
+    protected static function expireExtra(int $now): void {}
+
+    /** names the key of the sealed secret: another purpose, another key */
+    protected static function sealPurpose(): string
+    {
+        return 'batch-run';
+    }
+
+    /** the longest a secret may stay sealed - a stolen record opens nothing older */
+    protected static function maxSealSeconds(): int
+    {
+        return 86400;
     }
 
     /** under the AA maintenance and feeds (10), which a run of weeks must not hold up */
@@ -190,6 +222,7 @@ abstract class BatchRun extends AA_Object
             throw new \LogicException('A batch run starts inside the caller\'s transaction');
         }
         self::requireTransactional();
+        static::expireExtra(static::now());
         $states = static::states();
         if (($state !== null) && !isset($states->extra[$state])) {
             throw new \InvalidArgumentException('A batch run starts active or in an own state');
@@ -254,6 +287,9 @@ abstract class BatchRun extends AA_Object
             return 'not a batch run: ' . mb_strcut($class, 0, 100);
         }
         $run = $class::get($id);
+        if ($expected === self::CLOSE_ROW) {
+            return $run?->closeEnded() ?? 'stale';
+        }
         if (!$run || !$run->isAt($expected)) {
             return 'stale';
         }
@@ -294,6 +330,340 @@ abstract class BatchRun extends AA_Object
     public function step(): int
     {
         return (int) $this->step;
+    }
+
+    /** End: the run stops for good, what it wrote stays. Only on an instance of lockForUpdate(), so it
+     *  commits with the caller's other writes. The lease stays till it runs out: a step still working
+     *  may write items till then, so a new run of the subject waits (hasLiveLease()); that step then
+     *  finds the run ended and writes nothing of its own. afterClose('ended') runs from the queue
+     *  (CLOSE_ROW) once the caller's transaction has committed.
+     *  @param string $note why, as a code (SETTINGS_CHANGED) - the progress page shows it
+     *  @throws BatchFailed FORBIDDEN when $uid may not control the run, WRONG_STATE when it is finished */
+    final public function end(string $uid, string $note = ''): void
+    {
+        $this->requireLock();
+        $this->requireControl($uid);
+        if (($note !== '') && !BatchFailed::isCode($note)) {
+            throw new \InvalidArgumentException('The note of an ended batch run must match ' . BatchFailed::CODE);
+        }
+        if ($this->isFinished()) {
+            throw new BatchFailed('WRONG_STATE');
+        }
+        // before the record is written: a queue that refuses the row runs it at once, and it must find the run not ended
+        // not while a step with a live lease may still write
+        $at = $this->hasLiveLease(static::now()) ? (int) $this->lease + 1 : static::now();
+        $this->queueRow(self::CLOSE_ROW, self::closeSelector($this->getId()), $at, $this->stepPriority());
+        if ($note !== '') {
+            $this->progress = self::encode(['note' => $note] + $this->json('progress'));
+        }
+        $this->becomeEnded(['progress']);
+    }
+
+    /** Continue: a run in error goes on from its position, a run waiting for its retry or hanging
+     *  (isStuck()) tries now. Only on an instance of lockForUpdate(). The step counter moves, so every
+     *  row queued before is stale.
+     *  @param ?string $secret a new secret to seal (the source refused the old one), good till $until
+     *  @throws BatchFailed FORBIDDEN when $uid may not control the run, WRONG_STATE when it is finished
+     *                      or its step is on its way */
+    final public function resume(string $uid, #[\SensitiveParameter] ?string $secret = null, ?int $until = null): void
+    {
+        $this->requireLock();
+        $this->requireControl($uid);
+        $now     = static::now();
+        $states  = static::states();
+        $error   = ($this->state === $states->error);
+        $waiting = ($this->state === $states->active) && ((int) $this->next_at > $now) && !$this->hasLiveLease($now);
+        // a step that works or is queued to run now would only be doubled
+        if (!$error && !$waiting && !$this->isStuck($now)) {
+            throw new BatchFailed('WRONG_STATE');
+        }
+        if ($secret !== null) {
+            $this->seal($secret, $until ?? throw new \InvalidArgumentException('A new secret of a batch run needs its time'));
+        }
+        (new Toexecute())->cancel_all($this->selector());
+        if ($error) {
+            $this->moveTo($states->active);
+        }
+        if (!$this->hasLiveLease($now)) {
+            // a lease that ran out belongs to a dead step - the user goes on, so it counts no failure
+            $this->lease     = '';
+            $this->lease_tok = '';
+        }
+        $this->failures   = '0';
+        $this->error_code = '';
+        $this->error_path = '';
+        // when the step is due: until it has had its chance the run does not hang (isStuck())
+        $this->next_at    = (string) $now;
+        $this->step       = (string) ($this->step() + 1);
+        $this->enqueue($now);
+        $this->update(['failures', 'step', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
+    }
+
+    /** Keeps a secret the steps need (Central: the source's login token) encrypted with the server's
+     *  key, bound to this run and to $until, till which unseal() gives it - at most maxSealSeconds()
+     *  ahead. Only on an instance of lockForUpdate(); done and ended forget it, cleanup() forgets it
+     *  past $until. */
+    final public function seal(#[\SensitiveParameter] string $secret, int $until): void
+    {
+        $this->requireLock();
+        if ($this->isFinished()) {
+            throw new \LogicException('A finished batch run keeps no secret');
+        }
+        $now = static::now();
+        if (($secret === '') || ($until <= $now) || ($until > $now + static::maxSealSeconds())) {
+            throw new \InvalidArgumentException('A sealed secret is not empty and is good till a time to come, within maxSealSeconds()');
+        }
+        try {
+            $sealed = Crypt::encryptAesGcm($secret, Secret::key(static::sealPurpose()), $this->sealContext($until));
+        } catch (\Throwable) {
+            // dropped, not chained: the trace of that exception may hold the secret and the key
+            throw new \RuntimeException('The secret of a batch run could not be sealed');
+        }
+        $this->sealed       = $sealed;
+        $this->sealed_until = (string) $until;
+        $this->update(['sealed', 'sealed_until']);
+    }
+
+    /** The sealed secret, for the user's own code (its steps; Central: the page of a preview) - never
+     *  handed to a request as it is. Null when there is none, it is past its time, or it cannot be
+     *  opened (the key changed, the record was altered) - the user then asks for a new one. */
+    final protected function unseal(): ?string
+    {
+        $until = (int) $this->sealed_until;
+        if (((string) $this->sealed === '') || ($until <= static::now())) {
+            return null;
+        }
+        try {
+            $secret = Crypt::decryptAesGcm((string) $this->sealed, Secret::key(static::sealPurpose()), $this->sealContext($until));
+        } catch (\Throwable) {
+            return null;
+        }
+        return is_string($secret) ? $secret : null;
+    }
+
+    /** What the progress page shows, as plain data for JSON. running = a step holds a live lease;
+     *  next_at = when the next step is due (a retry, or the step after Continue) - it waits only while
+     *  next_at > now, failures tells how many tries failed; warning after_close = afterClose() failed.
+     *  label, note and error.where are codes or texts the user masked (AA\Import\Context::redact()),
+     *  still text to the page: it puts them in by textContent or safe(), never as HTML.
+     *  @return array{role: string, state: string, label: string, done: int, total: int, moved: int, started: int,
+     *                running: bool, next_at: int, failures: int, counts: array, warnings: array,
+     *                error: ?array{code: string, where: string}, note: string, warning: string, extra: array}
+     *  @throws BatchFailed FORBIDDEN when $uid may not see the run */
+    final public function progress(string $uid): array
+    {
+        $this->requireControl($uid);
+        $last = $this->json('progress');
+        return [
+            'role'     => $this->role(),
+            'state'    => $this->state(),
+            'label'    => (string) ($last['label'] ?? ''),
+            'done'     => (int) ($last['done'] ?? 0),
+            'total'    => (int) ($last['total'] ?? 0),
+            'moved'    => (int) $this->moved,
+            'started'  => (int) $this->started,
+            'running'  => $this->hasLiveLease(static::now()),
+            'next_at'  => (int) $this->next_at,
+            'failures' => $this->failures(),
+            'counts'   => $this->json('counts'),
+            'warnings' => $this->json('warnings'),
+            'error'    => ((string) $this->error_code === '') ? null : ['code' => (string) $this->error_code, 'where' => (string) $this->error_path],
+            'note'     => (string) ($last['note'] ?? ''),
+            'warning'  => (string) ($last['warning'] ?? ''),
+            'extra'    => $this->progressExtra(),
+        ];
+    }
+
+    /** Active, yet no step works and none has been due (next_at: each queued step, a retry, a Continue)
+     *  nor moved the position (since the start, when nothing did) for longer than the retries take and
+     *  an hour: a lost queue row, a queue that does not run, a step that never fits a round. */
+    final public function isStuck(int $now): bool
+    {
+        if (($this->state !== static::states()->active) || $this->hasLiveLease($now)) {
+            return false;
+        }
+        $wait = self::STUCK_GRACE;
+        for ($failures = 0; $failures < self::MAX_FAILURES; ++$failures) {
+            $wait += $this->retryDelay($failures);
+        }
+        $since = max((int) (((string) $this->moved !== '') ? $this->moved : $this->started), (int) $this->next_at);
+        return $now - $since > $wait;
+    }
+
+    /** a step may still be working - also in an ended run, so a new run of the subject waits for it */
+    final public function hasLiveLease(int $now): bool
+    {
+        return ((string) $this->lease_tok !== '') && ((int) $this->lease > $now);
+    }
+
+    /** The runs neither done nor ended, of $subject or all, read-only. No rights checked - the caller
+     *  shows a user only those mayControl() allows.
+     *  @return list<static> */
+    final public static function unfinished(?string $subject = null): array
+    {
+        $open    = self::unfinishedStates();
+        $records = ($subject === null) ? self::records('state', $open, ['state']) : self::records('subject', $subject, ['state']);
+        $ids     = array_keys(array_filter($records, static fn(array $r): bool => in_array($r['state'] ?? '', $open, true)));
+        return self::getAll($ids);
+    }
+
+    /** the runs that hang (isStuck()), read-only - for the State Check, no rights checked
+     *  @return list<static> */
+    final public static function stuck(int $now): array
+    {
+        $ids = array_keys(self::records('state', static::states()->active, []));
+        return array_values(array_filter(self::getAll($ids), static fn(self $run): bool => $run->isStuck($now)));
+    }
+
+    /** Deletes the finished runs of $subject but the $keep last ones, and forgets the secrets past their
+     *  time of all runs. Kept: unfinished runs, an ended run whose step may still be writing (its lease
+     *  keeps a new run of the subject waiting), and one whose afterClose() still waits in the queue.
+     *  Outside any transaction: each secret is forgotten under its run's own short lock, never while the
+     *  caller holds other locks a step's end may wait for. No rights checked - the caller has. */
+    final public static function cleanup(string $subject, int $keep): void
+    {
+        if (DB_AA::inTransaction()) {
+            throw new \LogicException('Batch runs are cleaned up outside any transaction');
+        }
+        $states = static::states();
+        $now    = static::now();
+        self::forgetExpiredSecrets($now);
+        $finished = array_filter(
+            self::records('subject', $subject, ['state', 'started', 'finished', 'lease', 'lease_tok']),
+            static fn(array $r): bool => in_array($r['state'] ?? '', [$states->done, $states->ended], true) && ((($r['lease_tok'] ?? '') === '') || ((int) ($r['lease'] ?? 0) <= $now)),
+        );
+        uasort($finished, static fn(array $a, array $b): int => [(int) ($b['finished'] ?? 0), (int) ($b['started'] ?? 0)] <=> [(int) ($a['finished'] ?? 0), (int) ($a['started'] ?? 0)]);
+        $old = array_map('strval', array_slice(array_keys($finished), max(0, $keep)));
+        if ($old) {
+            // a row of priority 0 never runs again - it must not hold the run for ever
+            $rows    = DB_AA::select([], 'SELECT selector, priority FROM `toexecute`', [['selector', array_map(self::closeSelector(...), $old)]]);
+            $closing = array_map(static fn(array $r): string => (string) $r['selector'], array_filter($rows, static fn(array $r): bool => (int) $r['priority'] > 0));
+            $old     = array_values(array_filter($old, static fn(string $id): bool => !in_array(self::closeSelector($id), $closing, true)));
+        }
+        if ($old) {
+            self::deleteObjects($old);
+        }
+    }
+
+    /** The last $limit runs of $subject, the newest first, read-only. No rights checked - the caller
+     *  shows a user only those mayControl() allows.
+     *  @return list<static> */
+    final public static function ofSubject(string $subject, int $limit): array
+    {
+        $records = self::records('subject', $subject, ['started']);
+        uksort($records, static fn($a, $b): int => [(int) ($records[$b]['started'] ?? 0), (string) $b] <=> [(int) ($records[$a]['started'] ?? 0), (string) $a]);
+        return self::getAll(array_slice(array_keys($records), 0, max(0, $limit)));
+    }
+
+    /** the run as get() reads it, for each of $ids that is one
+     *  @return list<static> */
+    private static function getAll(array $ids): array
+    {
+        return array_values(array_filter(array_map(static fn($id): ?static => static::get((string) $id), $ids)));
+    }
+
+    /** The runs of this class whose $property is $value (or one of them), with the values of $props:
+     *  one query for the ids, one for the values - not a read per run.
+     *  @param string|list<string> $value
+     *  @param list<string> $props
+     *  @return array<string, array<string, string>> id => property => value */
+    private static function records(string $property, string|array $value, array $props): array
+    {
+        $ids = array_values(array_unique(array_map('strval', DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', $property], ['value', $value]]))));
+        if (!$ids) {
+            return [];
+        }
+        $records = [];
+        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $ids], ['property', ['aa_type', ...$props]]]) as $row) {
+            $records[(string) $row['object_id']][(string) $row['property']] = (string) $row['value'];
+        }
+        // other objects may have a property of that name too
+        return array_filter($records, static fn(array $r): bool => ($r['aa_type'] ?? '') === static::class);
+    }
+
+    /** @return list<string> */
+    private static function unfinishedStates(): array
+    {
+        $states = static::states();
+        return array_values(array_diff($states->all(), [$states->done, $states->ended]));
+    }
+
+    /** a secret past its time is of no use - and only an unfinished run keeps one; each run in a short
+     *  transaction of its own, checked again under the lock: Continue may have sealed a new one since */
+    private static function forgetExpiredSecrets(int $now): void
+    {
+        $sealed = array_filter(self::records('state', self::unfinishedStates(), ['sealed_until']), static fn(array $r): bool => (($r['sealed_until'] ?? '') !== '') && ((int) $r['sealed_until'] <= $now));
+        foreach (array_keys($sealed) as $id) {
+            DB_AA::transaction(static function () use ($id, $now): void {
+                $run = self::lockForUpdate((string) $id);
+                if ($run && ((string) $run->sealed_until !== '') && ((int) $run->sealed_until <= $now)) {
+                    $run->sealed       = '';
+                    $run->sealed_until = '';
+                    $run->update(['sealed', 'sealed_until']);
+                }
+            });
+        }
+    }
+
+    /** the queue selector of an ended run's close row - of the run, so cleanup() sees it waiting */
+    private static function closeSelector(string $id): string
+    {
+        return 'BatchClose_' . $id;
+    }
+
+    /** what the sealed secret is bound to: moved to another run or given more time, it does not open */
+    private function sealContext(int $until): string
+    {
+        return static::class . "\n" . $this->getId() . "\n" . $until;
+    }
+
+    /** @throws BatchFailed FORBIDDEN */
+    private function requireControl(string $uid): void
+    {
+        if (!$this->mayControl($uid)) {
+            throw new BatchFailed('FORBIDDEN');
+        }
+    }
+
+    private function isFinished(): bool
+    {
+        return !in_array($this->state, self::unfinishedStates(), true);
+    }
+
+    /** ended, its queued steps with it - the lease and its step stay; the caller has the lock
+     *  @param list<string> $also the caller's own properties to write with it */
+    private function becomeEnded(array $also = []): void
+    {
+        $this->moveTo(static::states()->ended);
+        $this->finished     = (string) static::now();
+        $this->next_at      = '';
+        $this->sealed       = '';
+        $this->sealed_until = '';
+        $this->update(['state', 'finished', 'next_at', 'sealed', 'sealed_until', ...$also]);
+        (new Toexecute())->cancel_all($this->selector());
+    }
+
+    /** the core's role of the state: active, error, done, ended - or own */
+    private function role(): string
+    {
+        $states = static::states();
+        return match ($this->state()) {
+            $states->active => 'active',
+            $states->error  => 'error',
+            $states->done   => 'done',
+            $states->ended  => 'ended',
+            default         => 'own',
+        };
+    }
+
+    /** the close row of an ended run: afterClose() after the commit of the end */
+    private function closeEnded(): string
+    {
+        if ($this->state() !== static::states()->ended) {
+            return 'stale';
+        }
+        $this->closed();
+        return 'closed';
     }
 
     /** object_text for the lock; toexecute because a step row on MyISAM is visible to another runner
@@ -485,7 +855,8 @@ abstract class BatchRun extends AA_Object
             return;
         }
         $at            = $now + ($wait ? $this->retryDelay($failures) : 0);
-        $this->next_at = ($at > $now) ? (string) $at : '';
+        // also a step due now: a run that just got its chance does not hang (isStuck())
+        $this->next_at = (string) $at;
         $this->enqueue($at);
     }
 
@@ -532,14 +903,7 @@ abstract class BatchRun extends AA_Object
     /** what the run stands on is gone: ended for good, its queued steps with it */
     private function endInvalid(string $expected): string
     {
-        $run = $this->whileAt($expected, static function (self $run): void {
-            $run->moveTo($run::states()->ended);
-            $run->finished     = (string) $run::now();
-            $run->sealed       = '';
-            $run->sealed_until = '';
-            $run->update(['state', 'finished', 'sealed', 'sealed_until']);
-            (new Toexecute())->cancel_all($run->selector());
-        });
+        $run = $this->whileAt($expected, static fn(self $run) => $run->becomeEnded());
         if (!$run) {
             return 'stale';
         }
@@ -562,11 +926,12 @@ abstract class BatchRun extends AA_Object
                 $run->moveTo($run::states()->done);
                 $run->report       = $report ? json_encode($report, JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE, self::JSON_DEPTH) : '';
                 $run->finished     = (string) $run::now();
+                $run->next_at      = '';
                 $run->sealed       = '';
                 $run->sealed_until = '';
                 $run->lease        = '';
                 $run->lease_tok    = '';
-                $run->update(['state', 'report', 'finished', 'sealed', 'sealed_until', 'lease', 'lease_tok']);
+                $run->update(['state', 'report', 'finished', 'next_at', 'sealed', 'sealed_until', 'lease', 'lease_tok']);
             });
         } catch (\Throwable $e) {
             // it would fail the same way again (a report too deep, a broken state) - no retry
@@ -601,7 +966,7 @@ abstract class BatchRun extends AA_Object
             $this->afterClose($this->state());
         } catch (\Throwable) {
             $this->whileLocked(static function (self $run): bool {
-                $run->progress = self::encode(['warning' => 'AFTER_CLOSE'] + $run->json('progress'));
+                $run->progress = self::encode(['warning' => 'after_close'] + $run->json('progress'));
                 $run->update(['progress']);
                 return true;
             });
@@ -660,8 +1025,12 @@ abstract class BatchRun extends AA_Object
      *  later() runs a task it cannot queue at once, and such a step must find its row stale. */
     private function enqueue(int $time, ?int $priority = null): void
     {
-        $step = new BatchStep(static::class, $this->getId(), BatchPosition::fingerprint($this->step(), $this->position()));
-        if ((new Toexecute())->later($step, [], $this->selector(), $priority ?? $this->stepPriority(), $time) !== true) {
+        $this->queueRow(BatchPosition::fingerprint($this->step(), $this->position()), $this->selector(), $time, $priority ?? $this->stepPriority());
+    }
+
+    private function queueRow(string $expected, string $selector, int $time, int $priority): void
+    {
+        if ((new Toexecute())->later(new BatchStep(static::class, $this->getId(), $expected), [], $selector, $priority, $time) !== true) {
             throw new \RuntimeException('The queue did not take the step of a batch run');
         }
     }

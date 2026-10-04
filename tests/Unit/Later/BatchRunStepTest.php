@@ -470,7 +470,7 @@ namespace Tests\Unit\Later {
             $stored = self::stored($id);
             $this->assertSame('done', $stored['state'], 'the state stays');
             $this->assertSame('done', $ret);
-            $this->assertSame('AFTER_CLOSE', json_decode($stored['progress'], true)['warning'] ?? null);
+            $this->assertSame('after_close', json_decode($stored['progress'], true)['warning'] ?? null);
             $this->assertStringNotContainsString('hunter2', implode("\n", $stored));
         }
 
