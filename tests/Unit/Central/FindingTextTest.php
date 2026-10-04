@@ -127,12 +127,24 @@ final class FindingTextTest extends TestCase
         self::assertSame('Slice "News" › Allow anonymous posting of items', (new FindingText(self::package()))->place($post));
     }
 
+    public function test_a_command_carrying_a_secret_shows_only_its_name(): void
+    {
+        $found = static fn(string $code, string $ref): string => FindingText::found(new LintFinding(LintFinding::SECURITY, $code, $ref, 0), 'slice-module[' . self::SLICE . ']/view[12]/odd');
+
+        self::assertSame('{credentials:••••••', $found('credentials', '{credentials:' . self::SLICE . ':S3cr3t}'));
+        self::assertSame('{setsecret:••••••', $found('setsecret', '{setsecret:api:S3cr3t}'));
+        self::assertSame('{jwtencode(••••••', $found('jwtencode', '{jwtencode({"k":"S3cr3t"})}'));
+        self::assertSame('{changepwd:••••••', $found('changepwd', '{changepwd:S3cr3t}'));
+        self::assertSame('slice_pwd=••••••', $found('slice-pwd', 'slice_pwd=S3cr3t'));
+        self::assertSame('{include:http://x/…', $found('include', '{include:http://x/'), 'other commands show what they read');
+    }
+
     public function test_a_setting_that_may_hold_a_password_shows_no_part_of_it(): void
     {
         $at = static fn(string $field): string => 'slice-module[' . self::SLICE . "]/setting-values/{$field}[0]";
 
         self::assertSame('••••••', FindingText::found(new LintFinding(LintFinding::SECURITY, 'slice-pwd', 'slice_pwd=S3cr3t', 0), $at('_feed_key.......')));
-        self::assertSame('slice_pwd=x', FindingText::found(new LintFinding(LintFinding::SECURITY, 'slice-pwd', 'slice_pwd=x', 0), $at('_author.........')), 'no secret by its id');
+        self::assertSame('slice_pwd=••••••', FindingText::found(new LintFinding(LintFinding::SECURITY, 'slice-pwd', 'slice_pwd=x', 0), $at('_author.........')), 'the password itself');
         foreach (['_api............', '_auth_url.......', '_smtp_heslo.....', '_client_secret..', '_Token..........', '_smtppass.......', '_pass2..........',
             '_passphrase.....', '_smtppwd........', '_sshkey.........', '_oauth..........'] as $secret) {
             self::assertSame('••••••', FindingText::found(new LintFinding(LintFinding::ERROR, 'charset', 'x', 0), $at($secret)), $secret);

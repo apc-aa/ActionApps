@@ -31,15 +31,20 @@ final class RemoteSource
     /** the token the target keeps for a run: its batches run in a day, Continue logs in again */
     public const TOKEN_TTL = 24 * 3600;
 
+    /** log.type of a failed login of an admin to the source (AA_Log::TYPE_MAX) */
+    public const LOG_DENY = 'APP_DENY';
+
     /** nesting of an answer; the module definitions are some five levels deep */
     private const MAX_DEPTH = 64;
 
-    /** @param ?HttpClientInterface $transport the connection under AA\Http\Client; another one for tests only */
+    /** @param ?HttpClientInterface $transport the connection under AA\Http\Client; another one for tests only
+     *  @param string $source the central_conf id or InstallRun::STORE - what the AA log names for a failed login */
     public function __construct(
         private readonly string $url,
         private readonly int $maxBytes = self::MAX_BYTES,
         private readonly int $timeout = self::TIMEOUT,
         private readonly ?HttpClientInterface $transport = null,
+        private readonly string $source = '',
     ) {}
 
     /** the responder of the AA of the central_conf row
@@ -47,7 +52,7 @@ final class RemoteSource
     public static function forAa(int $aa_id): self
     {
         $aa = Actionapps::find($aa_id) ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list');
-        return new self($aa->getComunicatorUrl());
+        return new self($aa->getComunicatorUrl(), source: (string) $aa_id);
     }
 
     /** the responder of a remote source of an install run (InstallRun::source()): the store or a
@@ -56,7 +61,7 @@ final class RemoteSource
     public static function forSource(string $source): self
     {
         return match (true) {
-            $source === InstallRun::STORE                    => new self(AppStore::responderUrl()),
+            $source === InstallRun::STORE                    => new self(AppStore::responderUrl(), source: InstallRun::STORE),
             (bool) preg_match('/^[1-9]\d{0,9}\z/', $source) => self::forAa((int) $source),
             default                                           => throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such remote source'),
         };
@@ -67,8 +72,44 @@ final class RemoteSource
      *  @throws SourceFailed */
     public function jwt(string $username, string $password, string $code2fa = ''): string
     {
-        $response = $this->ask(new AA_Request('Get_Jwt', ['ttl' => self::TOKEN_TTL, 'scope' => 'apps']), ['username' => $username, 'password' => $password, 'code2fa' => $code2fa]);
-        $token    = $response->getResponse();
+        return self::token($this->askJwt($username, $password, $code2fa));
+    }
+
+    /** jwt() for an admin of this AA: a failure also leaves a row in the AA log - the source, the reason and
+     *  the error number of the source, never the login or a token - as the page shows only the message
+     *  @param array{string, string, string} $login username, password, 2FA code
+     *  @throws SourceFailed */
+    public function login(array $login): string
+    {
+        try {
+            $response = $this->askJwt(...$login);
+        } catch (SourceFailed $e) {
+            $this->denied($e, null);
+        }
+        try {
+            return self::token($response);
+        } catch (SourceFailed $e) {
+            $this->denied($e, $response);
+        }
+    }
+
+    /** @param ?AA_Response $response the answer of the source, null = none came */
+    private function denied(SourceFailed $e, ?AA_Response $response): never
+    {
+        \AA_Log::write(self::LOG_DENY, $this->source, [$e->reason, (string) ($response?->getError() ?? '')]);
+        throw $e;
+    }
+
+    /** @throws SourceFailed */
+    private function askJwt(string $username, string $password, string $code2fa): AA_Response
+    {
+        return $this->ask(new AA_Request('Get_Jwt', ['ttl' => self::TOKEN_TTL, 'scope' => 'apps']), ['username' => $username, 'password' => $password, 'code2fa' => $code2fa]);
+    }
+
+    /** the token of a Get_Jwt answer @throws SourceFailed */
+    private static function token(AA_Response $response): string
+    {
+        $token = $response->getResponse();
         if ($response->isError() || !is_string($token) || !self::isToken($token)) {
             throw new SourceFailed(SourceFailed::LOGIN, 'The source AA refused the login - a superadmin of it has to log in (error ' . $response->getError() . ')');
         }

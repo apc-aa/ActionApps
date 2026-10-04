@@ -16,7 +16,16 @@ use AA\Central\Package\ValueCodec;
  *  so the texts assume the reader does not know the codes. */
 final class FindingText
 {
+    /** codes whose found value may be the secret itself - a password, a key, a signed payload */
+    private const SECRET_CODES = ['credentials', 'jwtencode', 'setsecret', SecurityLint::SLICE_PWD];
+
     public function __construct(private readonly ?Package $package = null) {}
+
+    /** the levels by their danger, as the headings of the findings name them @return array<string, string> level => label */
+    public static function levels(): array
+    {
+        return [LintFinding::SECURITY => _m('Security findings (S)'), LintFinding::ERROR => _m('Errors (E)'), LintFinding::WARNING => _m('Warnings (W)'), LintFinding::INFO => _m('Notes (I)')];
+    }
 
     /** what the level means for the install - shown by the heading of the level */
     public static function level(string $level): string
@@ -347,6 +356,10 @@ final class FindingText
         $ref = $finding->ref;
         if (($ref !== '') && preg_match('~/setting-values/([^/\[]+)~', $path, $setting) && SettingDefaults::secret($setting[1])) {
             return '••••••';        // a setting that may hold a password: no finding shows a part of it
+        }
+        if (($ref !== '') && (in_array($finding->code, self::SECRET_CODES, true) || str_starts_with($finding->code, 'changepwd'))) {
+            // `{credentials:` or `slice_pwd=` says what it is, the rest may be the secret
+            return (preg_match('~^(?:\{\w+[:(]|slice_pwd=)~i', $ref, $head) ? $head[0] : '') . '••••••';
         }
         if ($finding->code === 'perm-mode') {
             return [

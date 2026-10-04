@@ -75,6 +75,7 @@ use AA\Central\RemoteAppSource;
 use AA\Central\RemoteSource;
 use AA\Central\SourceFailed;
 use AA\Central\TransferProgress;
+use AA\Central\TransferText;
 use AA\IO\DB\DB_AA;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
@@ -151,22 +152,23 @@ if ($json) {
     MoreTimeLimit(120);
     $run = InstallRun::get($run_id);
     try {
+        $text = new TransferText($run ? installapp_slice_names($run) : []);
         // built only by the steps that ask the source: End works when its Central row is gone
         $progress = new TransferProgress(new Importer(new DbImportTarget(), $uid), static fn(): AppSource => installapp_run_source($run), new AaAfterCommit(), $uid);
         $renewed  = '';
         if (($action === 'continue') && $run && ($run->source() !== InstallRun::LOCAL) && ($run->user() === $uid) && ($run->state() === InstallRun::ERROR)) {
             if ($login[0] !== '') {
                 $remote  = RemoteSource::forSource($run->source());
-                $renewed = $remote->seal($remote->jwt(...$login));
+                $renewed = $remote->seal($remote->login($login));
             } elseif (($run->error()[0] ?? '') === SourceFailed::LOGIN) {
-                installapp_json(TransferProgress::state($run, 'login'));
+                installapp_json($text->page(TransferProgress::state($run, 'login')));
             }
         }
-        installapp_json(match ($action) {
+        installapp_json($text->page(match ($action) {
             'batch'    => $progress->next($run_id, $position),
             'continue' => $progress->resume($run_id, $renewed),
             'end'      => $progress->end($run_id),
-        });
+        }));
     } catch (ImportFailed) {
         installapp_json(['status' => 'denied', 'message' => _m('This is no transfer of yours, or you may not install apps.')], 403);
     } catch (SourceFailed $e) {
@@ -203,6 +205,10 @@ $apage->addRequire('
     .aa-installapp-owner details[open] label { display: inline-block; margin: 0.3em 1em 0 0; }
     .aa-installapp [hidden] { display: none; }
     .aa-installapp td.tabtxt { width: 11em; }
+    .aa-installapp-progress progress { width: 100%; max-width: 30em; }
+    .aa-installapp-notes { padding-left: 1.2em; max-width: 60em; }
+    .aa-installapp-notes li { margin: 0.6em 0; overflow-wrap: anywhere; }
+    .aa-installapp-notes li div { margin-top: 0.2em; }
     .aa-installapp-what { display: inline-flex; border: 1px solid var(--clr-basic-darker, #A8977A); border-radius: 4px; overflow: hidden; background: #fff; }
     .aa-installapp-what label { position: relative; padding: 0.35em 1em; cursor: pointer; }
     .aa-installapp-what label + label { border-left: 1px solid var(--clr-basic-darker, #A8977A); }
@@ -436,7 +442,7 @@ function installapp_connect(int $aa, string $mode, bool $all_bins, array $login,
     }
     try {
         $remote = RemoteSource::forAa($aa);
-        $sealed = $remote->seal($remote->jwt(...$login));
+        $sealed = $remote->seal($remote->login($login));
     } catch (SourceFailed $e) {
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         installapp_form($aa, $uid);
@@ -928,7 +934,7 @@ function installapp_settings(array $settings): void
  *  @param list<array{string, LintFinding}> $findings @param Package|null $package names the places */
 function installapp_findings(array $findings, ?Package $package = null): void
 {
-    $levels = [LintFinding::SECURITY => _m('Security findings (S)'), LintFinding::ERROR => _m('Errors (E)'), LintFinding::WARNING => _m('Warnings (W)'), LintFinding::INFO => _m('Notes (I)')];
+    $levels = FindingText::levels();
     $unique = [];
     foreach ($findings as $f) {                  // the export lint and the import lint read the same texts
         $unique[implode("\0", [$f[1]->level, $f[1]->code, $f[0], $f[1]->ref])] ??= $f;
@@ -992,7 +998,6 @@ function installapp_progress(string $run_id, string $uid, bool $start = false): 
         echo '<p>' . safe(installapp_state($run->state())) . '</p>';
         return;
     }
-    $written = $run->written();
     if ($run->state() === InstallRun::DONE) {
         installapp_check($run);
         return;
@@ -1002,26 +1007,66 @@ function installapp_progress(string $run_id, string $uid, bool $start = false): 
     } catch (SourceFailed $e) {
         $counts = [];
     }
-    $remote = ($run->source() !== InstallRun::LOCAL);
-    [$slice, $cursor] = $run->position();
-    $states           = [InstallRun::ITEMS, InstallRun::ERROR, InstallRun::DONE, InstallRun::ENDED];
+    $written = $run->written();
+    $names   = installapp_slice_names($run);
+    // a sum missing a slice the source did not count would promise too little
+    $total   = array_diff_key($names, $counts) ? '' : (string) array_sum(array_intersect_key($counts, $names));
+    $states  = [InstallRun::ERROR, InstallRun::DONE, InstallRun::ENDED];
+    // {x} and the like are filled in by the page as the batches come
+    $texts   = [
+        'states'     => array_combine($states, array_map('installapp_state', $states)),
+        'running'    => _m('Running…'),
+        'retrying'   => _m('Connection lost, retrying (%1/%2)…', ['{n}', '{m}']),
+        'stopped'    => _m('Stopped - press Continue'),
+        'writtenOf'  => _m('Written %1 of %2 items (%3 %)', ['{x}', '{y}', '{p}']),
+        'written'    => _m('Written %1 items', ['{x}']),
+        'lostOf'     => _m('The connection was interrupted (network, the phone went to sleep). Nothing is lost - %1 of %2 items are written. Press Continue to go on.', ['{x}', '{y}']),
+        'lost'       => _m('The connection was interrupted (network, the phone went to sleep). Nothing is lost - %1 items are written. Press Continue to go on.', ['{x}']),
+        'lostEnd'    => _m('The connection was interrupted (network, the phone went to sleep) - it is not known whether the transfer ended. Press End again.'),
+        'answer'     => _m('Last batch answer: %1', ['{t}']),
+        'confirmEnd' => _m('End the transfer? The items written so far stay.'),
+        'login'      => _m('The session has expired - log in again and reload this page.'),
+        'report'     => _m('The report'),
+        'more'       => _m('and %1 more', ['{n}']),
+    ];
     echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs.') . '</div>';
-    echo '<div id="installapp-progress" data-url="' . safe(installapp_url()) . '" data-report="' . safe(installapp_url(['run' => $run_id])) . '" data-token="' . safe(FormToken::get(INSTALLAPP_TOKEN)) . '"'
-        . ' data-run="' . safe($run_id) . '" data-state="' . safe($run->state()) . '" data-slice="' . safe($slice) . '" data-cursor="' . safe($cursor) . '"'
-        . ' data-states="' . safe(json_encode(array_combine($states, array_map('installapp_state', $states)))) . '"'
-        . ' data-confirm-end="' . safe(_m('End the transfer? The items written so far stay.')) . '" data-login="' . safe(_m('The session has expired - log in again and reload this page.')) . '"'
-        . ' data-report-link="' . safe(_m('The report')) . '" data-error-code="' . safe($run->error()[0] ?? '') . '"' . ($start ? ' data-start="1"' : '') . '>';
-    echo '<table class="aa-installapp-findings"><tr><th>' . _m('Slice') . '</th><th class="aa-num">' . _m('Written') . '</th><th class="aa-num">' . _m('On the source') . '</th></tr>';
-    foreach ($run->slices() as $id) {
-        echo '<tr><td>' . safe(AA_Module::getModuleName($remote ? ($run->idMap()->module($id) ?? '') : $id) ?: $id) . '</td><td class="aa-num" data-slice="' . safe($id) . '">' . (int) ($written[$id] ?? 0) . '</td><td class="aa-num">' . (isset($counts[$id]) ? (int) $counts[$id] : '?') . '</td></tr>';
-    }
-    $error = ($run->state() === InstallRun::ERROR) ? implode(' ', $run->error() ?? []) : '';
-    echo '</table><p><strong data-role="state">' . safe(installapp_state($run->state())) . '</strong> <span data-role="error">' . safe($error) . '</span></p><ul data-role="findings"></ul>';
-    if ($remote) {        // the source refused its token (it expired): Continue logs in again
+    echo '<div id="installapp-progress" class="aa-installapp-progress" data-url="' . safe(installapp_url()) . '" data-report="' . safe(installapp_url(['run' => $run_id])) . '" data-token="' . safe(FormToken::get(INSTALLAPP_TOKEN)) . '"'
+        . ' data-run="' . safe($run_id) . '" data-total="' . safe($total) . '" data-moved="' . $run->moved() . '" data-texts="' . safe(installapp_js_data($texts)) . '"'
+        . ' data-initial="' . safe(installapp_js_data((new TransferText($names))->page(TransferProgress::state($run, '')))) . '"' . ($start ? ' data-start="1"' : '') . '>';
+    echo '<p><strong data-role="total"></strong><br><progress data-role="bar"' . (($total === '') ? ' hidden' : ' max="' . max(1, (int) $total) . '"') . '></progress></p>'
+        . '<p><strong data-role="state" aria-live="polite">' . safe(installapp_state($run->state())) . '</strong> <span class="tabhlp" data-role="answer"></span></p>'
+        . '<div class="aa-err" data-role="error" hidden></div>';
+    if ($run->source() !== InstallRun::LOCAL) {        // the source refused its token (it expired): Continue logs in again
         echo '<fieldset data-role="login" hidden><legend>' . _m('Log in to the source AA again') . '</legend><table>' . installapp_login_rows() . '</table></fieldset>';
     }
-    echo '<p><button type="button" class="btn-l" data-role="continue" hidden>' . _m('Continue') . '</button> <button type="button" class="btn-l btn-secondary" data-role="end">' . _m('End') . '</button></p></div>';
+    echo '<p><button type="button" class="btn-l" data-role="continue" hidden>' . _m('Continue') . '</button> <button type="button" class="btn-l btn-secondary" data-role="end" hidden>' . _m('End') . '</button></p>';
+    echo '<table class="aa-installapp-findings"><tr><th>' . _m('Slice') . '</th><th class="aa-num">' . _m('Written') . '</th><th class="aa-num">' . _m('On the source') . '</th></tr>';
+    foreach ($names as $id => $name) {
+        echo '<tr><td>' . safe($name) . '</td><td class="aa-num" data-slice="' . safe((string) $id) . '">' . (int) ($written[$id] ?? 0) . '</td><td class="aa-num">' . (isset($counts[$id]) ? (int) $counts[$id] : '?') . '</td></tr>';
+    }
+    echo '</table><ul class="aa-installapp-notes" data-role="notes"></ul></div>';
     installapp_script();
+}
+
+/** source slice => the name of the slice its items go into; none before the definitions are written
+ *  @return array<string, string> */
+function installapp_slice_names(InstallRun $run): array
+{
+    if ($run->state() === InstallRun::PREVIEW) {
+        return [];          // no id map yet
+    }
+    $map   = $run->idMap();
+    $names = [];
+    foreach ($run->slices() as $id) {
+        $names[$id] = AA_Module::getModuleName($map->module($id) ?? '') ?: $id;
+    }
+    return $names;
+}
+
+/** JSON for a data attribute - safe() it @param array<string, mixed> $data */
+function installapp_js_data(array $data): string
+{
+    return (string) json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES);
 }
 
 /** the report of a finished transfer, as its finish stored it */
@@ -1038,7 +1083,7 @@ function installapp_check(InstallRun $run): void
 }
 
 /** the loop of the progress page: POST "next batch" until the run leaves the items; the run says where it
- *  is, so a stale answer only moves the position on */
+ *  is, so a stale answer only moves the position on - and a batch lost on the way may simply be asked again */
 function installapp_script(): void
 {
     echo <<<'HTML'
@@ -1046,104 +1091,167 @@ function installapp_script(): void
 (() => {
     const box = document.getElementById('installapp-progress');
     const el = role => box.querySelector(`[data-role="${role}"]`);
-    const states = JSON.parse(box.dataset.states);
-    let pos = {slice: box.dataset.slice, cursor: box.dataset.cursor};
-    let running = false;
-    let state = box.dataset.state;
-
+    const t = JSON.parse(box.dataset.texts);
+    const total = (box.dataset.total === '') ? null : Number(box.dataset.total);
+    // the pauses before asking again: a phone waking up, a proxy restarting
+    const pauses = [2000, 5000, 15000];
+    // a gateway answering without PHP behind it
+    const GATEWAY = [502, 503, 504];
+    const LEVELS = ['S', 'E', 'W', 'I'];
+    const PLACES = 5;           // places of a note listed - its count says the rest
+    const fill = (text, values) => text.replace(/\{(\w)\}/g, (all, key) => values[key] ?? all);
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     const login = el('login');
-    const showLogin = (st, code) => {
-        if (login) login.hidden = !(st === 'error' && code === 'SOURCE_LOGIN');
+    // the findings of the written batches by the position each was sent from - a batch sent again
+    // (Continue after an error) replaces its own, an answer names only those of its batch
+    const kept = new Map();
+    let s = JSON.parse(box.dataset.initial);
+    let busy = 0;               // callers of post() at work
+    let retry = 0;
+
+    const written = () => Object.values(s.written || {}).reduce((sum, n) => sum + n, 0);
+    // X alone when the source did not count all its slices
+    const counted = (of, alone) => {
+        const x = written();
+        return (total === null) ? fill(alone, {x: x.toLocaleString()})
+            : fill(of, {x: x.toLocaleString(), y: total.toLocaleString(), p: total ? Math.min(100, Math.floor(100 * x / total)) : 100});
     };
+    const answered = ms => {
+        const d = new Date(ms);
+        el('answer').textContent = fill(t.answer, {t: (d.toDateString() === new Date().toDateString()) ? d.toLocaleTimeString() : d.toLocaleString()});
+    };
+    const paint = () => {
+        const open = ['items', 'error'].includes(s.state);
+        el('total').textContent = counted(t.writtenOf, t.written);
+        el('bar').value = written();
+        el('state').textContent = retry ? fill(t.retrying, {n: retry, m: pauses.length})
+            : (s.state !== 'items') ? (t.states[s.state] || s.state) : (busy ? t.running : t.stopped);
+        el('continue').hidden = (busy > 0) || !open;
+        el('end').hidden = !open;
+        if (login) login.hidden = !(s.state === 'error' && s.login);
+    };
+    const say = text => {
+        el('error').textContent = text;
+        el('error').hidden = !text;
+    };
+    // one note per key: the counts of its batches added up
+    const merge = lists => {
+        const by = new Map();
+        for (const n of lists.flat()) {
+            const m = by.get(n.key) ?? {...n, count: 0, places: new Map()};
+            m.count += n.count;
+            for (const [place, k] of n.places) m.places.set(place, (m.places.get(place) || 0) + k);
+            by.set(n.key, m);
+        }
+        return [...by.values()];
+    };
+    const note = n => {
+        const places = [...n.places].map(([place, k]) => `${place} (${k}×)`);
+        const more = places.length - PLACES;
+        const lines = [places.slice(0, PLACES).join(', ') + ((more > 0) ? ` ${fill(t.more, {n: more})}` : ''), ...n.lines];
+        const li = document.createElement('li');
+        li.append(Object.assign(document.createElement('strong'), {textContent: `${n.title} - ${n.count}×`}),
+            ...lines.filter(Boolean).map(line => Object.assign(document.createElement('div'), {textContent: line})));
+        return li;
+    };
+    const show = next => {
+        s = next;
+        for (const [slice, n] of Object.entries(s.written || {})) {
+            const cell = box.querySelector(`td[data-slice="${CSS.escape(slice)}"]`);
+            if (cell) cell.textContent = n;
+        }
+        say(s.error);
+        el('notes').replaceChildren(...[...merge([...kept.values()]), ...merge([s.notes])].sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)).map(note));
+        paint();
+        if (s.state === 'done') {
+            if (s.cleanupFailed) {
+                const li = document.createElement('li');
+                li.append(Object.assign(document.createElement('a'), {href: box.dataset.report, textContent: t.report}));
+                el('notes').append(li);
+            } else {
+                location.href = box.dataset.report;
+            }
+        }
+    };
+    const json = text => {
+        try {
+            return JSON.parse(text);
+        } catch {
+            return null;
+        }
+    };
+    // Only a request that got no answer is sent again - it names the run's position, so one the server did
+    // write comes back stale. Never Continue: it may carry the login to the source.
     const post = async action => {
-        const body = new URLSearchParams({action, run: box.dataset.run, token: box.dataset.token, slice: pos.slice, cursor: pos.cursor});
+        const body = new URLSearchParams({action, run: box.dataset.run, token: box.dataset.token, slice: s.position.slice, cursor: s.position.cursor});
+        const tries = (action === 'continue') ? 0 : pauses.length;
         if (action === 'continue' && login && !login.hidden) {
             for (const input of login.querySelectorAll('input')) {
                 body.set(input.name, input.value);
                 if (input.type === 'password') input.value = '';
             }
         }
-        const response = await fetch(box.dataset.url, {method: 'POST', body, credentials: 'same-origin', headers: {Accept: 'application/json'}});
-        const data = await response.json().catch(() => null);       // a login page after the session expired
-        if (!data) {
-            throw new Error(box.dataset.login);
-        }
-        if (!response.ok || !data.state) {
-            throw new Error(data.message || `HTTP ${response.status}`);
-        }
-        return data;
-    };
-    const show = s => {
-        pos = s.position;
-        for (const [slice, n] of Object.entries(s.written || {})) {
-            const cell = box.querySelector(`td[data-slice="${CSS.escape(slice)}"]`);
-            if (cell) cell.textContent = n;
-        }
-        el('state').textContent = states[s.state] || s.state;
-        el('error').textContent = s.error ? `${s.error.code} ${s.error.path}` : '';
-        const lines = [
-            ...Object.entries(s.warnings || {}).flatMap(([slice, codes]) => Object.entries(codes).map(([code, n]) => `W ${code} slice-module[${slice}] ${n}x`)),
-            ...(s.findings || []).filter(f => f.level !== 'W').map(f => `${f.level} ${f.code} ${f.path} ${f.ref}`),
-            ...(s.cleanup || []).map(([step, error]) => `W ${step} ${error}`),
-        ];
-        el('findings').replaceChildren(...lines.map(line => Object.assign(document.createElement('li'), {textContent: line})));
-        state = s.state;
-        showLogin(s.state, s.error?.code);
-        el('continue').hidden = s.state !== 'error';
-        el('end').hidden = !['items', 'error'].includes(s.state);
-        if (s.state === 'done') {
-            if ((s.cleanup || []).length) {
-                const li = document.createElement('li');
-                li.append(Object.assign(document.createElement('a'), {href: box.dataset.report, textContent: box.dataset.reportLink}));
-                el('findings').append(li);
-            } else {
-                location.href = box.dataset.report;
+        for (let attempt = 1; ; attempt++) {
+            let response, raw;
+            try {
+                // a connection dropped silently would keep the page waiting for ever
+                response = await fetch(box.dataset.url, {method: 'POST', body, credentials: 'same-origin', headers: {Accept: 'application/json'}, signal: AbortSignal.timeout?.(300000)});
+                if (GATEWAY.includes(response.status)) throw Object.assign(new Error(`HTTP ${response.status}`), {gateway: true});
+                raw = await response.text();
+            } catch (e) {
+                const lost = (e instanceof TypeError) || (e.name === 'TimeoutError') || e.gateway;
+                if (!lost || attempt > tries) {
+                    retry = 0;
+                    paint();
+                    throw lost ? new Error((action === 'end') ? t.lostEnd : counted(t.lostOf, t.lost)) : e;
+                }
+                retry = attempt;
+                paint();
+                await sleep(pauses[attempt - 1]);
+                continue;
             }
+            retry = 0;
+            const data = json(raw);
+            if (!data) throw new Error(response.ok ? t.login : `HTTP ${response.status}`);     // a login page after the session expired
+            if (!response.ok || !data.state) throw new Error(data.message || `HTTP ${response.status}`);
+            answered(Date.now());
+            return data;
         }
     };
-    const fail = e => {
-        el('error').textContent = e.message;
-        el('continue').hidden = false;
-    };
-    const loop = async () => {
-        if (running) return;
-        running = true;
+    // every caller of post() holds busy while it works - Continue waits for all of them
+    const busyWith = async work => {
+        busy++;
+        paint();
         try {
-            for (let s = {state: 'items'}; s.state === 'items';) {
-                s = await post('batch');
-                show(s);
-                if (s.status === 'stale') await new Promise(resolve => setTimeout(resolve, 500));
-            }
+            await work();
         } catch (e) {
-            fail(e);
+            say(e.message);
         }
-        running = false;
+        busy--;
+        paint();
     };
-    el('continue').addEventListener('click', async () => {
-        if (state === 'items') {
-            loop();
-            return;
+    const batches = async () => {
+        while (s.state === 'items') {
+            const from = `${s.position.slice} ${s.position.cursor}`;
+            const next = await post('batch');
+            if (next.status !== 'stale') kept.set(from, next.found);       // a stale answer did nothing
+            show(next);
+            if (s.status === 'stale') await sleep(500);
         }
-        try {
-            const s = await post('continue');
-            show(s);
-            if (s.state === 'items') loop();
-        } catch (e) {
-            fail(e);
-        }
+    };
+    el('continue').addEventListener('click', () => {
+        if (busy) return;
+        busyWith(async () => {
+            if (s.state === 'error') show(await post('continue'));
+            await batches();
+        });
     });
-    el('end').addEventListener('click', async () => {
-        if (!confirm(box.dataset.confirmEnd)) return;
-        try {
-            show(await post('end'));
-        } catch (e) {
-            fail(e);
-        }
+    el('end').addEventListener('click', () => {
+        if (confirm(t.confirmEnd)) busyWith(async () => show(await post('end')));
     });
-    el('continue').hidden = !['items', 'error'].includes(state) || (state === 'items' && box.dataset.start);
-    el('end').hidden = !['items', 'error'].includes(state);
-    showLogin(state, box.dataset.errorCode);
-    if (state === 'items' && box.dataset.start) loop();
+    if (Number(box.dataset.moved)) answered(1000 * Number(box.dataset.moved));
+    show(s);
+    if (box.dataset.start) busyWith(batches);
 })();
 </script>
 HTML;
