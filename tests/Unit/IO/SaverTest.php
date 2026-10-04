@@ -549,6 +549,51 @@ namespace Tests\Unit\IO {
             $this->assertStringNotContainsString('SECRET', $saver->report(2, 'plain'), 'nor in the report of an import');
         }
 
+        public function test_setRedact_masksTheKeyBeforeItIsCut(): void
+        {
+            // the secret ends past KEY_CHARS: cut first, only its start would be left, which no mask knows
+            $key   = 'https://example.cz/data?apikey=sekret4242424242';
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed([$key])), null, self::SLICE, 'update/insert', '["relation........"]'))
+                ->setImportMode()
+                ->setRedact(static fn(string $text): string => str_replace('sekret4242424242', '***', $text))
+                ->addValidate('no');
+
+            $this->assertSame([0, 1], $saver->run());
+            $this->assertSame('Item 1 (relation........=https://example.cz/data?apikey=***): the item failed the validation', $saver->errors()[0]['msg']);
+        }
+
+        public function test_setRedact_masksSamples(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber([$this->item(self::ITEM1, ['headline........' => 'token sekret42 inside'])]), null, self::SLICE, 'update'))
+                ->setImportMode()
+                ->setRedact(static fn(string $text): string => str_replace('sekret42', '***', $text));
+
+            $saver->run(false);
+
+            $this->assertSame(['token *** inside'], $saver->samples()[0]['headline........']);
+        }
+
+        public function test_setRedact_masksTheNamesInAMessage(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber([$this->item(self::ITEM1, ['headline........' => 'h'])]), null, self::SLICE, 'update/insert', '["sekret42........"]'))
+                ->setImportMode()
+                ->setRedact(static fn(string $text): string => str_replace('sekret42', '***', $text));
+
+            $this->assertSame([0, 1], $saver->run());
+            $this->assertSame('Item 1 (***........=): key field ***........ is empty', $saver->errors()[0]['msg']);
+        }
+
+        public function test_run_givesTheCallerItsSliceBack(): void
+        {
+            \AA::$slice_id = 'outer';
+            $saver         = (new RecordingSaver(new ArrayGrabber($this->items(1)), null, self::SLICE, 'update'))
+                ->setImportMode()
+                ->addValidate('1');
+
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame('outer', \AA::$slice_id, 'the validation ran in the slice of the item, the caller goes on in its own');
+        }
+
         public function test_errors_keyInInvalidUtf8StaysValid(): void
         {
             $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(["a\xff\xfeb"])), null, self::SLICE, 'update/insert', '["relation........"]'))

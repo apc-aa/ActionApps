@@ -105,6 +105,9 @@ class Saver implements AA\Later\LaterInterface
     /** @var array<string, string|list<string>> job parameters the validation sees as fields */
     private array $context = [];
 
+    /** @var ?\Closure(string): string masks secrets in the data errors() and samples() show */
+    private ?\Closure $redact = null;
+
     /** @var array{new: int, updated: int, skipped: int, errors: int} */
     private array $counts = self::NO_COUNTS;
 
@@ -187,6 +190,14 @@ class Saver implements AA\Later\LaterInterface
         return $this;
     }
 
+    /** Masks the secrets of the source (AA\Import\Context::redact()) in the values errors() and
+     *  samples() show - before they are cut, when the whole secret is still there to be found. */
+    public function setRedact(\Closure $redact): static
+    {
+        $this->redact = $redact;
+        return $this;
+    }
+
     /** The messages carry key values - data of the source: escape them (safe(), textContent in JS),
      *  never pass them through {…} or unalias.
      *  @return list<array{code: string, msg: string}> the first $max item errors since clear_ids() */
@@ -227,6 +238,18 @@ class Saver implements AA\Later\LaterInterface
      * @return int[] count of [changed,error] items
      */
     public function run(bool $fire = true, ?BatchBudget $budget = null, int $limit = 0): array
+    {
+        // the validation needs the slice of each item; the caller gets its own back
+        $slice_id = AA::$slice_id;
+        try {
+            return $this->runItems($fire, $budget, $limit);
+        } finally {
+            AA::$slice_id = $slice_id;
+        }
+    }
+
+    /** run() without restoring AA::$slice_id */
+    private function runItems(bool $fire, ?BatchBudget $budget, int $limit): array
     {
         $this->reached_end = false;
         if ($budget?->spent()) {
@@ -325,7 +348,7 @@ class Saver implements AA\Later\LaterInterface
                         // update and insert_if_new restrict previous just for updates or inserts
 
                         $set = new AA_Set([$this->slice_id]);
-                        $key_desc = $this->import_mode ? self::describeKey($content4id, $flds) : '';
+                        $key_desc = $this->import_mode ? $this->describeKey($content4id, $flds) : '';
                         foreach ($flds as $fld) {
                             $condval = $content4id->getValue($fld);
                             if (trim($condval) === '') {
@@ -467,7 +490,7 @@ class Saver implements AA\Later\LaterInterface
     {
         $this->counts['errors']++;
         if (count($this->errors) < self::ERRORS_KEPT) {
-            $msg            = vsprintf(self::ERROR_MESSAGES[$code], array_map(static fn(string $a): string => self::shorten($a, self::KEY_CHARS), $args));
+            $msg            = vsprintf(self::ERROR_MESSAGES[$code], array_map(fn(string $a): string => $this->clip($a, self::KEY_CHARS), $args));
             $this->errors[] = ['code' => $code, 'msg' => "Item $item" . ($key_desc === '' ? '' : " ($key_desc)") . ": $msg"];
         }
         if (!$this->import_mode) {
@@ -476,12 +499,18 @@ class Saver implements AA\Later\LaterInterface
     }
 
     /** "field=value, ..." of the key fields, each value shortened */
-    private static function describeKey(ItemContent $content, array $fields): string
+    private function describeKey(ItemContent $content, array $fields): string
     {
         return implode(', ', array_map(
-            static fn($fld): string => self::shorten((string) $fld, self::KEY_CHARS) . '=' . self::shorten((string) $content->getValue($fld), self::KEY_CHARS),
+            fn($fld): string => $this->clip((string) $fld, self::KEY_CHARS) . '=' . $this->clip((string) $content->getValue($fld), self::KEY_CHARS),
             $fields,
         ));
+    }
+
+    /** data of the source as shorten() gives it, its secrets masked first */
+    private function clip(string $text, int $chars): string
+    {
+        return self::shorten($this->redact ? ($this->redact)($text) : $text, $chars);
     }
 
     /** valid UTF-8 without control characters, at most $chars characters */
@@ -518,7 +547,7 @@ class Saver implements AA\Later\LaterInterface
                 continue;
             }
             $sample[self::shorten($field_id, 32)] = array_map(
-                static fn($v): string => self::shorten((string) (is_array($v) ? ($v['value'] ?? '') : $v), self::SAMPLE_CHARS),
+                fn($v): string => $this->clip((string) (is_array($v) ? ($v['value'] ?? '') : $v), self::SAMPLE_CHARS),
                 array_slice(array_values($values), 0, self::SAMPLE_VALUES),
             );
             if (count($sample) >= self::SAMPLE_FIELDS) {
