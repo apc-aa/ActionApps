@@ -767,6 +767,20 @@ final class BatchRunControlTest extends TestCase
         $this->assertTrue($run->isStuck(self::NOW + 9001));
     }
 
+    /** State Check says how long by the very time isStuck() counts from */
+    public function test_idleSince_isWhatIsStuckCountsFrom(): void
+    {
+        $id = self::start()->getId();
+        self::assertSame(self::NOW, self::fresh($id)->idleSince(), 'the start, before any progress');
+        self::storedSet($id, 'moved', (string) (self::NOW + 100));
+        self::assertSame(self::NOW + 100, self::fresh($id)->idleSince());
+        self::storedSet($id, 'next_at', (string) (self::NOW + 2000));
+        $run = self::fresh($id);
+        self::assertSame(self::NOW + 2000, $run->idleSince(), 'a retry due later');
+        $this->assertFalse($run->isStuck($run->idleSince() + 9000));
+        $this->assertTrue($run->isStuck($run->idleSince() + 9001));
+    }
+
     public function test_no_progress_right_after_resume_is_no_hang(): void
     {
         $id = self::start()->getId();

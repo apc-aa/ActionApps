@@ -549,8 +549,14 @@ abstract class BatchRun extends AA_Object
         for ($failures = 0; $failures < self::MAX_FAILURES; ++$failures) {
             $wait += $this->retryDelay($failures);
         }
-        $since = max((int) (((string) $this->moved !== '') ? $this->moved : $this->started), (int) $this->next_at);
-        return $now - $since > $wait;
+        return $now - $this->idleSince() > $wait;
+    }
+
+    /** since when nothing has happened to the run: its last progress (the start, before any), or the
+     *  time its next step was due, whichever is later */
+    final public function idleSince(): int
+    {
+        return max((int) (((string) $this->moved !== '') ? $this->moved : $this->started), (int) $this->next_at);
     }
 
     /** a step may still be working - also in an ended run, so a new run of the subject waits for it */
@@ -561,10 +567,11 @@ abstract class BatchRun extends AA_Object
 
     /** The runs of $subject, finished ones too, whose step may still be working (hasLiveLease()) - read
      *  without loading them. No rights checked.
+     *  @param ?int $now the time to judge the leases at; null = now
      *  @return list<string> their ids */
-    final public static function leasedOf(string $subject): array
+    final public static function leasedOf(string $subject, ?int $now = null): array
     {
-        $now     = static::now();
+        $now   ??= static::now();
         $records = self::records('subject', $subject, ['lease', 'lease_tok']);
         $leased  = array_filter($records, static fn(array $r): bool => (($r['lease_tok'] ?? '') !== '') && ((int) ($r['lease'] ?? 0) > $now));
         return array_map('strval', array_keys($leased));
