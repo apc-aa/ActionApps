@@ -35,7 +35,9 @@ use AA\Util\ReportTrait;
 use AA_Condition;
 use AA_Item;
 use AA_Set;
+use AA_Slice;
 use AA_Transformation;
+use AA_Value;
 use Exception;
 use ItemContent;
 use UnexpectedValueException;
@@ -97,6 +99,42 @@ class Saver implements AA\Later\LaterInterface
     /** the last run() took items until the grabber had no more */
     private bool $reached_end = false;
 
+    /** an import run: see setImportMode() */
+    private bool $import_mode = false;
+
+    /** @var array<string, string|list<string>> job parameters the validation sees as fields */
+    private array $context = [];
+
+    /** @var array{new: int, updated: int, skipped: int, errors: int} */
+    private array $counts = self::NO_COUNTS;
+
+    /** @var list<array{code: string, msg: string}> the first ERRORS_KEPT item errors */
+    private array $errors = [];
+
+    /** @var list<array<string, list<string>>> the first SAMPLES_KEPT items of an import dry run */
+    private array $samples = [];
+
+    private const NO_COUNTS = ['new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0];
+
+    /** errors() and samples() keep this many - the rest is only counted */
+    public const ERRORS_KEPT  = 20;
+    public const SAMPLES_KEPT = 5;
+    /** a sample shows at most this many fields, values per field, and characters per value */
+    public const SAMPLE_FIELDS = 50;
+    public const SAMPLE_VALUES = 10;
+    public const SAMPLE_CHARS  = 200;
+    /** a key value in an error message is cut to this many characters */
+    public const KEY_CHARS = 40;
+
+    /** the messages of errors() - never the validation output or the text of an exception, which
+     *  may carry a key or a URL with one */
+    private const ERROR_MESSAGES = [
+        'EMPTY_KEY' => 'key field %s is empty',
+        'VALIDATE'  => 'the item failed the validation',
+        'COMPLETE'  => 'the item could not be completed for insert',
+        'STORE'     => 'the item was not stored (failed, or a skipped duplicate)',
+    ];
+
     // protected $_messages = [];
 
 
@@ -125,6 +163,52 @@ class Saver implements AA\Later\LaterInterface
         $this->_new_ids = [];
         $this->_updated_ids = [];
         $this->_updated_slices = [];
+        $this->counts  = self::NO_COUNTS;
+        $this->errors  = [];
+        $this->samples = [];
+    }
+
+    /** An import run: an exception from prepare() is thrown, not swallowed - the import tells a
+     *  transport failure from the rest; a dry run prints no report, item errors go to errors() only
+     *  and samples() keeps examples; new and updated are told apart by the key lookup; a store does
+     *  not invalidate the page cache of the slice - the import does it once for its step. */
+    public function setImportMode(bool $on = true): static
+    {
+        $this->import_mode = $on;
+        return $this;
+    }
+
+    /** Job parameters (name => value or values) the validation expressions read as fields of the
+     *  item - {index:name}. They are not stored with it. A parameter named as a field of the target
+     *  slice is left out: the validation must check the value that is stored. */
+    public function setContext(array $params): static
+    {
+        $this->context = $params;
+        return $this;
+    }
+
+    /** The messages carry key values - data of the source: escape them (safe(), textContent in JS),
+     *  never pass them through {…} or unalias.
+     *  @return list<array{code: string, msg: string}> the first $max item errors since clear_ids() */
+    public function errors(int $max = 20): array
+    {
+        return array_slice($this->errors, 0, max(0, $max));
+    }
+
+    /** Data of the source: escape it (safe(), textContent in JS), never pass it through {…} or unalias.
+     *  @return list<array<string, list<string>>> the first $max items an import dry run would store
+     *          (field => values), shortened; password fields left out */
+    public function samples(int $max = 5): array
+    {
+        return array_slice($this->samples, 0, max(0, $max));
+    }
+
+    /** skipped = the key lookup found an item the store mode does not update, or found none and it
+     *  does not insert
+     *  @return array{new: int, updated: int, skipped: int, errors: int} items since clear_ids(), dry runs included */
+    public function counts(): array
+    {
+        return $this->counts;
     }
 
     /** run function
@@ -151,9 +235,15 @@ class Saver implements AA\Later\LaterInterface
         try {
             $this->grabber->prepare();    // maybe some initialization in grabber
         } catch (Exception $e) {
+            if ($this->import_mode) {
+                throw $e;
+            }
             $this->message("grabber->prepare() Error: " . $e->getMessage());
             return [0,1];
         }
+
+        // the old dry-run report; an import keeps errors() and samples() instead
+        $report = !$fire && !$this->import_mode;
 
         // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
         $directfill = $this->grabber->isDirectfill();
@@ -168,7 +258,9 @@ class Saver implements AA\Later\LaterInterface
                 break;
             }
             $taken++;
-            if (!$fire) {
+            $key_found = null;
+            $key_desc  = '';
+            if ($report) {
                 $this->message("AA\IO\Saver->run(): grabbed item: ", 2);
                 $this->message($source_content4id);
             }
@@ -196,7 +288,7 @@ class Saver implements AA\Later\LaterInterface
             $id_mode = ($this->id_mode === 'by_grabber') ? $this->grabber->getIdMode() : $this->id_mode;
             $store_mode = ($this->store_mode === 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
 
-            if (!$fire) {
+            if ($report) {
                 $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode, transformed item: ", 2);
                 $this->message($content4id, 2);
             }
@@ -233,29 +325,33 @@ class Saver implements AA\Later\LaterInterface
                         // update and insert_if_new restrict previous just for updates or inserts
 
                         $set = new AA_Set([$this->slice_id]);
+                        $key_desc = $this->import_mode ? self::describeKey($content4id, $flds) : '';
                         foreach ($flds as $fld) {
                             $condval = $content4id->getValue($fld);
                             if (trim($condval) === '') {
                                 $err_count++;
-                                $this->message(['err' => "AA\IO\Saver->run(): key condition empty for $fld"]);
+                                $this->itemError('EMPTY_KEY', $taken, $key_desc, "AA\IO\Saver->run(): key condition empty for $fld", $fld);
                                 continue 3; // another item
                             }
 
                             $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
                         }
                         $zids = $this->findByKey($set);
-                        if (!$fire) {
+                        $key_found = !$zids->isEmpty();
+                        if ($report) {
                             $this->message("AA\IO\Saver->run(): update/insert - condition:", 2);
                             $this->message($set, 2);
                             $this->message($zids, 2);
                         }
                         if (!$zids->isEmpty()) {
                             if (!str_contains($store_mode, 'update')) {
+                                $this->counts['skipped']++;
                                 continue 2; // another item
                             }
                             $new_item_id = $zids->longids(0);
                         } else {
                             if (!str_contains($store_mode, 'insert')) {
+                                $this->counts['skipped']++;
                                 continue 2; // another item
                             }
                             $new_item_id = new_id();
@@ -280,24 +376,27 @@ class Saver implements AA\Later\LaterInterface
 
             $item = ($this->compute || $this->validate) ? new AA_Item($content4id) : null;
 
-            if ($this->validate && ($err_arr = $this->test_validate($item))) {
+            if ($this->validate && ($err_arr = $this->test_validate($this->context ? $this->withContext($content4id) : $item))) {
                 $err_count++;
-                $this->message(['err' => "AA\IO\Saver->run(): validate failed: " . implode("\n", $err_arr)]);
+                $this->itemError('VALIDATE', $taken, $key_desc, "AA\IO\Saver->run(): validate failed: " . implode("\n", $err_arr));
                 continue;
             }
 
             if ($store_mode === 'overwrite' || str_starts_with($store_mode, 'insert')) {
                 if (!$content4id->complete4Insert($this->error_mode)) {
                     $err_count++;
-                    $this->message(['err' => "AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg()]);
+                    $this->itemError('COMPLETE', $taken, $key_desc, "AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
                     continue;
                 }
             } elseif (!$content4id->validate4Update()) {
                 // @todo do validation for updates
                 $err_count++;
-                $this->message(['err' => "AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
+                $this->itemError('COMPLETE', $taken, $key_desc, "AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg());
                 continue;
             }
+
+            // outside an import, as ever: new only for 'insert'
+            $is_new = ($this->import_mode && ($key_found !== null)) ? !$key_found : ($store_mode === 'insert');
 
             if ($this->compute) {
                 is_null($this->compute_key)
@@ -310,17 +409,18 @@ class Saver implements AA\Later\LaterInterface
             if ($fire) {
                 // id_mode - overwrite or insert_if_new
                 // (the $new_item_id should not be changed by storeItem)
-                if (!($new_item_id = $this->store($content4id, $store_mode))) {     // invalidatecache, feed
+                if (!($new_item_id = $this->store($content4id, $store_mode, $this->import_mode ? [false] : []))) {     // invalidatecache, feed
                     // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
                     $err_count++;
-                    $this->message(['err' => 'AA\IO\Saver->run(): storeItem failed or skipped duplicate: ' . ItemContent::lastErrMsg()]);
+                    $this->itemError('STORE', $taken, $key_desc, 'AA\IO\Saver->run(): storeItem failed or skipped duplicate: ' . ItemContent::lastErrMsg());
                 } else {
                     // @todo better check of new ids
-                    if ($store_mode === 'insert') {
+                    if ($is_new) {
                         $this->_new_ids[] = $new_item_id;
                     } else {
                         $this->_updated_ids[] = $new_item_id;
                     }
+                    $this->counts[$is_new ? 'new' : 'updated']++;
                     $ok_count++;
 
                     // Update relation table to show where came from
@@ -330,16 +430,22 @@ class Saver implements AA\Later\LaterInterface
                 }
             } else {
                 $ok_count++;
-                $this->message("AA\IO\Saver->run(): would be stored ID / content: " . ItemContent::lastErrMsg(), 2);
-                $this->message($new_item_id, 2);
-                $this->message($content4id);
+                $this->counts[$is_new ? 'new' : 'updated']++;
+                if ($report) {
+                    $this->message("AA\IO\Saver->run(): would be stored ID / content: " . ItemContent::lastErrMsg(), 2);
+                    $this->message($new_item_id, 2);
+                    $this->message($content4id);
+                } elseif (count($this->samples) < self::SAMPLES_KEPT) {
+                    $this->samples[] = $this->sample($content4id);
+                }
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
 
-        $this->message("AA\IO\Saver->run(): finish - $ok_count OK, $err_count Err." . ItemContent::lastErrMsg());
+        // lastErrMsg() may hold values of the source
+        $this->message("AA\IO\Saver->run(): finish - $ok_count OK, $err_count Err." . ($this->import_mode ? '' : ItemContent::lastErrMsg()));
 
-        if (!$fire) {
+        if ($report) {
             print($this->report());
         }
         return [$ok_count, $err_count];
@@ -351,6 +457,75 @@ class Saver implements AA\Later\LaterInterface
     public function reachedEnd(): bool
     {
         return $this->reached_end;
+    }
+
+    /** Records an item error: structured for errors(), outside an import as the report message.
+     *  @param int    $item     the item's number in the run
+     *  @param string $key_desc the key values of the item (describeKey())
+     *  @param string ...$args  for the code's message - names from the definition */
+    private function itemError(string $code, int $item, string $key_desc, string $report_message, string ...$args): void
+    {
+        $this->counts['errors']++;
+        if (count($this->errors) < self::ERRORS_KEPT) {
+            $msg            = vsprintf(self::ERROR_MESSAGES[$code], array_map(static fn(string $a): string => self::shorten($a, self::KEY_CHARS), $args));
+            $this->errors[] = ['code' => $code, 'msg' => "Item $item" . ($key_desc === '' ? '' : " ($key_desc)") . ": $msg"];
+        }
+        if (!$this->import_mode) {
+            $this->message(['err' => $report_message]);
+        }
+    }
+
+    /** "field=value, ..." of the key fields, each value shortened */
+    private static function describeKey(ItemContent $content, array $fields): string
+    {
+        return implode(', ', array_map(
+            static fn($fld): string => self::shorten((string) $fld, self::KEY_CHARS) . '=' . self::shorten((string) $content->getValue($fld), self::KEY_CHARS),
+            $fields,
+        ));
+    }
+
+    /** valid UTF-8 without control characters, at most $chars characters */
+    private static function shorten(string $text, int $chars): string
+    {
+        return mb_substr((string) preg_replace('/\p{Cc}/u', ' ', mb_scrub($text, 'UTF-8')), 0, $chars);
+    }
+
+    /** the item the validation sees: a copy with the job parameters, so they are never stored */
+    private function withContext(ItemContent $content): AA_Item
+    {
+        $slice = AA_Slice::getModule($content->getSliceID());
+        $copy  = clone $content;
+        foreach ($this->context as $name => $value) {
+            if ($slice?->getField((string) $name) === null) {
+                // the flag given, AA_Value does not look into the value (an empty array has no [0])
+                $copy->setAaValue($name, new AA_Value($value, 0));
+            }
+        }
+        return new AA_Item($copy);
+    }
+
+    /** @return array<string, list<string>> the item's fields, shortened for a preview */
+    private function sample(ItemContent $content): array
+    {
+        $slice  = AA_Slice::getModule($content->getSliceID());
+        $sample = [];
+        foreach ($content->getContent() as $field_id => $values) {
+            $field_id = (string) $field_id;
+            // packed ids are binary (their unpacked twins are there); protected fields are no preview -
+            // the list covers a password the slice has no field for
+            if (in_array($field_id, ['id..............', 'slice_id........', 'password........'], true) || !is_array($values)
+                || ($slice?->getField($field_id)?->isProtected() ?? false)) {
+                continue;
+            }
+            $sample[self::shorten($field_id, 32)] = array_map(
+                static fn($v): string => self::shorten((string) (is_array($v) ? ($v['value'] ?? '') : $v), self::SAMPLE_CHARS),
+                array_slice(array_values($values), 0, self::SAMPLE_VALUES),
+            );
+            if (count($sample) >= self::SAMPLE_FIELDS) {
+                break;
+            }
+        }
+        return $sample;
     }
 
     private function outOfBudget(?BatchBudget $budget, int $limit, int $taken): bool

@@ -27,12 +27,16 @@ namespace Tests\Unit\IO {
 
     use AA;
     use AA\IO\Saver;
+    use AA\IO\SourceRefused;
+    use AA\IO\SourceUnavailable;
     use AA\Later\BatchBudget;
+    use AA_Field;
     use ItemContent;
     use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\IO\Fixtures\ArrayGrabber;
     use Tests\Unit\IO\Fixtures\RecordingSaver;
+    use Tests\Unit\Legacy\Fixtures\FakeFields;
     use Tests\Unit\Legacy\Fixtures\FakeSlice;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
@@ -55,6 +59,8 @@ namespace Tests\Unit\IO {
 
         private ?string $slice_id_before = null;
 
+        private FakeSlice $slice;
+
         protected function setUp(): void
         {
             // not in setUpBeforeClass(): that one runs in the parent process as well; the
@@ -67,7 +73,7 @@ namespace Tests\Unit\IO {
             }
             require_once __DIR__ . '/fixtures/ArrayGrabber.php';
             require_once __DIR__ . '/fixtures/RecordingSaver.php';
-            new FakeSlice(self::SLICE);
+            $this->slice = new FakeSlice(self::SLICE);
             RecordingDb::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb()];
             // anonymous user ('' - no $auth) allowed to edit all items, so complete4Insert()
@@ -109,6 +115,31 @@ namespace Tests\Unit\IO {
             return static function () use (&$time): float {
                 return $time;
             };
+        }
+
+        /** @return list<ItemContent> one item per key value, ids 000…1, 000…2, ... */
+        private function keyed(array $relations): array
+        {
+            $items = [];
+            foreach (array_values($relations) as $i => $relation) {
+                $items[] = $this->item(sprintf('%032x', $i + 1), ['relation........' => $relation]);
+            }
+            return $items;
+        }
+
+        private function field(string $id, array $data = []): AA_Field
+        {
+            return new AA_Field($data + [
+                'id'                => $id,
+                'text_stored'       => 1,
+                'in_item_tbl'       => '',
+                'input_show_func'   => 'fld',
+                'input_insert_func' => 'qte',
+                'input_validate'    => '',
+                'multiple'          => 0,
+                'content_edit'      => 0,
+                'slice_id'          => pack_id(self::SLICE),
+            ]);
         }
 
         /** the texts of the messages the saver recorded up to $verbosity */
@@ -345,6 +376,267 @@ namespace Tests\Unit\IO {
             $this->expectOutputRegex('/Saver->run\(\): finish - 1 OK, 0 Err\./');
             $this->assertSame([1, 0], $saver->run(false, null, 1));
             $this->assertSame([], $saver->stored);
+        }
+
+        // ------------------------------------------------------------ import mode
+
+        public function test_importMode_prepareExceptionPropagates(): void
+        {
+            foreach ([new SourceUnavailable('TRANSPORT', 'down'), new SourceRefused('AUTH', 'no'), new \Exception('bad')] as $failure) {
+                $saver = (new RecordingSaver(new ArrayGrabber($this->items(1), $failure), null, self::SLICE))->setImportMode();
+                try {
+                    $saver->run();
+                    $this->fail('expected ' . $failure::class);
+                } catch (\Exception $e) {
+                    $this->assertSame($failure, $e);
+                }
+                $this->assertSame([], $saver->errors());
+                $this->assertSame(0, $saver->counts()['errors']);
+                $this->assertFalse($saver->reachedEnd());
+            }
+        }
+
+        public function test_importMode_noReportPrinted(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->items(2)), null, self::SLICE))->setImportMode();
+
+            $this->expectOutputString('');
+            $this->assertSame([2, 0], $saver->run(false));
+            $this->assertSame([], $saver->stored);
+            $this->assertSame([], RecordingDb::$log);
+        }
+
+        public function test_nonImportMode_unchanged(): void
+        {
+            // a transport failure is swallowed with its text, the store gets no flags
+            $saver = new RecordingSaver(new ArrayGrabber($this->items(1), new SourceUnavailable('TRANSPORT', 'down')), null, self::SLICE);
+            $this->assertSame([0, 1], $saver->run());
+            $this->assertSame(['grabber->prepare() Error: down'], $this->texts($saver));
+
+            $saver = new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'update/insert', '["relation........"]');
+            $saver->existing = ['known' => self::ITEM3];
+            $this->assertSame([2, 0], $saver->run());
+            $this->assertSame([[], []], array_column($saver->stored, 'flags'));
+            $this->assertSame([], $saver->newIds());
+            $this->assertCount(2, $saver->updatedIds());
+        }
+
+        public function test_importMode_finishMessageWithoutLastError(): void
+        {
+            // the last store error may quote values of the source
+            ItemContent::lastErr(1, 'SECRET from the source');
+            $import = (new RecordingSaver(new ArrayGrabber($this->items(1)), null, self::SLICE))->setImportMode();
+            $import->run();
+            $this->assertSame(['AA\IO\Saver->run(): finish - 1 OK, 0 Err.'], $this->texts($import));
+
+            ItemContent::lastErr(1, 'SECRET from the source');
+            $plain = new RecordingSaver(new ArrayGrabber($this->items(1)), null, self::SLICE);
+            $plain->run();
+            $this->assertStringContainsString('SECRET', implode('', $this->texts($plain)), 'outside an import as ever');
+        }
+
+        public function test_importMode_countsNewVsUpdatedByKey(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown', ''])), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            $saver->existing = ['known' => self::ITEM3];
+
+            $this->assertSame([2, 1], $saver->run());
+            $this->assertSame(['new' => 1, 'updated' => 1, 'skipped' => 0, 'errors' => 1], $saver->counts());
+            $this->assertSame([self::ITEM3], $saver->updatedIds());
+            $this->assertCount(1, $saver->newIds());
+            $this->assertNotSame(self::ITEM3, $saver->newIds()[0]);
+        }
+
+        public function test_importMode_dryRunCountsToo(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            $saver->existing = ['known' => self::ITEM3];
+
+            $this->assertSame([2, 0], $saver->run(false));
+            $this->assertSame(['new' => 1, 'updated' => 1, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame([], $saver->changedIds(), 'nothing was stored');
+        }
+
+        public function test_counts_skippedByStoreMode(): void
+        {
+            // found, but the mode only inserts
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'insert_if_new', '["relation........"]'))->setImportMode();
+            $saver->existing = ['known' => self::ITEM3];
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
+
+            // not found, but the mode only updates
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown'])), null, self::SLICE, 'update', '["relation........"]'))->setImportMode();
+            $saver->existing = ['known' => self::ITEM3];
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'skipped' => 1, 'errors' => 0], $saver->counts());
+        }
+
+        public function test_clearIds_resetsCountsErrorsAndSamples(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['a', ''])), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            $saver->run(false);
+            $this->assertNotSame([], $saver->errors());
+            $this->assertNotSame([], $saver->samples());
+
+            $saver->clear_ids();
+            $this->assertSame(['new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0], $saver->counts());
+            $this->assertSame([], $saver->errors());
+            $this->assertSame([], $saver->samples());
+        }
+
+        public function test_setContext_paramsVisibleInValidationOnly(): void
+        {
+            // 'update' stores the item as it is - nothing (unlike complete4Insert()) would drop the parameter
+            $make = fn() => (new RecordingSaver(new ArrayGrabber($this->items(1)), null, self::SLICE, 'update'))
+                ->setImportMode()
+                ->addValidate('{ifeq:{index:geo}:CZ:1:no}');   // a bare "0" row would pass
+
+            $saver = $make()->setContext(['geo' => 'CZ']);
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertArrayNotHasKey('geo', $saver->stored[0]['content']->getContent(), 'the parameter is not stored');
+
+            $saver = $make();
+            $this->assertSame([0, 1], $saver->run());
+            $this->assertSame(['VALIDATE'], array_column($saver->errors(), 'code'));
+        }
+
+        public function test_setContext_skipsFieldsOfTargetSlice(): void
+        {
+            $this->slice->setFields(new FakeFields(self::SLICE, [$this->field('headline........')]));
+            $saver = (new RecordingSaver(new ArrayGrabber([$this->item(self::ITEM1, ['headline........' => 'stored'])]), null, self::SLICE, 'update'))
+                ->setImportMode()
+                ->addValidate('{ifeq:{index:headline........}:stored:1:no}')
+                ->setContext(['headline........' => 'from the job', 'empty' => []]);
+
+            $this->assertSame([1, 0], $saver->run(), 'the validation checks the value that is stored');
+            $this->assertSame('stored', $saver->stored[0]['content']->getValue('headline........'));
+        }
+
+        public function test_errors_structuredAndCapped(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(array_fill(0, 21, ''))), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+
+            $this->assertSame([0, 21], $saver->run());
+            $this->assertCount(Saver::ERRORS_KEPT, $saver->errors(100));
+            $this->assertCount(3, $saver->errors(3));
+            $this->assertSame(['code' => 'EMPTY_KEY', 'msg' => 'Item 1 (relation........=): key field relation........ is empty'], $saver->errors()[0]);
+            $this->assertSame(21, $saver->counts()['errors']);
+        }
+
+        public function test_errors_keyValuesShortenedNoValidationOutput(): void
+        {
+            $key   = "k\x07" . str_repeat('é', 100);
+            $items = [
+                $this->item(self::ITEM1, ['relation........' => $key, 'headline........' => 'SECRET value from the source']),
+                $this->item(self::ITEM2, ['relation........' => 'b']),
+            ];
+            $saver = (new RecordingSaver(new ArrayGrabber($items), null, self::SLICE, 'update/insert', '["relation........"]'))
+                ->setImportMode()
+                ->addValidate('{index:headline........}');   // the validation output is source data
+            $saver->existing = ['b' => self::ITEM3];
+            $saver->refuse   = [self::ITEM3];
+
+            $this->assertSame([0, 2], $saver->run());
+            $errors = $saver->errors();
+            $this->assertSame(['VALIDATE', 'STORE'], array_column($errors, 'code'));
+            $this->assertSame('Item 1 (relation........=k ' . str_repeat('é', 38) . '): the item failed the validation', $errors[0]['msg']);
+            $this->assertSame('Item 2 (relation........=b): the item was not stored (failed, or a skipped duplicate)', $errors[1]['msg']);
+            foreach ($errors as $error) {
+                $this->assertSame(['code', 'msg'], array_keys($error));
+                $this->assertStringNotContainsString('SECRET', $error['msg']);
+            }
+            $this->assertStringNotContainsString('SECRET', $saver->report(2, 'plain'), 'nor in the report of an import');
+        }
+
+        public function test_errors_keyInInvalidUtf8StaysValid(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(["a\xff\xfeb"])), null, self::SLICE, 'update/insert', '["relation........"]'))
+                ->setImportMode()
+                ->addValidate('no');
+
+            $this->assertSame([0, 1], $saver->run());
+            $this->assertTrue(mb_check_encoding($saver->errors()[0]['msg'], 'UTF-8'));
+            $this->assertNotFalse(json_encode($saver->errors()));
+        }
+
+        public function test_setContext_emptyValueRaisesNoWarning(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->items(1)), null, self::SLICE, 'update'))
+                ->setImportMode()
+                ->addValidate('1')
+                ->setContext(['empty' => [], 'blank' => '']);
+
+            set_error_handler(static function (int $no, string $msg): never {
+                throw new \ErrorException($msg, 0, $no);
+            }, E_WARNING | E_NOTICE);
+            try {
+                $this->assertSame([1, 0], $saver->run());
+            } finally {
+                restore_error_handler();
+            }
+        }
+
+        public function test_samples_capped(): void
+        {
+            $this->slice->setFields(new FakeFields(self::SLICE, [
+                $this->field('text...........1', ['input_insert_func' => 'pwd:']),
+                $this->field('text...........2', ['input_insert_func' => '2fa']),
+                $this->field('secret.........1'),
+            ]));
+            $items = [];
+            for ($i = 1; $i <= 6; $i++) {
+                $items[] = $this->item(sprintf('%032x', $i), [
+                    'headline........' => str_repeat('é', 500),
+                    'abstract........' => 'short',
+                    'password........' => 'pwd1',
+                    'text...........1' => 'pwd2',
+                    'text...........2' => '2fa secret',
+                    'secret.........1' => 'api key',
+                ]);
+            }
+            $items[0]->setAaValue('category........', new \AA_Value(range(1, 30)));
+            for ($f = 0; $f < 60; $f++) {
+                $items[1]->setValue(sprintf('extra%011d', $f), 'x');
+            }
+            $saver = (new RecordingSaver(new ArrayGrabber($items), null, self::SLICE, 'update'))->setImportMode();
+
+            $this->assertSame([6, 0], $saver->run(false));
+            $this->assertCount(Saver::SAMPLES_KEPT, $saver->samples(100));
+            $this->assertCount(2, $saver->samples(2));
+            $sample = $saver->samples()[0];
+            $this->assertSame(['short'], $sample['abstract........']);
+            $this->assertSame(Saver::SAMPLE_CHARS, mb_strlen($sample['headline........'][0]));
+            $this->assertCount(Saver::SAMPLE_VALUES, $sample['category........']);
+            $this->assertArrayNotHasKey('id..............', $sample, 'packed ids are binary');
+            $this->assertArrayNotHasKey('password........', $sample);
+            $this->assertArrayNotHasKey('text...........1', $sample, 'a field stored by the pwd inserter');
+            $this->assertArrayNotHasKey('text...........2', $sample, 'a 2FA secret');
+            $this->assertArrayNotHasKey('secret.........1', $sample, 'a secret field');
+            $this->assertCount(Saver::SAMPLE_FIELDS, $saver->samples()[1]);
+            $this->assertNotFalse(json_encode($saver->samples()));
+
+            // a real run keeps none
+            $saver = (new RecordingSaver(new ArrayGrabber($this->items(2)), null, self::SLICE, 'update'))->setImportMode();
+            $saver->run();
+            $this->assertSame([], $saver->samples());
+        }
+
+        public function test_samples_onlyInImportMode(): void
+        {
+            $saver = new RecordingSaver(new ArrayGrabber($this->items(2)), null, self::SLICE);
+
+            $this->expectOutputRegex('/finish - 2 OK/');
+            $saver->run(false);
+            $this->assertSame([], $saver->samples());
+        }
+
+        public function test_importMode_storeItemWithoutCacheInvalidation(): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->items(2)), null, self::SLICE))->setImportMode();
+
+            $this->assertSame([2, 0], $saver->run());
+            $this->assertSame([[false], [false]], array_column($saver->stored, 'flags'));
         }
     }
 }
