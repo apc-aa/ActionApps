@@ -53,10 +53,11 @@ trait OwnedByDefinition
     }
 
     /** Deletes the record of $defId (or a half-written one) without reading its values; a foreign record
-     *  at its id stays. */
+     *  at its id stays. In a transaction the read locks: a plain read sees the transaction's snapshot,
+     *  which misses a record the end of a concurrent step has just created. */
     public static function deleteFor(string $defId): void
     {
-        $rows = self::rowsOf($defId, ['aa_type', 'aa_owner']);
+        $rows = self::rowsOf($defId, ['aa_type', 'aa_owner'], DB_AA::inTransaction());
         if (self::isOwn($rows, $defId) || self::isHalfOwn($rows)) {
             self::deleteObjects([self::idOf($defId)]);
         }
@@ -95,10 +96,11 @@ trait OwnedByDefinition
     }
 
     /** @param list<string> $properties [] = all
+     *  @param bool $lock SELECT ... FOR UPDATE - only inside a transaction
      *  @return array<string, string> property => value */
-    private static function rowsOf(string $defId, array $properties): array
+    private static function rowsOf(string $defId, array $properties, bool $lock = false): array
     {
-        return self::textRows(self::idOf($defId), false, $properties);
+        return self::textRows(self::idOf($defId), $lock, $properties);
     }
 
     /** @param array<string, string> $rows */

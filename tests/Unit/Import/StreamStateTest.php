@@ -6,6 +6,7 @@ namespace Tests\Unit\Import;
 
 use AA\Import\CheckResult;
 use AA\Import\StreamState;
+use AA\IO\DB\DB_AA;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -309,6 +310,32 @@ final class StreamStateTest extends TestCase
         self::assertSame([], self::stored($state->getId()));
         self::assertNotNull(StreamState::forDefinition(self::RUN));
         StreamState::deleteFor(self::DEF);   // nothing there: no error
+    }
+
+    /** Under REPEATABLE READ a plain read would see the transaction's snapshot and miss a record the
+     *  end of a concurrent step has just created - the fakes have no snapshots, so the read is pinned. */
+    public function test_deleteFor_inTransaction_readsWithLock(): void
+    {
+        StreamState::create(self::DEF)->store();
+        StreamState::create(self::RUN)->store();
+
+        StreamState::deleteFor(self::RUN);
+        $outside = self::readsOf(StreamState::idOf(self::RUN));
+        $from    = count(TableDb::$log);
+        DB_AA::transaction(static fn() => StreamState::deleteFor(self::DEF));
+        $inside  = self::readsOf(StreamState::idOf(self::DEF), $from);
+
+        self::assertNotSame([], $outside);
+        self::assertSame([], array_filter($outside, static fn(string $sql): bool => str_ends_with($sql, ' FOR UPDATE')), 'no lock without a transaction');
+        self::assertCount(1, $inside);
+        self::assertStringEndsWith(' FOR UPDATE', $inside[0]);
+        self::assertSame([], self::stored(StreamState::idOf(self::DEF)));
+    }
+
+    /** @return list<string> the SELECTs of the type and owner of object $id, from statement $from on */
+    private static function readsOf(string $id, int $from = 0): array
+    {
+        return array_values(array_filter(array_slice(TableDb::$log, $from), static fn(string $sql): bool => str_starts_with($sql, 'SELECT') && str_contains($sql, $id) && str_contains($sql, 'aa_owner')));
     }
 
     /** @return array<string, array{\Closure(): mixed}> */
