@@ -660,12 +660,6 @@ parameters:
 			path: src/Optimize/ConvertSliceEncoding.php
 
 		-
-			message: '#^Constant DB_NAME not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: src/Optimize/Convertlatin2Utf8Mb4.php
-
-		-
 			message: '#^PHPDoc tag @return with type string is incompatible with native type bool\.$#'
 			identifier: return.phpDocType
 			count: 1
