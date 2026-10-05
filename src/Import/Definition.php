@@ -207,6 +207,18 @@ final class Definition extends AA_Object implements InternalExpandInterface
         };
     }
 
+    /** Whether a planned task of $slice calls import $id named $name - as plannedTasks() lists them,
+     *  from the same read, without working out when */
+    public static function isPlanned(string $slice, string $id, string $name): bool
+    {
+        foreach (self::plannedTasksOf($slice) as $task) {
+            if (self::modesCalling($task, $id, $name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * When a planned task of the slice starts the import next, at $now or later: the earliest queued
      * step of each task calling {import} with the id or the name of the import (its "Run now" too),

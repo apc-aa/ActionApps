@@ -15,7 +15,6 @@ use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
 use AA_Log;
-use AA_Plannedtask;
 
 /** Imports run in queue steps nobody watches, so a run stopped by an error or hanging, a definition
  *  that cannot run and the records a deleted import left behind are seen only here. Reads the small
@@ -328,25 +327,9 @@ class CheckImports extends AbstractOptimize
     /** @return array<string, true> the enabled definitions a planned task of their slice calls by name or id */
     private static function planned(array $defs): array
     {
-        $enabled = array_filter($defs, static fn(array $r): bool => ($r['enabled'] ?? '') === '1');
-        $ids     = $enabled ? DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'aa_type'], ['value', AA_Plannedtask::class]]) : [];
-        if (!$ids) {
-            return [];
-        }
-        $calls = [];
-        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', array_map('strval', $ids)], ['property', ['aa_owner', 'task']]]) as $row) {
-            $calls[(string) $row['object_id']][(string) $row['property']] = (string) $row['value'];
-        }
-        $called = [];
-        foreach ($calls as $task) {
-            foreach (array_filter(AA_Plannedtask::importCalls($task['task'] ?? '')) as $ref) {
-                $called[($task['aa_owner'] ?? '') . ':' . Definition::nameKey($ref)] = true;
-            }
-        }
         $planned = [];
-        foreach ($enabled as $id => $r) {
-            $slice = $r['aa_owner'] ?? '';
-            if (isset($called["$slice:" . Definition::nameKey((string) $id)]) || isset($called["$slice:" . Definition::nameKey($r['aa_name'] ?? '')])) {
+        foreach ($defs as $id => $r) {
+            if ((($r['enabled'] ?? '') === '1') && Definition::isPlanned((string) ($r['aa_owner'] ?? ''), (string) $id, (string) ($r['aa_name'] ?? ''))) {
                 $planned[(string) $id] = true;
             }
         }

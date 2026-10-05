@@ -83,6 +83,8 @@ final class CheckImportsTest extends TestCase
         $this->tablesSetUp();
         Registry::setCustomRootForTests(self::$root, self::$root . '/import');
         TableDb::$answer = self::logAnswer(...);
+        // the planned tasks are read once a request - here once a test
+        \AA::Contentcache()->clear_soft();
     }
 
     protected function tearDown(): void
@@ -283,7 +285,7 @@ final class CheckImportsTest extends TestCase
         self::definition(self::DEF, 'prices', ['enabled' => '1']);
         self::definition(self::DEF2, 'rates', ['enabled' => '1']);
         self::definition(self::DEF3, 'fees', ['enabled' => '1']);
-        self::plannedTask('a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', self::SLICE, '{IMPORT(Rates )} {import:prices2}');
+        self::plannedTask('a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', self::SLICE, '{IMPORT: Rates } {import:prices2}');
         // a task of another slice does not start the import of this one
         self::plannedTask('b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2', self::SLICE2, '{import:prices}');
         self::plannedTask('c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3', self::SLICE, '{import:' . self::DEF3 . ':changed}');
@@ -293,7 +295,38 @@ final class CheckImportsTest extends TestCase
         $this->assertSame(Finding::INFO, self::only($findings, 'plan:' . self::DEF)->severity, 'prices2 is another name');
         $this->assertNull(self::find($findings, 'plan:' . self::DEF2), 'names match as {import} finds them');
         $this->assertNull(self::find($findings, 'plan:' . self::DEF3), 'by its id');
-        $this->assertSame(['aa_type', 'aa_owner', 'task'], self::plannedTaskProperties(), 'only the task of the planned tasks is read');
+        $this->assertNotContains('condition', self::plannedTaskProperties(), 'the condition never starts an import');
+    }
+
+    /** a task counts as the import detail lists it: {import(x)} does not reach the import x when it
+     *  runs, {import} trims its parameters */
+    public function test_plannedAsTheDetailListsIt(): void
+    {
+        self::definition(self::DEF, 'prices', ['enabled' => '1']);
+        self::definition(self::DEF2, 'rates', ['enabled' => '1']);
+        self::plannedTask('a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', self::SLICE, '{import(prices)} {import:  rates :changed}');
+
+        $findings = self::findings(time());
+
+        $this->assertNotNull(self::find($findings, 'plan:' . self::DEF), 'not planned by {import(prices)}');
+        $this->assertNull(self::find($findings, 'plan:' . self::DEF2), 'planned by {import:  rates :changed}');
+        $this->assertSame([], Definition::fresh(self::DEF)?->plannedTasks(time()), 'the detail lists no task');
+        $this->assertCount(1, Definition::fresh(self::DEF2)?->plannedTasks(time()) ?? []);
+    }
+
+    /** the tasks and the queue are read once, whatever number of imports */
+    public function test_plannedTasksReadOnce(): void
+    {
+        foreach ([self::DEF, self::DEF2, self::DEF3] as $i => $id) {
+            self::definition($id, "import $i", ['enabled' => '1']);
+        }
+        self::plannedTask('a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1', self::SLICE, '{import:import 1}');
+        TableDb::$log = [];
+
+        self::findings(time());
+
+        $this->assertCount(1, array_filter(TableDb::$log, static fn(string $sql): bool => str_contains($sql, 'FROM `toexecute`') && str_contains($sql, 'Plannedtask_')));
+        $this->assertCount(1, array_filter(TableDb::$log, static fn(string $sql): bool => str_contains($sql, 'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1') && str_contains($sql, "'task'")));
     }
 
     public function test_duplicateNames_warning(): void
@@ -503,6 +536,7 @@ final class CheckImportsTest extends TestCase
             $catalog = Catalog::create($def);
             $catalog->addPage(new CatalogPage([new CatalogEntry('a', 'Alpha')]), time());
             $catalog->store();
+            \AA::Contentcache()->clear_soft();
             TableDb::$log = [];
 
             self::findings(time());
@@ -572,6 +606,7 @@ final class CheckImportsTest extends TestCase
     /** @return list<string> the properties CheckImports read of the planned tasks */
     private static function plannedTaskProperties(): array
     {
+        \AA::Contentcache()->clear_soft();
         TableDb::$log = [];
         self::findings(time());
         $read = [];
