@@ -161,7 +161,7 @@ function GetItemSummaryHtml($item, bool $full = false): string
     }
 
     // headline, or (no _#HEADLINE) a slice-name + short-id fallback, never a literal "_#HEADLINE"
-    $name = $headline !== '' ? safe($headline)
+    $name = $headline !== '' ? Adminlink::headlineText($headline)
           : trim(($slice ? safe($slice->getName()) : '') . ' <span class="aa-id">' . safe($short_id) . '</span>');
 
     // Public-site link: the item's live URL when the slice resolves one (an explicit preview-URL
