@@ -78,7 +78,7 @@ class CheckSecurityProtections extends AbstractOptimize
                     _m('Switched off') => isset($switch['time']) ? date('Y-m-d H:i', (int) $switch['time']) : _m('unknown'),
                     _m('By')           => safe((string) ($switch['user'] ?? '')),
                 ]],
-                advice: $protection->risk() . ' ' . _m('Switch it on again once the templates that need it are fixed.'),
+                advice: _m('Switch it on again once the older forms are converted.') . ' ' . $protection->migration(),
                 links: $page,
                 key: 'off:' . $protection->value,
             );
@@ -99,7 +99,7 @@ class CheckSecurityProtections extends AbstractOptimize
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: Protection::SignedExpressions->effect() . ' ' . _m('A page you do not know is most likely a probe.'),
+                advice: Protection::SignedExpressions->migration() . ' ' . _m('If you do not know the page, the request did not come from your forms and nothing needs to change.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(SignedExpression::EVENT, $selector)] + $page,
                 key: $selector,
                 last: (int) $row['last'],

@@ -28,19 +28,15 @@ enum Protection: string
         };
     }
 
-    /** what anyone can do while the protection is off */
-    public function risk(): string
+    /**
+     * How to convert a form that still uses the older way, so the protection can stay on. Written
+     * for the template author; it does not describe what the protection prevents, the admin pages
+     * are no place to explain an attack.
+     */
+    public function migration(): string
     {
         return match ($this) {
-            self::SignedExpressions => _m('Anyone can send a form an AA expression of their own, and AA runs it. Such an expression reads files of the server, the database password among them.'),
-        };
-    }
-
-    /** what may stop working while it is on, and how to fix the template */
-    public function effect(): string
-    {
-        return match ($this) {
-            self::SignedExpressions => _m('Expressions AA puts into its own forms ({ajax}, {form}, adding a related item) are signed and keep working, and so do plain text, _#ALIASES and simple field references. A hand-written form or link which sends its own {expression} in ret_code gets an empty answer instead. Generate such a form with {form} or {ajax}, or send only text and aliases.'),
+            self::SignedExpressions => _m('Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases.'),
         };
     }
 

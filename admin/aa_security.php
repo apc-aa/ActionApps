@@ -1,7 +1,7 @@
 <?php
 /**
  * Security protections of this install: each is on unless a superadmin switches it off here for an
- * old site that relies on the hole it closes. Storage: AA\Security\Settings; State Check warns while
+ * old site whose forms still use the older way. Storage: AA\Security\Settings; State Check warns while
  * one is off (AA\Optimize\CheckSecurityProtections).
  *
  * PHP version 8.2+
@@ -115,8 +115,8 @@ $apage->addRequire('
     .aa-security-switch { grid-column: 2; grid-row: 1 / span 3; align-self: start; }
     .aa-security-switch label { display: flex; gap: 0.5em; align-items: center; margin-top: 0.3em; cursor: pointer; }
     .aa-security-switch input { margin: 0; }
-    .aa-security-risk { display: none; margin-top: 0.5em !important; font-size: var(--sz-s); }
-    li:has(.aa-security-switch input:checked) .aa-security-risk { display: block; }
+    .aa-security-switch .aa-security-note { display: none; margin-top: 0.5em; font-size: var(--sz-s); }
+    li:has(.aa-security-switch input:checked) .aa-security-note { display: block; }
     .aa-security-actions { margin-top: 1.2em; }
     @media (max-width: 50rem) {
         .aa-security > li { grid-template-columns: minmax(0, 1fr); }
@@ -129,7 +129,7 @@ if ($saved > 0) {
 }
 $apage->printHead();
 
-echo '<p>' . _m('Each protection closes one way to misuse AA. Switch one off only for an old site that needs it; State Check warns until it is on again.') . '</p>';
+echo '<p>' . _m('Each protection is on unless you switch it off here. Switch one off only for an old site whose forms still use the older way, and only until they are converted.') . '</p>';
 
 echo '<form method="post" action="' . safe(get_admin_url('aa_security.php')) . '">' . FormToken::field(SECURITY_TOKEN);
 echo '<ul class="aa-security">';
@@ -141,11 +141,11 @@ foreach (Protection::cases() as $protection) {
     echo '<div class="aa-security-switch">'
         . security_state($protection)
         . '<label for="' . $id . '"><input type="checkbox" id="' . $id . '" name="off[]" value="' . safe($protection->value) . '"' . ($is_off ? ' checked' : '') . '> ' . _m('Switch this protection off') . '</label>'
-        . '<p class="aa-security-risk" role="note">' . safe($protection->risk()) . '</p>'
+        . '<p class="aa-security-note" role="note">' . _m('State Check reminds you until it is on again.') . '</p>'
         . '</div>';
     echo security_evidence($protection);
-    echo '<details><summary>' . _m('What it blocks and what may stop working') . '</summary>'
-        . '<p>' . safe($protection->risk()) . '</p><p>' . safe($protection->effect()) . '</p></details>';
+    echo '<details><summary>' . _m('How to convert older forms') . '</summary>'
+        . '<p>' . safe($protection->migration()) . '</p></details>';
     echo '</li>';
 }
 echo '</ul>';
