@@ -215,7 +215,6 @@ class JsonLD extends AbstractGrabber
         $header =  "Content-Type: application/json";
         $header .= "\r\nAccept: application/json";
         if ($this->token) {
-            //$header .= "\r\nAuthorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MTY5ODYwMjMsImV4cCI6MTYxNzA3MjQyMywicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoibWFsaWtAbnN6bS5jeiJ9.oRpPze6fLueBpySTGo_m4NrZl5dFBhj7NyJ1HHZL5RjOaREXCiMB1z15j4UPwLaWVH8sUi2h74bCLs3KY1yeiZoIBGKcvU1663JqiT2V6OjpUJKLlIHz2cEMeOVTVD4Lps-LQ7elKc91GMqzEuAHitnoKQ-ys6vMyIL1slJgooO8hugUzFi7YZ91nCn040VYfu0It3O9dzAkCl6E35aA-pz_5B01D9GdFHf-ZQ5CxAuJwvzlNTPArRK6CCrSVDQqx_gdMz04rm8vsDhnqHkPpKLHIFdfV0wIjtbWwGl8fDC4B_-fYN61B1sdyhdAiduvMdTV5fq8qKNrECTVfvottwpXFsMlMTO0durs4WHIsR-jy7wPUtmWLf4N5KRjWi03hqljuw3Pi4F_Jth5EdO23eWXtm74u9EU2pALcTHXBfYw8_80Jkmbd1Aweck57eeNR_uWJEIJN94Ms4lSxhh7KGYi17vcoecVPXdQSYAXVd8ETyzRnV6IOneoA1tyfihyihk8b3bPsLyCd2jeH6-S0hDRiztMSfDX4M-EoW1ISC8cm1oMTO9W519TT3RI6Lt_1yXiq60iCInKZokvHjwCy580wBHwKO4iOSvtWm1yQAd7lVPH42kePCgqj22YKKlWGe78e-PjrtWh-zRBxQIPBtpSK2utANz1s5ZSYJVk6LU";
             $header .= "\r\nAuthorization: Bearer {$this->token}";
         }
         $context_opts = ['http' => ['method'  => 'GET', 'header'  => $header]];
