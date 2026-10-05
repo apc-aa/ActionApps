@@ -126,7 +126,7 @@ final class DetailConfig
         [$refusal, $detail] = explode(':', $reason, 2) + ['', ''];
         return match ($code) {
             'mapping_reset'    => MsgOk(_m('The mapping is set again from the source. An open run goes on with the mapping it started with.')),
-            'mapping_refused'  => MsgErr(_m('The mapping was not reset:') . ' ' . safe(Definition::refusal($refusal, $detail)) . self::settingsPointer($refusal, false)),
+            'mapping_refused'  => MsgErr(_m('The mapping was not reset:') . ' ' . safe(Definition::refusal($refusal, $detail)) . self::settingsPointer($refusal, false, $detail)),
             'settings_saved'   => MsgOk(_m('The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped.')),
             'settings_same'    => MsgOk(_m('The settings are the same as stored - nothing changed.')),
             'settings_refused' => MsgErr(_m('The settings were not saved:') . ' ' . safe(Definition::refusal($refusal, $detail))),
@@ -138,14 +138,16 @@ final class DetailConfig
 
     /** Where to fix what refused an action, for the refusals the settings or the source cause; ''
      *  for others. $start: a start or Continue by hand - a planned start does not check the settings
-     *  for its user, so it goes on. */
-    public static function settingsPointer(string $code, bool $start): string
+     *  for its user, so it goes on.
+     *  @param string $detail of the refusal - a mapping without a key gets it from the settings */
+    public static function settingsPointer(string $code, bool $start, string $detail = ''): string
     {
-        $link = '<a href="#aa-import-settings">' . _m('Settings of the source') . '</a>';
+        $link   = '<a href="#aa-import-settings">' . _m('Settings of the source') . '</a>';
+        $no_key = ($code === 'MAPPING') && in_array('NO_KEY', Mapping::splitProblems($detail), true);
         return match (true) {
             $start && in_array($code, ['SETTINGS', 'SLICE'], true)
                 => ' ' . _m('Planned starts still run with the stored settings; to run the import by hand, change them in %1 below.', [$link]),
-            !$start && in_array($code, ['SETTINGS', 'SLICE', 'NO_MAPPING', 'SOURCE'], true)
+            !$start && ($no_key || in_array($code, ['SETTINGS', 'SLICE', 'NO_MAPPING', 'SOURCE'], true))
                 => ' ' . _m('Change the settings or the source in %1 below.', [$link]),
             default => '',
         };

@@ -411,8 +411,12 @@ final class Definition extends AA_Object implements InternalExpandInterface
         } catch (SourceRefused) {
             return _m('The mapping of the import is not valid.');
         }
+        // the key may come with the settings, which only a stored definition can have; no run starts without it
+        if (self::hasSettings((string) $this->source)) {
+            $problems = array_diff($problems, ['NO_KEY']);
+        }
         if ($problems) {
-            return self::refusal('MAPPING', implode(', ', $problems));
+            return self::refusal('MAPPING', Mapping::joinProblems(array_values($problems)));
         }
         return null;
     }
@@ -431,7 +435,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
             'NOT_OF_SLICE' => _m('The import was not saved - it is not an import of this slice.'),
             'NO_SOURCE'    => _m('The import source is not available.'),
             'NO_MAPPING'   => _m('The import source did not give its mapping.'),
-            'MAPPING'      => _m('The mapping of the import does not fit the slice: %1', [$detail]),
+            'MAPPING'      => ($detail === '') ? _m('The mapping of the import does not fit the slice.') : Mapping::problemsText($detail),
             'SETTINGS'     => ($detail === '') ? _m('A setting of the import source is not valid.') : _m('The setting "%1" of the import source is not valid.', [$detail]),
             'SLICE'        => ($detail === '') ? _m('The settings name a slice whose feeding you do not manage.') : _m('The setting "%1" names a slice whose feeding you do not manage.', [$detail]),
             'STALE'        => _m('The settings of the import changed meanwhile. Reload the page and set them again.'),
@@ -749,6 +753,17 @@ final class Definition extends AA_Object implements InternalExpandInterface
     private function isOwn(array $rows): bool
     {
         return (($rows['aa_type'] ?? '') === self::class) && (($rows['aa_owner'] ?? '') === strtolower((string) $this->getOwnerId()));
+    }
+
+    /** whether source $type declares settings; a source whose code fails here has none to set */
+    private static function hasSettings(string $type): bool
+    {
+        $class = Registry::sources()[$type] ?? null;
+        try {
+            return ($class !== null) && ($class::getClassProperties() !== []);
+        } catch (Throwable) {
+            return false;
+        }
     }
 
     /** A new definition has no settings yet, so the source is asked without them. An unknown source

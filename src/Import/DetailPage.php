@@ -600,24 +600,8 @@ final class DetailPage
         if (!$problems) {
             return '';
         }
-        $items = array_map(static fn(string $code): string => '<li>' . safe(self::problemText($code)) . ' <code>' . safe($code) . '</code></li>', $problems);
+        $items = array_map(static fn(string $code): string => '<li>' . safe(Mapping::problemText($code)) . ' <code>' . safe($code) . '</code></li>', $problems);
         return '<div class="aa-err">' . _m('The mapping does not fit the slice; no run starts until it is fixed:') . '<ul>' . implode('', $items) . '</ul></div>';
-    }
-
-    /** a code of Mapping::problems() in words */
-    public static function problemText(string $code): string
-    {
-        return match ($code) {
-            'NO_SLICE'               => _m('The slice of the import is not available.'),
-            'UNKNOWN_TRANSFORMATION' => _m('A row of the mapping uses a transformation that does not exist.'),
-            'BAD_PARAMS'             => _m('A row of the mapping has parameters its transformation does not take.'),
-            'UNKNOWN_FIELD'          => _m('The mapping fills a field the slice does not have.'),
-            'PROTECTED_FIELD'        => _m('The mapping fills a field an import may not set.'),
-            'DUPLICATE_TARGET'       => _m('Two rows of the mapping fill the same field.'),
-            'NO_KEY'                 => _m('The mapping has no key field, so an item cannot be found again.'),
-            'KEY_NOT_TARGET'         => _m('A key field is not filled by the mapping.'),
-            default                  => _m('The mapping has a problem.'),
-        };
     }
 
     // ------------------------------------------------------------ action parts

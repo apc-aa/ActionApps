@@ -13,6 +13,7 @@ use AA\Import\RunCursor;
 use AA\Import\Service;
 use AA\Import\StreamState;
 use AA\IO\DB\DB_AA;
+use AA\Managed_Object;
 use AA\Util\FormToken;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
@@ -193,6 +194,7 @@ final class DetailConfigTest extends TestCase
             $this->assertStringNotContainsString('aa-import-settings', DetailConfig::outcomeHtml('mapping_refused', $reason), $reason);
         }
         $this->assertStringContainsString('UNKNOWN_FIELD', DetailConfig::outcomeHtml('mapping_refused', 'MAPPING:UNKNOWN_FIELD'));
+        $this->assertStringContainsString('aa-import-settings', DetailConfig::outcomeHtml('mapping_refused', 'MAPPING:UNKNOWN_FIELD, NO_KEY'), 'the settings give the key');
     }
 
     public function test_resetMapping_disabledWithoutSource(): void
@@ -203,6 +205,36 @@ final class DetailConfigTest extends TestCase
 
         $this->assertTrue(self::submit($html, 'Reset mapping from the source')->hasAttribute('disabled'));
         $this->assertStringContainsString('The import source is not available.', self::text($html));
+    }
+
+    // ------------------------------------------------------------ a new import of a source mapped by its settings
+
+    /** The Manager form has no settings, so the new definition has no key yet: it is saved, the
+     *  detail says why it cannot start, and the settings give it the key. */
+    public function test_newCsvImport_savedWithoutKeyStartsOnceSettingsGiveIt(): void
+    {
+        self::perms(PS_FEEDING, PS_FEEDING);
+        $_POST['aa'] = ['n1_' . self::SLICE => ['aa_name' => ['prices'], 'source' => ['core:csvurl'], 'enabled' => ['1']]];
+
+        $this->assertNull((new Managed_Object(Definition::class))->save(self::SLICE, ''));
+
+        $def = Definition::byNameOrId(self::SLICE, 'prices') ?? throw new \LogicException('No definition');
+        $id  = (string) $def->getId();
+        $this->assertSame([], TableDb::rows('toexecute'));
+        $page = DetailPage::forRequest(self::SLICE, $id, AuthGetUid()) ?? throw new \LogicException('No page');
+        $this->assertStringContainsString('The mapping has no key field, so an item cannot be found again.', $page->overviewHtml(time()));
+        $this->assertStringContainsString('(DEFINITION)', $page->actionsHtml(time()), 'the start buttons say why they are off');
+        $refused = Service::start($def, 'run', [], 'manual', AuthGetUid());
+        $this->assertSame(['invalid', 'DEFINITION'], [$refused->code, $refused->reason]);
+
+        $settings = ['url' => 'https://example.org/data.csv', 'columns' => '{"Name": "headline........", "Code": "text...........1"}', 'key_column' => 'Code'];
+        $this->assertSame('CHANGED', Service::changeSettings($def, 'core:csvurl', $settings, AuthGetUid())->code);
+
+        $def = Definition::fresh($id) ?? throw new \LogicException('No definition');
+        $this->assertSame(['text...........1'], $def->mapping()->keyFields);
+        $this->assertSame([], $def->mapping()->problems(self::SLICE));
+        $this->assertSame('queued', Service::start($def, 'run', [], 'manual', AuthGetUid())->code);
+        $this->assertContains('Import_' . $id, array_column(self::queue(), 'selector'));
     }
 
     // ------------------------------------------------------------ refused starts point to the settings

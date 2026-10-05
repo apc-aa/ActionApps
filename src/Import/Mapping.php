@@ -160,6 +160,40 @@ final class Mapping
         return array_values(array_unique($problems));
     }
 
+    /** @param list<string> $codes of problems(), as one text a refusal carries - splitProblems() reads it */
+    public static function joinProblems(array $codes): string
+    {
+        return implode(', ', $codes);
+    }
+
+    /** @return list<string> the codes of joinProblems() */
+    public static function splitProblems(string $joined): array
+    {
+        return array_values(array_filter(explode(', ', $joined)));
+    }
+
+    /** the codes of joinProblems() in words, each with its code, plain text */
+    public static function problemsText(string $joined): string
+    {
+        return implode(' ', array_map(static fn(string $code): string => self::problemText($code) . " ($code)", self::splitProblems($joined)));
+    }
+
+    /** a code of problems() in words, plain text */
+    public static function problemText(string $code): string
+    {
+        return match ($code) {
+            'NO_SLICE'               => _m('The slice of the import is not available.'),
+            'UNKNOWN_TRANSFORMATION' => _m('A row of the mapping uses a transformation that does not exist.'),
+            'BAD_PARAMS'             => _m('A row of the mapping has parameters its transformation does not take.'),
+            'UNKNOWN_FIELD'          => _m('The mapping fills a field the slice does not have.'),
+            'PROTECTED_FIELD'        => _m('The mapping fills a field an import may not set.'),
+            'DUPLICATE_TARGET'       => _m('Two rows of the mapping fill the same field.'),
+            'NO_KEY'                 => _m('The mapping has no key field, so an item cannot be found again.'),
+            'KEY_NOT_TARGET'         => _m('A key field is not filled by the mapping.'),
+            default                  => _m('The mapping has a problem.'),
+        };
+    }
+
     /** The id mode of the Saver: the item is found by the key fields (Saver reads them as a JSON list). */
     public function idMode(): string
     {

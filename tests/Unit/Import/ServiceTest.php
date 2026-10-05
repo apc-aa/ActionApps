@@ -733,7 +733,7 @@ final class ServiceTest extends TestCase
         \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], ['text...........9']);
         $before = TableDb::$tables;
 
-        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, [], AuthGetUid())->refusal());
+        $this->assertSame('The mapping fills a field the slice does not have. (UNKNOWN_FIELD)', Service::changeSettings($def, self::SOURCE, [], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 
@@ -936,7 +936,7 @@ final class ServiceTest extends TestCase
 
         \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], ['text...........9']);
         $before = TableDb::$tables;
-        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
+        $this->assertSame('The mapping fills a field the slice does not have. (UNKNOWN_FIELD)', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 
@@ -1169,7 +1169,21 @@ final class ServiceTest extends TestCase
         $before = TableDb::$tables;
         \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], ['text...........9']);
 
-        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::resetMapping($def, AuthGetUid())->refusal());
+        $this->assertSame('The mapping fills a field the slice does not have. (UNKNOWN_FIELD)', Service::resetMapping($def, AuthGetUid())->refusal());
+        $this->assertSame($before, TableDb::$tables);
+    }
+
+    /** a mapping without a key would refuse every start - neither a change nor a reset stores it */
+    public function test_changeSettingsAndResetMapping_noKeyRefused(): void
+    {
+        $def    = self::definition();
+        $before = TableDb::$tables;
+        \ServiceSource::$mapping = new Mapping([['to' => 'relation........', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], []);
+        $no_key = 'The mapping has no key field, so an item cannot be found again. (NO_KEY)';
+
+        $this->assertSame($no_key, Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
+        $this->assertSame($before, TableDb::$tables);
+        $this->assertSame($no_key, Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 

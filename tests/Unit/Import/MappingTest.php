@@ -458,6 +458,16 @@ namespace Tests\Unit\Import {
             self::assertSame(['UNKNOWN_TRANSFORMATION', 'UNKNOWN_FIELD', 'KEY_NOT_TARGET'], $mapping->problems(self::SLICE));
         }
 
+        public function test_problemText_ownWordsForEachCode(): void
+        {
+            $codes = ['NO_SLICE', 'UNKNOWN_TRANSFORMATION', 'BAD_PARAMS', 'UNKNOWN_FIELD', 'PROTECTED_FIELD', 'DUPLICATE_TARGET', 'NO_KEY', 'KEY_NOT_TARGET'];
+
+            $texts = array_map(Mapping::problemText(...), $codes);
+
+            self::assertNotContains(Mapping::problemText('NOT_A_CODE'), $texts);
+            self::assertCount(count($codes), array_unique($texts));
+        }
+
         // ------------------------------------------------------------ fromJson(), toJson(), constructor
 
         /** @return iterable<string, array{string}> */

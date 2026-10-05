@@ -34,7 +34,13 @@ interface SourceInterface extends NamedInterface
      */
     public static function getClassProperties(): array;
 
-    /** @param array<string, string> $settings */
+    /**
+     * Must accept [] - a new definition is created without settings and takes defaultMapping() of
+     * this source; a source that throws then cannot be created (NO_MAPPING). That mapping may lack
+     * rows or a key: no run starts until the settings give them. A missing required setting is for
+     * check() or the run to report, not a reason to throw here.
+     * @param array<string, string> $settings
+     */
     public static function fromSettings(array $settings): static;
 
     /**

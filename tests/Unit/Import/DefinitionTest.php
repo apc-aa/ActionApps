@@ -149,6 +149,39 @@ final class DefinitionTest extends TestCase
 
         self::assertIsString($error);
         self::assertStringContainsString('UNKNOWN_FIELD', $error);
+        self::assertStringContainsString('The mapping fills a field the slice does not have.', $error, 'in words, not only the code');
+    }
+
+    /** the settings give the key, and they are set in the detail - only of a stored definition */
+    public function test_formRefusal_newWithoutKeySaved(): void
+    {
+        self::assertNull(self::post('', 'prices', 'core:csvurl'));
+
+        $def = Definition::byNameOrId(self::SLICE, 'prices');
+        self::assertNotNull($def);
+        self::assertSame(['NO_KEY'], $def->mapping()->problems(self::SLICE), 'no run starts until the settings give the key');
+        self::assertSame('', $def->snapshot()['settings']);
+    }
+
+    /** a source without settings has nothing that could give the key later */
+    public function test_formRefusal_newWithoutKeyRefusedWhenSourceHasNoSettings(): void
+    {
+        self::assertSame('The mapping has no key field, so an item cannot be found again. (NO_KEY)', self::post('', 'prices', 'custom:definitionunkeyed'));
+        self::assertSame([], TableDb::writes());
+    }
+
+    /** what the mapping does name must fit the slice, key or not */
+    public function test_formRefusal_newWithoutKeyStillRefusedForWrongRows(): void
+    {
+        $def = self::definition('prices');
+        $def->setProperty('source', 'core:csvurl');   // its settings could give the key
+        $def->applyMapping(new Mapping([['to' => 'text...........9', 't' => 'value', 'p' => ['new_content' => 'x', 'new_flag' => 't']]]));
+
+        $error = $def->formRefusal();
+
+        self::assertIsString($error);
+        self::assertStringContainsString('UNKNOWN_FIELD', $error);
+        self::assertStringNotContainsString('NO_KEY', $error);
     }
 
     public function test_formRefusal_sourceFailingDefaultMapping(): void

@@ -488,7 +488,7 @@ final class Service
         }
         $problems = $mapping->problems($slice);
         if ($problems) {
-            return new ChangeResult('MAPPING', implode(', ', $problems));
+            return new ChangeResult('MAPPING', Mapping::joinProblems($problems));
         }
         $def->applyMapping($mapping);
         return null;
