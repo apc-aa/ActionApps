@@ -178,18 +178,29 @@ final class Definition extends AA_Object implements InternalExpandInterface
     }
 
     /** The state of $run in words; null = no run. A run that works holds a live lease; one whose next
-     *  step is due later waits for a retry. */
+     *  step is due later waits for a retry; one that hangs only the State Check explains - checked in
+     *  the order the import detail describes the open run. */
     public static function statusWord(?Run $run, int $now): string
     {
         if ($run === null) {
             return _m('Never ran');
         }
         return match ($run->state()) {
-            Run::RUNNING => $run->hasLiveLease($now) ? _m('Running') : ($run->isWaiting($now) ? _m('Waiting to retry') : _m('Queued')),
+            Run::RUNNING => self::runningWord($run, $now),
             Run::DONE    => ($run->counts()['errors'] > 0) ? _m('Finished with item errors') : _m('Finished'),
             Run::ERROR   => _m('Stopped by an error'),
             Run::ENDED   => _m('Ended'),
             default      => $run->state(),
+        };
+    }
+
+    private static function runningWord(Run $run, int $now): string
+    {
+        return match (true) {
+            $run->isStuck($now)      => _m('Stuck — see State Check'),
+            $run->hasLiveLease($now) => _m('Running'),
+            $run->isWaiting($now)    => _m('Waiting to retry'),
+            default                  => _m('Queued'),
         };
     }
 

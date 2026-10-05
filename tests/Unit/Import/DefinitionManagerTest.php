@@ -85,6 +85,9 @@ final class DefinitionManagerTest extends TestCase
         yield 'no run'                   => [null, 'Never ran'];
         yield 'queued'                   => [['state' => Run::RUNNING, 'started' => (string) ($now - 5), 'next_at' => (string) $now], 'Queued'];
         yield 'queued after a lost step' => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'lease' => (string) ($now - 1), 'lease_tok' => 't'], 'Queued'];
+        yield 'queued after a dead step' => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'lease' => (string) ($now - Run::DEAD_GRACE), 'lease_tok' => 't'], 'Queued'];
+        yield 'stuck'                    => [['state' => Run::RUNNING, 'started' => (string) ($now - 86400), 'next_at' => (string) ($now - 86000)], 'Stuck — see State Check'];
+        yield 'stuck with a dead step'   => [['state' => Run::RUNNING, 'started' => (string) ($now - 86400), 'lease' => (string) ($now - 86000), 'lease_tok' => 't'], 'Stuck — see State Check'];
         yield 'running'                  => [['state' => Run::RUNNING, 'started' => (string) ($now - 5), 'lease' => (string) ($now + 20), 'lease_tok' => 't'], 'Running'];
         yield 'running past its retry'   => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'next_at' => (string) ($now + 60), 'lease' => (string) ($now + 20), 'lease_tok' => 't'], 'Running'];
         yield 'waiting to retry'         => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'next_at' => (string) ($now + 60), 'failures' => '1'], 'Waiting to retry'];
