@@ -226,6 +226,27 @@ final class CheckImportsTest extends TestCase
         $this->assertSame([Finding::OK], self::severities(self::findings(time())));
     }
 
+    /** a source may pass and still say what to fix (bad definitions) - by its code, the message is the source's */
+    public function test_lastCheckPassedWithCode_info(): void
+    {
+        self::definition(self::DEF, 'prices');
+        self::definition(self::DEF2, 'rates');
+        $checked = time() - 3600;
+        self::checked(self::DEF, new CheckResult(true, 'BAD_DEFINITIONS', 'item s3cr3t'), $checked);
+        self::checked(self::DEF2, new CheckResult(true, 'OLD_NEWS', ''), time() - 8 * self::DAY);
+
+        $findings = self::findings(time());
+
+        $finding = self::only($findings, 'checknote:' . self::DEF);
+        $this->assertSame(Finding::INFO, $finding->severity);
+        $this->assertStringContainsString('BAD_DEFINITIONS', self::text($finding));
+        $this->assertStringContainsString('prices', self::text($finding));
+        $this->assertStringNotContainsString('s3cr3t', self::text($finding));
+        $this->assertSame($checked, $finding->since);
+        $this->assertNull(self::find($findings, 'checknote:' . self::DEF2));
+        $this->assertNull(self::find($findings, 'check:' . self::DEF));
+    }
+
     public function test_damagedCheckOfStreamState_warning(): void
     {
         self::definition(self::DEF, 'prices');

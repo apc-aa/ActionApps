@@ -229,6 +229,8 @@ class CheckImports extends AbstractOptimize
             } elseif ($check && !$check['ok'] && ($check['time'] >= $now - self::WINDOW)) {
                 // the code only: the message is the source's
                 $findings[] = new Finding(Finding::WARNING, _m('The last check of an import source failed'), since: $check['time'], evidence: [$about + [_m('Checked') => self::date($check['time']), _m('Code') => safe($check['code'])]], advice: _m('A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again.'), links: $links, key: "check:$id", last: $check['time']);
+            } elseif ($check && $check['ok'] && ($check['code'] !== '') && ($check['time'] >= $now - self::WINDOW)) {
+                $findings[] = new Finding(Finding::INFO, _m('The last check of an import source passed with a remark'), since: $check['time'], evidence: [$about + [_m('Checked') => self::date($check['time']), _m('Code') => safe($check['code'])]], advice: _m('The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said.'), links: $links, key: "checknote:$id", last: $check['time']);
             }
         }
         $catalog  = $o['at'][Catalog::idOf($id)] ?? [];
