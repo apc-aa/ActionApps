@@ -1462,29 +1462,32 @@ function inner_trim(string $string): string
     return str_replace([' ', "\n", "\t", "\r"], '', $string);
 }
 
-/** Prints the page at an http(s) address - the answer of filler.php with inline=1 (its ok_url) and
- *  of fillform.php (show_result). Both come from the request, so an address of the server's own
- *  network is refused and logged for State Check.
+/** Prints the page at an http(s) address - the answer of filler.php with inline=1 (its ok_url), of
+ *  fillform.php (show_result) and slice.php (inc). They come from the request, so an address of the
+ *  server's own network is refused and logged for State Check.
  *  @param string $purpose the request parameter the address came in, for the log
+ *  @return bool the page was printed
  */
-function ReadFileSafe($url, string $purpose): void
+function ReadFileSafe($url, string $purpose): bool
 {
     $url = trim((string) $url);
     if (!preg_match('~^https?://~i', $url) || str_contains($url, '..')) {
-        return;
+        return false;
     }
     try {
         $answer = Client::publicOnly(timeout: 60, idle: 60, redirects: 10, maxBytes: 16 * 1024 * 1024)->request('GET', $url);
     } catch (TransportException $e) {
         CheckBlockedRequests::record($e, $purpose, (string) ($_SERVER['REMOTE_ADDR'] ?? ''));
-        return;
+        return false;
     } catch (ResponseTooLargeException) {
-        return;
+        return false;
     }
     // an error page is not the result the form promised
-    if ($answer->ok()) {
-        echo $answer->body;
+    if (!$answer->ok()) {
+        return false;
     }
+    echo $answer->body;
+    return true;
 }
 
 /** add_post2shtml_vars function
