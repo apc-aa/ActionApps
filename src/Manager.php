@@ -1253,12 +1253,12 @@ class Manager extends AA_Storable
                 return $this->getAndClearMessages() . MsgErr($refusal);
             }
             $form = $this->managed->getForm($id, $this->module_id);
-            $form_buttons = [ "update", "cancel"];
+            $form_buttons = [$id ? 'update' : 'insert', 'cancel'];
 
             try {
                 // the id goes back with the post - the form saves only the object it was built for
                 $html = $this->getAndClearMessages() . '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $id ? ['id' => $id] : []))) . '">' . FormToken::field(self::FORM_TOKEN);
-                $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($id), $form_buttons);
+                $html .= getFrmTabCaption($id ? _m("Edit id") . ': ' . safe($id) : _m('Add'), $form_buttons);
                 $html .= '<tr><td colspan="2">';
                 $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();
                 $html .= '</td></tr>';

@@ -76,6 +76,20 @@ namespace Tests\Unit\Legacy {
             $this->assertStringContainsString('[code]', $html);
         }
 
+        /** a new object is inserted, a stored one updated - the button and the caption say which */
+        public function test_a_new_object_is_inserted_a_stored_one_updated(): void
+        {
+            $new    = self::page(['add' => '1']);
+            $stored = self::page(['id' => self::OWN]);
+
+            $this->assertStringContainsString('name="insert"', $new);
+            $this->assertStringNotContainsString('name="update"', $new);
+            $this->assertStringNotContainsString('Edit id', $new, 'no caption with an empty id');
+            $this->assertStringContainsString('name="update"', $stored);
+            $this->assertStringNotContainsString('name="insert"', $stored);
+            $this->assertStringContainsString('Edit id: ' . self::OWN, $stored);
+        }
+
         public function test_the_form_of_another_modules_object_is_refused(): void
         {
             $html = self::page(['id' => self::VICTIM]);
