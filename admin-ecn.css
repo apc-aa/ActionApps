@@ -2410,6 +2410,12 @@ summary.aa-ad-filter {
 .aa-filter.expanded {
     flex: 1 1 auto;
 }
+/* the row is a column on phones - 550px would be the height */
+@media (max-width: 767px) {
+    .aa-filter {
+        flex-basis: auto;
+    }
+}
 .aa-sb-searchline {
     display: flex;
     flex-wrap: wrap;
