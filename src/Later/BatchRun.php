@@ -688,7 +688,7 @@ abstract class BatchRun extends AA_Object
             self::records('subject', $subject, ['state', 'started', 'finished', 'lease', 'lease_tok']),
             static fn(array $r): bool => in_array($r['state'] ?? '', [$states->done, $states->ended], true) && ((($r['lease_tok'] ?? '') === '') || ((int) ($r['lease'] ?? 0) <= $now)),
         );
-        uasort($finished, static fn(array $a, array $b): int => [(int) ($b['finished'] ?? 0), (int) ($b['started'] ?? 0)] <=> [(int) ($a['finished'] ?? 0), (int) ($a['started'] ?? 0)]);
+        uksort($finished, static fn($a, $b): int => self::newerFirst((string) $a, $finished[$a], (string) $b, $finished[$b]));
         $old = array_values(array_diff(array_map('strval', array_slice(array_keys($finished), max(0, $keep))), $alsoKept));
         if ($old) {
             // a row of priority 0 never runs again - it must not hold the run for ever
@@ -743,12 +743,23 @@ abstract class BatchRun extends AA_Object
 
     /** The runs of $subject, newest first, as records - no run read, however many there are.
      *  @param list<string> $props further properties to read
-     *  @return array<string, array<string, string>> id => started and $props */
+     *  @return array<string, array<string, string>> id => started, finished and $props */
     final protected static function recordsOfSubject(string $subject, array $props = []): array
     {
-        $records = self::records('subject', $subject, array_values(array_unique(['started', ...$props])));
-        uksort($records, static fn($a, $b): int => [(int) ($records[$b]['started'] ?? 0), (string) $b] <=> [(int) ($records[$a]['started'] ?? 0), (string) $a]);
+        $records = self::records('subject', $subject, array_values(array_unique(['started', 'finished', ...$props])));
+        uksort($records, static fn($a, $b): int => self::newerFirst((string) $a, $records[$a], (string) $b, $records[$b]));
         return $records;
+    }
+
+    /** Newest first: by start, then by end (an unfinished run is the newer), then by id. One order for
+     *  the lists and cleanup(), so what a page calls the newest run is never what cleanup() takes for an
+     *  old one - runs of a subject can start in one second, and ids are random.
+     *  @param array<string, string> $a
+     *  @param array<string, string> $b */
+    private static function newerFirst(string $aId, array $a, string $bId, array $b): int
+    {
+        $key = static fn(array $r): array => [(int) ($r['started'] ?? 0), (($r['finished'] ?? '') === '') ? PHP_INT_MAX : (int) $r['finished']];
+        return ($key($b) <=> $key($a)) ?: strcmp($bId, $aId);
     }
 
     /** the run as get() reads it, for each of $ids that is one

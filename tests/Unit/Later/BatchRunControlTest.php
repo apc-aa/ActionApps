@@ -1136,6 +1136,38 @@ final class BatchRunControlTest extends TestCase
         $this->assertNotContains($first, $ids);
     }
 
+    /** Runs started in one second: the later end is the newer, an unfinished run the newest, and on a
+     *  full tie the id decides - in the list and in cleanup() alike. Ids are random, so they are set
+     *  here: the highest one goes to the run that ended first. */
+    public function test_of_subject_and_cleanup_break_ties_alike(): void
+    {
+        $run = static function (string $id, ?int $finished): string {
+            $started = self::start()->getId();
+            if ($finished !== null) {
+                self::storedSet($started, 'state', 'done');
+                self::storedSet($started, 'finished', (string) $finished);
+            }
+            foreach (TableDb::$tables['object_text'] as $i => $row) {
+                if ($row['object_id'] === $started) {
+                    TableDb::$tables['object_text'][$i]['object_id'] = $id;
+                }
+            }
+            return $id;
+        };
+        $first   = $run(str_repeat('f', 32), self::NOW);
+        $twin    = $run(str_repeat('a', 32), self::NOW + 5);
+        $second  = $run(str_repeat('e', 32), self::NOW + 5);
+        $running = $run(str_repeat('1', 32), null);
+        TableDb::$tables['toexecute'] = [];
+
+        $ids = static fn(): array => array_map(static fn(ScriptedBatchRun $r): string => $r->getId(), ScriptedBatchRun::ofSubject(self::SUBJECT, 10));
+        $this->assertSame([$running, $second, $twin, $first], $ids());
+
+        ScriptedBatchRun::cleanup(self::SUBJECT, 1);
+
+        $this->assertSame([$running, $second], $ids(), 'the newest finished run of the list stays');
+    }
+
     // ---------------------------------------------------------------- the queue has no session
 
     /** A queue step has no session: it neither starts one nor touches $_SESSION - here an object that
