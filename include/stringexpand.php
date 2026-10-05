@@ -6597,7 +6597,7 @@ class AA_Unalias_Callback {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
 
         $initiallen = strspn(strtolower(aa_substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
-        $cmd_delim  = $out[$initiallen];
+        $cmd_delim  = $out[$initiallen] ?? '';   // {now} has no delimiter after the name
         if ( ($outcmd   = aa_substr($out,0,$initiallen)) && ($initiallen === strlen($out) || $cmd_delim === ':' || $cmd_delim === '(') ) {
         // if ( $outcmd   = aa_substr($out,0,$initiallen) ) {   // older - it also runs {math on {Math.parse(...
             $outparam = aa_substr($out,$initiallen+1);  // skip one more char - delimiter
