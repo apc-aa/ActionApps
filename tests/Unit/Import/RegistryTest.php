@@ -110,7 +110,7 @@ namespace Tests\Unit\Import {
         {
             $dir = $this->tmpDir();
             // ARESSource.php sorts before AbstractBaseSource.php, yet needs it declared
-            file_put_contents("$dir/ARESSource.php", self::sourceCode('ARESSource', 'AbstractBaseSource'));
+            file_put_contents("$dir/ARESSource.php", self::sourceCode('ARESSource', 'extends \\AbstractBaseSource'));
             file_put_contents("$dir/AbstractBaseSource.php", "<?php\nabstract class AbstractBaseSource extends \\AA\\Import\\AbstractSource {}\n");
 
             self::assertSame(['custom:ares' => 'ARESSource'], self::custom(Registry::sources($dir)));
@@ -132,7 +132,7 @@ namespace Tests\Unit\Import {
         public function test_sources_acceptsWhatOnlyLooksLikeADeclaration(): void
         {
             $dir = $this->tmpDir();
-            file_put_contents("$dir/TrickySource.php", "<?php\nuse function strlen as tricky_len;\n" . substr(self::sourceCode('TrickySource', 'AA\Import\AbstractSource', <<<'PHP'
+            file_put_contents("$dir/TrickySource.php", "<?php\nuse function strlen as tricky_len;\n" . substr(self::sourceCode('TrickySource', more: <<<'PHP'
                 public function helper(): array
                 {
                     $f = function () { return self::class; };
@@ -156,6 +156,21 @@ namespace Tests\Unit\Import {
             self::assertStringContainsString(SourceInterface::class, $rejected['NotASource']);
             self::assertStringContainsString('SomeOtherName', $rejected['WrongNameSource.php']);
             self::assertFalse(class_exists('SomeOtherName', false));
+        }
+
+        /** complete, so it loads - yet the next method added to the contract would make it a fatal error */
+        public function test_rejected_sourceNotExtendingAbstractSource(): void
+        {
+            $dir = $this->tmpDir();
+            file_put_contents("$dir/DirectSource.php", self::sourceCode('DirectSource', 'implements \\AA\\Import\\SourceInterface', <<<'PHP'
+                public static function credentials(): array { return []; }
+                public function minJobSeconds(): int { return 15; }
+                public function defaultMapping(): \AA\Import\Mapping { return new \AA\Import\Mapping([]); }
+                PHP));
+
+            self::assertSame([], self::custom(Registry::sources($dir)));
+            self::assertSame('does not extend ' . AbstractSource::class, Registry::rejected($dir)['DirectSource'] ?? '');
+            self::assertTrue(Registry::isRejected('custom:direct', $dir));
         }
 
         /** @return iterable<string, array{string, string}> */
@@ -333,11 +348,12 @@ namespace Tests\Unit\Import {
             Registry::setCustomRootForTests($root);
         }
 
-        private static function sourceCode(string $class, string $extends = 'AA\Import\AbstractSource', string $more = ''): string
+        /** @param string $parent what follows the class name: extends ... or implements ... */
+        private static function sourceCode(string $class, string $parent = 'extends \\AA\\Import\\AbstractSource', string $more = ''): string
         {
             return <<<PHP
                 <?php
-                final class $class extends \\$extends
+                final class $class $parent
                 {
                     public static function name(): string { return '$class'; }
                     public static function description(): string { return ''; }

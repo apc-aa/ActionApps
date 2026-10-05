@@ -12,7 +12,8 @@ use AA\Util\NamedInterface;
  * or the global configuration itself. Optional abilities are separate interfaces (Checkable,
  * Probeable, Cataloged, CatalogAdoptable).
  *
- * A source extends AbstractSource, and every method added here gets a default there: PHP reports
+ * A source must extend AbstractSource - core and installation sources (include/custom/<dir>/import/)
+ * alike; Registry leaves out any other. Every method added here gets a default there: PHP reports
  * a missing method as a fatal error, not an exception, so a source of an installation that lacks
  * it would bring down the import pages, State Check and the queue step.
  */

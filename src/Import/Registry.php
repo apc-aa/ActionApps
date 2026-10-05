@@ -14,7 +14,7 @@ use Throwable;
  * Finds the import sources. Adding one means adding one file - there is no list to edit:
  * - core: src/Import/Source/<Name>Source.php, type "core:<name>";
  * - installation: <customDir>/<Name>Source.php, class <Name>Source in the global namespace
- *   (include/custom/ is not autoloaded), type "custom:<name>". It should extend AbstractSource;
+ *   (include/custom/ is not autoloaded), type "custom:<name>". It must extend AbstractSource;
  *   a base shared by several sources belongs in a file called Abstract..., loaded first, never offered.
  *
  * A syntax error, an exception, a second declaration or printed output in an installation file
@@ -115,6 +115,8 @@ final class Registry
                     $rejected[$class] = 'abstract - a base class belongs in a file called Abstract...';
                 } elseif (!is_subclass_of($class, SourceInterface::class)) {
                     $rejected[$class] = 'does not implement ' . SourceInterface::class;
+                } elseif (!is_subclass_of($class, AbstractSource::class)) {
+                    $rejected[$class] = 'does not extend ' . AbstractSource::class;
                 } else {
                     $sources[$type] = $class;
                 }
