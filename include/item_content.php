@@ -129,7 +129,7 @@ class AA_Value implements IteratorAggregate, ArrayAccess, Countable
      */
     public function getValue($i = 0)
     {
-        return $this->arr[$i];
+        return $this->arr[$i] ?? null;
     }
 
     /**

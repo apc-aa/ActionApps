@@ -67,5 +67,24 @@ namespace Tests\Unit\Legacy {
             $this->assertFalse($set);
             $this->assertSame([], $warnings);
         }
+
+        /** a form without a row for a property of the object gives an empty value for it */
+        public function test_getValue_nullWithoutWarningForAMissingField(): void
+        {
+            $content  = new AA_Content();
+            $warnings = [];
+            set_error_handler(static function (int $no, string $msg) use (&$warnings): bool {
+                $warnings[] = $msg;
+                return true;
+            });
+            try {
+                $value = $content->getAaValue('saved_by')->getValue();
+            } finally {
+                restore_error_handler();
+            }
+
+            $this->assertNull($value);
+            $this->assertSame([], $warnings);
+        }
     }
 }
