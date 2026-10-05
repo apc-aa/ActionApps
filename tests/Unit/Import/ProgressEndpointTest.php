@@ -417,7 +417,7 @@ final class ProgressEndpointTest extends TestCase
 
         $html = DetailLive::answer(['change_id' => self::SLICE, 'id' => self::DEF, 'sections' => '1']);
         $this->assertIsString($html);
-        $this->assertStringContainsString('>Stav<', $html, 'Status in the language of the slice page');
+        $this->assertStringContainsString('>Nový<', $html, 'Status in the language of the slice page');
         \AA::$module_id = self::SLICE;
         $this->assertSame(self::links(self::page()->html(time())), self::links($html));
         $this->assertContains(get_admin_url('se_dataimport.php', ['change_id' => self::SLICE, 'id' => self::DEF, 'progress' => $id]), self::links($html));

@@ -285,10 +285,13 @@ final class Service
         });
     }
 
-    /** What a settings form carries to tell the definition it was made from: its source and settings as stored. */
-    public static function settingsHash(Definition $d): string
+    /** The source and settings of a definition as stored, or of the copy a run works with: what a
+     *  settings form carries to tell the definition it was made from, and what tells a run of the
+     *  settings in force from one of older ones. */
+    public static function settingsHash(Definition|Run $of): string
     {
-        return hash('sha256', $d->sourceType() . "\0" . $d->snapshot()['settings']);
+        $snapshot = $of->snapshot();
+        return hash('sha256', ($snapshot['source'] ?? '') . "\0" . ($snapshot['settings'] ?? ''));
     }
 
     /** Definition::manageRefusal() as a result */

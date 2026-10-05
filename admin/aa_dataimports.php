@@ -38,5 +38,6 @@ if (!IsSuperadmin()) {
 $apage = new AA_Adminpageutil('aaadmin', 'dataimports');
 $apage->setTitle(_m('Imports of all slices'));
 $apage->setSubtitle(_m("The imports of every slice of this installation. A new import is added on the Imports page of its slice."));
+$apage->addRequire(get_aa_url('css/dataimport.css', ['v' => AA_JS_VERSION], false));
 // a definition added here would belong to whichever slice is selected now
 $apage->printWithManager((new Manager('dataimport', Definition::getManagerConf()->setAction('add', false)))->setAllModules());

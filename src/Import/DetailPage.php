@@ -54,6 +54,9 @@ final class DetailPage
     /** @var ?list<Run> newest first, read once per page */
     private ?array $runs = null;
 
+    /** the newest import (Run::storesItems()), read once per page; false = not read yet */
+    private Run|false|null $import = false;
+
     /** read once per page; false = not read yet */
     private StreamState|false|null $state = false;
 
@@ -260,45 +263,54 @@ final class DetailPage
             . ' data-aa-stale="' . safe(_m('This page is out of date – reload it.')) . '"></div>';
     }
 
-    /** source, enabled, status, last run, the open run, next plan and the tasks, last check, mapping problems */
+    /** the verdict and any mapping problems at the top, the outcomes of the latest runs, then the
+     *  last import with its counts, the next start with its tasks, the last check of the source; the
+     *  open run last */
     public function overviewHtml(int $now): string
     {
-        $last   = $this->runs()[0] ?? null;
+        $runs   = $this->runs();
         $open   = $this->openRun();
-        $source = $this->def->sourceType();
-        $rows   = [
-            _m('Source')     => safe(Definition::sourceName($source)) . ($this->hasSource() ? '' : ' - ' . _m('this source is not available, so the import cannot run')),
-            _m('Enabled')    => $this->def->isEnabled() ? _m('Yes - a planned task may start it') : _m('No - it runs only by hand'),
-            _m('Status')     => safe(Definition::statusWord($last, $now)),
-            _m('Last run')   => ($last === null) ? '--' : self::runSummaryHtml($last, $now),
-            _m('Next plan')  => $this->nextPlanHtml($now),
-            _m('Planned tasks') => $this->plannedTasksHtml($now),
-            _m('Last check of the source') => $this->lastCheckHtml(),
-        ];
-        $html = self::factsHtml($rows);
+        $health = RunView::health($this->def->isEnabled(), $this->hasSource(), $this->problems() === [], $runs[0] ?? null, $this->lastImport(), $now);
+        $html   = $this->healthHtml($health) . $this->problemsHtml() . self::ribbonHtml($runs, $now)
+            . '<div class="aa-import-glance">'
+            . '<div class="aa-import-last"><h3>' . _m('Last import') . '</h3>' . $this->lastImportHtml($runs, $now) . '</div>'
+            . '<div class="aa-import-next"><h3>' . _m('Next start') . '</h3>' . $this->nextPlanHtml($now) . $this->plannedTasksHtml($now) . '</div>'
+            . '<div class="aa-import-check"><h3>' . _m('Last check of the source') . '</h3>' . $this->lastCheckHtml($runs, $now) . '</div>'
+            . '</div>';
         if ($open !== null) {
             $html .= $this->openRunHtml($open, $now);
         }
-        $html .= $this->problemsHtml();
-        return self::section('overview', _m('Overview'), $html);
+        // one child: the section styles each direct child as its own padded block
+        return self::section('overview', _m('Overview'), '<div>' . $html . '</div>');
     }
 
-    /** the forms of the actions; a button that cannot be used now is disabled and says why */
+    /** the forms of the actions; a button that cannot be used now is disabled and says why.
+     *  Run is the one loud button, the rest is quieter, the rare ones are one click away. */
     public function actionsHtml(int $now): string
     {
         $why   = $this->startBlocked($now);
-        $html  = '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions">' . $this->hidden('');
-        $html .= self::button(_m('Run'), $why, ['name' => 'action', 'value' => 'run', 'class' => 'aa-button-run'])
-            . ' ' . self::button(_m('Run changed only'), $why, ['name' => 'action', 'value' => 'changed'])
-            . ' ' . self::button(_m('Check source'), $why, ['name' => 'action', 'value' => 'check'])
-            . ' ' . self::button(_m('Dry run'), $why, ['name' => 'action', 'value' => 'dry']);
+        $html  = '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions aa-import-start">' . $this->hidden('');
+        $html .= '<div class="aa-import-acts">'
+            . self::actHtml(self::button(_m('Run'), $why, ['name' => 'action', 'value' => 'run', 'class' => 'aa-button-run aa-import-primary']), _m('Imports every stream.'))
+            . self::actHtml(self::button(_m('Run changed only'), $why, ['name' => 'action', 'value' => 'changed', 'class' => 'aa-import-quiet']), _m('Skips the streams the source says did not change.'))
+            . self::actHtml(self::button(_m('Check source'), $why, ['name' => 'action', 'value' => 'check', 'class' => 'aa-import-quiet']), _m('Asks the source whether it works. Stores nothing.'))
+            . self::actHtml(self::button(_m('Dry run'), $why, ['name' => 'action', 'value' => 'dry', 'class' => 'aa-import-quiet']), _m('Reads up to 500 items and shows what it would store. Stores nothing.'))
+            . '</div>';
         $html .= ($why === '') ? '' : '<p class="aa-import-why">' . safe($why) . '</p>';
         $html .= '</form>';
-        $html .= '<p><small>' . _m('Run changed only skips the streams the source says did not change. Check source asks the source whether it works and stores nothing. A dry run reads up to 500 items and shows what it would store, without storing it.') . '</small></p>';
-        $html .= $this->streamFormHtml($why);
-        $html .= $this->baselineFormHtml($why);
         $html .= $this->controlFormHtml($now);
+        // the id lets a refreshed page keep it open
+        $html .= '<details id="aa-import-more" class="aa-import-more"><summary>' . _m('More actions') . '</summary>'
+            . $this->streamFormHtml($why)
+            . $this->baselineFormHtml($why)
+            . '</details>';
         return self::section('actions', _m('Actions'), $html);
+    }
+
+    /** a button with its one-line hint under it */
+    private static function actHtml(string $button, string $hint): string
+    {
+        return '<div class="aa-import-act">' . $button . '<small>' . safe($hint) . '</small></div>';
     }
 
     /** the last runs, newest first, each with its item errors and what a dry run would store */
@@ -308,21 +320,23 @@ final class DetailPage
         if (!$runs) {
             return self::section('runs', _m('Runs'), '<p class="aa-empty-note">' . _m('No run yet.') . '</p>');
         }
-        $heads = [_m('Started'), _m('How'), _m('Status'), _m('Took'), _m('Counts'), _m('Error')];
+        $heads = [_m('Outcome'), _m('Started'), _m('Took'), _m('Read'), _m('New'), _m('Updated'), _m('Skipped'), _m('Item errors')];
         $html  = '<table class="aa-import-runs"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
         foreach ($runs as $run) {
             $p       = $this->progressOf($run);
             $started = (int) $run->getProperty('started');
-            $html   .= '<tr class="aa-import-run">'
-                . '<td>' . ($started ? date('Y-m-d H:i:s', $started) : '--') . '</td>'
-                . '<td>' . safe(Definition::howItRan($run)) . '</td>'
-                . '<td>' . safe(Definition::statusWord($run, $now)) . '</td>'
-                . '<td>' . self::took($run, $now) . '</td>'
-                . '<td>' . self::countsText($run) . '</td>'
-                . '<td>' . self::errorHtml($p['error'] ?? null) . '</td>'
+            $outcome = RunView::outcome($run, $now);
+            $errors  = $run->errors();
+            $html   .= '<tr class="aa-import-run" data-outcome="' . $outcome['kind'] . '">'
+                . '<th scope="row">' . RunView::markHtml($outcome['kind']) . ' <strong>' . safe($outcome['word']) . '</strong>'
+                . (($outcome['then'] === '') ? '' : '<small class="aa-import-then">' . safe($outcome['then']) . '</small>')
+                . '<small>' . safe(self::kindOfRun($run)) . '</small></th>'
+                . '<td data-label="' . safe($heads[1]) . '">' . ($started ? date('Y-m-d H:i:s', $started) . self::ageHtml($started, $now) : '--') . '</td>'
+                . '<td data-label="' . safe($heads[2]) . '">' . self::took($run, $now) . '</td>'
+                . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
                 . '</tr>';
             $samples = $run->samples();
-            $more    = self::itemErrorsHtml($run->errors(), (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
+            $more    = self::runErrorHtml($p['error'] ?? null) . self::itemErrorsHtml($errors, (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
             if ($more !== '') {
                 $html .= '<tr class="aa-import-run-more"><td colspan="' . count($heads) . '">' . $more . '</td></tr>';
             }
@@ -331,36 +345,44 @@ final class DetailPage
         return self::section('runs', _m('Runs'), $html);
     }
 
-    /** What the imports know of each stream: its data version, when the source was last asked whether
-     *  it changed, when it was imported and by which run. Read from the stored state, whatever it holds,
+    /** What the imports know of each stream: a verdict, the volume of the run that imported it, when it was
+     *  imported and the source asked, and its data version. Read from the stored state, whatever it holds,
      *  page by page; not refreshed while a run goes on - a source may have thousands of streams.
      *  @param mixed $page the page of the listing (?streams_page=), from the request */
-    public function streamsHtml(mixed $page = null): string
+    public function streamsHtml(mixed $page = null, ?int $now = null): string
     {
+        $now     = $now ?? Run::clock();
         $state   = $this->streamState();
         $streams = $state?->streams() ?? [];
         if (!$streams) {
-            $note = ($state?->streamsDamaged()) ? _m('The stored state of the streams cannot be read.') : _m('No stream has been imported or checked yet.');
-            return self::section('streams', _m('Streams'), '<p class="aa-empty-note">' . $note . '</p>', false);
+            $html = ($state?->streamsDamaged())
+                ? '<p class="aa-empty-note">' . _m('The stored state of the streams cannot be read.') . '</p>'
+                : '<p class="aa-import-empty">' . _m('No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list.', ['<a href="#aa-import-actions">' . _m('Run') . '</a>', '<a href="#aa-import-actions">' . _m('Check source') . '</a>']) . '</p>';
+            return self::section('streams', _m('Streams'), $html, false);
         }
         $pages   = self::pagesOf(count($streams));
         $page    = self::pageOf($page, $pages);
         $streams = array_slice($streams, ($page - 1) * self::PAGE_SIZE, self::PAGE_SIZE, true);
-        $started = [];
+        $runs    = [];
         foreach ($this->runs() as $run) {
-            $started[(string) $run->getId()] = (int) $run->getProperty('started');
+            $runs[(string) $run->getId()] = $run;
         }
-        $heads = [_m('Stream'), _m('Data version'), _m('Checked for changes'), _m('Imported'), _m('By the run started')];
+        $heads = [_m('Stream'), _m('State'), _m('Records'), _m('Last recorded'), _m('Source checked'), _m('Data version')];
         $html  = '<table class="aa-import-streams"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
         foreach ($streams as $key => $stream) {
-            $version = $stream['v'] ?? '';
-            $run     = $stream['run'] ?? '';
-            $html   .= '<tr><td>' . safe((string) $key) . '</td>'
-                . '<td>' . ((is_string($version) && ($version !== '')) ? safe($version) : '--') . '</td>'
-                . '<td>' . self::timeOf($stream['probed'] ?? null) . '</td>'
-                . '<td>' . self::importedHtml($stream) . '</td>'
-                // a run older than those listed is gone from the page
-                . '<td>' . self::timeOf(is_string($run) ? ($started[$run] ?? null) : null) . '</td>'
+            $key  = (string) $key;
+            // a run older than those listed is gone from the page
+            $run  = is_string($stream['run'] ?? null) ? ($runs[$stream['run']] ?? null) : null;
+            $since = self::timeOf($run ? (int) $run->getProperty('started') : null);
+            [$kind, $mark, $word, $reason, $time] = self::streamKind($stream, $key, $run);
+            $html .= '<tr><th scope="row" data-label="' . safe($heads[0]) . '">' . safe($key) . '</th>'
+                . '<td data-label="' . safe($heads[1]) . '"><span class="aa-import-state aa-import-state-' . $kind . '">' . RunView::markHtml($mark) . $word . '</span>'
+                . '<small class="aa-import-reason">' . $reason . '</small></td>'
+                . '<td data-label="' . safe($heads[2]) . '">' . (($kind === 'imported' || $kind === 'warn') ? self::recordsHtml($run, $key) : '--') . '</td>'
+                . '<td data-label="' . safe($heads[3]) . '">' . self::timeOf($time) . self::ageHtml($time, $now)
+                . (($since !== '--') ? '<small class="aa-import-since">' . _m('by the run started %1', [$since]) . '</small>' : '') . '</td>'
+                . '<td data-label="' . safe($heads[4]) . '">' . self::timeOf($stream['probed'] ?? null) . self::ageHtml($stream['probed'] ?? null, $now) . '</td>'
+                . '<td data-label="' . safe($heads[5]) . '">' . self::versionHtml($stream['v'] ?? '') . '</td>'
                 . '</tr>';
         }
         $html .= '</tbody></table>' . self::pagerHtml($this->def, 'streams_page', self::STREAMS_ANCHOR, _m('Pages of the streams'), $page, $pages);
@@ -516,6 +538,10 @@ final class DetailPage
             'SLICE'          => _m('The settings name a slice whose feeding you do not manage.'),
             'STREAMS'        => _m('The source has no such stream now.'),
             'SOURCE'         => _m('The code of the import source failed (SOURCE). The log of import failures has its class and line.'),
+            'COLUMNS'        => _m('The first row of the file lacks columns the mapping needs.'),
+            'AUTH'           => _m('The source did not accept the key.'),
+            'NO_CREDENTIAL'  => _m('The key of the source is damaged in the configuration.'),
+            'TRANSPORT'      => _m('The source could not be reached.'),
             'WRONG_STATE'    => _m('The run is finished; it cannot go on.'),
             'OFF'            => _m('The import is switched off.'),
             'KEYS'           => _m('This import uses API keys, so only a superadmin may do this.'),
@@ -526,12 +552,97 @@ final class DetailPage
 
     // ------------------------------------------------------------ overview parts
 
-    private static function runSummaryHtml(Run $run, int $now): string
+    /** the last import with its counts; a newer run that stored nothing (a check, a dry run) is told apart under it
+     *  @param list<Run> $runs newest first */
+    private function lastImportHtml(array $runs, int $now): string
     {
-        $started = (int) $run->getProperty('started');
-        return ($started ? date('Y-m-d H:i', $started) : '--')
-            . ' <small>' . safe(Definition::howItRan($run)) . '</small><br>'
-            . _m('took %1', [self::took($run, $now)]) . '; ' . self::countsText($run);
+        $import = $this->lastImport();
+        $newest = $runs[0] ?? null;
+        $about  = ($newest === null) ? '' : safe(RunView::howItRan($newest)) . ', ' . RunView::whenText((int) $newest->getProperty('started'), $now) . ' - ' . safe(RunView::resultText($newest, $now));
+        if ($import === null) {
+            return '<p class="aa-import-value">' . _m('No import yet') . '</p>'
+                . (($about === '') ? '' : '<p class="aa-import-sub aa-import-newer">' . _m('Latest run: %1', [$about]) . '</p>');
+        }
+        $how = RunView::howItRan($import);
+        return '<p class="aa-import-value">' . RunView::whenText((int) $import->getProperty('started'), $now) . '</p>'
+            . '<p class="aa-import-sub">' . (($import->state() === Run::DONE) ? '' : safe(RunView::outcomeText($import, $now)) . ' &middot; ') . (($how === '') ? '' : safe($how) . ' &middot; ') . _m('took %1', [self::took($import, $now)]) . '</p>'
+            . self::countsHtml($import)
+            . ((($newest === null) || ((string) $newest->getId() === (string) $import->getId())) ? '' : '<p class="aa-import-sub aa-import-newer">' . _m('Since then: %1', [$about]) . '</p>');
+    }
+
+    /** the verdict in words with a mark, why, and what went wrong - colour is never the only signal
+     *  @param array{kind: string, word: string, reason: string} $health */
+    private function healthHtml(array $health): string
+    {
+        $enabled = $this->def->isEnabled();
+        $source  = safe(Definition::sourceName($this->def->sourceType()));
+        $line    = _m('Source: %1', [$source]) . ($this->hasSource() ? '' : ' - ' . _m('this source is not available')) . ' &middot; ' . ($enabled ? _m('Enabled') : _m('Disabled'));
+        return '<div class="aa-import-health" data-kind="' . $health['kind'] . '">'
+            . RunView::chipHtml($health['kind'], $health['word'])
+            . '<p class="aa-import-reason">' . safe($health['reason']) . '</p></div>'
+            . $this->firstErrorHtml()
+            . '<p class="aa-import-sub">' . $line . '</p>';
+    }
+
+    /** What went wrong: why the open run stopped, else the first item error of the last import, in
+     *  the source's words. Not shown when neither has one. */
+    private function firstErrorHtml(): string
+    {
+        $open = $this->openRun();
+        if ($open?->state() === Run::ERROR) {
+            return self::runErrorHtml($this->progressOf($open)['error'] ?? null);
+        }
+        $import = $this->lastImport();
+        $first  = ($import === null) ? null : ($import->errors()[0] ?? null);
+        if (($first === null) || ($import->counts()['errors'] === 0)) {
+            return '';
+        }
+        $where = trim($first['stream'] . ' ' . $first['job']);
+        return self::alertHtml(_m('First item error:'), $first['code'] . (($first['msg'] === '') ? '' : ': ' . $first['msg']) . (($where === '') ? '' : ' (' . $where . ')'));
+    }
+
+    /** @param string $label plain text */
+    private static function alertHtml(string $label, string $text): string
+    {
+        return '<p class="aa-import-alert">' . RunView::markHtml('warn') . ' <strong>' . safe($label) . '</strong> ' . safe($text) . '</p>';
+    }
+
+    /** One tick per latest run, newest first: the shape and the hidden word say how it went; a dashed
+     *  tick is a run that stored nothing (a check, a dry run, a baseline), so it never looks like an import.
+     *  @param list<Run> $runs newest first */
+    private static function ribbonHtml(array $runs, int $now): string
+    {
+        $runs = array_slice($runs, 0, 10);
+        if (count($runs) < 2) {
+            return '';
+        }
+        $ticks = '';
+        foreach ($runs as $run) {
+            $kind    = RunView::outcome($run, $now)['kind'];
+            $what    = trim(self::kindOfRun($run) . ' - ' . RunView::outcomeText($run, $now), ' -');
+            $text    = RunView::whenText((int) $run->getProperty('started'), $now) . ' - ' . $what;
+            $ticks  .= '<li data-outcome="' . $kind . '" data-stored="' . ($run->storesItems() ? 'yes' : 'no') . '">'
+                . '<a href="#aa-import-runs" title="' . safe($text) . '">' . RunView::markHtml($kind)
+                . '<span class="aa-import-sr">' . safe($text) . '</span></a></li>';
+        }
+        return '<div class="aa-import-ribbon"><h3>' . _m('Latest runs') . '</h3><ol aria-label="' . safe(_m('Outcomes of the latest runs, newest first')) . '">' . $ticks . '</ol>'
+            . '<p class="aa-import-sub">' . _m('Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished.', [RunView::markHtml('ended')]) . '</p></div>';
+    }
+
+    /** the counts of an import as numbers under their names; item errors get a mark when there are any */
+    private static function countsHtml(Run $run): string
+    {
+        $nothing = RunView::nothingReadText($run);
+        if ($nothing !== '') {
+            return '<p class="aa-import-sub">' . safe($nothing) . '</p>';
+        }
+        $counts = $run->counts();
+        $html   = '';
+        foreach (['read' => _m('Read'), 'new' => _m('New'), 'updated' => _m('Updated'), 'skipped' => _m('Skipped'), 'errors' => _m('Item errors')] as $key => $label) {
+            $bad   = (($key === 'errors') && ($counts[$key] > 0));
+            $html .= '<div' . ($bad ? ' data-kind="warn"' : '') . '><dt>' . $label . '</dt><dd>' . ($bad ? RunView::markHtml('warn') . ' ' : '') . (int) $counts[$key] . '</dd></div>';
+        }
+        return '<dl class="aa-import-counts">' . $html . '</dl>';
     }
 
     private function openRunHtml(Run $run, int $now): string
@@ -550,8 +661,7 @@ final class DetailPage
         $html .= _m('Last progress: %1.', [$p['moved'] ? date('Y-m-d H:i', $p['moved']) : '--']) . '</p>';
         // an error first: a step of it may still hold its lease
         $html .= match (true) {
-            $run->state() === Run::ERROR => '<p>' . _m('Stopped by an error: %1', [self::errorHtml($p['error'])]) . '</p>'
-                . '<p>' . _m('Nothing more is imported until you act or a planned task starts the import again (that ends this run).') . '</p>'
+            $run->state() === Run::ERROR => '<p>' . _m('Nothing more is imported until you act or a planned task starts the import again (that ends this run).') . '</p>'
                 . '<p>' . _m('Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported.') . '</p>',
             $run->isStuck($now)   => '<p>' . _m('No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run.') . '</p>',
             $p['running']         => '<p>' . _m('A step is working now.') . '</p>',
@@ -569,10 +679,26 @@ final class DetailPage
     {
         // a planned start of a disabled import does nothing
         if (!$this->def->isEnabled()) {
-            return _m('Off');
+            return '<p class="aa-import-value">' . _m('Off') . '</p><p class="aa-import-sub">' . _m('The import is disabled, so no planned task starts it.') . '</p>';
         }
         $next = $this->def->nextPlanned($now);
-        return ($next === null) ? _m('Not planned - no planned task of the slice calls {import} with its name or id') : date('Y-m-d H:i', $next);
+        if ($next !== null) {
+            return '<p class="aa-import-value">' . date('Y-m-d H:i', $next) . '</p>';
+        }
+        return '<p class="aa-import-value">' . _m('Not planned') . '</p>' . ($this->def->plannedTasks($now)
+            ? '<p class="aa-import-sub">' . _m('A planned task calls it, but none has a time to start it.') . '</p>'
+            : '<p class="aa-import-sub">' . _m('It runs only when you start it. To run it on a schedule, add a planned task.') . '</p>' . $this->taskCallHtml());
+    }
+
+    /** For a superadmin, who may write a planned task by hand: the call that starts this import. The
+     *  braces are entities, so no template expansion of the page can ever run it. */
+    private function taskCallHtml(): string
+    {
+        if (!Definition::isSuperadmin($this->uid)) {
+            return '';
+        }
+        $call = '<code>&#123;import:' . safe($this->id()) . ':changed&#125;</code>';
+        return '<p class="aa-import-sub"><small>' . _m('Written by hand, a planned task starts it with %1.', [$call]) . '</small></p>';
     }
 
     /** The planned tasks that start this import, each linked to its form, and Schedule - a link to the
@@ -586,7 +712,7 @@ final class DetailPage
             $why  = _m('Planned tasks need the Forms permission');
             $next = array_filter(array_column($tasks, 'next'));
             $html = match (true) {
-                !$tasks => '<p>' . _m('No planned task of the slice calls this import.') . '</p>',
+                !$tasks => '',
                 !$next  => '<p>' . _m('Planned tasks: %1', [count($tasks)]) . '</p>',
                 default => '<p>' . _m('Planned tasks: %1, next %2', [count($tasks), date('Y-m-d H:i', min($next))]) . '</p>',
             };
@@ -603,7 +729,7 @@ final class DetailPage
             $next   = $task['next'] ? _m('next %1', [date('Y-m-d H:i', $task['next'])]) : _m('no time set');
             $items .= '<li>' . $name . ': ' . $modes . ', ' . $next . ', ' . ($task['queued'] ? _m('queued') : _m('not queued')) . $off . '</li>';
         }
-        $html = ($items === '') ? '<p>' . _m('No planned task of the slice calls this import.') . '</p>' : '<ul>' . $items . '</ul>';
+        $html = ($items === '') ? '' : '<ul class="aa-import-tasks">' . $items . '</ul>';
         return $html . a_href(self::scheduleUrl($this->def), _m('Schedule'), ['class' => 'aa-button-new']);
     }
 
@@ -633,21 +759,41 @@ final class DetailPage
         };
     }
 
-    private function lastCheckHtml(): string
+    /** The newer of the result the stream state holds and the newest finished check run of the
+     *  settings in force: saving other settings resets the state, while the run list keeps the history.
+     *  @param list<Run> $runs newest first */
+    private function lastCheckHtml(array $runs, int $now): string
     {
-        $state = $this->streamState();
-        $check = $state?->lastCheck();
-        if ($check === null) {
-            return ($state?->checkDamaged()) ? _m('The stored result cannot be read.') : _m('Never checked');
+        $state   = $this->streamState();
+        $check   = $state?->lastCheck();
+        $current = Service::settingsHash($this->def);
+        $fromRun = null;
+        foreach ($runs as $run) {
+            if (($run->mode() === 'check') && in_array($run->state(), [Run::DONE, Run::ERROR], true) && hash_equals($current, Service::settingsHash($run))) {
+                $fromRun = $run;
+                break;
+            }
         }
-        $html = ($check['time'] ? date('Y-m-d H:i', $check['time']) : '--') . ' ' . ($check['ok'] ? _m('Passed') : _m('Failed'));
+        $runTime = ($fromRun === null) ? 0 : ((int) $fromRun->getProperty('finished') ?: (int) $fromRun->getProperty('started'));
+        if (($fromRun !== null) && ($runTime > (int) ($check['time'] ?? 0))) {
+            $ok   = ($fromRun->state() === Run::DONE);
+            $code = $ok ? '' : (string) ($this->progressOf($fromRun)['error']['code'] ?? '');
+            return '<p class="aa-import-value">' . RunView::chipHtml($ok ? 'ok' : 'bad', $ok ? _m('Passed') : _m('Failed')) . '</p>'
+                . '<p class="aa-import-sub">' . RunView::whenText($runTime, $now) . (($code === '') ? '' : ' <code>' . safe($code) . '</code>') . '</p>'
+                . '<p class="aa-import-sub"><small>' . _m('Taken from the run list: the stream state holds no newer check result.') . '</small></p>';
+        }
+        if ($check === null) {
+            return '<p class="aa-import-value">' . ($state?->checkDamaged() ? _m('The stored result cannot be read.') : _m('Never checked')) . '</p>';
+        }
+        $html = '<p class="aa-import-value">' . RunView::chipHtml($check['ok'] ? 'ok' : 'bad', $check['ok'] ? _m('Passed') : _m('Failed')) . '</p>'
+            . '<p class="aa-import-sub">' . RunView::whenText($check['time'], $now);
         if ($check['code'] !== '') {
             $html .= ' <code>' . safe($check['code']) . '</code>';
         }
         if ($check['msg'] !== '') {
             $html .= ': ' . safe($check['msg']);
         }
-        return $html;
+        return $html . '</p>';
     }
 
     /** the problems of the mapping in words - each refuses every start (DEFINITION) */
@@ -697,10 +843,10 @@ final class DetailPage
         $none = $keys ? '' : _m('No stream is known yet - run the import or check the source first.');
         $off  = ($why !== '') ? $why : $none;
         $options = implode('', array_map(static fn(string $k): string => '<option value="' . safe($k) . '">' . safe($k) . '</option>', $keys));
-        return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions">' . $this->hidden('stream')
+        return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions aa-import-rare">' . $this->hidden('stream')
             . '<label>' . _m('One stream') . ' <select name="stream_key"' . ($keys ? '' : ' disabled') . '>' . $options . '</select></label> '
-            . self::button(_m('Run the stream'), $off, ['name' => 'dry', 'value' => '0'])
-            . ' ' . self::button(_m('Dry run of the stream'), $off, ['name' => 'dry', 'value' => '1'])
+            . self::button(_m('Run the stream'), $off, ['name' => 'dry', 'value' => '0', 'class' => 'aa-import-quiet'])
+            . ' ' . self::button(_m('Dry run of the stream'), $off, ['name' => 'dry', 'value' => '1', 'class' => 'aa-import-quiet'])
             // a run in the way is said above the form already
             . ((($why === '') && ($none !== '')) ? '<p class="aa-import-why">' . safe($none) . '</p>' : '')
             . '</form>';
@@ -713,10 +859,10 @@ final class DetailPage
     {
         $refused = ($why === '') ? ($this->def->manageRefusal($this->uid) ?? ($this->sourceProbes() ? null : 'NO_VERSIONS')) : null;
         $off     = ($refused === null) ? $why : self::reasonText($refused);
-        return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions" data-aa-confirm="' . safe(_m('Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported.')) . '">' . $this->hidden('baseline')
-            . self::button(_m('Record the current state of the source'), $off, [])
+        return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions aa-import-rare" data-aa-confirm="' . safe(_m('Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported.')) . '">' . $this->hidden('baseline')
+            . self::button(_m('Record the current state of the source'), $off, ['class' => 'aa-import-quiet'])
             . (($refused === null) ? '' : self::whyHtml($off))
-            . '<p><small>' . _m('Record the current state of the source stores the version of each stream the source has now, without importing anything, so that Run changed only then imports just what changes after that. Use it only when the data of the source already are in the slice.') . '</small></p>'
+            . '<p><small>' . _m('Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice.') . '</small></p>'
             . '</form>';
     }
 
@@ -746,15 +892,18 @@ final class DetailPage
         }
         $run = ($open === null) ? '' : self::hiddenInput('run', (string) $open->getId());
         $why = self::whyHtml(...);
-        return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions">' . $this->hidden('resume') . $run
-            . self::button($resume, $whyGo, ['class' => 'aa-button-run'])
+        return '<div class="aa-import-open">'
+            . '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions">' . $this->hidden('resume') . $run
+            . self::button($resume, $whyGo, ['class' => 'aa-import-quiet'])
             // one reason for both when there is no run
             . (($open === null) ? '' : $why($whyGo))
             . '</form>'
             . '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions" data-aa-confirm="' . safe(_m('End the run for good? What it imported stays; the next run starts from the beginning.')) . '">' . $this->hidden('end') . $run
-            . self::button(_m('End'), $whyEnd, [])
-            . $why($whyEnd)
-            . '</form>';
+            . self::button(_m('End'), $whyEnd, ['class' => 'aa-import-quiet'])
+            . (($open === null) ? '' : $why($whyEnd))
+            . '</form>'
+            . (($open === null) ? $why($whyEnd) : '')
+            . '</div>';
     }
 
     /** the token, and the action when the form has one */
@@ -838,34 +987,131 @@ final class DetailPage
         return $html . '</details>';
     }
 
-    /** @param ?array{code: string, where: string} $error */
-    private static function errorHtml(?array $error): string
+    /** The failure of a stopped run in words, what to do about it, and where it stopped; the code is
+     *  for the log.
+     *  @param ?array{code: string, where: string} $error */
+    private static function runErrorHtml(?array $error): string
     {
         if ($error === null) {
             return '';
         }
-        return '<code>' . safe($error['code']) . '</code>' . (($error['where'] === '') ? '' : ' <small>' . safe($error['where']) . '</small>');
+        $message = self::reasonText($error['code']);
+        $todo    = self::nextStep($error['code']);
+        return '<div class="aa-import-fail"><p>' . RunView::markHtml('error') . ' <strong>' . _m('Error:') . '</strong> ' . safe($message)
+            . (($error['where'] === '') ? '' : ' <span class="aa-import-where">' . _m('At: %1', ['<code>' . safe($error['where']) . '</code>']) . '</span>')
+            . (str_contains($message, $error['code']) ? '' : ' <code class="aa-import-code">' . safe($error['code']) . '</code>') . '</p>'
+            . (($todo === '') ? '' : '<p class="aa-import-todo"><strong>' . _m('What to do:') . '</strong> ' . safe($todo) . '</p>')
+            . '</div>';
     }
 
-    private static function countsText(Run $run): string
+    /** the next step for an error code the source or the run throws; '' when none is known */
+    private static function nextStep(string $code): string
     {
+        return match ($code) {
+            'COLUMNS'       => _m('Fix the column mapping or the file so that the missing columns exist, then run Check source again.'),
+            'AUTH'          => _m('Check the key of the source in its settings, then run Check source.'),
+            'NO_CREDENTIAL' => _m('Enter the key of the source again in its settings, then run Check source.'),
+            'TRANSPORT'     => _m('The source could not be reached. Check its address in the settings; if it is right, Continue the run later.'),
+            'SETTINGS'      => _m('Correct the settings of the source, then run Check source.'),
+            'STREAMS'       => _m('Choose a stream the source still has, then start the import again.'),
+            'DEFINITION'    => _m('Check that every mapped field exists in the slice, then start the import again.'),
+            'SOURCE'        => _m('Look the failure up in the log of import failures, then Continue or End the run.'),
+            default         => '',
+        };
+    }
+
+    /** what kind of run it was: how much it reads, a dry run, who started it */
+    private static function kindOfRun(Run $run): string
+    {
+        $how = RunView::howItRan($run);
+        return ($run->mode() === 'run') ? trim(_m('full run') . ', ' . $how, ', ') : $how;
+    }
+
+    /** the five count cells; a run that imports nothing, or stopped before it read anything, says so in one cell
+     *  @param list<string> $labels */
+    private static function countCellsHtml(Run $run, int $now, array $labels, string $errorsOf = ''): string
+    {
+        $nothing = in_array($run->mode(), Run::SOURCE_ONLY_MODES, true) ? RunView::resultText($run, $now) : RunView::nothingReadText($run);
+        if ($nothing !== '') {
+            return '<td colspan="5" class="aa-import-nocounts">' . safe($nothing) . '</td>';
+        }
         $counts = $run->counts();
-        if ($run->mode() === 'baseline') {
-            return _m('streams recorded %1, without a version %2', [$counts['streams'], $counts['unversioned']]);
+        $html   = '';
+        foreach (['read', 'new', 'updated', 'skipped', 'errors'] as $i => $key) {
+            $n     = (int) $counts[$key];
+            $class = ($n === 0) ? ' class="aa-import-zero"' : (($key === 'errors') ? ' class="aa-import-some"' : '');
+            $cell  = (($key === 'errors') && ($n > 0) && ($errorsOf !== '')) ? '<a href="#aa-import-errors-' . safe($errorsOf) . '" data-aa-open>' . $n . '</a>' : (string) $n;
+            $html .= '<td data-label="' . safe($labels[$i]) . '"' . $class . '>' . $cell . '</td>';
         }
-        return _m('read %1, new %2, updated %3, skipped %4, item errors %5', [$counts['read'], $counts['new'], $counts['updated'], $counts['skipped'], $counts['errors']]);
+        return $html;
     }
 
-    /** when the stream was imported, or recorded by a baseline when that came later
-     *  @param array<string, string|int> $stream */
-    private static function importedHtml(array $stream): string
+    /** What the stream is, for the eye and for the operator: css kind (the mark's shape differs, not only
+     *  its colour), the verdict word, a line saying what follows from it, and the time that state began -
+     *  the import, or the baseline when that came later. The stored state keeps one version per stream, so
+     *  it cannot say the source changed since: nothing here claims it.
+     *  @param array<string, string|int> $stream
+     *  @return array{string, string, string, string, int|null} kind, mark, word, reason (html), time */
+    private static function streamKind(array $stream, string $key = '', ?Run $run = null): array
     {
-        $imported = $stream['imported'] ?? 0;
-        $baseline = $stream['baseline'] ?? 0;
-        if (is_int($baseline) && ($baseline > 0) && (!is_int($imported) || ($baseline > $imported))) {
-            return _m('Baseline %1', [self::timeOf($baseline)]);
+        $imported = is_int($stream['imported'] ?? null) ? $stream['imported'] : 0;
+        $baseline = is_int($stream['baseline'] ?? null) ? $stream['baseline'] : 0;
+        $probed   = is_int($stream['probed'] ?? null) ? $stream['probed'] : 0;
+        if ($baseline > $imported) {
+            return ['baseline', 'baseline', _m('Baseline only'), _m('Nothing imported yet. Run changed only takes what changes after this.'), $baseline];
         }
-        return self::timeOf($imported ?: null);
+        if ($imported > 0) {
+            $bad = 0;
+            foreach ($run?->errors() ?? [] as $error) {
+                $bad += ($error['stream'] === $key) ? 1 : 0;
+            }
+            return match (true) {
+                $bad === 1 => ['warn', 'warn', _m('Imported with item errors'), _m('1 item error in the run that imported it - see Runs.'), $imported],
+                $bad > 1   => ['warn', 'warn', _m('Imported with item errors'), _m('%1 item errors in the run that imported it - see Runs.', [$bad]), $imported],
+                // a probe in the same second came with the import
+                default    => ['imported', 'ok', _m('Imported'), (($probed > $imported) ? _m('The source was asked again after the import.') : _m('The source has not been asked since.')), $imported],
+            };
+        }
+        return ($probed > 0)
+            ? ['checked', 'checked', _m('Checked, not imported yet'), _m('Run imports it; Run changed only too, as it has no version to compare.'), null]
+            : ['never', 'never', _m('Not seen yet'), _m('No run has imported or checked it.'), null];
+    }
+
+    /** the records of the run that imported the stream. The state keeps no count per stream, so a run of
+     *  one stream gives its own numbers and a run of several is given as a whole and said to be */
+    private static function recordsHtml(?Run $run, string $key): string
+    {
+        if (($run === null) || !in_array($run->mode(), ['run', 'changed'], true)) {
+            return '--';
+        }
+        $counts = $run->counts();
+        $keys   = json_decode((string) $run->getProperty('stream_keys'), true);
+        $alone  = is_array($keys) && ($keys === [$key]);
+        $html   = '<strong>' . _m('%1 read', [$counts['read']]) . '</strong><small class="aa-import-reason">'
+            . _m('%1 new, %2 updated, %3 skipped', [$counts['new'], $counts['updated'], $counts['skipped']]) . '</small>';
+        $note   = $run->isDry() ? _m('dry run - nothing stored') : ($alone ? '' : _m('all streams of the run together'));
+        return $html . (($note === '') ? '' : '<small class="aa-import-reason">' . $note . '</small>');
+    }
+
+    /** "25 min ago" under an absolute time, so the freshness reads at a glance */
+    private static function ageHtml(mixed $time, int $now): string
+    {
+        $age = is_int($time) ? RunView::ageText($time, $now) : '';
+        return ($age === '') ? '' : '<small class="aa-import-since">' . safe($age) . '</small>';
+    }
+
+    /** the data version is for the technical eye: a short head; a long one opens to the whole value,
+     *  which a touch screen has no tooltip for */
+    private static function versionHtml(mixed $version): string
+    {
+        if (!is_string($version) || ($version === '')) {
+            return '--';
+        }
+        if (mb_strlen($version) <= 12) {
+            return '<code class="aa-import-version">' . safe($version) . '</code>';
+        }
+        return '<details class="aa-import-vfull"><summary><code class="aa-import-version">' . safe(mb_substr($version, 0, 10)) . '…</code></summary>'
+            . '<code class="aa-import-version">' . safe($version) . '</code></details>';
     }
 
     private static function timeOf(mixed $time): string
@@ -883,7 +1129,13 @@ final class DetailPage
         }
         $end = (int) $run->getProperty('finished') ?: (($run->state() === Run::ERROR) ? ((int) $run->getProperty('moved') ?: $started) : $now);
         $seconds = max(0, $end - $started);
-        return ($seconds < 60) ? _m('%1 s', [$seconds]) : (($seconds < 7200) ? _m('%1 min', [intdiv($seconds, 60)]) : _m('%1 h', [intdiv($seconds, 3600)]));
+        if ($seconds < 60) {
+            return _m('%1 s', [$seconds]);
+        }
+        if ($seconds < 600) {
+            return ($seconds % 60) ? _m('%1 min %2 s', [intdiv($seconds, 60), $seconds % 60]) : _m('%1 min', [intdiv($seconds, 60)]);
+        }
+        return ($seconds < 7200) ? _m('%1 min', [intdiv($seconds, 60)]) : _m('%1 h', [intdiv($seconds, 3600)]);
     }
 
     // ------------------------------------------------------------ reading
@@ -914,6 +1166,15 @@ final class DetailPage
             }
         }
         return null;
+    }
+
+    /** the newest import, however many runs that stored nothing came after it */
+    private function lastImport(): ?Run
+    {
+        if ($this->import === false) {
+            $this->import = Run::newestOf($this->id())[1];
+        }
+        return $this->import;
     }
 
     private function streamState(): ?StreamState

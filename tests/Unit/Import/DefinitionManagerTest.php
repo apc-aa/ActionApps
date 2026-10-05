@@ -76,36 +76,6 @@ final class DefinitionManagerTest extends TestCase
         unset($GLOBALS['permission_uid'], $GLOBALS['permission_to']);
     }
 
-    // ------------------------------------------------------------ status
-
-    /** @return iterable<string, array{?array<string, string>, string}> the run's stored properties (null = no run), the word */
-    public static function runStates(): iterable
-    {
-        $now = 1_900_000_000;
-        yield 'no run'                   => [null, 'Never ran'];
-        yield 'queued'                   => [['state' => Run::RUNNING, 'started' => (string) ($now - 5), 'next_at' => (string) $now], 'Queued'];
-        yield 'queued after a lost step' => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'lease' => (string) ($now - 1), 'lease_tok' => 't'], 'Queued'];
-        yield 'queued after a dead step' => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'lease' => (string) ($now - Run::DEAD_GRACE), 'lease_tok' => 't'], 'Queued'];
-        yield 'stuck'                    => [['state' => Run::RUNNING, 'started' => (string) ($now - 86400), 'next_at' => (string) ($now - 86000)], 'Stuck — see State Check'];
-        yield 'stuck with a dead step'   => [['state' => Run::RUNNING, 'started' => (string) ($now - 86400), 'lease' => (string) ($now - 86000), 'lease_tok' => 't'], 'Stuck — see State Check'];
-        yield 'running'                  => [['state' => Run::RUNNING, 'started' => (string) ($now - 5), 'lease' => (string) ($now + 20), 'lease_tok' => 't'], 'Running'];
-        yield 'running past its retry'   => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'next_at' => (string) ($now + 60), 'lease' => (string) ($now + 20), 'lease_tok' => 't'], 'Running'];
-        yield 'waiting to retry'         => [['state' => Run::RUNNING, 'started' => (string) ($now - 900), 'next_at' => (string) ($now + 60), 'failures' => '1'], 'Waiting to retry'];
-        yield 'finished'                 => [['state' => Run::DONE, 'counts' => '{"read":3,"new":3,"errors":0}'], 'Finished'];
-        yield 'finished with errors'     => [['state' => Run::DONE, 'counts' => '{"read":3,"new":1,"errors":2}'], 'Finished with item errors'];
-        yield 'error'                    => [['state' => Run::ERROR, 'error_code' => 'AUTH'], 'Stopped by an error'];
-        yield 'ended'                    => [['state' => Run::ENDED], 'Ended'];
-    }
-
-    /** @param ?array<string, string> $props */
-    #[DataProvider('runStates')]
-    public function test_status_wordsForEachRunState(?array $props, string $word): void
-    {
-        $run = ($props === null) ? null : new Run($props);
-
-        self::assertSame($word, Definition::statusWord($run, 1_900_000_000));
-    }
-
     // ------------------------------------------------------------ the row
 
     public function test_rowHtml_hasDetailLink(): void
@@ -153,13 +123,15 @@ final class DefinitionManagerTest extends TestCase
 
         $html = self::rendered($id);
 
-        self::assertStringContainsString('<td>Mapped</td>', $html, 'the name of the source');
+        self::assertStringContainsString('>Mapped · <', $html, 'the name of the source');
         self::assertStringContainsString('title="' . self::SLICE . '"', $html, 'the slice - the overview lists the imports of all');
-        self::assertStringContainsString('>Yes<', $html);
+        self::assertStringNotContainsString('Disabled', $html);
+        self::assertStringContainsString('class="aa-import-name">prices</a>', $html, 'the name leads and links to the detail');
         self::assertStringContainsString('Queued', $html, 'the run\'s first step waits in the queue');
         self::assertStringContainsString(date('Y-m-d H:i', (int) self::stored($run)['started']), $html);
         self::assertStringContainsString('check', $html);
         self::assertStringContainsString('by hand', $html);
+        self::assertStringContainsString('Source check under way', $html, 'what the run did, not only that it exists');
     }
 
     public function test_rowHtml_neverRan(): void
@@ -168,6 +140,7 @@ final class DefinitionManagerTest extends TestCase
 
         self::assertStringContainsString('Never ran', $html);
         self::assertStringContainsString('Not planned', $html);
+        self::assertStringContainsString('Run starts the first import', $html);
     }
 
     /** the newest run decides, by its start */
@@ -179,8 +152,10 @@ final class DefinitionManagerTest extends TestCase
         $new = self::startRun($id);
         self::storedSet($new, 'started', (string) ((int) self::stored($old)['started'] + 10));
         self::storedSet($new, 'state', Run::DONE);
+        self::storedSet($new, 'counts', '{"read":3,"new":3}');
 
-        self::assertStringContainsString('Finished', self::rendered($id));
+        self::assertStringContainsString('Healthy', self::rendered($id));
+        self::assertStringContainsString('3 read, 3 new', self::rendered($id));
         self::assertStringNotContainsString('Stopped by an error', self::rendered($id));
     }
 
@@ -281,12 +256,48 @@ final class DefinitionManagerTest extends TestCase
 
         $html = self::rendered($id);
 
-        self::assertStringContainsString('>No<', $html);
-        self::assertStringContainsString('Off', $html);
+        self::assertStringContainsString('Disabled', $html);
+        self::assertStringContainsString('None - the import is disabled', $html);
         self::assertStringNotContainsString('Not planned', $html);
     }
 
+    /** the last import is found however many runs that stored nothing came after it */
+    public function test_status_lastImportBehindManyChecks(): void
+    {
+        $id     = self::definition('prices');
+        $import = self::startRun($id);
+        self::storedSet($import, 'state', Run::DONE);
+        self::storedSet($import, 'counts', '{"read":4,"new":4}');
+        self::storedSet($import, 'started', (string) (self::NOW - 90000));
+        for ($i = 0; $i < 12; $i++) {
+            $check = self::startRun($id, ['mode' => 'check']);
+            self::storedSet($check, 'state', Run::DONE);
+            self::storedSet($check, 'started', (string) (self::NOW - 80000 + $i));
+        }
+
+        $html = self::rendered($id);
+
+        self::assertStringNotContainsString('No import yet', $html);
+        self::assertStringContainsString('Healthy', $html);
+        self::assertStringContainsString('Last import: ' . date('Y-m-d H:i', self::NOW - 90000), $html);
+    }
+
     // ------------------------------------------------------------ the cells
+
+    public function test_cells_statusHasSignAndLastRunItsCounts(): void
+    {
+        $id  = self::definition('prices');
+        $run = self::startRun($id);
+        self::storedSet($run, 'state', Run::DONE);
+        self::storedSet($run, 'counts', '{"read":9,"new":5,"updated":2,"errors":2}');
+
+        $html = self::rendered($id);
+
+        self::assertMatchesRegularExpression('~<span class="aa-import-chip" data-kind="warn"><span class="aa-import-glyph" aria-hidden="true"><svg[^>]*>.*?</svg></span> Needs attention</span>~', $html, 'the verdict has a sign, not only a colour');
+        self::assertStringContainsString('2 items could not be stored', $html);
+        self::assertStringContainsString('9 read, 5 new, 2 changed', $html);
+        self::assertStringContainsString('2 item errors', $html);
+    }
 
     public function test_cells_onlyForTheIdOfADefinition(): void
     {
@@ -322,7 +333,7 @@ final class DefinitionManagerTest extends TestCase
         $id = self::definition('prices');
         self::startRun($id, $props);
 
-        self::assertStringContainsString("<small>$about</small>", self::rendered($id));
+        self::assertStringContainsString("<small class=\"aa-import-sub\">$about</small>", self::rendered($id));
     }
 
     // ------------------------------------------------------------ searchbar, form

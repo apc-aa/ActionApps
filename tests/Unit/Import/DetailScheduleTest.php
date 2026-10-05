@@ -92,7 +92,7 @@ final class DetailScheduleTest extends TestCase
         foreach (['Prices of the other slice', 'Rents', 'Clock'] as $name) {
             $this->assertStringNotContainsString($name, $html);
         }
-        $this->assertStringContainsString('No planned task of the slice calls this import.', $html);
+        $this->assertStringContainsString('To run it on a schedule, add a planned task.', $html);
     }
 
     /** the link fills in exactly what the form of a new task takes from a link - a name stripped of
@@ -175,6 +175,19 @@ final class DetailScheduleTest extends TestCase
         $html = self::overview();
 
         $this->assertMatchesRegularExpression('~>Early</a>.*>Late</a>.*>Untimed</a>: Run, no time set, not queued~s', $html);
+    }
+
+    /** a task calls it already - the page does not ask for one to be added */
+    public function test_nextStart_tasksWithoutTime(): void
+    {
+        self::definition('Prices');
+        self::task(self::TASK_B, self::SLICE, 'Untimed', '{import:prices}', '');
+
+        $html = self::overview();
+
+        $this->assertStringContainsString('Not planned', $html);
+        $this->assertStringContainsString('none has a time to start it', $html);
+        $this->assertStringNotContainsString('add a planned task', $html);
     }
 
     /** {import} trims its parameters - so does the list */

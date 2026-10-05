@@ -77,23 +77,7 @@ $apage = new AA_Adminpageutil('sliceadmin', 'dataimports');
 $apage->setTitle(_m('Import: %1', [safe((string) $page->definition()->getName())]));
 // each action has its own form
 $apage->setForm();
-$apage->addRequire('
-    .aa-import-facts th { text-align: left; padding-right: 1em; vertical-align: top; }
-    .aa-import-facts, .aa-import-runs { font-variant-numeric: tabular-nums; }
-    .aa-import-runs, .aa-import-streams, .aa-import-catalog, .aa-import-diff { width: 100%; border-collapse: collapse; }
-    .aa-import-runs th, .aa-import-streams th, .aa-import-catalog th, .aa-import-diff th { text-align: left; }
-    .aa-import-runs th, .aa-import-runs td, .aa-import-streams th, .aa-import-streams td, .aa-import-catalog th, .aa-import-catalog td, .aa-import-diff th, .aa-import-diff td { padding: 0.3em 0.6em; vertical-align: top; }
-    .aa-import-catalog td, .aa-import-diff td { overflow-wrap: anywhere; }
-    .aa-import-adopt { margin: 0; }
-    .aa-import-actions { margin: 0.5em 0; }
-    .aa-import-why { margin: 0.3em 0; }
-    .aa-import-sample { margin: 0.3em 0; }
-    .aa-import-mapping, .aa-import-keys { border-collapse: collapse; }
-    .aa-import-mapping th, .aa-import-keys th { text-align: left; }
-    .aa-import-mapping th, .aa-import-mapping td, .aa-import-keys th, .aa-import-keys td { padding: 0.3em 0.6em; vertical-align: top; }
-    .aa-import-mapping code { white-space: pre-wrap; overflow-wrap: anywhere; }
-    .aa-import-settings, .aa-import-source { margin: 0.5em 0; }
-', 'AA_Req_CSScode');
+$apage->addRequire(get_aa_url('css/dataimport.css', ['v' => AA_JS_VERSION], false));
 // asks before End and before a change of the settings, follows a running run
 $apage->addRequire(get_aa_url('javascript/dataimport.min.js', ['v' => AA_JS_VERSION], false));
 // before the head: the widgets of the settings form add the scripts they need

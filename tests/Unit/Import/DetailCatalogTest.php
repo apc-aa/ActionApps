@@ -78,7 +78,9 @@ final class DetailCatalogTest extends TestCase
     public function test_streams_tableFromState(): void
     {
         self::definition();
-        $this->assertStringContainsString('No stream has been imported or checked yet.', self::page()->streamsHtml());
+        $empty = self::page()->streamsHtml();
+        $this->assertStringContainsString('No stream has been imported or checked yet.', $empty);
+        $this->assertSame(2, substr_count($empty, 'href="#aa-import-actions"'), 'the empty state links to the buttons');
 
         $run   = self::importRun();
         $state = StreamState::create(self::DEF);
@@ -87,11 +89,13 @@ final class DetailCatalogTest extends TestCase
         $state->store();
         TableDb::$log = [];
 
-        $html = self::page()->streamsHtml();
+        self::storedSet($run, 'counts', '{"read":31,"new":1,"updated":2,"skipped":3}');
+        $html = self::page()->streamsHtml(null, self::NOW);
+        $by   = date('Y-m-d H:i', (int) self::stored($run)['started']);
 
         $this->assertSame([
-            ['s1', '<i>2026</i>', date('Y-m-d H:i', self::NOW - 7200), date('Y-m-d H:i', self::NOW - 3600), date('Y-m-d H:i', (int) self::stored($run)['started'])],
-            ['s2', '--', date('Y-m-d H:i', self::NOW - 60), '--', '--'],
+            ['s1', 'ImportedThe source has not been asked since.', '31 read1 new, 2 updated, 3 skipped', date('Y-m-d H:i', self::NOW - 3600) . '1 h agoby the run started ' . $by, date('Y-m-d H:i', self::NOW - 7200) . '2 h ago', '<i>2026</i>'],
+            ['s2', 'Checked, not imported yetRun imports it; Run changed only too, as it has no version to compare.', '--', '--', date('Y-m-d H:i', self::NOW - 60) . '1 min ago', '--'],
         ], self::tableRows($html, 'aa-import-streams'));
         $this->assertStringNotContainsString('<i>2026', $html);
         $this->assertSame([], TableDb::writes(), 'read only');
@@ -139,7 +143,7 @@ final class DetailCatalogTest extends TestCase
         $this->assertStringContainsString('No stream has been imported or checked yet.', $page->streamsHtml(), 'only the check damaged');
 
         self::storedSet(StreamState::idOf(self::DEF), 'streams', '{"s1":{"v":"1"}}');
-        $this->assertSame([['s1', '1', '--', '--', '--']], self::tableRows(self::page()->streamsHtml(), 'aa-import-streams'));
+        $this->assertSame([['s1', 'Not seen yetNo run has imported or checked it.', '--', '--', '--', '1']], self::tableRows(self::page()->streamsHtml(), 'aa-import-streams'));
 
         self::storedSet(StreamState::idOf(self::DEF), 'streams', '{not json');
         $this->assertStringContainsString('The stored state of the streams cannot be read.', self::page()->streamsHtml());
@@ -170,7 +174,7 @@ final class DetailCatalogTest extends TestCase
 
         $html = self::page()->streamsHtml();
 
-        $this->assertSame([['<b>k</b>', '<script>x</script>', '--', '--', '--']], self::tableRows($html, 'aa-import-streams'));
+        $this->assertSame([['<b>k</b>', 'Not seen yetNo run has imported or checked it.', '--', '--', '--', '<script>x<…<script>x</script>']], self::tableRows($html, 'aa-import-streams'));
         foreach (['<b>k', '<script>', '<i>t', '<x>'] as $raw) {
             $this->assertStringNotContainsString($raw, $html);
         }

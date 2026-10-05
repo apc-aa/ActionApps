@@ -28,6 +28,20 @@
         form.classList.add('aa-updating');
     });
 
+    // a link to a closed list (the item errors of a run) opens it, and its section, before it scrolls there
+    document.addEventListener('click', (e) => {
+        const link = (e.target instanceof Element) ? e.target.closest('a[data-aa-open]') : null;
+        let box = null;
+        try {
+            box = link ? document.getElementById(decodeURIComponent(link.hash.slice(1))) : null;
+        } catch {
+            // a malformed escape names nothing to open
+        }
+        for (let d = box?.closest('details'); d; d = d.parentElement?.closest('details')) {
+            d.open = true;
+        }
+    });
+
     /** what the user set in a section stays in its fresh copy: open details, chosen options */
     const keepState = (old, fresh) => {
         fresh.open = old.open;

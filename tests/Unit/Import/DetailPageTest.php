@@ -143,11 +143,198 @@ final class DetailPageTest extends TestCase
 
         $this->assertStringContainsString('Stopped by an error', $html);
         $this->assertStringContainsString('by hand', $html);
-        $this->assertMatchesRegularExpression('~read 7\b.*new 3\b.*updated 2\b.*skipped 1\b.*item errors 1\b~s', $html);
+        $this->assertMatchesRegularExpression('~<dt>Read</dt><dd>7</dd>.*<dt>New</dt><dd>3</dd>.*<dt>Updated</dt><dd>2</dd>.*<dt>Skipped</dt><dd>1</dd>.*<dt>Item errors</dt><dd>(?:<span[^>]*>.*?</span> )?1</dd>~s', $html, 'the counts as numbers under their names');
+        $this->assertStringContainsString('data-kind="bad"', $html, 'a stopped run is marked, not only worded');
         $this->assertStringContainsString('1 of 3', $html, 'how far the open run got');
         $this->assertStringContainsString('TRANSPORT', $html);
         $this->assertStringContainsString('s2:&lt;i&gt;job&lt;/i&gt;', $html);
         $this->assertMatchesRegularExpression('~Continue.*End~s', $html, 'what to do about it');
+    }
+
+    public function test_overview_healthSaysEnabledAndNextStart(): void
+    {
+        self::definition();
+        $html = self::page()->overviewHtml(time());
+        $this->assertStringContainsString('Enabled', $html);
+        $this->assertStringContainsString('Not planned', $html);
+        $this->assertSame(1, substr_count($html, 'add a planned task'), 'the reason is said once');
+
+        self::definition(['enabled' => '0']);
+        $off = self::page()->overviewHtml(time());
+        $this->assertStringContainsString('Disabled', $off);
+        $this->assertStringContainsString('data-kind="off"', $off);
+        $this->assertStringContainsString('so no planned task starts it', $off);
+    }
+
+    /** the call a planned task makes is for whoever may write one by hand, and never live template code */
+    public function test_overview_taskCallOnlyForASuperadmin(): void
+    {
+        self::definition();
+        $call = '<code>&#123;import:' . self::DEF . ':changed&#125;</code>';
+        $this->assertStringNotContainsString($call, self::page()->overviewHtml(time()));
+        $GLOBALS['r_superuser'] = [AA_ID => true];
+        try {
+            $html = self::page()->overviewHtml(time());
+        } finally {
+            unset($GLOBALS['r_superuser']);
+        }
+        $this->assertStringContainsString($call, $html);
+        $this->assertStringNotContainsString('{import', $html);
+    }
+
+    /** the page is rendered for its user, whoever is logged in */
+    public function test_overview_taskCallByTheUserOfThePage(): void
+    {
+        self::definition();
+        $call  = '<code>&#123;import:' . self::DEF . ':changed&#125;</code>';
+        $other = 'uid-9';
+        // the perms of the page's user, then those of the superadmin logged in
+        $GLOBALS['permission_uid'] = $other;
+        $page = DetailPage::forRequest(self::SLICE, self::DEF, $other) ?? throw new \LogicException('No page');
+        $GLOBALS['permission_uid'] = AuthGetUid();
+        $GLOBALS['r_superuser']    = [AA_ID => true];
+        try {
+            // alone: the rest of the overview asks for the perms of the page's user again
+            $html = (new \ReflectionMethod($page, 'taskCallHtml'))->invoke($page);
+        } finally {
+            unset($GLOBALS['r_superuser']);
+        }
+        $this->assertStringNotContainsString($call, $html, 'the superadmin logged in is not the user of the page');
+    }
+
+    /** the ribbon, the runs table and the list read a run ended after an error the same way: failed */
+    public function test_overview_ribbonShowsARunEndedAfterAnErrorAsFailed(): void
+    {
+        self::definition();
+        $a = self::start()->runId;
+        self::storedSet($a, 'state', Run::ENDED);
+        self::storedSet($a, 'error_code', 'COLUMNS');
+        self::storedSet($a, 'progress', '{"note":"SETTINGS_CHANGED"}');
+        self::storedSet($a, 'started', (string) (time() - 900));
+        $b = self::startMode('check');
+        self::storedSet($b, 'state', Run::DONE);
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertMatchesRegularExpression('~<li data-outcome="error" data-stored="yes">.*Stopped by an error, then ended - the settings changed</span>~', $html);
+        $this->assertMatchesRegularExpression('~A filled square <span class="aa-import-glyph" aria-hidden="true">.*?</span> is a run ended before it finished~', $html, 'the legend names the mark in words');
+        $this->assertStringContainsString('a check, a dry run or a baseline', $html);
+    }
+
+    /** a check or a dry run is not an import: it never fills the last-import block or hides a real result */
+    public function test_overview_lastImportIsToldApartFromANewerCheck(): void
+    {
+        self::definition();
+        $import = self::start()->runId;
+        self::storedSet($import, 'counts', '{"read":31,"new":1,"updated":30}');
+        self::storedSet($import, 'state', Run::DONE);
+        self::storedSet($import, 'started', (string) (time() - 7200));
+        $check = self::startMode('check');
+        self::storedSet($check, 'state', Run::DONE);
+        self::storedSet($check, 'started', (string) (time() - 600));
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertStringContainsString('Healthy', $html);
+        $this->assertMatchesRegularExpression('~Last import</h3><p class="aa-import-value">[^<]*2 h ago~', $html);
+        $this->assertMatchesRegularExpression('~<dt>Read</dt><dd>31</dd>~', $html, 'the counts are the import\'s');
+        $this->assertStringContainsString('Since then: check', $html);
+        $this->assertStringContainsString('Source reachable - nothing imported', $html);
+    }
+
+    /** with no import, nothing is "since" it */
+    public function test_overview_noImportSaysTheLatestRun(): void
+    {
+        self::definition();
+        $check = self::startMode('check');
+        self::storedSet($check, 'state', Run::DONE);
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertStringContainsString('No import yet', $html);
+        $this->assertStringContainsString('Latest run: check', $html);
+        $this->assertStringNotContainsString('Since then', $html);
+    }
+
+    public function test_overview_checkRunFillsInWhenTheStreamStateHoldsNoCheck(): void
+    {
+        self::definition();
+        $check = self::startMode('check');
+        self::storedSet($check, 'state', Run::DONE);
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertStringNotContainsString('Never checked', $html);
+        $this->assertStringContainsString('Passed', $html);
+        $this->assertStringContainsString('Taken from the run list', $html);
+    }
+
+    /** a check of the settings before a change says nothing of the new ones */
+    public function test_overview_checkRunOfOldSettingsDoesNotCount(): void
+    {
+        self::definition();
+        $check = self::startMode('check');
+        self::storedSet($check, 'state', Run::DONE);
+        self::storedSet(self::DEF, 'settings', '{"territory":"at"}');
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertStringContainsString('Never checked', $html);
+        $this->assertStringNotContainsString('Taken from the run list', $html);
+    }
+
+    /** the last import is found however many runs that stored nothing came after it */
+    public function test_overview_lastImportBehindManyChecks(): void
+    {
+        self::definition();
+        $import = self::importRun();
+        self::storedSet($import, 'counts', '{"read":4,"new":4}');
+        self::storedSet($import, 'started', (string) (self::NOW - 90000));
+        for ($i = 0; $i < DetailPage::RUNS_SHOWN + 2; $i++) {
+            $check = self::startMode('check');
+            self::storedSet($check, 'state', Run::DONE);
+            self::storedSet($check, 'started', (string) (self::NOW - 80000 + $i));
+            TableDb::$tables['toexecute'] = [];
+        }
+
+        $html = self::page()->overviewHtml(self::NOW);
+
+        $this->assertStringNotContainsString('No import yet', $html);
+        $this->assertStringContainsString('Healthy', $html);
+        $this->assertMatchesRegularExpression('~<dt>Read</dt><dd>4</dd>~', $html);
+    }
+
+    public function test_overview_ribbonHasATickPerRunWithItsWords(): void
+    {
+        self::definition();
+        $a = self::start()->runId;
+        self::storedSet($a, 'state', Run::DONE);
+        self::storedSet($a, 'counts', '{"read":2,"new":2}');
+        self::storedSet($a, 'started', (string) (time() - 900));
+        $b = self::startMode('check');
+        self::storedSet($b, 'state', Run::DONE);
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertSame(2, substr_count($html, 'href="#aa-import-runs"'));
+        $this->assertStringContainsString('data-stored="no"', $html, 'a check is a dashed tick');
+        $this->assertStringContainsString('data-stored="yes"', $html);
+        $this->assertMatchesRegularExpression('~<span class="aa-import-sr">[^<]*check, by hand - Finished</span>~', $html, 'the tick says it in words too');
+    }
+
+    public function test_overview_firstItemErrorIsShownEscaped(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'counts', '{"read":5,"new":3,"errors":2}');
+        self::storedSet($id, 'errors', '[{"stream":"s1","job":"j","code":"BAD_ROW","msg":"<b>x</b>"}]');
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertStringContainsString('Needs attention', $html);
+        $this->assertStringContainsString('First item error:', $html);
+        $this->assertStringContainsString('BAD_ROW: &lt;b&gt;x&lt;/b&gt; (s1 j)', $html);
     }
 
     public function test_overview_mappingProblemsInWords(): void
@@ -437,7 +624,7 @@ final class DetailPageTest extends TestCase
 
         $html = self::page()->runsHtml(time());
 
-        foreach (['<script>', '<img', '<b>bold', '<i>field', '<u>x', '<svg'] as $markup) {
+        foreach (['<script>', '<img', '<b>bold', '<i>field', '<u>x', '<svg onload'] as $markup) {
             $this->assertStringNotContainsString($markup, $html);
         }
         $this->assertStringContainsString('&lt;script&gt;x()&lt;/script&gt;', $html);
@@ -547,7 +734,7 @@ final class DetailPageTest extends TestCase
         $text = html_entity_decode(strip_tags(self::page()->runsHtml(time())), ENT_QUOTES | ENT_HTML5);
 
         $this->assertStringContainsString('recording the state of the source', $text);
-        $this->assertStringContainsString('streams recorded 3, without a version 1', $text);
+        $this->assertStringContainsString('Recorded the state of 3 streams - nothing imported. 1 without a version', $text);
         $this->assertStringNotContainsString('read 0', $text);
     }
 
@@ -566,13 +753,29 @@ final class DetailPageTest extends TestCase
         @$doc->loadHTML('<?xml encoding="UTF-8"><body>' . self::page()->streamsHtml() . '</body>');
         foreach ($doc->getElementsByTagName('tr') as $tr) {
             $cells = array_map(static fn(\DOMNode $td): string => trim($td->textContent), iterator_to_array($tr->getElementsByTagName('td')));
-            if ($cells) {
-                $rows[$cells[0]] = $cells[3];
+            $head  = $tr->getElementsByTagName('th')->item(0);
+            if ($cells && $head) {
+                $rows[trim($head->textContent)] = trim($tr->getElementsByTagName('span')->item(0)->textContent) . ' ' . $cells[2];
             }
         }
 
         $at = date('Y-m-d H:i', 2000000000);
-        $this->assertSame(['s1' => "Baseline $at", 's2' => $at, 's3' => "Baseline $at"], $rows);
+        $this->assertSame(['s1' => "Baseline only $at", 's2' => "Imported $at", 's3' => "Baseline only $at"], $rows);
+    }
+
+    /** a probe in the same second as the import came with it, not after it */
+    public function test_streams_probeOfTheImportIsNotAskedAgain(): void
+    {
+        self::definition();
+        $state = StreamState::create(self::DEF);
+        $state->record('s1', ['v' => '1', 'imported' => 2000000000, 'probed' => 2000000000]);
+        $state->record('s2', ['v' => '1', 'imported' => 2000000000, 'probed' => 2000000001]);
+        $state->store();
+
+        $html = self::page()->streamsHtml();
+
+        $this->assertSame(1, substr_count($html, 'The source has not been asked since.'));
+        $this->assertSame(1, substr_count($html, 'The source was asked again after the import.'));
     }
 
     // ------------------------------------------------------------ redirect after an action
@@ -764,15 +967,81 @@ final class DetailPageTest extends TestCase
         self::storedSet($id, 'moved', (string) (self::NOW - 6880));
         self::storedSet($id, 'state', Run::ERROR);
 
-        $this->assertMatchesRegularExpression('~<td>2 min</td>~', self::page()->runsHtml(self::NOW));
+        $this->assertMatchesRegularExpression('~>2 min</td>~', self::page()->runsHtml(self::NOW));
 
         self::storedSet($id, 'state', Run::ENDED);
         self::storedSet($id, 'finished', (string) (self::NOW - 6400));
-        $this->assertMatchesRegularExpression('~<td>10 min</td>~', self::page()->runsHtml(self::NOW));
+        $this->assertMatchesRegularExpression('~>10 min</td>~', self::page()->runsHtml(self::NOW));
 
         self::storedSet($id, 'state', Run::RUNNING);
         self::storedSet($id, 'finished', '');
-        $this->assertMatchesRegularExpression('~<td>116 min</td>~', self::page()->runsHtml(self::NOW));
+        $this->assertMatchesRegularExpression('~>116 min</td>~', self::page()->runsHtml(self::NOW));
+    }
+
+    public function test_runs_endedSaysWhyByItsNote(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::ENDED);
+        $this->assertStringContainsString('Ended by hand', self::page()->runsHtml(self::NOW));
+
+        self::storedSet($id, 'progress', '{"note":"SETTINGS_CHANGED"}');
+        $html = self::page()->runsHtml(self::NOW);
+        $this->assertStringContainsString('Ended - the settings changed', $html);
+        $this->assertStringNotContainsString('Ended by hand', $html);
+
+        self::storedSet($id, 'progress', '{"note":"SCHEDULED_START"}');
+        $this->assertStringContainsString('Ended - a planned run started', self::page()->runsHtml(self::NOW));
+    }
+
+    public function test_runs_errorTellsWhatToDoAndThatEndedCameAfter(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::ERROR);
+        self::storedSet($id, 'error_code', 'COLUMNS');
+        $html = self::page()->runsHtml(self::NOW);
+        $this->assertStringContainsString('What to do:', $html);
+        $this->assertStringContainsString('<code class="aa-import-code">COLUMNS</code>', $html);
+        $this->assertStringNotContainsString('afterwards', $html);
+
+        self::storedSet($id, 'state', Run::ENDED);
+        $html = self::page()->runsHtml(self::NOW);
+        $this->assertStringContainsString('data-outcome="error"', $html, 'ending it does not hide that it failed');
+        $this->assertStringContainsString('<strong>Stopped by an error</strong><small class="aa-import-then">then ended by hand</small>', $html);
+        $this->assertStringContainsString('Stopped before reading anything', $html, 'no row of zeros');
+    }
+
+    public function test_runs_itemErrorsLinkToTheirList(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'counts', '{"read":3,"new":1,"updated":0,"skipped":0,"errors":2}');
+        self::storedSet($id, 'errors', json_encode([['stream' => 's', 'job' => 'j', 'code' => 'VALIDATE', 'msg' => 'm']], JSON_THROW_ON_ERROR));
+        $html = self::page()->runsHtml(self::NOW);
+        $this->assertStringContainsString('<a href="#aa-import-errors-' . $id . '" data-aa-open>2</a>', $html);
+        $this->assertStringContainsString('id="aa-import-errors-' . $id . '"', $html);
+    }
+
+    public function test_runs_startedShowsAge(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'started', (string) (self::NOW - 300));
+        $this->assertStringContainsString('<small class="aa-import-since">5 min ago</small>', self::page()->runsHtml(self::NOW));
+    }
+
+    public function test_took_secondsBelowTenMinutes(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'started', (string) (self::NOW - 129));
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'finished', (string) self::NOW);
+        $this->assertMatchesRegularExpression('~>2 min 9 s</td>~', self::page()->runsHtml(self::NOW));
+        self::storedSet($id, 'finished', (string) (self::NOW - 84));
+        $this->assertMatchesRegularExpression('~>45 s</td>~', self::page()->runsHtml(self::NOW));
     }
 
     // ------------------------------------------------------------ runs, pinned
@@ -867,6 +1136,14 @@ final class DetailPageTest extends TestCase
         $r = Service::start(Definition::fresh($id) ?? throw new \LogicException('No definition'), 'run', [], 'manual', AuthGetUid());
         self::assertSame('queued', $r->code);
         return $r;
+    }
+
+    /** the id of a new run of $mode */
+    private static function startMode(string $mode): string
+    {
+        $r = Service::start(Definition::fresh(self::DEF) ?? throw new \LogicException('No definition'), $mode, [], 'manual', AuthGetUid());
+        self::assertSame('queued', $r->code);
+        return $r->runId;
     }
 
     /** a stream the page can offer */

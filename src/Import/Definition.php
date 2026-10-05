@@ -128,40 +128,42 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     protected static function getManagerTopHtml($fields): string
     {
-        $heads = ['', _m('Action'), _m('Name'), _m('Slice'), _m('Source'), _m('Enabled'), _m('Status'), _m('Last run'), _m('Next plan')];
+        $heads = ['', _m('Import'), _m('Status'), _m('Last run'), _m('Next plan'), _m('Action')];
         return '
-          <table>
+          <table class="aa-import-list">
           <thead>
             <tr>
-              <th scope=col>' . implode("</th>\n<th scope=col>", $heads) . '</th>
+              <th scope=col><span class="aa-import-sr">' . safe(_m('Select')) . '</span></th>
+<th scope=col>' . implode("</th>\n<th scope=col>", array_slice($heads, 1)) . '</th>
             </tr>
           </thead><tbody>
             ';
     }
 
-    /** Edit and Detail are links that only read; Run and Delete are buttons that POST. The slice
-     *  tells the imports apart on the overview of all slices. */
+    /** The name leads and links to the detail. Edit and Detail are links that only read; Run and
+     *  Delete are buttons that POST. The slice tells the imports apart on the overview of all slices;
+     *  each cell carries its label for the stacked layout of a narrow screen. */
     protected static function getManagerRowHtml($fields, $aliases, $buttons): string
     {
-        $detail  = a_href(get_admin_url('se_dataimport.php', ['change_id=_#AA_OWNER', 'id=_#AA_ID___']), _m('Detail'), ['class' => 'aa-button-show']);
+        $url     = get_admin_url('se_dataimport.php', ['change_id=_#AA_OWNER', 'id=_#AA_ID___']);
+        $name    = a_href($url, '_#AA_NAME_', ['class' => 'aa-import-name']);
+        $detail  = a_href($url, _m('Detail'), ['class' => 'aa-button-show']);
         $actions = [$buttons['Edit'] ?? '', $detail, $buttons[Import_Run::ID] ?? '', $buttons['DeleteObject'] ?? ''];
         $cell    = static fn(string $info): string => '{internal:' . self::class . ':' . $info . '}';
+        $label   = static fn(string $text): string => ' data-label="' . safe($text) . '"';
         return '
             <tr>
-              <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
-              <td style="white-space:nowrap;">' . implode(' ', array_filter($actions)) . '</td>
-              <td>_#AA_NAME_</td>
-              <td><span title="_#AA_OWNER">_#AA_OW_NM</span></td>
-              <td>' . $cell('source') . '</td>
-              <td>' . $cell('enabled') . '</td>
-              <td>' . $cell('status') . '</td>
-              <td style="font-variant-numeric:tabular-nums">' . $cell('lastrun') . '</td>
-              <td style="font-variant-numeric:tabular-nums">' . $cell('nextplan') . '</td>
+              <td class="aa-import-sel"><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
+              <td class="aa-import-lead"' . $label(_m('Import')) . '>' . $name . '<small class="aa-import-sub">' . $cell('source') . ' · <span title="_#AA_OWNER">_#AA_OW_NM</span></small></td>
+              <td' . $label(_m('Status')) . '>' . $cell('status') . '</td>
+              <td' . $label(_m('Last run')) . '>' . $cell('lastrun') . '</td>
+              <td' . $label(_m('Next plan')) . '>' . $cell('nextplan') . '</td>
+              <td class="aa-import-act"' . $label(_m('Action')) . '>' . implode(' ', array_filter($actions)) . '</td>
             </tr>
             ';
     }
 
-    /** The cells of the imports Manager: source, enabled, status, lastrun, nextplan - text, escaped.
+    /** The cells of the imports Manager: source, status, lastrun, nextplan - HTML, every value escaped.
      *  {internal} works in any template, so it gives only what the list shows. */
     public static function internal_expand(?AA_Content $content, ...$params): string
     {
@@ -172,38 +174,10 @@ final class Definition extends AA_Object implements InternalExpandInterface
         $now = Run::clock();
         return match ((string) ($params[0] ?? '')) {
             'source'   => safe(self::sourceName((string) $content->getValue('source'))),
-            'enabled'  => ((string) $content->getValue('enabled') === '1') ? _m('Yes') : _m('No'),
-            'status'   => safe(self::statusWord(self::lastRun($id), $now)),
-            'lastrun'  => self::lastRunHtml(self::lastRun($id)),
+            'status'   => RunView::statusHtml(self::rowHealth($content, $now), (string) $content->getValue('enabled') === '1'),
+            'lastrun'  => RunView::lastRunHtml($now, ...self::latestRuns($id)),
             'nextplan' => self::nextPlanHtml($content, $now),
             default    => '',
-        };
-    }
-
-    /** The state of $run in words; null = no run. A run that works holds a live lease; one whose next
-     *  step is due later waits for a retry; one that hangs only the State Check explains - checked in
-     *  the order the import detail describes the open run. */
-    public static function statusWord(?Run $run, int $now): string
-    {
-        if ($run === null) {
-            return _m('Never ran');
-        }
-        return match ($run->state()) {
-            Run::RUNNING => self::runningWord($run, $now),
-            Run::DONE    => ($run->counts()['errors'] > 0) ? _m('Finished with item errors') : _m('Finished'),
-            Run::ERROR   => _m('Stopped by an error'),
-            Run::ENDED   => _m('Ended'),
-            default      => $run->state(),
-        };
-    }
-
-    private static function runningWord(Run $run, int $now): string
-    {
-        return match (true) {
-            $run->isStuck($now)      => _m('Stuck — see State Check'),
-            $run->hasLiveLease($now) => _m('Running'),
-            $run->isWaiting($now)    => _m('Waiting to retry'),
-            default                  => _m('Queued'),
         };
     }
 
@@ -346,67 +320,48 @@ final class Definition extends AA_Object implements InternalExpandInterface
         return array_values($tasks);
     }
 
-    /** the newest run of definition $id, by its start - a fresh copy of the cached one */
-    private static function lastRun(string $id): ?Run
+    /** the verdict on the import of $content for its row; the mapping is not checked in a list
+     *  @return array{kind: string, word: string, reason: string} */
+    private static function rowHealth(AA_Content $content, int $now): array
     {
-        $props = AA::Contentcache()->get_result([self::class, 'lastRunFromDb'], [$id]);
-        return $props ? new Run($props) : null;
+        $hasSource          = isset(Registry::sources()[(string) $content->getValue('source')]);
+        [$newest, $import] = self::latestRuns((string) $content->getId());
+        return RunView::health((string) $content->getValue('enabled') === '1', $hasSource, true, $newest, $import, $now);
     }
 
-    /** For the cache of lastRun(): the properties of the newest run of definition $id; [] = none.
-     *  @return array<string, string> */
-    public static function lastRunFromDb(string $id): array
+    /** Run::newestOf() of definition $id, read once for the cells of its row
+     *  @return array{0: ?Run, 1: ?Run} */
+    private static function latestRuns(string $id): array
     {
-        $run = Run::ofSubject($id, 1)[0] ?? null;
-        if ($run === null) {
-            return [];
-        }
-        $props = [];
-        foreach (array_keys(Run::getClassProperties()) as $property) {
-            $props[$property] = (string) $run->getProperty($property);
-        }
-        return $props;
+        $rows = AA::Contentcache()->get_result([self::class, 'latestRunsFromDb'], [$id]);
+        return array_map(static fn(array $props): ?Run => $props ? new Run($props) : null, $rows);
     }
 
-    private static function lastRunHtml(?Run $run): string
+    /** For the cache of latestRuns(): the properties of each of Run::newestOf(); [] = none.
+     *  @return array{0: array<string, string>, 1: array<string, string>} */
+    public static function latestRunsFromDb(string $id): array
     {
-        if ($run === null) {
-            return '--';
-        }
-        $started = (int) $run->getProperty('started');
-        return ($started ? date('Y-m-d H:i', $started) : '--') . ' <small>' . safe(self::howItRan($run)) . '</small>';
-    }
-
-    /** how $run ran - its mode, dry, its trigger - in words, plain text */
-    public static function howItRan(Run $run): string
-    {
-        $trigger = (string) $run->getProperty('trigger');
-        $about   = [
-            match ($run->mode()) {
-                'changed'  => _m('changed only'),
-                'check'    => _m('check'),
-                'baseline' => _m('recording the state of the source'),
-                default    => '',
-            },
-            $run->isDry() ? _m('dry run') : '',
-            match (true) {
-                $trigger === 'manual'               => _m('by hand'),
-                str_starts_with($trigger, 'plan:')  => _m('planned'),
-                str_starts_with($trigger, 'event:') => _m('on an event'),
-                default                             => '',
-            },
-        ];
-        return implode(', ', array_filter($about));
+        $props = static function (?Run $run): array {
+            $props = [];
+            if ($run !== null) {
+                foreach (array_keys(Run::getClassProperties()) as $property) {
+                    $props[$property] = (string) $run->getProperty($property);
+                }
+            }
+            return $props;
+        };
+        [$newest, $import] = Run::newestOf($id);
+        return [$props($newest), $props($import)];
     }
 
     private static function nextPlanHtml(AA_Content $content, int $now): string
     {
         // a planned start of a disabled import does nothing
         if ((string) $content->getValue('enabled') !== '1') {
-            return _m('Off');
+            return '<span class="aa-import-none">' . safe(_m('None - the import is disabled')) . '</span>';
         }
         $next = self::nextPlannedOf((string) $content->getOwnerId(), (string) $content->getId(), (string) $content->getName(), $now);
-        return ($next === null) ? _m('Not planned') : date('Y-m-d H:i', $next);
+        return ($next === null) ? '<span class="aa-import-none">' . safe(_m('Not planned - no task starts it')) . '</span>' : date('Y-m-d H:i', $next);
     }
 
     /** the name of source $type, or the type when the source is not available */
@@ -535,12 +490,17 @@ final class Definition extends AA_Object implements InternalExpandInterface
         if (!self::mayImportInto($uid, (string) $this->getOwnerId())) {
             return 'FORBIDDEN';
         }
-        // IsSuperadmin() knows the logged-in user only
-        if (($uid === AuthGetUid()) && IsSuperadmin()) {
+        if (self::isSuperadmin($uid)) {
             return null;
         }
         $keyed = (self::sourceKeys($this->sourceType()) !== []) || (($source !== null) && (self::sourceKeys($source) !== []));
         return $keyed ? 'KEYS' : null;
+    }
+
+    /** whether $uid is a superadmin - IsSuperadmin() knows the logged-in user only, so any other is not */
+    public static function isSuperadmin(string $uid): bool
+    {
+        return ($uid === AuthGetUid()) && IsSuperadmin();
     }
 
     /** The keys of source $type as Context takes them - the list the right to change the definition

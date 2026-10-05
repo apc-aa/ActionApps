@@ -39,4 +39,5 @@ if (!Definition::mayImportInto(AuthGetUid(), (string) AA::$module_id)) {
 $apage = new AA_Adminpageutil('sliceadmin', 'dataimports');
 $apage->setTitle(_m('Imports'));
 $apage->setSubtitle(_m("An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes."));
+$apage->addRequire(get_aa_url('css/dataimport.css', ['v' => AA_JS_VERSION], false));
 $apage->printWithManager(new Manager('dataimport' . AA::$module_id, Definition::getManagerConf()));
