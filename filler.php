@@ -225,7 +225,7 @@ function SendOkPage($txt, $new_ids = []): void
     }
     if ($_REQUEST["inline"]) {
         if ($_REQUEST["ok_url"]) {
-            ReadFileSafe($_REQUEST["ok_url"]);
+            ReadFileSafe($_REQUEST["ok_url"], 'ok_url');
         } else {
             $ret     = [];
             if ($txt['report']) {

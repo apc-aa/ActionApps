@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Http;
 
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -15,8 +16,8 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  * Not hand-written curl and not the old AA_Http (file_get_contents, no timeout, and false for
  * anything that is not 200 - which loses the difference between a bad key, an empty credit and
  * a service that is briefly down). The library brings what we would otherwise write ourselves
- * and get wrong: timeouts, decompression, and - when the crawler arrives - NoPrivateNetworkHttpClient
- * against SSRF, RetryableHttpClient and ThrottlingHttpClient.
+ * and get wrong: timeouts, decompression, NoPrivateNetworkHttpClient against SSRF (publicOnly()),
+ * and when the crawler arrives RetryableHttpClient and ThrottlingHttpClient.
  *
  * Redirects are off by default: an API that sends us somewhere else is not an API answer. The
  * callers that do have to follow - a template including a page, a link checker - say so.
@@ -36,6 +37,18 @@ final class Client implements ClientInterface
     public static function agent(string $purpose = ''): string
     {
         return 'ActionApps (+https://actionapps.org' . ($purpose === '' ? '' : '; ' . $purpose) . ')';
+    }
+
+    /**
+     * A client that refuses addresses of the local and private networks, after a redirect too
+     * (TransportException::blockedHost() says which). For every address a template, a form or a
+     * request can choose - otherwise whoever chooses it reads the server's internal services
+     * through AA. The sites' own domains keep working: they resolve to public addresses.
+     * @param ?HttpClientInterface $transport the connection under the guard; another one for tests only
+     */
+    public static function publicOnly(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $transport = null, int $maxBytes = 0): self
+    {
+        return new self($timeout, $idle, $agent, $redirects, new NoPrivateNetworkHttpClient($transport ?? HttpClient::create()), $maxBytes);
     }
 
     /**

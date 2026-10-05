@@ -8,8 +8,6 @@ use AA\Http\Client;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
 use InvalidArgumentException;
-use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -57,9 +55,8 @@ final class ImportFile
         if (!preg_match('~^https?://~i', $url)) {
             return null;
         }
-        $guarded = new NoPrivateNetworkHttpClient($transport ?? HttpClient::create());
         try {
-            $answer = (new Client(timeout: self::FETCH_SECONDS, idle: 30, redirects: 5, http: $guarded, maxBytes: $max_bytes))->request('GET', $url);
+            $answer = Client::publicOnly(timeout: self::FETCH_SECONDS, idle: 30, redirects: 5, transport: $transport, maxBytes: $max_bytes)->request('GET', $url);
         } catch (TransportException|ResponseTooLargeException|InvalidArgumentException) {   // no connection or a refused address, too large, a malformed URL
             return null;
         }

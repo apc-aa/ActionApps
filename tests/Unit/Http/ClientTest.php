@@ -7,6 +7,7 @@ namespace Tests\Unit\Http;
 use AA\Http\Client;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
@@ -196,6 +197,43 @@ final class ClientTest extends TestCase
         self::assertSame('https://example.org/new', $moved->redirect);
 
         self::assertSame('', $client->request('GET', 'https://example.org/new')->redirect, 'an answer that is not a 3xx points nowhere');
+    }
+
+    // the transport would answer, so an exception means the guard refused the address
+    #[DataProvider('privateUrls')]
+    public function test_publicOnly_refusesThePrivateNetwork(string $url, string $host): void
+    {
+        $client = Client::publicOnly(transport: new MockHttpClient(new MockResponse('secret')));
+        try {
+            $client->request('GET', $url);
+            self::fail('TransportException expected');
+        } catch (TransportException $e) {
+            self::assertSame($host, $e->blockedHost());
+        }
+    }
+
+    public static function privateUrls(): array
+    {
+        return [
+            'loopback'   => ['http://127.0.0.1/server-status', '127.0.0.1'],
+            'private'    => ['http://10.0.0.1/admin', '10.0.0.1'],
+            'link-local' => ['http://169.254.169.254/latest/meta-data/', '169.254.169.254'],
+            'ipv6'       => ['http://[::1]/', '[::1]'],
+        ];
+    }
+
+    // a public address literal: the guard resolves host names, and the documentation ranges count as reserved
+    public function test_publicOnly_passesAPublicAddress(): void
+    {
+        $client = Client::publicOnly(transport: new MockHttpClient(new MockResponse('page')));
+        self::assertSame('page', $client->request('GET', 'https://1.1.1.1/')->body);
+    }
+
+    // the policy of the client still applies under the guard
+    public function test_publicOnly_keepsTheSizeCeiling(): void
+    {
+        $this->expectException(ResponseTooLargeException::class);
+        Client::publicOnly(transport: new MockHttpClient(new MockResponse(str_repeat('x', 11))), maxBytes: 10)->request('GET', 'https://1.1.1.1/');
     }
 
     public function test_theExcerptIsShortEnoughForALogLine(): void
