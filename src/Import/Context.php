@@ -178,7 +178,7 @@ final class Context
     {
         // the guard checks this too; kept here so the rule does not depend on the library
         if (preg_match('~^https?://~i', $url) !== 1) {
-            throw $this->failure(false, 'Only http(s) addresses are imported', $url);
+            throw $this->failure(false, 'Only http(s) addresses are imported', $url, TransportException::ADDRESS);
         }
         $seconds = $this->budget->httpTimeout();
         $this->guarded ??= new NoPrivateNetworkHttpClient($this->transport ?? HttpClient::create());
@@ -187,13 +187,13 @@ final class Context
         try {
             $answer = $client->request($method, $url, $body, $headers);
         } catch (ResponseTooLargeException) {
-            throw $this->failure(false, "The answer is over {$this->maxBytes} bytes", $url);
+            throw $this->failure(false, "The answer is over {$this->maxBytes} bytes", $url, SourceFailure::TOO_LARGE);
         } catch (TransportException $e) {
             throw $this->transportFailure($e, $url);
         }
         // the guard hands over the last 3xx when redirects ran out
         if ($answer->redirect !== '') {
-            throw $this->failure(false, 'More than ' . self::REDIRECTS . ' redirects', $url);
+            throw $this->failure(false, 'More than ' . self::REDIRECTS . ' redirects', $url, SourceFailure::REDIRECTS);
         }
         return $answer;
     }
@@ -201,25 +201,21 @@ final class Context
     /** Sorts a failed request into "ask again later" and "refused for good" */
     private function transportFailure(#[SensitiveParameter] TransportException $e, #[SensitiveParameter] string $url): SourceFailure
     {
-        if ($e->malformedAddress()) {
-            return $this->failure(false, 'Only well-formed http(s) addresses are imported', $url);
+        $kind = $e->kind();
+        if ($kind === TransportException::ADDRESS) {
+            return $this->failure(false, 'Only well-formed http(s) addresses are imported', $url, $kind);
         }
         $blocked = $e->blockedHost();
         if (!is_null($blocked)) {
             // the guard reports a host it failed to look up as blocked too; ask again
             return $this->resolvesPrivate($blocked)
-                ? $this->failure(false, 'Address in a local or private network', $url)
-                : $this->failure(true, 'Host name not found', $url);
+                ? $this->failure(false, 'Address in a local or private network', $url, TransportException::ADDRESS)
+                : $this->failure(true, 'Host name not found', $url, TransportException::DNS);
         }
-        $texts = [];
-        for ($cause = $e->getPrevious(); !is_null($cause); $cause = $cause->getPrevious()) {
-            $texts[] = $cause->getMessage();
-        }
-        $text = implode(' ', $texts);
-        return match (true) {
-            preg_match('/timeout|timed out|max duration/i', $text) === 1     => $this->failure(true, 'No answer in time', $url),
-            preg_match('/resolve host|getaddrinfo|name or service/i', $text) === 1 => $this->failure(true, 'Host name not found', $url),
-            default                                                         => $this->failure(true, 'No answer', $url),
+        return match ($kind) {
+            TransportException::TIMEOUT => $this->failure(true, 'No answer in time', $url, $kind),
+            TransportException::DNS     => $this->failure(true, 'Host name not found', $url, $kind),
+            default                     => $this->failure(true, 'No answer', $url, $kind),
         };
     }
 
@@ -271,10 +267,11 @@ final class Context
         return preg_replace_callback($pattern, fn(array $m): string => (($m[1] ?? '') !== '') ? $m[0] : rawurlencode($m[0]), $text) ?? '';
     }
 
-    /** A failure with AA's own text and the requested URL masked */
-    private function failure(bool $retry, string $what, #[SensitiveParameter] string $url): SourceFailure
+    /** A failure with AA's own text and the requested URL masked
+     *  @param string $detail one of SourceFailure::isDetail() */
+    private function failure(bool $retry, string $what, #[SensitiveParameter] string $url, string $detail): SourceFailure
     {
         $message = $what . ': ' . self::printable($this->redact($url));
-        return $retry ? new SourceUnavailable('TRANSPORT', $message) : new SourceRefused('SOURCE', $message);
+        return $retry ? new SourceUnavailable('TRANSPORT', $message, $detail) : new SourceRefused('SOURCE', $message, $detail);
     }
 }

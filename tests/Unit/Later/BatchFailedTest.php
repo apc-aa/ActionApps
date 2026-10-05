@@ -27,6 +27,32 @@ final class BatchFailedTest extends TestCase
         $this->assertSame('DEFINITION', $e->getMessage(), 'the message is the code only, a log never gets source text from it');
     }
 
+    public function test_construct_keeps_a_detail_of_words_and_a_number(): void
+    {
+        foreach (['', 'dns', 'too_large', 'http:404'] as $detail) {
+            $this->assertSame($detail, (new BatchFailed('SOURCE', 'stream 3', $detail))->detail);
+        }
+    }
+
+    /** @return array<string, array{string}> */
+    public static function badDetails(): array
+    {
+        return [
+            'a URL'        => ['https://api.example.org/data?token=hunter2'],
+            'a sentence'   => ['Not Found'],
+            'upper case'   => ['DNS'],
+            'a long word'  => [str_repeat('a', 33)],
+            'two numbers'  => ['http:404:1'],
+        ];
+    }
+
+    #[DataProvider('badDetails')]
+    public function test_construct_rejects_detail_that_is_no_short_word(string $detail): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new BatchFailed('SOURCE', '', $detail);
+    }
+
     /** @return array<string, array{string}> */
     public static function badPlaces(): array
     {

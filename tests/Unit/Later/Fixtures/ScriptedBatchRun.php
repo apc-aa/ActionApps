@@ -51,6 +51,9 @@ class ScriptedBatchRun extends BatchRun
     /** @var array<string, mixed> what progressExtra() adds */
     public static array $progressExtra = [];
 
+    /** progressError() shows lastFailure(), as the import does */
+    public static bool $lastFailure = false;
+
     /** an own property, as a user of the core has */
     protected $note = '';
 
@@ -73,6 +76,7 @@ class ScriptedBatchRun extends BatchRun
         self::$hookValues       = [];
         self::$expiredAt        = [];
         self::$progressExtra    = [];
+        self::$lastFailure      = false;
     }
 
     /** @return list<string> the names of the hooks called, in order */
@@ -236,6 +240,11 @@ class ScriptedBatchRun extends BatchRun
     protected function progressExtra(): array
     {
         return self::$progressExtra;
+    }
+
+    protected function progressError(): ?array
+    {
+        return self::$lastFailure ? $this->lastFailure() : parent::progressError();
     }
 
     protected static function expireExtra(int $now): void

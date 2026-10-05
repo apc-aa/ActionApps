@@ -128,7 +128,7 @@ final class Service
                 $keys = array_map('strval', array_keys(Run::streamsOf($source)));
             } catch (Throwable $e) {
                 // a planned start has no page to show its refusal
-                return new StartResult('invalid', reason: self::sourceFailure($id, $e, !$manual));
+                return new StartResult('invalid', reason: self::sourceFailure($id, $e, !$manual), detail: SourceFailure::detailOf($e));
             }
             if ($options['streams'] !== null) {
                 if (array_diff($options['streams'], $keys)) {
@@ -399,7 +399,7 @@ final class Service
             // the time ran out: no answer in time, not a bug of the source
             return new ChangeResult('TRANSPORT');
         } catch (Throwable $e) {
-            return new ChangeResult(self::sourceFailure($id, $e, false));
+            return new ChangeResult(self::sourceFailure($id, $e, false), SourceFailure::detailOf($e));
         }
         return new ChangeResult('CHANGED');
     }

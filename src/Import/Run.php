@@ -492,7 +492,7 @@ class Run extends BatchRun
             $check    = $source->check($ctx);
             if (!$check->ok) {
                 // its code tells the cause (an expired token: AUTH), the last try only how it failed
-                throw new BatchFailed($check->code, 'check');
+                throw new BatchFailed($check->code, 'check', $check->detail);
             }
             if (RunCursor::endsTheStream($pos)) {
                 // a source that answers check() while its jobs fail would hold the run for days:
@@ -529,6 +529,12 @@ class Run extends BatchRun
         }
     }
 
+    /** the page tells 404 from DNS, also while the run waits to try again */
+    protected function progressError(): ?array
+    {
+        return $this->lastFailure();
+    }
+
     /** a run that never got a step through: the queue round is shorter than a step needs */
     protected function progressExtra(): array
     {
@@ -546,7 +552,7 @@ class Run extends BatchRun
         $ctx     = null;
         try {
             if ($pos['ccode'] !== '') {
-                throw new BatchFailed($pos['ccode'], 'check');
+                throw new BatchFailed($pos['ccode'], 'check', $pos['cdetail']);
             }
             $source  = $this->source();
             $ctx     = $this->context($source, $budget);
@@ -633,7 +639,7 @@ class Run extends BatchRun
                 $budget->secondsLeft() < 1                                             => '',
                 default => ($e instanceof SourceUnavailable) ? $e->reason : 'TRANSPORT',
             };
-            return $this->stopped($pos, $from, $keys, $retry);
+            return $this->stopped($pos, $from, $keys, $retry, ($retry === '') ? '' : SourceFailure::detailOf($e));
         } catch (\Throwable $e) {
             throw $this->failure($e, $keys, $pos, $ctx);
         }
@@ -652,7 +658,7 @@ class Run extends BatchRun
         $where = RunCursor::where($keys[$pos['i']] ?? '', $pos['job'], $ctx);
         if ($e instanceof SourceRefused) {
             // a parameter that makes two rows fill one field is a fault of the definition
-            return new BatchFailed(($e->reason === 'DUPLICATE_TARGET') ? 'DEFINITION' : $e->reason, $where);
+            return new BatchFailed(($e->reason === 'DUPLICATE_TARGET') ? 'DEFINITION' : $e->reason, $where, $e->detail);
         }
         AA_Log::write(Toexecute::FAILED_EVENT, $this->selector(), Toexecute::failureParams($this->getId(), $e));
         return new BatchFailed('SOURCE', $where);
@@ -736,7 +742,8 @@ class Run extends BatchRun
                 $pos = RunCursor::pageRead($pos, $page->next);
             }
         } catch (SourceRefused $e) {
-            $pos['ccode'] = $e->reason;
+            $pos['ccode']   = $e->reason;
+            $pos['cdetail'] = $e->detail;
             return $this->result($pos, false, $keys);
         }
         return $this->result($pos, true, $keys);
@@ -776,10 +783,11 @@ class Run extends BatchRun
             try {
                 $check = $source->check($ctx);
             } catch (SourceRefused $e) {
-                $check = new CheckResult(false, $e->reason, '');
+                $check = new CheckResult(false, $e->reason, '', $e->detail);
             }
-            $this->checkResult = new CheckResult($check->ok, $check->code, $ctx->redact($check->message));
+            $this->checkResult = new CheckResult($check->ok, $check->code, $ctx->redact($check->message), $check->detail);
             $pos['ccode']      = $check->ok ? '' : $check->code;
+            $pos['cdetail']    = $check->ok ? '' : $check->detail;
         }
         $pos['checked'] = 1;
         return $pos['ccode'] === '';
@@ -794,7 +802,7 @@ class Run extends BatchRun
     /** Continue asks check() again: the user may have fixed what it refused */
     protected function positionOnResume(array $position): array
     {
-        return (($position['ccode'] ?? '') === '') ? $position : (['ccode' => '', 'checked' => 0] + $position);
+        return (($position['ccode'] ?? '') === '') ? $position : (['ccode' => '', 'cdetail' => '', 'checked' => 0] + $position);
     }
 
     /**
@@ -1161,7 +1169,7 @@ class Run extends BatchRun
     }
 
     /** @param list<string> $keys */
-    private function result(array $pos, bool $finished, array $keys, string $retry = ''): BatchStepResult
+    private function result(array $pos, bool $finished, array $keys, string $retry = '', string $retryDetail = ''): BatchStepResult
     {
         return new BatchStepResult(
             $pos,
@@ -1173,12 +1181,14 @@ class Run extends BatchRun
             count($keys),
             $retry,
             ['errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog, 'collisions' => $this->stepCollisions, 'empty_keys' => $this->stepEmptyKeys],
+            $retryDetail,
         );
     }
 
     /** a step cut short at $pos: progress, or no progress with a reason the core can retry
-     *  @param list<string> $keys */
-    private function stopped(array $pos, array $from, array $keys, string $retry): BatchStepResult
+     *  @param list<string> $keys
+     *  @param string $detail SourceFailure::$detail of the failure behind $retry */
+    private function stopped(array $pos, array $from, array $keys, string $retry, string $detail = ''): BatchStepResult
     {
         if (($retry !== '') && !$this->sourceOnly() && BatchPosition::same($from, ['checked' => $from['checked']] + $pos)) {
             // a check() passed is no progress of a step that failed before any job started (streams(),
@@ -1188,7 +1198,7 @@ class Run extends BatchRun
         if (($retry === '') && BatchPosition::same($from, $pos)) {
             $retry = 'NO_PROGRESS';
         }
-        return $this->result($pos, false, $keys, $retry);
+        return $this->result($pos, false, $keys, $retry, $detail);
     }
 
     /** source items the run read in the steps before and in this one */

@@ -50,6 +50,50 @@ final class RunFailureTest extends TestCase
         self::assertSame(['error', 'SOURCE'], self::errorOf($run->getId()));
         self::assertCount(1, TestRun::$requests);
     }
+    /** a status the grabber gets is kept as a detail; the URL, with its token, is kept nowhere */
+    #[DataProvider('statusDetails')]
+    public function test_source_statusKeptAsDetail(int $status, string $code): void
+    {
+        $source = self::source(streams: 1, jobs: 1, items: 0);
+        $source->jobs['s1'][0]['grabber'] = new \AA\IO\Grabber\CSV('https://1.1.1.1/data.csv?token=tok3n5151');
+        TestRun::$http = static fn(): \Symfony\Component\HttpClient\Response\MockResponse => new \Symfony\Component\HttpClient\Response\MockResponse('gone at https://1.1.1.1/data.csv?token=tok3n5151', ['http_code' => $status]);
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        $stored = self::stored($run->getId());
+        self::assertSame(['error', $code, "http:$status"], [$stored['state'], $stored['error_code'], $stored['error_detail']]);
+        self::assertStringNotContainsString('tok3n5151', json_encode($stored, JSON_THROW_ON_ERROR));
+        self::assertSame(['code' => $code, 'where' => $stored['error_path'], 'detail' => "http:$status"], TestRun::get($run->getId())?->progress(AuthGetUid())['error']);
+    }
+
+    public static function statusDetails(): array
+    {
+        return ['404' => [404, 'SOURCE'], '410' => [410, 'SOURCE'], '429' => [429, 'TRANSPORT'], '503' => [503, 'TRANSPORT'], '500' => [500, 'TRANSPORT']];
+    }
+
+    // while it waits to try again the page learns why - not error: null
+    #[DataProvider('outageDetails')]
+    public function test_source_outageWhileWaitingShowsItsDetail(string $error, string $detail): void
+    {
+        $source = self::source(streams: 1, jobs: 1, items: 0);
+        $source->jobs['s1'][0]['grabber'] = new \AA\IO\Grabber\CSV('https://1.1.1.1/data.csv?token=tok3n5252');
+        TestRun::$http = static fn(): \Symfony\Component\HttpClient\Response\MockResponse => new \Symfony\Component\HttpClient\Response\MockResponse('', ['error' => $error . ' for "https://1.1.1.1/data.csv?token=tok3n5252"']);
+        $run = self::startRun($source);
+
+        self::runOne();
+
+        $run = TestRun::get($run->getId()) ?? throw new \LogicException('No run');
+        self::assertTrue($run->isWaiting(TestRun::$now));
+        self::assertSame(['code' => 'TRANSPORT', 'where' => '', 'detail' => $detail], $run->progress(AuthGetUid())['error']);
+        self::assertStringNotContainsString('tok3n5252', json_encode(self::stored($run->getId()), JSON_THROW_ON_ERROR));
+    }
+
+    public static function outageDetails(): array
+    {
+        return ['dns' => ['Could not resolve host: data.example', 'dns'], 'timeout' => ['Idle timeout reached', 'timeout'], 'tls' => ['SSL connect error', 'tls']];
+    }
+
     public function test_brokenSettingsInSnapshot_definitionError(): void
     {
         self::source(streams: 1, jobs: 1, items: 1);

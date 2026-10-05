@@ -1076,6 +1076,135 @@ final class DetailPageTest extends TestCase
         $this->assertStringContainsString('Stopped before reading anything', $html, 'no row of zeros');
     }
 
+    // ------------------------------------------------------------ why the source failed
+
+    public function test_runs_errorShowsItsDetailInWords(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::ERROR);
+        self::storedSet($id, 'error_code', 'SOURCE');
+        self::storedSet($id, 'error_detail', 'http:404');
+
+        $html = self::page()->runsHtml(self::NOW);
+
+        $this->assertStringContainsString('The source answered 404 Not Found.', $html);
+        $this->assertStringContainsString('<code class="aa-import-code">SOURCE</code>', $html);
+        $this->assertStringNotContainsString('class and line', $html, 'a status is no bug of the source code');
+
+        self::storedSet($id, 'error_code', 'TRANSPORT');
+        self::storedSet($id, 'error_detail', 'http:503');
+        $this->assertStringContainsString('The source is not available now. The source answered 503 Service Unavailable.', self::page()->runsHtml(self::NOW));
+    }
+
+    // a run stored before the detail existed reads as it did
+    public function test_runs_oldErrorWithoutDetailAsBefore(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::ERROR);
+        self::storedSet($id, 'error_code', 'TRANSPORT');
+        TableDb::$tables['object_text'] = array_values(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => !(($r['object_id'] === $id) && in_array($r['property'], ['error_detail', 'retry_code'], true))));
+
+        $html = self::page()->runsHtml(self::NOW);
+
+        $this->assertStringContainsString('The source could not be reached.', $html);
+        $this->assertStringContainsString('What to do:', $html);
+        $this->assertStringNotContainsString('The source answered', $html);
+    }
+
+    // a forged or damaged detail is not shown at all - the code and its words stay
+    public function test_runs_detailNotOfTheSetIsNotShown(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::ERROR);
+        self::storedSet($id, 'error_code', 'TRANSPORT');
+        self::storedSet($id, 'error_detail', '<img src=x onerror=alert(1)>');
+
+        $html = self::page()->runsHtml(self::NOW) . self::page()->overviewHtml(self::NOW);
+
+        $this->assertStringNotContainsString('<img', $html);
+        $this->assertStringNotContainsString('onerror', $html);
+        $this->assertStringContainsString('The source could not be reached.', $html);
+        $this->assertSame('', \AA\Import\RunView::detailText('dns2'));
+    }
+
+    /** the next step fits what the source answered */
+    #[DataProvider('sourceDetailSteps')]
+    public function test_runs_nextStepOfARefusalByItsDetail(string $detail, bool $checkAddress): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::ERROR);
+        self::storedSet($id, 'error_code', 'SOURCE');
+        self::storedSet($id, 'error_detail', $detail);
+
+        $html = self::page()->runsHtml(self::NOW);
+
+        $this->assertSame($checkAddress, str_contains($html, 'Check the address of the source'));
+        $this->assertStringNotContainsString('log of import failures', $html, 'an answer of the source is no bug to look up');
+    }
+
+    public static function sourceDetailSteps(): array
+    {
+        return [
+            '404'       => ['http:404', true],
+            '410'       => ['http:410', true],
+            'address'   => ['address', true],
+            'redirects' => ['redirects', true],
+            'too large' => ['too_large', false],
+            '100'       => ['http:100', false],
+        ];
+    }
+
+    /** a source down between two tries: the open run says why, the URL with its token goes nowhere */
+    public function test_waitingRun_showsWhyTheLastTryFailed(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        \ServiceSource::$failStreams = new \AA\IO\SourceUnavailable('TRANSPORT', 'Host name not found: https://1.1.1.1/x?token=tok3n6161', 'dns');
+
+        self::runOne();
+
+        $html = self::page()->runsHtml(time()) . self::page()->overviewHtml(time());
+        $this->assertStringContainsString('Last try failed:', $html);
+        $this->assertStringNotContainsString('What to do:', $html, 'nothing to do yet - it tries again by itself');
+        $this->assertStringContainsString('The address of the source could not be resolved (DNS).', $html);
+        $this->assertStringNotContainsString('tok3n6161', $html);
+        $this->assertStringNotContainsString('tok3n6161', json_encode(self::stored($id), JSON_THROW_ON_ERROR));
+    }
+
+    public function test_errorRun_refusalDetailWithoutItsUrl(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        \ServiceSource::$failStreams = new \AA\IO\SourceRefused('SOURCE', 'HTTP 410 from https://1.1.1.1/x?token=tok3n6262', 'http:410');
+
+        self::runOne();
+
+        $html = self::page()->runsHtml(self::NOW) . self::page()->overviewHtml(self::NOW);
+        $this->assertSame(Run::ERROR, self::stored($id)['state']);
+        $this->assertStringContainsString('The source answered 410 Gone.', $html);
+        $this->assertStringNotContainsString('tok3n6262', $html);
+        $this->assertStringNotContainsString('tok3n6262', json_encode(self::stored($id), JSON_THROW_ON_ERROR));
+    }
+
+    public function test_post_startRefusedBySourceSaysItsDetail(): void
+    {
+        self::definition();
+        \ServiceSource::$failStreams = new \AA\IO\SourceUnavailable('TRANSPORT', 'down at https://1.1.1.1/?token=tok3n6363', 'timeout');
+        $page = self::page();
+
+        $outcome = $page->handle(['action' => 'run', 'token' => self::token()], self::POST);
+        $page->afterPost((array) $outcome);
+
+        $this->assertSame(['refused', 'TRANSPORT', 'timeout'], $outcome);
+        $html = self::page()->outcomeOnceHtml();
+        $this->assertStringContainsString('The source did not answer in time.', $html);
+        $this->assertStringNotContainsString('tok3n6363', $html);
+    }
+
     public function test_runs_itemErrorsLinkToTheirList(): void
     {
         self::definition();
