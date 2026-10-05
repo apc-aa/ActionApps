@@ -16,12 +16,15 @@ use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Planner;
 use AA\Central\Package\Validator;
+use AA\Later\BatchStep;
+use LogicException;
 use RuntimeException;
 
 require_once __DIR__ . '/PackageMutations.php';
 
 /** What the writer tests share: TableDb with rows the target had before the import (foreign()), the
- *  example planned and written for an install run, a failing statement. */
+ *  example planned and written for an install run, a failing statement; the run's steps from the queue
+ *  (runQueued()), AA::$perm knowing who is a superadmin ($superadmins). */
 trait ImportFixture
 {
     use PackageMutations;
@@ -49,6 +52,9 @@ trait ImportFixture
     private int $runRows = 900_000;
     /** the id of the last run newRun() made */
     private string $lastRun = '';
+    /** AA::$perm of the test: who is a superadmin */
+    private FakeSuperadmins $superadmins;
+    private mixed $perm = null;
 
     public static function setUpBeforeClass(): void
     {
@@ -64,15 +70,72 @@ trait ImportFixture
         // spare handles: a statement that throws inside DB_AA::sql() never gives its handle back (freeDB()) -
         // AA opens a new connection then; here an empty pool would try a real one
         $GLOBALS['spareDBs'] = [new TableDb(), new TableDb(), new TableDb(), new TableDb()];
+        // what a batch run needs (BatchRun::requireTransactional())
+        TableDb::$engines    = ['object_text' => 'InnoDB', 'toexecute' => 'InnoDB', 'item' => 'InnoDB', 'content' => 'InnoDB'];
         $this->target        = new FakeImportTarget();
         $this->authority     = new FakeInstallPermission();
         $this->after         = new FakeAfterCommit();
+        class_exists(\AA_Perm::class);          // loaded later, include/perm_core.php would replace the stub
+        $this->perm          = \AA::$perm;
+        $this->superadmins   = new FakeSuperadmins([self::USER]);
+        \AA::$perm           = $this->superadmins;
+        InstallRun::setTestDoubles(null, $this->after);
+        TableDb::$answer     = self::idsInUse(...);
+    }
+
+    /** DbImportTarget::itemIdsInUse() of a batch asks one UNION TableDb cannot read: the ids among the
+     *  perms (a reader's id is a user id) and those of content rows of no item */
+    private static function idsInUse(string $sql): ?array
+    {
+        if (!str_contains($sql, ' UNION ')) {
+            return null;
+        }
+        preg_match_all('/[0-9a-f]{32}/i', $sql, $m);
+        $ids   = array_values(array_unique(array_map('strtolower', $m[0])));
+        $items = array_map('strtolower', array_column(TableDb::rows('item'), 'id'));
+        $users = array_map('strtolower', array_map('strval', array_column(TableDb::rows('perms'), 'userid')));
+        $texts = array_map('strtolower', array_column(TableDb::rows('content'), 'item_id'));
+        $used  = array_filter($ids, static fn(string $id): bool => in_array($id, $users, true) || (in_array($id, $texts, true) && !in_array($id, $items, true)));
+        return array_map(static fn(string $id): array => ['id' => $id], array_values($used));
     }
 
     protected function tearDown(): void
     {
         $GLOBALS['spareDBs'] = [];
         TableDb::reset();
+        \AA::$perm = $this->perm;
+        InstallRun::setTestDoubles(null);
+        set_time_limit(0);   // a task later() runs at once sets a 30 s limit - it must not outlive the test
+    }
+
+    /** @return list<array<string, mixed>> the queue rows, the oldest first */
+    private static function queue(): array
+    {
+        return TableDb::rows('toexecute');
+    }
+
+    /** runs the oldest queued step as the queue does - the row goes away after it; its log line */
+    private static function runQueued(): string
+    {
+        $row  = self::queue()[0] ?? throw new LogicException('Nothing queued');
+        $step = unserialize((string) $row['object']);
+        if (!($step instanceof BatchStep)) {
+            throw new LogicException('Not a batch step');
+        }
+        $ret = $step->toexecutelater();
+        TableDb::$tables['toexecute'] = array_values(array_filter(TableDb::rows('toexecute'), static fn(array $r): bool => $r['id'] !== $row['id']));
+        return $ret;
+    }
+
+    /** runs the queued steps till none is left - at most $max
+     *  @return list<string> their log lines */
+    private static function runAll(int $max = 50): array
+    {
+        $lines = [];
+        while (self::queue() && (count($lines) < $max)) {
+            $lines[] = self::runQueued();
+        }
+        return $lines;
     }
 
     /** rows the target had before the import - none of them may be touched
@@ -146,12 +209,13 @@ trait ImportFixture
         return ($importer ?? $this->importer())->write($plan, $run ?? $this->newRun(), self::DEFINITIONS, $confirmation);
     }
 
-    /** the tables without the rows of install runs and without empty tables
+    /** the tables without the rows of install runs, their queued steps and empty tables
      *  @return array<string, list<array<string, mixed>>> */
     private static function tables(): array
     {
         $runs   = array_column(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => ($r['property'] === 'aa_type') && ($r['value'] === InstallRun::class)), 'object_id');
         $tables = TableDb::$tables;
+        unset($tables['toexecute']);
         if (isset($tables['object_text'])) {
             $tables['object_text'] = array_values(array_filter($tables['object_text'], static fn(array $r): bool => !in_array($r['object_id'], $runs, true)));
         }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 /**
  * ItemWriter: a batch of two items (a relation in and out of the transfer, a password hash, a number, a
- * translation, alerts fields) written into TableDb by Importer::writeBatch() - the field types of the
+ * translation, alerts fields) written into TableDb by Importer::writeItems() - the field types of the
  * target slice, the rows AA_Field_Writer::contentRow() builds, references rewritten, the hash byte for
  * byte, nothing of storeItem(); a failure at any item statement rolls the batch back.
  */
@@ -12,11 +12,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Central\Package;
 
 use AA\Central\InstallRun;
-use AA\Central\Package\BatchResult;
 use AA\Central\Package\ImportPlan;
+use AA\Central\Package\WriteError;
 use AA\Central\Package\Model\Batch;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
+use AA\IO\DB\DB_AA;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\ImportFixture;
@@ -94,13 +95,32 @@ final class ItemWriterTest extends TestCase
         return new Package('Články', self::example()->source, [new Module(Module::SLICE, self::SLICE, [], items: $items)], withItems: true, batch: new Batch('', $items ? end($items)['id'] : '', true));
     }
 
-    /** the definitions written for a transfer run, the statement log cleared; the batch written */
-    private function write(?Package $definitions = null, ?Package $batch = null): BatchResult
+    /** the definitions written for a transfer run, the statement log cleared; the batch written
+     *  @return array<string, mixed> writeItems() */
+    private function write(?Package $definitions = null, ?Package $batch = null): array
     {
         $this->run = $this->newRun(InstallRun::TRANSFER);
         $this->import($this->plan(self::definitions($definitions), true), run: $this->run);
         [TableDb::$log, TableDb::$handles, $this->before] = [[], [], self::tables()];
-        return $this->importer()->writeBatch($this->run, $batch ?? self::batch(), [self::SLICE, '']);
+        return $this->batchOfRun($batch ?? self::batch());
+    }
+
+    /** the batch written as a step of the run writes it: in a transaction, on the locked run
+     *  @return array<string, mixed> */
+    private function batchOfRun(Package $batch): array
+    {
+        return DB_AA::transaction(fn(): array => $this->importer()->writeItems(InstallRun::lockForUpdate($this->run), $batch, InstallRun::at(self::SLICE, '')));
+    }
+
+    /** the write of write() that fails */
+    private function failed(?Package $batch = null): \Throwable
+    {
+        try {
+            $this->write(batch: $batch);
+        } catch (\Throwable $e) {
+            return $e;
+        }
+        self::fail('the batch was written');
     }
 
     /** our rows of a table: not the target's */
@@ -116,7 +136,7 @@ final class ItemWriterTest extends TestCase
         $result = $this->write();
         [$s, $a, $b] = [self::id(2), self::ITEM_A, self::ITEM_B];
 
-        self::assertSame(BatchResult::WRITTEN, $result->status);
+        self::assertSame([2, true], [$result['written'], $result['finished']]);
         $item = ['short_id' => null, 'slice_id' => $s, 'status_code' => 1, 'post_date' => 1690000000, 'publish_date' => 1700000000, 'expiry_date' => 2145913200,
             'highlight' => 0, 'posted_by' => null, 'edited_by' => null, 'last_edit' => 1700000001, 'display_count' => 0, 'flags' => '', 'disc_count' => 0,
             'disc_app' => 0, 'externally_fed' => '', 'moved2active' => 1700000000];
@@ -158,7 +178,7 @@ final class ItemWriterTest extends TestCase
             }
         }
 
-        $this->importer()->writeBatch($this->run, self::batch([['id' => self::ITEM_A, 'content' => self::content(['status_code.....' => '1', 'number.........1' => '42'])]]), [self::SLICE, '']);
+        $this->batchOfRun(self::batch([['id' => self::ITEM_A, 'content' => self::content(['status_code.....' => '1', 'number.........1' => '42'])]]));
 
         self::assertSame([['item_id' => self::ITEM_A, 'field_id' => 'number.........1', 'number' => 0, 'text' => '42', 'flag' => 64]], self::ours('content', 'item_id'));
     }
@@ -184,7 +204,7 @@ final class ItemWriterTest extends TestCase
 
         $tables = array_unique(array_map(static fn(string $q): string => preg_replace('/^(?:INSERT INTO|UPDATE|DELETE (?:LOW_PRIORITY )?FROM) `(\w+)`.*/s', '$1', $q), TableDb::writes()));
         sort($tables);
-        self::assertSame(['content', 'item', 'object_float', 'object_integer', 'object_text'], $tables, 'object_*: the run');
+        self::assertSame(['content', 'item'], $tables, 'the step moves the run itself');
         self::assertSame([], array_filter(TableDb::rows('content'), static fn(array $r): bool => ($r['item_id'] === self::ITEM_A) && ($r['field_id'] === 'relation.......1')), 'no reverse relation on item A');
     }
 
@@ -209,9 +229,10 @@ final class ItemWriterTest extends TestCase
     /** item.flags is char(30) - never cut; content.text has no limit */
     public function test_an_item_column_too_long_stops_the_batch(): void
     {
-        $result = $this->write(batch: self::batch([['id' => self::ITEM_A, 'content' => self::content(['status_code.....' => '1', 'flags...........' => str_repeat('x', 31)])]]));
+        $e = $this->failed(self::batch([['id' => self::ITEM_A, 'content' => self::content(['status_code.....' => '1', 'flags...........' => str_repeat('x', 31)])]]));
 
-        self::assertSame([BatchResult::FAILED, ['TOO_LONG', 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']/flags...........[0]']], [$result->status, $result->error]);
+        self::assertInstanceOf(WriteError::class, $e);
+        self::assertSame(['too-long', 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']/flags...........[0]'], [$e->reason, $e->path]);
         self::assertSame($this->before, self::tables());
     }
 
@@ -240,14 +261,14 @@ final class ItemWriterTest extends TestCase
         self::failAt($statement, $mode);
 
         try {
-            $result = $this->write();
+            $e = $this->failed();
         } finally {
             ini_set('error_log', (string) $log);
         }
 
-        self::assertSame(BatchResult::FAILED, $result->status);
+        self::assertInstanceOf(($mode === 'false') ? WriteError::class : \RuntimeException::class, $e);
         self::assertSame([], self::ours('item', 'id'));
         self::assertSame([], self::ours('content', 'item_id'));
-        self::assertSame(array_values(array_diff_key($this->before, ['object_text' => 1])), array_values(array_diff_key(self::tables(), ['object_text' => 1])), 'the rows of the target - its item and content too');
+        self::assertSame($this->before, self::tables(), 'the rows of the target - its item and content too');
     }
 }

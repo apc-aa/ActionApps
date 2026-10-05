@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 /**
- * A transfer from another AA: the target pulls the batches through Get_App of the source (a fake remote
- * running the real AppRequest behind RemoteSource). The short token of the source's superadmin lives only
- * encrypted in the run, never in central_conf; a token the source refuses stops the run with a clear
- * code, and a new login continues it.
+ * A transfer from another AA: the steps of the run in the queue pull the batches through Get_App of the
+ * source (a fake remote running the real AppRequest behind RemoteSource). The short token of the source's
+ * superadmin lives only sealed in the run, never in central_conf; a token the source refuses stops the run
+ * with a clear code, and a new login continues it.
  */
 
 namespace Tests\Unit\Central;
@@ -18,6 +18,7 @@ use AA\Central\ItemIdCheck;
 use AA\Central\Package\DbImportTarget;
 use AA\Central\ExportRefused;
 use AA\Central\InstallRun;
+use AA\Central\Package\ImportChoices;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ItemFilter;
 use AA\Central\Package\LintFinding;
@@ -28,6 +29,7 @@ use AA\Central\ResponderPolicy;
 use AA\Central\SourceFailed;
 use AA\Central\TransferCheck;
 use AA\Central\TransferProgress;
+use AA\Later\BatchFailed;
 use AA_Request;
 use AA_Response;
 use ArrayObject;
@@ -60,10 +62,12 @@ final class RemoteTransferTest extends TestCase
     private string $accepted = self::TOKEN;
     /** @var list<string> the commands the source was asked */
     private array $asked = [];
-    /** answers instead of the source's own: (request) => response, null = its own */
+    /** answers instead of the source's own: (request) => response, a MockResponse as it is, null = its own */
     private ?Closure $answer = null;
     /** the AA_ID the source reports - another AA by default */
     private string $sourceAa = '5ource000000000000000000000000aa';
+    /** @var list<int> the seconds each source built for a step may wait for an answer */
+    private array $timeouts = [];
 
     protected function setUp(): void
     {
@@ -84,9 +88,9 @@ final class RemoteTransferTest extends TestCase
     }
 
     /** the source AA: its responder.php answering Get_App for a superadmin with a Bearer token */
-    private function remote(): RemoteSource
+    private function remote(int $timeout = RemoteSource::TIMEOUT): RemoteSource
     {
-        return new RemoteSource('https://source.example/aa/central/responder.php', transport: new MockHttpClient(function (string $method, string $url, array $options): MockResponse {
+        return new RemoteSource('https://source.example/aa/central/responder.php', timeout: $timeout, transport: new MockHttpClient(function (string $method, string $url, array $options): MockResponse {
             parse_str((string) $options['body'], $post);
             $request       = AA_Request::decode($post['request']);
             $this->asked[] = $request->getCommand();
@@ -102,8 +106,16 @@ final class RemoteTransferTest extends TestCase
                 $request->getCommand() !== 'Get_App' => new AA_Response('Bad request', ResponderPolicy::ERR_UNKNOWN_COMMAND),
                 default                              => (new AppRequest($export, 'source-admin', static function (): void {}, $this->sourceAa))->answer($request->getParameters()),
             };
-            return new MockResponse(serialize($response));
+            return ($response instanceof MockResponse) ? $response : new MockResponse(serialize($response));
         }));
+    }
+
+    /** an answer that never comes - the mock's inactivity timeout */
+    private static function silent(): MockResponse
+    {
+        return new MockResponse((static function (): \Generator {
+            yield '';
+        })());
     }
 
     private static function jwtOf(array $claims): string
@@ -112,28 +124,44 @@ final class RemoteTransferTest extends TestCase
         return $b64('{"typ":"JWT","alg":"HS256"}') . '.' . $b64(json_encode($claims)) . '.' . $b64('signature');
     }
 
-    /** the source of a run as the install page builds it: the sealed token opened for the source's address */
-    private function sourceOf(string $run): RemoteAppSource
-    {
-        return new RemoteAppSource($this->remote(), $this->remote()->unseal(InstallRun::get($run)->token()));
-    }
-
-    /** a transfer run from the source AA of central_conf row 7, its definitions written */
-    private function transferred(): string
+    /** a transfer run from the source AA of central_conf row 7, its definitions written and its first step queued
+     *  @param array<string, string> $filters source slice => the condition of its items */
+    private function transferred(array $filters = []): string
     {
         [$next, TableDb::$next['object_text']] = [TableDb::$next['object_text'], 900_000];
-        $run                                   = InstallRun::preview(InstallRun::TRANSFER, false, '7', self::USER, $this->remote()->seal(self::TOKEN), self::NOW)->getId();
+        $choices                               = $filters ? new ImportChoices(filters: $filters) : null;
+        $run                                   = InstallRun::preview(InstallRun::TRANSFER, false, '7', self::USER, $this->remote()->seal(self::TOKEN), self::NOW, '', [], $choices)->getId();
         TableDb::$next['object_text']          = $next;
         $confirmation                          = new ImportConfirmation('preview-session');
         $plan                                  = $this->plan(self::example(), true);
         $this->import($plan, $this->importer(null, $confirmation), $confirmation->token($plan, self::USER), $run);
         $this->after->calls = [];
+        $this->steps();
         return $run;
     }
 
-    private function progress(string $run): TransferProgress
+    /** The steps get the source as InstallRun builds it for a remote run: the sealed token opened for the
+     *  source's address, each answer within the timeout the step gives; $from (called once per source
+     *  built) may replace it.
+     *  @param ?Closure(InstallRun, int): AppSource $from */
+    private function steps(?Closure $from = null): void
     {
-        return new TransferProgress($this->importer(), fn(): RemoteAppSource => $this->sourceOf($run), $this->after, self::USER);
+        InstallRun::setTestDoubles(function (InstallRun $run, int $timeout) use ($from): AppSource {
+            $this->timeouts[] = $timeout;
+            return $from ? $from($run, $timeout) : new RemoteAppSource($this->remote($timeout), $this->remote()->unseal($run->token()));
+        }, $this->after);
+    }
+
+    /** runs the queued steps - $max at most - the source's complaints kept out of the test output
+     *  @return list<string> */
+    private static function quietly(int $max = 50): array
+    {
+        $log = ini_set('error_log', '/dev/null');
+        try {
+            return self::runAll($max);
+        } finally {
+            ini_set('error_log', (string) $log);
+        }
     }
 
     /** @return list<string> ids of the items of the new slice */
@@ -142,40 +170,75 @@ final class RemoteTransferTest extends TestCase
         return array_values(array_column(array_filter(TableDb::rows('item'), static fn(array $r): bool => $r['slice_id'] === self::id(2)), 'id'));
     }
 
-    /** the stored value of the run's token property */
-    private static function storedToken(string $run): string
+    /** the stored value of a property of the run */
+    private static function stored(string $run, string $property): string
     {
         foreach (TableDb::rows('object_text') as $row) {
-            if (($row['object_id'] === $run) && ($row['property'] === 'token')) {
+            if (($row['object_id'] === $run) && ($row['property'] === $property)) {
                 return (string) $row['value'];
             }
         }
         return '';
     }
 
-    public function test_the_token_is_kept_only_encrypted_in_the_run(): void
+    /** the Get_App requests of the source kept, the source answering as before */
+    private function kept(): ArrayObject
+    {
+        $requests     = new ArrayObject();
+        $this->answer = static function (AA_Request $r) use ($requests): ?AA_Response {
+            $requests[] = $r->getParameters();
+            return null;
+        };
+        return $requests;
+    }
+
+    /** @param list<string> $ids @return list<array<string, mixed>> items of the source with these ids */
+    private static function entries(array $ids): array
+    {
+        return array_map(static fn(string $id): array => ['id' => $id, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]], 'headline........' => [['value' => $id, 'flag' => 0]]]], $ids);
+    }
+
+    public function test_the_token_is_kept_only_sealed_in_the_run(): void
     {
         $run = $this->transferred();
 
         self::assertSame(self::TOKEN, $this->remote()->unseal(InstallRun::get($run)->token()));
-        self::assertNotSame('', self::storedToken($run));
+        self::assertNotSame('', self::stored($run, 'sealed'));
+        self::assertGreaterThan(time(), (int) self::stored($run, 'sealed_until'));
         self::assertStringNotContainsString(self::TOKEN, json_encode(TableDb::$tables));
         self::assertStringNotContainsString('first-short-token', json_encode(TableDb::$tables));
         self::assertArrayNotHasKey('central_conf', TableDb::$tables);
     }
 
-    public function test_the_batches_come_through_get_app_and_the_finish_forgets_the_token(): void
+    public function test_the_steps_bring_the_batches_through_get_app_and_the_finish_forgets_the_token(): void
     {
         $run = $this->transferred();
 
-        $state = $this->progress($run)->next($run, [self::SLICE, '']);
+        $lines = self::runAll();
 
-        self::assertSame([TransferProgress::DONE, InstallRun::DONE], [$state['status'], $state['state']]);
+        self::assertSame([InstallRun::DONE, 'stale'], $lines, 'the batch and the check in one step; its safety row finds the run done');
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
         self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
         self::assertSame(['Get_App', 'Get_App', 'Get_App'], $this->asked, 'the batch and the two counts of the check');
         self::assertSame(2, InstallRun::get($run)->report()['slices'][0]['sourceCount']);
-        self::assertSame(['', ''], [InstallRun::get($run)->token(), self::storedToken($run)]);
-        self::assertStringNotContainsString(self::HASH, json_encode(array_map(static fn(array $w): mixed => $w, TableDb::rows('object_text'))), 'no secret in the run');
+        self::assertSame([self::SLICE => 2], InstallRun::get($run)->written());
+        self::assertSame(['', '', ''], [InstallRun::get($run)->token(), self::stored($run, 'sealed'), self::stored($run, 'sealed_until')]);
+        self::assertStringNotContainsString(self::HASH, json_encode(TableDb::rows('object_text')), 'no secret in the run');
+        self::assertContains('invalidatePagecache ' . self::id(2), $this->after->calls, 'the pages of the new slice');
+        self::assertContains('constantsChanged', $this->after->calls);
+    }
+
+    /** an answer of the source may take only what is left of the step - the check, with no budget of its own, a short while */
+    public function test_each_source_of_a_step_waits_at_most_for_the_rest_of_the_step(): void
+    {
+        $this->transferred();
+
+        self::runAll();
+
+        self::assertCount(2, $this->timeouts, 'the batch, then the check');
+        self::assertGreaterThanOrEqual(1, $this->timeouts[0]);
+        self::assertLessThanOrEqual(30, $this->timeouts[0], 'a queue round');
+        self::assertLessThanOrEqual(30, $this->timeouts[1]);
     }
 
     public function test_a_refused_token_stops_the_run_and_a_new_login_continues_it(): void
@@ -183,23 +246,61 @@ final class RemoteTransferTest extends TestCase
         $run            = $this->transferred();
         $this->accepted = self::NEW_TOKEN;          // the token expired or the password changed on the source
 
-        $log = ini_set('error_log', '/dev/null');
-        try {
-            $state = $this->progress($run)->next($run, [self::SLICE, '']);
-        } finally {
-            ini_set('error_log', (string) $log);
-        }
+        self::assertSame(['error ' . SourceFailed::LOGIN], self::quietly(), 'no retry - the same token would be refused again');
 
-        self::assertSame([InstallRun::ERROR, ['code' => SourceFailed::LOGIN, 'path' => 'source']], [$state['state'], $state['error']]);
-        self::assertSame(['slice' => self::SLICE, 'cursor' => ''], $state['position']);
+        $stopped = InstallRun::get($run);
+        self::assertSame([InstallRun::ERROR, [SourceFailed::LOGIN, 'source']], [$stopped->state(), $stopped->error()]);
+        self::assertSame(InstallRun::at(self::SLICE, ''), $stopped->position());
         self::assertSame([], self::itemsOfTheSlice());
+        self::assertTrue(TransferProgress::needsLogin($stopped));
+        $page = TransferProgress::state($run, self::USER);
+        self::assertSame([true, true], [$page['login'], $page['mayContinue']]);
 
-        $resumed = $this->progress($run)->resume($run, $this->remote()->seal(self::NEW_TOKEN));
+        self::assertSame(TransferProgress::RESUMED, TransferProgress::resume($run, self::USER, $this->remote()->seal(self::NEW_TOKEN)));
 
-        self::assertSame([TransferProgress::RESUMED, InstallRun::ITEMS], [$resumed['status'], $resumed['state']]);
+        self::assertSame(InstallRun::ITEMS, InstallRun::get($run)->state());
         self::assertSame(self::NEW_TOKEN, $this->remote()->unseal(InstallRun::get($run)->token()));
+        self::assertFalse(TransferProgress::needsLogin(InstallRun::get($run)));
         self::assertStringNotContainsString('second-short-token', json_encode(TableDb::$tables));
-        self::assertSame(TransferProgress::DONE, $this->progress($run)->next($run, [self::SLICE, ''])['status']);
+        self::runAll();
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
+        self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
+    }
+
+    /** what Continue of the page does after the source refused the token: log in, seal, resume */
+    public function test_continue_logs_in_again_and_the_transfer_goes_on(): void
+    {
+        $run            = $this->transferred();
+        $this->accepted = self::NEW_TOKEN;
+        self::quietly();
+        self::assertSame(SourceFailed::LOGIN, InstallRun::get($run)->error()[0]);
+
+        $remote = $this->remote();
+        self::assertSame(TransferProgress::RESUMED, TransferProgress::resume($run, self::USER, $remote->seal($remote->jwt('source-admin', 'pw'))));
+        $this->asked = [];
+        self::runAll();
+
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
+        self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
+        self::assertSame(['Get_App', 'Get_App', 'Get_App'], $this->asked, 'the new token is accepted for the batch and the check');
+    }
+
+    /** Continue is the user's who started the run - a new login would put another user's rights in it */
+    public function test_another_superadmin_may_not_continue_with_a_login_of_his_own(): void
+    {
+        $run            = $this->transferred();
+        $this->accepted = self::NEW_TOKEN;
+        self::quietly();
+        $this->superadmins->superadmins[] = 'other-admin';
+
+        self::assertFalse(TransferProgress::state($run, 'other-admin')['mayContinue']);
+        try {
+            TransferProgress::resume($run, 'other-admin', $this->remote()->seal(self::NEW_TOKEN));
+            self::fail('another user continued the run');
+        } catch (BatchFailed $e) {
+            self::assertSame('FORBIDDEN', $e->reason);
+        }
+        self::assertSame([InstallRun::ERROR, self::TOKEN], [InstallRun::get($run)->state(), $this->remote()->unseal(InstallRun::get($run)->token())]);
     }
 
     public function test_the_definitions_and_the_logins_come_as_the_local_ones(): void
@@ -255,40 +356,120 @@ final class RemoteTransferTest extends TestCase
         (new RemoteAppSource($this->remote(), self::TOKEN))->definitions([self::SLICE], true, false, self::NOW);
     }
 
-    /** what Continue of the page does after the source refused the token: log in, seal, resume */
-    public function test_continue_logs_in_again_and_the_transfer_goes_on(): void
-    {
-        $run            = $this->transferred();
-        $this->accepted = self::NEW_TOKEN;
-        $log            = ini_set('error_log', '/dev/null');
-        try {
-            self::assertSame(SourceFailed::LOGIN, $this->progress($run)->next($run, [self::SLICE, ''])['error']['code']);
-        } finally {
-            ini_set('error_log', (string) $log);
-        }
-
-        $remote  = $this->remote();
-        $resumed = $this->progress($run)->resume($run, $remote->seal($remote->jwt('source-admin', 'pw')));
-
-        self::assertSame(InstallRun::ITEMS, $resumed['state']);
-        self::assertSame(TransferProgress::DONE, $this->progress($run)->next($run, [self::SLICE, ''])['status']);
-        self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
-    }
-
     public function test_the_cursor_goes_over_the_wire(): void
     {
-        $run = $this->transferred();
-        $ids = array_map(static fn(int $i): string => sprintf('%032x', 0xb0000 + $i), range(1, 501));
-        $this->source->items[self::SLICE] = array_map(static fn(string $id): array => ['id' => $id, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]], 'headline........' => [['value' => $id, 'flag' => 0]]]], $ids);
+        $ids                              = array_map(static fn(int $i): string => sprintf('%032x', 0xb0000 + $i), range(1, 501));
+        $this->source->items[self::SLICE] = self::entries($ids);
+        $run                              = $this->transferred();
+        $requests                         = $this->kept();
 
-        $first = $this->progress($run)->next($run, [self::SLICE, '']);
-        self::assertSame(['slice' => self::SLICE, 'cursor' => $ids[499]], $first['position']);
+        self::assertSame('step 2', self::runQueued(), 'the definitions queued step 1');
+        self::assertSame(InstallRun::at(self::SLICE, $ids[499]), InstallRun::get($run)->position());
 
-        $last = $this->progress($run)->next($run, [self::SLICE, $ids[499]]);
+        self::runAll();
 
-        self::assertSame(TransferProgress::DONE, $last['status']);
-        self::assertSame([self::SLICE => 501], $last['written']);
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
+        self::assertSame([self::SLICE => 501], InstallRun::get($run)->written());
         self::assertCount(501, self::itemsOfTheSlice());
+        self::assertSame(['', $ids[499]], array_column(array_filter((array) $requests, static fn(array $r): bool => $r['part'] === 'batch'), 'after'));
+        self::assertSame([], array_filter(array_column((array) $requests, 'items')), 'full batches ask for no limit');
+    }
+
+    /** a step out of time asks at once for half as many items - and only then names a limit at all; a quick
+     *  answer asks for twice as many again */
+    public function test_after_a_step_out_of_time_the_source_is_asked_for_fewer_items(): void
+    {
+        $ids                              = array_map(static fn(int $i): string => sprintf('%032x', 0xb0000 + $i), range(1, 501));
+        $this->source->items[self::SLICE] = self::entries($ids);
+        $run                              = $this->transferred();
+        $requests                         = new ArrayObject();
+        $failed                           = false;
+        $this->answer                     = static function (AA_Request $r) use ($requests, &$failed): AA_Response|MockResponse|null {
+            $requests[] = $r->getParameters();
+            if (!$failed && (($r->getParameters()['part'] ?? '') === 'batch')) {
+                $failed = true;
+                return self::silent();
+            }
+            return null;
+        };
+
+        self::quietly(1);
+        self::assertSame([1, InstallRun::at(self::SLICE, ''), false], [(int) self::stored($run, 'failures'), InstallRun::get($run)->position(), InstallRun::get($run)->isWaiting(InstallRun::clock())], 'no wait');
+
+        self::quietly();
+
+        $batches = array_values(array_filter((array) $requests, static fn(array $r): bool => $r['part'] === 'batch'));
+        self::assertSame([null, 250, null], array_map(static fn(array $r): ?int => $r['items'] ?? null, $batches), 'the half after the timeout, a full one after a quick answer');
+        self::assertSame(['', '', $ids[249]], array_column($batches, 'after'));
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
+        self::assertCount(501, self::itemsOfTheSlice());
+    }
+
+    /** a source that knows no limit gives a full batch - the run takes it */
+    public function test_a_source_ignoring_the_limit_still_transfers_everything(): void
+    {
+        $ids                              = array_map(static fn(int $i): string => sprintf('%032x', 0xb0000 + $i), range(1, 501));
+        $this->source->items[self::SLICE] = self::entries($ids);
+        $run                              = $this->transferred();
+        $export                           = new AppExport($this->source, ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'], static fn(): bool => true, true);
+        $failed                           = false;
+        $asked                            = new ArrayObject();
+        $this->answer                     = function (AA_Request $r) use ($export, &$failed, $asked): AA_Response|MockResponse|null {
+            $params = $r->getParameters();
+            if (($params['part'] ?? '') !== 'batch') {
+                return null;
+            }
+            if (!$failed) {
+                $failed = true;
+                return self::silent();
+            }
+            $asked[] = $params['items'] ?? null;
+            unset($params['items']);
+            return (new AppRequest($export, 'source-admin', static function (): void {}, $this->sourceAa))->answer($params);
+        };
+
+        self::quietly();
+
+        self::assertSame(250, $asked[0], 'asked for fewer');
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
+        self::assertSame([self::SLICE => 501], InstallRun::get($run)->written());
+        self::assertCount(501, self::itemsOfTheSlice());
+    }
+
+    /** the condition goes with every batch and the check; an answer of a source that cannot filter would be all the items */
+    public function test_a_filtered_transfer_takes_the_matching_items_only(): void
+    {
+        $this->source->tables['field'] = [['id' => 'headline........', 'slice_id' => self::SLICE, 'input_show_func' => 'fld:']];
+        $run                           = $this->transferred([self::SLICE => self::ONLY_B]);
+        $requests                      = $this->kept();
+
+        self::runAll();
+
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
+        self::assertSame([self::ITEM_B], self::itemsOfTheSlice());
+        self::assertSame(['batch', 'counts', 'counts'], array_column((array) $requests, 'part'));
+        self::assertSame(array_fill(0, 3, [self::SLICE => self::ONLY_B]), array_column((array) $requests, 'filters'));
+        $report = InstallRun::get($run)->report();
+        self::assertSame([1, 1], [$report['slices'][0]['sourceCount'], $report['slices'][0]['targetCount']]);
+        self::assertSame([], $report['findings'], 'the matching items only are compared');
+    }
+
+    public function test_a_batch_without_the_echo_of_the_filters_is_not_written(): void
+    {
+        $this->source->tables['field'] = [['id' => 'headline........', 'slice_id' => self::SLICE, 'input_show_func' => 'fld:']];
+        $run                           = $this->transferred([self::SLICE => self::ONLY_B]);
+        $export                        = new AppExport($this->source, ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'], static fn(): bool => true, true);
+        // an older source: all the items, no echo
+        $this->answer = function (AA_Request $r) use ($export): ?AA_Response {
+            $params = $r->getParameters();
+            unset($params['filters']);
+            return (($r->getParameters()['part'] ?? '') === 'batch') ? (new AppRequest($export, 'source-admin', static function (): void {}, $this->sourceAa))->answer($params) : null;
+        };
+
+        self::quietly();
+
+        self::assertSame([InstallRun::ERROR, [SourceFailed::FAILED, '']], [InstallRun::get($run)->state(), InstallRun::get($run)->error()], 'asked three times, then stopped');
+        self::assertSame([], self::itemsOfTheSlice());
     }
 
     /** @return array<string, array{mixed}> */
@@ -318,9 +499,9 @@ final class RemoteTransferTest extends TestCase
         $run          = $this->transferred();
         $this->answer = static fn(AA_Request $r): ?AA_Response => (($r->getParameters()['part'] ?? '') === 'counts') ? new AA_Response('down', ResponderPolicy::ERR_APP_FAILED) : null;
 
-        $state = $this->progress($run)->next($run, [self::SLICE, '']);
+        self::runAll();
 
-        self::assertSame([TransferProgress::DONE, InstallRun::DONE], [$state['status'], $state['state']]);
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
         $report = InstallRun::get($run)->report();
         self::assertNull($report['slices'][0]['sourceCount']);
         self::assertSame(['W', 'source-count-unknown'], [$report['findings'][0]['level'], $report['findings'][0]['code']]);
@@ -329,13 +510,17 @@ final class RemoteTransferTest extends TestCase
     /** End and the page of a run never need the source - its Central row may be gone */
     public function test_end_works_after_the_central_row_is_deleted(): void
     {
-        $run      = $this->transferred();
-        $progress = new TransferProgress($this->importer(), static fn(): never => throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list'), $this->after, self::USER);
+        $run = $this->transferred();
+        $this->steps(static fn(): never => throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list'));
 
-        $state = $progress->end($run);
+        self::assertSame(InstallRun::ITEMS, TransferProgress::state($run, self::USER)['state']);
+        self::assertSame(TransferProgress::ENDED, TransferProgress::end($run, self::USER));
 
-        self::assertSame([TransferProgress::ENDED, InstallRun::ENDED], [$state['status'], $state['state']]);
-        self::assertSame('', InstallRun::get($run)->token());
+        self::assertSame(InstallRun::ENDED, InstallRun::get($run)->state());
+        self::assertSame(['', ''], [InstallRun::get($run)->token(), self::stored($run, 'sealed')]);
+        self::runAll();
+        self::assertSame([], $this->timeouts, 'nothing asked the source');
+        self::assertSame([], self::itemsOfTheSlice());
     }
 
     /** the errors of an answer are source text: a few, and short */
@@ -356,16 +541,15 @@ final class RemoteTransferTest extends TestCase
 
     public function test_a_finish_without_the_central_row_reports_the_target_counts(): void
     {
-        $run    = $this->transferred();
-        $source = $this->sourceOf($run);
-        $calls  = 0;
-        $from   = static function () use ($source, &$calls): RemoteAppSource {
-            return (++$calls === 1) ? $source : throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list');
-        };
+        $run   = $this->transferred();
+        $calls = 0;
+        $this->steps(function (InstallRun $run, int $timeout) use (&$calls): AppSource {
+            return (++$calls === 1) ? new RemoteAppSource($this->remote($timeout), $this->remote()->unseal($run->token())) : throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list');
+        });
 
-        $state = (new TransferProgress($this->importer(), $from, $this->after, self::USER))->next($run, [self::SLICE, '']);
+        self::runAll();
 
-        self::assertSame(InstallRun::DONE, $state['state']);
+        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state());
         $report = InstallRun::get($run)->report();
         self::assertSame([null, 2], [$report['slices'][0]['sourceCount'], $report['slices'][0]['targetCount']]);
         self::assertSame([TransferCheck::SOURCE_UNKNOWN, SourceFailed::UNREACHABLE], [$report['findings'][0]['code'], $report['findings'][0]['ref']]);
@@ -549,7 +733,7 @@ final class RemoteTransferTest extends TestCase
                 throw new \LogicException('not asked');
             }
 
-            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
+            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = 500): array
             {
                 throw new \LogicException('not asked');
             }

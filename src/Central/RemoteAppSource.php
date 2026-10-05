@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
+use AA\Central\Package\CollectOptions;
 use AA\Central\Package\ItemFilter;
 use AA\Central\Package\LintFinding;
 use AA_Request;
@@ -27,7 +28,7 @@ final class RemoteAppSource implements AppSource
     private bool $same = false;
 
     /** @param ?string $ownAa AA_ID of this AA; null = AA_ID */
-    public function __construct(private readonly RemoteSource $remote, private readonly string $token, ?string $ownAa = null)
+    public function __construct(private readonly RemoteSource $remote, #[\SensitiveParameter] private readonly string $token, ?string $ownAa = null)
     {
         $this->ownAa = $ownAa ?? (string) constant('AA_ID');
     }
@@ -55,9 +56,11 @@ final class RemoteAppSource implements AppSource
         return [self::xml($answer['package'] ?? null), [], $answer['now']];
     }
 
-    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
+    /** a full batch names no limit: an older source, which knows none, gives the same */
+    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = CollectOptions::MAX_ITEMS): array
     {
-        return [self::xml($this->get('batch', ['slice' => $slice, 'after' => $after, 'started' => $started], true, $allBins, RemoteSource::MAX_BYTES, ItemFilter::ofSlices($filters, [$slice]))), []];
+        $param = ['slice' => $slice, 'after' => $after, 'started' => $started] + (($limit < CollectOptions::MAX_ITEMS) ? ['items' => $limit] : []);
+        return [self::xml($this->get('batch', $param, true, $allBins, RemoteSource::MAX_BYTES, ItemFilter::ofSlices($filters, [$slice]))), []];
     }
 
     public function logins(array $slices, bool $allBins, array $filters = []): array

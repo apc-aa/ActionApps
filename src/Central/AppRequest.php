@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
+use AA\Central\Package\CollectOptions;
 use AA\Central\Package\ItemFilter;
 use AA\Central\Package\LintFinding;
 use AA_Response;
@@ -124,10 +125,11 @@ final class AppRequest
     {
         $slice = self::ids([$param['slice'] ?? null]);
         $after = $param['after'] ?? '';
-        if (!$transfer || !$slice || (($after !== '') && !self::ids([$after]))) {
-            return self::bad('a transfer, slice and after');
+        $limit = self::limit($param['items'] ?? null);
+        if (!$transfer || !$slice || (($after !== '') && !self::ids([$after])) || ($limit === null)) {
+            return self::bad('a transfer, slice, after and items');
         }
-        [$xml, , $items] = $this->export->batchOf($slice[0], $after, $allBins, $started, $filters);
+        [$xml, , $items] = $this->export->batchOf($slice[0], $after, $allBins, $started, $filters, $limit);
         $this->logged("transfer batch $slice[0]", "items=$items" . self::counted($filters));
         return new AA_Response($xml);
     }
@@ -242,6 +244,18 @@ final class AppRequest
             }
         }
         return array_map('strtolower', $value);
+    }
+
+    /** the items of a batch the target asks for: none = a full one (an older target asks so) */
+    private static function limit(mixed $value): ?int
+    {
+        $limit = match (true) {
+            $value === null                                         => CollectOptions::MAX_ITEMS,
+            is_int($value)                                          => $value,
+            is_string($value) && (bool) preg_match('/^\d{1,3}\z/', $value) => (int) $value,
+            default                                                 => 0,
+        };
+        return (($limit >= 1) && ($limit <= CollectOptions::MAX_ITEMS)) ? $limit : null;
     }
 
     /** a unixtime; '' = now; null for anything else */

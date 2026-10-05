@@ -159,40 +159,55 @@ items left out stay in the definitions (views, spots), as with the items of the 
 "Install" / "Write the definitions and transfer the items" reads the definitions from the source
 again and compares them with the preview (SHA-256 fingerprint, same-AA flag, the Into choice); any
 change -> "preview again". All definitions are written in **one InnoDB transaction** (the import
-refuses MyISAM tables; see Optimize "Convert database engine to InnoDB"). The run moves to its items
-in the same transaction, so the definitions are never written twice. After the commit: an `APP_INST`
-log row, permissions for the new modules, the constants and page caches. The report lists the new modules and
-ids, the settings to fill in and the findings. An install is finished here.
+refuses MyISAM tables; see Optimize "Convert database engine to InnoDB" - the run itself needs
+`object_text`, `toexecute`, `item` and `content` InnoDB already at the preview). The run moves to its items
+in the same transaction, with its first step queued, so the definitions are never written twice.
+After the commit: an `APP_INST` log row, permissions for the new modules, the constants and page caches.
+The report lists the new modules and ids, the settings to fill in and the findings. An install is
+written here; its run only finishes in the queue.
 
 ### Batches, Continue / End, the finish report
 
-A transfer continues on the progress page (`installapp.php?run=<id>`). Its script requests one batch
-after another; each batch is one request and one transaction:
+A transfer moves its items in the **task queue** (`toexecute`): `InstallRun` is a batch run of the
+core (`AA\Later\BatchRun`), one batch per queue step of at most ~30 s. The progress page
+(`installapp.php?run=<id>`) only shows it - it asks for the state every few seconds and may be closed.
+Each step:
 
-- the source cuts at most **500 items / 4 MB** after the cursor (`id > cursor ORDER BY id`); an item
-  larger than that alone is E `item-too-big`;
-- the batch travels as a package XML too, and goes through `Reader`, `Validator`, the target charset
-  check, `ItemLint` and `ItemWriter` (field types from the target's `field` rows);
-- the run is read `FOR UPDATE`; a request naming another position than the run's is **stale** and
-  does nothing - a double click or a second tab cannot write a batch twice;
-- a failure rolls the batch back and puts the run in `error` with a code and a path (never a raw DB
-  message; details in the PHP error log). Codes: E finding codes (`ITEM_TOO_BIG`, ...),
-  `SOURCE_LOGIN`, `SOURCE_UNREACHABLE`, `SOURCE_FAILED`, `SOURCE_DENIED`, `COLLECT_FAILED`.
+- checks that the user who started the run is still a superadmin here (else error `DENIED`);
+- reads the batch from the source with no transaction open - with that user's rights: this AA, or the
+  other AA with the login token the run keeps sealed (`seal()`, a day at most). The source cuts at most
+  **500 items / 4 MB** after the cursor (`id > cursor ORDER BY id`); an item larger than that alone is E
+  `item-too-big`. Every answer of the source has a timeout from the rest of the step; a source that
+  does not answer in it (`SOURCE_TIMEOUT`) is asked again at once for half as many items (`Get_App`
+  `batch` param `items`), one that answers in a quarter of the time for twice as many, up to 500;
+- writes it in **one transaction with the run's new position** under the run's lock: `Reader`,
+  `Validator`, the target charset check, `ItemLint` and `ItemWriter` (field types from the target's
+  `field` rows). A failure rolls the batch back with its position; the queue's fingerprint of a step
+  makes a step queued twice do nothing;
+- a source that cannot be reached or fails (`SOURCE_UNREACHABLE`, `SOURCE_FAILED`) is asked again
+  after 5, then 15 minutes, then the run stops in `error`; three timeouts in a row stop it as
+  `NO_PROGRESS`; a write that fails stops it at once. Codes: E finding codes (`ITEM_TOO_BIG`, ...), `SOURCE_LOGIN`,
+  `SOURCE_UNREACHABLE`, `SOURCE_FAILED`, `SOURCE_DENIED`, `COLLECT_FAILED`, `WRITE_FAILED`, `DENIED`,
+  `NO_PROGRESS`, `STEP_DIED` - with a place
+  (`slice-module:<id>/item:<id>`), never a raw DB message (details in the PHP error log).
 
-Run states: `preview` -> `done` (an install, or no slice) or `preview` -> `items`; `items` <-> `error`;
-`items` -> `done`; `items` | `error` -> `ended`. An error never finishes a run directly.
+Run states: `preview` -> `items` (definitions written; with no item to follow only the finish is
+queued) <-> `error`; `items` -> `done`; `preview` | `items` | `error` -> `ended`.
 
-- **Continue** resumes from the stored position. After `SOURCE_LOGIN` (the token expired) it asks
-  for the source login again and stores the new token.
-- **End** keeps what is written and stops. To undo a transfer, delete the new modules as usual.
-- Closing the tab only pauses; "Install an app" lists the user's unfinished transfers.
+- **Continue** (the user who started the run) queues the next step now - after an error, during a
+  retry's wait, or when no step has come for long. When the source refused the token or the run keeps
+  none any more, it asks for the source login again first. It waits while a step may still work.
+- **End** (that user or any superadmin) keeps what is written and stops. To undo a transfer, delete
+  the new modules as usual.
+- "Install an app" lists the unfinished transfers - for a superadmin those of all users.
 
-When the last slice is done, the target checks (`TransferCheck`) and stores the **finish report**:
+When the last slice is done, the last step checks (`TransferCheck`) and stores the **finish report**:
 per slice written / on the source / on this AA, and W findings `count-differs`,
 `edited-during-transfer` (items the source changed after the start - the source is not frozen),
-`relation-dangling` (relation values naming no item), `source-count-unknown`. It clears the page cache
-of the new modules and the constants cache and erases the token. Uploaded files are not transferred:
-copy them by hand, and switch the domain only after checking the copy.
+`relation-dangling` (relation values naming no item), `source-count-unknown`. Then the page cache
+of the new modules and the constants cache are cleared and the token is forgotten. Uploaded files are
+not transferred: copy them by hand, and switch the domain only after checking the copy. The 100 last
+finished runs of this AA are kept for their reports; a preview not written is forgotten after a day.
 
 ### Into an existing slice
 
@@ -321,7 +336,7 @@ the sites whose modules it may edit.
 | part | params | answer | right |
 |---|---|---|---|
 | `definitions` | `modules` (a site id, or slices/Alerts) | `['package' => XML, 'now' => time, 'aa' => AA_ID]` | install: `PS_EDIT` on every module; transfer: superadmin |
-| `batch` | `slice`, `after` | package XML | transfer, superadmin |
+| `batch` | `slice`, `after`, `items` (1-500, default 500) | package XML | transfer, superadmin |
 | `logins` | `slices` (Reader Management) | list of logins | transfer, superadmin |
 | `counts` | `slices`, `edited_after` | `slice => count` | `PS_EDIT` |
 | `item_ids` | `slice`, `after` | up to 5000 ids after the cursor | transfer, superadmin |
@@ -364,7 +379,8 @@ Error codes (`AA\Central\ResponderPolicy`, plus the responder's own):
 | Transfer (items, readers, hashes, 2FA) | superadmin here and on the source |
 | Publish a site in the app store | superadmin |
 | Install from the app store | superadmin with `PS_INSTALL_APP` here; the store's public account |
-| Batches, Continue, End | the user who started the run, a superadmin with `PS_INSTALL_APP` |
+| Progress page, End | the user who started the run, any superadmin with `PS_INSTALL_APP` |
+| Continue | the user who started the run - the batches go on with their rights |
 
 A package is code: its templates run with all rights of the target AA. The S lint and its
 confirmation help the admin; the boundary is who may install.
@@ -456,8 +472,8 @@ installer on the store.
 
 On `admin/aa_statecheck.php`:
 
-- **App transfers** - W for a transfer that has not moved on for an hour, E for one stopped by an
-  error; links to its progress page.
+- **App transfers** - W for a run that hangs (no step has come for longer than its retries and an
+  hour - a queue that does not run), E for one stopped by an error; links to its progress page.
 - **Required slice settings** - W for slices whose required settings fields (`_` ids) have no value.
 - **Central logins** - W for `central_conf` rows holding anything but an encrypted token (a password
   or a plain `jwt:` token of older Central lying in the database). Central never sends them; press

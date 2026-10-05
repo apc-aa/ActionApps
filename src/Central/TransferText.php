@@ -7,19 +7,19 @@ namespace AA\Central;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
 
-/** What the progress page of a transfer gets of TransferProgress::state(): where to ask next, the written
- *  counts, and the findings and the error in words - a finding by its FindingText title, what it means and
- *  what to do, a slice by the name of the slice its items go into, an item by its id. No raw finding leaves
- *  for the browser: a found value only as FindingText::found() masks it. One note per code with its count
- *  and the count of each place - a batch of 500 items says the same thing 500 times, and the page adds up
- *  the notes of its batches. The texts are package text and names: the page escapes them.
+/** What the progress page of a transfer gets of TransferProgress::of(): the state and the written counts,
+ *  the findings and the error in words - a finding by its FindingText title, what it means and what to
+ *  do, a slice by the name of the slice its items go into, an item by its id. No raw finding leaves for
+ *  the browser: a found value only as FindingText::found() masks it. One note per code with its count and
+ *  the count of each place - a batch of 500 items says the same thing 500 times. The texts are package
+ *  text and names: the page escapes them.
  *  @phpstan-type Note array{key: string, level: string, title: string, count: int, places: list<array{string, int}>, lines: list<string>} */
 final class TransferText
 {
     /** a found value is package text, possibly a whole template */
     private const FOUND_CHARS = 80;
-    /** error paths that are no place in the package */
-    private const NO_PLACE = ['source', 'batch'];
+    /** error places that are no place in the package */
+    private const NO_PLACE = ['source', 'batch', 'user'];
 
     /** @var array<string, string> */
     private readonly array $names;
@@ -30,26 +30,19 @@ final class TransferText
         $this->names = array_change_key_case($names);
     }
 
-    /** notes: the warnings of the run and the failed steps after its finish - all of them every time;
-     *  found: the S, E and I findings of this request only - the page keeps them by the position of the
-     *  batch (a batch sent again replaces its own) and adds them up
-     *  @param array<string, mixed> $state TransferProgress::state()
-     *  @return array{status: string, state: string, position: array{slice: string, cursor: string}, written: array<string, int>,
-     *                login: bool, cleanupFailed: bool, notes: list<Note>,
-     *                found: list<Note>, error: string} */
+    /** notes: the warnings of the run and a cache not cleared after its end; found: the S, E and I
+     *  findings of its last batches
+     *  @param array<string, mixed> $state TransferProgress::of()
+     *  @return array<string, mixed> $state without warnings, findings and the raw error, with
+     *          notes: list<Note>, found: list<Note>, error: string */
     public function page(array $state): array
     {
-        $error = $state['error'] ?? null;
+        $page = array_diff_key($state, array_flip(['warnings', 'findings', 'error', 'afterClose']));
         return [
-            'status'        => (string) $state['status'],
-            'state'         => (string) $state['state'],
-            'position'      => $state['position'],
-            'written'       => $state['written'],
-            'login'         => ($error['code'] ?? '') === SourceFailed::LOGIN,     // Continue asks for the login again
-            'cleanupFailed' => (bool) ($state['cleanup'] ?? []),
-            'notes'         => [...$this->warnings($state['warnings'] ?? []), ...self::cleanup($state['cleanup'] ?? [])],
-            'found'         => $this->found($state['findings'] ?? []),
-            'error'         => $this->error($error),
+            ...$page,
+            'notes' => [...$this->warnings($state['warnings'] ?? []), ...self::afterClose((bool) ($state['afterClose'] ?? false))],
+            'found' => $this->found($state['findings'] ?? []),
+            'error' => $this->error($state['error'] ?? null),
         ];
     }
 
@@ -87,19 +80,16 @@ final class TransferText
         return $notes;
     }
 
-    /** @param list<array{string, string}> $cleanup [step, error] @return list<Note> */
-    private static function cleanup(array $cleanup): array
+    /** @return list<Note> */
+    private static function afterClose(bool $failed): array
     {
-        return $cleanup ? [[
-            'key'    => 'cleanup',
+        return $failed ? [[
+            'key'    => 'after-close',
             'level'  => LintFinding::WARNING,
             'title'  => FindingText::levels()[LintFinding::WARNING] . ': ' . _m('A cache was not cleared after the transfer'),
-            'count'  => count($cleanup),
+            'count'  => 1,
             'places' => [],
-            'lines'  => [
-                implode(', ', array_map(static fn(array $step): string => "$step[0] ($step[1])", $cleanup)),
-                _m('Pages of the new modules may show old content until their cache expires; the details are in the PHP error log.'),
-            ],
+            'lines'  => [_m('Pages of the new modules may show old content until their cache expires; the details are in the PHP error log.')],
         ]] : [];
     }
 
@@ -130,7 +120,7 @@ final class TransferText
         return $notes;
     }
 
-    /** why the run stopped: the code in words, where @param array{code: string, path: string}|null $error */
+    /** why the run stopped: the code in words, where @param array{code: string, where: string}|null $error */
     private function error(?array $error): string
     {
         if ($error === null) {
@@ -138,19 +128,25 @@ final class TransferText
         }
         $code  = (string) $error['code'];
         $title = match ($code) {
-            SourceFailed::LOGIN              => _m('The source AA refused the login'),
-            SourceFailed::UNREACHABLE        => _m('The source AA cannot be reached'),
-            SourceFailed::FAILED             => _m('The source AA gave no usable answer'),
-            TransferProgress::COLLECT_FAILED => _m('The source could not read the items'),
-            TransferProgress::SOURCE_DENIED  => _m('The source gives no items of the slice'),
-            'WRITE_FAILED'                   => _m('Writing the items failed - the details are in the PHP error log of this AA'),
-            'DB'                             => _m('The database of this AA refused to write - the details are in the PHP error log of this AA'),
-            'GONE'                           => _m('A slice the transfer writes into was deleted meanwhile'),
-            'ENGINE'                         => _m('A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize'),
+            SourceFailed::LOGIN          => _m('The source AA refused the login'),
+            SourceFailed::UNREACHABLE    => _m('The source AA cannot be reached'),
+            SourceFailed::TIMEOUT        => _m('The source AA did not answer in time'),
+            SourceFailed::FAILED         => _m('The source AA gave no usable answer'),
+            InstallRun::COLLECT_FAILED   => _m('The source could not read the items'),
+            InstallRun::SOURCE_DENIED    => _m('The source gives no items of the slice'),
+            InstallRun::DENIED           => _m('The user who started the transfer is no superadmin of this AA any more'),
+            InstallRun::WRITE_FAILED     => _m('Writing the items failed - the details are in the PHP error log of this AA'),
+            'NO_PROGRESS'                => _m('The batch did not fit into the time of a queue step, not even a smaller one'),
+            'STEP_DIED'                  => _m('The batch step stopped before its end several times - the details are in the PHP error log of this AA'),
+            'FINAL_CHECK'                => _m('The check at the end failed - the details are in the PHP error log of this AA'),
+            'INTERNAL'                   => _m('The batch step failed - the details are in the PHP error log of this AA'),
+            'DB'                         => _m('The database of this AA refused to write - the details are in the PHP error log of this AA'),
+            'GONE'                       => _m('A slice the transfer writes into was deleted meanwhile'),
+            'ENGINE'                     => _m('A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize'),
             // the run keeps a finding code as ITEM_TOO_BIG (Importer::errorCode())
             default => FindingText::explain(new LintFinding(LintFinding::ERROR, strtolower(strtr($code, '_', '-')), '', 0))['title'] ?? '',
         };
-        $where = $this->where((string) $error['path']);
+        $where = $this->where(InstallRun::pathOf((string) $error['where']));
         return implode(' - ', self::filled([($title === '') ? $code : "$title ($code)", $where]));
     }
 

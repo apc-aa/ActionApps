@@ -74,7 +74,7 @@ final class FilterCheckTest extends TestCase
                 throw new \LogicException('not asked');
             }
 
-            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
+            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = 500): array
             {
                 throw new \LogicException('not asked');
             }

@@ -689,6 +689,14 @@ class AA_Perm {
         return [];
     }
 
+    /** Is $uid a superadmin of this AA, as IsSuperadmin() decides it for the logged-in user - but read
+     *  from the perm storage, so it may ask about anyone: cache() would put that user's perms into the
+     *  session of the request. */
+    public function isSuperadminUser(string $uid): bool
+    {
+        return ($uid !== '') && IsPerm((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''), self::ROLES['SUPER']['id']);
+    }
+
     /**
      * @param $objectID
      * @param $objectType

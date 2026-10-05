@@ -127,7 +127,7 @@ final class ImporterTest extends TestCase
         self::assertCount(1, array_unique(TableDb::$handles), 'every statement on the transaction handle');
 
         $objects = array_keys(array_filter(TableDb::$log, fn(string $q): bool => str_starts_with($q, 'INSERT INTO `object_text`') && !str_contains($q, $this->lastRun)));
-        $rows    = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => (bool) preg_match('/^(INSERT|UPDATE) (INTO )?`(?!object_)/', $q)));
+        $rows    = array_keys(array_filter(TableDb::$log, static fn(string $q): bool => (bool) preg_match('/^(INSERT|UPDATE) (INTO )?`(?!object_|toexecute)/', $q)));
         self::assertGreaterThan(end($rows), $objects[0], 'the objects after the rows');
         self::assertCount(29, $objects, 'ObjectWriterTest has them row by row');
     }

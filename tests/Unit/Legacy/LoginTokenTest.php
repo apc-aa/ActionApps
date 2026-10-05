@@ -324,7 +324,7 @@ namespace Tests\Unit\Legacy {
         public function test_the_sql_tag_is_the_keyed_hmac_of_users_password(): void
         {
             $this->assertFalse(defined('AA_SECRET'), 'the vector is for the key made of the test DB constants');
-            $this->assertSame('1b95bf7817acbe86', self::claims(LoginToken::issue('7'))['pwd']);
+            $this->assertSame('24336441b6986780', self::claims(LoginToken::issue('7'))['pwd']);
         }
 
         public function test_no_token_for_a_user_without_a_credential_stamp(): void

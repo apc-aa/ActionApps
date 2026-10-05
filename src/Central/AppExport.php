@@ -62,20 +62,20 @@ final class AppExport implements AppSource
         return !$transfer && !$this->store && $this->superadmin;
     }
 
-    /** @throws InvalidArgumentException not a slice, a cursor of no id */
-    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
+    /** @throws InvalidArgumentException not a slice, a cursor of no id, a limit out of range */
+    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = CollectOptions::MAX_ITEMS): array
     {
-        return array_slice($this->batchOf($slice, $after, $allBins, $started, $filters), 0, 2);
+        return array_slice($this->batchOf($slice, $after, $allBins, $started, $filters, $limit), 0, 2);
     }
 
     /** batch() and the number of its items - Get_App logs it
      *  @param array<string, string> $filters
      *  @return array{string, list<array{string, LintFinding}>, int} @throws InvalidArgumentException */
-    public function batchOf(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
+    public function batchOf(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = CollectOptions::MAX_ITEMS): array
     {
         $this->admit(true);
         $this->check([$slice]);
-        return $this->xml((new Collector($this->sourceFor($filters, [$slice])))->itemBatch($slice, $after, $this->options(true, $allBins, $started)));
+        return $this->xml((new Collector($this->sourceFor($filters, [$slice])))->itemBatch($slice, $after, $this->options(true, $allBins, $started), $limit));
     }
 
     /** A login that does not convert to UTF-8 refuses them all: the target could not check it against its users.

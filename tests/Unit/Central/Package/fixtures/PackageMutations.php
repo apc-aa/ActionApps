@@ -59,6 +59,7 @@ trait PackageMutations
         require_once __DIR__ . '/TableDbTarget.php';
         require_once __DIR__ . '/FakeInstallPermission.php';
         require_once __DIR__ . '/FakeAfterCommit.php';
+        require_once __DIR__ . '/FakeSuperadmins.php';
         class_exists(\AA_Module_Site::class);
     }
 

@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Central\Package;
 
 use AA\Central\Package\DbImportTarget;
+use AA\Central\Package\ImportFailed;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Planner;
 use AA\Central\Package\Validator;
@@ -97,10 +98,15 @@ final class ImportGuardTest extends TestCase
 
     public function test_no_transaction_no_write(): void
     {
+        $foreign = self::foreign();
+        [$plan, $run]          = [$this->plan(), $this->newRun()];      // a run starts only in a transaction
         TableDb::$transactions = false;             // beginTransaction() fails: DB_AA::transaction() would run the block without one
-        $foreign               = self::foreign();
 
-        $e = $this->failure($this->plan());
+        try {
+            $this->import($plan, run: $run);
+            self::fail('written without a transaction');
+        } catch (ImportFailed $e) {
+        }
 
         self::assertInstanceOf(WriteError::class, $e->getPrevious());
         self::assertSame([WriteError::DB, 'import'], [$e->getPrevious()->reason, $e->getPrevious()->path]);

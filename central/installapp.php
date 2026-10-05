@@ -5,10 +5,11 @@
  * its runs): a site with its modules, or slices
  * and Alerts modules, as a clean app (install) or with their items (transfer). One path for both: the
  * source makes XML (AppExport here, Get_App there), this AA reads it (Reader -> Validator -> Planner ->
- * Importer). A transfer then moves the items in batches, one request each, driven by the progress page -
- * each batch as XML too (TransferProgress). A transfer carries password hashes and 2FA secrets:
- * superadmins only, on both AAs. Another AA gives its app only to its superadmin: the admin logs in to
- * it here, this AA keeps the short token it gets only in the run (encrypted), never the password.
+ * Importer). A transfer then moves the items in batches - the steps of the run in the task queue, each
+ * batch as XML too (InstallRun); the progress page only shows them. A transfer carries password hashes
+ * and 2FA secrets: superadmins only, on both AAs. Another AA gives its app only to its superadmin: the
+ * admin logs in to it here, this AA keeps the short token it gets only in the run (encrypted), never the
+ * password.
  *
  * GET               the form (aa=<id>: the login to another AA), or with run=<id> the progress / report of a run
  * POST connect      logs in to another AA: the run opens in preview with its token, the choice of the app follows
@@ -17,7 +18,7 @@
  *                   offers the choice and is sent again with it. The first preview chooses by the role of the
  *                   slice (SliceRoles)
  * POST write        writes the definitions; an install gives its new modules the owner its form chose (owner)
- * POST batch|continue|end   JSON for the progress page
+ * POST state|continue|end   JSON for the progress page
  *
  * PHP version 8.2+
  *
@@ -49,7 +50,6 @@ use AA\Central\FilterCheck;
 use AA\Central\FindingText;
 use AA\Central\InstallRun;
 use AA\Central\ItemIdCheck;
-use AA\Central\Package\AaAfterCommit;
 use AA\Central\Package\DbImportTarget;
 use AA\Central\Package\DbSource;
 use AA\Central\Package\ExistingSlices;
@@ -80,6 +80,8 @@ use AA\Central\SourceFailed;
 use AA\Central\TransferProgress;
 use AA\Central\TransferText;
 use AA\IO\DB\DB_AA;
+use AA\Later\BatchFailed;
+use AA\Later\BatchRun;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 
@@ -87,7 +89,7 @@ require_once __DIR__ . "/include/init_central.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 const INSTALLAPP_TOKEN = InstallRun::FORM_TOKEN;
-const INSTALLAPP_JSON  = ['batch', 'continue', 'end'];
+const INSTALLAPP_JSON  = ['state', 'continue', 'end'];
 
 pageOpen();
 
@@ -99,7 +101,6 @@ try {
     $modules  = array_values(array_map('strtolower', array_filter(InputVars::arrayPOST('modules'), static fn($id): bool => is_string($id) && is_long_id($id))));
     $mode     = (InputVars::stringPOST('mode') === InstallRun::TRANSFER) ? InstallRun::TRANSFER : InstallRun::INSTALL;
     $all_bins = InputVars::stringPOST('bins') === 'all';
-    $position = [strtolower(InputVars::stringPOST('slice')), strtolower(InputVars::stringPOST('cursor'))];
     $confirm  = InputVars::stringPOST('confirm');
     $aa       = max(0, InputVars::intGETPOST('aa'));     // a row of the Central list: the app comes from that AA
     // not username/password: those would log this session in as the user of the other AA
@@ -138,47 +139,45 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST') && !FormToken::check(INSTALLAPP_TOKE
           : AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "installapp.php", _m('The form has expired; reload the page and try again.'), 'admin');
 }
 
-// a transfer hands out password hashes and 2FA secrets of the readers
-$transfer = $json || (in_array($action, ['connect', 'preview'], true) && ($mode === InstallRun::TRANSFER)) || (in_array($action, ['preview', 'write'], true) && (InstallRun::get($run_id)?->mode() === InstallRun::TRANSFER));
+$run_of   = ($run_id === '') ? null : InstallRun::get($run_id);
+// a transfer hands out password hashes and 2FA secrets of the readers - its progress page shows their findings
+$transfer = $json || (in_array($action, ['connect', 'preview'], true) && ($mode === InstallRun::TRANSFER)) || ($run_of?->mode() === InstallRun::TRANSFER);
 if ($transfer && !IsSuperadmin()) {
     $json ? installapp_json(['status' => 'denied', 'message' => _m('Only a superadmin may transfer apps with their items.')], 403)
           : AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "installapp.php", _m('Only a superadmin may transfer apps with their items.'), 'admin');
 }
 // the run of another AA keeps a token of that AA's superadmin - for an install too
-if (($action === 'connect') && !IsSuperadmin()) {
+if ((($action === 'connect') || (($run_of !== null) && ($run_of->source() !== InstallRun::LOCAL))) && !IsSuperadmin()) {
     AA_Adminpageutil::MsgPageMenu(StateUrl(self_base()) . "installapp.php", _m('Only a superadmin may install apps from another AA.'), 'admin');
 }
 
 if ($json) {
-    // the batches of a long transfer must not block the other pages of this session
+    // the page asks every few seconds - it must not block the other pages of this session
     Session::page_close();
     session_write_close();
-    MoreTimeLimit(120);
     $run = InstallRun::get($run_id);
     try {
-        $text = new TransferText($run ? installapp_slice_names($run) : []);
-        // built only by the steps that ask the source: End works when its Central row is gone
-        $progress = new TransferProgress(new Importer(new DbImportTarget(), $uid), static fn(): AppSource => installapp_run_source($run), new AaAfterCommit(), $uid);
-        $renewed  = '';
-        if (($action === 'continue') && $run && ($run->source() !== InstallRun::LOCAL) && ($run->user() === $uid) && ($run->state() === InstallRun::ERROR)) {
-            if ($login[0] !== '') {
-                $remote  = RemoteSource::forSource($run->source());
-                $renewed = $remote->seal($remote->login($login));
-            } elseif (($run->error()[0] ?? '') === SourceFailed::LOGIN) {
-                installapp_json($text->page(TransferProgress::state($run, 'login')));
+        $text   = new TransferText($run ? installapp_slice_names($run) : []);
+        $status = '';
+        if ($action === 'continue') {
+            $sealed = null;
+            // only the user of the run logs in to the source for it - Continue is that user's
+            if ($run && ($run->user() === $uid) && TransferProgress::needsLogin($run)) {
+                if ($login[0] === '') {
+                    installapp_json($text->page(TransferProgress::state($run_id, $uid, TransferProgress::LOGIN)));
+                }
+                $remote = RemoteSource::forSource($run->source());
+                $sealed = $remote->seal($remote->login($login));
             }
+            $status = TransferProgress::resume($run_id, $uid, $sealed);
+        } elseif ($action === 'end') {
+            $status = TransferProgress::end($run_id, $uid);
         }
-        installapp_json($text->page(match ($action) {
-            'batch'    => $progress->next($run_id, $position),
-            'continue' => $progress->resume($run_id, $renewed),
-            'end'      => $progress->end($run_id),
-        }));
-    } catch (ImportFailed) {
-        installapp_json(['status' => 'denied', 'message' => _m('This is no transfer of yours, or you may not install apps.')], 403);
+        installapp_json($text->page(TransferProgress::state($run_id, $uid, $status)));
+    } catch (BatchFailed) {
+        installapp_json(['status' => 'denied', 'message' => _m('No such transfer, or not yours.')], 403);
     } catch (SourceFailed $e) {
         installapp_json(['status' => 'denied', 'message' => $e->getMessage()], 403);
-    } catch (ExportRefused) {
-        installapp_json(['status' => 'denied', 'message' => _m('The source has no such app, or you may not export it.')], 403);
     } catch (Throwable $e) {
         installapp_log('the progress page request failed', $e);
         installapp_json(['status' => 'failed', 'message' => _m('The request failed - details are in the PHP error log.')], 500);
@@ -348,20 +347,16 @@ function installapp_local_source(): AppExport
  *  @throws SourceFailed no such row, the store refused its login */
 function installapp_remote_source(InstallRun $run): RemoteAppSource
 {
-    try {
-        $sealed = $run->token();
-    } catch (RuntimeException) {            // AA_SECRET changed: the source refuses the empty token, Continue logs in again
-        $sealed = '';
-    }
     $remote = RemoteSource::forSource($run->source());
-    return ($run->source() === InstallRun::STORE) ? AppStore::source($remote, $remote->unseal($sealed)) : new RemoteAppSource($remote, $remote->unseal($sealed));
+    $token  = $remote->unseal($run->token());
+    return ($run->source() === InstallRun::STORE) ? AppStore::source($remote, $token) : new RemoteAppSource($remote, $token);
 }
 
-/** the source of a run; no run - this AA (the progress requests then refuse it anyway)
+/** the source of a run, with the rights of the user here
  *  @throws SourceFailed */
-function installapp_run_source(?InstallRun $run): AppSource
+function installapp_run_source(InstallRun $run): AppSource
 {
-    return (($run === null) || ($run->source() === InstallRun::LOCAL)) ? installapp_local_source() : installapp_remote_source($run);
+    return ($run->source() === InstallRun::LOCAL) ? installapp_local_source() : installapp_remote_source($run);
 }
 
 /** the link back to the login to the source AA of the run; the store logs in by itself */
@@ -372,16 +367,17 @@ function installapp_relogin(InstallRun $run): string
         : a_href(installapp_url(['aa' => $run->source()]), _m('Log in to the source AA again'));
 }
 
-/** the items of the slices on the source - of a filtered slice those its filter selects; [] when it cannot tell
- *  @param list<string> $slices @param array<string, string> $filters @return array<string, int> */
-function installapp_counts(AppSource $from, array $slices, bool $all_bins, array $filters = []): array
+/** a run cannot start: start() refuses a table without transactions */
+function installapp_refused(BatchFailed $e): string
 {
-    try {
-        return $slices ? $from->itemCounts($slices, $all_bins, 0, $filters) : [];
-    } catch (ExportRefused | SourceFailed $e) {
-        installapp_log('the item counts of the source', $e);
-        return [];
-    }
+    return '<div class="aa-err">' . safe(_m('A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1', [$e->where])) . '</div>';
+}
+
+/** the items the preview counted on the source per transferred slice - of a filtered one those its filter selects
+ *  @return array<string, int> */
+function installapp_source_counts(array $prepared): array
+{
+    return array_replace($prepared['counts'], $prepared['matching']);
 }
 
 function installapp_url(array $params = []): string
@@ -401,11 +397,13 @@ function installapp_hidden(string $action, string $site, array $modules, string 
 
 function installapp_form(int $aa, string $uid): void
 {
-    $mine = array_filter(InstallRun::unfinished(), static fn(InstallRun $run): bool => $run->user() === $uid);
-    if ($mine) {
+    // a superadmin may end the transfers of the others too
+    $open = array_filter(InstallRun::unfinished(), static fn(InstallRun $run): bool => ($run->state() !== InstallRun::PREVIEW) && ($run->mode() === InstallRun::TRANSFER) && $run->mayControl($uid));
+    if ($open) {
         echo '<div class="aa-info"><p>' . _m('Unfinished transfers') . ':</p><ul>';
-        foreach ($mine as $run) {
-            echo '<li>' . a_href(installapp_url(['run' => $run->getId()]), safe(date('Y-m-d H:i', $run->started())) . ' - ' . safe(installapp_state($run->state()))) . '</li>';
+        foreach ($open as $run) {
+            $who = ($run->user() === $uid) ? '' : ' - ' . perm_username($run->user());
+            echo '<li>' . a_href(installapp_url(['run' => $run->getId()]), safe(date('Y-m-d H:i', $run->started())) . ' - ' . safe(installapp_state($run->state()) . $who)) . '</li>';
         }
         echo '</ul></div>';
     }
@@ -515,7 +513,11 @@ function installapp_connect(int $aa, string $mode, bool $all_bins, array $login,
         installapp_form($aa, $uid);
         return;
     }
-    installapp_choose(InstallRun::preview($mode, $all_bins, (string) $aa, $uid, $sealed, time()));
+    try {
+        installapp_choose(InstallRun::preview($mode, $all_bins, (string) $aa, $uid, $sealed, time()));
+    } catch (BatchFailed $e) {
+        echo installapp_refused($e);
+    }
 }
 
 /** the choice of the app of a run opened at the login to another AA; the store lists its apps itself */
@@ -672,7 +674,12 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
     $from     = installapp_local_source();
     $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect, $choices);
     if (installapp_show_preview($prepared, $mode, installapp_hidden('preview', $site, $modules) . installapp_mode_hidden($mode, $all_bins))) {
-        $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into'], $prepared['choices']);
+        try {
+            $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into'], $prepared['choices'], installapp_source_counts($prepared));
+        } catch (BatchFailed $e) {
+            echo installapp_refused($e);
+            return;
+        }
         installapp_write_form($run, $site, $modules, $prepared['plan'], $uid);
     }
 }
@@ -705,7 +712,7 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
     try {
         $locked = DB_AA::transaction(static function () use ($run_id, $prepared): InstallRun {
             $locked = InstallRun::lockForUpdate($run_id) ?? throw new LogicException('The run is gone');
-            $locked->previewed(hash('sha256', $prepared['xml']), $prepared['now'], $prepared['same'], $prepared['into'], $prepared['choices']);
+            $locked->previewed(hash('sha256', $prepared['xml']), $prepared['now'], $prepared['same'], $prepared['into'], $prepared['choices'], installapp_source_counts($prepared));
             return $locked;
         });
     } catch (LogicException) {              // another tab wrote it meanwhile
@@ -1112,7 +1119,7 @@ function installapp_write_form(InstallRun $run, string $site, array $modules, Im
             . _m('I have read the security findings (S) and want to install the app with them.') . '</label></p>';
     }
     if ($run->mode() === InstallRun::TRANSFER) {
-        echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs.') . '</div>';
+        echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs. The items then go in batches in the task queue of this AA - the progress page only shows them, it may be closed.') . '</div>';
     }
     echo '<p><button class="btn-l" type="submit" data-role="installapp-write">' . (($run->mode() === InstallRun::TRANSFER) ? _m('Write the definitions and transfer the items') : _m('Install')) . '</button></p></form>';
 }
@@ -1168,7 +1175,7 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
     }
     installapp_report($report, $prepared['package']);
     if ($run->mode() === InstallRun::TRANSFER) {
-        installapp_progress($run_id, $uid, true);
+        installapp_progress($run_id, $uid);
     }
 }
 
@@ -1254,16 +1261,16 @@ function installapp_state(string $state): string
         InstallRun::DONE => _m('Finished'), InstallRun::ENDED => _m('Ended')][$state] ?? $state;
 }
 
-/** the progress of a transfer; its report when it is finished
- *  @param bool $start run the batches at once - only right after the definitions; a link opens it paused */
-function installapp_progress(string $run_id, string $uid, bool $start = false): void
+/** the progress of a transfer - for the user who started it and for any superadmin, who may end it; its
+ *  report when it is finished */
+function installapp_progress(string $run_id, string $uid): void
 {
     $run = InstallRun::get($run_id);
-    if (($run === null) || ($run->user() !== $uid)) {
+    if (($run === null) || !$run->mayControl($uid)) {
         echo '<div class="aa-err">' . _m('No such install run of yours.') . '</div>';
         return;
     }
-    if (($run->state() === InstallRun::PREVIEW) && ($run->source() !== InstallRun::LOCAL)) {
+    if (($run->state() === InstallRun::PREVIEW) && ($run->source() !== InstallRun::LOCAL) && ($run->user() === $uid)) {
         installapp_choose($run);           // logged in to the other AA, the app not chosen or not written yet
         return;
     }
@@ -1272,54 +1279,47 @@ function installapp_progress(string $run_id, string $uid, bool $start = false): 
         return;
     }
     if ($run->mode() !== InstallRun::TRANSFER) {
-        echo '<p>' . safe(installapp_state($run->state())) . '</p>';
+        echo '<p>' . (in_array($run->state(), [InstallRun::ITEMS, InstallRun::DONE], true) ? _m('The app is installed.') : safe(installapp_state($run->state()))) . '</p>';
         return;
     }
     if ($run->state() === InstallRun::DONE) {
         installapp_check($run);
         return;
     }
-    try {
-        $counts = installapp_counts(installapp_run_source($run), $run->slices(), $run->allBins(), $run->filters());
-    } catch (SourceFailed $e) {
-        $counts = [];
-    }
-    $written = $run->written();
-    $names   = installapp_slice_names($run);
-    // a sum missing a slice the source did not count would promise too little
-    $total   = array_diff_key($names, $counts) ? '' : (string) array_sum(array_intersect_key($counts, $names));
-    $states  = [InstallRun::ERROR, InstallRun::DONE, InstallRun::ENDED];
-    // {x} and the like are filled in by the page as the batches come
-    $texts   = [
+    $names  = installapp_slice_names($run);
+    $counts = $run->sourceCounts();
+    $states = [InstallRun::ERROR, InstallRun::DONE, InstallRun::ENDED];
+    // {x} and the like are filled in by the page
+    $texts  = [
         'states'     => array_combine($states, array_map('installapp_state', $states)),
-        'running'    => _m('Running…'),
-        'retrying'   => _m('Connection lost, retrying (%1/%2)…', ['{n}', '{m}']),
-        'stopped'    => _m('Stopped - press Continue'),
+        'running'    => _m('Transferring a batch…'),
+        'queued'     => _m('Waiting for the task queue…'),
+        'waiting'    => _m('The source failed (%1 of %2 tries) - the next try at %3', ['{n}', '{m}', '{t}']),
+        'stuck'      => _m('No batch has come for a long time - is the task queue of this AA running? Continue tries at once.'),
         'writtenOf'  => _m('Written %1 of %2 items (%3 %)', ['{x}', '{y}', '{p}']),
         'written'    => _m('Written %1 items', ['{x}']),
-        'lostOf'     => _m('The connection was interrupted (network, the phone went to sleep). Nothing is lost - %1 of %2 items are written. Press Continue to go on.', ['{x}', '{y}']),
-        'lost'       => _m('The connection was interrupted (network, the phone went to sleep). Nothing is lost - %1 items are written. Press Continue to go on.', ['{x}']),
-        'lostEnd'    => _m('The connection was interrupted (network, the phone went to sleep) - it is not known whether the transfer ended. Press End again.'),
-        'answer'     => _m('Last batch answer: %1', ['{t}']),
+        'moved'      => _m('Last progress: %1', ['{t}']),
+        'lost'       => _m('This page lost the connection to the server - the transfer goes on without it. Asking again…'),
+        'busy'       => _m('A batch may still be working - press Continue again in a few minutes.'),
+        'loginFirst' => _m('Log in to the source AA again, then press Continue.'),
         'confirmEnd' => _m('End the transfer? The items written so far stay.'),
         'login'      => _m('The session has expired - log in again and reload this page.'),
-        'report'     => _m('The report'),
         'more'       => _m('and %1 more', ['{n}']),
     ];
-    echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs.') . '</div>';
+    echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs. The batches go in the task queue of this AA - this page only shows them and may be closed.') . '</div>';
     echo '<div id="installapp-progress" class="aa-installapp-progress" data-url="' . safe(installapp_url()) . '" data-report="' . safe(installapp_url(['run' => $run_id])) . '" data-token="' . safe(FormToken::get(INSTALLAPP_TOKEN)) . '"'
-        . ' data-run="' . safe($run_id) . '" data-total="' . safe($total) . '" data-moved="' . $run->moved() . '" data-texts="' . safe(installapp_js_data($texts)) . '"'
-        . ' data-initial="' . safe(installapp_js_data((new TransferText($names))->page(TransferProgress::state($run, '')))) . '"' . ($start ? ' data-start="1"' : '') . '>';
-    echo '<p><strong data-role="total"></strong><br><progress data-role="bar"' . (($total === '') ? ' hidden' : ' max="' . max(1, (int) $total) . '"') . '></progress></p>'
-        . '<p><strong data-role="state" aria-live="polite">' . safe(installapp_state($run->state())) . '</strong> <span class="tabhlp" data-role="answer"></span></p>'
+        . ' data-run="' . safe($run_id) . '" data-tries="' . BatchRun::MAX_FAILURES . '" data-texts="' . safe(installapp_js_data($texts)) . '"'
+        . ' data-initial="' . safe(installapp_js_data((new TransferText($names))->page(TransferProgress::of($run, $uid)))) . '">';
+    echo '<p><strong data-role="total"></strong><br><progress data-role="bar" hidden></progress></p>'
+        . '<p><strong data-role="state" aria-live="polite">' . safe(installapp_state($run->state())) . '</strong> <span class="tabhlp" data-role="moved"></span></p>'
         . '<div class="aa-err" data-role="error" hidden></div>';
-    if ($run->source() !== InstallRun::LOCAL) {        // the source refused its token (it expired): Continue logs in again
+    if ($run->source() !== InstallRun::LOCAL) {        // the source refused its token, or it expired: Continue logs in again
         echo '<fieldset data-role="login" hidden><legend>' . _m('Log in to the source AA again') . '</legend><table>' . installapp_login_rows() . '</table></fieldset>';
     }
     echo '<p><button type="button" class="btn-l" data-role="continue" hidden>' . _m('Continue') . '</button> <button type="button" class="btn-l btn-secondary" data-role="end" hidden>' . _m('End') . '</button></p>';
     echo '<table class="aa-installapp-findings"><tr><th>' . _m('Slice') . '</th><th class="aa-num">' . _m('Written') . '</th><th class="aa-num">' . _m('On the source') . '</th></tr>';
     foreach ($names as $id => $name) {
-        echo '<tr><td>' . safe($name) . '</td><td class="aa-num" data-slice="' . safe((string) $id) . '">' . (int) ($written[$id] ?? 0) . '</td><td class="aa-num">' . (isset($counts[$id]) ? (int) $counts[$id] : '?') . '</td></tr>';
+        echo '<tr><td>' . safe($name) . '</td><td class="aa-num" data-slice="' . safe((string) $id) . '">0</td><td class="aa-num">' . (isset($counts[$id]) ? (int) $counts[$id] : '?') . '</td></tr>';
     }
     echo '</table><ul class="aa-installapp-notes" data-role="notes"></ul></div>';
     installapp_script();
@@ -1350,6 +1350,9 @@ function installapp_js_data(array $data): string
 function installapp_check(InstallRun $run): void
 {
     $check = $run->report() + ['checked' => 0, 'slices' => [], 'findings' => []];
+    if ($run->cachesLeft()) {
+        echo '<div class="aa-err">' . _m('A cache was not cleared after the transfer') . ' - ' . _m('Pages of the new modules may show old content until their cache expires; the details are in the PHP error log.') . '</div>';
+    }
     echo '<div class="aa-ok">' . _m('The transfer is finished. Checked at %1:', [date('Y-m-d H:i', (int) $check['checked'])]) . '</div><table class="aa-installapp-findings"><tr><th>' . _m('Slice') . '</th><th class="aa-num">' . _m('Written') . '</th><th class="aa-num">' . _m('On the source') . '</th><th class="aa-num">' . _m('On this AA') . '</th></tr>';
     foreach ($check['slices'] as $s) {
         echo '<tr><td>' . a_href(AA_Module::getModuleUrl($s['target'], 'admin/index.php'), safe(AA_Module::getModuleName($s['target']) ?: $s['target'])) . '</td><td class="aa-num">' . $s['written'] . '</td><td class="aa-num">' . (($s['sourceCount'] === null) ? '?' : (int) $s['sourceCount']) . '</td><td class="aa-num">' . $s['targetCount'] . '</td></tr>';
@@ -1359,8 +1362,8 @@ function installapp_check(InstallRun $run): void
     echo '<p>' . _m('Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it.') . '</p>';
 }
 
-/** the loop of the progress page: POST "next batch" until the run leaves the items; the run says where it
- *  is, so a stale answer only moves the position on - and a batch lost on the way may simply be asked again */
+/** the progress page asks for the state of the run every few seconds while the queue moves it, more
+ *  seldom while it waits; Continue and End answer with the state too */
 function installapp_script(): void
 {
     echo <<<'HTML'
@@ -1369,61 +1372,48 @@ function installapp_script(): void
     const box = document.getElementById('installapp-progress');
     const el = role => box.querySelector(`[data-role="${role}"]`);
     const t = JSON.parse(box.dataset.texts);
-    const total = (box.dataset.total === '') ? null : Number(box.dataset.total);
-    // the pauses before asking again: a phone waking up, a proxy restarting
-    const pauses = [2000, 5000, 15000];
-    // a gateway answering without PHP behind it
-    const GATEWAY = [502, 503, 504];
+    const LIVE = 3000;          // a batch moves the counts
+    const IDLE = 20000;         // an error, a retry minutes away
     const LEVELS = ['S', 'E', 'W', 'I'];
     const PLACES = 5;           // places of a note listed - its count says the rest
     const fill = (text, values) => text.replace(/\{(\w)\}/g, (all, key) => values[key] ?? all);
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
     const login = el('login');
-    // the findings of the written batches by the position each was sent from - a batch sent again
-    // (Continue after an error) replaces its own, an answer names only those of its batch
-    const kept = new Map();
     let s = JSON.parse(box.dataset.initial);
-    let busy = 0;               // callers of post() at work
-    let retry = 0;
+    let busy = false;           // Continue or End on its way
+    let lost = 0;               // questions in a row without an answer
+    let timer = 0;
+    let acts = 0;               // Continue and End sent - an older answer of the poll must not undo theirs
 
     const written = () => Object.values(s.written || {}).reduce((sum, n) => sum + n, 0);
-    // X alone when the source did not count all its slices
-    const counted = (of, alone) => {
-        const x = written();
-        return (total === null) ? fill(alone, {x: x.toLocaleString()})
-            : fill(of, {x: x.toLocaleString(), y: total.toLocaleString(), p: total ? Math.min(100, Math.floor(100 * x / total)) : 100});
+    const when = unix => {
+        const d = new Date(1000 * unix);
+        return (d.toDateString() === new Date().toDateString()) ? d.toLocaleTimeString() : d.toLocaleString();
     };
-    const answered = ms => {
-        const d = new Date(ms);
-        el('answer').textContent = fill(t.answer, {t: (d.toDateString() === new Date().toDateString()) ? d.toLocaleTimeString() : d.toLocaleString()});
+    const open = () => ['items', 'error'].includes(s.state);
+    const stateText = () => {
+        if (s.state !== 'items') return t.states[s.state] || s.state;
+        if (s.running) return t.running;
+        if (s.waiting) return fill(t.waiting, {n: s.failures, m: box.dataset.tries, t: when(s.nextAt)});
+        return s.stuck ? t.stuck : t.queued;
     };
     const paint = () => {
-        const open = ['items', 'error'].includes(s.state);
-        el('total').textContent = counted(t.writtenOf, t.written);
-        el('bar').value = written();
-        el('state').textContent = retry ? fill(t.retrying, {n: retry, m: pauses.length})
-            : (s.state !== 'items') ? (t.states[s.state] || s.state) : (busy ? t.running : t.stopped);
-        el('continue').hidden = (busy > 0) || !open;
-        el('end').hidden = !open;
-        if (login) login.hidden = !(s.state === 'error' && s.login);
+        const x = written();
+        el('total').textContent = s.total ? fill(t.writtenOf, {x: x.toLocaleString(), y: s.total.toLocaleString(), p: Math.min(100, Math.floor(100 * x / s.total))})
+            : fill(t.written, {x: x.toLocaleString()});
+        el('bar').hidden = !s.total;
+        if (s.total) Object.assign(el('bar'), {max: s.total, value: x});
+        el('state').textContent = stateText();
+        el('moved').textContent = s.moved ? fill(t.moved, {t: when(s.moved)}) : '';
+        el('continue').hidden = busy || !s.mayContinue;
+        el('end').hidden = busy || !s.mayEnd;
+        if (login) login.hidden = !(s.login && s.mayContinue);
     };
     const say = text => {
         el('error').textContent = text;
         el('error').hidden = !text;
     };
-    // one note per key: the counts of its batches added up
-    const merge = lists => {
-        const by = new Map();
-        for (const n of lists.flat()) {
-            const m = by.get(n.key) ?? {...n, count: 0, places: new Map()};
-            m.count += n.count;
-            for (const [place, k] of n.places) m.places.set(place, (m.places.get(place) || 0) + k);
-            by.set(n.key, m);
-        }
-        return [...by.values()];
-    };
     const note = n => {
-        const places = [...n.places].map(([place, k]) => `${place} (${k}×)`);
+        const places = n.places.map(([place, k]) => `${place} (${k}×)`);
         const more = places.length - PLACES;
         const lines = [places.slice(0, PLACES).join(', ') + ((more > 0) ? ` ${fill(t.more, {n: more})}` : ''), ...n.lines];
         const li = document.createElement('li');
@@ -1435,100 +1425,75 @@ function installapp_script(): void
         s = next;
         for (const [slice, n] of Object.entries(s.written || {})) {
             const cell = box.querySelector(`td[data-slice="${CSS.escape(slice)}"]`);
-            if (cell) cell.textContent = n;
+            if (cell) cell.textContent = n.toLocaleString();
         }
-        say(s.error);
-        el('notes').replaceChildren(...[...merge([...kept.values()]), ...merge([s.notes])].sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)).map(note));
+        const said = {busy: t.busy, login: t.loginFirst}[s.status];
+        say([s.error, said].filter(Boolean).join(' - '));
+        el('notes').replaceChildren(...[...s.found, ...s.notes].sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)).map(note));
         paint();
-        if (s.state === 'done') {
-            if (s.cleanupFailed) {
-                const li = document.createElement('li');
-                li.append(Object.assign(document.createElement('a'), {href: box.dataset.report, textContent: t.report}));
-                el('notes').append(li);
-            } else {
-                location.href = box.dataset.report;
-            }
-        }
+        if (s.state === 'done') location.href = box.dataset.report;
     };
-    const json = text => {
+    const post = async (action, more = {}) => {
+        const body = new URLSearchParams({action, run: box.dataset.run, token: box.dataset.token, ...more});
+        // a connection dropped silently would keep the page waiting for ever; Continue may log in to the source first
+        const response = await fetch(box.dataset.url, {method: 'POST', body, credentials: 'same-origin', headers: {Accept: 'application/json'}, signal: AbortSignal.timeout?.((action === 'continue') ? 180000 : 60000)});
+        let data = null;
         try {
-            return JSON.parse(text);
+            data = JSON.parse(await response.text());
         } catch {
-            return null;
+            // a login page after the session expired
+            throw Object.assign(new Error(response.ok ? t.login : `HTTP ${response.status}`), {answered: response.ok});
         }
+        if (!response.ok || !data.state) throw Object.assign(new Error(data.message || `HTTP ${response.status}`), {answered: true});
+        return data;
     };
-    // Only a request that got no answer is sent again - it names the run's position, so one the server did
-    // write comes back stale. Never Continue: it may carry the login to the source.
-    const post = async action => {
-        const body = new URLSearchParams({action, run: box.dataset.run, token: box.dataset.token, slice: s.position.slice, cursor: s.position.cursor});
-        const tries = (action === 'continue') ? 0 : pauses.length;
-        if (action === 'continue' && login && !login.hidden) {
-            for (const input of login.querySelectorAll('input')) {
-                body.set(input.name, input.value);
-                if (input.type === 'password') input.value = '';
-            }
-        }
-        for (let attempt = 1; ; attempt++) {
-            let response, raw;
+    const ask = () => {
+        clearTimeout(timer);
+        if (!open()) return;
+        // after a lost answer less often, up to a minute
+        const wait = lost ? Math.min(60000, LIVE * 2 ** lost) : ((s.state === 'items') && !s.waiting) ? LIVE : IDLE;
+        timer = setTimeout(async () => {
+            if (busy) return ask();
+            const sent = acts;
             try {
-                // a connection dropped silently would keep the page waiting for ever
-                response = await fetch(box.dataset.url, {method: 'POST', body, credentials: 'same-origin', headers: {Accept: 'application/json'}, signal: AbortSignal.timeout?.(300000)});
-                if (GATEWAY.includes(response.status)) throw Object.assign(new Error(`HTTP ${response.status}`), {gateway: true});
-                raw = await response.text();
+                const next = await post('state');
+                if (sent === acts) show(next);
+                lost = 0;
             } catch (e) {
-                const lost = (e instanceof TypeError) || (e.name === 'TimeoutError') || e.gateway;
-                if (!lost || attempt > tries) {
-                    retry = 0;
-                    paint();
-                    throw lost ? new Error((action === 'end') ? t.lostEnd : counted(t.lostOf, t.lost)) : e;
-                }
-                retry = attempt;
-                paint();
-                await sleep(pauses[attempt - 1]);
-                continue;
+                lost++;
+                say(e.answered ? e.message : t.lost);
             }
-            retry = 0;
-            const data = json(raw);
-            if (!data) throw new Error(response.ok ? t.login : `HTTP ${response.status}`);     // a login page after the session expired
-            if (!response.ok || !data.state) throw new Error(data.message || `HTTP ${response.status}`);
-            answered(Date.now());
-            return data;
-        }
+            ask();
+        }, wait);
     };
-    // every caller of post() holds busy while it works - Continue waits for all of them
-    const busyWith = async work => {
-        busy++;
+    const act = async (action, more) => {
+        acts++;
+        busy = true;
         paint();
         try {
-            await work();
+            show(await post(action, more));
         } catch (e) {
             say(e.message);
         }
-        busy--;
+        busy = false;
         paint();
-    };
-    const batches = async () => {
-        while (s.state === 'items') {
-            const from = `${s.position.slice} ${s.position.cursor}`;
-            const next = await post('batch');
-            if (next.status !== 'stale') kept.set(from, next.found);       // a stale answer did nothing
-            show(next);
-            if (s.status === 'stale') await sleep(500);
-        }
+        ask();
     };
     el('continue').addEventListener('click', () => {
-        if (busy) return;
-        busyWith(async () => {
-            if (s.state === 'error') show(await post('continue'));
-            await batches();
-        });
+        const more = {};
+        if (login && !login.hidden) {
+            for (const input of login.querySelectorAll('input')) {
+                more[input.name] = input.value;
+                if (input.type === 'password') input.value = '';
+            }
+        }
+        act('continue', more);
     });
     el('end').addEventListener('click', () => {
-        if (confirm(t.confirmEnd)) busyWith(async () => show(await post('end')));
+        if (confirm(t.confirmEnd)) act('end');
     });
-    if (Number(box.dataset.moved)) answered(1000 * Number(box.dataset.moved));
     show(s);
-    if (box.dataset.start) busyWith(batches);
+    ask();
 })();
 </script>
 HTML;

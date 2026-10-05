@@ -41,7 +41,7 @@ final class TransferCheck
         } catch (SourceFailed|ExportRefused $e) {        // the items are written - the run finishes, the counts stay unknown
             $onSource   = null;
             $edited     = 0;
-            $findings[] = ['source', new LintFinding(LintFinding::WARNING, self::SOURCE_UNKNOWN, ($e instanceof SourceFailed) ? $e->reason : TransferProgress::SOURCE_DENIED, 0)];
+            $findings[] = ['source', new LintFinding(LintFinding::WARNING, self::SOURCE_UNKNOWN, ($e instanceof SourceFailed) ? $e->reason : InstallRun::SOURCE_DENIED, 0)];
         }
         $into    = $run->targets();
         foreach ($run->slices() as $slice) {

@@ -21,7 +21,8 @@ require_once __DIR__ . '/../include/zids.php';
 // Define constants that would normally come from config.php
 // with safe test values (no real credentials)
 if (!defined('AA_ID')) {
-    define('AA_ID', 'test00000000000000000000000000AA');
+    // a long id, as a real one: batch runs (Central) belong to it
+    define('AA_ID', '7e5700000000000000000000000000aa');
 }
 if (!defined('DB_TYPE')) {
     define('DB_TYPE', 'mysql');

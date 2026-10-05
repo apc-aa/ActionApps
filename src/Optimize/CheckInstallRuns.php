@@ -6,14 +6,11 @@ namespace AA\Optimize;
 
 use AA\Central\InstallRun;
 
-/** A transfer of an app moves its items only while its progress page is open (central/installapp.php),
- *  so a closed tab or a failed batch leaves a half-moved app nobody may notice: the new site lacks items.
- *  Warns about transfers that have not moved on for an hour and lists those stopped by an error. */
+/** A transfer of an app moves its items in the task queue (InstallRun), so a queue that does not run
+ *  or a failed batch leaves a half-moved app nobody may notice: the new site lacks items. Warns about
+ *  transfers that hang (BatchRun::isStuck()) and lists those stopped by an error. */
 class CheckInstallRuns extends AbstractOptimize
 {
-    /** seconds without progress before a transfer counts as stuck */
-    public const STUCK_AFTER = 3600;
-
     public static function name(): string
     {
         return _m('App transfers');
@@ -21,7 +18,7 @@ class CheckInstallRuns extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Warns about app transfers that have not moved on for an hour and lists those stopped by an error.');
+        return _m('Warns about app transfers that hang and lists those stopped by an error.');
     }
 
     public static function types(): array
@@ -50,8 +47,8 @@ class CheckInstallRuns extends AbstractOptimize
         $findings = [];
         foreach (InstallRun::unfinished() as $run) {
             $error = $run->state() === InstallRun::ERROR;
-            if (!$error && ($run->moved() > $now - self::STUCK_AFTER)) {
-                continue;
+            if (!$error && !$run->isStuck($now)) {
+                continue;               // a preview, or a transfer the queue moves
             }
             $evidence = [
                 _m('Started')       => safe(date('Y-m-d H:i', $run->started())),
@@ -66,10 +63,14 @@ class CheckInstallRuns extends AbstractOptimize
             }
             $findings[] = new Finding(
                 $error ? Finding::ERROR : Finding::WARNING,
-                $error ? _m('An app transfer stopped by an error') : _m('An app transfer has not moved on for %1 hours', [intdiv($now - $run->moved(), 3600)]),
+                match (true) {
+                    $error                                 => _m('An app transfer stopped by an error'),
+                    $run->mode() === InstallRun::TRANSFER => _m('An app transfer has not moved on for %1 hours', [intdiv($now - $run->moved(), 3600)]),
+                    default                                => _m('An installed app has waited for its finish for %1 hours', [intdiv($now - $run->moved(), 3600)]),
+                },
                 since: $run->started(),
                 evidence: [$evidence],
-                advice: _m('The new modules hold only part of the items. The user who started the transfer opens its progress page and chooses Continue - or End, which keeps what is written.'),
+                advice: _m('The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written.'),
                 links: [_m('Progress page') => AA_INSTAL_PATH . 'central/installapp.php?run=' . $run->getId()],
                 key: $run->getId(),
             );

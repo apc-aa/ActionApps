@@ -3,16 +3,18 @@
 declare(strict_types=1);
 
 /**
- * A transfer on the target: the definitions write puts the run to its items and brings the state of the
- * source installation along; Importer::writeBatch() writes one batch of items per transaction at the
- * position of the run - a stale or repeated batch is a no-op, a failed one rolls back and leaves the run
- * in error at its position. Item ids stay on another AA and are derived from the run on the same AA.
+ * A transfer on the target: the definitions write puts the run to its items, its first step queued, and
+ * brings the state of the source installation along. Importer::writeItems() writes one batch inside the
+ * transaction of a step and tells the position after it - a failure throws, so the transaction rolls the
+ * batch back. A step of the run reads the batch, writes it with the run's new position; a failed step
+ * leaves the run in error at its position. Item ids stay on another AA and are derived from the run on
+ * the same AA.
  */
 
 namespace Tests\Unit\Central\Package;
 
+use AA\Central\AppExport;
 use AA\Central\InstallRun;
-use AA\Central\Package\BatchResult;
 use AA\Central\Package\Collector;
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\ValueCodec;
@@ -24,6 +26,9 @@ use AA\Central\Package\ImportPlan;
 use AA\Central\Package\ImportTarget;
 use AA\Central\Package\ItemLint;
 use AA\Central\Package\Planner;
+use AA\Central\Package\TargetCharset;
+use AA\Central\Package\Validator;
+use AA\Central\Package\WriteError;
 use AA_Perm;
 use LogicException;
 use AA\Central\Package\Model\Batch;
@@ -32,11 +37,13 @@ use AA\Central\Package\Model\Package;
 use AA\IO\DB\DB_AA;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Package\Fixtures\FakeSource;
 use Tests\Unit\Central\Package\Fixtures\ImportFixture;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Central\Package\Fixtures\TableDbTarget;
 
 require_once __DIR__ . '/fixtures/ImportFixture.php';
+require_once __DIR__ . '/fixtures/FakeSource.php';
 
 final class BatchWriteTest extends TestCase
 {
@@ -53,6 +60,8 @@ final class BatchWriteTest extends TestCase
     private const OUTSIDE = '0123456789abcdef0123456789abcdef';
     /** a second slice of the definitions (twoSlices()) */
     private const SLICE2 = '7f1e2d3c4b5a69788796a5b4c3d2e1f0';
+    /** meta/source of the batches a step reads */
+    private const SOURCE = ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'];
 
     /** the target the importer asks - null: the fake */
     private ?ImportTarget $db = null;
@@ -134,10 +143,49 @@ final class BatchWriteTest extends TestCase
         return array_values(array_column(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => $r['property'] === 'alternate_url'), 'value'));
     }
 
-    /** the batch at the position it was read from (the batch's cursor) - or at $at */
-    private function write(string $run, Package $batch, ?array $at = null): BatchResult
+    /** The batch written as a step of the run writes it - in a transaction, on the locked run - read
+     *  from its own cursor or from $at
+     *  @param list<array{string, LintFinding}> $found what the source found making it
+     *  @return array<string, mixed> writeItems() */
+    private function write(string $run, Package $batch, ?array $at = null, array $found = []): array
     {
-        return $this->importer($this->db)->writeBatch($run, $batch, $at ?? [self::SLICE, $batch->batch->after]);
+        return DB_AA::transaction(fn(): array => $this->importer($this->db)->writeItems(InstallRun::lockForUpdate($run), $batch, $at ?? InstallRun::at(self::SLICE, $batch->batch->after), $found));
+    }
+
+    /** the WriteError of write() */
+    private function refused(string $run, Package $batch, ?array $at = null, array $found = []): WriteError
+    {
+        try {
+            $this->write($run, $batch, $at, $found);
+        } catch (WriteError $e) {
+            return $e;
+        }
+        self::fail('the batch was written');
+    }
+
+    /** The steps of the runs read their batches of the example's slice from a source AA with $items -
+     *  through AppExport, as from this AA - and write them asking the DB as they do live.
+     *  @param list<array<string, mixed>> $items in id order */
+    private function steps(array $items): FakeSource
+    {
+        $source = new FakeSource(['module' => [['id' => self::SLICE, 'type' => 'S', 'deleted' => 0, 'name' => 'Články', 'lang_file' => 'cz-utf8_news_lang.php']]], [self::SLICE => $items]);
+        InstallRun::setTestDoubles(static fn(): AppExport => new AppExport($source, self::SOURCE, static fn(): bool => true, true), $this->after);
+        return $source;
+    }
+
+    /** the transaction (BEGIN ... COMMIT of the log) with the first statement matching $statement @return list<string> */
+    private static function transactionOf(string $statement): array
+    {
+        $begin = null;
+        foreach (TableDb::$log as $i => $q) {
+            if ($q === 'BEGIN') {
+                $begin = $i;
+            } elseif (($begin !== null) && preg_match($statement, $q)) {
+                $end = array_search('COMMIT', array_slice(TableDb::$log, $i, null, true), true);
+                return array_slice(TableDb::$log, $begin, (int) $end - $begin + 1);
+            }
+        }
+        self::fail("no transaction with $statement");
     }
 
     private static function locked(string $run, callable $change): void
@@ -157,36 +205,43 @@ final class BatchWriteTest extends TestCase
         return array_values(array_column(array_filter(TableDb::rows('item'), static fn(array $r): bool => $r['slice_id'] === self::id(2)), 'id'));
     }
 
-    /** "<level> <code> <path> <ref>" @param list<array{string, \AA\Central\Package\LintFinding}> $findings @return list<string> */
+    /** "<level> <code> <path> <ref>" - of LintFindings, or of the plain findings of writeItems()
+     *  @param list<array{string, LintFinding}>|list<array{level: string, code: string, path: string, ref: string}> $findings
+     *  @return list<string> */
     private static function codes(array $findings): array
     {
-        $list = array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $findings);
+        $list = array_map(static fn(array $f): string => isset($f['code']) ? "{$f['level']} {$f['code']} {$f['path']} {$f['ref']}" : "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $findings);
         sort($list);
         return $list;
     }
 
     // ---------------------------------------------------------------- the definitions
 
-    public function test_the_definitions_write_puts_the_run_to_its_items(): void
+    public function test_the_definitions_write_puts_the_run_to_its_items_and_queues_its_first_step(): void
     {
         $run = $this->transferred();
 
         $back = InstallRun::get($run);
         self::assertSame(InstallRun::ITEMS, $back->state());
         self::assertSame([self::SLICE], $back->slices(), 'the slices whose items follow');
-        self::assertSame([self::SLICE, ''], $back->position());
+        self::assertSame(InstallRun::at(self::SLICE, ''), $back->position());
+        self::assertSame(['Install_' . $run], array_column(self::queue(), 'selector'), 'committed with the definitions');
         self::assertSame(hash('sha256', self::DEFINITIONS), $back->fingerprint());
         self::assertSame(self::id(2), $back->idMap()->module(self::SLICE));
         self::assertSame([12 => 1000, 13 => 1001], $back->idMap()->views(), 'the numbers the rows got');
     }
 
-    public function test_an_install_run_has_no_items_to_follow(): void
+    public function test_an_install_run_has_no_items_and_its_only_step_finishes_it(): void
     {
         $run = $this->newRun();
         $this->import($this->plan(), run: $run);
+        $calls = $this->after->calls;
 
         self::assertSame([], InstallRun::get($run)->slices());
-        self::assertSame(InstallRun::DONE, InstallRun::get($run)->state(), 'nothing to wait for');
+        self::assertSame(InstallRun::DONE, self::runQueued());
+        self::assertSame([InstallRun::DONE, []], [InstallRun::get($run)->state(), InstallRun::get($run)->report()], 'no check of items');
+        self::assertSame($calls, $this->after->calls, 'the write cleared the caches of an install');
+        self::assertSame([], self::queue());
     }
 
     public function test_the_definitions_go_to_a_run_only_once(): void
@@ -283,129 +338,110 @@ final class BatchWriteTest extends TestCase
 
     // ---------------------------------------------------------------- batches
 
-    public function test_a_batch_is_written_and_the_run_advances(): void
+    public function test_a_batch_is_written_and_tells_the_position_after_it(): void
     {
         $run = $this->transferred();
 
         $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A']), self::entry(self::ITEM_B, ['headline........' => 'B'])]));
 
-        self::assertSame(BatchResult::WRITTEN, $result->status);
+        self::assertSame(['position' => InstallRun::at(self::SLICE, self::ITEM_B), 'finished' => false, 'written' => 2, 'warnings' => [], 'findings' => []], $result);
         self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
-        $back = InstallRun::get($run);
-        self::assertSame([InstallRun::ITEMS, [self::SLICE, self::ITEM_B], [self::SLICE => 2]], [$back->state(), $back->position(), $back->written()]);
         self::assertCount(1, array_unique(TableDb::$handles), 'one handle - the run and the items in one transaction');
+        // the step stores the position and the counts - written twice they would count twice
+        self::assertSame([InstallRun::at(self::SLICE, ''), []], [InstallRun::get($run)->position(), InstallRun::get($run)->written()]);
     }
 
-    public function test_the_warnings_the_source_found_are_counted_in_the_run_and_its_error_stops_the_batch(): void
+    public function test_the_warnings_the_source_found_are_counted_and_its_error_stops_the_batch(): void
     {
-        $run    = $this->transferred();
-        $path   = 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']';
-        $source = [[$path, new LintFinding(LintFinding::WARNING, ValueCodec::INVALID_BYTES, 'x', 0)]];
+        $run  = $this->transferred();
+        $path = 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']';
 
-        $this->importer($this->db)->writeBatch($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]), [self::SLICE, ''], $source);
+        $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]), null, [[$path, new LintFinding(LintFinding::WARNING, ValueCodec::INVALID_BYTES, 'x', 0)]]);
 
-        self::assertSame([self::SLICE => [ValueCodec::INVALID_BYTES => 1]], InstallRun::get($run)->warnings());
+        self::assertSame([ValueCodec::INVALID_BYTES => 1], $result['warnings']);
+        self::assertSame(['W ' . ValueCodec::INVALID_BYTES . " $path x"], self::codes($result['findings']), 'plain data for the run');
 
-        $result = $this->importer($this->db)->writeBatch($run, self::batch([], self::ITEM_A), [self::SLICE, self::ITEM_A], [[$path, new LintFinding(LintFinding::ERROR, Collector::ITEM_TOO_BIG, self::ITEM_B, 0)]]);
+        $e = $this->refused($run, self::batch([self::entry(self::ITEM_B, ['headline........' => 'B'])], self::ITEM_A), null, [[$path, new LintFinding(LintFinding::ERROR, Collector::ITEM_TOO_BIG, self::ITEM_B, 0)]]);
 
-        self::assertSame([BatchResult::FAILED, ['ITEM_TOO_BIG', $path]], [$result->status, $result->error]);
+        self::assertSame([Collector::ITEM_TOO_BIG, $path], [$e->reason, $e->path]);
+        self::assertSame([self::ITEM_A], self::itemsOfTheSlice());
     }
 
-    public function test_the_next_batch_continues_from_the_position(): void
+    public function test_the_last_batch_of_the_last_slice_finishes_the_items(): void
     {
         $run = $this->transferred();
         $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]));
 
         $result = $this->write($run, self::batch([self::entry(self::ITEM_B, ['headline........' => 'B'])], self::ITEM_A, true));
 
-        self::assertSame(BatchResult::WRITTEN, $result->status);
+        self::assertSame([InstallRun::at(self::SLICE, self::ITEM_B), true, 1], [$result['position'], $result['finished'], $result['written']]);
         self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
-        self::assertSame([[self::SLICE, self::ITEM_B], [self::SLICE => 2]], [InstallRun::get($run)->position(), InstallRun::get($run)->written()]);
     }
 
-    public function test_a_batch_read_from_another_position_is_a_no_op(): void
+    /** @return array<string, array{Package, array{slice: string, cursor: string}}> the batch, the position it is written at */
+    public static function misplacedBatches(): array
     {
-        $run = $this->transferred();
+        // InstallRun::at() not here: a data provider runs before the AA boots
+        $b = [self::entry(self::ITEM_B, ['headline........' => 'B'])];
+        return [
+            'another cursor' => [self::batch($b, self::ITEM_A), ['slice' => self::SLICE, 'cursor' => '']],
+            'another slice'  => [self::batch($b, '', false, self::SLICE2), ['slice' => self::SLICE, 'cursor' => '']],
+        ];
+    }
+
+    /** a source that answered for another position than it was asked */
+    #[DataProvider('misplacedBatches')]
+    public function test_a_batch_read_from_another_position_is_refused(Package $batch, array $at): void
+    {
+        $run = $this->transferred(definitions: self::twoSlices());
         [TableDb::$log, $before] = [[], self::tables()];
 
-        $result = $this->write($run, self::batch([self::entry(self::ITEM_B, ['headline........' => 'B'])], self::ITEM_A));
+        $e = $this->refused($run, $batch, $at);
 
-        self::assertSame(BatchResult::STALE, $result->status);
+        self::assertSame([Validator::BATCH, 'meta/batch'], [$e->reason, $e->path]);
         self::assertSame([], TableDb::writes());
         self::assertSame($before, self::tables());
-        self::assertSame([self::SLICE, ''], InstallRun::get($run)->position());
     }
 
-    /** a double click, a second tab, a retry of a lost answer */
-    public function test_a_batch_sent_twice_is_written_once(): void
-    {
-        $run   = $this->transferred();
-        $batch = self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]);
-        $this->write($run, $batch);
-
-        $again = $this->write($run, $batch);
-
-        self::assertSame(BatchResult::STALE, $again->status);
-        self::assertSame([self::ITEM_A], self::itemsOfTheSlice());
-        self::assertSame([self::SLICE => 1], InstallRun::get($run)->written());
-    }
-
-    /** @return array<string, array{string, array{string, string}}> the failing mode, the error the run keeps */
+    /** @return array<string, array{string, class-string, ?array{string, string}}> the failing mode, what writeItems() throws, its reason and path */
     public static function failures(): array
     {
         $at = 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_B . ']/headline........[0]';
         return [
-            'refused statement' => ['false', ['DB', $at]],
-            'lost connection'   => ['throw', ['WRITE_FAILED', 'batch']],       // no raw DB message in the run
+            'refused statement' => ['false', WriteError::class, [WriteError::DB, $at]],
+            'lost connection'   => ['throw', \RuntimeException::class, null],
         ];
     }
 
-    /** @param array{string, string} $error */
+    /** @param class-string $class @param ?array{string, string} $error */
     #[DataProvider('failures')]
-    public function test_a_failure_mid_batch_rolls_it_back_and_keeps_the_position(string $mode, array $error): void
+    public function test_a_failure_mid_batch_rolls_it_back(string $mode, string $class, ?array $error): void
     {
         $run = $this->transferred();
-        $log = ini_set('error_log', '/dev/null');
         self::failAt('/^INSERT INTO `content` .*0x' . self::ITEM_B . '/', $mode);
 
         try {
-            $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A']), self::entry(self::ITEM_B, ['headline........' => 'B'])]));
-        } finally {
-            ini_set('error_log', (string) $log);
+            $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A']), self::entry(self::ITEM_B, ['headline........' => 'B'])]));
+            self::fail('the batch was written');
+        } catch (\Throwable $e) {
+            self::assertInstanceOf($class, $e);
         }
 
-        self::assertSame([BatchResult::FAILED, $error], [$result->status, $result->error]);
+        if ($error) {
+            self::assertSame($error, [$e->reason, $e->path]);
+        }
         self::assertSame([], self::itemsOfTheSlice(), 'item A rolled back too');
-        $back = InstallRun::get($run);
-        self::assertSame([InstallRun::ERROR, $error, [self::SLICE, ''], [self::SLICE => 0]], [$back->state(), $back->error(), $back->position(), $back->written()]);
-    }
-
-    public function test_continue_after_an_error_writes_the_batch_again(): void
-    {
-        $run   = $this->transferred();
-        $batch = self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]);
-        self::failAt('/^INSERT INTO `item`/');
-        $this->write($run, $batch);
-        TableDb::$fail = null;
-
-        self::assertSame(BatchResult::STALE, $this->write($run, $batch)->status, 'a run in error takes no batch');
-        self::locked($run, static fn(InstallRun $r) => $r->resume());
-        $result = $this->write($run, $batch);
-
-        self::assertSame(BatchResult::WRITTEN, $result->status);
-        self::assertSame([self::ITEM_A], self::itemsOfTheSlice());
-        self::assertSame([InstallRun::ITEMS, [self::SLICE, self::ITEM_A]], [InstallRun::get($run)->state(), InstallRun::get($run)->position()]);
     }
 
     public function test_a_value_the_slice_charset_cannot_hold_stops_the_batch(): void
     {
         $run = $this->transferred(definitions: self::lang(self::definitions(), self::SLICE, 'cz_news_lang.php'));
 
-        $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'Čína 中国'])]));
+        $e = $this->refused($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'Čína 中国'])]));
 
-        self::assertSame([BatchResult::FAILED, ['CHARSET', 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']/headline........[0]']], [$result->status, $result->error]);
+        self::assertSame([TargetCharset::CHARSET, 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']/headline........[0]'], [$e->reason, $e->path]);
+        self::assertSame('CHARSET', Importer::errorCode($e->reason), 'the code the run keeps');
         self::assertSame([], self::itemsOfTheSlice());
-        self::assertSame(InstallRun::ERROR, InstallRun::get($run)->state());
     }
 
     public function test_a_transfer_keeps_the_authors_of_the_items(): void
@@ -418,22 +454,18 @@ final class BatchWriteTest extends TestCase
         self::assertSame(['uid-17', 'uid-18'], [$item['posted_by'], $item['edited_by']], 'not the importing user');
     }
 
-    public function test_a_finished_slice_hands_over_to_the_next_and_the_last_stays_at_its_end(): void
+    public function test_a_finished_slice_hands_over_to_the_next_and_the_last_finishes_the_items(): void
     {
         $run = $this->transferred(definitions: self::twoSlices());
 
-        $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])], '', true));
-        self::assertSame([self::SLICE2, ''], InstallRun::get($run)->position());
+        $first = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])], '', true));
+        self::assertSame([InstallRun::at(self::SLICE2, ''), false], [$first['position'], $first['finished']]);
 
-        $this->write($run, self::batch([self::entry(self::ITEM_D, ['headline........' => 'D'])], '', true, self::SLICE2), [self::SLICE2, '']);
-        self::assertSame([self::SLICE2, self::ITEM_D], InstallRun::get($run)->position(), 'the last slice: no next one');
-
-        $result = $this->write($run, self::batch([], self::ITEM_D, true, self::SLICE2), [self::SLICE2, self::ITEM_D]);
-        self::assertSame(BatchResult::WRITTEN, $result->status, 'nothing after the end - the run is at it');
-        self::assertSame([[self::SLICE2, self::ITEM_D], [self::SLICE => 1, self::SLICE2 => 1]], [InstallRun::get($run)->position(), InstallRun::get($run)->written()]);
+        $last = $this->write($run, self::batch([self::entry(self::ITEM_D, ['headline........' => 'D'])], '', true, self::SLICE2), InstallRun::at(self::SLICE2, ''));
+        self::assertSame([InstallRun::at(self::SLICE2, self::ITEM_D), true], [$last['position'], $last['finished']], 'the last slice: no next one');
     }
 
-    /** @return array<string, array{\Closure(self): void, Package, array{string, string}}> what goes wrong, the batch, the error */
+    /** @return array<string, array{\Closure(self): void, Package, array{string, string}}> what goes wrong, the batch, the error code the run keeps and the path */
     public static function refusedBatches(): array
     {
         $S = 'slice-module[' . self::SLICE . ']';
@@ -449,48 +481,136 @@ final class BatchWriteTest extends TestCase
 
     /** @param \Closure(self): void $change @param array{string, string} $error */
     #[DataProvider('refusedBatches')]
-    public function test_a_refused_batch_leaves_the_run_in_error_at_its_position(\Closure $change, Package $batch, array $error): void
+    public function test_a_refused_batch_writes_nothing(\Closure $change, Package $batch, array $error): void
     {
         $run = $this->transferred();
         $change($this);
 
-        $result = $this->write($run, $batch);
+        $e = $this->refused($run, $batch);
 
-        self::assertSame([BatchResult::FAILED, $error], [$result->status, $result->error]);
-        self::assertSame([InstallRun::ERROR, $error, [self::SLICE, '']], [InstallRun::get($run)->state(), InstallRun::get($run)->error(), InstallRun::get($run)->position()]);
+        self::assertSame($error, [Importer::errorCode($e->reason), $e->path]);
         self::assertSame([], self::itemsOfTheSlice());
     }
 
-    /** the batch failed and so did marking the run: logged, the batch still reported as failed */
-    public function test_a_run_that_cannot_be_marked_still_gives_a_failed_batch(): void
+    /** a step writes only in the transaction that moves the run on - outside one, half a batch would stay */
+    public function test_no_batch_outside_a_transaction(): void
     {
         $run = $this->transferred();
-        $log = ini_set('error_log', '/dev/null');
-        TableDb::$fail = static fn(string $sql): bool => str_starts_with($sql, 'INSERT INTO `item`') || str_starts_with($sql, 'DELETE LOW_PRIORITY FROM `object_');
+        TableDb::$log = [];
 
         try {
-            $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]));
+            $this->importer()->writeItems(InstallRun::get($run), self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]), InstallRun::at(self::SLICE, ''));
+            self::fail('a batch outside a transaction');
+        } catch (WriteError $e) {
+            self::assertSame([WriteError::DB, 'batch'], [$e->reason, $e->path]);
+        }
+        self::assertSame([], TableDb::writes());
+    }
+
+    public function test_an_install_run_takes_no_items(): void
+    {
+        $run = $this->newRun();
+        $this->import($this->plan(), run: $run);
+
+        $this->expectException(LogicException::class);
+        $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]));
+    }
+
+    // ---------------------------------------------------------------- the steps of the run
+
+    /** the items commit with the run's new position or not at all */
+    public function test_a_step_writes_its_batch_with_the_new_position_in_one_transaction(): void
+    {
+        $run = $this->transferred(definitions: self::twoSlices());
+        $this->steps([self::entry(self::ITEM_A, ['headline........' => 'A']), self::entry(self::ITEM_B, ['headline........' => 'B'])]);
+        TableDb::$log = [];
+
+        self::assertSame('step 2', self::runQueued());
+
+        $back = InstallRun::get($run);
+        self::assertSame([InstallRun::ITEMS, InstallRun::at(self::SLICE2, ''), [self::SLICE => 2]], [$back->state(), $back->position(), $back->written()]);
+        self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
+        $transaction = self::transactionOf('/^INSERT INTO `item`/');
+        self::assertNotEmpty(preg_grep('/^INSERT INTO `object_text`.*' . self::SLICE2 . '/', $transaction), 'the position of the next slice');
+        self::assertSame(['Install_' . $run], array_column(self::queue(), 'selector'), 'the next step');
+    }
+
+    /** @return array<string, array{string, array{string, string}}> the failing mode, the error the run keeps */
+    public static function stepFailures(): array
+    {
+        return [
+            'refused statement' => ['false', ['DB', 'slice-module:' . self::SLICE . '/item:' . self::ITEM_B . '/headline........:0']],
+            'lost connection'   => ['throw', ['WRITE_FAILED', 'batch']],       // no raw DB message in the run
+        ];
+    }
+
+    /** @param array{string, string} $error */
+    #[DataProvider('stepFailures')]
+    public function test_a_failed_step_leaves_the_run_in_error_at_its_position(string $mode, array $error): void
+    {
+        $run = $this->transferred();
+        $this->steps([self::entry(self::ITEM_A, ['headline........' => 'A']), self::entry(self::ITEM_B, ['headline........' => 'B'])]);
+        $log = ini_set('error_log', '/dev/null');
+        self::failAt('/^INSERT INTO `content` .*0x' . self::ITEM_B . '/', $mode);
+
+        try {
+            self::runQueued();
         } finally {
             ini_set('error_log', (string) $log);
         }
 
-        self::assertSame([BatchResult::FAILED, ['DB', 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']']], [$result->status, $result->error]);
-        TableDb::$fail = null;
-        self::assertSame([InstallRun::ITEMS, [self::SLICE, '']], [InstallRun::get($run)->state(), InstallRun::get($run)->position()], 'not marked - Continue is not needed');
+        $back = InstallRun::get($run);
+        self::assertSame([InstallRun::ERROR, $error, InstallRun::at(self::SLICE, ''), []], [$back->state(), $back->error(), $back->position(), $back->written()]);
+        self::assertSame([], self::itemsOfTheSlice(), 'item A rolled back too');
+        self::assertSame([], self::queue(), 'no step without Continue');
     }
 
-    public function test_the_batches_of_a_run_are_its_user_s(): void
+    public function test_continue_after_an_error_writes_the_batch_again(): void
     {
-        $run   = $this->transferred();
-        $other = new Importer($this->target, 'another-admin', null, self::NOW, mayInstall: $this->authority->mayInstall(...), afterCommit: $this->after);
-
+        $run = $this->transferred();
+        $this->steps([self::entry(self::ITEM_A, ['headline........' => 'A'])]);
+        $log = ini_set('error_log', '/dev/null');
+        self::failAt('/^INSERT INTO `item`/');
         try {
-            $other->writeBatch($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]), [self::SLICE, '']);
-            self::fail('another user wrote a batch');
-        } catch (ImportFailed $e) {
-            self::assertSame('denied', $e->getPrevious()->reason);
+            self::runQueued();
+        } finally {
+            ini_set('error_log', (string) $log);
         }
-        self::assertSame([InstallRun::ITEMS, [self::SLICE, '']], [InstallRun::get($run)->state(), InstallRun::get($run)->position()]);
+        TableDb::$fail = null;
+
+        self::locked($run, static fn(InstallRun $r) => $r->resume(self::USER));
+        self::runQueued();
+
+        self::assertSame([self::ITEM_A], self::itemsOfTheSlice());
+        self::assertSame([InstallRun::DONE, [self::SLICE => 1]], [InstallRun::get($run)->state(), InstallRun::get($run)->written()]);
+    }
+
+    /** the queue may hand a step out twice (a runner that died, a hand-run Execute) */
+    public function test_a_step_queued_twice_writes_its_batch_once(): void
+    {
+        $run = $this->transferred(definitions: self::twoSlices());
+        $this->steps([self::entry(self::ITEM_A, ['headline........' => 'A'])]);
+        TableDb::$tables['toexecute'][] = ['id' => 99_999] + self::queue()[0];
+
+        self::runQueued();
+        self::assertSame('stale', self::runQueued());
+
+        self::assertSame([self::ITEM_A], self::itemsOfTheSlice());
+        self::assertSame([self::SLICE => 1], InstallRun::get($run)->written());
+    }
+
+    /** the rights are checked again by every step - the batches carry password hashes */
+    public function test_a_step_of_a_user_no_longer_a_superadmin_stops_the_run(): void
+    {
+        $run = $this->transferred();
+        $this->steps([self::entry(self::ITEM_A, ['headline........' => 'A'])]);
+        $this->superadmins->superadmins = [];
+
+        self::assertSame('error ' . InstallRun::DENIED, self::runQueued());
+
+        self::assertSame([InstallRun::ERROR, [InstallRun::DENIED, 'user']], [InstallRun::get($run)->state(), InstallRun::get($run)->error()]);
+        self::assertSame([], self::itemsOfTheSlice());
+        self::assertContains(self::USER, $this->superadmins->asked);
     }
 
     public function test_the_definitions_of_a_run_are_its_user_s(): void
@@ -619,10 +739,9 @@ final class BatchWriteTest extends TestCase
             return false;                   // the statement runs - into the PRIMARY key
         };
 
-        $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]));
+        $e = $this->refused($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'A'])]));
 
-        self::assertSame([BatchResult::FAILED, ['ITEM_ID_EXISTS', 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']']], [$result->status, $result->error]);
-        self::assertSame([InstallRun::ERROR, 'ITEM_ID_EXISTS'], [InstallRun::get($run)->state(), InstallRun::get($run)->error()[0]]);
+        self::assertSame([WriteError::ITEM_ID_EXISTS, 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_A . ']'], [$e->reason, $e->path]);
     }
 
     // ---------------------------------------------------------------- readers
@@ -634,8 +753,7 @@ final class BatchWriteTest extends TestCase
         $this->db = new TableDbTarget($this->target);
         unset(TableDb::$tables['constant'], TableDb::$tables['constant_slice']);     // the plan's fake target knows no group
         class_exists(AA_Perm::class);
-        $this->perm  = \AA::$perm;
-        \AA::$perm   = new AA_Perm(['sql', 'Reader']);
+        \AA::$perm  = new AA_Perm(['sql', 'Reader']);           // ImportFixture puts its own back
         $readers     = static fn(): array => array_column(array_filter(TableDb::rows('slice'), static fn(array $r): bool => ($r['type'] ?? '') === ItemLint::READER_SLICE), 'id');
         $items       = static fn(): array => array_column(array_filter(TableDb::rows('item'), static fn(array $r): bool => in_array($r['slice_id'], $readers(), true)), 'id');
         TableDb::$answer = static function (string $sql) use ($items): ?array {
@@ -649,24 +767,8 @@ final class BatchWriteTest extends TestCase
                 $rows  = array_filter(TableDb::rows('content'), static fn(array $r): bool => ($r['field_id'] === $m[1]) && in_array($r['item_id'], $items(), true));
                 return array_values(array_map(static fn(array $r): array => ['login' => $r['text'], 'perm' => in_array($r['item_id'], $perms, true) ? $r['item_id'] : null], $rows));
             }
-            if (str_contains($sql, ' UNION ')) {
-                preg_match('/userid (?:IN \\(([^)]*)\\)|= (\'[^\']*\'))/', $sql, $m);          // one value: makeWhere() writes =
-                $ids = array_map(static fn(string $q): string => trim($q, " '"), explode(',', ($m[1] ?? '') . ($m[2] ?? '')));
-                return array_map(static fn(string $id): array => ['id' => $id], array_values(array_intersect($ids, array_column(TableDb::rows('perms'), 'userid'))));
-            }
-            return null;
+            return self::idsInUse($sql);
         };
-    }
-
-    private mixed $perm = null;
-
-    protected function tearDown(): void
-    {
-        if ($this->db) {
-            \AA::$perm = $this->perm;
-        }
-        $GLOBALS['spareDBs'] = [];
-        TableDb::reset();
     }
 
     /** the readers of this AA are asked in its DB, on the handle of the batch's transaction: of earlier
@@ -683,9 +785,9 @@ final class BatchWriteTest extends TestCase
 
         $taken = $this->write($run, self::batch([self::entry(self::ITEM_B, ['headline........' => 'JANA'])], self::ITEM_A));
 
-        self::assertSame(BatchResult::WRITTEN, $taken->status);
-        self::assertContains('W reader-taken slice-module[' . self::SLICE . ']/item[' . self::ITEM_B . ']/headline........[0] JANA', self::codes($taken->findings));
-        self::assertSame([self::SLICE => ['reader-taken' => 1]], InstallRun::get($run)->warnings());
+        self::assertSame(1, $taken['written']);
+        self::assertContains('W reader-taken slice-module[' . self::SLICE . ']/item[' . self::ITEM_B . ']/headline........[0] JANA', self::codes($taken['findings']));
+        self::assertSame(['reader-taken' => 1], $taken['warnings']);
         self::assertCount(1, array_unique(TableDb::$handles), 'one DB handle');
 
         $at = static fn(string $id): string => 'slice-module[' . self::SLICE . "]/item[$id]";
@@ -695,10 +797,10 @@ final class BatchWriteTest extends TestCase
             ['BOSS@target.example', self::ITEM_C, ['READER_ADMIN', $at(self::ITEM_C) . '/headline........[0]']],
             ['nova', self::FITEM, ['ITEM_ID_IN_USE', $at(self::FITEM)]],
         ] as [$login, $id, $error]) {
-            $result = $this->write($run, self::batch([self::entry($id, ['headline........' => $login])], self::ITEM_B));
-            self::assertSame([BatchResult::FAILED, $error], [$result->status, $result->error], $login);
-            self::locked($run, static fn(InstallRun $r) => $r->resume());
+            $e = $this->refused($run, self::batch([self::entry($id, ['headline........' => $login])], self::ITEM_B));
+            self::assertSame($error, [Importer::errorCode($e->reason), $e->path], $login);
         }
+        self::assertSame([self::ITEM_A, self::ITEM_B], self::itemsOfTheSlice());
     }
 
     /** restrictPermsTo() leaves the readers only - no answer is no "free" */
@@ -713,13 +815,11 @@ final class BatchWriteTest extends TestCase
         $this->target->admins = ['editor'];
         $run                  = $this->transferred(definitions: self::definitions(true));
 
-        $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'jana']), self::entry(self::ITEM_B, ['headline........' => 'editor'])]));
+        $e = $this->refused($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'jana']), self::entry(self::ITEM_B, ['headline........' => 'editor'])]));
 
         $at = 'slice-module[' . self::SLICE . ']/item[' . self::ITEM_B . ']/headline........[0]';
-        self::assertSame([BatchResult::FAILED, ['READER_ADMIN', $at]], [$result->status, $result->error]);
-        self::assertContains("E reader-admin $at editor", self::codes($result->findings));
-        self::assertSame([], self::itemsOfTheSlice(), 'the admin keeps his login');
-        self::assertSame([InstallRun::ERROR, ['READER_ADMIN', $at]], [InstallRun::get($run)->state(), InstallRun::get($run)->error()]);
+        self::assertSame([ItemLint::READER_ADMIN, $at], [$e->reason, $e->path]);
+        self::assertSame([], self::itemsOfTheSlice(), 'the admin keeps the login');
     }
 
     /** the batch has no slice row - the target's slice says whether the headlines are logins */
@@ -730,6 +830,6 @@ final class BatchWriteTest extends TestCase
 
         $result = $this->write($run, self::batch([self::entry(self::ITEM_A, ['headline........' => 'editor', 'password........' => 'x'])]));
 
-        self::assertSame([BatchResult::WRITTEN, []], [$result->status, self::codes($result->findings)], 'a headline of an article is no login');
+        self::assertSame([1, []], [$result['written'], self::codes($result['findings'])], 'a headline of an article is no login');
     }
 }

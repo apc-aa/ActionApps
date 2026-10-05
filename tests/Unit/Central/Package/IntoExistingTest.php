@@ -14,7 +14,6 @@ namespace Tests\Unit\Central\Package;
 use AA\Central\AppExport;
 use AA\Central\InstallRun;
 use AA\Central\TransferCheck;
-use AA\Central\Package\BatchResult;
 use AA\Central\Package\DbImportTarget;
 use AA\Central\Package\ExistingSlice;
 use AA\Central\Package\ExistingSlices;
@@ -644,7 +643,7 @@ final class IntoExistingTest extends TestCase
 
         $result = $this->batch($run);
 
-        self::assertSame(BatchResult::WRITTEN, $result->status, json_encode(self::codes($result->findings)));
+        self::assertSame([1, []], [$result['written'], $result['findings']]);
         self::assertSame([str_repeat('7', 32), self::ITEM_A], array_values(array_column(array_filter(TableDb::rows('item'), static fn(array $r): bool => $r['slice_id'] === self::T), 'id')));
     }
 
@@ -658,12 +657,14 @@ final class IntoExistingTest extends TestCase
         self::assertSame([str_repeat('7', 32), string2id($run . self::ITEM_A)], array_values(array_column(array_filter(TableDb::rows('item'), static fn(array $r): bool => $r['slice_id'] === self::T), 'id')));
     }
 
-    /** the first and last batch of the slice: ITEM_A */
-    private function batch(string $run): BatchResult
+    /** the first and last batch of the slice: ITEM_A, written as a step of the run writes it
+     *  @return array<string, mixed> writeItems() */
+    private function batch(string $run): array
     {
         $item  = ['id' => self::ITEM_A, 'content' => ['status_code.....' => [0 => ['value' => '1', 'flag' => 0]], 'headline........' => [0 => ['value' => 'A', 'flag' => 0]]]];
         $batch = new Package('Články', self::example()->source, [new Module(Module::SLICE, self::SLICE, [], items: [$item])], withItems: true, batch: new Batch('', self::ITEM_A, true));
-        return $this->importer()->writeBatch($run, $batch, [self::SLICE, '']);        // TableDb cannot run ItemLint's UNION
+        // the fake target: TableDb cannot run ItemLint's UNION
+        return DB_AA::transaction(fn(): array => $this->importer()->writeItems(InstallRun::lockForUpdate($run), $batch, InstallRun::at(self::SLICE, '')));
     }
 
     public function test_the_final_check_counts_the_written_items_of_an_existing_slice(): void
@@ -671,10 +672,15 @@ final class IntoExistingTest extends TestCase
         $run = $this->newRun(InstallRun::TRANSFER);
         DB_AA::transaction(static fn() => InstallRun::lockForUpdate($run)->previewed(hash('sha256', 'x'), self::NOW, false, [self::SLICE => self::T]));
         $this->import(...$this->confirmed($this->planInto(null, [self::SLICE => self::T], true)), run: $run);
-        $this->batch($run);
-        $source = new FakeSource([], [self::SLICE => [['id' => self::ITEM_A, 'last_edit' => self::NOW - 10, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]]]]]]);
+        $source = new FakeSource(
+            ['module' => [['id' => self::SLICE, 'type' => 'S', 'deleted' => 0, 'name' => 'Články', 'lang_file' => 'cz-utf8_news_lang.php']]],
+            [self::SLICE => [['id' => self::ITEM_A, 'last_edit' => self::NOW - 10, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]], 'headline........' => [['value' => 'A', 'flag' => 0]]]]]],
+        );
+        $export = new AppExport($source, ['url' => 'https://source.example/aa/', 'aa-version' => '2026.9'], static fn(): bool => true, true);
+        InstallRun::setTestDoubles(static fn(): AppExport => $export, $this->after);
+        self::runQueued();               // the step counts the items it writes in the run
 
-        $check = (new TransferCheck(new AppExport($source, [], static fn(): bool => true, true)))->check(InstallRun::get($run));
+        $check = (new TransferCheck($export))->check(InstallRun::get($run));
 
         self::assertSame([['source' => self::SLICE, 'target' => self::T, 'written' => 1, 'sourceCount' => 1, 'targetCount' => 2]], $check['slices']);
         self::assertSame([], $check['findings'], 'the items the slice had are no difference');

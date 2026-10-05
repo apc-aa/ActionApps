@@ -722,6 +722,41 @@ namespace Tests\Unit\Central\Package {
             $this->assertTrue($second->package->batch->finished);
         }
 
+        /** a target whose step ran out of time asks for fewer */
+        public function test_a_batch_takes_at_most_the_items_asked_for(): void
+        {
+            $source = self::bigSlice(array_fill(0, 3, 'x'));
+            $first  = (new Collector($source))->itemBatch(self::SLICE_B, '', self::transfer(), 2);
+
+            $this->assertSame([sprintf('%032x', 1), sprintf('%032x', 2)], array_column(self::batchSlice($first)->items, 'id'));
+            $this->assertEquals(new Batch('', sprintf('%032x', 2), false), $first->package->batch);
+            $this->assertContains(['itemIds', [self::SLICE_B, false, '', 3]], $source->log);
+
+            $second = (new Collector($source))->itemBatch(self::SLICE_B, sprintf('%032x', 2), self::transfer(), 1);
+            $this->assertSame([sprintf('%032x', 3)], array_column(self::batchSlice($second)->items, 'id'));
+            $this->assertTrue($second->package->batch->finished, 'one item asked for, one left');
+        }
+
+        /** @return array<string, array{int}> */
+        public static function limitsOutOfRange(): array
+        {
+            return ['none' => [0], 'negative' => [-1], 'over MAX_ITEMS' => [CollectOptions::MAX_ITEMS + 1]];
+        }
+
+        #[DataProvider('limitsOutOfRange')]
+        public function test_a_batch_of_a_limit_out_of_range_is_refused(int $limit): void
+        {
+            $source = self::bigSlice(['x']);
+
+            try {
+                (new Collector($source))->itemBatch(self::SLICE_B, '', self::transfer(), $limit);
+                $this->fail("a batch of $limit items");
+            } catch (InvalidArgumentException $e) {
+                $this->assertStringContainsString('1 - ' . CollectOptions::MAX_ITEMS . ' items', $e->getMessage());
+            }
+            $this->assertSame([], array_filter($source->log, static fn(array $call): bool => $call[0] === 'itemIds'), 'refused before the source is asked');
+        }
+
         public function test_exactly_MAX_ITEMS_are_finished(): void
         {
             $result = (new Collector(self::bigSlice(array_fill(0, CollectOptions::MAX_ITEMS, 'x'))))->itemBatch(self::SLICE_B, '', self::transfer());

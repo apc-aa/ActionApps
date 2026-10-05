@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
+use AA\Central\Package\CollectOptions;
 use AA\Central\Package\LintFinding;
 
 /** Where the install page reads an app from: this AA (AppExport) or another one through its Get_App
@@ -40,9 +41,10 @@ interface AppSource
     /** One item batch of the slice after the cursor - a transfer only.
      *  @param string $after '' or the last item id of the previous batch
      *  @param array<string, string> $filters
+     *  @param int $limit items at most, 1 - CollectOptions::MAX_ITEMS (an older source gives MAX_ITEMS)
      *  @return array{string, list<array{string, LintFinding}>} the XML, the export findings
      *  @throws ExportRefused|SourceFailed */
-    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array;
+    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = CollectOptions::MAX_ITEMS): array;
 
     /** The login names of the readers of Reader Management slices, UTF-8, sorted - a transfer only.
      *  @param list<string> $slices @param array<string, string> $filters @return list<string>

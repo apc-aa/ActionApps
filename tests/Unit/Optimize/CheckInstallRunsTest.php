@@ -3,8 +3,9 @@
 declare(strict_types=1);
 
 /**
- * CheckInstallRuns: State Check warns about a transfer that has not moved on for an hour and lists the
- * transfers stopped by an error; finished, ended and preview runs are no finding.
+ * CheckInstallRuns: State Check warns about a transfer that hangs - no step has come for longer than its
+ * retries and an hour (a queue that does not run) - and lists the transfers stopped by an error;
+ * previews, finished and ended runs are no finding.
  */
 
 // Loading AA_Object (include/statestore.php) needs the config constants already (as InstallRunTest).
@@ -32,14 +33,23 @@ namespace Tests\Unit\Optimize {
     use AA\Central\InstallRun;
     use AA\Central\Package\IdMap;
     use AA\IO\DB\DB_AA;
+    use AA\Later\BatchStep;
     use AA\Optimize\CheckInstallRuns;
     use AA\Optimize\Finding;
+    use LogicException;
     use PHPUnit\Framework\TestCase;
+    use Tests\Unit\Central\Package\Fixtures\FakeSuperadmins;
     use Tests\Unit\Central\Package\Fixtures\TableDb;
 
     final class CheckInstallRunsTest extends TestCase
     {
         private const SLICE = '11111111111111111111111111111111';
+        private const USER  = 'admin-uid';
+        /** a run hangs this long after its last progress: the retries (1 + 5 + 15 min) and an hour */
+        private const HANGS_AFTER = 3600 + 60 + 300 + 900;
+
+        private FakeSuperadmins $superadmins;
+        private mixed $perm = null;
 
         public static function setUpBeforeClass(): void
         {
@@ -47,36 +57,68 @@ namespace Tests\Unit\Optimize {
             require_once __DIR__ . '/../../../include/constants.php';
             require_once __DIR__ . '/../../../include/util.php';
             require_once __DIR__ . '/../Central/Package/fixtures/TableDb.php';
+            require_once __DIR__ . '/../Central/Package/fixtures/FakeSuperadmins.php';
         }
 
         protected function setUp(): void
         {
             TableDb::reset();
             TableDb::$next       = ['object_text' => 1];
+            TableDb::$engines    = ['object_text' => 'InnoDB', 'toexecute' => 'InnoDB', 'item' => 'InnoDB', 'content' => 'InnoDB'];
             $GLOBALS['spareDBs'] = [new TableDb(), new TableDb(), new TableDb(), new TableDb()];
+            class_exists(\AA_Perm::class);              // its first load sets AA::$perm - not over the stub
+            $this->perm          = \AA::$perm;
+            $this->superadmins   = new FakeSuperadmins([self::USER]);
+            \AA::$perm           = $this->superadmins;
         }
 
         protected function tearDown(): void
         {
             $GLOBALS['spareDBs'] = [];
             TableDb::reset();
+            \AA::$perm = $this->perm;
+            set_time_limit(0);   // a task later() runs at once sets a 30 s limit - it must not outlive the test
         }
 
-        /** a transfer run driven to $state; its id */
-        private static function runIn(string $state): string
+        /** a run of $mode driven to $state; its id */
+        private function runIn(string $state, string $mode = InstallRun::TRANSFER): string
         {
-            $id = InstallRun::preview(InstallRun::TRANSFER, false, InstallRun::LOCAL, 'admin-uid', '', time())->getId();
-            $at = static fn(callable $change) => DB_AA::transaction(static fn() => $change(InstallRun::lockForUpdate($id)));
-            if ($state !== InstallRun::PREVIEW) {
-                $at(static fn(InstallRun $run) => $run->definitionsWritten(new IdMap(modules: [self::SLICE => str_repeat('b', 32)]), '<aa-app/>', [self::SLICE]));
+            $id = InstallRun::preview($mode, false, InstallRun::LOCAL, self::USER, '', time())->getId();
+            if ($state === InstallRun::PREVIEW) {
+                return $id;
             }
-            $at(static fn(InstallRun $run) => match ($state) {
-                InstallRun::ERROR => $run->fail('ITEM_TOO_BIG', 'slice-module[' . self::SLICE . ']/item[x]'),
-                InstallRun::DONE  => $run->finish(),
-                InstallRun::ENDED => $run->end(),
+            $slices = ($mode === InstallRun::TRANSFER) ? [self::SLICE] : [];
+            self::locked($id, static fn(InstallRun $run) => $run->definitionsWritten(new IdMap(modules: [self::SLICE => str_repeat('b', 32)]), '<aa-app/>', $slices));
+            match ($state) {
+                // the user lost the superadmin rights: the step stops before it asks the source
+                InstallRun::ERROR => $this->stepWithout(self::USER, $id),
+                InstallRun::DONE  => self::assertSame(InstallRun::DONE, self::runQueued($id)),
+                InstallRun::ENDED => self::locked($id, static fn(InstallRun $run) => $run->end(self::USER)),
                 default           => null,
-            });
+            };
             return $id;
+        }
+
+        private function stepWithout(string $user, string $id): void
+        {
+            $this->superadmins->superadmins = array_values(array_diff($this->superadmins->superadmins, [$user]));
+            self::assertSame('error ' . InstallRun::DENIED, self::runQueued($id));
+        }
+
+        private static function locked(string $id, callable $change): mixed
+        {
+            return DB_AA::transaction(static fn() => $change(InstallRun::lockForUpdate($id)));
+        }
+
+        /** runs the queued step of run $id as the queue does - the row goes away after it */
+        private static function runQueued(string $id): string
+        {
+            $row  = array_values(array_filter(TableDb::rows('toexecute'), static fn(array $r): bool => $r['selector'] === "Install_$id"))[0] ?? throw new LogicException('Nothing queued');
+            $step = unserialize((string) $row['object']);
+            self::assertInstanceOf(BatchStep::class, $step);
+            $ret = $step->toexecutelater();
+            TableDb::$tables['toexecute'] = array_values(array_filter(TableDb::rows('toexecute'), static fn(array $r): bool => $r['id'] !== $row['id']));
+            return $ret;
         }
 
         public function test_no_run_is_ok(): void
@@ -87,14 +129,17 @@ namespace Tests\Unit\Optimize {
             $this->assertSame(Finding::OK, $findings[0]->severity);
         }
 
-        public function test_a_transfer_that_moved_within_the_hour_is_ok(): void
+        /** the queue may not have come to it yet - only its retries and an hour make a run hang */
+        public function test_a_transfer_waiting_for_the_queue_is_ok_till_it_hangs(): void
         {
             self::runIn(InstallRun::ITEMS);
 
             $this->assertSame(Finding::OK, CheckInstallRuns::findingsAt(time() + 600)[0]->severity);
+            $this->assertSame(Finding::OK, CheckInstallRuns::findingsAt(time() + self::HANGS_AFTER - 60)[0]->severity);
+            $this->assertSame(Finding::WARNING, CheckInstallRuns::findingsAt(time() + self::HANGS_AFTER + 60)[0]->severity);
         }
 
-        public function test_a_transfer_without_progress_for_an_hour_is_a_warning(): void
+        public function test_a_transfer_that_hangs_is_a_warning(): void
         {
             $id = self::runIn(InstallRun::ITEMS);
 
@@ -104,6 +149,18 @@ namespace Tests\Unit\Optimize {
             $this->assertSame([Finding::WARNING, $id], [$findings[0]->severity, $findings[0]->key]);
             $this->assertStringContainsString('2', $findings[0]->title);
             $this->assertStringEndsWith("installapp.php?run=$id", array_values($findings[0]->links)[0]);
+            $this->assertContains('1', $findings[0]->evidence[0], 'its slices');
+        }
+
+        /** a written install whose finish the queue never ran */
+        public function test_an_install_waiting_for_its_finish_is_a_warning_of_its_own(): void
+        {
+            $id = self::runIn(InstallRun::ITEMS, InstallRun::INSTALL);
+
+            $findings = CheckInstallRuns::findingsAt(time() + 2 * 3600 + 60);
+
+            $this->assertSame([Finding::WARNING, $id], [$findings[0]->severity, $findings[0]->key]);
+            $this->assertSame('An installed app has waited for its finish for 2 hours', $findings[0]->title);
         }
 
         public function test_a_transfer_in_error_is_listed_with_its_error(): void
@@ -112,14 +169,15 @@ namespace Tests\Unit\Optimize {
 
             $findings = CheckInstallRuns::findingsAt(time());
 
+            $this->assertCount(1, $findings);
             $this->assertSame([Finding::ERROR, $id], [$findings[0]->severity, $findings[0]->key]);
-            $this->assertContains(safe('ITEM_TOO_BIG slice-module[' . self::SLICE . ']/item[x]'), $findings[0]->evidence[0]);
+            $this->assertContains(safe(InstallRun::DENIED . ' user'), $findings[0]->evidence[0]);
+            $this->assertContains(safe(self::USER), $findings[0]->evidence[0]);
         }
 
-        public function test_a_written_install_run_is_done_at_once_and_no_finding(): void
+        public function test_a_written_install_is_no_finding_once_the_queue_finished_it(): void
         {
-            $id = InstallRun::preview(InstallRun::INSTALL, false, InstallRun::LOCAL, 'admin-uid', '', time())->getId();
-            DB_AA::transaction(static fn() => InstallRun::lockForUpdate($id)->definitionsWritten(new IdMap(modules: [self::SLICE => str_repeat('b', 32)]), '<aa-app/>', []));
+            $id = self::runIn(InstallRun::DONE, InstallRun::INSTALL);
 
             $this->assertSame(InstallRun::DONE, InstallRun::get($id)->state());
             $this->assertSame([], InstallRun::unfinished());
@@ -128,9 +186,9 @@ namespace Tests\Unit\Optimize {
 
         public function test_previews_and_finished_or_ended_runs_are_no_finding(): void
         {
-            foreach ([InstallRun::PREVIEW, InstallRun::DONE, InstallRun::ENDED] as $state) {
-                self::runIn($state);
-            }
+            self::runIn(InstallRun::PREVIEW);
+            self::runIn(InstallRun::DONE, InstallRun::INSTALL);
+            self::runIn(InstallRun::ENDED);
 
             $findings = CheckInstallRuns::findingsAt(time() + 86400);
 

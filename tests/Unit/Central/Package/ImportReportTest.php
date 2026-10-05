@@ -51,9 +51,10 @@ final class ImportReportTest extends TestCase
 
     public function test_a_failed_commit_fails_the_import_and_runs_no_step(): void
     {
+        $run                  = $this->newRun();      // a run starts only in a transaction that commits
         TableDb::$commitFails = true;
         try {
-            $this->import($this->plan());
+            $this->import($this->plan(), run: $run);
             self::fail('a failed commit passed');
         } catch (ImportFailed $e) {
             self::assertStringContainsString('commit failed', $e->getMessage());

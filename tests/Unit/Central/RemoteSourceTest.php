@@ -155,7 +155,7 @@ final class RemoteSourceTest extends TestCase
             $this->remote($silent)->ask(new AA_Request('Get_App'), [], self::TOKEN);
             self::fail('no answer');
         } catch (SourceFailed $e) {
-            self::assertSame(SourceFailed::UNREACHABLE, $e->reason);
+            self::assertSame(SourceFailed::TIMEOUT, $e->reason);
             self::assertSame('The remote AA did not answer in time', $e->getMessage());
         }
     }

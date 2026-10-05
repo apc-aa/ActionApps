@@ -13,8 +13,10 @@ final class SourceFailed extends RuntimeException
 {
     /** the source refused the login or its token - the admin logs in again (Continue) */
     public const LOGIN = 'SOURCE_LOGIN';
-    /** no https, a redirect, an HTTP error, no connection, a timeout */
+    /** no https, a redirect, an HTTP error, no connection */
     public const UNREACHABLE = 'SOURCE_UNREACHABLE';
+    /** no answer in the time given - a queued step asks for a smaller batch then */
+    public const TIMEOUT = 'SOURCE_TIMEOUT';
     /** an answer too big, of a foreign form, or an error of the source */
     public const FAILED = 'SOURCE_FAILED';
 

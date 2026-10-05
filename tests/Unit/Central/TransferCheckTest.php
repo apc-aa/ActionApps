@@ -140,6 +140,30 @@ final class TransferCheckTest extends TestCase
         self::assertSame(['W ' . TransferCheck::EDITED_DURING . ' source 1'], array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $check['findings']));
     }
 
+    /** the source refuses the user meanwhile - the run is written, the counts stay unknown */
+    public function test_a_source_refusing_the_counts_leaves_them_unknown(): void
+    {
+        self::targetItems(2);
+
+        $check = (new TransferCheck(new AppExport($this->source, [], static fn(): bool => false, false)))->check(InstallRun::get($this->run));
+
+        self::assertNull($check['slices'][0]['sourceCount']);
+        self::assertSame(['W ' . TransferCheck::SOURCE_UNKNOWN . ' source ' . InstallRun::SOURCE_DENIED], array_map(static fn(array $f): string => "{$f[1]->level} {$f[1]->code} $f[0] {$f[1]->ref}", $check['findings']));
+    }
+
+    /** the items the steps wrote: an existing slice had items before, so these are compared with the source */
+    public function test_the_written_count_is_the_one_the_steps_added_up(): void
+    {
+        self::targetItems(2);
+        $this->source->items[self::SLICE][1]['last_edit'] = self::NOW - 5;
+        TableDb::$tables['object_text'][] = ['id' => 999_998, 'object_id' => $this->run, 'property' => 'counts', 'priority' => 0, 'value' => json_encode([self::SLICE => 2])];
+
+        $check = (new TransferCheck(new AppExport($this->source, [], static fn(): bool => true, true)))->check(InstallRun::get($this->run));
+
+        self::assertSame(2, $check['slices'][0]['written']);
+        self::assertSame([], $check['findings']);
+    }
+
     public function test_a_source_that_cannot_count_leaves_the_counts_unknown(): void
     {
         self::targetItems(2);
@@ -159,7 +183,7 @@ final class TransferCheckTest extends TestCase
                 throw new \LogicException('not asked');
             }
 
-            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
+            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = 500): array
             {
                 throw new \LogicException('not asked');
             }

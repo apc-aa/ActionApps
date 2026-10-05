@@ -160,6 +160,46 @@ final class AppRequestTest extends TestCase
         self::assertTrue($package->batch->finished);
     }
 
+    /** a target whose step ran out of time asks for fewer items - the cursor goes on from the last one given */
+    public function test_a_batch_takes_at_most_the_items_the_target_asks_for(): void
+    {
+        foreach ([1, '1'] as $items) {
+            $package = (new Reader())->read($this->answer(['items' => $items] + self::batch())->getResponse())->package;
+
+            self::assertSame([self::ITEM_1], array_column($package->modules[0]->items, 'id'));
+            self::assertSame([self::ITEM_1, false], [$package->batch->next, $package->batch->finished]);
+        }
+        $package = (new Reader())->read($this->answer(['items' => 500] + self::batch())->getResponse())->package;
+        self::assertSame([self::ITEM_1, self::ITEM_2], array_column($package->modules[0]->items, 'id'));
+    }
+
+    /** an older target names no limit: a full batch */
+    public function test_a_batch_without_a_limit_takes_500_items(): void
+    {
+        $ids = array_map(static fn(int $i): string => sprintf('%032x', 0xe0000 + $i), range(1, 501));
+        $this->source->items[self::READERS] = array_map(static fn(string $id): array => ['id' => $id, 'content' => ['status_code.....' => [['value' => '1', 'flag' => 0]], 'headline........' => [['value' => "u$id", 'flag' => 0]]]], $ids);
+
+        $package = (new Reader())->read($this->answer(self::batch())->getResponse())->package;
+
+        self::assertCount(500, $package->modules[0]->items);
+        self::assertSame([$ids[499], false], [$package->batch->next, $package->batch->finished]);
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function badLimits(): array
+    {
+        return ['none' => [0], 'negative' => [-1], 'more than a batch' => [501], 'no number' => ['abc'], 'a fraction' => ['1.5'], 'a list' => [[1]], 'a float' => [2.0]];
+    }
+
+    #[DataProvider('badLimits')]
+    public function test_a_batch_limit_out_of_range_is_a_bad_request(mixed $items): void
+    {
+        $response = $this->answer(['items' => $items] + self::batch());
+
+        self::assertSame(ResponderPolicy::ERR_APP_REQUEST, $response->getError());
+        self::assertSame([], $this->log, 'nothing exported');
+    }
+
     public function test_logins_are_a_list_of_strings(): void
     {
         self::assertSame(['alice', 'bob'], $this->answer(self::logins())->getResponse());

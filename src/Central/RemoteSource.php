@@ -48,21 +48,22 @@ final class RemoteSource
     ) {}
 
     /** the responder of the AA of the central_conf row
+     *  @param int $timeout seconds for one answer - a queued step takes it from its budget
      *  @throws SourceFailed no such row */
-    public static function forAa(int $aa_id): self
+    public static function forAa(int $aa_id, int $timeout = self::TIMEOUT): self
     {
         $aa = Actionapps::find($aa_id) ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list');
-        return new self($aa->getComunicatorUrl(), source: (string) $aa_id);
+        return new self($aa->getComunicatorUrl(), timeout: $timeout, source: (string) $aa_id);
     }
 
     /** the responder of a remote source of an install run (InstallRun::source()): the store or a
      *  central_conf row - never an address of the request
      *  @throws SourceFailed anything else, or no such row */
-    public static function forSource(string $source): self
+    public static function forSource(string $source, int $timeout = self::TIMEOUT): self
     {
         return match (true) {
-            $source === InstallRun::STORE                    => new self(AppStore::responderUrl(), source: InstallRun::STORE),
-            (bool) preg_match('/^[1-9]\d{0,9}\z/', $source) => self::forAa((int) $source),
+            $source === InstallRun::STORE                    => new self(AppStore::responderUrl(), timeout: $timeout, source: InstallRun::STORE),
+            (bool) preg_match('/^[1-9]\d{0,9}\z/', $source) => self::forAa((int) $source, $timeout),
             default                                           => throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such remote source'),
         };
     }
@@ -145,14 +146,14 @@ final class RemoteSource
 
     /** The token with the address it was given for - what a run keeps, so that a Central row changed
      *  meanwhile cannot send the token to another server. */
-    public function seal(string $token): string
+    public function seal(#[\SensitiveParameter] string $token): string
     {
         return json_encode(['u' => $this->url, 't' => $token], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);   // a row of no UTF-8 gets a token unseal() refuses
     }
 
     /** the token of seal() when it was given for this address; '' otherwise - the source refuses the
      *  request then and Continue asks for a new login */
-    public function unseal(string $sealed): string
+    public function unseal(#[\SensitiveParameter] string $sealed): string
     {
         $data = json_decode($sealed, true);
         return (is_array($data) && (($data['u'] ?? null) === $this->url) && is_string($data['t'] ?? null)) ? $data['t'] : '';
@@ -162,7 +163,7 @@ final class RemoteSource
      *  @param int $maxBytes the answer at most - MAX_BYTES only for a package
      *  @param list<class-string> $classes objects the answer may hold besides plain data (the module definitions of Central)
      *  @throws SourceFailed the AA cannot be asked safely or gave no plain AA_Response */
-    public function ask(AA_Request $request, array $post = [], string $token = '', int $maxBytes = self::SMALL_BYTES, array $classes = []): AA_Response
+    public function ask(AA_Request $request, array $post = [], #[\SensitiveParameter] string $token = '', int $maxBytes = self::SMALL_BYTES, array $classes = []): AA_Response
     {
         $limit = min($maxBytes, $this->maxBytes);
         if (strncasecmp($this->url, 'https://', 8) !== 0) {
@@ -184,7 +185,7 @@ final class RemoteSource
         } catch (TransportException $e) {
             // curl reports the whole-request limit as a plain transport error, not as a timeout
             if (($e->getPrevious() instanceof TimeoutExceptionInterface) || (microtime(true) - $start >= $this->timeout)) {
-                throw new SourceFailed(SourceFailed::UNREACHABLE, 'The remote AA did not answer in time');
+                throw new SourceFailed(SourceFailed::TIMEOUT, 'The remote AA did not answer in time');
             }
             // the page gets no detail; the log no login a URL may carry (user:password@)
             error_log('AA Central: the remote AA cannot be reached: ' . preg_replace(['~//[^/@\s]*@~', '/[\x00-\x1F\x7F]+/'], ['//', ' '], $e->getMessage()));
