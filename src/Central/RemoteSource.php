@@ -31,39 +31,33 @@ final class RemoteSource
     /** the token the target keeps for a run: its batches run in a day, Continue logs in again */
     public const TOKEN_TTL = 24 * 3600;
 
-    /** log.type of a failed login of an admin to the source (AA_Log::TYPE_MAX) */
-    public const LOG_DENY = 'APP_DENY';
-
     /** nesting of an answer; the module definitions are some five levels deep */
     private const MAX_DEPTH = 64;
 
-    /** @param ?HttpClientInterface $transport the connection under AA\Http\Client; another one for tests only
-     *  @param string $source the central_conf id or InstallRun::STORE - what the AA log names for a failed login */
+    /** @param ?HttpClientInterface $transport the connection under AA\Http\Client; another one for tests only */
     public function __construct(
         private readonly string $url,
         private readonly int $maxBytes = self::MAX_BYTES,
         private readonly int $timeout = self::TIMEOUT,
         private readonly ?HttpClientInterface $transport = null,
-        private readonly string $source = '',
     ) {}
 
     /** the responder of the AA of the central_conf row
-     *  @param int $timeout seconds for one answer - a queued step takes it from its budget
      *  @throws SourceFailed no such row */
-    public static function forAa(int $aa_id, int $timeout = self::TIMEOUT): self
+    public static function forAa(int $aa_id): self
     {
         $aa = Actionapps::find($aa_id) ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list');
-        return new self($aa->getComunicatorUrl(), timeout: $timeout, source: (string) $aa_id);
+        return new self($aa->getComunicatorUrl());
     }
 
     /** the responder of a remote source of an install run (InstallRun::source()): the store or a
      *  central_conf row - never an address of the request
      *  @throws SourceFailed anything else, or no such row */
-    public static function forSource(string $source, int $timeout = self::TIMEOUT): self
+    public static function forSource(string $source): self
     {
         return match (true) {
-            $source === InstallRun::STORE                    => new self(AppStore::responderUrl(), timeout: $timeout, source: InstallRun::STORE),
-            (bool) preg_match('/^[1-9]\d{0,9}\z/', $source) => self::forAa((int) $source, $timeout),
+            $source === InstallRun::STORE                    => new self(AppStore::responderUrl()),
+            (bool) preg_match('/^[1-9]\d{0,9}\z/', $source) => self::forAa((int) $source),
             default                                           => throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such remote source'),
         };
     }
@@ -73,44 +67,8 @@ final class RemoteSource
      *  @throws SourceFailed */
     public function jwt(string $username, string $password, string $code2fa = ''): string
     {
-        return self::token($this->askJwt($username, $password, $code2fa));
-    }
-
-    /** jwt() for an admin of this AA: a failure also leaves a row in the AA log - the source, the reason and
-     *  the error number of the source, never the login or a token - as the page shows only the message
-     *  @param array{string, string, string} $login username, password, 2FA code
-     *  @throws SourceFailed */
-    public function login(array $login): string
-    {
-        try {
-            $response = $this->askJwt(...$login);
-        } catch (SourceFailed $e) {
-            $this->denied($e, null);
-        }
-        try {
-            return self::token($response);
-        } catch (SourceFailed $e) {
-            $this->denied($e, $response);
-        }
-    }
-
-    /** @param ?AA_Response $response the answer of the source, null = none came */
-    private function denied(SourceFailed $e, ?AA_Response $response): never
-    {
-        \AA_Log::write(self::LOG_DENY, $this->source, [$e->reason, (string) ($response?->getError() ?? '')]);
-        throw $e;
-    }
-
-    /** @throws SourceFailed */
-    private function askJwt(string $username, string $password, string $code2fa): AA_Response
-    {
-        return $this->ask(new AA_Request('Get_Jwt', ['ttl' => self::TOKEN_TTL, 'scope' => 'apps']), ['username' => $username, 'password' => $password, 'code2fa' => $code2fa]);
-    }
-
-    /** the token of a Get_Jwt answer @throws SourceFailed */
-    private static function token(AA_Response $response): string
-    {
-        $token = $response->getResponse();
+        $response = $this->ask(new AA_Request('Get_Jwt', ['ttl' => self::TOKEN_TTL, 'scope' => 'apps']), ['username' => $username, 'password' => $password, 'code2fa' => $code2fa]);
+        $token    = $response->getResponse();
         if ($response->isError() || !is_string($token) || !self::isToken($token)) {
             throw new SourceFailed(SourceFailed::LOGIN, 'The source AA refused the login - a superadmin of it has to log in (error ' . $response->getError() . ')');
         }
@@ -146,14 +104,14 @@ final class RemoteSource
 
     /** The token with the address it was given for - what a run keeps, so that a Central row changed
      *  meanwhile cannot send the token to another server. */
-    public function seal(#[\SensitiveParameter] string $token): string
+    public function seal(string $token): string
     {
         return json_encode(['u' => $this->url, 't' => $token], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);   // a row of no UTF-8 gets a token unseal() refuses
     }
 
     /** the token of seal() when it was given for this address; '' otherwise - the source refuses the
      *  request then and Continue asks for a new login */
-    public function unseal(#[\SensitiveParameter] string $sealed): string
+    public function unseal(string $sealed): string
     {
         $data = json_decode($sealed, true);
         return (is_array($data) && (($data['u'] ?? null) === $this->url) && is_string($data['t'] ?? null)) ? $data['t'] : '';
@@ -163,7 +121,7 @@ final class RemoteSource
      *  @param int $maxBytes the answer at most - MAX_BYTES only for a package
      *  @param list<class-string> $classes objects the answer may hold besides plain data (the module definitions of Central)
      *  @throws SourceFailed the AA cannot be asked safely or gave no plain AA_Response */
-    public function ask(AA_Request $request, array $post = [], #[\SensitiveParameter] string $token = '', int $maxBytes = self::SMALL_BYTES, array $classes = []): AA_Response
+    public function ask(AA_Request $request, array $post = [], string $token = '', int $maxBytes = self::SMALL_BYTES, array $classes = []): AA_Response
     {
         $limit = min($maxBytes, $this->maxBytes);
         if (strncasecmp($this->url, 'https://', 8) !== 0) {
@@ -185,7 +143,7 @@ final class RemoteSource
         } catch (TransportException $e) {
             // curl reports the whole-request limit as a plain transport error, not as a timeout
             if (($e->getPrevious() instanceof TimeoutExceptionInterface) || (microtime(true) - $start >= $this->timeout)) {
-                throw new SourceFailed(SourceFailed::TIMEOUT, 'The remote AA did not answer in time');
+                throw new SourceFailed(SourceFailed::UNREACHABLE, 'The remote AA did not answer in time');
             }
             // the page gets no detail; the log no login a URL may carry (user:password@)
             error_log('AA Central: the remote AA cannot be reached: ' . preg_replace(['~//[^/@\s]*@~', '/[\x00-\x1F\x7F]+/'], ['//', ' '], $e->getMessage()));

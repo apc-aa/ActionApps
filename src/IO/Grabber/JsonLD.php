@@ -28,7 +28,6 @@
 
 namespace AA\IO\Grabber;
 
-use AA\IO\SourceRefused;
 use AA_Content;
 use AA_Property;
 use Exception;
@@ -159,17 +158,13 @@ class JsonLD extends AbstractGrabber
             $post_body = json_encode(["username" => $this->authdata['username'], "password" => $this->authdata['password']]);
             $data      = $this->loadUrl($this->authdata['tokenurl'], $post_body);
             $data      = json_decode($data, true);
-            if ($this->hasHttp()) {
-                $this->token = (is_array($data) && is_string($data['token'] ?? null)) ? $data['token'] : throw new SourceRefused('AUTH', 'No token from ' . self::host((string) $this->authdata['tokenurl']));
-            } else {
-                $this->token = $data ? $data['token'] : '';
-            }
+            $this->token = $data ? $data['token'] : '';
         }
         return (bool) $this->token;
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setAuth(#[\SensitiveParameter] array $authdata): static
+    public function setAuth(array $authdata): static
     {
         $this->authdata['username'] = $authdata['username'];
         $this->authdata['password'] = $authdata['password'];
@@ -189,7 +184,7 @@ class JsonLD extends AbstractGrabber
     }
 
     /** You can get token dynamically, so you weill set it through  setAuth, or you already have token, then you setToken directly */
-    public function setToken(#[\SensitiveParameter] string $token): static
+    public function setToken(string $token): static
     {
         $this->token = $token;
         return $this;
@@ -203,18 +198,12 @@ class JsonLD extends AbstractGrabber
      *
      * @return string data
      */
-    protected function loadUrl(#[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $post_body = ''): string
+    protected function loadUrl(string $url, ?string $post_body = ''): string
     {
-        if ($this->hasHttp()) {
-            $headers = ['Content-Type' => 'application/json', 'Accept' => 'application/json'];
-            if ($this->token && $this->ownHost($url)) {
-                $headers['Authorization'] = 'Bearer ' . $this->token;
-            }
-            return $this->fetch($post_body ? 'POST' : 'GET', $url, $post_body ?: null, $headers);
-        }
         $header =  "Content-Type: application/json";
         $header .= "\r\nAccept: application/json";
         if ($this->token) {
+            //$header .= "\r\nAuthorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MTY5ODYwMjMsImV4cCI6MTYxNzA3MjQyMywicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoibWFsaWtAbnN6bS5jeiJ9.oRpPze6fLueBpySTGo_m4NrZl5dFBhj7NyJ1HHZL5RjOaREXCiMB1z15j4UPwLaWVH8sUi2h74bCLs3KY1yeiZoIBGKcvU1663JqiT2V6OjpUJKLlIHz2cEMeOVTVD4Lps-LQ7elKc91GMqzEuAHitnoKQ-ys6vMyIL1slJgooO8hugUzFi7YZ91nCn040VYfu0It3O9dzAkCl6E35aA-pz_5B01D9GdFHf-ZQ5CxAuJwvzlNTPArRK6CCrSVDQqx_gdMz04rm8vsDhnqHkPpKLHIFdfV0wIjtbWwGl8fDC4B_-fYN61B1sdyhdAiduvMdTV5fq8qKNrECTVfvottwpXFsMlMTO0durs4WHIsR-jy7wPUtmWLf4N5KRjWi03hqljuw3Pi4F_Jth5EdO23eWXtm74u9EU2pALcTHXBfYw8_80Jkmbd1Aweck57eeNR_uWJEIJN94Ms4lSxhh7KGYi17vcoecVPXdQSYAXVd8ETyzRnV6IOneoA1tyfihyihk8b3bPsLyCd2jeH6-S0hDRiztMSfDX4M-EoW1ISC8cm1oMTO9W519TT3RI6Lt_1yXiq60iCInKZokvHjwCy580wBHwKO4iOSvtWm1yQAd7lVPH42kePCgqj22YKKlWGe78e-PjrtWh-zRBxQIPBtpSK2utANz1s5ZSYJVk6LU";
             $header .= "\r\nAuthorization: Bearer {$this->token}";
         }
         $context_opts = ['http' => ['method'  => 'GET', 'header'  => $header]];
@@ -229,33 +218,18 @@ class JsonLD extends AbstractGrabber
         return file_get_contents($url, false, $context);
     }
 
-    /**
-     * The token goes only to the host of the data or of the login - never to where an answer
-     * points - and only over https, so it does not cross the network readable.
-     */
-    private function ownHost(#[\SensitiveParameter] string $url): bool
-    {
-        return (strtolower((string) parse_url($url, PHP_URL_SCHEME)) === 'https')
-            && (self::sameHost($url, (string) $this->file) || self::sameHost($url, (string) ($this->authdata['tokenurl'] ?? '')));
-    }
-
     protected function nextPage($json): string
     {
         if ($this->next_func) {
             return $this->nextfunction($json);
         }
         $url = '';
-        if ($next = ($json['hydra:view']['hydra:next'] ?? '')) {
-            $needle = substr($next, 0, (int) max(3, strlen($next) / 2));
+        if ($next = $json['hydra:view']['hydra:next']) {
+            $needle = substr($next, 0, (max(3, strlen($next) / 2)));
             $url = substr($this->file, 0, strrpos($this->file, $needle)) . $next;
             //            huhl('NP',$next, $needle, $url);
         }
         return $url;
-    }
-
-    public function fetchesViaLoadData(): bool
-    {
-        return true;
     }
 
     /** loads all the data based on grabber setting and return it */
@@ -265,17 +239,7 @@ class JsonLD extends AbstractGrabber
         $next_url = $this->file;
         while ($next_url) {
             $data = $this->loadData($next_url);
-            $json = json_decode($data, true);
-            if ($this->hasHttp() && !is_array($json)) {
-                throw new SourceRefused('SOURCE', 'The answer from ' . self::host($next_url) . ' is not JSON');
-            }
-            $next_url = $this->nextPage($json);
-            if ($this->hasHttp() && ($next_url !== '')) {
-                // an import fetches each page as its own job; paging here would fetch them all, or loop
-                throw self::sameHost($next_url, (string) $this->file)
-                    ? new SourceRefused('SOURCE', 'The answer has a next page - paging of the grabber must be off (setNextFunc) in an import')
-                    : new SourceRefused('SOURCE', 'The next page points away from ' . self::host($this->file));
-            }
+            $next_url = $this->nextPage(json_decode($data, true));
             $ret[] = $data;
         }
         return $ret;

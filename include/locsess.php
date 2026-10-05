@@ -194,9 +194,8 @@ spl_autoload_register(static function ($class_name) {
 
     if (defined('AA_CUSTOM_DIR')) {
         foreach ($CUSTOM_INC_FILES as $inc_def => $inc_file) {
-            // optional - an install may set AA_CUSTOM_DIR only for other custom files
-            if (str_starts_with($class_name, $inc_def) && is_file($inc_path = __DIR__. '/custom/'. AA_CUSTOM_DIR. '/'. $inc_file)) {
-                include_once($inc_path);
+            if (str_starts_with($class_name, $inc_def)) {
+                include_once(__DIR__. '/custom/'. AA_CUSTOM_DIR. '/'. $inc_file);
             }
         }
     }

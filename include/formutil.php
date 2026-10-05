@@ -3187,7 +3187,7 @@ function FrmJavascript( $jscode ): void
 function IncludeManagerJavascript(): void
 {
     echo getFrmJavascriptFile( 'javascript/aajslib-legacy.min.js' );
-    echo getFrmJavascriptFile( 'javascript/manager.min.js', ['v' => AA_JS_VERSION] );
+    echo getFrmJavascriptFile( 'javascript/manager.min.js' );
 }
 
 /** getRadioBookmarkRow function

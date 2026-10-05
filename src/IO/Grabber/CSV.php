@@ -111,11 +111,6 @@ class CSV extends AbstractGrabber
         return $properties;
     }
 
-    public function fetchesViaLoadData(): bool
-    {
-        return true;
-    }
-
     /** loads all the data based on grabber setting and return it */
     public function getSources(): array
     {

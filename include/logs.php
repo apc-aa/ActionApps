@@ -63,11 +63,7 @@ JWT_DENY        client IP                       reason                         /
 OBJ_DENY        module_id:object_id|-:user      form_class:stored_class:stored_owner  // object form or Manager action refused - not its object or table row (-: none stored at the posted id; form_class of a table: _T<table>), once a day (AA\Managed_Object, AA\Managed_Table, LogOnce)
 SESSID_USE      client IP:reader|password|session                              // Get_Sessionid answered to a login, once a day (AA\Optimize\CheckSessionidUse, LogOnce)
 APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:source_url  // aa-app package installed (AA\Central\Package\AaAfterCommit)
-APP_DENY        source (central_conf id | store)  reason:error            // an admin's login to another AA for an app install or transfer failed - SourceFailed reason, error number of the source (AA\Central\RemoteSource::login())
 APPSTORE        command:client (IPv4; IPv6 "/48 /64")  command               // a request of the app store's public account - the hourly limits count them, keep it logged (AA\Central\AppStore::admit())
-HTTP_BLOCK      purpose:client IP               host                           // an address of the local or private network refused by Client::publicOnly(), once a day (AA\Optimize\CheckBlockedRequests, LogOnce)
-IMPORT_ERR      Import_{definition_id}          #id Class file:line            // an import failure outside a queue step; never the message - it may carry a secret (AA\Import\Definition::logError())
-IMPORT_BL       Import_{definition_id}          #id run_id user                // a baseline of an import started: versions recorded without importing (AA\Import\Service::start())
 AA_WARN
 */
 

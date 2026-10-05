@@ -20,9 +20,9 @@ class Table_Row_Delete extends AbstractManageraction
     protected function getButtonDef(): array
     {
         return [
-            'label'   => _m('Delete'),
-            'attr'    => ['class' => 'aa-button-delete'],
-            'confirm' => _m("Do you really want to delete this row?"),
+            'label' => _m('Delete'),
+            'attr'  => ['class' => 'aa-button-delete',
+                'onclick' => "return confirm('" . _m("Do you really want to delete this row?") . "')"],
         ];
     }
 

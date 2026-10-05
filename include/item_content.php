@@ -344,7 +344,7 @@ class AA_Content implements Iterator, ArrayAccess, Countable
      */
     public function isSet($field_id): bool
     {
-        return is_array($this->content[$field_id] ?? null);
+        return is_array($this->content[$field_id]);
     }
 
     /**

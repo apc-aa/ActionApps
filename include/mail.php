@@ -323,13 +323,13 @@ class AA_Mail extends htmlMimeMail implements LaterInterface {
             if (!$attachment) {
                 continue;
             }
-            if ('' === ($att_data = self::readFile((string) $attachment))) {
+            if ('' === ($att_data = AA_File_Wrapper::wrapper($attachment)->contents())) {
                 continue;
             }
             if (ctype_digit((string)$name)) {
                 $name = basename(parse_url($attachment, PHP_URL_PATH));
             }
-            $attachments[] = $extended ? ['name' => $name, 'data' => $att_data, 'type' => (string) (new finfo(FILEINFO_MIME_TYPE))->buffer($att_data)] : ['name' => $name, 'data' => $att_data];
+            $attachments[] = $extended ? ['name' => $name, 'data' => $att_data, 'type' => get_headers($attachment, true)['Content-Type'] ?? ''] : ['name' => $name, 'data' => $att_data];
         }
         return $attachments;
     }

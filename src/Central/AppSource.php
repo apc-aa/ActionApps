@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
-use AA\Central\Package\CollectOptions;
 use AA\Central\Package\LintFinding;
 
 /** Where the install page reads an app from: this AA (AppExport) or another one through its Get_App
  *  (RemoteAppSource). Both give package XML, so everything after it - Reader, Validator, Planner,
- *  Importer - is one path.
- *
- *  $filters (source slice id => ItemFilter text, UTF-8) narrow a transfer to the items they select: the
- *  ids, batches, logins and counts then cover those items only. A call takes only the filters of its own
- *  slices (ids compared lower case) and leaves the others out. Only a superadmin of the source may filter. */
+ *  Importer - is one path. */
 interface AppSource
 {
     /** item ids a page of itemIds() */
@@ -25,9 +20,8 @@ interface AppSource
 
     /** The ids of the slice's items after the cursor, in id order, ID_PAGE at most - a transfer only:
      *  another AA keeps the item ids, so the preview checks them before anything is written.
-     *  @param array<string, string> $filters
      *  @return list<string> @throws ExportRefused|SourceFailed */
-    public function itemIds(string $slice, bool $allBins, string $after, array $filters = []): array;
+    public function itemIds(string $slice, bool $allBins, string $after): array;
 
     /** The definitions package: a site with its modules, or slices and Alerts modules.
      *  @param list<string> $modules a site id, or slice and Alerts ids
@@ -40,27 +34,17 @@ interface AppSource
 
     /** One item batch of the slice after the cursor - a transfer only.
      *  @param string $after '' or the last item id of the previous batch
-     *  @param array<string, string> $filters
-     *  @param int $limit items at most, 1 - CollectOptions::MAX_ITEMS (an older source gives MAX_ITEMS)
      *  @return array{string, list<array{string, LintFinding}>} the XML, the export findings
      *  @throws ExportRefused|SourceFailed */
-    public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = [], int $limit = CollectOptions::MAX_ITEMS): array;
+    public function batch(string $slice, string $after, bool $allBins, int $started): array;
 
     /** The login names of the readers of Reader Management slices, UTF-8, sorted - a transfer only.
-     *  @param list<string> $slices @param array<string, string> $filters @return list<string>
+     *  @param list<string> $slices @return list<string>
      *  @throws ExportRefused|SourceFailed */
-    public function logins(array $slices, bool $allBins, array $filters = []): array;
+    public function logins(array $slices, bool $allBins): array;
 
     /** @param list<string> $slices @param int $editedAfter only the items edited after this unixtime; 0 = all
-     *  @param array<string, string> $filters
      *  @return array<string, int> slice => items, in the bins of the run
      *  @throws ExportRefused|SourceFailed */
-    public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0, array $filters = []): array;
-
-    /** Per slice: the relation values of its transferred items naming an item of a filtered slice that
-     *  the transfer leaves out (FilteredSource::leftOut()) - a transfer only; all 0 without filters.
-     *  @param array<string, string> $filters @param list<string> $slices the transferred slices
-     *  @return array<string, int> slice => values
-     *  @throws ExportRefused|SourceFailed */
-    public function leftOut(array $filters, array $slices, bool $allBins): array;
+    public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0): array;
 }

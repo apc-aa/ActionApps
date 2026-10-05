@@ -60,9 +60,8 @@ class Linkcheck
 
     private function http(): ClientInterface
     {
-        // no redirects: this class follows them itself, hop by hop, and records each one. Public
-        // addresses only - the links are entered by editors and visitors
-        return $this->http ??= Client::publicOnly(timeout: 10, idle: 7, agent: Client::agent('link checker'));
+        // no redirects: this class follows them itself, hop by hop, and records each one
+        return $this->http ??= new Client(timeout: 10, idle: 7, agent: Client::agent('link checker'));
     }
 
     // http codes, error names and their weight

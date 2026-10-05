@@ -27,7 +27,7 @@ function MarkedActionGo() {
             if (!GetItemsArrayString() && !AA_$N('aa_akce_all').value) {
                 AA_$('.aa_manager_actions_all').style.display = '';
             } else {
-                AA_SubmitWithToken(document.itemsform);
+                document.itemsform.submit();
             }
         }
     }
@@ -54,64 +54,12 @@ function WriteEmailGo() {
   document.itemsform.target = iftarget;
 }
 
-function EmptyTrashQuestion(url, question, token) {
-    if (question && confirm(question)) {
-        AA_PostForm(url, {DeleteTrash: 1, token: token ?? ''});
-    }
-}
-
-/** Submits a Manager form with its token. The form keeps the token only in data-aa-token, so
- *  a <button> in the content of a row submits it without one; the field lives just for the
- *  submit (the data are taken in submit()), not for a native submit after a return by Back. */
-function AA_SubmitWithToken(form) {
-    const input = form.ownerDocument.createElement('input');
-    input.type  = 'hidden';
-    input.name  = 'token';
-    input.value = form.dataset.aaToken ?? '';
-    form.append(input);
-    form.submit();
-    input.remove();
-}
-
-/** POSTs fields to url by a throwaway form - not by itemsform, which a row button may lack
- *  (AA finder) or sit outside of (the row "..." menu) */
-function AA_PostForm(url, fields) {
-    // only to this site - the url comes from the page markup
-    const target = new URL(url || location.href, location.href);
-    if (target.origin !== location.origin || !target.protocol.startsWith('http')) {
-        return;
-    }
-    const form  = document.createElement('form');
-    form.method = 'post';
-    form.action = target.href;
-    form.hidden = true;
-    for (const [name, value] of Object.entries(fields)) {
-        const input = document.createElement('input');
-        input.type  = 'hidden';
-        input.name  = name;
-        input.value = value;
-        form.append(input);
-    }
-    document.body.append(form);
-    form.submit();
-}
-
-/* Row buttons of the Manager (AbstractManageraction::getButton()) run their action by POST.
- * The chb key is the row id as the itemsform checkbox has it. An inline onclick may veto.
- * Registered once - a page may load this script twice, and each click would post twice. */
-if (!window.AA_ManagerRowActionsOn) {
-    window.AA_ManagerRowActionsOn = true;
-    document.addEventListener('click', e => {
-        const btn = e.target.closest('button[data-aa-akce]');
-        if (!btn || e.defaultPrevented) {
-            return;
+function EmptyTrashQuestion(url, question) {
+    if ( question ) {
+        if (confirm(question)) {
+            open(url,"_parent");
         }
-        const d = btn.dataset;
-        if (d.aaConfirm && !confirm(d.aaConfirm)) {
-            return;
-        }
-        AA_PostForm(d.aaUrl, {akce: d.aaAkce, [`chb[x${d.aaChb ?? ''}]`]: '', token: d.aaToken ?? ''});
-    });
+    }
 }
 
 
@@ -174,7 +122,7 @@ function ReturnParam(param) {
     window.opener.document.itemsform.elements['akce_param'].value = param;
 //    window.opener.document.itemsform.target='';
 //    window.opener.document.itemsform.action='';
-    AA_SubmitWithToken(window.opener.document.itemsform);
+    window.opener.document.itemsform.submit();
     window.close();
 }
 
@@ -411,28 +359,15 @@ function AA_FilterDelete(btn) {
 }
 
 /* points srchbr_bookmark at the target row, builds srchbr_akce (mirroring
- * SearchBarAction's ':' / '#:' encoding) and submits the search form -
- * by POST when it changes the stored filters - the server refuses those by GET.
- * The POST goes to the bare page (module_id rides in the form): a query left
- * from a link (?GoBookmark=) would override the filter just stored. */
+ * SearchBarAction's ':' / '#:' encoding) and submits the search form */
 function AA_FilterBookmarkSubmit(formName, akce, key, name, global) {
     const f = document[formName];
-    let action = akce;
-    if (name != null) { action += ':' + String(name).replace(/:/g, '#:'); }
-    if (global)       { action += ':y'; }
-    if (akce !== 'bookmarkgo') {
-        const fields = Object.fromEntries(new FormData(f));
-        fields.srchbr_akce = action;
-        fields.token       = f.dataset.aaToken ?? '';
-        if (key != null && key !== '') {
-            fields.srchbr_bookmark = key;
-        }
-        AA_PostForm(location.pathname, fields);
-        return;
-    }
     if (key != null && key !== '') {
         f.elements['srchbr_bookmark'].value = key;
     }
+    let action = akce;
+    if (name != null) { action += ':' + String(name).replace(/:/g, '#:'); }
+    if (global)       { action += ':y'; }
     f.elements['srchbr_akce'].value = action;
     f.submit();
 }

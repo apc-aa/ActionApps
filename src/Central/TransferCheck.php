@@ -6,13 +6,11 @@ namespace AA\Central;
 
 use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
-use AA\Central\Package\ReferenceRewriter;
 use AA\IO\DB\DB_AA;
 
 /** What the end of a transfer checks: the items of each slice on the source and on the target, the items
  *  the source changed since the run started (the source is not frozen during a transfer) and the
- *  relations of the new items that point nowhere. On the source only the items the filters of the run
- *  select count. Only reads - it may run again for the report. */
+ *  relations of the new items that point nowhere. Only reads - it may run again for the report. */
 final class TransferCheck
 {
     /** W: the slice has another number of items on the target than on the source - an existing slice the
@@ -25,6 +23,9 @@ final class TransferCheck
     /** W: the source did not tell its counts (unreachable, its login expired); ref = why */
     public const SOURCE_UNKNOWN = 'source-count-unknown';
 
+    /** input_show_func of a field that selects items (AA_Field::getRelation()): its constants are `#sLiCe-<slice id>` */
+    private const RELATION_MARK = '#sLiCe-';
+
     /** @param ?AppSource $source null = it cannot be asked any more (its Central row is gone) */
     public function __construct(private readonly ?AppSource $source) {}
 
@@ -36,12 +37,12 @@ final class TransferCheck
         $written = $run->written();
         $slices  = $findings = [];
         try {
-            $onSource = ($this->source ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'no source'))->itemCounts($run->slices(), $run->allBins(), 0, $run->filters());
-            $edited   = array_sum($this->source->itemCounts($run->slices(), $run->allBins(), $run->sourceStarted(), $run->filters()));
+            $onSource = ($this->source ?? throw new SourceFailed(SourceFailed::UNREACHABLE, 'no source'))->itemCounts($run->slices(), $run->allBins());
+            $edited   = array_sum($this->source->itemCounts($run->slices(), $run->allBins(), $run->sourceStarted()));
         } catch (SourceFailed|ExportRefused $e) {        // the items are written - the run finishes, the counts stay unknown
             $onSource   = null;
             $edited     = 0;
-            $findings[] = ['source', new LintFinding(LintFinding::WARNING, self::SOURCE_UNKNOWN, ($e instanceof SourceFailed) ? $e->reason : InstallRun::SOURCE_DENIED, 0)];
+            $findings[] = ['source', new LintFinding(LintFinding::WARNING, self::SOURCE_UNKNOWN, ($e instanceof SourceFailed) ? $e->reason : TransferProgress::SOURCE_DENIED, 0)];
         }
         $into    = $run->targets();
         foreach ($run->slices() as $slice) {
@@ -74,6 +75,6 @@ final class TransferCheck
         $sql = 'SELECT COUNT(*) AS cnt FROM `content` INNER JOIN `item` ON `item`.`id` = `content`.`item_id`'
             . ' INNER JOIN `field` ON `field`.`slice_id` = `item`.`slice_id` AND `field`.`id` = `content`.`field_id`'
             . ' LEFT JOIN `item` AS `related` ON `related`.`id` = UNHEX(`content`.`text`)';
-        return (int) DB_AA::select1('cnt', $sql, [['item.slice_id', $slices, 'l'], ['field.input_show_func', ReferenceRewriter::RELATION_MARK, 'CONTAIN'], ['content.text', '', 'FILLED'], ['related.id', '', 'ISNULL']]);
+        return (int) DB_AA::select1('cnt', $sql, [['item.slice_id', $slices, 'l'], ['field.input_show_func', self::RELATION_MARK, 'CONTAIN'], ['content.text', '', 'FILLED'], ['related.id', '', 'ISNULL']]);
     }
 }

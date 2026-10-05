@@ -1074,8 +1074,7 @@ class AA_Dbcondition
         $this->joincond  = $arr[1];
 
         //  could be id or expression like 49d94e8e3379dc951eac78c2cd0f9f65 OR 78d89ac8dd0de0967a6f50ee5408ccdd OR ae076560dd8674b169e7d493d23ca8f2
-        //  an escaped apostrophe inside a literal never starts one
-        $this->condition = ($table === 'item' && AA_Metabase::isPacked('item', $field)) ? preg_replace("/(?<!\\\\)'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
+        $this->condition = ($table === 'item' && AA_Metabase::isPacked('item', $field)) ? preg_replace("/'([0-9a-f]{32})'/i", "0x\\1", $arr[2]) : $arr[2];
         $this->table = $table;
     }
 
@@ -1220,11 +1219,7 @@ class AA_Dbcondition
                 }
                 return ($ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);   // maybe we can change LEFT to INNER
             case 'BETWEEN':
-                // unquoted in SQL and public via conds[]: two numbers, or nothing (anything else never worked)
-                $arr = array_map('trim', explode(',', $querystring));
-                if ((count($arr) !== 2) || !is_numeric($arr[0]) || !is_numeric($arr[1])) {
-                    return ['NONE', '', '1=0'];
-                }
+                $arr = explode(",", quote($querystring));
                 return ['INNER', '', "(($qfield >= $arr[0]) AND ($qfield <= $arr[1]))"];
             case 'ISNULL':
                 return ['LEFT', '', "(($qfield IS NULL) OR ($qfield=''))"];
@@ -1288,7 +1283,7 @@ function ProoveFieldNames($slices, $conds): void
             }
             foreach (array_keys($cond) as $key) {
                 // @todo - we do not check the headline........@relation.......1 kind of fields
-                if (!isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$key]) && !strpos($key, '@') && !$slice->isField($key)) {
+                if (!AA_Condition::CONDS_NOT_FIELD_NAMES[$key] && !strpos($key, '@') && !$slice->isField($key)) {
                     warn("Field <b>$key</b> does not exist in slice <b>$slice_id</b>.");
                 }
             }
@@ -1776,7 +1771,7 @@ class QueryZidsHelper
                     continue;
                 }
 
-                if (isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$fid])) {
+                if (AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) {
                     continue;      // it is not field_id parameters - skip it for now
                 }
 

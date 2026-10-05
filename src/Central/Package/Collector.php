@@ -309,35 +309,32 @@ final class Collector
         ];
     }
 
-    /** One batch of the slice's items after the cursor, in id order: at most $limit items and
-     *  MAX_BATCH_BYTES of their values; package->batch tells the next cursor and whether the slice is
-     *  finished. An item over the byte limit alone is an E (never cut) and the batch is empty.
+    /** One batch of the slice's items after the cursor, in id order: at most CollectOptions::MAX_ITEMS
+     *  items and MAX_BATCH_BYTES of their values; package->batch tells the next cursor and whether the
+     *  slice is finished. An item over the byte limit alone is an E (never cut) and the batch is empty.
      *  Values in UTF-8, NULL as '' (Model\Module), posted_by/edited_by as text, without the state of the
      *  source AA (counters, feeding, short_id). Every slice alike - ReaderManagement too, password hashes and 2FA secrets
      *  included: readers of a moved site must log in on the target. The caller checks PS_EDIT on the slice
      *  (CollectResult::$checkPermissions) and lets only the source's superadmin transfer (CollectOptions).
      *  @param string $after '' or the last item id of the previous batch
-     *  @param int    $limit items at most, 1 - CollectOptions::MAX_ITEMS: a target whose step ran out of
-     *                       time asks for fewer
-     *  @throws InvalidArgumentException not a transfer, not a slice, a cursor of no id, a limit out of range */
-    public function itemBatch(string $slice_id, string $after, CollectOptions $options, int $limit = CollectOptions::MAX_ITEMS): CollectResult
+     *  @throws InvalidArgumentException not a transfer, not a slice, a cursor of no id */
+    public function itemBatch(string $slice_id, string $after, CollectOptions $options): CollectResult
     {
         $slice_id = self::id($slice_id);
         $module   = $this->modules([$slice_id])[$slice_id] ?? [];
-        if (!$options->transfer() || (($module['type'] ?? '') !== 'S') || $module['deleted'] || (($after !== '') && !preg_match('/^[0-9a-f]{32}\z/', $after))
-            || ($limit < 1) || ($limit > CollectOptions::MAX_ITEMS)) {
-            throw new InvalidArgumentException("No item batch of $slice_id in mode $options->mode (a slice, a cursor of an item id, 1 - " . CollectOptions::MAX_ITEMS . ' items)');
+        if (!$options->transfer() || (($module['type'] ?? '') !== 'S') || $module['deleted'] || (($after !== '') && !preg_match('/^[0-9a-f]{32}\z/', $after))) {
+            throw new InvalidArgumentException("No item batch of $slice_id in mode $options->mode (a slice, a cursor of an item id)");
         }
         $this->findings = [];
         $path           = Module::SLICE . "[$slice_id]";
         $charset        = self::itemCharset($module);
         $items          = [];
         $next           = $after;           // the last item carried - a vanished one is no cursor
-        $ids            = $this->source->itemIds($slice_id, $options->allBins, $after, $limit + 1);
-        $finished       = count($ids) <= $limit;
+        $ids            = $this->source->itemIds($slice_id, $options->allBins, $after, CollectOptions::MAX_ITEMS + 1);
+        $finished       = count($ids) <= CollectOptions::MAX_ITEMS;
         $drop           = array_flip(self::ITEM_LEFT_OUT);
         $bytes          = 0;
-        foreach (array_chunk(array_slice($ids, 0, $limit), self::ITEM_CHUNK) as $chunk) {
+        foreach (array_chunk(array_slice($ids, 0, CollectOptions::MAX_ITEMS), self::ITEM_CHUNK) as $chunk) {
             $contents = [];
             foreach ($this->source->items($chunk, $options->transfer()) as $item) {
                 $contents[$item['id']] = $item['content'];

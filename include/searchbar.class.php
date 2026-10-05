@@ -138,8 +138,6 @@ class AA_Searchbar extends AA_Storable
     protected $show;           //
     protected $hint;
     protected $hint_url;
-    /** srchbr_akce which update() performed in this request (not stored in the state) */
-    protected string $done_akce = '';
 
     /** getClassProperties function of AA_Serializable
      *  Used parameter format (in fields.input_show_func table)
@@ -179,64 +177,47 @@ class AA_Searchbar extends AA_Storable
         $this->module_id            = $module_id;
     }
 
-    /** srchbr_akce values which change the stored filters */
-    private const WRITE_ACTIONS = ['bookmark', 'bookmarkupdate', 'bookmarkrename', 'bookmarkdelete'];
-
-    /** The searchbar form as sent: filtering goes by GET (a link may filter), storing a filter by POST.
-     *  @return array{0: array, 1: string, 2: bool} [form values, srchbr_akce, posted] */
-    private static function request(): array
-    {
-        $posted = isset($_POST['srchbr_akce']);
-        $input  = $posted ? $_POST : $_GET;
-        return [$input, is_string($input['srchbr_akce'] ?? null) ? $input['srchbr_akce'] : '', $posted];
-    }
-
     /** update funtion
-     * Updates internal search_row and order_row variables from the submitted searchbar form
-     * @param bool $may_write the request may change data - Manager::performActions() decides
-     * @return bool false - a change of the stored filters was refused: it did not come by POST of this site
+     * Updates internal search_row and order_row variables from data posted from
+     * form (in $_POST[])
      */
-    public function update(bool $may_write): bool
+    public function update(): void
     {
-        [$input, $srchbr_akce, $posted] = self::request();
-        $srchbr_bookmark = (string) ($input['srchbr_bookmark'] ?? '');
+        $srchbr_akce     = $_GET['srchbr_akce'];
+        $srchbr_bookmark = (string) $_GET['srchbr_bookmark'];
         if (!$srchbr_akce) {     // no searchbar action
-            return true;
+            return;
         }
-        [ $akce, $answer, $confirm ] = ParamExplode($srchbr_akce) + ['', '', ''];   // 'bookmark:<name>:y'
-        if (in_array($akce, self::WRITE_ACTIONS, true) && (!$posted || !$may_write)) {
-            return false;
-        }
-        $this->done_akce = $akce;
+        [ $akce, $answer, $confirm ] = ParamExplode($srchbr_akce);
 
         switch ($akce) {
             case 'bookmark':    // bookmark as user bookmark (just for the user)
-                $this->setFromForm($input);      // set the searchbar from form values
+                $this->setFromForm();      // set the searchbar from form values
                 if (trim($answer)) {
                     $this->bookmarks->store($answer, $this->getState(), $confirm === 'y');
                 }
-                return true;
+                return;
             case 'clearsearch':
                 $this->resetSearchAndOrder();
                 $this->setDefaultOrder();
                 $this->bookmarks->setLastUsed();
-                return true;
+                return;
             case 'bookmarkgo':
                 $this->setFromBookmark($srchbr_bookmark);
-                return true;
+                return;
             case 'bookmarkupdate':
-                $this->setFromForm($input);      // set the searchbar from form values
+                $this->setFromForm();      // set the searchbar from form values
                 if ($this->bookmarks->is_defined($srchbr_bookmark)) {
                     $this->bookmarks->updateBookmark($srchbr_bookmark, $this->getState());
                     $this->bookmarks->setLastUsed($srchbr_bookmark);
                 }
-                return true;
+                return;
             case 'bookmarkrename':
                 if ($this->bookmarks->is_defined($srchbr_bookmark)) {
                     $this->bookmarks->renameBookmark($srchbr_bookmark, $answer);
                     $this->bookmarks->setLastUsed($srchbr_bookmark);
                 }
-                return true;
+                return;
             case 'bookmarkdelete':
                 if ($this->bookmarks->is_defined($srchbr_bookmark)) {
                     $this->bookmarks->delete($srchbr_bookmark);
@@ -244,12 +225,11 @@ class AA_Searchbar extends AA_Storable
                     $this->setDefaultOrder();
                     $this->bookmarks->setLastUsed();
                 }
-                return true;
+                return;
         }
 
         // reset the searchbar and set it from form values
-        $this->setFromForm($input);
-        return true;
+        $this->setFromForm();
     }
 
     /** resetSearchAndOrder function
@@ -287,9 +267,8 @@ class AA_Searchbar extends AA_Storable
 
     /** setFromForm function
      *  Set searchbar state from form
-     *  @param array $input the submitted form - $_GET or $_POST
      */
-    public function setFromForm(array $input): void
+    public function setFromForm(): void
     {
         if ($this->show & MGR_SB_SEARCHROWS) {
             // cleaning all searchrows except 'readonly' searches
@@ -299,18 +278,18 @@ class AA_Searchbar extends AA_Storable
             // reset only if visible
             $this->resetOrder();
         }
-        if (is_array($input['srchbr_order'] ?? null)) {
-            foreach ($input['srchbr_order'] as $k => $fld) {
-                $this->addOrder([0 => [$fld => $input['srchbr_order_dir'][$k] ?? null]]);
+        if (is_array($_GET['srchbr_order'])) {
+            foreach ($_GET['srchbr_order'] as $k => $fld) {
+                $this->addOrder([0 => [$fld => $_GET["srchbr_order_dir"][$k]]]);
             }
         }
 
-        if (is_array($input['srchbr_field'] ?? null)) {
-            foreach ($input['srchbr_field'] as $k => $fld) {
+        if (is_array($_GET['srchbr_field'])) {
+            foreach ($_GET['srchbr_field'] as $k => $fld) {
                 $this->addSearch([
                     0 => [ $fld       => 1,
-                        'operator' => $input['srchbr_oper'][$k] ?? null,
-                        'value'    => $input['srchbr_value'][$k] ?? null,
+                        'operator' => $_GET["srchbr_oper"][$k],
+                        'value'    => $_GET["srchbr_value"][$k],
                     ],
                 ]);
             }
@@ -653,8 +632,7 @@ class AA_Searchbar extends AA_Storable
         $ret .=    $this->bookmarks->getSelectbox();
         $ret .=   '</div>';
         $ret .=  '</div>';
-        // keep the panel open right after a rename / delete so the user sees the result and can carry on
-        $ret .=  $this->bookmarks->getManageList($this->form_name, in_array($this->done_akce, ['bookmarkrename', 'bookmarkdelete'], true));
+        $ret .=  $this->bookmarks->getManageList($this->form_name);
         $ret .= '</div>';
         return $ret;
     }
@@ -760,7 +738,7 @@ class AA_Searchbar extends AA_Storable
             if (empty($row)) {
                 $ret .= "   ChangeOperators('" . $this->form_name . "','$i','');\n";
             } elseif (!$row->isReadonly()) {
-                $ret .= "   ChangeOperators('" . $this->form_name . "','$i'," . json_encode((string) $row->getOperator(), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ");\n";   // the operator comes from the URL
+                $ret .= "   ChangeOperators('" . $this->form_name . "','$i','" . $row->getOperator() . "');\n";
             }
         }
         if ($this->show & MGR_SB_BOOKMARKS) {
@@ -779,12 +757,15 @@ class AA_Searchbar extends AA_Storable
             // the Save dialog from the last-used filter and flip Save<->Refine live
             $ret .= "   window.AA_BM_NAMES = " . json_encode($this->bookmarks->getNameList(), JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ";\n";
         }
-        // PRG-lite: a reload would post the change of the stored filters again (a duplicate filter
-        // or a second delete). The state is kept in the session, so turn the history entry into
-        // a plain GET of the page - with the module, which the POST carried in the form.
-        if (in_array($this->done_akce, self::WRITE_ACTIONS, true)) {
-            $query = is_long_id((string) AA::$module_id) ? '?module_id=' . AA::$module_id : '';
-            $ret  .= "\n   if (window.history.replaceState) { window.history.replaceState(null, '', location.pathname + '$query'); }\n";
+        // PRG-lite: a mutating bookmark action is a one-shot, but the search form
+        // submits via GET so it lingers in the URL and a reload would repeat it
+        // (deleting/duplicating the next bookmark). The resulting state is already
+        // kept in the session, so drop the action from the URL after it ran.
+        if (!empty($_GET['srchbr_akce'])) {
+            [ $done_akce ] = ParamExplode((string) $_GET['srchbr_akce']);
+            if (in_array($done_akce, ['bookmark', 'bookmarkrename', 'bookmarkdelete', 'bookmarkupdate'], true)) {
+                $ret .= "\n   if (window.history.replaceState) { const u = new URL(location.href); u.searchParams.delete('srchbr_akce'); u.searchParams.delete('srchbr_bookmark'); window.history.replaceState(null, '', u); }\n";
+            }
         }
         $ret .= '
             </script>';
@@ -1093,9 +1074,8 @@ class AA_Bookmarks
      *  it they are shown read-only (apply only).
      *
      * @param  string  $form_name  name of the search form (for submit)
-     * @param  bool    $open       show the panel unfolded
      */
-    public function getManageList(string $form_name, bool $open): string
+    public function getManageList(string $form_name): string
     {
         if (!$this->bookmarks) {
             return '';
@@ -1103,6 +1083,15 @@ class AA_Bookmarks
         $can_global = IfSlPerm(PS_BOOKMARK);
         $form       = safe($form_name);
 
+        // keep the panel open right after a rename / delete so the user sees the
+        // result and can carry on managing
+        $open = '';
+        if (!empty($_GET['srchbr_akce'])) {
+            [ $akce ] = ParamExplode((string) $_GET['srchbr_akce']);
+            if (in_array($akce, ['bookmarkrename', 'bookmarkdelete'], true)) {
+                $open = ' open';
+            }
+        }
 
         $rows = '';
         foreach ($this->bookmarks as $k => $book) {
@@ -1131,7 +1120,7 @@ class AA_Bookmarks
                   . '</div>';
         }
 
-        return '<details class="aa-save-filters relative pr-3"' . ($open ? ' open' : '') . '>'
+        return '<details class="aa-save-filters relative pr-3"' . $open . '>'
              . '<summary>' . _m('Manage filters') . '</summary>'
              . '<div class="aa-manage-filter pt-1"><div class="aa-ui-searches">' . $rows . '</div></div>'
              . '</details>';

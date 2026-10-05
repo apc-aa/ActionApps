@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Central;
 
-use AA\Central\Package\CollectOptions;
-use AA\Central\Package\ItemFilter;
 use AA\Central\Package\LintFinding;
 use AA_Response;
 use Closure;
@@ -17,13 +15,8 @@ use Throwable;
  *  the same XML.
  *
  *  part definitions (modules: a site id, or slices and Alerts modules) | batch (slice, after) |
- *  logins (slices) | counts (slices, edited_after) | item_ids (slice, after) | left_out (slices);
- *  mode install | transfer; bins active | all.
- *
- *  filters (slice => ItemFilter text, slices of the part only) narrow batch, logins, counts, item_ids and
- *  left_out to the items they select. Such an answer is ['filters' => ItemFilter::digest(), 'answer' => …]:
- *  an older AA would ignore the parameter and answer for all the items - the target refuses an answer
- *  without the echo.
+ *  logins (slices) | counts (slices, edited_after) | item_ids (slice, after); mode install | transfer;
+ *  bins active | all.
  *
  *  Answers plain data only - package XML as a string (with the source's time for the definitions),
  *  logins as strings, counts as integers - so the
@@ -34,7 +27,7 @@ use Throwable;
  *  for an install; publishing is read on every request, so a site taken back is refused at once. */
 final class AppRequest
 {
-    private const PARTS = ['definitions', 'batch', 'logins', 'counts', 'item_ids', 'left_out'];
+    private const PARTS = ['definitions', 'batch', 'logins', 'counts', 'item_ids'];
     private const MODES = ['install', 'transfer'];
 
     /** lines of an ERR_APP_EXPORT answer - an export fails at its first errors, so these are enough */
@@ -69,10 +62,6 @@ final class AppRequest
         }
         $transfer = ($mode === 'transfer');
         $allBins  = (($param['bins'] ?? '') === 'all');
-        $filters  = self::filters($param['filters'] ?? null, self::slicesOf($part, $param));
-        if (($filters === null) || ($filters && ($part === 'definitions'))) {
-            return self::bad('filters of the slices of the part');
-        }
         if ($this->store !== null) {
             $modules = self::ids($param['modules'] ?? null);
             if (($part !== 'definitions') || $transfer) {
@@ -83,13 +72,12 @@ final class AppRequest
             }
         }
         try {
-            $response = match ($part) {
+            return match ($part) {
                 'definitions' => $this->definitions($param, $transfer, $allBins, $started),
-                'batch'       => $this->batch($param, $transfer, $allBins, $started, $filters),
-                'logins'      => $this->logins($param, $transfer, $allBins, $filters),
-                'counts'      => $this->counts($param, $allBins, $filters),
-                'item_ids'    => $this->itemIds($param, $transfer, $allBins, $filters),
-                'left_out'    => $this->leftOut($param, $transfer, $allBins, $filters),
+                'batch'       => $this->batch($param, $transfer, $allBins, $started),
+                'logins'      => $this->logins($param, $transfer, $allBins),
+                'counts'      => $this->counts($param, $allBins),
+                'item_ids'    => $this->itemIds($param, $transfer, $allBins),
             };
         } catch (ExportRefused $e) {
             if ($e->isDenied()) {
@@ -103,7 +91,6 @@ final class AppRequest
             error_log('AA Central Get_App failed: ' . self::oneLine(get_class($e) . ': ' . $e->getMessage()));
             return new AA_Response('The export failed - details are in the PHP error log of this AA', ResponderPolicy::ERR_APP_FAILED);
         }
-        return ($filters && !$response->isError()) ? new AA_Response(['filters' => ItemFilter::digest($filters), 'answer' => $response->getResponse()]) : $response;
     }
 
     /** @param array<mixed> $param */
@@ -120,109 +107,51 @@ final class AppRequest
         return new AA_Response(['package' => $xml, 'now' => $now, 'aa' => $this->aa]);
     }
 
-    /** @param array<mixed> $param @param array<string, string> $filters */
-    private function batch(array $param, bool $transfer, bool $allBins, int $started, array $filters): AA_Response
-    {
-        $slice = self::ids([$param['slice'] ?? null]);
-        $after = $param['after'] ?? '';
-        $limit = self::limit($param['items'] ?? null);
-        if (!$transfer || !$slice || (($after !== '') && !self::ids([$after])) || ($limit === null)) {
-            return self::bad('a transfer, slice, after and items');
-        }
-        [$xml, , $items] = $this->export->batchOf($slice[0], $after, $allBins, $started, $filters, $limit);
-        $this->logged("transfer batch $slice[0]", "items=$items" . self::counted($filters));
-        return new AA_Response($xml);
-    }
-
-    /** @param array<mixed> $param @param array<string, string> $filters */
-    private function logins(array $param, bool $transfer, bool $allBins, array $filters): AA_Response
-    {
-        $slices = self::ids($param['slices'] ?? null);
-        if (!$transfer || !$slices) {
-            return self::bad('a transfer and slices');
-        }
-        $logins = $this->export->logins($slices, $allBins, $filters);
-        $this->logged('transfer logins ' . implode(',', $slices), 'logins=' . count($logins) . self::counted($filters));
-        return new AA_Response($logins);
-    }
-
-    /** @param array<mixed> $param @param array<string, string> $filters */
-    private function itemIds(array $param, bool $transfer, bool $allBins, array $filters): AA_Response
+    /** @param array<mixed> $param */
+    private function batch(array $param, bool $transfer, bool $allBins, int $started): AA_Response
     {
         $slice = self::ids([$param['slice'] ?? null]);
         $after = $param['after'] ?? '';
         if (!$transfer || !$slice || (($after !== '') && !self::ids([$after]))) {
             return self::bad('a transfer, slice and after');
         }
-        $ids = $this->export->itemIds($slice[0], $allBins, $after, $filters);
-        if ($filters) {             // which items match tells what they hold
-            $this->logged("transfer item_ids $slice[0]", 'ids=' . count($ids) . self::counted($filters));
-        }
-        return new AA_Response($ids);
+        [$xml, , $items] = $this->export->batchOf($slice[0], $after, $allBins, $started);
+        $this->logged("transfer batch $slice[0]", "items=$items");
+        return new AA_Response($xml);
     }
 
-    /** @param array<mixed> $param @param array<string, string> $filters */
-    private function counts(array $param, bool $allBins, array $filters): AA_Response
+    /** @param array<mixed> $param */
+    private function logins(array $param, bool $transfer, bool $allBins): AA_Response
+    {
+        $slices = self::ids($param['slices'] ?? null);
+        if (!$transfer || !$slices) {
+            return self::bad('a transfer and slices');
+        }
+        $logins = $this->export->logins($slices, $allBins);
+        $this->logged('transfer logins ' . implode(',', $slices), 'logins=' . count($logins));
+        return new AA_Response($logins);
+    }
+
+    /** @param array<mixed> $param */
+    private function itemIds(array $param, bool $transfer, bool $allBins): AA_Response
+    {
+        $slice = self::ids([$param['slice'] ?? null]);
+        $after = $param['after'] ?? '';
+        if (!$transfer || !$slice || (($after !== '') && !self::ids([$after]))) {
+            return self::bad('a transfer, slice and after');
+        }
+        return new AA_Response($this->export->itemIds($slice[0], $allBins, $after));
+    }
+
+    /** @param array<mixed> $param */
+    private function counts(array $param, bool $allBins): AA_Response
     {
         $slices = self::ids($param['slices'] ?? null);
         $after  = self::time($param['edited_after'] ?? '0');
         if (!$slices || ($after === null)) {
             return self::bad('slices and edited_after');
         }
-        $counts = $this->export->itemCounts($slices, $allBins, $after, $filters);
-        if ($filters) {
-            $this->logged('filtered counts ' . implode(',', $slices), 'slices=' . count($slices) . self::counted($filters));
-        }
-        return new AA_Response($counts);
-    }
-
-    /** @param array<mixed> $param @param array<string, string> $filters */
-    private function leftOut(array $param, bool $transfer, bool $allBins, array $filters): AA_Response
-    {
-        $slices = self::ids($param['slices'] ?? null);
-        if (!$transfer || !$slices) {
-            return self::bad('a transfer and slices');
-        }
-        $counts = $this->export->leftOut($filters, $slices, $allBins);
-        if ($filters) {
-            $this->logged('transfer left_out ' . implode(',', $slices), 'values=' . array_sum($counts) . self::counted($filters));
-        }
-        return new AA_Response($counts);
-    }
-
-    /** the slices of a part - the only keys its filters may have
-     *  @param array<mixed> $param @return list<string> */
-    private static function slicesOf(string $part, array $param): array
-    {
-        return (in_array($part, ['batch', 'item_ids'], true) ? self::ids([$param['slice'] ?? null]) : self::ids($param['slices'] ?? null)) ?? [];
-    }
-
-    /** The filters of a request: slice => text, each slice one of the part's, each text a string - the export
-     *  reads them after the rights on the slices; [] = none; null for anything else.
-     *  @param list<string> $slices @return array<string, string>|null */
-    private static function filters(mixed $value, array $slices): ?array
-    {
-        if (($value === null) || ($value === [])) {
-            return [];
-        }
-        if (!is_array($value)) {
-            return null;
-        }
-        $filters = [];
-        foreach ($value as $slice => $text) {
-            $slice = strtolower((string) $slice);
-            if (!in_array($slice, $slices, true) || isset($filters[$slice]) || !is_string($text)) {
-                return null;
-            }
-            $filters[$slice] = $text;
-        }
-        return $filters;
-    }
-
-    /** the log tells how many filters, never their texts @param array<string, string> $filters */
-    private static function counted(array $filters): string
-    {
-        return $filters ? ' filters=' . count($filters) : '';
+        return new AA_Response($this->export->itemCounts($slices, $allBins, $after));
     }
 
     /** one log row: the selector names the modules, the params who and how many */
@@ -244,18 +173,6 @@ final class AppRequest
             }
         }
         return array_map('strtolower', $value);
-    }
-
-    /** the items of a batch the target asks for: none = a full one (an older target asks so) */
-    private static function limit(mixed $value): ?int
-    {
-        $limit = match (true) {
-            $value === null                                         => CollectOptions::MAX_ITEMS,
-            is_int($value)                                          => $value,
-            is_string($value) && (bool) preg_match('/^\d{1,3}\z/', $value) => (int) $value,
-            default                                                 => 0,
-        };
-        return (($limit >= 1) && ($limit <= CollectOptions::MAX_ITEMS)) ? $limit : null;
     }
 
     /** a unixtime; '' = now; null for anything else */

@@ -29,11 +29,7 @@
 // Miscellaneous utility functions
 //
 
-use AA\Http\Client;
-use AA\Http\ResponseTooLargeException;
-use AA\Http\TransportException;
 use AA\IO\DB\DB_AA;
-use AA\Optimize\CheckBlockedRequests;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
@@ -1462,32 +1458,11 @@ function inner_trim(string $string): string
     return str_replace([' ', "\n", "\t", "\r"], '', $string);
 }
 
-/** Prints the page at an http(s) address - the answer of filler.php with inline=1 (its ok_url), of
- *  fillform.php (show_result) and slice.php (inc). They come from the request, so an address of the
- *  server's own network is refused and logged for State Check.
- *  @param string $purpose the request parameter the address came in, for the log
- *  @return bool the page was printed
- */
-function ReadFileSafe($url, string $purpose): bool
+function ReadFileSafe($url): void
 {
-    $url = trim((string) $url);
-    if (!preg_match('~^https?://~i', $url) || str_contains($url, '..')) {
-        return false;
+    if ((stripos($url, 'http://') === 0 || stripos($url, 'https://') === 0) && !str_contains($url, '..')) {
+        readfile($url);
     }
-    try {
-        $answer = Client::publicOnly(timeout: 60, idle: 60, redirects: 10, maxBytes: 16 * 1024 * 1024)->request('GET', $url);
-    } catch (TransportException $e) {
-        CheckBlockedRequests::record($e, $purpose, (string) ($_SERVER['REMOTE_ADDR'] ?? ''));
-        return false;
-    } catch (ResponseTooLargeException) {
-        return false;
-    }
-    // an error page is not the result the form promised
-    if (!$answer->ok()) {
-        return false;
-    }
-    echo $answer->body;
-    return true;
 }
 
 /** add_post2shtml_vars function

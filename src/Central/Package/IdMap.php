@@ -86,7 +86,7 @@ final class IdMap
     /** a group name an app may carry: no `[`-list, no `#sLiCe-<id>` (items of a slice), no core group */
     public static function isAppGroup(string $name): bool
     {
-        return ($name !== '') && ($name[0] !== '[') && !str_starts_with($name, ReferenceRewriter::RELATION_MARK) && !in_array($name, self::CORE_GROUPS, true);
+        return ($name !== '') && ($name[0] !== '[') && !str_starts_with($name, '#sLiCe-') && !in_array($name, self::CORE_GROUPS, true);
     }
 
     /** the numbers the rows got from AUTO_INCREMENT; `filter`: alerts_filter.id - no text refers to a

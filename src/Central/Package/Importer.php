@@ -6,7 +6,7 @@ namespace AA\Central\Package;
 
 use AA;
 use AA\Central\InstallRun;
-use AA\Central\TransferProgress;
+use AA\Central\Package\Model\Batch;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
@@ -19,7 +19,7 @@ use LogicException;
 use Throwable;
 
 /** Writes an importable ImportPlan to this AA for an install run - all of it or nothing; in a transfer
- *  then the items, one batch per step of the run (writeItems()), each all or nothing.
+ *  then the items, one batch per call (writeBatch()), each all or nothing.
  *
  *  Before any statement: PS_INSTALL_APP, the S findings confirmed (ImportConfirmation), every table InnoDB
  *  (the rollback is the only cleanup). Then one DB_AA::transaction(); the group names and collection ids are
@@ -87,19 +87,17 @@ final class Importer
      *  @param string      $run          the InstallRun in its preview
      *  @param string      $definitions  the definitions package as downloaded - the run keeps its fingerprint
      *  @param string|null $confirmation ImportConfirmation::token(), passed once the user confirmed the S findings
-     *  @param string|null $choicesSum   InstallRun::choicesSum() the plan was made from - another preview of the run
-     *                                   meanwhile (its filters go to the batches) refuses the write; null = not compared
      *  @throws InvalidArgumentException the plan has an E, or items - they come in batches
      *  @throws LogicException inside DB_AA::transaction()
      *  @return ImportReport with the view, e-mail and filter numbers AUTO_INCREMENT gave
      *  @throws ImportFailed nothing was written: refused, or rolled back */
-    public function write(ImportPlan $plan, string $run, string $definitions, ?string $confirmation = null, ?string $choicesSum = null): ImportReport
+    public function write(ImportPlan $plan, string $run, string $definitions, ?string $confirmation = null): ImportReport
     {
         if (!$plan->importable()) {
             throw new InvalidArgumentException('The import plan has errors - it is not written');
         }
         if (array_filter($plan->package->modules, static fn(Module $m): bool => $m->items !== [])) {
-            throw new InvalidArgumentException('Items come in batches (writeItems()), never with the definitions');
+            throw new InvalidArgumentException('Items come in batches (writeBatch()), never with the definitions');
         }
         if (DB_AA::inTransaction()) {
             throw new LogicException('Importer::write() inside DB_AA::transaction() - the import needs a transaction of its own');
@@ -130,16 +128,13 @@ final class Importer
         $rows    = new RowWriter($store, $this->schema, $this->target, $this->user, $this->now ?? time());
         $objects = new ObjectWriter($store);
         try {
-            $map = DB_AA::transaction(function () use ($plan, $run, $definitions, $transfer, $rows, $objects, $choicesSum): IdMap {
+            $map = DB_AA::transaction(function () use ($plan, $run, $definitions, $transfer, $rows, $objects): IdMap {
                 if (!DB_AA::inTransaction()) {          // DB_AA::transaction() runs the block without one when it cannot start it
                     throw new WriteError(WriteError::DB, 'import', 'no database transaction could be started');
                 }
                 $record = InstallRun::lockForUpdate($run);
                 if ($record?->state() !== InstallRun::PREVIEW) {
                     throw new WriteError(WriteError::RUN, 'import', 'the install run is not in its preview - written already, ended or forgotten');
-                }
-                if (($choicesSum !== null) && !hash_equals($record->choicesSum(), $choicesSum)) {
-                    throw new WriteError(WriteError::RUN, 'import', 'the choices of the install run changed since the plan was made - preview again');
                 }
                 $this->recheck($plan);
                 $slices = $transfer ? self::slices($plan->package) : [];
@@ -159,28 +154,59 @@ final class Importer
         return ImportReport::of($plan, $map, $store->written(), $this->finish($plan));
     }
 
-    /** One batch of the items of a transfer (Collector::itemBatch()), read from the position $from of the
-     *  run: the step of the run (InstallRun::work()) calls it inside the transaction that moves the run on,
-     *  on the run's locked record, after it checked the user's rights - a failure throws, and the
-     *  transaction rolls the batch back with it.
-     *  @param array{slice: string, cursor: string}  $from  the position the batch was read from
-     *  @param list<array{string, LintFinding}>       $found what the source found making the batch (Collector, Writer,
-     *                                                       Reader): its W are counted in the run, an E stops the batch
-     *  @return array{position: array{slice: string, cursor: string}, finished: bool, written: int, warnings: array<string, int>,
-     *                findings: list<array{level: string, code: string, path: string, ref: string}>}
-     *          the position after the batch, finished = the last slice is written; the warnings by code
+    /** One batch of the items of a transfer (Collector::itemBatch()) in one transaction, written only when
+     *  the run is at $expected - the position the batch was read from. A failure rolls the batch back and
+     *  puts the run in error at its position (a transaction of its own): Continue sends the batch again.
+     *  The caller checks the admin FormToken first (CSRF).
+     *  @param array{string, string}           $expected [source slice, cursor]
+     *  @param list<array{string, LintFinding}> $source   what the source found making the batch (Collector, Writer,
+     *                                                   Reader): its W are counted in the run, an E stops the batch
+     *  @throws ImportFailed the user may not install - the run stays as it is
+     *  @throws LogicException inside DB_AA::transaction() */
+    public function writeBatch(string $run, Package $batch, array $expected, array $source = []): BatchResult
+    {
+        if (DB_AA::inTransaction()) {
+            throw new LogicException('Importer::writeBatch() inside DB_AA::transaction() - a batch needs a transaction of its own');
+        }
+        $this->permitted();
+        if (InstallRun::get($run)?->user() !== $this->user) {
+            throw new ImportFailed(new WriteError(WriteError::DENIED, 'batch', 'the install run is another user\'s'));
+        }
+        $findings = new FindingList();
+        foreach ($source as [$path, $finding]) {
+            $findings->add($path, $finding);
+        }
+        try {
+            return DB_AA::transaction(fn(): BatchResult => $this->batch($run, $batch, $expected, $findings));
+        } catch (Throwable $e) {
+            $error = self::failure($e);
+            try {
+                DB_AA::transaction(static function () use ($run, $expected, $error): void {
+                    $record = InstallRun::lockForUpdate($run);
+                    if ($record?->at($expected)) {                  // another request may have moved it on meanwhile
+                        $record->fail(...$error);
+                    }
+                });
+            } catch (Throwable $e) {
+                error_log('AA Central: a failed item batch could not be marked in its run: ' . self::oneLine(get_class($e) . ': ' . $e->getMessage()));
+            }
+            return new BatchResult(BatchResult::FAILED, $findings->all(), $error);
+        }
+    }
+
+    /** writeBatch() inside its transaction @param array{string, string} $expected
      *  @throws WriteError|RewriteFailed|LogicException */
-    public function writeItems(InstallRun $record, Package $batch, array $from, array $found = []): array
+    private function batch(string $run, Package $batch, array $expected, FindingList $findings): BatchResult
     {
         if (!DB_AA::inTransaction()) {
-            throw new WriteError(WriteError::DB, 'batch', 'no database transaction is open');
+            throw new WriteError(WriteError::DB, 'batch', 'no database transaction could be started');
+        }
+        $record = InstallRun::lockForUpdate($run) ?? throw new LogicException("No install run $run");
+        if (!$record->at($expected)) {
+            return new BatchResult(BatchResult::STALE);
         }
         if ($record->mode() !== InstallRun::TRANSFER) {
             throw new LogicException('Items belong to a transfer run');
-        }
-        $findings = new FindingList();
-        foreach ($found as [$path, $finding]) {
-            $findings->add($path, $finding);
         }
         $not = $this->target->nonTransactional(self::BATCH_TABLES);
         if ($not) {
@@ -194,7 +220,7 @@ final class Importer
         }
         self::stopAtError($findings);
         $m = $batch->modules[0];
-        if (($m->id !== $from['slice']) || ($batch->batch->after !== $from['cursor'])) {
+        if (($m->id !== $expected[0]) || ($batch->batch->after !== $expected[1])) {
             throw new WriteError(Validator::BATCH, 'meta/batch', 'the batch was read from another position than the run is at');
         }
         if (!$m->items && !$batch->batch->finished) {           // the source stops the slice at an item over its batch limit
@@ -210,16 +236,8 @@ final class Importer
         (new ItemLint($this->target, $this->metabase))->check($m, $slice, $map, $findings);
         self::stopAtError($findings);
         (new ItemWriter(new RowStore($this->metabase, $this->schema), $this->metabase))->write($m, $slice, $map);
-        $slices = $record->slices();
-        $after  = $slices[(int) array_search($m->id, $slices, true) + 1] ?? null;
-        return [
-            // a finished slice goes on with the next one; the last one stays at its end
-            'position' => ($batch->batch->finished && ($after !== null)) ? InstallRun::at($after, '') : InstallRun::at($m->id, $batch->batch->next),
-            'finished' => $batch->batch->finished && ($after === null),
-            'written'  => count($m->items),
-            'warnings' => $findings->counts(LintFinding::WARNING),
-            'findings' => TransferProgress::plain($findings->all()),
-        ];
+        $record->advance($expected, self::next($record, $m->id, $batch->batch), count($m->items), $findings->counts(LintFinding::WARNING));
+        return new BatchResult(BatchResult::WRITTEN, $findings->all());
     }
 
     /** the first E stops the batch @throws WriteError */
@@ -232,7 +250,28 @@ final class Importer
         }
     }
 
-    /** a finding code as the error code of a run: item-too-big -> ITEM_TOO_BIG */
+    /** The position after a written batch: on in its slice, or the next slice once it is finished. The
+     *  last slice stays at its end - a batch from there is empty and finished.
+     *  @return array{string, string} */
+    private static function next(InstallRun $record, string $slice, Batch $batch): array
+    {
+        $slices = $record->slices();
+        $after  = $slices[(int) array_search($slice, $slices, true) + 1] ?? null;
+        return ($batch->finished && ($after !== null)) ? [$after, ''] : [$slice, $batch->next];
+    }
+
+    /** [code, path] of a failed batch for the run: a WriteError's reason and path; anything else goes to the
+     *  log only - a DB message names tables and columns @return array{string, string} */
+    private static function failure(Throwable $e): array
+    {
+        if ($e instanceof WriteError) {
+            return [self::errorCode($e->reason), $e->path];
+        }
+        error_log('AA Central: an item batch failed: ' . self::oneLine(get_class($e) . ': ' . $e->getMessage()));
+        return ['WRITE_FAILED', 'batch'];
+    }
+
+    /** a finding code as the error code of a run (InstallRun::fail()): item-too-big -> ITEM_TOO_BIG */
     public static function errorCode(string $reason): string
     {
         return strtoupper(strtr($reason, '-', '_'));

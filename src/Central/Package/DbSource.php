@@ -64,23 +64,6 @@ final class DbSource implements Source
         return DB_AA::count('item', $where);
     }
 
-    /** QueryZids() as views select, one condition a query within the ids the conditions before kept: with
-     *  neverAllItems a condition it drops leaves no id - among several, the others would be all that counts */
-    public function matching(string $slice_id, ItemFilter $filter, array $ids, int $edited_after = 0): array
-    {
-        if ($ids && $edited_after) {
-            $ids = DB_AA::select('unpackid', 'SELECT LOWER(HEX(' . DB_AA::quoteIdentifier('id') . ')) AS unpackid FROM ' . DB_AA::quoteIdentifier('item'), [['id', $ids, 'l'], ['last_edit', $edited_after, '>']]);
-        }
-        foreach ($ids ? $filter->conditions() : [] as $c) {
-            $cond = ['value' => $c['value'], 'operator' => $c['operator']] + array_fill_keys($c['fields'], 1);
-            $ids  = array_map('strtolower', QueryZids([$slice_id], [$cond], '', 'ALL', 1, new zids($ids, 'l'), 'LIKE')->longids());
-            if (!$ids) {
-                break;
-            }
-        }
-        return $ids;
-    }
-
     /** @return Generator<int, array{id: string, content: array<string, list<array<string, mixed>>>}> */
     public function items(array $ids, bool $with_secrets): Generator
     {

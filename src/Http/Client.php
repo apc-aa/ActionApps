@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AA\Http;
 
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
@@ -16,8 +15,8 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
  * Not hand-written curl and not the old AA_Http (file_get_contents, no timeout, and false for
  * anything that is not 200 - which loses the difference between a bad key, an empty credit and
  * a service that is briefly down). The library brings what we would otherwise write ourselves
- * and get wrong: timeouts, decompression, NoPrivateNetworkHttpClient against SSRF (publicOnly()),
- * and when the crawler arrives RetryableHttpClient and ThrottlingHttpClient.
+ * and get wrong: timeouts, decompression, and - when the crawler arrives - NoPrivateNetworkHttpClient
+ * against SSRF, RetryableHttpClient and ThrottlingHttpClient.
  *
  * Redirects are off by default: an API that sends us somewhere else is not an API answer. The
  * callers that do have to follow - a template including a page, a link checker - say so.
@@ -40,21 +39,8 @@ final class Client implements ClientInterface
     }
 
     /**
-     * A client that refuses addresses of the local and private networks, after a redirect too
-     * (TransportException::blockedHost() says which). For every address a template, a form or a
-     * request can choose - otherwise whoever chooses it reads the server's internal services
-     * through AA. The sites' own domains keep working: they resolve to public addresses.
-     * @param ?HttpClientInterface $transport the connection under the guard; another one for tests only
-     */
-    public static function publicOnly(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $transport = null, int $maxBytes = 0): self
-    {
-        return new self($timeout, $idle, $agent, $redirects, new NoPrivateNetworkHttpClient($transport ?? HttpClient::create()), $maxBytes);
-    }
-
-    /**
-     * @param float $timeout whole call, seconds - a nightly run must not hang on one service. A
-     *                       fraction stays: 0 would mean no limit to the library
-     * @param float $idle    seconds of silence before giving up; this is what the library calls
+     * @param int $timeout   whole call, seconds - a nightly run must not hang on one service
+     * @param int $idle      seconds of silence before giving up; this is what the library calls
      *                       "timeout", and it restarts with every byte that arrives, so it is not
      *                       a ceiling on the call - $timeout is
      * @param string $agent  '' takes AA's own name. There is no way to send none: left out, the
@@ -63,7 +49,7 @@ final class Client implements ClientInterface
      * @param int $maxBytes  largest body accepted, 0 = no limit; over it ResponseTooLargeException,
      *                       decided by Content-Length when sent, else while the body arrives
      */
-    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0)
+    public function __construct(int $timeout = 30, int $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0)
     {
         $options = [
             'max_duration'  => $timeout,
@@ -76,12 +62,7 @@ final class Client implements ClientInterface
         $this->http = is_null($http) ? HttpClient::create($options) : $http->withOptions($options);
     }
 
-    /**
-     * @param  array<string, string>     $headers
-     * @throws TransportException        when there was no answer at all (timeout, DNS, refused)
-     * @throws ResponseTooLargeException when the body is over $maxBytes
-     */
-    public function request(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): Response
+    public function request(string $method, string $url, ?string $body = null, array $headers = []): Response
     {
         $options = ['headers' => $headers];
         if (!is_null($body)) {
@@ -111,7 +92,7 @@ final class Client implements ClientInterface
      * @param array<string, string> $headers
      * @param bool $has_body HEAD, 204 and 304 carry the length of a body they do not send
      */
-    private function limitedContent(ResponseInterface $answer, array $headers, #[\SensitiveParameter] string $url, bool $has_body): string
+    private function limitedContent(ResponseInterface $answer, array $headers, string $url, bool $has_body): string
     {
         if ($has_body && ((int) ($headers['content-length'] ?? 0) > $this->maxBytes)) {
             $answer->cancel();

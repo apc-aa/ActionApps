@@ -34,17 +34,11 @@ https://www.apc.org/
 */
 
 require_once __DIR__ . "/../../include/convert_charset.class.php";
-require_once __DIR__ . "/../../vendor/autoload.php";
 
-$from   = ($_REQUEST['from'] ?? '') ?: 'iso-8859-1';
-$to     = ($_REQUEST['to'] ?? '') ?: 'utf-8';
-$source = $_REQUEST['source'] ?? '';
-// the names pick a conversion table file - nothing but a plain name may reach the path
-if (!is_string($from) || !is_string($to) || !preg_match('/^[A-Za-z0-9_-]+$/', $from . $to)) {
-    echo "<!-- unknown encoding -->";
-    exit;
-}
-if (!is_string($source) || ($source === '')) {
+$from   = ($_REQUEST['from'] ?: 'iso-8859-1');
+$to     = ($_REQUEST['to'] ?: 'utf-8');
+$source = $_REQUEST['source'];
+if (!$source) {
     echo "<--! source not specified -->";
     exit;
 }
@@ -54,16 +48,5 @@ if (!str_starts_with($source, 'http://') && !str_starts_with($source, 'https://'
     exit;
 }
 
-// an address of the server's own network is refused - anyone can call this file
-try {
-    $answer = AA\Http\Client::publicOnly(timeout: 30, idle: 30, redirects: 5, maxBytes: 10 * 1024 * 1024)->request('GET', $source);
-} catch (AA\Http\TransportException|AA\Http\ResponseTooLargeException) {
-    echo "<!-- source not readable -->";
-    exit;
-}
-
-// a foreign page on AA's own origin: opened directly, it must not run its scripts here
-// (an SSI include does not pass this header on to the visitor)
-header('Content-Security-Policy: sandbox');
 $encoder = new ConvertCharset();
-echo $encoder->Convert($answer->ok() ? $answer->body : '', $from, $to);
+echo $encoder->Convert(file_get_contents($source), $from, $to);

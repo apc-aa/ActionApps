@@ -74,7 +74,7 @@ final class PhpThumbParams
     }
 
     /** Output dimensions for the parameter combinations where phpThumb always renders
-     *  exactly w × h. For those {img} skips measuring the generated image -
+     *  exactly w × h. For those {img} skips @getimagesize() on the generated image -
      *  that is a self-HTTP request which also forces the thumbnail to be rendered
      *  (70-110 ms measured), just to learn a size we already know.
      *

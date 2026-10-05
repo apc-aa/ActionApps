@@ -38,12 +38,10 @@ namespace AA;
 
 // require_once __DIR__ . "/menu_util.php";  // for showMenu()
 use AA;
-use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Manageraction\Manageractions;
 use AA\Optimize\CheckObjectFormRefusals;
-use AA\Util\FormToken;
 use AA\Util\LogOnce;
 use AA\Widget\Widget;
 use AA_Condition;
@@ -127,13 +125,6 @@ class Managed
      * @return AA_Form|null
      */
     public function getForm(?string $id, ?string $module_id): ?AA_Form
-    {
-        return null;
-    }
-
-    /** Why the edit form of $id may not open on a page of $module - a translated message; null = it
-     *  may. The form shows what is stored at $id, which the id from a link alone does not limit. */
-    public function formRefusal(?string $id, ?string $module): ?string
     {
         return null;
     }
@@ -409,12 +400,7 @@ class Managed_Object extends Managed
     /** @inheritDoc */
     public function getForm(?string $id, ?string $module_id): ?AA_Form
     {
-        $form = AA_Form::factoryForm($this->getType(), $id, $module_id);
-        if ((string) $id === '') {
-            // a link may fill in a new object's form; it is saved only when the user posts it
-            $form->prefill($this->class::formPrefill($_GET['prefill'] ?? null));
-        }
-        return $form;
+        return AA_Form::factoryForm($this->getType(), $id, $module_id);
     }
 
     /** Saves the object the form was built for - the object id comes from the POSTed keys, so it is
@@ -438,26 +424,8 @@ class Managed_Object extends Managed
         } elseif (!self::isOwn($id, $owner, $this->class)) {
             return $this->refuse($owner, $id);
         }
-        if (($refusal = $object->formRefusal()) !== null) {
-            return $refusal;
-        }
-        if ($object->save() === false) {
-            return _m('The object was not saved - it changed meanwhile. Reload and try again.');
-        }
+        $object->save();
         return null;
-    }
-
-    /** Only a new object, or an object of this class the module owns: an id of a stale or forged link
-     *  would show the name and properties of an object of another module.
-     *  @inheritDoc */
-    public function formRefusal(?string $id, ?string $module): ?string
-    {
-        $id     = (string) $id;
-        $module = strtolower((string) $module);
-        if (($id === '') || (is_long_id($id) && is_long_id($module) && self::isOwn($id, $module, $this->class))) {
-            return null;
-        }
-        return _m('This object can not be edited here - it is not an object of this module.');
     }
 
     /** the object $id is stored, owned by $owner and of $class */
@@ -762,10 +730,6 @@ class Managed_Table extends Managed
  */
 class Manager extends AA_Storable
 {
-    /** FormToken purpose of every write of every Manager page - one, since a row button may post
-     *  to another Manager page (the AA finder lists aliases with the buttons of aliases.php) */
-    public const FORM_TOKEN = 'manager';
-
     protected ?AA_Searchbar $searchbar;
 
     /** @var string searchbar additional function name */
@@ -1072,79 +1036,62 @@ class Manager extends AA_Storable
         }
     }
 
-    /** the checked rows: chb[x<id>] => value - only from the POST, a link must not pick them */
-    public function getPostedChb(): array
-    {
-        $chb = $_POST['chb'] ?? null;
-        return is_array($chb) ? $chb : [];
-    }
-
-    /** the rows an action works on; no checked row and "all rows" chosen - all rows of the list
+    /**
      * @return zids
      */
     public function getPostedItems(): zids
     {
-        if (!isset($_POST['chb']) && ($_POST['aa_akce_all'] ?? '') === '1') {
+        if (!is_array($_REQUEST['chb']) && $_POST['aa_akce_all'] == '1') {
             return $this->getZids();
         }
-        return (new zids([], $this->managed->getZidsType()))->setFromItemArr($this->getPostedChb());
+        return (new zids([], $this->managed->getZidsType()))->setFromItemArr($_POST['chb'] ?? $_GET['chb'] ?? []);
     }
 
     /** performActions function
-     *  Writes (actions, switches like Empty trash, the edit form, stored filters) run only from a POST
-     *  of a page of this site which this session rendered: a link runs for a prefetch, a crawler or
-     *  an <img src>, SameSite=Lax still lets a sibling subdomain POST with the session cookie, and
-     *  the token (FORM_TOKEN; JS adds it from data-aa-token) stops a form of another page.
      */
     public function performActions(): void
     {
+
         /** used for AJAX display of action parameters */
-        if ($_GET['display_params'] ?? '') {
-            echo $this->actionSettingsHtml((string) $_GET['display_params']);
+        if ($_GET['display_params']) {
+            if ($action2display = $this->actions?->getAction((string) $_GET['display_params'])) {
+                echo $action2display->htmlSettings();
+            }
             exit;
         }
 
-        $token     = $_POST['token'] ?? '';
-        $may_write = !ResponderPolicy::isForeignBrowserRequest($_SERVER)
-            && FormToken::checkPost(self::FORM_TOKEN, is_string($token) ? $token : '', $_SERVER);
-        $refused   = isset($_GET['akce']);
+        /* if (!isset($akce)) { $akce = $_GET['akce']; }
+           if (!isset($chb))  { $akce = $_GET['chb'];  }
+        */
 
         // call custom searchbar function (if searchbar action invoked)
-        // used for additional search functions like 'category search' in Links - it only sets the view
-        if ($this->searchbar_funct && ($_REQUEST['srchbr_akce'] ?? '')) {
+        // used for additional search functions like 'category search' in Links
+        if ($this->searchbar_funct && $_REQUEST['srchbr_akce']) {
             $function2call = $this->searchbar_funct;
             $function2call();
         }
 
-        // update searchbar - storing a filter is a write too
-        if (isset($this->searchbar) && !$this->searchbar->update($may_write)) {
-            $refused = true;
+        // update searchbar
+        if (isset($this->searchbar)) {
+            $this->searchbar->update();
         }
 
         $item_zids = $this->getPostedItems(); // in some managers we use 'x' before the item id - remove it
 
-        $akce = is_string($_POST['akce'] ?? null) ? $_POST['akce'] : '';
+        // new approach uses AA\Manageractions
+        $akce = (string) $_REQUEST['akce'];
         if ($akce && $this->actions) {
-            $action2do  = $this->actions->getAction($akce);
-            $akce_param = $_POST['akce_param'] ?? null;
-            if (!$may_write) {
-                $refused = true;
-            } elseif ($action2do && $action2do->isPerm4Perform($this, $item_zids, $akce_param)) {
-                $this->msg[] = $action2do->perform($this, $item_zids, $akce_param);
+            $action2do = $this->actions->getAction($akce);
+            if ($action2do && $action2do->isPerm4Perform($this, $item_zids, $_REQUEST['akce_param'])) {
+                $this->msg[] = $action2do->perform($this, $item_zids, $_REQUEST['akce_param']);
             }
         }
 
-        // switches of the view (tabs, bookmarks) are links; the ones which write come only by POST
+        // new approach uses AA\Manageractions
         if ($this->switches) {
             foreach ($this->switches as $sw => $switch) {
-                if ($switch->allowGet()) {
-                    $input = $_GET;
-                } else {
-                    $refused = $refused || isset($_GET[$sw]) || (isset($_POST[$sw]) && !$may_write);
-                    $input   = $may_write ? $_POST : [];
-                }
-                if (isset($input[$sw]) && $switch->isPerm4Perform($this, $item_zids, $input[$sw])) {
-                    $this->msg[] = $switch->perform($this, $item_zids, $input[$sw]);
+                if (isset($_GET[$sw]) && $switch->isPerm4Perform($this, $item_zids, $_GET[$sw])) {
+                    $this->msg[] = $switch->perform($this, $item_zids, $_GET[$sw]);
                 }
             }
         }
@@ -1152,22 +1099,20 @@ class Manager extends AA_Storable
         // update scroller (items could be deleted, moved, ...)
         if ($this->scroller) {
             $this->scroller->update();
-            if ($_GET['listlen'] ?? '') {
+            if ($_GET['listlen']) {
                 $this->setListlen($_GET['listlen']);
             }
             // new search - go to first page
-            if ($_REQUEST['srchbr_akce'] ?? '') {
+            if ($_REQUEST['srchbr_akce']) {
                 $this->go2page(1);
             }
         }
 
 
         // for managed class
-        if (($_POST['aa'] ?? null) && ($this->managed->isAction('edit') || $this->managed->isAction('add'))) {
-            if (!$may_write) {
-                $refused = true;
-            } else {
-                $form = $this->managed->getForm(self::requestedId(), $this->module_id);
+        if ($this->managed->isAction('edit') || $this->managed->isAction('add')) {
+            if ($_POST['aa']) {
+                $form = $this->managed->getForm($_GET['id'], $this->module_id);
                 // the managed of the page - with its actions, not the defaults (add, edit)
                 if ($form->process($_POST['aa'], $this->managed) === AA_Form::REFUSED) {
                     $this->msg[] = MsgErr($form->getError());
@@ -1175,17 +1120,6 @@ class Manager extends AA_Storable
                 $this->form_posted = true;
             }
         }
-
-        if ($refused) {
-            $this->msg[] = MsgErr(_m('The action was not performed - use the button on the page.'));
-        }
-    }
-
-    /** the settings form of action $id; '' - no such action, or one without settings */
-    public function actionSettingsHtml(string $id): string
-    {
-        $action = $this->actions?->getAction($id);
-        return ($action?->isSetting()) ? (string) $action->htmlSettings() : '';
     }
 
     /** zids directly from manager, which is a right way! */
@@ -1227,13 +1161,6 @@ class Manager extends AA_Storable
     }
 
 
-    /** the object of the edit form, ?id=; '' = none - ?id[]=x is an array, which names no object */
-    private static function requestedId(): string
-    {
-        $id = $_GET['id'] ?? '';
-        return is_string($id) ? $id : '';
-    }
-
     /**
      * @param zids|null $zids  @deprecated - manager should generate the zids from its own settings
      * @return string
@@ -1244,29 +1171,23 @@ class Manager extends AA_Storable
         global $r_state;
 
         $zids = $zids ?? $this->getZids();
-        $id   = self::requestedId();
 
-        if (!$this->form_posted && (($id && $this->managed->isAction('edit')) || (($_GET['add'] ?? '') && $this->managed->isAction('add')))) {
+        if (!$this->form_posted && (($_GET['id'] && $this->managed->isAction('edit')) || ($_GET['add'] && $this->managed->isAction('add')))) {
 
-            if (($refusal = $this->managed->formRefusal($id, $this->module_id)) !== null) {
-                $r_state['manager'][$this->_manager_id] = $this->getState();
-                return $this->getAndClearMessages() . MsgErr($refusal);
-            }
-            $form = $this->managed->getForm($id, $this->module_id);
+            $form = $this->managed->getForm($_GET['id'], $this->module_id);
             $form_buttons = [ "update", "cancel"];
 
             try {
                 // the id goes back with the post - the form saves only the object it was built for
-                $html = $this->getAndClearMessages() . '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $id ? ['id' => $id] : []))) . '">' . FormToken::field(self::FORM_TOKEN);
-                $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($id), $form_buttons);
+                $html = '<form name="f" method="post" action="' . safe(StateUrl(get_url('', $_GET['id'] ? ['id' => $_GET['id']] : []))) . '">';
+                $html .= getFrmTabCaption(_m("Edit id") . ': ' . safe($_GET['id']), $form_buttons);
                 $html .= '<tr><td colspan="2">';
                 $html .= $form->getObjectEditHtml();//            $html .= $form->getEditFormHtml();
                 $html .= '</td></tr>';
                 $html .= getFrmTabEnd($form_buttons);
                 $html .= '</form>';
             } catch (Exception $e) {
-                // the message may carry the id of the request
-                $html = MsgErr(safe($e->getMessage()));
+                $html = MsgErr($e->getMessage());
             }
             // echo $form->getAjaxHtml('xxx'); // ($_GET['ret_code']);
         } else {
@@ -1303,21 +1224,9 @@ class Manager extends AA_Storable
      * to searchbar after calling this function. Then you MUST close the form
      * with getSearchbarEnd() function
      */
-    /** The 'js' of an "Empty trash" menu item: asks, then POSTs DeleteTrash with the token (manager.js).
-     *  The arguments are escaped for JS strings (an apostrophe of a translation would break the call;
-     *  escape4js, not json_encode - some language files are not UTF-8), the whole for the attribute:
-     *  menus put it raw into href="javascript:..." or onclick="...".
-     *  @param string $url the page - '{href}' for the URL the menu computes */
-    public static function emptyTrashJs(string $url): string
-    {
-        $args = array_map(static fn(string $s): string => "'" . escape4js($s) . "'", [$url, _m("Are you sure you want to empty trash?"), FormToken::get(self::FORM_TOKEN)]);
-        return safe('EmptyTrashQuestion(' . implode(',', $args) . ')');
-    }
-
     public function getSearchbarBegin(): string
     {
-        // filtering goes by GET, so the token is not a field (it would land in the URL); JS adds it to a POST
-        $ret = '<form name="filterform" class="noprint aa-ui-filterform" data-aa-token="' . safe(FormToken::get(self::FORM_TOKEN)) . '">' . StateHidden();
+        $ret = '<form name="filterform" class="noprint aa-ui-filterform">' . StateHidden();
         if (isset($this->searchbar)) {
             $ret .= $this->searchbar->getBar();
         }
@@ -1339,8 +1248,7 @@ class Manager extends AA_Storable
     */
     public function getItems($zids): string
     {
-        // no token field: content of a row (a <button> in it) would submit it natively; JS adds it
-        $ret  = '<form name="itemsform" id="itemsform" method="post" action="' . StateUrl() . '" data-aa-token="' . safe(FormToken::get(self::FORM_TOKEN)) . '">';
+        $ret  = '<form name="itemsform" id="itemsform" method="post" action="' . StateUrl() . '">';
         $ret .= '<div class=aa-manager-tab>';
         $ret .= '<input type="submit" disabled style="display: none" aria-hidden="true"> '; // prevents form to be submitted by pressing Enter on any live text field
 
@@ -1425,7 +1333,7 @@ class Manager extends AA_Storable
             }
             $ret .=  '</div>';
             //            $ret .=  '<input type="hidden" name="debug" value="511">';
-            $ret .=  '<div class="aa_manager_actions_all" style="display: none">' . _m("No item selected. Perform action for all filtered items? ") . '<input type="hidden" name="aa_akce_all" value=""><button type="button" class="aa-button" onclick="AA_$N(\'aa_akce_all\').value=1;MarkedActionGo();">' . _m('Run for %1 items', [$this->scroller->getItemCount()]) . '</button></div>';
+            $ret .=  '<div class="aa_manager_actions_all" style="display: none">' . _m("No item selected. Perform action for all filtered items? ") . '<input type="hidden" name="aa_akce_all" value=""><button class="aa-button" onclick="AA_$N(\'aa_akce_all\').value=1;MarkedActionGo();">' . _m('Run for %1 items', [$this->scroller->getItemCount()]) . '</button></div>';
             $ret .=  "<div id=\"markedactionparams\"></div>";
             $ret .= '</div>';
         }

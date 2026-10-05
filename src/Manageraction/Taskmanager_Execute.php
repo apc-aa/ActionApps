@@ -6,7 +6,9 @@ use AA\Later\Toexecute;
 use AA\Manager;
 use zids;
 
-/** Taskmanager_Execute - runs the selected tasks of the queue now */
+/** Manager action Item_DeleteTrash - Handler for DeleteTrash switch
+ *  Delete all items in the trash bin
+ */
 class Taskmanager_Execute extends AbstractManageraction
 {
     /** Name of this Manager's action */
@@ -29,15 +31,15 @@ class Taskmanager_Execute extends AbstractManageraction
         }
 
         $toexecute = new Toexecute();
-        $toexecute->executeTask($item_zids->shortids(), self::expectedPriorities($manager->getPostedChb()));
+        $toexecute->executeTask($item_zids->shortids(), self::expectedPriorities($_REQUEST['chb'] ?? []));
         return $toexecute->report();
     }
 
     /** Parse the priorities the UI displayed from the manager checkbox values
      *  ('p-<n>' token, see GetToexecuteManagerSettings()) - task_id => priority.
      *  The value is a token string so managers can pass more hints later;
-     *  values without the token (select-all, row buttons) yield no expectation.
-     * @param array $chb - Manager::getPostedChb(): 'x<task_id>' => 'p-<priority>'
+     *  values without the token (select-all, GET links) yield no expectation.
+     * @param array $chb - $_REQUEST['chb']: 'x<task_id>' => 'p-<priority>'
      */
     private static function expectedPriorities(array $chb): array
     {

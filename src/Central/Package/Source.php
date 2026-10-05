@@ -25,14 +25,6 @@ interface Source
      *  @param int $edited_after only those with last_edit after this unixtime; 0 = all */
     public function itemCount(string $slice_id, bool $all_bins, int $edited_after = 0): int;
 
-    /** Which of the slice's items $ids the filter selects - in any bin: the caller pages through the bins
-     *  it wants (FilteredSource).
-     *  @param ItemFilter $filter values in the slice's charset (ItemFilter::inCharset())
-     *  @param list<string> $ids unpacked
-     *  @param int $edited_after only those with last_edit after this unixtime; 0 = all
-     *  @return list<string> unpacked, lower case, any order */
-    public function matching(string $slice_id, ItemFilter $filter, array $ids, int $edited_after = 0): array;
-
     /** The items in the GetItemContent() form, reading password ignored - the caller has checked the
      *  exporter's permissions (Collector). Any order.
      *  @param list<string> $ids unpacked

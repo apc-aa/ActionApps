@@ -6,7 +6,7 @@
  * Parameters:
  * Input:
  *   $module_id       - for edit slice
- *   $fileName        - name of the data file step 1 stored in the slice's upload directory (AA\IO\ImportFile)
+ *   $fileName        - file in upload directory
  *   $addParamsSerial - serialized additional parameters (file type specific)
  *
  * PHP version 7.2+
@@ -34,7 +34,6 @@
 */
 
 use AA\IO\DB\DB_AA;
-use AA\IO\ImportFile;
 use AA\Util\InputVars;
 use AA\Util\Txt;
 
@@ -73,6 +72,7 @@ try {
     $save_name = InputVars::stringPOST('save_name');
     // array ( 'Dokončit …' => 2, )
     $save = InputVars::boolPOST('save');
+    $save_periodical = InputVars::boolPOST('save_periodical');
     $load = InputVars::boolPOST('load');
     $preview = InputVars::boolPOST('preview');
     $upload = InputVars::boolPOST('upload');
@@ -131,6 +131,8 @@ class AA_Csv_Importer {
 
     /** @var string Name under which the settings are stored ("Save setting as" form field) */
     public string $save_name = '';
+    /** @var bool Upload periodically (form checkbox, HTTP(S) sources only) */
+    public bool $save_periodical = false;
 
     var $auth_uid;
 
@@ -157,6 +159,7 @@ class AA_Csv_Importer {
         $this->actionIfItemExists  = $_REQUEST['actionIfItemExists'];
         $this->insertSilent        = (bool)$_REQUEST['insertSilent'];
         $this->save_name           = (string)($_REQUEST['save_name'] ?? '');
+        $this->save_periodical     = (bool)($_REQUEST['save_periodical'] ?? false);
         $this->addParams           = unserialize(Txt::url2bin($_REQUEST['addParamsSerial']), ['allowed_classes' => false]);
         $this->auth_uid            = AuthGetUid();
     }
@@ -197,23 +200,16 @@ class AA_Csv_Importer {
             exit;
         }
 
-        $this->filePath();
+        // check parameters
+/*
+        if (!file_exists($fileName)) {
+            MsgPage(StateUrl(_m("File for import does not exists:", self_base()."se_csv_import.php").$fileName );
+        }
+*/
         if (!$this->addParams) {
             MsgPage(_m("Invalid additional parameters for import"));
             exit;
         }
-    }
-
-    /** Full path of the data file. The request names it, so only a file step 1 stored in the slice's
-     *  upload directory is accepted - the import reads it and deletes it after Finish.
-     */
-    private function filePath(): string
-    {
-        $path = ImportFile::path((string) Files::destinationDir(AA_Slice::getModule($this->slice_id)), (string) $this->fileName);
-        if (is_null($path)) {
-            MsgPage(_m('The data to import are no longer on the server - load them again'), StateUrl(self_base() . "se_csv_import.php"));
-        }
-        return $path;
     }
 
 /** prepare function
@@ -259,13 +255,12 @@ class AA_Csv_Importer {
         $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
 
         // Create list of fields from the first row of csv data
-        $path       = $this->filePath();
-        $fieldNames = createFieldNames($path, $this->addParams);
+        $fieldNames = createFieldNames($this->fileName,$this->addParams);
 
 
         MoreTimeLimit(IMPORTFILE_TIME_LIMIT);	// set time for the executing this script
 
-        $handle       = fopen($path, 'rb');
+        $handle       = fopen($this->fileName, 'rb');
         $numProcessed = 0;
         $numError     = 0;
 
@@ -304,10 +299,13 @@ class AA_Csv_Importer {
 
         fclose($handle);
 
-        if (unlink($path)) {
-            AA_Log::write("CSV_IMPORT", '', new AA_Logentry_File(['outcome' => 'deleted', 'file' => $path]));
-        } else {
-            AA_Log::write("CSV_IMPORT", '', new AA_Logentry_File(['outcome' => 'delete failed', 'file' => $path]));
+        // deletes  uploaded file, todo - uncomment
+        if ( !in_array( Files::sourceType($this->fileName), ['HTTP', 'HTTPS']) ) {
+            if (unlink($this->fileName)) {
+                AA_Log::write("CSV_IMPORT", '', new AA_Logentry_File(['outcome' => 'deleted', 'file' => $this->fileName]));
+            } else {
+                AA_Log::write("CSV_IMPORT", '', new AA_Logentry_File(['outcome' => 'delete failed', 'file' => $this->fileName]));
+            }
         }
 
         $msg = _m("Added to slice"). $this->slice_id ." :<br><br>\n". $msg." <br><br>\n";
@@ -325,13 +323,12 @@ class AA_Csv_Importer {
         $trans_actions = new Actions($this->actions,$this->mapping, $this->html, $this->params);
 
         // Create list of fields from the first row of csv data
-        $path          = $this->filePath();
-        $fieldNames    = createFieldNames($path, $this->addParams);
+        $fieldNames    = createFieldNames($this->fileName,$this->addParams);
         $slice_fields  = $slice->getFields();
 
         $slf = array_merge(['unpacked_id.....' => 'Item id'], $slice_fields->getNameArray());
 
-        $handle = fopen($path, 'rb');
+        $handle = fopen($this->fileName, 'rb');
 
         FrmTabCaption(_m("Mapping preview"));
         FrmTabRow($slf);			// print output fields
@@ -373,7 +370,7 @@ class AA_Csv_Importer {
         $actionList = getActions();
 
         // Create input fields from the first row of CSV data
-        $inFields = createFieldNames($this->filePath(), $this->addParams);
+        $inFields = createFieldNames($this->fileName,$this->addParams);
 
 
         $form_buttons = [
@@ -431,7 +428,7 @@ class AA_Csv_Importer {
                    }
                    echo  "></td>";
                    echo "<td><input type=\"text\" name=\"params[$f_id]\" value=\""; if (!$set_default) {
-                       echo safe(stripslashes($this->params[$f_id]));
+                       echo stripslashes($this->params[$f_id]);
                    }
                    echo "\"></td>";
                    echo "<td class=\"tabhlp\">". getParamWizardLink("TRANS_ACTIONS","actions[$f_id]","params[$f_id]"). "</td>";
@@ -462,7 +459,7 @@ class AA_Csv_Importer {
                  ];
 
                  FrmSelectEasy("itemIdMappedActions", $mapping_options, $set_default ? 'store' : $this->itemIdMappedActions);
-                 echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. ($set_default ? '' : safe($this->itemIdMappedParams)).'">';
+                 echo '&nbsp<input type="text" name="itemIdMappedParams" value="'. ($set_default ? '' : $this->itemIdMappedParams).'">';
                ?></td>
             </tr>
         <?php
@@ -479,6 +476,8 @@ class AA_Csv_Importer {
 
         FrmInputRadio('actionIfItemExists', _m('If the item id is already in the slice'), $storage_mode, $set_default ? "insert_if_new" : $this->actionIfItemExists, true, '', '', 1);
         FrmInputChBox('insertSilent', _m('Silent'), $set_default ? false : $this->insertSilent, false, '', 1, false, _m("Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..."));
+        FrmTabSeparator(_m("Data source"));
+        FrmInputText('fileName', _m('Source'), $this->fileName, 254, 100);
 
         FrmTabSeparator(_m("Store settings..."));
 
@@ -489,6 +488,10 @@ class AA_Csv_Importer {
         FrmInputSelect('load_id', _m('Load setting'), (array)$load_arr);
 
         FrmInputText('save_name', _m('Save setting as'), $this->save_name);
+
+        if ( in_array(Files::sourceType($this->fileName), ['HTTP','HTTPS'])) {
+            FrmInputChBox('save_periodical', _m("Upload periodically"), $this->save_periodical);
+        }
 
         FrmTabEnd($form_buttons);
         echo "</form>";
@@ -503,9 +506,6 @@ if ( $load ) {
     // $importer = unserialize($ret['value']);
     $importer = unserialize( DB_AA::select1('val', "SELECT LOWER(HEX(`value`)) as val FROM object_text", [['object_id', $load_id], ['property', 'importer']]), ['allowed_classes' => [AA_Csv_Importer::class]] );
     $importer->setFilename($_REQUEST['fileName']);
-    // a stored setting is only the mapping - it runs as the current user, into the current slice
-    $importer->slice_id = AA::$module_id;
-    $importer->auth_uid = AuthGetUid();
 } else {
     $importer = new AA_Csv_Importer();
     $importer->loadFromRequest();
@@ -526,17 +526,16 @@ function SaveObjectProperty($obj_id, $property, $value): void
     $varset->doInsert('object_text');
 }
 
-// before saving - the setting is stored for the slice the importer names
-$importer->check();
-
 if ( $save ) {
     $obj_id = new_id();
     SaveObjectProperty($obj_id, 'type',       'AA_Csv_Importer');
     SaveObjectProperty($obj_id, 'importer',   serialize($importer));
     SaveObjectProperty($obj_id, 'name',       $save_name);
+    SaveObjectProperty($obj_id, 'periodical', $save_periodical);
     SaveObjectProperty($obj_id, 'owner',      $importer->getSliceId());
 }
 
+$importer->check();
 if ($upload) {
     $importer->upload();
 }
