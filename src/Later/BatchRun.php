@@ -858,16 +858,13 @@ abstract class BatchRun extends AA_Object
         if (!$valid) {
             return $this->endInvalid($expected);
         }
-        $round = Toexecute::roundSeconds();
-        if (($round !== null) && ($round < $min)) {
-            // no later round is longer until the config changes - waiting would go round for ever
-            return $this->errorAt($expected, 'ROUND_TOO_SHORT', '');
-        }
         $left = Toexecute::timeLeft();
         if (($left !== null) && ($left < $min)) {
-            // at the round's end, not now - the queue would take the row again every second
+            // at the round's end, not now - the queue would take the row again every second. A whole
+            // round too short is no failure either: another runner may have longer ones, and a run
+            // that never gets one hangs (isStuck()).
             $this->requeue(static::now() + (int) ceil($left) + 1, $priority);
-            return 'round end';
+            return (Toexecute::roundSeconds() < $min) ? 'round too short' : 'round end';
         }
         $budget = new BatchBudget(static::microNow() + self::stepSeconds($left), $limits['items'], $limits['bytes'], static::microNow(...));
         $claim  = 'stale';

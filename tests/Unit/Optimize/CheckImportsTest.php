@@ -118,6 +118,26 @@ final class CheckImportsTest extends TestCase
         $this->assertStringContainsString('cron', $finding->advice);
     }
 
+    /** a queue whose rounds are all shorter than a step needs: the run waits, unharmed, until the State Check says why */
+    public function test_stuckRun_roundsTooShort(): void
+    {
+        self::definition(self::DEF, 'prices');
+        $run   = self::importRun(self::DEF);
+        $round = new \ReflectionProperty(Toexecute::class, 'round');
+        $round->setValue(null, [microtime(true), 5.0]);
+        try {
+            $this->assertSame('round too short', self::runQueued());
+        } finally {
+            $round->setValue(null, null);
+        }
+        $this->assertSame([Run::RUNNING, '', '0'], [self::stored($run)['state'], self::stored($run)['error_code'], self::stored($run)['failures']]);
+        $this->assertCount(1, self::queue(), 'its step waits for the next round');
+
+        $finding = self::only(self::findings(time() + 3 * 3600), "stuck:$run");
+
+        $this->assertStringContainsString('TOEXECUTE_ALLOWED_TIME', $finding->advice);
+    }
+
     /** the hours count from where isStuck() counts: a step due later than the start */
     public function test_stuckRun_hoursSinceTheStepWasDue(): void
     {

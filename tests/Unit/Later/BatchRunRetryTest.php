@@ -229,21 +229,43 @@ final class BatchRunRetryTest extends TestCase
         }
     }
 
-    public function test_round_too_short_errors_round_too_short(): void
+    /** another runner may have longer rounds - a round all too short is no failure of the run */
+    public function test_round_too_short_requeues_at_round_end_without_failure(): void
     {
         $id = self::start()->getId();
+        self::storedSet($id, 'failures', '1');
         ScriptedBatchRun::$hookValues = ['minStepSeconds' => 20];
+        $before       = self::stored($id);
+        TableDb::$log = [];
 
         $ret = self::inRound(15.0, 0.0, static fn(): string => self::runQueued());
 
-        $this->assertSame('error ROUND_TOO_SHORT', $ret);
-        $stored = self::stored($id);
-        $this->assertSame('error', $stored['state']);
-        $this->assertSame('ROUND_TOO_SHORT', $stored['error_code']);
-        $this->assertSame('0', $stored['step']);
-        $this->assertSame('0', $stored['failures']);
-        $this->assertSame([], self::queue());
-        $this->assertSame([], ScriptedBatchRun::hooks(), 'no work, no afterClose()');
+        $this->assertSame('round too short', $ret);
+        $this->assertSame($before, self::stored($id), 'still active, no failure counted');
+        $this->assertSame([], ScriptedBatchRun::hooks(), 'no claim, no work');
+        $this->assertSame([BatchPosition::fingerprint(0, ['n' => 0])], self::queued(), 'the same step once more');
+        $this->assertGreaterThanOrEqual(self::NOW + 15, self::queue()[0]['execute_after'], 'at the end of the round');
+        $this->assertLessThanOrEqual(self::NOW + 16, self::queue()[0]['execute_after']);
+        foreach (TableDb::writes() as $sql) {
+            $this->assertStringStartsWith('INSERT INTO `toexecute`', $sql);
+        }
+    }
+
+    /** rounds that are all too short never end the run: it hangs, and the State Check says so */
+    public function test_round_too_short_for_ever_hangs(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$hookValues = ['minStepSeconds' => 20];
+        for ($round = 0; $round < 3; ++$round) {
+            $this->assertSame('round too short', self::inRound(15.0, 0.0, static fn(): string => self::runNewest()));
+        }
+        $this->assertSame([], ScriptedBatchRun::stuck(self::NOW + 9000), 'not before the retries and an hour');
+
+        $this->assertSame([$id], array_map(static fn(ScriptedBatchRun $r): string => $r->getId(), ScriptedBatchRun::stuck(self::NOW + 9001)));
+        $this->assertSame('running', self::stored($id)['state']);
+
+        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 1], false)];
+        $this->assertSame('step 1', self::inRound(30.0, 0.0, static fn(): string => self::runNewest()), 'a longer round goes on');
     }
 
     public function test_round_end_queue_refusal_does_not_recurse(): void
@@ -336,13 +358,11 @@ final class BatchRunRetryTest extends TestCase
         self::storedSet($id, 'lease', (string) (self::NOW + 100));
         self::storedSet($id, 'lease_tok', 'another-step');
         ScriptedBatchRun::$hookValues = ['minStepSeconds' => 20];
+        $before = self::stored($id);
 
-        self::inRound(15.0, 0.0, static fn(): string => self::runQueued());
+        $this->assertSame('round too short', self::inRound(15.0, 0.0, static fn(): string => self::runQueued()));
 
-        $stored = self::stored($id);
-        $this->assertSame('ROUND_TOO_SHORT', $stored['error_code']);
-        $this->assertSame((string) (self::NOW + 100), $stored['lease'], 'the step working elsewhere keeps its lease');
-        $this->assertSame('another-step', $stored['lease_tok']);
+        $this->assertSame($before, self::stored($id), 'the step working elsewhere keeps its lease');
     }
 
     // ---------------------------------------------------------------- retries spent

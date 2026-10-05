@@ -451,7 +451,7 @@ final class DetailPage
         $html .= match (true) {
             $run->state() === Run::ERROR => '<p>' . _m('Stopped by an error: %1', [self::errorHtml($p['error'])]) . '</p>'
                 . '<p>' . _m('Nothing more is imported and no new run starts until you act: Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported.') . '</p>',
-            $run->isStuck($now)   => '<p>' . _m('No step has worked on it for a long time - check that cron runs the task queue. Continue tries it again now; End stops it for good and keeps what was imported.') . '</p>',
+            $run->isStuck($now)   => '<p>' . _m('No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported.') . '</p>',
             $p['running']         => '<p>' . _m('A step is working now.') . '</p>',
             $run->isWaiting($now) => '<p>' . (($p['failures'] > 0)
                 ? _m('Waiting to try again at %1 after %2 failed tries.', [date('H:i', $p['next_at']), $p['failures']])

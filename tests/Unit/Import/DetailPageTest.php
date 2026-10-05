@@ -578,7 +578,7 @@ final class DetailPageTest extends TestCase
         $this->assertSame('Continue', $buttons['resume']['label']);
         self::assertReasonShown($buttons, self::STARTS, $actions);
         $this->assertStringContainsString('No step has worked on the last run for a long time. Continue it or End it first', $actions);
-        $this->assertMatchesRegularExpression('~No step has worked on it for a long time.*Continue.*End~s', $overview);
+        $this->assertMatchesRegularExpression('~No step has worked on it for a long time.*TOEXECUTE_ALLOWED_TIME.*Continue.*End~s', $overview);
         $this->assertStringNotContainsString('waits in the task queue', $overview);
         $this->assertStringContainsString('No step has worked on the last run', self::post('run'));
     }
