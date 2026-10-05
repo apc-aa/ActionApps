@@ -10,6 +10,10 @@
 */
 
 use AA\Cache\ImgCache;
+use AA\Http\Client;
+use AA\Http\ResponseTooLargeException;
+use AA\Http\TransportException;
+use AA\Optimize\CheckBlockedRequests;
 
 require_once __DIR__."/mimePart.php";
 
@@ -124,7 +128,27 @@ class htmlMimeMail {
      */
     function getFile($filename): string
     {
-        return AA_File_Wrapper::wrapper($filename)->contents();
+        return self::readFile((string) $filename);
+    }
+
+    /**
+     * The mail may carry item content, so a web address goes through the SSRF guard, and no stream
+     * but a local path (php://, file://, ...) is opened.
+     */
+    public static function readFile(string $filename): string
+    {
+        if (preg_match('~^https?://~i', $filename)) {
+            try {
+                $answer = Client::publicOnly(timeout: 60, idle: 30, redirects: 5, maxBytes: 25 * 1024 * 1024)->request('GET', $filename);
+            } catch (TransportException $e) {
+                CheckBlockedRequests::record($e, 'mail', '');
+                return '';
+            } catch (ResponseTooLargeException) {
+                return '';
+            }
+            return $answer->ok() ? $answer->body : '';
+        }
+        return str_contains($filename, '://') ? '' : AA_File_Wrapper::wrapper($filename)->contents();
     }
 
     /**
