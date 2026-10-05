@@ -371,15 +371,15 @@ final class RunWorkTest extends TestCase
     public function test_work_itemErrorsNumberedWithinTheJob(): void
     {
         $source = self::source(streams: 1, jobs: 1, items: 5, seconds: 10.0);
-        // the fifth item has no key
-        $source->jobs['s1'][0]['items'][4] = ['val' => 'no key'];
-        $run = self::startRun($source);
+        // the fifth item fails the validation
+        $source->jobs['s1'][0]['items'][4] = ['key' => 'k5', 'val' => 'bad'];
+        $run = self::startRun($source, [], ['validate' => '["{ifeq:{index:text...........1}:bad:no:1}"]']);
 
         self::runAll($run->getId());
 
         $errors = array_merge(...array_map(static fn($r): array => $r->extra['errors'] ?? [], TestRun::$committed));
         self::assertCount(1, $errors);
-        self::assertSame(['s1', 's1:a', 'EMPTY_KEY'], [$errors[0]['stream'], $errors[0]['job'], $errors[0]['code']]);
+        self::assertSame(['s1', 's1:a', 'VALIDATE'], [$errors[0]['stream'], $errors[0]['job'], $errors[0]['code']]);
         self::assertStringStartsWith('Item 5 (', $errors[0]['msg'], 'the number in the job, not in the second step');
         self::assertSame(1, TestRun::get($run->getId())?->counts()['errors']);
     }
@@ -788,10 +788,7 @@ final class RunWorkTest extends TestCase
     {
         $source = self::source(streams: 1, jobs: 2, items: 15);
         $source->minJob = 1;
-        foreach ([0, 1] as $j) {
-            $source->jobs['s1'][$j]['items'] = array_fill(0, 15, ['val' => 'no key']);
-        }
-        $run = self::startRun($source);
+        $run = self::startRun($source, [], ['validate' => '["no"]']);
 
         self::runAll($run->getId());
 

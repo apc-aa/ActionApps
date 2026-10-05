@@ -33,10 +33,15 @@ use AA\IO\Grabber\AbstractGrabber;
 use AA\Later\BatchBudget;
 use AA\Util\ReportTrait;
 use AA_Condition;
+use AA_Content;
 use AA_Item;
+use AA_Module;
 use AA_Set;
 use AA_Slice;
 use AA_Transformation;
+use AA_Transformation_CopyField;
+use AA_Transformation_Replace;
+use AA_Transformation_Setflag;
 use AA_Value;
 use Exception;
 use ItemContent;
@@ -123,6 +128,18 @@ class Saver implements AA\Later\LaterInterface
     /** items of an import whose key an item before them had */
     private int $collisions = 0;
 
+    /** items of an import skipped since clear_ids() as their key came out empty */
+    private int $empty_keys = 0;
+
+    /** @var list<array<string, string>> the first EMPTY_KEYS_KEPT of them: the source values of their key */
+    private array $empty_key_samples = [];
+
+    /** an item of an import since clear_ids() had its key */
+    private bool $keyed = false;
+
+    /** @var array<string, list<string>> key field => the source fields its transformation reads */
+    private array $key_reads = [];
+
     private const NO_COUNTS = ['new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0];
 
     /** errors() and samples() keep this many - the rest is only counted */
@@ -134,6 +151,9 @@ class Saver implements AA\Later\LaterInterface
     public const SAMPLE_CHARS  = 200;
     /** a key value in an error message is cut to this many characters */
     public const KEY_CHARS = 40;
+    /** emptyKeySamples() keeps this many, each with at most this many source fields */
+    public const EMPTY_KEYS_KEPT  = 20;
+    public const EMPTY_KEY_FIELDS = 5;
 
     /** the messages of errors() - never the validation output or the text of an exception, which
      *  may carry a key or a URL with one */
@@ -177,6 +197,9 @@ class Saver implements AA\Later\LaterInterface
         $this->samples = [];
         $this->keys_seen  = [];
         $this->collisions = 0;
+        $this->empty_keys        = 0;
+        $this->empty_key_samples = [];
+        $this->keyed             = false;
     }
 
     /** An import run: an exception from prepare() is thrown, not swallowed - the import tells a
@@ -228,6 +251,29 @@ class Saver implements AA\Later\LaterInterface
     public function counts(): array
     {
         return $this->counts;
+    }
+
+    /** Items of an import since clear_ids() skipped as their key came out empty, counted in counts()
+     *  as skipped too - a code of a territory the slice does not know is no error of the data, and an
+     *  error would keep the stream from its version. Whether no item of a whole job had its key (a
+     *  broken mapping) only the caller can tell: a job may span several Savers - see keyed(). */
+    public function emptyKeys(): int
+    {
+        return $this->empty_keys;
+    }
+
+    /** Data of the source: escape it (safe(), textContent in JS), never pass it through {…} or unalias.
+     *  @return list<array<string, string>> for the first $max emptyKeys(): the source fields the key
+     *          is computed from => value, masked and shortened */
+    public function emptyKeySamples(int $max = 20): array
+    {
+        return array_slice($this->empty_key_samples, 0, max(0, $max));
+    }
+
+    /** an item of an import since clear_ids() had every key field filled */
+    public function keyed(): bool
+    {
+        return $this->keyed;
     }
 
     /** Items of an import since clear_ids() whose key fields hold the values of an item before
@@ -369,6 +415,10 @@ class Saver implements AA\Later\LaterInterface
                         foreach ($flds as $fld) {
                             $condval = $content4id->getValue($fld);
                             if (trim($condval) === '') {
+                                if ($this->import_mode) {
+                                    $this->skipEmptyKey($source_content4id, $fld);
+                                    continue 3;
+                                }
                                 $err_count++;
                                 $this->itemError('EMPTY_KEY', $taken, $key_desc, "AA\IO\Saver->run(): key condition empty for $fld", $fld);
                                 continue 3; // another item
@@ -378,6 +428,7 @@ class Saver implements AA\Later\LaterInterface
                         }
                         if ($this->import_mode) {
                             $this->noteKey($content4id, $flds);
+                            $this->keyed = true;
                         }
                         $zids = $this->findByKey($set);
                         $key_found = !$zids->isEmpty();
@@ -518,6 +569,75 @@ class Saver implements AA\Later\LaterInterface
         }
     }
 
+    /** an item of an import skipped for its empty key, with what the key came from */
+    private function skipEmptyKey(AA_Content $source, string $field): void
+    {
+        $this->counts['skipped']++;
+        $this->empty_keys++;
+        if (count($this->empty_key_samples) < self::EMPTY_KEYS_KEPT) {
+            $this->empty_key_samples[] = $this->keySource($source, $field);
+        }
+    }
+
+    /**
+     * The fields of the source item the transformation of key field $field reads, those the job
+     * does not give: which of them gave the empty key cannot be told without evaluating the
+     * expression piece by piece. Names that look like a secret are left out - the expression may
+     * read a token to build the key.
+     * @return array<string, string> field => its first value, masked and shortened
+     */
+    private function keySource(AA_Content $source, string $field): array
+    {
+        $this->key_reads[$field] ??= $this->keyReads($field);
+        $content = $source->getContent();
+        $slice   = is_string($this->slice_id) ? AA_Slice::getModule($this->slice_id) : null;
+        $sample  = [];
+        foreach ($this->key_reads[$field] as $name) {
+            if (!array_key_exists($name, $content) || isset($this->context[$name]) || $this->hidden($name, $slice)
+                || preg_match('/pass|pwd|heslo|token|secret|auth|cred|cookie|session|jwt|bearer|(api|private|access).?key/i', $name)) {
+                continue;
+            }
+            // a blank key field beside the fields the expression names would only repeat that the key is empty
+            if (($name === $field) && (count($this->key_reads[$field]) > 1) && (trim((string) $source->getValue($name)) === '')) {
+                continue;
+            }
+            $sample[$this->clip($name, 32)] = $this->clip((string) $source->getValue($name), self::SAMPLE_CHARS);
+            if (count($sample) >= self::EMPTY_KEY_FIELDS) {
+                break;
+            }
+        }
+        return $sample;
+    }
+
+    /**
+     * The source fields the transformation of key field $field names the way AA reads a field of
+     * the item: field2copy of copyfield, {index:name} or {index:name:…} and {name} in its other
+     * texts (a name may hold spaces); the key field itself always, except for copyfield.
+     * @return list<string>
+     */
+    private function keyReads(string $field): array
+    {
+        $t13n = $this->transformations[$field] ?? null;
+        if ($t13n === null) {
+            return [$field];
+        }
+        if ($t13n instanceof AA_Transformation_CopyField) {
+            return [(string) $t13n->field2copy];
+        }
+        if (($t13n instanceof AA_Transformation_Replace) || ($t13n instanceof AA_Transformation_Setflag)) {
+            // they change the value the field already has
+            return [$field];
+        }
+        // first the field itself: translate, regexpreplace or addvalue start from the value it has
+        $names = [$field];
+        foreach (get_object_vars($t13n) as $text) {
+            if (is_string($text) && preg_match_all('/\{(?:index:([^:{}]+)[:}]|([^:{}]+)\})/u', $text, $m)) {
+                $names = [...$names, ...array_filter([...$m[1], ...$m[2]], static fn(string $name): bool => $name !== '')];
+            }
+        }
+        return array_values(array_unique($names));
+    }
+
     /** counts a key met before; a hash, so a long job keeps no source data */
     private function noteKey(ItemContent $content, array $fields): void
     {
@@ -568,10 +688,7 @@ class Saver implements AA\Later\LaterInterface
         $sample = [];
         foreach ($content->getContent() as $field_id => $values) {
             $field_id = (string) $field_id;
-            // packed ids are binary (their unpacked twins are there); protected fields are no preview -
-            // the list covers a password the slice has no field for
-            if (in_array($field_id, ['id..............', 'slice_id........', 'password........'], true) || !is_array($values)
-                || ($slice?->getField($field_id)?->isProtected() ?? false)) {
+            if (!is_array($values) || $this->hidden($field_id, $slice)) {
                 continue;
             }
             $sample[self::shorten($field_id, 32)] = array_map(
@@ -583,6 +700,14 @@ class Saver implements AA\Later\LaterInterface
             }
         }
         return $sample;
+    }
+
+    /** Packed ids are binary (their unpacked twins are there); protected fields are no preview - the
+     *  list covers a password the slice has no field for. */
+    private function hidden(string $field_id, ?AA_Module $slice): bool
+    {
+        return in_array($field_id, ['id..............', 'slice_id........', 'password........'], true)
+            || (($slice instanceof AA_Slice) && ($slice->getField($field_id)?->isProtected() ?? false));
     }
 
     private function outOfBudget(?BatchBudget $budget, int $limit, int $taken): bool

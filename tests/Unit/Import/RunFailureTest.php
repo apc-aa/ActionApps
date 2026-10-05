@@ -176,7 +176,7 @@ final class RunFailureTest extends TestCase
         $skip = TestRun::$committed[3];
         self::assertSame('', $skip->retry);
         self::assertSame(
-            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1, 'skips' => 1] + self::pastCheck()),
+            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1, 'skips' => 1, 'rkeyed' => 1] + self::pastCheck()),
             self::sorted($skip->position),
             'the next job, not started yet',
         );
@@ -225,7 +225,7 @@ final class RunFailureTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(self::sorted(['i' => 1] + self::pastCheck()), self::sorted(TestRun::$committed[3]->position));
+        self::assertSame(self::sorted(['i' => 1, 'rkeyed' => 1] + self::pastCheck()), self::sorted(TestRun::$committed[3]->position), 'the run had a keyed item');
         self::assertSame(['k-s1:a-1', 'k-s2:a-1', 'k-s2:b-1'], TestRun::storedValues('relation........'));
         self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
         self::assertSame('v-old', StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'the next changed run imports the stream again');

@@ -336,7 +336,7 @@ final class DetailPage
                 . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
                 . '</tr>';
             $samples = $run->samples();
-            $more    = self::runErrorHtml($p['error'] ?? null) . self::itemErrorsHtml($errors, (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
+            $more    = self::runErrorHtml($p['error'] ?? null) . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
             if ($more !== '') {
                 $html .= '<tr class="aa-import-run-more"><td colspan="' . count($heads) . '">' . $more . '</td></tr>';
             }
@@ -967,6 +967,27 @@ final class DetailPage
         }
         return '<details id="aa-import-errors-' . safe($runId) . '"><summary>' . _m('The first item errors (%1)', [count($errors)]) . '</summary>'
             . '<table><thead><tr><th scope="col">' . _m('Stream') . '</th><th scope="col">' . _m('Job') . '</th><th scope="col">' . _m('Code') . '</th><th scope="col">' . _m('Message') . '</th></tr></thead>'
+            . '<tbody>' . $rows . '</tbody></table></details>';
+    }
+
+    /** items skipped as their key came out empty: the source values the key was computed from
+     *  @param array{count: int, samples: list<array{stream: string, job: string, values: array<string, string>}>} $skipped */
+    private static function emptyKeysHtml(array $skipped, string $runId): string
+    {
+        if ($skipped['count'] === 0) {
+            return '';
+        }
+        $summary = _m('Skipped - the key came out empty (%1)', [$skipped['count']]);
+        if (!$skipped['samples']) {
+            return '<p>' . $summary . '</p>';
+        }
+        $rows = '';
+        foreach ($skipped['samples'] as $s) {
+            $values = array_map(static fn(string $field, string $value): string => safe($field) . ' = ' . safe($value), array_keys($s['values']), $s['values']);
+            $rows  .= '<tr><td>' . safe($s['stream']) . '</td><td>' . safe($s['job']) . '</td><td>' . implode('<br>', $values) . '</td></tr>';
+        }
+        return '<details id="aa-import-nokey-' . safe($runId) . '"><summary>' . $summary . '</summary>'
+            . '<table><thead><tr><th scope="col">' . _m('Stream') . '</th><th scope="col">' . _m('Job') . '</th><th scope="col">' . _m('Source value') . '</th></tr></thead>'
             . '<tbody>' . $rows . '</tbody></table></details>';
     }
 

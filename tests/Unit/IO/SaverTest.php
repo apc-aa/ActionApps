@@ -498,8 +498,8 @@ namespace Tests\Unit\IO {
             $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['known', 'unknown', ''])), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
             $saver->existing = ['known' => self::ITEM3];
 
-            $this->assertSame([2, 1], $saver->run());
-            $this->assertSame(['new' => 1, 'updated' => 1, 'skipped' => 0, 'errors' => 1], $saver->counts());
+            $this->assertSame([2, 0], $saver->run());
+            $this->assertSame(['new' => 1, 'updated' => 1, 'skipped' => 1, 'errors' => 0], $saver->counts(), 'an empty key among keyed items is skipped');
             $this->assertSame([self::ITEM3], $saver->updatedIds());
             $this->assertCount(1, $saver->newIds());
             $this->assertNotSame(self::ITEM3, $saver->newIds()[0]);
@@ -532,7 +532,9 @@ namespace Tests\Unit\IO {
 
         public function test_clearIds_resetsCountsErrorsAndSamples(): void
         {
-            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['a', ''])), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(['a', 'b'])), null, self::SLICE, 'update/insert', '["relation........"]'))
+                ->setImportMode()
+                ->addValidate('{ifeq:{index:relation........}:b:no:1}');
             $saver->run(false);
             $this->assertNotSame([], $saver->errors());
             $this->assertNotSame([], $saver->samples());
@@ -610,12 +612,13 @@ namespace Tests\Unit\IO {
 
         public function test_errors_structuredAndCapped(): void
         {
-            $saver = (new RecordingSaver(new ArrayGrabber($this->keyed(array_fill(0, 21, ''))), null, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            // outside an import: there an empty key is skipped
+            $saver = new RecordingSaver(new ArrayGrabber($this->keyed(array_fill(0, 21, ''))), null, self::SLICE, 'update/insert', '["relation........"]');
 
             $this->assertSame([0, 21], $saver->run());
             $this->assertCount(Saver::ERRORS_KEPT, $saver->errors(100));
             $this->assertCount(3, $saver->errors(3));
-            $this->assertSame(['code' => 'EMPTY_KEY', 'msg' => 'Item 1 (relation........=): key field relation........ is empty'], $saver->errors()[0]);
+            $this->assertSame(['code' => 'EMPTY_KEY', 'msg' => 'Item 1: key field relation........ is empty'], $saver->errors()[0]);
             $this->assertSame(21, $saver->counts()['errors']);
         }
 
@@ -671,11 +674,10 @@ namespace Tests\Unit\IO {
         public function test_setRedact_masksTheNamesInAMessage(): void
         {
             $saver = (new RecordingSaver(new ArrayGrabber([$this->item(self::ITEM1, ['headline........' => 'h'])]), null, self::SLICE, 'update/insert', '["sekret42........"]'))
-                ->setImportMode()
                 ->setRedact(static fn(string $text): string => str_replace('sekret42', '***', $text));
 
             $this->assertSame([0, 1], $saver->run());
-            $this->assertSame('Item 1 (***........=): key field ***........ is empty', $saver->errors()[0]['msg']);
+            $this->assertSame('Item 1: key field ***........ is empty', $saver->errors()[0]['msg']);
         }
 
         public function test_run_givesTheCallerItsSliceBack(): void
@@ -769,6 +771,194 @@ namespace Tests\Unit\IO {
             $this->expectOutputRegex('/finish - 2 OK/');
             $saver->run(false);
             $this->assertSame([], $saver->samples());
+        }
+
+        // ------------------------------------------------------------ empty key in an import
+
+        /** the key from geo only for a territory the slice knows - any other gives an empty key */
+        private function territoryKey(): array
+        {
+            return ['relation........' => new \AA_Transformation_Value(['new_flag' => 'u', 'new_content' => '{ifeq:{index:geo}{index:territory}:CZ0100T:R1}'])];
+        }
+
+        /** an item whose values have their flags, as a grabber gives them - a transformation reads the flag */
+        private function sourceItem(string $id, array $values): ItemContent
+        {
+            $content = new ItemContent();
+            $content->setItemID($id);
+            foreach ($values + ['relation........' => ''] as $field_id => $value) {
+                $content->setAaValue($field_id, new AA_Value($value, 0));
+            }
+            return $content;
+        }
+
+        /** @param list<string> $geos */
+        private function territorySaver(array $geos): RecordingSaver
+        {
+            $items = [];
+            foreach ($geos as $i => $geo) {
+                $items[] = $this->sourceItem(sprintf('%032x', $i + 1), ['geo' => $geo, 'territory' => 'T', 'headline........' => 'not read by the key']);
+            }
+            return (new RecordingSaver(new ArrayGrabber($items), $this->territoryKey(), self::SLICE, 'update/insert', '["relation........"]'))
+                ->setImportMode()
+                ->setContext(['territory' => 'T']);
+        }
+
+        public function test_emptyKey_skippedWithSample(): void
+        {
+            $saver = $this->territorySaver(['CZ0100', 'CZ9999']);
+
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame(['new' => 1, 'updated' => 0, 'skipped' => 1, 'errors' => 0], $saver->counts());
+            $this->assertSame([], $saver->errors());
+            $this->assertSame(1, $saver->emptyKeys());
+            $this->assertSame([['geo' => 'CZ9999']], $saver->emptyKeySamples(), 'the source field the key row names; not the job parameter, not other fields');
+            $this->assertTrue($saver->keyed());
+        }
+
+        public function test_emptyKey_allRowsSkipped_theCallerDecides(): void
+        {
+            // a job may span several Savers: only the run sees that none of its items had a key
+            $saver = $this->territorySaver(['CZ9998', 'CZ9999']);
+
+            $this->assertSame([0, 0], $saver->run());
+            $this->assertSame(['new' => 0, 'updated' => 0, 'skipped' => 2, 'errors' => 0], $saver->counts());
+            $this->assertSame([], $saver->errors());
+            $this->assertSame(2, $saver->emptyKeys());
+            $this->assertFalse($saver->keyed());
+        }
+
+        public function test_emptyKey_keepsNoListPerItem(): void
+        {
+            $saver = $this->territorySaver(array_fill(0, 300, 'CZ9999'));
+
+            $saver->run();
+
+            $this->assertSame(300, $saver->emptyKeys());
+            foreach ((new \ReflectionObject($saver))->getProperties() as $prop) {
+                $value = $prop->getValue($saver);
+                if (is_array($value)) {
+                    $this->assertLessThanOrEqual(Saver::EMPTY_KEYS_KEPT, count($value), $prop->getName());
+                }
+            }
+        }
+
+        /** @return list<string> the fields keySource() samples of an item with $fields, key by $expression */
+        private function sampledBy(string $expression, array $fields): array
+        {
+            $t13s  = ['relation........' => new \AA_Transformation_Value(['new_flag' => 'u', 'new_content' => $expression])];
+            $saver = (new RecordingSaver(new ArrayGrabber([$this->sourceItem(self::ITEM1, $fields)]), $t13s, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+            $saver->run();
+            return array_keys($saver->emptyKeySamples()[0]);
+        }
+
+        public function test_emptyKey_sampleOnlyFieldsTheExpressionReads(): void
+        {
+            $fields = ['Kód obce' => '', 'Kód' => 'x', 'obce' => 'x', 'index' => 'x', 'ifset' => 'x', 'geo' => 'x', 'gid' => 'x', 'headline........' => 'x'];
+
+            $this->assertSame(['Kód obce'], $this->sampledBy('{ifset:{index:Kód obce}:x}', $fields), 'a name with a space; not its words, the command or the text');
+            $this->assertEqualsCanonicalizing(['geo', 'gid'], $this->sampledBy('{ifeq:{index:geo:0}:{gid}::}', $fields), '{index:name:…} and {name}');
+        }
+
+        public function test_emptyKey_secretLookingNamesNotSampled(): void
+        {
+            $secret = ['api_token', 'Password', 'apikey', 'client_secret', 'user_pwd', 'heslo', 'credentials', 'cookie', 'session_id', 'jwt', 'bearer', 'access_key'];
+            $fields = array_fill_keys([...$secret, 'geo', 'key'], 'x');
+            $read   = implode('', array_map(static fn(string $name): string => "{index:$name}", array_keys($fields)));
+
+            $this->assertSame(['geo', 'key'], $this->sampledBy("{ifeq:$read:ok:}", $fields), 'a plain key column stays visible');
+        }
+
+        public function test_emptyKey_replaceAndSetflagReadTheKeyFieldItself(): void
+        {
+            foreach ([
+                // a territory name the table lacks: the catch-all row gives an empty key
+                [new \AA_Transformation_Translate(['new_flag' => 'u', 'translation' => "Praha:CZ0100\n:regexp:/.*/:"]), 'Brno'],
+                [new \AA_Transformation_Replace(['searchpattern' => 'CZ', 'replacestring' => '']), 'CZ'],
+                [new \AA_Transformation_Setflag(['new_flag' => 't']), ' '],
+            ] as [$t13n, $value]) {
+                $items = [$this->sourceItem(self::ITEM1, ['relation........' => $value, 'geo' => 'x'])];
+                // built into a new item, as an import does: the source keeps the value the key came from
+                $grabber = new class ($items) extends ArrayGrabber {
+                    public function isDirectfill(): bool
+                    {
+                        return false;
+                    }
+                };
+                $saver = (new RecordingSaver($grabber, ['relation........' => $t13n], self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+
+                $saver->run();
+
+                $this->assertSame([['relation........' => $value]], $saver->emptyKeySamples(), $t13n::class);
+            }
+        }
+
+        public function test_emptyKey_nonUtf8FieldNameRaisesNoWarning(): void
+        {
+            set_error_handler(static function (int $no, string $msg): never {
+                throw new \ErrorException($msg, 0, $no);
+            });
+            try {
+                $this->assertSame(['geo'], $this->sampledBy('{ifeq:{index:geo}:never:1}', ["\xffgeo" => 'x', 'geo' => 'x']), 'a source field name');
+            } finally {
+                restore_error_handler();
+            }
+        }
+
+        public function test_emptyKey_outsideImportUnchanged(): void
+        {
+            $items = [$this->sourceItem(self::ITEM1, ['geo' => 'CZ0100', 'territory' => 'T']), $this->sourceItem(self::ITEM2, ['geo' => 'CZ9999', 'territory' => 'T'])];
+            $saver = new RecordingSaver(new ArrayGrabber($items), $this->territoryKey(), self::SLICE, 'update/insert', '["relation........"]');
+
+            $this->assertSame([1, 1], $saver->run());
+            $this->assertSame(['new' => 0, 'updated' => 1, 'skipped' => 0, 'errors' => 1], $saver->counts());
+            $this->assertContains('AA\IO\Saver->run(): key condition empty for relation........', $this->texts($saver));
+            $this->assertSame(0, $saver->emptyKeys());
+            $this->assertSame([], $saver->emptyKeySamples());
+        }
+
+        public function test_emptyKey_samplesCappedAndShortened(): void
+        {
+            $saver = $this->territorySaver(['CZ0100', ...array_fill(0, Saver::EMPTY_KEYS_KEPT + 5, str_repeat('é', 500))]);
+
+            $this->assertSame([1, 0], $saver->run());
+            $this->assertSame(Saver::EMPTY_KEYS_KEPT + 5, $saver->emptyKeys());
+            $this->assertCount(Saver::EMPTY_KEYS_KEPT, $saver->emptyKeySamples(100));
+            $this->assertCount(3, $saver->emptyKeySamples(3));
+            $this->assertSame(Saver::SAMPLE_CHARS, mb_strlen($saver->emptyKeySamples()[0]['geo']));
+        }
+
+        public function test_emptyKey_sampleRedacted(): void
+        {
+            // the secret ends past SAMPLE_CHARS: masked before the value is cut
+            $saver = $this->territorySaver(['CZ0100', str_repeat('x', 190) . 'apikey=sekret4242424242'])
+                ->setRedact(static fn(string $text): string => str_replace('sekret4242424242', '***', $text));
+
+            $saver->run();
+
+            $this->assertSame(str_repeat('x', 190) . 'apikey=***', $saver->emptyKeySamples()[0]['geo']);
+        }
+
+        public function test_emptyKey_copiedFieldIsTheSample(): void
+        {
+            $t13s  = ['relation........' => new \AA_Transformation_CopyField(['field2copy' => 'Kód obce'])];
+            $items = [$this->sourceItem(self::ITEM1, ['Kód obce' => 'R1']), $this->sourceItem(self::ITEM2, ['Kód obce' => ' ', 'Kód' => 'not this one'])];
+            $saver = (new RecordingSaver(new ArrayGrabber($items), $t13s, self::SLICE, 'update/insert', '["relation........"]'))->setImportMode();
+
+            $saver->run();
+
+            $this->assertSame([['Kód obce' => ' ']], $saver->emptyKeySamples());
+        }
+
+        public function test_clearIds_resetsEmptyKeys(): void
+        {
+            $saver = $this->territorySaver(['CZ0100', 'CZ9999']);
+            $saver->run();
+
+            $saver->clear_ids();
+
+            $this->assertSame([0, []], [$saver->emptyKeys(), $saver->emptyKeySamples()]);
+            $this->assertFalse($saver->keyed());
         }
 
         public function test_importMode_storeItemWithoutCacheInvalidation(): void

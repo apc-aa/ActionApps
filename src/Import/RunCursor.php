@@ -18,9 +18,12 @@ final class RunCursor
     public const SKIPS_IN_A_ROW = 3;
 
     /**
-     * Where a run starts; a new stream starts with all but i, checked and after of it.
+     * Where a run starts; a new stream starts with all but i, checked, rkeyed and after of it.
      * - failed: the stream skipped a job or lost items to errors - its version stays the old one;
      * - skips: jobs of the stream skipped in a row, since the last one done;
+     * - keyed, nokey: an item of the cursor's job had its key; items of it skipped without one - none
+     *   keyed at the job's end means a broken mapping, also when the job spans several steps;
+     * - rkeyed: an item of the run had its key - a job cut by the run's limit says nothing of the mapping then;
      * - probed, pv: the changed or run mode asked probe() at the stream's start, and the version it gave;
      * - after: the key of a closed stream whose expression is due;
      * - checked: a check, a baseline or a live run asked check(); ccode: what ends the run in its next step.
@@ -28,7 +31,7 @@ final class RunCursor
     public const START = [
         'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',
         'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '',
-        'after' => '', 'checked' => 0, 'ccode' => '', 'skips' => 0,
+        'after' => '', 'checked' => 0, 'ccode' => '', 'skips' => 0, 'keyed' => 0, 'nokey' => 0, 'rkeyed' => 0,
     ];
 
     /** the stored position in the shape of START, the types of START */
@@ -44,7 +47,7 @@ final class RunCursor
 
     public static function nextStream(array $pos): array
     {
-        return ['i' => $pos['i'] + 1, 'checked' => $pos['checked']] + self::START;
+        return ['i' => $pos['i'] + 1, 'checked' => $pos['checked'], 'rkeyed' => $pos['rkeyed']] + self::START;
     }
 
     /** a source handing out the cursor's job again, or more than MAX_PAGES jobs, goes round in a cycle */
@@ -56,7 +59,7 @@ final class RunCursor
     /** the cursor on $job, a job not started yet */
     public static function started(array $pos, string $job): array
     {
-        return ['job' => $job, 'offset' => 0, 'fp' => '', 'pages' => $pos['pages'] + 1, 'cur' => sha1($job)] + $pos;
+        return ['job' => $job, 'offset' => 0, 'fp' => '', 'pages' => $pos['pages'] + 1, 'cur' => sha1($job), 'keyed' => 0, 'nokey' => 0] + $pos;
     }
 
     /** the failed job at $pos is the SKIPS_IN_A_ROW-th in a row: the rest of its stream is skipped */
@@ -74,7 +77,7 @@ final class RunCursor
     /** the cursor's job gone from the source: the stream starts over, its stored items stay */
     public static function restarted(array $pos): array
     {
-        return ['job' => '', 'offset' => 0, 'fp' => '', 'restarts' => $pos['restarts'] + 1] + $pos;
+        return ['job' => '', 'offset' => 0, 'fp' => '', 'restarts' => $pos['restarts'] + 1, 'keyed' => 0, 'nokey' => 0] + $pos;
     }
 
     /** whether this step counts the job: one that read nothing more than the cursor $from had was

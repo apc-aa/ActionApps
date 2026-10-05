@@ -636,6 +636,39 @@ final class DetailPageTest extends TestCase
         $this->assertStringContainsString('dry run', $html);
     }
 
+    public function test_runs_listEscapesEmptyKeySamples(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'empty_keys', json_encode(['count' => 7, 'samples' => [
+            ['stream' => 's1', 'job' => '<i>job</i>', 'values' => ['<b>geo</b>' => '<script>alert(1)</script> {user:password}']],
+        ]], JSON_THROW_ON_ERROR));
+
+        $html = self::page()->runsHtml(time());
+
+        foreach (['<script>', '<b>geo', '<i>job'] as $markup) {
+            $this->assertStringNotContainsString($markup, $html);
+        }
+        $this->assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt; {user:password}', $html, 'never expanded');
+        $this->assertStringContainsString('&lt;b&gt;geo&lt;/b&gt;', $html);
+        $this->assertStringContainsString('id="aa-import-nokey-' . $id . '"', $html);
+        $this->assertStringContainsString('(7)', $html, 'all of them counted, not only the samples');
+    }
+
+    public function test_runs_emptyKeysWithoutSamples_onlyTheCount(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'empty_keys', json_encode(['count' => 3, 'samples' => []], JSON_THROW_ON_ERROR));
+
+        $html = self::page()->runsHtml(time());
+
+        $this->assertStringContainsString('<p>Skipped - the key came out empty (3)</p>', $html);
+        $this->assertStringNotContainsString('aa-import-nokey-', $html, 'no empty table');
+    }
+
     public function test_runs_lastTwenty(): void
     {
         self::definition();

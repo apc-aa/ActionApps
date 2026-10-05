@@ -18,11 +18,11 @@ final class RunCursorTest extends TestCase
         self::assertSame([2, '7', 0], [$pos['i'], $pos['job'], $pos['pages']]);
     }
 
-    public function test_nextStream_keepsOnlyTheStreamIndexAndTheCheck(): void
+    public function test_nextStream_keepsOnlyTheStreamIndexTheCheckAndTheRunsKey(): void
     {
-        $pos = ['i' => 3, 'job' => 's4:b', 'pages' => 9, 'wrote' => 1, 'failed' => 1, 'after' => 's3', 'checked' => 1] + RunCursor::START;
+        $pos = ['i' => 3, 'job' => 's4:b', 'pages' => 9, 'wrote' => 1, 'failed' => 1, 'after' => 's3', 'checked' => 1, 'keyed' => 1, 'nokey' => 2, 'rkeyed' => 1] + RunCursor::START;
 
-        self::assertSame(['i' => 4, 'checked' => 1] + RunCursor::START, RunCursor::nextStream($pos));
+        self::assertSame(['i' => 4, 'checked' => 1, 'rkeyed' => 1] + RunCursor::START, RunCursor::nextStream($pos));
     }
 
     public function test_cycles_repeatedJobOrTooManyPages(): void

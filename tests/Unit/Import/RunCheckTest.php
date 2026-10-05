@@ -8,6 +8,7 @@ use AA\Import\Catalog;
 use AA\Import\CatalogEntry;
 use AA\Import\CatalogPage;
 use AA\Import\CheckResult;
+use AA\Import\ParamsGrabber;
 use AA\Import\Probe;
 use AA\Import\RunCursor;
 use AA\Import\Stream;
@@ -16,6 +17,8 @@ use AA\IO\DB\DB_AA;
 use AA\Http\TransportException;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
+use AA_Content;
+use AA_Value;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
@@ -24,6 +27,7 @@ use Tests\Unit\Import\Fixtures\CatalogSource;
 use Tests\Unit\Import\Fixtures\CheckedSource;
 use Tests\Unit\Import\Fixtures\ListedSource;
 use Tests\Unit\Import\Fixtures\RunSteps;
+use Tests\Unit\Import\Fixtures\ScriptedGrabber;
 use Tests\Unit\Import\Fixtures\ScriptedSource;
 use Tests\Unit\Import\Fixtures\TestRun;
 
@@ -535,6 +539,140 @@ final class RunCheckTest extends TestCase
         self::assertSame(['jobs' => [['stream' => 's1', 'job' => 's1:a', 'count' => 2]], 'more' => 0], $report['collisions']);
         self::assertSame(0, TestRun::get($run->getId())?->counts()['errors']);
         self::assertCount(5, TestRun::stored(), 'each one stored - the last one wins');
+    }
+
+    // ------------------------------------------------------------ empty keys
+
+    public function test_emptyKey_skippedRowsKeepTheStreamVersion(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 1, items: 0, probed: true);
+        $source->jobs['s1'][0]['items'] = [['key' => 'k1', 'val' => '1'], ['key' => ' ', 'val' => 'a territory the slice lacks'], ['key' => 'k2', 'val' => '2']];
+        $run                            = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        $counts = TestRun::get($run->getId())?->counts();
+        self::assertSame([2, 1, 0], [$counts['new'] + $counts['updated'], $counts['skipped'], $counts['errors']]);
+        self::assertSame('v-s1', StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'a skipped row is no failed one');
+        $expected = ['count' => 1, 'samples' => [['stream' => 's1', 'job' => 's1:a', 'values' => ['key' => ' ']]]];
+        self::assertSame($expected, TestRun::get($run->getId())?->emptyKeys());
+        self::assertSame($expected, json_decode(self::stored($run->getId())['report'], true)['empty_keys']);
+    }
+
+    public function test_emptyKey_jobKeyedInAnEarlierStep_restStaysSkipped(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 1, items: 0, seconds: 10.0, probed: true);
+        $keyed                          = array_map(static fn(string $k): array => ['key' => $k, 'val' => 'v'], ['k1', 'k2', 'k3']);
+        $source->jobs['s1'][0]['items'] = [...$keyed, ...array_fill(0, 3, ['key' => '', 'val' => 'x'])];
+        $run                            = self::startRun($source);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertCount(2, $steps, 'three items fit a step - the second has no key at all');
+        self::assertSame([3, 0], [TestRun::get($run->getId())?->counts()['skipped'], TestRun::get($run->getId())?->counts()['errors']]);
+        self::assertSame('v-s1', StreamState::forDefinition(self::DEF)?->versionOf('s1'));
+        self::assertSame(3, TestRun::get($run->getId())?->emptyKeys()['count']);
+    }
+
+    public function test_emptyKey_allRowsIsError(): void
+    {
+        $source                         = self::source(streams: 2, jobs: 1, items: 1, probed: true);
+        $source->jobs['s1'][0]['items'] = [['key' => '', 'val' => '1'], ['key' => ' ', 'val' => '2']];
+        $run                            = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame([2, 1], [TestRun::get($run->getId())?->counts()['skipped'], TestRun::get($run->getId())?->counts()['errors']], 'one error for the job, its items stay skipped');
+        $errors = TestRun::get($run->getId())?->errors() ?? [];
+        self::assertSame([['stream' => 's1', 'job' => 's1:a', 'code' => 'EMPTY_KEY', 'msg' => 'No item of the job had its key (2 without it) - the key of the mapping is broken']], $errors);
+        self::assertNull(StreamState::forDefinition(self::DEF)?->versionOf('s1'));
+        self::assertSame('v-s2', StreamState::forDefinition(self::DEF)?->versionOf('s2'));
+        self::assertSame(2, json_decode(self::stored($run->getId())['report'], true)['empty_keys']['count'], 'the samples show what broke');
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function dryOrLive(): iterable
+    {
+        yield 'dry run' => ['1'];
+        yield 'live run' => [''];
+    }
+
+    #[DataProvider('dryOrLive')]
+    public function test_emptyKey_allRowsUpToTheLimitIsError(string $dry): void
+    {
+        $source                         = self::source(streams: 1, jobs: 1, items: 0, probed: true);
+        $source->jobs['s1'][0]['items'] = [...array_fill(0, 3, ['key' => '', 'val' => 'x']), ['key' => 'k4', 'val' => 'v']];
+        $run                            = self::startRun($source, ['dry' => $dry, 'limit' => '3']);
+
+        self::runAll($run->getId());
+
+        self::assertSame('None of the 3 items read had its key - the key of the mapping is broken', TestRun::get($run->getId())?->errors()[0]['msg'] ?? '');
+        self::assertSame(1, TestRun::get($run->getId())?->counts()['errors']);
+        self::assertNull(StreamState::forDefinition(self::DEF)?->versionOf('s1'));
+    }
+
+    public function test_emptyKey_limitCutsAJobAfterKeyedOnes_noError(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 2, items: 3, probed: true);
+        $source->jobs['s1'][1]['items'] = array_fill(0, 3, ['key' => '', 'val' => 'a territory the slice lacks']);
+        $run                            = self::startRun($source, ['dry' => '1', 'limit' => '4']);
+
+        self::runAll($run->getId());
+
+        $counts = TestRun::get($run->getId())?->counts();
+        self::assertSame([4, 1, 0], [$counts['read'], $counts['skipped'], $counts['errors']], 'one keyless item of job b says nothing of the mapping');
+    }
+
+    public function test_emptyKey_keyedJobThenKeylessJob_errorForTheSecond(): void
+    {
+        $source                         = self::source(streams: 1, jobs: 2, items: 2, probed: true);
+        $source->jobs['s1'][1]['items'] = array_fill(0, 2, ['key' => '', 'val' => 'x']);
+        $run                            = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        $errors = TestRun::get($run->getId())?->errors() ?? [];
+        self::assertSame([['s1:b', 'EMPTY_KEY']], array_map(static fn(array $e): array => [$e['job'], $e['code']], $errors), 'each job decides on its own items');
+        self::assertNull(StreamState::forDefinition(self::DEF)?->versionOf('s1'));
+    }
+
+    public function test_emptyKey_lastStepReadsNothing_stillError(): void
+    {
+        $items                          = array_fill(0, 3, ['key' => '', 'val' => 'x']);
+        $source                         = self::source(streams: 1, jobs: 1, items: 0, probed: true);
+        $source->jobs['s1'][0]['items'] = $items;
+        // a step before read all three items, and its time ran out before it asked for a fourth
+        $read = new ParamsGrabber(new ScriptedGrabber(array_map(static function (array $fields): AA_Content {
+            $item = new AA_Content();
+            foreach ($fields as $field => $value) {
+                $item->setAaValue($field, new AA_Value($value));
+            }
+            return $item;
+        }, $items)), ['fld' => 'text...........1']);
+        $read->prepare();
+        $run = self::startRun($source, ['position' => ['offset' => 3, 'fp' => $read->fingerprint(), 'nokey' => 3] + self::onJob('s1:a')]);
+
+        self::runAll($run->getId());
+
+        self::assertSame(0, TestRun::get($run->getId())?->counts()['read'], 'this step read nothing');
+        self::assertSame(['EMPTY_KEY'], array_column(TestRun::get($run->getId())?->errors() ?? [], 'code'));
+        self::assertNull(StreamState::forDefinition(self::DEF)?->versionOf('s1'));
+    }
+
+    public function test_emptyKey_jobReadAgain_countsItsKeysAnew(): void
+    {
+        $source = self::source(streams: 1, jobs: 1, items: 5, seconds: 10.0, probed: true);
+        $run    = self::startRun($source);
+        self::runOne();
+        self::assertSame(1, TestRun::$committed[0]->position['keyed']);
+
+        // the source changed under the offset: the job starts over, and now no item has a key
+        $source->jobs['s1'][0]['items'] = array_fill(0, 5, ['key' => '', 'val' => 'x']);
+        self::runAll($run->getId());
+
+        self::assertSame(['EMPTY_KEY'], array_column(TestRun::get($run->getId())?->errors() ?? [], 'code'));
+        self::assertStringContainsString('(5 without it)', TestRun::get($run->getId())?->errors()[0]['msg'] ?? '');
     }
 
     public function test_report_namesTheRunsAPlannedStartEnded(): void

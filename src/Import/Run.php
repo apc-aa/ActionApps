@@ -63,6 +63,9 @@ class Run extends BatchRun
     /** jobs whose key collisions the run lists; the rest it only counts */
     private const COLLISIONS_KEPT = 20;
 
+    /** items skipped for an empty key the run shows */
+    private const EMPTY_KEYS_KEPT = 20;
+
     private const MODES = ['run', 'changed', 'check', 'baseline'];
 
     /** the modes that store nothing in the slice: they ask the source and record what it says */
@@ -99,6 +102,9 @@ class Run extends BatchRun
      *  in jobs not listed}, for the report. Saver::collisions() of each step's part of a job - a lower
      *  bound; a job read again after JOB_GONE may count twice. */
     protected $collisions = '';
+    /** JSON {count, samples: [{stream, job, values: {source field: value}}]} of the items skipped as
+     *  their key came out empty (Saver::emptyKeys()), for the report */
+    protected $empty_keys = '';
 
     /** @var array<string, int> what the step counted so far */
     private array $tally = self::COUNTS;
@@ -114,6 +120,8 @@ class Run extends BatchRun
     private array $stepSamples = [];
     /** @var list<array{stream: string, job: string, count: int}> the key collisions of the step */
     private array $stepCollisions = [];
+    /** @var array{count: int, samples: list<array{stream: string, job: string, values: array<string, string>}>} */
+    private array $stepEmptyKeys = ['count' => 0, 'samples' => []];
     /** the check() of the step, its message redacted */
     private ?CheckResult $checkResult = null;
     /** the catalog with the pages of the step, stored at its end */
@@ -122,7 +130,7 @@ class Run extends BatchRun
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced'] as $id) {
+        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced', 'empty_keys'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -264,6 +272,25 @@ class Run extends BatchRun
         return $samples;
     }
 
+    /** Items skipped as their key came out empty, and the source values of the first ones. Data of
+     *  the source - escape it, never expand it.
+     *  @return array{count: int, samples: list<array{stream: string, job: string, values: array<string, string>}>} */
+    public function emptyKeys(): array
+    {
+        $stored  = json_decode((string) $this->empty_keys, true);
+        $samples = [];
+        foreach (is_array($stored['samples'] ?? null) ? $stored['samples'] : [] as $s) {
+            if (is_array($s)) {
+                $values = [];
+                foreach (is_array($s['values'] ?? null) ? $s['values'] : [] as $field => $value) {
+                    $values[(string) $field] = self::text($value);
+                }
+                $samples[] = ['stream' => self::text($s['stream'] ?? ''), 'job' => self::text($s['job'] ?? ''), 'values' => $values];
+            }
+        }
+        return ['count' => (int) (is_array($stored) ? ($stored['count'] ?? 0) : 0), 'samples' => $samples];
+    }
+
     /** a stored JSON value as text - what is no scalar shows empty */
     private static function text(mixed $value): string
     {
@@ -318,6 +345,7 @@ class Run extends BatchRun
         $this->streamRecords  = [];
         $this->stepSamples    = [];
         $this->stepCollisions = [];
+        $this->stepEmptyKeys  = ['count' => 0, 'samples' => []];
         $this->checkResult    = null;
         $this->catalog        = null;
         try {
@@ -364,6 +392,14 @@ class Run extends BatchRun
             $this->collisions = self::addCollisions((string) $this->collisions, $extra['collisions']);
             $write[]          = 'collisions';
         }
+        if (($extra['empty_keys']['count'] ?? 0) > 0) {
+            $kept             = $this->emptyKeys();
+            $this->empty_keys = json_encode([
+                'count'   => $kept['count'] + $extra['empty_keys']['count'],
+                'samples' => array_slice([...$kept['samples'], ...$extra['empty_keys']['samples']], 0, self::EMPTY_KEYS_KEPT),
+            ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
+            $write[]          = 'empty_keys';
+        }
         if ($write) {
             $this->update($write);
         }
@@ -399,6 +435,10 @@ class Run extends BatchRun
         $collisions = self::collisionsOf((string) $this->collisions);
         if ($collisions['jobs']) {
             $report['collisions'] = $collisions;
+        }
+        $empty_keys = $this->emptyKeys();
+        if ($empty_keys['count'] > 0) {
+            $report['empty_keys'] = $empty_keys;
         }
         if ($this->sourceOnly()) {
             $report['check'] = json_decode((string) $this->check, true);
@@ -975,7 +1015,30 @@ class Run extends BatchRun
             return self::STOP;
         }
         $this->took($grabber, $saver, $stream->key, $job->key, $ctx, $offset, $pos);
-        return $saver->reachedEnd() ? '' : self::STOP;
+        $ended = $saver->reachedEnd();
+        // the limit counts items read, so it may cut a job after a few items that have no key by chance
+        $cut = !$ended && ($pos['rkeyed'] === 0) && $this->limitReached();
+        if (($ended || $cut) && ($pos['keyed'] === 0) && ($pos['nokey'] > 0)) {
+            $this->keylessJob($stream->key, $job->key, $ctx, $ended, $pos);
+        }
+        return $ended ? '' : self::STOP;
+    }
+
+    /**
+     * No item of the job had its key, read to its end or up to the run's limit: the key of the
+     * mapping is broken, not the data. One error for the job, and its stream keeps the old version;
+     * the items stay skipped, their samples show what the key came from.
+     */
+    private function keylessJob(string $stream, string $job, Context $ctx, bool $ended, array &$pos): void
+    {
+        $this->tally['errors']++;
+        $pos['failed'] = 1;
+        if (count($this->itemErrors) < self::ERRORS_KEPT) {
+            $msg = $ended
+                ? "No item of the job had its key ({$pos['nokey']} without it) - the key of the mapping is broken"
+                : "None of the {$pos['nokey']} items read had its key - the key of the mapping is broken";
+            $this->itemErrors[] = ['stream' => $stream, 'job' => $ctx->redact($job), 'code' => 'EMPTY_KEY', 'msg' => $msg];
+        }
     }
 
     /** what the Saver did in the job counts, and the cursor moves past it */
@@ -992,10 +1055,18 @@ class Run extends BatchRun
         if ($saver->collisions() > 0) {
             $this->stepCollisions[] = ['stream' => $stream, 'job' => $ctx->redact($job), 'count' => $saver->collisions()];
         }
+        $this->stepEmptyKeys['count'] += $saver->emptyKeys();
+        foreach ($saver->emptyKeySamples(self::EMPTY_KEYS_KEPT - count($this->stepEmptyKeys['samples'])) as $values) {
+            $this->stepEmptyKeys['samples'][] = ['stream' => $stream, 'job' => mb_substr($ctx->redact($job), 0, Saver::KEY_CHARS), 'values' => $values];
+        }
         if ($this->isDry()) {
             $this->stepSamples = array_slice(array_merge($this->stepSamples, $saver->samples()), 0, self::SAMPLES_KEPT);
         }
         $pos['restarts'] += $grabber->restarted() ? 1 : 0;
+        // a job read again from its first item counts its keys anew
+        $pos['keyed']     = ((($pos['keyed'] === 1) && !$grabber->restarted()) || $saver->keyed()) ? 1 : 0;
+        $pos['nokey']     = ($grabber->restarted() ? 0 : $pos['nokey']) + $saver->emptyKeys();
+        $pos['rkeyed']    = (($pos['rkeyed'] === 1) || $saver->keyed()) ? 1 : 0;
         $pos['wrote']     = (($pos['wrote'] === 1) || ($saver->changedIds() !== [])) ? 1 : 0;
         // items lost to errors: changed must not skip them next time
         $pos['failed']    = (($pos['failed'] === 1) || ($saver->counts()['errors'] > 0)) ? 1 : 0;
@@ -1101,7 +1172,7 @@ class Run extends BatchRun
             min($pos['i'], count($keys)),
             count($keys),
             $retry,
-            ['errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog, 'collisions' => $this->stepCollisions],
+            ['errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog, 'collisions' => $this->stepCollisions, 'empty_keys' => $this->stepEmptyKeys],
         );
     }
 
