@@ -90,6 +90,8 @@ require_once __DIR__ . "/../include/formutil.php";
 
 const INSTALLAPP_TOKEN = InstallRun::FORM_TOKEN;
 const INSTALLAPP_JSON  = ['state', 'continue', 'end'];
+/** places of a note listed - its count says the rest */
+const INSTALLAPP_PLACES = 5;
 
 pageOpen();
 
@@ -1308,7 +1310,7 @@ function installapp_progress(string $run_id, string $uid): void
     ];
     echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs. The batches go in the task queue of this AA - this page only shows them and may be closed.') . '</div>';
     echo '<div id="installapp-progress" class="aa-installapp-progress" data-url="' . safe(installapp_url()) . '" data-report="' . safe(installapp_url(['run' => $run_id])) . '" data-token="' . safe(FormToken::get(INSTALLAPP_TOKEN)) . '"'
-        . ' data-run="' . safe($run_id) . '" data-tries="' . BatchRun::MAX_FAILURES . '" data-texts="' . safe(installapp_js_data($texts)) . '"'
+        . ' data-run="' . safe($run_id) . '" data-tries="' . BatchRun::MAX_FAILURES . '" data-places="' . INSTALLAPP_PLACES . '" data-texts="' . safe(installapp_js_data($texts)) . '"'
         . ' data-initial="' . safe(installapp_js_data((new TransferText($names))->page(TransferProgress::of($run, $uid)))) . '">';
     echo '<p><strong data-role="total"></strong><br><progress data-role="bar" hidden></progress></p>'
         . '<p><strong data-role="state" aria-live="polite">' . safe(installapp_state($run->state())) . '</strong> <span class="tabhlp" data-role="moved"></span></p>'
@@ -1346,20 +1348,39 @@ function installapp_js_data(array $data): string
     return (string) json_encode($data, JSON_INVALID_UTF8_SUBSTITUTE | JSON_UNESCAPED_SLASHES);
 }
 
-/** the report of a finished transfer, as its finish stored it */
+/** the report of a finished transfer, as its finish stored it, with what its batches found - the queue
+ *  may have run them with no page open */
 function installapp_check(InstallRun $run): void
 {
     $check = $run->report() + ['checked' => 0, 'slices' => [], 'findings' => []];
-    if ($run->cachesLeft()) {
-        echo '<div class="aa-err">' . _m('A cache was not cleared after the transfer') . ' - ' . _m('Pages of the new modules may show old content until their cache expires; the details are in the PHP error log.') . '</div>';
-    }
+    $page  = (new TransferText(installapp_slice_names($run)))->page(['warnings' => $run->warnings(), 'findings' => $run->findings(), 'afterClose' => $run->cachesLeft()]);
     echo '<div class="aa-ok">' . _m('The transfer is finished. Checked at %1:', [date('Y-m-d H:i', (int) $check['checked'])]) . '</div><table class="aa-installapp-findings"><tr><th>' . _m('Slice') . '</th><th class="aa-num">' . _m('Written') . '</th><th class="aa-num">' . _m('On the source') . '</th><th class="aa-num">' . _m('On this AA') . '</th></tr>';
     foreach ($check['slices'] as $s) {
         echo '<tr><td>' . a_href(AA_Module::getModuleUrl($s['target'], 'admin/index.php'), safe(AA_Module::getModuleName($s['target']) ?: $s['target'])) . '</td><td class="aa-num">' . $s['written'] . '</td><td class="aa-num">' . (($s['sourceCount'] === null) ? '?' : (int) $s['sourceCount']) . '</td><td class="aa-num">' . $s['targetCount'] . '</td></tr>';
     }
     echo '</table>';
+    installapp_notes([...$page['found'], ...$page['notes']]);
     installapp_findings(array_map(static fn(array $f): array => [(string) $f['path'], new LintFinding((string) $f['level'], (string) $f['code'], (string) $f['ref'], 0)], $check['findings']));
     echo '<p>' . _m('Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it.') . '</p>';
+}
+
+/** the notes of TransferText::page() as the progress page shows them, the most dangerous first
+ *  @param list<array{level: string, title: string, count: int, places: list<array{string, int}>, lines: list<string>}> $notes */
+function installapp_notes(array $notes): void
+{
+    if (!$notes) {
+        return;
+    }
+    $rank = array_flip(array_keys(FindingText::levels()));
+    usort($notes, static fn(array $a, array $b): int => ($rank[$a['level']] ?? 9) <=> ($rank[$b['level']] ?? 9));
+    echo '<ul class="aa-installapp-notes">';
+    foreach ($notes as $n) {
+        $places = array_map(static fn(array $p): string => "{$p[0]} ({$p[1]}×)", $n['places']);
+        $more   = count($places) - INSTALLAPP_PLACES;
+        $lines  = [implode(', ', array_slice($places, 0, INSTALLAPP_PLACES)) . (($more > 0) ? ' ' . _m('and %1 more', [$more]) : ''), ...$n['lines']];
+        echo '<li><strong>' . safe("{$n['title']} - {$n['count']}×") . '</strong>' . implode('', array_map(static fn(string $l): string => '<div>' . safe($l) . '</div>', array_filter($lines, static fn(string $l): bool => $l !== ''))) . '</li>';
+    }
+    echo '</ul>';
 }
 
 /** the progress page asks for the state of the run every few seconds while the queue moves it, more
@@ -1375,7 +1396,7 @@ function installapp_script(): void
     const LIVE = 3000;          // a batch moves the counts
     const IDLE = 20000;         // an error, a retry minutes away
     const LEVELS = ['S', 'E', 'W', 'I'];
-    const PLACES = 5;           // places of a note listed - its count says the rest
+    const PLACES = Number(box.dataset.places);
     const fill = (text, values) => text.replace(/\{(\w)\}/g, (all, key) => values[key] ?? all);
     const login = el('login');
     let s = JSON.parse(box.dataset.initial);
