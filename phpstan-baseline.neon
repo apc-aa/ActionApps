@@ -636,12 +636,6 @@ parameters:
 			path: src/Optimize/Convert2innodb.php
 
 		-
-			message: '#^Constant DB_NAME not found\.$#'
-			identifier: constant.notFound
-			count: 3
-			path: src/Optimize/Convert2utf8mb4.php
-
-		-
 			message: '#^Constant DB_CHARACTER_SET not found\.$#'
 			identifier: constant.notFound
 			count: 2
