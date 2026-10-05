@@ -215,10 +215,10 @@ abstract class AbstractGrabber implements NamedInterface
             $answer = $http->request($method, $url, $body, $headers);
         } catch (TransportException $e) {
             throw $e->malformedAddress()
-                ? new SourceRefused('SOURCE', 'Malformed address of ' . self::host($url))
-                : new SourceUnavailable('TRANSPORT', 'No answer from ' . self::host($url));
+                ? new SourceRefused('SOURCE', 'Malformed address of ' . self::host($url), $e->kind())
+                : new SourceUnavailable('TRANSPORT', 'No answer from ' . self::host($url), $e->kind());
         } catch (ResponseTooLargeException) {
-            throw new SourceRefused('SOURCE', 'The answer from ' . self::host($url) . ' is too large');
+            throw new SourceRefused('SOURCE', 'The answer from ' . self::host($url) . ' is too large', SourceFailure::TOO_LARGE);
         }
         $failure = SourceFailure::forStatus($answer->status, 'HTTP ' . $answer->status . ' from ' . self::host($url));
         if (!is_null($failure)) {

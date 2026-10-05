@@ -18,6 +18,7 @@ final class BatchStepResult
      * @param array $extra    the run user's own data for commitStep()
      * @param string $label   what the step did, for the progress page (which prints it through safe()) -
      *                        never an exception text, nor source data that may hold a secret
+     * @param string $retryDetail what tells the failure of $retry apart, as BatchFailed::$detail
      */
     public function __construct(
         public readonly array $position,
@@ -29,10 +30,14 @@ final class BatchStepResult
         public readonly int $total = 0,
         public readonly string $retry = '',
         public readonly array $extra = [],
+        public readonly string $retryDetail = '',
     ) {
         // retry becomes the run's error code once the retries are spent
         if (($retry !== '') && !BatchFailed::isCode($retry)) {
             throw new \InvalidArgumentException('Batch retry reason must match ' . BatchFailed::CODE);
+        }
+        if (!BatchFailed::isDetail($retryDetail)) {
+            throw new \InvalidArgumentException('Batch retry detail must match ' . BatchFailed::DETAIL);
         }
         // added and stored as JSON at the end of the step - a bad value must fail here, in work(), not in that transaction
         if (!mb_check_encoding($label, 'UTF-8') || !self::tally($counts) || !self::tally($warnings)) {

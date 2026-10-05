@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Later;
 
-/** Permanent failure of a batch run: the run goes to its error state with a code and a place.
- *  Only these two are stored and shown - never an exception text, which may carry source
+/** Permanent failure of a batch run: the run goes to its error state with a code, a place and a
+ *  detail. Only these are stored and shown - never an exception text, which may carry source
  *  data or a secret. $reason/$where are own properties: Exception::$code cannot be readonly. */
 final class BatchFailed extends \RuntimeException
 {
@@ -15,9 +15,14 @@ final class BatchFailed extends \RuntimeException
     /** shape of $where: words, digits and a few separators - no URL query, no quoted data, no newline */
     public const WHERE = '/^[\w .:\/#-]{0,200}$/uD';
 
-    /** @param string $where the run's own coordinates (stream, job, id) - never a URL nor data of the
-     *                       source, since it is stored and shown as it is */
-    public function __construct(public readonly string $reason, public readonly string $where = '')
+    /** shape of $detail (also BatchStepResult::$retryDetail): a short word, maybe with a number - no room for a URL or a text */
+    public const DETAIL = '/^(?:[a-z][a-z0-9_]{0,31}(?::[0-9]{1,5})?)?$/D';
+
+    /** @param string $where  the run's own coordinates (stream, job, id) - never a URL nor data of the
+     *                        source, since it is stored and shown as it is
+     *  @param string $detail what tells the failure of $reason apart, from the user's closed set (an
+     *                        import: AA\IO\SourceFailure::isDetail()); '' = nothing more */
+    public function __construct(public readonly string $reason, public readonly string $where = '', public readonly string $detail = '')
     {
         if (!self::isCode($reason)) {
             throw new \InvalidArgumentException('Batch error code must match ' . self::CODE);
@@ -25,11 +30,19 @@ final class BatchFailed extends \RuntimeException
         if (preg_match(self::WHERE, $where) !== 1) {
             throw new \InvalidArgumentException('Batch error place must match ' . self::WHERE);
         }
+        if (!self::isDetail($detail)) {
+            throw new \InvalidArgumentException('Batch error detail must match ' . self::DETAIL);
+        }
         parent::__construct($reason);
     }
 
     public static function isCode(string $code): bool
     {
         return preg_match(self::CODE, $code) === 1;
+    }
+
+    public static function isDetail(string $detail): bool
+    {
+        return preg_match(self::DETAIL, $detail) === 1;
     }
 }

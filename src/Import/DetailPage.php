@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace AA\Import;
 
 use AA\Api\JsonResponse;
+use AA\Http\TransportException;
+use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Later\Toexecute;
@@ -163,7 +165,8 @@ final class DetailPage
      * anything. A GET, or a POST without an action, does nothing.
      * @param array<mixed> $post   $_POST
      * @param array<mixed> $server $_SERVER
-     * @return ?array{string, string} the outcome - a code of outcomeHtml() and a reason code; null = nothing asked
+     * @return ?array{0: string, 1: string, 2?: string} the outcome - a code of outcomeHtml(), a reason code and maybe the detail of a
+     *         refusal of the source; null = nothing asked
      */
     public function handle(array $post, array $server): ?array
     {
@@ -197,7 +200,7 @@ final class DetailPage
     }
 
     /** Keeps the outcome of handle() for the GET page, which shows it once.
-     *  @param array{string, string} $outcome
+     *  @param array{0: string, 1: string, 2?: string} $outcome
      *  @return string the GET page to redirect to (303) */
     public function afterPost(array $outcome): string
     {
@@ -205,7 +208,7 @@ final class DetailPage
         return ($this->picked === null) ? self::urlOf($this->def, $this->back) . $this->anchor : self::urlOf($this->def, ['source' => $this->picked]);
     }
 
-    /** @param array<mixed> $post @return array{string, string} */
+    /** @param array<mixed> $post @return array{0: string, 1: string, 2?: string} */
     private function adopt(array $post): array
     {
         $page       = self::pageOf($post['catalog_page'] ?? null, PHP_INT_MAX);
@@ -228,7 +231,7 @@ final class DetailPage
     {
         $outcome = $_SESSION[self::FLASH][$this->id()] ?? null;
         unset($_SESSION[self::FLASH][$this->id()]);
-        return is_array($outcome) ? self::outcomeHtml((string) ($outcome[0] ?? ''), (string) ($outcome[1] ?? '')) : '';
+        return is_array($outcome) ? self::outcomeHtml((string) ($outcome[0] ?? ''), (string) ($outcome[1] ?? ''), (string) ($outcome[2] ?? '')) : '';
     }
 
     /** the sections that follow a running run - the ones the script of the page replaces */
@@ -339,7 +342,7 @@ final class DetailPage
                 . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
                 . '</tr>';
             $samples = $run->samples();
-            $more    = self::runErrorHtml($p['error'] ?? null) . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
+            $more    = self::runErrorHtml($p['error'] ?? null, ($p['role'] ?? '') === 'active') . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
             if ($more !== '') {
                 $html .= '<tr class="aa-import-run-more"><td colspan="' . count($heads) . '">' . $more . '</td></tr>';
             }
@@ -421,7 +424,7 @@ final class DetailPage
 
     // ------------------------------------------------------------ actions
 
-    /** @param array<mixed> $post  @return array{string, string} */
+    /** @param array<mixed> $post  @return array{0: string, 1: string, 2?: string} */
     private function start(string $action, array $post): array
     {
         [$mode, $opt] = self::STARTS[$action];
@@ -437,7 +440,7 @@ final class DetailPage
             'queued'  => ['queued', ''],
             'busy'    => ['busy', $this->busyReason($r)],
             'unknown' => ['gone', ''],
-            default   => ['refused', ($r->reason !== '') ? $r->reason : strtoupper($r->code)],
+            default   => ['refused', ($r->reason !== '') ? $r->reason : strtoupper($r->code), ...(($r->detail === '') ? [] : [$r->detail])],
         };
     }
 
@@ -493,8 +496,9 @@ final class DetailPage
     }
 
     /** What an action did, by the outcome of handle(), for the GET page after it. Codes only - the
-     *  source's own words may carry its data. */
-    public static function outcomeHtml(string $code, string $reason): string
+     *  source's own words may carry its data.
+     *  @param string $detail of a failure of the source, as AA\IO\SourceFailure::$detail */
+    public static function outcomeHtml(string $code, string $reason, string $detail = ''): string
     {
         return match ($code) {
             'queued'      => MsgOk(_m('The run is queued. It goes on in the background; reload the page to see how far it got.')),
@@ -509,9 +513,9 @@ final class DetailPage
             'gone'        => MsgErr(_m('This import no longer exists in this slice.')),
             'no_run'      => MsgErr(_m('No such run of this import.')),
             'finished'    => MsgErr(_m('The run is finished already.')),
-            'refused'     => MsgErr(safe(self::reasonText($reason)) . DetailConfig::settingsPointer($reason, true)),
+            'refused'     => MsgErr(safe(self::failureText($reason, $detail)) . DetailConfig::settingsPointer($reason, true)),
             'failed'      => MsgErr(_m('The action failed. The log of import failures has its cause.')),
-            'adopted', 'no_entry', 'adopt_busy', 'adopt_refused' => DetailCatalog::outcomeHtml($code, $reason),
+            'adopted', 'no_entry', 'adopt_busy', 'adopt_refused' => DetailCatalog::outcomeHtml($code, $reason, $detail),
             default       => DetailConfig::outcomeHtml($code, $reason),
         };
     }
@@ -551,6 +555,20 @@ final class DetailPage
             'NO_VERSIONS'    => _m('The import source cannot tell the versions of its streams, so there is no state of it to record.'),
             default          => _m('The import source refused: %1', [$code]),
         };
+    }
+
+    /** reasonText() with what the detail of the failure adds. SOURCE with a detail is an answer of the
+     *  source (a status, a too large answer), not a failure of its code; TRANSPORT with a status was
+     *  reached, only it was down. Plain text. */
+    public static function failureText(string $code, string $detail): string
+    {
+        $reason = match (true) {
+            $detail === ''                                                => self::reasonText($code),
+            $code === 'SOURCE'                                            => _m('The request to the source failed.'),
+            ($code === 'TRANSPORT') && str_starts_with($detail, 'http:') => _m('The source is not available now.'),
+            default                                                       => self::reasonText($code),
+        };
+        return trim($reason . ' ' . RunView::detailText($detail));
     }
 
     // ------------------------------------------------------------ overview parts
@@ -1029,16 +1047,17 @@ final class DetailPage
     }
 
     /** The failure of a stopped run in words, what to do about it, and where it stopped; the code is
-     *  for the log.
-     *  @param ?array{code: string, where: string} $error */
-    private static function runErrorHtml(?array $error): string
+     *  for the log. A run that still tries again shows why its last try failed, with nothing to do yet.
+     *  @param ?array{code: string, where: string, detail?: string} $error */
+    private static function runErrorHtml(?array $error, bool $retrying = false): string
     {
         if ($error === null) {
             return '';
         }
-        $message = self::reasonText($error['code']);
-        $todo    = self::nextStep($error['code']);
-        return '<div class="aa-import-fail"><p>' . RunView::markHtml('error') . ' <strong>' . _m('Error:') . '</strong> ' . safe($message)
+        $detail  = (string) ($error['detail'] ?? '');
+        $message = self::failureText($error['code'], $detail);
+        $todo    = $retrying ? '' : self::nextStep($error['code'], $detail);
+        return '<div class="aa-import-fail"><p>' . RunView::markHtml('error') . ' <strong>' . ($retrying ? _m('Last try failed:') : _m('Error:')) . '</strong> ' . safe($message)
             . (($error['where'] === '') ? '' : ' <span class="aa-import-where">' . _m('At: %1', ['<code>' . safe($error['where']) . '</code>']) . '</span>')
             . (str_contains($message, $error['code']) ? '' : ' <code class="aa-import-code">' . safe($error['code']) . '</code>') . '</p>'
             . (($todo === '') ? '' : '<p class="aa-import-todo"><strong>' . _m('What to do:') . '</strong> ' . safe($todo) . '</p>')
@@ -1046,8 +1065,14 @@ final class DetailPage
     }
 
     /** the next step for an error code the source or the run throws; '' when none is known */
-    private static function nextStep(string $code): string
+    private static function nextStep(string $code, string $detail = ''): string
     {
+        if (($code === 'SOURCE') && ($detail !== '')) {
+            // the address is wrong, moved or gone; other answers (too large, 1xx) have no advice of their own
+            return ((preg_match('/^http:[34][0-9]{2}$/D', $detail) === 1) || in_array($detail, [TransportException::ADDRESS, SourceFailure::REDIRECTS], true))
+                ? _m('Check the address of the source in its settings, then Continue or End the run.')
+                : '';
+        }
         return match ($code) {
             'COLUMNS'       => _m('Fix the column mapping or the file so that the missing columns exist, then run Check source again.'),
             'AUTH'          => _m('Check the key of the source in its settings, then run Check source.'),
@@ -1246,7 +1271,7 @@ final class DetailPage
 
     /** @return ?array{role: string, state: string, label: string, done: int, total: int, moved: int, started: int,
      *                 running: bool, next_at: int, failures: int, counts: array, warnings: array,
-     *                 error: ?array{code: string, where: string}, note: string, warning: string, extra: array} */
+     *                 error: ?array{code: string, where: string, detail: string}, note: string, warning: string, extra: array} */
     private function progressOf(Run $run): ?array
     {
         try {

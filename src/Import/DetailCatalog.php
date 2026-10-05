@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Import;
 
+use AA\IO\SourceFailure;
+
 /**
  * The catalog of the source in the import detail: what the last check listed, what of it is new,
  * missing or renamed against the streams the source had then, page by page, and Add/Update of an
@@ -48,7 +50,7 @@ final class DetailCatalog
 
     // ------------------------------------------------------------ actions
 
-    /** @return array{string, string} an outcome of DetailPage::handle() */
+    /** @return array{0: string, 1: string, 2?: string} an outcome of DetailPage::handle() */
     public function adopt(mixed $key): array
     {
         if (!is_string($key) || ($key === '')) {
@@ -59,18 +61,20 @@ final class DetailCatalog
             'CHANGED'  => ['adopted', ''],
             'NO_ENTRY' => ['no_entry', ''],
             'BUSY'     => ['adopt_busy', $r->detail],
-            default    => ['adopt_refused', $r->code],
+            // the third element only for a failure of the source - a refusal of the settings has no detail here
+            default    => ['adopt_refused', $r->code, ...(SourceFailure::isDetail($r->detail) && ($r->detail !== '') ? [$r->detail] : [])],
         };
     }
 
-    /** what adopt() did, by its outcome */
-    public static function outcomeHtml(string $code, string $reason): string
+    /** what adopt() did, by its outcome
+     *  @param string $detail of a failure of the source, as SourceFailure::$detail */
+    public static function outcomeHtml(string $code, string $reason, string $detail = ''): string
     {
         return match ($code) {
             'adopted'  => MsgOk(_m('The stream is added or updated from the catalog. The streams of the import show it after the next check of the source.')),
             'no_entry' => MsgErr(_m('The catalog has no such entry. Check the source to list its catalog again.')),
             'adopt_busy' => MsgErr(_m('Nothing was added from the catalog:') . ' ' . safe(DetailPage::busyText($reason))),
-            default    => MsgErr(_m('Nothing was added from the catalog:') . ' ' . safe(self::reasonText($reason))),
+            default    => MsgErr(_m('Nothing was added from the catalog:') . ' ' . safe((($detail !== '') && in_array($reason, ['SOURCE', 'TRANSPORT'], true)) ? DetailPage::failureText($reason, $detail) : trim(self::reasonText($reason) . ' ' . RunView::detailText($detail)))),
         };
     }
 

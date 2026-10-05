@@ -289,6 +289,43 @@ final class RunCheckTest extends TestCase
         self::assertSame($failed, json_decode(self::stored($run->getId())['check'], true));
     }
 
+    // the refusal ends the run in the next step; its detail goes along, through the cursor
+    public function test_run_checkAtStartRefused_keepsItsDetail(): void
+    {
+        $source        = self::checkedSource(streams: 1);
+        $source->check = new SourceRefused('SOURCE', 'HTTP 410 from https://1.1.1.1/x?token=tok3n4242', 'http:410');
+        $run           = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        $stored = self::stored($run->getId());
+        self::assertSame(['error', 'SOURCE', 'http:410', 'check'], [$stored['state'], $stored['error_code'], $stored['error_detail'], $stored['error_path']]);
+        self::assertStringNotContainsString('tok3n4242', json_encode($stored, JSON_THROW_ON_ERROR));
+    }
+
+    public function test_run_checkResultFailed_keepsItsDetail(): void
+    {
+        $source        = self::cataloged(streams: 1, jobs: 1, items: 1);
+        $source->check = new CheckResult(false, 'AUTH', '401 from the source', 'http:401');
+        $run           = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['AUTH', 'http:401'], [self::stored($run->getId())['error_code'], self::stored($run->getId())['error_detail']]);
+    }
+
+    public function test_check_catalogRefused_keepsItsDetail(): void
+    {
+        $source        = self::cataloged(streams: 1);
+        $source->pages = ['' => new SourceRefused('SOURCE', 'HTTP 404 from 1.1.1.1', 'http:404')];
+        $run           = self::startRun($source, ['mode' => 'check']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['error', 'SOURCE'], self::errorOf($run->getId()));
+        self::assertSame('http:404', self::stored($run->getId())['error_detail']);
+    }
+
     public function test_check_refusedCheck_recordsTheCodeNotTheText(): void
     {
         $source        = self::checkedSource(streams: 1);
@@ -409,7 +446,7 @@ final class RunCheckTest extends TestCase
     public function test_run_checkAtStartUnavailableRetries(string $outage): void
     {
         $source        = self::checkedSource(streams: 2);
-        $source->check = ($outage === 'transport') ? new TransportException('no route to host') : new SourceUnavailable('TRANSPORT', 'No answer');
+        $source->check = ($outage === 'transport') ? new TransportException('no route to host') : new SourceUnavailable('TRANSPORT', 'No answer', 'timeout');
         $run           = self::startRun($source);
 
         self::runOne();
@@ -418,6 +455,7 @@ final class RunCheckTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['error', 'TRANSPORT'], self::errorOf($run->getId()));
+        self::assertSame(($outage === 'transport') ? '' : 'timeout', self::stored($run->getId())['error_detail']);
         self::assertCount(3, $source->checkCalls, 'three steps; the hook has no job to skip and does not ask again');
         self::assertSame([], $source->jobCalls);
         self::assertSame([], self::warnings($run->getId()));

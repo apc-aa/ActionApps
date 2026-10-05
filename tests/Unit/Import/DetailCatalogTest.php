@@ -377,6 +377,31 @@ final class DetailCatalogTest extends TestCase
         $this->assertStringNotContainsString('secret', $msg);
     }
 
+    /** the source answered, but no: its status in words, never the URL it was asked at */
+    public function test_adopt_refusalOfTheSourceSaysItsDetail(): void
+    {
+        self::definition();
+        self::catalog([new CatalogEntry('e3', 'Rents')], []);
+        \AdoptSource::$failAdopt = new \AA\IO\SourceRefused('SOURCE', 'HTTP 404 from https://1.1.1.1/x?token=tok3n8181', 'http:404');
+
+        $msg = self::act(['action' => 'adopt', 'key' => 'e3']);
+
+        $this->assertStringContainsString('The request to the source failed. The source answered 404 Not Found.', $msg);
+        $this->assertStringNotContainsString('tok3n8181', $msg);
+    }
+
+    public function test_adopt_sourceDownSaysItWasReached(): void
+    {
+        self::definition();
+        self::catalog([new CatalogEntry('e3', 'Rents')], []);
+        \AdoptSource::$failAdopt = new \AA\IO\SourceUnavailable('TRANSPORT', 'HTTP 503 from 1.1.1.1', 'http:503');
+
+        $msg = self::act(['action' => 'adopt', 'key' => 'e3']);
+
+        $this->assertStringContainsString('The source is not available now. The source answered 503 Service Unavailable.', $msg);
+        $this->assertStringNotContainsString('could not be reached', $msg);
+    }
+
     /** back on the page of the listing the entry was on */
     public function test_adopt_returnsToItsCatalogPage(): void
     {

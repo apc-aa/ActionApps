@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace AA\Import;
 
+use AA\Http\TransportException;
+use AA\IO\SourceFailure;
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * How the runs of an import and the verdict on it read - the same words and marks in the list of
  * imports and in the detail of one. A *Text method gives plain text, a *Html one HTML with every
@@ -91,6 +95,26 @@ final class RunView
             return '';
         }
         return ($run->state() === Run::ENDED) && ((string) $run->getProperty('error_code') === '') ? _m('Ended before reading anything') : _m('Stopped before reading anything');
+    }
+
+    /** What a detail of a failure of the source (AA\IO\SourceFailure::$detail) says, plain text; '' for
+     *  none, and for a value outside the set - a damaged or forged record says nothing. */
+    public static function detailText(string $detail): string
+    {
+        if (preg_match('/^http:([1-5][0-9]{2})$/D', $detail, $m) === 1) {
+            $phrase = Response::$statusTexts[(int) $m[1]] ?? '';
+            return _m('The source answered %1.', [trim($m[1] . ' ' . $phrase)]);
+        }
+        return match ($detail) {
+            TransportException::DNS     => _m('The address of the source could not be resolved (DNS).'),
+            TransportException::TIMEOUT => _m('The source did not answer in time.'),
+            TransportException::TLS     => _m('The secure connection to the source failed (TLS).'),
+            TransportException::REFUSED => _m('The source refused the connection.'),
+            TransportException::ADDRESS => _m('The address of the source is not allowed or not valid.'),
+            SourceFailure::TOO_LARGE    => _m('The answer of the source is too large.'),
+            SourceFailure::REDIRECTS    => _m('The source redirected too many times.'),
+            default                     => '',
+        };
     }
 
     /** how long ago, roughly; '' when it is too long ago for that to help */
