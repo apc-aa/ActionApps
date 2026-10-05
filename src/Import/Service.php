@@ -389,7 +389,7 @@ final class Service
             if (!is_long_id($slice) || !CheckPerms($user, 'slice', strtolower($slice), PS_EDIT_ALL_ITEMS)) {
                 return new ChangeResult('ADOPT_SLICE');
             }
-            $source->adopt($entry, new Context(Definition::sourceCredentials($def->sourceType()), new BatchBudget(microtime(true) + self::ADOPT_SECONDS)));
+            $source->adopt($entry, Context::forSource($source, Definition::sourceCredentials($def->sourceType()), new BatchBudget(microtime(true) + self::ADOPT_SECONDS)));
         } catch (BatchBudgetSpent) {
             // the time ran out: no answer in time, not a bug of the source
             return new ChangeResult('TRANSPORT');

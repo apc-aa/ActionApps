@@ -16,6 +16,7 @@ use AA;
 use AA_Item;
 use AA_Set;
 use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
 use Tests\Unit\IO\Fixtures\RecordingSaver;
 use zids;
 
@@ -51,6 +52,10 @@ final class TestRun extends Run
     public static ?\Closure $evaluate = null;
     /** @var list<array{string, array<string, mixed>, string}> the expressions run: expression, item fields, slice */
     public static array $evaluated = [];
+    /** @var ?\Closure(string, string): MockResponse answers the run's requests (method, URL); null = none may be made */
+    public static ?\Closure $http = null;
+    /** @var list<string> "METHOD url" of the requests answered by $http */
+    public static array $requests = [];
 
     public static function reset(): void
     {
@@ -66,6 +71,8 @@ final class TestRun extends Run
         self::$overrun   = null;
         self::$evaluate  = null;
         self::$evaluated = [];
+        self::$http      = null;
+        self::$requests  = [];
         ScriptedSource::$credentials = [];
     }
 
@@ -109,11 +116,20 @@ final class TestRun extends Run
         return $saver;
     }
 
-    protected function context(SourceInterface $source, BatchBudget $budget): Context
+    /** the keys the test's source declares - a custom test source is not in the Registry */
+    protected function keys(): array
+    {
+        return $this->source()::credentials();
+    }
+
+    protected function connection(BatchBudget $budget): array
     {
         self::$contextBudgets[] = $budget;
-        $offline = new MockHttpClient(static fn() => throw new \LogicException('A test run went to the network'));
-        return new Context($source::credentials(), $budget, Context::DEFAULT_MAX_BYTES, $offline, static fn(): array => []);
+        $offline = new MockHttpClient(static function (string $method, string $url): MockResponse {
+            self::$requests[] = "$method $url";
+            return (self::$http ?? throw new \LogicException('A test run went to the network'))($method, $url);
+        });
+        return [$offline, static fn(): array => []];
     }
 
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult

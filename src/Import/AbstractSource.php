@@ -17,6 +17,11 @@ abstract class AbstractSource implements SourceInterface
         return 15;
     }
 
+    public function maxBytes(): int
+    {
+        return Context::DEFAULT_MAX_BYTES;
+    }
+
     /** no rows - a source that imports overrides this */
     public function defaultMapping(): Mapping
     {

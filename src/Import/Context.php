@@ -82,6 +82,17 @@ final class Context
     }
 
     /**
+     * The Context of a source - the one way to build it for one, so the source's own cap on answers applies
+     * @param list<array{vendor: string, context: string}> $credentials from SourceInterface::credentials()
+     * @param ?HttpClientInterface $transport the connection under the guard; another one for tests only
+     * @param ?\Closure(string): list<string> $resolver IP addresses of a host name; another one for tests only
+     */
+    public static function forSource(SourceInterface $source, array $credentials, BatchBudget $budget, ?HttpClientInterface $transport = null, ?\Closure $resolver = null): self
+    {
+        return new self($credentials, $budget, $source->maxBytes(), $transport, $resolver);
+    }
+
+    /**
      * HTTP(S) only to public addresses, also after a redirect, at most 3 redirects; the request
      * ends with the step, and once its budget is spent none starts (BatchBudgetSpent - the step's
      * own end, not a failure of the source). The port is not restricted: the source takes its URL

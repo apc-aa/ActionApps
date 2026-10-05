@@ -35,6 +35,21 @@ final class RunFailureTest extends TestCase
     // ------------------------------------------------------------ the cursor of the source
 
     /** settings broken in the snapshot end the run as a fault of the definition, not of a stream */
+
+    // the cap stops the download itself - no step parses an answer over it
+    public function test_source_answerOverItsMaxBytesRefused(): void
+    {
+        $source           = self::source(streams: 1, jobs: 1, items: 0);
+        $source->maxBytes = 100;
+        $source->jobs['s1'][0]['grabber'] = new \AA\IO\Grabber\CSV('https://1.1.1.1/data.csv');
+        TestRun::$http    = static fn(): \Symfony\Component\HttpClient\Response\MockResponse => new \Symfony\Component\HttpClient\Response\MockResponse("key,val\n" . str_repeat("k,v\n", 50));
+        $run              = self::startRun($source, ['dry' => '1']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['error', 'SOURCE'], self::errorOf($run->getId()));
+        self::assertCount(1, TestRun::$requests);
+    }
     public function test_brokenSettingsInSnapshot_definitionError(): void
     {
         self::source(streams: 1, jobs: 1, items: 1);

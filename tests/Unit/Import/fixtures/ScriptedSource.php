@@ -44,6 +44,8 @@ class ScriptedSource extends AbstractSource
 
     public int $minJob = 15;
 
+    public int $maxBytes = Context::DEFAULT_MAX_BYTES;
+
     /** @var list<array{stream: string, known: ?string}> the jobs() calls */
     public array $jobCalls = [];
 
@@ -93,6 +95,11 @@ class ScriptedSource extends AbstractSource
     public function minJobSeconds(): int
     {
         return $this->minJob;
+    }
+
+    public function maxBytes(): int
+    {
+        return $this->maxBytes;
     }
 
     public static function credentials(): array

@@ -24,6 +24,7 @@ use AA_Log;
 use AA_Property;
 use AA_Value;
 use JsonException;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * One run of an import definition, in queue steps: stream by stream, job by job, item by item
@@ -238,9 +239,19 @@ class Run extends BatchRun
     }
 
     /** the way out of the step, with its keys and its budget */
-    protected function context(SourceInterface $source, BatchBudget $budget): Context
+    private function context(SourceInterface $source, BatchBudget $budget): Context
     {
-        return new Context($this->keys(), $budget);
+        return Context::forSource($source, $this->keys(), $budget, ...$this->connection($budget));
+    }
+
+    /**
+     * The connection under the guard of Context and the resolver it asks; null = the real ones
+     * @param BatchBudget $budget of the Context they serve
+     * @return array{0: ?HttpClientInterface, 1: ?\Closure(string): list<string>}
+     */
+    protected function connection(BatchBudget $budget): array
+    {
+        return [null, null];
     }
 
     /** @return list<array{vendor: string, context: string}> the keys of the source type of the snapshot */

@@ -7,6 +7,7 @@ namespace Tests\Unit\Import;
 use AA\Import\Catalog;
 use AA\Import\CatalogEntry;
 use AA\Import\CatalogPage;
+use AA\Import\Context;
 use AA\Import\Definition;
 use AA\Import\DetailPage;
 use AA\Import\Registry;
@@ -56,6 +57,8 @@ final class DetailCatalogTest extends TestCase
         \AdoptSource::$credentials = [];
         \AdoptSource::$askKey      = null;
         \AdoptSource::$keySeen     = false;
+        \AdoptSource::$maxBytes    = Context::DEFAULT_MAX_BYTES;
+        \AdoptSource::$capSeen     = null;
         TableDb::$tables['module'] = [['id' => self::SLICE, 'type' => 'S'], ['id' => self::OTHER, 'type' => 'S']];
         \AA::$module_id = self::SLICE;
     }
@@ -426,6 +429,16 @@ final class DetailCatalogTest extends TestCase
 
         $this->assertStringContainsString('aa-ok', self::act(['action' => 'adopt', 'key' => 'e3']));
         $this->assertTrue(\AdoptSource::$keySeen);
+    }
+
+    public function test_adopt_contextHasTheCapOfTheSource(): void
+    {
+        \AdoptSource::$maxBytes = 1234;
+        self::definition();
+        self::catalog([new CatalogEntry('e3', 'Rents')], []);
+
+        $this->assertStringContainsString('aa-ok', self::act(['action' => 'adopt', 'key' => 'e3']));
+        $this->assertSame(1234, \AdoptSource::$capSeen);
     }
 
     /** the settings are checked for whoever adopts: a slice they name must be one he imports into */

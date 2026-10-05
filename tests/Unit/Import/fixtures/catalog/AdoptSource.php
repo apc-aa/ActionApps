@@ -28,6 +28,11 @@ final class AdoptSource extends AbstractSource implements Cataloged, CatalogAdop
     /** whether adopt() got the key it asked for */
     public static bool $keySeen = false;
 
+    public static int $maxBytes = Context::DEFAULT_MAX_BYTES;
+
+    /** the cap of the Context adopt() got */
+    public static ?int $capSeen = null;
+
     public static function name(): string
     {
         return 'Adopting';
@@ -66,6 +71,11 @@ final class AdoptSource extends AbstractSource implements Cataloged, CatalogAdop
         return self::$credentials;
     }
 
+    public function maxBytes(): int
+    {
+        return self::$maxBytes;
+    }
+
     public function catalog(Context $ctx, string $cursor): CatalogPage
     {
         self::$calls[] = 'catalog';
@@ -82,6 +92,7 @@ final class AdoptSource extends AbstractSource implements Cataloged, CatalogAdop
     {
         self::$calls[]   = 'adopt';
         self::$adopted[] = $e;
+        self::$capSeen   = (new \ReflectionProperty($ctx, 'maxBytes'))->getValue($ctx);
         if (self::$askKey !== null) {
             self::$keySeen = ($ctx->secret(self::$askKey)?->isEmpty() === false);
         }

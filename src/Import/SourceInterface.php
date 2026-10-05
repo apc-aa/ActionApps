@@ -69,4 +69,8 @@ interface SourceInterface extends NamedInterface
 
     /** a job is not started when less of the step is left */
     public function minJobSeconds(): int;
+
+    /** Largest answer the source takes: a download stops there, before the answer is held in memory.
+     *  Context caps it at Context::MAX_BYTES_CAP. */
+    public function maxBytes(): int;
 }

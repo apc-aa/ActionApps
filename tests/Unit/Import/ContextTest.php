@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Import;
 
 use AA\Http\Client;
+use AA\Import\AbstractSource;
 use AA\Import\Context;
+use AA\Import\Stream;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
@@ -76,6 +78,45 @@ final class ContextTest extends TestCase
         self::fail('SourceRefused expected');
     }
 
+
+    public function test_forSource_takesTheCapOfTheSource(): void
+    {
+        $source = new class extends AbstractSource {
+            public static function name(): string
+            {
+                return 'Capped';
+            }
+            public static function description(): string
+            {
+                return '';
+            }
+            public static function getClassProperties(): array
+            {
+                return [];
+            }
+            public static function fromSettings(array $settings): static
+            {
+                return new static();
+            }
+            public function streams(): iterable
+            {
+                return [];
+            }
+            public function jobs(Stream $stream, Context $ctx, ?string $known): iterable
+            {
+                return [];
+            }
+            public function maxBytes(): int
+            {
+                return 10;
+            }
+        };
+        $mock = new MockHttpClient([new MockResponse(str_repeat('x', 10)), new MockResponse(str_repeat('x', 11))]);
+        $ctx  = Context::forSource($source, [], new BatchBudget(microtime(true) + 30), $mock, fn(string $host): array => throw new \LogicException("DNS asked for $host"));
+
+        self::assertSame(10, strlen($ctx->http()->request('GET', 'https://1.1.1.1/a')->body));
+        $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/b'));
+    }
     public function test_http_returnsAnswer(): void
     {
         $answer = $this->context([new MockResponse('data')])->http()->request('GET', 'https://1.1.1.1/data');
