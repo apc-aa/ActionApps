@@ -24,9 +24,10 @@ final class StreamState extends AA_Object
     /** {key: {field: value}} */
     private const STREAMS_DEPTH = 2;
     /** field => what it holds */
-    private const FIELDS = ['v' => 'text', 'probed' => 'time', 'imported' => 'time', 'run' => 'id'];
+    private const FIELDS = ['v' => 'text', 'probed' => 'time', 'imported' => 'time', 'baseline' => 'time', 'run' => 'id'];
 
-    /** JSON {<stream key>: {"v": version, "probed": unixtime, "imported": unixtime, "run": run id}} */
+    /** JSON {<stream key>: {"v": version, "probed": unixtime, "imported": unixtime, "baseline": unixtime,
+     *  "run": run id}} - baseline: when a run recorded the source's version without importing */
     protected $streams = '';
     /** JSON {"time", "ok", "code", "msg"} of the last check() */
     protected $check = '';
@@ -51,7 +52,8 @@ final class StreamState extends AA_Object
         return ['streams', 'check'];
     }
 
-    /** null = no version recorded for the stream; '' = the source has no versions */
+    /** null = no version known - never imported, or a baseline could not tell it, so the next changed
+     *  run imports the stream; '' = the source has no versions */
     public function versionOf(string $streamKey): ?string
     {
         $version = $this->streams()[$streamKey]['v'] ?? null;
@@ -77,8 +79,8 @@ final class StreamState extends AA_Object
         return $this->streamsDamaged;
     }
 
-    /** Sets the given fields of a stream, keeps the others.
-     *  @param array<string, mixed> $values of v (version), probed, imported (unixtimes), run (its id) */
+    /** Sets the given fields of a stream, keeps the others; a field given null is removed.
+     *  @param array<string, mixed> $values of v (version), probed, imported, baseline (unixtimes), run (its id) */
     public function record(string $streamKey, array $values): void
     {
         if (preg_match(Stream::KEY, $streamKey) !== 1) {
@@ -87,6 +89,10 @@ final class StreamState extends AA_Object
         $streams = $this->streams();
         $entry   = $streams[$streamKey] ?? [];
         foreach ($values as $field => $value) {
+            if (($value === null) && isset(self::FIELDS[$field])) {
+                unset($entry[$field]);
+                continue;
+            }
             $entry[$field] = match (self::FIELDS[$field] ?? '') {
                 'text'  => is_string($value) ? self::cleanVersion($value) : throw new InvalidArgumentException('A version is a string'),
                 'time'  => (is_int($value) && ($value >= 0)) ? $value : throw new InvalidArgumentException("Stream $field is a unixtime"),

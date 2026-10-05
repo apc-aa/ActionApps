@@ -49,8 +49,8 @@ final class RunWorkTest extends TestCase
         self::assertCount(6, array_filter($steps, static fn(string $s): bool => str_starts_with($s, 'step') || ($s === 'done')), 'a step per job: the next job does not fit after the first');
         self::assertSame(self::keys(3, 2, 2), TestRun::storedValues('relation........'));
         $counts = $after->counts();
-        self::assertSame([12, 12, 0, 0, 0, 6, 3, 0, 0], array_values($counts));
-        self::assertSame(['read', 'new', 'updated', 'skipped', 'errors', 'jobs', 'streams', 'unchanged', 'skipped_jobs'], array_keys($counts));
+        self::assertSame([12, 12, 0, 0, 0, 6, 3, 0, 0, 0], array_values($counts));
+        self::assertSame(['read', 'new', 'updated', 'skipped', 'errors', 'jobs', 'streams', 'unchanged', 'skipped_jobs', 'unversioned'], array_keys($counts));
     }
 
     public function test_work_storesTheParameterTargetOfEachStream(): void

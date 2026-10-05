@@ -26,7 +26,9 @@ final class Stream
      *                                          only through http_build_query(…, PHP_QUERY_RFC3986) or
      *                                          rawurlencode(), never into its path
      * @param string $catalogKey   the catalog entry the stream comes from
-     * @param string $versionField source field whose maximum is the data version; '' = probe() gives it
+     * @param string $versionField source field whose maximum is the data version; '' = probe() gives it.
+     *                             With it set, any version of the stream - $known of jobs() and probe(),
+     *                             a version probe() gives - is on the scale of that field
      */
     public function __construct(
         public readonly string $key,

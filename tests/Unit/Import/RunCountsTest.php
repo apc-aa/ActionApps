@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 /** The counts of a run as its record keeps them - State Check reads them without loading the run. */
 final class RunCountsTest extends TestCase
 {
-    private const ZERO = ['read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0, 'jobs' => 0, 'streams' => 0, 'unchanged' => 0, 'skipped_jobs' => 0];
+    private const ZERO = ['read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0, 'jobs' => 0, 'streams' => 0, 'unchanged' => 0, 'skipped_jobs' => 0, 'unversioned' => 0];
 
     /** @return array<string, array{string, array<string, int>}> */
     public static function stored(): array

@@ -11,6 +11,7 @@ use AA\Later\BatchBudget;
 use AA\Later\BatchBudgetSpent;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
+use AA_Log;
 use JsonException;
 use Throwable;
 
@@ -28,7 +29,7 @@ final class Service
     /** source items a dry run reads unless told */
     private const DRY_LIMIT = 500;
 
-    private const MODES = ['run', 'changed', 'check'];
+    private const MODES = ['run', 'changed', 'check', 'baseline'];
 
     private const TRIGGER = '/^(manual|(plan|event):[0-9a-f]{32})\z/';
 
@@ -44,7 +45,9 @@ final class Service
      * settings name; a planned one keeps the right of whoever set them. A planned start ends a run in
      * error or hanging (blocking()) in the transaction that starts the new one, which names it.
      * @param array{dry?: bool, streams?: list<string>, limit?: int} $opt  streams = some of the source's
-     * @param string $mode    run | changed | check
+     * @param string $mode    run | changed | check | baseline - a baseline by hand only, by whoever may
+     *                        manage the definition, of a Probeable source (else NO_VERSIONS): it records
+     *                        versions no run fetched; logged with its user
      * @param string $trigger manual | plan:<task id> | event:<task id> - set by the caller, never from the request
      */
     public static function start(Definition $d, string $mode, array $opt, string $trigger, string $user): StartResult
@@ -52,7 +55,7 @@ final class Service
         if (preg_match(self::TRIGGER, $trigger) !== 1) {
             throw new \InvalidArgumentException('An import starts manual, plan:<task id> or event:<task id>');
         }
-        if (!in_array($mode, self::MODES, true)) {
+        if (!in_array($mode, self::MODES, true) || (($mode === 'baseline') && ($trigger !== 'manual'))) {
             return new StartResult('invalid', reason: 'MODE');
         }
         $options = self::options($mode, $opt);
@@ -88,6 +91,10 @@ final class Service
             if (!$manual && !$def->isEnabled()) {
                 return new StartResult('off');
             }
+            $refused = ($mode === 'baseline') ? $def->manageRefusal($user) : null;
+            if ($refused !== null) {
+                return new StartResult('invalid', reason: $refused);
+            }
             $toEnd = [];
             $busy  = self::busy($id, $trigger, $toEnd);
             if ($busy !== null) {
@@ -111,7 +118,12 @@ final class Service
                 }
             }
             try {
-                $keys = array_map('strval', array_keys(Run::streamsOf(Registry::create($def->sourceType(), $settings))));
+                $source = Registry::create($def->sourceType(), $settings);
+                // a source without versions has no state to record: a baseline would only drop versions
+                if (($mode === 'baseline') && !($source instanceof Probeable)) {
+                    return new StartResult('invalid', reason: 'NO_VERSIONS');
+                }
+                $keys = array_map('strval', array_keys(Run::streamsOf($source)));
             } catch (Throwable $e) {
                 // a planned start has no page to show its refusal
                 return new StartResult('invalid', reason: self::sourceFailure($id, $e, !$manual));
@@ -139,6 +151,10 @@ final class Service
                 'trigger'     => $trigger,
                 'replaced'    => $toEnd ? json_encode($toEnd, JSON_THROW_ON_ERROR) : '',
             ]);
+            if ($mode === 'baseline') {
+                // the run is cleaned away with the older ones; the log keeps who recorded versions nobody imported
+                AA_Log::write(Definition::BASELINE_EVENT, 'Import_' . $id, "#$id " . $run->getId() . " $user");
+            }
             return new StartResult('queued', (string) $run->getId());
         });
     }
@@ -153,6 +169,14 @@ final class Service
             $run = Run::lockForUpdate($runId);
             if (($run === null) || !$run->mayControl($user)) {
                 return new StartResult('unknown');
+            }
+            // whoever may start it - a baseline of a source with keys is a superadmin's
+            if ($run->mode() === 'baseline') {
+                $def     = Definition::fresh($run->definitionId());
+                $refused = ($def === null) ? 'FORBIDDEN' : $def->manageRefusal($user);
+                if ($refused !== null) {
+                    return new StartResult('invalid', $runId, $refused);
+                }
             }
             // a manual action, as a manual start: the slices of the settings are checked for this user
             $snapshot = $run->snapshot();
@@ -565,8 +589,8 @@ final class Service
         if (!is_bool($dry) || (($limit !== null) && (!is_int($limit) || ($limit < 1)))) {
             return null;
         }
-        // a check stores nothing in the slice to try out - the run would end it in error
-        if ($dry && ($mode === 'check')) {
+        // these store nothing in the slice to try out - the run would end them in error
+        if ($dry && in_array($mode, Run::SOURCE_ONLY_MODES, true)) {
             return null;
         }
         $streams = null;

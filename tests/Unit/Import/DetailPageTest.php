@@ -47,7 +47,7 @@ final class DetailPageTest extends TestCase
     /** an import stored under SITE */
     private const OF_SITE = 'a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2';
     /** what a start disables while a run is in the way */
-    private const STARTS = ['run', 'changed', 'check', 'dry', 'stream'];
+    private const STARTS = ['run', 'changed', 'check', 'dry', 'stream', 'baseline'];
 
     protected function setUp(): void
     {
@@ -223,6 +223,7 @@ final class DetailPageTest extends TestCase
         yield 'stream'         => [['action' => 'stream', 'stream_key' => 's2'], 'run', '', '', ['s2']];
         yield 'run of stream'  => [['action' => 'stream', 'stream_key' => 's1', 'dry' => '0'], 'run', '', '', ['s1']];
         yield 'dry of stream'  => [['action' => 'stream', 'stream_key' => 's3', 'dry' => '1'], 'run', '1', '500', ['s3']];
+        yield 'baseline'       => [['action' => 'baseline'], 'baseline', '', '', ['s1', 's2', 's3']];
     }
 
     /** @param array<string, string> $post @param list<string> $streams */
@@ -468,6 +469,110 @@ final class DetailPageTest extends TestCase
         self::definition();
 
         $this->assertStringContainsString('No run yet', self::page()->runsHtml(time()));
+    }
+
+    // ------------------------------------------------------------ baseline: the state of the source recorded
+
+    public function test_baseline_postAndPermOnly(): void
+    {
+        self::definition();
+        $page = self::page();
+        TableDb::$log = [];
+
+        $this->assertNull($page->handle(['action' => 'baseline', 'token' => self::token()], ['REQUEST_METHOD' => 'GET']), 'a GET');
+        $this->assertStringContainsString('expired', self::shown($page, $page->handle(['action' => 'baseline'], self::POST)), 'no token');
+        self::perms(PS_EDIT_ALL_ITEMS, PS_FEEDING);
+        $this->assertStringContainsString('aa-err', self::shown($page, $page->handle(['action' => 'baseline', 'token' => self::token()], self::POST)), 'no right to the imports of the slice');
+        $this->assertSame([], TableDb::writes());
+
+        self::perms(PS_FEEDING . PS_EDIT_ALL_ITEMS, PS_EDIT_ALL_ITEMS);
+        \ServiceSource::$credentials = [['vendor' => 'csu', 'context' => '']];
+        $html   = self::page()->actionsHtml(time());
+        $button = self::buttons($html)['baseline'];
+        $this->assertTrue($button['disabled'], 'a source with keys, not a superadmin');
+        $this->assertStringContainsString('superadmin', $button['title']);
+        $this->assertStringContainsString($button['title'], html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5));
+        $this->assertStringContainsString('superadmin', self::act(['action' => 'baseline']), 'a POST all the same');
+        $this->assertSame([], self::runIds());
+
+        $GLOBALS['r_superuser'] = [AA_ID => true];
+        $this->assertFalse(self::buttons(self::page()->actionsHtml(time()))['baseline']['disabled']);
+        $this->assertStringContainsString('queued', self::act(['action' => 'baseline']));
+        $runs = Run::unfinished(self::DEF);
+        $this->assertSame(['baseline', 'manual'], [$runs[0]->mode(), (string) $runs[0]->getProperty('trigger')]);
+
+        // a run in the way is the reason, said once above the forms
+        $GLOBALS['r_superuser'] = [AA_ID => false];
+        $busy = self::buttons(self::page()->actionsHtml(time()))['baseline'];
+        $this->assertTrue($busy['disabled']);
+        $this->assertStringContainsString('still running', $busy['title']);
+    }
+
+    /** the page asks before a baseline: it cannot be taken back */
+    public function test_baseline_formAsksFirst(): void
+    {
+        self::definition();
+        $doc = new \DOMDocument();
+        @$doc->loadHTML('<?xml encoding="UTF-8"><body>' . self::page()->actionsHtml(time()) . '</body>');
+
+        $asks = (new \DOMXPath($doc))->query('//form[.//input[@name="action"][@value="baseline"]]/@data-aa-confirm');
+        $this->assertSame(1, $asks?->length);
+        $this->assertStringContainsString('will not be imported', (string) $asks->item(0)?->nodeValue);
+    }
+
+    public function test_baseline_sourceWithoutProbeDisabled(): void
+    {
+        $dir = __DIR__ . '/fixtures/definition';
+        Registry::setCustomRootForTests(dirname($dir), $dir);
+        self::definition(['source' => 'custom:definitionplain']);
+
+        $html   = self::page()->actionsHtml(time());
+        $button = self::buttons($html)['baseline'];
+
+        $this->assertTrue($button['disabled']);
+        $this->assertStringContainsString('cannot tell the versions', $button['title']);
+        $this->assertStringContainsString($button['title'], html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5));
+        $this->assertFalse(self::buttons($html)['run']['disabled'], 'only the baseline');
+        $this->assertStringContainsString('cannot tell the versions', self::act(['action' => 'baseline']));
+        $this->assertSame([], self::runIds());
+    }
+
+    public function test_baseline_runShownWithItsCounts(): void
+    {
+        self::definition();
+        $id = self::importRun();
+        self::storedSet($id, 'mode', 'baseline');
+        self::storedSet($id, 'counts', '{"streams":3,"unversioned":1}');
+
+        $text = html_entity_decode(strip_tags(self::page()->runsHtml(time())), ENT_QUOTES | ENT_HTML5);
+
+        $this->assertStringContainsString('recording the state of the source', $text);
+        $this->assertStringContainsString('streams recorded 3, without a version 1', $text);
+        $this->assertStringNotContainsString('read 0', $text);
+    }
+
+    /** a stream a baseline recorded is told apart from one imported - until an import comes after it */
+    public function test_baseline_streamsTableSaysBaseline(): void
+    {
+        self::definition();
+        $state = StreamState::create(self::DEF);
+        $state->record('s1', ['v' => '1', 'imported' => 1000, 'baseline' => 2000000000]);
+        $state->record('s2', ['v' => '2', 'imported' => 2000000000, 'baseline' => 1000]);
+        $state->record('s3', ['baseline' => 2000000000]);
+        $state->store();
+
+        $rows = [];
+        $doc  = new \DOMDocument();
+        @$doc->loadHTML('<?xml encoding="UTF-8"><body>' . self::page()->streamsHtml() . '</body>');
+        foreach ($doc->getElementsByTagName('tr') as $tr) {
+            $cells = array_map(static fn(\DOMNode $td): string => trim($td->textContent), iterator_to_array($tr->getElementsByTagName('td')));
+            if ($cells) {
+                $rows[$cells[0]] = $cells[3];
+            }
+        }
+
+        $at = date('Y-m-d H:i', 2000000000);
+        $this->assertSame(['s1' => "Baseline $at", 's2' => $at, 's3' => "Baseline $at"], $rows);
     }
 
     // ------------------------------------------------------------ redirect after an action

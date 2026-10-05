@@ -245,8 +245,9 @@ final class CheckImportsTest extends TestCase
         self::definition(self::DEF, 'prices');
         self::definition(self::DEF2, 'rates');
         self::importRun(self::DEF, ['state' => Run::DONE, 'started' => '100', 'finished' => '200', 'counts' => '{"read":10,"errors":3}']);
-        // neither a check nor a dry run says what the last import left: they store no items
+        // neither a check, a baseline of the source's state nor a dry run says what the last import left: they store no items
         self::importRun(self::DEF, ['state' => Run::DONE, 'started' => '500', 'finished' => '600', 'mode' => 'check', 'counts' => '{}']);
+        self::importRun(self::DEF, ['state' => Run::DONE, 'started' => '600', 'finished' => '650', 'mode' => 'baseline', 'counts' => '{"streams":2}']);
         self::importRun(self::DEF, ['state' => Run::DONE, 'started' => '700', 'finished' => '800', 'dry' => '1', 'counts' => '{"read":5}']);
         // nor a run that is not finished - whatever it says
         self::importRun(self::DEF, ['state' => Run::ERROR, 'started' => '900', 'finished' => '1000', 'counts' => '{"read":1}']);

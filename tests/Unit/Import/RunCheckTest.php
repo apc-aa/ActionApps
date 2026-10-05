@@ -1214,6 +1214,141 @@ final class RunCheckTest extends TestCase
         self::assertCount(1, TestRun::$evaluated, 'no expression for a stream gone');
     }
 
+    // ------------------------------------------------------------ baseline: the state of the source recorded
+
+    public function test_baseline_versionsWithoutImport(): void
+    {
+        $source               = self::cataloged(streams: 3, jobs: 1, items: 1);
+        $source->callSeconds  = 10.0;
+        $source->probes['s2'] = new Probe(Probe::UNCHANGED, 'v-2');
+        self::streamVersions(['s3' => 'v-old']);
+        $run = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runOne();
+        self::assertSame(['check', 'probe:s1', 'probe:s2'], $source->calls, 'in queue steps, as a check');
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s1', 'probe:s2', 'probe:s3'], $source->calls, 'no catalog');
+        self::assertSame(['s1' => null, 's2' => null, 's3' => null], $source->known, 'what the source has now, whatever was imported before');
+        self::assertSame([], $source->jobCalls, 'nothing fetched');
+        self::assertSame([], TestRun::$savers, 'nothing stored');
+        self::assertSame([], self::$invalidated);
+        $state = StreamState::forDefinition(self::DEF);
+        self::assertEquals(['v' => 'v-s1', 'probed' => self::NOW, 'baseline' => self::NOW, 'run' => $run->getId()], $state?->streams()['s1'], 'a baseline, not an import');
+        self::assertSame(['v-s1', 'v-2', 'v-s3'], [$state->versionOf('s1'), $state->versionOf('s2'), $state->versionOf('s3')]);
+        self::assertTrue($state->lastCheck()['ok']);
+        $report = json_decode(self::stored($run->getId())['report'], true);
+        self::assertSame(['streams' => 3, 'unversioned' => 0], $report['baseline']);
+        self::assertSame(['ok' => true, 'code' => '', 'msg' => ''], $report['check']);
+        self::assertArrayNotHasKey('probe', $report);
+
+        $source->calls  = [];
+        $source->known  = [];
+        $source->probes = ['s1' => new Probe(Probe::UNCHANGED, 'v-s1'), 's2' => new Probe(Probe::UNCHANGED, 'v-2'), 's3' => new Probe(Probe::CHANGED, 'v-s3b')];
+        $changed        = self::startRun($source, ['mode' => 'changed']);
+        self::runAll($changed->getId());
+
+        self::assertSame(['done', ''], self::errorOf($changed->getId()));
+        self::assertSame(['s1' => 'v-s1', 's2' => 'v-2', 's3' => 'v-s3'], $source->known, 'the next changed run starts from the recorded versions');
+        self::assertSame([['stream' => 's3', 'known' => 'v-s3']], $source->jobCalls, 'only what changed since');
+    }
+
+    /** nothing vouches for the old version: it goes, and the next changed run imports the stream */
+    public function test_baseline_noVersionLeavesNoneKnown(): void
+    {
+        $source               = self::cataloged(streams: 2);
+        $source->probes['s1'] = new Probe(Probe::UNKNOWN);
+        self::streamVersions(['s1' => 'v-old']);
+        $run = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runAll($run->getId());
+
+        $state = StreamState::forDefinition(self::DEF);
+        self::assertSame([null, 'v-s2'], [$state?->versionOf('s1'), $state?->versionOf('s2')]);
+        self::assertArrayNotHasKey('v', $state->streams()['s1'], "not '' - that would say the source has no versions");
+        self::assertSame([2, 1], [TestRun::get($run->getId())?->counts()['streams'], TestRun::get($run->getId())?->counts()['unversioned']]);
+        self::assertSame(['streams' => 2, 'unversioned' => 1], json_decode(self::stored($run->getId())['report'], true)['baseline']);
+    }
+
+    /** the maximum of a versionField needs the rows; a version probe() gives may be on another scale */
+    public function test_baseline_versionFieldStreamGetsNoVersion(): void
+    {
+        $source             = self::cataloged(streams: 2);
+        $source->streams[0] = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
+        self::streamVersions(['s1' => '2021']);
+        $run = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s2'], $source->calls, 'not asked for s1');
+        $state = StreamState::forDefinition(self::DEF);
+        self::assertSame([null, 'v-s2'], [$state?->versionOf('s1'), $state?->versionOf('s2')]);
+        self::assertEquals(['baseline' => self::NOW, 'run' => $run->getId()], $state->streams()['s1']);
+        self::assertSame(1, TestRun::get($run->getId())?->counts()['unversioned']);
+    }
+
+    public function test_baseline_versionRedacted(): void
+    {
+        define('AA_APIKEY_RUNBASE', 'sekret66');
+        $source               = self::cataloged(streams: 1);
+        $source::$credentials = [['vendor' => 'RUNBASE', 'context' => '']];
+        $source->probes['s1'] = new Probe(Probe::CHANGED, 'https://x.cz/?k=sekret66');
+        $run                  = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runAll($run->getId());
+
+        self::assertSame('https://x.cz/?k=***', StreamState::forDefinition(self::DEF)?->versionOf('s1'));
+        foreach (TableDb::rows('object_text') as $row) {
+            self::assertStringNotContainsString('sekret66', (string) $row['value']);
+        }
+    }
+
+    /** a check() passed is the progress of the step, as in a check: the probe has its own tries */
+    public function test_baseline_probeDownRightAfterCheck_isProgress(): void
+    {
+        $source                  = self::cataloged(streams: 1);
+        $source->failProbe['s1'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        $run                     = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runOne();
+        self::assertSame(['0', 1], [self::stored($run->getId())['failures'], TestRun::get($run->getId())?->position()['checked']]);
+        unset($source->failProbe['s1']);
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s1', 'probe:s1'], $source->calls);
+        self::assertSame('v-s1', StreamState::forDefinition(self::DEF)?->versionOf('s1'));
+    }
+
+    /** a source that does not answer ends the baseline as it ends a check, with what it recorded kept */
+    public function test_baseline_probeDownErrorsAsCheck(): void
+    {
+        $source                  = self::cataloged(streams: 2);
+        $source->failProbe['s2'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        $run                     = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['error', 'TRANSPORT'], self::errorOf($run->getId()));
+        $state = StreamState::forDefinition(self::DEF);
+        self::assertSame(['v-s1', null], [$state?->versionOf('s1'), $state?->versionOf('s2')]);
+        self::assertSame([], $source->jobCalls);
+    }
+
+    public function test_baseline_dryIsRefused(): void
+    {
+        $source = self::cataloged(streams: 1);
+        $run    = self::startRun($source, ['mode' => 'baseline', 'dry' => '1']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['error', 'DEFINITION'], self::errorOf($run->getId()), 'dry it would not record what it is for');
+        self::assertSame([], $source->calls);
+        self::assertNull(StreamState::forDefinition(self::DEF));
+    }
+
     // ------------------------------------------------------------ helpers
 
     private static function storedCheck(CheckResult $check): void

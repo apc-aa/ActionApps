@@ -113,6 +113,18 @@ final class StreamStateTest extends TestCase
         );
     }
 
+    /** a baseline that cannot tell a version removes the one known, not sets it to '' */
+    public function test_record_nullRemovesField(): void
+    {
+        $state = StreamState::create(self::DEF);
+        $state->record('a', ['v' => '2024', 'imported' => 8]);
+        $state->record('a', ['v' => null, 'baseline' => 9]);
+        $state->store();
+
+        self::assertSame(['a' => ['imported' => 8, 'baseline' => 9]], StreamState::forDefinition(self::DEF)?->streams());
+        self::assertNull(StreamState::forDefinition(self::DEF)?->versionOf('a'));
+    }
+
     public function test_store_numericKeysStayAnObject(): void
     {
         $state = StreamState::create(self::DEF);
@@ -168,6 +180,7 @@ final class StreamStateTest extends TestCase
         return [
             'stream key with a colon' => ['a:b', ['v' => '1']],
             'unknown field'           => ['a', ['secret' => 'x']],
+            'unknown field unset'     => ['a', ['secret' => null]],
             'version not a string'    => ['a', ['v' => 2024]],
             'negative time'           => ['a', ['probed' => -1]],
             'time not an int'         => ['a', ['imported' => '7']],

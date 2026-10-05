@@ -50,7 +50,7 @@ class Run extends BatchRun
     /** what a run counts, all of them in this order */
     private const COUNTS = [
         'read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0,
-        'jobs' => 0, 'streams' => 0, 'unchanged' => 0, 'skipped_jobs' => 0,
+        'jobs' => 0, 'streams' => 0, 'unchanged' => 0, 'skipped_jobs' => 0, 'unversioned' => 0,
     ];
 
     /** item errors a step hands over, and the run keeps, at most */
@@ -62,7 +62,10 @@ class Run extends BatchRun
     /** jobs whose key collisions the run lists; the rest it only counts */
     private const COLLISIONS_KEPT = 20;
 
-    private const MODES = ['run', 'changed', 'check'];
+    private const MODES = ['run', 'changed', 'check', 'baseline'];
+
+    /** the modes that store nothing in the slice: they ask the source and record what it says */
+    public const SOURCE_ONLY_MODES = ['check', 'baseline'];
 
     /** what walkJobs() and runJob() return when the step stops at the cursor */
     private const STOP = 'stop';
@@ -70,7 +73,8 @@ class Run extends BatchRun
     /** seconds onRetriesExhausted() gives check() and jobs(), ending 30 s before the lease at the latest */
     private const DECIDE_SECONDS = 15;
 
-    /** run (every stream) | changed (streams probe() does not call unchanged) | check (check(), probe(), catalog()) */
+    /** run (every stream) | changed (streams probe() does not call unchanged) | check (check(), probe(), catalog())
+     *  | baseline (check(), then each stream recorded at the version probe() gives, without importing it) */
     protected $mode = '';
     /** '1' = a dry run: nothing stored */
     protected $dry = '';
@@ -86,7 +90,7 @@ class Run extends BatchRun
     protected $errors = '';
     /** JSON list of the first items a dry run would store, for its report */
     protected $samples = '';
-    /** JSON {ok, code, msg} of the run's check(), for the report of a check */
+    /** JSON {ok, code, msg} of the run's check(), for the report of a check or a baseline */
     protected $check = '';
     /** JSON list of the runs a planned start ended to make way for this one, for the report */
     protected $replaced = '';
@@ -161,14 +165,20 @@ class Run extends BatchRun
         return (string) $this->dry === '1';
     }
 
-    /** @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int} */
+    /** a check or a baseline: nothing goes into the slice */
+    private function sourceOnly(): bool
+    {
+        return in_array($this->mode(), self::SOURCE_ONLY_MODES, true);
+    }
+
+    /** @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
     public function counts(): array
     {
         return self::countsOf((string) $this->counts);
     }
 
     /** the counts a stored `counts` value holds - State Check reads them without loading the run
-     *  @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int} */
+     *  @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
     public static function countsOf(string $json): array
     {
         $stored = json_decode($json, true);
@@ -323,8 +333,8 @@ class Run extends BatchRun
         }
     }
 
-    /** the report of a done run: its check() and probes of a check, the samples of a dry run, the
-     *  jobs whose items repeat a key, the runs its planned start ended */
+    /** the report of a done run: its check() and probes of a check, what a baseline recorded, the
+     *  samples of a dry run, the jobs whose items repeat a key, the runs its planned start ended */
     protected function finalCheck(): array
     {
         $report     = [];
@@ -335,9 +345,14 @@ class Run extends BatchRun
         if ($collisions['jobs']) {
             $report['collisions'] = $collisions;
         }
-        if ($this->mode() === 'check') {
+        if ($this->sourceOnly()) {
             $report['check'] = json_decode((string) $this->check, true);
+        }
+        if ($this->mode() === 'check') {
             $report['probe'] = ['probed' => $this->counts()['streams'], 'unchanged' => $this->counts()['unchanged']];
+        }
+        if ($this->mode() === 'baseline') {
+            $report['baseline'] = ['streams' => $this->counts()['streams'], 'unversioned' => $this->counts()['unversioned']];
         }
         if ($this->isDry()) {
             $report['samples'] = self::listOf((string) $this->samples);
@@ -360,8 +375,8 @@ class Run extends BatchRun
         $pos  = RunCursor::fromPosition($last->position);
         $keys = $this->streamKeys();
         $ctx  = null;
-        // a check has nothing to skip: its cycle, its failed check() end it
-        if (($last->retry === 'NO_PROGRESS') || ($this->mode() === 'check')) {
+        // a check or a baseline has nothing to skip: its cycle, its failed check() end it
+        if (($last->retry === 'NO_PROGRESS') || $this->sourceOnly()) {
             return null;
         }
         try {
@@ -444,9 +459,9 @@ class Run extends BatchRun
             }
             $source  = $this->source();
             $ctx     = $this->context($source, $budget);
-            if ($this->mode() === 'check') {
+            if ($this->sourceOnly()) {
                 if ($this->isDry()) {
-                    // a check stores nothing in the slice anyway; dry it would not store what it is for
+                    // it stores nothing in the slice anyway; dry it would not store what it is for
                     throw new BatchFailed('DEFINITION', 'run');
                 }
                 return $this->walkCheck($source, $ctx, $budget, $from, $pos, $keys);
@@ -576,18 +591,21 @@ class Run extends BatchRun
      * CATALOG_TOO_BIG) goes into the cursor and ends the run in the next step - after this one stored
      * the check() and the probes. A catalog that failed keeps the pages it got, unfinished (no time),
      * until a check fills it again.
+     * The baseline mode goes the same way to the end of the streams (baselineStream()); the catalog
+     * is the check's to fill.
      * @param list<string> $keys
      */
     private function walkCheck(SourceInterface $source, Context $ctx, BatchBudget $budget, array $from, array &$pos, array $keys): BatchStepResult
     {
         $first = true;   // the first call of a step always goes
+        $baseline = ($this->mode() === 'baseline');
         try {
             if (($pos['checked'] === 0) && !$this->checkSource($source, $ctx, $pos, $first)) {
                 return $this->result($pos, false, $keys);
             }
             $streams = ($source instanceof Probeable) ? self::streamsOf($source) : [];
             // the versions imported so far tell probe() what is new
-            $state   = StreamState::forDefinition($this->definitionId());
+            $state   = $baseline ? null : StreamState::forDefinition($this->definitionId());
             while (($source instanceof Probeable) && ($pos['i'] < count($keys))) {
                 if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
                     return $this->stopped($pos, $from, $keys, '');
@@ -597,6 +615,8 @@ class Run extends BatchRun
                 $stream = $streams[$key] ?? null;
                 if ($stream === null) {
                     $this->note('STREAM_GONE');
+                } elseif ($baseline) {
+                    $this->baselineStream($source, $ctx, $stream);
                 } else {
                     $unchanged = ($source->probe($stream, $ctx, $state?->versionOf($key))->state === Probe::UNCHANGED);
                     $this->streamRecords[$key] = ['probed' => static::now()];
@@ -606,7 +626,7 @@ class Run extends BatchRun
                 $pos = RunCursor::nextStream($pos);
             }
             $pos['i'] = count($keys);
-            while (($source instanceof Cataloged) && (($pos['pages'] === 0) || ($pos['cat'] !== ''))) {
+            while (!$baseline && ($source instanceof Cataloged) && (($pos['pages'] === 0) || ($pos['cat'] !== ''))) {
                 if (RunCursor::cycles($pos, $pos['cat'])) {
                     throw new SourceRefused('SOURCE_CYCLE', 'The catalog cursor goes round');
                 }
@@ -633,7 +653,27 @@ class Run extends BatchRun
     }
 
     /**
-     * check() once, at the start of a check or of a live run; $first is false once it asked. A
+     * A stream recorded at the version the source has now, as an import of it would record it, but
+     * as a baseline: nothing of it was fetched. The version is what probe() says, asked as the run
+     * mode asks it at the end of a stream. A stream versioned by its versionField gets none - the
+     * maximum of that field cannot be had without its rows - and neither does one probe() tells no
+     * version of: its stored version goes, so the next changed run imports it.
+     */
+    private function baselineStream(Probeable $source, Context $ctx, Stream $stream): void
+    {
+        $version = '';
+        $record  = ['baseline' => static::now(), 'run' => (string) $this->getId()];
+        if ($stream->versionField === '') {
+            $version          = self::sourceVersion($ctx, $source->probe($stream, $ctx, null)->version);
+            $record['probed'] = static::now();
+        }
+        $this->streamRecords[$stream->key] = ['v' => ($version === '') ? null : $version] + $record;
+        $this->tally['streams']++;
+        $this->tally['unversioned'] += ($version === '') ? 1 : 0;
+    }
+
+    /**
+     * check() once, at the start of a check, a baseline or a live run; $first is false once it asked. A
      * failure goes into the cursor and ends the run in the next step, after this one stored the
      * check(); a refusal thrown is kept by its reason only - its text may carry a URL with a token
      * redact() does not know. An outage is thrown and retried as any failure to reach the source.
@@ -1022,7 +1062,7 @@ class Run extends BatchRun
      *  @param list<string> $keys */
     private function stopped(array $pos, array $from, array $keys, string $retry): BatchStepResult
     {
-        if (($retry !== '') && ($this->mode() !== 'check') && BatchPosition::same($from, ['checked' => $from['checked']] + $pos)) {
+        if (($retry !== '') && !$this->sourceOnly() && BatchPosition::same($from, ['checked' => $from['checked']] + $pos)) {
             // a check() passed is no progress of a step that failed before any job started (streams(),
             // jobs(), probe()): those get their three tries; the next step asks again
             $pos = $from;

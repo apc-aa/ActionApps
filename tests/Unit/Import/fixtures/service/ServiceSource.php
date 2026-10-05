@@ -5,11 +5,13 @@ declare(strict_types=1);
 use AA\Import\AbstractSource;
 use AA\Import\Context;
 use AA\Import\Mapping;
+use AA\Import\Probe;
+use AA\Import\Probeable;
 use AA\Import\SliceIdSetting;
 use AA\Import\Stream;
 
 /** A source of an installation whose streams and failures the test sets - static, as the Registry creates it */
-final class ServiceSource extends AbstractSource
+final class ServiceSource extends AbstractSource implements Probeable
 {
     /** @var list<string> keys of the streams, in order */
     public static array $streamKeys = ['s1', 's2', 's3'];
@@ -84,6 +86,11 @@ final class ServiceSource extends AbstractSource
             throw self::$failStreams;
         }
         return array_map(static fn(string $key): Stream => new Stream($key, "Stream $key", []), self::$streamKeys);
+    }
+
+    public function probe(Stream $s, Context $ctx, ?string $known): Probe
+    {
+        return new Probe(Probe::CHANGED, 'v-' . $s->key);
     }
 
     public function jobs(Stream $stream, Context $ctx, ?string $known): iterable

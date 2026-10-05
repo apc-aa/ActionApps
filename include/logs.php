@@ -67,6 +67,7 @@ APP_DENY        source (central_conf id | store)  reason:error            // an 
 APPSTORE        command:client (IPv4; IPv6 "/48 /64")  command               // a request of the app store's public account - the hourly limits count them, keep it logged (AA\Central\AppStore::admit())
 HTTP_BLOCK      purpose:client IP               host                           // an address of the local or private network refused by Client::publicOnly(), once a day (AA\Optimize\CheckBlockedRequests, LogOnce)
 IMPORT_ERR      Import_{definition_id}          #id Class file:line            // an import failure outside a queue step; never the message - it may carry a secret (AA\Import\Definition::logError())
+IMPORT_BL       Import_{definition_id}          #id run_id user                // a baseline of an import started: versions recorded without importing (AA\Import\Service::start())
 AA_WARN
 */
 

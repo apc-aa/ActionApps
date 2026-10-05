@@ -46,6 +46,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
     /** log type of a failure of the imports outside a queue step (log.type is varbinary(10)) */
     public const ERROR_EVENT = 'IMPORT_ERR';
 
+    /** the AA log type of a baseline started - who recorded versions no run imported */
+    public const BASELINE_EVENT = 'IMPORT_BL';
+
     /** what applyMapping() sets */
     public const MAPPING_PROPS = ['mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'];
 
@@ -307,9 +310,10 @@ final class Definition extends AA_Object implements InternalExpandInterface
         $trigger = (string) $run->getProperty('trigger');
         $about   = [
             match ($run->mode()) {
-                'changed' => _m('changed only'),
-                'check'   => _m('check'),
-                default   => '',
+                'changed'  => _m('changed only'),
+                'check'    => _m('check'),
+                'baseline' => _m('recording the state of the source'),
+                default    => '',
             },
             $run->isDry() ? _m('dry run') : '',
             match (true) {

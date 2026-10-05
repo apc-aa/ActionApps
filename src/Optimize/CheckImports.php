@@ -307,14 +307,14 @@ class CheckImports extends AbstractOptimize
         return $orphans;
     }
 
-    /** @param list<string> $runs  @return ?string the newest finished run that stored items - a check or a dry run stores none */
+    /** @param list<string> $runs  @return ?string the newest finished run that stored items - a check, a baseline or a dry run stores none */
     private static function lastFinished(array $o, array $runs): ?string
     {
         $last = null;
         $at   = [0, 0];
         foreach ($runs as $id) {
             $r = $o['runs'][$id];
-            if (!in_array($r['state'] ?? '', [Run::DONE, Run::ENDED], true) || (($r['mode'] ?? '') === 'check') || (($r['dry'] ?? '') === '1')) {
+            if (!in_array($r['state'] ?? '', [Run::DONE, Run::ENDED], true) || in_array($r['mode'] ?? '', Run::SOURCE_ONLY_MODES, true) || (($r['dry'] ?? '') === '1')) {
                 continue;
             }
             $when = [(int) ($r['finished'] ?? 0), (int) ($r['started'] ?? 0)];

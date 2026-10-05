@@ -36,11 +36,12 @@ final class DetailPage
 
     /** the actions that start a run: action => mode, options of Service::start() */
     private const STARTS = [
-        'run'     => ['run', []],
-        'changed' => ['changed', []],
-        'check'   => ['check', []],
-        'dry'     => ['run', ['dry' => true]],
-        'stream'  => ['run', []],
+        'run'      => ['run', []],
+        'changed'  => ['changed', []],
+        'check'    => ['check', []],
+        'dry'      => ['run', ['dry' => true]],
+        'stream'   => ['run', []],
+        'baseline' => ['baseline', []],
     ];
 
     /** an open run no step has worked on for long (BatchRun::isStuck()) - a page's own code, no state */
@@ -293,6 +294,7 @@ final class DetailPage
         $html .= '</form>';
         $html .= '<p><small>' . _m('Run changed only skips the streams the source says did not change. Check source asks the source whether it works and stores nothing. A dry run reads up to 500 items and shows what it would store, without storing it.') . '</small></p>';
         $html .= $this->streamFormHtml($why);
+        $html .= $this->baselineFormHtml($why);
         $html .= $this->controlFormHtml($now);
         return self::section('actions', _m('Actions'), $html);
     }
@@ -314,7 +316,7 @@ final class DetailPage
                 . '<td>' . safe(Definition::howItRan($run)) . '</td>'
                 . '<td>' . safe(Definition::statusWord($run, $now)) . '</td>'
                 . '<td>' . self::took($run, $now) . '</td>'
-                . '<td>' . self::countsText($run->counts()) . '</td>'
+                . '<td>' . self::countsText($run) . '</td>'
                 . '<td>' . self::errorHtml($p['error'] ?? null) . '</td>'
                 . '</tr>';
             $samples = $run->samples();
@@ -354,7 +356,7 @@ final class DetailPage
             $html   .= '<tr><td>' . safe((string) $key) . '</td>'
                 . '<td>' . ((is_string($version) && ($version !== '')) ? safe($version) : '--') . '</td>'
                 . '<td>' . self::timeOf($stream['probed'] ?? null) . '</td>'
-                . '<td>' . self::timeOf($stream['imported'] ?? null) . '</td>'
+                . '<td>' . self::importedHtml($stream) . '</td>'
                 // a run older than those listed is gone from the page
                 . '<td>' . self::timeOf(is_string($run) ? ($started[$run] ?? null) : null) . '</td>'
                 . '</tr>';
@@ -514,6 +516,8 @@ final class DetailPage
             'SOURCE'         => _m('The code of the import source failed (SOURCE). The log of import failures has its class and line.'),
             'WRONG_STATE'    => _m('The run is finished; it cannot go on.'),
             'OFF'            => _m('The import is switched off.'),
+            'KEYS'           => _m('This import uses API keys, so only a superadmin may do this.'),
+            'NO_VERSIONS'    => _m('The import source cannot tell the versions of its streams, so there is no state of it to record.'),
             default          => _m('The import source refused: %1', [$code]),
         };
     }
@@ -525,7 +529,7 @@ final class DetailPage
         $started = (int) $run->getProperty('started');
         return ($started ? date('Y-m-d H:i', $started) : '--')
             . ' <small>' . safe(Definition::howItRan($run)) . '</small><br>'
-            . _m('took %1', [self::took($run, $now)]) . '; ' . self::countsText($run->counts());
+            . _m('took %1', [self::took($run, $now)]) . '; ' . self::countsText($run);
     }
 
     private function openRunHtml(Run $run, int $now): string
@@ -658,6 +662,27 @@ final class DetailPage
             . '</form>';
     }
 
+    /** Record the current state of the source: for whoever may manage the import, of a source that
+     *  tells versions, as Service decides - the reason a run is in the way, $why, is said above the
+     *  forms already */
+    private function baselineFormHtml(string $why): string
+    {
+        $refused = ($why === '') ? ($this->def->manageRefusal($this->uid) ?? ($this->sourceProbes() ? null : 'NO_VERSIONS')) : null;
+        $off     = ($refused === null) ? $why : self::reasonText($refused);
+        return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions" data-aa-confirm="' . safe(_m('Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported.')) . '">' . $this->hidden('baseline')
+            . self::button(_m('Record the current state of the source'), $off, [])
+            . (($refused === null) ? '' : self::whyHtml($off))
+            . '<p><small>' . _m('Record the current state of the source stores the version of each stream the source has now, without importing anything, so that Run changed only then imports just what changes after that. Use it only when the data of the source already are in the slice.') . '</small></p>'
+            . '</form>';
+    }
+
+    /** whether the source can tell the versions of its streams - by its class, the page does not create it */
+    private function sourceProbes(): bool
+    {
+        $class = Registry::sources()[$this->def->sourceType()] ?? null;
+        return ($class !== null) && is_subclass_of($class, Probeable::class);
+    }
+
     /** Continue and End of the open run */
     private function controlFormHtml(int $now): string
     {
@@ -778,10 +803,25 @@ final class DetailPage
         return '<code>' . safe($error['code']) . '</code>' . (($error['where'] === '') ? '' : ' <small>' . safe($error['where']) . '</small>');
     }
 
-    /** @param array<string, int> $counts */
-    private static function countsText(array $counts): string
+    private static function countsText(Run $run): string
     {
-        return _m('read %1, new %2, updated %3, skipped %4, item errors %5', [$counts['read'] ?? 0, $counts['new'] ?? 0, $counts['updated'] ?? 0, $counts['skipped'] ?? 0, $counts['errors'] ?? 0]);
+        $counts = $run->counts();
+        if ($run->mode() === 'baseline') {
+            return _m('streams recorded %1, without a version %2', [$counts['streams'], $counts['unversioned']]);
+        }
+        return _m('read %1, new %2, updated %3, skipped %4, item errors %5', [$counts['read'], $counts['new'], $counts['updated'], $counts['skipped'], $counts['errors']]);
+    }
+
+    /** when the stream was imported, or recorded by a baseline when that came later
+     *  @param array<string, string|int> $stream */
+    private static function importedHtml(array $stream): string
+    {
+        $imported = $stream['imported'] ?? 0;
+        $baseline = $stream['baseline'] ?? 0;
+        if (is_int($baseline) && ($baseline > 0) && (!is_int($imported) || ($baseline > $imported))) {
+            return _m('Baseline %1', [self::timeOf($baseline)]);
+        }
+        return self::timeOf($imported ?: null);
     }
 
     private static function timeOf(mixed $time): string

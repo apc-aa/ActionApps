@@ -1018,6 +1018,92 @@ final class ServiceTest extends TestCase
         $this->assertSame('FORBIDDEN', Service::resetMapping($def, AuthGetUid())->code, 'no feeding at all');
     }
 
+    // ------------------------------------------------------------ baseline: the state of the source recorded
+
+    /** it records versions no import fetched - a decision of a user at the page, never of a plan */
+    public function test_baseline_notFromPlannedTask(): void
+    {
+        $def = self::definition();
+
+        foreach (['plan:' . self::TASK, 'event:' . self::TASK] as $trigger) {
+            $this->assertSame(['invalid', 'MODE'], self::codeOf(Service::start($def, 'baseline', [], $trigger, AuthGetUid())), $trigger);
+        }
+        $this->assertSame(['invalid', 'OPTIONS'], self::codeOf(Service::start($def, 'baseline', ['dry' => true], 'manual', AuthGetUid())), 'nothing to try out');
+        $this->assertSame([], self::runIds());
+        $this->assertSame([], self::baselinesLogged());
+
+        $r = Service::start($def, 'baseline', [], 'manual', AuthGetUid());
+        $this->assertSame('queued', $r->code);
+        $this->assertSame(['baseline', 'manual', ''], [self::stored($r->runId)['mode'], self::stored($r->runId)['trigger'], self::stored($r->runId)['dry']]);
+        $this->assertSame(['#' . self::DEF . ' ' . $r->runId . ' ' . AuthGetUid()], self::baselinesLogged(), 'who did it outlives the run');
+    }
+
+    public function test_baseline_busyRefused(): void
+    {
+        $def   = self::definition();
+        $first = Service::start($def, 'run', [], 'manual', AuthGetUid());
+
+        $this->assertSame(['busy', $first->runId, 'running'], [($r = Service::start($def, 'baseline', [], 'manual', AuthGetUid()))->code, $r->runId, $r->reason]);
+        self::storedSet($first->runId, 'state', Run::ERROR);
+        $this->assertSame(['busy', 'error'], [($r = Service::start($def, 'baseline', [], 'manual', AuthGetUid()))->code, $r->reason], 'as for any start by hand');
+        $this->assertSame([], self::baselinesLogged());
+
+        self::storedSet($first->runId, 'state', Run::DONE);
+        $baseline = Service::start($def, 'baseline', [], 'manual', AuthGetUid());
+        $this->assertSame('queued', $baseline->code);
+        $this->assertSame(['busy', $baseline->runId], [($r = Service::start($def, 'changed', [], 'manual', AuthGetUid()))->code, $r->runId], 'a baseline is in the way of runs too');
+    }
+
+    /** as any change of what the runs are made of: whoever manages the import, a superadmin for a source with keys */
+    public function test_baseline_keysSourceSuperadminOnly(): void
+    {
+        $def = self::definition();
+        \ServiceSource::$credentials = [['vendor' => 'csu', 'context' => '']];
+
+        $this->assertSame(['invalid', 'KEYS'], self::codeOf(Service::start($def, 'baseline', [], 'manual', AuthGetUid())));
+        $this->assertSame([], self::runIds());
+        self::perms(PS_EDIT_ALL_ITEMS, PS_FEEDING);
+        $this->assertSame(['invalid', 'FORBIDDEN'], self::codeOf(Service::start($def, 'baseline', [], 'manual', AuthGetUid())));
+
+        self::perms(PS_FEEDING . PS_EDIT_ALL_ITEMS, PS_EDIT_ALL_ITEMS);
+        $GLOBALS['r_superuser'] = [AA_ID => true];
+        $this->assertSame('queued', Service::start($def, 'baseline', [], 'manual', AuthGetUid())->code);
+    }
+
+    /** Continue of a baseline asks the same right as its start; of another run, the feeding right only */
+    public function test_baseline_resumeNeedsTheRightToStartIt(): void
+    {
+        $def = self::definition();
+        \ServiceSource::$credentials = [['vendor' => 'csu', 'context' => '']];
+        $GLOBALS['r_superuser']      = [AA_ID => true];
+        $r = Service::start($def, 'baseline', [], 'manual', AuthGetUid());
+        $this->assertSame('queued', $r->code);
+        self::storedSet($r->runId, 'state', Run::ERROR);
+        $GLOBALS['r_superuser'] = [AA_ID => false];
+
+        $this->assertSame(['invalid', $r->runId, 'KEYS'], [($c = Service::resume($r->runId, AuthGetUid()))->code, $c->runId, $c->reason]);
+        $this->assertSame('error', self::stored($r->runId)['state']);
+
+        self::storedSet($r->runId, 'mode', 'run');
+        $this->assertSame('queued', Service::resume($r->runId, AuthGetUid())->code, 'a run of the import needs no more');
+        self::storedSet($r->runId, 'mode', 'baseline');
+        self::storedSet($r->runId, 'state', Run::ERROR);
+        $GLOBALS['r_superuser'] = [AA_ID => true];
+        $this->assertSame('queued', Service::resume($r->runId, AuthGetUid())->code);
+    }
+
+    /** a source that tells no versions has no state to record: a baseline would only drop the versions known */
+    public function test_baseline_sourceWithoutProbeRefused(): void
+    {
+        $dir = __DIR__ . '/fixtures/definition';
+        Registry::setCustomRootForTests(dirname($dir), $dir);
+        $def = self::definition(['source' => 'custom:definitionplain']);
+
+        $this->assertSame(['invalid', 'NO_VERSIONS'], self::codeOf(Service::start($def, 'baseline', [], 'manual', AuthGetUid())));
+        $this->assertSame([], self::runIds());
+        $this->assertSame('queued', Service::start($def, 'check', [], 'manual', AuthGetUid())->code, 'other runs go');
+    }
+
     // ------------------------------------------------------------ resetMapping()
 
     public function test_resetMapping_brokenStoredSettingsRefused(): void
@@ -1168,6 +1254,12 @@ final class ServiceTest extends TestCase
     private static function logged(): array
     {
         return array_values(array_map(static fn(array $r): string => (string) $r['params'], array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Definition::ERROR_EVENT)));
+    }
+
+    /** @return list<string> the params of the logged starts of a baseline */
+    private static function baselinesLogged(): array
+    {
+        return array_values(array_map(static fn(array $r): string => (string) $r['params'], array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Definition::BASELINE_EVENT)));
     }
 
     /** @return array{string, string} */
