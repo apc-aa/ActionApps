@@ -240,7 +240,7 @@ namespace Tests\Unit\Central {
         public static function transitions(): array
         {
             $after = [
-                InstallRun::PREVIEW => ['definitionsWritten' => InstallRun::ITEMS],
+                InstallRun::PREVIEW => ['definitionsWritten' => InstallRun::ITEMS, 'previewed' => InstallRun::PREVIEW],
                 InstallRun::ITEMS   => ['advance' => InstallRun::ITEMS, 'fail' => InstallRun::ERROR, 'finish' => InstallRun::DONE, 'end' => InstallRun::ENDED],
                 InstallRun::ERROR   => ['resume' => InstallRun::ITEMS, 'end' => InstallRun::ENDED],
                 InstallRun::DONE    => [],
@@ -248,7 +248,7 @@ namespace Tests\Unit\Central {
             ];
             $cases = [];
             foreach ($after as $state => $allowed) {
-                foreach (['definitionsWritten', 'advance', 'fail', 'resume', 'finish', 'end'] as $action) {
+                foreach (['definitionsWritten', 'previewed', 'advance', 'fail', 'resume', 'finish', 'end'] as $action) {
                     $cases["$state $action"] = [$state, $action, $allowed[$action] ?? null];
                 }
             }
@@ -259,6 +259,7 @@ namespace Tests\Unit\Central {
         {
             match ($action) {
                 'definitionsWritten' => $run->definitionsWritten(self::map(), self::DEFINITIONS, [self::SLICE1]),
+                'previewed'          => $run->previewed(hash('sha256', self::DEFINITIONS), self::NOW, false),
                 'advance'            => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 1, []),
                 'fail'               => $run->fail('WRITE_FAILED', 'item[1]'),
                 'resume'             => $run->resume(),
@@ -408,14 +409,15 @@ namespace Tests\Unit\Central {
 
         public function test_a_token_older_than_a_day_is_forgotten_in_every_unfinished_state(): void
         {
+            // the fresh one first: a later preview() would delete the old preview before its token is checked
+            $fresh   = InstallRun::preview(InstallRun::TRANSFER, false, '7', self::USER, self::TOKEN, time() + 3600)->getId();
             $preview = self::preview()->getId();
             $error   = self::runIn(InstallRun::ERROR);
             $items   = self::runIn(InstallRun::ITEMS);
-            $fresh   = InstallRun::preview(InstallRun::TRANSFER, false, '7', self::USER, self::TOKEN, time() + 3600)->getId();
 
             InstallRun::forgetOldTokens(time() + 86400 + 1);       // the error run moved last now (its definitions)
 
-            $this->assertSame('', self::stored($preview)['token'] ?? '');
+            $this->assertSame(['', InstallRun::PREVIEW], [self::stored($preview)['token'], InstallRun::get($preview)->state()]);
             $this->assertSame('', self::stored($error)['token'] ?? '');
             $this->assertSame('', self::stored($items)['token'] ?? '', 'a live transfer moves on with every batch - a day without one is abandoned');
             $this->assertSame(InstallRun::ITEMS, InstallRun::get($items)->state());
@@ -459,6 +461,103 @@ namespace Tests\Unit\Central {
             self::locked($id, static fn(InstallRun $run) => $run->resume());
 
             $this->assertSame(self::TOKEN, InstallRun::get($id)->token());
+        }
+
+        public function test_a_token_that_cannot_be_decrypted_is_an_error_not_an_empty_token(): void
+        {
+            $id = self::preview()->getId();
+            foreach (TableDb::$tables['object_text'] as $i => $row) {
+                if (($row['object_id'] === $id) && ($row['property'] === 'token')) {
+                    TableDb::$tables['object_text'][$i]['value'] = 'v1:not-sealed-by-this-aa';
+                }
+            }
+
+            $this->expectException(\RuntimeException::class);
+            InstallRun::get($id)->token();
+        }
+
+        public function test_forgetting_old_tokens_leaves_records_of_other_classes(): void
+        {
+            $other = str_repeat('c', 32);
+            foreach (['aa_type' => 'AA\\Import\\Run', 'state' => InstallRun::ERROR, 'token' => 'secret of another class', 'moved' => '1'] as $property => $value) {
+                TableDb::$tables['object_text'][] = ['id' => TableDb::$next['object_text']++, 'object_id' => $other, 'property' => $property, 'priority' => 0, 'value' => $value];
+            }
+
+            InstallRun::forgetOldTokens(time() + 2 * 86400);
+
+            $this->assertSame('secret of another class', self::stored($other)['token']);
+        }
+
+        public function test_unfinished_are_the_runs_in_items_and_error_only(): void
+        {
+            $ids = array_map(self::runIn(...), [InstallRun::PREVIEW, InstallRun::ITEMS, InstallRun::ERROR, InstallRun::DONE, InstallRun::ENDED]);
+            TableDb::$tables['object_text'][] = ['id' => TableDb::$next['object_text']++, 'object_id' => str_repeat('d', 32), 'property' => 'state', 'priority' => 0, 'value' => InstallRun::ITEMS];
+
+            $this->assertEqualsCanonicalizing([$ids[1], $ids[2]], array_map(static fn(InstallRun $run): string => $run->getId(), InstallRun::unfinished()));
+        }
+
+        public function test_a_failure_after_continue_shows_its_own_error(): void
+        {
+            $id = self::runIn(InstallRun::ERROR);
+
+            self::locked($id, static fn(InstallRun $run) => $run->resume());
+            self::locked($id, static fn(InstallRun $run) => $run->fail('SOURCE_LOGIN', 'source'));
+
+            $this->assertSame(['SOURCE_LOGIN', 'source'], InstallRun::get($id)->error());
+        }
+
+        /** a batch, a renewed login and Continue count as moving on (the token lives a day from then); a failure does not */
+        public function test_moving_on_is_a_batch_or_continue_never_a_failure(): void
+        {
+            $id    = self::runIn(InstallRun::ITEMS);
+            $moved = static fn(): string => self::stored($id)['moved'];
+            $set   = static function (string $value) use ($id): void {
+                foreach (TableDb::$tables['object_text'] as $i => $row) {
+                    if (($row['object_id'] === $id) && ($row['property'] === 'moved')) {
+                        TableDb::$tables['object_text'][$i]['value'] = $value;
+                    }
+                }
+            };
+            $before = (string) time();
+
+            $set('1');
+            self::locked($id, static fn(InstallRun $run) => $run->advance([self::SLICE1, ''], [self::SLICE1, self::ITEM1], 1, []));
+            $this->assertGreaterThanOrEqual($before, $moved());
+
+            $set('1');
+            self::locked($id, static fn(InstallRun $run) => $run->fail('WRITE_FAILED', ''));
+            $this->assertSame('1', $moved());
+
+            self::locked($id, static fn(InstallRun $run) => $run->resume());
+            $this->assertGreaterThanOrEqual($before, $moved());
+        }
+
+        /** a run written before an upgrade must read back after it: the record as this AA stores it today */
+        public function test_a_stored_record_reads_back(): void
+        {
+            $id   = str_repeat('e', 32);
+            $rows = [
+                'aa_type' => InstallRun::class, 'aa_owner' => str_repeat('0', 32), 'state' => InstallRun::ITEMS, 'mode' => InstallRun::TRANSFER,
+                'all_bins' => '', 'source' => '7', 'user' => self::USER, 'started' => (string) self::NOW, 'moved' => (string) (self::NOW + 60),
+                'source_time' => (string) (self::NOW - 5), 'same_aa' => '', 'fingerprint' => hash('sha256', self::DEFINITIONS),
+                'slice' => self::SLICE2, 'cursor' => self::ITEM2, 'error_code' => '', 'error_path' => '', 'token' => '',
+                'id_map' => self::map()->toJson(), 'slices' => '["' . self::SLICE1 . '","' . self::SLICE2 . '"]',
+                'written' => '{"' . self::SLICE1 . '":3,"' . self::SLICE2 . '":1}', 'warnings' => '{"' . self::SLICE1 . '":{"item-field":2}}',
+                'report' => '', 'targets' => '{"' . self::SLICE1 . '":"' . str_repeat('f', 32) . '"}', 'choices' => '',
+                'filters' => '{"' . self::SLICE2 . '":"d-headline........-==-B"}',
+            ];
+            foreach ($rows as $property => $value) {
+                TableDb::$tables['object_text'][] = ['id' => TableDb::$next['object_text']++, 'object_id' => $id, 'property' => $property, 'priority' => 0, 'value' => $value];
+            }
+
+            $run = InstallRun::get($id);
+
+            $this->assertSame([InstallRun::ITEMS, InstallRun::TRANSFER, false, '7', self::USER], [$run->state(), $run->mode(), $run->allBins(), $run->source(), $run->user()]);
+            $this->assertSame([self::NOW, self::NOW + 60, self::NOW - 5, false], [$run->started(), $run->moved(), $run->sourceStarted(), $run->sameAa()]);
+            $this->assertSame([[self::SLICE1, self::SLICE2], [self::SLICE2, self::ITEM2]], [$run->slices(), $run->position()]);
+            $this->assertSame([[self::SLICE1 => 3, self::SLICE2 => 1], [self::SLICE1 => ['item-field' => 2]]], [$run->written(), $run->warnings()]);
+            $this->assertSame([[self::SLICE1 => str_repeat('f', 32)], [self::SLICE2 => 'd-headline........-==-B']], [$run->targets(), $run->filters()]);
+            $this->assertSame([str_repeat('b', 32), '', null], [$run->idMap()->module(self::SLICE1), $run->token(), $run->error()]);
         }
 
         // ---------------------------------------------------------------- batches
@@ -561,11 +660,11 @@ namespace Tests\Unit\Central {
             $locked = DB_AA::transaction(static fn() => InstallRun::lockForUpdate($id));
 
             $this->assertSame([self::SLICE1, ''], $locked->position());
-            $this->assertSame('BEGIN', TableDb::$log[0]);
-            $this->assertStringStartsWith('SELECT ', TableDb::$log[1]);
-            $this->assertStringContainsString('`object_text`', TableDb::$log[1]);
-            $this->assertStringEndsWith(' FOR UPDATE', TableDb::$log[1]);
-            $this->assertSame('COMMIT', TableDb::$log[2]);
+            $begin  = array_search('BEGIN', TableDb::$log, true);
+            $commit = array_search('COMMIT', TableDb::$log, true);
+            $reads  = array_keys(array_filter(TableDb::$log, static fn(string $sql): bool => str_contains($sql, '`object_text`') && str_ends_with($sql, ' FOR UPDATE')));
+            $this->assertNotSame([], $reads, 'a locking read of the record');
+            $this->assertTrue(($begin !== false) && ($commit !== false) && ($begin < min($reads)) && (max($reads) < $commit), 'inside the transaction');
         }
 
         // ---------------------------------------------------------------- cleanup

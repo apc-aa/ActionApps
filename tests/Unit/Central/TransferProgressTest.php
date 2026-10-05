@@ -11,12 +11,20 @@ declare(strict_types=1);
 namespace Tests\Unit\Central;
 
 use AA\Central\AppExport;
+use AA\Central\AppSource;
+use AA\Central\ExportRefused;
+use AA\Central\SourceFailed;
 use AA\Central\InstallRun;
+use AA\Central\Package\AfterCommit;
 use AA\Central\Package\BatchResult;
 use AA\Central\Package\CollectOptions;
 use AA\Central\Package\ImportConfirmation;
 use AA\Central\Package\ImportFailed;
+use AA\Central\Package\LintFinding;
 use AA\Central\Package\Model\Module;
+use AA\Central\Package\Model\Package;
+use AA\IO\DB\DB_AA;
+use Closure;
 use AA\Central\TransferProgress;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\FakeSource;
@@ -286,6 +294,206 @@ final class TransferProgressTest extends TestCase
 
         $this->expectException(ImportFailed::class);
         $this->progress('another-uid')->next($run, [self::SLICE, '']);
+    }
+
+    /** a source whose batch throws $failure, after $meanwhile; it is asked for nothing else */
+    private static function failingSource(\Throwable $failure, ?Closure $meanwhile = null): AppSource
+    {
+        return new class ($failure, $meanwhile) implements AppSource {
+            public function __construct(private \Throwable $failure, private ?Closure $meanwhile) {}
+
+            public function sameAa(): bool
+            {
+                return false;
+            }
+
+            public function itemIds(string $slice, bool $allBins, string $after, array $filters = []): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function definitions(array $modules, bool $transfer, bool $allBins, int $started): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function batch(string $slice, string $after, bool $allBins, int $started, array $filters = []): array
+            {
+                $this->meanwhile && ($this->meanwhile)();
+                throw $this->failure;
+            }
+
+            public function logins(array $slices, bool $allBins, array $filters = []): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function itemCounts(array $slices, bool $allBins, int $editedAfter = 0, array $filters = []): array
+            {
+                throw new \LogicException('not asked');
+            }
+
+            public function leftOut(array $filters, array $slices, bool $allBins): array
+            {
+                throw new \LogicException('not asked');
+            }
+        };
+    }
+
+    public function test_an_export_error_of_a_batch_stops_the_run_with_its_code_and_findings(): void
+    {
+        $run      = $this->transferred();
+        $path     = Module::SLICE . '[' . self::SLICE . ']/item';
+        $refused  = ExportRefused::failed([
+            [$path, new LintFinding(LintFinding::WARNING, 'item-field', 'x', 0)],
+            [$path, new LintFinding(LintFinding::ERROR, 'item-too-big', self::ITEM_A, 0)],
+            [$path . '[2]', new LintFinding(LintFinding::ERROR, 'item-charset', self::ITEM_B, 0)],
+        ]);
+        $progress = new TransferProgress($this->importer(), self::failingSource($refused), $this->after, self::USER);
+
+        $state = $progress->next($run, [self::SLICE, '']);
+
+        self::assertSame([BatchResult::FAILED, InstallRun::ERROR], [$state['status'], $state['state']]);
+        self::assertSame(['code' => 'ITEM_TOO_BIG', 'path' => $path], $state['error'], 'the first error, its code upper case');
+        self::assertSame(['item-field', 'item-too-big', 'item-charset'], array_column($state['findings'], 'code'), 'every finding of the source');
+        self::assertSame([self::SLICE, ''], InstallRun::get($run)->position());
+    }
+
+    public function test_a_source_that_fails_puts_the_run_in_error_with_its_reason(): void
+    {
+        $run      = $this->transferred();
+        $progress = new TransferProgress($this->importer(), self::failingSource(new SourceFailed(SourceFailed::UNREACHABLE, 'timeout')), $this->after, self::USER);
+
+        $log = ini_set('error_log', '/dev/null');
+        try {
+            $state = $progress->next($run, [self::SLICE, '']);
+        } finally {
+            ini_set('error_log', (string) $log);
+        }
+
+        self::assertSame(['code' => SourceFailed::UNREACHABLE, 'path' => 'source'], $state['error']);
+        self::assertSame([], $state['findings']);
+    }
+
+    /** the source is asked only by a batch: a stale request, Continue and End go without it */
+    public function test_only_a_batch_asks_the_source(): void
+    {
+        $run      = $this->transferred();
+        $gone     = static fn(): never => throw new SourceFailed(SourceFailed::UNREACHABLE, 'No such AA in the Central list');
+        $progress = new TransferProgress($this->importer(), $gone, $this->after, self::USER);
+
+        self::assertSame(BatchResult::STALE, $progress->next($run, [self::SLICE, self::ITEM_B])['status']);
+        self::assertSame(BatchResult::STALE, $progress->resume($run)['status'], 'Continue of a run not in error');
+        self::assertSame(InstallRun::ITEMS, InstallRun::get($run)->state());
+        self::assertSame(TransferProgress::ENDED, $progress->end($run)['status']);
+    }
+
+    public function test_a_failing_cache_step_is_reported_and_the_others_still_run(): void
+    {
+        $run               = $this->transferred();
+        $this->after->fail = ['invalidatePagecache ' . self::id(2)];
+
+        $log = ini_set('error_log', '/dev/null');
+        try {
+            $state = $this->progress()->next($run, [self::SLICE, '']);
+        } finally {
+            ini_set('error_log', (string) $log);
+        }
+
+        self::assertSame([TransferProgress::DONE, InstallRun::DONE], [$state['status'], $state['state']]);
+        self::assertSame([['pagecache[' . self::id(2) . ']', \RuntimeException::class]], $state['cleanup'], 'the step and the class, never the message');
+        self::assertSame(['invalidatePagecache ' . self::id(1), 'invalidatePagecache ' . self::id(2), 'invalidatePagecache ' . self::id(3), 'constantsChanged'], $this->after->calls);
+    }
+
+    public function test_no_user_drives_no_run(): void
+    {
+        $run = $this->transferred();
+        foreach (TableDb::$tables['object_text'] as $i => $row) {
+            if (($row['object_id'] === $run) && ($row['property'] === 'user')) {
+                TableDb::$tables['object_text'][$i]['value'] = '';
+            }
+        }
+
+        $this->expectException(ImportFailed::class);
+        $this->progress('')->resume($run);
+    }
+
+    public function test_an_unknown_run_is_refused(): void
+    {
+        $this->expectException(ImportFailed::class);
+        $this->progress()->next(str_repeat('9', 32), [self::SLICE, '']);
+    }
+
+    /** another request wrote the batch while this one waited for the source: its failure leaves the run alone */
+    public function test_a_late_failure_of_a_batch_written_meanwhile_changes_nothing(): void
+    {
+        $run       = $this->transferred();
+        $meanwhile = static fn() => DB_AA::transaction(static fn() => InstallRun::lockForUpdate($run)->advance([self::SLICE, ''], [self::SLICE, self::ITEM_B], 2, []));
+        $progress  = new TransferProgress($this->importer(), self::failingSource(new SourceFailed(SourceFailed::UNREACHABLE, 'timeout'), $meanwhile), $this->after, self::USER);
+
+        $log = ini_set('error_log', '/dev/null');
+        try {
+            $state = $progress->next($run, [self::SLICE, '']);
+        } finally {
+            ini_set('error_log', (string) $log);
+        }
+
+        self::assertSame([InstallRun::ITEMS, null, ['slice' => self::SLICE, 'cursor' => self::ITEM_B]], [$state['state'], $state['error'], $state['position']]);
+    }
+
+    /** another request finished the run while this one cleared the caches: this one reports stale, the report is the other's */
+    public function test_a_finish_that_comes_second_is_stale(): void
+    {
+        $run   = $this->transferred();
+        $after = new class ($run) implements AfterCommit {
+            public function __construct(private string $run) {}
+
+            public function permissions(string $module, string $user): void {}
+
+            public function constantsChanged(): void
+            {
+                DB_AA::transaction(fn() => InstallRun::lockForUpdate($this->run)->finish(['by' => 'the other request']));
+            }
+
+            public function invalidatePagecache(string $module): void {}
+
+            public function logInstall(Package $package, array $modules): void {}
+        };
+        $progress = new TransferProgress($this->importer(), new AppExport($this->source, self::SOURCE, static fn(): bool => true, true), $after, self::USER);
+
+        $state = $progress->next($run, [self::SLICE, '']);
+
+        self::assertSame([BatchResult::STALE, InstallRun::DONE], [$state['status'], $state['state']]);
+        self::assertSame(['by' => 'the other request'], InstallRun::get($run)->report());
+    }
+
+    public function test_end_after_an_error_clears_the_caches_and_a_second_end_does_not(): void
+    {
+        $run = $this->transferred();
+        self::failAt('/^INSERT INTO `item`/');
+        $this->progress()->next($run, [self::SLICE, '']);
+        TableDb::$fail = null;
+
+        $state = $this->progress()->end($run);
+
+        self::assertSame([TransferProgress::ENDED, InstallRun::ENDED], [$state['status'], $state['state']]);
+        self::assertContains('constantsChanged', $this->after->calls);
+        $this->after->calls = [];
+        $this->progress()->end($run);
+        self::assertSame([], $this->after->calls);
+    }
+
+    public function test_warnings_of_the_batches_are_counted_per_slice_and_told_by_each_batch(): void
+    {
+        $run = $this->transferredTwoSlices();
+        $this->source->items[self::SLICE][0]['content']['nofield.........'] = [['value' => 'x', 'flag' => 0]];
+
+        $first = $this->progress()->next($run, [self::SLICE, '']);
+        $last  = $this->progress()->next($run, [self::SLICE2, '']);
+
+        self::assertSame(['W item-field'], array_map(static fn(array $f): string => "{$f['level']} {$f['code']}", $first['findings']), 'a middle batch');
+        self::assertSame([self::SLICE => ['item-field' => 1]], $first['warnings']);
+        self::assertSame([TransferProgress::DONE, [self::SLICE => ['item-field' => 1]]], [$last['status'], $last['warnings']], 'the counts stay to the end');
     }
 
     public function test_an_install_run_has_no_progress(): void
