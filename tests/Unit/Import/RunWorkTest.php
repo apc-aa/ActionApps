@@ -238,7 +238,7 @@ final class RunWorkTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame([['stream' => 's1', 'known' => null]], $source->jobCalls);
-        self::assertSame([['stream' => 's1', 'known' => null]], $source->probeCalls, 'run imports every stream - its version is asked at its end');
+        self::assertSame([['stream' => 's1', 'known' => null]], $source->probeCalls, 'run imports every stream - its version is asked at its start');
     }
 
     public function test_work_singleStream(): void

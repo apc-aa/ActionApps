@@ -21,14 +21,13 @@ final class RunCursor
      * Where a run starts; a new stream starts with all but i, checked and after of it.
      * - failed: the stream skipped a job or lost items to errors - its version stays the old one;
      * - skips: jobs of the stream skipped in a row, since the last one done;
-     * - probed, pv: the changed mode asked probe() at the stream's start, and the version it gave;
-     * - end: the jobs of the stream are done, its version is pending;
+     * - probed, pv: the changed or run mode asked probe() at the stream's start, and the version it gave;
      * - after: the key of a closed stream whose expression is due;
      * - checked: a check, a baseline or a live run asked check(); ccode: what ends the run in its next step.
      */
     public const START = [
         'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',
-        'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '', 'end' => 0,
+        'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '',
         'after' => '', 'checked' => 0, 'ccode' => '', 'skips' => 0,
     ];
 

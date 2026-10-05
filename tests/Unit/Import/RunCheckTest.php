@@ -635,7 +635,7 @@ final class RunCheckTest extends TestCase
         self::assertEquals(['v' => '2021', 'imported' => self::NOW, 'run' => $run->getId()], $state->streams()['s1']);
     }
 
-    public function test_version_fromProbeInRunModeAtStreamEnd(): void
+    public function test_version_fromProbeInRunModeAtStreamStart(): void
     {
         $source               = self::cataloged(streams: 1, jobs: 1, items: 1);
         $source->probes['s1'] = new Probe(Probe::CHANGED, 'v-7');
@@ -643,7 +643,7 @@ final class RunCheckTest extends TestCase
 
         self::runAll($run->getId());
 
-        self::assertSame(['probe:s1'], $source->calls, 'asked once, after its jobs');
+        self::assertSame(['probe:s1'], $source->calls, 'asked once, before its jobs');
         self::assertEquals(['v' => 'v-7', 'imported' => self::NOW, 'run' => $run->getId(), 'probed' => self::NOW], StreamState::forDefinition(self::DEF)?->streams()['s1']);
     }
 
@@ -661,6 +661,22 @@ final class RunCheckTest extends TestCase
         self::assertSame(['probe:s1'], $source->calls);
         self::assertSame('v-start', StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'the version the import started from');
         self::assertSame(self::NOW, StreamState::forDefinition(self::DEF)?->streams()['s1']['probed']);
+    }
+
+    // the file changing during the run: the version stored is that of the data imported, so changed sees the newer one
+    public function test_version_runModeKeepsTheProbeOfItsStart(): void
+    {
+        $source               = self::cataloged(streams: 1, jobs: 2, items: 1, seconds: 5.0);
+        $source->minJob       = 25;
+        $source->probes['s1'] = new Probe(Probe::CHANGED, 'v-start');
+        $run                  = self::startRun($source, ['position' => self::pastCheck()]);
+
+        self::runOne();
+        $source->probes['s1'] = new Probe(Probe::CHANGED, 'v-later');
+        self::runAll($run->getId());
+
+        self::assertSame(['probe:s1'], $source->calls);
+        self::assertSame('v-start', StreamState::forDefinition(self::DEF)?->versionOf('s1'));
     }
 
     public function test_version_notWrittenWhenStreamHadFailedJob(): void
@@ -996,16 +1012,16 @@ final class RunCheckTest extends TestCase
 
     public function test_versionProbe_keepsToTheBudget(): void
     {
-        $source              = self::cataloged(streams: 1, jobs: 1, items: 1, seconds: 20.0);
+        $source              = self::cataloged(streams: 2, jobs: 1, items: 1, seconds: 20.0);
         $run                 = self::startRun($source, ['position' => self::pastCheck()]);
 
         self::runOne();
 
-        self::assertSame([], $source->calls, '7 s left - the probe waits for the next step');
-        self::assertSame(1, TestRun::get($run->getId())?->position()['end']);
+        self::assertSame(['probe:s1'], $source->calls, '7 s left - the probe of s2 waits for the next step');
+        self::assertSame(['i' => 1, 'probed' => 0], array_intersect_key((array) TestRun::get($run->getId())?->position(), ['i' => 0, 'probed' => 0]));
         self::runAll($run->getId());
-        self::assertSame(['probe:s1'], $source->calls);
-        self::assertCount(1, $source->grabbers);
+        self::assertSame(['probe:s1', 'probe:s2'], $source->calls);
+        self::assertCount(2, $source->grabbers);
     }
 
     public function test_afterStream_notForAStreamClosedWithoutWriting(): void

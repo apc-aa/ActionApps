@@ -394,10 +394,6 @@ class Run extends BatchRun
             if ($last->retry === 'SOURCE_CYCLE') {
                 return $this->skipped($last, $pos, RunCursor::nextStream($pos), $keys);
             }
-            if ($pos['end'] === 1) {
-                // the jobs went well, only the version could not be had: the stream closes without it
-                return $this->skipped($last, $pos, RunCursor::nextStream($pos), $keys, 'VERSION_UNKNOWN');
-            }
             $source = $this->source();
             // a check() at the start that never answered leaves no job to skip; a step that passed it
             // (its cursor stayed, see stopped()) or died may have got past it
@@ -510,14 +506,23 @@ class Run extends BatchRun
                 }
                 $known = $state?->versionOf($key);
                 // probed once: a stream whose jobs keep failing must not count a new probe as progress
-                if (($pos['job'] === '') && ($pos['pages'] === 0) && ($pos['probed'] === 0) && $changed && ($source instanceof Probeable)) {
+                if (($pos['job'] === '') && ($pos['pages'] === 0) && ($pos['probed'] === 0) && ($source instanceof Probeable) && $this->probesAtStart($stream)) {
                     if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
                         return $this->stopped($pos, $from, $keys, '');
                     }
                     $first = false;
-                    $probe = $source->probe($stream, $ctx, $known);
-                    $this->streamRecords[$key] = ['probed' => static::now()];
-                    if ($probe->state === Probe::UNCHANGED) {
+                    try {
+                        $probe = $source->probe($stream, $ctx, $known);
+                        $this->streamRecords[$key] = ['probed' => static::now()];
+                    } catch (SourceUnavailable|TransportException $e) {
+                        if ($changed || ($budget->secondsLeft() < 1)) {
+                            throw $e;
+                        }
+                        // run imports the stream anyway; without a version the changed mode imports it again
+                        $this->note('VERSION_UNKNOWN');
+                        $probe = new Probe(Probe::UNKNOWN);
+                    }
+                    if ($changed && ($probe->state === Probe::UNCHANGED)) {
                         $this->tally['unchanged']++;
                         $pos = RunCursor::nextStream($pos);
                         continue;
@@ -525,23 +530,13 @@ class Run extends BatchRun
                     $pos['probed'] = 1;
                     $pos['pv']     = self::sourceVersion($ctx, $probe->version);
                 }
-                if ($pos['end'] === 0) {
-                    $halt = $this->walkJobs($source, $ctx, $stream, $known, $mapping, $budget, $pos, $first);
-                    if ($halt === self::STOP) {
-                        return $this->limitReached() ? $this->result($pos, true, $keys) : $this->stopped($pos, $from, $keys, '');
-                    }
-                    if ($halt !== '') {
-                        // what got stored before counts; from here on the step makes no progress
-                        return $this->stopped($pos, $from, $keys, $halt);
-                    }
-                    $pos['end'] = 1;
+                $halt = $this->walkJobs($source, $ctx, $stream, $known, $mapping, $budget, $pos, $first);
+                if ($halt === self::STOP) {
+                    return $this->limitReached() ? $this->result($pos, true, $keys) : $this->stopped($pos, $from, $keys, '');
                 }
-                if ($this->probesAtEnd($source, $stream, $pos)) {
-                    // the jobs are done and stay done: a probe that does not fit or fails is all that is repeated
-                    if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
-                        return $this->stopped($pos, $from, $keys, '');
-                    }
-                    $first = false;
+                if ($halt !== '') {
+                    // what got stored before counts; from here on the step makes no progress
+                    return $this->stopped($pos, $from, $keys, $halt);
                 }
                 $pos = $this->streamDone($source, $ctx, $stream, $pos, $known);
             }
@@ -718,10 +713,14 @@ class Run extends BatchRun
         return (($position['ccode'] ?? '') === '') ? $position : (['ccode' => '', 'checked' => 0] + $position);
     }
 
-    /** run mode, a stream versioned by probe(): it is asked when the stream is done */
-    private function probesAtEnd(SourceInterface $source, Stream $stream, array $pos): bool
+    /**
+     * The changed mode asks probe() whether to import the stream; the run mode, for a stream versioned
+     * by probe(), for the version of what it imports. Asked at the start: asked at the end, data
+     * changed meanwhile would be recorded as imported.
+     */
+    private function probesAtStart(Stream $stream): bool
     {
-        return !$this->isDry() && ($pos['failed'] === 0) && ($stream->versionField === '') && ($this->mode() === 'run') && ($source instanceof Probeable);
+        return ($this->mode() === 'changed') || (($this->mode() === 'run') && !$this->isDry() && ($stream->versionField === ''));
     }
 
     /** A stream went through its last job: its version when nothing of it failed, its expression due
@@ -749,8 +748,7 @@ class Run extends BatchRun
 
     /**
      * The data version of a stream done: the maximum of its versionField - in the changed mode not
-     * below the one known, the jobs got only what is newer - else what probe() says, at its start in
-     * the changed mode, now in the run mode; else none.
+     * below the one known, the jobs got only what is newer - else what probe() said at its start; else none.
      * @return array{string, ?int} the version, and when probe() was asked for it
      */
     private function versionOf(SourceInterface $source, Context $ctx, Stream $stream, array $pos, ?string $known): array
@@ -758,13 +756,7 @@ class Run extends BatchRun
         if ($stream->versionField !== '') {
             return [($this->mode() === 'changed') ? ParamsGrabber::laterVersion($known ?? '', $pos['vmax']) : $pos['vmax'], null];
         }
-        if (!($source instanceof Probeable)) {
-            return ['', null];
-        }
-        if ($this->mode() === 'changed') {
-            return [$pos['pv'], null];
-        }
-        return [self::sourceVersion($ctx, $source->probe($stream, $ctx, null)->version), static::now()];
+        return [($source instanceof Probeable) ? $pos['pv'] : '', null];
     }
 
     /** A catalog page with the source's keys masked in its texts - the import detail shows them. Its
