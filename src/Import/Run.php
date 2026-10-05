@@ -166,6 +166,50 @@ class Run extends BatchRun
         return (string) $this->dry === '1';
     }
 
+    /** an import: not a check, a baseline or a dry run */
+    public function storesItems(): bool
+    {
+        return self::stores($this->mode(), $this->isDry());
+    }
+
+    private static function stores(string $mode, bool $dry): bool
+    {
+        return !$dry && !in_array($mode, self::SOURCE_ONLY_MODES, true);
+    }
+
+    /** The newest run of definition $id and its newest import (storesItems()), the same run when the
+     *  newest is one; null = none. Found among all its runs, however many stored nothing since - at
+     *  most two runs are read.
+     *  @return array{0: ?self, 1: ?self} */
+    public static function newestOf(string $id): array
+    {
+        [$newest, $import] = self::newestIds($id);
+        $run = ($newest === null) ? null : self::get($newest);
+        return [$run, match ($import) {
+            null    => null,
+            $newest => $run,
+            default => self::get($import),
+        }];
+    }
+
+    /** the id of the newest import of definition $id - as newestOf(), without reading the run */
+    public static function newestImportId(string $id): ?string
+    {
+        return self::newestIds($id)[1];
+    }
+
+    /** @return array{0: ?string, 1: ?string} the ids of the newest run and the newest import */
+    private static function newestIds(string $id): array
+    {
+        $records = self::recordsOfSubject($id, ['mode', 'dry']);
+        foreach ($records as $runId => $record) {
+            if (self::stores($record['mode'] ?? '', ($record['dry'] ?? '') === '1')) {
+                return [(string) array_key_first($records), (string) $runId];
+            }
+        }
+        return [($records === []) ? null : (string) array_key_first($records), null];
+    }
+
     /** a check or a baseline: nothing goes into the slice */
     private function sourceOnly(): bool
     {

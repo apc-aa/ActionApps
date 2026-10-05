@@ -80,8 +80,10 @@ final class Service
         } catch (BatchFailed $e) {
             return new StartResult('invalid', reason: $e->reason);
         }
-        // it refuses to run inside a transaction
-        Run::cleanup($id, self::KEEP_RUNS);
+        // it refuses to run inside a transaction; the newest import stays, so the page still tells when
+        // the data last changed after many checks
+        $import = Run::newestImportId($id);
+        Run::cleanup($id, self::KEEP_RUNS, ($import === null) ? [] : [$import]);
 
         return DB_AA::transaction(static function () use ($id, $slice, $mode, $options, $trigger, $manual, $user): StartResult {
             $def = Definition::fresh($id, true);

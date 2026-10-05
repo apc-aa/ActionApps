@@ -674,8 +674,9 @@ abstract class BatchRun extends AA_Object
      *  time of all runs. Kept: unfinished runs, an ended run whose step may still be writing (its lease
      *  keeps a new run of the subject waiting), and one whose afterClose() still waits in the queue.
      *  Outside any transaction: each secret is forgotten under its run's own short lock, never while the
-     *  caller holds other locks a step's end may wait for. No rights checked - the caller has. */
-    final public static function cleanup(string $subject, int $keep): void
+     *  caller holds other locks a step's end may wait for. No rights checked - the caller has.
+     *  @param list<string> $alsoKept runs kept however old they are */
+    final public static function cleanup(string $subject, int $keep, array $alsoKept = []): void
     {
         if (DB_AA::inTransaction()) {
             throw new \LogicException('Batch runs are cleaned up outside any transaction');
@@ -688,7 +689,7 @@ abstract class BatchRun extends AA_Object
             static fn(array $r): bool => in_array($r['state'] ?? '', [$states->done, $states->ended], true) && ((($r['lease_tok'] ?? '') === '') || ((int) ($r['lease'] ?? 0) <= $now)),
         );
         uasort($finished, static fn(array $a, array $b): int => [(int) ($b['finished'] ?? 0), (int) ($b['started'] ?? 0)] <=> [(int) ($a['finished'] ?? 0), (int) ($a['started'] ?? 0)]);
-        $old = array_map('strval', array_slice(array_keys($finished), max(0, $keep)));
+        $old = array_values(array_diff(array_map('strval', array_slice(array_keys($finished), max(0, $keep))), $alsoKept));
         if ($old) {
             // a row of priority 0 never runs again - it must not hold the run for ever
             $rows    = DB_AA::select([], 'SELECT selector, priority FROM `toexecute`', [['selector', array_map(self::closeSelector(...), $old)]]);
@@ -737,9 +738,17 @@ abstract class BatchRun extends AA_Object
      *  @return list<static> */
     final public static function ofSubject(string $subject, int $limit): array
     {
-        $records = self::records('subject', $subject, ['started']);
+        return self::getAll(array_slice(array_keys(self::recordsOfSubject($subject)), 0, max(0, $limit)));
+    }
+
+    /** The runs of $subject, newest first, as records - no run read, however many there are.
+     *  @param list<string> $props further properties to read
+     *  @return array<string, array<string, string>> id => started and $props */
+    final protected static function recordsOfSubject(string $subject, array $props = []): array
+    {
+        $records = self::records('subject', $subject, array_values(array_unique(['started', ...$props])));
         uksort($records, static fn($a, $b): int => [(int) ($records[$b]['started'] ?? 0), (string) $b] <=> [(int) ($records[$a]['started'] ?? 0), (string) $a]);
-        return self::getAll(array_slice(array_keys($records), 0, max(0, $limit)));
+        return $records;
     }
 
     /** the run as get() reads it, for each of $ids that is one

@@ -1084,7 +1084,7 @@ final class BatchRunControlTest extends TestCase
         $this->assertEqualsCanonicalizing([$other, $running, $errored, $previewd], $ids(ScriptedBatchRun::unfinished()));
     }
 
-    public function test_cleanup_keeps_last_n_finished_and_all_unfinished(): void
+    public function test_cleanup_keeps_last_n_finished_all_unfinished_and_those_named(): void
     {
         $oldest  = self::finished(self::NOW + 100);
         $old     = self::finished(self::NOW + 200, 'ended');
@@ -1109,14 +1109,14 @@ final class BatchRunControlTest extends TestCase
         $stale = self::finished(self::NOW + 110, 'ended');
         (new Toexecute())->later(new BatchStep(ScriptedBatchRun::class, $stale, BatchRun::CLOSE_ROW), [], 'BatchClose_' . $stale, 0, self::NOW);
 
-        ScriptedBatchRun::cleanup(self::SUBJECT, 2);
+        ScriptedBatchRun::cleanup(self::SUBJECT, 2, [$old]);
 
         $this->assertNull(ScriptedBatchRun::get($stale), 'a close row of priority 0 never runs - it holds nothing');
         $this->assertCount(4, self::stored($foreign), 'another object with the same subject');
-        foreach ([$newer, $newest, $writing, $closing, $running, $errored, $other] as $kept) {
+        foreach ([$newer, $newest, $writing, $closing, $running, $errored, $other, $old] as $kept) {
             $this->assertNotNull(ScriptedBatchRun::get($kept), "$kept was kept");
         }
-        foreach ([$oldest, $old] as $gone) {
+        foreach ([$oldest] as $gone) {
             $this->assertNull(ScriptedBatchRun::get($gone));
             $this->assertSame([], self::stored($gone), 'every row of it');
         }
