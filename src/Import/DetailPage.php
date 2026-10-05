@@ -517,7 +517,6 @@ final class DetailPage
             'PROTECTED_FIELD'        => _m('The mapping fills a field an import may not set.'),
             'DUPLICATE_TARGET'       => _m('Two rows of the mapping fill the same field.'),
             'NO_KEY'                 => _m('The mapping has no key field, so an item cannot be found again.'),
-            'KEY_UNUSED'             => _m('A key field is set, yet the store mode does not use keys.'),
             'KEY_NOT_TARGET'         => _m('A key field is not filled by the mapping.'),
             default                  => _m('The mapping has a problem.'),
         };

@@ -42,6 +42,6 @@ final class DefinitionPlainSource extends AbstractSource
 
     public function defaultMapping(): Mapping
     {
-        return new Mapping([['to' => 'headline........', 't' => 'value', 'p' => ['new_content' => '{index:name}', 'new_flag' => 't']]], [], 'insert_if_new');
+        return new Mapping([['to' => 'headline........', 't' => 'value', 'p' => ['new_content' => '{index:name}', 'new_flag' => 't']]], ['headline........']);
     }
 }

@@ -33,8 +33,12 @@ use JsonException;
  */
 final class Mapping
 {
-    /** without "overwrite" - it drops the fields the import does not fill */
-    public const STORE_MODES = ['update/insert', 'update', 'insert', 'insert_if_new'];
+    /**
+     * Without "overwrite" - it drops the fields the import does not fill - and "insert_if_new": it has
+     * no key, so a repeated run counts every stored item as an error and a source without item ids
+     * stores only its first item ("insert" with key fields stores only what is new).
+     */
+    public const STORE_MODES = ['update/insert', 'update', 'insert'];
 
     private const PARAM          = 'param:';
     private const PARAM_NAME     = '/^[a-z][a-z0-9_]{0,31}\z/';
@@ -115,11 +119,10 @@ final class Mapping
     /**
      * What is wrong whatever the job: a transformation imports may not use or one missing a
      * parameter, a fixed target that is not a field of the slice, is protected or is filled twice,
-     * no key where the store mode needs one, a key insert_if_new would ignore, a key field no fixed
-     * row fills (a field reached only through a parameter cannot be the key - it changes from job to job).
+     * no key, a key field no fixed row fills (a field reached only through a parameter cannot be the
+     * key - it changes from job to job).
      * @return list<string> codes, each once: NO_SLICE, UNKNOWN_TRANSFORMATION, BAD_PARAMS,
-     *                      UNKNOWN_FIELD, PROTECTED_FIELD, DUPLICATE_TARGET, NO_KEY, KEY_UNUSED,
-     *                      KEY_NOT_TARGET
+     *                      UNKNOWN_FIELD, PROTECTED_FIELD, DUPLICATE_TARGET, NO_KEY, KEY_NOT_TARGET
      */
     public function problems(string $sliceId): array
     {
@@ -148,12 +151,8 @@ final class Mapping
             }
             $targets[$row['to']] = true;
         }
-        if (($this->storeMode !== 'insert_if_new') && ($this->keyFields === [])) {
+        if ($this->keyFields === []) {
             $problems[] = 'NO_KEY';
-        }
-        if (($this->storeMode === 'insert_if_new') && ($this->keyFields !== [])) {
-            // idMode() gives "combined" - the item id comes from the source, not from the key
-            $problems[] = 'KEY_UNUSED';
         }
         if (array_diff($this->keyFields, array_keys($targets))) {
             $problems[] = 'KEY_NOT_TARGET';
@@ -161,15 +160,9 @@ final class Mapping
         return array_values(array_unique($problems));
     }
 
-    /**
-     * The id mode of the Saver: insert_if_new gives each source item one id in the slice, the
-     * other modes find the item by the key fields (Saver reads them as a JSON list).
-     */
+    /** The id mode of the Saver: the item is found by the key fields (Saver reads them as a JSON list). */
     public function idMode(): string
     {
-        if ($this->storeMode === 'insert_if_new') {
-            return 'combined';
-        }
         if ($this->keyFields === []) {
             // "[]" would match every item of the slice
             throw self::refused('the store mode needs key fields');

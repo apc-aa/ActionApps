@@ -143,7 +143,7 @@ final class DefinitionTest extends TestCase
     public function test_formRefusal_mappingProblems(): void
     {
         $def = self::definition('prices');
-        $def->applyMapping(new Mapping([['to' => 'text...........9', 't' => 'value', 'p' => ['new_content' => 'x', 'new_flag' => 't']]], [], 'insert_if_new'));
+        $def->applyMapping(new Mapping([['to' => 'text...........9', 't' => 'value', 'p' => ['new_content' => 'x', 'new_flag' => 't']]], ['text...........9']));
 
         $error = $def->formRefusal();
 
@@ -160,7 +160,7 @@ final class DefinitionTest extends TestCase
     public function test_formRefusal_validDefinitionPasses(): void
     {
         $def = self::definition('prices');
-        $def->applyMapping(new Mapping([['to' => 'headline........', 't' => 'value', 'p' => ['new_content' => 'x', 'new_flag' => 't']]], [], 'insert_if_new'));
+        $def->applyMapping(new Mapping([['to' => 'headline........', 't' => 'value', 'p' => ['new_content' => 'x', 'new_flag' => 't']]], ['headline........']));
 
         self::assertNull($def->formRefusal());
     }

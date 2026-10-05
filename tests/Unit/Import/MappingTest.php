@@ -398,7 +398,6 @@ namespace Tests\Unit\Import {
             yield 'update/insert' => ['update/insert', ['NO_KEY']];
             yield 'update'        => ['update', ['NO_KEY']];
             yield 'insert'        => ['insert', ['NO_KEY']];
-            yield 'insert_if_new' => ['insert_if_new', []];
         }
 
         /** @param list<string> $expected */
@@ -410,20 +409,11 @@ namespace Tests\Unit\Import {
             self::assertSame($expected, $mapping->problems(self::SLICE));
         }
 
-        /** insert_if_new finds nothing by the key, so a key there would be silently ignored */
-        public function test_problems_keyUnusedByInsertIfNew(): void
-        {
-            $mapping = new Mapping([self::row('relation........')], ['relation........'], 'insert_if_new');
-
-            self::assertSame(['KEY_UNUSED'], $mapping->problems(self::SLICE));
-        }
-
         public function test_idMode_keyFieldsAsSaverReadsThem(): void
         {
             $mapping = new Mapping([self::row('relation........')], ['relation........', 'publish_date....'], 'update');
 
             self::assertSame('["relation........","publish_date...."]', $mapping->idMode());
-            self::assertSame('combined', (new Mapping([self::row('relation........')], [], 'insert_if_new'))->idMode());
         }
 
         /** "[]" would let the Saver match any item of the slice */
@@ -559,6 +549,7 @@ namespace Tests\Unit\Import {
         {
             yield 'store mode overwrite'   => [[], [], 'overwrite'];
             yield 'store mode unknown'     => [[], [], 'by_grabber'];
+            yield 'store mode keyless'     => [[], ['relation........'], 'insert_if_new'];
             yield 'key field not an id'    => [[], ['relation'], 'update/insert'];
             yield 'key field twice'        => [[], ['relation........', 'relation........'], 'update/insert'];
             yield 'row target bad'         => [[['to' => 'param:a-b', 't' => 'value', 'p' => []]], [], 'update/insert'];
@@ -585,7 +576,7 @@ namespace Tests\Unit\Import {
         /** @return iterable<string, array{string}> */
         public static function storeModes(): iterable
         {
-            foreach (['update/insert', 'update', 'insert', 'insert_if_new'] as $mode) {
+            foreach (['update/insert', 'update', 'insert'] as $mode) {
                 yield $mode => [$mode];
             }
         }

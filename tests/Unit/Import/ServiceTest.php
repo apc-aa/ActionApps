@@ -185,7 +185,7 @@ final class ServiceTest extends TestCase
     /** a target field deleted from the slice after the definition was saved */
     public function test_start_invalidMapping(): void
     {
-        $def = self::definition(['mapping' => '{"rows":[{"to":"text...........9","t":"copyfield","p":{"field2copy":"key"}}]}', 'key_fields' => '[]', 'store_mode' => 'insert_if_new']);
+        $def = self::definition(['mapping' => '{"rows":[{"to":"text...........9","t":"copyfield","p":{"field2copy":"key"}}]}', 'key_fields' => '["text...........9"]']);
 
         $r = Service::start($def, 'run', [], 'manual', AuthGetUid());
 
@@ -560,7 +560,7 @@ final class ServiceTest extends TestCase
         $def = self::definition(['source' => 'custom:gone']);
         self::importRun();
         self::ownedRecords();
-        \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], [], 'insert_if_new');
+        \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], ['text...........9']);
         $before = TableDb::$tables;
 
         $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, [], AuthGetUid())->refusal());
@@ -751,7 +751,7 @@ final class ServiceTest extends TestCase
         $this->assertSame(['{ids:' . self::SLICE . '}'], json_decode(self::stored(self::DEF)['validate'], true));
         $this->assertStringNotContainsString(self::OTHER, json_encode(self::stored(self::DEF), JSON_THROW_ON_ERROR));
 
-        \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], [], 'insert_if_new');
+        \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], ['text...........9']);
         $before = TableDb::$tables;
         $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
@@ -898,7 +898,7 @@ final class ServiceTest extends TestCase
     {
         $def    = self::definition();
         $before = TableDb::$tables;
-        \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], [], 'insert_if_new');
+        \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], ['text...........9']);
 
         $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
