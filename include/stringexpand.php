@@ -5374,7 +5374,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
 
                     //$ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
                     $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.safe($onsuccess).'"' : '';
-                    $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".safe(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
+                    $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".safe(\AA\Security\SignedExpression::sign($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                     $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
                     $ret .= "</div>";
                     AA::Stringexpander()->addRequire('aa-jslib');  // for DisplayInput()
@@ -10692,7 +10692,8 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
         //return $form->getAjaxHtml($ret_code);
         AA::Stringexpander()->addRequire('aa-jslib');  // for {AA_AjaxSendForm}
         try {
-            return $form->getAjaxHtml($ok_code, 'inplace');
+            // aliases in a plain text are substituted when the page renders, as before; an expression waits for the new item
+            return $form->getAjaxHtml(str_contains((string)$ok_code, '{') ? \AA\Security\SignedExpression::sign((string)$ok_code) : (string)$ok_code, 'inplace');
         } catch (Exception $e) {
             return MsgErr($e->getMessage());
         }

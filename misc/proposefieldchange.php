@@ -20,6 +20,7 @@ https://www.apc.org/
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Security\SignedExpression;
 use AA\Util\ChangeProposal;
 use AA\Util\ChangesMonitor;
 
@@ -65,8 +66,11 @@ function UpdateFieldContent($item_id, $field_id, $field_content, $flags = []): v
 function GetRepreValue($item_id, $field_id, $alias_name = ''): string
 {
     // get the item directly from the database
-    $item        = AA_Item::getItem(new zids($item_id));
-    $repre_value = $alias_name ? $item->subst_alias('_#' . $alias_name) : $item->f_h($field_id);
+    $item = AA_Item::getItem(new zids($item_id));
+    // alias_name comes from the browser: {ajax} sends what AA signed, older pages a bare alias name
+    $alias_name = (string) $alias_name;
+    $expression = preg_match('/^[0-9A-Z_]{8}$/', $alias_name) ? '_#' . $alias_name : (($alias_name === '') ? null : SignedExpression::fromRequest($alias_name, 'alias_name', SignedExpression::fieldsOf($item)));
+    $repre_value = is_null($expression) ? $item->f_h($field_id) : $item->subst_alias($expression);
     return strlen($repre_value) ? $repre_value : '--';
 }
 

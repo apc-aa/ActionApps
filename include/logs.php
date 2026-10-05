@@ -66,6 +66,8 @@ APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:
 APP_DENY        source (central_conf id | store)  reason:error            // an admin's login to another AA for an app install or transfer failed - SourceFailed reason, error number of the source (AA\Central\RemoteSource::login())
 APPSTORE        command:client (IPv4; IPv6 "/48 /64")  command               // a request of the app store's public account - the hourly limits count them, keep it logged (AA\Central\AppStore::admit())
 HTTP_BLOCK      purpose:client IP               host                           // an address of the local or private network refused by Client::publicOnly(), once a day (AA\Optimize\CheckBlockedRequests, LogOnce)
+SECURITY        protection                      on|off                         // a security protection switched on or off on admin/aa_security.php; the user column says who (AA\Security\Settings)
+EXPR_SIGN       refused|allowed:parameter:page                                 // a form sent an unsigned AA expression in ret_code/ok_url, once a day (AA\Security\SignedExpression, LogOnce)
 IMPORT_ERR      Import_{definition_id}          #id Class file:line            // an import failure outside a queue step; never the message - it may carry a secret (AA\Import\Definition::logError())
 IMPORT_BL       Import_{definition_id}          #id run_id user                // a baseline of an import started: versions recorded without importing (AA\Import\Service::start())
 AA_WARN

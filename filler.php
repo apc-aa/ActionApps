@@ -59,6 +59,7 @@ https://www.apc.org/
  */
 
 use AA\IO\DB\DB_AA;
+use AA\Security\SignedExpression;
 use AA\Util\InputVars;
 use AA\Widget\FilWidget;
 
@@ -72,6 +73,8 @@ use AA\Widget\FilWidget;
 function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
 
 require_once __DIR__ . '/src/Util/InputVars.php';   // the autoloader comes later
+// the expression engine reads aliases ({_#ALIAS___}) and state from these globals, so a request could run any command through them
+unset($_REQUEST['als'], $_REQUEST['apc_state']);
 foreach ($_REQUEST as $k => $v) {
     if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
         $$k = AddslashesDeep($v);
@@ -219,8 +222,9 @@ function SendOkPage($txt, $new_ids = []): void
             $_REQUEST["ok_url"] = str_replace($new_als, $new_ids, $_REQUEST["ok_url"]);
         }
         if (str_contains($_REQUEST["ok_url"], '_#')) {
-            $item = AA_Item::getItem(new zids(reset($new_ids), 'l'));
-            $_REQUEST["ok_url"] = AA::Un($_REQUEST["ok_url"], '', $item);
+            $item       = AA_Item::getItem(new zids(reset($new_ids), 'l'));
+            $expression = SignedExpression::fromRequest((string) $_REQUEST["ok_url"], 'ok_url', SignedExpression::fieldsOf($item));
+            $_REQUEST["ok_url"] = is_null($expression) ? '' : AA::Un($expression, '', $item);
         }
     }
     if ($_REQUEST["inline"]) {
@@ -231,7 +235,9 @@ function SendOkPage($txt, $new_ids = []): void
             if ($txt['report']) {
                 $ret['report'] = $txt['report'];
             }
-            $retcode = $_REQUEST["ret_code"] ?: base64_decode($_REQUEST["ret_code_enc"]);
+            // the AA JS library sends ret_code_enc unencoded, so a '+' of the older base64 arrives as a space
+            $enc     = (string) ($_REQUEST["ret_code_enc"] ?? '');
+            $retcode = (string) ($_REQUEST["ret_code"] ?? '') ?: (SignedExpression::isSigned($enc) ? $enc : (string) base64_decode(strtr($enc, ' ', '+')));
 
             if ( $retcode === 'AA_2FA_QR') {   // very special case for 2FA secret
                 $secret = strlen(AuthGetUid()) ? DB_AA::select1('secret', 'SELECT content.text AS secret FROM content', [['field_id', FIELDID_2FA_SECRET], ['item_id', AuthGetUid(), 'l']]) : '';
@@ -245,8 +251,9 @@ function SendOkPage($txt, $new_ids = []): void
                 $ret[reset($new_ids)] = $qr;
             } else {
                 foreach ($new_ids as $long_id) {
-                    $item = AA_Item::getItem(new zids($long_id, 'l'));
-                    $text = AA::Un($retcode, '', $item);
+                    $item       = AA_Item::getItem(new zids($long_id, 'l'));
+                    $expression = SignedExpression::fromRequest($retcode, 'ret_code', SignedExpression::fieldsOf($item));
+                    $text       = is_null($expression) ? '' : AA::Un($expression, '', $item);
                     if ($text && $item) {
                         $slice = AA_Slice::getModule($item->getSliceID());
                         if (!empty($slice)) {

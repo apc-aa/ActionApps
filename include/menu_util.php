@@ -79,6 +79,7 @@ function GetCommonMenu(AA_Profile $profile): array {
         "aafinder"    => ["label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php"],
         'optimize'    => ["label"=>_m("Optimize"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_optimize.php"],
         'statecheck'  => ["label"=>_m("State Check"),     "cond"=>IsSuperadmin(),        "href"=>"admin/aa_statecheck.php"],
+        'security'    => ["label"=>_m("Security"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_security.php"],
         "statistics"  => ["label"=>_m("Statistics"),      "cond"=>IsSuperadmin(),        'ico'=>'ico-statistics.png', "href"=>"admin/aa_statistics.php"],
         "history"     => ["label"=>_m("History"),         "cond"=>IfSlPerm(PS_HISTORY),  'ico'=>'ico-history.png',    "href"=>"admin/se_history.php"],
         "xmgettext"   => ["label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php"],

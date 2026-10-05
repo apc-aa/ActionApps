@@ -2171,7 +2171,7 @@ class AA_Inputfield {
             if (!$slice_field) {
                 $slice_field = '{'.AA_Slice::getModule($sid)?->getFields()->firstOfTypeFieldId('headline').'}';
             }
-            $form_url = get_aa_url('form.php', ['form_id' => $addform, 'type' => 'ajax', 'ret_code' => $slice_field]);
+            $form_url = get_aa_url('form.php', ['form_id' => $addform, 'type' => 'ajax', 'ret_code' => \AA\Security\SignedExpression::sign($slice_field)]);
             $img      = GetAAImage('icon_new.gif', _m('new'), 17, 17);
             // varname used as a pointer to right selectbox for returning ajax call
             $this->echoo("\n<a id=\"a".$this->varname ."\" href=\"javascript:void(0)\" onclick=\"AA_AjaxInsert(this, '$form_url'); return false;\">$img</a>");

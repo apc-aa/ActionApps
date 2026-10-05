@@ -448,7 +448,7 @@ class AA_Form extends AA_Object implements NamedInterface
     }
 
     /** Add item form
-     * @param string $ret_code
+     * @param string $ret_code what filler.php shows for the new item - signed (AA\Security\SignedExpression::sign()) when it is an expression
      * @param string $type
      * @return string
      * @throws Exception
@@ -466,7 +466,7 @@ class AA_Form extends AA_Object implements NamedInterface
         $html  = "\n  <fieldset id=\"form$id\">";
         $html .= "\n    " . '<input id="inline" name="inline" value="1" type="hidden">';
         $html .= "\n    " . '<input id="slice_id" name="slice_id" value="' . $this->object_owner . '" type="hidden">';
-        $html .= "\n    " . '<input id="ret_code" name="ret_code" value="' . $ret_code . '" type="hidden">';
+        $html .= "\n    " . '<input id="ret_code" name="ret_code" value="' . safe($ret_code) . '" type="hidden">';
 
         $html .= $this->getRowsHtml($content);
 

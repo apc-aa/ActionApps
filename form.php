@@ -54,7 +54,8 @@ if (is_null($form)) {
 
 if ($_GET['type'] === 'ajax') {
     try {
-        $html = $form->getAjaxHtml($_GET['ret_code']);
+        // passed on as it came: signed by AA, or checked by filler.php as any unsigned value
+        $html = $form->getAjaxHtml(is_string($_GET['ret_code'] ?? null) ? $_GET['ret_code'] : '');
     } catch (Exception $e) {
         $html = MsgErr($e->getMessage());
     }
