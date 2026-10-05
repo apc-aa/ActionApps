@@ -61,6 +61,10 @@ final class Context
 
     private ?HttpClientInterface $guarded = null;
 
+    /** @var ?\WeakMap<self, list<string>> what redact() masks, built once per Context - kept outside
+     *  the object, so a dump of it does not show the keys */
+    private static ?\WeakMap $masks = null;
+
     /** @var \Closure(string): list<string> */
     private readonly \Closure $resolver;
 
@@ -124,6 +128,14 @@ final class Context
     /** $text with every declared key, plain or URL-encoded, replaced by *** */
     public function redact(#[SensitiveParameter] string $text): string
     {
+        self::$masks ??= new \WeakMap();
+        self::$masks[$this] ??= $this->masks();
+        return str_replace(self::$masks[$this], '***', $text);
+    }
+
+    /** @return list<string> the values redact() masks, the longest first */
+    private function masks(): array
+    {
         $values = [];
         foreach (array_keys($this->declared) as $id) {
             // a damaged key is never handed out, so it cannot be in the text
@@ -138,7 +150,7 @@ final class Context
         $values = array_unique($values);
         // an encoded form may contain the plain value; the longer one goes first
         usort($values, fn(string $a, string $b): int => strlen($b) <=> strlen($a));
-        return str_replace($values, '***', $text);
+        return $values;
     }
 
     private function read(string $id): Secret|false|null
