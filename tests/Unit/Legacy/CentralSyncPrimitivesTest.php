@@ -600,8 +600,9 @@ final class CentralSyncPrimitivesTest extends TestCase
 
         $this->assertSame([], self::toexecuteStatements('DELETE FROM'));
         $updates = self::toexecuteStatements('UPDATE');
-        $this->assertCount(2, $updates, 'only the claims - the priority sinks by one, so the row retires after ~100 leases');
+        $this->assertCount(4, $updates, 'per row its claim and its short retry - the priority sinks by one, so the row retires after ~100 attempts');
         $this->assertMatchesRegularExpression('/priority[`"]?\\s*=\\s*\'?99\\b/', $updates[0]);
+        $this->assertStringContainsString(Toexecute::MISSING_CLASS_KEY, $updates[1], 'the retry counts the miss in the row');
         $logs = RecordingDb::inserts('log');
         $this->assertCount(1, $logs);
         $this->assertSame(Toexecute::LOG_CLASS_MISSING, $logs[0]['type']);

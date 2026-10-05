@@ -77,6 +77,19 @@ class Toexecute
      *  task retries after the lease expires. */
     public const CLAIM_LEASE = 1800;
 
+    /** Seconds before a task whose class was missing tries again, instead of the claim lease: a class
+     *  file read on a network file system (GlusterFS) may fail for a moment, and the import or install
+     *  waiting for the task would look stuck for half an hour. */
+    public const MISSING_CLASS_RETRY = 60;
+
+    /** Short tries of a task whose class is missing; then it waits out the claim lease like a failed
+     *  task. A few minutes outlast a file-system hiccup; a class missing longer is a broken deploy,
+     *  which the lease waits out without retrying every minute for days. */
+    public const MISSING_CLASS_TRIES = 5;
+
+    /** the key of the task's params that counts its short tries; the task never sees it */
+    public const MISSING_CLASS_KEY = '_toexecute_missing_class_tries';
+
     /** Task classes AA no longer has: their queued rows can never run and are removed. Only these -
      *  during a deploy or with a stale classmap a live class may be missing for a moment. */
     public const REMOVED_TASK_CLASSES = ['AA_Task_Import_Module_Chunk', 'AA\\Central\\Task\\ImportModuleChunk'];
@@ -421,6 +434,11 @@ class Toexecute
                 return $this->taskOfMissingClass($task, $object);
             }
             $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
+            if (is_array($params) && array_key_exists(self::MISSING_CLASS_KEY, $params)) {
+                unset($params[self::MISSING_CLASS_KEY]);
+                // the class is back - should it go missing again, the task gets all its short tries
+                $this->storeMissingClassTries($task, null);
+            }
             if (is_object($object)) {
                 $retcode = $this->execute_one($object, $params);
                 $this->message($retcode);
@@ -455,9 +473,10 @@ class Toexecute
     }
 
     /** A task whose class is not declared. Of a removed class it is dropped; of any other it stays
-     *  queued - the claim's lease delays the retry and its lowered priority retires the row after about
-     *  100 attempts, long enough to survive a deploy. The log gets one row a day per class, not one per
-     *  task - there may be thousands of them (State Check: CheckQueuedClassMissing).
+     *  queued - first retried soon (retryMissingClassSoon()), then after the claim's lease, and its
+     *  lowered priority retires the row after about 100 attempts, long enough to survive a deploy. The
+     *  log gets one row a day per class, not one per task - there may be thousands of them (State
+     *  Check: CheckQueuedClassMissing).
      *  @return int 1 = dropped, -1 = left in the queue (the caller goes on) */
     private function taskOfMissingClass(array $task, \__PHP_Incomplete_Class $object): int
     {
@@ -469,8 +488,55 @@ class Toexecute
             return 1;
         }
         LogOnce::daily(self::LOG_CLASS_MISSING, $class, (string) $task['selector']);
-        $this->message("Toexecute: class $class is missing - task left in the queue");
+        $soon = $this->retryMissingClassSoon($task);
+        $this->message("Toexecute: class $class is missing - task left in the queue" . ($soon ? ', tried again in ' . self::MISSING_CLASS_RETRY . ' s' : ''));
         return -1;
+    }
+
+    /** One of the first MISSING_CLASS_TRIES misses: the row, claimed by the caller, becomes due after
+     *  MISSING_CLASS_RETRY and counts the miss in its params - no other column of toexecute is free for
+     *  it. A user-queue task stays parked, and params the count cannot be added to unchanged keep the
+     *  claim's lease.
+     *  @return bool true = it tries again soon, false = the claim's lease stays */
+    private function retryMissingClassSoon(array $task): bool
+    {
+        if ((int) $task['execute_after'] === self::TOEXECUTE_USER_TASK_TIME) {
+            return false;
+        }
+        $params = self::rewritableParams((string) $task['params']);
+        $tries  = ($params === null) ? PHP_INT_MAX : (int) ($params[self::MISSING_CLASS_KEY] ?? 0) + 1;
+        return ($tries <= self::MISSING_CLASS_TRIES) && $this->storeMissingClassTries($task, $tries, time() + self::MISSING_CLASS_RETRY);
+    }
+
+    /** the row's params with the count of short tries set ($tries) or removed (null); $due moves the row too
+     *  @return bool false = the params cannot be rewritten unchanged */
+    private function storeMissingClassTries(array $task, ?int $tries, ?int $due = null): bool
+    {
+        $params = self::rewritableParams((string) $task['params']);
+        if ($params === null) {
+            return false;
+        }
+        if ($tries === null) {
+            unset($params[self::MISSING_CLASS_KEY]);
+        } else {
+            $params[self::MISSING_CLASS_KEY] = $tries;
+        }
+        $set = [['params', serialize($params), 's']];
+        if ($due !== null) {
+            $set[] = ['execute_after', $due, 'i'];
+        }
+        DB_AA::update('toexecute', $set, [['id', $task['id'], 'i']]);
+        return true;
+    }
+
+    /** Params as an array that serializes back to the very same bytes, else null: read without their
+     *  classes (no __wakeup() of a task that does not run), an object that serializes itself (C:) comes
+     *  back without its data. */
+    private static function rewritableParams(string $serialized): ?array
+    {
+        // such a C: object warns "has no unserializer" - expected, the byte check below refuses it
+        $params = @unserialize($serialized, ['allowed_classes' => false]);
+        return (is_array($params) && (serialize($params) === $serialized)) ? $params : null;
     }
 
     /** The FAILED_EVENT row: "#id Class file:line", never the message (it may carry
