@@ -467,6 +467,17 @@ final class RunCheckTest extends TestCase
         self::assertCount(5, TestRun::stored(), 'each one stored - the last one wins');
     }
 
+    public function test_report_namesTheRunsAPlannedStartEnded(): void
+    {
+        $old = str_repeat('ab', 16);
+        $run = self::startRun(self::source(streams: 1, jobs: 1, items: 1), ['replaced' => json_encode([$old])]);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame([$old], json_decode(self::stored($run->getId())['report'], true)['replaced']);
+    }
+
     public function test_report_noCollisions_noEntry(): void
     {
         $run = self::startRun(self::source(streams: 1, jobs: 2, items: 2), ['dry' => '1']);
@@ -474,6 +485,7 @@ final class RunCheckTest extends TestCase
         self::runAll($run->getId());
 
         self::assertArrayNotHasKey('collisions', json_decode(self::stored($run->getId())['report'], true));
+        self::assertArrayNotHasKey('replaced', json_decode(self::stored($run->getId())['report'], true), 'nor runs a planned start ended');
     }
 
     public function test_report_keyCollisionsOfADryRun(): void

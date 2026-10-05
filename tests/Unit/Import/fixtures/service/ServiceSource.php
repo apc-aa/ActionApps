@@ -17,6 +17,8 @@ final class ServiceSource extends AbstractSource
     public static ?\Throwable $refuse = null;
     /** thrown by streams() */
     public static ?\Throwable $failStreams = null;
+    /** called by streams(): what other processes do meanwhile */
+    public static ?\Closure $onStreams = null;
     /** null = the mapping below */
     public static ?Mapping $mapping = null;
     /** @var list<array<string, string>> the settings of each fromSettings() */
@@ -75,6 +77,9 @@ final class ServiceSource extends AbstractSource
 
     public function streams(): iterable
     {
+        if (self::$onStreams) {
+            (self::$onStreams)();
+        }
         if (self::$failStreams) {
             throw self::$failStreams;
         }

@@ -148,11 +148,11 @@ class CheckImports extends AbstractOptimize
             $started = (int) ($r['started'] ?? 0);
             if (($r['state'] ?? '') === Run::ERROR) {
                 // only the code: the place names stream and job keys of the source - the import detail shows it
-                $findings[] = new Finding(Finding::ERROR, _m('An import stopped by an error'), since: $started, evidence: [$about + [_m('Error') => safe($r['error_code'] ?? ''), _m('Started') => self::date($started)]], advice: _m('Nothing more is imported until someone acts. Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported.'), links: self::detail($o['defs'][$def], $def), key: "error:$id");
+                $findings[] = new Finding(Finding::ERROR, _m('An import stopped by an error'), since: $started, evidence: [$about + [_m('Error') => safe($r['error_code'] ?? ''), _m('Started') => self::date($started)]], advice: _m('Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported.'), links: self::detail($o['defs'][$def], $def), key: "error:$id");
             } elseif ((($r['state'] ?? '') === Run::RUNNING) && ($run = Run::get((string) $id)) && $run->isStuck($now)) {
                 // a running run is loaded whole for isStuck() - one per import at most
                 $idle       = $run->idleSince();
-                $findings[] = new Finding(Finding::WARNING, _m('An import has not moved on for %1 hours', [intdiv($now - $idle, 3600)]), since: $idle, evidence: [$about + [_m('Started') => self::date($started), _m('Idle since') => self::date($idle)]], advice: _m('No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import.'), links: self::detail($o['defs'][$def], $def), key: "stuck:$id");
+                $findings[] = new Finding(Finding::WARNING, _m('An import has not moved on for %1 hours', [intdiv($now - $idle, 3600)]), since: $idle, evidence: [$about + [_m('Started') => self::date($started), _m('Idle since') => self::date($idle)]], advice: _m('No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run.'), links: self::detail($o['defs'][$def], $def), key: "stuck:$id");
             }
         }
         return $findings;

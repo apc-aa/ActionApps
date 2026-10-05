@@ -36,7 +36,8 @@ final class Service
     /**
      * Queues a run of the definition $d of the slice $d belongs to, with the definition as stored now.
      * A manual start checks the user's right to run imports of the slice and to the slices its
-     * settings name; a planned one keeps the right of whoever set them.
+     * settings name; a planned one keeps the right of whoever set them. A planned start ends a run in
+     * error or hanging (blocking()) in the transaction that starts the new one, which names it.
      * @param array{dry?: bool, streams?: list<string>, limit?: int} $opt  streams = some of the source's
      * @param string $mode    run | changed | check
      * @param string $trigger manual | plan:<task id> | event:<task id> - set by the caller, never from the request
@@ -82,7 +83,8 @@ final class Service
             if (!$manual && !$def->isEnabled()) {
                 return new StartResult('off');
             }
-            $busy = self::busy($id, $trigger);
+            $toEnd = [];
+            $busy  = self::busy($id, $trigger, $toEnd);
             if ($busy !== null) {
                 return $busy;
             }
@@ -115,6 +117,11 @@ final class Service
                 }
                 $keys = array_values(array_intersect($keys, $options['streams']));
             }
+            // the last moment: a start refused above must leave the old run as it was
+            $busy = self::endInTheWay($toEnd, $trigger, $user);
+            if ($busy !== null) {
+                return $busy;
+            }
             $run = Run::start([
                 'subject'     => $id,
                 'user'        => $user,
@@ -125,6 +132,7 @@ final class Service
                 'snapshot'    => $json,
                 'stream_keys' => json_encode($keys, JSON_THROW_ON_ERROR),
                 'trigger'     => $trigger,
+                'replaced'    => $toEnd ? json_encode($toEnd, JSON_THROW_ON_ERROR) : '',
             ]);
             return new StartResult('queued', (string) $run->getId());
         });
@@ -302,24 +310,69 @@ final class Service
     }
 
     /**
-     * Whether the unfinished run $r keeps a new run of its definition from starting. Each one does,
-     * also one in error or hanging: nothing ends a run by itself, the user ends it or lets it go on.
+     * Whether the unfinished run $r keeps a new run of its definition from starting. For a manual
+     * start each one does - the user ends it or lets it go on. A planned start ends a run in error or
+     * hanging instead, else one outage of the source would stop the planned imports for good - but
+     * never one whose step may still be working: both would store the same items.
      */
-    private static function blocking(Run $r, string $trigger): bool
+    private static function blocking(Run $r, string $trigger, int $now): bool
     {
-        return true;
+        if (!str_starts_with($trigger, 'plan:') || $r->stepMayStillWork($now)) {
+            return true;
+        }
+        return ($r->state() !== Run::ERROR) && !$r->isStuck($now);
     }
 
-    /** busy when a run is in the way: unfinished, or ended while a step may still store items with its snapshot */
-    private static function busy(string $id, string $trigger): ?StartResult
+    /**
+     * busy when a run is in the way: unfinished, or ended while a step may still store items with its snapshot
+     * @param list<string> $toEnd the runs a planned start ends
+     */
+    private static function busy(string $id, string $trigger, array &$toEnd): ?StartResult
     {
+        $now = Run::clock();
         foreach (Run::unfinished($id) as $run) {
-            if (self::blocking($run, $trigger)) {
+            if (self::blocking($run, $trigger, $now)) {
                 return new StartResult('busy', (string) $run->getId(), $run->state());
             }
+            $toEnd[] = (string) $run->getId();
         }
-        $leased = Run::leasedOf($id);
+        $leased = Run::leasedOf($id, $now);
         return $leased ? new StartResult('busy', $leased[0], 'LEASE') : null;
+    }
+
+    /** Ends the runs busy() let a planned start end. Each is decided again under its lock - a step
+     *  or a Continue may have taken it since - and all of them before the first is ended: a refusal
+     *  ends none. The answer when one is in the way now, else null.
+     *  @param list<string> $toEnd left with the runs it ended */
+    private static function endInTheWay(array &$toEnd, string $trigger, string $user): ?StartResult
+    {
+        $now  = Run::clock();
+        $runs = [];
+        foreach ($toEnd as $runId) {
+            $run = Run::lockForUpdate($runId);
+            if ($run === null) {
+                continue;
+            }
+            if (in_array($run->state(), [Run::DONE, Run::ENDED], true)) {
+                if ($run->hasLiveLease($now)) {
+                    return new StartResult('busy', $runId, 'LEASE');
+                }
+                continue;
+            }
+            if (self::blocking($run, $trigger, $now)) {
+                return new StartResult('busy', $runId, $run->state());
+            }
+            // whoever set the plan has lost the right to the imports of the slice
+            if (!$run->mayControl($user)) {
+                return new StartResult('invalid', reason: 'FORBIDDEN');
+            }
+            $runs[] = $run;
+        }
+        foreach ($runs as $run) {
+            $run->end($user, 'SCHEDULED_START');
+        }
+        $toEnd = array_map(static fn(Run $run): string => (string) $run->getId(), $runs);
+        return null;
     }
 
     /** A planned start comes from a task of the slice. Tasks run on events have no rule for imports yet. */

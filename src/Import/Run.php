@@ -88,6 +88,8 @@ class Run extends BatchRun
     protected $samples = '';
     /** JSON {ok, code, msg} of the run's check(), for the report of a check */
     protected $check = '';
+    /** JSON list of the runs a planned start ended to make way for this one, for the report */
+    protected $replaced = '';
     /** JSON {jobs: [{stream, job, count}] of the first jobs whose items repeat a key, more: the repeats
      *  in jobs not listed}, for the report. Saver::collisions() of each step's part of a job - a lower
      *  bound; a job read again after JOB_GONE may count twice. */
@@ -115,7 +117,7 @@ class Run extends BatchRun
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions'] as $id) {
+        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -325,10 +327,13 @@ class Run extends BatchRun
     }
 
     /** the report of a done run: its check() and probes of a check, the samples of a dry run, the
-     *  jobs whose items repeat a key */
+     *  jobs whose items repeat a key, the runs its planned start ended */
     protected function finalCheck(): array
     {
         $report     = [];
+        if ((string) $this->replaced !== '') {
+            $report['replaced'] = self::listOf((string) $this->replaced);
+        }
         $collisions = self::collisionsOf((string) $this->collisions);
         if ($collisions['jobs']) {
             $report['collisions'] = $collisions;

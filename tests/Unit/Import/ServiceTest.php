@@ -19,6 +19,7 @@ use AA\IO\DB\DB_AA;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
 use AA\Later\BatchFailed;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
@@ -60,6 +61,7 @@ final class ServiceTest extends TestCase
         \ServiceSource::$streamKeys  = ['s1', 's2', 's3'];
         \ServiceSource::$refuse      = null;
         \ServiceSource::$failStreams = null;
+        \ServiceSource::$onStreams   = null;
         \ServiceSource::$created     = [];
         \ServiceSource::$mapping     = null;
         \ServiceSource::$failProperties = null;
@@ -116,7 +118,7 @@ final class ServiceTest extends TestCase
         $this->assertSame(['s1', 's2', 's3'], json_decode(self::stored($all->runId)['stream_keys'], true), 'every stream when none is chosen, each once');
     }
 
-    public function test_start_busyWhileUnfinished(): void
+    public function test_start_manualStillBusyOnError(): void
     {
         $def   = self::definition();
         $first = Service::start($def, 'run', [], 'manual', AuthGetUid());
@@ -125,12 +127,179 @@ final class ServiceTest extends TestCase
             self::storedSet($first->runId, 'state', $state);
             // hanging too: no step for days
             self::storedSet($first->runId, 'started', '1000');
+            self::storedSet($first->runId, 'next_at', '');
 
-            $r = Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid());
+            $r = Service::start($def, 'run', [], 'manual', AuthGetUid());
 
-            $this->assertSame(['busy', $first->runId], [$r->code, $r->runId], $state);
+            $this->assertSame(['busy', $first->runId, $state], [$r->code, $r->runId, $r->reason], $state);
+            $this->assertSame($state, self::stored($first->runId)['state']);
         }
         $this->assertCount(1, self::runIds());
+    }
+
+    /** one outage of the source must not stop the planned imports for good */
+    public function test_start_planEndsErroredRunAndStarts(): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        self::storedSet($old, 'state', 'error');
+
+        $r = Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid());
+
+        $this->assertSame('queued', $r->code);
+        $this->assertSame('ended', self::stored($old)['state']);
+        $this->assertSame([$old, $r->runId], self::runIds());
+        $this->assertSame('running', self::stored($r->runId)['state']);
+    }
+
+    public function test_start_planEndsStuckRunAndStarts(): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        // no step for days, none queued
+        self::storedSet($old, 'started', '1000');
+        self::storedSet($old, 'next_at', '');
+
+        $r = Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid());
+
+        $this->assertSame('queued', $r->code);
+        $this->assertSame('ended', self::stored($old)['state']);
+        $this->assertCount(2, self::runIds());
+    }
+
+    public function test_start_planBlockedByLiveRun(): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+
+        $this->assertSame(['busy', 'running'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())), 'queued, not hanging');
+
+        // in error, but the step that failed may still be storing items
+        self::storedSet($old, 'state', 'error');
+        foreach ([time() + 60, time() - Run::DEAD_GRACE + 5] as $lease) {
+            self::storedSet($old, 'lease', (string) $lease);
+            self::storedSet($old, 'lease_tok', 'tok');
+
+            $this->assertSame(['busy', 'error'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
+        }
+        $this->assertSame([$old], self::runIds());
+        $this->assertSame('error', self::stored($old)['state']);
+    }
+
+    public function test_start_endedRunNotedInNewReport(): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        self::storedSet($old, 'state', 'error');
+
+        $new = Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())->runId;
+
+        $this->assertSame([$old], json_decode(self::stored($new)['replaced'], true), 'the report of the new run names it');
+        $this->assertSame('SCHEDULED_START', json_decode(self::stored($old)['progress'], true)['note']);
+        $this->assertSame('', self::stored(Service::start(self::definition([], self::SIBLING), 'run', [], 'manual', AuthGetUid())->runId)['replaced'] ?? '');
+    }
+
+    /** the end and the start in one transaction: no new run, no end */
+    public function test_start_planEndsOnlyWithTheStart(): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        self::storedSet($old, 'state', 'error');
+
+        \ServiceSource::$failStreams = new SourceRefused('AUTH', 'the source refuses');
+        $this->assertSame('invalid', Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())->code);
+        $this->assertSame('error', self::stored($old)['state'], 'a start refused ends nothing');
+
+        \ServiceSource::$failStreams = null;
+        TableDb::$commitFails         = true;
+        try {
+            Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid());
+            $this->fail('the commit fails');
+        } catch (\RuntimeException) {
+        } finally {
+            TableDb::$commitFails = false;
+        }
+        $this->assertSame('error', self::stored($old)['state']);
+        $this->assertSame([$old], self::runIds());
+    }
+
+    public function test_start_planOfAUserWhoMayNotEndItRefused(): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        self::storedSet($old, 'state', 'error');
+        // whoever set the plan has lost the right to run the imports of the slice
+        self::perms(PS_EDIT_ALL_ITEMS, PS_FEEDING);
+
+        $this->assertSame(['invalid', 'FORBIDDEN'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
+        $this->assertSame('error', self::stored($old)['state']);
+        $this->assertSame([$old], self::runIds());
+    }
+
+    /** @return array<string, array{array<string, string>, string}> what another process writes into the run meanwhile, the reason */
+    public static function takenMeanwhile(): array
+    {
+        return [
+            'a step claimed it'      => [['lease' => '+60', 'lease_tok' => 'tok'], 'error'],
+            'a Continue went through' => [['state' => 'running', 'next_at' => '+0'], 'running'],
+            'ended, its step working' => [['state' => 'ended', 'lease' => '+60', 'lease_tok' => 'tok'], 'LEASE'],
+        ];
+    }
+
+    /** @param array<string, string> $write */
+    #[DataProvider('takenMeanwhile')]
+    public function test_start_planDecidesAgainUnderTheLock(array $write, string $reason): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        self::storedSet($old, 'state', 'error');
+        $written = [];
+        \ServiceSource::$onStreams = static function () use ($old, $write, &$written): void {
+            foreach ($write as $property => $value) {
+                self::storedSet($old, $property, str_starts_with($value, '+') ? (string) (time() + (int) $value) : $value);
+            }
+            $written = self::stored($old);
+        };
+
+        $this->assertSame(['busy', $reason], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
+        $this->assertSame($written, self::stored($old), 'left as the other process wrote it');
+        $this->assertSame([$old], self::runIds());
+    }
+
+    public function test_start_planRunEndedMeanwhileNotNamed(): void
+    {
+        $def = self::definition();
+        $old = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        self::storedSet($old, 'state', 'error');
+        \ServiceSource::$onStreams = static fn() => self::storedSet($old, 'state', 'ended');
+
+        $r = Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid());
+
+        $this->assertSame('queued', $r->code);
+        $this->assertSame('', self::stored($r->runId)['replaced'] ?? '', 'the planned start did not end it');
+        $this->assertArrayNotHasKey('note', (array) json_decode(self::stored($old)['progress'] ?? '', true));
+    }
+
+    /** every run is decided before the first one is ended: a refusal leaves all of them as they were */
+    public function test_start_planEndsNoneWhenOneRefuses(): void
+    {
+        $def  = self::definition();
+        $runs = [Service::start($def, 'run', [], 'manual', AuthGetUid())->runId, self::importRun()];
+        foreach ([0, 1] as $refusing) {
+            foreach ($runs as $id) {
+                self::storedSet($id, 'state', 'error');
+                self::storedSet($id, 'lease', '');
+                self::storedSet($id, 'lease_tok', '');
+            }
+            \ServiceSource::$onStreams = static function () use ($runs, $refusing): void {
+                self::storedSet($runs[$refusing], 'lease', (string) (time() + 60));
+                self::storedSet($runs[$refusing], 'lease_tok', 'tok');
+            };
+
+            $this->assertSame(['busy', 'error'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())), "run $refusing refuses");
+            $this->assertSame(['error', 'error'], array_map(static fn(string $id): string => self::stored($id)['state'], $runs), "run $refusing refuses");
+        }
+        $this->assertCount(2, self::runIds());
     }
 
     /** a double click, or a plan and a click at once - one run, the second is busy */
