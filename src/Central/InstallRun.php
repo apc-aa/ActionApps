@@ -169,7 +169,8 @@ final class InstallRun extends BatchRun
             $run   = self::start($props, self::PREVIEW);
             $until = self::sealedUntil($token);
             if (($token !== '') && ($until > static::now())) {
-                (self::lockForUpdate($run->getId()) ?? throw new LogicException('The new install run is gone'))->seal($token, $until);
+                $run = self::lockForUpdate($run->getId()) ?? throw new LogicException('The new install run is gone');
+                $run->seal($token, $until);
             }
             return $run;
         });

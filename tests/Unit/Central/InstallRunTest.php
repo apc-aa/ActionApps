@@ -573,6 +573,12 @@ namespace Tests\Unit\Central {
             $this->assertSame(self::TOKEN, InstallRun::get($id)->token());
         }
 
+        /** the page of the login asks the source for its apps with the run it got */
+        public function test_the_new_preview_holds_its_token(): void
+        {
+            $this->assertSame(self::TOKEN, self::preview()->token());
+        }
+
         public function test_a_preview_without_a_token_keeps_none(): void
         {
             $id = InstallRun::preview(InstallRun::TRANSFER, false, InstallRun::LOCAL, self::USER, '', self::NOW)->getId();
