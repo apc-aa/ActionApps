@@ -350,8 +350,8 @@ class Run extends BatchRun
      * one gets failed = 1, the last one closes the stream without its version) once check() says
      * the source is up; the third job skipped in a row (RunCursor::SKIPS_IN_A_ROW) skips the rest
      * of its stream (JOBS_FAILING); a stream whose jobs() fails then is closed. A source that cannot
-     * say it is up, or is down, ends the run in error with the failure's code; one that refuses,
-     * with its reason.
+     * say it is up, or is down, ends the run in error with the failure's code; one whose check()
+     * fails, with the check's code; one that refuses, with its reason.
      */
     protected function onRetriesExhausted(BatchStepResult $last): ?BatchStepResult
     {
@@ -381,8 +381,10 @@ class Run extends BatchRun
             $deadline = min(static::microNow() + self::DECIDE_SECONDS, (float) $this->lease - 30);
             $budget   = new BatchBudget($deadline, 0, 0, static::microNow(...));
             $ctx      = $this->context($source, $budget);
-            if (!$source->check($ctx)->ok) {
-                return null;
+            $check    = $source->check($ctx);
+            if (!$check->ok) {
+                // its code tells the cause (an expired token: AUTH), the last try only how it failed
+                throw new BatchFailed($check->code, 'check');
             }
             if (RunCursor::endsTheStream($pos)) {
                 // a source that answers check() while its jobs fail would hold the run for days:

@@ -424,7 +424,7 @@ final class RunFailureTest extends TestCase
     /** @return array<string, array{string, string}> */
     public static function deadChecks(): array
     {
-        return ['check fails' => ['fails', 'TRANSPORT'], 'check cannot reach the source' => ['down', 'TRANSPORT'], 'check refused' => ['refused', 'AUTH']];
+        return ['check fails' => ['fails', 'AUTH'], 'check cannot reach the source' => ['down', 'TRANSPORT'], 'check refused' => ['refused', 'AUTH']];
     }
 
     #[DataProvider('deadChecks')]
@@ -441,7 +441,10 @@ final class RunFailureTest extends TestCase
 
         self::runAll($run->getId());
 
-        self::assertSame(['error', $code], self::errorOf($run->getId()));
+        self::assertSame(['error', $code], self::errorOf($run->getId()), 'a failed check() tells its own code, not the TRANSPORT of the job');
+        if ($how === 'fails') {
+            self::assertSame('check', self::stored($run->getId())['error_path']);
+        }
         self::assertCount(1, $source->checkCalls);
         self::assertSame(['k-s1:a-1'], TestRun::storedValues('relation........'));
         self::assertSame([], self::warnings($run->getId()));
