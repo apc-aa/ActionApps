@@ -619,7 +619,8 @@ class Saver implements AA\Later\LaterInterface
             $array        = preg_split("/\R/", $validate_str);
             foreach ($array as $row) {
                 $row = trim($row);
-                if ($row && $row[0] !== '1') {
+                // not a truthy test: a bare "0" would pass, and {ifeq:…:1:0} with it
+                if ($row !== '' && $row[0] !== '1') {
                     $err_array[] = $row;
                 }
             }
@@ -686,7 +687,8 @@ class Saver implements AA\Later\LaterInterface
 
     /**
      * @param string $validate
-     * {aa-expression} - expression to validate the inserted item - if set, must be equal to '1' for storing the item
+     * {aa-expression} - expression to validate the inserted item - every non-empty row of the output must
+     * begin with '1' for storing the item; anything else, "0" included, is an error of the item
      */
     public function addValidate(string $validate): static
     {

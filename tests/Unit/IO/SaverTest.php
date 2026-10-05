@@ -208,7 +208,7 @@ namespace Tests\Unit\IO {
                 'text'                => ['no', [0, 1]],
                 'one bad row'         => ["1\nno", [0, 1]],
                 'starts with 0'       => ['01', [0, 1]],
-                'bare 0 passes'       => ['0', [1, 0]],
+                'bare 0'              => ['0', [0, 1]],
             ];
         }
 
@@ -585,7 +585,7 @@ namespace Tests\Unit\IO {
             // 'update' stores the item as it is - nothing (unlike complete4Insert()) would drop the parameter
             $make = fn() => (new RecordingSaver(new ArrayGrabber($this->items(1)), null, self::SLICE, 'update'))
                 ->setImportMode()
-                ->addValidate('{ifeq:{index:geo}:CZ:1:no}');   // a bare "0" row would pass
+                ->addValidate('{ifeq:{index:geo}:CZ:1:0}');
 
             $saver = $make()->setContext(['geo' => 'CZ']);
             $this->assertSame([1, 0], $saver->run());
