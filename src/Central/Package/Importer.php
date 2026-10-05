@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA;
 use AA\Central\InstallRun;
+use AA\Central\TransferProgress;
 use AA\Central\Package\Model\Module;
 use AA\Central\Package\Model\Package;
 use AA\Central\Package\Model\RawBytes;
@@ -217,7 +218,7 @@ final class Importer
             'finished' => $batch->batch->finished && ($after === null),
             'written'  => count($m->items),
             'warnings' => $findings->counts(LintFinding::WARNING),
-            'findings' => array_map(static fn(array $f): array => ['level' => $f[1]->level, 'code' => $f[1]->code, 'path' => $f[0], 'ref' => $f[1]->ref], $findings->all()),
+            'findings' => TransferProgress::plain($findings->all()),
         ];
     }
 

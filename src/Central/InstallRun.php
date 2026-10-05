@@ -24,7 +24,6 @@ use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use AA\Later\BatchStates;
 use AA\Later\BatchStepResult;
-use AA_Object;
 use AA_Property;
 use Closure;
 use InvalidArgumentException;
@@ -331,7 +330,7 @@ final class InstallRun extends BatchRun
         }
         $old = array_keys(array_filter($props, static fn(array $p): bool => (($p['aa_type'] ?? '') === self::class) && ((int) ($p['started'] ?? 0) <= $now - self::PREVIEW_LIFETIME)));
         if ($old) {
-            AA_Object::deleteObjects(array_map('strval', $old));
+            self::deleteObjects(array_map('strval', $old));
         }
     }
 
@@ -400,14 +399,18 @@ final class InstallRun extends BatchRun
 
     protected function commitStep(BatchStepResult $r): void
     {
-        $new = $r->extra['findings'] ?? [];
+        $changed = [];
+        $new     = $r->extra['findings'] ?? [];
         if ($new) {
             $this->findings = json_encode(array_slice([...$this->findings(), ...$new], -self::KEPT_FINDINGS), JSON_THROW_ON_ERROR | JSON_INVALID_UTF8_SUBSTITUTE);
-            $this->update(['findings']);
+            $changed[]      = 'findings';
         }
         if (isset($r->extra['items']) && ((string) $r->extra['items'] !== (string) $this->batch_items)) {
             $this->batch_items = (string) $r->extra['items'];
-            $this->update(['batch_items']);
+            $changed[]         = 'batch_items';
+        }
+        if ($changed) {
+            $this->update($changed);
         }
     }
 
@@ -462,6 +465,14 @@ final class InstallRun extends BatchRun
             // a superadmin exports every module - fetch() made sure the user is one
             return new AppExport(new DbSource(), ['url' => (string) constant('AA_INSTAL_URL'), 'aa-version' => aa_version('aa')], static fn(): bool => true, true);
         }
+        return $this->remoteSource($timeout);
+    }
+
+    /** the AA of the run's central_conf row or the app store, with the token the run keeps sealed - the
+     *  store logs in by itself again when that one is too old
+     *  @param int $timeout seconds each answer may take @throws SourceFailed no such Central row any more */
+    public function remoteSource(int $timeout = RemoteSource::TIMEOUT): RemoteAppSource
+    {
         $remote = RemoteSource::forSource($this->source(), $timeout);
         $token  = $remote->unseal($this->token());
         return ($this->source() === self::STORE) ? AppStore::source($remote, $token) : new RemoteAppSource($remote, $token);

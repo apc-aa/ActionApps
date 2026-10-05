@@ -36,7 +36,6 @@ use AA\Central\Actionapps;
 use AA\Central\AppStore;
 use AA\Central\InstallRun;
 use AA\Central\Package\Importer;
-use AA\Central\RemoteAppSource;
 use AA\Central\RemoteSource;
 use AA\Central\SourceFailed;
 use AA\Later\BatchFailed;
@@ -151,9 +150,7 @@ function appstore_list(string $run_id, string $uid): void
 function appstore_apps(InstallRun $run): void
 {
     try {
-        $remote = RemoteSource::forSource($run->source());
-        $token  = $remote->unseal($run->token());
-        $apps   = (($run->source() === InstallRun::STORE) ? AppStore::source($remote, $token) : new RemoteAppSource($remote, $token))->apps();
+        $apps = $run->remoteSource()->apps();
     } catch (SourceFailed $e) {
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         appstore_form();

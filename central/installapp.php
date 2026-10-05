@@ -44,7 +44,6 @@
 use AA\Central\Actionapps;
 use AA\Central\AppExport;
 use AA\Central\AppSource;
-use AA\Central\AppStore;
 use AA\Central\ExportRefused;
 use AA\Central\FilterCheck;
 use AA\Central\FindingText;
@@ -74,7 +73,6 @@ use AA\Central\Package\SliceRoles;
 use AA\Central\Package\Validator;
 use AA\Central\Package\ValueCodec;
 use AA\Central\Package\WriteError;
-use AA\Central\RemoteAppSource;
 use AA\Central\RemoteSource;
 use AA\Central\SourceFailed;
 use AA\Central\TransferProgress;
@@ -157,7 +155,7 @@ if ($json) {
     // the page asks every few seconds - it must not block the other pages of this session
     Session::page_close();
     session_write_close();
-    $run = InstallRun::get($run_id);
+    $run = $run_of;
     try {
         $text   = new TransferText($run ? installapp_slice_names($run) : []);
         $status = '';
@@ -344,21 +342,11 @@ function installapp_local_source(): AppExport
     return new AppExport(new DbSource(), $attributes, static fn(string $module): bool => IfSlPerm(PS_EDIT, $module), IsSuperadmin());
 }
 
-/** the AA of the run's central_conf row or the app store, with the token the run keeps sealed (the store
- *  logs in again by itself)
- *  @throws SourceFailed no such row, the store refused its login */
-function installapp_remote_source(InstallRun $run): RemoteAppSource
-{
-    $remote = RemoteSource::forSource($run->source());
-    $token  = $remote->unseal($run->token());
-    return ($run->source() === InstallRun::STORE) ? AppStore::source($remote, $token) : new RemoteAppSource($remote, $token);
-}
-
 /** the source of a run, with the rights of the user here
  *  @throws SourceFailed */
 function installapp_run_source(InstallRun $run): AppSource
 {
-    return ($run->source() === InstallRun::LOCAL) ? installapp_local_source() : installapp_remote_source($run);
+    return ($run->source() === InstallRun::LOCAL) ? installapp_local_source() : $run->remoteSource();
 }
 
 /** the link back to the login to the source AA of the run; the store logs in by itself */
@@ -531,7 +519,7 @@ function installapp_choose(InstallRun $run): void
         return;
     }
     try {
-        $from   = installapp_remote_source($run);
+        $from   = $run->remoteSource();
         $sites  = $from->modules(['W']);
         $others = $from->modules(['S', 'Alerts']);
     } catch (SourceFailed $e) {         // the app store account of a Central row lists no modules
@@ -701,7 +689,7 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         return;
     }
     try {
-        $from = installapp_remote_source($run);
+        $from = $run->remoteSource();
     } catch (SourceFailed $e) {
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         return;

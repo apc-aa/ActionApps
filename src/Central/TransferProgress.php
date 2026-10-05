@@ -60,7 +60,7 @@ final class TransferProgress
             'warnings'    => $run->warnings(),
             'error'       => $progress['error'],
             'findings'    => $run->findings(),
-            'afterClose'  => $progress['warning'] === 'after_close',
+            'afterClose'  => $run->cachesLeft(),
             'mayContinue' => ($uid === $run->user()) && $run->mayResume($now),
             'mayEnd'      => $open,
             'login'       => $open && self::needsLogin($run),
