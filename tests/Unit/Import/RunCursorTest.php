@@ -34,6 +34,23 @@ final class RunCursorTest extends TestCase
         self::assertTrue(RunCursor::cycles(['pages' => RunCursor::MAX_PAGES] + $pos, 's1:b'));
     }
 
+    public function test_skippedJob_countsTheSkipsInARow(): void
+    {
+        $next = RunCursor::started(RunCursor::START, 's1:b');
+
+        self::assertSame(['skips' => 1] + $next, RunCursor::skippedJob(RunCursor::START, $next));
+        self::assertSame(['skips' => 2] + $next, RunCursor::skippedJob(['skips' => 1] + RunCursor::START, $next));
+    }
+
+    public function test_endsTheStream_atTheCap(): void
+    {
+        $pos = RunCursor::started(RunCursor::START, 's1:b');
+
+        self::assertFalse(RunCursor::endsTheStream(['skips' => RunCursor::SKIPS_IN_A_ROW - 2] + $pos));
+        self::assertTrue(RunCursor::endsTheStream(['skips' => RunCursor::SKIPS_IN_A_ROW - 1] + $pos));
+        self::assertFalse(RunCursor::endsTheStream(['skips' => RunCursor::SKIPS_IN_A_ROW - 1, 'job' => ''] + $pos), 'no job: the stream failed before its first one');
+    }
+
     /** @return array<string, array{string, string, string}> */
     public static function whereCases(): array
     {

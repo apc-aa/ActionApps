@@ -33,7 +33,7 @@ use JsonException;
  * The position is the cursor of the source (RunCursor): the stream (index in stream_keys), the
  * job and how far into it (offset and the fingerprint of its first items), plus what a stream
  * carries from step to step until it ends - pages and cur (jobs started and the last one), wrote,
- * failed, vmax, restarts.
+ * failed, vmax, restarts, skips.
  * A step always returns the cursor after the last work it stored, also when the source fails.
  * Moving the cursor onto a job not yet started (the first one of a stream, or the next one) counts
  * as progress before that job stored anything, so a source failing at a new job costs at most one
@@ -348,8 +348,10 @@ class Run extends BatchRun
      * what does not fit would lose data quietly. A cycle skips the rest of its stream: skipping one
      * job would let the source hand out the cycle again. Any other failure skips the job (the next
      * one gets failed = 1, the last one closes the stream without its version) once check() says
-     * the source is up; a stream whose jobs() fails then is closed. A source that cannot say it is
-     * up, or is down, ends the run in error with the failure's code; one that refuses, with its reason.
+     * the source is up; the third job skipped in a row (RunCursor::SKIPS_IN_A_ROW) skips the rest
+     * of its stream (JOBS_FAILING); a stream whose jobs() fails then is closed. A source that cannot
+     * say it is up, or is down, ends the run in error with the failure's code; one that refuses,
+     * with its reason.
      */
     protected function onRetriesExhausted(BatchStepResult $last): ?BatchStepResult
     {
@@ -382,6 +384,12 @@ class Run extends BatchRun
             if (!$source->check($ctx)->ok) {
                 return null;
             }
+            if (RunCursor::endsTheStream($pos)) {
+                // a source that answers check() while its jobs fail would hold the run for days:
+                // the job counts as skipped, then the rest of the stream goes
+                $job = $this->skipped($last, $pos, $pos, $keys);
+                return $this->skipped($job, $pos, RunCursor::nextStream($pos), $keys, 'JOBS_FAILING');
+            }
             // streams the source cannot list are the whole source failing, not this stream
             $streams = self::streamsOf($source);
             $gone    = false;
@@ -390,6 +398,9 @@ class Run extends BatchRun
                 $next = ($pos['job'] === '') ? RunCursor::nextStream($pos) : $this->jobAfter($source, $ctx, $budget, $streams[$keys[$pos['i']] ?? ''] ?? null, $pos);
                 $gone = ($next === null);
                 $next ??= RunCursor::nextStream($pos);
+                if ($next['i'] === $pos['i']) {
+                    $next = RunCursor::skippedJob($pos, $next);
+                }
             } catch (SourceRefused $e) {
                 throw $e;
             } catch (SourceFailure|TransportException) {
@@ -785,6 +796,7 @@ class Run extends BatchRun
             if ($halt !== '') {
                 return $halt;
             }
+            $pos['skips'] = 0;
             if (RunCursor::jobCounts($from, $pos)) {
                 $this->tally['jobs']++;
             }

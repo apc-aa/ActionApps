@@ -161,10 +161,43 @@ final class RunFailureTest extends TestCase
         $skip = TestRun::$committed[3];
         self::assertSame('', $skip->retry);
         self::assertSame(
-            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1] + self::pastCheck()),
+            self::sorted(['job' => 's1:c', 'pages' => 3, 'cur' => sha1('s1:c'), 'failed' => 1, 'wrote' => 1, 'skips' => 1] + self::pastCheck()),
             self::sorted($skip->position),
             'the next job, not started yet',
         );
+    }
+
+    public function test_retriesExhausted_thirdFailedJobInARowSkipsTheStream(): void
+    {
+        $source = self::checked(streams: 2, jobs: 5, items: 1);
+        foreach ([1, 2, 3] as $j) {
+            $source->jobs['s1'][$j]['error'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        }
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['k-s1:a-1', 'k-s2:a-1', 'k-s2:b-1', 'k-s2:c-1', 'k-s2:d-1', 'k-s2:e-1'], TestRun::storedValues('relation........'), 'job e of s1 is skipped with the stream');
+        self::assertSame(['JOB_FAILED' => 3, 'JOBS_FAILING' => 1], self::warnings($run->getId()));
+        self::assertSame(3, TestRun::get($run->getId())?->counts()['skipped_jobs']);
+        $s1 = array_filter($source->jobCalls, static fn(array $call): bool => $call['stream'] === 's1');
+        self::assertCount(9 + 2 + 1, $s1, 'three steps per failed job, the first two skips look for the next one, the third does not');
+    }
+
+    public function test_retriesExhausted_jobDoneResetsTheSkips(): void
+    {
+        $source = self::checked(streams: 1, jobs: 6, items: 1);
+        foreach ([1, 2, 4] as $j) {
+            $source->jobs['s1'][$j]['error'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        }
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['k-s1:a-1', 'k-s1:d-1', 'k-s1:f-1'], TestRun::storedValues('relation........'));
+        self::assertSame(['JOB_FAILED' => 3], self::warnings($run->getId()), 'three failed jobs, never three in a row');
     }
 
     public function test_retriesExhausted_lastJobClosesStreamWithoutVersion(): void
@@ -341,19 +374,20 @@ final class RunFailureTest extends TestCase
                 yield ['key' => 's1:b', 'items' => [['key' => 'k-b', 'val' => 'v']], 'error' => $dead];
             }
         };
-        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 2, 'cur' => sha1('s1:a')] + self::pastCheck()]);
+        // the cap comes before the third skip in a row would end the stream
+        $run = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 1, 'cur' => sha1('s1:a')] + self::pastCheck()]);
 
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
         $skips = array_values(array_filter(TestRun::$committed, static fn($r): bool => ($r->retry === '') && !$r->finished));
         self::assertSame(
-            [['s1:b', RunCursor::MAX_PAGES - 1, 0], ['s1:a', RunCursor::MAX_PAGES, 0], ['', 0, 1]],
+            [['s1:b', RunCursor::MAX_PAGES, 0], ['', 0, 1]],
             array_map(static fn($r): array => [$r->position['job'], $r->position['pages'], $r->position['i']], $skips),
             'each skip starts a job - the cap ends the stream',
         );
-        self::assertSame(['JOB_FAILED' => 3], self::warnings($run->getId()));
-        self::assertCount(3, $source->checkCalls);
+        self::assertSame(['JOB_FAILED' => 2], self::warnings($run->getId()));
+        self::assertCount(2, $source->checkCalls);
         self::assertSame([], TestRun::stored());
     }
 

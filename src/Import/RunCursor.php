@@ -14,9 +14,13 @@ final class RunCursor
     /** jobs of one stream (pages of a catalog) at most - a source may hand out its pages in a cycle */
     public const MAX_PAGES = 1000;
 
+    /** failed jobs in a row that skip the rest of their stream: each costs three steps, ~1 h */
+    public const SKIPS_IN_A_ROW = 3;
+
     /**
      * Where a run starts; a new stream starts with all but i, checked and after of it.
      * - failed: the stream skipped a job or lost items to errors - its version stays the old one;
+     * - skips: jobs of the stream skipped in a row, since the last one done;
      * - probed, pv: the changed mode asked probe() at the stream's start, and the version it gave;
      * - end: the jobs of the stream are done, its version is pending;
      * - after: the key of a closed stream whose expression is due;
@@ -25,7 +29,7 @@ final class RunCursor
     public const START = [
         'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',
         'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '', 'end' => 0,
-        'after' => '', 'checked' => 0, 'ccode' => '',
+        'after' => '', 'checked' => 0, 'ccode' => '', 'skips' => 0,
     ];
 
     /** the stored position in the shape of START, the types of START */
@@ -54,6 +58,18 @@ final class RunCursor
     public static function started(array $pos, string $job): array
     {
         return ['job' => $job, 'offset' => 0, 'fp' => '', 'pages' => $pos['pages'] + 1, 'cur' => sha1($job)] + $pos;
+    }
+
+    /** the failed job at $pos is the SKIPS_IN_A_ROW-th in a row: the rest of its stream is skipped */
+    public static function endsTheStream(array $pos): bool
+    {
+        return ($pos['job'] !== '') && ($pos['skips'] + 1 >= self::SKIPS_IN_A_ROW);
+    }
+
+    /** the cursor past the failed job at $pos, on $next - the job after it in the same stream */
+    public static function skippedJob(array $pos, array $next): array
+    {
+        return ['skips' => $pos['skips'] + 1] + $next;
     }
 
     /** the cursor's job gone from the source: the stream starts over, its stored items stay */
