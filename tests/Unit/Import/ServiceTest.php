@@ -7,6 +7,7 @@ namespace Tests\Unit\Import;
 use AA\Import\Catalog;
 use AA\Import\CatalogEntry;
 use AA\Import\CatalogPage;
+use AA\Import\ChangeResult;
 use AA\Import\Definition;
 use AA\Import\Mapping;
 use AA\Import\Registry;
@@ -818,6 +819,19 @@ final class ServiceTest extends TestCase
         $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertCount(2, self::logged());
         $this->assertStringNotContainsString('s3cr3t', implode(' ', self::logged()));
+    }
+
+    // settings each valid alone, but not together - the source says so, its code did not fail
+    public function test_changeSettings_settingsRefusedBySource(): void
+    {
+        $def    = self::definition(['settings' => '{"territory":"cz"}']);
+        $before = TableDb::$tables;
+        \ServiceSource::$refuse = new SourceRefused('SETTINGS', 'The key column must be one of the columns');
+
+        $this->assertEquals(new ChangeResult('SETTINGS'), Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertEquals(new ChangeResult('SETTINGS'), Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame($before, TableDb::$tables);
+        $this->assertSame([], self::logged());
     }
 
     public function test_changeSettings_deniedWithoutFeeding(): void

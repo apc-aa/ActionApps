@@ -244,8 +244,8 @@ final class Service
         try {
             $new = Registry::create($source, $settings);
         } catch (Throwable $e) {
-            self::sourceFailure($id, $e, false);
-            return new ChangeResult('SOURCE');
+            // SETTINGS: each setting passed alone, the source refused them together
+            return new ChangeResult((self::sourceFailure($id, $e, false) === 'SETTINGS') ? 'SETTINGS' : 'SOURCE');
         }
         // valid UTF-8 - checkSettings() made sure
         $json = $settings ? json_encode($settings, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) : '';
@@ -326,8 +326,7 @@ final class Service
             try {
                 $source = Registry::create($def->sourceType(), $settings);
             } catch (Throwable $e) {
-                self::sourceFailure($id, $e, false);
-                return new ChangeResult('NO_MAPPING');
+                return new ChangeResult((self::sourceFailure($id, $e, false) === 'SETTINGS') ? 'SETTINGS' : 'NO_MAPPING');
             }
             $refused = self::takeDefaultMapping($def, $source, $slice);
             if ($refused !== null) {
