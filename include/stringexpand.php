@@ -3092,7 +3092,7 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
         $feed = HttpInclude::fetch('GET', $rss_url);
         $xml  = new DomDocument();
         if (($feed === '') || !@$xml->loadXML($feed, LIBXML_NONET)) {
-            warn('No RSS feed at ' . $rss_url);
+            warn('No RSS feed at ' . Txt::safe($rss_url));
             return '';
         }
 
@@ -8619,14 +8619,16 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     }
 
 
-    /** getimagesize() of the image: a web address goes through the SSRF guard, a local file is read
-     *  as before, and no other stream (php://, phar://, ...) is opened
+    /** getimagesize() of the image: a web address goes through the SSRF guard, a local path is read
+     *  from disk, and no other stream (php://, phar://, ...) is opened
      *  @return array<int|string, mixed>|false
      */
     private static function measure(string $url): array|false
     {
         if (preg_match('~^https?://~i', $url)) {
-            $body = HttpInclude::fetch('GET', $url);
+            // the size sits in the header, so a listing of 8 MB photos must not download them whole
+            // (512 kB still covers JPEGs with large EXIF/ICC blocks before the frame header)
+            $body = \AA\Expand\HttpInclude::fetch('GET', $url, '', ['Range' => 'bytes=0-524287']);
             return ($body === '') ? false : @getimagesizefromstring($body);
         }
         return str_contains($url, '://') ? false : @getimagesize($url);
@@ -8660,7 +8662,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             $image = preg_replace("~^(http[s]?:)?//(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\5", $image);
         }
 
-        // 'measure' is the internal call behind @getimagesize() and deliberately stays on
+        // 'measure' is the internal call behind measuring the image and deliberately stays on
         // img.php: through the cache the miss would be forged synchronously inside the page
         // render (91 ms vs 72 ms measured), while this way it warms phpThumb's own cache, so
         // the browser's later request for the cache url only has to copy the bytes.
