@@ -45,6 +45,13 @@ class Txt
         return self::substr($str, 0, $head_len) . $marker . self::substr($str, $head_len - $budget);
     }
 
+    /** Valid UTF-8 of at most $bytes, for a column of that size: invalid bytes become
+     *  mb_substitute_character, and the cut never splits a character. */
+    public static function utf8Cut(string $s, int $bytes): string
+    {
+        return mb_strcut(mb_scrub($s, 'UTF-8'), 0, max(0, $bytes), 'UTF-8');
+    }
+
     // --- UTF-aware string primitives (canonical home; the global aa_*() in
     //     include/util.php now delegate here). grapheme_/mb_ per tonsky.me/blog/unicode. ---
 

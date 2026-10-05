@@ -88,6 +88,7 @@ function GetCommonMenu(AA_Profile $profile): array {
         "rsstest"     => ["label"=>_m("RSS test"),        "cond"=>IsSuperadmin(),        "href"=>"admin/rsstest.php"],
         "aarsstest"   => ["label"=>_m("AA RSS test"),     "cond"=>IsSuperadmin(),        "href"=>"admin/aarsstest.php"],
         "testrss"     => ["label"=>_m("Run feeding"),     "cond"=>IsSuperadmin(),        "href"=>"admin/xmlclient.php?debugfeed=4"],
+        "dataimports" => ["label"=>_m("Imports"),         "cond"=>IsSuperadmin(),        "href"=>"admin/aa_dataimports.php"],
 
         "header5"     =>_m("Slice structure"),
         "sliceexp"    => ["label"=>_m("Export"),          "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceexp.php"],
@@ -125,7 +126,7 @@ function GetCommonMenu(AA_Profile $profile): array {
             "installapp"  => ["cond"=>\AA\Central\Package\Importer::hasInstallPermission((string) AuthGetUid()), "href"=>"central/installapp.php",   "label"=>_m("Install an app...")],
             "appstore"    => ["cond"=>IsSuperadmin(),              "href"=>"central/appstore.php",                                      "label"=>_m("App store...")],
             "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
-            "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php?DeleteTrash=1",                           "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are you sure you want to empty trash?")."')"],
+            "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php",                                          "label"=>_m("Empty trash"), "js"=>\AA\Manager::emptyTrashJs('{href}')],
             "importcsv"   => ["cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")],
         ]
     ];

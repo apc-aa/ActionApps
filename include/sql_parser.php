@@ -149,11 +149,11 @@ class SQL_Lex
     public static function tillTheEndingQuotApos($input, $i, $length, $ending): array
     {
         $tok = "";
-        while ($input[$i] != $ending) {
+        while (($i < $length) && ($input[$i] != $ending)) {   // a quote as the last character opens nothing
             $tok .= $input[$i++];
-            if ($i >= $length) {
-                return ["status" => self::E_NO_ENDING_QUOTAPOS, "value" => "", "i" => $i];
-            }
+        }
+        if ($i >= $length) {
+            return ["status" => self::E_NO_ENDING_QUOTAPOS, "value" => "", "i" => $i];
         }
         return ["status" => self::S_OK, "value" => $tok, "i" => $i + 1];    // i+1  =>  skips string terminator
     }

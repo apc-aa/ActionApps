@@ -45,6 +45,9 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     protected $shift = 0;
     protected $item_id = '';
 
+    /** the task whose toexecutelater() runs now - an expression may act only inside a task */
+    private static ?self $running = null;
+
     /** allows storing form in database
      *  AA_Object's method
      * @return array
@@ -114,6 +117,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
               <td><input name="chb[x_#AA_ID___]" value="" type="checkbox"></td>
               <td style="white-space:nowrap;">'
             . $buttons['Edit'] . ' '
+            . ($buttons['Runnow'] ?? '') . ' '
             /* `RLIKE` (= "begins with" -> `selector LIKE 'AA_Plannedtask:{id}%'`) so the
                button finds both the rows written before AA_Logentry_Obj
                (`AA_Plannedtask:{id}`) and the ones written since
@@ -135,13 +139,32 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             ';
     }
 
-    public function nexttime(): int
+    /** the time the task names, read at $now (default the current time); 0 = it names none */
+    public function nexttime(?int $now = null): int
     {
         // every 5 min
         if (!strlen($time = trim($this->getProperty('time')))) {
             return 0;
         }
-        return strtotime($time) + (int) $this->getProperty('shift');
+        return (int) strtotime($time, $now ?? time()) + (int) $this->getProperty('shift');
+    }
+
+    /** When the task is queued to run next, at $now or later. schedule() queues only a time not yet
+     *  past, so a time past today (03:00 at noon) comes on a later day - read here at the start of
+     *  each day, as the scheduler reads it on its rounds. 0 = never within a year. */
+    public function nextStart(int $now): int
+    {
+        if (!strlen(trim($this->getProperty('time')))) {
+            return 0;
+        }
+        for ($day = 0; $day <= 366; ++$day) {
+            $base = ($day === 0) ? $now : (int) strtotime("today +$day days", $now);
+            $at   = $this->nexttime($base);
+            if ($at >= $base) {
+                return $at;
+            }
+        }
+        return 0;
     }
 
     /** Implement internal aliases for Admin interface Such aliases then could be called as {internal:AA_Plannedtask:lastrun:...},
@@ -171,24 +194,89 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      */
     public function toexecutelater($params = []): string
     {
-        $ret = $this->aa_name;
-        AA::$slice_id = $this->getOwnerId();
-        if (is_long_id($this->item_id)) {
-            AA::Un('{define:aa_event_for:' . $this->item_id . '}');
-        }
-        $condition = trim($this->condition);
-        $condition_res = strlen($condition) ? trim(AA::Un($condition)) : '1';
-        if (!strlen($condition_res) || ($condition_res === '0')) {
-            $ret .= ":Cond not met - $condition ($condition_res)";
-        } else {
+        // a task run by an event inside another task hands the context back when it ends
+        $outer = self::$running;
+        self::$running = $this;
+        try {
+            $ret = $this->aa_name;
+            AA::$slice_id = $this->getOwnerId();
             if (is_long_id($this->item_id)) {
-                $ret .= ':=' . AA::Un($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
-            } else {
-                $ret .= ':=' . AA::Un($this->task);
+                AA::Un('{define:aa_event_for:' . $this->item_id . '}');
             }
+            $condition = trim($this->condition);
+            $condition_res = strlen($condition) ? trim(AA::Un($condition)) : '1';
+            if (!strlen($condition_res) || ($condition_res === '0')) {
+                $ret .= ":Cond not met - $condition ($condition_res)";
+            } else {
+                if (is_long_id($this->item_id)) {
+                    $ret .= ':=' . AA::Un($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
+                } else {
+                    $ret .= ':=' . AA::Un($this->task);
+                }
+            }
+        } finally {
+            self::$running = $outer;
         }
         // AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:x".AA::$slice_id);  // logged in Toexecute
         return $ret;
+    }
+
+    /** The task whose toexecutelater() runs now - from the queue, an event or "Run now"; null outside a task */
+    public static function running(): ?self
+    {
+        return self::$running;
+    }
+
+    /** Whether the task or its condition calls {import} - the admin then asks for the feeding permission.
+     *  A safeguard against a slip in the admin, not a permission boundary: an expression can put the
+     *  command together only when it runs. Command names are case-insensitive. */
+    public function usesImport(): bool
+    {
+        return (bool) self::importCalls($this->task . "\n" . $this->condition);
+    }
+
+    /** The first argument of each {import} call in $text - {import:<arg>:..}, {import(<arg>)}, or ''
+     *  for a bare {import}; the import's name or id.
+     *  @return list<string> */
+    public static function importCalls(string $text): array
+    {
+        preg_match_all('/\{import(?:\(([^)}]*)\)?|:([^:}]*)|(?=\}))/i', $text, $calls, PREG_SET_ORDER);
+        return array_map(static fn(array $call): string => ($call[1] ?? '') . ($call[2] ?? ''), $calls);
+    }
+
+    /** The page of the tasks also lets in users who only edit the forms, but an import belongs to
+     *  the users who manage the feeding of the slice. */
+    public function formRefusal(): ?string
+    {
+        if ($this->usesImport() && !IfSlPerm(PS_FEEDING, $this->getOwnerId())) {
+            return _m('The task was not saved - only a user who manages the feeding of the slice may save a task with {import}.');
+        }
+        return null;
+    }
+
+    /** A link may open a new task with a name, a time and a plain {import} call - another
+     *  expression from a link is dropped, the user would save it without reading it.
+     *  @inheritDoc
+     */
+    public static function formPrefill(mixed $requested): array
+    {
+        if (!is_array($requested)) {
+            return [];
+        }
+        $valid = [
+            // the name is shown in lists - no markup, no expression
+            'aa_name' => static fn(string $v): bool => (bool) preg_match('/\A[^<>&"{}\x00-\x1f]{1,100}\z/u', $v),
+            'task'    => static fn(string $v): bool => (bool) preg_match('/\A\{import:[0-9a-f]{32}:(?:run|changed|check)\}\z/', $v),
+            // strtotime() reads only up to a NUL byte, so control characters are refused first
+            'time'    => static fn(string $v): bool => !preg_match('/[\x00-\x1f]/', $v) && (strtotime($v) !== false),
+        ];
+        $prefill = [];
+        foreach ($valid as $key => $is_valid) {
+            if (is_string($requested[$key] ?? null) && $is_valid($requested[$key])) {
+                $prefill[$key] = $requested[$key];
+            }
+        }
+        return $prefill;
     }
 
     /**
@@ -205,6 +293,8 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     {
         $toexecute = new Toexecute();
         $toexecute->cancel_all(self::toexecuteSelector($this->getId()));
+        // a waiting "Run now" holds a copy of the task as it was - the old version must not run
+        $toexecute->cancel_all(self::toexecuteSelector($this->getId()) . ':now');
         $this->schedule();
     }
 

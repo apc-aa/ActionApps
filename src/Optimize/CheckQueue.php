@@ -90,7 +90,7 @@ class CheckQueue extends AbstractOptimize
         }
 
         // a task that throws no longer ends the run with a PHP fatal - its log row is the only trace
-        $failed_of = [['type', Toexecute::FAILED_EVENT], ['time', $now - self::WINDOW_SECONDS, '>=']];
+        $failed_of = self::failedTasksOf($now);
         $failed    = DB_AA::select1('', 'SELECT COUNT(*) AS cnt, MIN(`time`) AS first, MAX(`time`) AS last FROM `log`', $failed_of);
         $failed_n  = (int) ($failed['cnt'] ?? 0);
         if ($failed_n > 0) {
@@ -125,6 +125,13 @@ class CheckQueue extends AbstractOptimize
             $findings[] = new Finding(Finding::OK, _m('Queue ran at %1; %2 runs in the last 7 days, %3 over the time limit', [date('Y-m-d H:i', $last_run), $stats['runs'], $stats['over']]));
         }
         return $findings;
+    }
+
+    /** The log rows of the queued tasks that threw in the last 7 days. Not the steps of imports: their
+     *  run stops in error and is not retried this way - CheckImports lists them. */
+    public static function failedTasksOf(int $now): array
+    {
+        return [['type', Toexecute::FAILED_EVENT], ['time', $now - self::WINDOW_SECONDS, '>='], ['selector', 'Import_', 'NOT BEGIN']];
     }
 
     /** Counts over the `Xrun:done:started:duration:allowed` rows (AA_Logentry_Xrun);

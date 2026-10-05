@@ -12,6 +12,7 @@
 namespace AA\Util;
 
 use Exception;
+use SensitiveParameter;
 
 /**
  * Class Crypt
@@ -31,7 +32,7 @@ final class Crypt
      * @return string
      * @throws Exception
      */
-    public static function encryptAesGcm($text, $pass, string $ad = ''): string
+    public static function encryptAesGcm(#[SensitiveParameter] $text, #[SensitiveParameter] $pass, string $ad = ''): string
     {
         $key   = self::createKey($pass);
         $nonce = mb_substr(Txt::bin2url(random_bytes(self::AES256GCM_NPUBBYTES)), 0, self::AES256GCM_NPUBBYTES, '8bit'); // nonce is already base64_url encoded
@@ -45,7 +46,7 @@ final class Crypt
      * @param string $ad the additional data of encryptAesGcm()
      * @throws Exception
      */
-    public static function decryptAesGcm($text, $pass, string $ad = ''): false|string
+    public static function decryptAesGcm($text, #[SensitiveParameter] $pass, string $ad = ''): false|string
     {
         if (strlen($text) < self::AES256GCM_NPUBBYTES) {
             return false;
@@ -61,7 +62,7 @@ final class Crypt
      * @param string $pass
      * @return string - $kay modified to exact self::AES256GCM_KEYBYTES bytes
      */
-    private static function createKey($pass): string
+    private static function createKey(#[SensitiveParameter] $pass): string
     {
         if (($passlen = strlen($pass)) > self::AES256GCM_KEYBYTES) {
             return pack("H*", hash('sha256', $pass));

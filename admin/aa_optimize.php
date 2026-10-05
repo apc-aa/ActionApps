@@ -26,7 +26,6 @@
 * @link      https://www.apc.org/ APC
 */
 
-use AA\Central\ManagerActionPolicy;
 use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 use AA\Optimize\AbstractOptimize;
@@ -35,9 +34,7 @@ use AA\Manager;
 require_once __DIR__ . "/../include/init_page.php";
 
 
-/** Manager action Item_DeleteTrash - Handler for DeleteTrash switch
- *  Delete all items in the trash bin
- */
+/** Manager action - runs the test of the selected Optimize classes; the subclasses run their other actions */
 class Optimize_Action_Test extends AbstractManageraction
 {
     public const ACTION_NAME = 'test';
@@ -189,15 +186,7 @@ $managed->setColumns2show(['name','types']);
 
 $manager = new Manager('optimize' . AA::$module_id, $managed);
 
-// Manager takes akce from GET too, and a repair changes this AA (e.g. creates the app store account):
-// a link on another site must not run it. Pinned to POST/GET, so a cookie named akce cannot pass the check.
-$err              = '';
-$akce_id          = (string) ($_POST['akce'] ?? $_GET['akce'] ?? '');
-$_REQUEST['akce'] = $akce_id;
-if (($akce_id !== '') && ($akce = $actions->getAction($akce_id)) && !ManagerActionPolicy::mayPerform($_SERVER, (bool) $akce->getButton('', '', ''))) {
-    unset($_GET['akce'], $_POST['akce'], $_REQUEST['akce']);
-    $err = _m('The action was not performed - start it from the Optimize page');
-}
+$err = '';
 $manager->performActions();
 $html = $manager->getDisplayPage();
 $apage->setForm();

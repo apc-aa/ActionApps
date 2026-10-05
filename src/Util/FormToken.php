@@ -10,9 +10,11 @@ namespace AA\Util;
  */
 final class FormToken
 {
+    /** '' without a session - the key would be just AA_ID, which is no secret; check() refuses '' */
     public static function get(string $purpose): string
     {
-        return hash_hmac('sha256', $purpose, session_id() . constant('AA_ID'));
+        $session = (string) session_id();
+        return ($session === '') ? '' : hash_hmac('sha256', $purpose, $session . constant('AA_ID'));
     }
 
     public static function check(string $purpose, string $token): bool

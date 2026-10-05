@@ -7,6 +7,7 @@ namespace AA\Expand;
 use AA\Http\Client;
 use AA\Http\ClientInterface;
 use AA\Http\TransportException;
+use AA\Optimize\CheckBlockedRequests;
 use AA\Util\Txt;
 
 /**
@@ -16,6 +17,8 @@ use AA\Util\Txt;
  * It lives next to the consumer rather than in AA\Http because this is the template's contract,
  * not the client's: redirects are followed and a body without a Content-Type goes as a form,
  * because PHP's http wrapper did both for the old AA_Http::request() and templates rely on it.
+ * Addresses of the server's own network are refused: a template may build the address from item
+ * content or from the request, and {include} is reachable through expressions a visitor sends.
  *
  * Pinned by tests/Unit/Legacy/StringexpandIncludeTest.php before the move.
  */
@@ -47,6 +50,7 @@ final class HttpInclude
         try {
             $answer = self::http($seconds)->request($method, $url, $body === '' ? null : $body, $headers);
         } catch (TransportException $e) {
+            CheckBlockedRequests::record($e, 'include', (string) ($_SERVER['REMOTE_ADDR'] ?? ''));
             // no answer at all: there is no status to report, which is what the old path did too
             return self::failed($err, '', $e->getMessage());
         }
@@ -68,10 +72,10 @@ final class HttpInclude
             return self::$http;   // a test handed us one; it decides its own limits
         }
         if ($seconds > 0 && $seconds !== self::SECONDS) {
-            return new Client(timeout: $seconds, redirects: 10);
+            return Client::publicOnly(timeout: $seconds, redirects: 10);
         }
 
-        return self::$http = new Client(timeout: self::SECONDS, redirects: 10);
+        return self::$http = Client::publicOnly(timeout: self::SECONDS, redirects: 10);
     }
 
     /**

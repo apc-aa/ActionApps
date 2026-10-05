@@ -19,12 +19,13 @@ final class ItemIdCheck
 
     public function __construct(private readonly AppSource $source, private readonly ImportTarget $target) {}
 
-    /** @param list<string> $slices source slice ids @return list<array{string, LintFinding}>
+    /** @param list<string> $slices source slice ids @param array<string, string> $filters source slice => the
+     *  ItemFilter text of the items it takes @return list<array{string, LintFinding}>
      *  @throws ExportRefused|SourceFailed */
-    public function check(array $slices, bool $allBins): array
+    public function check(array $slices, bool $allBins, array $filters = []): array
     {
         $findings = [];
-        $counts   = $this->source->itemCounts($slices, $allBins);
+        $counts   = $this->source->itemCounts($slices, $allBins, 0, $filters);
         foreach ($slices as $slice) {
             [$after, $found, $pages] = ['', 0, intdiv($counts[$slice] + AppSource::ID_PAGE - 1, AppSource::ID_PAGE) + 1];
             do {
@@ -32,7 +33,7 @@ final class ItemIdCheck
                 if (--$pages < 0) {
                     throw new SourceFailed(SourceFailed::FAILED, "The source AA lists more item ids of the slice $slice than it has items.");
                 }
-                $ids    = $this->source->itemIds($slice, $allBins, $after);
+                $ids    = $this->source->itemIds($slice, $allBins, $after, $filters);
                 $found += $this->target->existingItems($ids);
                 $after  = (string) end($ids);
             } while (count($ids) === AppSource::ID_PAGE);

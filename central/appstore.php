@@ -36,9 +36,9 @@ use AA\Central\Actionapps;
 use AA\Central\AppStore;
 use AA\Central\InstallRun;
 use AA\Central\Package\Importer;
-use AA\Central\RemoteAppSource;
 use AA\Central\RemoteSource;
 use AA\Central\SourceFailed;
+use AA\Later\BatchFailed;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 
@@ -124,7 +124,13 @@ function appstore_connect(string $source, string $uid): void
         appstore_form();
         return;
     }
-    appstore_apps(InstallRun::preview(InstallRun::INSTALL, false, $source, $uid, $sealed, time()));
+    try {
+        $run = InstallRun::preview(InstallRun::INSTALL, false, $source, $uid, $sealed, time());
+    } catch (BatchFailed $e) {
+        echo '<div class="aa-err">' . safe(_m('A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1', [$e->where])) . '</div>';
+        return;
+    }
+    appstore_apps($run);
 }
 
 /** the apps of the store of an open run of the user */
@@ -144,10 +150,8 @@ function appstore_list(string $run_id, string $uid): void
 function appstore_apps(InstallRun $run): void
 {
     try {
-        $remote = RemoteSource::forSource($run->source());
-        $token  = $remote->unseal($run->token());
-        $apps   = (($run->source() === InstallRun::STORE) ? AppStore::source($remote, $token) : new RemoteAppSource($remote, $token))->apps();
-    } catch (SourceFailed | RuntimeException $e) {
+        $apps = $run->remoteSource()->apps();
+    } catch (SourceFailed $e) {
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         appstore_form();
         return;

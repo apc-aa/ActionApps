@@ -235,11 +235,9 @@ if ($inc) {                   // this section must be after add_vars()
     if (!preg_match("/^([0-9a-z_])+(\.[0-9a-z]*)?$/i", $inc)) {
         echo _m("Bad inc parameter - included file must contain only alphanumeric characters") . safe(" $inc");
     } else {
-        $fp = @fopen(shtml_base() . $inc, 'rb');    //   if encapsulated
-        if (!$fp) {
+        // the host comes from the request's Host header, so the address goes through the guard
+        if (!ReadFileSafe(shtml_base() . $inc, 'inc')) {
             echo _m("No such file") . safe(" $inc");
-        } else {
-            fpassthru($fp);
         }
     }
     ExitPage();

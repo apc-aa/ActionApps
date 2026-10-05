@@ -9,6 +9,12 @@
 * AA CVS: $Id$
 */
 
+use AA\Cache\ImgCache;
+use AA\Http\Client;
+use AA\Http\ResponseTooLargeException;
+use AA\Http\TransportException;
+use AA\Optimize\CheckBlockedRequests;
+
 require_once __DIR__."/mimePart.php";
 
 class htmlMimeMail {
@@ -122,7 +128,27 @@ class htmlMimeMail {
      */
     function getFile($filename): string
     {
-        return AA_File_Wrapper::wrapper($filename)->contents();
+        return self::readFile((string) $filename);
+    }
+
+    /**
+     * The mail may carry item content, so a web address goes through the SSRF guard, and no stream
+     * but a local path (php://, file://, ...) is opened.
+     */
+    public static function readFile(string $filename): string
+    {
+        if (preg_match('~^https?://~i', $filename)) {
+            try {
+                $answer = Client::publicOnly(timeout: 60, idle: 30, redirects: 5, maxBytes: 25 * 1024 * 1024)->request('GET', $filename);
+            } catch (TransportException $e) {
+                CheckBlockedRequests::record($e, 'mail', '');
+                return '';
+            } catch (ResponseTooLargeException) {
+                return '';
+            }
+            return $answer->ok() ? $answer->body : '';
+        }
+        return str_contains($filename, '://') ? '' : AA_File_Wrapper::wrapper($filename)->contents();
     }
 
     /**
@@ -313,6 +339,9 @@ class htmlMimeMail {
         preg_match_all('~["\']([^"\']+/img\.php\?src=[^"\']+)["\']~Ui', $sanit_text, $images2);
 
         $images      = array_unique(array_merge($images[1], $images2[1]));
+        // {img} links the image cache root-relative on a page served by the host of IMG_UPLOAD_URL -
+        // a mail has no page to resolve that against. With the uploads at the domain root no prefix tells them apart.
+        $upload_path = (ImgCache::configured() && (ImgCache::srcBase() !== '')) ? '/' . ImgCache::srcBase() : null;
 
         $img_content = [];
         $img_name    = [];
@@ -323,26 +352,31 @@ class htmlMimeMail {
             if (stripos($img, 'http') === 0) {
                 $image_path = $img;
                 if ($pos = strpos($img,'/img.php?src=')) {
-                    $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+                    $img_name[$image_path] ??= (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
                 } else {
-                    $img_name[$image_path] = (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
+                    $img_name[$image_path] ??= (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
                 }
             } elseif (false !== ($pos = strpos($img,'/img.php?src='))) {
                 // this one is used in new versions of AA - Honza 14.8.2013
                 $image_path            = AA_INSTAL_URL . substr($img,$pos+1);
                 $pos                   = strpos($image_path,'/img.php?src='); // recompute for full url and use the same approach as above
-                $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+                $img_name[$image_path] ??= (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+            } elseif (($upload_path !== null) && str_starts_with($img, $upload_path)) {
+                $image_path            = rtrim(ImgCache::uploadUrl(), '/') . '/' . substr($img, strlen($upload_path));
+                $img_name[$image_path] ??= (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
             } else {
                 $image_path            = $images_dir . $img;
-                $img_name[$image_path] = (string)$i.basename( $image_path );
+                $img_name[$image_path] ??= (string)$i.basename( $image_path );
             }
 
             if (!isset($img_content[$image_path])) {
                 $img_content[$image_path] = $this->getFile(str_replace('&amp;', '&', $image_path));
             }
             if ($img_content[$image_path]) {
-                $html_images[] = $image_path;
-                $this->html = str_replace($img, $img_name[$image_path], $this->html);
+                $html_images[$image_path] = $image_path;   // one attachment for an image linked in two spellings
+                // the quoted value only - the same path may stand inside another url, as the src of img.php
+                $name       = $img_name[$image_path];
+                $this->html = str_replace(["\"$img\"", "'$img'"], ["\"$name\"", "'$name'"], $this->html);
             }
         }
 

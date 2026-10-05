@@ -15,6 +15,7 @@ interface ClientInterface
      * @param  ?string               $body    already encoded - the caller knows whether it is JSON or a form
      * @param  array<string, string> $headers
      * @throws TransportException    when there was no answer at all (timeout, DNS, refused)
+     * @throws ResponseTooLargeException when the client limits the size and the body is over it
      */
     public function request(string $method, string $url, ?string $body = null, array $headers = []): Response;
 }

@@ -18,6 +18,12 @@ class Central_Tab extends AbstractManageraction
         parent::__construct($id);
     }
 
+    /** only changes the view - a link */
+    public function allowGet(): bool
+    {
+        return true;
+    }
+
     /** @inheritDoc */
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
