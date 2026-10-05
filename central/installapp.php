@@ -209,7 +209,22 @@ $apage->addRequire('
     .aa-installapp-owner details[open] label { display: inline-block; margin: 0.3em 1em 0 0; }
     .aa-installapp [hidden] { display: none; }
     .aa-installapp td.tabtxt { width: 11em; }
-    .aa-installapp-progress progress { width: 100%; max-width: 30em; }
+    .aa-installapp-progress progress { width: 100%; max-width: 30em; accent-color: var(--clr-dark, #1f1f1f); }
+    .aa-installapp-progress[data-phase="done"] progress { accent-color: var(--clr-green, #1eb585); }
+    .aa-installapp-state { margin: 0.6em 0 0.4em; }
+    .aa-installapp-progress [data-role="state"]::before { content: ""; display: inline-block; box-sizing: border-box; width: 12px; height: 12px; margin-right: 8px; vertical-align: -1px; border-radius: 50%; background: var(--clr-basic-darker, #A8977A); }
+    .aa-installapp-progress:is([data-phase="queued"], [data-phase="running"], [data-phase="busy"]) [data-role="state"]::before, .aa-installapp button.aa-busy::before { background: none; border: 2px solid var(--clr-border, #dcd5c2); border-top-color: var(--clr-dark, #1f1f1f); animation: aa-spin .8s linear infinite; }
+    .aa-installapp-progress[data-phase="queued"] [data-role="state"]::before { animation-duration: 1.6s; }
+    .aa-installapp-progress:is([data-phase="stuck"], [data-phase="error"], [data-phase="lost"]) [data-role="state"]::before { background: none; border: 2px solid var(--clr-dark, #1f1f1f); }
+    .aa-installapp-progress[data-phase="done"] [data-role="state"]::before { background: var(--clr-green, #1eb585); }
+    .aa-installapp button.aa-busy::before { content: ""; display: inline-block; box-sizing: border-box; width: 12px; height: 12px; margin-right: 8px; vertical-align: -1px; border-radius: 50%; border-color: rgb(243 243 241 / 40%); border-top-color: var(--clr-body, #f3f3f1); }
+    @keyframes aa-spin { to { transform: rotate(1turn); } }
+    @media (prefers-reduced-motion: reduce) {
+      .aa-installapp-progress [data-role="state"]::before, .aa-installapp button.aa-busy::before { animation: none; }
+    }
+    .aa-installapp button:disabled { pointer-events: none; }
+    .aa-installapp button:disabled:not(.aa-busy) { opacity: .55; }
+    .aa-installapp-written { margin: 1em 0; }
     .aa-installapp-notes { padding-left: 1.2em; max-width: 60em; }
     .aa-installapp-notes li { margin: 0.6em 0; overflow-wrap: anywhere; }
     .aa-installapp-notes li div { margin-top: 0.2em; }
@@ -230,6 +245,7 @@ $apage->addRequire('
     .aa-installapp-plan .aa-c-on { width: 3.4em; }
     .aa-installapp-plan .aa-c-name { width: 18.5em; }
     .aa-installapp-plan .aa-c-type { width: 4em; }
+    .aa-installapp-plan .aa-c-items { width: 11em; }
     .aa-installapp-plan td { border-bottom: 0; }
     .aa-installapp-plan .aa-plan-a > td { padding-top: 8px; }
     .aa-installapp-plan tbody > tr:last-child > td { padding-bottom: 8px; border-bottom: 1px solid var(--clr-border, #ddd); }
@@ -237,13 +253,16 @@ $apage->addRequire('
     .aa-plan-into select, .aa-installapp-links select { width: 100%; max-width: 36em; }
     .aa-installapp-links { max-width: 70em; }
     .aa-installapp-links small { display: block; margin-top: 2px; overflow-wrap: anywhere; }
-    .aa-installapp-plan .aa-plan-flabel { padding-top: 11px; text-align: right; font-size: var(--sz-s); }
-    .aa-plan-scopebox { display: grid; grid-template-columns: minmax(0, 1fr) 10.8em; grid-template-areas: "field count" "note note"; column-gap: 8px; max-width: 52em; }
+    .aa-plan-scopebox { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "field" "note"; max-width: 52em; }
+    .aa-installapp-filters { max-width: 62em; margin: 0.2em 0 1em; }
+    .aa-installapp-filters-body { padding-top: 6px; }
+    .aa-filter-slice { margin: 0 0 12px; }
+    .aa-filter-slice > label { display: block; margin-bottom: 2px; font-weight: 600; }
     .aa-cond-in { grid-area: field; box-sizing: border-box; width: 100%; min-height: 2.15em; padding: 4px 6px; font-family: var(--aa-mono); line-height: 1.4; resize: none; field-sizing: content; overflow-wrap: anywhere; }
     .aa-cond-in::placeholder { font-family: inherit; color: var(--aa-muted); }
     .aa-cond-in:focus { outline: 0; border-color: var(--clr-border-hover, #a59850); box-shadow: var(--aa-ring); }
     .aa-cond-in[aria-invalid="true"] { border-color: var(--clr-dark, #1f1f1f); background: var(--clr-surface-selected, #f3e6c3); }
-    .aa-count { grid-area: count; padding-top: 7px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .aa-count { display: inline-block; padding-top: 5px; font-variant-numeric: tabular-nums; }
     .aa-count strong { font-weight: 600; }
     .aa-count-of { color: var(--aa-muted); }
     .aa-count-bar { display: block; height: 3px; margin-top: 4px; background: linear-gradient(to right, var(--clr-dark, #1f1f1f) max(2px, calc(var(--pct) * 1%)), var(--clr-border, #ddd) 0); }
@@ -271,20 +290,22 @@ $apage->addRequire('
     @container aa-plan (max-width: 46em) {
       .aa-installapp-plan, .aa-installapp-plan tbody, .aa-installapp-plan tr, .aa-installapp-plan td { display: block; }
       .aa-installapp-plan { box-sizing: border-box; padding-right: 20px; }
-      .aa-installapp-plan colgroup, .aa-installapp-plan thead, .aa-plan-b > td:first-child { display: none; }
+      .aa-installapp-plan colgroup, .aa-installapp-plan thead { display: none; }
       .aa-installapp-plan tbody > tr > td, .aa-installapp-plan tbody > tr:last-child > td { padding: 0; border: 0; }
       .aa-installapp-plan tbody { padding: 12px 0; border-bottom: 1px solid var(--clr-border, #ddd); }
-      .aa-installapp-plan .aa-plan-a { display: grid; grid-template-columns: 2.6em 1fr auto; grid-template-areas: "on name type" "into into into"; }
+      .aa-installapp-plan .aa-plan-a { display: grid; grid-template-columns: 2.6em 1fr auto; grid-template-areas: "on name type" "on name items" "into into into"; }
       .aa-plan-on { grid-area: on; }
       .aa-plan-name { grid-area: name; }
-      .aa-installapp-plan .aa-plan-type { grid-area: type; padding: 4px 2px 0 8px; font-size: var(--sz-xs); color: var(--aa-muted); }
+      .aa-installapp-plan .aa-plan-a > .aa-plan-type { grid-area: type; padding: 4px 2px 0 8px; font-size: var(--sz-xs); color: var(--aa-muted); text-align: right; }
       .aa-installapp-plan .aa-plan-into { grid-area: into; margin-top: 8px; }
-      .aa-plan-into .aa-plan-lbl, .aa-installapp-plan .aa-plan-flabel { position: static; width: auto; height: auto; margin: 0 0 2px; padding: 0; clip-path: none; text-align: left; white-space: normal; font-size: var(--sz-s); }
-      .aa-installapp-plan .aa-plan-b { margin-top: 8px; }
-      .aa-plan-scopebox { grid-template-columns: minmax(0, 1fr); grid-template-areas: "field" "note" "count"; }
-      .aa-count { padding-top: 4px; text-align: left; }
+      .aa-plan-into .aa-plan-lbl { position: static; width: auto; height: auto; margin: 0 0 2px; padding: 0; clip-path: none; text-align: left; white-space: normal; font-size: var(--sz-s); }
+      .aa-installapp-plan .aa-plan-a > .aa-plan-items { grid-area: items; padding: 0 2px 0 8px; font-size: var(--sz-xs); }
+      .aa-installapp-plan .aa-plan-items .aa-count { padding-top: 0; }
     }
     @media (max-width: 600px) {
+      .aa-installapp-settings, .aa-installapp-settings tbody { display: block; }
+      .aa-installapp-settings tr { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .aa-installapp-settings :is(td, th):first-child { grid-column: 1 / -1; max-width: none; }
       .aa-filterhelp-body { padding: 2px 8px 12px; }
       .aa-filterhelp-ops td:first-child { white-space: normal; }
     }
@@ -795,9 +816,8 @@ function installapp_choices_form(array $prepared, ImportPlan $plan, string $mode
     $planned  = array_column($preview['modules'], null, 'old');
     $slices   = array_values(array_map(static fn(Module $m): string => $m->id, array_filter($prepared['all']->modules, static fn(Module $m): bool => $m->type === Module::SLICE)));
     $into     = $slices ? installapp_slice_choices() : [];
-    $types    = [Module::SITE => _m('Site'), Module::SLICE => _m('Slice'), Module::ALERTS => _m('Alerts')];
 
-    echo '<h2>' . safe($preview['name']) . ' - ' . safe($transfer ? _m('transfer with the items') : _m('install, no items')) . '</h2>';
+    echo installapp_title($preview['name'], $transfer);
     // UTF-8 whatever the charset of the admin: the choices are text of the app, which is UTF-8
     echo '<form method="post" action="' . safe(installapp_url()) . '" accept-charset="UTF-8" class="aa-installapp-choices" data-role="installapp-choices">' . $again;
     $names    = [];
@@ -807,8 +827,9 @@ function installapp_choices_form(array $prepared, ImportPlan $plan, string $mode
     $taken    = $transfer ? array_filter($prepared['all']->modules, static fn(Module $m): bool => ($m->type === Module::SLICE) && isset($planned[$m->id])) : [];
     $notes    = $transfer ? installapp_filter_notes($prepared['findings'], $taken, $names, $choices->filters) : [];
     echo '<h3>' . _m('What to install') . '</h3><div class="aa-plan"><table class="aa-installapp-findings aa-installapp-plan">'
-        . '<colgroup><col class="aa-c-on"><col class="aa-c-name"><col class="aa-c-type"><col></colgroup>'
-        . '<thead><tr><th><span class="aa-sr">' . _m('Install') . '</span></th><th>' . _m('Name') . '</th><th>' . _m('Type') . '</th><th>' . _m('Into') . '</th></tr></thead>';
+        . '<colgroup><col class="aa-c-on"><col class="aa-c-name"><col class="aa-c-type"><col>' . ($transfer ? '<col class="aa-c-items">' : '') . '</colgroup>'
+        . '<thead><tr><th><span class="aa-sr">' . _m('Install') . '</span></th><th>' . _m('Name') . '</th><th>' . _m('Type') . '</th><th>' . _m('Into') . '</th>'
+        . ($transfer ? '<th class="aa-num">' . _m('Items') . '</th>' : '') . '</tr></thead>';
     foreach ($prepared['all']->modules as $k => $m) {
         $old     = strtolower($m->id);
         $skipped = !isset($planned[$m->id]);
@@ -825,20 +846,20 @@ function installapp_choices_form(array $prepared, ImportPlan $plan, string $mode
             . '<td class="aa-plan-name"><label class="aa-plan-lbl" for="installapp-name-' . safe($old) . '">' . _m('Name') . '</label>'
             . '<input type="text" id="installapp-name-' . safe($old) . '" name="name[' . safe($old) . ']" value="' . safe($name) . '" maxlength="100" size="40"' . ($skipped ? ' readonly' : '') . '>'
             . '<small><code>' . safe($old) . '</code></small></td>'
-            . '<td class="aa-plan-type">' . safe($types[$m->type] ?? $m->type) . '</td><td class="aa-plan-into">' . $cell . '</td></tr>'
-            . (isset($taken[$k]) ? installapp_filter_row($old, $choices->filters[$old] ?? '', $prepared['counts'][$m->id] ?? null, $prepared['matching'][$old] ?? null, $notes[$old] ?? null) : '')
-            . '</tbody>';
+            . '<td class="aa-plan-type">' . safe(installapp_type_name($m->type)) . '</td><td class="aa-plan-into">' . $cell . '</td>'
+            . ($transfer ? '<td class="aa-plan-items aa-num">' . (isset($taken[$k]) ? installapp_item_count($old, $choices->filters[$old] ?? '', $prepared['counts'][$m->id] ?? null, $prepared['matching'][$old] ?? null, ($notes[$old]['level'] ?? '') === LintFinding::ERROR) : '') . '</td>' : '')
+            . '</tr></tbody>';
     }
     echo '</table></div><p class="tabhlp">' . _m('A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice.') . '</p>';
     if ($taken) {
-        installapp_filter_help($taken, $names);
+        installapp_filters($taken, $names, $choices->filters, $notes);
     }
     installapp_link_rows($plan->outside->missing($prepared['findings']), $choices->links, $prepared['suggested'], $prepared['package']);
     if (!$transfer && array_diff_key($plan->map->modules(), $plan->existing)) {
         installapp_owner_rows($plan->owner, $choices->newOwner, (bool) $plan->existing);
     }
     installapp_setting_rows($plan, $choices, $transfer, $prepared['all']);
-    echo '<p><button class="btn" type="submit">' . _m('Check the changes') . '</button> <span class="tabhlp">' . _m('After a change, check it before installing.') . '</span></p></form>';
+    echo '<p><button class="btn btn-secondary" type="submit">' . _m('Check the changes') . '</button> <span class="tabhlp">' . _m('After a change, check it before installing.') . '</span></p></form>';
     // a condition is one line that wraps: Enter checks the changes; the field grows where field-sizing does not
     echo '<script>document.querySelectorAll(\'.aa-cond-in\').forEach(t => { const fit = () => { t.style.height = \'auto\'; t.style.height = (t.scrollHeight + t.offsetHeight - t.clientHeight) + \'px\'; };'
         . ' if (!CSS.supports(\'field-sizing\', \'content\')) { t.addEventListener(\'input\', fit); fit(); }'
@@ -877,15 +898,11 @@ function installapp_link_rows(array $missing, array $links, array $suggested, ?P
     echo '</tbody></table>';
 }
 
-/** The second row of a transferred slice: its condition as typed, its items - matching of all when the
- *  source read the condition - and the note of a finding of the condition.
- *  @param array{level: string, html: string}|null $note */
-function installapp_filter_row(string $slice, string $filter, ?int $count, ?int $matching, ?array $note): string
+/** The items of a transferred slice the plan shows: matching of all when the source read its condition */
+function installapp_item_count(string $slice, string $filter, ?int $count, ?int $matching, bool $invalid): string
 {
-    $id      = 'installapp-filter-' . safe($slice);
-    $invalid = ($note['level'] ?? '') === LintFinding::ERROR;
-    $number  = static fn(int $n): string => number_format($n, 0, '.', "\u{00A0}");
-    $items   = match (true) {
+    $number = static fn(int $n): string => number_format($n, 0, '.', "\u{00A0}");
+    $items  = match (true) {
         ($count === null) && ($matching !== null) => '<strong>' . $number($matching) . '</strong> <span class="aa-count-of">' . safe(_m('of %1 items', ['?'])) . '</span>',
         $count === null    => '? ' . _m('items'),
         $invalid           => '<strong aria-hidden="true">-</strong> <span class="aa-count-of">' . safe(_m('of %1 items', [$number($count)])) . '</span>',
@@ -894,11 +911,38 @@ function installapp_filter_row(string $slice, string $filter, ?int $count, ?int 
             . '<span class="aa-count-bar" style="--pct:' . ($count ? round(100 * $matching / $count, 1) : 100) . '" aria-hidden="true"></span>',
         default            => '<strong>' . $number($count) . '</strong> <span class="aa-count-of">' . _m('items') . '</span>',
     };
+    return '<span class="aa-count" id="installapp-filter-' . safe($slice) . '-count">' . $items . '</span>';
+}
+
+/** The conditions of the transferred slices, folded: most transfers take every item. Open when a condition
+ *  is typed or a finding is about one - a folded block must not hide what holds or what is wrong.
+ *  @param array<int, Module> $taken @param array<string, string> $names @param array<string, string> $filters
+ *  @param array<string, array{level: string, html: string}> $notes installapp_filter_notes() */
+function installapp_filters(array $taken, array $names, array $filters, array $notes): void
+{
+    $open = $notes || array_filter(array_map(static fn(Module $m): string => $filters[strtolower($m->id)] ?? '', $taken), static fn(string $f): bool => $f !== '');
+    echo '<details class="aa-installapp-filters"' . ($open ? ' open' : '') . '><summary>' . _m('Transfer only some items') . '</summary><div class="aa-installapp-filters-body">'
+        . '<p class="tabhlp aa-filterhint">' . _m('Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above.', ['<code>d-&lt;field id&gt;-&lt;operator&gt;-&lt;value&gt;</code>', '<code>d-headline........-=-energy</code>']) . '</p>';
+    foreach ($taken as $m) {
+        $old = strtolower($m->id);
+        echo installapp_filter_field($old, $names[$old], $filters[$old] ?? '', $notes[$old] ?? null);
+    }
+    installapp_filter_help($taken, $names);
+    echo '</div></details>';
+}
+
+/** The condition of a transferred slice as typed, and the note of a finding of the condition; its items are
+ *  counted in the plan (installapp_item_count())
+ *  @param array{level: string, html: string}|null $note */
+function installapp_filter_field(string $slice, string $name, string $filter, ?array $note): string
+{
+    $id      = 'installapp-filter-' . safe($slice);
+    $invalid = ($note['level'] ?? '') === LintFinding::ERROR;
     $html    = $note ? '<div class="aa-cond-note" id="' . $id . '-note"><span class="aa-lv' . ($invalid ? ' aa-lv-e' : '') . '">' . safe($note['level']) . '</span><div>' . $note['html'] . '</div></div>' : '';
-    return '<tr class="aa-plan-b"><td></td><td class="aa-plan-flabel"><label for="' . $id . '">' . _m('Only items matching') . '</label></td><td colspan="2"><div class="aa-plan-scopebox">'
+    return '<div class="aa-filter-slice"><label for="' . $id . '">' . safe($name) . '</label><div class="aa-plan-scopebox">'
         . '<textarea class="aa-cond-in" id="' . $id . '" name="filter[' . safe($slice) . ']" rows="1" placeholder="' . safe(_m('all items')) . '"'
         . ' spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="' . ($html ? "$id-note " : '') . "$id-count\"" . ($invalid ? ' aria-invalid="true"' : '') . '>' . safe($filter) . '</textarea>'
-        . '<span class="aa-count" id="' . $id . '-count">' . $items . '</span>' . $html . '</div></td></tr>';
+        . $html . '</div></div>';
 }
 
 /** The findings of the conditions as a note under the field they are about: why a condition cannot be
@@ -1013,7 +1057,7 @@ function installapp_slice_fields(Module $m, array $names): array
     return $fields;
 }
 
-/** How to write a condition: a short hint, then on demand the parts, examples from the fields of the app,
+/** How to write a condition, on demand: the parts, examples from the fields of the app,
  *  the operators, AND, the doubled dash and the field ids of every transferred slice.
  *  @param array<int, Module> $taken @param array<string, string> $names */
 function installapp_filter_help(array $taken, array $names): void
@@ -1035,8 +1079,6 @@ function installapp_filter_help(array $taken, array $names): void
         ['< > <= >=', _m('is smaller or greater (numbers)'), '100'], ['BEGIN', _m('begins with the text'), 'Pra'], ['ISNULL', _m('is not set (write any value)'), '1'],
         ['NOTNULL', _m('is set (write any value)'), '1'], ['BETWEEN', _m('lies between two numbers'), '1,5'], ['REGEXP', _m('matches the regular expression'), '^CZ[0-9]+'],
         ['d:< d:>', _m('is before or after a date (any form PHP strtotime reads)'), "$year--01--01"], ['e:< e:>', _m('is before or after a date written dd.mm.yyyy'), "1.1.$year"]];
-    echo '<p class="tabhlp aa-filterhint"><strong>' . _m('Only items matching') . ':</strong> '
-        . _m('empty takes every item. To take only some, write a condition, %1, for example %2. Check the changes then shows beside the field how many items it takes.', ['<code>d-&lt;field id&gt;-&lt;operator&gt;-&lt;value&gt;</code>', '<code>d-headline........-=-energy</code>']) . '</p>';
     $html = '<details class="aa-filterhelp"><summary>' . _m('How to write a condition, with field ids') . '</summary><div class="aa-filterhelp-body">'
         . '<h4>' . _m('Parts') . '</h4><dl class="aa-filterhelp-parts">'
         . '<dt>' . _m('field id') . '</dt><dd>' . safe(_m('16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end.')) . '</dd>'
@@ -1146,8 +1188,9 @@ function installapp_setting_rows(ImportPlan $plan, ImportChoices $choices, bool 
 /** @param list<string> $modules */
 function installapp_write_form(InstallRun $run, string $site, array $modules, ImportPlan $plan, string $uid): void
 {
-    // one write per preview: the second click of a double click would only fail
-    echo '<form method="post" action="' . safe(installapp_url()) . '" onsubmit="this.querySelector(\'button[type=submit]\').disabled = true">' . installapp_hidden('write', $site, $modules, $run->getId())
+    // one write per preview: the second click of a double click would only fail; the write reads the source
+    // again and may take a while
+    echo '<form method="post" action="' . safe(installapp_url()) . '" onsubmit="const b = this.querySelector(\'button[type=submit]\'); b.disabled = true; b.classList.add(\'aa-busy\'); b.textContent = b.dataset.busy; this.setAttribute(\'aria-busy\', \'true\')">' . installapp_hidden('write', $site, $modules, $run->getId())
         . '<input type="hidden" name="choices_sum" value="' . safe($run->choicesSum()) . '">';
     foreach ($run->targets() as $old => $new) {         // compared with the run: a form of an older preview is refused
         echo '<input type="hidden" name="into[' . safe($old) . ']" value="' . safe($new) . '">';
@@ -1159,7 +1202,7 @@ function installapp_write_form(InstallRun $run, string $site, array $modules, Im
     if ($run->mode() === InstallRun::TRANSFER) {
         echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs. The items then go in batches in the task queue of this AA - the progress page only shows them, it may be closed.') . '</div>';
     }
-    echo '<p><button class="btn-l" type="submit" data-role="installapp-write">' . (($run->mode() === InstallRun::TRANSFER) ? _m('Write the definitions and transfer the items') : _m('Install')) . '</button></p></form>';
+    echo '<p><button class="btn-l btn-primary" type="submit" data-role="installapp-write" data-busy="' . safe(_m('Writing the definitions…')) . '">' . (($run->mode() === InstallRun::TRANSFER) ? _m('Write the definitions and transfer the items') : _m('Install')) . '</button></p></form>';
 }
 
 /** @param list<string> $modules @param array<string, string> $into the targets the write form sends
@@ -1211,23 +1254,39 @@ function installapp_write(string $run_id, string $site, array $modules, array $i
         echo '<div class="aa-err">' . safe(installapp_error(_m('Writing the app'), $e)) . '</div>';
         return;
     }
-    installapp_report($report, $prepared['package']);
-    if ($run->mode() === InstallRun::TRANSFER) {
-        installapp_progress($run_id, $uid);
+    if ($run->mode() !== InstallRun::TRANSFER) {
+        installapp_report($report, $prepared['package']);
+        return;
     }
+    // the items are what goes on now - the definitions, written already, fold under them
+    echo installapp_title($prepared['plan']->preview()['name'], true);
+    installapp_progress($run_id, $uid, true);
+    installapp_report($report, $prepared['package'], true);
 }
 
-function installapp_report(ImportReport $report, ?Package $package): void
+/** @param bool $folded the modules and findings in a closed block - the transfer goes on above it; what
+ *                      failed and the settings to fill in stay in sight */
+function installapp_report(ImportReport $report, ?Package $package, bool $folded = false): void
 {
-    echo '<div class="aa-ok">' . _m('The definitions are written.') . '</div><table class="aa-installapp-findings"><tr><th>' . _m('Module') . '</th><th>' . _m('Type') . '</th><th>' . _m('Id') . '</th></tr>';
+    $table = '<table class="aa-installapp-findings"><tr><th>' . _m('Module') . '</th><th>' . _m('Type') . '</th><th>' . _m('Id') . '</th></tr>';
     foreach ($report->modules as $m) {
-        echo '<tr><td>' . safe($m['name'] . ($m['existing'] ? ' (' . _m('existing slice') . ')' : '')) . '</td><td>' . safe($m['type']) . '</td><td><code>' . safe($m['new']) . '</code></td></tr>';
+        $table .= '<tr><td>' . safe($m['name'] . ($m['existing'] ? ' (' . _m('existing slice') . ')' : '')) . '</td><td>' . safe(installapp_type_name($m['type'])) . '</td><td><code>' . safe($m['new']) . '</code></td></tr>';
     }
-    echo '</table>';
-    installapp_settings($report->settings);
+    $table .= '</table>';
+    $failures = '';
     foreach ($report->failures() as [$step, $errors]) {
-        echo '<div class="aa-err">' . safe($step . ': ' . implode('; ', $errors)) . '</div>';
+        $failures .= '<div class="aa-err">' . safe($step . ': ' . implode('; ', $errors)) . '</div>';
     }
+    if ($folded) {
+        echo $failures . '<details class="aa-installapp-written"><summary>' . _m('The definitions are written; modules: %1', [count($report->modules)]) . '</summary>' . $table;
+        installapp_findings($report->findings, $package);
+        echo '</details>';
+        installapp_settings($report->settings);
+        return;
+    }
+    echo '<div class="aa-ok">' . _m('The definitions are written.') . '</div>' . $table;
+    installapp_settings($report->settings);
+    echo $failures;
     installapp_findings($report->findings, $package);
 }
 
@@ -1293,6 +1352,17 @@ function installapp_findings(array $findings, ?Package $package = null, bool $co
     }
 }
 
+function installapp_type_name(string $type): string
+{
+    return [Module::SITE => _m('Site'), Module::SLICE => _m('Slice'), Module::ALERTS => _m('Alerts')][$type] ?? $type;
+}
+
+/** the heading of the preview and of the run it starts: which app, and how */
+function installapp_title(string $name, bool $transfer): string
+{
+    return '<h2>' . safe($name . ': ' . ($transfer ? _m('transfer with the items') : _m('install, no items'))) . '</h2>';
+}
+
 function installapp_state(string $state): string
 {
     return [InstallRun::PREVIEW => _m('Preview'), InstallRun::ITEMS => _m('Transferring the items'), InstallRun::ERROR => _m('Stopped by an error'),
@@ -1300,8 +1370,10 @@ function installapp_state(string $state): string
 }
 
 /** the progress of a transfer - for the user who started it and for any superadmin, who may end it; its
- *  report when it is finished */
-function installapp_progress(string $run_id, string $uid): void
+ *  report when it is finished
+ *  @param bool $stay the page keeps what is under the progress when the transfer finishes - the report of
+ *                    the written definitions; it offers the final check instead of opening it */
+function installapp_progress(string $run_id, string $uid, bool $stay = false): void
 {
     $run = InstallRun::get($run_id);
     if (($run === null) || !$run->mayControl($uid)) {
@@ -1338,6 +1410,7 @@ function installapp_progress(string $run_id, string $uid): void
         'writtenOf'  => _m('Written %1 of %2 items (%3 %)', ['{x}', '{y}', '{p}']),
         'written'    => _m('Written %1 items', ['{x}']),
         'moved'      => _m('Last progress: %1', ['{t}']),
+        'checked'    => _m('checked at %1', ['{t}']),
         'lost'       => _m('This page lost the connection to the server - the transfer goes on without it. Asking again…'),
         'busy'       => _m('A batch may still be working - press Continue again in a few minutes.'),
         'loginFirst' => _m('Log in to the source AA again, then press Continue.'),
@@ -1345,14 +1418,18 @@ function installapp_progress(string $run_id, string $uid): void
         'login'      => _m('The session has expired - log in again and reload this page.'),
         'more'       => _m('and %1 more', ['{n}']),
     ];
-    echo '<div class="aa-info">' . ($install ? _m('The app is installed and works - only the finish of its run waits for the task queue of this AA.')
-        : _m('Do not edit the source while the transfer runs. The batches go in the task queue of this AA - this page only shows them and may be closed.')) . '</div>';
+    if ($install) {
+        echo '<div class="aa-info">' . _m('The app is installed and works - only the finish of its run waits for the task queue of this AA.') . '</div>';
+    }
     echo '<div id="installapp-progress" class="aa-installapp-progress" data-url="' . safe(installapp_url()) . '" data-report="' . safe(installapp_url(['run' => $run_id])) . '" data-token="' . safe(FormToken::get(INSTALLAPP_TOKEN)) . '"'
         . ' data-run="' . safe($run_id) . '" data-tries="' . BatchRun::MAX_FAILURES . '" data-places="' . INSTALLAPP_PLACES . '" data-texts="' . safe(installapp_js_data($texts)) . '"'
-        . ' data-initial="' . safe(installapp_js_data((new TransferText($names))->page(TransferProgress::of($run, $uid)))) . '">';
-    echo '<p><strong data-role="total"></strong><br><progress data-role="bar" hidden></progress></p>'
-        . '<p><strong data-role="state" aria-live="polite">' . safe(installapp_state($run->state())) . '</strong> <span class="tabhlp" data-role="moved"></span></p>'
-        . '<div class="aa-err" data-role="error" hidden></div>';
+        . ' data-initial="' . safe(installapp_js_data((new TransferText($names))->page(TransferProgress::of($run, $uid)))) . '"' . ($stay ? ' data-stay="1"' : '') . '>';
+    // the state first: does it run; then how far
+    echo '<p class="aa-installapp-state"><strong data-role="state" aria-live="polite">' . safe(installapp_state($run->state())) . '</strong> <span class="tabhlp" data-role="moved"></span></p>'
+        . '<p><strong id="installapp-total" data-role="total"></strong><br><progress data-role="bar" aria-labelledby="installapp-total" hidden></progress></p>'
+        . ($install ? '' : '<p class="tabhlp" data-role="hint">' . _m('The transfer runs in the task queue of this AA; you may close this page. Do not edit the source until it finishes.') . '</p>')
+        . '<div class="aa-err" data-role="error" role="alert" hidden></div>'
+        . '<p data-role="report" hidden><a class="btn btn-l" href="' . safe(installapp_url(['run' => $run_id])) . '">' . _m('Show the final check') . '</a></p>';
     if ($run->source() !== InstallRun::LOCAL) {        // the source refused its token, or it expired: Continue logs in again
         echo '<fieldset data-role="login" hidden><legend>' . _m('Log in to the source AA again') . '</legend><table>' . installapp_login_rows() . '</table></fieldset>';
     }
@@ -1443,6 +1520,7 @@ function installapp_script(): void
     let timer = 0;
     let acts = 0;               // Continue and End sent - an older answer of the poll must not undo theirs
     let told = '';              // what the last Continue or End answered - till the run moves on
+    let checked = 0;            // the last answer of the server - the page is alive, even when the run waits
 
     const written = () => Object.values(s.written || {}).reduce((sum, n) => sum + n, 0);
     const when = unix => {
@@ -1450,6 +1528,8 @@ function installapp_script(): void
         return (d.toDateString() === new Date().toDateString()) ? d.toLocaleTimeString() : d.toLocaleString();
     };
     const open = () => ['items', 'error'].includes(s.state);
+    // the mark before the state turns only while something is really on its way
+    const phase = () => !open() ? s.state : busy ? 'busy' : lost ? 'lost' : (s.state !== 'items') ? s.state : s.running ? 'running' : s.waiting ? 'waiting' : s.stuck ? 'stuck' : 'queued';
     const stateText = () => {
         if (s.state !== 'items') return t.states[s.state] || s.state;
         if (s.running) return t.running;
@@ -1462,14 +1542,18 @@ function installapp_script(): void
             : fill(t.written, {x: x.toLocaleString()});
         el('bar').hidden = !s.total;
         if (s.total) Object.assign(el('bar'), {max: s.total, value: x});
-        el('state').textContent = stateText();
-        el('moved').textContent = s.moved ? fill(t.moved, {t: when(s.moved)}) : '';
-        el('continue').hidden = busy || !s.mayContinue;
-        el('end').hidden = busy || !s.mayEnd;
+        if (el('state').textContent !== stateText()) el('state').textContent = stateText();      // aria-live: read when it changes
+        el('moved').textContent = [s.moved ? fill(t.moved, {t: when(s.moved)}) : '', checked ? fill(t.checked, {t: when(checked)}) : ''].filter(Boolean).join(', ');
+        box.dataset.phase = phase();
+        if (el('hint')) el('hint').hidden = (s.state !== 'items');
+        // disabled, not hidden, while Continue or End is on its way - the buttons do not jump away
+        el('continue').hidden = !s.mayContinue;
+        el('end').hidden = !s.mayEnd;
+        el('continue').disabled = el('end').disabled = busy;
         if (login) login.hidden = !(s.login && s.mayContinue);
     };
     const say = text => {
-        el('error').textContent = text;
+        if (el('error').textContent !== text) el('error').textContent = text;      // an alert is read again on every change
         el('error').hidden = !text;
     };
     const note = n => {
@@ -1495,7 +1579,10 @@ function installapp_script(): void
         say([s.error, told].filter(Boolean).join(' - '));
         el('notes').replaceChildren(...[...s.found, ...s.notes].sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)).map(note));
         paint();
-        if (s.state === 'done') location.href = box.dataset.report;
+        if (s.state === 'done') {
+            if (box.dataset.stay) el('report').hidden = false;
+            else location.href = box.dataset.report;
+        }
     };
     const post = async (action, more = {}) => {
         const body = new URLSearchParams({action, run: box.dataset.run, token: box.dataset.token, ...more});
@@ -1521,11 +1608,13 @@ function installapp_script(): void
             const sent = acts;
             try {
                 const next = await post('state');
-                if (sent === acts) show(next);
                 lost = 0;
+                checked = Date.now() / 1000;
+                if (sent === acts) show(next);
             } catch (e) {
                 lost++;
                 if (sent === acts) say(e.answered ? e.message : t.lost);
+                paint();
             }
             ask();
         }, wait);
@@ -1536,6 +1625,8 @@ function installapp_script(): void
         paint();
         try {
             const next = await post(action, more);
+            lost = 0;
+            checked = Date.now() / 1000;
             show(next, {busy: t.busy, login: t.loginFirst}[next.status] || '');
         } catch (e) {
             told = e.message;
