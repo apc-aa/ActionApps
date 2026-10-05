@@ -639,6 +639,23 @@ final class RunCheckTest extends TestCase
         self::assertSame([], TestRun::$evaluated, 'a dry run');
     }
 
+    /** a step that lost the run to another one runs no expression of its stream: that step does it */
+    public function test_afterStream_notOnceTheRunIsAnotherStepsOwn(): void
+    {
+        $source            = self::source(streams: 1, jobs: 1, items: 1);
+        TestRun::$evaluate = static function (): void {};
+        $run               = self::startRun($source, [], ['after_stream' => '{x}']);
+        $id                = $run->getId();
+        $source->jobs['s1'][0]['onPrepare'] = static function () use ($id): void {
+            self::storedSet($id, 'lease_tok', 'retried');
+        };
+
+        self::runOne();
+
+        self::assertSame(['k-s1:a-1'], TestRun::storedValues('relation........'));
+        self::assertSame([], TestRun::$evaluated);
+    }
+
     public function test_afterStream_exceptionToErrors(): void
     {
         $source            = self::source(streams: 2, jobs: 1, items: 1);

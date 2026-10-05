@@ -596,12 +596,39 @@ final class DetailPageTest extends TestCase
         $this->assertSame([true, 'Its step is working now.'], [$resume['disabled'], $resume['title']]);
         $this->assertStringContainsString('A step is working now.', self::page()->overviewHtml(time()));
 
-        // stopped by an error while its last step still holds the lease: the error is what to act on
+        // stopped by an error while its last step still holds the lease: the error is what to act on,
+        // once that step is surely gone
         self::storedSet($id, 'state', Run::ERROR);
         $overview = self::page()->overviewHtml(time());
         $this->assertStringContainsString('Stopped by an error', $overview);
         $this->assertStringNotContainsString('A step is working now.', $overview);
+        $this->assertSame([true, 'Its step is working now.'], [self::buttons(self::page()->actionsHtml(time()))['resume']['disabled'], self::buttons(self::page()->actionsHtml(time()))['resume']['title']]);
+        self::storedSet($id, 'lease', (string) (time() - Run::DEAD_GRACE));
         $this->assertFalse(self::buttons(self::page()->actionsHtml(time()))['resume']['disabled']);
+    }
+
+    /** its step died holding the lease: the page offers what Continue does - the same rule */
+    public function test_deadStep_tryNow(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'lease', (string) (time() - Run::DEAD_GRACE + 60));
+        self::storedSet($id, 'lease_tok', 'dead-step');
+        $grace = self::buttons(self::page()->actionsHtml(time()))['resume'];
+        $this->assertSame([true, 'Its last step may still be working.'], [$grace['disabled'], $grace['title']]);
+        $this->assertStringContainsString('Its last step may still be working.', self::page()->overviewHtml(time()));
+        $this->assertStringNotContainsString('waits in the task queue', self::page()->overviewHtml(time()));
+        $this->assertStringContainsString('Its last step may still be working. Try again in a few minutes.', self::act(['action' => 'resume', 'run' => $id]));
+        self::storedSet($id, 'lease', (string) (time() - Run::DEAD_GRACE));
+
+        $resume = self::buttons(self::page()->actionsHtml(time()))['resume'];
+        $this->assertSame([false, 'Try now'], [$resume['disabled'], $resume['label']]);
+        $this->assertStringContainsString('Its last step stopped without finishing', self::page()->overviewHtml(time()));
+
+        $this->assertStringContainsString('its next step is queued', self::act(['action' => 'resume', 'run' => $id]));
+        $again = self::buttons(self::page()->actionsHtml(time()))['resume'];
+        $this->assertSame([true, 'Its next step waits in the task queue.'], [$again['disabled'], $again['title']]);
+        $this->assertStringNotContainsString('Its last step stopped without finishing', self::page()->overviewHtml(time()));
     }
 
     public function test_waitingRun_failedTriesOnlyWhenAny(): void

@@ -446,7 +446,7 @@ class Run extends BatchRun
             $state   = $this->streamState();
             while (true) {
                 if ($pos['after'] !== '') {
-                    if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
+                    if (!$first && (($budget->secondsLeft() < $source->minJobSeconds()) || !$this->holdsLease())) {
                         return $this->stopped($pos, $from, $keys, '');
                     }
                     $first  = false;
@@ -774,7 +774,8 @@ class Run extends BatchRun
                     return 'SOURCE_CYCLE';
                 }
                 $pos = RunCursor::started($pos, $job->key);
-                if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
+                // a step past its lease starts no further job: Continue may give the run to another one
+                if (!$first && (($budget->secondsLeft() < $source->minJobSeconds()) || !$this->holdsLease())) {
                     return self::STOP;
                 }
             }

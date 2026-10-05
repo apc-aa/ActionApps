@@ -135,6 +135,41 @@ final class RunWorkTest extends TestCase
         self::assertSame('done', TestRun::get($run->getId())?->state());
     }
 
+    /** Continue gave the run to a new step: this one, past its lease, starts no further job beside it */
+    public function test_work_stopsBetweenJobsOnceTheRunIsNoLongerItsOwn(): void
+    {
+        $source         = self::source(streams: 1, jobs: 2, items: 1, seconds: 5.0);
+        $source->minJob = 5;
+        $run            = self::startRun($source);
+        $id             = $run->getId();
+        $source->jobs['s1'][0]['onPrepare'] = static function () use ($id): void {
+            self::storedSet($id, 'lease_tok', 'retried');
+        };
+
+        self::runOne();
+
+        self::assertSame(['k-s1:a-1'], TestRun::storedValues('relation........'), 'the second job did not start');
+        self::assertSame([], TestRun::$committed, 'the end of the step is not its own');
+    }
+
+    /** past its lease the step ends at the next job: a Continue may give the run to another step any moment */
+    public function test_work_stopsBetweenJobsOnceTheLeaseRanOut(): void
+    {
+        $source         = self::source(streams: 1, jobs: 2, items: 1, seconds: 5.0);
+        $source->minJob = 5;
+        $run            = self::startRun($source);
+        $id             = $run->getId();
+        $source->jobs['s1'][0]['onPrepare'] = static function () use ($id): void {
+            self::storedSet($id, 'lease', (string) (self::NOW - 1));
+        };
+
+        self::runOne();
+
+        self::assertSame(['k-s1:a-1'], TestRun::storedValues('relation........'));
+        self::assertSame('s1:b', TestRun::get($id)?->position()['job'], 'the step ended at the job boundary');
+        self::assertSame('running', self::stored($id)['state']);
+    }
+
     public function test_work_budgetFromTimeLeft(): void
     {
         $source = self::source(streams: 1, jobs: 1, items: 1);
@@ -804,6 +839,20 @@ final class RunWorkTest extends TestCase
         $run = self::startRun(self::source(streams: 1, jobs: 1, items: 0));
         self::storedSet($run->getId(), 'lease', (string) (self::NOW - 1));
         self::storedSet($run->getId(), 'lease_tok', 'dead-step');
+
+        self::runOne();
+
+        self::assertSame([[[self::SLICE], 'M']], self::$invalidated, 'the dead step may have stored items');
+    }
+
+    /** Continue tried the dead step at once: the step after it still cleans up after the dead one */
+    public function test_work_pagecacheAfterADeadStepContinued(): void
+    {
+        $run = self::startRun(self::source(streams: 1, jobs: 1, items: 0));
+        self::storedSet($run->getId(), 'lease', (string) (self::NOW - TestRun::DEAD_GRACE));
+        self::storedSet($run->getId(), 'lease_tok', 'dead-step');
+        $uid = (string) $GLOBALS['permission_uid'];
+        DB_AA::transaction(static fn() => TestRun::lockForUpdate($run->getId())?->resume($uid));
 
         self::runOne();
 

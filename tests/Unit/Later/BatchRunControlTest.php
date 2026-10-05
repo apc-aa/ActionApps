@@ -374,6 +374,184 @@ final class BatchRunControlTest extends TestCase
         $this->assertSame('0', self::stored($id)['failures']);
     }
 
+    /** a step that died while holding its lease: the queue repeats its row only after its own lease */
+    private static function deadStep(string $id, int $failures): void
+    {
+        self::storedSet($id, 'lease', (string) (self::NOW - BatchRun::DEAD_GRACE));
+        self::storedSet($id, 'lease_tok', 'dead-step');
+        self::storedSet($id, 'failures', (string) $failures);
+        self::storedSet($id, 'next_at', (string) (self::NOW - 100));
+        TableDb::$tables['toexecute'][0]['execute_after'] = self::NOW + Toexecute::CLAIM_LEASE - 100;
+    }
+
+    /** Continue does at once what the queue would do half an hour later - the dead step still counts */
+    public function test_resume_of_a_dead_step_tries_now_keeping_failures(): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 1);
+        $this->assertTrue(self::fresh($id)->mayResume(self::NOW));
+
+        self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+
+        $stored = self::stored($id);
+        $this->assertSame(['running', '1', '1', (string) self::NOW], [$stored['state'], $stored['failures'], $stored['step'], $stored['next_at']], 'the failures stay');
+        $this->assertNotSame('dead-step', $stored['lease_tok'], 'that step may not write any more');
+        $this->assertFalse(self::fresh($id)->hasLiveLease(self::NOW));
+        self::assertOneRowEach($id);
+        $this->assertSame([BatchPosition::fingerprint(1, ['n' => 0])], self::queued(), 'the dead step\'s row is gone');
+        $this->assertSame(self::NOW, self::queue()[0]['execute_after']);
+
+        $seen = [];
+        ScriptedBatchRun::$script = [static function () use ($id, &$seen): BatchStepResult {
+            $seen = self::stored($id);
+            return new BatchStepResult(['n' => 1], false);
+        }];
+        $this->assertSame('step 2', self::runQueued());
+        $this->assertSame('2', $seen['failures'], 'the claim counts the dead step');
+        $this->assertSame('0', self::stored($id)['failures'], 'progress clears them');
+    }
+
+    public function test_resume_of_a_dead_step_spends_the_last_try(): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 2);
+
+        self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+
+        $this->assertSame('error STEP_DIED', self::runQueued(), 'no endless retry by clicking Continue');
+        $this->assertSame(['onRetriesExhausted', 'commitStep'], ScriptedBatchRun::hooks(), 'commitStep() gets the made-up result of the dead step');
+    }
+
+    /** once Continue queued the step, a second one would only double it - until that step dies too */
+    public function test_resume_of_a_dead_step_once(): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 0);
+        self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+
+        $this->assertFalse(self::fresh($id)->mayResume(self::NOW));
+        try {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+            $this->fail('A second Continue doubled the step');
+        } catch (BatchFailed $e) {
+            $this->assertSame('WRONG_STATE', $e->reason);
+        }
+        $this->assertCount(1, self::queue());
+    }
+
+    /** a step may still work a while past its lease - a new step beside it would store its items twice */
+    public function test_resume_of_a_step_within_its_grace_refused(): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 1);
+        foreach ([self::NOW - BatchRun::DEAD_GRACE + 1, self::NOW + 1] as $lease) {
+            self::storedSet($id, 'lease', (string) $lease);
+            $this->assertFalse(self::fresh($id)->hasDeadStep(self::NOW));
+            $this->assertTrue(self::fresh($id)->stepMayStillWork(self::NOW));
+            $this->assertFalse(self::fresh($id)->mayResume(self::NOW));
+            try {
+                self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+                $this->fail('Continue doubled a step that may still work');
+            } catch (BatchFailed $e) {
+                $this->assertSame('LEASE', $e->reason);
+            }
+        }
+        $this->assertSame('dead-step', self::stored($id)['lease_tok']);
+        $this->assertSame([self::NOW + Toexecute::CLAIM_LEASE - 100], array_column(self::queue(), 'execute_after'));
+    }
+
+    /** in error or waiting for its retry, but a step claimed it a moment ago: Continue waits for the grace too */
+    #[DataProvider('errorOrWaiting')]
+    public function test_resume_while_a_claimed_step_may_still_work_refused(string $state, string $nextAt): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 1);
+        self::storedSet($id, 'state', $state);
+        self::storedSet($id, 'next_at', $nextAt);
+        self::storedSet($id, 'lease', (string) (self::NOW - BatchRun::DEAD_GRACE + 1));
+        $before = self::stored($id);
+        $this->assertFalse(self::fresh($id)->mayResume(self::NOW));
+
+        try {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+            $this->fail('Continue started a step beside one that may still work');
+        } catch (BatchFailed $e) {
+            $this->assertSame('LEASE', $e->reason);
+        }
+        $this->assertSame($before, self::stored($id));
+
+        self::storedSet($id, 'lease', (string) (self::NOW - BatchRun::DEAD_GRACE));
+        $this->assertTrue(self::fresh($id)->mayResume(self::NOW));
+        self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+        $this->assertSame('running', self::stored($id)['state']);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function errorOrWaiting(): array
+    {
+        return ['error' => ['error', ''], 'waiting' => ['running', (string) (self::NOW + 600)]];
+    }
+
+    /** the token of a dead step in a run that is no longer active: nothing to try again */
+    #[DataProvider('notActive')]
+    public function test_resume_of_a_dead_token_in_a_run_not_active_refused(string $state): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 1);
+        self::storedSet($id, 'state', $state);
+        $before = self::stored($id);
+        $this->assertFalse(self::fresh($id)->hasDeadStep(self::NOW));
+        $this->assertFalse(self::fresh($id)->mayResume(self::NOW));
+
+        try {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+            $this->fail("A $state run was resumed");
+        } catch (BatchFailed $e) {
+            $this->assertSame('WRONG_STATE', $e->reason);
+        }
+        $this->assertSame($before, self::stored($id));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function notActive(): array
+    {
+        return ['ended' => ['ended'], 'done' => ['done'], 'own state' => ['preview']];
+    }
+
+    /** a hand-run Execute may claim the step before its retry is due; when that one dies, it counts too */
+    public function test_resume_of_a_dead_step_claimed_before_its_retry_counts(): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 1);
+        self::storedSet($id, 'next_at', (string) (self::NOW + 600));
+        $this->assertTrue(self::fresh($id)->isWaiting(self::NOW));
+        $this->assertTrue(self::fresh($id)->continueKeepsCount(self::NOW));
+
+        self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
+
+        $this->assertSame('1', self::stored($id)['failures']);
+        $seen = [];
+        ScriptedBatchRun::$script = [static function () use ($id, &$seen): BatchStepResult {
+            $seen = self::stored($id);
+            return new BatchStepResult(['n' => 1], false);
+        }];
+        self::runQueued();
+        $this->assertSame('2', $seen['failures'], 'the claim counts the dead step');
+    }
+
+    /** a hanging run's dead step is forgiven: hours passed, the user starts afresh */
+    public function test_continueKeepsCount_not_when_stuck(): void
+    {
+        $id = self::start()->getId();
+        self::deadStep($id, 2);
+        self::storedSet($id, 'next_at', '');
+        TableDb::$tables['toexecute'] = [];
+        $at = self::NOW + 9001;
+        $this->assertTrue(self::fresh($id)->isStuck($at));
+        $this->assertTrue(self::fresh($id)->hasDeadStep($at));
+        $this->assertFalse(self::fresh($id)->continueKeepsCount($at));
+    }
+
     public function test_resume_of_a_run_on_its_way_refused(): void
     {
         $id = self::start()->getId();
@@ -794,6 +972,20 @@ final class BatchRunControlTest extends TestCase
         $this->assertSame('1', self::stored($id)['failures']);
         $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 1), 'its next step is due now');
         $this->assertSame([], ScriptedBatchRun::stuck(self::NOW + 1));
+    }
+
+    /** a step claimed after hours of waiting did happen: until its lease ran out the run is not idle */
+    public function test_is_stuck_counts_from_the_lease_of_a_claimed_step(): void
+    {
+        $id = self::start()->getId();
+        self::storedSet($id, 'started', (string) (self::NOW - 20000));
+        self::storedSet($id, 'lease', (string) (self::NOW + 90));
+        self::storedSet($id, 'lease_tok', 'claimed-late');
+
+        $this->assertSame(self::NOW + 90, self::fresh($id)->idleSince());
+        $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 100), 'its step died a moment ago');
+        $this->assertFalse(self::fresh($id)->isStuck(self::NOW + 90 + 9000));
+        $this->assertTrue(self::fresh($id)->isStuck(self::NOW + 90 + 9001));
     }
 
     public function test_is_stuck_counts_from_the_start_without_progress(): void

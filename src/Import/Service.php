@@ -130,7 +130,8 @@ final class Service
         });
     }
 
-    /** Continue: a run in error goes on from its position, one waiting for a retry or hanging tries now.
+    /** Continue: a run in error goes on from its position, one waiting for a retry, hanging or whose
+     *  step died tries now (BatchRun::mayResume()).
      *  A run the user may not control is unknown, as one that is not there. The caller checks the run
      *  belongs to a definition of its page's slice. */
     public static function resume(string $runId, string $user): StartResult

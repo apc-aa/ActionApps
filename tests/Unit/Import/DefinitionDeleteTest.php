@@ -194,7 +194,7 @@ final class DefinitionDeleteTest extends TestCase
 
         $this->assertSame('run gone', self::runOne());
 
-        $this->assertSame(['k-a', 'k-b'], TestRun::storedValues('relation........'), 'items till the end of the step');
+        $this->assertSame(['k-a'], TestRun::storedValues('relation........'), 'the job it was in, no further one');
         $this->assertSame([], self::objectRows([$run->getId(), self::DEF, StreamState::idOf(self::DEF), Catalog::idOf(self::DEF)]));
         $this->assertSame([], self::queue());
     }

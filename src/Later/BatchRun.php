@@ -41,6 +41,12 @@ abstract class BatchRun extends AA_Object
      *  the end has committed - late, and more than once when the queue repeats a row whose process died */
     public const CLOSE_ROW = 'close';
 
+    /** How long past its lease a step may still be working, so Continue does not start another beside
+     *  it (two steps store the same items twice): the first job of a step runs whatever its budget, a
+     *  write may wait for a lock (innodb_lock_wait_timeout, 50 s by default). Five minutes cover that
+     *  several times and are still far below the queue's own retry (Toexecute::CLAIM_LEASE). */
+    public const DEAD_GRACE = 300;
+
     /** a run without progress this long past its retries hangs (isStuck()) */
     private const STUCK_GRACE = 3600;
 
@@ -55,6 +61,9 @@ abstract class BatchRun extends AA_Object
     private const LEASE_PROPS = ['lease', 'lease_tok'];
     /** the token of a dead step Continue forgave: no step holds it, the next claim still cleans up after it */
     private const FORGIVEN = 'forgiven';
+    /** the token of a dead step Continue tried again at once: no step holds it, the next claim counts
+     *  that step as one that died - clicking Continue must not retry a step that keeps dying for ever */
+    private const RETRIED = 'retried';
 
     /** a state name of states(): its active role means queued or working */
     protected $state = '';
@@ -169,7 +178,7 @@ abstract class BatchRun extends AA_Object
      *  idempotent: after an end it comes from the queue (CLOSE_ROW), late, and maybe more than once. */
     protected function afterClose(string $state): void {}
 
-    /** After a step took over the lease of a step that died (also one Continue forgave), before its
+    /** After a step took over the lease of a step that died (also one Continue forgave or retried), before its
      *  own work, called outside any transaction of its own: what the dead step left half done outside
      *  the database (import: the page cache of the items it stored). An exception is counted in
      *  warnings as AFTER_DEAD_STEP, the step goes on. */
@@ -420,24 +429,30 @@ abstract class BatchRun extends AA_Object
         $this->becomeEnded(['progress']);
     }
 
-    /** Continue: a run in error goes on from its position, a run waiting for its retry or hanging
-     *  (isStuck()) tries now. Only on an instance of lockForUpdate(). The step counter moves, so every
-     *  row queued before is stale.
+    /** Continue: a run in error goes on from its position, a run waiting for its retry, hanging
+     *  (isStuck()) or whose step died (hasDeadStep()) tries now. Only on an instance of lockForUpdate().
+     *  The step counter moves, so every row queued before is stale.
      *  @param ?string $secret a new secret to seal (the source refused the old one), good till $until
-     *  @throws BatchFailed FORBIDDEN when $uid may not control the run, WRONG_STATE when it is finished
-     *                      or its step is on its way */
+     *  @throws BatchFailed FORBIDDEN when $uid may not control the run, LEASE while a step it claimed may
+     *                      still work (stepMayStillWork()), WRONG_STATE when it is finished or its step is
+     *                      on its way (mayResume()) */
     final public function resume(string $uid, #[\SensitiveParameter] ?string $secret = null, ?int $until = null): void
     {
         $this->requireLock();
         $this->requireControl($uid);
-        $now     = static::now();
-        $states  = static::states();
-        $error   = ($this->state === $states->error);
-        $waiting = $this->isWaiting($now);
-        // a step that works or is queued to run now would only be doubled
-        if (!$error && !$waiting && !$this->isStuck($now)) {
+        if ($this->isFinished()) {
             throw new BatchFailed('WRONG_STATE');
         }
+        $now    = static::now();
+        $states = static::states();
+        $error  = ($this->state === $states->error);
+        if ($this->stepMayStillWork($now)) {
+            throw new BatchFailed('LEASE');
+        }
+        if (!$this->mayResume($now)) {
+            throw new BatchFailed('WRONG_STATE');
+        }
+        $died = $this->continueKeepsCount($now);
         if ($secret !== null) {
             $this->seal($secret, $until ?? throw new \InvalidArgumentException('A new secret of a batch run needs its time'));
         }
@@ -445,13 +460,13 @@ abstract class BatchRun extends AA_Object
         if ($error) {
             $this->moveTo($states->active);
         }
-        if (!$this->hasLiveLease($now)) {
-            // a lease that ran out belongs to a dead step - the user goes on, so it counts no failure,
-            // yet the next claim cleans up after it (afterDeadStep())
-            $this->lease     = '';
-            $this->lease_tok = ((string) $this->lease_tok === '') ? '' : self::FORGIVEN;
+        // any lease left belongs to a dead step: it may not write any more, and the next claim cleans
+        // up after it (afterDeadStep())
+        $this->lease     = '';
+        $this->lease_tok = ((string) $this->lease_tok === '') ? '' : ($died ? self::RETRIED : self::FORGIVEN);
+        if (!$died) {
+            $this->failures = '0';
         }
-        $this->failures   = '0';
         $this->error_code = '';
         $this->error_path = '';
         $this->position   = self::positionJson($this->positionOnResume($this->position()));
@@ -552,11 +567,48 @@ abstract class BatchRun extends AA_Object
         return $now - $this->idleSince() > $wait;
     }
 
-    /** since when nothing has happened to the run: its last progress (the start, before any), or the
-     *  time its next step was due, whichever is later */
+    /** since when nothing has happened to the run: its last progress (the start, before any), the
+     *  time its next step was due, or the end of the lease of a step claimed since, whichever is later */
     final public function idleSince(): int
     {
-        return max((int) (((string) $this->moved !== '') ? $this->moved : $this->started), (int) $this->next_at);
+        return max((int) (((string) $this->moved !== '') ? $this->moved : $this->started), (int) $this->next_at, (int) $this->lease);
+    }
+
+    /** Active, and the step that claimed it died: its lease ran out DEAD_GRACE ago and was never
+     *  released. The queue repeats that step only after Toexecute::CLAIM_LEASE (in the final phase,
+     *  its safety row right after the lease); Continue tries it now - once. */
+    final public function hasDeadStep(int $now): bool
+    {
+        return ($this->state === static::states()->active) && $this->hasStepToken() && ((int) $this->lease + self::DEAD_GRACE <= $now);
+    }
+
+    /** A step that claimed the run may still be working: its lease has not run out, or ran out less than
+     *  DEAD_GRACE ago. Continue waits - a step beside it would store the same items twice. */
+    final public function stepMayStillWork(int $now): bool
+    {
+        return $this->hasStepToken() && ((int) $this->lease + self::DEAD_GRACE > $now);
+    }
+
+    /** the token a claim gave a step - not one Continue left in its place */
+    private function hasStepToken(): bool
+    {
+        return !in_array((string) $this->lease_tok, ['', self::FORGIVEN, self::RETRIED], true);
+    }
+
+    /** Continue of a dead step is the queue's own retry, only sooner: the step counts as one that
+     *  died. Only a run that hangs starts afresh - hours have passed. */
+    final public function continueKeepsCount(int $now): bool
+    {
+        return $this->hasDeadStep($now) && !$this->isStuck($now);
+    }
+
+    /** Continue may go on now: in error, waiting for a retry, hanging or with its step dead - never
+     *  while a step may still work (stepMayStillWork()) or is queued to run now, which Continue would
+     *  only double. */
+    final public function mayResume(int $now): bool
+    {
+        return !$this->stepMayStillWork($now)
+            && (($this->state === static::states()->error) || $this->isWaiting($now) || $this->isStuck($now) || $this->hasDeadStep($now));
     }
 
     /** Active, no step works, and the next one is due later than $now - a retry after a failure. */
@@ -569,6 +621,16 @@ abstract class BatchRun extends AA_Object
     final public static function clock(): int
     {
         return static::now();
+    }
+
+    /** The step working now still owns the run and its lease has not run out - read from the record,
+     *  not this instance. work() asks between pieces of its work: past the lease, Continue may give
+     *  the run to another step any moment, and the two would store the same items twice. Not inside a
+     *  transaction (stepInTransaction()): the unlocked read there sees the transaction's own snapshot. */
+    final protected function holdsLease(): bool
+    {
+        $held = self::get($this->getId());
+        return ($held !== null) && $held->holds((string) $this->lease_tok) && ((int) $held->lease > static::now());
     }
 
     /** a step may still be working - also in an ended run, so a new run of the subject waits for it */

@@ -7,6 +7,7 @@ namespace AA\Import;
 use AA\Api\JsonResponse;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
+use AA\Later\Toexecute;
 use AA\Util\FormToken;
 use Throwable;
 
@@ -329,7 +330,7 @@ final class DetailPage
         $r = Service::resume((string) $run->getId(), $this->uid);
         return match ($r->code) {
             'queued'  => ['resumed', ''],
-            'busy'    => ['busy_resume', $r->reason],
+            'busy'    => ($r->reason === 'LEASE') ? ['still_working', ''] : ['busy_resume', $r->reason],
             'unknown' => ['no_run', ''],
             default   => ['refused', $r->reason],
         };
@@ -383,6 +384,7 @@ final class DetailPage
             'no_stream'   => MsgErr(_m('Choose a stream of the source.')),
             'busy'        => MsgErr(_m('Not started.') . ' ' . safe(self::busyText($reason))),
             'busy_resume' => MsgErr(safe(self::busyText($reason))),
+            'still_working' => MsgErr(_m('Its last step may still be working. Try again in a few minutes.')),
             'gone'        => MsgErr(_m('This import no longer exists in this slice.')),
             'no_run'      => MsgErr(_m('No such run of this import.')),
             'finished'    => MsgErr(_m('The run is finished already.')),
@@ -456,6 +458,8 @@ final class DetailPage
             $run->isWaiting($now) => '<p>' . (($p['failures'] > 0)
                 ? _m('Waiting to try again at %1 after %2 failed tries.', [date('H:i', $p['next_at']), $p['failures']])
                 : _m('Waiting to try again at %1.', [date('H:i', $p['next_at'])])) . '</p>',
+            $run->stepMayStillWork($now) => '<p>' . _m('Its last step may still be working.') . '</p>',
+            $run->hasDeadStep($now) => '<p>' . _m('Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once.', [intdiv(Toexecute::CLAIM_LEASE, 60)]) . '</p>',
             default               => '<p>' . _m('Its next step waits in the task queue.') . '</p>',
         };
         return $html;
@@ -569,14 +573,14 @@ final class DetailPage
             $whyGo  = $whyEnd = _m('No run is open.');
             $resume = _m('Continue');
         } else {
-            $waiting = $open->isWaiting($now);
-            $whyEnd  = '';
-            $whyGo   = match (true) {
-                ($open->state() === Run::ERROR) || $waiting || $open->isStuck($now) => '',
+            $whyEnd = '';
+            $whyGo  = match (true) {
+                $open->mayResume($now)    => '',
                 $open->hasLiveLease($now) => _m('Its step is working now.'),
+                $open->stepMayStillWork($now) => _m('Its last step may still be working.'),
                 default                   => _m('Its next step waits in the task queue.'),
             };
-            $resume = $waiting ? _m('Try now') : _m('Continue');
+            $resume = ($open->isWaiting($now) || $open->continueKeepsCount($now)) ? _m('Try now') : _m('Continue');
         }
         $run = ($open === null) ? '' : self::hiddenInput('run', (string) $open->getId());
         $why = self::whyHtml(...);
@@ -774,7 +778,7 @@ final class DetailPage
     private function liveFacts(Run $run, int $now): ?array
     {
         $progress = $this->progressOf($run);
-        return ($progress === null) ? null : $progress + ['stuck' => $run->isStuck($now), 'waiting' => $run->isWaiting($now)];
+        return ($progress === null) ? null : $progress + ['stuck' => $run->isStuck($now), 'waiting' => $run->isWaiting($now), 'dead' => $run->hasDeadStep($now)];
     }
 
     private function url(): string

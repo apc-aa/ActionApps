@@ -103,7 +103,7 @@ final class ProgressEndpointTest extends TestCase
 
         $run = Run::get($id) ?? throw new \LogicException('No run');
         $this->assertSame(200, $status);
-        $this->assertSame($run->progress(AuthGetUid()) + ['stuck' => false, 'waiting' => false], $body);
+        $this->assertSame($run->progress(AuthGetUid()) + ['stuck' => false, 'waiting' => false, 'dead' => false], $body);
         $this->assertSame([Run::RUNNING, 's2 <b>x</b>', 1, 3], [$body['state'], $body['label'], $body['done'], $body['total']]);
 
         // a finished run answers too: its state tells the script to stop
@@ -127,6 +127,13 @@ final class ProgressEndpointTest extends TestCase
         TableDb::$tables['toexecute'] = [];
         ['body' => $body] = JsonResponseReader::read(DetailPage::progressJson(self::SLICE, self::DEF, $id, AuthGetUid()));
         $this->assertSame([true, false], [$body['stuck'], $body['waiting']]);
+
+        // its lease and the grace past it run out - the button to try now turns on by itself
+        self::storedSet($id, 'started', (string) Run::clock());
+        self::storedSet($id, 'lease', (string) (Run::clock() - Run::DEAD_GRACE));
+        self::storedSet($id, 'lease_tok', 'dead-step');
+        ['body' => $body] = JsonResponseReader::read(DetailPage::progressJson(self::SLICE, self::DEF, $id, AuthGetUid()));
+        $this->assertSame([false, false, true], [$body['stuck'], $body['waiting'], $body['dead']]);
     }
 
     /** a GET changes nothing - neither the tables nor the session, whatever it answers */

@@ -429,6 +429,20 @@ final class ServiceTest extends TestCase
         }
     }
 
+    /** its step died holding the lease: Continue tries now, the failures stay, and once only */
+    public function test_resume_deadStepTriesNowKeepsFailures(): void
+    {
+        $id = Service::start(self::definition(), 'run', [], 'manual', AuthGetUid())->runId;
+        self::storedSet($id, 'lease', (string) (time() - Run::DEAD_GRACE));
+        self::storedSet($id, 'lease_tok', 'dead-step');
+        self::storedSet($id, 'failures', '2');
+
+        $this->assertSame(['queued', ''], self::codeOf(Service::resume($id, AuthGetUid())));
+        $this->assertSame(['running', '2'], [self::stored($id)['state'], self::stored($id)['failures']]);
+        $this->assertSame(['Import_' . self::DEF], array_column(self::queue(), 'selector'));
+        $this->assertSame(['busy', 'WRONG_STATE'], self::codeOf(Service::resume($id, AuthGetUid())), 'its step is queued to run now');
+    }
+
     // ------------------------------------------------------------ changeSettings()
 
     public function test_changeSettings_endsRunAndDropsStateAtomically(): void
