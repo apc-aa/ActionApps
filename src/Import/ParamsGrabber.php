@@ -25,6 +25,9 @@ final class ParamsGrabber extends AbstractGrabber
     /** how many leading source items the fingerprint covers */
     public const FP_ITEMS = 20;
 
+    /** where ItemContent::getSliceID() reads the slice of an item */
+    private const SLICE_FIELDS = ['u_slice_id......', 'slice_id........'];
+
     /** @var list<AA_Content> read ahead for the fingerprint, not yet handed out */
     private array $buffer = [];
     private bool $exhausted = false;
@@ -103,6 +106,9 @@ final class ParamsGrabber extends AbstractGrabber
         }
         // a second prepare() reads the same objects again; with the parameters in them its fingerprint would differ
         $item = clone $raw;
+        // the expressions of the mapping would apply the aliases of the slice these name - a source
+        // must not choose whose aliases run over its own values
+        unset($item[self::SLICE_FIELDS[0]], $item[self::SLICE_FIELDS[1]]);
         foreach ($this->params as $name => $value) {
             $item->setAaValue($name, new AA_Value($value));
         }

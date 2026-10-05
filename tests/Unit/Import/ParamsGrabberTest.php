@@ -117,6 +117,35 @@ namespace Tests\Unit\Import {
             $this->assertNull($g->getItem());
         }
 
+        // a source row naming a slice would get that slice's aliases applied over its own values
+        public function test_getItem_sourceCannotNameASlice(): void
+        {
+            $slice = 'aaaabbbbccccddddeeeeffff00001111';
+            $source = self::item(['u_slice_id......' => $slice, 'slice_id........' => pack_id($slice), 'cell' => 'x _#SECRET__ y', 'other' => 'LEAKED']);
+            new class ($slice) extends \AA_Slice {
+                public function __construct(string $id)
+                {
+                    // no parent constructor - it reads the database; what AA_Slice::getModule() returns
+                    $this->module_id = $id;
+                    \AA_Module::$_modules[$id] = $this;
+                }
+
+                public function aliases($additional_aliases = null, $type = ''): ?array
+                {
+                    return ['_#SECRET__' => ['fce' => 'f_h', 'param' => 'other', 'hlp' => '']];
+                }
+            };
+            $value = new \AA_Transformation_Value(['new_content' => '{index:cell}', 'new_flag' => 't']);
+            $this->assertSame('x LEAKED y', $value->transform('headline........', $source)->getValue(), 'the alias would show');
+
+            $g = new ParamsGrabber(self::source([$source]), []);
+            $g->prepare();
+            $item = $g->getItem();
+
+            $this->assertSame('x _#SECRET__ y', $value->transform('headline........', $item)->getValue());
+            $this->assertSame(['cell', 'other'], $item->getFields());
+        }
+
         public function test_getItem_paramsDoNotChangeFingerprint(): void
         {
             $items = self::items(3);
