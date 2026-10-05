@@ -41,12 +41,6 @@ final class Context
 
     private const IDLE_SECONDS = 10.0;
 
-    /**
-     * How NoPrivateNetworkHttpClient words a refused address - it has no own exception class. If
-     * Symfony changes the text, the address stays blocked; only the code becomes TRANSPORT.
-     */
-    private const BLOCKED = '/^(?:Host|IP) "([^"]*)" is blocked for "/';
-
     private readonly int $maxBytes;
 
     /** @var array<string, array{string, string}> "vendor\0context" => [vendor, context] the source declared */
@@ -199,16 +193,16 @@ final class Context
         if ($e->malformedAddress()) {
             return $this->failure(false, 'Only well-formed http(s) addresses are imported', $url);
         }
+        $blocked = $e->blockedHost();
+        if (!is_null($blocked)) {
+            // the guard reports a host it failed to look up as blocked too; ask again
+            return $this->resolvesPrivate($blocked)
+                ? $this->failure(false, 'Address in a local or private network', $url)
+                : $this->failure(true, 'Host name not found', $url);
+        }
         $texts = [];
         for ($cause = $e->getPrevious(); !is_null($cause); $cause = $cause->getPrevious()) {
-            $text = $cause->getMessage();
-            if (preg_match(self::BLOCKED, $text, $m) === 1) {
-                // the guard reports a host it failed to look up as blocked too; ask again
-                return $this->blockedHost($m[1])
-                    ? $this->failure(false, 'Address in a local or private network', $url)
-                    : $this->failure(true, 'Host name not found', $url);
-            }
-            $texts[] = $text;
+            $texts[] = $cause->getMessage();
         }
         $text = implode(' ', $texts);
         return match (true) {
@@ -219,7 +213,7 @@ final class Context
     }
 
     /** whether the host is, or resolves to, an address the guard blocks; a failed lookup is not */
-    private function blockedHost(string $host): bool
+    private function resolvesPrivate(string $host): bool
     {
         $host = trim($host, '[]');
         $ips  = (filter_var($host, FILTER_VALIDATE_IP) !== false) ? [$host] : ($this->resolver)($host);

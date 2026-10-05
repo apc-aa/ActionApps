@@ -42,6 +42,24 @@ final class TransportExceptionTest extends TestCase
         }
     }
 
+    #[DataProvider('blockChains')]
+    public function test_blockedHost_byCauseInChain(?\Throwable $cause, ?string $expected): void
+    {
+        self::assertSame($expected, (new TransportException('No answer', 0, $cause))->blockedHost());
+    }
+
+    public static function blockChains(): array
+    {
+        return [
+            'no cause'            => [null, null],
+            'timeout'             => [new \RuntimeException('Timeout reached'), null],
+            'ip'                  => [new \RuntimeException('IP "127.0.0.1" is blocked for "http://127.0.0.1/".'), '127.0.0.1'],
+            'host'                => [new \RuntimeException('Host "intranet" is blocked for "http://intranet/".'), 'intranet'],
+            'deeper in the chain' => [new \RuntimeException('wrapped', 0, new \RuntimeException('IP "::1" is blocked for "http://[::1]/".')), '::1'],
+            'only at the start'   => [new \RuntimeException('Why IP "10.0.0.1" is blocked for "x"'), null],
+        ];
+    }
+
     public function test_malformedAddress_noAnswerIsNot(): void
     {
         try {
