@@ -9,6 +9,7 @@ use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Later\Toexecute;
 use AA\Util\FormToken;
+use AA_Plannedtask;
 use Throwable;
 
 /**
@@ -259,7 +260,7 @@ final class DetailPage
             . ' data-aa-stale="' . safe(_m('This page is out of date – reload it.')) . '"></div>';
     }
 
-    /** source, enabled, status, last run, the open run, next plan, last check, mapping problems */
+    /** source, enabled, status, last run, the open run, next plan and the tasks, last check, mapping problems */
     public function overviewHtml(int $now): string
     {
         $last   = $this->runs()[0] ?? null;
@@ -271,6 +272,7 @@ final class DetailPage
             _m('Status')     => safe(Definition::statusWord($last, $now)),
             _m('Last run')   => ($last === null) ? '--' : self::runSummaryHtml($last, $now),
             _m('Next plan')  => $this->nextPlanHtml($now),
+            _m('Planned tasks') => $this->plannedTasksHtml($now),
             _m('Last check of the source') => $this->lastCheckHtml(),
         ];
         $html = self::factsHtml($rows);
@@ -571,6 +573,64 @@ final class DetailPage
         }
         $next = $this->def->nextPlanned($now);
         return ($next === null) ? _m('Not planned - no planned task of the slice calls {import} with its name or id') : date('Y-m-d H:i', $next);
+    }
+
+    /** The planned tasks that start this import, each linked to its form, and Schedule - a link to the
+     *  form of a new task filled in for this import, saved only when the user posts it. Both open the
+     *  page of the planned tasks, which asks for the Forms permission; without it the user learns only
+     *  how many tasks there are and when the first starts. */
+    private function plannedTasksHtml(int $now): string
+    {
+        $tasks = $this->def->plannedTasks($now);
+        if (!CheckPerms($this->uid, 'slice', $this->slice(), PS_FORMS)) {
+            $why  = _m('Planned tasks need the Forms permission');
+            $next = array_filter(array_column($tasks, 'next'));
+            $html = match (true) {
+                !$tasks => '<p>' . _m('No planned task of the slice calls this import.') . '</p>',
+                !$next  => '<p>' . _m('Planned tasks: %1', [count($tasks)]) . '</p>',
+                default => '<p>' . _m('Planned tasks: %1, next %2', [count($tasks), date('Y-m-d H:i', min($next))]) . '</p>',
+            };
+            return $html . htmltag('button', _m('Schedule'), ['type' => 'button', 'disabled' => 'disabled', 'title' => $why]) . self::whyHtml($why);
+        }
+        // the Next plan row says Off - a task must not look as if it started the import
+        $off   = $this->def->isEnabled() ? '' : ' ' . _m('(import off)');
+        $items = '';
+        foreach ($tasks as $task) {
+            $edit = new AA_Plannedtask();
+            $edit->setNew($task['id'], $this->slice());
+            $name   = a_href($edit->getAdminUrl(), safe(($task['name'] === '') ? $task['id'] : $task['name']));
+            $modes  = implode(', ', array_unique(array_map(self::modeText(...), $task['modes'])));
+            $next   = $task['next'] ? _m('next %1', [date('Y-m-d H:i', $task['next'])]) : _m('no time set');
+            $items .= '<li>' . $name . ': ' . $modes . ', ' . $next . ', ' . ($task['queued'] ? _m('queued') : _m('not queued')) . $off . '</li>';
+        }
+        $html = ($items === '') ? '<p>' . _m('No planned task of the slice calls this import.') . '</p>' : '<ul>' . $items . '</ul>';
+        return $html . a_href(self::scheduleUrl($this->def), _m('Schedule'), ['class' => 'aa-button-new']);
+    }
+
+    /** the form of a new planned task that runs import $def changed only, nightly */
+    private static function scheduleUrl(Definition $def): string
+    {
+        $prefill = ['aa_name' => self::taskName($def), 'task' => '{import:' . $def->getId() . ':changed}', 'time' => '03:00'];
+        return get_admin_url('se_tasks.php', ['module_id' => strtolower((string) $def->getOwnerId()), 'add' => '1', 'prefill' => $prefill]);
+    }
+
+    /** the name of the import as a task name may be - the form drops a name with markup or braces */
+    private static function taskName(Definition $def): string
+    {
+        $name = trim((string) preg_replace('/[\s<>&"{}\x00-\x1f\x7f]+/u', ' ', mb_scrub((string) $def->getName(), 'UTF-8')));
+        $name = trim(mb_substr($name, 0, 100));
+        return ($name === '') ? _m('Import %1', [$def->getId()]) : $name;
+    }
+
+    /** the mode of an {import} call in the words of the buttons that run the same */
+    private static function modeText(string $mode): string
+    {
+        return match ($mode) {
+            'run'      => _m('Run'),
+            'changed'  => _m('Run changed only'),
+            'check'    => _m('Check source'),
+            default    => str_ends_with($mode, '{') ? _m('mode set by an expression') : _m('unknown mode %1', [safe($mode)]),
+        };
     }
 
     private function lastCheckHtml(): string

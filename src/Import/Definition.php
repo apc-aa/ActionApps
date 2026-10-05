@@ -219,26 +219,72 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     private static function nextPlannedOf(string $slice, string $id, string $name, int $now): ?int
     {
-        if (!is_long_id($slice)) {
-            return null;
-        }
-        $refs  = [self::nameKey($id), self::nameKey($name)];
-        $times = [];
-        // read once for the installation: a list of the imports of all slices asks for many
-        foreach (AA::Contentcache()->get_result([self::class, 'plannedTasksFromDb']) as $task) {
-            if (($task['slice'] !== strtolower($slice)) || !array_intersect($task['calls'], $refs)) {
-                continue;
-            }
-            $times[] = $task['queued'] ?? (new AA_Plannedtask(['time' => $task['time'], 'shift' => $task['shift']]))->nextStart($now);
-        }
-        $times = array_filter($times, static fn(int $at): bool => $at > 0);
+        $times = array_filter(array_column(self::tasksCalling($slice, $id, $name, $now), 'next'), static fn(int $at): bool => $at > 0);
         return $times ? min($times) : null;
     }
 
     /**
-     * For the cache of nextPlanned(): the planned tasks that call {import} - their slice, the import
-     * names and ids they call (nameKey()), their time and the earliest step queued for them.
-     * @return list<array{slice: string, calls: list<string>, time: string, shift: int, queued: ?int}>
+     * The planned tasks of the slice that call this import by its id or its name, soonest first:
+     * the modes they call it with, and when they start it next - see nextPlanned().
+     * @return list<array{id: string, name: string, modes: list<string>, next: int, queued: bool}> next 0 = never
+     */
+    public function plannedTasks(int $now): array
+    {
+        return self::tasksCalling((string) $this->getOwnerId(), (string) $this->getId(), (string) $this->aa_name, $now);
+    }
+
+    /** @return list<array{id: string, name: string, modes: list<string>, next: int, queued: bool}> */
+    private static function tasksCalling(string $slice, string $id, string $name, int $now): array
+    {
+        $tasks = [];
+        foreach (self::plannedTasksOf($slice) as $task) {
+            if (!($modes = self::modesCalling($task, $id, $name))) {
+                continue;
+            }
+            $tasks[] = [
+                'id'     => $task['id'],
+                'name'   => $task['name'],
+                'modes'  => array_values(array_unique($modes)),
+                'next'   => $task['queued'] ?? (new AA_Plannedtask(['time' => $task['time'], 'shift' => $task['shift']]))->nextStart($now),
+                'queued' => $task['queued'] !== null,
+            ];
+        }
+        // a task with no time to start comes last
+        usort($tasks, static fn(array $a, array $b): int => [$a['next'] ?: PHP_INT_MAX, $a['name']] <=> [$b['next'] ?: PHP_INT_MAX, $b['name']]);
+        return $tasks;
+    }
+
+    /** @return list<array{id: string, name: string, slice: string, calls: list<array{string, string}>, time: string, shift: int, queued: ?int}> */
+    private static function plannedTasksOf(string $slice): array
+    {
+        if (!is_long_id($slice)) {
+            return [];
+        }
+        // read once for the installation: a list of the imports of all slices asks for many
+        $tasks = AA::Contentcache()->get_result([self::class, 'plannedTasksFromDb']);
+        // the id goes into the link to the task
+        return array_values(array_filter($tasks, static fn(array $t): bool => ($t['slice'] === strtolower($slice)) && is_long_id($t['id'])));
+    }
+
+    /** the modes planned task $task calls import $id named $name with; [] = it does not call it
+     *  @return list<string> */
+    private static function modesCalling(array $task, string $id, string $name): array
+    {
+        $refs  = [self::nameKey($id), self::nameKey($name)];
+        $modes = [];
+        foreach ($task['calls'] as [$ref, $mode]) {
+            if (in_array($ref, $refs, true)) {
+                $modes[] = $mode;
+            }
+        }
+        return $modes;
+    }
+
+    /**
+     * For the cache of nextPlanned(): the planned tasks that call {import} - their id, name and slice,
+     * each call's import name or id (nameKey()) and mode (as importCallArgs(), '' made 'run'), their time
+     * and the earliest step queued for them.
+     * @return list<array{id: string, name: string, slice: string, calls: list<array{string, string}>, time: string, shift: int, queued: ?int}>
      */
     public static function plannedTasksFromDb(): array
     {
@@ -247,15 +293,30 @@ final class Definition extends AA_Object implements InternalExpandInterface
             return [];
         }
         $rows = [];
-        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $ids], ['property', ['aa_owner', 'task', 'time', 'shift']]]) as $row) {
+        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $ids], ['property', ['aa_owner', 'aa_name', 'task', 'time', 'shift']]]) as $row) {
             $rows[(string) $row['object_id']][(string) $row['property']] = (string) $row['value'];
         }
         $tasks = [];
         foreach ($rows as $taskId => $task) {
-            // a bare {import} names no import
-            $calls = array_values(array_unique(array_map(self::nameKey(...), array_filter(AA_Plannedtask::importCalls($task['task'] ?? '')))));
+            $calls = [];
+            foreach (AA_Plannedtask::importCallArgs($task['task'] ?? '') as [$ref, $mode, $form]) {
+                // a bare {import} names no import, {import(x)} never reaches the import x;
+                // {import} trims its parameters
+                if (($form === ':') && (trim($ref) !== '')) {
+                    $mode    = strtolower(trim($mode));
+                    $calls[] = [self::nameKey(trim($ref)), ($mode === '') ? 'run' : $mode];
+                }
+            }
             if ($calls) {
-                $tasks[AA_Plannedtask::toexecuteSelector((string) $taskId)] = ['slice' => strtolower($task['aa_owner'] ?? ''), 'calls' => $calls, 'time' => $task['time'] ?? '', 'shift' => (int) ($task['shift'] ?? 0), 'queued' => null];
+                $tasks[AA_Plannedtask::toexecuteSelector((string) $taskId)] = [
+                    'id'     => (string) $taskId,
+                    'name'   => $task['aa_name'] ?? '',
+                    'slice'  => strtolower($task['aa_owner'] ?? ''),
+                    'calls'  => $calls,
+                    'time'   => $task['time'] ?? '',
+                    'shift'  => (int) ($task['shift'] ?? 0),
+                    'queued' => null,
+                ];
             }
         }
         if (!$tasks) {

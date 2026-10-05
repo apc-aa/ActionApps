@@ -240,8 +240,17 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
      *  @return list<string> */
     public static function importCalls(string $text): array
     {
-        preg_match_all('/\{import(?:\(([^)}]*)\)?|:([^:}]*)|(?=\}))/i', $text, $calls, PREG_SET_ORDER);
-        return array_map(static fn(array $call): string => ($call[1] ?? '') . ($call[2] ?? ''), $calls);
+        return array_column(self::importCallArgs($text), 0);
+    }
+
+    /** importCalls() with the mode of each call as written ('' = none; ending in '{' = an expression
+     *  sets it) and the delimiter after the command name: ':', '(' or '' for a bare {import}
+     *  @return list<array{string, string, string}> */
+    public static function importCallArgs(string $text): array
+    {
+        // the '{' of an expression in the mode is only looked at - it may open another {import}
+        preg_match_all('/\{import(?:\(([^)}]*)\)?|:([^:}]*)(?::([^:{}]*)(?:(?=(\{))|))?|(?=\}))/i', $text, $calls, PREG_SET_ORDER);
+        return array_map(static fn(array $call): array => [($call[1] ?? '') . ($call[2] ?? ''), ($call[3] ?? '') . ($call[4] ?? ''), substr($call[0], 7, 1)], $calls);
     }
 
     /** The page of the tasks also lets in users who only edit the forms, but an import belongs to

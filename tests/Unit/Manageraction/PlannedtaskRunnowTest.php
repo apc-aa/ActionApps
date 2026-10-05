@@ -236,6 +236,23 @@ final class PlannedtaskRunnowTest extends TestCase
         $this->assertSame([], AA_Plannedtask::importCalls('{importer:prices} import:prices'));
     }
 
+    /** a call nested in the mode of another is a call of its own */
+    public function test_importCallArgs_nestedCallInMode(): void
+    {
+        $this->assertSame([['a', '{', ':'], ['b', '', ':']], AA_Plannedtask::importCallArgs('{import:a:{import:b}}'));
+        $this->assertSame([['a', 'x{', ':'], ['b', '', ':']], AA_Plannedtask::importCallArgs('{import:a:x{import:b}}'));
+        $this->assertTrue((new AA_Plannedtask(['task' => '{import:a:x{import:b}}']))->usesImport());
+    }
+
+    /** the mode as written, '' where the call names none, '{' where an expression sets it; the delimiter */
+    public function test_importCallArgs_withModeAndForm(): void
+    {
+        $this->assertSame(
+            [['prices', 'changed', ':'], ['rates', '', '('], ['', '', ''], ['a1b2', '', ':'], ['x', 'check', ':'], ['y', '{', ':']],
+            AA_Plannedtask::importCallArgs("{import:prices:changed} {IMPORT(rates)} {import} {Import:a1b2} {import:x:check:more} {import:y:{var:m}}"),
+        );
+    }
+
     public function test_allowGet_isFalse(): void
     {
         $this->assertFalse((new Plannedtask_Runnow('Runnow'))->allowGet());
