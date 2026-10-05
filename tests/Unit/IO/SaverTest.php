@@ -31,7 +31,9 @@ namespace Tests\Unit\IO {
     use AA\IO\SourceUnavailable;
     use AA\Later\BatchBudget;
     use AA_Field;
+    use AA_Value;
     use ItemContent;
+    use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\IO\Fixtures\ArrayGrabber;
@@ -194,6 +196,62 @@ namespace Tests\Unit\IO {
             $this->assertContains('AA\IO\Saver->run(): key condition empty for relation........', $this->texts($saver));
             $this->assertSame([], RecordingDb::$log);
             $this->assertSame(1, $grabber->finished);
+        }
+
+        /** @return array<string, array{string, list<int>}> validation output => [ok, err] of one item */
+        public static function validationRows(): array
+        {
+            return [
+                'one'                 => ['1', [1, 0]],
+                'empty'               => ['', [1, 0]],
+                'rows of one + blank' => ["  \n1 - x\n\n1", [1, 0]],
+                'text'                => ['no', [0, 1]],
+                'one bad row'         => ["1\nno", [0, 1]],
+                'starts with 0'       => ['01', [0, 1]],
+                'bare 0 passes'       => ['0', [1, 0]],
+            ];
+        }
+
+        #[DataProvider('validationRows')]
+        public function test_addValidate_rowsOutsideImport(string $output, array $expected): void
+        {
+            $saver = (new RecordingSaver(new ArrayGrabber($this->items(1)), null, self::SLICE, 'update'))->addValidate($output);
+
+            $this->assertSame($expected, $saver->run());
+        }
+
+        /** @return array<string, array{array<string, string>, string}> item values => the error text ('' passes) */
+        public static function nszmValidations(): array
+        {
+            $good = ['relation........' => self::ITEM3, 'publish_date....' => '1700000000', 'number..........' => '0'];
+            return [
+                'all good, value 0' => [$good, ''],
+                'no town'           => [['relation........' => 'Praha'] + $good, 'mesto nenalezno'],
+                'no date'           => [['publish_date....' => 'x'] + $good, 'chyba datumu'],
+                'no value'          => [['number..........' => ''] + $good, 'neni hodnota'],
+                'hidden value'      => [['number..........' => 'Hidden'] + $good, 'hidden hodnota'],
+            ];
+        }
+
+        #[DataProvider('nszmValidations')]
+        public function test_addValidate_nszmLoadersFailWithText(array $values, string $error): void
+        {
+            // the expressions of the NSZM indicator loaders: on error they print text, never a bare 0
+            $this->slice->setFields(new FakeFields(self::SLICE, array_map(fn(string $id) => $this->field($id), array_keys($values))));
+            $item = $this->item(self::ITEM1);
+            foreach ($values as $field_id => $value) {
+                $item->setAaValue($field_id, new AA_Value($value));   // with its flag, as a grabber fills it
+            }
+            $saver = (new RecordingSaver(new ArrayGrabber([$item]), null, self::SLICE, 'update'))
+                ->addValidate('{iftype:{relation........}:longid:1 - _#1:mesto nenalezno}')
+                ->addValidate('{iftype:{publish_date....}:positive:1 - _#1:chyba datumu}')
+                ->addValidate('{ifset:{number..........}:1 - _#1:neni hodnota}')
+                ->addValidate('{ifin:{number..........}:idden:hidden hodnota:1 - _#1}');
+
+            $this->assertSame(($error === '') ? [1, 0] : [0, 1], $saver->run());
+            if ($error !== '') {
+                $this->assertContains("AA\\IO\\Saver->run(): validate failed: $error", $this->texts($saver));
+            }
         }
 
         // ------------------------------------------------------------ through the seams
