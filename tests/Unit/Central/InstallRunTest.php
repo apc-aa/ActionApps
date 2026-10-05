@@ -793,7 +793,9 @@ namespace Tests\Unit\Central {
             $this->assertSame([], self::queue());
         }
 
-        public function test_a_source_out_of_time_is_asked_at_once_for_half_the_items(): void
+        /** a batch too big for a step is asked at once for half the items; a source silent again may be down,
+         *  so it waits as an outage does - and the run stops as a source out of time, not as a batch too big */
+        public function test_a_source_out_of_time_is_asked_for_half_the_items_at_once_the_first_time(): void
         {
             $id = $this->runIn(InstallRun::ITEMS);
             $this->source(static fn() => throw new SourceFailed(SourceFailed::TIMEOUT, 'did not answer in time'));
@@ -802,10 +804,11 @@ namespace Tests\Unit\Central {
             $this->assertFalse(InstallRun::get($id)->isWaiting(time()), 'no wait');
             $this->assertLessThanOrEqual(time(), (int) self::queue()[0]['execute_after']);
             self::runQueued();
+            $this->assertTrue(InstallRun::get($id)->isWaiting(time()), 'silent again: a wait');
             self::runQueued();
 
             $this->assertSame([500, 250, 125], array_column($this->asked, 2));
-            $this->assertSame(['NO_PROGRESS', ''], InstallRun::get($id)->error());
+            $this->assertSame([SourceFailed::TIMEOUT, ''], InstallRun::get($id)->error());
             $this->assertSame('62', self::stored($id)['batch_items'], 'Continue goes on with half of the last');
         }
 

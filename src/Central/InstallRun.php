@@ -164,15 +164,16 @@ final class InstallRun extends BatchRun
             'filters'     => self::filtersJson($choices),
             'src_counts'  => self::countsJson($counts),
         ];
-        return DB_AA::transaction(static function () use ($props, $token): self {
+        $id = DB_AA::transaction(static function () use ($props, $token): string {
             $run   = self::start($props, self::PREVIEW);
             $until = self::sealedUntil($token);
             if (($token !== '') && ($until > static::now())) {
-                $run = self::lockForUpdate($run->getId()) ?? throw new LogicException('The new install run is gone');
-                $run->seal($token, $until);
+                (self::lockForUpdate($run->getId()) ?? throw new LogicException('The new install run is gone'))->seal($token, $until);
             }
-            return $run;
+            return $run->getId();
         });
+        // read again: neither the instance of start() nor the locked one (its lock ended with the commit) is the run now
+        return self::get($id) ?? throw new LogicException('The new install run is gone');
     }
 
     /** The preview of a run opened at the login to another AA: the definitions package it showed, which
@@ -359,8 +360,10 @@ final class InstallRun extends BatchRun
                 throw new BatchFailed($e->reason, 'source');
             }
             if ($e->reason === SourceFailed::TIMEOUT) {
-                // the batch takes the source longer than a step has: no wait, half the items at once
-                return new BatchStepResult($from, false, retry: 'NO_PROGRESS', extra: ['items' => max(1, intdiv($budget->items, 2))]);
+                // the batch may take the source longer than a step has: half the items, the first time at
+                // once - a source silent again may be down, so it waits as an outage does
+                $retry = ((int) $this->failures === 0) ? 'NO_PROGRESS' : SourceFailed::TIMEOUT;
+                return new BatchStepResult($from, false, retry: $retry, extra: ['items' => max(1, intdiv($budget->items, 2))]);
             }
             error_log('AA Central: the source of a transfer failed: ' . self::oneLine($e->getMessage()));
             return new BatchStepResult($from, false, retry: $e->reason);

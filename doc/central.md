@@ -178,16 +178,17 @@ Each step:
   other AA with the login token the run keeps sealed (`seal()`, a day at most). The source cuts at most
   **500 items / 4 MB** after the cursor (`id > cursor ORDER BY id`); an item larger than that alone is E
   `item-too-big`. Every answer of the source has a timeout from the rest of the step; a source that
-  does not answer in it (`SOURCE_TIMEOUT`) is asked again at once for half as many items (`Get_App`
-  `batch` param `items`), one that answers in a quarter of the time for twice as many, up to 500;
+  does not answer in it (`SOURCE_TIMEOUT`) is asked for half as many items (`Get_App` `batch` param
+  `items`) - the first time at once, again as after an outage (it may be down) - one that answers in a
+  quarter of the time for twice as many, up to 500;
 - writes it in **one transaction with the run's new position** under the run's lock: `Reader`,
   `Validator`, the target charset check, `ItemLint` and `ItemWriter` (field types from the target's
   `field` rows). A failure rolls the batch back with its position; the queue's fingerprint of a step
   makes a step queued twice do nothing;
 - a source that cannot be reached or fails (`SOURCE_UNREACHABLE`, `SOURCE_FAILED`) is asked again
-  after 5, then 15 minutes, then the run stops in `error`; three timeouts in a row stop it as
-  `NO_PROGRESS`; a write that fails stops it at once. Codes: E finding codes (`ITEM_TOO_BIG`, ...), `SOURCE_LOGIN`,
-  `SOURCE_UNREACHABLE`, `SOURCE_FAILED`, `SOURCE_DENIED`, `COLLECT_FAILED`, `WRITE_FAILED`, `DENIED`,
+  after 5, then 15 minutes, then the run stops in `error` (three timeouts in a row as `SOURCE_TIMEOUT`);
+  a write that fails stops it at once. Codes: E finding codes (`ITEM_TOO_BIG`, ...), `SOURCE_LOGIN`,
+  `SOURCE_UNREACHABLE`, `SOURCE_TIMEOUT`, `SOURCE_FAILED`, `SOURCE_DENIED`, `COLLECT_FAILED`, `WRITE_FAILED`, `DENIED`,
   `NO_PROGRESS`, `STEP_DIED` - with a place
   (`slice-module:<id>/item:<id>`), never a raw DB message (details in the PHP error log).
 
@@ -200,6 +201,8 @@ queued) <-> `error`; `items` -> `done`; `preview` | `items` | `error` -> `ended`
 - **End** (that user or any superadmin) keeps what is written and stops. To undo a transfer, delete
   the new modules as usual.
 - "Install an app" lists the unfinished transfers - for a superadmin those of all users.
+- An **install** finishes in the queue too (nothing to check, its write cleared the caches). When its
+  finish has not come for long, its progress page offers Continue and End as well.
 
 When the last slice is done, the last step checks (`TransferCheck`) and stores the **finish report**:
 per slice written / on the source / on this AA, and W findings `count-differs`,

@@ -161,6 +161,7 @@ namespace Tests\Unit\Optimize {
 
             $this->assertSame([Finding::WARNING, $id], [$findings[0]->severity, $findings[0]->key]);
             $this->assertSame('An installed app has waited for its finish for 2 hours', $findings[0]->title);
+            $this->assertStringStartsWith('The app is installed and works', $findings[0]->advice);
         }
 
         public function test_a_transfer_in_error_is_listed_with_its_error(): void

@@ -70,7 +70,9 @@ class CheckInstallRuns extends AbstractOptimize
                 },
                 since: $run->started(),
                 evidence: [$evidence],
-                advice: _m('The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written.'),
+                advice: ($run->mode() === InstallRun::TRANSFER)
+                    ? _m('The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written.')
+                    : _m('The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it.'),
                 links: [_m('Progress page') => AA_INSTAL_PATH . 'central/installapp.php?run=' . $run->getId()],
                 key: $run->getId(),
             );

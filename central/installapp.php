@@ -1268,7 +1268,8 @@ function installapp_progress(string $run_id, string $uid): void
         echo '<div class="aa-info">' . _m('This app was previewed, but not installed yet.') . ' ' . a_href(installapp_url(), _m('Preview it again')) . '</div>';
         return;
     }
-    if ($run->mode() !== InstallRun::TRANSFER) {
+    $install = $run->mode() !== InstallRun::TRANSFER;
+    if ($install && !$run->isStuck(InstallRun::clock())) {
         echo '<p>' . (in_array($run->state(), [InstallRun::ITEMS, InstallRun::DONE], true) ? _m('The app is installed.') : safe(installapp_state($run->state()))) . '</p>';
         return;
     }
@@ -1296,7 +1297,8 @@ function installapp_progress(string $run_id, string $uid): void
         'login'      => _m('The session has expired - log in again and reload this page.'),
         'more'       => _m('and %1 more', ['{n}']),
     ];
-    echo '<div class="aa-info">' . _m('Do not edit the source while the transfer runs. The batches go in the task queue of this AA - this page only shows them and may be closed.') . '</div>';
+    echo '<div class="aa-info">' . ($install ? _m('The app is installed and works - only the finish of its run waits for the task queue of this AA.')
+        : _m('Do not edit the source while the transfer runs. The batches go in the task queue of this AA - this page only shows them and may be closed.')) . '</div>';
     echo '<div id="installapp-progress" class="aa-installapp-progress" data-url="' . safe(installapp_url()) . '" data-report="' . safe(installapp_url(['run' => $run_id])) . '" data-token="' . safe(FormToken::get(INSTALLAPP_TOKEN)) . '"'
         . ' data-run="' . safe($run_id) . '" data-tries="' . BatchRun::MAX_FAILURES . '" data-places="' . INSTALLAPP_PLACES . '" data-texts="' . safe(installapp_js_data($texts)) . '"'
         . ' data-initial="' . safe(installapp_js_data((new TransferText($names))->page(TransferProgress::of($run, $uid)))) . '">';
@@ -1392,6 +1394,7 @@ function installapp_script(): void
     let lost = 0;               // questions in a row without an answer
     let timer = 0;
     let acts = 0;               // Continue and End sent - an older answer of the poll must not undo theirs
+    let told = '';              // what the last Continue or End answered - till the run moves on
 
     const written = () => Object.values(s.written || {}).reduce((sum, n) => sum + n, 0);
     const when = unix => {
@@ -1430,14 +1433,18 @@ function installapp_script(): void
             ...lines.filter(Boolean).map(line => Object.assign(document.createElement('div'), {textContent: line})));
         return li;
     };
-    const show = next => {
+    const show = (next, said = null) => {
+        if (said !== null) {
+            told = said;
+        } else if ((next.moved !== s.moved) || (next.state !== s.state)) {
+            told = '';
+        }
         s = next;
         for (const [slice, n] of Object.entries(s.written || {})) {
             const cell = box.querySelector(`td[data-slice="${CSS.escape(slice)}"]`);
             if (cell) cell.textContent = n.toLocaleString();
         }
-        const said = {busy: t.busy, login: t.loginFirst}[s.status];
-        say([s.error, said].filter(Boolean).join(' - '));
+        say([s.error, told].filter(Boolean).join(' - '));
         el('notes').replaceChildren(...[...s.found, ...s.notes].sort((a, b) => LEVELS.indexOf(a.level) - LEVELS.indexOf(b.level)).map(note));
         paint();
         if (s.state === 'done') location.href = box.dataset.report;
@@ -1470,7 +1477,7 @@ function installapp_script(): void
                 lost = 0;
             } catch (e) {
                 lost++;
-                say(e.answered ? e.message : t.lost);
+                if (sent === acts) say(e.answered ? e.message : t.lost);
             }
             ask();
         }, wait);
@@ -1480,9 +1487,11 @@ function installapp_script(): void
         busy = true;
         paint();
         try {
-            show(await post(action, more));
+            const next = await post(action, more);
+            show(next, {busy: t.busy, login: t.loginFirst}[next.status] || '');
         } catch (e) {
-            say(e.message);
+            told = e.message;
+            say([s.error, told].filter(Boolean).join(' - '));
         }
         busy = false;
         paint();

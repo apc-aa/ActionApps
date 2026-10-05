@@ -9,7 +9,8 @@ use AA\IO\DB\DB_AA;
 use AA\Later\BatchFailed;
 
 /** The requests of the progress page of a transfer: the state of the run, Continue and End. The queue
- *  moves the items (the steps of InstallRun) - the page only shows them and steers the run. Each
+ *  moves the items (the steps of InstallRun) - the page only shows them and steers the run. An install
+ *  has a page too, for a finish the queue never ran. Each
  *  answer is plain data for JSON; it quotes package text (finding refs, paths), the page escapes it.
  *  The user who started the run and any superadmin see it and may End it; Continue is that user's only -
  *  it goes on with that user's rights, and a new login to the source is that user's. The caller checks
@@ -26,7 +27,7 @@ final class TransferProgress
     /** Continue needs a new login to the source */
     public const LOGIN = 'login';
 
-    /** @return array<string, mixed> of() @throws BatchFailed FORBIDDEN no transfer run $uid may see */
+    /** @return array<string, mixed> of() @throws BatchFailed FORBIDDEN no run $uid may see */
     public static function state(string $id, string $uid, string $status = ''): array
     {
         return self::of(self::visible(InstallRun::get($id), $uid), $uid, $status);
@@ -68,10 +69,10 @@ final class TransferProgress
     }
 
     /** Continue may not go on without a new login to the source: it refused the token, or the run keeps
-     *  none any more (a day passed, AA_SECRET changed) */
+     *  none any more (a day passed, AA_SECRET changed) - unless no batch asks the source */
     public static function needsLogin(InstallRun $run): bool
     {
-        return !in_array($run->source(), [InstallRun::LOCAL, InstallRun::STORE], true)
+        return $run->slices() && !in_array($run->source(), [InstallRun::LOCAL, InstallRun::STORE], true)
             && ((($run->error()[0] ?? '') === SourceFailed::LOGIN) || ($run->token() === ''));
     }
 
@@ -123,10 +124,10 @@ final class TransferProgress
         return array_map(static fn(array $f): array => ['level' => $f[1]->level, 'code' => $f[1]->code, 'path' => $f[0], 'ref' => $f[1]->ref], $findings);
     }
 
-    /** @throws BatchFailed FORBIDDEN - one answer for no run, no transfer and no right, so the page learns nothing of other runs */
+    /** @throws BatchFailed FORBIDDEN - one answer for no run and no right, so the page learns nothing of other runs */
     private static function visible(?InstallRun $run, string $uid): InstallRun
     {
-        if (($run === null) || ($run->mode() !== InstallRun::TRANSFER) || !$run->mayControl($uid)) {
+        if (($run === null) || !$run->mayControl($uid)) {
             throw new BatchFailed('FORBIDDEN');
         }
         return $run;

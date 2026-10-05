@@ -587,15 +587,25 @@ final class TransferProgressTest extends TestCase
         self::assertSame(InstallRun::ITEMS, self::record($run)->state());
     }
 
-    public function test_no_run_and_an_install_run_have_no_progress(): void
+    public function test_no_run_has_no_progress(): void
     {
-        $install = $this->newRun();
-        $this->import($this->plan(), run: $install);
-
         self::assertSame('FORBIDDEN', self::refused(static fn() => TransferProgress::state(str_repeat('9', 32), self::USER)));
-        self::assertSame('FORBIDDEN', self::refused(static fn() => TransferProgress::state($install, self::USER)));
-        self::assertSame('FORBIDDEN', self::refused(static fn() => TransferProgress::end($install, self::USER)));
-        self::assertSame('FORBIDDEN', self::refused(static fn() => TransferProgress::resume($install, self::USER)));
+        self::assertSame('FORBIDDEN', self::refused(static fn() => TransferProgress::end(str_repeat('9', 32), self::USER)));
+    }
+
+    /** a written install whose finish the queue never ran - the app works, End closes the run */
+    public function test_an_install_waiting_for_its_finish_may_be_ended_without_a_login(): void
+    {
+        $install = $this->newRun(InstallRun::INSTALL, '7');
+        $this->import($this->plan(), run: $install);
+        $this->after->calls = [];
+
+        self::assertSame(['state' => InstallRun::ITEMS, 'login' => false, 'mayEnd' => true], self::seen($install, ['state', 'login', 'mayEnd']), 'no batch asks the source');
+        self::assertSame(TransferProgress::ENDED, TransferProgress::end($install, self::ADMIN));
+
+        self::runAll();
+        self::assertSame([], $this->after->calls, 'an install cleared its caches with its write');
+        self::assertSame(InstallRun::ENDED, self::record($install)->state());
     }
 
     public function test_a_run_without_a_user_is_nobody_s(): void
