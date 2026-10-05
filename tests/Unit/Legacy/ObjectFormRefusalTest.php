@@ -172,6 +172,42 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], self::objectWrites());
         }
 
+        /** the import would save items and the event would run the task again, for good */
+        public function test_task_eventWithImportRefusedOnSave(): void
+        {
+            self::perms(PS_FORMS . PS_FEEDING);
+
+            $error = self::save(AA_Plannedtask::class, '', ['task' => ['{import:prices}'], 'condition' => [''], 'event' => ['ITEM_UPDATED'], 'time' => [''], 'shift' => ['0'], 'item_id' => ['']]);
+
+            $this->assertIsString($error);
+            $this->assertStringContainsString('event', $error);
+            $this->assertSame([], self::objectWrites());
+            $this->assertNull(self::save(AA_Plannedtask::class, '', ['task' => ['{now:Y}'], 'condition' => [''], 'event' => ['ITEM_UPDATED'], 'time' => [''], 'shift' => ['0'], 'item_id' => ['']]), 'an event task without {import} is saved');
+        }
+
+        /** an {import} of the task runs with the right of whoever saved it last - never of a value posted */
+        public function test_task_saveRecordsSavedBy(): void
+        {
+            $GLOBALS['auth'] = new class {
+                public function getUid(): string
+                {
+                    return 'uid-saver';
+                }
+            };
+            try {
+                self::perms(PS_FORMS . PS_FEEDING);
+
+                $this->assertNull(self::save(AA_Plannedtask::class, '', ['task' => ['{import:prices}'], 'condition' => [''], 'event' => [''], 'time' => [''], 'shift' => ['0'], 'item_id' => [''], 'saved_by' => ['uid-forged']]));
+            } finally {
+                unset($GLOBALS['auth']);
+            }
+
+            $saved = array_values(array_filter(self::objectWrites(), static fn(string $s): bool => str_starts_with($s, 'INSERT') && str_contains($s, 'saved_by')));
+            $this->assertCount(1, $saved);
+            $this->assertStringContainsString('uid-saver', $saved[0]);
+            $this->assertStringNotContainsString('uid-forged', implode("\n", RecordingDb::$log));
+        }
+
         public function test_plannedtask_without_import_unaffected(): void
         {
             $this->assertNull(self::saveTask('', '{now:Y}', ''));

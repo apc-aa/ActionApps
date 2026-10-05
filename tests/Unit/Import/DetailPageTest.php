@@ -188,11 +188,17 @@ final class DetailPageTest extends TestCase
         self::definition();
         $call  = '<code>&#123;import:' . self::DEF . ':changed&#125;</code>';
         $other = 'uid-9';
-        // the perms of the page's user, then those of the superadmin logged in
-        $GLOBALS['permission_uid'] = $other;
+        // the perms of the page's user, read from the storage, then those of the superadmin logged in
+        $perm     = \AA::$perm;
+        \AA::$perm = new class ([]) extends \AA_Perm {
+            public function getUserPerms($uid, $objectType, $flags = 0): array
+            {
+                return (($uid === 'uid-9') && ($objectType === 'slice')) ? ['5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b5b' => PS_FEEDING] : [];
+            }
+        };
         $page = DetailPage::forRequest(self::SLICE, self::DEF, $other) ?? throw new \LogicException('No page');
-        $GLOBALS['permission_uid'] = AuthGetUid();
-        $GLOBALS['r_superuser']    = [AA_ID => true];
+        \AA::$perm = $perm;
+        $GLOBALS['r_superuser'] = [AA_ID => true];
         try {
             // alone: the rest of the overview asks for the perms of the page's user again
             $html = (new \ReflectionMethod($page, 'taskCallHtml'))->invoke($page);

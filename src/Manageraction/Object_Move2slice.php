@@ -60,6 +60,12 @@ class Object_Move2slice extends \AA\Manageraction\Item_Move2Slice
                 $msg[] = _m('The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there.', [safe((string) $object->getName())]);
                 continue;
             }
+            if ($object instanceof AA_Plannedtask) {
+                // its {import} ran with the right of whoever saved it in the old slice - the task is
+                // saved again in the new one before it imports there
+                $object->setOwnerId($dest_slice_id)->setProperty('saved_by', '')->update(['aa_owner', 'saved_by']);
+                continue;
+            }
             $object?->setOwnerId($dest_slice_id)->update(['aa_owner']);
         }
 

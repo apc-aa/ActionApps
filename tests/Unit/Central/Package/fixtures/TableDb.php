@@ -291,6 +291,8 @@ final class TableDb extends DB_PDO
                 'in' => (bool) array_filter($value, static fn($v): bool => $equal($name, $v)),
                 '>'  => ($row[$name] ?? 0) > $value,
                 '<'  => ($row[$name] ?? 0) < $value,
+                '>=' => ($row[$name] ?? 0) >= $value,
+                '<=' => ($row[$name] ?? 0) <= $value,
             };
             if (!$ok) {
                 return false;
@@ -369,14 +371,14 @@ final class SqlScanner
     }
 
     /** conditions joined by AND, up to anything else (LIMIT, FOR UPDATE, the end): `col = literal`,
-     *  `col IN (literals)`, `col > literal`, `col < literal`
-     *  @return list<array{string, string, mixed}> [operator (= in > <), column, value] */
+     *  `col IN (literals)`, `col > literal`, `col < literal`, `col >= literal`, `col <= literal`
+     *  @return list<array{string, string, mixed}> [operator (= in > < >= <=), column, value] */
     public function conditions(): array
     {
         $conditions = [];
         do {
             $this->space();
-            if (preg_match('/\G`?([\w.]+)`? ([<>]) /', $this->sql, $m, 0, $this->pos)) {
+            if (preg_match('/\G`?([\w.]+)`? ([<>]=?) /', $this->sql, $m, 0, $this->pos)) {
                 $this->pos   += strlen($m[0]);
                 $conditions[] = [$m[2], preg_replace('/^\w+\./', '', $m[1]), $this->literal()];
             } elseif (preg_match('/\G`?([\w.]+)`? IN \(/', $this->sql, $m, 0, $this->pos)) {

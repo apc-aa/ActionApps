@@ -44,6 +44,9 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     protected $time = '';
     protected $shift = 0;
     protected $item_id = '';
+    /** who saved the task last - its {import} runs with his right to the slice. A uid: a task of a
+     *  deleted user keeps it, so a new user given the same uid would inherit the task's imports. */
+    protected $saved_by = '';
 
     /** the task whose toexecutelater() runs now - an expression may act only inside a task */
     private static ?self $running = null;
@@ -64,7 +67,26 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             'time' => new AA_Property('time', _m("Time to run"), 'string', false, true, '', false, _m("Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so.")),
             'shift' => new AA_Property('shift', _m("+ seconds"), 'int', false, true, '', false, _m('Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the "15-th in the month" by previous row, so you can combine both:<br> - "time" = "first day of this month 10:00"<br> - "+ seconds" = "1209600"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)')),
             'item_id' => new AA_Property('item_id', _m("Item ID"), 'string', false, true, 'id', false, _m("Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item.")),
+            'saved_by' => new AA_Property('saved_by', _m("Saved by"), 'string', false, true),
         ];
+    }
+
+    /** The form leaves out who saved the task - save() records it. */
+    public static function addFormrows(AA_Form $form): void
+    {
+        if (static::USES_NAME) {
+            self::getPropertyObject('aa_name')?->addPropertyFormrows($form);
+        }
+        foreach (array_diff_key(static::getClassProperties(), ['saved_by' => 1]) as $property) {
+            $property->addPropertyFormrows($form);
+        }
+    }
+
+    /** Records who saves the task - never a value of the form. */
+    public function save(): false|string
+    {
+        $this->saved_by = AuthGetUid();
+        return parent::save();
     }
 
     // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
@@ -253,11 +275,46 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         return array_map(static fn(array $call): array => [($call[1] ?? '') . ($call[2] ?? ''), ($call[3] ?? '') . ($call[4] ?? ''), substr($call[0], 7, 1)], $calls);
     }
 
+    /** {import} normalized as it runs: the import trimmed, the mode trimmed and lower-cased, '' = run
+     *  @return array{string, string} */
+    public static function importCall(string $ref, string $mode): array
+    {
+        $mode = strtolower(trim($mode));
+        return [trim($ref), ($mode === '') ? 'run' : $mode];
+    }
+
+    /** Whether the task's own text (task or condition) calls {import:$ref:$mode}, normalized as
+     *  importCall() - a call in a view, an included text or an item the task shows is not the task's.
+     *  The import is compared as Definition::nameKey() compares names. */
+    public function callsImport(string $ref, string $mode): bool
+    {
+        foreach (self::importCallArgs($this->task . "\n" . $this->condition) as [$own_ref, $own_mode, $form]) {
+            [$own_ref, $own_mode] = self::importCall($own_ref, $own_mode);
+            if (($form === ':') && ($own_mode === $mode) && (\AA\Import\Definition::nameKey($own_ref) === \AA\Import\Definition::nameKey($ref))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** whether an event runs the task - besides its time, if it has one */
+    public function hasEvent(): bool
+    {
+        return (bool) array_filter((array) $this->event, static fn(mixed $e): bool => trim((string) $e) !== '');
+    }
+
     /** The page of the tasks also lets in users who only edit the forms, but an import belongs to
-     *  the users who manage the feeding of the slice. */
+     *  the users who manage the feeding of the slice. A task run on an event would run again on the
+     *  items its import saves - for good. */
     public function formRefusal(): ?string
     {
-        if ($this->usesImport() && !IfSlPerm(PS_FEEDING, $this->getOwnerId())) {
+        if (!$this->usesImport()) {
+            return null;
+        }
+        if ($this->hasEvent()) {
+            return _m('The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again.');
+        }
+        if (!IfSlPerm(PS_FEEDING, $this->getOwnerId())) {
             return _m('The task was not saved - only a user who manages the feeding of the slice may save a task with {import}.');
         }
         return null;

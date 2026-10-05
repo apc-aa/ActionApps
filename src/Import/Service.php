@@ -11,6 +11,7 @@ use AA\Later\BatchBudget;
 use AA\Later\BatchBudgetSpent;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
+use AA\Util\LogOnce;
 use AA_Log;
 use JsonException;
 use Throwable;
@@ -41,9 +42,11 @@ final class Service
 
     /**
      * Queues a run of the definition $d of the slice $d belongs to, with the definition as stored now.
-     * A manual start checks the user's right to run imports of the slice and to the slices its
-     * settings name; a planned one keeps the right of whoever set them. A planned start ends a run in
-     * error or hanging (blocking()) in the transaction that starts the new one, which names it.
+     * Each start checks that $user runs the imports of the slice - for a planned one the user who
+     * saved the task; a manual start checks his right to the slices the settings name too, a planned
+     * one keeps the right of whoever set them. A planned start ends a run in error or hanging
+     * (blocking()) in the transaction that starts the new one, which names it; its refusal is logged,
+     * as no page shows it.
      * @param array{dry?: bool, streams?: list<string>, limit?: int} $opt  streams = some of the source's
      * @param string $mode    run | changed | check | baseline - a baseline by hand only, by whoever may
      *                        manage the definition, of a Probeable source (else NO_VERSIONS): it records
@@ -55,6 +58,18 @@ final class Service
         if (preg_match(self::TRIGGER, $trigger) !== 1) {
             throw new \InvalidArgumentException('An import starts manual, plan:<task id> or event:<task id>');
         }
+        $r = self::startOrRefuse($d, $mode, $opt, $trigger, $user);
+        // a bug of the source is logged where it is caught, with its place; a plan runs every few
+        // minutes, so once a day says enough
+        if (($trigger !== 'manual') && ($r->code === 'invalid') && ($r->reason !== 'SOURCE')) {
+            LogOnce::daily(Definition::ERROR_EVENT, 'Import_' . $d->getId(), '#' . $d->getId() . ' ' . $r->reason);
+        }
+        return $r;
+    }
+
+    /** @param array{dry?: bool, streams?: list<string>, limit?: int} $opt */
+    private static function startOrRefuse(Definition $d, string $mode, array $opt, string $trigger, string $user): StartResult
+    {
         if (!in_array($mode, self::MODES, true) || (($mode === 'baseline') && ($trigger !== 'manual'))) {
             return new StartResult('invalid', reason: 'MODE');
         }
@@ -71,8 +86,9 @@ final class Service
         if (!$manual && !self::isTaskOf($trigger, $slice)) {
             return new StartResult('invalid', reason: 'TRIGGER');
         }
-        // the right to run imports of the slice, as for Continue and End
-        if ($manual && !Definition::mayImportInto($user, $slice)) {
+        // the right to run imports of the slice, as for Continue and End; a planned start reads it as
+        // it is now, not as the session of the queue's request keeps it
+        if (!Definition::mayImportInto($user, $slice, !$manual)) {
             return new StartResult('invalid', reason: 'FORBIDDEN');
         }
         try {
@@ -127,8 +143,7 @@ final class Service
                 }
                 $keys = array_map('strval', array_keys(Run::streamsOf($source)));
             } catch (Throwable $e) {
-                // a planned start has no page to show its refusal
-                return new StartResult('invalid', reason: self::sourceFailure($id, $e, !$manual), detail: SourceFailure::detailOf($e));
+                return new StartResult('invalid', reason: self::sourceFailure($id, $e), detail: SourceFailure::detailOf($e));
             }
             if ($options['streams'] !== null) {
                 if (array_diff($options['streams'], $keys)) {
@@ -247,7 +262,7 @@ final class Service
             $new = Registry::create($source, $settings);
         } catch (Throwable $e) {
             // SETTINGS: each setting passed alone, the source refused them together
-            return new ChangeResult((self::sourceFailure($id, $e, false) === 'SETTINGS') ? 'SETTINGS' : 'SOURCE');
+            return new ChangeResult((self::sourceFailure($id, $e) === 'SETTINGS') ? 'SETTINGS' : 'SOURCE');
         }
         // valid UTF-8 - checkSettings() made sure
         $json = $settings ? json_encode($settings, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) : '';
@@ -331,7 +346,7 @@ final class Service
             try {
                 $source = Registry::create($def->sourceType(), $settings);
             } catch (Throwable $e) {
-                return new ChangeResult((self::sourceFailure($id, $e, false) === 'SETTINGS') ? 'SETTINGS' : 'NO_MAPPING');
+                return new ChangeResult((self::sourceFailure($id, $e) === 'SETTINGS') ? 'SETTINGS' : 'NO_MAPPING');
             }
             $refused = self::takeDefaultMapping($def, $source, $slice);
             if ($refused !== null) {
@@ -399,7 +414,7 @@ final class Service
             // the time ran out: no answer in time, not a bug of the source
             return new ChangeResult('TRANSPORT');
         } catch (Throwable $e) {
-            return new ChangeResult(self::sourceFailure($id, $e, false), SourceFailure::detailOf($e));
+            return new ChangeResult(self::sourceFailure($id, $e), SourceFailure::detailOf($e));
         }
         return new ChangeResult('CHANGED');
     }
@@ -470,7 +485,8 @@ final class Service
         return null;
     }
 
-    /** A planned start comes from a task of the slice. Tasks run on events have no rule for imports yet. */
+    /** A planned start comes from a task of the slice. A task run on an event never imports: the import
+     *  saves items, and the event would run the task again. */
     private static function isTaskOf(string $trigger, string $slice): bool
     {
         [$kind, $task] = explode(':', $trigger);
@@ -488,7 +504,7 @@ final class Service
         try {
             $mapping = $source->defaultMapping();
         } catch (Throwable $e) {
-            self::sourceFailure((string) $def->getId(), $e, false);
+            self::sourceFailure((string) $def->getId(), $e);
             return new ChangeResult('NO_MAPPING');
         }
         $problems = $mapping->problems($slice);
@@ -518,7 +534,7 @@ final class Service
         try {
             $declared = $class::getClassProperties();
         } catch (Throwable $e) {
-            return self::sourceFailure($id, $e, false);
+            return self::sourceFailure($id, $e);
         }
         $checked = [];
         foreach ($settings as $name => $value) {
@@ -570,10 +586,10 @@ final class Service
     }
 
     /** The code of a failure of the source's own code. A bug is logged (class and line, never its
-     *  text); a refusal only with $logRefusal - otherwise a page shows it. */
-    private static function sourceFailure(string $id, Throwable $e, bool $logRefusal): string
+     *  text); a refusal is the caller's to show. */
+    private static function sourceFailure(string $id, Throwable $e): string
     {
-        if (!($e instanceof SourceFailure) || $logRefusal) {
+        if (!($e instanceof SourceFailure)) {
             Definition::logError($id, $e);
         }
         return ($e instanceof SourceFailure) ? $e->reason : 'SOURCE';

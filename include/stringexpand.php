@@ -6232,6 +6232,66 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     }
 }
 
+/** {import:<import>[:run|changed|check]} - in a planned task, queues a run of the import of the task's
+ *  slice given by its id or name; run is the default mode. Anywhere else - a view, a page, a step of an
+ *  import - it does nothing; a call the task's own text does not write is invalid. The import runs with the right of whoever saved the task last.
+ *  Answers imp:queued, imp:busy (a run is in the way), imp:off (the import is disabled), imp:unknown
+ *  (no such import of the slice), imp:invalid (a wrong call, a name two imports share, a task run on
+ *  an event, an import that cannot start - logged) or imp:denied (the task was saved before tasks
+ *  recorded who saved them, or that user does not manage the feeding of the slice).
+ *  {import:prices:changed}
+ */
+class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
+    /** stands for the arguments of {import(..)} - only {import:..} reaches an import */
+    private const NOT_COLON = "\x00(";
+
+    public static function parseParam(string $params, string $delimiter=':'): array
+    {
+        return ($delimiter === '(') ? [self::NOT_COLON] : parent::parseParam($params, $delimiter);
+    }
+
+    /** the log of a task keeps 40 bytes of its name and output - so a short code, nothing more */
+    function expand($ref='', $mode='', ...$more): string
+    {
+        $task = AA_Plannedtask::running();
+        // a step of an import may save items whose event runs a task
+        if (!$task || \AA\Later\BatchStep::running()) {
+            return '';
+        }
+        if ($more || ($ref === self::NOT_COLON)) {
+            return 'imp:invalid';
+        }
+        [$ref, $mode] = AA_Plannedtask::importCall((string)$ref, (string)$mode);
+        // a call the task does not write itself comes from a view or a text it shows - their author
+        // did not save the task
+        if (($ref === '') || !in_array($mode, ['run', 'changed', 'check'], true) || !$task->callsImport($ref, $mode)) {
+            return 'imp:invalid';
+        }
+        // an event task: its import would save items and run the task again, for good
+        if ($task->hasEvent() || !preg_match('/^[0-9a-f]{32}\z/', (string)$task->getId())) {
+            return 'imp:invalid';
+        }
+        $slice = (string)$task->getOwnerId();
+        $def   = \AA\Import\Definition::byNameOrId($slice, $ref);
+        if (!$def) {
+            $named = \AA\Import\Definition::named($slice, $ref);
+            foreach ((count($named) > 1) ? $named : [] as $id) {
+                \AA\Util\LogOnce::daily(\AA\Import\Definition::ERROR_EVENT, "Import_$id", "#$id AMBIGUOUS");
+            }
+            return (count($named) > 1) ? 'imp:invalid' : 'imp:unknown';
+        }
+        $user = (string)$task->getProperty('saved_by');
+        if ($user === '') {
+            return 'imp:denied';
+        }
+        $result = \AA\Import\Service::start($def, $mode, [], 'plan:' . $task->getId(), $user);
+        if (($result->code === 'invalid') && ($result->reason === 'FORBIDDEN')) {
+            return 'imp:denied';
+        }
+        return 'imp:' . $result->code;
+    }
+}
+
 /** include file / URL {include:<url>:<type>:<headers>:<body>:<err>}
  *  $url     - filename / URL
  *  $type    - hint on where to find it  (http, ajax, site, readfile, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default

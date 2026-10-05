@@ -768,7 +768,8 @@ final class DetailPage
             $name   = a_href($edit->getAdminUrl(), safe(($task['name'] === '') ? $task['id'] : $task['name']));
             $modes  = implode(', ', array_unique(array_map(self::modeText(...), $task['modes'])));
             $next   = $task['next'] ? _m('next %1', [date('Y-m-d H:i', $task['next'])]) : _m('no time set');
-            $items .= '<li>' . $name . ': ' . $modes . ', ' . $next . ', ' . ($task['queued'] ? _m('queued') : _m('not queued')) . $off . '</li>';
+            $unsaved = $task['saved'] ? '' : ' - ' . _m('save the task again to let it start the import');
+            $items  .= '<li>' . $name . ': ' . $modes . ', ' . $next . ', ' . ($task['queued'] ? _m('queued') : _m('not queued')) . $off . $unsaved . '</li>';
         }
         $html = ($items === '') ? '' : '<ul class="aa-import-tasks">' . $items . '</ul>';
         return $html . a_href(self::scheduleUrl($this->def), _m('Schedule'), ['class' => 'aa-button-new']);

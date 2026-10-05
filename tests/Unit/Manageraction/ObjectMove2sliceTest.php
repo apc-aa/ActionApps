@@ -82,6 +82,21 @@ final class ObjectMove2sliceTest extends TestCase
         $this->assertSame([self::$import], self::moved());
     }
 
+    /** its {import} ran with the right of whoever saved it in the old slice - saved again, it imports in the new one */
+    public function test_perform_moved_task_forgets_who_saved_it(): void
+    {
+        self::perms(PS_FULLTEXT, PS_FULLTEXT . PS_FEEDING);
+
+        $this->assertSame('', self::move([self::$import, self::$task]));
+
+        foreach ([self::$import, self::$task] as $id) {
+            $deleted = array_filter(RecordingDb::$log, static fn(string $sql): bool => str_starts_with($sql, 'DELETE') && str_contains($sql, $id) && str_contains($sql, "'saved_by'"));
+            $this->assertNotEmpty($deleted, "the author of $id is dropped");
+        }
+        $authors = array_filter(RecordingDb::inserts('object_text'), static fn(array $row): bool => (($row['property'] ?? '') === 'saved_by') && ((string) ($row['value'] ?? '') !== ''));
+        $this->assertSame([], $authors);
+    }
+
     public function test_perform_feeding_on_source_does_not_count(): void
     {
         self::perms(PS_FULLTEXT . PS_FEEDING);

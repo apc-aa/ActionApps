@@ -212,14 +212,14 @@ final class Definition extends AA_Object implements InternalExpandInterface
     /**
      * The planned tasks of the slice that call this import by its id or its name, soonest first:
      * the modes they call it with, and when they start it next - see nextPlanned().
-     * @return list<array{id: string, name: string, modes: list<string>, next: int, queued: bool}> next 0 = never
+     * @return list<array{id: string, name: string, modes: list<string>, next: int, queued: bool, saved: bool}> next 0 = never
      */
     public function plannedTasks(int $now): array
     {
         return self::tasksCalling((string) $this->getOwnerId(), (string) $this->getId(), (string) $this->aa_name, $now);
     }
 
-    /** @return list<array{id: string, name: string, modes: list<string>, next: int, queued: bool}> */
+    /** @return list<array{id: string, name: string, modes: list<string>, next: int, queued: bool, saved: bool}> */
     private static function tasksCalling(string $slice, string $id, string $name, int $now): array
     {
         $tasks = [];
@@ -233,6 +233,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
                 'modes'  => array_values(array_unique($modes)),
                 'next'   => $task['queued'] ?? (new AA_Plannedtask(['time' => $task['time'], 'shift' => $task['shift']]))->nextStart($now),
                 'queued' => $task['queued'] !== null,
+                'saved'  => $task['saved'],
             ];
         }
         // a task with no time to start comes last
@@ -240,7 +241,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
         return $tasks;
     }
 
-    /** @return list<array{id: string, name: string, slice: string, calls: list<array{string, string}>, time: string, shift: int, queued: ?int}> */
+    /** @return list<array{id: string, name: string, slice: string, calls: list<array{string, string}>, time: string, shift: int, queued: ?int, saved: bool}> */
     private static function plannedTasksOf(string $slice): array
     {
         if (!is_long_id($slice)) {
@@ -268,9 +269,10 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     /**
      * For the cache of nextPlanned(): the planned tasks that call {import} - their id, name and slice,
-     * each call's import name or id (nameKey()) and mode (as importCallArgs(), '' made 'run'), their time
-     * and the earliest step queued for them.
-     * @return list<array{id: string, name: string, slice: string, calls: list<array{string, string}>, time: string, shift: int, queued: ?int}>
+     * each call's import name or id (nameKey()) and mode as {import} reads them (AA_Plannedtask::importCall()),
+     * their time, the earliest step queued for them and whether the task says who saved it - {import}
+     * of a task saved before tasks recorded it is denied.
+     * @return list<array{id: string, name: string, slice: string, calls: list<array{string, string}>, time: string, shift: int, queued: ?int, saved: bool}>
      */
     public static function plannedTasksFromDb(): array
     {
@@ -279,18 +281,17 @@ final class Definition extends AA_Object implements InternalExpandInterface
             return [];
         }
         $rows = [];
-        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $ids], ['property', ['aa_owner', 'aa_name', 'task', 'time', 'shift']]]) as $row) {
+        foreach (DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $ids], ['property', ['aa_owner', 'aa_name', 'task', 'time', 'shift', 'saved_by']]]) as $row) {
             $rows[(string) $row['object_id']][(string) $row['property']] = (string) $row['value'];
         }
         $tasks = [];
         foreach ($rows as $taskId => $task) {
             $calls = [];
             foreach (AA_Plannedtask::importCallArgs($task['task'] ?? '') as [$ref, $mode, $form]) {
-                // a bare {import} names no import, {import(x)} never reaches the import x;
-                // {import} trims its parameters
-                if (($form === ':') && (trim($ref) !== '')) {
-                    $mode    = strtolower(trim($mode));
-                    $calls[] = [self::nameKey(trim($ref)), ($mode === '') ? 'run' : $mode];
+                [$ref, $mode] = AA_Plannedtask::importCall($ref, $mode);
+                // a bare {import} names no import, {import(x)} never reaches the import x
+                if (($form === ':') && ($ref !== '')) {
+                    $calls[] = [self::nameKey($ref), $mode];
                 }
             }
             if ($calls) {
@@ -302,6 +303,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
                     'time'   => $task['time'] ?? '',
                     'shift'  => (int) ($task['shift'] ?? 0),
                     'queued' => null,
+                    'saved'  => ($task['saved_by'] ?? '') !== '',
                 ];
             }
         }
@@ -566,10 +568,16 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     /** The one rule of imports: whoever manages the feeding of a slice imports into it - defines its
      *  imports and controls their runs. Only a slice: the admin role of a site or alerts module holds
-     *  PS_FEEDING too. */
-    public static function mayImportInto(string $uid, string $slice): bool
+     *  PS_FEEDING too. With $fresh, or for another user than the logged-in one (who saved a planned
+     *  task, whose run a queue step goes on with), it is read from the perm storage: the session keeps
+     *  the logged-in user's rights as they were at login, and CheckPerms() would put another user's
+     *  rights into it. */
+    public static function mayImportInto(string $uid, string $slice, bool $fresh = false): bool
     {
-        return is_long_id($slice) && CheckPerms($uid, 'slice', $slice, PS_FEEDING) && (\AA_Slice::getOwnModule(strtolower($slice)) !== null);
+        if (!is_long_id($slice) || (\AA_Slice::getOwnModule(strtolower($slice)) === null)) {
+            return false;
+        }
+        return ($fresh || ($uid !== AuthGetUid())) ? AA::$perm->hasSlicePerm($uid, $slice, PS_FEEDING) : CheckPerms($uid, 'slice', $slice, PS_FEEDING);
     }
 
     /**
@@ -703,7 +711,8 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     /**
      * The definition of slice $sliceId given by its id or name; never one of another slice, so a
-     * slice cannot start the import of another one. null also for a name two definitions share.
+     * slice cannot start the import of another one. null also for a name two definitions share -
+     * named() tells them.
      */
     public static function byNameOrId(string $sliceId, string $ref): ?self
     {
@@ -823,7 +832,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
     }
 
     /** @return list<string> ids of the definitions of slice $sliceId called $name */
-    private static function named(string $sliceId, string $name): array
+    public static function named(string $sliceId, string $name): array
     {
         if ($name === '') {
             return [];

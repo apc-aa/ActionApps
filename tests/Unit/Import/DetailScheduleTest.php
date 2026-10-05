@@ -260,6 +260,19 @@ final class DetailScheduleTest extends TestCase
         $this->assertStringNotContainsString('<b>1', $html);
     }
 
+    /** a task saved before tasks recorded who saved them starts no import until it is saved again */
+    public function test_linkedTasks_taskNotSavedSinceSaysSaveAgain(): void
+    {
+        self::definition('Prices');
+        self::task(self::TASK_A, self::SLICE, 'Old task', '{import:prices}', '03:00', '');
+        self::task(self::TASK_B, self::SLICE, 'New task', '{import:prices}', '04:00');
+
+        $html = self::overview();
+
+        $this->assertMatchesRegularExpression('~>Old task</a>: Run, next [^<]*, not queued - save the task again to let it start the import</li>~', $html);
+        $this->assertMatchesRegularExpression('~>New task</a>: Run, next [^<]*, not queued</li>~', $html);
+    }
+
     public function test_taskWithoutNameShowsId(): void
     {
         self::definition('Prices');
@@ -306,10 +319,14 @@ final class DetailScheduleTest extends TestCase
         self::assertSame(self::DEF, $def->save());
     }
 
-    /** a planned task of $slice, stored as its form stores it */
-    private static function task(string $id, string $slice, string $name, string $task, string $time): void
+    /** a planned task of $slice, stored as its form stores it - with who saved it, unless $savedBy is '' */
+    private static function task(string $id, string $slice, string $name, string $task, string $time, string $savedBy = 'uid-1'): void
     {
-        foreach (['aa_type' => 'AA_Plannedtask', 'aa_owner' => $slice, 'aa_name' => $name, 'task' => $task, 'time' => $time, 'shift' => '0'] as $property => $value) {
+        $props = ['aa_type' => 'AA_Plannedtask', 'aa_owner' => $slice, 'aa_name' => $name, 'task' => $task, 'time' => $time, 'shift' => '0'];
+        if ($savedBy !== '') {
+            $props['saved_by'] = $savedBy;
+        }
+        foreach ($props as $property => $value) {
             TableDb::$tables['object_text'][] = ['id' => 800000 + count(TableDb::rows('object_text')), 'object_id' => $id, 'property' => $property, 'priority' => 0, 'value' => $value, 'flag' => null];
         }
     }

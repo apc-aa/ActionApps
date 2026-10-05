@@ -55,6 +55,14 @@ final class ServiceTest extends TestCase
 
     protected function setUp(): void
     {
+        // a logged-in user: a planned start reads even his rights from the storage, which mirrors the session below
+        $GLOBALS['auth'] = new class {
+            public function getUid(): string
+            {
+                return 'uid-me';
+            }
+        };
+        self::storedPerms([]);
         $this->stepsSetUp();
         $dir = __DIR__ . '/fixtures/service';
         Registry::setCustomRootForTests(dirname($dir), $dir);
@@ -80,6 +88,7 @@ final class ServiceTest extends TestCase
     {
         Registry::setCustomRootForTests(null);
         $this->stepsTearDown();
+        unset($GLOBALS['auth']);
     }
 
     // ------------------------------------------------------------ start()
@@ -90,6 +99,7 @@ final class ServiceTest extends TestCase
         // the page's copy is older than the stored definition - the run takes what is stored, under the lock
         $stale = clone $def;
         $stale->setProperty('mapping', '{"rows":[]}');
+        self::storedPerms(['uid-9' => [self::SLICE => PS_FEEDING]]);
         TableDb::$log = [];
 
         $r = Service::start($stale, 'changed', ['streams' => ['s3', 's1']], 'plan:' . self::TASK, 'uid-9');
@@ -235,6 +245,64 @@ final class ServiceTest extends TestCase
         $this->assertSame(['invalid', 'FORBIDDEN'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
         $this->assertSame('error', self::stored($old)['state']);
         $this->assertSame([$old], self::runIds());
+    }
+
+    /** a planned start runs with the right of whoever saved the task - read as it is now, not from the
+     *  permissions the session of the queue's request keeps for its own user */
+    public function test_start_planChecksFeedingOfTaskAuthor(): void
+    {
+        $def = self::definition();
+        self::storedPerms(['uid-author' => [self::SLICE => PS_FORMS . PS_EDIT_ALL_ITEMS, self::OTHER => PS_FEEDING]]);
+
+        $this->assertSame(['invalid', 'FORBIDDEN'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, 'uid-author')));
+        $this->assertSame([], self::runIds());
+        $this->assertSame(AuthGetUid(), $GLOBALS['permission_uid'], 'the session keeps its own permissions');
+
+        // the role of an administrator holds the feeding
+        self::storedPerms(['uid-author' => [self::SLICE => \AA_Perm::ROLES['ADMINISTRATOR']['id']]]);
+        $this->assertSame('queued', Service::start($def, 'run', [], 'plan:' . self::TASK, 'uid-author')->code);
+    }
+
+    /** the session keeps the rights the user had when he logged in - a plan asks the storage */
+    public function test_start_planReadsRightsOfTheLoggedInUserFresh(): void
+    {
+        $def = self::definition();
+        self::storedPerms(['uid-me' => [self::SLICE => PS_EDIT_ALL_ITEMS]]);
+
+        $this->assertSame(['invalid', 'FORBIDDEN'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
+        $this->assertSame('queued', Service::start($def, 'run', [], 'manual', AuthGetUid())->code, 'a page reads the session');
+    }
+
+    /** a plan runs every few minutes - its refusal is logged once a day */
+    public function test_plannedStart_refusalLoggedOnceADay(): void
+    {
+        $def = self::definition(['enabled' => '1', 'mapping' => '{"rows":[{"to":"text...........9","t":"copyfield","p":{"field2copy":"key"}}]}', 'key_fields' => '["text...........9"]']);
+
+        for ($i = 0; $i < 3; $i++) {
+            $this->assertSame(['invalid', 'DEFINITION'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
+            \AA\Util\LogOnce::reset();   // as the next queue round, in another request
+        }
+        $this->assertSame(['#' . self::DEF . ' DEFINITION'], self::logged());
+    }
+
+    /** a planned start has no page to show why it was refused - State Check reads it from the log */
+    public function test_plannedStart_refusalLogged(): void
+    {
+        $def = self::definition(['mapping' => '{"rows":[{"to":"text...........9","t":"copyfield","p":{"field2copy":"key"}}]}', 'key_fields' => '["text...........9"]']);
+
+        $this->assertSame(['invalid', 'DEFINITION'], self::codeOf(Service::start($def, 'run', [], 'manual', AuthGetUid())));
+        $this->assertSame([], self::logged(), 'the page shows a manual refusal');
+
+        $this->assertSame(['invalid', 'DEFINITION'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
+        $this->assertSame(['#' . self::DEF . ' DEFINITION'], self::logged());
+
+        // a bug of the source is logged once, by its class and line
+        self::storedSet(self::DEF, 'mapping', self::NO_PARAM_MAPPING);
+        self::storedSet(self::DEF, 'key_fields', '["relation........"]');
+        \ServiceSource::$failStreams = new \RuntimeException('a bug');
+        $this->assertSame(['invalid', 'SOURCE'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
+        $this->assertCount(2, self::logged());
+        $this->assertStringContainsString('RuntimeException', self::logged()[1]);
     }
 
     /** @return array<string, array{array<string, string>, string}> what another process writes into the run meanwhile, the reason */
@@ -395,9 +463,10 @@ final class ServiceTest extends TestCase
         // the page shows a refusal; only the bug of the source is logged - by class and line
         $this->assertSame(['RuntimeException'], array_map(static fn(string $p): string => explode(' ', $p)[1], self::logged()));
 
-        // a planned start has no page: its refusal is logged too, by its code
+        // a planned start has no page: its refusal is logged too, by its code - once a day for the import
+        TableDb::$tables['log'] = [];
         $this->assertSame(['invalid', 'NO_CREDENTIAL'], self::codeOf(Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())));
-        $this->assertSame('#' . self::DEF . ' NO_CREDENTIAL', self::logged()[1] ?? '');
+        $this->assertSame(['#' . self::DEF . ' NO_CREDENTIAL'], self::logged());
         $this->assertSame([], self::runIds());
         $this->assertStringNotContainsString('s3cr3t', json_encode(TableDb::$tables, JSON_THROW_ON_ERROR));
     }
@@ -1288,6 +1357,26 @@ final class ServiceTest extends TestCase
     private static function baselinesLogged(): array
     {
         return array_values(array_map(static fn(array $r): string => (string) $r['params'], array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Definition::BASELINE_EVENT)));
+    }
+
+    /** @var array<string, array<string, string>> uid => slice => perms, as the perm storage keeps them */
+    public static array $stored = [];
+
+    /** The rights AA::$perm reads from the storage: those of $byUid, else those the session keeps
+     *  for its user - the tests change them with perms().
+     *  @param array<string, array<string, string>> $byUid */
+    private static function storedPerms(array $byUid): void
+    {
+        self::$stored = $byUid;
+        \AA::$perm   = new class ([]) extends \AA_Perm {
+            public function getUserPerms($uid, $objectType, $flags = 0): array
+            {
+                if ($objectType !== 'slice') {
+                    return [];
+                }
+                return ServiceTest::$stored[(string) $uid] ?? ((($GLOBALS['permission_uid'] ?? null) === $uid) ? ($GLOBALS['permission_to']['slice'] ?? []) : []);
+            }
+        };
     }
 
     /** @return array{string, string} */
