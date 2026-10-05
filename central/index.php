@@ -195,6 +195,13 @@ function aaCentralAuth(btn, aaId) {
     document.body.appendChild(f);
     f.submit();
 }
+// Enter in the login fields asks for the token, not submits the surrounding manager form
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.matches('.aa-auth-cell input')) {
+        e.preventDefault();
+        e.target.closest('details').querySelector('button').click();
+    }
+});
 </script>
 HTML;
 $html .= str_replace('__TOKEN__', FormToken::get(CENTRAL_AUTH_TOKEN), $script);   // hex - safe in the JS string
