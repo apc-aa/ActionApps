@@ -972,6 +972,37 @@ final class DetailPageTest extends TestCase
         $this->assertStringNotContainsString('Its last step stopped without finishing', self::page()->overviewHtml(time()));
     }
 
+    /** the queue holds its step back (a queue round could not run it): the page says till when */
+    public function test_queuedStep_saysUntilWhen(): void
+    {
+        self::definition();
+        self::start();
+        $until = time() + 1200;
+        TableDb::$tables['toexecute'] = array_map(static fn(array $row): array => ['execute_after' => $until] + $row, TableDb::rows('toexecute'));
+
+        $said = 'Its next step waits in the task queue until ' . date('H:i', $until) . '.';
+        $this->assertStringContainsString($said, self::page()->overviewHtml(time()));
+        $this->assertSame([true, $said], [self::buttons(self::page()->actionsHtml(time()))['resume']['disabled'], self::buttons(self::page()->actionsHtml(time()))['resume']['title']]);
+
+        TableDb::$tables['toexecute'] = array_map(static fn(array $row): array => ['execute_after' => time() - 1] + $row, TableDb::rows('toexecute'));
+        $this->assertStringContainsString('Its next step waits in the task queue.', self::page()->overviewHtml(time()));
+    }
+
+    /** a step at work keeps its queue row leased for the whole claim - the page says it works, not that it waits */
+    public function test_workingStep_notQueuedUntil(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        TableDb::$tables['toexecute'] = array_map(static fn(array $row): array => ['execute_after' => time() + 1800] + $row, TableDb::rows('toexecute'));
+        self::storedSet($id, 'lease', (string) (time() + 600));
+        self::storedSet($id, 'lease_tok', 'working-step');
+
+        $overview = self::page()->overviewHtml(time());
+        $this->assertStringContainsString('A step is working now.', $overview);
+        $this->assertStringNotContainsString('waits in the task queue', $overview);
+        $this->assertSame('Its step is working now.', self::buttons(self::page()->actionsHtml(time()))['resume']['title']);
+    }
+
     public function test_waitingRun_failedTriesOnlyWhenAny(): void
     {
         self::definition();

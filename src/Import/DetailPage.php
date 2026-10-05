@@ -63,6 +63,9 @@ final class DetailPage
     /** @var list<string>|null|false the mapping problems; null = the mapping cannot be read, false = not read yet */
     private array|false|null $problems = false;
 
+    /** @var array<string, int> run id => Run::queuedUntil(), read once per page */
+    private array $queuedUntil = [];
+
     /** the source a refused save picked, so the page after the redirect shows its form again */
     private ?string $picked = null;
 
@@ -670,9 +673,26 @@ final class DetailPage
                 : _m('Waiting to try again at %1.', [date('H:i', $p['next_at'])])) . '</p>',
             $run->stepMayStillWork($now) => '<p>' . _m('Its last step may still be working.') . '</p>',
             $run->hasDeadStep($now) => '<p>' . _m('Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once.', [intdiv(Toexecute::CLAIM_LEASE, 60)]) . '</p>',
-            default               => '<p>' . _m('Its next step waits in the task queue.') . '</p>',
+            default               => '<p>' . $this->queuedText($run, $now) . '</p>',
         };
         return $html;
+    }
+
+    private function queuedText(Run $run, int $now): string
+    {
+        $until = $this->heldBackUntil($run, $now);
+        return $until ? _m('Its next step waits in the task queue until %1.', [date('H:i', $until)]) : _m('Its next step waits in the task queue.');
+    }
+
+    /** When the queue lets the run's step go, if later than $now; 0 = it does not hold it back. A step
+     *  at work keeps its queue row leased for the whole claim, which is no waiting. */
+    private function heldBackUntil(Run $run, int $now): int
+    {
+        if ($run->hasLiveLease($now) || $run->stepMayStillWork($now)) {
+            return 0;
+        }
+        $until = $this->queuedUntil[(string) $run->getId()] ??= $run->queuedUntil();
+        return ($until > $now) ? $until : 0;
     }
 
     private function nextPlanHtml(int $now): string
@@ -886,7 +906,7 @@ final class DetailPage
                 $open->mayResume($now)    => '',
                 $open->hasLiveLease($now) => _m('Its step is working now.'),
                 $open->stepMayStillWork($now) => _m('Its last step may still be working.'),
-                default                   => _m('Its next step waits in the task queue.'),
+                default                   => $this->queuedText($open, $now),
             };
             $resume = ($open->isWaiting($now) || $open->continueKeepsCount($now)) ? _m('Try now') : _m('Continue');
         }
@@ -1236,13 +1256,13 @@ final class DetailPage
         }
     }
 
-    /** progressOf() and what only time changes - a run that hangs, a retry that is due - so the
-     *  script learns of those too
+    /** progressOf() and what only time changes - a run that hangs, a retry that is due, when the
+     *  queue lets its step go - so the script learns of those too
      *  @return ?array<string, mixed> */
     private function liveFacts(Run $run, int $now): ?array
     {
         $progress = $this->progressOf($run);
-        return ($progress === null) ? null : $progress + ['stuck' => $run->isStuck($now), 'waiting' => $run->isWaiting($now), 'dead' => $run->hasDeadStep($now)];
+        return ($progress === null) ? null : $progress + ['stuck' => $run->isStuck($now), 'waiting' => $run->isWaiting($now), 'dead' => $run->hasDeadStep($now), 'queued_until' => $this->heldBackUntil($run, $now)];
     }
 
     private function url(): string

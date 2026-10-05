@@ -617,6 +617,14 @@ abstract class BatchRun extends AA_Object
         return ($this->state === static::states()->active) && ((int) $this->next_at > $now) && !$this->hasLiveLease($now);
     }
 
+    /** When the earliest queued step of the run is due - later than now while the queue holds it back
+     *  (its own retry of a task that could not run), which the run's record does not know. 0 = none
+     *  queued; a row the queue gave up (priority 0) never runs. */
+    final public function queuedUntil(): int
+    {
+        return (int) DB_AA::select1('t', 'SELECT MIN(execute_after) AS t FROM `toexecute`', [['selector', $this->selector()], ['priority', 0, '>']]);
+    }
+
     /** the time the runs of this class judge leases and retries by */
     final public static function clock(): int
     {

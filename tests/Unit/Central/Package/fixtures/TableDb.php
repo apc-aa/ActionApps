@@ -14,8 +14,9 @@ use RuntimeException;
  *  Why no SQLite: AA's SQL is MySQL - packed ids as 0x<32 hex> (SQLite reads a 128-bit hex integer
  *  literal: "hex literal too big") and addslashes() escapes (\' is no SQLite escape). So this parses the
  *  statement shapes Cvarset and DB_AA::makeWhere() produce - INSERT (one row or doInsertMulti()'s several), UPDATE ... WHERE, DELETE ... WHERE
- *  with conditions joined by AND (`col = literal`, `col IN (...)`) - and SELECT ... WHERE the same way
- *  (or from $answer); `SELECT count(*) as x` (DB_AA::count()) counts the matching rows. A count over
+ *  with conditions joined by AND (`col = literal`, `col IN (...)`, `col > literal`, `col < literal`) - and
+ *  SELECT ... WHERE the same way (or from $answer); `SELECT count(*) as x` (DB_AA::count()) counts the
+ *  matching rows, `SELECT MIN(col) AS x` takes their least value. A count over
  *  INNER / LEFT JOINs (join()) takes ON `a`.`c` = `b`.`d` [AND ...], UNHEX(`b`.`d`) too, and WHERE
  *  conditions of qualified columns: = 0x.., IN (0x..), LIKE '..', > '', IS NULL.
  *  Beyond the tables: information_schema.tables from $engines (table => ENGINE; a table not there does
@@ -151,7 +152,11 @@ final class TableDb extends DB_PDO
             $where = str_ends_with($m[0], 'WHERE ') ? (new SqlScanner($sql, strlen($m[0])))->conditions() : [];
             $rows  = ($table === 'information_schema') ? self::informationSchema() : (self::$tables[$table] ?? []);
             $rows  = array_values(array_filter($rows, static fn(array $row): bool => self::matches($table, $row, $where)));
-            $this->rows = preg_match('/^count\(\*\) as (\w+)$/i', $m[1], $count) ? [[$count[1] => count($rows)]] : $rows;
+            $this->rows = match (true) {
+                (bool) preg_match('/^count\(\*\) as (\w+)$/i', $m[1], $agg) => [[$agg[1] => count($rows)]],
+                (bool) preg_match('/^min\(`?(\w+)`?\) as (\w+)$/i', $m[1], $agg) => [[$agg[2] => $rows ? min(array_column($rows, $agg[1])) : null]],
+                default => $rows,
+            };
             return true;
         }
         throw new RuntimeException("TableDb: unknown statement $sql");
@@ -284,6 +289,8 @@ final class TableDb extends DB_PDO
             $ok = match ($op) {
                 '='  => $equal($name, $value),
                 'in' => (bool) array_filter($value, static fn($v): bool => $equal($name, $v)),
+                '>'  => ($row[$name] ?? 0) > $value,
+                '<'  => ($row[$name] ?? 0) < $value,
             };
             if (!$ok) {
                 return false;
@@ -362,14 +369,17 @@ final class SqlScanner
     }
 
     /** conditions joined by AND, up to anything else (LIMIT, FOR UPDATE, the end): `col = literal`,
-     *  `col IN (literals)`
-     *  @return list<array{string, string, mixed}> [operator (= in), column, value] */
+     *  `col IN (literals)`, `col > literal`, `col < literal`
+     *  @return list<array{string, string, mixed}> [operator (= in > <), column, value] */
     public function conditions(): array
     {
         $conditions = [];
         do {
             $this->space();
-            if (preg_match('/\G`?([\w.]+)`? IN \(/', $this->sql, $m, 0, $this->pos)) {
+            if (preg_match('/\G`?([\w.]+)`? ([<>]) /', $this->sql, $m, 0, $this->pos)) {
+                $this->pos   += strlen($m[0]);
+                $conditions[] = [$m[2], preg_replace('/^\w+\./', '', $m[1]), $this->literal()];
+            } elseif (preg_match('/\G`?([\w.]+)`? IN \(/', $this->sql, $m, 0, $this->pos)) {
                 $this->pos   += strlen($m[0]);
                 $conditions[] = ['in', preg_replace('/^\w+\./', '', $m[1]), $this->values()];
                 $this->space();
