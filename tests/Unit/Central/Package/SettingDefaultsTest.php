@@ -202,7 +202,7 @@ final class SettingDefaultsTest extends TestCase
     {
         $t = 'e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0';
         self::foreign();
-        TableDb::$tables['module'][] = ['id' => $t, 'type' => 'S', 'name' => 'Existing', 'lang_file' => 'cz-utf8_news_lang.php', 'deleted' => 0];
+        TableDb::$tables['module'][] = ['id' => $t, 'type' => 'S', 'name' => 'Existing', 'lang_file' => 'cz-utf8_news_lang.php', 'owner' => '', 'deleted' => 0];
         TableDb::$tables['slice'][]  = ['id' => $t, 'name' => 'Existing', 'type' => 'S', 'deleted' => 0];
         TableDb::$tables['field'][]  = ['id' => 'headline........', 'slice_id' => $t, 'type' => 'headline', 'name' => 'Titulek', 'input_pri' => 100, 'input_show_func' => 'fld:',
             'alias1' => '_#HEADLINE', 'alias1_func' => 'f_h:', 'text_stored' => 1, 'input_insert_func' => ''];

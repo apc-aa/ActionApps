@@ -180,8 +180,20 @@ final class FindingText
                     'email-outside' => _m('The text sends an e-mail template by its number, and that template is not in the app. Here the number means another template, or none.'),
                     default         => _m('The text reads a slice or a site that is not in the app. Here that id means nothing.'),
                 },
-                'todo' => _m('Add the slice with it to the app (for a site: to its Uses) and preview again, or after installing change the number to the right one here.'),
+                'todo' => ($code === 'module-outside')
+                    ? _m('Add the slice with it to the app (for a site: to its Uses) and preview again; or, when the preview of the install lists it under Links outside the app, send the links to a slice of the AA it goes to.')
+                    : _m('Add the slice with it to the app (for a site: to its Uses) and preview again, or after installing change the number to the right one here.'),
                 'found' => ($code === 'module-outside') ? _m('Id') : _m('Number')],
+            in_array($code, ['module-here', 'module-linked'], true) => ['title' => _m('A link to a slice of this AA'),
+                'what' => ($code === 'module-here')
+                    ? _m('The text reads a slice or a site that is not in the app, but this AA has it - the link keeps going there.')
+                    : _m('The text reads a slice that is neither in the app nor in this AA; as chosen in Links outside the app, it goes to a slice of this AA.'),
+                'todo' => _m('Usually nothing. Check after installing that it is the slice meant.'),
+                'found' => ($code === 'module-here') ? _m('Id') : _m('Id => slice')],
+            $code === 'link-unknown' => ['title' => _m('A link goes to no slice'),
+                'what' => _m('A link outside the app was sent to a slice that this AA does not have, or that you may not change.'),
+                'todo' => _m('Choose another slice under Links outside the app, or keep the id, and check the changes.'),
+                'found' => _m('Id => slice')],
             in_array($code, ['computed', 'unknown-form', 'bare-number', 'glued-id', 'form'], true) => ['title' => _m('A link the check cannot follow'),
                 'what' => match ($code) {
                     'computed'    => _m('The number of a view or an e-mail is computed when the page is shown, so it cannot be renumbered for this AA.'),

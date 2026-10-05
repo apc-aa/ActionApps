@@ -119,8 +119,20 @@ Nothing is written except the run record. The preview is kept for a day.
 
 A slice left out takes along what names it structurally: the site's "uses" row, a constant group only
 it used; an Alerts module stays, without its reader slice, the filter views and e-mails of that slice
-(W `reader-left-out`); a group others use loses its owner (W `group-owner-left-out`). References in
-texts stay and are W `module-outside`. A typed settings value goes through the S lint.
+(W `reader-left-out`); a group others use loses its owner (W `group-owner-left-out`). What links to it
+is judged as any link outside the app (below). A typed settings value goes through the S lint.
+
+Links to modules outside the app (`{ids:`, `{modulefield:`, `#sLiCe-`, `mlxctrl`, settings) are
+judged on the target (`OutsideLinks`): to a module this AA has they keep going there (I `module-here`;
+`mlxctrl` is emptied by the write, so it stays W); to one it lacks they are W `module-outside`, and
+the form lists them under "Links outside the app" with a slice of this AA to send them to
+(`ImportChoices::$links`, `link[<id>]`, "keep the id" is a choice too). The plan takes a link only for
+an id the app links to, and maps it as a long id - not as a module of the app: no rights, no install
+log - so texts, structured columns and the items of a transfer get the slice (I `module-linked`). A
+slice this AA lacks or the user may not edit is E `link-unknown`; the write checks the slices again
+under lock (`WriteError::GONE` at `link[<id>]`). Where the form chose nothing, the preview offers the
+slice the newest written run of the same source (Central row, store, this AA) mapped that id to, of
+the slices the user may edit.
 
 Findings levels:
 

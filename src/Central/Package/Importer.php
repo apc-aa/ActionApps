@@ -373,7 +373,8 @@ final class Importer
     /** every group name, collection id and site domain of the plan is still free on the target, every
      *  existing slice still there in its charset, locked and editable by the user, with no value in a
      *  setting the plan gives a default, every group its fields
-     *  name still there, the owner of the new modules one of the target's @throws WriteError */
+     *  name still there, the owner of the new modules one of the target's, every slice links go to still
+     *  there and editable by the user @throws WriteError */
     private function recheck(ImportPlan $plan): void
     {
         if (($plan->owner !== '') && !isset($this->target->owners()[$plan->owner])) {
@@ -389,6 +390,11 @@ final class Importer
             }
             if (!$this->target->mayEditSlice($slice->id)) {
                 throw new WriteError(WriteError::DENIED, Module::SLICE . "[$old]", 'the user may not edit the slice it goes into any more');
+            }
+        }
+        foreach ($plan->outside->links as $old => $slice) {
+            if (($this->target->existingSlice($slice, true) === null) || !$this->target->mayEditSlice($slice)) {
+                throw new WriteError(WriteError::GONE, "link[$old]", 'the slice the links go to is gone or not the user\'s to edit since the plan');
             }
         }
         $planner = new Planner($this->target, $this->metabase);

@@ -115,6 +115,7 @@ try {
         'new_owner'       => InputVars::stringPOST('new_owner'),
         'new_owner_email' => InputVars::stringPOST('new_owner_email'),
         'filter'          => InputVars::arrayPOST('filter'),
+        'link'            => InputVars::arrayPOST('link'),
     ]);
     $sum      = InputVars::stringPOST('choices_sum');
     $into     = array_diff_key($into, array_flip($choices->skip));     // a slice left out goes nowhere
@@ -233,7 +234,9 @@ $apage->addRequire('
     .aa-installapp-plan .aa-plan-a > td { padding-top: 8px; }
     .aa-installapp-plan tbody > tr:last-child > td { padding-bottom: 8px; border-bottom: 1px solid var(--clr-border, #ddd); }
     .aa-plan-name small { display: block; margin-top: 1px; font-size: var(--sz-xs); }
-    .aa-plan-into select { width: 100%; max-width: 36em; }
+    .aa-plan-into select, .aa-installapp-links select { width: 100%; max-width: 36em; }
+    .aa-installapp-links { max-width: 70em; }
+    .aa-installapp-links small { display: block; margin-top: 2px; overflow-wrap: anywhere; }
     .aa-installapp-plan .aa-plan-flabel { padding-top: 11px; text-align: right; font-size: var(--sz-s); }
     .aa-plan-scopebox { display: grid; grid-template-columns: minmax(0, 1fr) 10.8em; grid-template-areas: "field count" "note note"; column-gap: 8px; max-width: 52em; }
     .aa-cond-in { grid-area: field; box-sizing: border-box; width: 100%; min-height: 2.15em; padding: 4px 6px; font-family: var(--aa-mono); line-height: 1.4; resize: none; field-sizing: content; overflow-wrap: anywhere; }
@@ -544,29 +547,36 @@ function installapp_login_rows(): string
         . '<div class="tabhlp">' . _m('Only when the user has two-factor login on the source AA.') . '</div></td></tr>';
 }
 
-/** the slices of this AA a slice of the package may go into: those the user may edit @return array<string, string> id => name */
+/** the slices of this AA a slice of the package may go into, or links outside it: those the user may
+ *  edit, read once a request @return array<string, string> id => name */
 function installapp_slice_choices(): array
 {
+    static $slices = null;
     $target = new DbImportTarget();
-    return array_filter(AA_Module::getModules('S', true), static fn($name, $id): bool => $target->mayEditSlice((string) $id), ARRAY_FILTER_USE_BOTH);
+    return $slices ??= array_filter(AA_Module::getModules('S', true), static fn($name, $id): bool => $target->mayEditSlice((string) $id), ARRAY_FILTER_USE_BOTH);
 }
 
 /** Reads the app from its source and plans it on this AA.
  *  @param list<string>          $modules
  *  @param array<string, string> $into    source slice => slice of this AA it goes into; the others get new slices
  *  @param bool                  $preselect no choice made yet: SliceRoles makes it
- *  @param ImportChoices|null    $choices names, slices left out, the owner ('' = Planner::defaultOwner()), settings values, filters
+ *  @param ImportChoices|null    $choices names, slices left out, the owner ('' = Planner::defaultOwner()), settings values, filters, links
+ *  @param string                $suggest the source of the earlier runs whose links to modules outside the app the form
+ *                                        gets where it chose none (InstallRun::earlierLinks()); '' = none - the write plans
+ *                                        exactly the choices of its preview
  *  @return array{error: string, login: bool, xml: string, now: int, same: bool, findings: list<array{string, LintFinding}>, plan: ?ImportPlan,
  *                into: array<string, string>, roles: array<string, string>, package: ?\AA\Central\Package\Model\Package,
- *                all: ?\AA\Central\Package\Model\Package, choices: ImportChoices, counts: array<string, int>, matching: array<string, int>}
+ *                all: ?\AA\Central\Package\Model\Package, choices: ImportChoices, counts: array<string, int>, matching: array<string, int>,
+ *                suggested: array<string, string>}
  *          login: the source refused its token; now: the time of the source; same: the source is this AA;
  *          roles: source slice => the role its target was preselected by; choices: as planned, the default owner filled in;
+ *          suggested: the links of the choices an earlier run gave;
  *          all: the app as the source gave it, package: as chosen (names, slices left out);
  *          counts, matching: the items of the transferred slices on the source, of the filtered ones those their filter selects */
-function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false, ?ImportChoices $choices = null): array
+function installapp_prepare(AppSource $from, string $site, array $modules, string $mode, bool $all_bins, int $started, array $into = [], bool $preselect = false, ?ImportChoices $choices = null, string $suggest = ''): array
 {
     $choices ??= new ImportChoices();
-    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null, 'all' => null, 'choices' => $choices, 'counts' => [], 'matching' => []];
+    $out      = ['error' => '', 'login' => false, 'xml' => '', 'now' => 0, 'same' => false, 'findings' => [], 'plan' => null, 'into' => [], 'roles' => [], 'package' => null, 'all' => null, 'choices' => $choices, 'counts' => [], 'matching' => [], 'suggested' => []];
     $transfer = ($mode === InstallRun::TRANSFER);
     try {
         [$out['xml'], $out['findings'], $out['now']] = $from->definitions(($site !== '') ? [$site] : $modules, $transfer, $all_bins, $started);
@@ -605,15 +615,24 @@ function installapp_prepare(AppSource $from, string $site, array $modules, strin
         $logins   = ($transfer && $readers && ($filters !== null)) ? $from->logins($readers, $all_bins, $filters) : [];
         $owner    = ($transfer || ($choices->newOwner !== null)) ? '' : ($choices->owner ?: $planner->defaultOwner());
         // the typed text of a filter stays, even one that cannot be used: left out, it would take all the items
-        $out['choices'] = new ImportChoices($choices->names, $choices->skip, $owner, $transfer ? null : $choices->newOwner, $choices->settings, ItemFilter::ofSlices($choices->filters, $slices));
-        $plan    = static fn(array $targets): ImportPlan => $planner->plan($package, $validation, $transfer, $logins, $targets, $out['same'], $owner, $out['choices']);
+        $out['choices'] = new ImportChoices($choices->names, $choices->skip, $owner, $transfer ? null : $choices->newOwner, $choices->settings, ItemFilter::ofSlices($choices->filters, $slices), $choices->links);
+        $plan    = static fn(array $targets, ImportChoices $chosen): ImportPlan => $planner->plan($package, $validation, $transfer, $logins, $targets, $out['same'], $owner, $chosen);
         if ($preselect) {           // stored with the preview as any choice - the write writes what it showed
-            [$out['plan'], $out['into'], $preselected, $out['roles']] = SliceRoles::plan($package, new DbImportTarget(), $out['same'], $transfer, $plan);
+            [$out['plan'], $out['into'], $preselected, $out['roles']] = SliceRoles::plan($package, new DbImportTarget(), $out['same'], $transfer, static fn(array $targets): ImportPlan => $plan($targets, $out['choices']));
             $out['findings'] = [...$out['findings'], ...$preselected];
         } else {
-            $out['plan'] = $plan($into);
+            $out['plan'] = $plan($into, $out['choices']);
         }
-        $out['findings'] = [...$out['findings'], ...$out['plan']->allFindings(), ...$filtered['findings']];
+        if ($suggest !== '') {
+            $undecided        = array_keys(array_diff_key($out['plan']->outside->missing([]), $out['choices']->links));
+            $out['suggested'] = $undecided ? InstallRun::earlierLinks($suggest, array_map('strval', $undecided), installapp_slice_choices()) : [];
+        }
+        if ($out['suggested']) {
+            $out['choices'] = $out['choices']->withLinks($out['suggested']);
+            $out['plan']    = $plan($out['into'], $out['choices']);
+        }
+        // the source lints the same texts: its findings of the links outside the app as the plan's
+        $out['findings'] = $out['plan']->outside->classify([...$out['findings'], ...$out['plan']->allFindings(), ...$filtered['findings']]);
         if ($transfer && !$out['same'] && ($filters !== null)) {        // another AA keeps the item ids: none may be here already
             $out['findings'] = [...$out['findings'], ...(new ItemIdCheck($from, new DbImportTarget()))->check($slices, $all_bins, $filters)];
         }
@@ -662,7 +681,7 @@ function installapp_preview(string $site, array $modules, string $mode, bool $al
     }
     $now      = time();
     $from     = installapp_local_source();
-    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect, $choices);
+    $prepared = installapp_prepare($from, $site, $modules, $mode, $all_bins, $now, $into, $preselect, $choices, InstallRun::LOCAL);
     if (installapp_show_preview($prepared, $mode, installapp_hidden('preview', $site, $modules) . installapp_mode_hidden($mode, $all_bins))) {
         try {
             $run = InstallRun::preview($mode, $all_bins, InstallRun::LOCAL, $uid, '', $now, hash('sha256', $prepared['xml']), $prepared['into'], $prepared['choices'], installapp_source_counts($prepared));
@@ -694,7 +713,7 @@ function installapp_remote_preview(string $run_id, string $site, array $modules,
         echo '<div class="aa-err">' . safe($e->getMessage()) . '</div>';
         return;
     }
-    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect, $choices);
+    $prepared = installapp_prepare($from, $site, $modules, $run->mode(), $run->allBins(), $run->started(), $into, $preselect, $choices, $run->source());
     if (!installapp_show_preview($prepared, $run->mode(), installapp_hidden('preview', $site, $modules, $run_id))) {
         echo '<p>' . ($prepared['login'] ? installapp_relogin($run) : a_href(installapp_url(['run' => $run_id]), _m('Choose another app'))) . '</p>';
         return;
@@ -814,6 +833,7 @@ function installapp_choices_form(array $prepared, ImportPlan $plan, string $mode
     if ($taken) {
         installapp_filter_help($taken, $names);
     }
+    installapp_link_rows($plan->outside->missing($prepared['findings']), $choices->links, $prepared['suggested'], $prepared['package']);
     if (!$transfer && array_diff_key($plan->map->modules(), $plan->existing)) {
         installapp_owner_rows($plan->owner, $choices->newOwner, (bool) $plan->existing);
     }
@@ -827,6 +847,34 @@ function installapp_choices_form(array $prepared, ImportPlan $plan, string $mode
     echo '<script>document.querySelector(\'[data-role="installapp-choices"]\').addEventListener(\'input\', () => {'
         . ' const b = document.querySelector(\'[data-role="installapp-write"]\'); if (b && !b.disabled) { b.disabled = true; b.textContent = '
         . json_encode(_m('Check the changes first'), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . '; } });</script>';
+}
+
+/** The links of the app to slices neither the app nor this AA has: each may go to a slice of this AA
+ *  instead - an id of no module here leads nowhere
+ *  @param array<string, list<string>> $missing   id => the paths linking to it (OutsideLinks::missing())
+ *  @param array<string, string>       $links     ImportChoices::$links
+ *  @param array<string, string>       $suggested those of the links an earlier run gave */
+function installapp_link_rows(array $missing, array $links, array $suggested, ?Package $package): void
+{
+    if (!$missing) {
+        return;
+    }
+    $slices = installapp_slice_choices();
+    $text   = new FindingText($package);
+    echo '<h3>' . _m('Links outside the app') . '</h3><p class="tabhlp">' . _m('The app links to these slices (or sites), but neither the app nor this AA has them. Send the links to a slice of this AA, or keep the id - it then leads nowhere.') . '</p>'
+        . '<table class="aa-installapp-findings aa-installapp-links"><thead><tr><th>' . _m('Outside the app') . '</th><th>' . _m('Links go to') . '</th></tr></thead><tbody>';
+    foreach ($missing as $id => $paths) {
+        $places = array_map(static fn(string $path): string => safe($text->place($path)), array_slice($paths, 0, 3));
+        $more   = count($paths) - count($places);
+        echo '<tr><td><code>' . safe($id) . '</code><small>' . implode('<br>', $places) . (($more > 0) ? '<br>' . safe(_m('and %1 more', [$more])) : '') . '</small></td>'
+            . '<td><label class="aa-sr" for="installapp-link-' . safe($id) . '">' . _m('Links go to') . '</label><select name="link[' . safe($id) . ']" id="installapp-link-' . safe($id) . '">'
+            . '<option value="">' . safe(_m('keep the id - leads nowhere')) . '</option>';
+        foreach ($slices as $slice => $name) {
+            echo '<option value="' . safe((string) $slice) . '"' . ((($links[$id] ?? '') === (string) $slice) ? ' selected' : '') . '>' . safe(ExistingSlices::choiceLabel((string) $name, (string) $slice)) . '</option>';
+        }
+        echo '</select>' . (isset($suggested[$id]) ? '<div class="tabhlp">' . _m('as an earlier install from the same source') . '</div>' : '') . '</td></tr>';
+    }
+    echo '</tbody></table>';
 }
 
 /** The second row of a transferred slice: its condition as typed, its items - matching of all when the

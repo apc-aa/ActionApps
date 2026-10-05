@@ -58,6 +58,9 @@ final class Planner
     public const SETTING_INVALID = 'setting-invalid';
     /** W: a constant group of a slice the preview left out stays, used by the rest - it gets no owner; ref = the slice id */
     public const GROUP_OWNER_LEFT_OUT = 'group-owner-left-out';
+    /** E: the preview sent the links to a module outside the app to no slice of this AA the user may edit;
+     *  ref = "module => slice" */
+    public const LINK_UNKNOWN = 'link-unknown';
 
     /** tables only a transfer writes: the item batches, the owners of the modules */
     private const TRANSFER_TABLES = ['item', 'content', 'slice_owner'];
@@ -83,8 +86,9 @@ final class Planner
      *  @param string       $owner        slice_owner id for the modules an install creates (defaultOwner());
      *                                    E unless it is one of this AA's - '' only when it has none; the plan
      *                                    keeps '' when no module is created
-     *  @param ImportChoices|null $choices a new owner; the names, the slices left out and the values typed
-     *                                    for the settings are choose()'s, before the validation
+     *  @param ImportChoices|null $choices a new owner, the links to modules outside the app; the names, the
+     *                                    slices left out and the values typed for the settings are choose()'s,
+     *                                    before the validation
      *  @throws InvalidArgumentException the validation has an E - such a package is never planned; an owner in a transfer
      *  @throws RewriteFailed a regex of the length check failed */
     public function plan(Package $package, ValidationResult $validation, bool $transfer = false, array $readerLogins = [], array $into = [], bool $sameAa = false, string $owner = '', ?ImportChoices $choices = null): ImportPlan
@@ -150,13 +154,15 @@ final class Planner
                 $long[$this->sourceId(ValueCodec::bytes($row['id'] ?? ''), $settings_of, "constant-group[$group->name]")] = $this->newId();
             }
         }
-        $long += $existing->objects();
+        $long    += $existing->objects();
+        $outside  = (new ImportLint($this->schema))->check($fixed, $this->findings, $whole) + self::outside($validation->findings);
+        $links    = $this->links(array_intersect_key($choices->links, $outside), array_change_key_case($modules) + $long);
+        $long    += $links;
         $map   = new IdMap($modules, $long, $existing->views(), $existing->emails(), $groups->names($fixed, $this->findings) + $existing->groupMap(), $collections);
 
         $existing->differences($map, $transfer);
         $this->alertsFields($fixed, $map);
         (new TargetCharset($this->schema, $map))->check($fixed, $charsets, $group_charsets, $this->findings);
-        (new ImportLint($this->schema))->check($fixed, $this->findings, $whole);
         $this->readers($readerLogins);
         $new_owner = null;
         $created   = array_diff_key($modules, $targets);
@@ -181,7 +187,57 @@ final class Planner
             $fixed = new Package(...array_merge(get_object_vars($fixed), ['modules' => $cleared]));
         }
         $this->engines($transfer, (bool) $defaults, $new_owner !== null);
-        return new ImportPlan($fixed, $map, $charsets, $lang_files, $group_charsets, $settings, $fix_ups, $validation->findings, $this->findings->all(), $targets, $defaults, $owner, $new_owner);
+        $linked = new OutsideLinks($links, array_fill_keys(array_keys($this->target->moduleOwners()), true), $outside);
+        return new ImportPlan(
+            $fixed,
+            $map,
+            $charsets,
+            $lang_files,
+            $group_charsets,
+            $settings,
+            $fix_ups,
+            $linked->classify($validation->findings),
+            $linked->classify($this->findings->all()),
+            $targets,
+            $defaults,
+            $owner,
+            $new_owner,
+            $linked,
+        );
+    }
+
+    /** the modules outside the package the Validator found in structured references (mlxctrl, settings)
+     *  @param list<array{string, LintFinding}> $findings @return array<string, true> */
+    private static function outside(array $findings): array
+    {
+        $ids = [];
+        foreach ($findings as [, $f]) {
+            if (($f->code === ReferenceLint::MODULE_OUTSIDE) && preg_match('/^[0-9a-f]{32}\z/i', $f->ref)) {
+                $ids[strtolower($f->ref)] = true;
+            }
+        }
+        return $ids;
+    }
+
+    /** The links the preview chose that the map takes: to a slice of this AA the user may edit - E for any
+     *  other slice
+     *  @param array<string, string> $links  ImportChoices::$links of the modules outside the app it links to
+     *  @param array<string, string> $mapped the ids of the app the map has already, lower case
+     *  @return array<string, string> */
+    private function links(array $links, array $mapped): array
+    {
+        $taken = [];
+        foreach ($links as $old => $new) {
+            if (($new === '') || isset($mapped[$old])) {
+                continue;
+            }
+            if (($this->target->existingSlice($new) === null) || !$this->target->mayEditSlice($new)) {
+                $this->add(self::TARGET, LintFinding::ERROR, self::LINK_UNKNOWN, "$old => $new");
+            } else {
+                $taken[$old] = $new;
+            }
+        }
+        return $taken;
     }
 
     /** The owner the preview offers first: the one most of the modules the user may edit have; with none

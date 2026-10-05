@@ -86,7 +86,7 @@ final class FindingTextTest extends TestCase
             'glued-id', 'group-kept', 'group-left-out', 'group-missing', 'group-name', 'group-name-exhausted', 'group-other', 'group-outside', 'group-redirected', 'group-renamed',
             'group-unpublished', 'charset', 'charset-broken', 'into-existing', 'into-source', 'int-range', 'invalid-id', 'item-field', 'item-id-exists', 'item-id-in-use', 'item-key',
             'items', 'items-published', 'item-status', 'item-too-big', 'lang-file', 'lang-file-normalised', 'lang-file-replaced', 'login-charset', 'may-be-too-long', 'module-missing',
-            'module-outside', 'module-rows', 'module-type', 'no-transaction', 'object', 'object-dropped', 'object-exists', 'object-unmatched', 'owner-missing', 'owner-unknown',
+            'module-outside', 'module-here', 'module-linked', 'link-unknown', 'module-rows', 'module-type', 'no-transaction', 'object', 'object-dropped', 'object-exists', 'object-unmatched', 'owner-missing', 'owner-unknown',
             'permission', 'perm-mode', 'preselect-dropped', 'preselected-by-role', 'preselected-reader-slice', 'profile-property', 'reader-accounts', 'reader-admin', 'reader-duplicate',
             'reader-multivalue', 'reader-outside', 'reader-perms', 'reader-taken', 'reader-2fa', 'relation-dangling', 'relation-target-differs', 'row-missing', 'setting-default-skipped',
             'setting-field', 'settings-dropped', 'slice-state-kept', 'slice-type-differs', 'source-count-unknown', 'spot-markup', 'spot-tree', 'spot-unused', 'state-file', 'subobject',

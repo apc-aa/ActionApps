@@ -579,6 +579,44 @@ final class InstallRun extends BatchRun
         return IdMap::fromJson((string) $this->id_map);
     }
 
+    /** Where the written runs of $source took these modules of it: the module an install made of one, or
+     *  the slice a preview sent the links to it to - of the newest run whose answer is one of $slices.
+     *  No rights checked: the caller offers only slices the user may edit.
+     *  @param list<string> $ids lower case @param array<string, mixed> $slices id => any: the slices on offer
+     *  @return array<string, string> id => slice */
+    public static function earlierLinks(string $source, array $ids, array $slices): array
+    {
+        $runs = $ids ? array_map('strval', DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', 'source'], ['value', $source]])) : [];
+        $read = $runs ? DB_AA::select([], 'SELECT object_id, property, value FROM `object_text`', [['object_id', $runs], ['property', ['aa_type', 'started']]]) : [];
+        $started = [];
+        foreach ($read as $row) {
+            $started[(string) $row['object_id']][(string) $row['property']] = (string) $row['value'];
+        }
+        $started = array_map(static fn(array $p): int => (int) ($p['started'] ?? 0), array_filter($started, static fn(array $p): bool => ($p['aa_type'] ?? '') === self::class));
+        arsort($started);
+        $found = [];
+        foreach (array_keys($started) as $id) {
+            $run = self::get((string) $id);
+            if (($run === null) || ((string) $run->id_map === '')) {
+                continue;
+            }
+            try {
+                $map = $run->idMap();
+            } catch (InvalidArgumentException|\JsonException) {        // one damaged run hides only its own links
+                continue;
+            }
+            foreach (array_diff($ids, array_keys($found)) as $old) {
+                if (isset($slices[$new = (string) $map->longId($old)])) {
+                    $found[$old] = $new;
+                }
+            }
+            if (count($found) === count($ids)) {
+                break;
+            }
+        }
+        return $found;
+    }
+
     public function fingerprint(): string
     {
         return (string) $this->fingerprint;

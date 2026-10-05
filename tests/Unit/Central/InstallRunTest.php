@@ -972,5 +972,38 @@ namespace Tests\Unit\Central {
             }
             $this->assertNotSame([], self::stored($open));
         }
+
+        public function test_earlier_links_are_those_of_the_newest_written_run_of_the_same_source(): void
+        {
+            [$b, $c, $d, $e] = [str_repeat('b', 32), str_repeat('c', 32), str_repeat('d', 32), str_repeat('e', 32)];
+            $slices  = [$b => 'B', $c => 'C', $d => 'D', $e => 'E'];
+            $written = static function (string $source, IdMap $map, int $started): string {
+                $id = InstallRun::preview(InstallRun::INSTALL, false, $source, self::USER, '', self::NOW)->getId();
+                self::locked($id, static fn(InstallRun $run) => $run->definitionsWritten($map, self::DEFINITIONS, []));
+                self::storedSet($id, 'started', (string) $started);
+                return $id;
+            };
+            $written('7', new IdMap([self::SLICE1 => $b]), self::NOW - 20);
+            $written('7', new IdMap([self::SLICE2 => $d], [self::SLICE1 => $c]), self::NOW - 10);     // a link of its preview
+            $written('8', new IdMap([self::SLICE2 => $e]), self::NOW);
+            self::storedSet(self::preview()->getId(), 'started', (string) (self::NOW + 10));          // no map yet
+
+            $this->assertSame([self::SLICE1 => $c, self::SLICE2 => $d], InstallRun::earlierLinks('7', [self::SLICE1, self::SLICE2, self::ITEM1], $slices));
+            $this->assertSame([self::SLICE2 => $e], InstallRun::earlierLinks('8', [self::SLICE1, self::SLICE2], $slices));
+            $this->assertSame([], InstallRun::earlierLinks('9', [self::SLICE1], $slices));
+            $this->assertSame([self::SLICE1 => $b], InstallRun::earlierLinks('7', [self::SLICE1], [$b => 'B']), 'the newest one not on offer: an older one');
+        }
+
+        public function test_a_damaged_map_hides_only_the_links_of_its_run(): void
+        {
+            $b  = str_repeat('b', 32);
+            $id = InstallRun::preview(InstallRun::INSTALL, false, '7', self::USER, '', self::NOW)->getId();
+            self::locked($id, static fn(InstallRun $run) => $run->definitionsWritten(new IdMap([self::SLICE1 => $b]), self::DEFINITIONS, []));
+            self::storedSet($id, 'started', (string) (self::NOW - 10));
+            $bad = InstallRun::preview(InstallRun::INSTALL, false, '7', self::USER, '', self::NOW)->getId();
+            self::storedSet($bad, 'id_map', '{"modules":');
+
+            $this->assertSame([self::SLICE1 => $b], InstallRun::earlierLinks('7', [self::SLICE1], [$b => 'B']));
+        }
     }
 }

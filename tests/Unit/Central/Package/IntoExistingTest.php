@@ -65,7 +65,7 @@ final class IntoExistingTest extends TestCase
     private static function existing(): void
     {
         $t = self::T;
-        TableDb::$tables['module'][] = ['id' => $t, 'type' => 'S', 'name' => 'Existing', 'lang_file' => 'cz-utf8_news_lang.php', 'deleted' => 0];
+        TableDb::$tables['module'][] = ['id' => $t, 'type' => 'S', 'name' => 'Existing', 'lang_file' => 'cz-utf8_news_lang.php', 'owner' => '', 'deleted' => 0];
         TableDb::$tables['slice'][]  = ['id' => $t, 'name' => 'Existing', 'type' => 'S', 'deleted' => 0, 'vid' => 20];
         TableDb::$tables['field'][]  = ['id' => 'headline........', 'slice_id' => $t, 'type' => 'headline', 'name' => 'Titulek', 'input_pri' => 100, 'input_show_func' => 'fld:',
             'alias1' => '_#HEADLINE', 'alias1_func' => 'f_h:', 'text_stored' => 1, 'input_insert_func' => ''];
@@ -385,7 +385,7 @@ final class IntoExistingTest extends TestCase
     /** a slice of $role besides T */
     private static function another(string $id, string $role, int $deleted = 0, int $moduleDeleted = 0): void
     {
-        TableDb::$tables['module'][] = ['id' => $id, 'type' => 'S', 'name' => 'Another', 'lang_file' => 'cz-utf8_news_lang.php', 'deleted' => $moduleDeleted];
+        TableDb::$tables['module'][] = ['id' => $id, 'type' => 'S', 'name' => 'Another', 'lang_file' => 'cz-utf8_news_lang.php', 'owner' => '', 'deleted' => $moduleDeleted];
         TableDb::$tables['slice'][]  = ['id' => $id, 'name' => 'Another', 'type' => $role, 'deleted' => $deleted];
     }
 
@@ -507,7 +507,7 @@ final class IntoExistingTest extends TestCase
     #[DataProvider('refusedTargets')]
     public function test_the_target_must_be_an_editable_slice(array $into, string $finding, bool $editable): void
     {
-        [TableDb::$tables['module'][0]['deleted'], TableDb::$tables['slice'][0]['deleted']] = [0, 1];       // the foreign slice
+        [TableDb::$tables['module'][0]['deleted'], TableDb::$tables['module'][0]['owner'], TableDb::$tables['slice'][0]['deleted']] = [0, '', 1];       // the foreign slice
         if (!$editable) {
             $this->target->notEditable[] = self::T;
         }
@@ -538,7 +538,7 @@ final class IntoExistingTest extends TestCase
 
     public function test_a_transfer_into_its_own_source_on_the_same_aa_is_an_error(): void
     {
-        TableDb::$tables['module'][] = ['id' => self::SLICE, 'type' => 'S', 'name' => 'Source', 'lang_file' => 'cz-utf8_news_lang.php', 'deleted' => 0];
+        TableDb::$tables['module'][] = ['id' => self::SLICE, 'type' => 'S', 'name' => 'Source', 'lang_file' => 'cz-utf8_news_lang.php', 'owner' => '', 'deleted' => 0];
         TableDb::$tables['slice'][]  = ['id' => self::SLICE, 'name' => 'Source', 'type' => 'S', 'deleted' => 0];
 
         $transfer = $this->planInto(null, [self::SLICE => self::SLICE], true, true);
@@ -553,7 +553,7 @@ final class IntoExistingTest extends TestCase
     public function test_a_same_aa_transfer_into_another_slice_of_the_package_is_an_error(): void
     {
         $b = str_repeat('3', 32);
-        TableDb::$tables['module'][] = ['id' => $b, 'type' => 'S', 'name' => 'B', 'lang_file' => 'cz-utf8_news_lang.php', 'deleted' => 0];
+        TableDb::$tables['module'][] = ['id' => $b, 'type' => 'S', 'name' => 'B', 'lang_file' => 'cz-utf8_news_lang.php', 'owner' => '', 'deleted' => 0];
         TableDb::$tables['slice'][]  = ['id' => $b, 'name' => 'B', 'type' => 'S', 'deleted' => 0];
         $package = self::with(self::example(), ['modules' => [...self::example()->modules, new Module(Module::SLICE, $b, ['module' => [['name' => 'B', 'lang_file' => 'cz-utf8_news_lang.php']], 'slice' => [['name' => 'B']]])]]);
 
@@ -610,7 +610,7 @@ final class IntoExistingTest extends TestCase
         foreach (['module', 'slice'] as $table) {
             foreach (TableDb::$tables[$table] as $k => $row) {
                 if ($row['id'] === self::T) {
-                    TableDb::$tables[$table][$k] += ['owner' => $mine, 'slice_url' => 'https://existing.example/'];
+                    TableDb::$tables[$table][$k] = ['owner' => $mine, 'slice_url' => 'https://existing.example/'] + $row;
                 }
             }
         }
