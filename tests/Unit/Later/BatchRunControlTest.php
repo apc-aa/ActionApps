@@ -267,14 +267,14 @@ final class BatchRunControlTest extends TestCase
     {
         $id = self::start()->getId();
         TableDb::$tables['toexecute'] = [];
-        foreach (['state' => 'error', 'error_code' => 'TRANSPORT', 'error_path' => 'stream 3', 'error_detail' => 'dns', 'failures' => '3'] as $prop => $value) {
+        foreach (['state' => 'error', 'error_code' => 'TRANSPORT', 'error_path' => 'stream 3', 'failures' => '3'] as $prop => $value) {
             self::storedSet($id, $prop, $value);
         }
 
         self::locked($id, static fn(ScriptedBatchRun $r) => $r->resume(self::USER));
 
         $stored = self::stored($id);
-        $this->assertSame(['running', '0', '', '', '', '1'], [$stored['state'], $stored['failures'], $stored['error_code'], $stored['error_path'], $stored['error_detail'], $stored['step']]);
+        $this->assertSame(['running', '0', '', '', '1'], [$stored['state'], $stored['failures'], $stored['error_code'], $stored['error_path'], $stored['step']]);
         self::assertOneRowEach($id);
         $this->assertSame([BatchPosition::fingerprint(1, ['n' => 0])], self::queued());
         $this->assertSame(self::NOW, self::queue()[0]['execute_after']);
@@ -332,7 +332,7 @@ final class BatchRunControlTest extends TestCase
     public function test_resume_while_waiting_for_retry_try_now(): void
     {
         $id                       = self::start()->getId();
-        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT', retryDetail: 'dns')];
+        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT')];
         self::runQueued();
         $this->assertSame((string) (self::NOW + 1800), self::stored($id)['next_at'], 'waits for the retry');
 
@@ -340,8 +340,6 @@ final class BatchRunControlTest extends TestCase
 
         $stored = self::stored($id);
         $this->assertSame(['running', '0', (string) self::NOW, '2'], [$stored['state'], $stored['failures'], $stored['next_at'], $stored['step']], 'due now');
-        $this->assertSame(['', ''], [$stored['retry_code'], $stored['error_detail']], 'the failed try is forgotten');
-        $this->assertNull(self::fresh($id)->progress(self::USER)['error']);
         self::assertOneRowEach($id);
         $this->assertSame([BatchPosition::fingerprint(2, ['n' => 0])], self::queued(), 'the waiting row is gone');
         $this->assertSame(self::NOW, self::queue()[0]['execute_after']);
@@ -911,68 +909,7 @@ final class BatchRunControlTest extends TestCase
         $progress = self::fresh($id)->progress(self::USER);
 
         $this->assertSame(['error', 'error'], [$progress['role'], $progress['state']]);
-        $this->assertSame(['code' => 'SOURCE_LOGIN', 'where' => 'stream 2', 'detail' => ''], $progress['error']);
-    }
-
-    // a source down shows why also between the tries, not only once they are spent
-    public function test_progress_shows_the_failed_try_while_it_waits(): void
-    {
-        $id = self::start()->getId();
-        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT', retryDetail: 'dns')];
-        self::runQueued();
-
-        $progress = self::fresh($id)->progress(self::USER);
-
-        $this->assertSame(['active', 1], [$progress['role'], $progress['failures']]);
-        $this->assertSame(['code' => 'TRANSPORT', 'where' => '', 'detail' => 'dns'], $progress['error']);
-    }
-
-    // an ended run did not stop by an error: the try that failed before the end is no error of it
-    public function test_progress_of_a_run_ended_while_it_waited(): void
-    {
-        $id = self::start()->getId();
-        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT', retryDetail: 'dns')];
-        self::runQueued();
-
-        self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
-
-        $this->assertSame('TRANSPORT', self::stored($id)['retry_code']);
-        $this->assertNull(self::fresh($id)->progress(self::USER)['error']);
-    }
-
-    /** what is read back is shown: a value of no allowed shape - a damaged or forged record - is dropped */
-    public function test_progress_drops_a_stored_code_or_detail_of_no_allowed_shape(): void
-    {
-        $id = self::start()->getId();
-        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT', retryDetail: 'dns')];
-        self::runQueued();
-
-        self::storedSet($id, 'error_detail', '<img src=x onerror=alert(1)>');
-        $this->assertSame(['code' => 'TRANSPORT', 'where' => '', 'detail' => ''], self::fresh($id)->progress(self::USER)['error']);
-
-        self::storedSet($id, 'retry_code', 'https://x.example/?token=t');
-        $this->assertNull(self::fresh($id)->progress(self::USER)['error']);
-    }
-
-    public function test_progress_shows_the_detail_of_the_error(): void
-    {
-        $id = self::start()->getId();
-        ScriptedBatchRun::$script = [new BatchFailed('SOURCE', 'stream 2', 'http:404')];
-        self::runQueued();
-
-        $this->assertSame(['code' => 'SOURCE', 'where' => 'stream 2', 'detail' => 'http:404'], self::fresh($id)->progress(self::USER)['error']);
-    }
-
-    // a run stored before the detail existed has none
-    public function test_progress_of_an_old_error_without_detail(): void
-    {
-        $id = self::start()->getId();
-        self::storedSet($id, 'state', 'error');
-        self::storedSet($id, 'error_code', 'TRANSPORT');
-        $rows = array_filter(TableDb::rows('object_text'), static fn(array $r): bool => !(($r['object_id'] === $id) && in_array($r['property'], ['error_detail', 'retry_code'], true)));
-        TableDb::$tables['object_text'] = array_values($rows);
-
-        $this->assertSame(['code' => 'TRANSPORT', 'where' => '', 'detail' => ''], self::fresh($id)->progress(self::USER)['error']);
+        $this->assertSame(['code' => 'SOURCE_LOGIN', 'where' => 'stream 2'], $progress['error']);
     }
 
     public function test_progress_denied_without_may_control(): void

@@ -181,7 +181,7 @@ final class GrabberHttpTest extends TestCase
 
     public function test_setHttp_503IsUnavailable(): void
     {
-        $this->assertFailure(SourceUnavailable::class, 'TRANSPORT', new MockResponse('down', ['http_code' => 503]), 'http:503');
+        $this->assertFailure(SourceUnavailable::class, 'TRANSPORT', new MockResponse('down', ['http_code' => 503]));
     }
 
     public function test_setHttp_429IsUnavailable(): void
@@ -203,7 +203,7 @@ final class GrabberHttpTest extends TestCase
     #[DataProvider('sourceStatuses')]
     public function test_setHttp_404IsRefusedSource(int $status): void
     {
-        $this->assertFailure(SourceRefused::class, 'SOURCE', new MockResponse('?', ['http_code' => $status]), "http:$status");
+        $this->assertFailure(SourceRefused::class, 'SOURCE', new MockResponse('?', ['http_code' => $status]));
     }
 
     public static function sourceStatuses(): array
@@ -213,12 +213,7 @@ final class GrabberHttpTest extends TestCase
 
     public function test_setHttp_timeoutIsUnavailable(): void
     {
-        $this->assertFailure(SourceUnavailable::class, 'TRANSPORT', new MockResponse('', ['error' => 'Idle timeout reached']), 'timeout');
-    }
-
-    public function test_setHttp_unknownHostIsUnavailableDns(): void
-    {
-        $this->assertFailure(SourceUnavailable::class, 'TRANSPORT', new MockResponse('', ['error' => 'Could not resolve host: example.invalid']), 'dns');
+        $this->assertFailure(SourceUnavailable::class, 'TRANSPORT', new MockResponse('', ['error' => 'Idle timeout reached']));
     }
 
     public function test_setHttp_tooLargeIsRefusedSource(): void
@@ -230,7 +225,6 @@ final class GrabberHttpTest extends TestCase
         self::assertInstanceOf(SourceRefused::class, $e);
         self::assertSame('SOURCE', $e->reason);
         self::assertSame('The answer from example.invalid is too large', $e->getMessage());
-        self::assertSame('too_large', $e->detail);
     }
 
     public function test_setHttp_malformedUrlIsRefusedSource(): void
@@ -239,7 +233,7 @@ final class GrabberHttpTest extends TestCase
 
         $e = $this->failureOf(fn() => $grabber->getSources());
         self::assertInstanceOf(SourceRefused::class, $e);
-        self::assertSame(['SOURCE', 'address'], [$e->reason, $e->detail]);
+        self::assertSame('SOURCE', $e->reason);
     }
 
     public function test_setHttp_grabberNotViaLoadDataThrows(): void
@@ -630,16 +624,13 @@ final class GrabberHttpTest extends TestCase
     }
 
     /** @param class-string<SourceFailure> $class */
-    private function assertFailure(string $class, string $reason, MockResponse $answer, ?string $detail = null): void
+    private function assertFailure(string $class, string $reason, MockResponse $answer): void
     {
         $grabber = (new CSV('https://example.invalid/data.csv'))->setHttp(new Client(http: new MockHttpClient([$answer])));
 
         $e = $this->failureOf(fn() => $grabber->getSources());
         self::assertInstanceOf($class, $e);
         self::assertSame($reason, $e->reason);
-        if ($detail !== null) {
-            self::assertSame($detail, $e->detail);
-        }
     }
 
     private function failureOf(\Closure $fetch): SourceFailure

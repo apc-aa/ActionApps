@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Import;
 
-use AA\IO\SourceFailure;
-
 /**
  * What Service::start() and resume() did:
  * - queued: runId = the run;
@@ -25,18 +23,13 @@ final class StartResult
 {
     public const CODES = ['queued', 'busy', 'off', 'unknown', 'invalid'];
 
-    /** @param string $detail of a refusal of the source, as AA\IO\SourceFailure::$detail */
     public function __construct(
         public readonly string $code,
         public readonly string $runId = '',
         public readonly string $reason = '',
-        public readonly string $detail = '',
     ) {
         if (!in_array($code, self::CODES, true)) {
             throw new \InvalidArgumentException("No start result $code");
-        }
-        if (!SourceFailure::isDetail($detail)) {
-            throw new \InvalidArgumentException('A start result detail must be one of SourceFailure::isDetail()');
         }
     }
 }

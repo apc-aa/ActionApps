@@ -135,7 +135,7 @@ final class ContextTest extends TestCase
     {
         $ctx = $this->context([new MockResponse('internal')]);
 
-        self::assertSame('address', $this->expectRefused(fn() => $ctx->http()->request('GET', $url))->detail);
+        $this->expectRefused(fn() => $ctx->http()->request('GET', $url));
         self::assertSame([], $this->requests);
     }
 
@@ -153,7 +153,7 @@ final class ContextTest extends TestCase
     {
         $ctx = $this->context([self::redirect('http://10.0.0.1/'), new MockResponse('internal')]);
 
-        self::assertSame('address', $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/a'))->detail);
+        $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/a'));
         self::assertCount(1, $this->requests);
     }
 
@@ -162,7 +162,7 @@ final class ContextTest extends TestCase
     {
         $ctx = $this->context([new MockResponse('x')]);
 
-        self::assertSame('address', $this->expectRefused(fn() => $ctx->http()->request('GET', $url))->detail);
+        $this->expectRefused(fn() => $ctx->http()->request('GET', $url));
         self::assertSame([], $this->requests);
     }
 
@@ -182,7 +182,7 @@ final class ContextTest extends TestCase
     {
         $ctx = $this->context([new MockResponse(str_repeat('x', 11))], maxBytes: 10);
 
-        self::assertSame('too_large', $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/big'))->detail);
+        $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/big'));
     }
 
     // a body over 100 MB would not fit the test's memory, so the limit is read directly
@@ -245,7 +245,7 @@ final class ContextTest extends TestCase
      * @param list<string> $ips what the fake resolver answers
      */
     #[DataProvider('lookups')]
-    public function test_http_blockedHostByItsAddresses(array $ips, string $expected, string $detail): void
+    public function test_http_blockedHostByItsAddresses(array $ips, string $expected): void
     {
         $asked = [];
         $error = new MockResponse('', ['error' => 'Host "data.example" is blocked for "https://data.example/x".']);
@@ -258,7 +258,7 @@ final class ContextTest extends TestCase
             $ctx->http()->request('GET', 'https://1.1.1.1/x');
             self::fail('SourceFailure expected');
         } catch (SourceFailure $e) {
-            self::assertSame([$expected, $detail], [$e::class, $e->detail]);
+            self::assertSame($expected, $e::class);
         }
         self::assertSame(['data.example'], $asked);
     }
@@ -266,10 +266,10 @@ final class ContextTest extends TestCase
     public static function lookups(): array
     {
         return [
-            'not found'           => [[], SourceUnavailable::class, 'dns'],
-            'public only'         => [['93.184.216.34', '2606:2800:220:1::1'], SourceUnavailable::class, 'dns'],
-            'one private'         => [['93.184.216.34', '10.0.0.5'], SourceRefused::class, 'address'],
-            'private ipv6'        => [['fd00::1'], SourceRefused::class, 'address'],
+            'not found'           => [[], SourceUnavailable::class],
+            'public only'         => [['93.184.216.34', '2606:2800:220:1::1'], SourceUnavailable::class],
+            'one private'         => [['93.184.216.34', '10.0.0.5'], SourceRefused::class],
+            'private ipv6'        => [['fd00::1'], SourceRefused::class],
         ];
     }
 
@@ -281,7 +281,7 @@ final class ContextTest extends TestCase
             $ctx->http()->request('GET', 'https://1.1.1.1/data');
             self::fail('SourceUnavailable expected');
         } catch (SourceUnavailable $e) {
-            self::assertSame(['TRANSPORT', 'dns'], [$e->reason, $e->detail]);
+            self::assertSame('TRANSPORT', $e->reason);
         }
     }
 
@@ -379,7 +379,7 @@ final class ContextTest extends TestCase
     {
         $ctx = $this->context([self::redirect($to), new MockResponse('local')]);
 
-        self::assertSame('address', $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/a'))->detail);
+        $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/a'));
         self::assertCount(1, $this->requests);
     }
 
@@ -399,33 +399,8 @@ final class ContextTest extends TestCase
             $ctx->http()->request('GET', 'https://1.1.1.1/slow');
             self::fail('SourceUnavailable expected');
         } catch (SourceUnavailable $e) {
-            self::assertSame(['TRANSPORT', 'timeout'], [$e->reason, $e->detail]);
+            self::assertSame('TRANSPORT', $e->reason);
         }
-    }
-
-    /** the library's words name the cause; what is kept is only its kind */
-    #[DataProvider('transportFailures')]
-    public function test_http_transportFailureHasItsKind(string $error, string $detail, string $message): void
-    {
-        $ctx = $this->context([new MockResponse('', ['error' => $error])]);
-
-        try {
-            $ctx->http()->request('GET', 'https://1.1.1.1/data?key=' . rawurlencode(self::KEY));
-            self::fail('SourceUnavailable expected');
-        } catch (SourceUnavailable $e) {
-            self::assertSame(['TRANSPORT', $detail], [$e->reason, $e->detail]);
-            self::assertSame($message . ': https://1.1.1.1/data?key=***', $e->getMessage());
-        }
-    }
-
-    public static function transportFailures(): array
-    {
-        return [
-            'dns'     => ['Could not resolve host: data.example', 'dns', 'Host name not found'],
-            'tls'     => ['SSL certificate problem: certificate has expired', 'tls', 'No answer'],
-            'refused' => ['Failed to connect to 1.1.1.1 port 443: Connection refused', 'refused', 'No answer'],
-            'unknown' => ['Something odd', '', 'No answer'],
-        ];
     }
 
     public function test_http_followsThreeRedirects(): void
@@ -440,7 +415,7 @@ final class ContextTest extends TestCase
     {
         $ctx = $this->context([self::redirect('https://1.1.1.1/b'), self::redirect('https://1.1.1.1/c'), self::redirect('https://1.1.1.1/d'), self::redirect('https://1.1.1.1/e'), new MockResponse('ok')]);
 
-        self::assertSame('redirects', $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/a'))->detail);
+        $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/a'));
         self::assertCount(4, $this->requests);
     }
 

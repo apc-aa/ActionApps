@@ -112,21 +112,6 @@ final class ProgressEndpointTest extends TestCase
         $this->assertSame([200, Run::DONE], [$status, $body['state']]);
     }
 
-    /** between two tries the script learns why the last one failed - not error: null - and never the URL */
-    public function test_progress_jsonWhileWaitingSaysWhy(): void
-    {
-        self::definition();
-        $id = self::start();
-        \ServiceSource::$failStreams = new \AA\IO\SourceUnavailable('TRANSPORT', 'Host name not found: https://1.1.1.1/x?token=tok3n7272', 'dns');
-
-        self::runOne();
-
-        ['status' => $status, 'body' => $body] = JsonResponseReader::read(DetailPage::progressJson(self::SLICE, self::DEF, $id, AuthGetUid()));
-        $this->assertSame([200, Run::RUNNING, true], [$status, $body['state'], $body['waiting']]);
-        $this->assertSame(['code' => 'TRANSPORT', 'where' => '', 'detail' => 'dns'], $body['error']);
-        $this->assertStringNotContainsString('tok3n7272', json_encode($body, JSON_THROW_ON_ERROR));
-    }
-
     /** what only time changes is in the JSON too, so the page learns a run hangs or its retry is due */
     public function test_progress_timeDependentFacts(): void
     {

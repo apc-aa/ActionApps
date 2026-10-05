@@ -30,8 +30,8 @@ abstract class BatchRun extends AA_Object
     /** the core's properties; a user adds its own in getClassProperties() */
     public const STATE_PROPS = [
         'state', 'subject', 'user', 'started', 'moved', 'finished', 'position', 'step', 'closing', 'lease',
-        'lease_tok', 'failures', 'next_at', 'error_code', 'error_path', 'error_detail', 'retry_code', 'counts',
-        'warnings', 'progress', 'report', 'sealed', 'sealed_until',
+        'lease_tok', 'failures', 'next_at', 'error_code', 'error_path', 'counts', 'warnings', 'progress',
+        'report', 'sealed', 'sealed_until',
     ];
 
     /** steps in a row without progress after which onRetriesExhausted() decides - nothing goes round for ever */
@@ -57,7 +57,7 @@ abstract class BatchRun extends AA_Object
     /** JSON nesting written - what is stored can always be read back */
     private const JSON_DEPTH = BatchStepResult::MAX_DEPTH;
     /** what toError() changes */
-    private const ERROR_PROPS = ['state', 'error_code', 'error_path', 'error_detail', 'retry_code', 'next_at'];
+    private const ERROR_PROPS = ['state', 'error_code', 'error_path', 'next_at'];
     private const LEASE_PROPS = ['lease', 'lease_tok'];
     /** the token of a dead step Continue forgave: no step holds it, the next claim still cleans up after it */
     private const FORGIVEN = 'forgiven';
@@ -89,10 +89,6 @@ abstract class BatchRun extends AA_Object
     protected $next_at = '';
     protected $error_code = '';
     protected $error_path = '';
-    /** BatchFailed::$detail of error_code - or of retry_code while the run waits to try again */
-    protected $error_detail = '';
-    /** why the last step failed while the run waits to try again; '' after a step that did not fail */
-    protected $retry_code = '';
     /** JSON of two levels of whole numbers - each step adds its deltas */
     protected $counts = '';
     protected $warnings = '';
@@ -469,14 +465,10 @@ abstract class BatchRun extends AA_Object
         $this->lease     = '';
         $this->lease_tok = ((string) $this->lease_tok === '') ? '' : ($died ? self::RETRIED : self::FORGIVEN);
         if (!$died) {
-            $this->failures   = '0';
-            $this->retry_code = '';
+            $this->failures = '0';
         }
         $this->error_code = '';
         $this->error_path = '';
-        if ((string) $this->retry_code === '') {
-            $this->error_detail = '';
-        }
         $this->position   = self::positionJson($this->positionOnResume($this->position()));
         // when the step is due: until it has had its chance the run does not hang (isStuck())
         $this->next_at    = (string) $now;
@@ -534,8 +526,7 @@ abstract class BatchRun extends AA_Object
      *  still text to the page: it puts them in by textContent or safe(), never as HTML.
      *  @return array{role: string, state: string, label: string, done: int, total: int, moved: int, started: int,
      *                running: bool, next_at: int, failures: int, counts: array, warnings: array,
-     *                error: ?array{code: string, where: string, detail: string}, note: string, warning: string, extra: array}
-     *  error is the run's error, or while it is active the failure of its last try.
+     *                error: ?array{code: string, where: string}, note: string, warning: string, extra: array}
      *  @throws BatchFailed FORBIDDEN when $uid may not see the run */
     final public function progress(string $uid): array
     {
@@ -554,23 +545,11 @@ abstract class BatchRun extends AA_Object
             'failures' => $this->failures(),
             'counts'   => $this->json('counts'),
             'warnings' => $this->json('warnings'),
-            'error'    => $this->lastFailure(),
+            'error'    => ((string) $this->error_code === '') ? null : ['code' => (string) $this->error_code, 'where' => (string) $this->error_path],
             'note'     => (string) ($last['note'] ?? ''),
             'warning'  => (string) ($last['warning'] ?? ''),
             'extra'    => $this->progressExtra(),
         ];
-    }
-
-    /** Read back as stored and then shown: a value of no allowed shape is dropped, not passed on.
-     *  @return ?array{code: string, where: string, detail: string} */
-    private function lastFailure(): ?array
-    {
-        $detail = BatchFailed::isDetail((string) $this->error_detail) ? (string) $this->error_detail : '';
-        if ((string) $this->error_code !== '') {
-            return ['code' => (string) $this->error_code, 'where' => (string) $this->error_path, 'detail' => $detail];
-        }
-        $active = ($this->state === static::states()->active);
-        return ($active && BatchFailed::isCode((string) $this->retry_code)) ? ['code' => (string) $this->retry_code, 'where' => '', 'detail' => $detail] : null;
     }
 
     /** Active, yet no step works and none has been due (next_at: each queued step, a retry, a Continue)
@@ -1145,35 +1124,30 @@ abstract class BatchRun extends AA_Object
         $this->commitStep($r);
         if ($r->finished) {
             // the lease stays for the final phase; if this process dies in it, the safety row repeats it
-            $this->failures     = '0';
-            $this->retry_code   = '';
-            $this->error_detail = '';
-            $this->closing      = '1';
-            $this->next_at      = '';
+            $this->failures = '0';
+            $this->closing  = '1';
+            $this->next_at  = '';
             $this->lease    = (string) $this->leaseUntil($now, self::stepSeconds(null));
             $this->enqueue((int) $this->lease + 1);
         } else {
             // a step that only ran out of time goes on at once; a failed source gets time to recover
-            $this->retryOrError($moved ? 0 : $this->failures() + 1, !in_array($r->retry, ['', 'NO_PROGRESS'], true), ($r->retry !== '') ? $r->retry : 'NO_PROGRESS', $r->retryDetail);
+            $this->retryOrError($moved ? 0 : $this->failures() + 1, !in_array($r->retry, ['', 'NO_PROGRESS'], true), ($r->retry !== '') ? $r->retry : 'NO_PROGRESS');
         }
         $this->update(['moved', 'failures', 'position', 'step', 'counts', 'warnings', 'progress', 'closing', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
     }
 
     /** The lease released, the next step queued - after retryDelay() when $wait - or, once $failures
-     *  reach MAX_FAILURES, error $code. A failed try keeps $code and $detail for the progress page. */
-    private function retryOrError(int $failures, bool $wait, string $code, string $detail = ''): void
+     *  reach MAX_FAILURES, error $code. */
+    private function retryOrError(int $failures, bool $wait, string $code): void
     {
         $now             = static::now();
         $this->failures  = (string) $failures;
         $this->lease     = '';
         $this->lease_tok = '';
         if ($failures >= self::MAX_FAILURES) {
-            $this->toError($code, '', $detail);
+            $this->toError($code, '');
             return;
         }
-        // a step may move on and still fail: it too waits, and the page tells why
-        $this->retry_code   = $wait ? $code : '';
-        $this->error_detail = $wait ? $detail : '';
         $at            = $now + ($wait ? $this->retryDelay($failures) : 0);
         // also a step due now: a run that just got its chance does not hang (isStuck())
         $this->next_at = (string) $at;
@@ -1184,9 +1158,9 @@ abstract class BatchRun extends AA_Object
     private function failStep(\Throwable $e): string
     {
         $this->logFailure($e);
-        [$code, $where, $detail] = self::failure($e);
-        $run = $this->whileHolding((string) $this->lease_tok, static function (self $run) use ($code, $where, $detail): void {
-            $run->toError($code, $where, $detail);
+        [$code, $where] = self::failure($e);
+        $run = $this->whileHolding((string) $this->lease_tok, static function (self $run) use ($code, $where): void {
+            $run->toError($code, $where);
             $run->step      = (string) ($run->step() + 1);
             $run->lease     = '';
             $run->lease_tok = '';
@@ -1211,10 +1185,10 @@ abstract class BatchRun extends AA_Object
     }
 
     /** error $code without the lease - a step working elsewhere keeps it, and finds the run not active */
-    private function errorAt(string $expected, string $code, string $where, string $detail = ''): string
+    private function errorAt(string $expected, string $code, string $where): string
     {
-        $run = $this->whileAt($expected, static function (self $run) use ($code, $where, $detail): void {
-            $run->toError($code, $where, $detail);
+        $run = $this->whileAt($expected, static function (self $run) use ($code, $where): void {
+            $run->toError($code, $where);
             $run->update(self::ERROR_PROPS);
         });
         return $run ? "error $code" : 'stale';
@@ -1264,10 +1238,10 @@ abstract class BatchRun extends AA_Object
         return $run->state();
     }
 
-    /** @return array{string, string, string} the error code, place and detail of $e - its own for a BatchFailed */
+    /** @return array{string, string} the error code and place of $e - its own for a BatchFailed */
     private static function failure(\Throwable $e): array
     {
-        return ($e instanceof BatchFailed) ? [$e->reason, $e->where, $e->detail] : ['INTERNAL', get_debug_type($e), ''];
+        return ($e instanceof BatchFailed) ? [$e->reason, $e->where] : ['INTERNAL', get_debug_type($e)];
     }
 
     /** the class and the line in the queue's failure log, as the queue logs a task that threw - never the
@@ -1384,14 +1358,12 @@ abstract class BatchRun extends AA_Object
     }
 
     /** the run in error, the lease untouched; the caller writes ERROR_PROPS */
-    private function toError(string $code, string $where, string $detail = ''): void
+    private function toError(string $code, string $where): void
     {
         $this->moveTo(static::states()->error);
-        $this->error_code   = $code;
-        $this->error_path   = mb_strcut($where, 0, 255);
-        $this->error_detail = $detail;
-        $this->retry_code   = '';
-        $this->next_at      = '';
+        $this->error_code = $code;
+        $this->error_path = mb_strcut($where, 0, 255);
+        $this->next_at    = '';
     }
 
     private function failures(): int

@@ -142,39 +142,6 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame([], array_diff(ScriptedBatchRun::hooks(), ['work', 'commitStep']), 'two tries are no reason to ask the user');
     }
 
-    #[DataProvider('bothModes')]
-    public function test_failed_try_keeps_its_code_and_detail_until_it_moves_on(bool $inTransaction): void
-    {
-        self::mode($inTransaction);
-        $id = self::start()->getId();
-        ScriptedBatchRun::$script = [
-            new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT', retryDetail: 'http:503'),
-            new BatchStepResult(['n' => 1], false),
-        ];
-
-        self::runQueued();
-        $stored = self::stored($id);
-        $this->assertSame(['running', '', 'TRANSPORT', 'http:503'], [$stored['state'], $stored['error_code'], $stored['retry_code'], $stored['error_detail']]);
-
-        self::runNewest();
-        $stored = self::stored($id);
-        $this->assertSame(['0', '', ''], [$stored['failures'], $stored['retry_code'], $stored['error_detail']], 'progress clears it');
-    }
-
-    #[DataProvider('bothModes')]
-    public function test_retries_spent_error_keeps_the_detail_of_the_last_try(bool $inTransaction): void
-    {
-        self::mode($inTransaction);
-        $id = self::start()->getId();
-        self::storedSet($id, 'failures', '2');
-        ScriptedBatchRun::$script = [new BatchStepResult(['n' => 0], false, retry: 'TRANSPORT', retryDetail: 'dns')];
-
-        $this->assertSame('error TRANSPORT', self::runQueued());
-
-        $stored = self::stored($id);
-        $this->assertSame(['error', 'TRANSPORT', 'dns', ''], [$stored['state'], $stored['error_code'], $stored['error_detail'], $stored['retry_code']]);
-    }
-
     /** @return array<string, array{string}> */
     public static function noRetryReasons(): array
     {
@@ -625,7 +592,6 @@ final class BatchRunRetryTest extends TestCase
         $this->assertSame('error', $stored['state']);
         $this->assertSame('SOURCE_LOGIN', $stored['error_code']);
         $this->assertSame('stream 3', $stored['error_path']);
-        $this->assertSame('', $stored['error_detail']);
         $this->assertSame('1', $stored['step']);
         $this->assertSame('0', $stored['failures']);
         $this->assertSame(['n' => 0], json_decode($stored['position'], true));

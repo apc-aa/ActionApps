@@ -7,9 +7,8 @@ namespace AA\Import;
 /**
  * What a change of the settings, the source or the mapping of a definition did (Service): CHANGED,
  * SAME (nothing to change, the open run goes on), STALE (the stored settings are no longer those the
- * form was made from), or the code of a refusal with its detail. The detail is the label of the
- * setting at fault (SETTINGS, SLICE), the problems of a mapping (MAPPING), the state in the way
- * (BUSY), or - for a failure of the source - its AA\IO\SourceFailure::$detail.
+ * form was made from), or the code of a refusal with its detail - the label of the setting at fault,
+ * or the problems of a mapping.
  */
 final class ChangeResult
 {

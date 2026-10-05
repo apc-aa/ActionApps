@@ -26,13 +26,12 @@ final class RunCursor
      * - rkeyed: an item of the run had its key - a job cut by the run's limit says nothing of the mapping then;
      * - probed, pv: the changed or run mode asked probe() at the stream's start, and the version it gave;
      * - after: the key of a closed stream whose expression is due;
-     * - checked: a check, a baseline or a live run asked check(); ccode: what ends the run in its next step,
-     *   cdetail: its SourceFailure::$detail.
+     * - checked: a check, a baseline or a live run asked check(); ccode: what ends the run in its next step.
      */
     public const START = [
         'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',
         'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '',
-        'after' => '', 'checked' => 0, 'ccode' => '', 'cdetail' => '', 'skips' => 0, 'keyed' => 0, 'nokey' => 0, 'rkeyed' => 0,
+        'after' => '', 'checked' => 0, 'ccode' => '', 'skips' => 0, 'keyed' => 0, 'nokey' => 0, 'rkeyed' => 0,
     ];
 
     /** the stored position in the shape of START, the types of START */

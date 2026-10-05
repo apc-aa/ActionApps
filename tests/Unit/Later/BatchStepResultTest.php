@@ -27,17 +27,6 @@ final class BatchStepResultTest extends TestCase
         $this->assertSame('SOURCE_UNSTABLE', (new BatchStepResult([], false, retry: 'SOURCE_UNSTABLE'))->retry);
     }
 
-    public function test_construct_accepts_retry_detail(): void
-    {
-        $this->assertSame('http:503', (new BatchStepResult([], false, retry: 'TRANSPORT', retryDetail: 'http:503'))->retryDetail);
-    }
-
-    public function test_construct_rejects_retry_detail_that_is_no_short_word(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        new BatchStepResult([], false, retry: 'TRANSPORT', retryDetail: 'No answer from https://x.example/?k=1');
-    }
-
     public function test_construct_rejects_retry_that_is_not_a_code(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -97,11 +86,11 @@ final class BatchStepResultTest extends TestCase
 
     public function test_withPosition_keeps_the_rest_and_clears_retry(): void
     {
-        $r = new BatchStepResult(['n' => 1], false, ['read' => 1], ['W' => 2], 'task 4', 1, 9, 'TRANSPORT', ['task' => 4], 'dns');
+        $r = new BatchStepResult(['n' => 1], false, ['read' => 1], ['W' => 2], 'task 4', 1, 9, 'TRANSPORT', ['task' => 4]);
         $n = $r->withPosition(['n' => 2]);
 
         $this->assertSame(['n' => 2], $n->position);
-        $this->assertSame(['', ''], [$n->retry, $n->retryDetail]);
+        $this->assertSame('', $n->retry);
         $this->assertSame([false, ['read' => 1], ['W' => 2], 'task 4', 1, 9, ['task' => 4]], [$n->finished, $n->counts, $n->warnings, $n->label, $n->done, $n->total, $n->extra]);
     }
 
