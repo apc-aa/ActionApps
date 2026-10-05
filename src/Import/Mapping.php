@@ -290,7 +290,7 @@ final class Mapping
     }
 
     /** @return array<string, true> ids of the fields stored in the item table (status, dates, author, ...) */
-    private static function systemFields(): array
+    public static function systemFields(): array
     {
         $ids = array_map(static fn(string $column): string => str_pad($column, 16, '.'), AA::Metabase()->getColumnNames('item'));
         return array_fill_keys($ids, true);

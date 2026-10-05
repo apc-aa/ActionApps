@@ -278,11 +278,12 @@ final class DetailConfigTest extends TestCase
         $text = self::text($html);
         $this->assertStringContainsString('ends the open run', $text);
         $this->assertStringContainsString('the mapping', $text);
-        $this->assertStringContainsString('No other source is available.', $text);
-        $forms = $doc->getElementsByTagName('form');
-        $this->assertSame(1, $forms->length);
-        $this->assertNotSame('', $forms->item(0)?->getAttribute('data-aa-confirm'));
-        $this->assertSame('post', $forms->item(0)?->getAttribute('method'));
+        $this->assertStringNotContainsString('No other source is available.', $text, 'a core source is always there to pick');
+        // besides the GET form choosing another source
+        $forms = array_values(array_filter(iterator_to_array($doc->getElementsByTagName('form')), fn(\DOMElement $f): bool => $f->getAttribute('method') !== 'get'));
+        $this->assertCount(1, $forms);
+        $this->assertNotSame('', $forms[0]->getAttribute('data-aa-confirm'));
+        $this->assertSame('post', $forms[0]->getAttribute('method'));
 
         // a pick that is no source shows the current one
         $this->assertStringContainsString('name="source" value="' . self::SOURCE . '"', self::config()->settingsHtml('custom:nonsense'));
@@ -432,6 +433,24 @@ final class DetailConfigTest extends TestCase
         $this->assertStringNotContainsString('source=', $page->afterPost($outcome), 'the current source needs no pick');
     }
 
+    public function test_settings_noOtherSourceToPick(): void
+    {
+        $root = sys_get_temp_dir() . '/aa-detailconfig-' . getmypid();
+        @mkdir("$root/empty", 0o700, true);
+        Registry::setCustomRootForTests($root, "$root/empty");
+        try {
+            self::definition(['source' => 'core:csvurl']);
+
+            $html = self::config()->settingsHtml();
+        } finally {
+            rmdir("$root/empty");
+            rmdir($root);
+        }
+
+        $this->assertStringContainsString('No other source is available.', self::text($html));
+        $this->assertStringNotContainsString('method="get"', $html);
+    }
+
     /** the choice of a source is a GET form of the page; an unknown pick shows the current source */
     public function test_settings_sourceChoiceIsGet(): void
     {
@@ -456,7 +475,7 @@ final class DetailConfigTest extends TestCase
         foreach ($get->getElementsByTagName('option') as $option) {
             $options[$option->getAttribute('value')] = $option->hasAttribute('selected');
         }
-        $this->assertSame([self::SOURCE => false], $options);
+        $this->assertSame(['core:csvurl' => false, self::SOURCE => false], $options);
         $this->assertStringContainsString('not available', $html, 'the settings of the missing current source');
         $this->assertStringNotContainsString('name="stored"', $html, 'no settings form for it');
     }
