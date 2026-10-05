@@ -110,9 +110,9 @@ $apage->addRequire('
     .aa-security-scope, .aa-security-evidence { font-size: var(--sz-s); }
     .aa-security-state { font-weight: 600; }
     .aa-security-unknown { font-style: italic; }
-    .aa-security details { grid-column: 1; max-width: 70ch; }
+    .aa-security details { grid-column: 1 / -1; }
     .aa-security summary { cursor: pointer; font-size: var(--sz-s); }
-    .aa-security-switch { grid-column: 2; grid-row: 1 / span 3; align-self: start; }
+    .aa-security-switch { grid-column: 2; grid-row: 1 / span 2; align-self: start; }
     .aa-security-switch label { display: flex; gap: 0.5em; align-items: center; margin-top: 0.3em; cursor: pointer; }
     .aa-security-switch input { margin: 0; }
     .aa-security-switch .aa-security-note { display: none; margin-top: 0.5em; font-size: var(--sz-s); }
