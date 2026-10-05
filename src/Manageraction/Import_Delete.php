@@ -39,13 +39,15 @@ class Import_Delete extends AbstractManageraction
         }
         [$defs, $refused] = $managed->actionable($manager, $item_zids, PS_FEEDING);
         $failed = false;
+        $keys   = false;
         foreach ($defs->longids() as $id) {
             // one that fails (a lost right, the database) does not keep the others
             try {
                 Definition::fresh((string) $id)?->deleteWithRuns(AuthGetUid());
-            } catch (BatchFailed) {
-                // a right lost meanwhile - a refusal, no fault to log
+            } catch (BatchFailed $e) {
+                // a refusal, no fault to log: a right lost meanwhile, or a source with keys
                 $failed = true;
+                $keys   = $keys || ($e->reason === 'KEYS');
             } catch (\Throwable $e) {
                 $failed = true;
                 Definition::logError((string) $id, $e);
@@ -54,6 +56,9 @@ class Import_Delete extends AbstractManageraction
         $msg = [];
         if ($failed) {
             $msg[] = _m('Some of the selected imports were not deleted.');
+        }
+        if ($keys) {
+            $msg[] = Definition::refusal('KEYS');
         }
         if ($refused) {
             $msg[] = _m('Some of the selected objects were not deleted - they belong to a module you can not change them in.');

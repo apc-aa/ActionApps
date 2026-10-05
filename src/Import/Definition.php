@@ -353,12 +353,13 @@ final class Definition extends AA_Object implements InternalExpandInterface
     /**
      * Checked when the definition is saved from a form; saving from code is not. An existing
      * definition is checked only for what the form changes, so a broken one can still be renamed or
-     * disabled.
+     * disabled - by whoever may change it (manageRefusal()), a superadmin when its source needs keys.
      */
     public function formRefusal(): ?string
     {
-        if (!$this->mayManage(AuthGetUid())) {
-            return self::refusal('FORBIDDEN');
+        $refused = $this->manageRefusal(AuthGetUid());
+        if ($refused !== null) {
+            return self::refusal($refused);
         }
         $name = (string) $this->aa_name;
         if ($name === '') {
@@ -403,13 +404,14 @@ final class Definition extends AA_Object implements InternalExpandInterface
 
     /**
      * Why a definition or a change of it is refused, for the user.
-     * @param string $code FORBIDDEN, NOT_OF_SLICE, NO_SOURCE, NO_MAPPING, MAPPING (with the problem
+     * @param string $code FORBIDDEN, KEYS, NOT_OF_SLICE, NO_SOURCE, NO_MAPPING, MAPPING (with the problem
      *                     codes in $detail), SETTINGS, SLICE; any other = the source refused the settings
      */
     public static function refusal(string $code, string $detail = ''): string
     {
         return match ($code) {
             'FORBIDDEN'    => _m('Only a user who manages the feeding of the slice may change its imports.'),
+            'KEYS'         => _m('This import uses API keys, so only a superadmin may change or delete it.'),
             'NOT_OF_SLICE' => _m('The import was not saved - it is not an import of this slice.'),
             'NO_SOURCE'    => _m('The import source is not available.'),
             'NO_MAPPING'   => _m('The import source did not give its mapping.'),
@@ -420,12 +422,66 @@ final class Definition extends AA_Object implements InternalExpandInterface
         };
     }
 
-    /** The one check of who may create, change or delete a definition and its settings and mapping.
-     *  @param ?string $source the source the definition is to have; null = its own. Every source asks
-     *                         the same right now - a stricter rule for some sources belongs here. */
+    /** @param ?string $source the source the definition is to have; null = its own */
     public function mayManage(string $uid, ?string $source = null): bool
     {
-        return self::mayImportInto($uid, (string) $this->getOwnerId());
+        return $this->manageRefusal($uid, $source) === null;
+    }
+
+    /**
+     * The one check of who may create, change or delete a definition - its name, settings, mapping,
+     * the definition itself: whoever imports into the slice, and only a superadmin when the source
+     * needs keys, before or after a change, as its settings decide where the keys are sent. Running
+     * it stays the slice's.
+     * @param ?string $source the source the definition is to have; null = its own
+     * @return ?string null = he may; FORBIDDEN, or KEYS when only the keys of a source stop him
+     */
+    public function manageRefusal(string $uid, ?string $source = null): ?string
+    {
+        if (!self::mayImportInto($uid, (string) $this->getOwnerId())) {
+            return 'FORBIDDEN';
+        }
+        // IsSuperadmin() knows the logged-in user only
+        if (($uid === AuthGetUid()) && IsSuperadmin()) {
+            return null;
+        }
+        $keyed = (self::sourceKeys($this->sourceType()) !== []) || (($source !== null) && (self::sourceKeys($source) !== []));
+        return $keyed ? 'KEYS' : null;
+    }
+
+    /**
+     * The keys source $type needs - SourceInterface::credentials(), static, so no code of the source
+     * runs beyond it. [] for a source that is gone.
+     * @return ?list<array{string, string}> vendor and context of each; null when it is unknown - the
+     *                                      source did not load, or its list fails or has another shape
+     */
+    public static function sourceKeys(string $type): ?array
+    {
+        $class = Registry::sources()[$type] ?? null;
+        if ($class === null) {
+            return Registry::isRejected($type) ? null : [];
+        }
+        try {
+            return self::keysOf($class::credentials());
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    /** @return ?list<array{string, string}> */
+    private static function keysOf(mixed $declared): ?array
+    {
+        if (!is_array($declared) || !array_is_list($declared)) {
+            return null;
+        }
+        $keys = [];
+        foreach ($declared as $key) {
+            if (!is_array($key) || !is_string($key['vendor'] ?? null) || !is_string($key['context'] ?? null)) {
+                return null;
+            }
+            $keys[] = [$key['vendor'], $key['context']];
+        }
+        return $keys;
     }
 
     /** Whether the actions of an imports Manager are offered on its page. The overview of all slices
@@ -479,7 +535,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
      * A step working during the delete may still store items until its lease ends (the step's 30 s
      * plus 60 s); its run is gone, so it writes nothing back. Nothing happens when the definition is
      * no longer stored.
-     * @throws BatchFailed FORBIDDEN when $uid may not manage the imports of the slice
+     * @throws BatchFailed FORBIDDEN or KEYS (manageRefusal()) when $uid may not delete it
      */
     public function deleteWithRuns(string $uid): void
     {
@@ -489,9 +545,10 @@ final class Definition extends AA_Object implements InternalExpandInterface
             if ($def === null) {
                 return null;
             }
-            // decided by the stored slice under the lock, not by the page that asks
-            if (!$def->mayManage($uid)) {
-                throw new BatchFailed('FORBIDDEN');
+            // decided by the stored slice and source under the lock, not by the page that asks
+            $refused = $def->manageRefusal($uid);
+            if ($refused !== null) {
+                throw new BatchFailed($refused);
             }
             $runs = self::deleteRecordsOf($id)['runs'];
             self::deleteObjects([$id]);

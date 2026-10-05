@@ -66,6 +66,7 @@ final class TestRun extends Run
         self::$overrun   = null;
         self::$evaluate  = null;
         self::$evaluated = [];
+        ScriptedSource::$credentials = [];
     }
 
     /** @return list<array<string, list<string>>> what the savers stored: field => values of each item */
@@ -112,7 +113,7 @@ final class TestRun extends Run
     {
         self::$contextBudgets[] = $budget;
         $offline = new MockHttpClient(static fn() => throw new \LogicException('A test run went to the network'));
-        return new Context($source->credentials(), $budget, Context::DEFAULT_MAX_BYTES, $offline, static fn(): array => []);
+        return new Context($source::credentials(), $budget, Context::DEFAULT_MAX_BYTES, $offline, static fn(): array => []);
     }
 
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult

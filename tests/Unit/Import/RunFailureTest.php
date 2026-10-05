@@ -490,7 +490,7 @@ final class RunFailureTest extends TestCase
     {
         define('AA_APIKEY_RUNFAIL', 'sekret42');
         $source              = self::source(streams: 1, jobs: 1, items: 0);
-        $source->credentials = [['vendor' => 'RUNFAIL', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNFAIL', 'context' => '']];
         $source->jobs['s1']  = [['key' => 's1:a', 'items' => array_map(static fn(int $n): array => ['key' => "https://x.cz/?k=sekret42&n=$n", 'val' => 'v'], range(1, 25))]];
         $run                 = self::startRun($source, [], ['validate' => '["no"]']);
 

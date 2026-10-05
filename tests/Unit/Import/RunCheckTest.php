@@ -155,7 +155,7 @@ final class RunCheckTest extends TestCase
     {
         define('AA_APIKEY_RUNCHECK', 'sekret77');
         $source              = self::cataloged(streams: 1);
-        $source->credentials = [['vendor' => 'RUNCHECK', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNCHECK', 'context' => '']];
         $source->check       = new CheckResult(true, '', 'answered to /api?key=sekret77');
         $source->pages       = ['' => new CatalogPage([])];
         $run                 = self::startRun($source, ['mode' => 'check']);
@@ -522,7 +522,7 @@ final class RunCheckTest extends TestCase
     {
         define('AA_APIKEY_RUNCOLL', 'sekret5151');
         $source              = self::source(streams: 1, jobs: 1, items: 0);
-        $source->credentials = [['vendor' => 'RUNCOLL', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNCOLL', 'context' => '']];
         $source->jobs['s1']  = [['key' => 's1:x.sekret5151', 'items' => [['key' => 'k1', 'val' => '1'], ['key' => 'k1', 'val' => '2']]]];
         $run                 = self::startRun($source);
 
@@ -760,7 +760,7 @@ final class RunCheckTest extends TestCase
     {
         define('AA_APIKEY_RUNCUT', 'sekret4242424242');
         $source              = self::source(streams: 1, jobs: 1, items: 0);
-        $source->credentials = [['vendor' => 'RUNCUT', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNCUT', 'context' => '']];
         // 47 characters: cut at 40, the key would leave "sekret424" that redact() no longer knows
         $source->jobs['s1']  = [['key' => 's1:a', 'items' => [['key' => 'https://example.cz/data?apikey=sekret4242424242', 'val' => 'v']]]];
         $run                 = self::startRun($source, [], ['validate' => '["no"]']);
@@ -823,7 +823,7 @@ final class RunCheckTest extends TestCase
     {
         define('AA_APIKEY_RUNVER', 'sekret99');
         $source               = self::cataloged(streams: 1, jobs: 1, items: 1);
-        $source->credentials  = [['vendor' => 'RUNVER', 'context' => '']];
+        $source::$credentials  = [['vendor' => 'RUNVER', 'context' => '']];
         $source->probes['s1'] = new Probe(Probe::CHANGED, "https://x.cz/?k=sekret99&v=\xff" . str_repeat('9', 400));
         $run                  = self::startRun($source);
 
@@ -840,7 +840,7 @@ final class RunCheckTest extends TestCase
         define('AA_APIKEY_RUNPV', 'sekret98');
         $source               = self::cataloged(streams: 1, jobs: 2, items: 1, seconds: 5.0);
         $source->minJob       = 25;
-        $source->credentials  = [['vendor' => 'RUNPV', 'context' => '']];
+        $source::$credentials  = [['vendor' => 'RUNPV', 'context' => '']];
         $source->probes['s1'] = new Probe(Probe::CHANGED, "v\xff-sekret98");
         $run                  = self::startRun($source, ['mode' => 'changed']);
 
@@ -857,7 +857,7 @@ final class RunCheckTest extends TestCase
     {
         define('AA_APIKEY_RUNCUR', 'sekret97');
         $source              = self::cataloged(streams: 1);
-        $source->credentials = [['vendor' => 'RUNCUR', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNCUR', 'context' => '']];
         $next                = 'https://x.cz/next?key=sekret97';
         $source->pages       = ['' => static fn(): CatalogPage => new CatalogPage([new CatalogEntry('e1', 'Entry 1')], $next), $next => new CatalogPage([])];
         $run                 = self::startRun($source, ['mode' => 'check']);
@@ -994,7 +994,7 @@ final class RunCheckTest extends TestCase
         define('AA_APIKEY_RUNVMAX', 'sekret96');
         $source              = self::cataloged(streams: 1, jobs: 2, items: 0, seconds: 5.0);
         $source->minJob      = 25;
-        $source->credentials = [['vendor' => 'RUNVMAX', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNVMAX', 'context' => '']];
         $source->streams[0]  = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
         $source->jobs['s1'][0]['items'] = [['key' => 'k1', 'val' => 'v', 'year' => "2021-sekret96\xff"]];
         $source->jobs['s1'][1]['items'] = [['key' => 'k2', 'val' => 'v', 'year' => '2020']];

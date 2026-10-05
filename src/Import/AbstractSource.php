@@ -7,7 +7,7 @@ namespace AA\Import;
 /** Defaults of a source; name() and description() stay with each source */
 abstract class AbstractSource implements SourceInterface
 {
-    public function credentials(): array
+    public static function credentials(): array
     {
         return [];
     }

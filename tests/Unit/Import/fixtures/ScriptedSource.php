@@ -40,7 +40,7 @@ class ScriptedSource extends AbstractSource
     public float $jobsSeconds = 0.0;
 
     /** @var list<array{vendor: string, context: string}> */
-    public array $credentials = [];
+    public static array $credentials = [];
 
     public int $minJob = 15;
 
@@ -95,9 +95,9 @@ class ScriptedSource extends AbstractSource
         return $this->minJob;
     }
 
-    public function credentials(): array
+    public static function credentials(): array
     {
-        return $this->credentials;
+        return static::$credentials;
     }
 
     /** @param array<string, mixed> $spec */

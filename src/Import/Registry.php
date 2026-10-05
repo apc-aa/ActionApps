@@ -69,6 +69,23 @@ final class Registry
         return self::scan($customDir)['rejected'];
     }
 
+    /**
+     * Whether source $type is there but left out - a file or class that did not load, or a directory
+     * of installation sources refused whole. Such a source is not gone: what it would need is unknown.
+     */
+    public static function isRejected(string $type, ?string $customDir = null): bool
+    {
+        [$prefix, $name] = explode(':', $type, 2) + ['', ''];
+        foreach (array_keys(self::rejected($customDir)) as $what) {
+            $base = basename(str_replace('\\', '/', (string) $what), '.php');
+            $hit  = str_ends_with($base, 'Source') ? (strtolower(substr($base, 0, -6)) === $name) : ($prefix === 'custom');
+            if ($hit) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /** @param array<string, string> $settings */
     public static function create(string $type, array $settings, ?string $customDir = null): SourceInterface
     {

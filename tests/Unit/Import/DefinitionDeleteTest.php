@@ -321,6 +321,19 @@ final class DefinitionDeleteTest extends TestCase
         $this->assertSame([], [...self::logged(Definition::ERROR_EVENT), ...self::logged(Toexecute::FAILED_EVENT)]);
     }
 
+    /** a source with keys: the feeding right is told why its import stays */
+    public function test_importDelete_keysSourceSaysWhy(): void
+    {
+        self::store([self::DEF => [self::SLICE, Definition::class], self::SIBLING => [self::SLICE, Definition::class]]);
+        self::failOnLock(self::DEF, new BatchFailed('KEYS'));
+
+        $msg = self::delete([self::DEF, self::SIBLING]);
+
+        $this->assertSame('Some of the selected imports were not deleted. This import uses API keys, so only a superadmin may change or delete it.', $msg);
+        $this->assertSame([self::SIBLING], self::deleted('object_text', 'object_id'));
+        $this->assertSame([], self::logged(Definition::ERROR_EVENT));
+    }
+
     // ------------------------------------------------------------ helpers
 
     /** the locking read of the definition $id throws $e */

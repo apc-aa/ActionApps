@@ -57,8 +57,14 @@ interface SourceInterface extends NamedInterface
      */
     public function defaultMapping(): Mapping;
 
-    /** @return list<array{vendor: string, context: string}> keys the source needs - names only */
-    public function credentials(): array;
+    /**
+     * Keys the source needs - names only, one fact of the source: static, so neither its settings
+     * nor an instance can change them. The right to change a definition and the keys a run gets
+     * come from this one list, so they cannot disagree; whoever sets the settings never chooses
+     * which key is sent.
+     * @return list<array{vendor: string, context: string}>
+     */
+    public static function credentials(): array;
 
     /** a job is not started when less of the step is left */
     public function minJobSeconds(): int;

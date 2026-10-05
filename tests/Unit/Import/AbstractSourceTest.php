@@ -48,7 +48,7 @@ final class AbstractSourceTest extends TestCase
 
         self::assertInstanceOf(SourceInterface::class, $source);
         self::assertSame(15, $source->minJobSeconds());
-        self::assertSame([], $source->credentials());
+        self::assertSame([], $source::credentials());
         // a source of an installation written before defaultMapping() still loads, with no rows
         self::assertSame([], $source->defaultMapping()->rows);
         self::assertSame('update/insert', $source->defaultMapping()->storeMode);

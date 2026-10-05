@@ -769,7 +769,7 @@ final class RunWorkTest extends TestCase
     {
         define('AA_APIKEY_RUNTEST', 'sekret42');
         $source              = self::source(streams: 1, jobs: 1, items: 0);
-        $source->credentials = [['vendor' => 'RUNTEST', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNTEST', 'context' => '']];
         $source->jobs['s1']  = [['key' => 's1:sekret42', 'items' => [['key' => 'k-sekret42', 'val' => 'v']]]];
         $run                 = self::startRun($source, [], ['validate' => '["no"]']);
 
@@ -785,7 +785,7 @@ final class RunWorkTest extends TestCase
     {
         define('AA_APIKEY_RUNTEST', 'sekret42');
         $source              = self::source(streams: 1, jobs: 1, items: 1);
-        $source->credentials = [['vendor' => 'RUNTEST', 'context' => '']];
+        $source::$credentials = [['vendor' => 'RUNTEST', 'context' => '']];
         $source->jobs['s1'][0]['key'] = 's1:sekret42';
         $source->jobs['s1'][0]['via'] = false;
         $run                          = self::startRun($source);

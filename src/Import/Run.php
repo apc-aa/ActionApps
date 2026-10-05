@@ -228,7 +228,16 @@ class Run extends BatchRun
     /** the way out of the step, with its keys and its budget */
     protected function context(SourceInterface $source, BatchBudget $budget): Context
     {
-        return new Context($source->credentials(), $budget);
+        return new Context($this->keys(), $budget);
+    }
+
+    /** The keys of the source type of the snapshot - the list the right to change the definition was
+     *  judged by, whatever class the source made itself. Unknown keys = none: a secret is not handed out.
+     *  @return list<array{vendor: string, context: string}> */
+    protected function keys(): array
+    {
+        $keys = Definition::sourceKeys((string) ($this->snapshot()['source'] ?? '')) ?? [];
+        return array_map(static fn(array $k): array => ['vendor' => $k[0], 'context' => $k[1]], $keys);
     }
 
     protected function targetSlice(): string
