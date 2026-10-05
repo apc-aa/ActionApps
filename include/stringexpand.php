@@ -122,8 +122,9 @@ class AA_Aliasfunc extends AA_Object implements NamedInterface {
 }
 
 
-if (defined('AA_CUSTOM_DIR')) {
-    include_once ("custom/". AA_CUSTOM_DIR. '/stringexpand.php');
+// optional - an install may set AA_CUSTOM_DIR only for other custom files
+if (defined('AA_CUSTOM_DIR') && is_file(__DIR__. '/custom/'. AA_CUSTOM_DIR. '/stringexpand.php')) {
+    include_once(__DIR__. '/custom/'. AA_CUSTOM_DIR. '/stringexpand.php');
 }
 
 // we need it for preg_replace_callback when unalias sometimes gives empty results (empty spots in site, ...)
