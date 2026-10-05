@@ -88,6 +88,55 @@ final class GrabberHttpTest extends TestCase
         self::assertSame([], $grabber->reportRows(9));
     }
 
+    // PHP 8.4 deprecates fgetcsv() without its escape argument - one notice per row
+    public function test_prepare_noDeprecation(): void
+    {
+        $deprecations = [];
+        set_error_handler(static function (int $no, string $text) use (&$deprecations): bool {
+            $deprecations[] = $text;
+            return true;
+        }, E_DEPRECATED);
+        try {
+            $items = (new CSV('', "a,b\n\"x\\\"\",2\n"))->getAllItems();
+        } finally {
+            restore_error_handler();
+        }
+
+        self::assertSame([], $deprecations);
+        self::assertSame('x\\"', $items[0]->getValue('a'), 'a backslash still escapes the enclosure');
+    }
+
+    // a blank line would become an item with no values - an import counts it as an item without a key
+    public function test_prepare_blankLinesSkipped(): void
+    {
+        $items = (new CSV('', "\na,b\n1,2\n\n\r\n3,4\n\n"))->getAllItems();
+
+        self::assertSame([['1', '2'], ['3', '4']], array_map(static fn($i): array => [$i->getValue('a'), $i->getValue('b')], $items));
+    }
+
+    // Excel's "CSV UTF-8" starts the file with one; it would stick to the first column name
+    public function test_prepare_utf8BomStripped(): void
+    {
+        $items = (new CSV('', "\xEF\xBB\xBFname,age\nAda,36\n"))->getAllItems();
+
+        self::assertSame('Ada', $items[0]->getValue('name'));
+    }
+
+    // a value copied as it is (copyfield) takes its flag along
+    public function test_getItem_valuesArePlainText(): void
+    {
+        $items = (new CSV('', "a,b\n<b>1</b>,2\n"))->getAllItems();
+
+        self::assertSame([['value' => '<b>1</b>', 'flag' => 0]], $items[0]->getContent()['a']);
+    }
+
+    public function test_firstRow_asPrepareReadsIt(): void
+    {
+        $grabber = new CSV('', "\xEF\xBB\xBF\nname\tage\nAda\t36\n", '\t');
+
+        self::assertSame(['name', 'age'], $grabber->firstRow());
+    }
+
     public function test_loadData_localFileWithoutClientUnchanged(): void
     {
         $this->tmp = tempnam(sys_get_temp_dir(), 'aa-grabber');
