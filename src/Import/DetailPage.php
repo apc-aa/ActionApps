@@ -12,17 +12,24 @@ use AA\Util\FormToken;
 use Throwable;
 
 /**
- * The detail of one import definition (admin/se_dataimport.php): an overview, the actions and the
- * last runs; the settings of the source and the mapping are DetailConfig's. Every action is a POST
- * with the token of this import, done through Service and answered by a redirect to the GET page,
- * which shows its outcome once - a reload never repeats it. A GET only reads. Whatever came from
- * the source - errors, samples, check messages, stream keys - is text: it goes out through safe()
- * and never through {...} or unalias.
+ * The detail of one import definition (admin/se_dataimport.php): an overview, the actions, the
+ * last runs and the state of the streams; the catalog is DetailCatalog's, the settings of the source
+ * and the mapping are DetailConfig's. Every action is a POST with the token of this import, done
+ * through Service and answered by a redirect to the GET page, which shows its outcome once - a
+ * reload never repeats it. A GET only reads. Whatever came from the source - errors, samples, check
+ * messages, stream keys and versions - is text: it goes out through safe() and never through {...}
+ * or unalias.
  */
 final class DetailPage
 {
     /** the runs the page lists */
     public const RUNS_SHOWN = 20;
+
+    /** streams or catalog entries listed on one page */
+    public const PAGE_SIZE = 50;
+
+    /** where the streams section starts, for a link back to it */
+    public const STREAMS_ANCHOR = '#aa-import-streams';
 
     /** $_SESSION key of the outcome of the last action, per import, until its page shows it */
     private const FLASH = 'aa_dataimport_outcome';
@@ -53,6 +60,12 @@ final class DetailPage
 
     /** the source a refused save picked, so the page after the redirect shows its form again */
     private ?string $picked = null;
+
+    /** @var array<string, string> further parameters of the page an action returns to */
+    private array $back = [];
+
+    /** the section of the page an action returns to */
+    private string $anchor = '';
 
     private function __construct(private readonly Definition $def, private readonly string $uid) {}
 
@@ -166,6 +179,7 @@ final class DetailPage
                 $action === 'end'            => $this->end($post['run'] ?? null),
                 $action === 'reset_mapping'  => $this->config()->resetMapping(),
                 $action === 'settings'       => $this->changeSettings($post),
+                $action === 'adopt'          => $this->adopt($post),
                 default                      => ['no_action', ''],
             };
         } catch (Throwable $e) {
@@ -180,7 +194,16 @@ final class DetailPage
     public function afterPost(array $outcome): string
     {
         $_SESSION[self::FLASH][$this->id()] = $outcome;
-        return ($this->picked === null) ? $this->url() : self::urlOf($this->def, ['source' => $this->picked]);
+        return ($this->picked === null) ? self::urlOf($this->def, $this->back) . $this->anchor : self::urlOf($this->def, ['source' => $this->picked]);
+    }
+
+    /** @param array<mixed> $post @return array{string, string} */
+    private function adopt(array $post): array
+    {
+        $page       = self::pageOf($post['catalog_page'] ?? null, PHP_INT_MAX);
+        $this->back   = ($page > 1) ? ['catalog_page' => (string) $page] : [];
+        $this->anchor = DetailCatalog::ANCHOR;
+        return $this->catalog()->adopt($post['key'] ?? null);
     }
 
     /** @param array<mixed> $post @return array{string, string} */
@@ -204,6 +227,12 @@ final class DetailPage
     public function html(int $now): string
     {
         return $this->liveHtml($now) . $this->overviewHtml($now) . $this->actionsHtml($now) . $this->runsHtml($now);
+    }
+
+    /** the catalog of the source: a section no run but a check changes, and only at its end */
+    public function catalog(): DetailCatalog
+    {
+        return new DetailCatalog($this->def, $this->uid);
     }
 
     /** the settings of the source and the mapping: the sections no run changes */
@@ -298,6 +327,69 @@ final class DetailPage
         return self::section('runs', _m('Runs'), $html);
     }
 
+    /** What the imports know of each stream: its data version, when the source was last asked whether
+     *  it changed, when it was imported and by which run. Read from the stored state, whatever it holds,
+     *  page by page; not refreshed while a run goes on - a source may have thousands of streams.
+     *  @param mixed $page the page of the listing (?streams_page=), from the request */
+    public function streamsHtml(mixed $page = null): string
+    {
+        $state   = $this->streamState();
+        $streams = $state?->streams() ?? [];
+        if (!$streams) {
+            $note = ($state?->streamsDamaged()) ? _m('The stored state of the streams cannot be read.') : _m('No stream has been imported or checked yet.');
+            return self::section('streams', _m('Streams'), '<p class="aa-empty-note">' . $note . '</p>', false);
+        }
+        $pages   = self::pagesOf(count($streams));
+        $page    = self::pageOf($page, $pages);
+        $streams = array_slice($streams, ($page - 1) * self::PAGE_SIZE, self::PAGE_SIZE, true);
+        $started = [];
+        foreach ($this->runs() as $run) {
+            $started[(string) $run->getId()] = (int) $run->getProperty('started');
+        }
+        $heads = [_m('Stream'), _m('Data version'), _m('Checked for changes'), _m('Imported'), _m('By the run started')];
+        $html  = '<table class="aa-import-streams"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
+        foreach ($streams as $key => $stream) {
+            $version = $stream['v'] ?? '';
+            $run     = $stream['run'] ?? '';
+            $html   .= '<tr><td>' . safe((string) $key) . '</td>'
+                . '<td>' . ((is_string($version) && ($version !== '')) ? safe($version) : '--') . '</td>'
+                . '<td>' . self::timeOf($stream['probed'] ?? null) . '</td>'
+                . '<td>' . self::timeOf($stream['imported'] ?? null) . '</td>'
+                // a run older than those listed is gone from the page
+                . '<td>' . self::timeOf(is_string($run) ? ($started[$run] ?? null) : null) . '</td>'
+                . '</tr>';
+        }
+        $html .= '</tbody></table>' . self::pagerHtml($this->def, 'streams_page', self::STREAMS_ANCHOR, _m('Pages of the streams'), $page, $pages);
+        return self::section('streams', _m('Streams'), $html, false);
+    }
+
+    /** the page of a listing the request asks for: a whole number from 1, past the end the last */
+    public static function pageOf(mixed $page, int $pages): int
+    {
+        $n = is_string($page) ? filter_var($page, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : false;
+        return ($n === false) ? 1 : min($n, $pages);
+    }
+
+    /** how many pages $count rows of a listing take - one at least */
+    public static function pagesOf(int $count): int
+    {
+        return max(1, intdiv($count + self::PAGE_SIZE - 1, self::PAGE_SIZE));
+    }
+
+    /** links to the page before and after of a listing of the page of $def, by its GET parameter $param */
+    public static function pagerHtml(Definition $def, string $param, string $anchor, string $label, int $page, int $pages): string
+    {
+        if ($pages < 2) {
+            return '';
+        }
+        $link = static fn(int $to, string $text): string => '<a href="' . safe(self::urlOf($def, [$param => (string) $to]) . $anchor) . '">' . $text . '</a>';
+        return '<nav class="aa-import-pages" aria-label="' . safe($label) . '">'
+            . (($page > 1) ? $link($page - 1, _m('Previous')) . ' ' : '')
+            . _m('Page %1 of %2', [$page, $pages])
+            . (($page < $pages) ? ' ' . $link($page + 1, _m('Next')) : '')
+            . '</nav>';
+    }
+
     // ------------------------------------------------------------ actions
 
     /** @param array<mixed> $post  @return array{string, string} */
@@ -390,12 +482,13 @@ final class DetailPage
             'finished'    => MsgErr(_m('The run is finished already.')),
             'refused'     => MsgErr(safe(self::reasonText($reason)) . DetailConfig::settingsPointer($reason, true)),
             'failed'      => MsgErr(_m('The action failed. The log of import failures has its cause.')),
+            'adopted', 'no_entry', 'adopt_busy', 'adopt_refused' => DetailCatalog::outcomeHtml($code, $reason),
             default       => DetailConfig::outcomeHtml($code, $reason),
         };
     }
 
     /** why a run is in the way, by the reason of a busy StartResult, or HANGING */
-    private static function busyText(string $reason): string
+    public static function busyText(string $reason): string
     {
         return match ($reason) {
             Run::ERROR    => _m('The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not.'),
@@ -481,7 +574,7 @@ final class DetailPage
         $state = $this->streamState();
         $check = $state?->lastCheck();
         if ($check === null) {
-            return ($state?->damaged()) ? _m('The stored result cannot be read.') : _m('Never checked');
+            return ($state?->checkDamaged()) ? _m('The stored result cannot be read.') : _m('Never checked');
         }
         $html = ($check['time'] ? date('Y-m-d H:i', $check['time']) : '--') . ' ' . ($check['ok'] ? _m('Passed') : _m('Failed'));
         if ($check['code'] !== '') {
@@ -689,6 +782,11 @@ final class DetailPage
     private static function countsText(array $counts): string
     {
         return _m('read %1, new %2, updated %3, skipped %4, item errors %5', [$counts['read'] ?? 0, $counts['new'] ?? 0, $counts['updated'] ?? 0, $counts['skipped'] ?? 0, $counts['errors'] ?? 0]);
+    }
+
+    private static function timeOf(mixed $time): string
+    {
+        return (is_int($time) && ($time > 0)) ? date('Y-m-d H:i', $time) : '--';
     }
 
     /** how long the run took: till it finished, till its last progress when it stopped by an error,

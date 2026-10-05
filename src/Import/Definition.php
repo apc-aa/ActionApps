@@ -462,6 +462,15 @@ final class Definition extends AA_Object implements InternalExpandInterface
         return $keyed ? 'KEYS' : null;
     }
 
+    /** The keys of source $type as Context takes them - the list the right to change the definition
+     *  was judged by, whatever class the source makes itself. Unknown keys = none: a secret is not
+     *  handed out.
+     *  @return list<array{vendor: string, context: string}> */
+    public static function sourceCredentials(string $type): array
+    {
+        return array_map(static fn(array $k): array => ['vendor' => $k[0], 'context' => $k[1]], self::sourceKeys($type) ?? []);
+    }
+
     /**
      * The keys source $type needs - SourceInterface::credentials(), static, so no code of the source
      * runs beyond it. [] for a source that is gone.

@@ -34,6 +34,10 @@ final class StreamState extends AA_Object
     /** @var array<array-key, array<string, string|int>>|null $streams decoded once, encoded once in store() */
     private ?array $decoded = null;
 
+    private bool $streamsDamaged = false;
+
+    private bool $checkDamaged = false;
+
     public static function getClassProperties(): array
     {
         return [
@@ -58,9 +62,19 @@ final class StreamState extends AA_Object
     public function streams(): array
     {
         if ($this->decoded === null) {
-            $this->decoded = array_filter($this->decode((string) $this->streams, self::STREAMS_DEPTH), 'is_array');
+            $value                = self::decoded((string) $this->streams, self::STREAMS_DEPTH);
+            $this->streamsDamaged = ($value === null);
+            $this->damaged        = $this->damaged || $this->streamsDamaged;
+            $this->decoded        = array_filter($value ?? [], 'is_array');
         }
         return $this->decoded;
+    }
+
+    /** the stored streams cannot be read - damaged() says so of the check too */
+    public function streamsDamaged(): bool
+    {
+        $this->streams();
+        return $this->streamsDamaged;
     }
 
     /** Sets the given fields of a stream, keeps the others.
@@ -101,9 +115,17 @@ final class StreamState extends AA_Object
     /** @return array{time: int, ok: bool, code: string, msg: string}|null null = no check() yet */
     public function lastCheck(): ?array
     {
-        $check         = self::checkOf((string) $this->check, $damaged);
-        $this->damaged = $this->damaged || $damaged;
+        $check              = self::checkOf((string) $this->check, $damaged);
+        $this->checkDamaged = $damaged;
+        $this->damaged      = $this->damaged || $damaged;
         return $check;
+    }
+
+    /** the stored check cannot be read - damaged() says so of the streams too */
+    public function checkDamaged(): bool
+    {
+        $this->lastCheck();
+        return $this->checkDamaged;
     }
 
     /** The check() a stored `check` value holds - read without the record, as State Check reads it.

@@ -19,8 +19,10 @@ use AA\IO\SourceUnavailable;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Import\Fixtures\CatalogSource;
 use Tests\Unit\Import\Fixtures\CheckedSource;
+use Tests\Unit\Import\Fixtures\ListedSource;
 use Tests\Unit\Import\Fixtures\RunSteps;
 use Tests\Unit\Import\Fixtures\ScriptedSource;
 use Tests\Unit\Import\Fixtures\TestRun;
@@ -115,6 +117,74 @@ final class RunCheckTest extends TestCase
         self::assertSame([], TestRun::$savers);
         self::assertSame([], $source->jobCalls);
         self::assertSame([], self::$invalidated);
+    }
+
+    /** the catalog keeps the streams the source had when the check listed it, so the page compares
+     *  them without asking the source; the next check lists them anew */
+    public function test_check_catalogKeepsTheStreamsItWasListedWith(): void
+    {
+        $source          = self::cataloged(streams: 0);
+        $source->streams = [new Stream('s1', 'Prices', [], 'e1'), new Stream('s2', 'Wages', [], 'e2'), new Stream('s3', 'Own', [])];
+        $source->pages   = [
+            ''   => new CatalogPage([new CatalogEntry('e1', 'Prices')], 'p2'),
+            'p2' => new CatalogPage([new CatalogEntry('e2', 'Wages, renamed')]),
+        ];
+        $source->callSeconds = 15.0;
+        $run                 = self::startRun($source, ['mode' => 'check']);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertGreaterThan(2, count($steps), 'the pages came in more steps');
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        $catalog = Catalog::forDefinition(self::DEF);
+        $streams = $catalog?->streams() ?? [];
+        self::assertSame([['s1', 'Prices', 'e1'], ['s2', 'Wages', 'e2']], array_map(static fn(Stream $s): array => [$s->key, $s->label, $s->catalogKey], $streams));
+        self::assertSame(['new' => [], 'missing' => [], 'renamed' => ['s2']], $catalog?->diff($streams));
+
+        array_shift($source->streams);
+        $source->calls = [];
+        $again         = self::startRun($source, ['mode' => 'check']);
+        self::runAll($again->getId());
+
+        self::assertSame(['s2'], array_map(static fn(Stream $s): string => $s->key, Catalog::forDefinition(self::DEF)?->streams() ?? []));
+    }
+
+    /** a source that only lists its catalog has its streams kept with it too */
+    public function test_check_catalogOfASourceWithoutProbes(): void
+    {
+        require_once __DIR__ . '/fixtures/ListedSource.php';
+        $source          = new ListedSource();
+        $source->streams = [new Stream('s1', 'Prices', [], 'e1')];
+        $source->pages   = ['' => new CatalogPage([new CatalogEntry('e1', 'Prices')])];
+        TestRun::$source = $source;
+        $run             = self::startRun($source, ['mode' => 'check']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['s1'], array_map(static fn(Stream $s): string => $s->key, Catalog::forDefinition(self::DEF)?->streams() ?? []));
+    }
+
+    /** the catalog is shown in the import detail: the source's keys are masked in its texts - in its
+     *  keys and the streams' catalog keys alike, so they still match */
+    public function test_check_catalogTextsRedacted(): void
+    {
+        define('AA_APIKEY_RUNCAT', 'sekret88');
+        $source               = self::cataloged(streams: 0);
+        $source::$credentials = [['vendor' => 'RUNCAT', 'context' => '']];
+        $source->streams      = [new Stream('s1', 'Label sekret88', [], 'k-sekret88')];
+        $source->pages        = ['' => new CatalogPage([new CatalogEntry('k-sekret88', 'Label sekret88', ['sekret88' => 'u sekret88', 'n' => 88], 'at sekret88')])];
+        $run                  = self::startRun($source, ['mode' => 'check']);
+
+        self::runAll($run->getId());
+
+        $catalog = Catalog::forDefinition(self::DEF);
+        self::assertEquals([new CatalogEntry('k-***', 'Label ***', ['***' => 'u ***', 'n' => '88'], 'at ***')], $catalog?->entries());
+        self::assertSame([['s1', 'Label ***', 'k-***']], array_map(static fn(Stream $s): array => [$s->key, $s->label, $s->catalogKey], $catalog->streams()));
+        self::assertSame(['new' => [], 'missing' => [], 'renamed' => []], $catalog->diff($catalog->streams()));
+        foreach (TableDb::rows('object_text') as $row) {
+            self::assertStringNotContainsString('sekret88', (string) $row['value']);
+        }
     }
 
     public function test_check_catalogCursorCycle_errorSourceCycle(): void

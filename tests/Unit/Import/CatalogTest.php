@@ -97,6 +97,76 @@ final class CatalogTest extends TestCase
         self::assertSame(['new' => ['b'], 'missing' => [], 'renamed' => ['s1']], $diff);
     }
 
+    /** the streams of the check that listed the catalog, kept with it for diff() - only those whose
+     *  catalog key an entry could have */
+    public function test_listStreams_keptForDiff(): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->listStreams([
+            new Stream('s1', 'Alpha', ['p' => 'x'], 'a'),
+            new Stream('s2', 'Beta', [], "b\x01"),
+            new Stream('s3', 'Not from the catalog', []),
+            new Stream('7', "Se\x01ven", [], '7'),
+            new Stream('s5', 'Long', [], str_repeat('k', 256)),
+            new Stream('s6', 'Broken', [], "\xff"),
+        ]);
+        $catalog->addPage(new CatalogPage([new CatalogEntry('a', 'Alpha'), new CatalogEntry('7', 'Seven'), new CatalogEntry('n', 'New')], 'p2'), self::TIME);
+        $catalog->store();
+        $read = Catalog::forDefinition(self::DEF);
+        self::assertNotNull($read);
+        $read->addPage(new CatalogPage([]), self::TIME);
+        $read->store();
+
+        $streams = Catalog::forDefinition(self::DEF)?->streams() ?? [];
+
+        self::assertSame([['s1', 'Alpha', 'a'], ['7', 'Se ven', '7']], array_map(static fn(Stream $s): array => [$s->key, $s->label, $s->catalogKey], $streams), 'labels cleaned, kept by later pages');
+        self::assertSame(['new' => ['n'], 'missing' => [], 'renamed' => ['7']], Catalog::forDefinition(self::DEF)?->diff($streams));
+    }
+
+    public function test_listStreams_capped(): void
+    {
+        $many = array_map(static fn(int $i): Stream => new Stream("s$i", '', [], "k$i"), range(0, Catalog::MAX_ENTRIES));
+        $big  = array_map(static fn(int $i): Stream => new Stream("s$i", str_repeat('a', 1000), [], "k$i"), range(0, 5300));
+        foreach (['entries' => $many, 'bytes' => $big] as $case => $streams) {
+            try {
+                Catalog::create(self::DEF)->listStreams($streams);
+                self::fail("Over the limit of $case");
+            } catch (SourceRefused $e) {
+                self::assertSame('CATALOG_TOO_BIG', $e->reason, $case);
+            }
+        }
+        $catalog = Catalog::create(self::DEF);
+        $catalog->listStreams(array_slice($many, 0, Catalog::MAX_ENTRIES));
+        self::assertCount(Catalog::MAX_ENTRIES, $catalog->streams());
+    }
+
+    /** whatever is stored at the streams, only usable ones come back */
+    public function test_streams_damagedLeftOut(): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->store();
+        self::storedSet($catalog->getId(), 'streams', '{"<x>":["a","A"],"s1":"text","s2":["b"],"s3":["c","C"],"s4":[1,"C"],"s5":["e",2]}');
+
+        self::assertSame([['s2', '', 'b'], ['s3', 'C', 'c']], array_map(static fn(Stream $s): array => [$s->key, $s->label, $s->catalogKey], Catalog::forDefinition(self::DEF)?->streams() ?? []));
+
+        self::storedSet($catalog->getId(), 'streams', 'not json');
+        $read = Catalog::forDefinition(self::DEF);
+        self::assertSame([], $read?->streams());
+        self::assertTrue($read->damaged());
+    }
+
+    /** a page of the listing makes the entries of that page only */
+    public function test_entriesAt_onePage(): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->addPage(new CatalogPage(array_map(static fn(int $i): CatalogEntry => new CatalogEntry("k$i", "N$i", ['u' => "$i"]), range(0, 9))), self::TIME);
+
+        self::assertSame(10, $catalog->count());
+        self::assertEquals([new CatalogEntry('k3', 'N3', ['u' => '3']), new CatalogEntry('k4', 'N4', ['u' => '4'])], $catalog->entriesAt(3, 2));
+        self::assertSame(['k8', 'k9'], array_map(static fn(CatalogEntry $e): string => $e->key, $catalog->entriesAt(8, 5)));
+        self::assertSame([], $catalog->entriesAt(10, 5));
+    }
+
     public function test_catalog_pagesAcrossSteps(): void
     {
         $catalog = Catalog::create(self::DEF);

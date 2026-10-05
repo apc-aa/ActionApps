@@ -7,6 +7,8 @@ namespace AA\Import;
 use AA\IO\DB\DB_AA;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
+use AA\Later\BatchBudget;
+use AA\Later\BatchBudgetSpent;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use JsonException;
@@ -32,6 +34,9 @@ final class Service
 
     /** characters of a setting whose property sets no maximum */
     private const MAX_SETTING = 1000;
+
+    /** what adopt() may spend on the network - it runs in the request of the page */
+    private const ADOPT_SECONDS = 20;
 
     /**
      * Queues a run of the definition $d of the slice $d belongs to, with the definition as stored now.
@@ -307,6 +312,68 @@ final class Service
             $def->update(Definition::MAPPING_PROPS);
             return new ChangeResult('CHANGED');
         });
+    }
+
+    /**
+     * Add/Update of a catalog entry: the source turns the entry the last check stored under $key into
+     * a stream - only the key comes from the request. As other changes of what runs are made of, for
+     * whoever may manage the definition and set its settings, and he must edit all items of the slice
+     * the source writes to. Runs the source's own code, which writes through storeItem() itself.
+     * Not while a run is in the way of a start by hand (busy()): the new stream would change the
+     * streams it goes through, or a step still finishing would store with the old ones. No lock is
+     * held over the call - the lock of the definition for up to ADOPT_SECONDS of network would stop
+     * every start and step; a change of the settings meanwhile only lets the source write with the old
+     * ones into the slice whose rights were checked.
+     * @return ChangeResult CHANGED; NO_ENTRY, NOT_ADOPTABLE, ADOPT_SLICE, BUSY (with the state of the
+     *                      open run, or LEASE), a refusal of manageRefusal() or checkSettings(), TRANSPORT when
+     *                      the time ran out, or the code of a failure of the source
+     */
+    public static function adopt(Definition $d, string $key, string $user): ChangeResult
+    {
+        $id  = (string) $d->getId();
+        $def = Definition::fresh($id);
+        if (!self::isOf($def, strtolower((string) $d->getOwnerId()))) {
+            return new ChangeResult('FORBIDDEN');
+        }
+        $refused = self::manageRefusal($def, $user);
+        if ($refused !== null) {
+            return $refused;
+        }
+        // in the way as of a start by hand - so the two cannot drift apart
+        $toEnd = [];
+        $busy  = self::busy($id, 'manual', $toEnd);
+        if ($busy !== null) {
+            return new ChangeResult('BUSY', $busy->reason);
+        }
+        $entry = Catalog::forDefinition($id)?->entry($key);
+        if ($entry === null) {
+            return new ChangeResult('NO_ENTRY');
+        }
+        try {
+            $settings = self::checkSettings($id, $def->sourceType(), Definition::settingsOf($def->snapshot()), $user);
+        } catch (SourceRefused) {
+            $settings = 'SETTINGS';
+        }
+        if (is_string($settings)) {
+            return new ChangeResult($settings);
+        }
+        try {
+            $source = Registry::create($def->sourceType(), $settings);
+            if (!($source instanceof CatalogAdoptable)) {
+                return new ChangeResult('NOT_ADOPTABLE');
+            }
+            $slice = $source->adoptSlice();
+            if (!is_long_id($slice) || !CheckPerms($user, 'slice', strtolower($slice), PS_EDIT_ALL_ITEMS)) {
+                return new ChangeResult('ADOPT_SLICE');
+            }
+            $source->adopt($entry, new Context(Definition::sourceCredentials($def->sourceType()), new BatchBudget(microtime(true) + self::ADOPT_SECONDS)));
+        } catch (BatchBudgetSpent) {
+            // the time ran out: no answer in time, not a bug of the source
+            return new ChangeResult('TRANSPORT');
+        } catch (Throwable $e) {
+            return new ChangeResult(self::sourceFailure($id, $e, false));
+        }
+        return new ChangeResult('CHANGED');
     }
 
     /**

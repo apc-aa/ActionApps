@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace AA\Import;
 
-/** One thing a source offers - a candidate for a stream. Catalog data is source data and is never
- *  redacted: it must not carry a secret, and whoever shows it escapes it. */
+/** One thing a source offers - a candidate for a stream. Catalog data is source data: the check masks
+ *  the source's keys in it before it is stored (adopt() so gets an entry with them masked), and
+ *  whoever shows it escapes it. */
 final class CatalogEntry
 {
     /**

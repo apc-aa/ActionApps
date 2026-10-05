@@ -9,7 +9,7 @@ interface CatalogAdoptable
 {
     /**
      * Called only after the caller checked the user's rights to adoptSlice(); writes the item only
-     * through storeItem().
+     * through storeItem(), and only into adoptSlice() - no other slice's rights were checked.
      * @return string id of the item defining the stream; an existing one is only updated
      */
     public function adopt(CatalogEntry $e, Context $ctx): string;

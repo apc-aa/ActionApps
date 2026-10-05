@@ -1,8 +1,8 @@
 <?php
 
 /**
- * The detail of one import of the slice: overview, actions, runs, settings of the source and
- * mapping (AA\Import\DetailPage).
+ * The detail of one import of the slice: overview, actions, runs, streams, catalog, settings of
+ * the source and mapping (AA\Import\DetailPage).
  *
  * PHP version 8.2+
  *
@@ -80,9 +80,11 @@ $apage->setForm();
 $apage->addRequire('
     .aa-import-facts th { text-align: left; padding-right: 1em; vertical-align: top; }
     .aa-import-facts, .aa-import-runs { font-variant-numeric: tabular-nums; }
-    .aa-import-runs { width: 100%; border-collapse: collapse; }
-    .aa-import-runs th { text-align: left; }
-    .aa-import-runs th, .aa-import-runs td { padding: 0.3em 0.6em; vertical-align: top; }
+    .aa-import-runs, .aa-import-streams, .aa-import-catalog, .aa-import-diff { width: 100%; border-collapse: collapse; }
+    .aa-import-runs th, .aa-import-streams th, .aa-import-catalog th, .aa-import-diff th { text-align: left; }
+    .aa-import-runs th, .aa-import-runs td, .aa-import-streams th, .aa-import-streams td, .aa-import-catalog th, .aa-import-catalog td, .aa-import-diff th, .aa-import-diff td { padding: 0.3em 0.6em; vertical-align: top; }
+    .aa-import-catalog td, .aa-import-diff td { overflow-wrap: anywhere; }
+    .aa-import-adopt { margin: 0; }
     .aa-import-actions { margin: 0.5em 0; }
     .aa-import-why { margin: 0.3em 0; }
     .aa-import-sample { margin: 0.3em 0; }
@@ -95,7 +97,7 @@ $apage->addRequire('
 // asks before End and before a change of the settings, follows a running run
 $apage->addRequire(get_aa_url('javascript/dataimport.min.js', ['v' => AA_JS_VERSION], false));
 // before the head: the widgets of the settings form add the scripts they need
-$body = $page->html(Run::clock()) . $page->config()->html($_GET['source'] ?? null);
+$body = $page->html(Run::clock()) . $page->streamsHtml($_GET['streams_page'] ?? null) . $page->catalog()->html($_GET['catalog_page'] ?? null) . $page->config()->html($_GET['source'] ?? null);
 $apage->printHead();
 
 echo $page->outcomeOnceHtml();

@@ -233,13 +233,10 @@ class Run extends BatchRun
         return new Context($this->keys(), $budget);
     }
 
-    /** The keys of the source type of the snapshot - the list the right to change the definition was
-     *  judged by, whatever class the source made itself. Unknown keys = none: a secret is not handed out.
-     *  @return list<array{vendor: string, context: string}> */
+    /** @return list<array{vendor: string, context: string}> the keys of the source type of the snapshot */
     protected function keys(): array
     {
-        $keys = Definition::sourceKeys((string) ($this->snapshot()['source'] ?? '')) ?? [];
-        return array_map(static fn(array $k): array => ['vendor' => $k[0], 'context' => $k[1]], $keys);
+        return Definition::sourceCredentials((string) ($this->snapshot()['source'] ?? ''));
     }
 
     protected function targetSlice(): string
@@ -618,9 +615,14 @@ class Run extends BatchRun
                 }
                 $first = false;
                 $page  = $source->catalog($ctx, $pos['cat']);
-                // a fill starts anew on its first page; later pages add to what the steps before stored
-                $this->catalog ??= (($pos['pages'] === 0) ? null : Catalog::forDefinition($this->definitionId())) ?? Catalog::create($this->definitionId());
-                $this->catalog->addPage($page, static::now());
+                // a fill starts anew on its first page, with the streams it is compared with; later
+                // pages add to what the steps before stored
+                if (($this->catalog === null) && ($pos['pages'] === 0)) {
+                    $this->catalog = Catalog::create($this->definitionId());
+                    $this->catalog->listStreams(self::redactedStreams($ctx, $streams ?: self::streamsOf($source)));
+                }
+                $this->catalog ??= Catalog::forDefinition($this->definitionId()) ?? Catalog::create($this->definitionId());
+                $this->catalog->addPage(self::redactedPage($ctx, $page), static::now());
                 $pos = RunCursor::pageRead($pos, $page->next);
             }
         } catch (SourceRefused $e) {
@@ -712,6 +714,33 @@ class Run extends BatchRun
             return [$pos['pv'], null];
         }
         return [self::sourceVersion($ctx, $source->probe($stream, $ctx, null)->version), static::now()];
+    }
+
+    /** A catalog page with the source's keys masked in its texts - the import detail shows them. Its
+     *  catalog keys are masked too, the same way as the streams' (redactedStreams()), so they still
+     *  match; a key with a secret in it then reaches adopt() masked, as no source should build one. */
+    private static function redactedPage(Context $ctx, CatalogPage $page): CatalogPage
+    {
+        $entries = [];
+        foreach ($page->entries as $e) {
+            $meta = [];
+            foreach ($e->meta as $name => $value) {
+                // anything but a plain value is refused by the catalog as it is
+                $meta[$ctx->redact((string) $name)] = is_scalar($value) ? $ctx->redact((string) $value) : $value;
+            }
+            $entries[] = new CatalogEntry($ctx->redact($e->key), $ctx->redact($e->name), $meta, $ctx->redact($e->updated));
+        }
+        return new CatalogPage($entries, $page->next);
+    }
+
+    /** @param iterable<Stream> $streams  @return list<Stream> the streams with their labels and catalog keys masked as redactedPage() masks entries */
+    private static function redactedStreams(Context $ctx, iterable $streams): array
+    {
+        $out = [];
+        foreach ($streams as $s) {
+            $out[] = new Stream($s->key, $ctx->redact($s->label), $s->params, $ctx->redact($s->catalogKey), $s->versionField);
+        }
+        return $out;
     }
 
     /** a version from the source as the cursor and StreamState keep it - its keys masked, clean, cut */

@@ -227,6 +227,28 @@ final class StreamStateTest extends TestCase
         self::assertFalse(StreamState::create(self::DEF)->damaged());
     }
 
+    /** damaged() is of the whole record, streamsDamaged() and checkDamaged() of one part each */
+    public function test_streamsDamaged_apartFromCheck(): void
+    {
+        $state = StreamState::create(self::DEF);
+        $state->record('a', ['v' => '1']);
+        $state->store();
+        self::storedSet($state->getId(), 'check', '{not json');
+
+        $read = StreamState::forDefinition(self::DEF);
+        self::assertNull($read?->lastCheck());
+        self::assertTrue($read->damaged());
+        self::assertFalse($read->streamsDamaged());
+        self::assertTrue($read->checkDamaged());
+
+        self::storedSet($state->getId(), 'streams', '{not json');
+        self::storedSet($state->getId(), 'check', '');
+        $read = StreamState::forDefinition(self::DEF);
+        self::assertTrue($read?->streamsDamaged(), 'read by itself');
+        self::assertTrue($read->damaged());
+        self::assertFalse($read->checkDamaged(), 'no check stored');
+    }
+
     /** State Check reads the stored check without the streams - by the decoder lastCheck() uses */
     public function test_checkOf_decodesAsLastCheck(): void
     {
