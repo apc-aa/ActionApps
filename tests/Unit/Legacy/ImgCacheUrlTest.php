@@ -420,4 +420,51 @@ final class ImgCacheUrlTest extends TestCase
     {
         self::assertStringStartsWith('https://example.org/img_upload/mC/', $this->url('img_upload/a/p.jpg', 'w=150', 'abs_raw'));
     }
+
+    /** @return array<int|string, mixed>|false */
+    private static function measure(\Tests\Unit\Fixtures\FakeHttp $http): array|false
+    {
+        \AA\Expand\HttpInclude::useHttp($http);
+        try {
+            return (new \ReflectionMethod(self::CLS, 'measure'))->invoke(null, 'https://example.org/img_upload/a/p.jpg');
+        } finally {
+            \AA\Expand\HttpInclude::useHttp(null);
+        }
+    }
+
+    /** a 40×30 JPEG; $padding bytes of APP2 blocks put its frame header that far from the start */
+    private static function jpeg(int $padding = 0): string
+    {
+        ob_start();
+        imagejpeg(imagecreatetruecolor(40, 30));
+        $jpeg     = (string) ob_get_clean();
+        $segments = '';
+        for (; $padding > 0; $padding -= 60000) {
+            $segments .= "\xFF\xE2" . pack('n', 60002) . str_repeat("\0", 60000);
+        }
+        return substr($jpeg, 0, 2) . $segments . substr($jpeg, 2);
+    }
+
+    /** a listing of large photos must not download each of them whole just to print its size */
+    public function testMeasuringAsksOnlyForTheBeginningOfTheImage(): void
+    {
+        require_once __DIR__ . '/../fixtures/FakeHttp.php';
+        $http = new \Tests\Unit\Fixtures\FakeHttp([new \AA\Http\Response(200, self::jpeg())]);
+
+        self::assertSame([40, 30], \array_slice((array) self::measure($http), 0, 2));
+        self::assertCount(1, $http->calls);
+        self::assertSame(['Range' => 'bytes=0-65535'], $http->calls[0]['headers']);
+    }
+
+    /** EXIF/ICC blocks may push the frame header past the first request - the size must not get lost */
+    public function testAHeaderBeyondTheFirstPartFetchesTheWholeImage(): void
+    {
+        require_once __DIR__ . '/../fixtures/FakeHttp.php';
+        $jpeg = self::jpeg(100000);
+        $http = new \Tests\Unit\Fixtures\FakeHttp([new \AA\Http\Response(206, substr($jpeg, 0, 65536)), new \AA\Http\Response(200, $jpeg)]);
+
+        self::assertSame([40, 30], \array_slice((array) self::measure($http), 0, 2));
+        self::assertCount(2, $http->calls);
+        self::assertSame([], $http->calls[1]['headers']);
+    }
 }

@@ -8626,9 +8626,12 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
     private static function measure(string $url): array|false
     {
         if (preg_match('~^https?://~i', $url)) {
-            // the size sits in the header, so a listing of 8 MB photos must not download them whole
-            // (512 kB still covers JPEGs with large EXIF/ICC blocks before the frame header)
-            $body = \AA\Expand\HttpInclude::fetch('GET', $url, '', ['Range' => 'bytes=0-524287']);
+            // the size sits in the header, so a listing of 8 MB photos must not download them whole;
+            // only a JPEG with large EXIF/ICC blocks before the frame header needs the rest
+            $body = \AA\Expand\HttpInclude::fetch('GET', $url, '', ['Range' => 'bytes=0-65535']);
+            if ((strlen($body) === 65536) && !@getimagesizefromstring($body)) {
+                $body = \AA\Expand\HttpInclude::fetch('GET', $url);
+            }
             return ($body === '') ? false : @getimagesizefromstring($body);
         }
         return str_contains($url, '://') ? false : @getimagesize($url);
