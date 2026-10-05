@@ -93,10 +93,12 @@ final class TransferText
         ]] : [];
     }
 
-    /** @param array<string, array{LintFinding, array<int|string, int>}> $groups level + code => [finding, place => count] */
+    /** codes of one explanation go into one group: the page names no code, so several notes of one title
+     *  would read as the same note repeated
+     *  @param array<string, array{LintFinding, array<int|string, int>}> $groups level + title => [first finding, place => count] */
     private static function add(array &$groups, LintFinding $finding, string $place, int $count): void
     {
-        $key = $finding->level . ' ' . $finding->code;
+        $key = $finding->level . ' ' . (FindingText::explain($finding)['title'] ?? $finding->code);
         $groups[$key] ??= [$finding, []];
         $groups[$key][1][$place] = ($groups[$key][1][$place] ?? 0) + $count;
     }
@@ -105,10 +107,10 @@ final class TransferText
     private static function notes(array $groups): array
     {
         $notes = [];
-        foreach ($groups as $key => [$finding, $places]) {
+        foreach ($groups as [$finding, $places]) {
             $explained = FindingText::explain($finding);
             $notes[]   = [
-                'key'    => (string) $key,
+                'key'    => $finding->level . ' ' . $finding->code,
                 'level'  => $finding->level,
                 'title'  => (FindingText::levels()[$finding->level] ?? $finding->level) . ': ' . ($explained['title'] ?? $finding->code),
                 'count'  => array_sum($places),

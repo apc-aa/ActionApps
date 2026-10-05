@@ -130,6 +130,20 @@ final class TransferTextTest extends TestCase
         self::assertSame(3, $page['notes'][0]['count']);
     }
 
+    /** codes of one explanation are one note - its text says what they share */
+    public function test_findings_of_one_explanation_are_one_note(): void
+    {
+        $item  = 'slice-module[' . self::NEWS . ']/item[' . self::ITEM . ']/full_text.......[0]';
+        $found = self::page(['findings' => [
+            ['level' => 'S', 'code' => 'include', 'path' => $item, 'ref' => '{include:a.txt}'],
+            ['level' => 'S', 'code' => 'file2text', 'path' => $item, 'ref' => '{file2text:b.txt}'],
+            ['level' => 'S', 'code' => 'mail', 'path' => $item, 'ref' => '{mail:x}'],
+        ]])['found'];
+
+        self::assertSame([['S include', 2], ['S mail', 1]], array_map(static fn(array $n): array => [$n['key'], $n['count']], $found));
+        self::assertCount(2, $found[0]['places']);
+    }
+
     public function test_the_findings_a_batch_only_counted_are_in_the_count(): void
     {
         $item  = 'slice-module[' . self::NEWS . ']/item[' . self::ITEM . ']';
