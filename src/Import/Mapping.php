@@ -45,6 +45,11 @@ final class Mapping
     private const TRANSFORMATION = '/^[A-Za-z][A-Za-z0-9]{0,63}\z/';
     private const MAX_JSON       = 65536;
     private const MAX_ROWS       = 200;
+    /** unknown fields a message names, each cut to FIELD_CHARS */
+    private const FIELDS_NAMED = 5;
+    private const FIELD_CHARS  = 64;
+    /** between the codes and the fields of joinProblems(); no code holds it */
+    private const FIELDS_APART = ' | ';
 
     /**
      * What a row may name, with the parameters the constructor reads without a default.
@@ -126,12 +131,28 @@ final class Mapping
      */
     public function problems(string $sliceId): array
     {
+        return $this->examine($sliceId)[0];
+    }
+
+    /** The fixed targets of the mapping the slice has no field of - what UNKNOWN_FIELD of problems() is
+     *  about: the first FIELDS_NAMED, each cut to FIELD_CHARS, for a message; the mapping shows the rest.
+     *  @return list<string> */
+    public function unknownFields(string $sliceId): array
+    {
+        $unknown = array_slice($this->examine($sliceId)[1], 0, self::FIELDS_NAMED);
+        return array_map(static fn(string $f): string => mb_substr($f, 0, self::FIELD_CHARS), $unknown);
+    }
+
+    /** @return array{list<string>, list<string>} problems(), and the targets the slice has no field of */
+    private function examine(string $sliceId): array
+    {
         $slice = self::slice($sliceId);
         if ($slice === null) {
-            return ['NO_SLICE'];
+            return [['NO_SLICE'], []];
         }
         $problems = [];
         $targets  = [];
+        $unknown  = [];
         foreach ($this->rows as $row) {
             $problem = self::transformationProblem($row);
             if ($problem !== null) {
@@ -143,6 +164,7 @@ final class Mapping
             $field = $slice->getField($row['to']);
             if ($field === null) {
                 $problems[] = 'UNKNOWN_FIELD';
+                $unknown[]  = $row['to'];
             } elseif ($field->isProtected()) {
                 $problems[] = 'PROTECTED_FIELD';
             }
@@ -157,35 +179,45 @@ final class Mapping
         if (array_diff($this->keyFields, array_keys($targets))) {
             $problems[] = 'KEY_NOT_TARGET';
         }
-        return array_values(array_unique($problems));
+        return [array_values(array_unique($problems)), array_values(array_unique($unknown))];
     }
 
-    /** @param list<string> $codes of problems(), as one text a refusal carries - splitProblems() reads it */
-    public static function joinProblems(array $codes): string
+    /** @param list<string> $codes of problems(), as one text a refusal carries - splitProblems() reads it
+     *  @param list<string> $fields unknownFields(), for the text of UNKNOWN_FIELD */
+    public static function joinProblems(array $codes, array $fields = []): string
     {
-        return implode(', ', $codes);
+        return implode(', ', $codes) . ($fields ? self::FIELDS_APART . json_encode($fields, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE) : '');
     }
 
     /** @return list<string> the codes of joinProblems() */
     public static function splitProblems(string $joined): array
     {
-        return array_values(array_filter(explode(', ', $joined)));
+        return array_values(array_filter(explode(', ', explode(self::FIELDS_APART, $joined, 2)[0])));
+    }
+
+    /** @return list<string> the fields joinProblems() names */
+    private static function fieldsOf(string $joined): array
+    {
+        $fields = json_decode(explode(self::FIELDS_APART, $joined, 2)[1] ?? '[]', true);
+        return is_array($fields) ? array_values(array_filter($fields, 'is_string')) : [];
     }
 
     /** the codes of joinProblems() in words, each with its code, plain text */
     public static function problemsText(string $joined): string
     {
-        return implode(' ', array_map(static fn(string $code): string => self::problemText($code) . " ($code)", self::splitProblems($joined)));
+        $fields = self::fieldsOf($joined);
+        return implode(' ', array_map(static fn(string $code): string => self::problemText($code, $fields) . " ($code)", self::splitProblems($joined)));
     }
 
-    /** a code of problems() in words, plain text */
-    public static function problemText(string $code): string
+    /** a code of problems() in words, plain text
+     *  @param list<string> $fields unknownFields(), named by UNKNOWN_FIELD */
+    public static function problemText(string $code, array $fields = []): string
     {
         return match ($code) {
             'NO_SLICE'               => _m('The slice of the import is not available.'),
             'UNKNOWN_TRANSFORMATION' => _m('A row of the mapping uses a transformation that does not exist.'),
             'BAD_PARAMS'             => _m('A row of the mapping has parameters its transformation does not take.'),
-            'UNKNOWN_FIELD'          => _m('The mapping fills a field the slice does not have.'),
+            'UNKNOWN_FIELD'          => $fields ? _m('The mapping fills a field the slice does not have: %1.', [implode(', ', $fields)]) : _m('The mapping fills a field the slice does not have.'),
             'PROTECTED_FIELD'        => _m('The mapping fills a field an import may not set.'),
             'DUPLICATE_TARGET'       => _m('Two rows of the mapping fill the same field.'),
             'NO_KEY'                 => _m('The mapping has no key field, so an item cannot be found again.'),

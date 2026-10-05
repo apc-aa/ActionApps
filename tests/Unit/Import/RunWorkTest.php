@@ -86,6 +86,22 @@ final class RunWorkTest extends TestCase
         self::assertSame(5, TestRun::get($run->getId())?->counts()['read']);
     }
 
+    /** each step adds its own time; the waits between steps do not count */
+    public function test_work_countsWorkingTimeOfTheSteps(): void
+    {
+        $source = self::source(streams: 1, jobs: 1, items: 5, seconds: 10.0);
+        $run    = self::startRun($source);
+        self::assertNull(TestRun::get($run->getId())?->workedSeconds(), 'no step yet');
+
+        self::runOne();
+        self::assertSame(30, TestRun::get($run->getId())?->workedSeconds(), 'three items of 10 s');
+        TestRun::$now = (int) TestRun::$now + 600;
+        self::runAll($run->getId());
+
+        self::assertSame('done', TestRun::get($run->getId())?->state());
+        self::assertSame(50, TestRun::get($run->getId())?->workedSeconds());
+    }
+
     public function test_work_restartsJobWhenFingerprintChanged(): void
     {
         $source = self::source(streams: 1, jobs: 1, items: 5, seconds: 10.0);

@@ -105,6 +105,10 @@ class Run extends BatchRun
     /** JSON {count, samples: [{stream, job, values: {source field: value}}]} of the items skipped as
      *  their key came out empty (Saver::emptyKeys()), for the report */
     protected $empty_keys = '';
+    /** Milliseconds the steps worked, summed at the end of each - the run's time without its waits in
+     *  the queue; '' for a run from before it was counted. A lower bound: a step that died, rolled back
+     *  or threw adds nothing, nor do onRetriesExhausted() and the final phase. */
+    protected $work_ms = '';
 
     /** @var array<string, int> what the step counted so far */
     private array $tally = self::COUNTS;
@@ -126,11 +130,13 @@ class Run extends BatchRun
     private ?CheckResult $checkResult = null;
     /** the catalog with the pages of the step, stored at its end */
     private ?Catalog $catalog = null;
+    /** when work() of the step began */
+    private ?float $workFrom = null;
 
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced', 'empty_keys'] as $id) {
+        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced', 'empty_keys', 'work_ms'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -222,6 +228,12 @@ class Run extends BatchRun
     private function sourceOnly(): bool
     {
         return in_array($this->mode(), self::SOURCE_ONLY_MODES, true);
+    }
+
+    /** seconds the steps of the run worked, at least ($work_ms); null when not counted (a run from before) */
+    public function workedSeconds(): ?int
+    {
+        return ((string) $this->work_ms === '') ? null : intdiv((int) $this->work_ms, 1000);
     }
 
     /** @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
@@ -348,6 +360,7 @@ class Run extends BatchRun
         $this->stepEmptyKeys  = ['count' => 0, 'samples' => []];
         $this->checkResult    = null;
         $this->catalog        = null;
+        $this->workFrom       = static::microNow();
         try {
             return $this->walk(RunCursor::fromPosition($from), $budget);
         } finally {
@@ -380,6 +393,10 @@ class Run extends BatchRun
     {
         $extra = $r->extra;
         $write = [];
+        if (is_int($extra['work_ms'] ?? null)) {
+            $this->work_ms = (string) ((int) $this->work_ms + $extra['work_ms']);
+            $write[]       = 'work_ms';
+        }
         if ($extra['errors'] ?? []) {
             $this->errors = self::addUpTo((string) $this->errors, $extra['errors'], self::ERRORS_KEPT);
             $write[]      = 'errors';
@@ -1180,7 +1197,12 @@ class Run extends BatchRun
             min($pos['i'], count($keys)),
             count($keys),
             $retry,
-            ['errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog, 'collisions' => $this->stepCollisions, 'empty_keys' => $this->stepEmptyKeys],
+            [
+                'errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog,
+                'collisions' => $this->stepCollisions, 'empty_keys' => $this->stepEmptyKeys,
+                // the step ends on a fresh instance of the run, which never saw work() begin
+                'work_ms' => (int) round(max(0.0, static::microNow() - ($this->workFrom ?? static::microNow())) * 1000),
+            ],
             $retryDetail,
         );
     }

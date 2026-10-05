@@ -333,12 +333,13 @@ final class DetailPage
             $started = (int) $run->getProperty('started');
             $outcome = RunView::outcome($run, $now);
             $errors  = $run->errors();
+            $worked  = self::worked($run, $now);
             $html   .= '<tr class="aa-import-run" data-outcome="' . $outcome['kind'] . '">'
                 . '<th scope="row">' . RunView::markHtml($outcome['kind']) . ' <strong>' . safe($outcome['word']) . '</strong>'
                 . (($outcome['then'] === '') ? '' : '<small class="aa-import-then">' . safe($outcome['then']) . '</small>')
                 . '<small>' . safe(self::kindOfRun($run)) . '</small></th>'
                 . '<td data-label="' . safe($heads[1]) . '">' . ($started ? date('Y-m-d H:i:s', $started) . self::ageHtml($started, $now) : '--') . '</td>'
-                . '<td data-label="' . safe($heads[2]) . '">' . self::took($run, $now) . '</td>'
+                . '<td data-label="' . safe($heads[2]) . '">' . self::took($run, $now) . (($worked === '') ? '' : '<small>' . _m('working %1', [$worked]) . '</small>') . '</td>'
                 . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
                 . '</tr>';
             $samples = $run->samples();
@@ -388,7 +389,7 @@ final class DetailPage
                 . '<td data-label="' . safe($heads[3]) . '">' . self::timeOf($time) . self::ageHtml($time, $now)
                 . (($since !== '--') ? '<small class="aa-import-since">' . _m('by the run started %1', [$since]) . '</small>' : '') . '</td>'
                 . '<td data-label="' . safe($heads[4]) . '">' . self::timeOf($stream['probed'] ?? null) . self::ageHtml($stream['probed'] ?? null, $now) . '</td>'
-                . '<td data-label="' . safe($heads[5]) . '">' . self::versionHtml($stream['v'] ?? '') . '</td>'
+                . '<td data-label="' . safe($heads[5]) . '">' . self::versionHtml($stream['v'] ?? '', $kind) . '</td>'
                 . '</tr>';
         }
         $html .= '</tbody></table>' . self::pagerHtml($this->def, 'streams_page', self::STREAMS_ANCHOR, _m('Pages of the streams'), $page, $pages);
@@ -586,7 +587,7 @@ final class DetailPage
         }
         $how = RunView::howItRan($import);
         return '<p class="aa-import-value">' . RunView::whenText((int) $import->getProperty('started'), $now) . '</p>'
-            . '<p class="aa-import-sub">' . (($import->state() === Run::DONE) ? '' : safe(RunView::outcomeText($import, $now)) . ' &middot; ') . (($how === '') ? '' : safe($how) . ' &middot; ') . _m('took %1', [self::took($import, $now)]) . '</p>'
+            . '<p class="aa-import-sub">' . (($import->state() === Run::DONE) ? '' : safe(RunView::outcomeText($import, $now)) . ' &middot; ') . (($how === '') ? '' : safe($how) . ' &middot; ') . self::tookText($import, $now) . '</p>'
             . self::countsHtml($import)
             . ((($newest === null) || ((string) $newest->getId() === (string) $import->getId())) ? '' : '<p class="aa-import-sub aa-import-newer">' . _m('Since then: %1', [$about]) . '</p>');
     }
@@ -686,9 +687,11 @@ final class DetailPage
                 . '<p>' . _m('Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported.') . '</p>',
             $run->isStuck($now)   => '<p>' . _m('No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run.') . '</p>',
             $p['running']         => '<p>' . _m('A step is working now.') . '</p>',
-            $run->isWaiting($now) => '<p>' . (($p['failures'] > 0)
-                ? _m('Waiting to try again at %1 after %2 failed tries.', [date('H:i', $p['next_at']), $p['failures']])
-                : _m('Waiting to try again at %1.', [date('H:i', $p['next_at'])])) . '</p>',
+            $run->isWaiting($now) => '<p>' . match (true) {
+                $p['failures'] === 1 => _m('Waiting to try again at %1 after 1 failed try.', [date('H:i', $p['next_at'])]),
+                $p['failures'] > 1   => _m('Waiting to try again at %1 after %2 failed tries.', [date('H:i', $p['next_at']), $p['failures']]),
+                default              => _m('Waiting to try again at %1.', [date('H:i', $p['next_at'])]),
+            } . '</p>',
             $run->stepMayStillWork($now) => '<p>' . _m('Its last step may still be working.') . '</p>',
             $run->hasDeadStep($now) => '<p>' . _m('Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once.', [intdiv(Toexecute::CLAIM_LEASE, 60)]) . '</p>',
             default               => '<p>' . $this->queuedText($run, $now) . '</p>',
@@ -844,7 +847,8 @@ final class DetailPage
         if (!$problems) {
             return '';
         }
-        $items = array_map(static fn(string $code): string => '<li>' . safe(Mapping::problemText($code)) . ' <code>' . safe($code) . '</code></li>', $problems);
+        $unknown = in_array('UNKNOWN_FIELD', $problems, true) ? $this->def->mapping()->unknownFields($this->slice()) : [];
+        $items   = array_map(static fn(string $code): string => '<li>' . safe(Mapping::problemText($code, $unknown)) . ' <code>' . safe($code) . '</code></li>', $problems);
         return '<div class="aa-err">' . _m('The mapping does not fit the slice; no run starts until it is fixed:') . '<ul>' . implode('', $items) . '</ul></div>';
     }
 
@@ -1166,12 +1170,18 @@ final class DetailPage
         return ($age === '') ? '' : '<small class="aa-import-since">' . safe($age) . '</small>';
     }
 
-    /** the data version is for the technical eye: a short head; a long one opens to the whole value,
-     *  which a touch screen has no tooltip for */
-    private static function versionHtml(mixed $version): string
+    /** The data version is for the technical eye: a short head; a long one opens to the whole value,
+     *  which a touch screen has no tooltip for. None says why: a check records none, nor does a
+     *  baseline of a stream versioned by a field.
+     *  @param string $kind of streamKind() */
+    private static function versionHtml(mixed $version, string $kind = ''): string
     {
         if (!is_string($version) || ($version === '')) {
-            return '--';
+            return match ($kind) {
+                'checked', 'baseline' => '<small>' . _m('None yet - an import records it') . '</small>',
+                'imported', 'warn'    => '<small>' . _m('None - the source gives no version') . '</small>',
+                default               => '--',
+            };
         }
         if (mb_strlen($version) <= 12) {
             return '<code class="aa-import-version">' . safe($version) . '</code>';
@@ -1189,12 +1199,44 @@ final class DetailPage
      *  till now while it runs */
     private static function took(Run $run, int $now): string
     {
+        $seconds = self::tookSeconds($run, $now);
+        return ($seconds === null) ? '--' : self::duration($seconds);
+    }
+
+    /** took() in seconds; null before the run started */
+    private static function tookSeconds(Run $run, int $now): ?int
+    {
         $started = (int) $run->getProperty('started');
         if (!$started) {
-            return '--';
+            return null;
         }
         $end = (int) $run->getProperty('finished') ?: (($run->state() === Run::ERROR) ? ((int) $run->getProperty('moved') ?: $started) : $now);
-        $seconds = max(0, $end - $started);
+        return max(0, $end - $started);
+    }
+
+    /** How long the steps of the run worked, when shorter than took() reads - the rest the run waited
+     *  in the task queue; '' when the run did not count it. A run in error took till its last progress,
+     *  while its failed tries worked on after it: then only Took is shown. */
+    private static function worked(Run $run, int $now): string
+    {
+        $worked = $run->workedSeconds();
+        $took   = self::tookSeconds($run, $now);
+        if (($worked === null) || ($took === null) || ($worked >= $took)) {
+            return '';
+        }
+        return (self::duration($worked) === self::duration($took)) ? '' : self::duration($worked);
+    }
+
+    /** "took …" of the last import, with its working time when that differs */
+    private static function tookText(Run $run, int $now): string
+    {
+        $took   = self::took($run, $now);
+        $worked = self::worked($run, $now);
+        return ($worked === '') ? _m('took %1', [$took]) : _m('took %1, working %2', [$took, $worked]);
+    }
+
+    private static function duration(int $seconds): string
+    {
         if ($seconds < 60) {
             return _m('%1 s', [$seconds]);
         }
@@ -1287,7 +1329,15 @@ final class DetailPage
     private function liveFacts(Run $run, int $now): ?array
     {
         $progress = $this->progressOf($run);
-        return ($progress === null) ? null : $progress + ['stuck' => $run->isStuck($now), 'waiting' => $run->isWaiting($now), 'dead' => $run->hasDeadStep($now), 'queued_until' => $this->heldBackUntil($run, $now)];
+        return ($progress === null) ? null : $progress + ['stuck' => $run->isStuck($now), 'waiting' => self::waits($run, $now), 'dead' => $run->hasDeadStep($now), 'queued_until' => $this->heldBackUntil($run, $now)];
+    }
+
+    /** Open, and no step works on it, hangs or died: it waits for its retry or for the queue to take
+     *  its next step - a run just started waits too, though the run itself set no time. */
+    private static function waits(Run $run, int $now): bool
+    {
+        return $run->isWaiting($now)
+            || (($run->state() === Run::RUNNING) && !$run->stepMayStillWork($now) && !$run->isStuck($now) && !$run->hasDeadStep($now));
     }
 
     private function url(): string

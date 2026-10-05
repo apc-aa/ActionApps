@@ -7,6 +7,7 @@ namespace Tests\Unit\Import;
 use AA\Import\Definition;
 use AA\Import\DetailConfig;
 use AA\Import\DetailPage;
+use AA\Import\Mapping;
 use AA\Import\Registry;
 use AA\Import\Run;
 use AA\Import\RunCursor;
@@ -57,6 +58,7 @@ final class DetailConfigTest extends TestCase
         \ServiceSource::$created        = [];
         \ServiceSource::$mapping        = null;
         \ServiceSource::$failProperties = null;
+        \ServiceSource::$activeOn       = false;
         \ServiceSource::$failMapping    = null;
         \ServiceSource::$credentials    = [];
         TableDb::$tables['module'] = [['id' => self::SLICE, 'type' => 'S'], ['id' => self::OTHER, 'type' => 'S']];
@@ -144,6 +146,8 @@ final class DetailConfigTest extends TestCase
             $names[] = $input->getAttribute('name') . '=' . (($input->getAttribute('name') === 'token') ? '' : $input->getAttribute('value'));
         }
         $this->assertSame(['token=', 'action=reset_mapping'], $names);
+        $form = $doc->getElementsByTagName('form')->item(0);
+        $this->assertStringStartsWith('Reset the mapping from the source?', (string) $form?->getAttribute('data-aa-confirm'), 'it replaces the stored mapping');
     }
 
     // ------------------------------------------------------------ reset mapping
@@ -195,6 +199,22 @@ final class DetailConfigTest extends TestCase
         }
         $this->assertStringContainsString('UNKNOWN_FIELD', DetailConfig::outcomeHtml('mapping_refused', 'MAPPING:UNKNOWN_FIELD'));
         $this->assertStringContainsString('aa-import-settings', DetailConfig::outcomeHtml('mapping_refused', 'MAPPING:UNKNOWN_FIELD, NO_KEY'), 'the settings give the key');
+    }
+
+    /** the field the slice lacks is named, as text */
+    public function test_unknownField_namedEscaped(): void
+    {
+        self::perms(PS_FEEDING, PS_FEEDING);
+        self::definition(['source' => 'core:csvurl']);
+        $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+
+        $r = Service::changeSettings($def, 'core:csvurl', ['url' => 'https://example.org/data.csv', 'columns' => '{"Code": "relation........", "X": "text...........9"}', 'key_column' => 'Code'], AuthGetUid());
+
+        $this->assertSame('MAPPING', $r->code);
+        $this->assertStringContainsString('does not have: text...........9.', (string) $r->refusal());
+        $html = DetailConfig::outcomeHtml('settings_refused', 'MAPPING:' . Mapping::joinProblems(['UNKNOWN_FIELD'], ['<b>x</b>']));
+        $this->assertStringContainsString('does not have: &lt;b&gt;x&lt;/b&gt;.', $html);
+        $this->assertStringNotContainsString('<b>x', $html);
     }
 
     public function test_resetMapping_disabledWithoutSource(): void
@@ -463,6 +483,55 @@ final class DetailConfigTest extends TestCase
         $outcome = $page->handle(self::settingsPost(['year' => 'MMVI']) + ['token' => self::token()], self::POST);
         $this->assertSame('settings_refused', $outcome[0] ?? null);
         $this->assertStringNotContainsString('source=', $page->afterPost($outcome), 'the current source needs no pick');
+    }
+
+    /** a new CSV import has no delimiter stored, which the grabber reads as a comma - the form shows the comma */
+    public function test_settings_csvDelimiterShowsTheComma(): void
+    {
+        self::definition(['source' => 'core:csvurl']);
+
+        $select = null;
+        foreach (self::dom(self::config()->settingsHtml())->getElementsByTagName('select') as $el) {
+            $select = str_contains($el->getAttribute('name'), '[delimiter]') ? $el : $select;
+        }
+        $this->assertNotNull($select);
+        $values   = [];
+        $selected = [];
+        foreach ($select->getElementsByTagName('option') as $option) {
+            $values[] = $option->getAttribute('value');
+            if ($option->hasAttribute('selected')) {
+                $selected[] = $option->getAttribute('value');
+            }
+        }
+        $this->assertSame([','], $selected);
+        $this->assertNotContains('other', array_map(static fn(\DOMElement $o): string => trim($o->textContent), iterator_to_array($select->getElementsByTagName('option'))), 'nothing to type another one into');
+
+        // the form sent back as shown changes nothing
+        self::perms(PS_FEEDING, PS_FEEDING);
+        $def      = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+        $settings = ['url' => 'https://example.org/data.csv', 'columns' => '{"Code": "relation........"}', 'key_column' => 'Code'];
+        $this->assertSame('CHANGED', Service::changeSettings($def, 'core:csvurl', $settings, AuthGetUid())->code);
+        $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+        $this->assertSame('SAME', Service::changeSettings($def, 'core:csvurl', $settings + ['delimiter' => ','], AuthGetUid())->code);
+        $this->assertSame('CHANGED', Service::changeSettings($def, 'core:csvurl', $settings + ['delimiter' => ';'], AuthGetUid())->code);
+    }
+
+    /** a bool default on could never be switched off - blank is off, so it is neither shown nor taken as unchanged */
+    public function test_settings_boolDefaultIgnored(): void
+    {
+        \ServiceSource::$activeOn = true;
+        self::definition(['settings' => '{"territory":"cz"}']);
+
+        $checked = false;
+        foreach (self::dom(self::config()->settingsHtml())->getElementsByTagName('input') as $input) {
+            $checked = $checked || (str_contains($input->getAttribute('name'), '[active]') && $input->hasAttribute('checked'));
+        }
+        $this->assertFalse($checked);
+
+        $def = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+        $this->assertSame('CHANGED', Service::changeSettings($def, self::SOURCE, ['territory' => 'cz', 'active' => '1'], AuthGetUid())->code, 'on is stored, not dropped as the default');
+        $stored = Definition::settingsOf((Definition::fresh(self::DEF) ?? throw new \LogicException('No definition'))->snapshot());
+        $this->assertSame('1', $stored['active'] ?? null);
     }
 
     public function test_settings_noOtherSourceToPick(): void

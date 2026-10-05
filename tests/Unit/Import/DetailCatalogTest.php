@@ -95,7 +95,7 @@ final class DetailCatalogTest extends TestCase
 
         $this->assertSame([
             ['s1', 'ImportedThe source has not been asked since.', '31 read1 new, 2 updated, 3 skipped', date('Y-m-d H:i', self::NOW - 3600) . '1 h agoby the run started ' . $by, date('Y-m-d H:i', self::NOW - 7200) . '2 h ago', '<i>2026</i>'],
-            ['s2', 'Checked, not imported yetRun imports it; Run changed only too, as it has no version to compare.', '--', '--', date('Y-m-d H:i', self::NOW - 60) . '1 min ago', '--'],
+            ['s2', 'Checked, not imported yetRun imports it; Run changed only too, as it has no version to compare.', '--', '--', date('Y-m-d H:i', self::NOW - 60) . '1 min ago', 'None yet - an import records it'],
         ], self::tableRows($html, 'aa-import-streams'));
         $this->assertStringNotContainsString('<i>2026', $html);
         $this->assertSame([], TableDb::writes(), 'read only');

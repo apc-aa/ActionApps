@@ -796,6 +796,24 @@ final class DetailPageTest extends TestCase
         $this->assertSame(['s1' => "Baseline only $at", 's2' => "Imported $at", 's3' => "Baseline only $at"], $rows);
     }
 
+    /** a stream without a version says why, not a bare "--" */
+    public function test_streams_missingVersionExplained(): void
+    {
+        self::definition();
+        $state = StreamState::create(self::DEF);
+        $state->record('s1', ['probed' => 2000000000]);
+        $state->record('s2', ['imported' => 2000000000]);
+        $state->record('s3', ['v' => '7', 'imported' => 2000000000]);
+        $state->record('s4', ['baseline' => 2000000000]);
+        $state->store();
+
+        $html = self::page()->streamsHtml();
+
+        $this->assertSame(2, substr_count($html, '<small>None yet - an import records it</small>'), 'neither a check nor a baseline of a stream versioned by a field records one');
+        $this->assertSame(1, substr_count($html, '<small>None - the source gives no version</small>'));
+        $this->assertStringContainsString('<code class="aa-import-version">7</code>', $html);
+    }
+
     /** a probe in the same second as the import came with it, not after it */
     public function test_streams_probeOfTheImportIsNotAskedAgain(): void
     {
@@ -1010,9 +1028,20 @@ final class DetailPageTest extends TestCase
         self::storedSet($id, 'next_at', (string) (time() + 600));
 
         self::storedSet($id, 'failures', '0');
-        $this->assertStringNotContainsString('failed tries', self::page()->overviewHtml(time()));
+        $this->assertStringNotContainsString('failed tr', self::page()->overviewHtml(time()));
+        self::storedSet($id, 'failures', '1');
+        $this->assertStringContainsString('after 1 failed try.', self::page()->overviewHtml(time()));
         self::storedSet($id, 'failures', '2');
         $this->assertStringContainsString('after 2 failed tries', self::page()->overviewHtml(time()));
+    }
+
+    public function test_overview_namesTheFieldTheSliceLacks(): void
+    {
+        self::definition(['mapping' => '{"rows":[{"to":"relation........","t":"copyfield","p":{"field2copy":"key"}},{"to":"text...........9","t":"copyfield","p":{"field2copy":"x"}}]}']);
+
+        $html = self::page()->overviewHtml(time());
+
+        $this->assertStringContainsString('The mapping fills a field the slice does not have: text...........9. <code>UNKNOWN_FIELD</code>', $html);
     }
 
     public function test_noOpenRun_reasonOnce(): void
@@ -1040,6 +1069,33 @@ final class DetailPageTest extends TestCase
         self::storedSet($id, 'state', Run::RUNNING);
         self::storedSet($id, 'finished', '');
         $this->assertMatchesRegularExpression('~>116 min</td>~', self::page()->runsHtml(self::NOW));
+    }
+
+    /** the waits in the task queue count in Took; the steps' own time stands under it when it reads otherwise */
+    public function test_took_workingTimeApart(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'started', (string) (self::NOW - 110));
+        self::storedSet($id, 'finished', (string) self::NOW);
+        self::storedSet($id, 'state', Run::DONE);
+
+        $this->assertStringNotContainsString('working', self::page()->runsHtml(self::NOW), 'a run from before working time was counted');
+
+        self::storedSet($id, 'work_ms', '2400');
+        $this->assertStringContainsString('>1 min 50 s<small>working 2 s</small></td>', self::page()->runsHtml(self::NOW));
+
+        self::storedSet($id, 'work_ms', '110300');
+        $this->assertStringNotContainsString('working', self::page()->runsHtml(self::NOW), 'no wait worth telling');
+
+        // in error Took ends at the last progress, the failed tries worked on after it
+        self::storedSet($id, 'state', Run::ERROR);
+        self::storedSet($id, 'finished', '');
+        self::storedSet($id, 'moved', '');
+        self::storedSet($id, 'work_ms', '90000');
+        $html = self::page()->runsHtml(self::NOW);
+        $this->assertStringContainsString('>0 s</td>', $html);
+        $this->assertStringNotContainsString('working', $html, 'never more working than Took');
     }
 
     public function test_runs_endedSaysWhyByItsNote(): void

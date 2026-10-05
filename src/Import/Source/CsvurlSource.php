@@ -51,10 +51,19 @@ final class CsvurlSource extends AbstractSource implements Checkable, Probeable
     {
         return [
             'url'        => new AA_Property('url', _m('URL of the file'), 'string', false, true, ['regexp', ['pattern' => self::URL]], true, _m('http or https only, on a public address, without a user name and password'), '', 'https://example.org/data.csv'),
-            'delimiter'  => CSV::getClassProperties()['delimiter'],
+            'delimiter'  => self::delimiterProperty(),
             'columns'    => new AA_Property('columns', _m('Columns'), 'text', false, true, new CsvColumnsSetting(), true, _m('JSON object: the column name in the first row => the field it fills'), '', '{"Name": "headline........", "Code": "text...........1"}'),
             'key_column' => new AA_Property('key_column', _m('Key column'), 'string', false, true, 'text', true, _m('The column that identifies the item; it must be one of the columns'), '', 'Code'),
         ];
+    }
+
+    /** The delimiters of the CSV grabber, the comma shown for a blank one - as it is read - and without
+     *  "other": the form has no field to type another delimiter into. */
+    private static function delimiterProperty(): AA_Property
+    {
+        $property = CSV::getClassProperties()['delimiter'];
+        $property->setConstants(array_diff_key((array) $property->getConstants(), ['' => true]));
+        return $property->setDefault(',');
     }
 
     /** Validated here again - stored settings reach a run without the form */

@@ -397,8 +397,16 @@ final class Definition extends AA_Object implements InternalExpandInterface
      * Checked when the definition is saved from a form; saving from code is not. An existing
      * definition is checked only for what the form changes, so a broken one can still be renamed or
      * disabled - by whoever may change it (manageRefusal()), a superadmin when its source needs keys.
+     * HTML: the Manager shows it as it is.
      */
     public function formRefusal(): ?string
+    {
+        $refused = $this->formRefusalText();
+        return ($refused === null) ? null : safe($refused);
+    }
+
+    /** formRefusal() as plain text - it names the fields the mapping lacks, translations are data too */
+    private function formRefusalText(): ?string
     {
         $refused = $this->manageRefusal(AuthGetUid());
         if ($refused !== null) {
@@ -436,6 +444,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
         }
         try {
             $problems = $this->mapping()->problems((string) $this->getOwnerId());
+            $unknown  = in_array('UNKNOWN_FIELD', $problems, true) ? $this->mapping()->unknownFields((string) $this->getOwnerId()) : [];
         } catch (SourceRefused) {
             return _m('The mapping of the import is not valid.');
         }
@@ -444,7 +453,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
             $problems = array_diff($problems, ['NO_KEY']);
         }
         if ($problems) {
-            return self::refusal('MAPPING', Mapping::joinProblems(array_values($problems)));
+            return self::refusal('MAPPING', Mapping::joinProblems(array_values($problems), $unknown));
         }
         return null;
     }

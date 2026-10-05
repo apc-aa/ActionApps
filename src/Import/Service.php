@@ -493,7 +493,7 @@ final class Service
         }
         $problems = $mapping->problems($slice);
         if ($problems) {
-            return new ChangeResult('MAPPING', Mapping::joinProblems($problems));
+            return new ChangeResult('MAPPING', Mapping::joinProblems($problems, $mapping->unknownFields($slice)));
         }
         $def->applyMapping($mapping);
         return null;
@@ -614,7 +614,8 @@ final class Service
     }
 
     /** Whether the stored settings are $settings (from checkSettings()), the unset ones of older
-     *  stored settings left out as checkSettings() leaves them out.
+     *  stored settings left out as checkSettings() leaves them out. A setting at its default is the
+     *  same as none: the form shows the default for a setting never stored.
      *  @param array<string, string> $settings */
     private static function sameSettings(Definition $def, array $settings): bool
     {
@@ -631,9 +632,32 @@ final class Service
                 unset($stored[$name]);
             }
         }
+        $stored   = self::withoutDefaults($stored, $declared);
+        $settings = self::withoutDefaults($settings, $declared);
         ksort($stored);
         ksort($settings);
         return $stored === $settings;
+    }
+
+    /** @param array<string, string> $settings  @param array<mixed> $declared the properties of the source
+     *  @return array<string, string> $settings without those at the default of their property */
+    private static function withoutDefaults(array $settings, array $declared): array
+    {
+        foreach ($settings as $name => $value) {
+            $property = $declared[$name] ?? null;
+            if (($property instanceof \AA_Property) && ($value === self::settingDefault($property))) {
+                unset($settings[$name]);
+            }
+        }
+        return $settings;
+    }
+
+    /** What a source reads for a setting left blank (SourceInterface::getClassProperties()); null =
+     *  none. Never for a bool: blank is off there, a default on could never be switched off. */
+    public static function settingDefault(\AA_Property $property): ?string
+    {
+        $default = $property->getDefault();
+        return (($default === null) || $default->isEmpty() || ($property->getType() === 'bool')) ? null : (string) $default->getValue();
     }
 
     /** @phpstan-assert-if-true Definition $def */

@@ -29,7 +29,9 @@ interface SourceInterface extends NamedInterface
      * ({expand:...}, view parameters) nor where it could form an alias (_#...). A setting that names
      * slices or items is a SliceIdSetting, one id each: free text never goes where an id goes ({ids:},
      * {item:}, view or slice parameters), not even quoted, and a source never trims or cuts an id out
-     * of a longer value.
+     * of a longer value. A default (AA_Property::setDefault()) must be what the source reads for a
+     * blank setting: the import detail shows it for a setting never stored, and a setting saved at it
+     * counts as unchanged. A bool setting has no default there - blank is off.
      * @return array<string, \AA_Property>
      */
     public static function getClassProperties(): array;

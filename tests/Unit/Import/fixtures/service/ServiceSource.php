@@ -27,6 +27,8 @@ final class ServiceSource extends AbstractSource implements Probeable
     public static array $created = [];
     /** thrown by getClassProperties() */
     public static ?\Throwable $failProperties = null;
+    /** the bool setting active declares on as its default */
+    public static bool $activeOn = false;
     /** thrown by defaultMapping() */
     public static ?\Throwable $failMapping = null;
     /** @var list<array{vendor: string, context: string}> what credentials() gives */
@@ -60,7 +62,7 @@ final class ServiceSource extends AbstractSource implements Probeable
             'code'      => new AA_Property('code', 'Code', 'string', false, true, ['text', ['maxlength' => 2000]]),
             // validators that hand back an int
             'year'      => new AA_Property('year', 'From year', 'int', false, true, 'int'),
-            'active'    => new AA_Property('active', 'Active only', 'bool', false, true, 'bool'),
+            'active'    => self::$activeOn ? (new AA_Property('active', 'Active only', 'bool', false, true, 'bool'))->setDefault('1') : new AA_Property('active', 'Active only', 'bool', false, true, 'bool'),
             // shown, never edited in the import detail
             'fixed'     => new AA_Property('fixed', 'Fixed', 'readonly', false, true, 'text'),
             'object'    => new AA_Property('object', 'Object', 'AA_Validate_Text', false, true, 'text'),

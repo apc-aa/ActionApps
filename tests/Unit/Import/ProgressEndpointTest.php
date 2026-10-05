@@ -103,13 +103,14 @@ final class ProgressEndpointTest extends TestCase
 
         $run = Run::get($id) ?? throw new \LogicException('No run');
         $this->assertSame(200, $status);
-        $this->assertSame($run->progress(AuthGetUid()) + ['stuck' => false, 'waiting' => false, 'dead' => false, 'queued_until' => 0], $body);
+        // queued, no step at work yet: it waits
+        $this->assertSame($run->progress(AuthGetUid()) + ['stuck' => false, 'waiting' => true, 'dead' => false, 'queued_until' => 0], $body);
         $this->assertSame([Run::RUNNING, 's2 <b>x</b>', 1, 3], [$body['state'], $body['label'], $body['done'], $body['total']]);
 
         // a finished run answers too: its state tells the script to stop
         self::storedSet($id, 'state', Run::DONE);
         ['status' => $status, 'body' => $body] = JsonResponseReader::read(DetailPage::progressJson(self::SLICE, self::DEF, $id, AuthGetUid()));
-        $this->assertSame([200, Run::DONE], [$status, $body['state']]);
+        $this->assertSame([200, Run::DONE, false], [$status, $body['state'], $body['waiting']]);
     }
 
     /** between two tries the script learns why the last one failed - not error: null - and never the URL */
@@ -137,8 +138,8 @@ final class ProgressEndpointTest extends TestCase
         ['body' => $body] = JsonResponseReader::read(DetailPage::progressJson(self::SLICE, self::DEF, $id, AuthGetUid()));
         $this->assertSame([false, true], [$body['stuck'], $body['waiting']]);
 
-        // the queue holds the step back, the run itself does not wait: when its first row goes; a
-        // row the queue gave up (priority 0) never runs
+        // the queue holds the step back, so the run waits: till its first row goes; a row the queue
+        // gave up (priority 0) never runs
         $step = TableDb::rows('toexecute')[0];
         TableDb::$tables['toexecute'] = [
             ['id' => 997, 'execute_after' => Run::clock() + 1500] + $step,
@@ -147,13 +148,13 @@ final class ProgressEndpointTest extends TestCase
         ];
         self::storedSet($id, 'next_at', (string) Run::clock());
         ['body' => $body] = JsonResponseReader::read(DetailPage::progressJson(self::SLICE, self::DEF, $id, AuthGetUid()));
-        $this->assertSame([false, Run::clock() + 1200], [$body['waiting'], $body['queued_until']]);
+        $this->assertSame([true, Run::clock() + 1200], [$body['waiting'], $body['queued_until']]);
 
         // a step at work keeps its row leased for the whole claim - that is no waiting
         self::storedSet($id, 'lease', (string) (Run::clock() + 600));
         self::storedSet($id, 'lease_tok', 'working-step');
         ['body' => $body] = JsonResponseReader::read(DetailPage::progressJson(self::SLICE, self::DEF, $id, AuthGetUid()));
-        $this->assertSame([true, 0], [$body['running'], $body['queued_until']]);
+        $this->assertSame([true, false, 0], [$body['running'], $body['waiting'], $body['queued_until']]);
         self::storedSet($id, 'lease', '');
         self::storedSet($id, 'lease_tok', '');
 

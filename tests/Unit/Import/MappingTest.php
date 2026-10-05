@@ -290,6 +290,23 @@ namespace Tests\Unit\Import {
             self::assertSame(['UNKNOWN_FIELD'], $mapping->problems(self::SLICE));
         }
 
+        /** the refusal names the fields the slice lacks - a parameter target is resolved per job, not here */
+        public function test_unknownFields_namedInTheText(): void
+        {
+            $mapping = new Mapping([self::row('text...........9'), self::row('nosuch..........'), self::row('text...........9'), self::row('relation........')], ['relation........']);
+
+            self::assertSame(['text...........9', 'nosuch..........'], $mapping->unknownFields(self::SLICE));
+            self::assertSame([], $mapping->unknownFields('ffffffffffffffffffffffffffffffff'), 'no slice: NO_SLICE says it');
+            $many = new Mapping(array_map(static fn(int $i): array => self::row("nosuch.........$i"), range(1, 6)), ['nosuch.........1']);
+            self::assertCount(5, $many->unknownFields(self::SLICE), 'a message names a few, the mapping shows all');
+
+            $joined = Mapping::joinProblems(['UNKNOWN_FIELD', 'NO_KEY'], $mapping->unknownFields(self::SLICE));
+            self::assertSame(['UNKNOWN_FIELD', 'NO_KEY'], Mapping::splitProblems($joined));
+            self::assertStringContainsString('The mapping fills a field the slice does not have: text...........9, nosuch........... (UNKNOWN_FIELD)', Mapping::problemsText($joined));
+            self::assertSame(Mapping::problemText('UNKNOWN_FIELD') . ' (UNKNOWN_FIELD)', Mapping::problemsText('UNKNOWN_FIELD'), 'a refusal without the names');
+            self::assertSame(['NO_KEY'], Mapping::splitProblems(Mapping::joinProblems(['NO_KEY'], ['a, NO_SLICE | "x"'])), 'a name never reads as a code');
+        }
+
         public function test_problems_duplicateFixedTarget(): void
         {
             $mapping = new Mapping([self::row('relation........'), self::row('relation........')], ['relation........']);

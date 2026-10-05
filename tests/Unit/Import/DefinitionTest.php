@@ -149,7 +149,26 @@ final class DefinitionTest extends TestCase
 
         self::assertIsString($error);
         self::assertStringContainsString('UNKNOWN_FIELD', $error);
-        self::assertStringContainsString('The mapping fills a field the slice does not have.', $error, 'in words, not only the code');
+        self::assertStringContainsString('The mapping fills a field the slice does not have: text...........9.', $error, 'in words, not only the code');
+    }
+
+    /** the Manager prints the refusal as HTML: escaped once, the field named in it and every other text too */
+    public function test_formRefusal_escapedOnce(): void
+    {
+        $def = self::definition('prices');
+        $def->applyMapping(new Mapping([['to' => 'text...........9', 't' => 'value', 'p' => ['new_content' => 'x', 'new_flag' => 't']]], ['text...........9']));
+        $GLOBALS['_m'] = ['The mapping fills a field the slice does not have: %1.' => '<b>%1</b> & co'];
+        try {
+            $error = $def->formRefusal();
+            $def->setProperty('aa_name', '');
+            $GLOBALS['_m'] = ['The import needs a name.' => '<i>name</i>'];
+            $name = $def->formRefusal();
+        } finally {
+            unset($GLOBALS['_m']);
+        }
+
+        self::assertStringContainsString('&lt;b&gt;text...........9&lt;/b&gt; &amp; co (UNKNOWN_FIELD)', (string) $error);
+        self::assertSame('&lt;i&gt;name&lt;/i&gt;', $name);
     }
 
     /** the settings give the key, and they are set in the detail - only of a stored definition */

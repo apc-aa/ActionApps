@@ -248,8 +248,12 @@ final class DetailConfig
                 $html .= '<p class="aa-import-fixed">' . safe((string) $property->getName()) . ': ' . (isset($stored[$name]) ? '<code>' . safe($stored[$name]) . '</code>' : '--') . '</p>';
                 continue;
             }
+            $default = Service::settingDefault($property);
             if (isset($stored[$name])) {
                 $content->setAaValue($property->getId(), new \AA_Value($stored[$name]));
+            } elseif ($default !== null) {
+                // a blank setting is not stored, so its default is what the source reads
+                $content->setAaValue($property->getId(), new \AA_Value($default));
             }
             $form = new \AA_Form();
             $property->addPropertyFormrows($form);
@@ -338,7 +342,7 @@ final class DetailConfig
         $why = isset(Registry::sources()[$this->def->sourceType()])
             ? $this->manageWhy(null)
             : DetailPage::reasonText('NO_SOURCE');
-        $html .= '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-actions">' . DetailPage::tokenFields($this->id(), 'reset_mapping')
+        $html .= '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-actions" data-aa-confirm="' . safe(_m('Reset the mapping from the source? The mapping, the key fields, the store mode, the validation and the expression after a stream are replaced by what the source gives.')) . '">' . DetailPage::tokenFields($this->id(), 'reset_mapping')
             . DetailPage::button(_m('Reset mapping from the source'), $why, []) . DetailPage::whyHtml($why) . '</form>'
             . '<p><small>' . _m('Sets the mapping, the key fields, the store mode, the validation and the expression after a stream again as the source gives them for the stored settings. An open run goes on with the mapping it started with.') . '</small></p>';
         return DetailPage::section('mapping', _m('Mapping'), $html, false);
