@@ -162,14 +162,12 @@ namespace Tests\Unit\Import {
         public function test_rejected_sourceNotExtendingAbstractSource(): void
         {
             $dir = $this->tmpDir();
-            file_put_contents("$dir/DirectSource.php", self::sourceCode('DirectSource', 'implements \\AA\\Import\\SourceInterface', <<<'PHP'
-                public static function credentials(): array { return []; }
-                public function minJobSeconds(): int { return 15; }
-                public function defaultMapping(): \AA\Import\Mapping { return new \AA\Import\Mapping([]); }
-                PHP));
+            // without most methods of the contract: loading it would be a fatal error no try catches
+            file_put_contents("$dir/DirectSource.php", self::sourceCode('DirectSource', 'implements \\AA\\Import\\SourceInterface'));
 
             self::assertSame([], self::custom(Registry::sources($dir)));
-            self::assertSame('does not extend ' . AbstractSource::class, Registry::rejected($dir)['DirectSource'] ?? '');
+            self::assertSame('class DirectSource at DirectSource.php:2 implements without extends - a source extends ' . AbstractSource::class, Registry::rejected($dir)['DirectSource.php'] ?? '');
+            self::assertFalse(class_exists('DirectSource', false), 'not loaded');
             self::assertTrue(Registry::isRejected('custom:direct', $dir));
         }
 

@@ -210,7 +210,7 @@ final class Registry
     private static function requireSource(string $path, string $file, string $class): string
     {
         try {
-            $why = self::declaresOnly(PhpToken::tokenize((string) file_get_contents($path), TOKEN_PARSE), $class);
+            $why = self::declaresOnly(PhpToken::tokenize((string) file_get_contents($path), TOKEN_PARSE), $class, $file);
         } catch (Throwable $e) {
             return self::failure($e, $file);   // a syntax error, found without running the file
         }
@@ -248,7 +248,7 @@ final class Registry
      * @param list<PhpToken> $tokens
      * @return string why not, '' when it holds
      */
-    private static function declaresOnly(array $tokens, string $class): string
+    private static function declaresOnly(array $tokens, string $class, string $file): string
     {
         $tokens   = array_values(array_filter($tokens, static fn(PhpToken $t): bool => !$t->isIgnorable()));
         $scopes   = [];      // open braces: true = a class body
@@ -267,6 +267,10 @@ final class Registry
                 if ($next?->is(T_STRING)) {   // a named declaration, not new class
                     if ($scopes !== [] || !$t->is(T_CLASS) || $next->text !== $class || ++$declared > 1) {
                         return "declares {$next->text} besides the class $class";
+                    }
+                    if (self::implementsOnly(array_slice($tokens, $i + 2))) {
+                        // such a class misses any method the contract gains later - a fatal error at loading
+                        return "class $class at $file:{$t->line} implements without extends - a source extends " . AbstractSource::class;
                     }
                 }
             } elseif ($t->is(T_USE) && $scopes === []) {
@@ -296,6 +300,23 @@ final class Registry
             }
         }
         return $declared === 1 ? '' : "does not declare the class $class";
+    }
+
+    /**
+     * Whether the class header has implements but no extends - PHP puts extends first
+     * @param list<PhpToken> $header the tokens after the class name, its body included
+     */
+    private static function implementsOnly(array $header): bool
+    {
+        foreach ($header as $t) {
+            if ($t->is(T_IMPLEMENTS)) {
+                return true;
+            }
+            if ($t->is(T_EXTENDS) || ($t->text === '{')) {
+                return false;
+            }
+        }
+        return false;
     }
 
     /** the exception's message may quote the file or a key, so only its kind and place */
