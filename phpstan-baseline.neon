@@ -324,18 +324,6 @@ parameters:
 			path: src/IO/Grabber/FilesFTP.php
 
 		-
-			message: '#^If condition is always true\.$#'
-			identifier: if.alwaysTrue
-			count: 1
-			path: src/IO/Grabber/Form.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between ''add''\|''update'' and ''new'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: src/IO/Grabber/Form.php
-
-		-
 			message: '#^Instantiated class iCalFile not found\.$#'
 			identifier: class.notFound
 			count: 1

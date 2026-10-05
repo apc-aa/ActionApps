@@ -10,11 +10,17 @@
 namespace AA\IO\Grabber;
 
 use AA\FormArray;
+use AA\Optimize\CheckAnonymousEditRefusals;
+use AA\Util\LogOnce;
+use AA\Widget\PwdWidget;
+use AA\Widget\TfaWidget;
 use AA\Widget\Widget;
 use AA_Content;
+use AA_Field;
 use AA_Fields;
 use AA_Item;
 use AA_Slice;
+use AA_Value;
 use Exception;
 use ItemContent;
 use RuntimeException;
@@ -241,6 +247,7 @@ class Form extends AbstractGrabber
         $trans_item_ids   = array_values($id_trans_table);
 
         $UPDATE_MODES = ['u' => 'update', 'i' => 'add', 'r' => 'update'];
+        $anonymous    = self::anonymous();
         foreach ($aa as $dirty_item_id => $item_fields) {
 
             // common fields
@@ -251,15 +258,15 @@ class Form extends AbstractGrabber
             // 'u': edited item - update = field content is changed to new value
             // 'r': edited item - remove value from field
             // 'i': edited item - insert = field content is added to the existing content of the field
-            if ($store_mode = $UPDATE_MODES[$dirty_item_id[0]]) {
+            $oldcontent4id = null;
+            if ($store_mode = ($UPDATE_MODES[$dirty_item_id[0]] ?? null)) {
                 $item_id                         = substr($dirty_item_id, 1);
                 if (! ($item_slice_id = AA_Slice::getSliceIdFromItemId($item_id))) {
                     continue;
                 }
                 $item_fields['slice_id________'] = [pack_id($item_slice_id)];
 
-                $oldcontent4id = new ItemContent();
-                $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
+                $oldcontent4id = $this->storedItem($item_id);
                 // if ($dirty_item_id[0] === 'r') {
                 if (!$oldcontent4id->getSliceID() || !$oldcontent4id->getItemID()) {
                     continue;
@@ -293,6 +300,7 @@ class Form extends AbstractGrabber
             if (!($slice = AA_Slice::getModule($item_slice_id))) {
                 continue;
             }
+            $anonymous_edit = $anonymous && $oldcontent4id;
 
             foreach ($item_fields as $dirty_field_id => $val_array) {
                 // create full_text......1 from full_text______1
@@ -303,7 +311,13 @@ class Form extends AbstractGrabber
                 if (!($field = $slice->getField($field_id))) {
                     continue;
                 }
-                $default_val = ($store_mode === 'new') ? $field->getDefault() : $oldcontent4id->getAaValue($field_id);
+
+                // a form without login could take over the reader's account or the item - the field stays as stored
+                if ($anonymous_edit && self::isAccountField($slice, $field)) {
+                    self::refused($item_slice_id, $field_id, $dirty_item_id[0]);
+                    continue;
+                }
+                $default_val = $oldcontent4id ? $oldcontent4id->getAaValue($field_id) : $field->getDefault();
 
                 // Get the content of the field (values and flags)
                 // Convert to array - designers sometimes set (wrongly) as scalar:
@@ -314,15 +328,65 @@ class Form extends AbstractGrabber
                 $aa_value = Widget::getValue((array) $val_array, $default_val);
                 $aa_value->replaceInValues($trans_item_alias, $trans_item_ids);
 
-                if ($dirty_item_id[0] === 'r' && $field_id !== 'slice_id........') {
+                if ($oldcontent4id && $dirty_item_id[0] === 'r' && $field_id !== 'slice_id........') {
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
                 $item->setAaValue($field_id, $aa_value);
+            }
+            // in another slice its fields would be checked by that slice - the item stays where it is
+            $moved_to = (string) $item->getValue('slice_id........');
+            if ($anonymous_edit && ($moved_to !== '') && ($moved_to !== pack_id($item_slice_id))) {
+                self::refused($item_slice_id, 'slice_id........', $dirty_item_id[0]);
+                $item->setAaValue('slice_id........', new AA_Value(pack_id($item_slice_id)));
             }
             $this->_items[] = [$item, $store_mode];
         }
         reset($this->_items);
         return true;
+    }
+
+    /** the item as stored - an empty ItemContent when there is none */
+    protected function storedItem(string $item_id): ItemContent
+    {
+        $oldcontent4id = new ItemContent();
+        $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
+        return $oldcontent4id;
+    }
+
+    /** No user is logged in. filler.php opens the session only when the visitor has its cookie, so
+     *  $auth may be missing; a logged-in reader is a user.
+     */
+    private static function anonymous(): bool
+    {
+        $auth = $GLOBALS['auth'] ?? null;
+        return !is_object($auth) || !$auth->is_user();
+    }
+
+    /** the field of the item was left as stored - logged once a day, never the value */
+    private static function refused(string $slice_id, string $field_id, string $mode): void
+    {
+        LogOnce::daily(CheckAnonymousEditRefusals::EVENT, ParamImplode([$slice_id, $field_id]), [$mode, basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''))]);
+    }
+
+    /** Fields an anonymous edit of an existing item must not change: the flags and the author of any
+     *  item, a password and a 2FA secret, and the login of a reader - they give the account or the item
+     *  away.
+     */
+    private static function isAccountField(AA_Slice $slice, AA_Field $field): bool
+    {
+        $field_id = $field->getId();
+        // a password field of another number is found by its type (firstOfTypeFieldId())
+        if (in_array($field_id, ['flags...........', 'posted_by.......'], true) || str_starts_with($field_id, 'password') || str_starts_with($field_id, 'secret')) {
+            return true;
+        }
+        // headline........ is an ordinary title outside Reader Management
+        if (($field_id === FIELDID_USERNAME) && ($slice->type() === 'ReaderManagement')) {
+            return true;
+        }
+        // the widget of a field of a fieldslice is not in input_show_func
+        $widget   = $field->getWidget();
+        [$insert] = explode(':', strtolower((string) $field->getProperty('input_insert_func')), 2);
+        return ($widget instanceof PwdWidget) || ($widget instanceof TfaWidget) || in_array($insert, ['pwd', '2fa'], true);
     }
 
     /** Function called by AA\IO\Saver after we get the last item from the data

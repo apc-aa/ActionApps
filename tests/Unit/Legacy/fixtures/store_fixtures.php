@@ -316,6 +316,8 @@ final class FakeSlice extends AA_Slice
     private FakeFields $fake_fields;
     /** the `module.deleted` flag - a soft-deleted slice must store like a live one */
     public bool $deleted = false;
+    /** the slice type (AA_Slice::type()) - 'ReaderManagement' for a reader slice */
+    public ?string $type = null;
 
     public function __construct(string $slice_id)
     {
@@ -360,10 +362,14 @@ final class FakeSlice extends AA_Slice
         return $this->fake_fields;
     }
 
-    /** slice settings storeItem() reads - history logging off, nothing else set */
+    /** slice settings storeItem() reads - history logging off, the type, nothing else set */
     public function getProperty($prop)
     {
-        return $prop === 'historylog' ? '0' : null;
+        return match ($prop) {
+            'historylog' => '0',
+            'type'       => $this->type,
+            default      => null,
+        };
     }
 }
 
@@ -375,6 +381,12 @@ final class FakeAuth
     public function getUid(): string
     {
         return $this->uid;
+    }
+
+    /** as AA_Auth::is_user() - pageOpen('nobody') without a login leaves the uid 'nobody' */
+    public function is_user(): bool
+    {
+        return ($this->uid !== '') && ($this->uid !== 'nobody');
     }
 
     public function authenticateUsername($username, $password, $code2fa): string|false
