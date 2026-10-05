@@ -3088,9 +3088,13 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
 
         $xsl_cond = ($number>0) ? '[position() &lt; '. ($number+1) .']' : '';
 
-        // load XML document
-        $xml = new DomDocument();
-        $xml->load($rss_url);
+        // through the SSRF guard, and the XML loads nothing more by itself
+        $feed = HttpInclude::fetch('GET', $rss_url);
+        $xml  = new DomDocument();
+        if (($feed === '') || !@$xml->loadXML($feed, LIBXML_NONET)) {
+            warn('No RSS feed at ' . $rss_url);
+            return '';
+        }
 
         if (empty($format)) {
             $format = <<<XML
@@ -3115,8 +3119,9 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
             </xsl:stylesheet>
         ');
 
-        // create XSLT processor
+        // create XSLT processor; document() in the format must not read files or other addresses
         $proc = new xsltprocessor();
+        $proc->setSecurityPrefs(XSL_SECPREF_DEFAULT | XSL_SECPREF_READ_FILE | XSL_SECPREF_READ_NETWORK);
         $proc->importStylesheet($xsl);
 
         // perform transformation and display result
@@ -8531,7 +8536,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (($size = \AA\Util\PhpThumbParams::knownSize($info, $phpthumb_params)) !== null) {
             $a = [$size[0], $size[1], 0, 'width="'.$size[0].'" height="'.$size[1].'"'];  // same shape as getimagesize(); $a[3] is read only when both are known
         } else {
-            $a = @getimagesize(self::getUrl($image, $phpthumb_params, 'measure'));      // slow - self-HTTP request which also renders the thumbnail
+            $a = self::measure(self::getUrl($image, $phpthumb_params, 'measure'));      // slow - self-HTTP request which also renders the thumbnail
             if (! $a) {
                 return '';
             }
@@ -8613,6 +8618,19 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         return $ret;
     }
 
+
+    /** getimagesize() of the image: a web address goes through the SSRF guard, a local file is read
+     *  as before, and no other stream (php://, phar://, ...) is opened
+     *  @return array<int|string, mixed>|false
+     */
+    private static function measure(string $url): array|false
+    {
+        if (preg_match('~^https?://~i', $url)) {
+            $body = HttpInclude::fetch('GET', $url);
+            return ($body === '') ? false : @getimagesizefromstring($body);
+        }
+        return str_contains($url, '://') ? false : @getimagesize($url);
+    }
 
     /** Url of the resized image - through {@see useCache() MissCache} when this install
      *  can serve it as a static file, otherwise the plain img.php link.
@@ -8909,7 +8927,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                     $size = @filesize($filename);
                 } else {
                     $fullurl = $url[0] === '/' ? 'https://'.$_SERVER['HTTP_HOST'].$url : $url;
-                    $size = @strlen(file_get_contents($fullurl));
+                    $size = strlen(HttpInclude::fetch('GET', $fullurl));
                 }
 
                 if ($size) {
