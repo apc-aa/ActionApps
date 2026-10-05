@@ -25,6 +25,9 @@ final class ServiceSource extends AbstractSource
     public static ?\Throwable $failProperties = null;
     /** thrown by defaultMapping() */
     public static ?\Throwable $failMapping = null;
+    /** @var list<array{vendor: string, context: string}> what credentials() gives */
+    public static array $credentials = [];
+    public static ?\Throwable $failKeys = null;
 
     /** @param array<string, string> $settings */
     public function __construct(private readonly array $settings = []) {}
@@ -54,6 +57,10 @@ final class ServiceSource extends AbstractSource
             // validators that hand back an int
             'year'      => new AA_Property('year', 'From year', 'int', false, true, 'int'),
             'active'    => new AA_Property('active', 'Active only', 'bool', false, true, 'bool'),
+            // shown, never edited in the import detail
+            'fixed'     => new AA_Property('fixed', 'Fixed', 'readonly', false, true, 'text'),
+            'object'    => new AA_Property('object', 'Object', 'AA_Validate_Text', false, true, 'text'),
+            'tags'      => new AA_Property('tags', 'Tags', 'string', true, true, 'text'),
         ];
     }
 
@@ -77,6 +84,14 @@ final class ServiceSource extends AbstractSource
     public function jobs(Stream $stream, Context $ctx, ?string $known): iterable
     {
         return [];
+    }
+
+    public static function credentials(): array
+    {
+        if (self::$failKeys) {
+            throw self::$failKeys;
+        }
+        return self::$credentials;
     }
 
     public function defaultMapping(): Mapping

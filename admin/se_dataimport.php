@@ -1,7 +1,8 @@
 <?php
 
 /**
- * The detail of one import of the slice: overview, actions, runs (AA\Import\DetailPage).
+ * The detail of one import of the slice: overview, actions, runs, settings of the source and
+ * mapping (AA\Import\DetailPage).
  *
  * PHP version 8.2+
  *
@@ -85,12 +86,19 @@ $apage->addRequire('
     .aa-import-actions { margin: 0.5em 0; }
     .aa-import-why { margin: 0.3em 0; }
     .aa-import-sample { margin: 0.3em 0; }
+    .aa-import-mapping, .aa-import-keys { border-collapse: collapse; }
+    .aa-import-mapping th, .aa-import-keys th { text-align: left; }
+    .aa-import-mapping th, .aa-import-mapping td, .aa-import-keys th, .aa-import-keys td { padding: 0.3em 0.6em; vertical-align: top; }
+    .aa-import-mapping code { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .aa-import-settings, .aa-import-source { margin: 0.5em 0; }
 ', 'AA_Req_CSScode');
-// asks before End, follows a running run
+// asks before End and before a change of the settings, follows a running run
 $apage->addRequire(get_aa_url('javascript/dataimport.min.js', ['v' => AA_JS_VERSION], false));
+// before the head: the widgets of the settings form add the scripts they need
+$body = $page->html(Run::clock()) . $page->config()->html($_GET['source'] ?? null);
 $apage->printHead();
 
 echo $page->outcomeOnceHtml();
-echo $page->html(Run::clock());
+echo $body;
 
 $apage->printFoot();

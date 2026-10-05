@@ -403,9 +403,10 @@ final class Definition extends AA_Object implements InternalExpandInterface
     }
 
     /**
-     * Why a definition or a change of it is refused, for the user.
+     * Why a definition or a change of it is refused, for the user - plain text.
      * @param string $code FORBIDDEN, KEYS, NOT_OF_SLICE, NO_SOURCE, NO_MAPPING, MAPPING (with the problem
-     *                     codes in $detail), SETTINGS, SLICE; any other = the source refused the settings
+     *                     codes in $detail), SETTINGS and SLICE (with the label of the setting in $detail,
+     *                     if known), STALE; any other = the source refused the settings
      */
     public static function refusal(string $code, string $detail = ''): string
     {
@@ -416,8 +417,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
             'NO_SOURCE'    => _m('The import source is not available.'),
             'NO_MAPPING'   => _m('The import source did not give its mapping.'),
             'MAPPING'      => _m('The mapping of the import does not fit the slice: %1', [$detail]),
-            'SETTINGS'     => _m('A setting of the import source is not valid.'),
-            'SLICE'        => _m('The settings name a slice whose feeding you do not manage.'),
+            'SETTINGS'     => ($detail === '') ? _m('A setting of the import source is not valid.') : _m('The setting "%1" of the import source is not valid.', [$detail]),
+            'SLICE'        => ($detail === '') ? _m('The settings name a slice whose feeding you do not manage.') : _m('The setting "%1" names a slice whose feeding you do not manage.', [$detail]),
+            'STALE'        => _m('The settings of the import changed meanwhile. Reload the page and set them again.'),
             default        => _m('The import source refused these settings.'),
         };
     }

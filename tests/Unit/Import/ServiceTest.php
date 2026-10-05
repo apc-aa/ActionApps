@@ -269,7 +269,7 @@ final class ServiceTest extends TestCase
 
         $this->assertSame(['invalid', 'SLICE'], self::codeOf(Service::start($def, 'run', [], 'manual', AuthGetUid())));
         $this->assertSame([], self::runIds());
-        $this->assertSame('The settings name a slice whose feeding you do not manage.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The setting "Slice of definitions" names a slice whose feeding you do not manage.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame('queued', Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid())->code);
     }
 
@@ -442,7 +442,7 @@ final class ServiceTest extends TestCase
 
         $thrown = null;
         try {
-            Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid());
+            Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal();
         } catch (\RuntimeException $e) {
             $thrown = $e;
         }
@@ -451,7 +451,7 @@ final class ServiceTest extends TestCase
 
         TableDb::$fail = null;
         TableDb::$log  = [];
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'sk', 'from_year' => '2006'], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'sk', 'from_year' => '2006'], AuthGetUid())->refusal());
         $this->assertTrue(self::lockedBeforeRun(self::DEF), 'under the lock a start takes');
 
         $stored = self::stored(self::DEF);
@@ -470,11 +470,11 @@ final class ServiceTest extends TestCase
         self::perms(PS_FEEDING, PS_EDIT_ALL_ITEMS);
         $before = TableDb::$tables;
 
-        $this->assertSame('The settings name a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['slice' => self::OTHER], AuthGetUid()));
+        $this->assertSame('The setting "Slice of definitions" names a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['slice' => self::OTHER], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
 
         self::perms(PS_FEEDING, PS_FEEDING);
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => self::OTHER], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => self::OTHER], AuthGetUid())->refusal());
         $this->assertSame(['slice' => self::OTHER], json_decode(self::stored(self::DEF)['settings'], true));
     }
 
@@ -493,12 +493,12 @@ final class ServiceTest extends TestCase
             'two'        => self::SLICE . ',' . self::OTHER,
         ];
         foreach ($bad as $case => $value) {
-            $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['slice' => $value], AuthGetUid()), $case);
+            $this->assertSame('The setting "Slice of definitions" of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['slice' => $value], AuthGetUid())->refusal(), $case);
         }
         $this->assertSame($before, TableDb::$tables);
         $this->assertSame([], \ServiceSource::$created, 'no code of the source ran');
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => " " . self::SLICE . "\n", 'territory' => self::OTHER], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => " " . self::SLICE . "\n", 'territory' => self::OTHER], AuthGetUid())->refusal());
         $this->assertSame([['slice' => self::SLICE, 'territory' => self::OTHER]], \ServiceSource::$created, 'the source gets the id alone; free text is the source\'s to escape');
         $this->assertSame(['slice' => self::SLICE, 'territory' => self::OTHER], json_decode(self::stored(self::DEF)['settings'], true));
     }
@@ -510,8 +510,8 @@ final class ServiceTest extends TestCase
         self::ownedRecords();
         $queue = self::queue();
 
-        $this->assertNull(Service::resetMapping($def, AuthGetUid()));
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['from_year' => '2006', 'territory' => 'cz'], AuthGetUid()), 'the same settings in another order');
+        $this->assertNull(Service::resetMapping($def, AuthGetUid())->refusal());
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['from_year' => '2006', 'territory' => 'cz'], AuthGetUid())->refusal(), 'the same settings in another order');
 
         $this->assertSame('running', self::stored($run)['state'], 'the run works with its snapshot');
         $this->assertNotNull(StreamState::forDefinition(self::DEF));
@@ -530,7 +530,7 @@ final class ServiceTest extends TestCase
         $run = self::importRun();
         self::ownedRecords();
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'cz'], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'cz'], AuthGetUid())->refusal());
 
         $stored  = self::stored(self::DEF);
         $default = (new \ServiceSource())->defaultMapping();
@@ -549,7 +549,7 @@ final class ServiceTest extends TestCase
         \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], [], 'insert_if_new');
         $before = TableDb::$tables;
 
-        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, [], AuthGetUid()));
+        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, [], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 
@@ -563,7 +563,7 @@ final class ServiceTest extends TestCase
         self::storedSet($run, 'lease_tok', 'tok');
         self::ownedRecords();
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
 
         $this->assertSame('ended', self::stored($run)['state']);
         $this->assertNull(StreamState::forDefinition(self::DEF));
@@ -583,7 +583,7 @@ final class ServiceTest extends TestCase
             return null;
         };
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
 
         $this->assertSame('done', self::stored($run)['state']);
         $this->assertSame('{"territory":"sk"}', self::stored(self::DEF)['settings']);
@@ -599,7 +599,7 @@ final class ServiceTest extends TestCase
         $before = TableDb::$tables;
 
         try {
-            Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid());
+            Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal();
             $this->fail('changed while a run of it goes on');
         } catch (BatchFailed $e) {
             $this->assertSame('FORBIDDEN', $e->reason);
@@ -611,14 +611,14 @@ final class ServiceTest extends TestCase
     {
         $def = self::definition(['settings' => '{"territory":"cz"}']);
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, [], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, [], AuthGetUid())->refusal());
         $this->assertSame('', self::stored(self::DEF)['settings']);
 
         // what cannot be read is no setting the user keeps
         self::storedSet(self::DEF, 'settings', '{broken');
         $run = Service::start($def, 'run', [], 'plan:' . self::TASK, AuthGetUid());
         $this->assertSame(['invalid', 'DEFINITION'], self::codeOf($run));
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, [], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, [], AuthGetUid())->refusal());
         $this->assertSame('', self::stored(self::DEF)['settings']);
     }
 
@@ -626,13 +626,13 @@ final class ServiceTest extends TestCase
     {
         $def = self::definition();
         \ServiceSource::$refuse = new SourceRefused('AUTH');
-        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
-        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
+        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame([], self::logged(), 'a refusal is the page\'s to show');
 
         \ServiceSource::$refuse = new \RuntimeException('at token=s3cr3t');
-        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
-        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
+        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertCount(2, self::logged());
         $this->assertStringNotContainsString('s3cr3t', implode(' ', self::logged()));
     }
@@ -643,7 +643,7 @@ final class ServiceTest extends TestCase
         self::perms(PS_EDIT_ALL_ITEMS . PS_EDIT, PS_FEEDING);
         $before = TableDb::$tables;
 
-        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
         $this->assertSame([], \ServiceSource::$created, 'no code of the source ran');
     }
@@ -653,19 +653,19 @@ final class ServiceTest extends TestCase
         $def    = self::definition();
         $before = TableDb::$tables;
 
-        $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['password' => 'x'], AuthGetUid()));
-        $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['territory' => ['a']], AuthGetUid()));
-        $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['territory' => "\xff\xfe"], AuthGetUid()));
-        $this->assertSame('The import source is not available.', Service::changeSettings($def, 'custom:gone', [], AuthGetUid()));
+        $this->assertSame('The setting "password" of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['password' => 'x'], AuthGetUid())->refusal());
+        $this->assertSame('The setting "Territory" of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['territory' => ['a']], AuthGetUid())->refusal());
+        $this->assertSame('The setting "Territory" of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['territory' => "\xff\xfe"], AuthGetUid())->refusal());
+        $this->assertSame('The import source is not available.', Service::changeSettings($def, 'custom:gone', [], AuthGetUid())->refusal());
         \ServiceSource::$refuse = new SourceRefused('DEFINITION');
-        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
 
         $posing = new Definition();
         $posing->setNew(self::DEF, self::OTHER, 'prices');
         self::perms(PS_FEEDING, PS_FEEDING);
         \ServiceSource::$refuse = null;
-        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::changeSettings($posing, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::changeSettings($posing, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 
@@ -676,13 +676,13 @@ final class ServiceTest extends TestCase
         self::perms(PS_FEEDING, PS_EDIT_ALL_ITEMS);
         $before = TableDb::$tables;
 
-        $this->assertSame('The settings name a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['other' => strtoupper(self::OTHER)], AuthGetUid()));
-        $this->assertSame('The settings name a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['territory' => ' ' . self::OTHER], AuthGetUid()));
+        $this->assertSame('The setting "Another slice" names a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['other' => strtoupper(self::OTHER)], AuthGetUid())->refusal());
+        $this->assertSame('The setting "Territory" names a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['territory' => ' ' . self::OTHER], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['other' => self::ITEM, 'territory' => self::SITE], AuthGetUid()), 'ids of no slice');
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['other' => self::ITEM, 'territory' => self::SITE], AuthGetUid())->refusal(), 'ids of no slice');
         self::perms(PS_FEEDING, PS_FEEDING);
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['other' => strtoupper(self::OTHER)], AuthGetUid()), 'the right to the slice, however the id is written');
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['other' => strtoupper(self::OTHER)], AuthGetUid())->refusal(), 'the right to the slice, however the id is written');
     }
 
     /** an id inside free text reaches a command that splits it - {ids:<A>-<B>} reads B */
@@ -694,14 +694,14 @@ final class ServiceTest extends TestCase
         $embedded = [self::SLICE . '-' . self::OTHER, self::SLICE . ',' . self::OTHER, 'x' . strtoupper(self::OTHER) . 'y'];
 
         foreach ($embedded as $value) {
-            $this->assertSame('The settings name a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['territory' => $value], AuthGetUid()), $value);
+            $this->assertSame('The setting "Territory" names a slice whose feeding you do not manage.', Service::changeSettings($def, self::SOURCE, ['territory' => $value], AuthGetUid())->refusal(), $value);
         }
         $this->assertSame($before, TableDb::$tables);
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'x' . self::ITEM . '-' . self::SLICE], AuthGetUid()), 'an item and the own slice');
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => 'x' . self::ITEM . '-' . self::SLICE], AuthGetUid())->refusal(), 'an item and the own slice');
 
         self::perms(PS_FEEDING, PS_FEEDING);
         foreach ($embedded as $value) {
-            $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => $value], AuthGetUid()), $value);
+            $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => $value], AuthGetUid())->refusal(), $value);
         }
     }
 
@@ -710,12 +710,12 @@ final class ServiceTest extends TestCase
     {
         $def = self::definition();
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['year' => '2006', 'active' => '1'], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['year' => '2006', 'active' => '1'], AuthGetUid())->refusal());
         $this->assertSame('{"year":"2006","active":"1"}', self::stored(self::DEF)['settings']);
         $this->assertSame(['year' => '2006', 'active' => '1'], \ServiceSource::$created[array_key_last(\ServiceSource::$created)]);
-        $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['year' => 'MMVI'], AuthGetUid()));
+        $this->assertSame('The setting "From year" of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['year' => 'MMVI'], AuthGetUid())->refusal());
 
-        $this->assertNull(Service::resetMapping($def, AuthGetUid()));
+        $this->assertNull(Service::resetMapping($def, AuthGetUid())->refusal());
         $run = Service::start($def, 'run', [], 'manual', AuthGetUid());
         $this->assertSame('queued', $run->code);
         self::storedSet($run->runId, 'state', 'error');
@@ -727,19 +727,19 @@ final class ServiceTest extends TestCase
     {
         $def = self::definition();
         self::perms(PS_FEEDING, PS_FEEDING);
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => self::OTHER], AuthGetUid()));
-        $this->assertNull(Service::resetMapping($def, AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => self::OTHER], AuthGetUid())->refusal());
+        $this->assertNull(Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame(['{ids:' . self::OTHER . '}'], json_decode(self::stored(self::DEF)['validate'], true));
 
         self::perms(PS_FEEDING, PS_EDIT_ALL_ITEMS);
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => self::SLICE], AuthGetUid()));
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['slice' => self::SLICE], AuthGetUid())->refusal());
 
         $this->assertSame(['{ids:' . self::SLICE . '}'], json_decode(self::stored(self::DEF)['validate'], true));
         $this->assertStringNotContainsString(self::OTHER, json_encode(self::stored(self::DEF), JSON_THROW_ON_ERROR));
 
         \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], [], 'insert_if_new');
         $before = TableDb::$tables;
-        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 
@@ -752,7 +752,7 @@ final class ServiceTest extends TestCase
         \ServiceSource::$failProperties = new \RuntimeException('a bug');
 
         // answered as a missing right: the page must not learn which ids are imports of other slices
-        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::changeSettings($posing, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::changeSettings($posing, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertSame([], \ServiceSource::$created);
         $this->assertSame([], self::logged());
     }
@@ -761,13 +761,14 @@ final class ServiceTest extends TestCase
     {
         $def = self::definition();
 
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => "  \t", 'slice' => ''], AuthGetUid()), 'an optional slice may stay empty');
-        $this->assertSame(['territory' => '', 'slice' => ''], json_decode(self::stored(self::DEF)['settings'], true));
+        // what a form posts for the fields left blank is not stored: nothing changed
+        $this->assertSame('SAME', Service::changeSettings($def, self::SOURCE, ['territory' => "  \t", 'slice' => ''], AuthGetUid())->code, 'an optional slice may stay empty');
+        $this->assertSame('', self::stored(self::DEF)['settings']);
 
-        $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['territory' => str_repeat('a', 1001)], AuthGetUid()));
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => str_repeat('a', 1000)], AuthGetUid()));
-        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['code' => str_repeat('b', 1500)], AuthGetUid()), 'a property with its own maximum');
-        $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['code' => str_repeat('b', 2001)], AuthGetUid()));
+        $this->assertSame('The setting "Territory" of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['territory' => str_repeat('a', 1001)], AuthGetUid())->refusal());
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['territory' => str_repeat('a', 1000)], AuthGetUid())->refusal());
+        $this->assertNull(Service::changeSettings($def, self::SOURCE, ['code' => str_repeat('b', 1500)], AuthGetUid())->refusal(), 'a property with its own maximum');
+        $this->assertSame('The setting "Code" of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['code' => str_repeat('b', 2001)], AuthGetUid())->refusal());
     }
 
     public function test_changeSettings_propertiesOfSourceFailing(): void
@@ -775,9 +776,63 @@ final class ServiceTest extends TestCase
         $def = self::definition();
         \ServiceSource::$failProperties = new \RuntimeException('at token=s3cr3t');
 
-        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertSame('The import source refused these settings.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
         $this->assertCount(1, self::logged());
         $this->assertSame(['invalid', 'SOURCE'], self::codeOf(Service::start($def, 'run', [], 'manual', AuthGetUid())));
+    }
+
+    /** a form posts every field: blank ones and an unchecked checkbox change nothing, also against older stored settings */
+    public function test_changeSettings_blankAndOffAreUnchanged(): void
+    {
+        $def = self::definition(['settings' => '{"territory":"cz","from_year":"","active":"0"}']);
+        $run = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        $all = ['territory' => 'cz', 'from_year' => '', 'slice' => '', 'other' => '', 'code' => ' ', 'year' => '', 'active' => '0'];
+
+        $this->assertSame('SAME', Service::changeSettings($def, self::SOURCE, $all, AuthGetUid())->code);
+        $this->assertSame(Run::RUNNING, self::stored($run)['state']);
+
+        $this->assertSame('CHANGED', Service::changeSettings($def, self::SOURCE, ['active' => '1'] + $all, AuthGetUid())->code);
+        $this->assertSame(['active' => '1', 'territory' => 'cz'], json_decode(self::stored(self::DEF)['settings'], true));
+        $this->assertSame('CHANGED', Service::changeSettings($def, self::SOURCE, $all, AuthGetUid())->code, 'switched off');
+        $this->assertSame(['territory' => 'cz'], json_decode(self::stored(self::DEF)['settings'], true));
+    }
+
+    /** a form made from other stored settings - another user saved meanwhile - changes nothing */
+    public function test_changeSettings_staleFormRefused(): void
+    {
+        $def  = self::definition(['settings' => '{"territory":"cz"}']);
+        $hash = Service::settingsHash($def);
+        $this->assertSame('CHANGED', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid(), $hash)->code);
+        $before = TableDb::$tables;
+
+        $result = Service::changeSettings($def, self::SOURCE, ['territory' => 'at'], AuthGetUid(), $hash);
+
+        $this->assertSame('STALE', $result->code);
+        $this->assertStringContainsString('changed meanwhile', (string) $result->refusal());
+        $this->assertSame($before, TableDb::$tables);
+        $fresh = Definition::fresh(self::DEF) ?? throw new \LogicException('No definition');
+        $this->assertNotSame($hash, Service::settingsHash($fresh));
+        $this->assertSame('CHANGED', Service::changeSettings($fresh, self::SOURCE, ['territory' => 'at'], AuthGetUid(), Service::settingsHash($fresh))->code);
+
+        // the source changed meanwhile, its settings stayed empty
+        $gone = self::definition(['source' => 'custom:gone'], 'abababababababababababababababab');
+        $hash = Service::settingsHash($gone);
+        $this->assertSame('CHANGED', Service::changeSettings($gone, self::SOURCE, [], AuthGetUid(), $hash)->code);
+        $this->assertSame('STALE', Service::changeSettings($gone, self::SOURCE, ['territory' => 'cz'], AuthGetUid(), $hash)->code);
+    }
+
+    /** the feeding right runs an import whose source uses keys, a superadmin changes it - and the user learns why */
+    public function test_changeSettings_keysSourceRefusedWithReason(): void
+    {
+        $def = self::definition();
+        \ServiceSource::$credentials = [['vendor' => 'csu', 'context' => '']];
+
+        $this->assertSame('KEYS', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->code);
+        $this->assertSame('KEYS', Service::resetMapping($def, AuthGetUid())->code);
+        $this->assertSame('queued', Service::start($def, 'run', [], 'manual', AuthGetUid())->code, 'it still runs');
+
+        self::perms(PS_EDIT_ALL_ITEMS, PS_FEEDING);
+        $this->assertSame('FORBIDDEN', Service::resetMapping($def, AuthGetUid())->code, 'no feeding at all');
     }
 
     // ------------------------------------------------------------ resetMapping()
@@ -787,7 +842,7 @@ final class ServiceTest extends TestCase
         $def = self::definition(['settings' => '{broken']);
         $before = TableDb::$tables;
 
-        $this->assertSame('A setting of the import source is not valid.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('A setting of the import source is not valid.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 
@@ -795,11 +850,11 @@ final class ServiceTest extends TestCase
     {
         $def = self::definition();
         \ServiceSource::$failMapping = new SourceRefused('AUTH');
-        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame([], self::logged(), 'the page shows a refusal');
 
         \ServiceSource::$failMapping = new \RuntimeException('at token=s3cr3t');
-        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertCount(1, self::logged());
     }
 
@@ -809,7 +864,7 @@ final class ServiceTest extends TestCase
         self::perms(PS_EDIT_ALL_ITEMS . PS_EDIT, PS_FEEDING);
         $before = TableDb::$tables;
 
-        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('Only a user who manages the feeding of the slice may change its imports.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
         $this->assertSame([], \ServiceSource::$created, 'no code of the source ran');
     }
@@ -820,7 +875,7 @@ final class ServiceTest extends TestCase
         $before = TableDb::$tables;
         \ServiceSource::$refuse = new SourceRefused('DEFINITION');
 
-        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The import source did not give its mapping.', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame([['territory' => 'cz']], \ServiceSource::$created, 'the source of the stored settings');
         $this->assertSame($before, TableDb::$tables);
     }
@@ -831,7 +886,7 @@ final class ServiceTest extends TestCase
         $before = TableDb::$tables;
         \ServiceSource::$mapping = new Mapping([['to' => 'text...........9', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], [], 'insert_if_new');
 
-        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The mapping of the import does not fit the slice: UNKNOWN_FIELD', Service::resetMapping($def, AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 
@@ -843,7 +898,7 @@ final class ServiceTest extends TestCase
         self::perms(PS_FEEDING, PS_FEEDING);
         $before = TableDb::$tables;
 
-        $this->assertSame('The import was not saved - it is not an import of this slice.', Service::resetMapping($posing, AuthGetUid()));
+        $this->assertSame('The import was not saved - it is not an import of this slice.', Service::resetMapping($posing, AuthGetUid())->refusal());
         $this->assertSame($before, TableDb::$tables);
     }
 

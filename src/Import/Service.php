@@ -180,40 +180,48 @@ final class Service
      * the catalog go, the definition takes them with the source's default mapping for them - its
      * expressions may hold a setting - all in one transaction under the lock of the definition, so
      * stream versions of the old settings never decide what the new ones import. Unchanged ones
-     * change nothing, and the run goes on. Every change rebuilds the mapping from defaultMapping() -
-     * a mapping edited by hand would be replaced.
+     * change nothing (SAME), and the run goes on. Every change rebuilds the mapping from
+     * defaultMapping() - a mapping edited by hand would be replaced.
      * @param array<mixed> $settings setting => text, only those the source declares
-     * @return ?string why not, for the user; null = done
+     * @param ?string $expected settingsHash() of the definition the form was made from; another one = STALE
      * @throws BatchFailed FORBIDDEN when an open run cannot be ended by this user
      */
-    public static function changeSettings(Definition $d, string $source, array $settings, string $user): ?string
+    public static function changeSettings(Definition $d, string $source, array $settings, string $user, ?string $expected = null): ChangeResult
     {
         $id    = (string) $d->getId();
         $slice = strtolower((string) $d->getOwnerId());
-        // before any code of the source runs; one answer, so the page learns nothing of other slices' imports
-        if (!self::isOf(Definition::fresh($id), $slice) || !$d->mayManage($user, $source)) {
-            return Definition::refusal('FORBIDDEN');
+        // one answer, so the page learns nothing of other slices' imports
+        if (!self::isOf(Definition::fresh($id), $slice)) {
+            return new ChangeResult('FORBIDDEN');
         }
-        $settings = self::checkSettings($id, $source, $settings, $user);
+        $refused = self::manageRefusal($d, $user, $source);
+        if ($refused !== null) {
+            return $refused;
+        }
+        $bad      = '';
+        $settings = self::checkSettings($id, $source, $settings, $user, $bad);
         if (is_string($settings)) {
-            return Definition::refusal($settings);
+            return new ChangeResult($settings, $bad);
         }
         try {
             $new = Registry::create($source, $settings);
         } catch (Throwable $e) {
             self::sourceFailure($id, $e, false);
-            return Definition::refusal('SOURCE');
+            return new ChangeResult('SOURCE');
         }
         // valid UTF-8 - checkSettings() made sure
         $json = $settings ? json_encode($settings, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES) : '';
 
-        return DB_AA::transaction(static function () use ($id, $slice, $source, $settings, $json, $new, $user): ?string {
+        return DB_AA::transaction(static function () use ($id, $slice, $source, $settings, $json, $new, $user, $expected): ChangeResult {
             $def = Definition::fresh($id, true);
             if (!self::isOf($def, $slice)) {
-                return Definition::refusal('NOT_OF_SLICE');
+                return new ChangeResult('NOT_OF_SLICE');
+            }
+            if (($expected !== null) && !hash_equals(self::settingsHash($def), $expected)) {
+                return new ChangeResult('STALE');
             }
             if (($def->sourceType() === $source) && self::sameSettings($def, $settings)) {
-                return null;
+                return new ChangeResult('SAME');
             }
             $refused = self::takeDefaultMapping($def, $new, $slice);
             if ($refused !== null) {
@@ -233,48 +241,62 @@ final class Service
             Catalog::deleteFor($id);
             $def->setProperty('source', $source)->setProperty('settings', $json);
             $def->update([...Definition::MAPPING_PROPS, 'source', 'settings']);
-            return null;
+            return new ChangeResult('CHANGED');
         });
+    }
+
+    /** What a settings form carries to tell the definition it was made from: its source and settings as stored. */
+    public static function settingsHash(Definition $d): string
+    {
+        return hash('sha256', $d->sourceType() . "\0" . $d->snapshot()['settings']);
+    }
+
+    /** Definition::manageRefusal() as a result */
+    private static function manageRefusal(Definition $d, string $user, ?string $source = null): ?ChangeResult
+    {
+        $code = $d->manageRefusal($user, $source);
+        return ($code === null) ? null : new ChangeResult($code);
     }
 
     /**
      * "Reset mapping": the mapping, key, store mode, validation and expression after a stream the
      * source gives for the stored settings - which the user must be allowed to set. An unfinished run
      * keeps working with its snapshot.
-     * @return ?string why not, for the user; null = done
      */
-    public static function resetMapping(Definition $d, string $user): ?string
+    public static function resetMapping(Definition $d, string $user): ChangeResult
     {
         $id    = (string) $d->getId();
         $slice = strtolower((string) $d->getOwnerId());
-        if (!$d->mayManage($user)) {
-            return Definition::refusal('FORBIDDEN');
+        $refused = self::manageRefusal($d, $user);
+        if ($refused !== null) {
+            return $refused;
         }
-        return DB_AA::transaction(static function () use ($id, $slice, $user): ?string {
+        return DB_AA::transaction(static function () use ($id, $slice, $user): ChangeResult {
             $def = Definition::fresh($id, true);
             if (!self::isOf($def, $slice)) {
-                return Definition::refusal('NOT_OF_SLICE');
+                return new ChangeResult('NOT_OF_SLICE');
             }
+            $bad = '';
             try {
-                $settings = self::checkSettings($id, $def->sourceType(), Definition::settingsOf($def->snapshot()), $user);
+                $settings = self::checkSettings($id, $def->sourceType(), Definition::settingsOf($def->snapshot()), $user, $bad);
             } catch (SourceRefused) {
                 $settings = 'SETTINGS';
             }
             if (is_string($settings)) {
-                return Definition::refusal($settings);
+                return new ChangeResult($settings, $bad);
             }
             try {
                 $source = Registry::create($def->sourceType(), $settings);
             } catch (Throwable $e) {
                 self::sourceFailure($id, $e, false);
-                return Definition::refusal('NO_MAPPING');
+                return new ChangeResult('NO_MAPPING');
             }
             $refused = self::takeDefaultMapping($def, $source, $slice);
             if ($refused !== null) {
                 return $refused;
             }
             $def->update(Definition::MAPPING_PROPS);
-            return null;
+            return new ChangeResult('CHANGED');
         });
     }
 
@@ -311,18 +333,18 @@ final class Service
     }
 
     /** The source's default mapping into $def, unless it does not fit the slice - it would only refuse every start.
-     *  @return ?string why not, for the user */
-    private static function takeDefaultMapping(Definition $def, SourceInterface $source, string $slice): ?string
+     *  @return ?ChangeResult why not */
+    private static function takeDefaultMapping(Definition $def, SourceInterface $source, string $slice): ?ChangeResult
     {
         try {
             $mapping = $source->defaultMapping();
         } catch (Throwable $e) {
             self::sourceFailure((string) $def->getId(), $e, false);
-            return Definition::refusal('NO_MAPPING');
+            return new ChangeResult('NO_MAPPING');
         }
         $problems = $mapping->problems($slice);
         if ($problems) {
-            return Definition::refusal('MAPPING', implode(', ', $problems));
+            return new ChangeResult('MAPPING', implode(', ', $problems));
         }
         $def->applyMapping($mapping);
         return null;
@@ -330,13 +352,15 @@ final class Service
 
     /**
      * Each setting by the validator of the property the source declares for it - which may normalise
-     * it (a slice id loses its spaces) - and each slice it names one the user imports into. A blank
-     * value is stored empty.
+     * it (a slice id loses its spaces) - and each slice it names one the user imports into. A setting
+     * left blank, or a bool one switched off, is not stored (isUnset()): a form posts every field it
+     * has, and the stored settings must not change only by the empty ones.
      * @param array<mixed> $settings
+     * @param string $bad set to the label of the setting refused with SETTINGS or SLICE
      * @return array<string, string>|string the settings to store, or why not: NO_SOURCE, SETTINGS, SLICE,
      *                                      SOURCE (the source's code failed)
      */
-    private static function checkSettings(string $id, string $source, array $settings, string $user): array|string
+    private static function checkSettings(string $id, string $source, array $settings, string $user, string &$bad = ''): array|string
     {
         $class = Registry::sources()[$source] ?? null;
         if ($class === null) {
@@ -350,13 +374,15 @@ final class Service
         $checked = [];
         foreach ($settings as $name => $value) {
             $property = $declared[$name] ?? null;
+            $bad      = ($property instanceof \AA_Property) ? (string) $property->getName() : (string) $name;
             if (!($property instanceof \AA_Property) || !is_string($value) || !mb_check_encoding($value, 'UTF-8')) {
                 return 'SETTINGS';
             }
             $validator = $property->getValidator();
             if ($validator->varempty($value)) {
-                $value = '';
-            } elseif (!$validator->validate($value)) {
+                continue;
+            }
+            if (!$validator->validate($value)) {
                 return 'SETTINGS';
             }
             // int, bool and date validators hand back an int
@@ -370,9 +396,19 @@ final class Service
                     return 'SLICE';
                 }
             }
-            $checked[(string) $name] = (string) $value;
+            if (!self::isUnset($property, $value)) {
+                $checked[(string) $name] = $value;
+            }
         }
+        $bad = '';
         return $checked;
+    }
+
+    /** Blank, or a bool setting switched off - an unchecked checkbox posts 0. To a source, off and
+     *  absent are the same, so neither is stored. */
+    private static function isUnset(\AA_Property $property, string $value): bool
+    {
+        return (trim($value) === '') || (($property->getType() === 'bool') && ($value === '0'));
     }
 
     /** @return list<string> the slices whose ids stand anywhere in $value, however written - a
@@ -428,13 +464,23 @@ final class Service
         return ['dry' => $dry, 'streams' => $streams, 'limit' => (string) ($limit ?? ($dry ? self::DRY_LIMIT : ''))];
     }
 
-    /** @param array<string, string> $settings */
+    /** Whether the stored settings are $settings (from checkSettings()), the unset ones of older
+     *  stored settings left out as checkSettings() leaves them out.
+     *  @param array<string, string> $settings */
     private static function sameSettings(Definition $def, array $settings): bool
     {
         try {
-            $stored = Definition::settingsOf($def->snapshot());
-        } catch (SourceRefused) {
+            $stored   = Definition::settingsOf($def->snapshot());
+            $class    = Registry::sources()[$def->sourceType()] ?? null;
+            $declared = ($class === null) ? [] : $class::getClassProperties();
+        } catch (Throwable) {
             return false;
+        }
+        foreach ($stored as $name => $value) {
+            $property = $declared[$name] ?? null;
+            if (($property instanceof \AA_Property) ? self::isUnset($property, $value) : (trim($value) === '')) {
+                unset($stored[$name]);
+            }
         }
         ksort($stored);
         ksort($settings);

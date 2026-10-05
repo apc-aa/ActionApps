@@ -12,10 +12,11 @@ use Throwable;
 
 /**
  * The detail of one import definition (admin/se_dataimport.php): an overview, the actions and the
- * last runs. Every action is a POST with the token of this import, done through Service and answered
- * by a redirect to the GET page, which shows its outcome once - a reload never repeats it. A GET only
- * reads. Whatever came from the source - errors, samples, check messages, stream keys - is text: it
- * goes out through safe() and never through {...} or unalias.
+ * last runs; the settings of the source and the mapping are DetailConfig's. Every action is a POST
+ * with the token of this import, done through Service and answered by a redirect to the GET page,
+ * which shows its outcome once - a reload never repeats it. A GET only reads. Whatever came from
+ * the source - errors, samples, check messages, stream keys - is text: it goes out through safe()
+ * and never through {...} or unalias.
  */
 final class DetailPage
 {
@@ -48,6 +49,9 @@ final class DetailPage
 
     /** @var list<string>|null|false the mapping problems; null = the mapping cannot be read, false = not read yet */
     private array|false|null $problems = false;
+
+    /** the source a refused save picked, so the page after the redirect shows its form again */
+    private ?string $picked = null;
 
     private function __construct(private readonly Definition $def, private readonly string $uid) {}
 
@@ -159,6 +163,8 @@ final class DetailPage
                 isset(self::STARTS[$action]) => $this->start($action, $post),
                 $action === 'resume'         => $this->resume($post['run'] ?? null),
                 $action === 'end'            => $this->end($post['run'] ?? null),
+                $action === 'reset_mapping'  => $this->config()->resetMapping(),
+                $action === 'settings'       => $this->changeSettings($post),
                 default                      => ['no_action', ''],
             };
         } catch (Throwable $e) {
@@ -173,7 +179,16 @@ final class DetailPage
     public function afterPost(array $outcome): string
     {
         $_SESSION[self::FLASH][$this->id()] = $outcome;
-        return $this->url();
+        return ($this->picked === null) ? $this->url() : self::urlOf($this->def, ['source' => $this->picked]);
+    }
+
+    /** @param array<mixed> $post @return array{string, string} */
+    private function changeSettings(array $post): array
+    {
+        $outcome = $this->config()->changeSettings($post);
+        $source       = $post['source'] ?? null;
+        $this->picked = (($outcome[0] === 'settings_refused') && is_string($source) && ($source !== $this->def->sourceType())) ? $source : null;
+        return $outcome;
     }
 
     /** the outcome of the last action on this import, once; '' = none */
@@ -184,10 +199,16 @@ final class DetailPage
         return is_array($outcome) ? self::outcomeHtml((string) ($outcome[0] ?? ''), (string) ($outcome[1] ?? '')) : '';
     }
 
-    /** the three sections of the page */
+    /** the sections that follow a running run - the ones the script of the page replaces */
     public function html(int $now): string
     {
         return $this->liveHtml($now) . $this->overviewHtml($now) . $this->actionsHtml($now) . $this->runsHtml($now);
+    }
+
+    /** the settings of the source and the mapping: the sections no run changes */
+    public function config(): DetailConfig
+    {
+        return new DetailConfig($this->def, $this->uid);
     }
 
     /** What the script of the page follows a running run by (javascript/dataimport.js): where to ask,
@@ -221,11 +242,7 @@ final class DetailPage
             _m('Next plan')  => $this->nextPlanHtml($now),
             _m('Last check of the source') => $this->lastCheckHtml(),
         ];
-        $html = '<table class="aa-import-facts"><tbody>';
-        foreach ($rows as $label => $value) {
-            $html .= '<tr><th scope="row">' . $label . '</th><td>' . $value . '</td></tr>';
-        }
-        $html .= '</tbody></table>';
+        $html = self::factsHtml($rows);
         if ($open !== null) {
             $html .= $this->openRunHtml($open, $now);
         }
@@ -369,9 +386,9 @@ final class DetailPage
             'gone'        => MsgErr(_m('This import no longer exists in this slice.')),
             'no_run'      => MsgErr(_m('No such run of this import.')),
             'finished'    => MsgErr(_m('The run is finished already.')),
-            'refused'     => MsgErr(safe(self::reasonText($reason))),
+            'refused'     => MsgErr(safe(self::reasonText($reason)) . DetailConfig::settingsPointer($reason, true)),
             'failed'      => MsgErr(_m('The action failed. The log of import failures has its cause.')),
-            default       => '',
+            default       => DetailConfig::outcomeHtml($code, $reason),
         };
     }
 
@@ -561,8 +578,8 @@ final class DetailPage
             };
             $resume = $waiting ? _m('Try now') : _m('Continue');
         }
-        $run = ($open === null) ? '' : '<input type="hidden" name="run" value="' . safe((string) $open->getId()) . '">';
-        $why = static fn(string $text): string => ($text === '') ? '' : ' <span class="aa-import-why">' . safe($text) . '</span>';
+        $run = ($open === null) ? '' : self::hiddenInput('run', (string) $open->getId());
+        $why = self::whyHtml(...);
         return '<form method="post" action="' . safe($this->url()) . '" class="aa-import-actions">' . $this->hidden('resume') . $run
             . self::button($resume, $whyGo, ['class' => 'aa-button-run'])
             // one reason for both when there is no run
@@ -577,12 +594,40 @@ final class DetailPage
     /** the token, and the action when the form has one */
     private function hidden(string $action): string
     {
-        return FormToken::field(self::tokenPurpose($this->id()))
-            . (($action === '') ? '' : '<input type="hidden" name="action" value="' . safe($action) . '">');
+        return self::tokenFields($this->id(), $action);
     }
 
-    /** @param array<string, string> $attr */
-    private static function button(string $label, string $why, array $attr): string
+    /** the token of the forms of import $id, and the action when the form has one */
+    public static function tokenFields(string $id, string $action): string
+    {
+        return FormToken::field(self::tokenPurpose($id)) . (($action === '') ? '' : self::hiddenInput('action', $action));
+    }
+
+    public static function hiddenInput(string $name, string $value): string
+    {
+        return '<input type="hidden" name="' . safe($name) . '" value="' . safe($value) . '">';
+    }
+
+    /** the reason next to a disabled button */
+    public static function whyHtml(string $why): string
+    {
+        return ($why === '') ? '' : ' <span class="aa-import-why">' . safe($why) . '</span>';
+    }
+
+    /** a table of label => value rows; the values are HTML
+     *  @param array<string, string> $rows */
+    public static function factsHtml(array $rows): string
+    {
+        $html = '<table class="aa-import-facts"><tbody>';
+        foreach ($rows as $label => $value) {
+            $html .= '<tr><th scope="row">' . $label . '</th><td>' . $value . '</td></tr>';
+        }
+        return $html . '</tbody></table>';
+    }
+
+    /** a submit button; one that cannot be used now is disabled and says why in its title
+     *  @param array<string, string> $attr */
+    public static function button(string $label, string $why, array $attr): string
     {
         $attr = ['type' => 'submit'] + $attr;
         if ($why !== '') {
@@ -734,7 +779,14 @@ final class DetailPage
 
     private function url(): string
     {
-        return get_admin_url('se_dataimport.php', ['change_id' => $this->slice(), 'id' => $this->id()]);
+        return self::urlOf($this->def);
+    }
+
+    /** the page of definition $def
+     *  @param array<string, string> $more further parameters of the page */
+    public static function urlOf(Definition $def, array $more = []): string
+    {
+        return get_admin_url('se_dataimport.php', ['change_id' => strtolower((string) $def->getOwnerId()), 'id' => (string) $def->getId()] + $more);
     }
 
     private function id(): string
@@ -747,9 +799,9 @@ final class DetailPage
         return strtolower((string) $this->def->getOwnerId());
     }
 
-    /** data-aa-live: the script replaces the section by the one of a fresh page while a run moves */
-    private static function section(string $name, string $title, string $body): string
+    /** $live: the script replaces the section by the one of a fresh page while a run moves */
+    public static function section(string $name, string $title, string $body, bool $live = true): string
     {
-        return '<details id="aa-import-' . $name . '" class="aa-page-section" open data-aa-live><summary><h2 class="aa-tab-title">' . $title . '</h2></summary>' . $body . '</details>';
+        return '<details id="aa-import-' . $name . '" class="aa-page-section" open' . ($live ? ' data-aa-live' : '') . '><summary><h2 class="aa-tab-title">' . $title . '</h2></summary>' . $body . '</details>';
     }
 }

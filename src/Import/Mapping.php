@@ -92,10 +92,14 @@ final class Mapping
         }
         $rows = [];
         foreach ($data['rows'] as $row) {
-            if (!is_array($row) || !isset($row['to'], $row['t']) || array_diff(array_keys($row), ['to', 't', 'p'])) {
-                throw self::refused('a row needs "to", "t" and may have "p"');
+            if (!is_array($row) || !is_string($row['to'] ?? null) || !is_string($row['t'] ?? null) || array_diff(array_keys($row), ['to', 't', 'p'])) {
+                throw self::refused('a row needs "to" and "t" texts and may have "p"');
             }
-            $rows[] = ['to' => $row['to'], 't' => $row['t'], 'p' => $row['p'] ?? []];
+            $p = $row['p'] ?? [];
+            if (!is_array($p) || (count(array_filter($p, is_string(...))) !== count($p))) {
+                throw self::refused('"p" must be an object of texts');
+            }
+            $rows[] = ['to' => $row['to'], 't' => $row['t'], 'p' => $p];
         }
         return new self($rows);
     }

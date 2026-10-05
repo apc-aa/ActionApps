@@ -58,6 +58,7 @@ trait RunSteps
             $slice  = new FakeSlice($slice_id);
             $fields = array_map(static fn(string $id): AA_Field => new AA_Field([
                 'id'                => $id,
+                'name'              => ucfirst((string) strtok($id, '.')),
                 'slice_id'          => $slice_id,
                 'text_stored'       => 1,
                 'in_item_tbl'       => '',
