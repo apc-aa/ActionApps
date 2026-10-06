@@ -89,6 +89,51 @@ final class RunCheckTest extends TestCase
         self::assertSame(['probed' => 3, 'unchanged' => 1], $report['probe']);
     }
 
+    /** a stream versioned by its field and with no version is read whole whatever probe() says: not
+     *  asked, and it spends nothing of the step - yet checked, so the detail lists it */
+    public function test_check_versionFieldStreamWithoutVersion_notProbed(): void
+    {
+        $source              = self::cataloged(streams: 4);
+        $source->checkSeconds = 25.0;
+        $source->streams[0]   = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
+        $source->streams[1]   = new Stream('s2', 'Stream 2', ['fld' => 'text...........1'], '', 'year');
+        $source->streams[2]   = new Stream('s3', 'Stream 3', ['fld' => 'text...........1'], '', 'year');
+        self::streamVersions(['s2' => '']);
+        $run = self::startRun($source, ['mode' => 'check']);
+
+        self::runOne();
+        self::assertSame(['check'], $source->calls, 'no time left after check()');
+        self::assertSame(3, TestRun::get($run->getId())?->position()['i'], "s1-s3 free all the same, '' known as none");
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s4', 'catalog:'], $source->calls);
+        $streams = StreamState::forDefinition(self::DEF)?->streams() ?? [];
+        self::assertEqualsCanonicalizing(['s1', 's2', 's3', 's4'], array_keys($streams), 'listed as checked');
+        self::assertSame(self::NOW, $streams['s1']['probed']);
+        self::assertSame(['probed' => 4, 'unchanged' => 0], json_decode(self::stored($run->getId())['report'], true)['probe']);
+    }
+
+    /** the changed mode reads such a stream without a request - one that fails cannot stop the run; a
+     *  stream with a version, or without a versionField, is probed as before */
+    public function test_changed_versionFieldStreamWithoutVersion_readWithoutProbe(): void
+    {
+        $source                  = self::cataloged(streams: 3, jobs: 1, items: 1);
+        $source->streams[0]      = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
+        $source->streams[1]      = new Stream('s2', 'Stream 2', ['fld' => 'text...........1'], '', 'year');
+        $source->failProbe['s1'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        $source->probes['s2']    = new Probe(Probe::UNCHANGED);
+        self::streamVersions(['s2' => '2021']);
+        $run = self::startRun($source, ['mode' => 'changed']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['s2' => '2021', 's3' => null], $source->known, 'no probe of s1');
+        self::assertSame([['stream' => 's1', 'known' => null], ['stream' => 's3', 'known' => null]], $source->jobCalls);
+        self::assertSame(1, TestRun::get($run->getId())?->counts()['unchanged']);
+    }
+
     public function test_check_dryIsRefused(): void
     {
         $source = self::cataloged(streams: 1);

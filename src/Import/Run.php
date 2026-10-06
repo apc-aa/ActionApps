@@ -680,7 +680,7 @@ class Run extends BatchRun
                 }
                 $known = $state?->versionOf($key);
                 // probed once: a stream whose jobs keep failing must not count a new probe as progress
-                if (($pos['job'] === '') && ($pos['pages'] === 0) && ($pos['probed'] === 0) && ($source instanceof Probeable) && $this->probesAtStart($stream)) {
+                if (($pos['job'] === '') && ($pos['pages'] === 0) && ($pos['probed'] === 0) && ($source instanceof Probeable) && $this->probesAtStart($stream, $known)) {
                     if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
                         return $this->stopped($pos, $from, $keys, '');
                     }
@@ -776,7 +776,8 @@ class Run extends BatchRun
     }
 
     /**
-     * The check mode from the cursor on: check() once, probe() stream by stream, then the catalog
+     * The check mode from the cursor on: check() once, probe() stream by stream - not of one read whole
+     * anyway (readWhole()), its answer could not change that - then the catalog
      * page by page - its cursor guarded as the jobs of a stream are. Nothing goes into the slice; the
      * end of the step stores what it found. What ends a check (a failed check(), a refusal, a cycle,
      * CATALOG_TOO_BIG) goes into the cursor and ends the run in the next step - after this one stored
@@ -798,18 +799,24 @@ class Run extends BatchRun
             // the versions imported so far tell probe() what is new
             $state   = $baseline ? null : StreamState::forDefinition($this->definitionId());
             while (($source instanceof Probeable) && ($pos['i'] < count($keys))) {
-                if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
-                    return $this->stopped($pos, $from, $keys, '');
-                }
-                $first  = false;
                 $key    = $keys[$pos['i']];
                 $stream = $streams[$key] ?? null;
+                $known  = $state?->versionOf($key);
+                $whole  = !$baseline && ($stream !== null) && self::readWhole($stream, $known);
+                // no request, nothing of the step spent
+                if (!$whole) {
+                    if (!$first && ($budget->secondsLeft() < $source->minJobSeconds())) {
+                        return $this->stopped($pos, $from, $keys, '');
+                    }
+                    $first = false;
+                }
                 if ($stream === null) {
                     $this->note('STREAM_GONE');
                 } elseif ($baseline) {
                     $this->baselineStream($source, $ctx, $stream);
                 } else {
-                    $unchanged = ($source->probe($stream, $ctx, $state?->versionOf($key))->state === Probe::UNCHANGED);
+                    // checked all the same: the detail lists it as seen, to be imported
+                    $unchanged = !$whole && ($source->probe($stream, $ctx, $known)->state === Probe::UNCHANGED);
                     $this->streamRecords[$key] = ['probed' => static::now()];
                     $this->tally['streams']++;
                     $this->tally['unchanged'] += $unchanged ? 1 : 0;
@@ -902,13 +909,21 @@ class Run extends BatchRun
     }
 
     /**
-     * The changed mode asks probe() whether to import the stream; the run mode, for a stream versioned
+     * The changed mode asks probe() whether to import the stream, unless it is read whole anyway
+     * (readWhole()) - the answer could not spare it; the run mode, for a stream versioned
      * by probe(), for the version of what it imports. Asked at the start: asked at the end, data
      * changed meanwhile would be recorded as imported.
      */
-    private function probesAtStart(Stream $stream): bool
+    private function probesAtStart(Stream $stream, ?string $known): bool
     {
-        return ($this->mode() === 'changed') || (($this->mode() === 'run') && !$this->isDry() && ($stream->versionField === ''));
+        return (($this->mode() === 'changed') && !self::readWhole($stream, $known)) || (($this->mode() === 'run') && !$this->isDry() && ($stream->versionField === ''));
+    }
+
+    /** A stream versioned by its field with no version known is read whole whatever probe() says, and
+     *  its version comes from the rows: asking would be a request for nothing */
+    private static function readWhole(Stream $stream, ?string $known): bool
+    {
+        return ($stream->versionField !== '') && (($known ?? '') === '');
     }
 
     /** A stream went through its last job: its version when nothing of it failed, its expression due
