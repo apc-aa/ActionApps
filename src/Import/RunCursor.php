@@ -14,6 +14,9 @@ final class RunCursor
     /** jobs of one stream (pages of a catalog) at most - a source may hand out its pages in a cycle */
     public const MAX_PAGES = 1000;
 
+    /** the most jobs of one stream a source may declare (SourceInterface::maxJobsPerStream()) */
+    public const MAX_JOBS = 100000;
+
     /** failed jobs in a row that skip the rest of their stream: each costs three steps, ~1 h */
     public const SKIPS_IN_A_ROW = 3;
 
@@ -52,10 +55,16 @@ final class RunCursor
         return ['i' => $pos['i'] + 1, 'checked' => $pos['checked'], 'rkeyed' => $pos['rkeyed']] + self::START;
     }
 
-    /** a source handing out the cursor's job again, or more than MAX_PAGES jobs, goes round in a cycle */
-    public static function cycles(array $pos, string $job): bool
+    /** a source handing out the cursor's job again, or more than $max jobs, goes round in a cycle */
+    public static function cycles(array $pos, string $job, int $max = self::MAX_PAGES): bool
     {
-        return ($pos['pages'] >= self::MAX_PAGES) || (sha1($job) === $pos['cur']);
+        return ($pos['pages'] >= $max) || (sha1($job) === $pos['cur']);
+    }
+
+    /** the jobs of one stream the run follows for $source, and looks through for the cursor's job */
+    public static function jobLimit(SourceInterface $source): int
+    {
+        return max(1, min(self::MAX_JOBS, $source->maxJobsPerStream()));
     }
 
     /** the cursor on $job, a job not started yet */

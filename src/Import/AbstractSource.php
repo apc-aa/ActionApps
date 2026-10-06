@@ -17,6 +17,11 @@ abstract class AbstractSource implements SourceInterface
         return 15;
     }
 
+    public function maxJobsPerStream(): int
+    {
+        return RunCursor::MAX_PAGES;
+    }
+
     public function maxBytes(): int
     {
         return Context::DEFAULT_MAX_BYTES;

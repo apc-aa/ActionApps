@@ -547,6 +547,51 @@ final class RunWorkTest extends TestCase
         self::assertSame(1, TestRun::get($run->getId())?->position()['i']);
     }
 
+    /** a source declaring more jobs a stream (one per municipality) is no cycle at MAX_PAGES - only at its own limit */
+    public function test_work_sourceLimitAboveMaxPages_noCycle(): void
+    {
+        $source          = self::source(streams: 1, jobs: 3, items: 1);
+        $source->minJob  = 0;
+        $source->maxJobs = RunCursor::MAX_PAGES + 2;
+        $from            = ['job' => 's1:a', 'pages' => RunCursor::MAX_PAGES - 1, 'cur' => sha1('s1:a')] + RunCursor::START;
+        $run             = self::startRun($source, ['position' => $from]);
+
+        self::runOne();
+
+        self::assertSame(3, TestRun::get($run->getId())?->counts()['read']);
+        self::assertSame(0, TestRun::get($run->getId())?->counts()['skipped_jobs'] ?? 0);
+
+        $source          = self::source(streams: 1, jobs: 3, items: 1);
+        $source->minJob  = 0;
+        $source->maxJobs = 5;
+        $run             = self::startRun($source, ['position' => ['job' => 's1:a', 'pages' => 4, 'cur' => sha1('s1:a')] + RunCursor::START]);
+
+        self::runOne();
+
+        self::assertSame([2, 1], [TestRun::get($run->getId())?->counts()['read'], TestRun::get($run->getId())?->counts()['skipped_jobs']], 'its own limit is the cycle guard');
+    }
+
+    /** a step goes on from a job past the first MAX_PAGES of its stream when the source declares that many */
+    public function test_work_resumePastMaxPages_findsTheJob(): void
+    {
+        $source             = self::source(streams: 1, jobs: 0, items: 0);
+        $source->minJob     = 0;
+        $source->maxJobs    = 2000;
+        $source->jobs['s1'] = static function (): \Generator {
+            for ($n = 1; $n <= 1500; $n++) {
+                $key = sprintf('s1:j%04d', $n);
+                yield ['key' => $key, 'items' => [['key' => "k-$key", 'val' => "v-$key"]]];
+            }
+        };
+        $run = self::startRun($source, ['position' => ['job' => 's1:j1200', 'pages' => 1200, 'cur' => sha1('s1:j1200')] + RunCursor::START]);
+
+        self::runOne();
+
+        self::assertSame([], (array) json_decode(self::stored($run->getId())['warnings'] ?? '[]', true), 'no JOB_GONE, no cycle');
+        self::assertSame(301, TestRun::get($run->getId())?->counts()['read'], 'jobs 1200 to 1500');
+        self::assertSame(1, TestRun::get($run->getId())?->position()['i']);
+    }
+
     // ------------------------------------------------------------ where the cursor goes when the step stops
 
     public function test_work_sourceFailingMidJob_keepsWhatWasStored(): void

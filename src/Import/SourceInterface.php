@@ -80,6 +80,13 @@ interface SourceInterface extends NamedInterface
     /** a job is not started when less of the step is left */
     public function minJobSeconds(): int;
 
+    /**
+     * Jobs of one stream at most: past them the run takes the source for one handing out its jobs in a
+     * cycle and skips the rest of the stream, and a step going on looks this far for the job it stopped
+     * at - so each job must come without a request. Capped at RunCursor::MAX_JOBS.
+     */
+    public function maxJobsPerStream(): int;
+
     /** Largest answer the source takes: a download stops there, before the answer is held in memory.
      *  Context caps it at Context::MAX_BYTES_CAP. */
     public function maxBytes(): int;

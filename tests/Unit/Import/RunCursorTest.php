@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace Tests\Unit\Import;
 
 use AA\Import\RunCursor;
+use Tests\Unit\Import\Fixtures\ScriptedSource;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+
+require_once __DIR__ . '/fixtures/ScriptedSource.php';
 
 final class RunCursorTest extends TestCase
 {
@@ -32,6 +35,21 @@ final class RunCursorTest extends TestCase
         self::assertTrue(RunCursor::cycles($pos, 's1:a'));
         self::assertFalse(RunCursor::cycles($pos, 's1:b'));
         self::assertTrue(RunCursor::cycles(['pages' => RunCursor::MAX_PAGES] + $pos, 's1:b'));
+        self::assertFalse(RunCursor::cycles(['pages' => RunCursor::MAX_PAGES] + $pos, 's1:b', RunCursor::MAX_PAGES + 1), 'a source may declare more jobs');
+        self::assertTrue(RunCursor::cycles(['pages' => 5] + $pos, 's1:b', 5));
+    }
+
+    public function test_jobLimit_ofTheSourceWithinBounds(): void
+    {
+        $source = new ScriptedSource();
+
+        self::assertSame(RunCursor::MAX_PAGES, RunCursor::jobLimit($source));
+        $source->maxJobs = 10000;
+        self::assertSame(10000, RunCursor::jobLimit($source));
+        $source->maxJobs = PHP_INT_MAX;
+        self::assertSame(RunCursor::MAX_JOBS, RunCursor::jobLimit($source));
+        $source->maxJobs = 0;
+        self::assertSame(1, RunCursor::jobLimit($source));
     }
 
     public function test_skippedJob_countsTheSkipsInARow(): void

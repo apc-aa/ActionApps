@@ -6,6 +6,7 @@ namespace Tests\Unit\Import;
 
 use AA\Import\AbstractSource;
 use AA\Import\Context;
+use AA\Import\RunCursor;
 use AA\Import\SourceInterface;
 use AA\Import\Stream;
 use PHPUnit\Framework\TestCase;
@@ -48,6 +49,7 @@ final class AbstractSourceTest extends TestCase
 
         self::assertInstanceOf(SourceInterface::class, $source);
         self::assertSame(15, $source->minJobSeconds());
+        self::assertSame(RunCursor::MAX_PAGES, $source->maxJobsPerStream());
         self::assertSame([], $source::credentials());
         // a source of an installation written before defaultMapping() still loads, with no rows
         self::assertSame([], $source->defaultMapping()->rows);

@@ -7,6 +7,7 @@ namespace Tests\Unit\Import\Fixtures;
 use AA\Import\AbstractSource;
 use AA\Import\Context;
 use AA\Import\Job;
+use AA\Import\RunCursor;
 use AA\Import\Stream;
 use AA\IO\Grabber\AbstractGrabber;
 use AA\IO\SourceUnavailable;
@@ -49,6 +50,8 @@ class ScriptedSource extends AbstractSource
     public int $minJob = 15;
 
     public int $maxBytes = Context::DEFAULT_MAX_BYTES;
+
+    public int $maxJobs = RunCursor::MAX_PAGES;
 
     /** @var list<array{stream: string, known: ?string}> the jobs() calls */
     public array $jobCalls = [];
@@ -107,6 +110,11 @@ class ScriptedSource extends AbstractSource
     public function maxBytes(): int
     {
         return $this->maxBytes;
+    }
+
+    public function maxJobsPerStream(): int
+    {
+        return $this->maxJobs;
     }
 
     public static function credentials(): array

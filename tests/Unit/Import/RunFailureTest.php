@@ -425,6 +425,34 @@ final class RunFailureTest extends TestCase
         self::assertSame(RunCursor::MAX_PAGES, $yields);
     }
 
+    public function test_retriesExhausted_lostJob_seeksUpToTheSourceLimit(): void
+    {
+        $source             = self::checked(streams: 2, jobs: 1, items: 1);
+        $source->maxJobs    = RunCursor::MAX_PAGES + 200;
+        $source->jobs['s1'] = self::endless($yields);
+        $run                = self::startRun($source, ['position' => self::onJob('s1:z')]);
+        self::diedTwice($run->getId());
+
+        self::runOne();
+
+        self::assertSame(RunCursor::MAX_PAGES + 200, $yields);
+    }
+
+    /** a job failing past job 1000 of a source declaring more skips only that job, not the rest of the stream */
+    public function test_retriesExhausted_failedJobPastMaxPages_skipsOnlyIt(): void
+    {
+        $source                         = self::checked(streams: 1, jobs: 3, items: 1);
+        $source->maxJobs                = RunCursor::MAX_PAGES + 10;
+        $source->jobs['s1'][1]['error'] = new SourceUnavailable('TRANSPORT', 'No answer');
+        $run                            = self::startRun($source, ['position' => ['job' => 's1:b', 'pages' => RunCursor::MAX_PAGES, 'cur' => sha1('s1:b')] + self::pastCheck()]);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['k-s1:c-1'], TestRun::storedValues('relation........'), 'the job after the failed one');
+        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+    }
+
     public function test_retriesExhausted_lookingForTheNextJob_keepsToItsBudget(): void
     {
         $source             = self::checked(streams: 1, jobs: 0, items: 0);

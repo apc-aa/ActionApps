@@ -1019,7 +1019,7 @@ class Run extends BatchRun
      * The jobs of one stream from the cursor on. A job gone from the source (its parameters changed)
      * restarts the stream once - storing by the key is idempotent; a source that keeps changing
      * under the run cannot be followed; one that repeats the key of the job before or hands out more
-     * than MAX_PAGES jobs goes round, and the run skips the rest of the stream.
+     * than its maxJobsPerStream() goes round, and the run skips the rest of the stream.
      * @return string '' = the stream is done, STOP = the step stops at $pos, SOURCE_UNSTABLE = it stops
      *                there and cannot go on, SOURCE_CYCLE = the stream cannot go on
      */
@@ -1027,18 +1027,19 @@ class Run extends BatchRun
     {
         $seek   = $pos['job'];
         $passed = 0;
+        $limit  = RunCursor::jobLimit($source);
         foreach ($source->jobs($stream, $ctx, $known) as $job) {
             if ($seek !== '') {
                 if ($job->key !== $seek) {
                     // the cursor's job was the pages-th at most: a source that has not handed it out by now lost it
-                    if (++$passed >= RunCursor::MAX_PAGES) {
+                    if (++$passed >= $limit) {
                         break;
                     }
                     continue;
                 }
                 $seek = '';
             } else {
-                if (RunCursor::cycles($pos, $job->key)) {
+                if (RunCursor::cycles($pos, $job->key, $limit)) {
                     return 'SOURCE_CYCLE';
                 }
                 $pos = RunCursor::started($pos, $job->key);
@@ -1204,16 +1205,17 @@ class Run extends BatchRun
         }
         $found  = false;
         $passed = 0;
+        $limit  = RunCursor::jobLimit($source);
         foreach ($source->jobs($stream, $ctx, $this->streamState()?->versionOf($stream->key)) as $job) {
             if ($found) {
-                return RunCursor::cycles($pos, $job->key) ? RunCursor::nextStream($pos) : (['failed' => 1] + RunCursor::started($pos, $job->key));
+                return RunCursor::cycles($pos, $job->key, $limit) ? RunCursor::nextStream($pos) : (['failed' => 1] + RunCursor::started($pos, $job->key));
             }
             if ($budget->spent()) {
                 throw new BatchBudgetSpent('No time left to find the job after the failed one');
             }
             $found = ($job->key === $pos['job']);
-            // as in walkJobs(): the cursor's job comes within MAX_PAGES jobs, or it is gone
-            if (!$found && (++$passed >= RunCursor::MAX_PAGES)) {
+            // as in walkJobs(): the cursor's job comes within the source's limit, or it is gone
+            if (!$found && (++$passed >= $limit)) {
                 break;
             }
         }
