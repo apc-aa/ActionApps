@@ -27,6 +27,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Import\Fixtures\CatalogSource;
 use Tests\Unit\Import\Fixtures\CheckedSource;
+use Tests\Unit\Import\Fixtures\FieldMaxSource;
 use Tests\Unit\Import\Fixtures\ListedSource;
 use Tests\Unit\Import\Fixtures\RunSteps;
 use Tests\Unit\Import\Fixtures\ScriptedGrabber;
@@ -34,6 +35,7 @@ use Tests\Unit\Import\Fixtures\ScriptedSource;
 use Tests\Unit\Import\Fixtures\TestRun;
 
 require_once __DIR__ . '/fixtures/RunSteps.php';
+require_once __DIR__ . '/fixtures/FieldMaxSource.php';
 
 /**
  * What a run of Run leaves besides the items: the check mode (check(), probe(), the catalog), the
@@ -1491,7 +1493,8 @@ final class RunCheckTest extends TestCase
         self::assertSame(['streams' => 2, 'unversioned' => 1], json_decode(self::stored($run->getId())['report'], true)['baseline']);
     }
 
-    /** the maximum of a versionField needs the rows; a version probe() gives may be on another scale */
+    /** the maximum of a versionField needs the rows; a version probe() gives may be on another scale
+     *  unless the source vouches for it (FieldMaxProbeable) */
     public function test_baseline_versionFieldStreamGetsNoVersion(): void
     {
         $source             = self::cataloged(streams: 2);
@@ -1507,6 +1510,60 @@ final class RunCheckTest extends TestCase
         self::assertSame([null, 'v-s2'], [$state?->versionOf('s1'), $state?->versionOf('s2')]);
         self::assertEquals(['baseline' => self::NOW, 'run' => $run->getId()], $state->streams()['s1']);
         self::assertSame(1, TestRun::get($run->getId())?->counts()['unversioned']);
+    }
+
+    /** a source that vouches for the maximum of the field: the baseline records it, and the next changed
+     *  run compares on that scale - an unchanged stream skipped, a later one read from it on */
+    public function test_baseline_fieldMaxProbeRecordsVersionField(): void
+    {
+        $source             = self::cataloged(streams: 2, source: new FieldMaxSource());
+        $source->streams[0] = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
+        $source->streams[1] = new Stream('s2', 'Stream 2', ['fld' => 'text...........1'], '', 'year');
+        $source->probes     = ['s1' => new Probe(Probe::CHANGED, '2023'), 's2' => new Probe(Probe::CHANGED, '2022')];
+        self::streamVersions(['s1' => '2019']);
+        $run = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s1', 'probe:s2'], $source->calls);
+        self::assertSame(['s1' => null, 's2' => null], $source->known, 'what the source has now');
+        self::assertSame([], $source->jobCalls, 'nothing fetched');
+        $state = StreamState::forDefinition(self::DEF);
+        self::assertSame(['2023', '2022'], [$state?->versionOf('s1'), $state?->versionOf('s2')]);
+        self::assertEquals(['v' => '2023', 'probed' => self::NOW, 'baseline' => self::NOW, 'run' => $run->getId()], $state?->streams()['s1']);
+        self::assertSame(0, TestRun::get($run->getId())?->counts()['unversioned']);
+
+        $source->calls  = [];
+        $source->known  = [];
+        $source->probes = ['s1' => new Probe(Probe::UNCHANGED), 's2' => new Probe(Probe::CHANGED)];
+        $source->jobs['s2'][0]['items'] = [['key' => 'k1', 'val' => 'v', 'year' => '2024']];
+        $changed = self::startRun($source, ['mode' => 'changed']);
+        self::runAll($changed->getId());
+
+        self::assertSame(['done', ''], self::errorOf($changed->getId()));
+        self::assertSame(['s1' => '2023', 's2' => '2022'], $source->known, 'probed from the recorded versions');
+        self::assertSame([['stream' => 's2', 'known' => '2022']], $source->jobCalls, 'only the stream with a later year');
+        self::assertSame(1, TestRun::get($changed->getId())?->counts()['unchanged']);
+        self::assertSame(['2023', '2024'], [StreamState::forDefinition(self::DEF)?->versionOf('s1'), StreamState::forDefinition(self::DEF)?->versionOf('s2')]);
+    }
+
+    /** a maximum the source cannot tell leaves the stream unversioned, as any baseline without a version */
+    public function test_baseline_fieldMaxProbeWithoutVersionIsUnversioned(): void
+    {
+        $source             = self::cataloged(streams: 1, source: new FieldMaxSource());
+        $source->streams[0] = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
+        $source->probes     = ['s1' => new Probe(Probe::CHANGED)];
+        self::streamVersions(['s1' => '2019']);
+        $run = self::startRun($source, ['mode' => 'baseline']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['check', 'probe:s1'], $source->calls);
+        self::assertNull(StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'the old version goes');
+        self::assertSame(1, TestRun::get($run->getId())?->counts()['unversioned']);
+        self::assertSame(['streams' => 1, 'unversioned' => 1], json_decode(self::stored($run->getId())['report'], true)['baseline']);
     }
 
     public function test_baseline_versionRedacted(): void
@@ -1593,9 +1650,9 @@ final class RunCheckTest extends TestCase
     }
 
     /** source() over a CatalogSource that checks, probes and has an empty catalog */
-    private static function cataloged(int $streams, int $jobs = 1, int $items = 0, float $seconds = 0.0): CatalogSource
+    private static function cataloged(int $streams, int $jobs = 1, int $items = 0, float $seconds = 0.0, ?CatalogSource $source = null): CatalogSource
     {
-        $source         = new CatalogSource();
+        $source       ??= new CatalogSource();
         $source->pages  = ['' => new CatalogPage([])];
         self::source($streams, $jobs, $items, $seconds, source: $source);
         return $source;

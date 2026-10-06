@@ -16,7 +16,7 @@ use AA\Import\Stream;
 require_once __DIR__ . '/ScriptedSource.php';
 
 /** A ScriptedSource that also checks, probes and lists its catalog as the test sets it, and records the calls */
-final class CatalogSource extends ScriptedSource implements Checkable, Probeable, Cataloged
+class CatalogSource extends ScriptedSource implements Checkable, Probeable, Cataloged
 {
     public CheckResult $check;
 

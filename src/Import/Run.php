@@ -848,14 +848,15 @@ class Run extends BatchRun
      * A stream recorded at the version the source has now, as an import of it would record it, but
      * as a baseline: nothing of it was fetched. The version is what probe() says, asked as the run
      * mode asks it at the end of a stream. A stream versioned by its versionField gets none - the
-     * maximum of that field cannot be had without its rows - and neither does one probe() tells no
-     * version of: its stored version goes, so the next changed run imports it.
+     * maximum of that field cannot be had without its rows - unless the source vouches for it
+     * (FieldMaxProbeable); neither does one probe() tells no version of: its stored version goes,
+     * so the next changed run imports it.
      */
     private function baselineStream(Probeable $source, Context $ctx, Stream $stream): void
     {
         $version = '';
         $record  = ['baseline' => static::now(), 'run' => (string) $this->getId()];
-        if ($stream->versionField === '') {
+        if (($stream->versionField === '') || ($source instanceof FieldMaxProbeable)) {
             $version          = self::sourceVersion($ctx, $source->probe($stream, $ctx, null)->version);
             $record['probed'] = static::now();
         }
