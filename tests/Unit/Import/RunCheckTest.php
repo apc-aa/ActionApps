@@ -1074,6 +1074,8 @@ final class RunCheckTest extends TestCase
 
         self::assertSame('ended', TestRun::get($run->getId())?->state());
         self::assertNull(StreamState::forDefinition(self::DEF), 's1 was done in the step - its version is not written');
+        $counts = TestRun::get($run->getId())?->counts() ?? [];
+        self::assertSame([2, 2, 2], [$counts['read'], $counts['new'], $counts['jobs']], 'the items the step stored count in the ended run');
     }
 
     public function test_pagecache_invalidatedOncePerStep(): void

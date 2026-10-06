@@ -216,7 +216,7 @@ final class BatchRunControlTest extends TestCase
         self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER, 'changed by <b>me</b>'));
     }
 
-    public function test_end_during_work_step_writes_nothing(): void
+    public function test_end_during_work_step_goes_no_further(): void
     {
         $id = self::start()->getId();
         ScriptedBatchRun::$script = [static function () use ($id): BatchStepResult {
@@ -228,7 +228,7 @@ final class BatchRunControlTest extends TestCase
 
         $stored = self::stored($id);
         $this->assertSame('ended', $stored['state']);
-        $this->assertSame(['{"n":0}', '0', ''], [$stored['position'], $stored['step'], $stored['counts']], 'the end of the step wrote nothing');
+        $this->assertSame(['{"n":0}', '0', '{"read":5}'], [$stored['position'], $stored['step'], $stored['counts']], 'only what it stored counts');
         $this->assertNotContains('commitStep', ScriptedBatchRun::hooks());
         $this->assertSame([BatchRun::CLOSE_ROW], self::queued(), 'no next step');
 
@@ -288,6 +288,8 @@ final class BatchRunControlTest extends TestCase
 
         $stored = self::stored($id);
         $this->assertSame(['ended', '', ''], [$stored['state'], $stored['lease'], $stored['lease_tok']]);
+        $this->assertSame(['fetch'], ScriptedBatchRun::hooks(), 'in the step\'s transaction too, work() never runs after End');
+        $this->assertSame(['', ''], [$stored['counts'], $stored['warnings']]);
     }
 
     public function test_final_phase_ended_gives_its_lease_back(): void
@@ -341,12 +343,13 @@ final class BatchRunControlTest extends TestCase
         ScriptedBatchRun::$script = [static function () use ($id, &$token): BatchStepResult {
             $token = self::stored($id)['lease_tok'];
             self::storedSet($id, 'state', 'error');     // as another row of the run that found it invalid
-            return new BatchStepResult(['n' => 1], false);
+            return new BatchStepResult(['n' => 1], false, ['new' => 3], ['W' => 1]);
         }];
 
         $this->assertSame('run error', self::runQueued());
 
         $stored = self::stored($id);
+        $this->assertSame(['', ''], [$stored['counts'], $stored['warnings']]);
         $this->assertNotSame('', $token);
         $this->assertSame(['error', $token, (string) (self::NOW + 87)], [$stored['state'], $stored['lease_tok'], $stored['lease']]);
     }
@@ -358,14 +361,88 @@ final class BatchRunControlTest extends TestCase
         ScriptedBatchRun::$script = [static function () use ($id): BatchStepResult {
             self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
             self::leased($id);
-            return new BatchStepResult(['n' => 1], false);
+            return new BatchStepResult(['n' => 1], false, ['new' => 3], ['W' => 1]);
         }];
 
         $this->assertSame('run ended', self::runQueued());
 
         $stored = self::stored($id);
         $this->assertSame(['working-step', (string) (self::NOW + 100)], [$stored['lease_tok'], $stored['lease']]);
+        $this->assertSame(['', ''], [$stored['counts'], $stored['warnings']], 'not its run any more - its counts do not go in');
         $this->assertSame([$id], ScriptedBatchRun::leasedOf(self::SUBJECT));
+    }
+
+    /** the items it stored count in the ended run; its place, step and commitStep() do not */
+    public function test_step_ended_during_work_adds_its_counts_and_warnings_only(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$script = [
+            new BatchStepResult(['n' => 1], false, ['new' => 1], ['W' => 1], 'first', 1, 9),
+            static function () use ($id): BatchStepResult {
+                self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+                return new BatchStepResult(['n' => 2], true, ['new' => 3, 'updated' => 2, 'by' => ['a' => 1]], ['W' => 1, 'X' => 1], 'second', 2, 9, extra: ['versions' => 1]);
+            },
+        ];
+        $this->assertSame('step 1', self::runQueued());
+        $progress = self::stored($id)['progress'];
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertEquals(['new' => 4, 'updated' => 2, 'by' => ['a' => 1]], json_decode($stored['counts'], true));
+        $this->assertSame(['W' => 2, 'X' => 1], json_decode($stored['warnings'], true));
+        $this->assertSame([['n' => 1], 1, $progress, ''], [json_decode($stored['position'], true), (int) $stored['step'], $stored['progress'], $stored['closing'] ?? '']);
+        $this->assertSame(['ended', '', ''], [$stored['state'], $stored['lease'], $stored['lease_tok']]);
+        $this->assertSame(['work', 'commitStep', 'work'], ScriptedBatchRun::hooks(), 'no commitStep() for the step cut off');
+    }
+
+    /** a skip counts what it skipped; the run ended under the step does not go on from it */
+    public function test_step_ended_during_work_adds_no_counts_of_the_skip(): void
+    {
+        $id = self::start()->getId();
+        self::storedSet($id, 'failures', '2');
+        ScriptedBatchRun::$script      = [static function () use ($id): BatchStepResult {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            return new BatchStepResult(['n' => 0], false, ['read' => 5], ['SLOW' => 1]);
+        }];
+        ScriptedBatchRun::$onExhausted = static fn(BatchStepResult $last): BatchStepResult => new BatchStepResult(['n' => 1], false, $last->counts + ['skipped_jobs' => 1], $last->warnings + ['TASK_FAILED' => 1]);
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertContains('onRetriesExhausted', ScriptedBatchRun::hooks());
+        $this->assertSame(['{"read":5}', '{"SLOW":1}', '{"n":0}'], [$stored['counts'], $stored['warnings'], $stored['position']]);
+    }
+
+    /** a fetch() that gives the result itself stored nothing; an empty result leaves the columns as they are */
+    #[DataProvider('bothModes')]
+    public function test_step_ended_with_a_result_of_fetch_adds_nothing(bool $inTransaction): void
+    {
+        self::mode($inTransaction);
+        $id = self::start()->getId();
+        ScriptedBatchRun::$fetchScript = [static function () use ($id): BatchStepResult {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            return new BatchStepResult(['n' => 0], false, ['read' => 5], ['SLOW' => 1], retry: 'SOURCE_DOWN');
+        }];
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['ended', '', '', '', ''], [$stored['state'], $stored['lease_tok'], $stored['lease'], $stored['counts'], $stored['warnings']]);
+    }
+
+    public function test_step_ended_during_work_with_nothing_to_count_leaves_the_counts(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$script = [static function () use ($id): BatchStepResult {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            return new BatchStepResult(['n' => 1], false);
+        }];
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['', '', ''], [$stored['counts'], $stored['warnings'], $stored['lease_tok']]);
     }
 
     /** End alone never frees the lease - the step may be storing items right now */

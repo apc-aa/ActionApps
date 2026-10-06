@@ -417,8 +417,9 @@ abstract class BatchRun extends AA_Object
     /** End: the run stops for good, what it wrote stays. Only on an instance of lockForUpdate(), so it
      *  commits with the caller's other writes. The lease stays till that step leaves (it gives the lease
      *  back) or the lease runs out: a step still working may write items till then, so a new run of the
-     *  subject waits (hasLiveLease()); that step then finds the run ended and writes nothing of its own.
-     *  afterClose('ended') runs from the queue (CLOSE_ROW) once the caller's transaction has committed.
+     *  subject waits (hasLiveLease()); that step then finds the run ended and adds only the counts and
+     *  warnings of what it stored (lostText()). afterClose('ended') runs from the queue (CLOSE_ROW) once
+     *  the caller's transaction has committed.
      *  @param string $note why, as a code (SETTINGS_CHANGED) - the progress page shows it
      *  @throws BatchFailed FORBIDDEN when $uid may not control the run, WRONG_STATE when it is finished */
     final public function end(string $uid, string $note = ''): void
@@ -1049,6 +1050,8 @@ abstract class BatchRun extends AA_Object
         $from    = $this->position();
         $fetched = null;
         $run     = null;
+        // what work() returned outside a transaction - the only result whose items are stored by now
+        $worked  = null;
         try {
             if ($died) {
                 $result = new BatchStepResult($from, false, retry: 'STEP_DIED');
@@ -1070,7 +1073,7 @@ abstract class BatchRun extends AA_Object
                     $this->requeue(static::now(), $priority);
                     return 'lease out';
                 }
-                $result = $this->spending($from, fn(): BatchStepResult => $this->work($from, $budget, $fetched));
+                $result = $worked = $this->spending($from, fn(): BatchStepResult => $this->work($from, $budget, $fetched));
             }
             if ($result === null) {
                 // a step that lost its lease drops what it fetched unwritten
@@ -1092,7 +1095,8 @@ abstract class BatchRun extends AA_Object
             return $this->failStep($e);
         }
         if (!$run) {
-            return $this->lostText();
+            // not the skip onRetriesExhausted() chose - the run does not go on from it
+            return $this->lostText($worked);
         }
         if ($run->state() === static::states()->error) {
             return 'error ' . $run->error_code;
@@ -1149,8 +1153,7 @@ abstract class BatchRun extends AA_Object
         }
         $this->position = self::positionJson($r->position);
         $this->step     = (string) ($this->step() + 1);
-        $this->counts   = self::encode(self::add($this->json('counts'), $r->counts));
-        $this->warnings = self::encode(self::add($this->json('warnings'), $r->warnings));
+        $this->addCounts($r);
         $this->progress = self::encode(['label' => $r->label, 'done' => $r->done, 'total' => $r->total]);
         $this->commitStep($r);
         if ($r->finished) {
@@ -1167,6 +1170,13 @@ abstract class BatchRun extends AA_Object
             $this->retryOrError($moved ? 0 : $this->failures() + 1, !in_array($r->retry, ['', 'NO_PROGRESS'], true), ($r->retry !== '') ? $r->retry : 'NO_PROGRESS', $r->retryDetail);
         }
         $this->update(['moved', 'failures', 'position', 'step', 'counts', 'warnings', 'progress', 'closing', ...self::ERROR_PROPS, ...self::LEASE_PROPS]);
+    }
+
+    /** the step's counts and warnings added to the run's; the caller writes them */
+    private function addCounts(BatchStepResult $r): void
+    {
+        $this->counts   = self::encode(self::add($this->json('counts'), $r->counts));
+        $this->warnings = self::encode(self::add($this->json('warnings'), $r->warnings));
     }
 
     /** The lease released, the next step queued - after retryDelay() when $wait - or, once $failures
@@ -1360,20 +1370,28 @@ abstract class BatchRun extends AA_Object
 
     /** Why a step wrote nothing: another step holds the lease, or the run is no longer active. A step that
      *  finds the run no longer its own leaves here, so one whose run was ended under it gives its lease
-     *  back - it stores nothing more, and a new run of the subject need not wait for the lease to run out. */
-    private function lostText(): string
+     *  back - it stores nothing more, and a new run of the subject need not wait for the lease to run out.
+     *  With it go the counts and warnings of $result: its items are stored, the ended run must count them.
+     *  Its position, step and commitStep() do not - the run does not go on from there.
+     *  @param ?BatchStepResult $result what work() returned; null when it never ran */
+    private function lostText(?BatchStepResult $result = null): string
     {
         $token = (string) $this->lease_tok;
         $state = self::get($this->getId())?->state();
         if (($state === static::states()->ended) && ($token !== '')) {
-            $this->whileLocked(static function (self $run) use ($token): bool {
-                // only its own: another token may be a step still storing items
+            $this->whileLocked(static function (self $run) use ($token, $result): bool {
+                // only its own: another token may be a step still storing items, which counts its own
                 if (($run->state() !== $run::states()->ended) || !hash_equals((string) $run->lease_tok, $token)) {
                     return false;
                 }
                 $run->lease     = '';
                 $run->lease_tok = '';
-                $run->update(self::LEASE_PROPS);
+                $write          = self::LEASE_PROPS;
+                if ($result && ($result->counts || $result->warnings)) {
+                    $run->addCounts($result);
+                    $write = [...$write, 'counts', 'warnings'];
+                }
+                $run->update($write);
                 return true;
             });
         }
