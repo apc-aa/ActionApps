@@ -22,6 +22,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
+use Tests\Unit\Later\Fixtures\BothStepModes;
 use Tests\Unit\Later\Fixtures\QueueRefusingDb;
 use Tests\Unit\Later\Fixtures\ScriptedBatchRun;
 
@@ -30,6 +31,7 @@ require_once __DIR__ . '/Fixtures/BatchRunTables.php';
 final class BatchRunControlTest extends TestCase
 {
     use BatchRunTables;
+    use BothStepModes;
 
     private const SECRET = 'tok-Zq8vW2pLx9Rb4Kc7';
 
@@ -249,6 +251,132 @@ final class BatchRunControlTest extends TestCase
         $this->assertSame([], self::queue());
         $this->assertSame(['work', 'commitStep', 'finalCheck', 'afterClose'], ScriptedBatchRun::hooks());
         $this->assertSame('ended', ScriptedBatchRun::call('afterClose')['arg']);
+    }
+
+    /** the step stores nothing more once it leaves - a new run need not wait for its lease to run out */
+    public function test_step_ended_during_work_gives_its_lease_back(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$script = [static function () use ($id): BatchStepResult {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            self::assertSame([$id], ScriptedBatchRun::leasedOf(self::SUBJECT), 'ended, the working step keeps its lease');
+            return new BatchStepResult(['n' => 1], false, ['read' => 5]);
+        }];
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['ended', '', ''], [$stored['state'], $stored['lease'], $stored['lease_tok']]);
+        $this->assertSame([], ScriptedBatchRun::leasedOf(self::SUBJECT));
+        $this->assertOneRowEach($id);
+
+        self::runQueued();
+        $this->assertSame(['work', 'afterClose'], ScriptedBatchRun::hooks(), 'the close row still runs afterClose(ended)');
+    }
+
+    #[DataProvider('bothModes')]
+    public function test_step_ended_during_fetch_gives_its_lease_back(bool $inTransaction): void
+    {
+        self::mode($inTransaction);
+        $id = self::start()->getId();
+        ScriptedBatchRun::$fetchScript = [static function () use ($id): array {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            return ['items' => 3];
+        }];
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['ended', '', ''], [$stored['state'], $stored['lease'], $stored['lease_tok']]);
+    }
+
+    public function test_final_phase_ended_gives_its_lease_back(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$script       = [new BatchStepResult(['n' => 1], true)];
+        ScriptedBatchRun::$onFinalCheck = static function () use ($id): void {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+        };
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['ended', '', ''], [$stored['state'], $stored['lease'], $stored['lease_tok']]);
+    }
+
+    public function test_step_whose_work_throws_after_end_gives_its_lease_back(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$script = [static function () use ($id): BatchStepResult {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            throw new \RuntimeException('source broke');
+        }];
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['ended', '', ''], [$stored['state'], $stored['lease'], $stored['lease_tok']]);
+    }
+
+    public function test_final_check_throwing_after_end_gives_its_lease_back(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$script       = [new BatchStepResult(['n' => 1], true)];
+        ScriptedBatchRun::$onFinalCheck = static function () use ($id): void {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            throw new \RuntimeException('check broke');
+        };
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['ended', '', ''], [$stored['state'], $stored['lease'], $stored['lease_tok']]);
+    }
+
+    /** only an ended run: a run in error is resumed only once its step's lease is gone (stepMayStillWork()) */
+    public function test_step_whose_run_went_to_error_keeps_its_lease(): void
+    {
+        $id    = self::start()->getId();
+        $token = '';
+        ScriptedBatchRun::$script = [static function () use ($id, &$token): BatchStepResult {
+            $token = self::stored($id)['lease_tok'];
+            self::storedSet($id, 'state', 'error');     // as another row of the run that found it invalid
+            return new BatchStepResult(['n' => 1], false);
+        }];
+
+        $this->assertSame('run error', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertNotSame('', $token);
+        $this->assertSame(['error', $token, (string) (self::NOW + 87)], [$stored['state'], $stored['lease_tok'], $stored['lease']]);
+    }
+
+    /** only its own: a lease under another token may belong to a step still storing items */
+    public function test_step_ended_under_it_leaves_a_lease_not_its_own(): void
+    {
+        $id = self::start()->getId();
+        ScriptedBatchRun::$script = [static function () use ($id): BatchStepResult {
+            self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+            self::leased($id);
+            return new BatchStepResult(['n' => 1], false);
+        }];
+
+        $this->assertSame('run ended', self::runQueued());
+
+        $stored = self::stored($id);
+        $this->assertSame(['working-step', (string) (self::NOW + 100)], [$stored['lease_tok'], $stored['lease']]);
+        $this->assertSame([$id], ScriptedBatchRun::leasedOf(self::SUBJECT));
+    }
+
+    /** End alone never frees the lease - the step may be storing items right now */
+    public function test_end_keeps_the_lease_of_a_step_still_working(): void
+    {
+        $id = self::start()->getId();
+        self::leased($id);
+
+        self::locked($id, static fn(ScriptedBatchRun $r) => $r->end(self::USER));
+
+        $this->assertSame([$id], ScriptedBatchRun::leasedOf(self::SUBJECT));
     }
 
     public function test_close_row_of_a_run_not_ended_does_nothing(): void

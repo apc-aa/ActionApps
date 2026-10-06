@@ -415,10 +415,10 @@ abstract class BatchRun extends AA_Object
     }
 
     /** End: the run stops for good, what it wrote stays. Only on an instance of lockForUpdate(), so it
-     *  commits with the caller's other writes. The lease stays till it runs out: a step still working
-     *  may write items till then, so a new run of the subject waits (hasLiveLease()); that step then
-     *  finds the run ended and writes nothing of its own. afterClose('ended') runs from the queue
-     *  (CLOSE_ROW) once the caller's transaction has committed.
+     *  commits with the caller's other writes. The lease stays till that step leaves (it gives the lease
+     *  back) or the lease runs out: a step still working may write items till then, so a new run of the
+     *  subject waits (hasLiveLease()); that step then finds the run ended and writes nothing of its own.
+     *  afterClose('ended') runs from the queue (CLOSE_ROW) once the caller's transaction has committed.
      *  @param string $note why, as a code (SETTINGS_CHANGED) - the progress page shows it
      *  @throws BatchFailed FORBIDDEN when $uid may not control the run, WRONG_STATE when it is finished */
     final public function end(string $uid, string $note = ''): void
@@ -1358,10 +1358,25 @@ abstract class BatchRun extends AA_Object
         });
     }
 
-    /** why a step wrote nothing: another step holds the lease, or the run is no longer active */
+    /** Why a step wrote nothing: another step holds the lease, or the run is no longer active. A step that
+     *  finds the run no longer its own leaves here, so one whose run was ended under it gives its lease
+     *  back - it stores nothing more, and a new run of the subject need not wait for the lease to run out. */
     private function lostText(): string
     {
+        $token = (string) $this->lease_tok;
         $state = self::get($this->getId())?->state();
+        if (($state === static::states()->ended) && ($token !== '')) {
+            $this->whileLocked(static function (self $run) use ($token): bool {
+                // only its own: another token may be a step still storing items
+                if (($run->state() !== $run::states()->ended) || !hash_equals((string) $run->lease_tok, $token)) {
+                    return false;
+                }
+                $run->lease     = '';
+                $run->lease_tok = '';
+                $run->update(self::LEASE_PROPS);
+                return true;
+            });
+        }
         return ($state === $this->state()) ? 'lease lost' : ('run ' . ($state ?? 'gone'));
     }
 
