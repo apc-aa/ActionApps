@@ -9,6 +9,7 @@ import 'tinymce/themes/silver/index.js';
 import 'tinymce/icons/default/index.js';
 // skins as JS modules, so no stylesheet is fetched at run time
 import 'tinymce/skins/ui/oxide/skin.js';
+import 'tinymce/skins/ui/oxide/skin.shadowdom.js';   // aa-richtext puts the editor in a shadow root
 import 'tinymce/skins/ui/oxide/content.js';
 import 'tinymce/skins/content/default/content.js';
 import 'tinymce/plugins/lists/index.js';
@@ -208,6 +209,9 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         style_formats: STYLE_FORMATS,
         browser_spellcheck: true,
         image_caption: true,
+        // in a shadow root the popups sit by the editor, inside the page's scrolling box:
+        // 'split' keeps them within it, so a menu near the bottom opens upwards
+        ...((target.getRootNode() instanceof ShadowRoot) ? { ui_mode: 'split' } : {}),
         content_style: 'body { font: 13px/1.6 Arial, Helvetica, Tahoma, Verdana, sans-serif; margin: 20px; color: #333; } table[border] td { border: 1px solid #333; }',
         // keep what AA stores: any element, any attribute, URLs as written, entities only where they were
         valid_elements: '*[*]',
