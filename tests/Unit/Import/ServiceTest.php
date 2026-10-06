@@ -120,6 +120,7 @@ final class ServiceTest extends TestCase
         $this->assertSame(RunCursor::START, json_decode($run['position'], true));
         $this->assertSame($def->snapshot(), json_decode($run['snapshot'], true));
         $this->assertSame(['s1', 's3'], json_decode($run['stream_keys'], true), 'in the order of the source');
+        $this->assertSame('1', $run['streams_chosen']);
         $this->assertSame([['territory' => 'cz']], \ServiceSource::$created, 'the source of the stored settings');
         $this->assertTrue(self::lockedBeforeRun(self::DEF), 'decided under the lock of the definition');
         $queue = self::queue();
@@ -130,6 +131,7 @@ final class ServiceTest extends TestCase
         \ServiceSource::$streamKeys = ['s1', 's2', 's1', 's3'];
         $all = Service::start(self::definition(['settings' => ''], self::SIBLING), 'run', [], 'manual', AuthGetUid());
         $this->assertSame(['s1', 's2', 's3'], json_decode(self::stored($all->runId)['stream_keys'], true), 'every stream when none is chosen, each once');
+        $this->assertSame('', self::stored($all->runId)['streams_chosen'] ?? '', 'all the source has - none chosen');
     }
 
     public function test_start_manualStillBusyOnError(): void

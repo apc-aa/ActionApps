@@ -431,6 +431,46 @@ final class DetailPageTest extends TestCase
         $this->assertSame([$mode, $dry, $limit, $streams], [$run['mode'], $run['dry'], $run['limit'], json_decode($run['stream_keys'], true)]);
     }
 
+    /** @return iterable<string, array{array<string, string>, string}> post, the kind of run in the list */
+    public static function runKinds(): iterable
+    {
+        yield 'run'           => [['action' => 'run'], 'full run, by hand'];
+        yield 'dry'           => [['action' => 'dry'], 'full run, dry run, by hand'];
+        yield 'run of stream' => [['action' => 'stream', 'stream_key' => 's2', 'dry' => '0'], 'one stream (s2), by hand'];
+        yield 'dry of stream' => [['action' => 'stream', 'stream_key' => 's3', 'dry' => '1'], 'one stream (s3), dry run, by hand'];
+        yield 'changed'       => [['action' => 'changed'], 'changed only, by hand'];
+    }
+
+    /** @param array<string, string> $post */
+    #[DataProvider('runKinds')]
+    public function test_runs_sayWhatKindOfRunItWas(array $post, string $kind): void
+    {
+        self::definition();
+        self::act($post);
+
+        $this->assertStringContainsString('<small>' . $kind . '</small></th>', self::page()->runsHtml(time()));
+    }
+
+    /** more than one chosen - only a start from outside the page can choose them */
+    public function test_runs_severalChosenStreamsAreCounted(): void
+    {
+        self::definition();
+        $r = Service::start(Definition::fresh(self::DEF) ?? throw new \LogicException('No definition'), 'run', ['streams' => ['s1', 's3']], 'manual', AuthGetUid());
+        $this->assertSame('queued', $r->code);
+
+        $this->assertStringContainsString('<small>2 streams, by hand</small></th>', self::page()->runsHtml(time()));
+    }
+
+    /** a source of one stream: a run of all it has is still a full run */
+    public function test_runs_fullRunOfOneStreamIsAFullRun(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'stream_keys', '["s1"]');
+
+        $this->assertStringContainsString('<small>full run, by hand</small></th>', self::page()->runsHtml(time()));
+    }
+
     public function test_post_badStreamOrActionRefused(): void
     {
         self::definition();

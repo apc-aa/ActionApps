@@ -157,16 +157,17 @@ final class Service
                 return $busy;
             }
             $run = Run::start([
-                'subject'     => $id,
-                'user'        => $user,
-                'position'    => RunCursor::START,
-                'mode'        => $mode,
-                'dry'         => $options['dry'] ? '1' : '',
-                'limit'       => $options['limit'],
-                'snapshot'    => $json,
-                'stream_keys' => json_encode($keys, JSON_THROW_ON_ERROR),
-                'trigger'     => $trigger,
-                'replaced'    => $toEnd ? json_encode($toEnd, JSON_THROW_ON_ERROR) : '',
+                'subject'        => $id,
+                'user'           => $user,
+                'position'       => RunCursor::START,
+                'mode'           => $mode,
+                'dry'            => $options['dry'] ? '1' : '',
+                'limit'          => $options['limit'],
+                'snapshot'       => $json,
+                'stream_keys'    => json_encode($keys, JSON_THROW_ON_ERROR),
+                'streams_chosen' => ($options['streams'] !== null) ? '1' : '',
+                'trigger'        => $trigger,
+                'replaced'       => $toEnd ? json_encode($toEnd, JSON_THROW_ON_ERROR) : '',
             ]);
             if ($mode === 'baseline') {
                 // the run is cleaned away with the older ones; the log keeps who recorded versions nobody imported

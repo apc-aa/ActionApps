@@ -1153,7 +1153,16 @@ final class DetailPage
     private static function kindOfRun(Run $run): string
     {
         $how = RunView::howItRan($run);
-        return ($run->mode() === 'run') ? trim(_m('full run') . ', ' . $how, ', ') : $how;
+        if ($run->mode() !== 'run') {
+            return $how;
+        }
+        $chosen = $run->chosenStreams();
+        $what   = match (true) {
+            $chosen === null      => _m('full run'),
+            count($chosen) === 1  => _m('one stream (%1)', [$chosen[0]]),
+            default               => _m('%1 streams', [count($chosen)]),
+        };
+        return trim($what . ', ' . $how, ', ');
     }
 
     /** the count cells; a run that imports nothing, or stopped before it read anything, says so in one cell

@@ -102,6 +102,8 @@ class Run extends BatchRun
     protected $snapshot = '';
     /** JSON list of the keys of the streams the run goes through */
     protected $stream_keys = '';
+    /** '1' = stream_keys were chosen at the start, not all the source has - one key alone cannot tell */
+    protected $streams_chosen = '';
     /** plan:<task> | event:<task> | manual */
     protected $trigger = '';
     /** JSON list of the first item errors {stream, job, code, msg} */
@@ -157,7 +159,7 @@ class Run extends BatchRun
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced', 'empty_keys', 'remarks', 'work_ms'] as $id) {
+        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'streams_chosen', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced', 'empty_keys', 'remarks', 'work_ms'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -199,6 +201,16 @@ class Run extends BatchRun
     public function isDry(): bool
     {
         return (string) $this->dry === '1';
+    }
+
+    /** @return ?list<string> the streams the user chose for the run; null = all the source has */
+    public function chosenStreams(): ?array
+    {
+        if ((string) $this->streams_chosen !== '1') {
+            return null;
+        }
+        $keys = json_decode((string) $this->stream_keys, true);
+        return is_array($keys) ? array_values(array_filter($keys, 'is_string')) : [];
     }
 
     /** an import: not a check, a baseline or a dry run */
