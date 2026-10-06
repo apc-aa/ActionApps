@@ -28,11 +28,11 @@ final class DetailConfig
 
     // ------------------------------------------------------------ actions
 
-    /** @return array{string, string} an outcome of DetailPage::handle() */
+    /** @return array{0: string, 1: string, 2?: string} an outcome of DetailPage::handle() */
     public function resetMapping(): array
     {
         $r = Service::resetMapping($this->def, $this->uid);
-        return $r->done() ? ['mapping_reset', ''] : ['mapping_refused', self::reason($r)];
+        return $r->done() ? ['mapping_reset', ''] : ['mapping_refused', ...self::refused($r)];
     }
 
     /**
@@ -40,7 +40,7 @@ final class DetailConfig
      * the form posts that this source declares. The form carries Service::settingsHash() of what it
      * was made from, so it cannot undo a change saved meanwhile.
      * @param array<mixed> $post
-     * @return array{string, string} an outcome of DetailPage::handle()
+     * @return array{0: string, 1: string, 2?: string} an outcome of DetailPage::handle()
      */
     public function changeSettings(array $post): array
     {
@@ -62,7 +62,7 @@ final class DetailConfig
             'CHANGED' => ['settings_saved', ''],
             'SAME'    => ['settings_same', ''],
             'STALE'   => ['settings_stale', ''],
-            default   => ['settings_refused', self::reason($r)],
+            default   => ['settings_refused', ...self::refused($r)],
         };
     }
 
@@ -113,23 +113,24 @@ final class DetailConfig
         return !$property->isObject() && !in_array($property->getType(), ['readonly', 'hidden'], true);
     }
 
-    /** a refusal for the session: its code and detail */
-    private static function reason(ChangeResult $r): string
+    /** a refusal for the session: "CODE:detail", and the source's words when it has them
+     *  @return array{0: string, 1?: string} */
+    private static function refused(ChangeResult $r): array
     {
-        return $r->code . ':' . $r->detail;
+        return [$r->code . ':' . $r->detail, ...(($r->message === '') ? [] : [$r->message])];
     }
 
     /** What reset_mapping and settings did, by DetailPage::handle()'s outcome; '' for any other outcome.
-     *  A refusal comes as "CODE:detail" (reason()). */
-    public static function outcomeHtml(string $code, string $reason): string
+     *  A refusal comes as "CODE:detail" with the source's words in $message (refused()). */
+    public static function outcomeHtml(string $code, string $reason, string $message = ''): string
     {
         [$refusal, $detail] = explode(':', $reason, 2) + ['', ''];
         return match ($code) {
             'mapping_reset'    => MsgOk(_m('The mapping is set again from the source. An open run goes on with the mapping it started with.')),
-            'mapping_refused'  => MsgErr(_m('The mapping was not reset:') . ' ' . safe(Definition::refusal($refusal, $detail)) . self::settingsPointer($refusal, false, $detail)),
+            'mapping_refused'  => MsgErr(_m('The mapping was not reset:') . ' ' . safe(Definition::refusal($refusal, $detail, $message)) . self::settingsPointer($refusal, false, $detail)),
             'settings_saved'   => MsgOk(_m('The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped.')),
             'settings_same'    => MsgOk(_m('The settings are the same as stored - nothing changed.')),
-            'settings_refused' => MsgErr(_m('The settings were not saved:') . ' ' . safe(Definition::refusal($refusal, $detail))),
+            'settings_refused' => MsgErr(_m('The settings were not saved:') . ' ' . safe(Definition::refusal($refusal, $detail, $message))),
             'settings_stale'   => MsgErr(safe(Definition::refusal('STALE'))),
             'no_source'        => MsgErr(_m('Choose a source.')),
             default            => '',

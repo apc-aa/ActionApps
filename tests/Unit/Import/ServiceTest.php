@@ -8,6 +8,7 @@ use AA\Import\Catalog;
 use AA\Import\CatalogEntry;
 use AA\Import\CatalogPage;
 use AA\Import\ChangeResult;
+use AA\Import\Context;
 use AA\Import\Definition;
 use AA\Import\Mapping;
 use AA\Import\Registry;
@@ -897,10 +898,36 @@ final class ServiceTest extends TestCase
         $before = TableDb::$tables;
         \ServiceSource::$refuse = new SourceRefused('SETTINGS', 'The key column must be one of the columns');
 
-        $this->assertEquals(new ChangeResult('SETTINGS'), Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
-        $this->assertEquals(new ChangeResult('SETTINGS'), Service::resetMapping($def, AuthGetUid()));
+        $words = new ChangeResult('SETTINGS', '', 'The key column must be one of the columns');
+        $this->assertEquals($words, Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()));
+        $this->assertEquals($words, Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame('The import source refused these settings: The key column must be one of the columns', $words->refusal());
         $this->assertSame($before, TableDb::$tables);
         $this->assertSame([], self::logged());
+
+        \ServiceSource::$refuse = new SourceRefused('SETTINGS');
+        $this->assertEquals(new ChangeResult('SETTINGS'), Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid()), 'no words of the source');
+        $this->assertSame('A setting of the import source is not valid.', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->refusal());
+    }
+
+    /** the source's words pass redact(), have control characters encoded and are cut; other refusals carry none */
+    public function test_changeSettings_settingsRefusalTextIsCleaned(): void
+    {
+        if (!defined('AA_APIKEY_D4WORDS')) {
+            define('AA_APIKEY_D4WORDS', 'w0rds-s3cr3t');
+        }
+        $def = self::definition();
+        \ServiceSource::$credentials = [['vendor' => 'd4words', 'context' => '']];
+        $GLOBALS['r_superuser']      = [AA_ID => true];
+        \ServiceSource::$refuse      = new SourceRefused('SETTINGS', "missing: importer\nkey w0rds-s3cr3t " . str_repeat('x', 500));
+
+        $message = Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->message;
+        $this->assertStringStartsWith('missing: importer%0Akey *** x', $message);
+        $this->assertSame(Context::REMARK_CHARS, mb_strlen($message));
+        $this->assertSame($message, Service::resetMapping($def, AuthGetUid())->message);
+
+        \ServiceSource::$refuse = new SourceRefused('AUTH', 'a text of another refusal');
+        $this->assertSame('', Service::changeSettings($def, self::SOURCE, ['territory' => 'sk'], AuthGetUid())->message);
     }
 
     public function test_changeSettings_deniedWithoutFeeding(): void

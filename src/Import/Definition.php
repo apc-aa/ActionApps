@@ -469,9 +469,13 @@ final class Definition extends AA_Object implements InternalExpandInterface
      * @param string $code FORBIDDEN, KEYS, NOT_OF_SLICE, NO_SOURCE, NO_MAPPING, MAPPING (with the problem
      *                     codes in $detail), SETTINGS and SLICE (with the label of the setting in $detail,
      *                     if known), STALE; any other = the source refused the settings
+     * @param string $message the source's own words on refused SETTINGS (ChangeResult::$message)
      */
-    public static function refusal(string $code, string $detail = ''): string
+    public static function refusal(string $code, string $detail = '', string $message = ''): string
     {
+        if (($code === 'SETTINGS') && ($message !== '')) {
+            return _m('The import source refused these settings: %1', [$message]);
+        }
         return match ($code) {
             'FORBIDDEN'    => _m('Only a user who manages the feeding of the slice may change its imports.'),
             'KEYS'         => _m('This import uses API keys, so only a superadmin may change or delete it.'),

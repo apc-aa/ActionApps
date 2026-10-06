@@ -166,7 +166,7 @@ final class DetailPage
      * @param array<mixed> $post   $_POST
      * @param array<mixed> $server $_SERVER
      * @return ?array{0: string, 1: string, 2?: string} the outcome - a code of outcomeHtml(), a reason code and maybe the detail of a
-     *         refusal of the source; null = nothing asked
+     *         refusal of the source or its words on refused settings; null = nothing asked
      */
     public function handle(array $post, array $server): ?array
     {
@@ -217,7 +217,7 @@ final class DetailPage
         return $this->catalog()->adopt($post['key'] ?? null);
     }
 
-    /** @param array<mixed> $post @return array{string, string} */
+    /** @param array<mixed> $post @return array{0: string, 1: string, 2?: string} */
     private function changeSettings(array $post): array
     {
         $outcome = $this->config()->changeSettings($post);
@@ -497,8 +497,10 @@ final class DetailPage
     }
 
     /** What an action did, by the outcome of handle(), for the GET page after it. Codes only - the
-     *  source's own words may carry its data.
-     *  @param string $detail of a failure of the source, as AA\IO\SourceFailure::$detail */
+     *  source's own words may carry its data - but for settings the source refused, whose words say
+     *  what to fix (DetailConfig::outcomeHtml()).
+     *  @param string $detail of a failure of the source, as AA\IO\SourceFailure::$detail, or for a
+     *                        settings or mapping outcome the source's words */
     public static function outcomeHtml(string $code, string $reason, string $detail = ''): string
     {
         return match ($code) {
@@ -517,7 +519,7 @@ final class DetailPage
             'refused'     => MsgErr(safe(self::failureText($reason, $detail)) . DetailConfig::settingsPointer($reason, true)),
             'failed'      => MsgErr(_m('The action failed. The log of import failures has its cause.')),
             'adopted', 'no_entry', 'adopt_busy', 'adopt_refused' => DetailCatalog::outcomeHtml($code, $reason, $detail),
-            default       => DetailConfig::outcomeHtml($code, $reason),
+            default       => DetailConfig::outcomeHtml($code, $reason, $detail),
         };
     }
 

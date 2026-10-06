@@ -14,6 +14,7 @@ use AA\Import\RunCursor;
 use AA\Import\Service;
 use AA\Import\StreamState;
 use AA\IO\DB\DB_AA;
+use AA\IO\SourceRefused;
 use AA\Managed_Object;
 use AA\Util\FormToken;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -430,6 +431,26 @@ final class DetailConfigTest extends TestCase
 
         $this->assertStringContainsString('The settings were not saved:', $msg);
         $this->assertStringContainsString('The setting &quot;From year&quot; of the import source is not valid.', $msg);
+    }
+
+    /** settings the source refuses together: the page shows its words, escaped and cut, or the generic text without them */
+    public function test_settings_sourceRefusalShowsItsWords(): void
+    {
+        self::definition();
+        \ServiceSource::$refuse = new SourceRefused('SETTINGS', '<b>missing: importer</b> ' . str_repeat('x', 500));
+
+        $msg = self::act(self::settingsPost(['territory' => 'sk']));
+
+        $this->assertStringContainsString('The settings were not saved: The import source refused these settings: &lt;b&gt;missing: importer&lt;/b&gt; x', $msg);
+        $this->assertStringNotContainsString('<b>missing', $msg);
+        $this->assertStringNotContainsString(str_repeat('x', 300), $msg, 'cut');
+
+        $msg = self::act(['action' => 'reset_mapping']);
+        $this->assertStringContainsString('The mapping was not reset: The import source refused these settings: &lt;b&gt;missing: importer', $msg);
+        $this->assertStringContainsString('aa-import-settings', $msg);
+
+        \ServiceSource::$refuse = new SourceRefused('SETTINGS');
+        $this->assertStringContainsString('The settings were not saved: A setting of the import source is not valid.', self::act(self::settingsPost(['territory' => 'sk'])));
     }
 
     /** another source is picked by a GET that only shows its settings; one save changes both */

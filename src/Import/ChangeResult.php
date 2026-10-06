@@ -13,7 +13,9 @@ namespace AA\Import;
  */
 final class ChangeResult
 {
-    public function __construct(public readonly string $code, public readonly string $detail = '') {}
+    /** @param string $message the source's own words on settings it refused (SETTINGS), as Context::remarkText()
+     *                         keeps them; plain text, escaped on output */
+    public function __construct(public readonly string $code, public readonly string $detail = '', public readonly string $message = '') {}
 
     public function done(): bool
     {
@@ -23,6 +25,6 @@ final class ChangeResult
     /** why not, in words, plain text; null when it was done */
     public function refusal(): ?string
     {
-        return $this->done() ? null : Definition::refusal($this->code, $this->detail);
+        return $this->done() ? null : Definition::refusal($this->code, $this->detail, $this->message);
     }
 }
