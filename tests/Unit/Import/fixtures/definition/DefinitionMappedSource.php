@@ -51,6 +51,7 @@ final class DefinitionMappedSource extends AbstractSource
             'update',
             ['{ifeq:{index:id}::0:1}'],
             '{recompute:{index:id}}',
+            '{index:id}',
         );
     }
 }

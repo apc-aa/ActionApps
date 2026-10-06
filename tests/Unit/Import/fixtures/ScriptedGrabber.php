@@ -29,8 +29,9 @@ final class ScriptedGrabber extends ArrayGrabber
         private readonly ?\Closure $onPrepare = null,
         private readonly int $failAt = 0,
         private readonly ?\Exception $failure = null,
+        ?\Closure $onGet = null,
     ) {
-        parent::__construct($items, $prepare_error);
+        parent::__construct($items, $prepare_error, $onGet);
     }
 
     public function prepare(): void

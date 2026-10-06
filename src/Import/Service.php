@@ -317,7 +317,7 @@ final class Service
     }
 
     /**
-     * "Reset mapping": the mapping, key, store mode, validation and expression after a stream the
+     * "Reset mapping": the mapping, key, store mode, validation, expression after a stream and filter the
      * source gives for the stored settings - which the user must be allowed to set. An unfinished run
      * keeps working with its snapshot.
      */

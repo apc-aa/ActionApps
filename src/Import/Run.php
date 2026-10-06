@@ -48,9 +48,10 @@ class Run extends BatchRun
     public const DONE    = 'done';
     public const ENDED   = 'ended';
 
-    /** what a run counts, all of them in this order */
+    /** what a run counts, all of them in this order; filtered = left out by the filter of the definition,
+     *  apart from skipped (empty key, store mode), so a filter that keeps nothing shows */
     private const COUNTS = [
-        'read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0,
+        'read' => 0, 'new' => 0, 'updated' => 0, 'skipped' => 0, 'filtered' => 0, 'errors' => 0,
         'jobs' => 0, 'streams' => 0, 'unchanged' => 0, 'skipped_jobs' => 0, 'unversioned' => 0,
     ];
 
@@ -67,6 +68,9 @@ class Run extends BatchRun
     private const EMPTY_KEYS_KEPT = 20;
 
     private const MODES = ['run', 'changed', 'check', 'baseline'];
+
+    /** the warning of a job the filter kept no item of */
+    public const FILTER_KEPT_NONE = 'FILTER_KEPT_NONE';
 
     /** the modes that store nothing in the slice: they ask the source and record what it says */
     public const SOURCE_ONLY_MODES = ['check', 'baseline'];
@@ -236,14 +240,14 @@ class Run extends BatchRun
         return ((string) $this->work_ms === '') ? null : intdiv((int) $this->work_ms, 1000);
     }
 
-    /** @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
+    /** @return array{read: int, new: int, updated: int, skipped: int, filtered: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
     public function counts(): array
     {
         return self::countsOf((string) $this->counts);
     }
 
     /** the counts a stored `counts` value holds - State Check reads them without loading the run
-     *  @return array{read: int, new: int, updated: int, skipped: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
+     *  @return array{read: int, new: int, updated: int, skipped: int, filtered: int, errors: int, jobs: int, streams: int, unchanged: int, skipped_jobs: int, unversioned: int} */
     public static function countsOf(string $json): array
     {
         $stored = json_decode($json, true);
@@ -1014,7 +1018,7 @@ class Run extends BatchRun
         }
         $params  = $job->params($stream);
         // a stream that started over once already cannot be followed: refused before anything is stored
-        $grabber = new ParamsGrabber($inner, $params, $pos['offset'], $pos['fp'], $stream->versionField, $pos['restarts'] < 1);
+        $grabber = new ParamsGrabber($inner, $params, $pos['offset'], $pos['fp'], $stream->versionField, $pos['restarts'] < 1, $mapping->filter, $budget);
         $t13s    = $mapping->forJob($params, $this->targetSlice());
         $grabber->setHttp($ctx->http());
         $saver = $this->saver($grabber, $t13s, $mapping)->setImportMode()->setContext($params)->setRedact($ctx->redact(...));
@@ -1046,6 +1050,10 @@ class Run extends BatchRun
         if (($ended || $cut) && ($pos['keyed'] === 0) && ($pos['nokey'] > 0)) {
             $this->keylessJob($stream->key, $job->key, $ctx, $ended, $pos);
         }
+        if ($ended && ($pos['fout'] > 0) && ($pos['fout'] === $pos['offset'])) {
+            // may be just what the filter is for (a job of districts only) - a remark, not an error
+            $this->note(self::FILTER_KEPT_NONE);
+        }
         return $ended ? '' : self::STOP;
     }
 
@@ -1074,6 +1082,8 @@ class Run extends BatchRun
         foreach ($saver->counts() as $name => $count) {
             $this->tally[$name] += $count;
         }
+        // left out on purpose: no error, the stream keeps its version
+        $this->tally['filtered'] += $grabber->filtered();
         foreach ($saver->errors() as $error) {
             $this->itemError($stream, $job, $error, $base, $ctx);
         }
@@ -1091,6 +1101,7 @@ class Run extends BatchRun
         // a job read again from its first item counts its keys anew
         $pos['keyed']     = ((($pos['keyed'] === 1) && !$grabber->restarted()) || $saver->keyed()) ? 1 : 0;
         $pos['nokey']     = ($grabber->restarted() ? 0 : $pos['nokey']) + $saver->emptyKeys();
+        $pos['fout']      = ($grabber->restarted() ? 0 : $pos['fout']) + $grabber->filtered();
         $pos['rkeyed']    = (($pos['rkeyed'] === 1) || $saver->keyed()) ? 1 : 0;
         $pos['wrote']     = (($pos['wrote'] === 1) || ($saver->changedIds() !== [])) ? 1 : 0;
         // items lost to errors: changed must not skip them next time
@@ -1236,7 +1247,8 @@ class Run extends BatchRun
         return ($limit > 0) && ($this->readSoFar() >= $limit);
     }
 
-    /** what the Saver may still read; 0 = no limit */
+    /** what the Saver may still take; 0 = no limit. It takes only what the filter keeps, so it may read
+     *  more than that in its job - limitReached() counts all it read and stops the run after the job */
     private function limitLeft(): int
     {
         $limit = (int) $this->limit;

@@ -20,8 +20,8 @@ use JsonException;
 
 /**
  * How an item of a source becomes an item of the target slice: rows "target <- transformation"
- * in the order the Saver runs them, plus the key, store mode, validation and the expression after
- * a stream - all the definition takes from Source::defaultMapping().
+ * in the order the Saver runs them, plus the key, store mode, validation, the expression after
+ * a stream and the filter of source items - all the definition takes from Source::defaultMapping().
  *
  * A row's target is a field of the slice, or "param:<name>": the field is then the value of that
  * job parameter (one row serves every indicator of NSZM). That value comes from the data of the
@@ -77,6 +77,8 @@ final class Mapping
         public readonly string $storeMode = 'update/insert',
         public readonly array $validate = [],
         public readonly string $afterStream = '',
+        /** expression over a source item; '' or 0 leaves the item out (ParamsGrabber). A template - never built from settings or data */
+        public readonly string $filter = '',
     ) {
         self::checkRows($rows);
         self::checkLists($keyFields, $validate);

@@ -50,10 +50,10 @@ final class Definition extends AA_Object implements InternalExpandInterface
     public const BASELINE_EVENT = 'IMPORT_BL';
 
     /** what applyMapping() sets */
-    public const MAPPING_PROPS = ['mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'];
+    public const MAPPING_PROPS = ['mapping', 'key_fields', 'store_mode', 'validate', 'after_stream', 'filter'];
 
     /** what a run works with - the same for its whole life, whatever is changed in the meantime */
-    private const SNAPSHOT = ['source', 'settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'];
+    private const SNAPSHOT = ['source', 'settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream', 'filter'];
 
     /** type of the source: core:<name> | custom:<name> */
     protected $source = '';
@@ -69,6 +69,9 @@ final class Definition extends AA_Object implements InternalExpandInterface
     protected $validate = '';
     /** expression run after a stream */
     protected $after_stream = '';
+    /** expression over a source item; '' or 0 leaves it out. Evaluated as a template, so a source never
+     *  builds it from its settings or data */
+    protected $filter = '';
     /** '1' = a planned task starts it; by hand it runs always */
     protected $enabled = '';
 
@@ -86,6 +89,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
             'store_mode'   => new AA_Property('store_mode', _m('Store mode'), 'string', false, true, 'text'),
             'validate'     => new AA_Property('validate', _m('Validation'), 'text', false, true, 'text'),
             'after_stream' => new AA_Property('after_stream', _m('After a stream'), 'text', false, true, 'text'),
+            'filter'       => new AA_Property('filter', _m('Filter'), 'text', false, true, 'text'),
             'enabled'      => new AA_Property('enabled', _m('Enabled'), 'string', false, true, 'text'),
         ];
     }
@@ -754,6 +758,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
             $snapshot['store_mode'] ?? '',
             self::listOf($snapshot['validate'] ?? '', 'validation'),
             $snapshot['after_stream'] ?? '',
+            $snapshot['filter'] ?? '',
         );
     }
 
@@ -788,6 +793,7 @@ final class Definition extends AA_Object implements InternalExpandInterface
         $this->store_mode   = $m->storeMode;
         $this->validate     = json_encode($m->validate, JSON_UNESCAPED_SLASHES | JSON_THROW_ON_ERROR);
         $this->after_stream = $m->afterStream;
+        $this->filter       = $m->filter;
     }
 
     public function sourceType(): string

@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace Tests\Unit\Import;
 
 use AA\Import\Definition;
+use AA\Import\ParamsGrabber;
+use AA\Import\Run;
 use AA\Import\Probe;
 use AA\Import\RunCursor;
 use AA\Import\Stream;
+use AA\Import\StreamState;
 use AA\IO\Grabber\CSV;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
@@ -49,8 +52,8 @@ final class RunWorkTest extends TestCase
         self::assertCount(6, array_filter($steps, static fn(string $s): bool => str_starts_with($s, 'step') || ($s === 'done')), 'a step per job: the next job does not fit after the first');
         self::assertSame(self::keys(3, 2, 2), TestRun::storedValues('relation........'));
         $counts = $after->counts();
-        self::assertSame([12, 12, 0, 0, 0, 6, 3, 0, 0, 0], array_values($counts));
-        self::assertSame(['read', 'new', 'updated', 'skipped', 'errors', 'jobs', 'streams', 'unchanged', 'skipped_jobs', 'unversioned'], array_keys($counts));
+        self::assertSame([12, 12, 0, 0, 0, 0, 6, 3, 0, 0, 0], array_values($counts));
+        self::assertSame(['read', 'new', 'updated', 'skipped', 'filtered', 'errors', 'jobs', 'streams', 'unchanged', 'skipped_jobs', 'unversioned'], array_keys($counts));
     }
 
     public function test_work_storesTheParameterTargetOfEachStream(): void
@@ -687,6 +690,108 @@ final class RunWorkTest extends TestCase
         self::runOne();
 
         self::assertSame(['s1:b', '2021'], [TestRun::get($run->getId())?->position()['job'], TestRun::get($run->getId())?->position()['vmax']]);
+    }
+
+    public function test_filter_skippedRowsKeepStreamVersion(): void
+    {
+        $source             = self::source(streams: 1, jobs: 1, items: 0);
+        $source->streams[0] = new Stream('s1', 'Stream 1', ['fld' => 'text...........1'], '', 'year');
+        $source->jobs['s1'][0]['items'] = [['key' => 'k1', 'val' => '1', 'year' => '2019'], ['key' => 'k2', 'val' => '', 'year' => '2023'], ['key' => 'k3', 'val' => '0', 'year' => '2020']];
+        $run = self::startRun($source, [], ['filter' => '{index:val}']);
+
+        self::runAll($run->getId());
+
+        $done = TestRun::get($run->getId());
+        self::assertSame('done', $done?->state());
+        self::assertSame(['read' => 3, 'skipped' => 0, 'filtered' => 2, 'errors' => 0], array_intersect_key((array) $done?->counts(), ['read' => 1, 'skipped' => 1, 'filtered' => 1, 'errors' => 1]));
+        self::assertSame(['k1'], TestRun::storedValues('relation........'));
+        self::assertSame('2023', StreamState::forDefinition(self::DEF)?->versionOf('s1'), 'left out is no failure: the stream gets its version');
+    }
+
+    public function test_filter_budgetSpentAmongLeftOutRows_nextStepGoesOnExactly(): void
+    {
+        $source  = self::source(streams: 1, jobs: 1, items: 0);
+        $charged = 0;
+        // reading a row past the fingerprint costs 4 s, once: the next step reads the skipped rows again for free
+        $source->jobs['s1'][0]['onGet'] = static function (int $n) use (&$charged): void {
+            if (($n > ParamsGrabber::FP_ITEMS) && ($n > $charged)) {
+                $charged            = $n;
+                TestRun::$microNow += 4.0;
+            }
+        };
+        $source->jobs['s1'][0]['items'] = array_map(static fn(int $n): array => ['key' => "k$n", 'val' => (($n <= 3) || ($n === 40)) ? '1' : ''], range(1, 40));
+        $run = self::startRun($source, [], ['filter' => '{index:val}']);
+
+        self::runOne();
+
+        $step = TestRun::get($run->getId());
+        $pos  = (array) $step?->position();
+        self::assertSame('running', $step?->state(), 'stopped among the rows left out, to go on');
+        self::assertGreaterThan(20, $pos['offset']);
+        self::assertLessThan(40, $pos['offset']);
+        self::assertSame([$pos['offset'], $pos['offset'] - 3, 0], [$step?->counts()['read'], $step?->counts()['filtered'], $step?->counts()['skipped']]);
+
+        self::runAll($run->getId());
+
+        $done = TestRun::get($run->getId());
+        self::assertSame(['k1', 'k2', 'k3', 'k40'], TestRun::storedValues('relation........'), 'each kept row once, none lost');
+        self::assertSame([40, 36, 0], [$done?->counts()['read'], $done?->counts()['filtered'], $done?->counts()['errors']]);
+        self::assertSame([], json_decode((string) $done?->getProperty('warnings'), true) ?? [], 'the filter kept some');
+    }
+
+    public function test_filter_keptNoneOfAJobAcrossSteps_notedOnceItEnds(): void
+    {
+        $source  = self::source(streams: 1, jobs: 2, items: 0);
+        $charged = 0;
+        // as above: rows past the fingerprint cost 4 s once, so the first job spans steps
+        $source->jobs['s1'][0]['onGet'] = static function (int $n) use (&$charged): void {
+            if (($n > ParamsGrabber::FP_ITEMS) && ($n > $charged)) {
+                $charged            = $n;
+                TestRun::$microNow += 4.0;
+            }
+        };
+        $prepared = 0;
+        // the second step spends its time going back to where the first stopped, and stops before reading on
+        $source->jobs['s1'][0]['onPrepare'] = static function () use (&$prepared): void {
+            TestRun::$microNow += (++$prepared === 2) ? 30.0 : 0.0;
+        };
+        $source->jobs['s1'][0]['items'] = array_map(static fn(int $n): array => ['key' => "k$n", 'val' => ''], range(1, 40));
+        $source->jobs['s1'][1]['items'] = [['key' => 'x1', 'val' => ''], ['key' => 'x2', 'val' => '']];
+        $run = self::startRun($source, [], ['filter' => '{index:val}']);
+
+        self::runOne();
+
+        $step = TestRun::get($run->getId());
+        $pos  = (array) $step?->position();
+        self::assertSame(['s1:a', $pos['offset']], [$pos['job'], $pos['fout']], 'every row so far left out');
+        self::assertLessThan(40, $pos['offset']);
+
+        self::runOne();
+
+        $step = TestRun::get($run->getId());
+        self::assertSame([$pos['offset'], 's1:a'], [$step?->position()['offset'], $step?->position()['job']], 'the job is not done');
+        self::assertSame([], json_decode((string) $step?->getProperty('warnings'), true) ?? [], 'not before the job ends');
+
+        self::runAll($run->getId());
+
+        $done = TestRun::get($run->getId());
+        self::assertSame('done', $done?->state());
+        self::assertSame(42, $done?->counts()['filtered']);
+        self::assertSame([Run::FILTER_KEPT_NONE => 2], json_decode((string) $done?->getProperty('warnings'), true), 'the rows left out add up over steps, and the second job counts its own');
+    }
+
+    public function test_filter_keptNoneOfAJob_aRemarkNotAnError(): void
+    {
+        $source = self::source(streams: 1, jobs: 2, items: 2);
+        $source->jobs['s1'][1]['items'] = [['key' => 'x1', 'val' => 'v1', 'drop' => '1'], ['key' => 'x2', 'val' => 'v2', 'drop' => '1']];
+        $run    = self::startRun($source, [], ['filter' => '{ifset:{index:drop}:0:1}']);
+
+        self::runAll($run->getId());
+
+        $done = TestRun::get($run->getId());
+        self::assertSame('done', $done?->state());
+        self::assertSame([2, 2, 0], [$done?->counts()['new'], $done?->counts()['filtered'], $done?->counts()['errors']]);
+        self::assertSame([Run::FILTER_KEPT_NONE => 1], json_decode((string) $done?->getProperty('warnings'), true));
     }
 
     // ------------------------------------------------------------ probe

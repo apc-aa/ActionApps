@@ -43,7 +43,7 @@ final class DefinitionTest extends TestCase
     private const PLAIN  = 'custom:definitionplain';
     private const BROKEN = 'custom:definitionbroken';
     private const FIELDS = ['headline........', 'relation........', 'text...........1'];
-    private const HIDDEN = ['settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'];
+    private const HIDDEN = ['settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream', 'filter'];
 
     protected function setUp(): void
     {
@@ -510,12 +510,24 @@ final class DefinitionTest extends TestCase
 
         $snapshot = Definition::fresh($id)?->snapshot();
 
-        self::assertSame(['slice', 'source', 'settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream'], array_keys((array) $snapshot));
+        self::assertSame(['slice', 'source', 'settings', 'mapping', 'key_fields', 'store_mode', 'validate', 'after_stream', 'filter'], array_keys((array) $snapshot));
         self::assertSame(self::SLICE, $snapshot['slice'] ?? null);
         foreach (array_slice(array_keys((array) $snapshot), 1) as $property) {
             self::assertSame($stored[$property], $snapshot[$property] ?? null, $property);
         }
         self::assertEquals((new \DefinitionMappedSource())->defaultMapping(), Definition::mappingOf((array) $snapshot), 'a run rebuilds the mapping from it');
+    }
+
+    public function test_definition_filterInSnapshot(): void
+    {
+        $id = self::create('prices');
+
+        $snapshot = (array) Definition::fresh($id)?->snapshot();
+
+        self::assertSame('{index:id}', $snapshot['filter'] ?? null, 'stored from the default mapping, copied for a run');
+        self::assertSame('{index:id}', Definition::mappingOf($snapshot)->filter);
+        unset($snapshot['filter']);
+        self::assertSame('', Definition::mappingOf($snapshot)->filter, 'a run started before the filter existed filters nothing');
     }
 
     public function test_storeMode_overwriteRefused(): void

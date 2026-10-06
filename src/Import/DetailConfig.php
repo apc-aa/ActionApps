@@ -342,9 +342,9 @@ final class DetailConfig
         $why = isset(Registry::sources()[$this->def->sourceType()])
             ? $this->manageWhy(null)
             : DetailPage::reasonText('NO_SOURCE');
-        $html .= '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-actions" data-aa-confirm="' . safe(_m('Reset the mapping from the source? The mapping, the key fields, the store mode, the validation and the expression after a stream are replaced by what the source gives.')) . '">' . DetailPage::tokenFields($this->id(), 'reset_mapping')
+        $html .= '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-actions" data-aa-confirm="' . safe(_m('Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives.')) . '">' . DetailPage::tokenFields($this->id(), 'reset_mapping')
             . DetailPage::button(_m('Reset mapping from the source'), $why, []) . DetailPage::whyHtml($why) . '</form>'
-            . '<p><small>' . _m('Sets the mapping, the key fields, the store mode, the validation and the expression after a stream again as the source gives them for the stored settings. An open run goes on with the mapping it started with.') . '</small></p>';
+            . '<p><small>' . _m('Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. An open run goes on with the mapping it started with.') . '</small></p>';
         return DetailPage::section('mapping', _m('Mapping'), $html, false);
     }
 
@@ -380,6 +380,7 @@ final class DetailConfig
             _m('Store mode')     => '<code>' . safe($mapping->storeMode) . '</code>',
             _m('Validation')     => $codes($mapping->validate, '<br>'),
             _m('After a stream') => $codes(($mapping->afterStream === '') ? [] : [$mapping->afterStream], ''),
+            _m('Filter')         => $codes(($mapping->filter === '') ? [] : [$mapping->filter], ''),
         ]);
     }
 

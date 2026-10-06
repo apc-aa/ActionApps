@@ -85,6 +85,7 @@ final class DetailConfigTest extends TestCase
                 . '{"to":"param:fld","t":"copyfield","p":{"field2copy":"a\"b"}}]}',
             'validate'     => '["{ids:<b>x</b>}"]',
             'after_stream' => '<i>{item:x:_#HEADLINE}</i>',
+            'filter'       => '<u>{index:kod}</u>',
         ]);
         self::nameField('relation........', '<b>Rel</b>');
 
@@ -100,8 +101,9 @@ final class DetailConfigTest extends TestCase
         $this->assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt;{user:password}', $html);
         $this->assertStringContainsString('{ids:&lt;b&gt;x&lt;/b&gt;}', $html, 'the validation');
         $this->assertStringContainsString('&lt;i&gt;{item:x:_#HEADLINE}&lt;/i&gt;', $html, 'the expression after a stream');
+        $this->assertStringContainsString('&lt;u&gt;{index:kod}&lt;/u&gt;', $html, 'the filter');
         $this->assertStringContainsString('update/insert', $html, 'the store mode');
-        foreach (['<script>', '<b>x', '<i>{', '<b>Rel'] as $raw) {
+        foreach (['<script>', '<b>x', '<i>{', '<u>{', '<b>Rel'] as $raw) {
             $this->assertStringNotContainsString($raw, $html);
         }
     }

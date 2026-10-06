@@ -30,6 +30,8 @@ namespace Tests\Unit\Import {
     use AA\IO\Grabber\AbstractGrabber;
     use AA\IO\SourceRefused;
     use AA\IO\SourceUnavailable;
+    use AA\Later\BatchBudget;
+    use AA\Later\BatchBudgetSpent;
     use AA_Content;
     use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
     use PHPUnit\Framework\TestCase;
@@ -399,6 +401,116 @@ namespace Tests\Unit\Import {
             $g->prepare();
             self::drain($g);
             $this->assertSame('', $g->versionMax());
+        }
+
+        /** @return list<AA_Content> items 1..5 in `n`; the filter {index:ok} keeps 1 and 4 */
+        private static function filterItems(): array
+        {
+            $items = [];
+            foreach (['1', '', '0', 'yes', ' 0 '] as $i => $ok) {
+                $n       = (string) ($i + 1);
+                $items[] = self::item(['n' => $n, 'ok' => $ok, 'rok' => "202$n"]);
+            }
+            return $items;
+        }
+
+        public function test_filter_skipsWithoutError(): void
+        {
+            $g = new ParamsGrabber(self::source(self::filterItems()), [], filter: '{index:ok}');
+            $g->prepare();
+
+            $this->assertSame(['1', '4'], self::drain($g), 'empty, "0" and " 0 " are left out');
+            $this->assertSame(3, $g->filtered());
+            $this->assertSame(5, $g->offset());
+        }
+
+        public function test_filter_offsetCountsRawItems(): void
+        {
+            $items = self::filterItems();
+            $g = new ParamsGrabber(self::source($items), [], filter: '{index:ok}');
+            $g->prepare();
+            $this->assertSame('1', (string) $g->getItem()?->getValue('n'));
+            $this->assertSame('4', (string) $g->getItem()?->getValue('n'));
+            $this->assertSame(4, $g->offset(), 'the items left out between count');
+
+            $next = new ParamsGrabber(self::source($items), [], $g->offset(), $g->fingerprint(), filter: '{index:ok}');
+            $next->prepare();
+            $this->assertSame([], self::drain($next), 'goes on after the fourth item, not after the second kept one');
+            $this->assertSame([5, 1], [$next->offset(), $next->filtered()]);
+        }
+
+        public function test_filter_versionCountsFilteredItems(): void
+        {
+            $g = new ParamsGrabber(self::source(self::filterItems()), [], versionField: 'rok', filter: '{index:ok}');
+            $g->prepare();
+            self::drain($g);
+
+            $this->assertSame('2025', $g->versionMax(), 'what the filter leaves out is no error - the stream has it all');
+        }
+
+        public function test_filter_seesJobParameters(): void
+        {
+            $items = array_map(static fn(int $n): AA_Content => self::item(['n' => (string) $n, 'keep' => '1']), [1, 2, 3]);
+            $g = new ParamsGrabber(self::source($items), ['keep' => '0'], filter: '{index:keep}');
+            $g->prepare();
+
+            $this->assertSame([], self::drain($g));
+            $this->assertSame(3, $g->filtered());
+        }
+
+        public function test_filter_budgetSpentAmongLeftOutItems(): void
+        {
+            $items = [];
+            foreach (range(1, 8) as $n) {
+                $items[] = self::item(['n' => (string) $n, 'ok' => in_array($n, [1, 7], true) ? '1' : '']);
+            }
+            $clock  = 0.0;
+            // each look at the clock is a second later: the third item left out finds it spent
+            $budget = new BatchBudget(3.0, 0, 0, static function () use (&$clock): float {
+                return $clock += 1.0;
+            });
+            $g = new ParamsGrabber(self::source($items), [], filter: '{index:ok}', budget: $budget);
+            $g->prepare();
+            $this->assertSame('1', (string) $g->getItem()?->getValue('n'));
+            try {
+                $g->getItem();
+                $this->fail('BatchBudgetSpent expected');
+            } catch (BatchBudgetSpent) {
+            }
+            $this->assertSame([4, 3], [$g->offset(), $g->filtered()], 'items 2-4 read and left out');
+
+            $next = new ParamsGrabber(self::source($items), [], $g->offset(), $g->fingerprint(), filter: '{index:ok}');
+            $next->prepare();
+            $this->assertSame(['7'], self::drain($next), 'goes on with item 5');
+            $this->assertSame([8, 3], [$next->offset(), $next->filtered()]);
+        }
+
+        public function test_filter_withoutFilterTheBudgetIsTheSavers(): void
+        {
+            $budget = new BatchBudget(0.0, 0, 0, static fn(): float => 1.0);
+            $g = new ParamsGrabber(self::source(self::items(3)), [], budget: $budget);
+            $g->prepare();
+
+            $this->assertSame(['1', '2', '3'], self::drain($g), 'the Saver checks it between items');
+        }
+
+        public function test_filter_emptyKeepsEveryItem(): void
+        {
+            $g = new ParamsGrabber(self::source(self::filterItems()), []);
+            $g->prepare();
+
+            $this->assertSame(['1', '2', '3', '4', '5'], self::drain($g));
+            $this->assertSame(0, $g->filtered());
+        }
+
+        public function test_filter_prepareForgetsTheLastCount(): void
+        {
+            $g = new ParamsGrabber(self::source(self::filterItems()), [], filter: '{index:ok}');
+            $g->prepare();
+            self::drain($g);
+            $g->prepare();
+
+            $this->assertSame(0, $g->filtered());
         }
 
         public function test_prepare_delegatesToInner(): void

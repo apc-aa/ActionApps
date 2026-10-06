@@ -23,6 +23,7 @@ final class RunCursor
      * - skips: jobs of the stream skipped in a row, since the last one done;
      * - keyed, nokey: an item of the cursor's job had its key; items of it skipped without one - none
      *   keyed at the job's end means a broken mapping, also when the job spans several steps;
+     * - fout: items of the cursor's job the filter left out - all of them at the job's end is worth a remark;
      * - rkeyed: an item of the run had its key - a job cut by the run's limit says nothing of the mapping then;
      * - probed, pv: the changed or run mode asked probe() at the stream's start, and the version it gave;
      * - after: the key of a closed stream whose expression is due;
@@ -32,7 +33,7 @@ final class RunCursor
     public const START = [
         'i' => 0, 'job' => '', 'offset' => 0, 'fp' => '', 'pages' => 0, 'cur' => '', 'cat' => '',
         'wrote' => 0, 'failed' => 0, 'vmax' => '', 'restarts' => 0, 'probed' => 0, 'pv' => '',
-        'after' => '', 'checked' => 0, 'ccode' => '', 'cdetail' => '', 'skips' => 0, 'keyed' => 0, 'nokey' => 0, 'rkeyed' => 0,
+        'after' => '', 'checked' => 0, 'ccode' => '', 'cdetail' => '', 'skips' => 0, 'keyed' => 0, 'nokey' => 0, 'rkeyed' => 0, 'fout' => 0,
     ];
 
     /** the stored position in the shape of START, the types of START */
@@ -60,7 +61,7 @@ final class RunCursor
     /** the cursor on $job, a job not started yet */
     public static function started(array $pos, string $job): array
     {
-        return ['job' => $job, 'offset' => 0, 'fp' => '', 'pages' => $pos['pages'] + 1, 'cur' => sha1($job), 'keyed' => 0, 'nokey' => 0] + $pos;
+        return ['job' => $job, 'offset' => 0, 'fp' => '', 'pages' => $pos['pages'] + 1, 'cur' => sha1($job), 'keyed' => 0, 'nokey' => 0, 'fout' => 0] + $pos;
     }
 
     /** the failed job at $pos is the SKIPS_IN_A_ROW-th in a row: the rest of its stream is skipped */
@@ -78,7 +79,7 @@ final class RunCursor
     /** the cursor's job gone from the source: the stream starts over, its stored items stay */
     public static function restarted(array $pos): array
     {
-        return ['job' => '', 'offset' => 0, 'fp' => '', 'restarts' => $pos['restarts'] + 1, 'keyed' => 0, 'nokey' => 0] + $pos;
+        return ['job' => '', 'offset' => 0, 'fp' => '', 'restarts' => $pos['restarts'] + 1, 'keyed' => 0, 'nokey' => 0, 'fout' => 0] + $pos;
     }
 
     /** whether this step counts the job: one that read nothing more than the cursor $from had was

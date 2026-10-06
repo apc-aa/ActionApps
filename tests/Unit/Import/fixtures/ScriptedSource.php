@@ -28,7 +28,8 @@ class ScriptedSource extends AbstractSource
      * stream key => its jobs, or a closure giving them anew at each jobs() call: key, items (field =>
      * value), params, and optionally a grabber of its own, an exception prepare() throws, a grabber
      * that does not fetch via loadData(), fills items directly or waits between requests (ms), a
-     * closure run first in prepare(), the item getItem() fails at and with what
+     * closure run first in prepare(), the item getItem() fails at and with what, a closure called with the
+     * number of each item read (ArrayGrabber's on_get)
      * @var array<string, list<array<string, mixed>>|\Closure(): iterable<array<string, mixed>>>
      */
     public array $jobs = [];
@@ -118,7 +119,7 @@ class ScriptedSource extends AbstractSource
             return $item;
         }, $spec['items'] ?? []);
         $failAt  = $spec['failAt'] ?? [0, null];
-        $grabber = new ScriptedGrabber($items, $spec['error'] ?? null, $spec['via'] ?? true, $spec['direct'] ?? false, $spec['onPrepare'] ?? null, $failAt[0], $failAt[1]);
+        $grabber = new ScriptedGrabber($items, $spec['error'] ?? null, $spec['via'] ?? true, $spec['direct'] ?? false, $spec['onPrepare'] ?? null, $failAt[0], $failAt[1], $spec['onGet'] ?? null);
         if (isset($spec['wait'])) {
             $grabber->setLoadFrequency($spec['wait']);
         }

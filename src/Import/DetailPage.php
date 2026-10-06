@@ -326,7 +326,7 @@ final class DetailPage
         if (!$runs) {
             return self::section('runs', _m('Runs'), '<p class="aa-empty-note">' . _m('No run yet.') . '</p>');
         }
-        $heads = [_m('Outcome'), _m('Started'), _m('Took'), _m('Read'), _m('New'), _m('Updated'), _m('Skipped'), _m('Item errors')];
+        $heads = [_m('Outcome'), _m('Started'), _m('Took'), _m('Read'), _m('New'), _m('Updated'), _m('Skipped'), _m('Filtered out'), _m('Item errors')];
         $html  = '<table class="aa-import-runs"><thead><tr><th scope="col">' . implode('</th><th scope="col">', $heads) . '</th></tr></thead><tbody>';
         foreach ($runs as $run) {
             $p       = $this->progressOf($run);
@@ -343,7 +343,7 @@ final class DetailPage
                 . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
                 . '</tr>';
             $samples = $run->samples();
-            $more    = self::runErrorHtml($p['error'] ?? null, ($p['role'] ?? '') === 'active') . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
+            $more    = self::runErrorHtml($p['error'] ?? null, ($p['role'] ?? '') === 'active') . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . self::filterKeptNoneHtml((int) ($p['warnings'][Run::FILTER_KEPT_NONE] ?? 0)) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
             if ($more !== '') {
                 $html .= '<tr class="aa-import-run-more"><td colspan="' . count($heads) . '">' . $more . '</td></tr>';
             }
@@ -660,7 +660,7 @@ final class DetailPage
         }
         $counts = $run->counts();
         $html   = '';
-        foreach (['read' => _m('Read'), 'new' => _m('New'), 'updated' => _m('Updated'), 'skipped' => _m('Skipped'), 'errors' => _m('Item errors')] as $key => $label) {
+        foreach (['read' => _m('Read'), 'new' => _m('New'), 'updated' => _m('Updated'), 'skipped' => _m('Skipped'), 'filtered' => _m('Filtered out'), 'errors' => _m('Item errors')] as $key => $label) {
             $bad   = (($key === 'errors') && ($counts[$key] > 0));
             $html .= '<div' . ($bad ? ' data-kind="warn"' : '') . '><dt>' . $label . '</dt><dd>' . ($bad ? RunView::markHtml('warn') . ' ' : '') . (int) $counts[$key] . '</dd></div>';
         }
@@ -1034,6 +1034,16 @@ final class DetailPage
             . '<tbody>' . $rows . '</tbody></table></details>';
     }
 
+    /** jobs the filter kept no item of - fine when that is what it is for, so a remark, not an error */
+    private static function filterKeptNoneHtml(int $jobs): string
+    {
+        if ($jobs === 0) {
+            return '';
+        }
+        return '<p>' . (($jobs === 1) ? _m('The filter kept no item of 1 job.') : _m('The filter kept no item of %1 jobs.', [$jobs]))
+            . ' ' . _m('If those items should be imported, check the filter in Mapping.') . '</p>';
+    }
+
     /** @param list<array<string, list<string>>> $samples */
     private static function samplesHtml(array $samples, string $runId): string
     {
@@ -1098,17 +1108,17 @@ final class DetailPage
         return ($run->mode() === 'run') ? trim(_m('full run') . ', ' . $how, ', ') : $how;
     }
 
-    /** the five count cells; a run that imports nothing, or stopped before it read anything, says so in one cell
+    /** the count cells; a run that imports nothing, or stopped before it read anything, says so in one cell
      *  @param list<string> $labels */
     private static function countCellsHtml(Run $run, int $now, array $labels, string $errorsOf = ''): string
     {
         $nothing = in_array($run->mode(), Run::SOURCE_ONLY_MODES, true) ? RunView::resultText($run, $now) : RunView::nothingReadText($run);
         if ($nothing !== '') {
-            return '<td colspan="5" class="aa-import-nocounts">' . safe($nothing) . '</td>';
+            return '<td colspan="' . count($labels) . '" class="aa-import-nocounts">' . safe($nothing) . '</td>';
         }
         $counts = $run->counts();
         $html   = '';
-        foreach (['read', 'new', 'updated', 'skipped', 'errors'] as $i => $key) {
+        foreach (['read', 'new', 'updated', 'skipped', 'filtered', 'errors'] as $i => $key) {
             $n     = (int) $counts[$key];
             $class = ($n === 0) ? ' class="aa-import-zero"' : (($key === 'errors') ? ' class="aa-import-some"' : '');
             $cell  = (($key === 'errors') && ($n > 0) && ($errorsOf !== '')) ? '<a href="#aa-import-errors-' . safe($errorsOf) . '" data-aa-open>' . $n . '</a>' : (string) $n;
@@ -1159,7 +1169,8 @@ final class DetailPage
         $keys   = json_decode((string) $run->getProperty('stream_keys'), true);
         $alone  = is_array($keys) && ($keys === [$key]);
         $html   = '<strong>' . _m('%1 read', [$counts['read']]) . '</strong><small class="aa-import-reason">'
-            . _m('%1 new, %2 updated, %3 skipped', [$counts['new'], $counts['updated'], $counts['skipped']]) . '</small>';
+            . _m('%1 new, %2 updated, %3 skipped', [$counts['new'], $counts['updated'], $counts['skipped']])
+            . (($counts['filtered'] > 0) ? ', ' . _m('%1 filtered out', [$counts['filtered']]) : '') . '</small>';
         $note   = $run->isDry() ? _m('dry run - nothing stored') : ($alone ? '' : _m('all streams of the run together'));
         return $html . (($note === '') ? '' : '<small class="aa-import-reason">' . $note . '</small>');
     }

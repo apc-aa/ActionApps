@@ -8,6 +8,8 @@ use AA\Http\ClientInterface;
 use AA\IO\Grabber\AbstractGrabber;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
+use AA\Later\BatchBudget;
+use AA\Later\BatchBudgetSpent;
 use AA\Later\BatchPosition;
 use AA_Content;
 use AA_Value;
@@ -35,6 +37,7 @@ final class ParamsGrabber extends AbstractGrabber
     private string $fp_now = '';
     private bool $restarted = false;
     private string $vmax = '';
+    private int $filtered = 0;
 
     /**
      * @param array<string, string> $params        added to each item as fields; they win over source fields of the same
@@ -44,6 +47,10 @@ final class ParamsGrabber extends AbstractGrabber
      * @param string                $versionField  source field whose maximum is the version of the data; '' = none
      * @param bool                  $restartAllowed false = a changed fingerprint fails prepare() instead of starting
      *                                             over, before a single item is handed out (and stored)
+     * @param string                $filter        expression over the item as the mapping sees it; an item it gives
+     *                                             '' or 0 is left out - not an error, so the stream keeps its version
+     * @param ?BatchBudget          $budget        checked after each item left out - the Saver checks it only
+     *                                             between the items handed out, and a filter may skip millions
      * @throws SourceRefused DEFINITION for a direct-fill grabber with parameters - its items are stored as they are,
      *                       so the parameters would land in the target item instead of serving the mapping
      */
@@ -54,6 +61,8 @@ final class ParamsGrabber extends AbstractGrabber
         private readonly string $fp = '',
         private readonly string $versionField = '',
         private readonly bool $restartAllowed = true,
+        private readonly string $filter = '',
+        private readonly ?BatchBudget $budget = null,
     ) {
         if (($offset < 0) || (($offset > 0) && ($fp === ''))) {
             // without the fingerprint nobody can tell the skipped items are still the stored ones
@@ -73,6 +82,7 @@ final class ParamsGrabber extends AbstractGrabber
         $this->exhausted = false;
         $this->taken = 0;
         $this->vmax = '';
+        $this->filtered = 0;
         $this->fp_now = '';
         $this->restarted = false;
         $this->inner->prepare();
@@ -93,26 +103,39 @@ final class ParamsGrabber extends AbstractGrabber
         }
     }
 
+    /** @throws BatchBudgetSpent when the budget runs out among items the filter leaves out; offset() counts them */
     public function getItem(): ?AA_Content
     {
-        if (!($raw = $this->nextRaw())) {
-            return null;
-        }
-        $this->taken++;
-        if ($this->versionField !== '') {
-            foreach ($raw->getValuesArray($this->versionField) as $value) {
-                $this->vmax = self::laterVersion($this->vmax, (string) $value);
+        while ($raw = $this->nextRaw()) {
+            $this->taken++;
+            if ($this->versionField !== '') {
+                foreach ($raw->getValuesArray($this->versionField) as $value) {
+                    $this->vmax = self::laterVersion($this->vmax, (string) $value);
+                }
+            }
+            // a second prepare() reads the same objects again; with the parameters in them its fingerprint would differ
+            $item = clone $raw;
+            // the expressions of the mapping would apply the aliases of the slice these name - a source
+            // must not choose whose aliases run over its own values
+            unset($item[self::SLICE_FIELDS[0]], $item[self::SLICE_FIELDS[1]]);
+            foreach ($this->params as $name => $value) {
+                $item->setAaValue($name, new AA_Value($value));
+            }
+            if ($this->passes($item)) {
+                return $item;
+            }
+            $this->filtered++;
+            if ($this->budget?->spent()) {
+                throw new BatchBudgetSpent('The budget ran out among items the filter left out');
             }
         }
-        // a second prepare() reads the same objects again; with the parameters in them its fingerprint would differ
-        $item = clone $raw;
-        // the expressions of the mapping would apply the aliases of the slice these name - a source
-        // must not choose whose aliases run over its own values
-        unset($item[self::SLICE_FIELDS[0]], $item[self::SLICE_FIELDS[1]]);
-        foreach ($this->params as $name => $value) {
-            $item->setAaValue($name, new AA_Value($value));
-        }
-        return $item;
+        return null;
+    }
+
+    /** source items the filter left out since prepare(), counted in offset() too */
+    public function filtered(): int
+    {
+        return $this->filtered;
     }
 
     /** source items handed out so far, those skipped by the offset included - where the next step goes on */
@@ -211,6 +234,16 @@ final class ParamsGrabber extends AbstractGrabber
     public function clear_report(): void
     {
         $this->inner->clear_report();
+    }
+
+    /** the filter over $item the way AA_Transformation_Value evaluates a row of the mapping */
+    private function passes(AA_Content $item): bool
+    {
+        if ($this->filter === '') {
+            return true;
+        }
+        $result = trim((string) GetItemFromContent($item)?->subst_alias($this->filter));
+        return ($result !== '') && ($result !== '0');
     }
 
     private function nextRaw(): ?AA_Content

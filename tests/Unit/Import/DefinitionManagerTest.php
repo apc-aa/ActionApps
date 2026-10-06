@@ -107,7 +107,7 @@ final class DefinitionManagerTest extends TestCase
     public function test_rowHtml_showsNoSettingsNorMapping(): void
     {
         $id = self::definition('prices');
-        foreach (['settings', 'mapping', 'key_fields', 'validate', 'after_stream'] as $property) {
+        foreach (['settings', 'mapping', 'key_fields', 'validate', 'after_stream', 'filter'] as $property) {
             self::storedSet($id, $property, '{"x":"' . self::SECRET_MARK . '"}');
         }
 

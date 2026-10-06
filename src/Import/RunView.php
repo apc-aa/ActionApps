@@ -91,7 +91,7 @@ final class RunView
     public static function nothingReadText(Run $run): string
     {
         $counts = $run->counts();
-        if (!in_array($run->state(), [Run::ENDED, Run::ERROR], true) || ($counts['read'] + $counts['new'] + $counts['updated'] + $counts['skipped'] + $counts['errors'] !== 0)) {
+        if (!in_array($run->state(), [Run::ENDED, Run::ERROR], true) || ($counts['read'] + $counts['new'] + $counts['updated'] + $counts['skipped'] + $counts['filtered'] + $counts['errors'] !== 0)) {
             return '';
         }
         return ($run->state() === Run::ENDED) && ((string) $run->getProperty('error_code') === '') ? _m('Ended before reading anything') : _m('Stopped before reading anything');

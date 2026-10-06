@@ -62,7 +62,9 @@ interface SourceInterface extends NamedInterface
 
     /**
      * The mapping a new definition starts with, and what "reset mapping" brings back: rows, key,
-     * store mode, validation and the expression after a stream.
+     * store mode, validation, the expression after a stream and the filter.
+     * The expressions are evaluated as templates in the queue: write them as constants of the source,
+     * never build them from its settings or from the data it reads.
      */
     public function defaultMapping(): Mapping;
 
