@@ -8,9 +8,10 @@ use AA\Later\Toexecute;
 use AA\Util\LogOnce;
 use AA_Log;
 
-/** Queued tasks of a class this AA does not have, in the last 30 days: Toexecute leaves them in the
- *  queue (a class may be missing only during a deploy) and logs it once a day per class. Their
- *  priority sinks with each attempt, so they retire after about two days. Index-only, hence basic.
+/** Queued tasks needing a class this AA does not have, in the last 30 days: Toexecute leaves them in
+ *  the queue at their priority, due again in a minute, older tasks in up to an hour (a class may be
+ *  missing only during a deploy, or only in this one of two AA trees over the same database), and
+ *  logs it once a day per class. Index-only, hence basic.
  */
 class CheckQueuedClassMissing extends AbstractOptimize
 {
@@ -67,7 +68,7 @@ class CheckQueuedClassMissing extends AbstractOptimize
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: _m('If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired.'),
+                advice: _m('The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager.'),
                 links: [_m('Task Manager') => get_admin_url('aa_toexecute.php'), _m('Log rows') => AA_Log::getAdminUrl(Toexecute::LOG_CLASS_MISSING, $class)],
                 key: $class,
                 last: (int) $row['last'],

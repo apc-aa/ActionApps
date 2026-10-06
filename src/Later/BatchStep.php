@@ -10,7 +10,7 @@ use AA_Logentry_Obj;
 /** One queued step of a batch run. The row holds only the run's class, its id and the fingerprint of
  *  the step it was queued for - never the run or its source, so a stale row cannot carry old state
  *  (or a secret) into the run, and the run's record stays the one truth. */
-final class BatchStep implements LaterInterface
+final class BatchStep implements LaterInterface, RequiresClasses
 {
     /** the run whose step is working now; plain request state, never serialized */
     private static ?BatchRun $running = null;
@@ -24,6 +24,12 @@ final class BatchStep implements LaterInterface
     public function toexecutelater($params = []): string
     {
         return BatchRun::runStep($this->class, $this->run, $this->expected);
+    }
+
+    /** the run's class - without it the step would be refused as no batch run and its row removed */
+    public function requiredClasses(): array
+    {
+        return [$this->class];
     }
 
     public function logSelector(): AA_Logentry

@@ -27,8 +27,10 @@ namespace {
 namespace Tests\Unit\Later {
 
     use AA\IO\DB\DB_PDO;
+    use AA\Later\BatchStep;
     use AA\Later\Toexecute;
     use AA\Optimize\CheckQueue;
+    use AA\Util\LogOnce;
     use AA_Logentry;
     use PDO;
     use PHPUnit\Framework\Attributes\DataProvider;
@@ -63,6 +65,7 @@ namespace Tests\Unit\Later {
             self::$ran = [];
             ClockTask::$seen = [];
             ParamsTask::$ran = [];
+            LogOnce::reset();   // one row a day per class - per process, so another test's row would hide this one's
             set_time_limit(0);   // the round size comes from the limit - another test may have left one
             $this->pdo = new PDO('sqlite::memory:');
             $this->pdo->exec('CREATE TABLE toexecute (id INTEGER PRIMARY KEY, created INTEGER NOT NULL DEFAULT 0, execute_after INTEGER NOT NULL, aa_user TEXT NOT NULL DEFAULT \'\', priority INTEGER NOT NULL, selector TEXT NOT NULL, object BLOB NOT NULL, params BLOB NOT NULL)');
@@ -93,10 +96,10 @@ namespace Tests\Unit\Later {
         }
 
         /** @param object|string $task  the task, or its already serialized form */
-        private function seed(object|string $task, string $selector, int $priority, ?int $execute_after = null, array $params = []): int
+        private function seed(object|string $task, string $selector, int $priority, ?int $execute_after = null, array $params = [], ?int $created = null): int
         {
-            $this->pdo->prepare('INSERT INTO toexecute (execute_after, priority, selector, object, params) VALUES (?, ?, ?, ?, ?)')
-                ->execute([$execute_after ?? time() - 60, $priority, $selector, is_string($task) ? $task : serialize($task), serialize($params)]);
+            $this->pdo->prepare('INSERT INTO toexecute (created, execute_after, priority, selector, object, params) VALUES (?, ?, ?, ?, ?, ?)')
+                ->execute([$created ?? time(), $execute_after ?? time() - 60, $priority, $selector, is_string($task) ? $task : serialize($task), serialize($params)]);
             return (int) $this->pdo->lastInsertId();
         }
 
@@ -110,18 +113,43 @@ namespace Tests\Unit\Later {
             return $rows;
         }
 
-        /** the params a queue row holds now */
-        private function paramsOf(int $id): mixed
+        /** a serialized object of $class with no properties - the length prefix must match, or unserialize() fails for another reason */
+        private static function objectOf(string $class): string
         {
-            $stmt = $this->pdo->prepare('SELECT params FROM toexecute WHERE id = ?');
-            $stmt->execute([$id]);
-            return unserialize((string) $stmt->fetchColumn());
+            return 'O:' . strlen($class) . ':"' . $class . '":0:{}';
+        }
+
+        /** runs $fn with PHP's warnings silenced - for payloads PHP warns about on purpose */
+        private static function quietly(callable $fn): void
+        {
+            set_error_handler(static fn() => true, E_WARNING);
+            try {
+                $fn();
+            } finally {
+                restore_error_handler();
+            }
         }
 
         /** the queue row is due again, as when its time has come */
         private function due(int $id): void
         {
             $this->pdo->prepare('UPDATE toexecute SET execute_after = ? WHERE id = ?')->execute([time() - 1, $id]);
+        }
+
+        /** @return array<string, mixed> the whole queue row as stored */
+        private function row(int $id): array
+        {
+            $stmt = $this->pdo->prepare('SELECT * FROM toexecute WHERE id = ?');
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+
+        /** the params a queue row holds now */
+        private function paramsOf(int $id): mixed
+        {
+            $stmt = $this->pdo->prepare('SELECT params FROM toexecute WHERE id = ?');
+            $stmt->execute([$id]);
+            return unserialize((string) $stmt->fetchColumn());
         }
 
         /** @return list<array{selector:string, params:string}> */
@@ -211,105 +239,266 @@ namespace Tests\Unit\Later {
             $this->assertStringNotContainsString(self::SECRET, json_encode($toexecute->reportRows()), 'and out of the report');
         }
 
-        public function test_execute_task_of_missing_class_tries_again_in_a_minute(): void
+        public function test_execute_task_of_missing_class_keeps_its_priority_and_is_due_in_a_minute(): void
         {
-            $broken = $this->seed('O:17:"MissingSoonClass1":0:{}', 'test-broken', 100, null, ['keep' => 1]);
+            // another AA tree over the same database has the class, this one does not
+            $broken = $this->seed(self::objectOf('AA\Later\NoSuchTaskClassX'), 'test-broken', 5);
+            $this->seed(new RecordingTask('behind'), 'test-behind', 1);
+            $before = $this->row($broken);
 
-            (new Toexecute())->execute();
+            $toexecute = new CountingToexecute();
+            $toexecute->execute();
 
-            $row = $this->queue()[$broken];
-            $this->assertEqualsWithDelta(time() + Toexecute::MISSING_CLASS_RETRY, $row['execute_after'], 5, 'a passing file-system glitch must not hide the task for the whole claim lease');
-            $this->assertSame(99, $row['priority'], 'the miss counts as an attempt');
-            $this->assertSame(['keep' => 1, Toexecute::MISSING_CLASS_KEY => 1], $this->paramsOf($broken), 'the row counts its misses next to its own params');
+            $after = $this->row($broken);
+            $this->assertSame(5, (int) $after['priority'], 'the miss does not sink the row - at 0 it would be lost');
+            $this->assertEqualsWithDelta(time() + Toexecute::MISSING_CLASS_RETRY, (int) $after['execute_after'], 5, 'a runner that has the class takes it within a minute, not after the lease');
+            $this->assertSame($before['params'], $after['params']);
+            $this->assertSame(['behind'], self::$ran, 'the round went on past it');
+            $this->assertSame(2, $toexecute->calls, 'each row once - the parked row is not due again in this round');
+            $this->assertStringContainsString("#$broken", json_encode($toexecute->reportRows()), 'the report names the task');
+            $this->assertSame([['selector' => 'AA\Later\NoSuchTaskClassX', 'params' => 'test-broken']], $this->logRows(Toexecute::LOG_CLASS_MISSING));
+            $this->assertCount(1, array_filter($this->logRows('TOEXECUTE'), static fn(array $r) => str_starts_with($r['params'], 'Xrun:1:1:')), 'a parked row is not a started task - CheckQueue would read it as a round out of time');
         }
 
-        public function test_execute_task_of_missing_class_takes_the_lease_after_the_short_tries(): void
+        public function test_execute_task_of_missing_class_keeps_its_priority_over_many_rounds(): void
         {
-            $broken = $this->seed('O:17:"MissingSoonClass2":0:{}', 'test-broken', 100);
+            $broken = $this->seed(self::objectOf('AA\Later\NoSuchTaskClassX'), 'test-broken', 5);
 
-            for ($try = 1; $try <= Toexecute::MISSING_CLASS_TRIES; ++$try) {
+            for ($round = 1; $round <= 5; ++$round) {
                 (new Toexecute())->execute();
-                $this->assertLessThan(time() + Toexecute::MISSING_CLASS_RETRY + 5, $this->queue()[$broken]['execute_after'], "try $try is short");
-                $this->due($broken);
+                $this->assertSame(5, $this->queue()[$broken]['priority'], "round $round");
+                $this->due($broken);   // a minute later
             }
+
+            $this->assertCount(1, $this->logRows(Toexecute::LOG_CLASS_MISSING), 'one log row a day per class');
+        }
+
+        public static function missingClassAges(): array
+        {
+            return [
+                'fresh'         => [0, 60],
+                '24 minutes'    => [24 * 60, 60],
+                'an hour'       => [3600, 150],
+                'half a day'    => [12 * 3600, 1800],
+                'a day'         => [86400, 3600],
+                'a month'       => [30 * 86400, 3600],
+                'created later' => [-600, 60],
+            ];
+        }
+
+        #[DataProvider('missingClassAges')]
+        public function test_missingClassDelay_grows_with_the_age(int $age, int $delay): void
+        {
+            $this->assertSame($delay, Toexecute::missingClassDelay($age));
+        }
+
+        public function test_execute_task_of_class_missing_for_long_is_tried_hourly(): void
+        {
+            $old   = $this->seed(self::objectOf('AA\Later\NoSuchTaskClassX'), 'test-old', 5, null, [], time() - 2 * 86400);
+            $fresh = $this->seed(self::objectOf('AA\Later\NoSuchTaskClassX'), 'test-fresh', 5);
+
             (new Toexecute())->execute();
 
-            $row = $this->queue()[$broken];
-            $this->assertGreaterThan(time() + Toexecute::CLAIM_LEASE - 60, $row['execute_after'], 'a class missing that long waits out the claim lease, as a failed task does');
-            $this->assertSame(100 - Toexecute::MISSING_CLASS_TRIES - 1, $row['priority'], 'its priority keeps sinking - at 0 the queue gives it up, never runs it broken');
-            $this->assertSame([Toexecute::MISSING_CLASS_KEY => Toexecute::MISSING_CLASS_TRIES], $this->paramsOf($broken), 'the count stops at the short tries');
-            $this->assertCount(1, $this->logRows(Toexecute::LOG_CLASS_MISSING), 'still one log row a day per class');
+            $this->assertEqualsWithDelta(time() + Toexecute::MISSING_CLASS_RETRY_MAX, $this->queue()[$old]['execute_after'], 5, 'missing everywhere - one look an hour per row');
+            $this->assertSame(5, $this->queue()[$old]['priority'], 'still never retired');
+            $this->assertEqualsWithDelta(time() + Toexecute::MISSING_CLASS_RETRY, $this->queue()[$fresh]['execute_after'], 5, 'a fresh task of a deploy skew is tried again in a minute');
+        }
+
+        public function test_execute_park_does_not_overwrite_a_row_moved_meanwhile(): void
+        {
+            // the row is moved while this runner holds the claim (another runner's write) - giving the
+            // priority back must match the claim's execute_after too, not only its priority
+            $moved  = time() + 5000;
+            $broken = $this->seed(self::objectOf('AA\Later\MovedMeanwhileTask'), 'test-broken', 5);
+            $loader = function (string $class) use ($broken, $moved): void {
+                if ($class === 'AA\Later\MovedMeanwhileTask') {
+                    $this->pdo->prepare('UPDATE toexecute SET execute_after = ? WHERE id = ?')->execute([$moved, $broken]);
+                }
+            };
+            spl_autoload_register($loader);
+            try {
+                (new Toexecute())->execute();
+            } finally {
+                spl_autoload_unregister($loader);
+            }
+
+            $this->assertSame(['execute_after' => $moved, 'priority' => 4], $this->queue()[$broken], 'the other write stands');
+        }
+
+        public function test_execute_report_escapes_what_a_task_returns(): void
+        {
+            $this->seed(new MarkupTask(), 'test-markup', 5);
+
+            $toexecute = new Toexecute();
+            $toexecute->execute();
+
+            $report = json_encode($toexecute->reportRows());
+            $this->assertStringNotContainsString('<img', $report, 'the Task Manager prints the report as HTML');
+            $this->assertStringContainsString('&lt;img', $report);
+        }
+
+        public function test_execute_parked_task_is_not_overdue(): void
+        {
+            $broken = $this->seed(self::objectOf('AA\Later\NoSuchTaskClassX'), 'test-broken', 5, time() - 7200);
+
+            (new Toexecute())->execute();
+
+            $this->assertSame([], array_filter((new CheckQueue())->findings(), static fn($f) => $f->key === 'overdue'), 'tried every minute, it never waits an hour while the queue runs');
+            $this->assertArrayHasKey($broken, $this->queue());
+        }
+
+        public function test_execute_runnable_task_behind_many_parked_rows_still_runs(): void
+        {
+            $parked = [];
+            for ($i = 0; $i < 40; ++$i) {
+                $parked[] = $this->seed(self::objectOf('AA\Later\NoSuchTaskClassX'), 'test-broken', 50);
+            }
+            $this->seed(new RecordingTask('behind'), 'test-behind', 1);
+
+            $toexecute = new CountingToexecute(100);
+            $toexecute->execute();
+
+            $this->assertSame(['behind'], self::$ran);
+            $this->assertSame(41, $toexecute->calls, 'each parked row costs one look, once');
+            $this->assertSame([50], array_values(array_unique(array_column(array_intersect_key($this->queue(), array_flip($parked)), 'priority'))));
+        }
+
+        public function test_execute_self_serialized_task_of_missing_class_is_parked(): void
+        {
+            $class  = 'AA\Later\NoSuchSerialTask';
+            $broken = $this->seed('C:' . strlen($class) . ':"' . $class . '":3:{abc}', 'test-broken', 5);
+
+            self::quietly(static fn() => (new Toexecute())->execute());   // PHP warns: no unserializer
+
+            $this->assertSame(5, $this->queue()[$broken]['priority']);
+            $this->assertSame($class, $this->logRows(Toexecute::LOG_CLASS_MISSING)[0]['selector']);
         }
 
         public function test_execute_task_whose_class_comes_back_runs_with_its_own_params(): void
         {
             $late  = $this->seed('O:16:"LateArrivingTask":1:{s:4:"name";s:4:"late";}', 'test-late', 100, null, ['keep' => 1]);
-            $other = $this->seed('O:17:"MissingSoonClass3":0:{}', 'test-other', 100);
             $plain = $this->seed(new ParamsTask('plain'), 'test-plain', 50, null, ['own' => 2]);
 
             (new Toexecute())->execute();
-            $this->due($late);
-            (new Toexecute())->execute();
-
-            $this->assertSame(['keep' => 1, Toexecute::MISSING_CLASS_KEY => 2], $this->paramsOf($late));
-            $this->assertSame([Toexecute::MISSING_CLASS_KEY => 1], $this->paramsOf($other), 'each row counts its own misses');
+            $this->assertSame([['plain', ['own' => 2]]], ParamsTask::$ran);
+            $this->assertSame(100, $this->queue()[$late]['priority']);
 
             class_alias(ParamsTask::class, 'LateArrivingTask');
             $this->due($late);
             (new Toexecute())->execute();
 
-            $this->assertSame([['plain', ['own' => 2]], ['late', ['keep' => 1]]], ParamsTask::$ran, 'the task gets its params without the count');
-            $this->assertSame([$other], array_keys($this->queue()), 'the task that ran left the queue');
+            $this->assertSame([['plain', ['own' => 2]], ['late', ['keep' => 1]]], ParamsTask::$ran);
+            $this->assertSame([], $this->queue());
             $this->assertArrayNotHasKey($plain, $this->queue());
         }
 
-        public function test_execute_task_of_missing_class_keeps_params_with_hidden_properties(): void
+        public function test_execute_batch_step_of_missing_run_class_is_parked_not_dropped(): void
         {
-            $broken = $this->seed('O:17:"MissingSoonClass5":0:{}', 'test-broken', 100, null, ['o' => new HiddenProps()]);
+            // the batch core is deployed, the feature whose run it drives is not yet
+            $step = $this->seed(new BatchStep('AA\Import\NoSuchRun', 'run1', 'step1'), 'test-step', 5);
 
             (new Toexecute())->execute();
 
-            $this->assertEquals(['o' => new HiddenProps(), Toexecute::MISSING_CLASS_KEY => 1], $this->paramsOf($broken), 'NUL bytes of the private and protected properties survive the rewrite');
+            $this->assertArrayHasKey($step, $this->queue(), 'never deleted as "not a batch run"');
+            $this->assertSame(5, $this->queue()[$step]['priority']);
+            $this->assertSame('AA\Import\NoSuchRun', $this->logRows(Toexecute::LOG_CLASS_MISSING)[0]['selector'], 'the log names the class that is missing, not BatchStep');
         }
 
-        public function test_execute_task_of_missing_class_with_self_serialized_params_keeps_the_lease(): void
+        public function test_execute_batch_step_of_a_class_that_is_no_batch_run_is_refused(): void
         {
-            // an object that serializes itself (Serializable, C:) - read without its class, its data would be lost
-            $params = 'a:1:{s:1:"o";C:16:"SelfSerializing1":3:{abc}}';
-            $broken = $this->seed('O:17:"MissingSoonClass6":0:{}', 'test-broken', 100);
-            $this->pdo->prepare('UPDATE toexecute SET params = ? WHERE id = ?')->execute([$params, $broken]);
+            $step = $this->seed(new BatchStep(\stdClass::class, 'run1', 'step1'), 'test-step', 5);
 
             (new Toexecute())->execute();
 
-            $this->assertGreaterThan(time() + Toexecute::CLAIM_LEASE - 60, $this->queue()[$broken]['execute_after'], 'no short tries - the params are not rewritten');
-            $stmt = $this->pdo->prepare('SELECT params FROM toexecute WHERE id = ?');
-            $stmt->execute([$broken]);
-            $this->assertSame($params, $stmt->fetchColumn());
+            $this->assertArrayNotHasKey($step, $this->queue(), 'the class exists - the step refuses it and is done');
+            $this->assertSame([], $this->logRows(Toexecute::LOG_CLASS_MISSING));
         }
 
-        public function test_execute_task_whose_class_comes_back_and_fails_forgets_its_misses(): void
+        public function test_execute_task_of_removed_class_is_dropped(): void
         {
-            $late = $this->seed('O:16:"LateThrowingTask":1:{s:9:"throwable";s:16:"RuntimeException";}', 'test-late', 100, null, ['keep' => 1]);
+            $gone = $this->seed(self::objectOf('AA_Task_Import_Module_Chunk'), 'test-gone', 5);
+
+            $toexecute = new Toexecute();
+            $toexecute->execute();
+
+            $this->assertArrayNotHasKey($gone, $this->queue(), 'a removed class can never run - its rows go');
+            $this->assertSame([['selector' => 'AA_Task_Import_Module_Chunk', 'params' => 'test-gone']], $this->logRows(Toexecute::LOG_CLASS_GONE));
+            $this->assertSame([], $this->logRows(Toexecute::LOG_CLASS_MISSING));
+            $this->assertStringContainsString('no longer exists', json_encode($toexecute->reportRows()));
+        }
+
+        public function test_execute_task_whose_autoload_throws_fails_like_any_task(): void
+        {
+            $loader = static function (string $class): void {
+                if ($class === 'AA\Later\ThrowingAutoloadTask') {
+                    throw new \RuntimeException(ToexecuteTest::SECRET);
+                }
+            };
+            $broken = $this->seed(self::objectOf('AA\Later\ThrowingAutoloadTask'), 'test-broken', 5);
+            $this->seed(new RecordingTask('behind'), 'test-behind', 1);
+
+            spl_autoload_register($loader);
+            try {
+                (new Toexecute())->execute();
+            } finally {
+                spl_autoload_unregister($loader);
+            }
+
+            $this->assertSame(['behind'], self::$ran, 'the round goes on');
+            $this->assertSame(4, $this->queue()[$broken]['priority'], 'a failure, not a missing class - the claim stands');
+            $this->assertGreaterThan(time() + Toexecute::CLAIM_LEASE - 60, $this->queue()[$broken]['execute_after']);
+            $this->assertCount(1, $this->logRows(Toexecute::FAILED_EVENT));
+        }
+
+        public function test_execute_non_object_payload_is_removed(): void
+        {
+            $bad = $this->seed('a:1:{i:0;s:1:"x";}', 'test-bad', 5);
+
+            $toexecute = new Toexecute();
+            $toexecute->execute();
+
+            $this->assertArrayNotHasKey($bad, $this->queue());
+            $this->assertStringContainsString("unserialize err: #$bad ? (", json_encode($toexecute->reportRows()));
+        }
+
+        public function test_execute_payload_with_markup_for_a_class_name_is_removed_without_it(): void
+        {
+            $bad = $this->seed('O:22:"<img src=x onerror=1>":0:{}', 'test-bad', 5);
+
+            $toexecute = new Toexecute();
+            self::quietly(static fn() => $toexecute->execute());   // PHP warns: not a class name
+
+            $this->assertArrayNotHasKey($bad, $this->queue(), 'not an object - the old unserialize-error path');
+            $this->assertStringNotContainsString('<img', json_encode($toexecute->reportRows()), 'the Task Manager prints the report as HTML');
+            $this->assertStringNotContainsString('<img', json_encode($this->logRows('TOEXECUTE')));
+            $this->assertSame([], $this->logRows(Toexecute::LOG_CLASS_MISSING));
+        }
+
+        public function test_execute_task_is_claimed_before_it_runs(): void
+        {
+            ClaimSpyTask::$pdo  = $this->pdo;
+            ClaimSpyTask::$seen = null;
+            $id = $this->seed(new ClaimSpyTask(), 'test-spy', 5);
+            ClaimSpyTask::$id = $id;
 
             (new Toexecute())->execute();
-            $this->assertSame(['keep' => 1, Toexecute::MISSING_CLASS_KEY => 1], $this->paramsOf($late));
 
-            class_alias(ThrowingTask::class, 'LateThrowingTask');
-            $this->due($late);
-            (new Toexecute())->execute();
-
-            $this->assertGreaterThan(time() + Toexecute::CLAIM_LEASE - 60, $this->queue()[$late]['execute_after'], 'a failed task waits out the lease');
-            $this->assertSame(['keep' => 1], $this->paramsOf($late), 'should the class go missing again, the task gets all its short tries');
+            $this->assertNotNull(ClaimSpyTask::$seen, 'the task ran');
+            $this->assertSame(4, ClaimSpyTask::$seen['priority'], 'the claim lowers the priority');
+            $this->assertGreaterThan(time() + Toexecute::CLAIM_LEASE - 60, ClaimSpyTask::$seen['execute_after'], 'and leases the row while it runs');
+            $this->assertSame([], $this->queue(), 'the done task leaves the queue');
         }
 
         public function test_executeTask_user_task_of_missing_class_stays_parked(): void
         {
-            $parked = $this->seed('O:17:"MissingSoonClass4":0:{}', 'test-parked', 100, Toexecute::TOEXECUTE_USER_TASK_TIME);
+            $parked = $this->seed(self::objectOf('MissingSoonClass4'), 'test-parked', 100, Toexecute::TOEXECUTE_USER_TASK_TIME);
 
-            (new Toexecute())->executeTask([$parked]);
+            $toexecute = new Toexecute();
+            $toexecute->executeTask([$parked]);
 
-            $this->assertSame([$parked => ['execute_after' => Toexecute::TOEXECUTE_USER_TASK_TIME, 'priority' => 99]], $this->queue(), 'the cron never runs a user task - not even a minute later');
+            $this->assertSame([$parked => ['execute_after' => Toexecute::TOEXECUTE_USER_TASK_TIME, 'priority' => 100]], $this->queue(), 'the cron never runs a user task - not even a minute later');
             $this->assertSame([], $this->paramsOf($parked));
+            $this->assertStringContainsString('MissingSoonClass4 is missing', json_encode($toexecute->reportRows()));
         }
 
         public function test_check_queue_reports_the_failures(): void
@@ -468,11 +657,46 @@ namespace Tests\Unit\Later {
         }
     }
 
-    /** params holding an object with private and protected properties - NUL bytes in its serialized form */
-    final class HiddenProps
+    /** counts the rows a round hands to _exeOne() - a round spinning on one row fails instead of hanging */
+    final class CountingToexecute extends Toexecute
     {
-        private string $secret = 'kept';
-        protected int $level   = 2;
+        public int $calls = 0;
+
+        public function __construct(private int $cap = 10) {}
+
+        public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int
+        {
+            if (++$this->calls > $this->cap) {
+                throw new \LogicException('the round keeps picking the same rows');
+            }
+            return parent::_exeOne($task, $execute_times, $execute_start, $allowed_time);
+        }
+    }
+
+    /** records its own queue row as it is while the task runs */
+    final class ClaimSpyTask
+    {
+        public static ?PDO $pdo = null;
+        public static int $id = 0;
+        /** @var array{priority:int, execute_after:int}|null */
+        public static ?array $seen = null;
+
+        public function toexecutelater(array $params): string
+        {
+            $stmt = self::$pdo->prepare('SELECT priority, execute_after FROM toexecute WHERE id = ?');
+            $stmt->execute([self::$id]);
+            self::$seen = array_map('intval', $stmt->fetch(PDO::FETCH_ASSOC));
+            return 'ok';
+        }
+    }
+
+    /** returns markup, as a task may echo data it processed */
+    final class MarkupTask
+    {
+        public function toexecutelater(array $params): string
+        {
+            return '<img src=x onerror=alert(1)>';
+        }
     }
 
     /** records its name and the params it got */
