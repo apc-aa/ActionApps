@@ -537,8 +537,7 @@ class Run extends BatchRun
 
     /**
      * Three steps without progress. A step that never fits a queue round ends in error - skipping
-     * what does not fit would lose data quietly. A cycle skips the rest of its stream: skipping one
-     * job would let the source hand out the cycle again. Any other failure skips the job (the next
+     * what does not fit would lose data quietly. Any other failure skips the job (the next
      * one gets failed = 1, the last one closes the stream without its version) once check() says
      * the source is up; the third job skipped in a row (RunCursor::SKIPS_IN_A_ROW) skips the rest
      * of its stream (JOBS_FAILING); a stream whose jobs() fails then is closed. A source that cannot
@@ -555,9 +554,6 @@ class Run extends BatchRun
             return null;
         }
         try {
-            if ($last->retry === 'SOURCE_CYCLE') {
-                return $this->skipped($last, $pos, RunCursor::nextStream($pos), $keys);
-            }
             $source = $this->source();
             // a check() at the start that never answered leaves no job to skip; a step that passed it
             // (its cursor stayed, see stopped()) or died may have got past it
@@ -704,6 +700,15 @@ class Run extends BatchRun
                 $halt = $this->walkJobs($source, $ctx, $stream, $known, $mapping, $budget, $pos, $first);
                 if ($halt === self::STOP) {
                     return $this->limitReached() ? $this->result($pos, true, $keys) : $this->stopped($pos, $from, $keys, '');
+                }
+                if ($halt === 'SOURCE_CYCLE') {
+                    // a source may see its cycle only among the pages it fetched in one step: a retry from
+                    // the cursor would creep on by a page a step, so the rest of the stream goes now
+                    $this->note('JOB_FAILED');
+                    $this->tally['skipped_jobs']++;
+                    $this->tally['streams']++;
+                    $pos = ['after' => $this->afterDue($pos, $stream->key)] + RunCursor::nextStream($pos);
+                    continue;
                 }
                 if ($halt !== '') {
                     // what got stored before counts; from here on the step makes no progress
@@ -1013,10 +1018,10 @@ class Run extends BatchRun
     /**
      * The jobs of one stream from the cursor on. A job gone from the source (its parameters changed)
      * restarts the stream once - storing by the key is idempotent; a source that keeps changing
-     * under the run, repeats the key of the job before or hands out more than MAX_PAGES jobs,
-     * cannot be followed.
-     * @return string '' = the stream is done, STOP = the step stops at $pos, else why it stops there
-     *                and cannot go on (SOURCE_UNSTABLE, SOURCE_CYCLE)
+     * under the run cannot be followed; one that repeats the key of the job before or hands out more
+     * than MAX_PAGES jobs goes round, and the run skips the rest of the stream.
+     * @return string '' = the stream is done, STOP = the step stops at $pos, SOURCE_UNSTABLE = it stops
+     *                there and cannot go on, SOURCE_CYCLE = the stream cannot go on
      */
     private function walkJobs(SourceInterface $source, Context $ctx, Stream $stream, ?string $known, Mapping $mapping, BatchBudget $budget, array &$pos, bool &$first): string
     {

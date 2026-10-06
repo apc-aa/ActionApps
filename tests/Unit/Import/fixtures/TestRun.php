@@ -147,6 +147,8 @@ final class TestRun extends Run
     /** onRetriesExhausted() called directly, as the core calls it after three steps without progress */
     public function exhausted(BatchStepResult $last): ?BatchStepResult
     {
+        // as in a step, which holds the lease: the hook's budget ends 30 s before it
+        $this->lease = ($this->lease !== '') ? $this->lease : (string) (static::now() + 600);
         return $this->onRetriesExhausted($last);
     }
 

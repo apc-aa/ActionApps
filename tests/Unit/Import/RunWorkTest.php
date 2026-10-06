@@ -542,13 +542,9 @@ final class RunWorkTest extends TestCase
 
         self::runOne();
 
-        $position = TestRun::get($run->getId())?->position();
-        self::assertSame(['s1:b', RunCursor::MAX_PAGES], [$position['job'], $position['pages']], 'the 1000th job may start, the 1001st not');
-        self::assertSame('SOURCE_CYCLE', TestRun::$committed[0]->retry);
-        self::assertSame(2, TestRun::get($run->getId())?->counts()['read'], 'what got stored before counts');
-
-        self::runOne();
-        self::assertSame('1', self::stored($run->getId())['failures'], 'from the cap on, no progress');
+        self::assertSame(2, TestRun::get($run->getId())?->counts()['read'], 'the 1000th job may start, the 1001st not - what got stored before counts');
+        self::assertSame(['', 1], [TestRun::$committed[0]->retry, TestRun::get($run->getId())?->counts()['skipped_jobs']], 'the rest of the stream goes at once');
+        self::assertSame(1, TestRun::get($run->getId())?->position()['i']);
     }
 
     // ------------------------------------------------------------ where the cursor goes when the step stops

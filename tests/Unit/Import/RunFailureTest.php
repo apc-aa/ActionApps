@@ -119,20 +119,75 @@ final class RunFailureTest extends TestCase
 
         self::runOne();
 
-        self::assertSame('SOURCE_CYCLE', TestRun::$committed[0]->retry);
-        self::assertSame(['k1'], TestRun::storedValues('relation........'), 'the repeated job does not start');
-        $position = TestRun::get($run->getId())?->position();
-        self::assertSame(['s1:a', 1, sha1('s1:a'), 1], [$position['job'], $position['pages'], $position['cur'], $position['wrote']], 'what got stored before counts');
-        self::assertSame(['0', (string) (self::NOW + 1800)], [self::stored($run->getId())['failures'], self::stored($run->getId())['next_at']]);
-
-        self::runOne();
-
-        self::assertSame('SOURCE_CYCLE', TestRun::$committed[1]->retry);
-        self::assertSame('1', self::stored($run->getId())['failures'], 'from the repeated key on, no progress');
+        self::assertSame('', TestRun::$committed[0]->retry, 'no retry: it would go round again');
+        self::assertSame(['k1'], TestRun::storedValues('relation........'), 'the repeated job does not start, nor the rest of the stream');
+        self::assertSame('0', self::stored($run->getId())['failures']);
 
         self::runAll($run->getId());
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(1, TestRun::get($run->getId())?->counts()['jobs'], 'the steps that went over s1:a again read nothing new');
+        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+        self::assertSame([1, 1, 1], [TestRun::get($run->getId())?->counts()['jobs'], TestRun::get($run->getId())?->counts()['skipped_jobs'], TestRun::get($run->getId())?->counts()['streams']]);
+    }
+
+    /** a stream skipped for its cycle after it stored something still gets its expression */
+    public function test_cycleAfterStoring_keepsTheAfterStreamExpression(): void
+    {
+        $source             = self::source(streams: 2, jobs: 0, items: 0);
+        $source->minJob     = 0;
+        $source->jobs['s1'] = [
+            ['key' => 's1:a', 'items' => [['key' => 'k1', 'val' => 'v1']]],
+            ['key' => 's1:a', 'items' => [['key' => 'k2', 'val' => 'v2']]],
+        ];
+        TestRun::$evaluate  = static function (): void {};
+        $run                = self::startRun($source, definition: ['after_stream' => '{x}']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+        self::assertCount(1, TestRun::$evaluated, 's1, which stored k1 (s2 has no job)');
+    }
+
+    /**
+     * A source that sees a repeated page only among the pages it fetched in one step: a step going on
+     * from the cursor fetches one more page before it sees the cycle again. The rest of the stream goes
+     * at the first cycle, so the run does not creep on by a page a step.
+     */
+    public function test_cycleSeenWithinAStep_skipsTheStreamAtOnce(): void
+    {
+        $source             = self::source(streams: 2, jobs: 1, items: 1);
+        $source->minJob     = 5;
+        $spent              = false;
+        $source->jobs['s1'] = static function () use (&$spent): \Generator {
+            $before = false;
+            for ($n = 1; $n <= 50; $n++) {
+                $fetched = false;
+                // the source ignores the page: every page has the same rows
+                $job = ['key' => "s1:p$n", 'items' => [['key' => 'k-p', 'val' => 'v']], 'onPrepare' => static function () use (&$fetched, &$spent): void {
+                    $fetched = true;
+                    if (!$spent) {
+                        // the first step has no time for a second page
+                        $spent             = true;
+                        TestRun::$microNow = TestRun::$now + 25.5;
+                    }
+                }];
+                yield $job;
+                if ($fetched && $before) {
+                    yield $job;
+                    return;
+                }
+                $before = $fetched;
+            }
+        };
+        $run = self::startRun($source);
+
+        $steps = self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertCount(2, $steps, implode(' | ', $steps));
+        self::assertSame('', TestRun::$committed[0]->retry, 'the first step only ran out of time');
+        self::assertSame(['k-p', 'k-p', 'k-p', 'k-s2:a-1'], TestRun::storedValues('relation........'), 'p1; then p2 and p3, the same, and s2');
+        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
     }
 
     public function test_cycleABA_endsAfterMaxPagesSkippingRestOfStream(): void
@@ -166,7 +221,7 @@ final class RunFailureTest extends TestCase
         $run = self::startRun($source);
 
         self::runOne();
-        self::assertSame(1, TestRun::get($run->getId())?->position()['i'], 'the step stops at the cycle, not where it started');
+        self::assertSame('', TestRun::$committed[0]->retry, 'the step goes on past the cycle');
 
         self::runAll($run->getId());
 
@@ -352,8 +407,8 @@ final class RunFailureTest extends TestCase
 
         self::runOne();
 
-        self::assertSame(['JOB_GONE' => 1], self::warnings($run->getId()), 'the cursor\'s job is not among the first MAX_PAGES');
-        self::assertSame('SOURCE_CYCLE', TestRun::$committed[0]->retry, 'the restarted stream ends at the cap');
+        self::assertSame(['JOB_GONE' => 1, 'JOB_FAILED' => 1], self::warnings($run->getId()), 'the cursor\'s job is not among the first MAX_PAGES; the restarted stream ends at the cap');
+        self::assertSame('', TestRun::$committed[0]->retry);
         self::assertLessThan(3 * RunCursor::MAX_PAGES, $yields);
     }
 
@@ -389,12 +444,12 @@ final class RunFailureTest extends TestCase
 
     public function test_retriesExhausted_skipKeepsTheLastStepsData(): void
     {
-        $run  = self::startRun(self::source(streams: 2, jobs: 1, items: 1));
-        $last = new BatchStepResult(self::onJob('s1:a'), false, ['read' => 2, 'skipped_jobs' => 1], ['JOB_GONE' => 1, 'JOB_FAILED' => 2], retry: 'SOURCE_CYCLE', extra: ['errors' => [['stream' => 's1', 'job' => 's1:a', 'code' => 'VALIDATE', 'msg' => 'Item 1']]]);
+        $run  = self::startRun(self::checked(streams: 2, jobs: 1, items: 1));
+        $last = new BatchStepResult(self::onJob('s1:a'), false, ['read' => 2, 'skipped_jobs' => 1], ['JOB_GONE' => 1, 'JOB_FAILED' => 2], retry: 'TRANSPORT', extra: ['errors' => [['stream' => 's1', 'job' => 's1:a', 'code' => 'VALIDATE', 'msg' => 'Item 1']]]);
 
         $next = TestRun::get($run->getId())?->exhausted($last);
 
-        self::assertEquals(['skipped_jobs' => 2, 'read' => 2, 'streams' => 1], $next?->counts, 'the cycle closed s1');
+        self::assertEquals(['skipped_jobs' => 2, 'read' => 2, 'streams' => 1], $next?->counts, 'skipping its last job closed s1');
         self::assertEquals(['JOB_FAILED' => 3, 'JOB_GONE' => 1], $next->warnings);
         self::assertSame($last->extra, $next->extra);
         self::assertSame(['', false, 's2', 1, 2], [$next->retry, $next->finished, $next->label, $next->done, $next->total]);
