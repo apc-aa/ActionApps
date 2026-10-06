@@ -41,6 +41,21 @@ final class Context
 
     private const IDLE_SECONDS = 10.0;
 
+    /** what a remark's code must look like - the page shows it as it is */
+    public const REMARK_PATTERN = '/^[A-Z][A-Z0-9_]{1,30}$/';
+
+    /** the code of a remark whose own code does not match REMARK_PATTERN - its text tells that code */
+    public const BAD_REMARK_CODE = 'REMARK_CODE';
+
+    /** characters of a bad code kept in the text */
+    private const BAD_CODE_CHARS = 40;
+
+    /** characters of a remark's text kept */
+    public const REMARK_CHARS = 300;
+
+    /** distinct remarks a step, and a run, tells apart and counts - the rest is dropped */
+    public const REMARKS_COUNTED = 1000;
+
     private readonly int $maxBytes;
 
     /** @var array<string, array{string, string}> "vendor\0context" => [vendor, context] the source declared */
@@ -54,6 +69,9 @@ final class Context
     private array $secrets = [];
 
     private ?HttpClientInterface $guarded = null;
+
+    /** @var array<string, array{code: string, text: string}> the first remarks, by code and text */
+    private array $remarks = [];
 
     /** @var ?\WeakMap<self, list<string>> what redact() masks, built once per Context - kept outside
      *  the object, so a dump of it does not show the keys */
@@ -137,6 +155,36 @@ final class Context
         self::$masks ??= new \WeakMap();
         self::$masks[$this] ??= $this->masks();
         return str_replace(self::$masks[$this], '***', $text);
+    }
+
+    /**
+     * A remark for the run's report: something to fix or to know that is no error and does not stop
+     * the run - rows left out on purpose, a duplicate id, a definition the source cannot use. The run
+     * counts it in its warnings (Run::REMARK, by code) and lists the first ones (Run::REMARKS_KEPT).
+     * The same code and text count once in the run, the first REMARKS_COUNTED of them.
+     * The text passes redact(), has control characters encoded and is cut to REMARK_CHARS; the page
+     * shows it escaped, never expanded. Still, never put a key or personal data in it.
+     * @param string $code matching REMARK_PATTERN, e.g. INCOMPLETE_YEAR; another one is a bug of the
+     *                     source, kept as BAD_REMARK_CODE with that code in front of the text - the run goes on
+     */
+    public function remark(string $code, string $text): void
+    {
+        if (preg_match(self::REMARK_PATTERN, $code) !== 1) {
+            $text = 'Bad code ' . mb_substr(self::printable($this->redact($code)), 0, self::BAD_CODE_CHARS) . ': ' . $text;
+            $code = self::BAD_REMARK_CODE;
+        }
+        // redacted before the cut, which could leave a part of a key unmasked
+        $text = mb_substr(self::printable(trim($this->redact($text))), 0, self::REMARK_CHARS);
+        if (count($this->remarks) < self::REMARKS_COUNTED) {
+            $this->remarks[$code . "\0" . $text] = ['code' => $code, 'text' => $text];
+        }
+    }
+
+    /** for the run: the remarks of the step, each code and text once
+     *  @return list<array{code: string, text: string}> */
+    public function remarks(): array
+    {
+        return array_values($this->remarks);
     }
 
     /** @return list<string> the values redact() masks, the longest first */

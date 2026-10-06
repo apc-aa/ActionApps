@@ -20,6 +20,9 @@ final class CatalogSource extends ScriptedSource implements Checkable, Probeable
 {
     public CheckResult $check;
 
+    /** @var ?\Closure(Context): void runs first in check() */
+    public ?\Closure $onCheck = null;
+
     /** @var array<string, Probe|\Closure(): Probe> stream key => answer, or what gives a new one at each call;
      *  a stream not listed is changed at v-<key> */
     public array $probes = [];
@@ -51,6 +54,9 @@ final class CatalogSource extends ScriptedSource implements Checkable, Probeable
     public function check(Context $ctx): CheckResult
     {
         $this->calls[]     = 'check';
+        if ($this->onCheck) {
+            ($this->onCheck)($ctx);
+        }
         TestRun::$microNow = (TestRun::$microNow ?? 0.0) + $this->checkSeconds;
         return $this->check;
     }

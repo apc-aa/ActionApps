@@ -67,10 +67,16 @@ class Run extends BatchRun
     /** items skipped for an empty key the run shows */
     private const EMPTY_KEYS_KEPT = 20;
 
+    /** remarks of the source the run shows */
+    private const REMARKS_KEPT = 20;
+
     private const MODES = ['run', 'changed', 'check', 'baseline'];
 
     /** the warning of a job the filter kept no item of */
     public const FILTER_KEPT_NONE = 'FILTER_KEPT_NONE';
+
+    /** the warnings of the remarks of the source, by their code: {REMARK: {code: count}} */
+    public const REMARK = 'REMARK';
 
     /** the modes that store nothing in the slice: they ask the source and record what it says */
     public const SOURCE_ONLY_MODES = ['check', 'baseline'];
@@ -109,6 +115,9 @@ class Run extends BatchRun
     /** JSON {count, samples: [{stream, job, values: {source field: value}}]} of the items skipped as
      *  their key came out empty (Saver::emptyKeys()), for the report */
     protected $empty_keys = '';
+    /** JSON {list: [{code, text}] of the first remarks of the source (Context::remark()), seen: hashes
+     *  of all it told apart} - each remark counts once in the warnings, also when a later step repeats it */
+    protected $remarks = '';
     /** Milliseconds the steps worked, summed at the end of each - the run's time without its waits in
      *  the queue; '' for a run from before it was counted. A lower bound: a step that died, rolled back
      *  or threw adds nothing, nor do onRetriesExhausted() and the final phase. */
@@ -134,13 +143,15 @@ class Run extends BatchRun
     private ?CheckResult $checkResult = null;
     /** the catalog with the pages of the step, stored at its end */
     private ?Catalog $catalog = null;
+    /** the Context of the step - the remarks of the source are in it */
+    private ?Context $stepContext = null;
     /** when work() of the step began */
     private ?float $workFrom = null;
 
     public static function getClassProperties(): array
     {
         $props = parent::getClassProperties();
-        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced', 'empty_keys', 'work_ms'] as $id) {
+        foreach (['mode', 'dry', 'limit', 'snapshot', 'stream_keys', 'trigger', 'errors', 'samples', 'check', 'collisions', 'replaced', 'empty_keys', 'remarks', 'work_ms'] as $id) {
             $props[$id] = new AA_Property($id, $id, 'text', false, true, 'text');
         }
         return $props;
@@ -307,6 +318,35 @@ class Run extends BatchRun
         return ['count' => (int) (is_array($stored) ? ($stored['count'] ?? 0) : 0), 'samples' => $samples];
     }
 
+    /** The remarks of the source (Context::remark()), each code and text once. Text of the source -
+     *  escape it, never expand it.
+     *  @return list<array{code: string, text: string}> */
+    public function remarks(): array
+    {
+        $remarks = [];
+        $stored  = json_decode((string) $this->remarks, true);
+        foreach (is_array($stored['list'] ?? null) ? $stored['list'] : [] as $r) {
+            $code = is_array($r) ? self::text($r['code'] ?? '') : '';
+            if ((preg_match(Context::REMARK_PATTERN, $code) === 1) && (count($remarks) < self::REMARKS_KEPT)) {
+                $remarks[] = ['code' => $code, 'text' => mb_substr(self::text($r['text'] ?? ''), 0, Context::REMARK_CHARS)];
+            }
+        }
+        return $remarks;
+    }
+
+    /** @return list<string> the hashes of the remarks the run told apart so far */
+    private function remarksSeen(): array
+    {
+        $seen = json_decode((string) $this->remarks, true)['seen'] ?? null;
+        return is_array($seen) ? array_values(array_filter($seen, is_string(...))) : [];
+    }
+
+    /** @param array{code: string, text: string} $remark */
+    private static function remarkHash(array $remark): string
+    {
+        return hash('xxh64', $remark['code'] . "\0" . $remark['text']);
+    }
+
     /** a stored JSON value as text - what is no scalar shows empty */
     private static function text(mixed $value): string
     {
@@ -364,6 +404,8 @@ class Run extends BatchRun
         $this->stepEmptyKeys  = ['count' => 0, 'samples' => []];
         $this->checkResult    = null;
         $this->catalog        = null;
+        // an instance may work more than one step; remarks of the one before must not count again
+        $this->stepContext    = null;
         $this->workFrom       = static::microNow();
         try {
             return $this->walk(RunCursor::fromPosition($from), $budget);
@@ -421,6 +463,18 @@ class Run extends BatchRun
             ], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE);
             $write[]          = 'empty_keys';
         }
+        if ($extra['remarks'] ?? []) {
+            $list = $this->remarks();
+            $seen = $this->remarksSeen();
+            foreach ($extra['remarks'] as $r) {
+                $seen[] = self::remarkHash($r);
+                if (count($list) < self::REMARKS_KEPT) {
+                    $list[] = $r;
+                }
+            }
+            $this->remarks = json_encode(['list' => $list, 'seen' => $seen], JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
+            $write[]       = 'remarks';
+        }
         if ($write) {
             $this->update($write);
         }
@@ -446,7 +500,8 @@ class Run extends BatchRun
     }
 
     /** the report of a done run: its check() and probes of a check, what a baseline recorded, the
-     *  samples of a dry run, the jobs whose items repeat a key, the runs its planned start ended */
+     *  samples of a dry run, the jobs whose items repeat a key, the remarks of the source, the runs its
+     *  planned start ended */
     protected function finalCheck(): array
     {
         $report     = [];
@@ -460,6 +515,10 @@ class Run extends BatchRun
         $empty_keys = $this->emptyKeys();
         if ($empty_keys['count'] > 0) {
             $report['empty_keys'] = $empty_keys;
+        }
+        $remarks = $this->remarks();
+        if ($remarks) {
+            $report['remarks'] = $remarks;
         }
         if ($this->sourceOnly()) {
             $report['check'] = json_decode((string) $this->check, true);
@@ -577,6 +636,7 @@ class Run extends BatchRun
             }
             $source  = $this->source();
             $ctx     = $this->context($source, $budget);
+            $this->stepContext = $ctx;
             if ($this->sourceOnly()) {
                 if ($this->isDry()) {
                     // it stores nothing in the slice anyway; dry it would not store what it is for
@@ -1196,21 +1256,44 @@ class Run extends BatchRun
         $this->notes[$code] = ($this->notes[$code] ?? 0) + 1;
     }
 
+    /**
+     * The remarks of the step the run has not seen, and their count by code: jobs() of a stream runs
+     * again in each step that goes on with it and says the same. Past Context::REMARKS_COUNTED
+     * distinct ones the run drops new remarks, so the count is a lower bound then.
+     * @return array{list<array{code: string, text: string}>, array<string, int>}
+     */
+    private function newRemarks(): array
+    {
+        $seen   = array_flip($this->remarksSeen());
+        $new    = [];
+        $counts = [];
+        foreach ($this->stepContext?->remarks() ?? [] as $r) {
+            $hash = self::remarkHash($r);
+            if (!isset($seen[$hash]) && (count($seen) < Context::REMARKS_COUNTED)) {
+                $seen[$hash]        = true;
+                $new[]              = $r;
+                $counts[$r['code']] = ($counts[$r['code']] ?? 0) + 1;
+            }
+        }
+        return [$new, $counts];
+    }
+
     /** @param list<string> $keys */
     private function result(array $pos, bool $finished, array $keys, string $retry = '', string $retryDetail = ''): BatchStepResult
     {
+        [$remarks, $remarked] = $this->newRemarks();
         return new BatchStepResult(
             $pos,
             $finished,
             $this->tally,
-            $this->notes,
+            $this->notes + ($remarked ? [self::REMARK => $remarked] : []),
             $keys[$pos['i']] ?? '',
             min($pos['i'], count($keys)),
             count($keys),
             $retry,
             [
                 'errors' => $this->itemErrors, 'streams' => $this->streamRecords, 'samples' => $this->stepSamples, 'check' => $this->checkResult, 'catalog' => $this->catalog,
-                'collisions' => $this->stepCollisions, 'empty_keys' => $this->stepEmptyKeys,
+                'collisions' => $this->stepCollisions, 'empty_keys' => $this->stepEmptyKeys, 'remarks' => $remarks,
                 // the step ends on a fresh instance of the run, which never saw work() begin
                 'work_ms' => (int) round(max(0.0, static::microNow() - ($this->workFrom ?? static::microNow())) * 1000),
             ],

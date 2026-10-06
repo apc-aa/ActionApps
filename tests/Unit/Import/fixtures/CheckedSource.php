@@ -18,7 +18,7 @@ final class CheckedSource extends ScriptedSource implements Checkable
     /** the answer, or what check() throws */
     public CheckResult|\Exception $check;
 
-    /** @var ?\Closure(self): void runs first in check() - a test changes the source there */
+    /** @var ?\Closure(self, Context): void runs first in check() - a test changes the source there */
     public ?\Closure $onCheck = null;
 
     /** @var list<array{tx: bool, left: ?float}> the check() calls */
@@ -32,7 +32,7 @@ final class CheckedSource extends ScriptedSource implements Checkable
     public function check(Context $ctx): CheckResult
     {
         if ($this->onCheck) {
-            ($this->onCheck)($this);
+            ($this->onCheck)($this, $ctx);
         }
         $budget             = end(TestRun::$contextBudgets);
         $this->checkCalls[] = ['tx' => DB_AA::inTransaction(), 'left' => $budget ? $budget->secondsLeft() : null];

@@ -37,6 +37,9 @@ class ScriptedSource extends AbstractSource
     /** how many streams() calls in a row fail as the source being down */
     public int $failStreams = 0;
 
+    /** @var ?\Closure(Stream, Context): void runs first in each jobs() call */
+    public ?\Closure $onJobs = null;
+
     /** what each jobs() call spends of the step before its first job */
     public float $jobsSeconds = 0.0;
 
@@ -85,6 +88,9 @@ class ScriptedSource extends AbstractSource
     public function jobs(Stream $stream, Context $ctx, ?string $known): iterable
     {
         $this->jobCalls[] = ['stream' => $stream->key, 'known' => $known];
+        if ($this->onJobs) {
+            ($this->onJobs)($stream, $ctx);
+        }
         TestRun::$microNow = (TestRun::$microNow ?? 0.0) + $this->jobsSeconds;
         $jobs = $this->jobs[$stream->key] ?? [];
         foreach (($jobs instanceof \Closure) ? $jobs() : $jobs as $spec) {

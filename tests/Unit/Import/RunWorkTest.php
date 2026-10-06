@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Import;
 
+use AA\Import\Context;
 use AA\Import\Definition;
 use AA\Import\ParamsGrabber;
 use AA\Import\Run;
@@ -792,6 +793,129 @@ final class RunWorkTest extends TestCase
         self::assertSame('done', $done?->state());
         self::assertSame([2, 2, 0], [$done?->counts()['new'], $done?->counts()['filtered'], $done?->counts()['errors']]);
         self::assertSame([Run::FILTER_KEPT_NONE => 1], json_decode((string) $done?->getProperty('warnings'), true));
+    }
+
+    // ------------------------------------------------------------ remarks of the source
+
+    public function test_remark_fromJobsAndAGrabber_keptByTheRunAcrossSteps(): void
+    {
+        $source = self::source(streams: 1, jobs: 2, items: 2, seconds: 10.0);
+        $ctx    = null;
+        $source->onJobs = static function (Stream $stream, Context $c) use (&$ctx): void {
+            $ctx = $c;
+            $c->remark('INCOMPLETE_YEAR', "Stream {$stream->key}: 2026 left out, 7 of 12 months");
+        };
+        $source->jobs['s1'][1]['onGet'] = static function (int $n) use (&$ctx): void {
+            $ctx?->remark('DUPLICATE_ICO', "Row $n: <b>IČO</b> 123 twice");
+        };
+        $run = self::startRun($source);
+
+        self::runOne();
+
+        $step = TestRun::get($run->getId());
+        self::assertSame('running', $step?->state());
+        self::assertSame([['code' => 'INCOMPLETE_YEAR', 'text' => 'Stream s1: 2026 left out, 7 of 12 months']], $step?->remarks());
+        self::assertSame([Run::REMARK => ['INCOMPLETE_YEAR' => 1]], json_decode((string) $step?->getProperty('warnings'), true));
+
+        self::runAll($run->getId());
+
+        $done = TestRun::get($run->getId());
+        self::assertSame('done', $done?->state());
+        self::assertCount(2, $source->jobCalls, 'jobs() asked again in the second step');
+        self::assertSame([
+            ['code' => 'INCOMPLETE_YEAR', 'text' => 'Stream s1: 2026 left out, 7 of 12 months'],
+            ['code' => 'DUPLICATE_ICO', 'text' => 'Row 1: <b>IČO</b> 123 twice'],
+            ['code' => 'DUPLICATE_ICO', 'text' => 'Row 2: <b>IČO</b> 123 twice'],
+        ], $done?->remarks(), 'the same remark of the next step is kept once');
+        self::assertSame([Run::REMARK => ['INCOMPLETE_YEAR' => 1, 'DUPLICATE_ICO' => 2]], json_decode((string) $done?->getProperty('warnings'), true), 'and counted once');
+        self::assertSame($done?->remarks(), json_decode((string) $done?->getProperty('report'), true)['remarks']);
+        self::assertSame([0, 4], [$done?->counts()['errors'], $done?->counts()['new']], 'no error, the run goes on');
+    }
+
+    public function test_remark_listedUpToTheCapAndCountedOnce(): void
+    {
+        $source = self::source(streams: 2, jobs: 1, items: 2, seconds: 10.0);
+        $source->onJobs = static function (Stream $stream, Context $c): void {
+            for ($i = 1; $i <= 15; $i++) {
+                $c->remark('DUPLICATE_ICO', "{$stream->key}: IČO $i twice");
+            }
+        };
+        $run = self::startRun($source);
+
+        $steps = self::runAll($run->getId());
+
+        $done = TestRun::get($run->getId());
+        self::assertSame('done', $done?->state(), implode(' | ', $steps));
+        self::assertGreaterThan(2, count($source->jobCalls), 'a stream asked again in a later step');
+        self::assertCount(20, $done?->remarks());
+        self::assertSame('s1: IČO 1 twice', $done?->remarks()[0]['text'], 'the first ones');
+        self::assertSame([Run::REMARK => ['DUPLICATE_ICO' => 30]], json_decode((string) $done?->getProperty('warnings'), true), 'also those not listed, each once');
+    }
+
+    public function test_remark_countedUpToWhatTheRunTellsApart(): void
+    {
+        $source = self::source(streams: 2, jobs: 1, items: 2, seconds: 10.0);
+        $source->onJobs = static function (Stream $stream, Context $c): void {
+            for ($i = 1; $i <= 600; $i++) {
+                $c->remark('DUPLICATE_ICO', "{$stream->key}: IČO $i twice");
+            }
+        };
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        $done = TestRun::get($run->getId());
+        self::assertSame([Run::REMARK => ['DUPLICATE_ICO' => Context::REMARKS_COUNTED]], json_decode((string) $done?->getProperty('warnings'), true));
+        self::assertLessThan(32 * 1024, strlen((string) $done?->getProperty('remarks')), 'what the run stores stays small');
+    }
+
+    public function test_remark_secretMasked(): void
+    {
+        define('AA_APIKEY_RUNTEST', 'sekret42');
+        $source               = self::source(streams: 1, jobs: 1, items: 1);
+        $source::$credentials = [['vendor' => 'RUNTEST', 'context' => '']];
+        $source->onJobs       = static fn(Stream $stream, Context $c) => $c->remark('BAD_DEFINITION', 'asked with key=sekret42');
+        $run                  = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame([['code' => 'BAD_DEFINITION', 'text' => 'asked with key=***']], TestRun::get($run->getId())?->remarks());
+    }
+
+    public function test_remark_badCode_keptAndTheRunGoesOn(): void
+    {
+        $source         = self::source(streams: 1, jobs: 1, items: 1);
+        $source->onJobs = static fn(Stream $stream, Context $c) => $c->remark('<b>bad</b>', 'text');
+        $run            = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame([['code' => Context::BAD_REMARK_CODE, 'text' => 'Bad code <b>bad</b>: text']], TestRun::get($run->getId())?->remarks());
+        self::assertSame([Run::REMARK => [Context::BAD_REMARK_CODE => 1]], json_decode((string) TestRun::get($run->getId())?->getProperty('warnings'), true));
+    }
+
+    public function test_remark_storedListReadBackUpToTwenty(): void
+    {
+        $list = array_map(static fn(int $i): array => ['code' => 'DUPLICATE_ICO', 'text' => "IČO $i"], range(1, 25));
+        $run  = self::startRun(self::source(streams: 1, jobs: 1, items: 1), ['remarks' => json_encode(['list' => $list], JSON_THROW_ON_ERROR)]);
+
+        self::assertSame(array_slice($list, 0, 20), TestRun::get($run->getId())?->remarks());
+    }
+
+    public function test_remark_storedTextReadBackCleaned(): void
+    {
+        $run = self::startRun(self::source(streams: 1, jobs: 1, items: 1), ['remarks' => json_encode(['list' => [
+            ['code' => 'OK_CODE', 'text' => str_repeat('x', Context::REMARK_CHARS + 9)],
+            ['code' => '<script>', 'text' => 'dropped'],
+            ['code' => 'ARRAY', 'text' => ['x']],
+            'not a remark',
+        ]], JSON_THROW_ON_ERROR)]);
+
+        self::assertSame([
+            ['code' => 'OK_CODE', 'text' => str_repeat('x', Context::REMARK_CHARS)],
+            ['code' => 'ARRAY', 'text' => ''],
+        ], TestRun::get($run->getId())?->remarks());
     }
 
     // ------------------------------------------------------------ probe

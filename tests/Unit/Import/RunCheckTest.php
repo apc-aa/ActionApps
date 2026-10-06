@@ -8,8 +8,10 @@ use AA\Import\Catalog;
 use AA\Import\CatalogEntry;
 use AA\Import\CatalogPage;
 use AA\Import\CheckResult;
+use AA\Import\Context;
 use AA\Import\ParamsGrabber;
 use AA\Import\Probe;
+use AA\Import\Run;
 use AA\Import\RunCursor;
 use AA\Import\Stream;
 use AA\Import\StreamState;
@@ -392,6 +394,32 @@ final class RunCheckTest extends TestCase
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
         self::assertSame(['check', 'probe:s1'], $source->calls);
+    }
+
+    public function test_run_remarkOfCheckAtStart_keptByTheRun(): void
+    {
+        $source          = self::source(streams: 1, jobs: 1, items: 1, source: new CheckedSource());
+        $source->check   = new CheckResult(true, '', 'fine');
+        $source->onCheck = static fn(CheckedSource $s, Context $ctx) => $ctx->remark('DEFINITION_LEFT_OUT', 'Indicator X: no geo level');
+        $run             = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame([['code' => 'DEFINITION_LEFT_OUT', 'text' => 'Indicator X: no geo level']], TestRun::get($run->getId())?->remarks());
+        self::assertSame([Run::REMARK => ['DEFINITION_LEFT_OUT' => 1]], json_decode(self::stored($run->getId())['warnings'], true));
+    }
+
+    public function test_check_remarkOfCheck_inTheReport(): void
+    {
+        $source          = self::cataloged(streams: 1);
+        $source->onCheck = static fn(Context $ctx) => $ctx->remark('DUPLICATE_ICO', 'IČO 123 twice');
+        $run             = self::startRun($source, ['mode' => 'check']);
+
+        self::runAll($run->getId());
+
+        self::assertSame(['done', ''], self::errorOf($run->getId()));
+        self::assertSame([['code' => 'DUPLICATE_ICO', 'text' => 'IČO 123 twice']], json_decode(self::stored($run->getId())['report'], true)['remarks']);
     }
 
     public function test_resume_afterAnErrorPastTheCheck_doesNotAskAgain(): void

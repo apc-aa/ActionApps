@@ -500,6 +500,82 @@ final class ContextTest extends TestCase
         self::assertSame('nothing to hide', $ctx->redact('nothing to hide'));
     }
 
+    // ------------------------------------------------------------ remark
+
+    public function test_remark_keptOnceByCodeAndText(): void
+    {
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
+
+        $ctx->remark('INCOMPLETE_YEAR', 'Series A: 2026 left out');
+        $ctx->remark('INCOMPLETE_YEAR', '  Series A: 2026 left out ');
+        $ctx->remark('INCOMPLETE_YEAR', 'Series B: 2026 left out');
+        $ctx->remark('BAD_ICO', 'Series A: 2026 left out');
+
+        self::assertSame([
+            ['code' => 'INCOMPLETE_YEAR', 'text' => 'Series A: 2026 left out'],
+            ['code' => 'INCOMPLETE_YEAR', 'text' => 'Series B: 2026 left out'],
+            ['code' => 'BAD_ICO', 'text' => 'Series A: 2026 left out'],
+        ], $ctx->remarks());
+    }
+
+    public function test_remark_textRedactedPrintableAndCut(): void
+    {
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
+
+        $ctx->remark('KEY_IN_TEXT', 'url ?key=' . rawurlencode(self::KEY) . "\nnext line\n");
+        $ctx->remark('LONG', str_repeat('ž', Context::REMARK_CHARS - 1) . self::KEY);
+
+        [$key, $long] = $ctx->remarks();
+        self::assertSame('url ?key=***%0Anext line', $key['text']);
+        self::assertSame(Context::REMARK_CHARS, mb_strlen($long['text']));
+        self::assertStringEndsWith('ž*', $long['text'], 'masked before the cut - no part of the key is left');
+    }
+
+    public function test_remark_keptUpToTheCap(): void
+    {
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
+
+        for ($i = 1; $i <= Context::REMARKS_COUNTED + 5; $i++) {
+            $ctx->remark('DUPLICATE_ICO', "IČO $i twice");
+        }
+
+        self::assertCount(Context::REMARKS_COUNTED, $ctx->remarks());
+        self::assertSame('IČO 1 twice', $ctx->remarks()[0]['text'], 'the first ones');
+    }
+
+    /** @return array<string, array{string}> */
+    public static function badRemarkCodes(): array
+    {
+        return [
+            'empty'        => [''],
+            'one letter'   => ['A'],
+            'lower case'   => ['bad_ico'],
+            'digit first'  => ['1BAD'],
+            'markup'       => ['<B>'],
+            'space'        => ['BAD ICO'],
+            'too long'     => [str_repeat('A', 32)],
+        ];
+    }
+
+    #[DataProvider('badRemarkCodes')]
+    public function test_remark_badCodeKeptUnderItsOwnCode(string $code): void
+    {
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
+
+        $ctx->remark($code, 'text');
+
+        self::assertSame([['code' => Context::BAD_REMARK_CODE, 'text' => 'Bad code ' . mb_substr($code, 0, 40) . ': text']], $ctx->remarks());
+    }
+
+    public function test_remark_badCodeBoundedPrintableAndRedacted(): void
+    {
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
+
+        $ctx->remark("x\n" . self::KEY . str_repeat('y', 500), 'text');
+
+        self::assertSame('Bad code x%0A***' . str_repeat('y', 40 - 7) . ': text', $ctx->remarks()[0]['text']);
+    }
+
     public function test_redact_masksValueInUrlQuery(): void
     {
         $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));

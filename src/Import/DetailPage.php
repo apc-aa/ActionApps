@@ -343,7 +343,7 @@ final class DetailPage
                 . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
                 . '</tr>';
             $samples = $run->samples();
-            $more    = self::runErrorHtml($p['error'] ?? null, ($p['role'] ?? '') === 'active') . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . self::filterKeptNoneHtml((int) ($p['warnings'][Run::FILTER_KEPT_NONE] ?? 0)) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
+            $more    = self::runErrorHtml($p['error'] ?? null, ($p['role'] ?? '') === 'active') . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . self::filterKeptNoneHtml((int) ($p['warnings'][Run::FILTER_KEPT_NONE] ?? 0)) . self::remarksHtml($run->remarks(), $p['warnings'][Run::REMARK] ?? [], (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
             if ($more !== '') {
                 $html .= '<tr class="aa-import-run-more"><td colspan="' . count($heads) . '">' . $more . '</td></tr>';
             }
@@ -1042,6 +1042,31 @@ final class DetailPage
         }
         return '<p>' . (($jobs === 1) ? _m('The filter kept no item of 1 job.') : _m('The filter kept no item of %1 jobs.', [$jobs]))
             . ' ' . _m('If those items should be imported, check the filter in Mapping.') . '</p>';
+    }
+
+    /** what the source remarked - no error; the count comes from the warnings, which also hold the
+     *  remarks past the listed ones
+     *  @param list<array{code: string, text: string}> $remarks
+     *  @param mixed $counts code => count, as stored */
+    private static function remarksHtml(array $remarks, mixed $counts, string $runId): string
+    {
+        $total = is_array($counts) ? (int) array_sum(array_filter($counts, is_int(...))) : 0;
+        if (!$remarks && ($total === 0)) {
+            return '';
+        }
+        $total   = max($total, count($remarks));
+        // past the cap the run counts no more
+        $summary = _m('Remarks of the source (%1)', [($total >= Context::REMARKS_COUNTED) ? Context::REMARKS_COUNTED . '+' : $total]);
+        if (!$remarks) {
+            return '<p>' . $summary . '</p>';
+        }
+        $rows = '';
+        foreach ($remarks as $r) {
+            $rows .= '<tr><td><code>' . safe($r['code']) . '</code></td><td>' . safe($r['text']) . '</td></tr>';
+        }
+        return '<details id="aa-import-remarks-' . safe($runId) . '"><summary>' . $summary . '</summary>'
+            . '<table><thead><tr><th scope="col">' . _m('Code') . '</th><th scope="col">' . _m('Remark') . '</th></tr></thead>'
+            . '<tbody>' . $rows . '</tbody></table></details>';
     }
 
     /** @param list<array<string, list<string>>> $samples */

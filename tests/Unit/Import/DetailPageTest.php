@@ -690,6 +690,52 @@ final class DetailPageTest extends TestCase
         $this->assertStringNotContainsString('aa-import-some', $html, 'no item error');
     }
 
+    public function test_runs_remarksEscapedWithTheirCount(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'warnings', json_encode([Run::REMARK => ['DUPLICATE_ICO' => 41, 'INCOMPLETE_YEAR' => 1]], JSON_THROW_ON_ERROR));
+        self::storedSet($id, 'remarks', json_encode(['list' => [
+            ['code' => 'DUPLICATE_ICO', 'text' => '<script>alert(1)</script> {user:password} _#AA_ID___'],
+            ['code' => '<b>BAD</b>', 'text' => 'a code of no allowed shape is dropped'],
+        ]], JSON_THROW_ON_ERROR));
+
+        $html = self::page()->runsHtml(time());
+
+        $this->assertStringNotContainsString('<script>', $html);
+        $this->assertStringContainsString('&lt;script&gt;alert(1)&lt;/script&gt; {user:password} _#AA_ID___', $html, 'never expanded');
+        $this->assertStringNotContainsString('a code of no allowed shape', $html);
+        $this->assertStringContainsString('id="aa-import-remarks-' . $id . '"', $html);
+        $this->assertStringContainsString('Remarks of the source (42)', $html, 'all of them counted, not only those listed');
+        $this->assertStringNotContainsString('aa-import-some', $html, 'no item error');
+    }
+
+    public function test_runs_remarksWithoutList_onlyTheCount(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'warnings', json_encode([Run::REMARK => ['DUPLICATE_ICO' => 3]], JSON_THROW_ON_ERROR));
+
+        $html = self::page()->runsHtml(time());
+
+        $this->assertStringContainsString('<p>Remarks of the source (3)</p>', $html);
+        $this->assertStringNotContainsString('aa-import-remarks-', $html, 'no empty table');
+    }
+
+    public function test_runs_remarksAtTheCap_saySoMany(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'warnings', json_encode([Run::REMARK => ['DUPLICATE_ICO' => 600, 'INCOMPLETE_YEAR' => 400]], JSON_THROW_ON_ERROR));
+
+        $html = self::page()->runsHtml(time());
+
+        $this->assertStringContainsString('Remarks of the source (1000+)', $html);
+    }
+
     public function test_runs_lastTwenty(): void
     {
         self::definition();
