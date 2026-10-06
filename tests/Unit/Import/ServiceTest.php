@@ -76,6 +76,8 @@ final class ServiceTest extends TestCase
         \ServiceSource::$mapping     = null;
         \ServiceSource::$failProperties = null;
         \ServiceSource::$failMapping    = null;
+        \ServiceSource::$unchangedWhenKnown = false;
+        \ServiceSource::$jobCalls       = [];
         TableDb::$tables['module'] = [['id' => self::SLICE, 'type' => 'S'], ['id' => self::OTHER, 'type' => 'S'], ['id' => self::SITE, 'type' => 'W']];
         $row = 900000;   // above the ids the tests' own writes get
         foreach ([self::TASK => self::SLICE, self::OTHER_TASK => self::OTHER] as $task => $slice) {
@@ -760,11 +762,12 @@ final class ServiceTest extends TestCase
     public function test_changeSettings_mappingOnlyKeepsRun(): void
     {
         $def = self::definition(['settings' => '{"territory":"cz","from_year":"2006"}']);
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
         $run = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
         self::ownedRecords();
         $queue = self::queue();
 
-        $this->assertNull(Service::resetMapping($def, AuthGetUid())->refusal());
+        $this->assertSame('SAME', Service::resetMapping($def, AuthGetUid())->code, 'the mapping the source gives is stored already');
         $this->assertNull(Service::changeSettings($def, self::SOURCE, ['from_year' => '2006', 'territory' => 'cz'], AuthGetUid())->refusal(), 'the same settings in another order');
 
         $this->assertSame('running', self::stored($run)['state'], 'the run works with its snapshot');
@@ -1295,7 +1298,104 @@ final class ServiceTest extends TestCase
         $this->assertSame($before, TableDb::$tables);
     }
 
+    /** the versions were read with the old mapping - a changed run must not skip a stream by them */
+    public function test_resetMapping_dropsStreamStateKeepsCatalog(): void
+    {
+        $def = self::definition();
+        self::ownedRecords();
+        $entries = Catalog::forDefinition(self::DEF)?->entries();
+
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
+
+        $this->assertNull(StreamState::forDefinition(self::DEF));
+        $this->assertEquals($entries, Catalog::forDefinition(self::DEF)?->entries(), 'the catalog lists the source, whatever the mapping');
+        $this->assertSame((new \ServiceSource())->defaultMapping()->toJson(), self::stored(self::DEF)['mapping']);
+    }
+
+    public function test_resetMapping_sameMappingChangesNothing(): void
+    {
+        $def = self::definition();
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
+        self::ownedRecords();
+        $before = TableDb::$tables;
+
+        $this->assertSame('SAME', Service::resetMapping($def, AuthGetUid())->code);
+        $this->assertNull(Service::resetMapping($def, AuthGetUid())->refusal(), 'done, for the page');
+        $this->assertSame($before, TableDb::$tables, 'the versions stay true');
+    }
+
+    /** the filter decides which rows reach the slice, as the mapping does */
+    public function test_resetMapping_filterOnlyDropsStreamState(): void
+    {
+        $def = self::definition();
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
+        self::ownedRecords();
+        $m = (new \ServiceSource())->defaultMapping();
+        \ServiceSource::$mapping = new Mapping($m->rows, $m->keyFields, $m->storeMode, $m->validate, $m->afterStream, '{ifeq:{_#KEY____}:x:0:1}');
+
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
+        $this->assertNull(StreamState::forDefinition(self::DEF));
+        $this->assertSame('{ifeq:{_#KEY____}:x:0:1}', self::stored(self::DEF)['filter']);
+    }
+
+    /** a run in the way would record versions read with the old mapping after they were dropped */
+    public function test_resetMapping_refusedWhileRunInTheWay(): void
+    {
+        $def = self::definition();
+        $run = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+        self::ownedRecords();
+        $before = TableDb::$tables;
+
+        $this->assertEquals(new ChangeResult('BUSY', 'running'), Service::resetMapping($def, AuthGetUid()));
+        $this->assertSame($before, TableDb::$tables);
+
+        self::storedSet($run, 'state', 'error');
+        $before = TableDb::$tables;
+        $this->assertEquals(new ChangeResult('BUSY', 'error'), Service::resetMapping($def, AuthGetUid()), 'a stopped run would go on with the old mapping too');
+        $this->assertSame($before, TableDb::$tables);
+
+        Service::end($run, AuthGetUid());
+        $baseline = Service::start($def, 'baseline', [], 'manual', AuthGetUid())->runId;
+        $before   = TableDb::$tables;
+        $this->assertEquals(new ChangeResult('BUSY', 'running'), Service::resetMapping($def, AuthGetUid()), 'a baseline records versions as well');
+        $this->assertSame($before, TableDb::$tables);
+
+        Service::end($baseline, AuthGetUid());
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
+        $this->assertNull(StreamState::forDefinition(self::DEF));
+        $this->assertSame(['ended', 'ended'], [self::stored($run)['state'], self::stored($baseline)['state']]);
+    }
+
+    public function test_resetMapping_changedRunReadsStreamsAgain(): void
+    {
+        $def = self::definition();
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
+        \ServiceSource::$unchangedWhenKnown = true;
+        self::changedRun($def);
+        $this->assertSame(['s1', 's2', 's3'], array_column(\ServiceSource::$jobCalls, 'stream'));
+        \ServiceSource::$jobCalls = [];
+        self::changedRun($def);
+        $this->assertSame([], \ServiceSource::$jobCalls, 'nothing changed in the source');
+
+        \ServiceSource::$mapping = new Mapping([['to' => 'headline........', 't' => 'copyfield', 'p' => ['field2copy' => 'key']]], ['headline........'], 'update/insert');
+        $this->assertSame('CHANGED', Service::resetMapping($def, AuthGetUid())->code);
+        self::changedRun($def);
+
+        $this->assertSame([['stream' => 's1', 'known' => null], ['stream' => 's2', 'known' => null], ['stream' => 's3', 'known' => null]], \ServiceSource::$jobCalls);
+    }
+
     // ------------------------------------------------------------ helpers
+
+    /** a changed run of $def started and stepped to its end */
+    private static function changedRun(Definition $def): void
+    {
+        $r = Service::start($def, 'changed', [], 'manual', AuthGetUid());
+        self::assertSame('queued', $r->code);
+        for ($steps = 0; self::queue() && ($steps < 10); $steps++) {
+            self::runQueued();
+        }
+        self::assertSame('done', self::stored($r->runId)['state']);
+    }
 
     /** @param array<string, string> $props  a stored definition over ServiceSource */
     private static function definition(array $props = [], string $id = self::DEF, string $slice = self::SLICE): Definition

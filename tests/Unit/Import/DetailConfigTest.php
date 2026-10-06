@@ -191,6 +191,31 @@ final class DetailConfigTest extends TestCase
         $this->assertSame([], TableDb::writes());
     }
 
+    /** a reset waits for an open run, and says when nothing changed */
+    public function test_resetMapping_busyAndSameSaid(): void
+    {
+        $def = self::definition();
+        $run = Service::start($def, 'run', [], 'manual', AuthGetUid())->runId;
+
+        $button = self::submit(self::page()->config()->mappingHtml(), 'Reset mapping from the source');
+        $this->assertTrue($button->hasAttribute('disabled'));
+        $this->assertSame('The last run is still running.', $button->getAttribute('title'));
+        $msg = self::act(['action' => 'reset_mapping']);
+        $this->assertStringContainsString('aa-err', $msg);
+        $this->assertStringContainsString('The mapping was not reset: The last run is still running.', $msg);
+        $this->assertSame(self::NO_PARAM_MAPPING, self::stored(self::DEF)['mapping']);
+
+        self::storedSet($run, 'state', 'error');
+        $this->assertSame('The last run stopped by an error. Continue it or End it first.', self::submit(self::page()->config()->mappingHtml(), 'Reset mapping from the source')->getAttribute('title'), 'no word of planned starts');
+        Service::end($run, AuthGetUid());
+
+        $this->assertFalse(self::submit(self::page()->config()->mappingHtml(), 'Reset mapping from the source')->hasAttribute('disabled'));
+        $this->assertStringContainsString('aa-ok', self::act(['action' => 'reset_mapping']));
+        $msg = self::act(['action' => 'reset_mapping']);
+        $this->assertStringContainsString('aa-ok', $msg);
+        $this->assertStringContainsString('nothing changed', $msg);
+    }
+
     /** only a refusal the settings or the source cause points to them */
     public function test_resetMapping_pointerOnlyForSettingsRefusals(): void
     {

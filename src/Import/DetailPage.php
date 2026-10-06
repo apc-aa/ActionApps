@@ -249,7 +249,7 @@ final class DetailPage
     /** the settings of the source and the mapping: the sections no run changes */
     public function config(): DetailConfig
     {
-        return new DetailConfig($this->def, $this->uid);
+        return new DetailConfig($this->def, $this->uid, fn(): string => $this->runInTheWay(Run::clock(), false));
     }
 
     /** What the script of the page follows a running run by (javascript/dataimport.js): where to ask,
@@ -523,12 +523,13 @@ final class DetailPage
         };
     }
 
-    /** why a run is in the way, by the reason of a busy StartResult, or HANGING */
-    public static function busyText(string $reason): string
+    /** why a run is in the way, by the reason of a busy StartResult, or HANGING; $start: of a run, which
+     *  a planned start may end itself - not of a change such as a reset of the mapping */
+    public static function busyText(string $reason, bool $start = true): string
     {
         return match ($reason) {
-            Run::ERROR    => _m('The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not.'),
-            self::HANGING => _m('No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not.'),
+            Run::ERROR    => $start ? _m('The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not.') : _m('The last run stopped by an error. Continue it or End it first.'),
+            self::HANGING => $start ? _m('No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not.') : _m('No step has worked on the last run for a long time. Continue it or End it first.'),
             'LEASE'       => _m('The last step of the previous run is still finishing. Try again in a few minutes.'),
             'WRONG_STATE' => _m('Its next step is already on its way.'),
             default       => _m('The last run is still running.'),
@@ -860,13 +861,23 @@ final class DetailPage
     /** why a new run cannot start now - what Service would refuse it with; '' = it can */
     private function startBlocked(int $now): string
     {
-        $open = $this->openRun();
+        $busy = $this->runInTheWay($now);
         return match (true) {
-            $open !== null                      => self::busyText($open->isStuck($now) ? self::HANGING : $open->state()),
-            (bool) Run::leasedOf($this->id(), $now) => self::busyText('LEASE'),
+            $busy !== ''                        => $busy,
             !$this->hasSource()                 => self::reasonText('NO_SOURCE'),
             $this->problems() !== []            => self::reasonText('DEFINITION'),
             default                             => '',
+        };
+    }
+
+    /** why a run is in the way of a start by hand ($start) or a reset of the mapping; '' = none */
+    private function runInTheWay(int $now, bool $start = true): string
+    {
+        $open = $this->openRun();
+        return match (true) {
+            $open !== null                          => self::busyText($open->isStuck($now) ? self::HANGING : $open->state(), $start),
+            (bool) Run::leasedOf($this->id(), $now) => self::busyText('LEASE', $start),
+            default                                 => '',
         };
     }
 

@@ -14,11 +14,13 @@ use Throwable;
  * The part of the import detail that changes what runs are made of: the settings of the source and
  * the source itself, the keys the source needs, and the mapping - read only, with its reset from the
  * source. No run changes these sections, so the script of the page leaves them alone and a half-filled
- * form stays. Every change goes through Service and ends the open run when it changes anything.
+ * form stays. Every change goes through Service: new settings end the open run, a new mapping waits
+ * until no run is in the way.
  */
 final class DetailConfig
 {
-    public function __construct(private readonly Definition $def, private readonly string $uid) {}
+    /** @param ?\Closure(): string $busy why a run is in the way of a reset ('' = none), asked only when the page is shown */
+    public function __construct(private readonly Definition $def, private readonly string $uid, private readonly ?\Closure $busy = null) {}
 
     /** @param mixed $chosen the source the user picked to switch to (?source=), from the request */
     public function html(mixed $chosen = null): string
@@ -32,7 +34,12 @@ final class DetailConfig
     public function resetMapping(): array
     {
         $r = Service::resetMapping($this->def, $this->uid);
-        return $r->done() ? ['mapping_reset', ''] : ['mapping_refused', ...self::refused($r)];
+        return match ($r->code) {
+            'CHANGED' => ['mapping_reset', ''],
+            'SAME'    => ['mapping_same', ''],
+            'BUSY'    => ['mapping_busy', $r->detail],
+            default   => ['mapping_refused', ...self::refused($r)],
+        };
     }
 
     /**
@@ -126,7 +133,9 @@ final class DetailConfig
     {
         [$refusal, $detail] = explode(':', $reason, 2) + ['', ''];
         return match ($code) {
-            'mapping_reset'    => MsgOk(_m('The mapping is set again from the source. An open run goes on with the mapping it started with.')),
+            'mapping_reset'    => MsgOk(_m('The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again.')),
+            'mapping_same'     => MsgOk(_m('The mapping is the same as the source gives - nothing changed.')),
+            'mapping_busy'     => MsgErr(_m('The mapping was not reset:') . ' ' . safe(DetailPage::busyText($reason, false))),
             'mapping_refused'  => MsgErr(_m('The mapping was not reset:') . ' ' . safe(Definition::refusal($refusal, $detail, $message)) . self::settingsPointer($refusal, false, $detail)),
             'settings_saved'   => MsgOk(_m('The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped.')),
             'settings_same'    => MsgOk(_m('The settings are the same as stored - nothing changed.')),
@@ -343,9 +352,10 @@ final class DetailConfig
         $why = isset(Registry::sources()[$this->def->sourceType()])
             ? $this->manageWhy(null)
             : DetailPage::reasonText('NO_SOURCE');
+        $why  = (($why === '') && $this->busy) ? ($this->busy)() : $why;
         $html .= '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-actions" data-aa-confirm="' . safe(_m('Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives.')) . '">' . DetailPage::tokenFields($this->id(), 'reset_mapping')
             . DetailPage::button(_m('Reset mapping from the source'), $why, []) . DetailPage::whyHtml($why) . '</form>'
-            . '<p><small>' . _m('Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. An open run goes on with the mapping it started with.') . '</small></p>';
+            . '<p><small>' . _m('Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing.') . '</small></p>';
         return DetailPage::section('mapping', _m('Mapping'), $html, false);
     }
 

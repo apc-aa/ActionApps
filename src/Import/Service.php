@@ -318,8 +318,10 @@ final class Service
 
     /**
      * "Reset mapping": the mapping, key, store mode, validation, expression after a stream and filter the
-     * source gives for the stored settings - which the user must be allowed to set. An unfinished run
-     * keeps working with its snapshot.
+     * source gives for the stored settings - which the user must be allowed to set. A new mapping drops
+     * the stream state in the same transaction: its versions were read with the old one, and a changed
+     * run would skip those streams for good. So it waits for a run in the way of a start by hand
+     * (BUSY), which would record them again; the catalog stays. The same mapping changes nothing (SAME).
      */
     public static function resetMapping(Definition $d, string $user): ChangeResult
     {
@@ -348,10 +350,20 @@ final class Service
             } catch (Throwable $e) {
                 return self::settingsRefused($id, $def->sourceType(), $e, 'NO_MAPPING');
             }
+            $stored  = self::mappingProps($def);
             $refused = self::takeDefaultMapping($def, $source, $slice);
             if ($refused !== null) {
                 return $refused;
             }
+            if (self::mappingProps($def) === $stored) {
+                return new ChangeResult('SAME');
+            }
+            $toEnd = [];
+            $busy  = self::busy($id, 'manual', $toEnd);
+            if ($busy !== null) {
+                return new ChangeResult('BUSY', $busy->reason);
+            }
+            StreamState::deleteFor($id);
             $def->update(Definition::MAPPING_PROPS);
             return new ChangeResult('CHANGED');
         });
@@ -495,6 +507,12 @@ final class Service
         }
         $rows = DB_AA::select(['property' => 'value'], 'SELECT property, value FROM `object_text`', [['object_id', $task], ['property', ['aa_type', 'aa_owner']]]);
         return (($rows['aa_type'] ?? '') === \AA_Plannedtask::class) && (strtolower((string) ($rows['aa_owner'] ?? '')) === $slice);
+    }
+
+    /** @return array<string, string> what applyMapping() sets, as stored */
+    private static function mappingProps(Definition $def): array
+    {
+        return array_intersect_key($def->snapshot(), array_flip(Definition::MAPPING_PROPS));
     }
 
     /** The source's default mapping into $def, unless it does not fit the slice - it would only refuse every start.

@@ -34,6 +34,10 @@ final class ServiceSource extends AbstractSource implements Probeable
     /** @var list<array{vendor: string, context: string}> what credentials() gives */
     public static array $credentials = [];
     public static ?\Throwable $failKeys = null;
+    /** probe() says unchanged when it is told the version it gives */
+    public static bool $unchangedWhenKnown = false;
+    /** @var list<array{stream: string, known: ?string}> */
+    public static array $jobCalls = [];
 
     /** @param array<string, string> $settings */
     public function __construct(private readonly array $settings = []) {}
@@ -92,11 +96,13 @@ final class ServiceSource extends AbstractSource implements Probeable
 
     public function probe(Stream $s, Context $ctx, ?string $known): Probe
     {
-        return new Probe(Probe::CHANGED, 'v-' . $s->key);
+        $version = 'v-' . $s->key;
+        return new Probe((self::$unchangedWhenKnown && ($known === $version)) ? Probe::UNCHANGED : Probe::CHANGED, $version);
     }
 
     public function jobs(Stream $stream, Context $ctx, ?string $known): iterable
     {
+        self::$jobCalls[] = ['stream' => $stream->key, 'known' => $known];
         return [];
     }
 
