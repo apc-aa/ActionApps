@@ -12,222 +12,305 @@ setlocale(LC_ALL, 'vi_VN.utf8', 'vi_VN');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "Core settings for the Alerts." => "Cài đặt cốt lõi cho cảnh báo.", // ai 2026-06
+// "form URL" => "URL biểu mẫu", // ai 2026-06
+// "Use AA Admin / Delete<br>to delete permanently" => "Dùng AA Admin / Xóa<br>để xóa vĩnh viễn", // ai 2026-06
+// "created at" => "tạo lúc", // ai 2026-06
+// "created by" => "tạo bởi", // ai 2026-06
+// "You don't have permissions to edit any collection or no collection exists." => "Bạn không có quyền sửa bất kỳ cảnh báo nào hoặc không có cảnh báo nào tồn tại.", // ai 2026-06
+// "Here you send the Alert emails manually." => "Tại đây bạn gửi email cảnh báo theo cách thủ công.", // ai 2026-06
+// End of unused messages
 
-// modules/alerts/alerts_sending.php, row 417
+// modules/alerts/acf.php, row 45
+// modules/alerts/modedit.php, row 89
+"You do not have permissions to add slice" => "Bạn không có quyền thêm chuyên mục", // ai 2026-06
+
+// modules/alerts/acf.php, row 114
+"Alerts Selections" => "Cảnh báo - Lựa chọn", // ai 2026-06
+
+// modules/alerts/acf.php, row 118
+"Choose selections which form the Alert email." => "Chọn các lựa chọn tạo nên email cảnh báo.", // ai 2026-06
+
+// modules/alerts/acf.php, row 122, 149
+"order" => "thứ tự", // ai 2026-06
+
+// modules/alerts/acf.php, row 122
+"selection" => "lựa chọn", // ai 2026-06
+
+// modules/alerts/acf.php, row 122
+"remove" => "",
+
+// modules/alerts/acf.php, row 131
+"No selections chosen yet." => "",
+
+// modules/alerts/acf.php, row 134
+"Save order" => "",
+
+// modules/alerts/acf.php, row 135
+"Remove checked" => "",
+
+// modules/alerts/acf.php, row 150
+"Add selection" => "",
+
+// modules/alerts/acf.php, row 152
+"No selections defined. You must define some." => "Chưa có lựa chọn nào được định nghĩa. Bạn phải định nghĩa một số.", // ai 2026-06
+
+// modules/alerts/alerts_sending.php, row 515
 "alerts alert" => "cảnh báo - thông báo", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 418
+// modules/alerts/alerts_sending.php, row 516
 "alerts welcome" => "cảnh báo - chào mừng", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 419
+// modules/alerts/alerts_sending.php, row 517
 "slice wizard welcome" => "trình hỗ trợ chuyên mục - chào mừng", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 420
+// modules/alerts/alerts_sending.php, row 518
 "user template" => "mẫu người dùng", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 421
+// modules/alerts/alerts_sending.php, row 519
 "password change" => "đổi mật khẩu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 422
+// modules/alerts/alerts_sending.php, row 520
 "other" => "khác", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 432
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Alert" => "Bí danh cho email cảnh báo", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 434
+// modules/alerts/alerts_sending.php, row 533
 "complete filter text" => "văn bản đầy đủ của bộ lọc", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 435, 444
+// modules/alerts/alerts_sending.php, row 534, 543
 "howoften" => "mức độ thường xuyên", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 436
+// modules/alerts/alerts_sending.php, row 535
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL biểu mẫu ẩn danh (được đặt trong Quản trị cảnh báo - Cài đặt)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 437
+// modules/alerts/alerts_sending.php, row 536
 "Unsubscribe Form URL" => "URL biểu mẫu hủy đăng ký", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 442
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Alerts Welcome" => "Bí danh cho email chào mừng cảnh báo", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 445
+// modules/alerts/alerts_sending.php, row 544
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL biểu mẫu thu thập (được đặt trong Quản trị cảnh báo - Cài đặt)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 446
+// modules/alerts/alerts_sending.php, row 545
 "email confirmed" => "email đã xác nhận", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 452
+// modules/alerts/alerts_sending.php, row 551
 "Aliases for Slice Wizard Welcome" => "Bí danh cho email chào mừng trình hỗ trợ chuyên mục", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 454, 466
+// modules/alerts/alerts_sending.php, row 553, 565
 "Slice name" => "Tên chuyên mục", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 455, 467
+// modules/alerts/alerts_sending.php, row 554, 566
 "New user name" => "Tên người dùng mới", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 456
+// modules/alerts/alerts_sending.php, row 555
 "New user login name" => "Tên đăng nhập của người dùng mới", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 457
+// modules/alerts/alerts_sending.php, row 556
 "New user role (editor / admin)" => "Vai trò người dùng mới (biên tập viên / quản trị viên)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 458
+// modules/alerts/alerts_sending.php, row 557
 "My name" => "Tên của tôi", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 459
+// modules/alerts/alerts_sending.php, row 558
 "My email" => "Email của tôi", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 464
+// modules/alerts/alerts_sending.php, row 563
 "Aliases for User Templates (you can use also all aliases of the user)" => "Bí danh cho mẫu người dùng (bạn cũng có thể dùng tất cả bí danh của người dùng)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 472
+// modules/alerts/alerts_sending.php, row 571
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Bí danh cho email đổi mật khẩu (bạn cũng có thể dùng tất cả bí danh của người dùng)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 474
+// modules/alerts/alerts_sending.php, row 573
 "HTML link to the password change page for current user" => "Liên kết HTML đến trang đổi mật khẩu cho người dùng hiện tại", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 475
+// modules/alerts/alerts_sending.php, row 574
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Tham số URL dùng cho liên kết đổi mật khẩu trong _#PWD_LINK (bạn có thể dùng nó nếu muốn dùng URL riêng của mình)", // ai 2026-06
 
-// modules/alerts/cf_common.php, row 41
+// modules/alerts/cf_common.php, row 42
 "Language" => "Ngôn ngữ", // ai 2026-06
 
-// modules/alerts/cf_common.php, row 47
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/cf_common.php, row 48
+// modules/alerts/send_emails.php, row 71
 "Email" => "",
 
-// modules/alerts/cf_common.php, row 53
+// modules/alerts/cf_common.php, row 54
 "Password" => "Mật khẩu", // ai 2026-06
 
-// modules/alerts/cf_common.php, row 58
+// modules/alerts/cf_common.php, row 59
 "First name" => "Tên", // ai 2026-06
 
-// modules/alerts/cf_common.php, row 63
+// modules/alerts/cf_common.php, row 64
 "Last name" => "Họ", // ai 2026-06
 
-// modules/alerts/cf_common.php, row 71
+// modules/alerts/cf_common.php, row 72
 // modules/alerts/synchro2.php, row 65
 "How often" => "Mức độ thường xuyên", // ai 2026-06
 
-// modules/alerts/cf_common.php, row 78
+// modules/alerts/cf_common.php, row 79
 "Change password" => "Đổi mật khẩu", // ai 2026-06
 
-// modules/alerts/cf_common.php, row 84
+// modules/alerts/cf_common.php, row 85
 "Retype new password" => "Nhập lại mật khẩu mới", // ai 2026-06
 
-// modules/alerts/menu.php, row 49, 50
-// modules/alerts/tableviews.php, row 158, 159
-"Alerts Settings" => "Cài đặt cảnh báo", // ai 2026-06
+// modules/alerts/emails.php, row 45
+"You do not have permission to manage Emails" => "Bạn không có quyền quản lý Email", // ai 2026-06
 
-// modules/alerts/menu.php, row 87
-"Alerts Admin" => "Quản trị cảnh báo", // ai 2026-06
+// modules/alerts/emails.php, row 62
+"Owner" => "Chủ sở hữu", // ai 2026-06
 
-// modules/alerts/menu.php, row 91
-"Settings" => "Cài đặt", // ai 2026-06
-
-// modules/alerts/menu.php, row 95
-// modules/alerts/send_emails.php, row 136
-// modules/alerts/synchro2.php, row 77
-// modules/alerts/tableviews.php, row 103
-"Selections" => "Lựa chọn", // ai 2026-06
-
-// modules/alerts/menu.php, row 99
-"Send emails" => "Gửi email", // ai 2026-06
-
-// modules/alerts/menu.php, row 104
-"Reader management" => "Quản lý người đọc", // ai 2026-06
-
-// modules/alerts/menu.php, row 107
-"Documentation" => "Tài liệu", // ai 2026-06
-
-// modules/alerts/menu.php, row 109
-"Common" => "Chung", // ai 2026-06
-
-// modules/alerts/menu.php, row 111
+// modules/alerts/emails.php, row 66
+// modules/alerts/menu.php, row 86
 "Email templates" => "Mẫu email", // ai 2026-06
 
-// modules/alerts/modedit.php, row 101
-"You do not have permissions to add slice" => "Bạn không có quyền thêm chuyên mục", // ai 2026-06
+// modules/alerts/menu.php, row 50, 51
+// modules/alerts/modedit.php, row 165, 168
+"Alerts Settings" => "Cài đặt cảnh báo", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 55
+// modules/alerts/menu.php, row 62
+"Alerts Admin" => "Quản trị cảnh báo", // ai 2026-06
+
+// modules/alerts/menu.php, row 66
+"Settings" => "Cài đặt", // ai 2026-06
+
+// modules/alerts/menu.php, row 70
+// modules/alerts/send_emails.php, row 153
+// modules/alerts/synchro2.php, row 77
+"Selections" => "Lựa chọn", // ai 2026-06
+
+// modules/alerts/menu.php, row 74
+"Send emails" => "Gửi email", // ai 2026-06
+
+// modules/alerts/menu.php, row 79
+"Reader management" => "Quản lý người đọc", // ai 2026-06
+
+// modules/alerts/menu.php, row 82
+"Documentation" => "Tài liệu", // ai 2026-06
+
+// modules/alerts/menu.php, row 84
+"Common" => "Chung", // ai 2026-06
+
+// modules/alerts/modedit.php, row 93
+"You do not have permissions to edit this Alerts module" => "",
+
+// modules/alerts/modedit.php, row 165
+"Add Alerts" => "",
+
+// modules/alerts/modedit.php, row 173
+"language" => "ngôn ngữ", // ai 2026-06
+
+// modules/alerts/modedit.php, row 177
+"Alert emails" => "",
+
+// modules/alerts/modedit.php, row 181, 187
+"Edit '%1'" => "",
+
+// modules/alerts/modedit.php, row 183
+"welcome email" => "email chào mừng", // ai 2026-06
+
+// modules/alerts/modedit.php, row 189
+// modules/alerts/send.php, row 76
+"alert email" => "email cảnh báo", // ai 2026-06
+
+// modules/alerts/modedit.php, row 192
+"alerts ID" => "ID cảnh báo", // ai 2026-06
+
+// modules/alerts/send.php, row 44
+"You do not have permissions to access this page" => "Bạn không có quyền truy cập trang này", // ai 2026-06
+
+// modules/alerts/send.php, row 69
+"Send Emails" => "Gửi email", // ai 2026-06
+
+// modules/alerts/send.php, row 75
+"Alert email to send" => "",
+
+// modules/alerts/send.php, row 77
+"Set" => "",
+
+// modules/alerts/send_emails.php, row 64
 "Send now an example alert email to email" => "Gửi ngay một email cảnh báo mẫu đến email", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 65, 76
+// modules/alerts/send_emails.php, row 72, 91
 "as if" => "như thể", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 66, 77, 92
+// modules/alerts/send_emails.php, row 73, 92, 108
 "Go!" => "Thực hiện!", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 74
+// modules/alerts/send_emails.php, row 83
 "Send now an example alert email to Reader" => "Gửi ngay một email cảnh báo mẫu đến Người đọc", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 75
+// modules/alerts/send_emails.php, row 90
 "Reader" => "Người đọc", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 84
+// modules/alerts/send_emails.php, row 99
 "Send alerts" => "Gửi cảnh báo", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 91
+// modules/alerts/send_emails.php, row 107
 "Send now alerts to all users subscribed to " => "Gửi ngay cảnh báo đến tất cả người dùng đã đăng ký", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 91
+// modules/alerts/send_emails.php, row 107
 "Warning: This is a real command!" => "Cảnh báo: Đây là lệnh thực sự!", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 95
+// modules/alerts/send_emails.php, row 111
 "Last time the alerts were sent on:" => "Lần cuối cảnh báo được gửi vào:", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 106
+// modules/alerts/send_emails.php, row 122
 "%1 email(s) sent" => "Đã gửi %1 email", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 134
+// modules/alerts/send_emails.php, row 151
 "Slice" => "Chuyên mục", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 135
+// modules/alerts/send_emails.php, row 152
 "View (Selection set)" => "Khung hiển thị (Tập lựa chọn)", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 140
+// modules/alerts/send_emails.php, row 157
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
  => "Hãy định nghĩa các lựa chọn trong những chuyên mục mà bạn muốn gửi cảnh báo,\\n        trong các khung hiển thị thuộc loại Alerts Selection Set", // ai 2026-06
 
-// modules/alerts/synchro.php, row 63
+// modules/alerts/synchro.php, row 65
 "Synchronization with Reader Management Slice" => "Đồng bộ với chuyên mục quản lý người đọc", // ai 2026-06
 
-// modules/alerts/synchro.php, row 93
+// modules/alerts/synchro.php, row 95
 "Not Yet Set" => "Chưa được đặt", // ai 2026-06
 
-// modules/alerts/synchro.php, row 102
+// modules/alerts/synchro.php, row 104
 "Choose Reader Management Slice" => "Chọn chuyên mục quản lý người đọc", // ai 2026-06
 
-// modules/alerts/synchro.php, row 103
+// modules/alerts/synchro.php, row 105
 "This Alerts Collection takes user data from the slice" => "Cảnh báo này lấy dữ liệu người dùng từ chuyên mục", // ai 2026-06
 
-// modules/alerts/synchro.php, row 110
+// modules/alerts/synchro.php, row 112
 "Change to: " => "Đổi thành:", // ai 2026-06
 
-// modules/alerts/synchro.php, row 116
+// modules/alerts/synchro.php, row 118
 "and delete the %1-specific fields from %2" => "và xóa các trường dành riêng cho %1 khỏi %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 120
+// modules/alerts/synchro.php, row 122
 "Change" => "Thay đổi", // ai 2026-06
 
-// modules/alerts/synchro.php, row 130
+// modules/alerts/synchro.php, row 133
 "Add %1-specific fields to %2" => "Thêm các trường dành riêng cho %1 vào %2", // ai 2026-06
 
-// modules/alerts/synchro.php, row 132
+// modules/alerts/synchro.php, row 136
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "Chỉ thêm những trường có ID chưa tồn tại trong chuyên mục.\\n    Làm mới nhóm hằng số chứa các lựa chọn nếu nó đã tồn tại.", // ai 2026-06
 
-// modules/alerts/synchro.php, row 138
+// modules/alerts/synchro.php, row 142
 "Field Name" => "Tên trường", // ai 2026-06
 
-// modules/alerts/synchro.php, row 139
+// modules/alerts/synchro.php, row 143
 "Field ID" => "ID trường", // ai 2026-06
 
-// modules/alerts/synchro.php, row 148
+// modules/alerts/synchro.php, row 152
 "Add or refresh fields" => "Thêm hoặc làm mới các trường", // ai 2026-06
 
-// modules/alerts/synchro.php, row 150
+// modules/alerts/synchro.php, row 154
 "This command can not be used until you choose the Reader Management Slice." => "Không thể dùng lệnh này cho đến khi bạn chọn chuyên mục quản lý người đọc.", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -245,93 +328,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "Đã thêm %1 trường", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 200
+// modules/alerts/synchro2.php, row 201
 "%1 field(s) and %2 constant group(s) deleted" => "Đã xóa %1 trường và %2 nhóm hằng số", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 228
+// modules/alerts/synchro2.php, row 229
 "not set" => "chưa đặt", // ai 2026-06
 
-// modules/alerts/tableviews.php, row 65
-"No selections defined. You must define some." => "Chưa có lựa chọn nào được định nghĩa. Bạn phải định nghĩa một số.", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 102
-"Alerts Selections" => "Cảnh báo - Lựa chọn", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 106
-"Choose selections which form the Alert email." => "Chọn các lựa chọn tạo nên email cảnh báo.", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 114
-"selection" => "lựa chọn", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 127
-"order" => "thứ tự", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 162
-"Core settings for the Alerts." => "Cài đặt cốt lõi cho cảnh báo.", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 172
-"alerts ID" => "ID cảnh báo", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 180
-"name" => "tên", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 183
-"form URL" => "URL biểu mẫu", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 185
-"language" => "ngôn ngữ", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 189
-"deleted" => "đã xóa", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 190
-"Use AA Admin / Delete<br>to delete permanently" => "Dùng AA Admin / Xóa<br>để xóa vĩnh viễn", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 195
-"welcome email" => "email chào mừng", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 204, 267
-"alert email" => "email cảnh báo", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 223
-"created at" => "tạo lúc", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 231
-"created by" => "tạo bởi", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 241, 261
-"You don't have permissions to edit any collection or no collection exists." => "Bạn không có quyền sửa bất kỳ cảnh báo nào hoặc không có cảnh báo nào tồn tại.", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 255, 256
-"Send Emails" => "Gửi email", // ai 2026-06
-
-// modules/alerts/tableviews.php, row 263
-"Here you send the Alert emails manually." => "Tại đây bạn gửi email cảnh báo theo cách thủ công.", // ai 2026-06
-
-// modules/alerts/util.php, row 58
-"instant" => "ngay lập tức", // ai 2026-06
-
-// modules/alerts/util.php, row 59
-"daily" => "hằng ngày", // ai 2026-06
+// modules/alerts/util.php, row 54
+"-- none --" => "",
 
 // modules/alerts/util.php, row 60
+"email" => "",
+
+// modules/alerts/util.php, row 87
+"instant" => "ngay lập tức", // ai 2026-06
+
+// modules/alerts/util.php, row 88
+"daily" => "hằng ngày", // ai 2026-06
+
+// modules/alerts/util.php, row 89
 "weekly" => "hằng tuần", // ai 2026-06
 
-// modules/alerts/util.php, row 61
+// modules/alerts/util.php, row 90
 "twoweeks" => "hai tuần một lần", // ai 2026-06
 
-// modules/alerts/util.php, row 62
+// modules/alerts/util.php, row 91
 "monthly" => "hằng tháng", // ai 2026-06
 
-// modules/alerts/util.php, row 63
+// modules/alerts/util.php, row 92
 "irregular" => "không định kỳ", // ai 2026-06
 
-// modules/alerts/util.php, row 70
+// modules/alerts/util.php, row 99
 "Active" => "Đang hoạt động", // ai 2026-06
 
-// modules/alerts/util.php, row 71
+// modules/alerts/util.php, row 100
 "Holding bin" => "Khu chờ duyệt", // ai 2026-06
 
-// modules/alerts/util.php, row 72
+// modules/alerts/util.php, row 101
 "Trash bin" => "Thùng rác", // ai 2026-06
 ];

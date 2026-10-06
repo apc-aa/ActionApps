@@ -9,131 +9,134 @@
 $mgettext_lang = "hu";
 
 return [
+// Unused messages - no longer found in the sources; kept commented for reference.
+// "Are you sure you want to empty trash?" => "Biztosan ki szeretn\xE9 \xFCr\xEDteni a lomt\xE1rat?", // ai 2026-06
+// End of unused messages
 
-// include/searchbar.class.php, row 51
+// include/searchbar.class.php, row 54
 "Condition" => "Felt\xE9tel", // ai 2026-06
 
-// include/searchbar.class.php, row 52
+// include/searchbar.class.php, row 55
 "Readonly" => "Csak olvashat\xF3", // ai 2026-06
 
-// include/searchbar.class.php, row 142
+// include/searchbar.class.php, row 151
 "Search row" => "Keres\xE9si sor", // ai 2026-06
 
-// include/searchbar.class.php, row 143
+// include/searchbar.class.php, row 152
 "Order row" => "Rendez\xE9si sor", // ai 2026-06
 
-// include/searchbar.class.php, row 533, 534, 570
+// include/searchbar.class.php, row 566, 567, 607
 "Search" => "Keres\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 533
+// include/searchbar.class.php, row 566
 "And" => "\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 543
+// include/searchbar.class.php, row 576
 "contains" => "tartalmazza", // ai 2026-06
 
-// include/searchbar.class.php, row 546
+// include/searchbar.class.php, row 580
 "begins with" => "ezzel kezd\xF5dik", // ai 2026-06
 
-// include/searchbar.class.php, row 549
+// include/searchbar.class.php, row 584
 "is" => "megegyezik", // ai 2026-06
 
-// include/searchbar.class.php, row 571
+// include/searchbar.class.php, row 608
 "Clear" => "T\xF6rl\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 574
+// include/searchbar.class.php, row 611
 "Store search" => "Keres\xE9s ment\xE9se", // ai 2026-06
 
-// include/searchbar.class.php, row 595
+// include/searchbar.class.php, row 633
 "Order" => "Rendez\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 599
+// include/searchbar.class.php, row 637
 "Descending" => "Cs\xF6kken\xF5", // ai 2026-06
 
-// include/searchbar.class.php, row 613
+// include/searchbar.class.php, row 652
 "Filter" => "Sz\xFBr\xF5", // ai 2026-06
 
-// include/searchbar.class.php, row 664
+// include/searchbar.class.php, row 706
 "Advanced search" => "R\xE9szletes keres\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 728
+// include/searchbar.class.php, row 769
 "Save" => "Ment\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 729
+// include/searchbar.class.php, row 770
 "Refine" => "Pontos\xEDt\xE1s", // ai 2026-06
 
-// include/searchbar.class.php, row 730
+// include/searchbar.class.php, row 771
 "Cancel" => "M\xE9gse", // ai 2026-06
 
-// include/searchbar.class.php, row 731
-// modules/links/constants.php, row 59, 171
+// include/searchbar.class.php, row 772
+// modules/links/constants.php, row 60, 173
 "Name" => "N\xE9v", // ai 2026-06
 
-// include/searchbar.class.php, row 732
+// include/searchbar.class.php, row 773
 "Share with all slice users" => "Megoszt\xE1s a rovat \xF6sszes felhaszn\xE1l\xF3j\xE1val", // ai 2026-06
 
-// include/searchbar.class.php, row 733
+// include/searchbar.class.php, row 774
 "Save filter" => "Sz\xFBr\xF5 ment\xE9se", // ai 2026-06
 
-// include/searchbar.class.php, row 734
+// include/searchbar.class.php, row 775
 "Rename filter" => "Sz\xFBr\xF5 \xE1tnevez\xE9se", // ai 2026-06
 
-// include/searchbar.class.php, row 735
+// include/searchbar.class.php, row 776
 "Are you sure you want to delete selected filter?" => "Biztosan t\xF6rli a kijel\xF6lt sz\xFBr\xF5t?", // ai 2026-06
 
-// include/searchbar.class.php, row 1017
+// include/searchbar.class.php, row 1065
 "Select one..." => "V\xE1lasszon...", // ai 2026-06
 
-// include/searchbar.class.php, row 1032
+// include/searchbar.class.php, row 1080
 "My filters" => "Saj\xE1t sz\xFBr\xF5k", // ai 2026-06
 
-// include/searchbar.class.php, row 1035
+// include/searchbar.class.php, row 1083
 "Global filters" => "Glob\xE1lis sz\xFBr\xF5k", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Shared filter (click to apply)" => "Megosztott sz\xFBr\xF5 (kattintson az alkalmaz\xE1shoz)", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Szem\xE9lyes sz\xFBr\xF5 (kattintson az alkalmaz\xE1shoz)", // ai 2026-06
 
-// include/searchbar.class.php, row 1083
+// include/searchbar.class.php, row 1124
 "Rename" => "\xC1tnevez\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1126
 "Delete" => "T\xF6rl\xE9s", // ai 2026-06
 
-// include/searchbar.class.php, row 1094
+// include/searchbar.class.php, row 1135
 "Manage filters" => "Sz\xFBr\xF5k kezel\xE9se", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Hiba: hi\xE1nyzik az olvas\xE1si jelsz\xF3", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "\xDCzenet a Toolkitb\xF5l", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 // modules/links/check_url.php, row 52
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "\xDAjrabejelentkez\xE9s", // ai 2026-06
 
-// modules/links/actions.php, row 47, 91, 112
+// modules/links/actions.php, row 48, 93, 115
 "Can't find link in given category" => "A hivatkoz\xE1s nem tal\xE1lhat\xF3 a megadott kateg\xF3ri\xE1ban", // ai 2026-06
 
-// modules/links/actions.php, row 52, 117
+// modules/links/actions.php, row 53, 120
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Nincs jogosults\xE1ga t\xF6r\xF6lni a hivatkoz\xE1st a kateg\xF3ri\xE1b\xF3l - a hivatkoz\xE1s t\xF6rl\xE9sre JAVASOLT \xE1llapotba ker\xFClt az adott kateg\xF3ri\xE1ban", // ai 2026-06
 
-// modules/links/actions.php, row 61, 126
+// modules/links/actions.php, row 62, 129
 "Can't get association information" => "Nem siker\xFClt lek\xE9rni a hozz\xE1rendel\xE9si adatokat", // ai 2026-06
 
-// modules/links/actions.php, row 95
+// modules/links/actions.php, row 97
 "No permission to approve link to given category" => "Nincs jogosults\xE1ga j\xF3v\xE1hagyni a hivatkoz\xE1st az adott kateg\xF3ri\xE1ban", // ai 2026-06
 
-// modules/links/actions.php, row 162, 165
+// modules/links/actions.php, row 166, 169
 "No permission to move link" => "Nincs jogosults\xE1ga a hivatkoz\xE1s \xE1thelyez\xE9s\xE9hez", // ai 2026-06
 
 // modules/links/catedit.php, row 51
-// modules/links/catedit2.php, row 208
+// modules/links/catedit2.php, row 210
 "No permission to edit category" => "Nincs jogosults\xE1ga a kateg\xF3ria szerkeszt\xE9s\xE9hez", // ai 2026-06
 
 // modules/links/catedit.php, row 74
@@ -146,7 +149,7 @@ return [
 "Category" => "Kateg\xF3ria", // ai 2026-06
 
 // modules/links/catedit.php, row 104
-// modules/links/constants.php, row 58, 170
+// modules/links/constants.php, row 59, 172
 // modules/links/linkedit.php, row 430
 "Id" => "ID", // ai 2026-06
 
@@ -154,13 +157,13 @@ return [
 "Links in subtree" => "Hivatkoz\xE1sok a r\xE9szf\xE1ban", // ai 2026-06
 
 // modules/links/catedit.php, row 105
-// modules/links/catedit2.php, row 217
-// modules/links/constants.php, row 93, 191
+// modules/links/catedit2.php, row 219
+// modules/links/constants.php, row 94, 194
 "Category name" => "Kateg\xF3ria neve", // ai 2026-06
 
 // modules/links/catedit.php, row 106
-// modules/links/catedit2.php, row 218
-// modules/links/constants.php, row 97, 193
+// modules/links/catedit2.php, row 220
+// modules/links/constants.php, row 98, 196
 "Category description" => "Kateg\xF3ria le\xEDr\xE1sa", // ai 2026-06
 
 // modules/links/catedit.php, row 107
@@ -170,17 +173,17 @@ return [
 "Disallow storing of the links to this category?" => "Hivatkoz\xE1sok t\xE1rol\xE1s\xE1nak tilt\xE1sa ebben a kateg\xF3ri\xE1ban?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
-// modules/links/catedit2.php, row 222
-// modules/links/constants.php, row 75
-// modules/links/link.class.php, row 674
-// modules/links/linkedit.php, row 473
+// modules/links/catedit2.php, row 224
+// modules/links/constants.php, row 76
+// modules/links/link.class.php, row 728
+// modules/links/linkedit.php, row 498
 "Editor's note" => "Szerkeszt\xF5i megjegyz\xE9s", // ai 2026-06
 
 // modules/links/catedit.php, row 110
 "Subcategories" => "Alkateg\xF3ri\xE1k", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "Category tree" => "Kateg\xF3riafa", // ai 2026-06
 
 // modules/links/catedit.php, row 113
@@ -207,31 +210,31 @@ return [
 // modules/links/catedit.php, row 137
 "Change state" => "\xC1llapot m\xF3dos\xEDt\xE1sa", // ai 2026-06
 
-// modules/links/catedit.php, row 142
+// modules/links/catedit.php, row 143
 "OK" => "",
 
-// modules/links/catedit2.php, row 153
+// modules/links/catedit2.php, row 154
 "Category reassigned" => "Kateg\xF3ria \xE1thelyezve", // ai 2026-06
 
-// modules/links/catedit2.php, row 165
+// modules/links/catedit2.php, row 166
 "Subcategory deleted" => "Alkateg\xF3ria t\xF6r\xF6lve", // ai 2026-06
 
-// modules/links/catedit2.php, row 167
+// modules/links/catedit2.php, row 168
 "Can't delete category which contains links" => "Hivatkoz\xE1sokat tartalmaz\xF3 kateg\xF3ria nem t\xF6r\xF6lhet\xF5", // ai 2026-06
 
-// modules/links/catedit2.php, row 221
+// modules/links/catedit2.php, row 223
 "Additional information" => "Tov\xE1bbi inform\xE1ci\xF3", // ai 2026-06
 
-// modules/links/catedit2.php, row 231
+// modules/links/catedit2.php, row 233
 "Category data changed" => "A kateg\xF3ria adatai m\xF3dosultak", // ai 2026-06
 
-// modules/links/catedit2.php, row 291
+// modules/links/catedit2.php, row 293
 "New category created" => "\xDAj kateg\xF3ria l\xE9trehozva", // ai 2026-06
 
-// modules/links/catedit2.php, row 297
+// modules/links/catedit2.php, row 299
 "Foreign category assigned" => "Kereszthivatkozott kateg\xF3ria hozz\xE1rendelve", // ai 2026-06
 
-// modules/links/cattree.php, row 436
+// modules/links/cattree.php, row 458
 "Switch to category" => "Ugr\xE1s a kateg\xF3ri\xE1ba", // ai 2026-06
 
 // modules/links/check_url.php, row 30
@@ -255,350 +258,353 @@ return [
 // modules/links/check_url.php, row 48
 "Page with the specified Url is not in database, yet" => "A megadott URL-c\xEDm\xFB oldal m\xE9g nincs az adatb\xE1zisban", // ai 2026-06
 
-// modules/links/constants.php, row 60
+// modules/links/constants.php, row 61
 "Original name" => "Eredeti n\xE9v", // ai 2026-06
 
-// modules/links/constants.php, row 61, 174
-// modules/links/link.class.php, row 663
-// modules/links/linkedit.php, row 456
+// modules/links/constants.php, row 62, 176
+// modules/links/link.class.php, row 717
+// modules/links/linkedit.php, row 474
 "Description" => "Le\xEDr\xE1s", // ai 2026-06
 
-// modules/links/constants.php, row 62, 122
-// modules/links/link.class.php, row 667
-// modules/links/linkedit.php, row 463
+// modules/links/constants.php, row 63, 124
+// modules/links/link.class.php, row 721
+// modules/links/linkedit.php, row 486
 "Link type" => "Hivatkoz\xE1s t\xEDpusa", // ai 2026-06
 
-// modules/links/constants.php, row 63
+// modules/links/constants.php, row 64
 "Rate" => "\xC9rt\xE9kel\xE9s", // ai 2026-06
 
-// modules/links/constants.php, row 64
+// modules/links/constants.php, row 65
 "Votes" => "Szavazatok", // ai 2026-06
 
-// modules/links/constants.php, row 65
-// modules/links/link.class.php, row 664
+// modules/links/constants.php, row 66
+// modules/links/link.class.php, row 718
 "Author" => "Szerz\xF5", // ai 2026-06
 
-// modules/links/constants.php, row 66
+// modules/links/constants.php, row 67
 "Insert date" => "Hozz\xE1ad\xE1s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 67
+// modules/links/constants.php, row 68
 "Editor" => "Utolj\xE1ra szerkesztette", // ai 2026-06
 
-// modules/links/constants.php, row 68
+// modules/links/constants.php, row 69
 "Last edit date" => "Utols\xF3 szerkeszt\xE9s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 69
+// modules/links/constants.php, row 70
 "Revised by" => "Ellen\xF5rizte", // ai 2026-06
 
-// modules/links/constants.php, row 70
+// modules/links/constants.php, row 71
 "Revision date" => "Ellen\xF5rz\xE9s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 71
-// modules/links/link.class.php, row 673
-// modules/links/linkedit.php, row 544
+// modules/links/constants.php, row 72
+// modules/links/link.class.php, row 727
+// modules/links/linkedit.php, row 574
 "E-mail" => "",
 
-// modules/links/constants.php, row 72
-// modules/links/link.class.php, row 665
+// modules/links/constants.php, row 73
+// modules/links/link.class.php, row 719
 // modules/links/linkedit.php, row 435
 "Url" => "URL", // ai 2026-06
 
-// modules/links/constants.php, row 73
+// modules/links/constants.php, row 74
 "Last vote time" => "Utols\xF3 szavaz\xE1s ideje", // ai 2026-06
 
-// modules/links/constants.php, row 74
+// modules/links/constants.php, row 75
 "Flag" => "Jelz\xF5", // ai 2026-06
 
-// modules/links/constants.php, row 76
+// modules/links/constants.php, row 77
 "Organization city" => "Szervezet - v\xE1ros", // ai 2026-06
 
-// modules/links/constants.php, row 77
+// modules/links/constants.php, row 78
 "Organization street" => "Szervezet - utca", // ai 2026-06
 
-// modules/links/constants.php, row 78
+// modules/links/constants.php, row 79
 "Organization post code" => "Szervezet - ir\xE1ny\xEDt\xF3sz\xE1m", // ai 2026-06
 
-// modules/links/constants.php, row 79
+// modules/links/constants.php, row 80
 "Organization phone" => "Szervezet - telefon", // ai 2026-06
 
-// modules/links/constants.php, row 80
+// modules/links/constants.php, row 81
 "Organization fax" => "Szervezet - fax", // ai 2026-06
 
-// modules/links/constants.php, row 81
+// modules/links/constants.php, row 82
 "Organization e-mail" => "Szervezet - e-mail", // ai 2026-06
 
-// modules/links/constants.php, row 82
-// modules/links/linkedit.php, row 484
+// modules/links/constants.php, row 83
+// modules/links/linkedit.php, row 514
 "Folder" => "Mappa", // ai 2026-06
 
-// modules/links/constants.php, row 83
+// modules/links/constants.php, row 84
 "Last validation date" => "Utols\xF3 el\xE9rhet\xF5s\xE9g-ellen\xF5rz\xE9s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 84
+// modules/links/constants.php, row 85
 "Validation codes" => "Ellen\xF5rz\xE9si k\xF3dok", // ai 2026-06
 
-// modules/links/constants.php, row 85
+// modules/links/constants.php, row 86
 "Validity Rank" => "Oldal el\xE9rhet\xF5s\xE9ge", // ai 2026-06
 
-// modules/links/constants.php, row 86
+// modules/links/constants.php, row 87
 "Region id" => "R\xE9gi\xF3azonos\xEDt\xF3", // ai 2026-06
 
-// modules/links/constants.php, row 87
+// modules/links/constants.php, row 88
 "Region name" => "R\xE9gi\xF3 neve", // ai 2026-06
 
-// modules/links/constants.php, row 88
+// modules/links/constants.php, row 89
 "Region level" => "R\xE9gi\xF3 szintje", // ai 2026-06
 
-// modules/links/constants.php, row 89
+// modules/links/constants.php, row 90
 "Language id" => "Nyelvazonos\xEDt\xF3", // ai 2026-06
 
-// modules/links/constants.php, row 90
-// modules/links/linkedit.php, row 552
+// modules/links/constants.php, row 91
+// modules/links/linkedit.php, row 582
 "Language" => "Nyelv", // ai 2026-06
 
-// modules/links/constants.php, row 91
+// modules/links/constants.php, row 92
 "Language short name" => "Nyelv r\xF6vid neve", // ai 2026-06
 
-// modules/links/constants.php, row 92, 190
+// modules/links/constants.php, row 93, 193
 "Category id" => "Kateg\xF3ria-azonos\xEDt\xF3", // ai 2026-06
 
-// modules/links/constants.php, row 94
+// modules/links/constants.php, row 95
 "Category deleted" => "Kateg\xF3ria t\xF6r\xF6lve", // ai 2026-06
 
-// modules/links/constants.php, row 95
+// modules/links/constants.php, row 96
 "Category path" => "Kateg\xF3ria \xFAtvonala", // ai 2026-06
 
-// modules/links/constants.php, row 96
+// modules/links/constants.php, row 97
 "Category link count" => "Hivatkoz\xE1sok sz\xE1ma a kateg\xF3ri\xE1ban", // ai 2026-06
 
-// modules/links/constants.php, row 98, 194
+// modules/links/constants.php, row 99, 197
 "Category editor's note" => "Kateg\xF3ria szerkeszt\xF5i megjegyz\xE9se", // ai 2026-06
 
-// modules/links/constants.php, row 99
+// modules/links/constants.php, row 100
 "Base" => "Els\xF5dleges", // ai 2026-06
 
-// modules/links/constants.php, row 100, 177
+// modules/links/constants.php, row 101, 179
 "State" => "\xC1llapot", // ai 2026-06
 
-// modules/links/constants.php, row 101
+// modules/links/constants.php, row 102
 "Change proposal" => "M\xF3dos\xEDt\xE1si javaslat", // ai 2026-06
 
-// modules/links/constants.php, row 102
+// modules/links/constants.php, row 103
 "To be deleted" => "T\xF6rlend\xF5", // ai 2026-06
 
-// modules/links/constants.php, row 103, 176
+// modules/links/constants.php, row 104, 178
 "Priority" => "Priorit\xE1s", // ai 2026-06
 
-// modules/links/constants.php, row 104
+// modules/links/constants.php, row 105
 // modules/links/linkedit.php, row 54
 "Change" => "M\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// modules/links/constants.php, row 118
+// modules/links/constants.php, row 120
 "Link id" => "Hivatkoz\xE1s-azonos\xEDt\xF3", // ai 2026-06
 
-// modules/links/constants.php, row 119
+// modules/links/constants.php, row 121
 "Link name" => "Hivatkoz\xE1s neve", // ai 2026-06
 
-// modules/links/constants.php, row 120
+// modules/links/constants.php, row 122
 "Link original name" => "Hivatkoz\xE1s eredeti neve", // ai 2026-06
 
-// modules/links/constants.php, row 121
+// modules/links/constants.php, row 123
 "Link description" => "Hivatkoz\xE1s le\xEDr\xE1sa", // ai 2026-06
 
-// modules/links/constants.php, row 123
+// modules/links/constants.php, row 125
 "Link rate" => "Hivatkoz\xE1s \xE9rt\xE9kel\xE9se", // ai 2026-06
 
-// modules/links/constants.php, row 124
+// modules/links/constants.php, row 126
 "Link votes" => "Hivatkoz\xE1s szavazatai", // ai 2026-06
 
-// modules/links/constants.php, row 125
+// modules/links/constants.php, row 127
 "Link - last vote date" => "Hivatkoz\xE1s - utols\xF3 szavaz\xE1s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 126
+// modules/links/constants.php, row 128
 "Link - created by" => "Hivatkoz\xE1s - l\xE9trehozta", // ai 2026-06
 
-// modules/links/constants.php, row 127
+// modules/links/constants.php, row 129
 "Link creation date" => "Hivatkoz\xE1s l\xE9trehoz\xE1s\xE1nak d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 128
+// modules/links/constants.php, row 130
 "Link - last edited by" => "Hivatkoz\xE1s - utolj\xE1ra szerkesztette", // ai 2026-06
 
-// modules/links/constants.php, row 129
+// modules/links/constants.php, row 131
 "Link - last edit date" => "Hivatkoz\xE1s - utols\xF3 szerkeszt\xE9s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 130
+// modules/links/constants.php, row 132
 "Link - checked by" => "Hivatkoz\xE1s - ellen\xF5rizte", // ai 2026-06
 
-// modules/links/constants.php, row 131
+// modules/links/constants.php, row 133
 "Link - last checked date" => "Hivatkoz\xE1s - utols\xF3 ellen\xF5rz\xE9s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 132
+// modules/links/constants.php, row 134
 "Link author's e-mail" => "Hivatkoz\xE1s szerz\xF5j\xE9nek e-mail c\xEDme", // ai 2026-06
 
-// modules/links/constants.php, row 133
+// modules/links/constants.php, row 135
 "Link url" => "Hivatkoz\xE1s URL-je", // ai 2026-06
 
-// modules/links/constants.php, row 134
+// modules/links/constants.php, row 136
 "Link link" => "Hivatkoz\xE1s", // ai 2026-06
 
-// modules/links/constants.php, row 135
+// modules/links/constants.php, row 137
 "Link flag" => "Hivatkoz\xE1s jelz\xF5je", // ai 2026-06
 
-// modules/links/constants.php, row 136
+// modules/links/constants.php, row 138
 "Link - validity rank" => "Hivatkoz\xE1s el\xE9rhet\xF5s\xE9ge", // ai 2026-06
 
-// modules/links/constants.php, row 137
+// modules/links/constants.php, row 139
 "Link - last validation date" => "Hivatkoz\xE1s - utols\xF3 el\xE9rhet\xF5s\xE9g-ellen\xF5rz\xE9s d\xE1tuma", // ai 2026-06
 
-// modules/links/constants.php, row 138
+// modules/links/constants.php, row 140
 "Link editor's note" => "Hivatkoz\xE1s szerkeszt\xF5i megjegyz\xE9se", // ai 2026-06
 
-// modules/links/constants.php, row 139
+// modules/links/constants.php, row 141
 "Link organization city" => "Hivatkoz\xE1s - szervezet v\xE1rosa", // ai 2026-06
 
-// modules/links/constants.php, row 140
+// modules/links/constants.php, row 142
 "Link organization street" => "Hivatkoz\xE1s - szervezet utc\xE1ja", // ai 2026-06
 
-// modules/links/constants.php, row 141
+// modules/links/constants.php, row 143
 "Link organization post code" => "Hivatkoz\xE1s - szervezet ir\xE1ny\xEDt\xF3sz\xE1ma", // ai 2026-06
 
-// modules/links/constants.php, row 142
+// modules/links/constants.php, row 144
 "Link organization phone" => "Hivatkoz\xE1s - szervezet telefonja", // ai 2026-06
 
-// modules/links/constants.php, row 143
+// modules/links/constants.php, row 145
 "Link organization fax" => "Hivatkoz\xE1s - szervezet faxa", // ai 2026-06
 
-// modules/links/constants.php, row 144
+// modules/links/constants.php, row 146
 "Link organization e-mail" => "Hivatkoz\xE1s - szervezet e-mailje", // ai 2026-06
 
-// modules/links/constants.php, row 145
+// modules/links/constants.php, row 147
 "Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Hivatkoz\xE1s mapp\xE1ja (\xE1llapotk\xF3d) - 1~Akt\xEDv, 2~V\xE1r\xF3lista, 3~Lomt\xE1r", // ai 2026-06
 
-// modules/links/constants.php, row 146
+// modules/links/constants.php, row 148
 "Link - ids of regions (comma separated)" => "Hivatkoz\xE1s - r\xE9gi\xF3k azonos\xEDt\xF3i (vessz\xF5vel elv\xE1lasztva)", // ai 2026-06
 
-// modules/links/constants.php, row 147
+// modules/links/constants.php, row 149
 "Link - names of regions (comma separated)" => "Hivatkoz\xE1s - r\xE9gi\xF3k nevei (vessz\xF5vel elv\xE1lasztva)", // ai 2026-06
 
-// modules/links/constants.php, row 148
+// modules/links/constants.php, row 150
 "Link - ids of languages (comma separated)" => "Hivatkoz\xE1s - nyelvek azonos\xEDt\xF3i (vessz\xF5vel elv\xE1lasztva)", // ai 2026-06
 
-// modules/links/constants.php, row 149
+// modules/links/constants.php, row 151
 "Link - names of languages (comma separated)" => "Hivatkoz\xE1s - nyelvek nevei (vessz\xF5vel elv\xE1lasztva)", // ai 2026-06
 
-// modules/links/constants.php, row 150
+// modules/links/constants.php, row 152
 "Link - short names of languages (comma separated)" => "Hivatkoz\xE1s - nyelvek r\xF6vid nevei (vessz\xF5vel elv\xE1lasztva)", // ai 2026-06
 
-// modules/links/constants.php, row 151
+// modules/links/constants.php, row 153
 "Category ids (comma separated)" => "Kateg\xF3ria-azonos\xEDt\xF3k (vessz\xF5vel elv\xE1lasztva)", // ai 2026-06
 
-// modules/links/constants.php, row 152
+// modules/links/constants.php, row 154
 "Category names (comma separated)" => "Kateg\xF3rianevek (vessz\xF5vel elv\xE1lasztva)", // ai 2026-06
 
-// modules/links/constants.php, row 153
+// modules/links/constants.php, row 155
 "State of link in this category (visible/highlighted)" => "Hivatkoz\xE1s \xE1llapota ebben a kateg\xF3ri\xE1ban (l\xE1that\xF3/kiemelt)", // ai 2026-06
 
-// modules/links/constants.php, row 154
+// modules/links/constants.php, row 156
 "Link - validity color" => "Hivatkoz\xE1s - \xE9rv\xE9nyess\xE9g sz\xEDne", // ai 2026-06
 
-// modules/links/constants.php, row 155
+// modules/links/constants.php, row 157
 "Paths to the categories" => "\xDAtvonalak a kateg\xF3ri\xE1khoz", // ai 2026-06
 
-// modules/links/constants.php, row 156
+// modules/links/constants.php, row 158
 "Number of found Links" => "Tal\xE1lt hivatkoz\xE1sok sz\xE1ma", // ai 2026-06
 
-// modules/links/constants.php, row 157
+// modules/links/constants.php, row 159
 "Link to link editing page (for admin interface only)" => "Hivatkoz\xE1s a hivatkoz\xE1sszerkeszt\xF5 oldalra (csak az admin fel\xFClethez)", // ai 2026-06
 
-// modules/links/constants.php, row 158
+// modules/links/constants.php, row 160
 "Category listing with links (for admin interface only)" => "Kateg\xF3rialista hivatkoz\xE1sokkal (csak az admin fel\xFClethez)", // ai 2026-06
 
-// modules/links/constants.php, row 172
+// modules/links/constants.php, row 174
 "Path" => "\xDAtvonal", // ai 2026-06
 
-// modules/links/constants.php, row 173
+// modules/links/constants.php, row 175
 "Link Count" => "Hivatkoz\xE1sok sz\xE1ma", // ai 2026-06
 
-// modules/links/constants.php, row 175
+// modules/links/constants.php, row 177
 "Note" => "Megjegyz\xE9s", // ai 2026-06
 
-// modules/links/constants.php, row 192
+// modules/links/constants.php, row 195
 "Number of links in category" => "Hivatkoz\xE1sok sz\xE1ma a kateg\xF3ri\xE1ban", // ai 2026-06
 
-// modules/links/constants.php, row 195
+// modules/links/constants.php, row 198
 "Crossreferenced category" => "Kereszthivatkozott kateg\xF3ria", // ai 2026-06
 
-// modules/links/constants.php, row 196
+// modules/links/constants.php, row 199
 "Path to current category" => "\xDAtvonal az aktu\xE1lis kateg\xF3ri\xE1hoz", // ai 2026-06
 
-// modules/links/constants.php, row 197
+// modules/links/constants.php, row 200
 "Is this category general one? (1/0)" => "\xC1ltal\xE1nos-e ez a kateg\xF3ria? (1/0)", // ai 2026-06
 
-// modules/links/constants.php, row 198
+// modules/links/constants.php, row 201
 "Print category priority, if category is general one." => "Ki\xEDrja a kateg\xF3ria priorit\xE1s\xE1t, ha a kateg\xF3ria \xE1ltal\xE1nos.", // ai 2026-06
 
-// modules/links/getcat.php, row 51
+// modules/links/getcat.php, row 53
 "Category Tree" => "Kateg\xF3riafa", // ai 2026-06
 
-// modules/links/getcat.php, row 56
+// modules/links/getcat.php, row 58
 "Select category" => "Kateg\xF3ria kiv\xE1laszt\xE1sa", // ai 2026-06
 
 // modules/links/index.php, row 84
 "No permissions to edit links" => "Nincs jogosults\xE1ga a hivatkoz\xE1sok szerkeszt\xE9s\xE9hez", // ai 2026-06
 
-// modules/links/index.php, row 207
+// modules/links/index.php, row 183
+"Module not found." => "A modul nem tal\xE1lhat\xF3.", // ai 2026-06
+
+// modules/links/index.php, row 215
 "HINT: \"social ecology\" AND environment" => "TIPP: \"szoci\xE1lis \xF6kol\xF3gia\" AND k\xF6rnyezet", // ai 2026-06
 
-// modules/links/index.php, row 234
+// modules/links/index.php, row 242
 "Perform action on selected items" => "M\xFBvelet v\xE9grehajt\xE1sa a kijel\xF6lt hivatkoz\xE1sokon", // ai 2026-06
 
-// modules/links/index.php, row 257
+// modules/links/index.php, row 265
 "ActionApps - Links Manager" => "ActionApps - Hivatkoz\xE1skezel\xF5", // ai 2026-06
 
-// modules/links/index.php, row 287
+// modules/links/index.php, row 295
 "All my links" => "Minden hivatkoz\xE1som", // ai 2026-06
 
-// modules/links/index.php, row 288
+// modules/links/index.php, row 296
 "Links to check" => "Ellen\xF5rizend\xF5 hivatkoz\xE1sok", // ai 2026-06
 
-// modules/links/index.php, row 289
+// modules/links/index.php, row 297
 "Last edited" => "Utolj\xE1ra szerkesztett", // ai 2026-06
 
-// modules/links/index.php, row 311
+// modules/links/index.php, row 319
 "Show Links" => "Hivatkoz\xE1sok megjelen\xEDt\xE9se", // ai 2026-06
 
-// modules/links/index.php, row 314
+// modules/links/index.php, row 322
 "Edit Category" => "Kateg\xF3ria szerkeszt\xE9se", // ai 2026-06
 
-// modules/links/index.php, row 318
+// modules/links/index.php, row 326
 "Show subtree links" => "R\xE9szfa hivatkoz\xE1sainak megjelen\xEDt\xE9se", // ai 2026-06
 
-// modules/links/link.class.php, row 661
-// modules/links/linkedit.php, row 450
+// modules/links/link.class.php, row 715
+// modules/links/linkedit.php, row 452
 "Page name" => "Oldal neve", // ai 2026-06
 
-// modules/links/link.class.php, row 662
-// modules/links/linkedit.php, row 453
+// modules/links/link.class.php, row 716
+// modules/links/linkedit.php, row 463
 "Original page name" => "Oldal eredeti neve", // ai 2026-06
 
-// modules/links/link.class.php, row 668
-// modules/links/linkedit.php, row 534
+// modules/links/link.class.php, row 722
+// modules/links/linkedit.php, row 564
 "City" => "V\xE1ros", // ai 2026-06
 
-// modules/links/link.class.php, row 669
-// modules/links/linkedit.php, row 536
+// modules/links/link.class.php, row 723
+// modules/links/linkedit.php, row 566
 "Street" => "Utca", // ai 2026-06
 
-// modules/links/link.class.php, row 670
-// modules/links/linkedit.php, row 538
+// modules/links/link.class.php, row 724
+// modules/links/linkedit.php, row 568
 "Post code" => "Ir\xE1ny\xEDt\xF3sz\xE1m", // ai 2026-06
 
-// modules/links/link.class.php, row 671
-// modules/links/linkedit.php, row 540
+// modules/links/link.class.php, row 725
+// modules/links/linkedit.php, row 570
 "Phone" => "Telefon", // ai 2026-06
 
-// modules/links/link.class.php, row 672
-// modules/links/linkedit.php, row 542
+// modules/links/link.class.php, row 726
+// modules/links/linkedit.php, row 572
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
@@ -608,11 +614,11 @@ return [
 "unfilled" => "kit\xF6ltetlen", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
-// modules/links/menu.php, row 72, 73
+// modules/links/menu.php, row 73, 74
 "Edit Link" => "Hivatkoz\xE1s szerkeszt\xE9se", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
-// modules/links/menu.php, row 72
+// modules/links/menu.php, row 73
 "Add Link" => "Hivatkoz\xE1s hozz\xE1ad\xE1sa", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
@@ -651,61 +657,61 @@ return [
 // modules/links/linkedit.php, row 445
 "Do not fill, please:" => "K\xE9rj\xFCk, ne t\xF6ltse ki:", // ai 2026-06
 
-// modules/links/linkedit.php, row 451
+// modules/links/linkedit.php, row 457
 "English name of the page" => "Az oldal angol neve", // ai 2026-06
 
-// modules/links/linkedit.php, row 454
+// modules/links/linkedit.php, row 468
 "Name of the page in original language" => "Az oldal neve az eredeti nyelven", // ai 2026-06
 
-// modules/links/linkedit.php, row 457
+// modules/links/linkedit.php, row 479
 "Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Ne haszn\xE1ljon HTML-c\xEDmk\xE9ket, \xE9s ne \xEDrjon olyan szavakat, mint \"legjobb oldal\", ... A le\xEDr\xE1s hossza legfeljebb kb. 250 karakter legyen.", // ai 2026-06
 
-// modules/links/linkedit.php, row 463
+// modules/links/linkedit.php, row 486
 "Select the type, if the link belongs to some special category" => "V\xE1lassza ki a t\xEDpust, ha a hivatkoz\xE1s valamilyen speci\xE1lis kateg\xF3ri\xE1ba tartozik", // ai 2026-06
 
-// modules/links/linkedit.php, row 471
+// modules/links/linkedit.php, row 494
 "Author's e-mail" => "A szerz\xF5 e-mail-c\xEDme", // ai 2026-06
 
-// modules/links/linkedit.php, row 474
+// modules/links/linkedit.php, row 503
 "You can type any message here - it is never shown on the website" => "Ide b\xE1rmilyen megjegyz\xE9st \xEDrhat - a weboldalon soha nem jelenik meg", // ai 2026-06
 
-// modules/links/linkedit.php, row 479
+// modules/links/linkedit.php, row 509
 "Last checked" => "Utols\xF3 ellen\xF5rz\xE9s", // ai 2026-06
 
-// modules/links/linkedit.php, row 479, 480, 481
+// modules/links/linkedit.php, row 509, 510, 511
 "n/j/Y" => "Y.n.j.", // ai 2026-06
 
-// modules/links/linkedit.php, row 480
+// modules/links/linkedit.php, row 510
 "Last changed" => "Utols\xF3 m\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// modules/links/linkedit.php, row 481
+// modules/links/linkedit.php, row 511
 "Inserted" => "Felv\xE9ve", // ai 2026-06
 
-// modules/links/linkedit.php, row 488
+// modules/links/linkedit.php, row 518
 "Show in category" => "Megjelen\xEDt\xE9s kateg\xF3ri\xE1ban", // ai 2026-06
 
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "select the category" => "v\xE1lassza ki a kateg\xF3ri\xE1t", // ai 2026-06
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "Selected categories" => "Kiv\xE1lasztott kateg\xF3ri\xE1k", // ai 2026-06
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "go to the category you want to select and click on the right arrow button to select" => "l\xE9pjen a kiv\xE1lasztani k\xEDv\xE1nt kateg\xF3ri\xE1ba, \xE9s kattintson a jobb oldali ny\xEDlgombra a kiv\xE1laszt\xE1shoz", // ai 2026-06
 
-// modules/links/linkedit.php, row 533
+// modules/links/linkedit.php, row 563
 "Organization" => "Szervezet", // ai 2026-06
 
-// modules/links/linkedit.php, row 549
+// modules/links/linkedit.php, row 579
 "Regions and languages" => "R\xE9gi\xF3k \xE9s nyelvek", // ai 2026-06
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "Region" => "R\xE9gi\xF3", // ai 2026-06
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "select up to 4 regions" => "legfeljebb 4 r\xE9gi\xF3t v\xE1lasszon", // ai 2026-06
 
-// modules/links/linkedit.php, row 552
+// modules/links/linkedit.php, row 582
 "select page's languages" => "v\xE1lassza ki az oldal nyelveit", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
@@ -720,105 +726,102 @@ return [
 // modules/links/linkedit2.php, row 151
 "Continue" => "Folytat\xE1s", // ai 2026-06
 
-// modules/links/menu.php, row 64
+// modules/links/menu.php, row 65
 "View site" => "Webhely megtekint\xE9se", // ai 2026-06
 
-// modules/links/menu.php, row 73
+// modules/links/menu.php, row 74
 "Add new link" => "\xDAj hivatkoz\xE1s hozz\xE1ad\xE1sa", // ai 2026-06
 
-// modules/links/menu.php, row 80, 81
+// modules/links/menu.php, row 81, 82
 "Link Manager" => "Hivatkoz\xE1skezel\xF5", // ai 2026-06
 
-// modules/links/menu.php, row 88, 89
+// modules/links/menu.php, row 89, 90
 "Link Admin" => "Be\xE1ll\xEDt\xE1sok", // ai 2026-06
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders" => "Mapp\xE1k", // ai 2026-06
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders with links, sorted by their status (active, changed, new, ...)" => "Hivatkoz\xE1sokat tartalmaz\xF3 mapp\xE1k, \xE1llapotuk szerint rendezve (akt\xEDv, m\xF3dos\xEDtott, \xFAj, ...)", // ai 2026-06
 
-// modules/links/menu.php, row 103
+// modules/links/menu.php, row 104
 "Active" => "Akt\xEDv", // ai 2026-06
 
-// modules/links/menu.php, row 106
+// modules/links/menu.php, row 107
 "Changed Links" => "M\xF3dos\xEDtott hivatkoz\xE1sok", // ai 2026-06
 
-// modules/links/menu.php, row 109
+// modules/links/menu.php, row 110
 "New Links" => "\xDAj hivatkoz\xE1sok", // ai 2026-06
 
-// modules/links/menu.php, row 112
+// modules/links/menu.php, row 113
 "Holding bin" => "V\xE1r\xF3lista", // ai 2026-06
 
-// modules/links/menu.php, row 115
+// modules/links/menu.php, row 116
 "Trash" => "Lomt\xE1r", // ai 2026-06
 
-// modules/links/menu.php, row 118
+// modules/links/menu.php, row 119
 "Unassigned" => "Besorolatlan", // ai 2026-06
 
-// modules/links/menu.php, row 121
+// modules/links/menu.php, row 122
 "Unassigned - Trash" => "Besorolatlan - lomt\xE1r", // ai 2026-06
 
-// modules/links/menu.php, row 122
+// modules/links/menu.php, row 123
 "Misc" => "Egy\xE9b", // ai 2026-06
 
-// modules/links/menu.php, row 126
+// modules/links/menu.php, row 127
 "Empty trash" => "Lomt\xE1r \xFCr\xEDt\xE9se", // ai 2026-06
 
-// modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "Biztosan ki szeretn\xE9 \xFCr\xEDteni a lomt\xE1rat?", // ai 2026-06
-
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug OFF" => "Hibakeres\xE9s kikapcsol\xE1sa (Debug OFF)", // ai 2026-06
 
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug ON" => "Hibakeres\xE9s bekapcsol\xE1sa (Debug ON)", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "Bookmarks" => "K\xF6nyvjelz\xF5k", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "My own links" => "Saj\xE1t hivatkoz\xE1saim", // ai 2026-06
 
-// modules/links/menu.php, row 158
+// modules/links/menu.php, row 159
 "Main settings" => "F\xF5 be\xE1ll\xEDt\xE1sok", // ai 2026-06
 
-// modules/links/menu.php, row 161
+// modules/links/menu.php, row 162
 "Links" => "Hivatkoz\xE1sok", // ai 2026-06
 
-// modules/links/menu.php, row 162
+// modules/links/menu.php, row 163
 "Design" => "Megjelen\xE9s", // ai 2026-06
 
-// modules/links/menu.php, row 170
+// modules/links/menu.php, row 171
 "New Category View" => "\xDAj kateg\xF3rian\xE9zet", // ai 2026-06
 
-// modules/links/menu.php, row 175
+// modules/links/menu.php, row 176
 "New Link View" => "\xDAj hivatkoz\xE1sn\xE9zet", // ai 2026-06
 
-// modules/links/modedit.php, row 97
+// modules/links/modedit.php, row 106
 "No permission to add module" => "Nincs jogosults\xE1ga modul hozz\xE1ad\xE1s\xE1hoz", // ai 2026-06
 
-// modules/links/modedit.php, row 102
+// modules/links/modedit.php, row 111
 "No permission to edit module" => "Nincs jogosults\xE1ga a modul szerkeszt\xE9s\xE9hez", // ai 2026-06
 
-// modules/links/modedit.php, row 119, 229, 232
+// modules/links/modedit.php, row 128, 238, 241
 "Start category id" => "Kezd\xF5 kateg\xF3ria azonos\xEDt\xF3ja", // ai 2026-06
 
-// modules/links/modedit.php, row 120, 235, 238
+// modules/links/modedit.php, row 129, 244, 247
 "Tree start id" => "Fa kezd\xF5 azonos\xEDt\xF3ja", // ai 2026-06
 
-// modules/links/modedit.php, row 121, 236, 239
+// modules/links/modedit.php, row 130, 245, 248
 "Select start id" => "V\xE1lassza ki a kezd\xF5 azonos\xEDt\xF3t", // ai 2026-06
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Add Links module" => "Hivatkoz\xE1sok modul hozz\xE1ad\xE1sa", // ai 2026-06
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Edit Links module" => "Hivatkoz\xE1sok modul szerkeszt\xE9se", // ai 2026-06
 
-// modules/links/modedit.php, row 220
+// modules/links/modedit.php, row 229
 "Module Links data" => "A Hivatkoz\xE1sok modul adatai", // ai 2026-06
 
-// modules/links/modedit.php, row 225
+// modules/links/modedit.php, row 234
 "Used Language File" => "Haszn\xE1lt nyelvi f\xE1jl", // ai 2026-06
 ];

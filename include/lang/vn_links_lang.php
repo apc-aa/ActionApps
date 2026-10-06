@@ -13,130 +13,130 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// include/searchbar.class.php, row 51
+// include/searchbar.class.php, row 54
 "Condition" => "Điều kiện", // ai 2026-06
 
-// include/searchbar.class.php, row 52
+// include/searchbar.class.php, row 55
 "Readonly" => "Chỉ đọc", // ai 2026-06
 
-// include/searchbar.class.php, row 142
+// include/searchbar.class.php, row 151
 "Search row" => "Hàng tìm kiếm", // ai 2026-06
 
-// include/searchbar.class.php, row 143
+// include/searchbar.class.php, row 152
 "Order row" => "Hàng sắp xếp", // ai 2026-06
 
-// include/searchbar.class.php, row 533, 534, 570
+// include/searchbar.class.php, row 566, 567, 607
 "Search" => "Tìm kiếm", // ai 2026-06
 
-// include/searchbar.class.php, row 533
+// include/searchbar.class.php, row 566
 "And" => "và đồng thời", // ai 2026-06
 
-// include/searchbar.class.php, row 543
+// include/searchbar.class.php, row 576
 "contains" => "chứa", // ai 2026-06
 
-// include/searchbar.class.php, row 546
+// include/searchbar.class.php, row 580
 "begins with" => "bắt đầu bằng", // ai 2026-06
 
-// include/searchbar.class.php, row 549
+// include/searchbar.class.php, row 584
 "is" => "là", // ai 2026-06
 
-// include/searchbar.class.php, row 571
+// include/searchbar.class.php, row 608
 "Clear" => "Xóa", // ai 2026-06
 
-// include/searchbar.class.php, row 574
+// include/searchbar.class.php, row 611
 "Store search" => "Lưu tìm kiếm", // ai 2026-06
 
-// include/searchbar.class.php, row 595
+// include/searchbar.class.php, row 633
 "Order" => "Sắp xếp", // ai 2026-06
 
-// include/searchbar.class.php, row 599
+// include/searchbar.class.php, row 637
 "Descending" => "Giảm dần", // ai 2026-06
 
-// include/searchbar.class.php, row 613
+// include/searchbar.class.php, row 652
 "Filter" => "Bộ lọc", // ai 2026-06
 
-// include/searchbar.class.php, row 664
+// include/searchbar.class.php, row 706
 "Advanced search" => "Tìm kiếm nâng cao", // ai 2026-06
 
-// include/searchbar.class.php, row 728
+// include/searchbar.class.php, row 769
 "Save" => "Lưu", // ai 2026-06
 
-// include/searchbar.class.php, row 729
+// include/searchbar.class.php, row 770
 "Refine" => "Tinh chỉnh", // ai 2026-06
 
-// include/searchbar.class.php, row 730
+// include/searchbar.class.php, row 771
 "Cancel" => "Hủy", // ai 2026-06
 
-// include/searchbar.class.php, row 731
-// modules/links/constants.php, row 59, 171
+// include/searchbar.class.php, row 772
+// modules/links/constants.php, row 60, 173
 "Name" => "Tên", // ai 2026-06
 
-// include/searchbar.class.php, row 732
+// include/searchbar.class.php, row 773
 "Share with all slice users" => "Chia sẻ với mọi người dùng của chuyên mục", // ai 2026-06
 
-// include/searchbar.class.php, row 733
+// include/searchbar.class.php, row 774
 "Save filter" => "Lưu bộ lọc", // ai 2026-06
 
-// include/searchbar.class.php, row 734
+// include/searchbar.class.php, row 775
 "Rename filter" => "Đổi tên bộ lọc", // ai 2026-06
 
-// include/searchbar.class.php, row 735
+// include/searchbar.class.php, row 776
 "Are you sure you want to delete selected filter?" => "Bạn có chắc muốn xóa bộ lọc đã chọn không?", // ai 2026-06
 
-// include/searchbar.class.php, row 1017
+// include/searchbar.class.php, row 1065
 "Select one..." => "Chọn một...", // ai 2026-06
 
-// include/searchbar.class.php, row 1032
+// include/searchbar.class.php, row 1080
 "My filters" => "Bộ lọc của tôi", // ai 2026-06
 
-// include/searchbar.class.php, row 1035
+// include/searchbar.class.php, row 1083
 "Global filters" => "Bộ lọc toàn cục", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Shared filter (click to apply)" => "Bộ lọc dùng chung (nhấn để áp dụng)", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Bộ lọc cá nhân (nhấn để áp dụng)", // ai 2026-06
 
-// include/searchbar.class.php, row 1083
+// include/searchbar.class.php, row 1124
 "Rename" => "Đổi tên", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1126
 "Delete" => "Xóa", // ai 2026-06
 
-// include/searchbar.class.php, row 1094
+// include/searchbar.class.php, row 1135
 "Manage filters" => "Quản lý bộ lọc", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Lỗi: Thiếu mật khẩu đọc", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Thông báo tin tức Toolkit", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 // modules/links/check_url.php, row 52
 "Back" => "Quay lại", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Đăng nhập lại", // ai 2026-06
 
-// modules/links/actions.php, row 47, 91, 112
+// modules/links/actions.php, row 48, 93, 115
 "Can't find link in given category" => "Không tìm thấy liên kết trong danh mục đã cho", // ai 2026-06
 
-// modules/links/actions.php, row 52, 117
+// modules/links/actions.php, row 53, 120
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Không có quyền xóa liên kết khỏi danh mục - liên kết được đặt là ĐỀ XUẤT để XÓA khỏi danh mục đã cho", // ai 2026-06
 
-// modules/links/actions.php, row 61, 126
+// modules/links/actions.php, row 62, 129
 "Can't get association information" => "Không lấy được thông tin liên kết danh mục", // ai 2026-06
 
-// modules/links/actions.php, row 95
+// modules/links/actions.php, row 97
 "No permission to approve link to given category" => "Không có quyền duyệt liên kết vào danh mục đã cho", // ai 2026-06
 
-// modules/links/actions.php, row 162, 165
+// modules/links/actions.php, row 166, 169
 "No permission to move link" => "Không có quyền di chuyển liên kết", // ai 2026-06
 
 // modules/links/catedit.php, row 51
-// modules/links/catedit2.php, row 208
+// modules/links/catedit2.php, row 210
 "No permission to edit category" => "Không có quyền sửa danh mục", // ai 2026-06
 
 // modules/links/catedit.php, row 74
@@ -149,7 +149,7 @@ return [
 "Category" => "Danh mục", // ai 2026-06
 
 // modules/links/catedit.php, row 104
-// modules/links/constants.php, row 58, 170
+// modules/links/constants.php, row 59, 172
 // modules/links/linkedit.php, row 430
 "Id" => "ID", // ai 2026-06
 
@@ -157,13 +157,13 @@ return [
 "Links in subtree" => "Liên kết trong cây con", // ai 2026-06
 
 // modules/links/catedit.php, row 105
-// modules/links/catedit2.php, row 217
-// modules/links/constants.php, row 93, 191
+// modules/links/catedit2.php, row 219
+// modules/links/constants.php, row 94, 194
 "Category name" => "Tên danh mục", // ai 2026-06
 
 // modules/links/catedit.php, row 106
-// modules/links/catedit2.php, row 218
-// modules/links/constants.php, row 97, 193
+// modules/links/catedit2.php, row 220
+// modules/links/constants.php, row 98, 196
 "Category description" => "Mô tả danh mục", // ai 2026-06
 
 // modules/links/catedit.php, row 107
@@ -173,17 +173,17 @@ return [
 "Disallow storing of the links to this category?" => "Không cho phép lưu liên kết vào danh mục này?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
-// modules/links/catedit2.php, row 222
-// modules/links/constants.php, row 75
-// modules/links/link.class.php, row 674
-// modules/links/linkedit.php, row 473
+// modules/links/catedit2.php, row 224
+// modules/links/constants.php, row 76
+// modules/links/link.class.php, row 728
+// modules/links/linkedit.php, row 498
 "Editor's note" => "Ghi chú của biên tập viên", // ai 2026-06
 
 // modules/links/catedit.php, row 110
 "Subcategories" => "Danh mục con", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "Category tree" => "Cây danh mục", // ai 2026-06
 
 // modules/links/catedit.php, row 113
@@ -210,31 +210,31 @@ return [
 // modules/links/catedit.php, row 137
 "Change state" => "Đổi trạng thái", // ai 2026-06
 
-// modules/links/catedit.php, row 142
+// modules/links/catedit.php, row 143
 "OK" => "",
 
-// modules/links/catedit2.php, row 153
+// modules/links/catedit2.php, row 154
 "Category reassigned" => "Đã chuyển danh mục", // ai 2026-06
 
-// modules/links/catedit2.php, row 165
+// modules/links/catedit2.php, row 166
 "Subcategory deleted" => "Đã xóa danh mục con", // ai 2026-06
 
-// modules/links/catedit2.php, row 167
+// modules/links/catedit2.php, row 168
 "Can't delete category which contains links" => "Không thể xóa danh mục có chứa liên kết", // ai 2026-06
 
-// modules/links/catedit2.php, row 221
+// modules/links/catedit2.php, row 223
 "Additional information" => "Thông tin bổ sung", // ai 2026-06
 
-// modules/links/catedit2.php, row 231
+// modules/links/catedit2.php, row 233
 "Category data changed" => "Đã thay đổi dữ liệu danh mục", // ai 2026-06
 
-// modules/links/catedit2.php, row 291
+// modules/links/catedit2.php, row 293
 "New category created" => "Đã tạo danh mục mới", // ai 2026-06
 
-// modules/links/catedit2.php, row 297
+// modules/links/catedit2.php, row 299
 "Foreign category assigned" => "Đã gán danh mục ngoài", // ai 2026-06
 
-// modules/links/cattree.php, row 436
+// modules/links/cattree.php, row 458
 "Switch to category" => "Chuyển đến danh mục", // ai 2026-06
 
 // modules/links/check_url.php, row 30
@@ -258,350 +258,353 @@ return [
 // modules/links/check_url.php, row 48
 "Page with the specified Url is not in database, yet" => "Trang có URL đã chỉ định chưa có trong cơ sở dữ liệu", // ai 2026-06
 
-// modules/links/constants.php, row 60
+// modules/links/constants.php, row 61
 "Original name" => "Tên gốc", // ai 2026-06
 
-// modules/links/constants.php, row 61, 174
-// modules/links/link.class.php, row 663
-// modules/links/linkedit.php, row 456
+// modules/links/constants.php, row 62, 176
+// modules/links/link.class.php, row 717
+// modules/links/linkedit.php, row 474
 "Description" => "Mô tả", // ai 2026-06
 
-// modules/links/constants.php, row 62, 122
-// modules/links/link.class.php, row 667
-// modules/links/linkedit.php, row 463
+// modules/links/constants.php, row 63, 124
+// modules/links/link.class.php, row 721
+// modules/links/linkedit.php, row 486
 "Link type" => "Loại liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 63
+// modules/links/constants.php, row 64
 "Rate" => "Đánh giá", // ai 2026-06
 
-// modules/links/constants.php, row 64
+// modules/links/constants.php, row 65
 "Votes" => "Số phiếu", // ai 2026-06
 
-// modules/links/constants.php, row 65
-// modules/links/link.class.php, row 664
+// modules/links/constants.php, row 66
+// modules/links/link.class.php, row 718
 "Author" => "Tác giả", // ai 2026-06
 
-// modules/links/constants.php, row 66
+// modules/links/constants.php, row 67
 "Insert date" => "Ngày thêm", // ai 2026-06
 
-// modules/links/constants.php, row 67
+// modules/links/constants.php, row 68
 "Editor" => "Biên tập viên", // ai 2026-06
 
-// modules/links/constants.php, row 68
+// modules/links/constants.php, row 69
 "Last edit date" => "Ngày sửa gần nhất", // ai 2026-06
 
-// modules/links/constants.php, row 69
+// modules/links/constants.php, row 70
 "Revised by" => "Người kiểm tra", // ai 2026-06
 
-// modules/links/constants.php, row 70
+// modules/links/constants.php, row 71
 "Revision date" => "Ngày kiểm tra", // ai 2026-06
 
-// modules/links/constants.php, row 71
-// modules/links/link.class.php, row 673
-// modules/links/linkedit.php, row 544
+// modules/links/constants.php, row 72
+// modules/links/link.class.php, row 727
+// modules/links/linkedit.php, row 574
 "E-mail" => "Email", // ai 2026-06
 
-// modules/links/constants.php, row 72
-// modules/links/link.class.php, row 665
+// modules/links/constants.php, row 73
+// modules/links/link.class.php, row 719
 // modules/links/linkedit.php, row 435
 "Url" => "URL", // ai 2026-06
 
-// modules/links/constants.php, row 73
+// modules/links/constants.php, row 74
 "Last vote time" => "Lần bỏ phiếu gần nhất", // ai 2026-06
 
-// modules/links/constants.php, row 74
+// modules/links/constants.php, row 75
 "Flag" => "Cờ", // ai 2026-06
 
-// modules/links/constants.php, row 76
+// modules/links/constants.php, row 77
 "Organization city" => "Thành phố của tổ chức", // ai 2026-06
 
-// modules/links/constants.php, row 77
+// modules/links/constants.php, row 78
 "Organization street" => "Đường phố của tổ chức", // ai 2026-06
 
-// modules/links/constants.php, row 78
+// modules/links/constants.php, row 79
 "Organization post code" => "Mã bưu điện của tổ chức", // ai 2026-06
 
-// modules/links/constants.php, row 79
+// modules/links/constants.php, row 80
 "Organization phone" => "Điện thoại của tổ chức", // ai 2026-06
 
-// modules/links/constants.php, row 80
+// modules/links/constants.php, row 81
 "Organization fax" => "Fax của tổ chức", // ai 2026-06
 
-// modules/links/constants.php, row 81
+// modules/links/constants.php, row 82
 "Organization e-mail" => "E-mail của tổ chức", // ai 2026-06
 
-// modules/links/constants.php, row 82
-// modules/links/linkedit.php, row 484
+// modules/links/constants.php, row 83
+// modules/links/linkedit.php, row 514
 "Folder" => "Thư mục", // ai 2026-06
 
-// modules/links/constants.php, row 83
+// modules/links/constants.php, row 84
 "Last validation date" => "Ngày kiểm tra tính khả dụng gần nhất", // ai 2026-06
 
-// modules/links/constants.php, row 84
+// modules/links/constants.php, row 85
 "Validation codes" => "Mã kiểm tra", // ai 2026-06
 
-// modules/links/constants.php, row 85
+// modules/links/constants.php, row 86
 "Validity Rank" => "Hạng khả dụng", // ai 2026-06
 
-// modules/links/constants.php, row 86
+// modules/links/constants.php, row 87
 "Region id" => "Id vùng", // ai 2026-06
 
-// modules/links/constants.php, row 87
+// modules/links/constants.php, row 88
 "Region name" => "Tên vùng", // ai 2026-06
 
-// modules/links/constants.php, row 88
+// modules/links/constants.php, row 89
 "Region level" => "Cấp vùng", // ai 2026-06
 
-// modules/links/constants.php, row 89
+// modules/links/constants.php, row 90
 "Language id" => "Id ngôn ngữ", // ai 2026-06
 
-// modules/links/constants.php, row 90
-// modules/links/linkedit.php, row 552
+// modules/links/constants.php, row 91
+// modules/links/linkedit.php, row 582
 "Language" => "Ngôn ngữ", // ai 2026-06
 
-// modules/links/constants.php, row 91
+// modules/links/constants.php, row 92
 "Language short name" => "Tên viết tắt ngôn ngữ", // ai 2026-06
 
-// modules/links/constants.php, row 92, 190
+// modules/links/constants.php, row 93, 193
 "Category id" => "Id danh mục", // ai 2026-06
 
-// modules/links/constants.php, row 94
+// modules/links/constants.php, row 95
 "Category deleted" => "Đã xóa danh mục", // ai 2026-06
 
-// modules/links/constants.php, row 95
+// modules/links/constants.php, row 96
 "Category path" => "Đường dẫn danh mục", // ai 2026-06
 
-// modules/links/constants.php, row 96
+// modules/links/constants.php, row 97
 "Category link count" => "Số liên kết trong danh mục", // ai 2026-06
 
-// modules/links/constants.php, row 98, 194
+// modules/links/constants.php, row 99, 197
 "Category editor's note" => "Ghi chú biên tập viên danh mục", // ai 2026-06
 
-// modules/links/constants.php, row 99
+// modules/links/constants.php, row 100
 "Base" => "Chính", // ai 2026-06
 
-// modules/links/constants.php, row 100, 177
+// modules/links/constants.php, row 101, 179
 "State" => "Trạng thái", // ai 2026-06
 
-// modules/links/constants.php, row 101
+// modules/links/constants.php, row 102
 "Change proposal" => "Đề xuất thay đổi", // ai 2026-06
 
-// modules/links/constants.php, row 102
+// modules/links/constants.php, row 103
 "To be deleted" => "Cần xóa", // ai 2026-06
 
-// modules/links/constants.php, row 103, 176
+// modules/links/constants.php, row 104, 178
 "Priority" => "Ưu tiên", // ai 2026-06
 
-// modules/links/constants.php, row 104
+// modules/links/constants.php, row 105
 // modules/links/linkedit.php, row 54
 "Change" => "Thay đổi", // ai 2026-06
 
-// modules/links/constants.php, row 118
+// modules/links/constants.php, row 120
 "Link id" => "Id liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 119
+// modules/links/constants.php, row 121
 "Link name" => "Tên liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 120
+// modules/links/constants.php, row 122
 "Link original name" => "Tên gốc của liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 121
+// modules/links/constants.php, row 123
 "Link description" => "Mô tả liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 123
+// modules/links/constants.php, row 125
 "Link rate" => "Đánh giá liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 124
+// modules/links/constants.php, row 126
 "Link votes" => "Phiếu bầu liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 125
+// modules/links/constants.php, row 127
 "Link - last vote date" => "Liên kết - ngày bình chọn cuối", // ai 2026-06
 
-// modules/links/constants.php, row 126
+// modules/links/constants.php, row 128
 "Link - created by" => "Liên kết - người tạo", // ai 2026-06
 
-// modules/links/constants.php, row 127
+// modules/links/constants.php, row 129
 "Link creation date" => "Ngày tạo liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 128
+// modules/links/constants.php, row 130
 "Link - last edited by" => "Liên kết - người sửa cuối", // ai 2026-06
 
-// modules/links/constants.php, row 129
+// modules/links/constants.php, row 131
 "Link - last edit date" => "Liên kết - ngày sửa cuối", // ai 2026-06
 
-// modules/links/constants.php, row 130
+// modules/links/constants.php, row 132
 "Link - checked by" => "Liên kết - người kiểm tra", // ai 2026-06
 
-// modules/links/constants.php, row 131
+// modules/links/constants.php, row 133
 "Link - last checked date" => "Liên kết - ngày kiểm tra cuối", // ai 2026-06
 
-// modules/links/constants.php, row 132
+// modules/links/constants.php, row 134
 "Link author's e-mail" => "E-mail người tạo liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 133
+// modules/links/constants.php, row 135
 "Link url" => "URL liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 134
+// modules/links/constants.php, row 136
 "Link link" => "Liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 135
+// modules/links/constants.php, row 137
 "Link flag" => "Cờ liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 136
+// modules/links/constants.php, row 138
 "Link - validity rank" => "Liên kết - hạng độ tin cậy", // ai 2026-06
 
-// modules/links/constants.php, row 137
+// modules/links/constants.php, row 139
 "Link - last validation date" => "Liên kết - ngày kiểm tra tính hợp lệ cuối", // ai 2026-06
 
-// modules/links/constants.php, row 138
+// modules/links/constants.php, row 140
 "Link editor's note" => "Ghi chú của biên tập viên liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 139
+// modules/links/constants.php, row 141
 "Link organization city" => "Thành phố của tổ chức liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 140
+// modules/links/constants.php, row 142
 "Link organization street" => "Đường phố của tổ chức liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 141
+// modules/links/constants.php, row 143
 "Link organization post code" => "Mã bưu chính của tổ chức liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 142
+// modules/links/constants.php, row 144
 "Link organization phone" => "Điện thoại của tổ chức liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 143
+// modules/links/constants.php, row 145
 "Link organization fax" => "Fax của tổ chức liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 144
+// modules/links/constants.php, row 146
 "Link organization e-mail" => "E-mail của tổ chức liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 145
+// modules/links/constants.php, row 147
 "Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Thư mục liên kết (mã trạng thái) - 1~Hoạt động, 2~Khu chờ duyệt, 3~Thùng rác", // ai 2026-06
 
-// modules/links/constants.php, row 146
+// modules/links/constants.php, row 148
 "Link - ids of regions (comma separated)" => "Liên kết - id các vùng (phân tách bằng dấu phẩy)", // ai 2026-06
 
-// modules/links/constants.php, row 147
+// modules/links/constants.php, row 149
 "Link - names of regions (comma separated)" => "Liên kết - tên các vùng (phân tách bằng dấu phẩy)", // ai 2026-06
 
-// modules/links/constants.php, row 148
+// modules/links/constants.php, row 150
 "Link - ids of languages (comma separated)" => "Liên kết - id các ngôn ngữ (phân tách bằng dấu phẩy)", // ai 2026-06
 
-// modules/links/constants.php, row 149
+// modules/links/constants.php, row 151
 "Link - names of languages (comma separated)" => "Liên kết - tên các ngôn ngữ (phân tách bằng dấu phẩy)", // ai 2026-06
 
-// modules/links/constants.php, row 150
+// modules/links/constants.php, row 152
 "Link - short names of languages (comma separated)" => "Liên kết - tên viết tắt các ngôn ngữ (phân tách bằng dấu phẩy)", // ai 2026-06
 
-// modules/links/constants.php, row 151
+// modules/links/constants.php, row 153
 "Category ids (comma separated)" => "Id danh mục (phân tách bằng dấu phẩy)", // ai 2026-06
 
-// modules/links/constants.php, row 152
+// modules/links/constants.php, row 154
 "Category names (comma separated)" => "Tên danh mục (phân tách bằng dấu phẩy)", // ai 2026-06
 
-// modules/links/constants.php, row 153
+// modules/links/constants.php, row 155
 "State of link in this category (visible/highlighted)" => "Trạng thái của liên kết trong danh mục này (hiển thị/nổi bật)", // ai 2026-06
 
-// modules/links/constants.php, row 154
+// modules/links/constants.php, row 156
 "Link - validity color" => "Liên kết - màu tính hợp lệ", // ai 2026-06
 
-// modules/links/constants.php, row 155
+// modules/links/constants.php, row 157
 "Paths to the categories" => "Đường dẫn đến các danh mục", // ai 2026-06
 
-// modules/links/constants.php, row 156
+// modules/links/constants.php, row 158
 "Number of found Links" => "Số liên kết tìm thấy", // ai 2026-06
 
-// modules/links/constants.php, row 157
+// modules/links/constants.php, row 159
 "Link to link editing page (for admin interface only)" => "Liên kết đến trang sửa liên kết (chỉ dành cho giao diện quản trị)", // ai 2026-06
 
-// modules/links/constants.php, row 158
+// modules/links/constants.php, row 160
 "Category listing with links (for admin interface only)" => "Danh sách danh mục kèm liên kết (chỉ dành cho giao diện quản trị)", // ai 2026-06
 
-// modules/links/constants.php, row 172
+// modules/links/constants.php, row 174
 "Path" => "Đường dẫn", // ai 2026-06
 
-// modules/links/constants.php, row 173
+// modules/links/constants.php, row 175
 "Link Count" => "Số liên kết", // ai 2026-06
 
-// modules/links/constants.php, row 175
+// modules/links/constants.php, row 177
 "Note" => "Ghi chú", // ai 2026-06
 
-// modules/links/constants.php, row 192
+// modules/links/constants.php, row 195
 "Number of links in category" => "Số liên kết trong danh mục", // ai 2026-06
 
-// modules/links/constants.php, row 195
+// modules/links/constants.php, row 198
 "Crossreferenced category" => "Danh mục tham chiếu chéo", // ai 2026-06
 
-// modules/links/constants.php, row 196
+// modules/links/constants.php, row 199
 "Path to current category" => "Đường dẫn đến danh mục hiện tại", // ai 2026-06
 
-// modules/links/constants.php, row 197
+// modules/links/constants.php, row 200
 "Is this category general one? (1/0)" => "Danh mục này có phải là danh mục chung không? (1/0)", // ai 2026-06
 
-// modules/links/constants.php, row 198
+// modules/links/constants.php, row 201
 "Print category priority, if category is general one." => "In độ ưu tiên của danh mục, nếu danh mục là chung.", // ai 2026-06
 
-// modules/links/getcat.php, row 51
+// modules/links/getcat.php, row 53
 "Category Tree" => "Cây danh mục", // ai 2026-06
 
-// modules/links/getcat.php, row 56
+// modules/links/getcat.php, row 58
 "Select category" => "Chọn danh mục", // ai 2026-06
 
 // modules/links/index.php, row 84
 "No permissions to edit links" => "Bạn không có quyền sửa liên kết", // ai 2026-06
 
-// modules/links/index.php, row 207
+// modules/links/index.php, row 183
+"Module not found." => "Không tìm thấy mô-đun.", // ai 2026-06
+
+// modules/links/index.php, row 215
 "HINT: \"social ecology\" AND environment" => "GỢI Ý: \"social ecology\" AND environment", // ai 2026-06
 
-// modules/links/index.php, row 234
+// modules/links/index.php, row 242
 "Perform action on selected items" => "Thực hiện hành động trên các mục đã chọn", // ai 2026-06
 
-// modules/links/index.php, row 257
+// modules/links/index.php, row 265
 "ActionApps - Links Manager" => "ActionApps - Quản lý liên kết", // ai 2026-06
 
-// modules/links/index.php, row 287
+// modules/links/index.php, row 295
 "All my links" => "Tất cả liên kết của tôi", // ai 2026-06
 
-// modules/links/index.php, row 288
+// modules/links/index.php, row 296
 "Links to check" => "Liên kết cần kiểm tra", // ai 2026-06
 
-// modules/links/index.php, row 289
+// modules/links/index.php, row 297
 "Last edited" => "Sửa lần cuối", // ai 2026-06
 
-// modules/links/index.php, row 311
+// modules/links/index.php, row 319
 "Show Links" => "Hiển thị liên kết", // ai 2026-06
 
-// modules/links/index.php, row 314
+// modules/links/index.php, row 322
 "Edit Category" => "Sửa danh mục", // ai 2026-06
 
-// modules/links/index.php, row 318
+// modules/links/index.php, row 326
 "Show subtree links" => "Hiển thị liên kết của cây con", // ai 2026-06
 
-// modules/links/link.class.php, row 661
-// modules/links/linkedit.php, row 450
+// modules/links/link.class.php, row 715
+// modules/links/linkedit.php, row 452
 "Page name" => "Tên trang", // ai 2026-06
 
-// modules/links/link.class.php, row 662
-// modules/links/linkedit.php, row 453
+// modules/links/link.class.php, row 716
+// modules/links/linkedit.php, row 463
 "Original page name" => "Tên trang gốc", // ai 2026-06
 
-// modules/links/link.class.php, row 668
-// modules/links/linkedit.php, row 534
+// modules/links/link.class.php, row 722
+// modules/links/linkedit.php, row 564
 "City" => "Thành phố", // ai 2026-06
 
-// modules/links/link.class.php, row 669
-// modules/links/linkedit.php, row 536
+// modules/links/link.class.php, row 723
+// modules/links/linkedit.php, row 566
 "Street" => "Đường phố", // ai 2026-06
 
-// modules/links/link.class.php, row 670
-// modules/links/linkedit.php, row 538
+// modules/links/link.class.php, row 724
+// modules/links/linkedit.php, row 568
 "Post code" => "Mã bưu chính", // ai 2026-06
 
-// modules/links/link.class.php, row 671
-// modules/links/linkedit.php, row 540
+// modules/links/link.class.php, row 725
+// modules/links/linkedit.php, row 570
 "Phone" => "Điện thoại", // ai 2026-06
 
-// modules/links/link.class.php, row 672
-// modules/links/linkedit.php, row 542
+// modules/links/link.class.php, row 726
+// modules/links/linkedit.php, row 572
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
@@ -611,11 +614,11 @@ return [
 "unfilled" => "chưa điền", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
-// modules/links/menu.php, row 72, 73
+// modules/links/menu.php, row 73, 74
 "Edit Link" => "Sửa liên kết", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
-// modules/links/menu.php, row 72
+// modules/links/menu.php, row 73
 "Add Link" => "Thêm liên kết", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
@@ -654,61 +657,61 @@ return [
 // modules/links/linkedit.php, row 445
 "Do not fill, please:" => "Vui lòng không điền:", // ai 2026-06
 
-// modules/links/linkedit.php, row 451
+// modules/links/linkedit.php, row 457
 "English name of the page" => "Tên tiếng Anh của trang", // ai 2026-06
 
-// modules/links/linkedit.php, row 454
+// modules/links/linkedit.php, row 468
 "Name of the page in original language" => "Tên của trang bằng ngôn ngữ gốc", // ai 2026-06
 
-// modules/links/linkedit.php, row 457
+// modules/links/linkedit.php, row 479
 "Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Không dùng thẻ HTML và không viết những từ như \"trang tốt nhất\", ... Độ dài tối đa của phần mô tả nên khoảng 250 ký tự.", // ai 2026-06
 
-// modules/links/linkedit.php, row 463
+// modules/links/linkedit.php, row 486
 "Select the type, if the link belongs to some special category" => "Chọn loại, nếu liên kết thuộc một danh mục đặc biệt nào đó", // ai 2026-06
 
-// modules/links/linkedit.php, row 471
+// modules/links/linkedit.php, row 494
 "Author's e-mail" => "E-mail của tác giả", // ai 2026-06
 
-// modules/links/linkedit.php, row 474
+// modules/links/linkedit.php, row 503
 "You can type any message here - it is never shown on the website" => "Bạn có thể nhập bất kỳ ghi chú nào ở đây - nó không bao giờ hiển thị trên trang web", // ai 2026-06
 
-// modules/links/linkedit.php, row 479
+// modules/links/linkedit.php, row 509
 "Last checked" => "Kiểm tra lần cuối", // ai 2026-06
 
-// modules/links/linkedit.php, row 479, 480, 481
+// modules/links/linkedit.php, row 509, 510, 511
 "n/j/Y" => "j/n/Y", // ai 2026-06
 
-// modules/links/linkedit.php, row 480
+// modules/links/linkedit.php, row 510
 "Last changed" => "Thay đổi lần cuối", // ai 2026-06
 
-// modules/links/linkedit.php, row 481
+// modules/links/linkedit.php, row 511
 "Inserted" => "Đã chèn", // ai 2026-06
 
-// modules/links/linkedit.php, row 488
+// modules/links/linkedit.php, row 518
 "Show in category" => "Hiển thị trong danh mục", // ai 2026-06
 
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "select the category" => "chọn danh mục", // ai 2026-06
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "Selected categories" => "Danh mục đã chọn", // ai 2026-06
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "go to the category you want to select and click on the right arrow button to select" => "chuyển đến danh mục bạn muốn chọn rồi nhấn nút mũi tên phải để chọn", // ai 2026-06
 
-// modules/links/linkedit.php, row 533
+// modules/links/linkedit.php, row 563
 "Organization" => "Tổ chức", // ai 2026-06
 
-// modules/links/linkedit.php, row 549
+// modules/links/linkedit.php, row 579
 "Regions and languages" => "Khu vực và ngôn ngữ", // ai 2026-06
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "Region" => "Khu vực", // ai 2026-06
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "select up to 4 regions" => "chọn tối đa 4 khu vực", // ai 2026-06
 
-// modules/links/linkedit.php, row 552
+// modules/links/linkedit.php, row 582
 "select page's languages" => "chọn ngôn ngữ của trang", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
@@ -723,105 +726,102 @@ return [
 // modules/links/linkedit2.php, row 151
 "Continue" => "Tiếp tục", // ai 2026-06
 
-// modules/links/menu.php, row 64
+// modules/links/menu.php, row 65
 "View site" => "Xem trang", // ai 2026-06
 
-// modules/links/menu.php, row 73
+// modules/links/menu.php, row 74
 "Add new link" => "Thêm liên kết mới", // ai 2026-06
 
-// modules/links/menu.php, row 80, 81
+// modules/links/menu.php, row 81, 82
 "Link Manager" => "Quản lý liên kết", // ai 2026-06
 
-// modules/links/menu.php, row 88, 89
+// modules/links/menu.php, row 89, 90
 "Link Admin" => "Quản trị liên kết", // ai 2026-06
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders" => "Thư mục", // ai 2026-06
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders with links, sorted by their status (active, changed, new, ...)" => "Thư mục chứa liên kết, sắp xếp theo trạng thái (hoạt động, đã thay đổi, mới, ...)", // ai 2026-06
 
-// modules/links/menu.php, row 103
+// modules/links/menu.php, row 104
 "Active" => "Đang hoạt động", // ai 2026-06
 
-// modules/links/menu.php, row 106
+// modules/links/menu.php, row 107
 "Changed Links" => "Liên kết đã thay đổi", // ai 2026-06
 
-// modules/links/menu.php, row 109
+// modules/links/menu.php, row 110
 "New Links" => "Liên kết mới", // ai 2026-06
 
-// modules/links/menu.php, row 112
+// modules/links/menu.php, row 113
 "Holding bin" => "Khu chờ duyệt", // ai 2026-06
 
-// modules/links/menu.php, row 115
+// modules/links/menu.php, row 116
 "Trash" => "Thùng rác", // ai 2026-06
 
-// modules/links/menu.php, row 118
+// modules/links/menu.php, row 119
 "Unassigned" => "Chưa phân loại", // ai 2026-06
 
-// modules/links/menu.php, row 121
+// modules/links/menu.php, row 122
 "Unassigned - Trash" => "Chưa phân loại - Thùng rác", // ai 2026-06
 
-// modules/links/menu.php, row 122
+// modules/links/menu.php, row 123
 "Misc" => "Khác", // ai 2026-06
 
-// modules/links/menu.php, row 126
+// modules/links/menu.php, row 127
 "Empty trash" => "Dọn thùng rác", // ai 2026-06
 
-// modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "Bạn có chắc muốn dọn thùng rác không?", // ai 2026-06
-
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug OFF" => "Tắt gỡ lỗi", // ai 2026-06
 
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug ON" => "Bật gỡ lỗi", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "Bookmarks" => "Dấu trang", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "My own links" => "Liên kết của tôi", // ai 2026-06
 
-// modules/links/menu.php, row 158
+// modules/links/menu.php, row 159
 "Main settings" => "Cài đặt chính", // ai 2026-06
 
-// modules/links/menu.php, row 161
+// modules/links/menu.php, row 162
 "Links" => "Liên kết", // ai 2026-06
 
-// modules/links/menu.php, row 162
+// modules/links/menu.php, row 163
 "Design" => "Thiết kế", // ai 2026-06
 
-// modules/links/menu.php, row 170
+// modules/links/menu.php, row 171
 "New Category View" => "Khung hiển thị danh mục mới", // ai 2026-06
 
-// modules/links/menu.php, row 175
+// modules/links/menu.php, row 176
 "New Link View" => "Khung hiển thị liên kết mới", // ai 2026-06
 
-// modules/links/modedit.php, row 97
+// modules/links/modedit.php, row 106
 "No permission to add module" => "Không có quyền thêm mô-đun", // ai 2026-06
 
-// modules/links/modedit.php, row 102
+// modules/links/modedit.php, row 111
 "No permission to edit module" => "Không có quyền sửa mô-đun", // ai 2026-06
 
-// modules/links/modedit.php, row 119, 229, 232
+// modules/links/modedit.php, row 128, 238, 241
 "Start category id" => "Id danh mục khởi đầu", // ai 2026-06
 
-// modules/links/modedit.php, row 120, 235, 238
+// modules/links/modedit.php, row 129, 244, 247
 "Tree start id" => "Id gốc cây", // ai 2026-06
 
-// modules/links/modedit.php, row 121, 236, 239
+// modules/links/modedit.php, row 130, 245, 248
 "Select start id" => "Chọn id khởi đầu", // ai 2026-06
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Add Links module" => "Thêm mô-đun Liên kết", // ai 2026-06
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Edit Links module" => "Sửa mô-đun Liên kết", // ai 2026-06
 
-// modules/links/modedit.php, row 220
+// modules/links/modedit.php, row 229
 "Module Links data" => "Dữ liệu mô-đun Liên kết", // ai 2026-06
 
-// modules/links/modedit.php, row 225
+// modules/links/modedit.php, row 234
 "Used Language File" => "Tệp ngôn ngữ được dùng", // ai 2026-06
 ];

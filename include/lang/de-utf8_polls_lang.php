@@ -14,7 +14,7 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 return [
 
 // modules/polls/designs.php, row 38
-// modules/polls/index.php, row 55
+// modules/polls/index.php, row 57
 "You do not have permission to manage Polls" => "Sie haben keine Berechtigung, Umfragen zu verwalten", // ai 2026-06
 
 // modules/polls/designs.php, row 47
@@ -41,197 +41,200 @@ return [
 // modules/polls/designs.php, row 57
 "Polls Design" => "Umfragen-Design", // ai 2026-06
 
-// modules/polls/include/util.php, row 44
+// modules/polls/include/util.php, row 46
 "Poll ID" => "Umfrage-ID", // ai 2026-06
 
-// modules/polls/include/util.php, row 45, 68
+// modules/polls/include/util.php, row 47, 71
 "Module ID" => "Modul-ID", // ai 2026-06
 
-// modules/polls/include/util.php, row 46, 63, 64
+// modules/polls/include/util.php, row 48, 66, 67
 "Prints poll question" => "Gibt die Umfragefrage aus", // ai 2026-06
 
-// modules/polls/include/util.php, row 47
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/include/util.php, row 49
+// modules/polls/polledit.php, row 235, 242
 "Publish Date" => "Veröffentlichungsdatum", // ai 2026-06
 
-// modules/polls/include/util.php, row 48
-// modules/polls/polledit.php, row 234, 241
+// modules/polls/include/util.php, row 50
+// modules/polls/polledit.php, row 236, 243
 "Expiry Date" => "Ablaufdatum", // ai 2026-06
 
-// modules/polls/include/util.php, row 49
+// modules/polls/include/util.php, row 51
 "Prints poll params" => "Gibt die Umfrageparameter aus", // ai 2026-06
 
-// modules/polls/include/util.php, row 50
+// modules/polls/include/util.php, row 52
 "Link to poll editing page (for admin interface only)" => "Link zur Umfrage-Bearbeitungsseite (nur für die Verwaltungsoberfläche)", // ai 2026-06
 
-// modules/polls/include/util.php, row 65
+// modules/polls/include/util.php, row 68
 "Poll publish date" => "Veröffentlichungsdatum der Umfrage", // ai 2026-06
 
-// modules/polls/include/util.php, row 66
+// modules/polls/include/util.php, row 69
 "Poll expiry date" => "Ablaufdatum der Umfrage", // ai 2026-06
 
-// modules/polls/include/util.php, row 67
+// modules/polls/include/util.php, row 70
 "Poll params" => "Umfrageparameter", // ai 2026-06
 
-// modules/polls/include/util.php, row 70
+// modules/polls/include/util.php, row 73
 "Poll id (32 characters hexadecimal number - the same for all answers)" => "Umfrage-ID (32-stellige Hexadezimalzahl – für alle Antworten gleich)", // ai 2026-06
 
-// modules/polls/include/util.php, row 72
+// modules/polls/include/util.php, row 75
 "Number of answer" => "Nummer der Antwort", // ai 2026-06
 
-// modules/polls/include/util.php, row 73
+// modules/polls/include/util.php, row 76
 "Number of votes for this answer" => "Anzahl der Stimmen für diese Antwort", // ai 2026-06
 
-// modules/polls/include/util.php, row 74
+// modules/polls/include/util.php, row 77
 "Text of answer" => "Text der Antwort", // ai 2026-06
 
-// modules/polls/include/util.php, row 75
+// modules/polls/include/util.php, row 78
 "ID of answer (32 characters hexadecimal number)" => "ID der Antwort (32-stellige Hexadezimalzahl)", // ai 2026-06
 
-// modules/polls/include/util.php, row 76
+// modules/polls/include/util.php, row 79
 "Votes for this answer in percent. You can use also {poll_share}." => "Stimmen für diese Antwort in Prozent. Sie können auch {poll_share} verwenden.", // ai 2026-06
 
-// modules/polls/include/util.php, row 77
+// modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "Summe aller Stimmen. Sie können auch {poll_sum} verwenden.", // ai 2026-06
 
-// modules/polls/menu.php, row 58
+// modules/polls/menu.php, row 59
 "View poll" => "Umfrage anzeigen", // ai 2026-06
 
-// modules/polls/menu.php, row 65, 66
-// modules/polls/polledit.php, row 188
+// modules/polls/menu.php, row 67, 68
+// modules/polls/polledit.php, row 193
 "Edit poll" => "Umfrage bearbeiten", // ai 2026-06
 
-// modules/polls/menu.php, row 65
-// modules/polls/polledit.php, row 188
+// modules/polls/menu.php, row 67
+// modules/polls/polledit.php, row 193
 "Add poll" => "Umfrage hinzufügen", // ai 2026-06
 
-// modules/polls/menu.php, row 66
+// modules/polls/menu.php, row 68
 "Add new poll" => "Neue Umfrage hinzufügen", // ai 2026-06
 
-// modules/polls/menu.php, row 73, 74
+// modules/polls/menu.php, row 75, 76
 "Polls manager" => "Umfragen-Verwaltung", // ai 2026-06
 
-// modules/polls/menu.php, row 81, 82
+// modules/polls/menu.php, row 83, 84
 "Polls admin" => "Umfragen-Administration", // ai 2026-06
 
-// modules/polls/menu.php, row 93
+// modules/polls/menu.php, row 95
 "Folders" => "Ordner",
 
-// modules/polls/menu.php, row 94
+// modules/polls/menu.php, row 96
 "Active" => "Aktiv",
 
-// modules/polls/menu.php, row 95
+// modules/polls/menu.php, row 97
 "... pending" => "Wartend",
 
-// modules/polls/menu.php, row 96
+// modules/polls/menu.php, row 98
 "... expired" => "Abgelaufen",
 
-// modules/polls/menu.php, row 97
+// modules/polls/menu.php, row 99
 "Hold bin" => "Wartekorb", // ai 2026-06
 
-// modules/polls/menu.php, row 98
+// modules/polls/menu.php, row 100
 "Trash bin" => "Papierkorb",
 
-// modules/polls/menu.php, row 100
+// modules/polls/menu.php, row 102
 "Misc" => "Sonstiges",
 
-// modules/polls/menu.php, row 101
+// modules/polls/menu.php, row 103
 "Empty trash" => "Papierkorb leeren",
 
-// modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "Möchten Sie den Papierkorb wirklich leeren?", // ai 2026-06
-
-// modules/polls/menu.php, row 115
+// modules/polls/menu.php, row 117
 "Main settings" => "Haupt-Einstellungen",
 
-// modules/polls/menu.php, row 116
+// modules/polls/menu.php, row 118
 "Polls" => "Umfragen", // ai 2026-06
 
-// modules/polls/menu.php, row 117
+// modules/polls/menu.php, row 119
 "Designs" => "",
 
-// modules/polls/modedit.php, row 93
+// modules/polls/modedit.php, row 102
 "You do not have permissions to add polls" => "Sie haben keine Berechtigung, Umfragen hinzuzufügen", // ai 2026-06
 
-// modules/polls/modedit.php, row 98
+// modules/polls/modedit.php, row 107
 "You do not have permissions to edit this poll" => "Sie haben keine Berechtigung, diese Umfrage zu bearbeiten", // ai 2026-06
 
-// modules/polls/modedit.php, row 115, 240
-// modules/polls/polledit.php, row 249
+// modules/polls/modedit.php, row 124, 249
+// modules/polls/polledit.php, row 251
 "IP Locking timeout" => "Zeitlimit für IP-Sperre", // ai 2026-06
 
-// modules/polls/modedit.php, row 116, 242
+// modules/polls/modedit.php, row 125, 251
 "Cookies prefix" => "Cookie-Präfix", // ai 2026-06
 
-// modules/polls/modedit.php, row 225
+// modules/polls/modedit.php, row 234
 "Add Polls" => "Umfragen hinzufügen", // ai 2026-06
 
-// modules/polls/modedit.php, row 225
+// modules/polls/modedit.php, row 234
 "Edit Polls" => "Umfragen bearbeiten", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 237
 "Polls Module general data" => "Allgemeine Daten des Umfragen-Moduls", // ai 2026-06
 
-// modules/polls/modedit.php, row 233
+// modules/polls/modedit.php, row 242
 "Used Language File" => "Sprach-Datei",
 
-// modules/polls/modedit.php, row 237
+// modules/polls/modedit.php, row 246
 "Defaults for polls in this module" => "Standardeinstellungen für Umfragen in diesem Modul", // ai 2026-06
 
-// modules/polls/modedit.php, row 238
-// modules/polls/polledit.php, row 247
+// modules/polls/modedit.php, row 247
+// modules/polls/polledit.php, row 249
 "Use logging" => "Protokollierung verwenden", // ai 2026-06
 
-// modules/polls/modedit.php, row 239
-// modules/polls/polledit.php, row 248
+// modules/polls/modedit.php, row 248
+// modules/polls/polledit.php, row 250
 "Use IP locking" => "IP-Sperre verwenden", // ai 2026-06
 
-// modules/polls/modedit.php, row 241
-// modules/polls/polledit.php, row 250
+// modules/polls/modedit.php, row 250
+// modules/polls/polledit.php, row 252
 "Use cookies" => "Cookies verwenden", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
 "No permission to add/edit poll." => "Keine Berechtigung zum Hinzufügen/Bearbeiten der Umfrage.", // ai 2026-06
 
-// modules/polls/polledit.php, row 113
-"Can't insert new poll" => "Neue Umfrage kann nicht angelegt werden", // ai 2026-06
+// modules/polls/polledit.php, row 80
+"Poll not found." => "",
+
+// modules/polls/polledit.php, row 80
+"The poll belongs to another module." => "",
 
 // modules/polls/polledit.php, row 119
+"Can't insert new poll" => "Neue Umfrage kann nicht angelegt werden", // ai 2026-06
+
+// modules/polls/polledit.php, row 125
 "Can't update poll with id %1" => "Umfrage mit ID %1 kann nicht aktualisiert werden", // ai 2026-06
 
-// modules/polls/polledit.php, row 209
+// modules/polls/polledit.php, row 214
 "Insert question and answers" => "Frage und Antworten eingeben", // ai 2026-06
 
-// modules/polls/polledit.php, row 231, 238
+// modules/polls/polledit.php, row 233, 240
 "Headline" => "Überschrift", // ai 2026-06
 
-// modules/polls/polledit.php, row 231, 238
+// modules/polls/polledit.php, row 233, 240
 "Question" => "Frage", // ai 2026-06
 
-// modules/polls/polledit.php, row 232, 239
+// modules/polls/polledit.php, row 234, 241
 "Insert new answers and choose their order" => "Neue Antworten eingeben und ihre Reihenfolge festlegen", // ai 2026-06
 
-// modules/polls/polledit.php, row 244
+// modules/polls/polledit.php, row 246
 "Polls settings" => "Umfrage-Einstellungen", // ai 2026-06
 
-// modules/polls/polledit.php, row 246
+// modules/polls/polledit.php, row 248
 "Poll is locked" => "Umfrage ist gesperrt", // ai 2026-06
 
-// modules/polls/polledit.php, row 249
+// modules/polls/polledit.php, row 251
 "time in seconds" => "Zeit in Sekunden", // ai 2026-06
 
-// modules/polls/polledit.php, row 252
+// modules/polls/polledit.php, row 254
 "Parameters" => "Parameter",
 
-// modules/polls/polledit.php, row 254
+// modules/polls/polledit.php, row 256
 "Polls design templates" => "Design-Vorlagen für Umfragen", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 261
 "Select design type - before vote" => "Design vor der Abstimmung", // ai 2026-06
 
-// modules/polls/polledit.php, row 263
+// modules/polls/polledit.php, row 262
 "Select design type - after vote" => "Design nach der Abstimmung", // ai 2026-06
 
-// modules/polls/polledit.php, row 263
+// modules/polls/polledit.php, row 262
 "If the design after vote should look differently, then specify it here." => "Wenn das Design nach der Abstimmung anders aussehen soll, geben Sie es hier an.", // ai 2026-06
 ];

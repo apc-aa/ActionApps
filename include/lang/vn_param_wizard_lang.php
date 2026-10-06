@@ -13,121 +13,121 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 111
 "field&nbsp;id" => "id&nbsp;trường", // ai 2026-06
 
-// admin/param_wizard.php, row 117
+// admin/param_wizard.php, row 114
 "boolean:&nbsp;0=false,1=true" => "boolean:&nbsp;0=sai,1=đúng", // ai 2026-06
 
-// admin/param_wizard.php, row 141
+// admin/param_wizard.php, row 138
 "Wizard" => "Trình hướng dẫn", // ai 2026-06
 
-// admin/param_wizard.php, row 230
+// admin/param_wizard.php, row 227
 "This is an undocumented %s. We don't recommend using it." => "Đây là %s không có tài liệu. Chúng tôi không khuyến nghị sử dụng.", // ai 2026-06
 
-// admin/param_wizard.php, row 231
+// admin/param_wizard.php, row 228
 "Close the wizard" => "Đóng trình hỗ trợ", // ai 2026-06
 
-// admin/param_wizard.php, row 245
+// admin/param_wizard.php, row 242
 "Available parameters: " => "Tham số khả dụng:", // ai 2026-06
 
-// admin/param_wizard.php, row 265
+// admin/param_wizard.php, row 262
 "This %s has no parameters." => "%s này không có tham số.", // ai 2026-06
 
-// admin/param_wizard.php, row 275
+// admin/param_wizard.php, row 272
 "Have a look at these examples of parameters sets:" => "Hãy xem các ví dụ về bộ tham số sau:", // ai 2026-06
 
-// admin/param_wizard.php, row 282
+// admin/param_wizard.php, row 279
 "Show" => "Hiển thị", // ai 2026-06
 
-// admin/param_wizard.php, row 293
+// admin/param_wizard.php, row 290
 "OK - Save" => "OK - Lưu", // ai 2026-06
 
-// admin/param_wizard.php, row 294
+// admin/param_wizard.php, row 291
 "Cancel" => "Hủy", // ai 2026-06
 
-// admin/param_wizard.php, row 295
+// admin/param_wizard.php, row 292
 "Show example params" => "Hiển thị tham số mẫu", // ai 2026-06
 
-// admin/param_wizard.php, row 299
+// admin/param_wizard.php, row 296
 "OK" => "",
 
-// include/constants_param_wizard.php, row 66
+// include/constants_param_wizard.php, row 68
 "Parameters" => "Tham số", // ai 2026-06
 
-// include/constants_param_wizard.php, row 68
+// include/constants_param_wizard.php, row 70
 "Help: Parameter Wizard" => "Trợ giúp: Trình hỗ trợ tham số", // ai 2026-06
 
-// include/constants_param_wizard.php, row 75
+// include/constants_param_wizard.php, row 77
 "Input Validate Type" => "Loại kiểm tra dữ liệu nhập (validate)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 79
 "No validation" => "Không kiểm tra", // ai 2026-06
 
-// include/constants_param_wizard.php, row 80
+// include/constants_param_wizard.php, row 82
 "URL" => "",
 
-// include/constants_param_wizard.php, row 83
+// include/constants_param_wizard.php, row 85
 "E-mail" => "Email", // ai 2026-06
 
-// include/constants_param_wizard.php, row 86
+// include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = số nguyên dương", // ai 2026-06
 
-// include/constants_param_wizard.php, row 89, 111
+// include/constants_param_wizard.php, row 91, 113
 "Min" => "",
 
-// include/constants_param_wizard.php, row 90, 112
+// include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Giá trị tối thiểu cho phép", // ai 2026-06
 
-// include/constants_param_wizard.php, row 95, 117
+// include/constants_param_wizard.php, row 97, 119
 "Max" => "",
 
-// include/constants_param_wizard.php, row 96, 118
+// include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Giá trị tối đa cho phép", // ai 2026-06
 
-// include/constants_param_wizard.php, row 101, 123
+// include/constants_param_wizard.php, row 103, 125
 "Step" => "Bước", // ai 2026-06
 
-// include/constants_param_wizard.php, row 108
+// include/constants_param_wizard.php, row 110
 "Number = (signed) integer number" => "Number = số nguyên (có dấu)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 130
+// include/constants_param_wizard.php, row 132
 "Float - including scientific notation 1.2E+9" => "Float - bao gồm cả ký pháp khoa học 1.2E+9", // ai 2026-06
 
-// include/constants_param_wizard.php, row 133
+// include/constants_param_wizard.php, row 135
 "Decimal" => "Số thập phân", // ai 2026-06
 
-// include/constants_param_wizard.php, row 136
+// include/constants_param_wizard.php, row 138
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 chữ số thập lục phân [0-9a-f]", // ai 2026-06
 
-// include/constants_param_wizard.php, row 139
+// include/constants_param_wizard.php, row 141
 "Date = store as date" => "Date = lưu dưới dạng ngày", // ai 2026-06
 
-// include/constants_param_wizard.php, row 142
+// include/constants_param_wizard.php, row 144
 "Bool = store as bool" => "Bool = lưu dưới dạng giá trị logic", // ai 2026-06
 
-// include/constants_param_wizard.php, row 145
+// include/constants_param_wizard.php, row 147
 "User = does nothing ???" => "User = không làm gì ???", // ai 2026-06
 
-// include/constants_param_wizard.php, row 148
+// include/constants_param_wizard.php, row 150
 "Unique = prove uniqueness" => "Unique = kiểm tra tính duy nhất", // ai 2026-06
 
-// include/constants_param_wizard.php, row 149
+// include/constants_param_wizard.php, row 151
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "Chỉ hợp lệ nếu giá trị chưa được sử dụng. Hữu ích ví dụ\n"
    ."        cho e-mail hoặc tên người dùng.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 153, 193
+// include/constants_param_wizard.php, row 155, 197
 "Field ID" => "ID trường", // ai 2026-06
 
-// include/constants_param_wizard.php, row 154, 194
+// include/constants_param_wizard.php, row 156, 198
 "Field in which to look for matching values (default is current field)." => "Trường để tìm các giá trị trùng khớp (mặc định là trường hiện tại).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 159
+// include/constants_param_wizard.php, row 161
 "Scope" => "Phạm vi áp dụng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 160
+// include/constants_param_wizard.php, row 163
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -137,46 +137,46 @@ return [
    ."                <b>0</b> = (mặc định) Tên người dùng, đặc biệt: Kiểm tra tính duy nhất trong các chuyên mục\n"
    ."                quản lý độc giả và trong hệ thống phân quyền. Luôn dùng trường có ID %1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 171
+// include/constants_param_wizard.php, row 175
 "Regular Expression" => "Biểu thức chính quy", // ai 2026-06
 
-// include/constants_param_wizard.php, row 172
+// include/constants_param_wizard.php, row 176
 "Validation based on Regular Expressions" => "Kiểm tra dựa trên biểu thức chính quy", // ai 2026-06
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 179
 "Regular Expressions" => "Biểu thức chính quy", // ai 2026-06
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 180
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "dùng dạng như: /^[0-9]*\$/ - xem hướng dẫn \"Regular Expressions\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 181
+// include/constants_param_wizard.php, row 185
 "Error text" => "Văn bản lỗi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 182
+// include/constants_param_wizard.php, row 186
 "error message" => "thông báo lỗi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 184
+// include/constants_param_wizard.php, row 188
 "Wrong value" => "Giá trị sai", // ai 2026-06
 
-// include/constants_param_wizard.php, row 189
+// include/constants_param_wizard.php, row 193
 "Unique e-mail" => "E-mail duy nhất", // ai 2026-06
 
-// include/constants_param_wizard.php, row 190
+// include/constants_param_wizard.php, row 194
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Kết hợp kiểm tra e-mail và tính duy nhất. Chỉ hợp lệ nếu giá trị là địa chỉ e-mail hợp lệ và chưa được sử dụng.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 199
+// include/constants_param_wizard.php, row 203
 "Slice only" => "Chỉ chuyên mục này", // ai 2026-06
 
-// include/constants_param_wizard.php, row 200
+// include/constants_param_wizard.php, row 204
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "Bạn muốn kiểm tra tính duy nhất chỉ trong chuyên mục này\n"
    ."                  hay trong tất cả chuyên mục?", // ai 2026-06
 
-// include/constants_param_wizard.php, row 208
+// include/constants_param_wizard.php, row 212
 "Password and Change Password" => "Mật khẩu và Đổi mật khẩu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 209
+// include/constants_param_wizard.php, row 213
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
@@ -186,466 +186,466 @@ return [
    ."        vì hàm chèn\n"
    ."        thực hiện kiểm tra lại trước khi chèn mật khẩu mới.</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 224
+// include/constants_param_wizard.php, row 228
 "Function" => "Hàm", // ai 2026-06
 
-// include/constants_param_wizard.php, row 225
+// include/constants_param_wizard.php, row 229
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Cách sử dụng định dạng văn bản trên trang này:<br><i>trường</i> in nghiêng biểu thị trường được chỉnh sửa trong cửa sổ \"configure Fields\",<br><b>tên tham số</b> in đậm biểu thị một tham số trên màn hình này.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 232
 "just code" => "chỉ mã", // ai 2026-06
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 233
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "in mã trong tham số - có thể dùng _#this - đơn giản hơn f_t (không cần tham số bổ sung)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 236
 "null function" => "hàm rỗng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 237
 "prints nothing" => "không in gì", // ai 2026-06
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 240
 "first value" => "giá trị đầu tiên", // ai 2026-06
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 241
 "prints first value, even if the field is multivalue" => "in giá trị đầu tiên, ngay cả khi trường có nhiều giá trị", // ai 2026-06
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 244
 "translated" => "đã dịch", // ai 2026-06
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 245
 "prints translated field based on currently selected language" => "in trường đã dịch theo ngôn ngữ đang được chọn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 248
 "abstract" => "tóm tắt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 249
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "in tóm tắt (nếu có) hoặc phần đầu của <b>fulltext</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 252
 "length" => "độ dài", // ai 2026-06
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 253
 "max number of characters grabbed from the <b>fulltext</b> field" => "số ký tự tối đa lấy từ trường <b>fulltext</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 254
+// include/constants_param_wizard.php, row 258
 "fulltext" => "toàn văn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 255
+// include/constants_param_wizard.php, row 259
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id trường của trường fulltext (như full_text.......), nơi lấy văn bản. Nếu để trống, văn bản được lấy từ chính <i>trường</i> đó.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 257, 299, 596
+// include/constants_param_wizard.php, row 261, 303, 600
 "full_text......." => "",
 
-// include/constants_param_wizard.php, row 260
+// include/constants_param_wizard.php, row 264
 "paragraph" => "đoạn văn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 261
+// include/constants_param_wizard.php, row 265
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "lấy đoạn văn đầu tiên (văn bản đến \\<BR\\> hoặc \\<P\\> hoặc \\</P\\> hoặc ít nhất là '.' (dấu chấm)) nếu ngắn hơn <b>length</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 268
+// include/constants_param_wizard.php, row 272
 "extended fulltext link" => "liên kết fulltext mở rộng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 269
+// include/constants_param_wizard.php, row 273
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "In một đoạn <b>text</b> (hoặc nội dung trường) kèm liên kết đến fulltext. Phiên bản tổng quát hơn của hàm f_f. Hàm này không dùng <i>trường</i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 272, 406
+// include/constants_param_wizard.php, row 276, 410
 "link only" => "chỉ liên kết", // ai 2026-06
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 277
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "id trường (như 'link_only.......') nơi lưu công tắc chuyển giữa bài viết bên ngoài và bên trong. (Trang đó nên chứa SSI include ../slice.php.). Nếu không điền, fulltext dùng cùng trang như trang danh sách bài viết (đây là hành vi hiển nhiên).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 275, 409
+// include/constants_param_wizard.php, row 279, 413
 "link_only......." => "",
 
-// include/constants_param_wizard.php, row 278
+// include/constants_param_wizard.php, row 282
 "url_field" => "",
 
-// include/constants_param_wizard.php, row 279
+// include/constants_param_wizard.php, row 283
 "field id if field, where external URL is stored (like hl_href.........)" => "id trường, nơi lưu URL bên ngoài (như hl_href.........)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 281
+// include/constants_param_wizard.php, row 285
 "hl_href........." => "",
 
-// include/constants_param_wizard.php, row 284, 412
+// include/constants_param_wizard.php, row 288, 416
 "redirect" => "chuyển hướng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 285, 413
+// include/constants_param_wizard.php, row 289, 417
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL của trang khác hiển thị nội dung bài viết. (Trang đó nên chứa SSI include ../slice.php.). Nếu không điền, fulltext dùng cùng trang như trang danh sách bài viết (đây là hành vi hiển nhiên).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 287, 415
+// include/constants_param_wizard.php, row 291, 419
 "http#://www.ecn.cz/articles/solar.shtml" => "",
 
-// include/constants_param_wizard.php, row 290
+// include/constants_param_wizard.php, row 294
 "text" => "",
 
-// include/constants_param_wizard.php, row 291
+// include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Văn bản sẽ được bao bởi liên kết. Nếu tham số này là id trường, nội dung của trường được dùng, nếu không thì dùng nguyên văn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 296
+// include/constants_param_wizard.php, row 300
 "condition field" => "trường điều kiện", // ai 2026-06
 
-// include/constants_param_wizard.php, row 297
+// include/constants_param_wizard.php, row 301
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "khi trường được chỉ định không có nội dung nào, không in liên kết mà chỉ in <b>text</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 302, 529
+// include/constants_param_wizard.php, row 306, 533
 "tag addition" => "bổ sung tag", // ai 2026-06
 
-// include/constants_param_wizard.php, row 303, 530
+// include/constants_param_wizard.php, row 307, 534
 "additional text to the \"\\<a\\>\" tag" => "văn bản bổ sung vào tag \"\\<a\\>\"", // ai 2026-06
 
-// include/constants_param_wizard.php, row 305, 532
+// include/constants_param_wizard.php, row 309, 536
 "target=_blank" => "",
 
-// include/constants_param_wizard.php, row 308, 418
+// include/constants_param_wizard.php, row 312, 422
 "no session id" => "không có session id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 309, 419
+// include/constants_param_wizard.php, row 313, 423
 "If 1, the session id (AA_Session=...) is not added to url" => "Nếu là 1, session id (AA_Session=...) sẽ không được thêm vào url", // ai 2026-06
 
-// include/constants_param_wizard.php, row 316, 320
+// include/constants_param_wizard.php, row 320, 324
 "condition" => "điều kiện", // ai 2026-06
 
-// include/constants_param_wizard.php, row 317
+// include/constants_param_wizard.php, row 321
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Đây là một hàm rất mạnh. Nó có thể được dùng để thay thế tốt hơn cho một số hàm trước đó. Nếu <b>cond_field</b> = <b>condition</b>, in <b>begin</b> <i>trường</i> <b>end</b>, nếu không thì in <b>else</b>. Nếu không chỉ định <b>cond_field</b>, <i>trường</i> được dùng. Có thể đảo (phủ định) điều kiện bằng ký tự \"!\" ở đầu.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 325
 "you may use \"!\" to reverse (negate) the condition" => "có thể dùng \"!\" để đảo (phủ định) điều kiện", // ai 2026-06
 
-// include/constants_param_wizard.php, row 326, 505
+// include/constants_param_wizard.php, row 330, 509
 "begin" => "bắt đầu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 327
+// include/constants_param_wizard.php, row 331
 "text to print before <i>field</i>, if condition is true" => "văn bản hiển thị trước <i>trường</i> nếu điều kiện đúng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 329
+// include/constants_param_wizard.php, row 333
 "Yes" => "Có", // ai 2026-06
 
-// include/constants_param_wizard.php, row 332
+// include/constants_param_wizard.php, row 336
 "end" => "kết thúc", // ai 2026-06
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 337
 "text to print after <i>field</i>, if condition is true" => "văn bản hiển thị sau <i>trường</i> nếu điều kiện đúng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 338
+// include/constants_param_wizard.php, row 342
 "else" => "nếu không", // ai 2026-06
 
-// include/constants_param_wizard.php, row 339
+// include/constants_param_wizard.php, row 343
 "text to print when condition is not satisfied" => "văn bản hiển thị khi điều kiện không thỏa mãn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 341
+// include/constants_param_wizard.php, row 345
 "No" => "Không", // ai 2026-06
 
-// include/constants_param_wizard.php, row 344
+// include/constants_param_wizard.php, row 348
 "cond_field" => "trường_điều_kiện", // ai 2026-06
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 349
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "trường để so sánh với <b>điều kiện</b> - nếu không điền, <i>trường</i> sẽ được dùng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 350
+// include/constants_param_wizard.php, row 354
 "skip_the_field" => "bỏ_qua_trường", // ai 2026-06
 
-// include/constants_param_wizard.php, row 351
+// include/constants_param_wizard.php, row 355
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "nếu đặt là 1, bỏ qua <i>trường</i> (chỉ hiển thị <b>begin end</b> hoặc <b>else</b>)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 358
+// include/constants_param_wizard.php, row 362
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Ví dụ này có thể dùng ví dụ cho trường Highlight - nó hiển thị Yes hoặc No tùy theo nội dung của trường", // ai 2026-06
 
-// include/constants_param_wizard.php, row 359
+// include/constants_param_wizard.php, row 363
 "1:Yes::No::1" => "1:Có::Không::1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 366
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Khi trường e-mail được điền, hiển thị dạng \"Email: email@apc.org\", khi trống thì không hiển thị gì", // ai 2026-06
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 367
 "!:Email#:&nbsp;" => "",
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 370
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Hiển thị thuộc tính chiều cao của ảnh nếu <i>trường</i> được điền, ngược lại không hiển thị gì.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 371
 "!:height=" => "",
 
-// include/constants_param_wizard.php, row 372
+// include/constants_param_wizard.php, row 376
 "date" => "ngày", // ai 2026-06
 
-// include/constants_param_wizard.php, row 373
+// include/constants_param_wizard.php, row 377
 "prints date in a user defined format" => "hiển thị ngày theo định dạng do người dùng tự định nghĩa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 380
 "format" => "định dạng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 381
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "định dạng kiểu PHP - xem <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>tài liệu PHP</a>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 379
+// include/constants_param_wizard.php, row 383
 "m-d-Y" => "d-m-Y", // ai 2026-06
 
-// include/constants_param_wizard.php, row 384
+// include/constants_param_wizard.php, row 388
 "edit item" => "sửa bài viết", // ai 2026-06
 
-// include/constants_param_wizard.php, row 385
+// include/constants_param_wizard.php, row 389
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM được dùng trên trang quản trị index.php cho url itemedit", // ai 2026-06
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 392
 "type" => "loại", // ai 2026-06
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 393
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - để sửa thảo luận<br>itemcount - để hiển thị số lượng bài viết<br>safe - cho html an toàn<br>slice_info - chọn một trường từ thông tin chuyên mục<br>edit - URL để sửa bài viết<br>add - URL để thêm bài viết mới", // ai 2026-06
 
-// include/constants_param_wizard.php, row 391
+// include/constants_param_wizard.php, row 395
 "edit" => "sửa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 394
+// include/constants_param_wizard.php, row 398
 "return url" => "url trả về", // ai 2026-06
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 399
 "Return url being called from, usually leave blank and allow default" => "URL trả về nơi được gọi từ đó, thường để trống và dùng giá trị mặc định", // ai 2026-06
 
-// include/constants_param_wizard.php, row 397
+// include/constants_param_wizard.php, row 401
 "/mysite.shtml" => "/trangcuatoi.shtml", // ai 2026-06
 
-// include/constants_param_wizard.php, row 402
+// include/constants_param_wizard.php, row 406
 "fulltext link" => "liên kết toàn văn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 403
+// include/constants_param_wizard.php, row 407
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Hiển thị tên URL bên trong liên kết tới toàn văn - cho phép dùng bài viết bên ngoài. Dùng ngay sau \"\\<a href=\"", // ai 2026-06
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 411
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "id trường (như 'link_only.......') nơi lưu công tắc chuyển giữa bài viết bên ngoài và bên trong. Trường này thường được biểu diễn dưới dạng ô đánh dấu. Nếu ô được đánh dấu, <i>trường</i> được hiển thị; nếu không đánh dấu, liên kết tới toàn văn được hiển thị (cũng phụ thuộc vào tham số <b>redirect</b>).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 426
+// include/constants_param_wizard.php, row 430
 "image height" => "chiều cao ảnh", // ai 2026-06
 
-// include/constants_param_wizard.php, row 427
+// include/constants_param_wizard.php, row 431
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "Hàm kiểu cũ. Hiển thị <i>trường</i> làm giá trị chiều cao ảnh (\\<img height=...\\>) hoặc xóa thẻ chiều cao. Dùng ngay sau \"height=\". Hàm f_c cung cấp cách tốt hơn để làm việc này với tham số \":height=\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 434
 "print HTML multiple" => "hiển thị HTML (nhiều giá trị)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "hiển thị nội dung <i>trường</i> tùy theo cờ html (thoát các ký tự đặc biệt html hoặc chỉ hiển thị)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 438
 "delimiter" => "dấu phân cách", // ai 2026-06
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 439
 "if specified, a field with multiple values is displayed with the values delimited by it" => "nếu được chỉ định, trường có nhiều giá trị sẽ hiển thị với các giá trị ngăn cách bởi dấu này", // ai 2026-06
 
-// include/constants_param_wizard.php, row 442
+// include/constants_param_wizard.php, row 446
 "image src" => "nguồn ảnh", // ai 2026-06
 
-// include/constants_param_wizard.php, row 443
+// include/constants_param_wizard.php, row 447
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "hiển thị <i>trường</i> làm nguồn ảnh (\\<img src=...\\>) - NO_PICTURE nếu không có. Cũng có thể làm điều tương tự bằng hàm f_c với tham số :::NO_PICTURE.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 450
 "image size" => "kích thước ảnh", // ai 2026-06
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 451
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "hiển thị <i>trường</i> làm kích thước ảnh (height='xxx' width='yyy') (hoặc thông tin ảnh khác) hoặc chuỗi rỗng nếu không xác định được; không xử lý đặc biệt các URL từ thư mục uploads, có thể bổ sung sau!", // ai 2026-06
 
-// include/constants_param_wizard.php, row 450, 826
+// include/constants_param_wizard.php, row 454, 830
 "information" => "thông tin", // ai 2026-06
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 455
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "chỉ định thông tin trả về: <br> - <i>html</i> - (mặc định) - trả về kích thước ảnh dưới dạng thuộc tính HTML (height='xxx' width='yyy')<br> - <i>width</i> - trả về chiều rộng của ảnh tính bằng pixel<br> - <i>height</i> - trả về chiều cao của ảnh tính bằng pixel<br> - <i>imgtype</i> - trả về cờ chỉ kiểu của ảnh: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - trả về kiểu mime của ảnh (như 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 458
+// include/constants_param_wizard.php, row 462
 "substring with case change" => "chuỗi con với thay đổi kiểu chữ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 459
+// include/constants_param_wizard.php, row 463
 "prints a part of <i>the field</i>" => "hiển thị một phần của <i>trường</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 466
 "start" => "bắt đầu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 467
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "vị trí bắt đầu chuỗi con (0=đầu tiên, 1=thứ hai, -1=cuối cùng, -2=hai ký tự từ cuối)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 468
+// include/constants_param_wizard.php, row 472
 "count" => "số lượng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 469
+// include/constants_param_wizard.php, row 473
 "count of characters (0=until the end)" => "số lượng ký tự (0=đến hết)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 474
+// include/constants_param_wizard.php, row 478
 "case" => "kiểu chữ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 475
+// include/constants_param_wizard.php, row 479
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - chuyển thành CHỮ HOA, lower - chuyển thành chữ thường, first - chuyển thành Chữ Đầu Viết Hoa; mặc định là không thay đổi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 480
+// include/constants_param_wizard.php, row 484
 "add string" => "chuỗi thêm", // ai 2026-06
 
-// include/constants_param_wizard.php, row 481
+// include/constants_param_wizard.php, row 485
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "nếu chuỗi bị rút ngắn, <i>chuỗi thêm</i> sẽ được nối vào chuỗi (có thể là gì đó như [...])", // ai 2026-06
 
-// include/constants_param_wizard.php, row 487
+// include/constants_param_wizard.php, row 491
 "Auto Update Checkbox" => "Ô đánh dấu tự động cập nhật", // ai 2026-06
 
-// include/constants_param_wizard.php, row 489
+// include/constants_param_wizard.php, row 493
 "linked field" => "trường có liên kết", // ai 2026-06
 
-// include/constants_param_wizard.php, row 490
+// include/constants_param_wizard.php, row 494
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "hiển thị <i>trường</i> dưới dạng liên kết nếu <b>link URL</b> không phải NULL, ngược lại chỉ hiển thị <i>trường</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 497
 "link URL" => "URL liên kết", // ai 2026-06
 
-// include/constants_param_wizard.php, row 496
+// include/constants_param_wizard.php, row 500
 "source_href....." => "",
 
-// include/constants_param_wizard.php, row 501
+// include/constants_param_wizard.php, row 505
 "e-mail or link" => "e-mail hoặc liên kết", // ai 2026-06
 
-// include/constants_param_wizard.php, row 502
+// include/constants_param_wizard.php, row 506
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "liên kết mailto - hiển thị: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>trường</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. Nếu <i>trường</i> không được điền, hiển thị <b>else_field/text</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 510
 "text before the link" => "văn bản trước liên kết", // ai 2026-06
 
-// include/constants_param_wizard.php, row 508
+// include/constants_param_wizard.php, row 512
 "e-mail" => "",
 
-// include/constants_param_wizard.php, row 511
+// include/constants_param_wizard.php, row 515
 "field/text" => "trường/văn bản", // ai 2026-06
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 516
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "nếu tham số này là id trường, nội dung của trường sẽ được dùng, ngược lại nó được dùng nguyên văn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 517
+// include/constants_param_wizard.php, row 521
 "else_field/text" => "trường/văn bản nếu không", // ai 2026-06
 
-// include/constants_param_wizard.php, row 518
+// include/constants_param_wizard.php, row 522
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "nếu <i>trường</i> trống, chỉ văn bản này (hoặc nội dung trường) được hiển thị", // ai 2026-06
 
-// include/constants_param_wizard.php, row 523
+// include/constants_param_wizard.php, row 527
 "linktype" => "kiểu liên kết", // ai 2026-06
 
-// include/constants_param_wizard.php, row 524
+// include/constants_param_wizard.php, row 528
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (mặc định là mailto) - cũng có thể dùng hàm f_m cho liên kết - chỉ cần nhập 'href' làm tham số này", // ai 2026-06
 
-// include/constants_param_wizard.php, row 526
+// include/constants_param_wizard.php, row 530
 "href" => "",
 
-// include/constants_param_wizard.php, row 535
+// include/constants_param_wizard.php, row 539
 "hide email" => "ẩn e-mail", // ai 2026-06
 
-// include/constants_param_wizard.php, row 536
+// include/constants_param_wizard.php, row 540
 "if 1 then hide email from spam robots. Default is 0." => "nếu là 1 thì ẩn e-mail khỏi robot spam. Mặc định là 0.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 543
+// include/constants_param_wizard.php, row 547
 "id" => "",
 
-// include/constants_param_wizard.php, row 544
+// include/constants_param_wizard.php, row 548
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "hiển thị id đã giải nén (dùng khi bạn muốn hiển thị 'item id' hoặc 'slice id')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 551
 "'New' sign" => "dấu 'New'", // ai 2026-06
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 552
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "hiển thị 'New' hoặc 'Old' hoặc bất kỳ văn bản nào khác trong <b>newer text</b> hoặc <b>older text</b> tùy theo <b>time</b>. Thời gian được chỉ định bằng phút tính từ thời điểm hiện tại.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 555
 "time" => "thời gian", // ai 2026-06
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 556
 "Time in minutes from current time." => "Thời gian tính bằng phút từ thời điểm hiện tại.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 554
+// include/constants_param_wizard.php, row 558
 "1440" => "",
 
-// include/constants_param_wizard.php, row 557
+// include/constants_param_wizard.php, row 561
 "newer text" => "văn bản mới hơn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 562
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "Văn bản hiển thị nếu ngày trong <i>trường</i> mới hơn <i>current_time</i> - <b>time</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 560
+// include/constants_param_wizard.php, row 564
 "NEW" => "MỚI", // ai 2026-06
 
-// include/constants_param_wizard.php, row 563
+// include/constants_param_wizard.php, row 567
 "older text" => "văn bản cũ hơn", // ai 2026-06
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 568
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "Văn bản sẽ in ra nếu ngày trong <i>trường</i> cũ hơn <i>current_time</i> - <b>time</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 571
+// include/constants_param_wizard.php, row 575
 "text (blurb) from another slice" => "văn bản (blurb) từ chuyên mục khác", // ai 2026-06
 
-// include/constants_param_wizard.php, row 572
+// include/constants_param_wizard.php, row 576
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "in ra 'blurb' (đoạn văn bản) từ chuyên mục khác, dựa trên một điều kiện đơn giản.<br>Nếu <i>trường</i> (hoặc trường được chỉ định bởi <b>stringToMatch</b>) trong chuyên mục hiện tại khớp với nội dung của <b>fieldToMatch</b> trong <b>blurbSliceId</b>, nó trả về nội dung của <b>fieldToReturn</b> trong <b>blurbSliceId</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 579
 "stringToMatch" => "",
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Mặc định là <i>trường</i>. Có thể được định dạng dưới dạng id của một trường (headline........) HOẶC dưới dạng văn bản tĩnh.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 578
+// include/constants_param_wizard.php, row 582
 "category........" => "",
 
-// include/constants_param_wizard.php, row 581
+// include/constants_param_wizard.php, row 585
 "blurbSliceId" => "",
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "id chuyên mục dạng không đóng gói (unpacked) của chuyên mục nơi lưu văn bản blurb", // ai 2026-06
 
-// include/constants_param_wizard.php, row 584
+// include/constants_param_wizard.php, row 588
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 587
+// include/constants_param_wizard.php, row 591
 "fieldToMatch" => "",
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id trường của trường trong <b>blurbSliceId</b> nơi tìm kiếm <b>stringToMatch</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 590
+// include/constants_param_wizard.php, row 594
 "headline........" => "",
 
-// include/constants_param_wizard.php, row 593
+// include/constants_param_wizard.php, row 597
 "fieldToReturn" => "",
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id trường của trường trong <b>blurbSliceId</b> nơi lưu văn bản blurb (nội dung cần in)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 601
+// include/constants_param_wizard.php, row 605
 "RSS tag" => "thẻ RSS", // ai 2026-06
 
-// include/constants_param_wizard.php, row 602
+// include/constants_param_wizard.php, row 606
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "phục vụ mục đích nội bộ của các bí danh RSS định nghĩa sẵn (ví dụ _#RSS_TITL). Thêm các thẻ tuân theo RSS 0.91.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 605, 609, 801
+// include/constants_param_wizard.php, row 609, 613, 805
 "default" => "mặc định", // ai 2026-06
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 610
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "in ra <i>trường</i> hoặc một giá trị mặc định nếu <i>trường</i> rỗng. Cũng có thể thực hiện điều tương tự bằng hàm f_c với tham số :::<b>default</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 614
 "default value" => "giá trị mặc định", // ai 2026-06
 
-// include/constants_param_wizard.php, row 612
+// include/constants_param_wizard.php, row 616
 "javascript: window.alert('No source url specified')" => "javascript: window.alert('Chưa chỉ định url nguồn')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 617
+// include/constants_param_wizard.php, row 621
 "print field" => "in trường", // ai 2026-06
 
-// include/constants_param_wizard.php, row 618
+// include/constants_param_wizard.php, row 622
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "in ra nội dung <i>trường</i> (hoặc <i>unalias string</i>) tùy theo cờ html (nếu cờ html không được đặt, nó chuyển nội dung sang html. Khác với hàm f_h, nó còn chuyển các ngắt dòng sang html (trong biến thể cơ bản)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 625
 "unalias string" => "chuỗi unalias", // ai 2026-06
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 626
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "nếu <i>unalias string</i> được định nghĩa, hàm sẽ bỏ qua <i>trường</i> và in ra <i>unalias string</i> thay thế. Tất nhiên bạn có thể dùng bất kỳ bí danh nào (hoặc các trường như {headline.........}) trong chuỗi này", // ai 2026-06
 
-// include/constants_param_wizard.php, row 624
+// include/constants_param_wizard.php, row 628
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 627
+// include/constants_param_wizard.php, row 631
 "output modify" => "chỉnh sửa đầu ra", // ai 2026-06
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 632
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -664,175 +664,175 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - loại bỏ các thẻ HTML và PHP khỏi chuỗi<br>\n"
    ."                   &nbsp; - <i>asis</i>  - in nội dung trường 'nguyên trạng' - không thêm &lt;br&gt; ở cuối dòng ngay cả khi trường được đánh dấu là 'Plain text'. Tham số 'asis' phù hợp ví dụ cho tính năng 'Modify content...' trong Item Manager<br>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 643
+// include/constants_param_wizard.php, row 647
 "user function" => "hàm người dùng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 644
+// include/constants_param_wizard.php, row 648
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "gọi một hàm do người dùng định nghĩa (xem How to create new aliases trong <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 651
 "function" => "hàm", // ai 2026-06
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 652
 "name of the function in the include/usr_aliasfnc.php file" => "tên của hàm trong tệp include/usr_aliasfnc.php", // ai 2026-06
 
-// include/constants_param_wizard.php, row 650
+// include/constants_param_wizard.php, row 654
 "usr_start_end_date_cz" => "",
 
-// include/constants_param_wizard.php, row 653
+// include/constants_param_wizard.php, row 657
 "parameter" => "tham số", // ai 2026-06
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 658
 "a parameter passed to the function" => "một tham số được truyền cho hàm", // ai 2026-06
 
-// include/constants_param_wizard.php, row 661
+// include/constants_param_wizard.php, row 665
 "view" => "xem", // ai 2026-06
 
-// include/constants_param_wizard.php, row 662
+// include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "cho phép bạn thao tác với các khung hiển thị. Đây là một hàm phức tạp và mạnh mẽ, được mô tả trong <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, cho phép hiển thị bất kỳ khung hiển thị nào tại vị trí của bí danh. Có thể dùng cho bảng 'bài viết liên quan' hoặc để hiển thị nội dung của chuyên mục liên quan.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 669
 "complex parameter" => "tham số phức hợp", // ai 2026-06
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 670
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "tham số này giống với tham số mà chúng ta dùng trong tham số url của view.php - xem FAQ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 668
+// include/constants_param_wizard.php, row 672
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 673
+// include/constants_param_wizard.php, row 677
 "image width" => "chiều rộng ảnh", // ai 2026-06
 
-// include/constants_param_wizard.php, row 674
+// include/constants_param_wizard.php, row 678
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Một hàm kiểu cũ. In ra <i>trường</i> dưới dạng giá trị chiều rộng ảnh (\\<img width=...\\>) hoặc xóa thẻ width. Dùng ngay sau \"width=\". Hàm f_c cung cấp cách tốt hơn để làm điều này với tham số \":width=\".", // ai 2026-06
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 681
 "transformation" => "phép biến đổi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 682
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Cho phép biến đổi giá trị của trường thành một giá trị khác.<br>Cách dùng: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Nếu nội dung <i>trường</i> bằng <b>content_1</b> thì trả về <b>return_value_1</b>. Nếu nội dung <i>trường</i> bằng <b>content_2</b> thì trả về <b>return_value_2</b>. Nếu <i>trường không bằng bất kỳ <b>content_x</b> nào, thì trả về <b>default</b></i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 681, 693, 705, 717, 729, 741, 753, 765, 777, 789
+// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
 "content" => "nội dung", // ai 2026-06
 
-// include/constants_param_wizard.php, row 682, 694, 706, 718, 730, 742, 754, 766, 778, 790
+// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
 "string for comparison with <i>the field</i> for following return value" => "chuỗi để so sánh với <i>trường</i> nhằm xác định giá trị trả về tiếp theo", // ai 2026-06
 
-// include/constants_param_wizard.php, row 687, 699, 711, 723, 735, 747, 759, 771, 783, 795
+// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
 "return value" => "giá trị trả về", // ai 2026-06
 
-// include/constants_param_wizard.php, row 688, 700, 712, 724, 736, 748, 760, 772, 784, 796
+// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
 "string to return if previous content matches - You can use field_id too" => "chuỗi trả về nếu nội dung trước đó khớp - Bạn cũng có thể dùng field_id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 690, 702, 714, 726, 738, 750, 762, 774, 786, 798, 804
+// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
 "Environment" => "Môi trường", // ai 2026-06
 
-// include/constants_param_wizard.php, row 802
+// include/constants_param_wizard.php, row 806
 "if no content matches, use this string as return value" => "nếu không có nội dung nào khớp, dùng chuỗi này làm giá trị trả về", // ai 2026-06
 
-// include/constants_param_wizard.php, row 809
+// include/constants_param_wizard.php, row 813
 "expanded string" => "chuỗi đã mở rộng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 810
+// include/constants_param_wizard.php, row 814
 "expands the string in the parameter" => "mở rộng chuỗi trong tham số", // ai 2026-06
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 817
 "string to expand" => "chuỗi cần mở rộng", // ai 2026-06
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 818
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "nếu được chỉ định thì chuỗi này được mở rộng, nếu không thì mở rộng nội dung của trường", // ai 2026-06
 
-// include/constants_param_wizard.php, row 822
+// include/constants_param_wizard.php, row 826
 "file information" => "thông tin tệp", // ai 2026-06
 
-// include/constants_param_wizard.php, row 823
+// include/constants_param_wizard.php, row 827
 "prints <i>the field</i> as file information, its size or type" => "in ra <i>trường</i> dưới dạng thông tin tệp, kích thước hoặc loại của nó", // ai 2026-06
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 831
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "chỉ định thông tin trả về: <br> - <i>name</i> - tên tệp<br> - <i>type</i> - trả về loại tệp (như TXT)<br> - <i>size</i> - trả về kích thước tệp theo kB hoặc MB (như 12.1 kB)<br> - <i>bytesize</i> - (như 12128)<br> - <i>link</i><br> - <i>typesize</i> - [loại - kích thước] trong span<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 841
+// include/constants_param_wizard.php, row 845
 "Transformation action" => "Hành động biến đổi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 843
+// include/constants_param_wizard.php, row 847
 "AA Expression" => "Biểu thức AA", // ai 2026-06
 
-// include/constants_param_wizard.php, row 844
+// include/constants_param_wizard.php, row 848
 "AA expression where we can use any AA {expressions}" => "biểu thức AA nơi chúng ta có thể dùng bất kỳ {expressions} AA nào", // ai 2026-06
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 851
 "expression" => "biểu thức", // ai 2026-06
 
-// include/constants_param_wizard.php, row 856
+// include/constants_param_wizard.php, row 860
 "Store" => "Lưu", // ai 2026-06
 
-// include/constants_param_wizard.php, row 857
+// include/constants_param_wizard.php, row 861
 "Simply store a value from the input field" => "Chỉ đơn giản lưu một giá trị từ trường nhập", // ai 2026-06
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 864
 "lang (optional)" => "lang (tùy chọn)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 865
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "hai chữ cái - cz | en | es | de. Nếu được cung cấp, giá trị sẽ được lưu vào ngôn ngữ đã chỉ định (trường phải sử dụng bản dịch)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 869
+// include/constants_param_wizard.php, row 873
 "Remove string" => "Xóa chuỗi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 870
+// include/constants_param_wizard.php, row 874
 "Remove all occurrences of a string from the input field." => "Xóa tất cả các lần xuất hiện của một chuỗi khỏi trường nhập.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 873, 894
+// include/constants_param_wizard.php, row 877, 898
 "string parameter" => "tham số chuỗi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 878
 "Removed string" => "Chuỗi bị xóa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 880
+// include/constants_param_wizard.php, row 884
 "Format date" => "Định dạng ngày", // ai 2026-06
 
-// include/constants_param_wizard.php, row 881
+// include/constants_param_wizard.php, row 885
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "Phân tích ngày trong trường nhập, dự kiến ở định dạng ngày tiếng Anh. Nếu có lỗi, phép biến đổi sẽ thất bại", // ai 2026-06
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 889
 "Add http prefix" => "Thêm tiền tố http", // ai 2026-06
 
-// include/constants_param_wizard.php, row 886
+// include/constants_param_wizard.php, row 890
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "Thêm tiền tố 'https://' vào trường nếu không bắt đầu bằng 'https://' và không rỗng.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 894
 "Store parameter" => "Lưu tham số", // ai 2026-06
 
-// include/constants_param_wizard.php, row 891
+// include/constants_param_wizard.php, row 895
 "Store parameter instead of the input field" => "Lưu tham số thay cho trường nhập", // ai 2026-06
 
-// include/constants_param_wizard.php, row 901
+// include/constants_param_wizard.php, row 905
 "Store as long id" => "Lưu dưới dạng id dài", // ai 2026-06
 
-// include/constants_param_wizard.php, row 902
+// include/constants_param_wizard.php, row 906
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Tạo id dài từ chuỗi. Chuỗi được kết hợp với tham số!! hoặc với slice_id (nếu không cung cấp tham số). Từ cùng một chuỗi (và cùng một tham số) chúng ta luôn tạo ra cùng một id.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 909
 "string to add" => "chuỗi cần thêm", // ai 2026-06
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 910
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "tham số này sẽ được thêm vào chuỗi trước khi chuyển đổi (lý do là để tránh các chuỗi rỗng và cũng để không luôn tạo ra cùng một id cho các chuỗi thông thường (trong các lần nhập khác nhau). Nếu không chỉ định tham số này, slice_id sẽ được dùng thay thế.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 914
+// include/constants_param_wizard.php, row 918
 "Split input field by string" => "Tách trường nhập theo chuỗi", // ai 2026-06
 
-// include/constants_param_wizard.php, row 915
+// include/constants_param_wizard.php, row 919
 "Split input field by string parameter and store the result as multi-value." => "Tách trường nhập theo tham số chuỗi và lưu kết quả dưới dạng đa giá trị.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 922
 "delimiter (+ possible languages)" => "dấu phân cách (+ ngôn ngữ nếu có)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 923
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "chuỗi phân cách ngăn cách các giá trị của trường nhập (như \"|\"). Một tùy chọn khác là thêm cả các ngôn ngữ ngăn cách bởi \"##\" theo dạng <delimiter>##<lang1>##<lang2> (\"|##cz##en\" cho \"Ahoj|Hi\") - điều này sẽ điền vào các trường đã dịch", // ai 2026-06
 
-// include/constants_param_wizard.php, row 926
+// include/constants_param_wizard.php, row 930
 "Store default value" => "Lưu giá trị mặc định", // ai 2026-06
 
-// include/constants_param_wizard.php, row 927
+// include/constants_param_wizard.php, row 931
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"

@@ -13,74 +13,74 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Hibás inc paraméter - a beillesztendő fájl neve csak alfanumerikus karaktereket tartalmazhat", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "A fájl nem található", // ai 2026-06
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Érvénytelen rovatszám, vagy a rovatot törölték", // ai 2026-06
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "A slice.php kimenet ennél a rovatnál tiltott", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "munkamenet-azonosító", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "az aktuális oldal száma (a lapozóban)", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "oldalhossz (cikkek száma)", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "Nem található cikk", // ai 2026-06
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "Kijelöltek megjelenítése", // ai 2026-06
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "Összes megjelenítése", // ai 2026-06
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "Új hozzáadása", // ai 2026-06
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "Alias ehhez: %1", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "Alias a hozzászólás tárgyához", // ai 2026-06
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "Alias a hozzászólás szövegéhez", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "Alias a szerzőhöz", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "Alias a szerző e-mail címéhez", // ai 2026-06
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "Alias a szerző webhelyének URL-címéhez", // ai 2026-06
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "Alias a szerző webhelyének leírásához", // ai 2026-06
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "Alias a közzététel dátumához", // ai 2026-06
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "Alias a szerző számítógépének IP-címéhez", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "Alias a hozzászólás kiválasztására szolgáló jelölőnégyzethez", // ai 2026-06
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "Alias a képekhez", // ai 2026-06
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -88,7 +88,7 @@ return [
    ."                             <i>Használat: </i>az űrlap kódjában<br>\n"
    ."                             <i>Példa: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -96,7 +96,7 @@ return [
    ."                             <i>Használat: </i>az űrlap kódjában<br>\n"
    ."                             <i>Példa: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -104,7 +104,7 @@ return [
    ."                             <i>Használat: </i>az űrlap kódjában<br>\n"
    ."                             <i>Példa: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -112,7 +112,7 @@ return [
    ."                             <i>Használat: </i>a hozzászólás áttekintő nézetének HTML-kódjában<br>\n"
    ."                             <i>Példa: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -120,7 +120,7 @@ return [
    ."                             <i>Használat: </i>a hozzászólás teljes szövegű nézetének HTML-kódjában<br>\n"
    ."                             <i>Példa: </i>&lt;a href=_#URLREPLY&gt;Válasz&lt;/a&gt;", // ai 2026-06
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -128,64 +128,64 @@ return [
    ."                             <i>Használat: </i>az űrlap kódjában<br>\n"
    ."                             <i>Példa: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "Alias az Összes megjelenítése, Kijelöltek megjelenítése, Új hozzáadása gombokhoz<br>\n"
    ."                             <i>Használat: </i> az alsó HTML-kódban", // ai 2026-06
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "A DiscussionMailList mezőben kitöltött 3. paraméter", // ai 2026-06
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "A DiscussionMailList mezőben kitöltött %1. paraméter", // ai 2026-06
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "Konstans neve", // ai 2026-06
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "Konstans lefordított neve", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "Konstans értéke", // ai 2026-06
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "Konstans prioritása", // ai 2026-06
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "Konstanscsoport azonosítója", // ai 2026-06
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "Kategóriaosztály (csak kategóriákhoz)", // ai 2026-06
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "Konstans sorszáma", // ai 2026-06
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "Konstans egyedi azonosítója (32 hexadecimális karakter)", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "Konstans egyedi rövid azonosítója (automatikusan növekszik '1'-től a rendszer minden konstansánál)", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "Konstans leírása", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Konstans szintje (hierarchikus konstansoknál használatos)", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "Hiba: hibás %1 aliasfüggvény ehhez: %2", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "Kijelölt cikk", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "a megtalált cikkek száma", // ai 2026-06
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "Nincs kijelölt hozzászólás", // ai 2026-06
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "pontos csoportnév", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -206,27 +206,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "Válasszon kategóriát", // ai 2026-06
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "Minden kategória", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Hiba: hiányzik az olvasási jelszó", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Toolkit hírüzenet", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "Vissza", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Újra bejelentkezés", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "Hozzárendelési űrlap", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "Feldolgozza az űrlap által POST-tal küldött cikk-kapcsolati adatokat", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

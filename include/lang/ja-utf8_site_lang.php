@@ -12,6 +12,9 @@ setlocale(LC_ALL, 'ja_JP.utf8', 'ja_JP');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "Site module not found" => "サイトモジュールが見つかりません", // ai 2026-06
+// End of unused messages
 
 // modules/site/aliases.php, row 36
 "You do not have permissions to manage tasks" => "タスクを管理する許可がありません", // ai 2026-06
@@ -19,66 +22,63 @@ return [
 // modules/site/aliases.php, row 41
 "Manage %1" => "%1の管理", // ai 2026-06
 
-// modules/site/index.php, row 57
-"Site module not found" => "サイトモジュールが見つかりません", // ai 2026-06
-
-// modules/site/index.php, row 63
+// modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "このスライスの項目を編集する許可がありません", // ai 2026-06
 
 // modules/site/index.php, row 68
 "Starting spot not found" => "開始スポットが見つかりません", // ai 2026-06
 
-// modules/site/index.php, row 149
+// modules/site/index.php, row 157
 "Editor window - site code manager" => "編集ウィンドウ - サイトコード管理", // ai 2026-06
 
-// modules/site/index.php, row 169
+// modules/site/index.php, row 177
 "Add&nbsp;spot" => "スポットを追加", // ai 2026-06
 
-// modules/site/index.php, row 170
+// modules/site/index.php, row 178
 "Add&nbsp;choice" => "選択肢を追加", // ai 2026-06
 
-// modules/site/index.php, row 173
+// modules/site/index.php, row 181
 "Move&nbsp;up" => "上へ移動", // ai 2026-06
 
-// modules/site/index.php, row 174
+// modules/site/index.php, row 182
 "Move&nbsp;down" => "下へ移動", // ai 2026-06
 
-// modules/site/index.php, row 177
+// modules/site/index.php, row 185
 "Move&nbsp;left" => "左へ移動", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 186
 "Move&nbsp;right" => "右へ移動", // ai 2026-06
 
-// modules/site/index.php, row 181
-// modules/site/sitetree.php, row 785, 806
+// modules/site/index.php, row 189
+// modules/site/sitetree.php, row 1008, 1029
 "Delete" => "削除", // ai 2026-06
 
-// modules/site/index.php, row 181
+// modules/site/index.php, row 189
 "Are you sure you want to delete the spot?" => "このスポットを削除してもよろしいですか？", // ai 2026-06
 
-// modules/site/index.php, row 184
+// modules/site/index.php, row 192
 "Enable" => "有効にする", // ai 2026-06
 
-// modules/site/index.php, row 185
+// modules/site/index.php, row 193
 "Disable" => "無効にする", // ai 2026-06
 
-// modules/site/index.php, row 206
+// modules/site/index.php, row 214
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "使用可能なシステムrequire - &lcub;require:...&rcub; または &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
-// modules/site/menu.php, row 46
+// modules/site/menu.php, row 47
 "View site" => "サイトを見る",
 
-// modules/site/menu.php, row 53
-// modules/site/modedit.php, row 270
+// modules/site/menu.php, row 55
+// modules/site/modedit.php, row 318
 "Site" => "サイト", // ai 2026-06
 
-// modules/site/menu.php, row 78
+// modules/site/menu.php, row 80
 "Module Settings" => "モジュール設定", // ai 2026-06
 
-// modules/site/menu.php, row 79
+// modules/site/menu.php, row 81
 "Code Manager" => "コード管理", // ai 2026-06
 
-// modules/site/menu.php, row 80
+// modules/site/menu.php, row 82
 "Aliases" => "別名", // ai 2026-06
 
 // modules/site/moddelete.php, row 45
@@ -90,57 +90,102 @@ return [
 // modules/site/moddelete.php, row 69
 "Slice successfully deleted, tables are optimized" => "スライスは削除され、テーブルは最適化されました", // ai 2026-06
 
-// modules/site/modedit.php, row 104
+// modules/site/modedit.php, row 116
 "You do not have permissions to add slice" => "スライスを追加する許可がありません",
 
-// modules/site/modedit.php, row 109
+// modules/site/modedit.php, row 121
 "You do not have permissions to edit this slice" => "スライスを編集する許可がありません",
 
-// modules/site/modedit.php, row 132
+// modules/site/modedit.php, row 129
+"The settings and the other fields of this page were not saved." => "",
+
+// modules/site/modedit.php, row 144
 "State file" => "状態ファイル", // ai 2026-06
 
-// modules/site/modedit.php, row 133, 278
+// modules/site/modedit.php, row 145, 326
 "Router" => "ルーター", // ai 2026-06
 
-// modules/site/modedit.php, row 134, 292
+// modules/site/modedit.php, row 146, 340
 "Uses modules" => "使用モジュール", // ai 2026-06
 
-// modules/site/modedit.php, row 257
+// modules/site/modedit.php, row 156
+"You can not use these modules in the site - you have no permission to them: %1" => "",
+
+// modules/site/modedit.php, row 230
+"The form has expired; reload the page and try again." => "",
+
+// modules/site/modedit.php, row 241
+"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "",
+
+// modules/site/modedit.php, row 305
 "Add Site" => "サイトを追加", // ai 2026-06
 
-// modules/site/modedit.php, row 257
+// modules/site/modedit.php, row 305
 "Edit Site" => "サイトの編集", // ai 2026-06
 
-// modules/site/modedit.php, row 277
+// modules/site/modedit.php, row 325
 "Used Language File" => "使用する言語ファイル", // ai 2026-06
 
-// modules/site/modedit.php, row 278
+// modules/site/modedit.php, row 326
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "AA_Router_Seoを使用してください。そうしないと、古いサイトモジュール方式の「制御ファイル」を使うことになりますが、これはお勧めできません。", // ai 2026-06
 
-// modules/site/modedit.php, row 279
+// modules/site/modedit.php, row 327
 "Home or State file" => "ホームまたは状態ファイル", // ai 2026-06
 
-// modules/site/modedit.php, row 279
+// modules/site/modedit.php, row 327
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "AA_Router_Seoの場合は<b>デフォルトURL</b>（ホーム）を入力してください - 例：<em>/en/home</em> - または空のままにしてください<br><br>AA_Router_Seoを使わない古いサイトの場合は<b>サイト制御ファイル</b>の名前を入力してください - /modules/site/sites/ ディレクトリに置かれます。指定した名前には接頭辞「site_」が付くため、例えばファイル名を「apc.php」とすると、サイト制御ファイルは /modules/site/sites/site_apc.php になります。", // ai 2026-06
 
-// modules/site/modedit.php, row 294
+// modules/site/modedit.php, row 342
 "Additional setting" => "追加設定", // ai 2026-06
 
-// modules/site/sitetree.php, row 782
+// modules/site/modedit.php, row 347
+"App store" => "",
+
+// modules/site/modedit.php, row 349
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "",
+
+// modules/site/modedit.php, row 353
+"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "",
+
+// modules/site/modedit.php, row 354
+"Approve the changed modules: %1" => "",
+
+// modules/site/modedit.php, row 354
+"Their templates, fields, views and constants then go to the app store with the site." => "",
+
+// modules/site/modedit.php, row 356
+"Publish in the app store" => "",
+
+// modules/site/modedit.php, row 356
+"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "",
+
+// modules/site/modedit.php, row 357
+"App description" => "",
+
+// modules/site/modedit.php, row 357
+"What the app does, for the list of the app store." => "",
+
+// modules/site/modedit.php, row 358
+"App version" => "",
+
+// modules/site/modedit.php, row 358
+"Like 1.2.0." => "",
+
+// modules/site/sitetree.php, row 1005
 "Spot&nbsp;variables" => "スポット変数", // ai 2026-06
 
-// modules/site/sitetree.php, row 788, 817
+// modules/site/sitetree.php, row 1011, 1040
 "Add" => "追加",
 
-// modules/site/sitetree.php, row 796
+// modules/site/sitetree.php, row 1019
 "Spot&nbsp;conditions" => "スポット条件", // ai 2026-06
 
-// modules/site/sitetree.php, row 805
+// modules/site/sitetree.php, row 1028
 "Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "警告：条件が空白文字で始まるか終わっています。式に問題がないかご確認ください。", // ai 2026-06
 
-// modules/site/sitetree.php, row 812
+// modules/site/sitetree.php, row 1035
 "contains" => "含む", // ai 2026-06
 
-// modules/site/sitetree.php, row 813
+// modules/site/sitetree.php, row 1036
 "Regular Expression" => "正規表現", // ai 2026-06
 ];

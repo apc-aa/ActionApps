@@ -13,7 +13,7 @@ setlocale(LC_ALL, 'en_US.utf8', 'en_US');  // sort, date, uppercase, ..
 return [
 
 // modules/polls/designs.php, row 38
-// modules/polls/index.php, row 55
+// modules/polls/index.php, row 57
 "You do not have permission to manage Polls" => "",
 
 // modules/polls/designs.php, row 47
@@ -40,197 +40,200 @@ return [
 // modules/polls/designs.php, row 57
 "Polls Design" => "",
 
-// modules/polls/include/util.php, row 44
+// modules/polls/include/util.php, row 46
 "Poll ID" => "",
 
-// modules/polls/include/util.php, row 45, 68
+// modules/polls/include/util.php, row 47, 71
 "Module ID" => "",
 
-// modules/polls/include/util.php, row 46, 63, 64
+// modules/polls/include/util.php, row 48, 66, 67
 "Prints poll question" => "",
 
-// modules/polls/include/util.php, row 47
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/include/util.php, row 49
+// modules/polls/polledit.php, row 235, 242
 "Publish Date" => "",
 
-// modules/polls/include/util.php, row 48
-// modules/polls/polledit.php, row 234, 241
+// modules/polls/include/util.php, row 50
+// modules/polls/polledit.php, row 236, 243
 "Expiry Date" => "",
 
-// modules/polls/include/util.php, row 49
+// modules/polls/include/util.php, row 51
 "Prints poll params" => "",
 
-// modules/polls/include/util.php, row 50
+// modules/polls/include/util.php, row 52
 "Link to poll editing page (for admin interface only)" => "",
 
-// modules/polls/include/util.php, row 65
+// modules/polls/include/util.php, row 68
 "Poll publish date" => "",
 
-// modules/polls/include/util.php, row 66
+// modules/polls/include/util.php, row 69
 "Poll expiry date" => "",
 
-// modules/polls/include/util.php, row 67
+// modules/polls/include/util.php, row 70
 "Poll params" => "",
 
-// modules/polls/include/util.php, row 70
+// modules/polls/include/util.php, row 73
 "Poll id (32 characters hexadecimal number - the same for all answers)" => "",
 
-// modules/polls/include/util.php, row 72
+// modules/polls/include/util.php, row 75
 "Number of answer" => "",
 
-// modules/polls/include/util.php, row 73
+// modules/polls/include/util.php, row 76
 "Number of votes for this answer" => "",
 
-// modules/polls/include/util.php, row 74
+// modules/polls/include/util.php, row 77
 "Text of answer" => "",
 
-// modules/polls/include/util.php, row 75
+// modules/polls/include/util.php, row 78
 "ID of answer (32 characters hexadecimal number)" => "",
 
-// modules/polls/include/util.php, row 76
+// modules/polls/include/util.php, row 79
 "Votes for this answer in percent. You can use also {poll_share}." => "",
 
-// modules/polls/include/util.php, row 77
+// modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "",
 
-// modules/polls/menu.php, row 58
+// modules/polls/menu.php, row 59
 "View poll" => "",
 
-// modules/polls/menu.php, row 65, 66
-// modules/polls/polledit.php, row 188
+// modules/polls/menu.php, row 67, 68
+// modules/polls/polledit.php, row 193
 "Edit poll" => "",
 
-// modules/polls/menu.php, row 65
-// modules/polls/polledit.php, row 188
+// modules/polls/menu.php, row 67
+// modules/polls/polledit.php, row 193
 "Add poll" => "",
 
-// modules/polls/menu.php, row 66
+// modules/polls/menu.php, row 68
 "Add new poll" => "",
 
-// modules/polls/menu.php, row 73, 74
+// modules/polls/menu.php, row 75, 76
 "Polls manager" => "",
 
-// modules/polls/menu.php, row 81, 82
+// modules/polls/menu.php, row 83, 84
 "Polls admin" => "",
 
-// modules/polls/menu.php, row 93
+// modules/polls/menu.php, row 95
 "Folders" => "",
 
-// modules/polls/menu.php, row 94
+// modules/polls/menu.php, row 96
 "Active" => "",
 
-// modules/polls/menu.php, row 95
+// modules/polls/menu.php, row 97
 "... pending" => "",
 
-// modules/polls/menu.php, row 96
+// modules/polls/menu.php, row 98
 "... expired" => "",
 
-// modules/polls/menu.php, row 97
+// modules/polls/menu.php, row 99
 "Hold bin" => "",
 
-// modules/polls/menu.php, row 98
+// modules/polls/menu.php, row 100
 "Trash bin" => "",
 
-// modules/polls/menu.php, row 100
+// modules/polls/menu.php, row 102
 "Misc" => "",
 
-// modules/polls/menu.php, row 101
+// modules/polls/menu.php, row 103
 "Empty trash" => "",
 
-// modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "",
-
-// modules/polls/menu.php, row 115
+// modules/polls/menu.php, row 117
 "Main settings" => "",
 
-// modules/polls/menu.php, row 116
+// modules/polls/menu.php, row 118
 "Polls" => "",
 
-// modules/polls/menu.php, row 117
+// modules/polls/menu.php, row 119
 "Designs" => "",
 
-// modules/polls/modedit.php, row 93
+// modules/polls/modedit.php, row 102
 "You do not have permissions to add polls" => "",
 
-// modules/polls/modedit.php, row 98
+// modules/polls/modedit.php, row 107
 "You do not have permissions to edit this poll" => "",
 
-// modules/polls/modedit.php, row 115, 240
-// modules/polls/polledit.php, row 249
+// modules/polls/modedit.php, row 124, 249
+// modules/polls/polledit.php, row 251
 "IP Locking timeout" => "",
 
-// modules/polls/modedit.php, row 116, 242
+// modules/polls/modedit.php, row 125, 251
 "Cookies prefix" => "",
 
-// modules/polls/modedit.php, row 225
+// modules/polls/modedit.php, row 234
 "Add Polls" => "",
 
-// modules/polls/modedit.php, row 225
+// modules/polls/modedit.php, row 234
 "Edit Polls" => "",
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 237
 "Polls Module general data" => "",
 
-// modules/polls/modedit.php, row 233
+// modules/polls/modedit.php, row 242
 "Used Language File" => "",
 
-// modules/polls/modedit.php, row 237
+// modules/polls/modedit.php, row 246
 "Defaults for polls in this module" => "",
 
-// modules/polls/modedit.php, row 238
-// modules/polls/polledit.php, row 247
+// modules/polls/modedit.php, row 247
+// modules/polls/polledit.php, row 249
 "Use logging" => "",
 
-// modules/polls/modedit.php, row 239
-// modules/polls/polledit.php, row 248
+// modules/polls/modedit.php, row 248
+// modules/polls/polledit.php, row 250
 "Use IP locking" => "",
 
-// modules/polls/modedit.php, row 241
-// modules/polls/polledit.php, row 250
+// modules/polls/modedit.php, row 250
+// modules/polls/polledit.php, row 252
 "Use cookies" => "",
 
 // modules/polls/polledit.php, row 74
 "No permission to add/edit poll." => "",
 
-// modules/polls/polledit.php, row 113
-"Can't insert new poll" => "",
+// modules/polls/polledit.php, row 80
+"Poll not found." => "",
+
+// modules/polls/polledit.php, row 80
+"The poll belongs to another module." => "",
 
 // modules/polls/polledit.php, row 119
+"Can't insert new poll" => "",
+
+// modules/polls/polledit.php, row 125
 "Can't update poll with id %1" => "",
 
-// modules/polls/polledit.php, row 209
+// modules/polls/polledit.php, row 214
 "Insert question and answers" => "",
 
-// modules/polls/polledit.php, row 231, 238
+// modules/polls/polledit.php, row 233, 240
 "Headline" => "",
 
-// modules/polls/polledit.php, row 231, 238
+// modules/polls/polledit.php, row 233, 240
 "Question" => "",
 
-// modules/polls/polledit.php, row 232, 239
+// modules/polls/polledit.php, row 234, 241
 "Insert new answers and choose their order" => "",
 
-// modules/polls/polledit.php, row 244
+// modules/polls/polledit.php, row 246
 "Polls settings" => "",
 
-// modules/polls/polledit.php, row 246
+// modules/polls/polledit.php, row 248
 "Poll is locked" => "",
 
-// modules/polls/polledit.php, row 249
+// modules/polls/polledit.php, row 251
 "time in seconds" => "",
 
-// modules/polls/polledit.php, row 252
+// modules/polls/polledit.php, row 254
 "Parameters" => "",
 
-// modules/polls/polledit.php, row 254
+// modules/polls/polledit.php, row 256
 "Polls design templates" => "",
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 261
 "Select design type - before vote" => "",
 
-// modules/polls/polledit.php, row 263
+// modules/polls/polledit.php, row 262
 "Select design type - after vote" => "",
 
-// modules/polls/polledit.php, row 263
+// modules/polls/polledit.php, row 262
 "If the design after vote should look differently, then specify it here." => "",
 ];

@@ -11,7 +11,7 @@ $mgettext_lang = "bg";
 return [
 
 // modules/polls/designs.php, row 38
-// modules/polls/index.php, row 55
+// modules/polls/index.php, row 57
 "You do not have permission to manage Polls" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xF3\xEF\xF0\xE0\xE2\xEB\xFF\xE2\xE0\xF2\xE5 \xE0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
 // modules/polls/designs.php, row 47
@@ -38,197 +38,200 @@ return [
 // modules/polls/designs.php, row 57
 "Polls Design" => "\xC4\xE8\xE7\xE0\xE9\xED \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE8\xF2\xE5", // ai 2026-06
 
-// modules/polls/include/util.php, row 44
+// modules/polls/include/util.php, row 46
 "Poll ID" => "ID \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 45, 68
+// modules/polls/include/util.php, row 47, 71
 "Module ID" => "ID \xED\xE0 \xEC\xEE\xE4\xF3\xEB\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 46, 63, 64
+// modules/polls/include/util.php, row 48, 66, 67
 "Prints poll question" => "\xC8\xE7\xE2\xE5\xE6\xE4\xE0 \xE2\xFA\xEF\xF0\xEE\xF1\xE0 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 47
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/include/util.php, row 49
+// modules/polls/polledit.php, row 235, 242
 "Publish Date" => "\xC4\xE0\xF2\xE0 \xED\xE0 \xEF\xF3\xE1\xEB\xE8\xEA\xF3\xE2\xE0\xED\xE5", // ai 2026-06
 
-// modules/polls/include/util.php, row 48
-// modules/polls/polledit.php, row 234, 241
+// modules/polls/include/util.php, row 50
+// modules/polls/polledit.php, row 236, 243
 "Expiry Date" => "\xC4\xE0\xF2\xE0 \xED\xE0 \xE8\xE7\xF2\xE8\xF7\xE0\xED\xE5", // ai 2026-06
 
-// modules/polls/include/util.php, row 49
+// modules/polls/include/util.php, row 51
 "Prints poll params" => "\xC8\xE7\xE2\xE5\xE6\xE4\xE0 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8\xF2\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 50
+// modules/polls/include/util.php, row 52
 "Link to poll editing page (for admin interface only)" => "\xC2\xF0\xFA\xE7\xEA\xE0 \xEA\xFA\xEC \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0\xF2\xE0 \xE7\xE0 \xF0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0 (\xF1\xE0\xEC\xEE \xE7\xE0 \xE0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF2\xE8\xE2\xED\xE8\xFF \xE8\xED\xF2\xE5\xF0\xF4\xE5\xE9\xF1)", // ai 2026-06
 
-// modules/polls/include/util.php, row 65
+// modules/polls/include/util.php, row 68
 "Poll publish date" => "\xC4\xE0\xF2\xE0 \xED\xE0 \xEF\xF3\xE1\xEB\xE8\xEA\xF3\xE2\xE0\xED\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 66
+// modules/polls/include/util.php, row 69
 "Poll expiry date" => "\xC4\xE0\xF2\xE0 \xED\xE0 \xE8\xE7\xF2\xE8\xF7\xE0\xED\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 67
+// modules/polls/include/util.php, row 70
 "Poll params" => "\xCF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 70
+// modules/polls/include/util.php, row 73
 "Poll id (32 characters hexadecimal number - the same for all answers)" => "ID \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0 (32-\xE7\xED\xE0\xEA\xEE\xE2\xEE \xF8\xE5\xF1\xF2\xED\xE0\xE4\xE5\xF1\xE5\xF2\xE8\xF7\xED\xEE \xF7\xE8\xF1\xEB\xEE - \xE5\xE4\xED\xE0\xEA\xE2\xEE \xE7\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xEE\xF2\xE3\xEE\xE2\xEE\xF0\xE8)", // ai 2026-06
 
-// modules/polls/include/util.php, row 72
+// modules/polls/include/util.php, row 75
 "Number of answer" => "\xCD\xEE\xEC\xE5\xF0 \xED\xE0 \xEE\xF2\xE3\xEE\xE2\xEE\xF0\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 73
+// modules/polls/include/util.php, row 76
 "Number of votes for this answer" => "\xC1\xF0\xEE\xE9 \xE3\xEB\xE0\xF1\xEE\xE2\xE5 \xE7\xE0 \xF2\xEE\xE7\xE8 \xEE\xF2\xE3\xEE\xE2\xEE\xF0", // ai 2026-06
 
-// modules/polls/include/util.php, row 74
+// modules/polls/include/util.php, row 77
 "Text of answer" => "\xD2\xE5\xEA\xF1\xF2 \xED\xE0 \xEE\xF2\xE3\xEE\xE2\xEE\xF0\xE0", // ai 2026-06
 
-// modules/polls/include/util.php, row 75
+// modules/polls/include/util.php, row 78
 "ID of answer (32 characters hexadecimal number)" => "ID \xED\xE0 \xEE\xF2\xE3\xEE\xE2\xEE\xF0\xE0 (32-\xE7\xED\xE0\xEA\xEE\xE2\xEE \xF8\xE5\xF1\xF2\xED\xE0\xE4\xE5\xF1\xE5\xF2\xE8\xF7\xED\xEE \xF7\xE8\xF1\xEB\xEE)", // ai 2026-06
 
-// modules/polls/include/util.php, row 76
+// modules/polls/include/util.php, row 79
 "Votes for this answer in percent. You can use also {poll_share}." => "\xC3\xEB\xE0\xF1\xEE\xE2\xE5 \xE7\xE0 \xF2\xEE\xE7\xE8 \xEE\xF2\xE3\xEE\xE2\xEE\xF0 \xE2 \xEF\xF0\xEE\xF6\xE5\xED\xF2\xE8. \xCC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 \xE8 {poll_share}.", // ai 2026-06
 
-// modules/polls/include/util.php, row 77
+// modules/polls/include/util.php, row 80
 "Sum of all votes. You can use also {poll_sum}." => "\xD1\xF3\xEC\xE0 \xED\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xE3\xEB\xE0\xF1\xEE\xE2\xE5. \xCC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 \xE8 {poll_sum}.", // ai 2026-06
 
-// modules/polls/menu.php, row 58
+// modules/polls/menu.php, row 59
 "View poll" => "\xCF\xF0\xE5\xE3\xEB\xE5\xE4 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/menu.php, row 65, 66
-// modules/polls/polledit.php, row 188
+// modules/polls/menu.php, row 67, 68
+// modules/polls/polledit.php, row 193
 "Edit poll" => "\xD0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0", // ai 2026-06
 
-// modules/polls/menu.php, row 65
-// modules/polls/polledit.php, row 188
+// modules/polls/menu.php, row 67
+// modules/polls/polledit.php, row 193
 "Add poll" => "\xC4\xEE\xE1\xE0\xE2\xFF\xED\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0", // ai 2026-06
 
-// modules/polls/menu.php, row 66
+// modules/polls/menu.php, row 68
 "Add new poll" => "\xC4\xEE\xE1\xE0\xE2\xFF\xED\xE5 \xED\xE0 \xED\xEE\xE2\xE0 \xE0\xED\xEA\xE5\xF2\xE0", // ai 2026-06
 
-// modules/polls/menu.php, row 73, 74
+// modules/polls/menu.php, row 75, 76
 "Polls manager" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 81, 82
+// modules/polls/menu.php, row 83, 84
 "Polls admin" => "\xC0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF6\xE8\xFF \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 93
+// modules/polls/menu.php, row 95
 "Folders" => "\xCF\xE0\xEF\xEA\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 94
+// modules/polls/menu.php, row 96
 "Active" => "\xC0\xEA\xF2\xE8\xE2\xED\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 95
+// modules/polls/menu.php, row 97
 "... pending" => "... \xF7\xE0\xEA\xE0\xF9\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 96
+// modules/polls/menu.php, row 98
 "... expired" => "... \xE8\xE7\xF2\xE5\xEA\xEB\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 97
+// modules/polls/menu.php, row 99
 "Hold bin" => "\xC8\xE7\xF7\xE0\xEA\xE2\xE0\xF9\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 98
+// modules/polls/menu.php, row 100
 "Trash bin" => "\xCA\xEE\xF8\xF7\xE5", // ai 2026-06
 
-// modules/polls/menu.php, row 100
+// modules/polls/menu.php, row 102
 "Misc" => "\xD0\xE0\xE7\xED\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 101
+// modules/polls/menu.php, row 103
 "Empty trash" => "\xC8\xE7\xEF\xF0\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xEA\xEE\xF8\xF7\xE5\xF2\xEE", // ai 2026-06
 
-// modules/polls/menu.php, row 101
-"Are you sure you want to empty trash?" => "\xCD\xE0\xE8\xF1\xF2\xE8\xED\xE0 \xEB\xE8 \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xF0\xE0\xE7\xED\xE8\xF2\xE5 \xEA\xEE\xF8\xF7\xE5\xF2\xEE?", // ai 2026-06
-
-// modules/polls/menu.php, row 115
+// modules/polls/menu.php, row 117
 "Main settings" => "\xCE\xF1\xED\xEE\xE2\xED\xE8 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 116
+// modules/polls/menu.php, row 118
 "Polls" => "\xC0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// modules/polls/menu.php, row 117
+// modules/polls/menu.php, row 119
 "Designs" => "\xC4\xE8\xE7\xE0\xE9\xED\xE8", // ai 2026-06
 
-// modules/polls/modedit.php, row 93
+// modules/polls/modedit.php, row 102
 "You do not have permissions to add polls" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xE4\xEE\xE1\xE0\xE2\xFF\xF2\xE5 \xE0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// modules/polls/modedit.php, row 98
+// modules/polls/modedit.php, row 107
 "You do not have permissions to edit this poll" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xF0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xF2\xE5 \xF2\xE0\xE7\xE8 \xE0\xED\xEA\xE5\xF2\xE0", // ai 2026-06
 
-// modules/polls/modedit.php, row 115, 240
-// modules/polls/polledit.php, row 249
+// modules/polls/modedit.php, row 124, 249
+// modules/polls/polledit.php, row 251
 "IP Locking timeout" => "\xC2\xF0\xE5\xEC\xE5 \xED\xE0 \xE1\xEB\xEE\xEA\xE8\xF0\xE0\xED\xE5 \xEF\xEE IP", // ai 2026-06
 
-// modules/polls/modedit.php, row 116, 242
+// modules/polls/modedit.php, row 125, 251
 "Cookies prefix" => "\xCF\xF0\xE5\xF4\xE8\xEA\xF1 \xE7\xE0 \xE1\xE8\xF1\xEA\xE2\xE8\xF2\xEA\xE8", // ai 2026-06
 
-// modules/polls/modedit.php, row 225
+// modules/polls/modedit.php, row 234
 "Add Polls" => "\xC4\xEE\xE1\xE0\xE2\xFF\xED\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// modules/polls/modedit.php, row 225
+// modules/polls/modedit.php, row 234
 "Edit Polls" => "\xD0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// modules/polls/modedit.php, row 228
+// modules/polls/modedit.php, row 237
 "Polls Module general data" => "\xCC\xEE\xE4\xF3\xEB \xE0\xED\xEA\xE5\xF2\xE8 - \xEE\xF1\xED\xEE\xE2\xED\xE8 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8", // ai 2026-06
 
-// modules/polls/modedit.php, row 233
+// modules/polls/modedit.php, row 242
 "Used Language File" => "\xC8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xED \xE5\xE7\xE8\xEA\xEE\xE2 \xF4\xE0\xE9\xEB", // ai 2026-06
 
-// modules/polls/modedit.php, row 237
+// modules/polls/modedit.php, row 246
 "Defaults for polls in this module" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8 \xEF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5 \xE7\xE0 \xE0\xED\xEA\xE5\xF2\xE8\xF2\xE5 \xE2 \xF2\xEE\xE7\xE8 \xEC\xEE\xE4\xF3\xEB", // ai 2026-06
 
-// modules/polls/modedit.php, row 238
-// modules/polls/polledit.php, row 247
+// modules/polls/modedit.php, row 247
+// modules/polls/polledit.php, row 249
 "Use logging" => "\xC8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xEB\xEE\xE3", // ai 2026-06
 
-// modules/polls/modedit.php, row 239
-// modules/polls/polledit.php, row 248
+// modules/polls/modedit.php, row 248
+// modules/polls/polledit.php, row 250
 "Use IP locking" => "\xC8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xE1\xEB\xEE\xEA\xE8\xF0\xE0\xED\xE5 \xEF\xEE IP", // ai 2026-06
 
-// modules/polls/modedit.php, row 241
-// modules/polls/polledit.php, row 250
+// modules/polls/modedit.php, row 250
+// modules/polls/polledit.php, row 252
 "Use cookies" => "\xC8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xE1\xE8\xF1\xEA\xE2\xE8\xF2\xEA\xE8", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
 "No permission to add/edit poll." => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xE4\xEE\xE1\xE0\xE2\xFF\xF2\xE5/\xF0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xF2\xE5 \xE0\xED\xEA\xE5\xF2\xE0.", // ai 2026-06
 
-// modules/polls/polledit.php, row 113
-"Can't insert new poll" => "\xCD\xEE\xE2\xE0\xF2\xE0 \xE0\xED\xEA\xE5\xF2\xE0 \xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xE1\xFA\xE4\xE5 \xE4\xEE\xE1\xE0\xE2\xE5\xED\xE0", // ai 2026-06
+// modules/polls/polledit.php, row 80
+"Poll not found." => "",
+
+// modules/polls/polledit.php, row 80
+"The poll belongs to another module." => "",
 
 // modules/polls/polledit.php, row 119
+"Can't insert new poll" => "\xCD\xEE\xE2\xE0\xF2\xE0 \xE0\xED\xEA\xE5\xF2\xE0 \xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xE1\xFA\xE4\xE5 \xE4\xEE\xE1\xE0\xE2\xE5\xED\xE0", // ai 2026-06
+
+// modules/polls/polledit.php, row 125
 "Can't update poll with id %1" => "\xC0\xED\xEA\xE5\xF2\xE0\xF2\xE0 \xF1 id %1 \xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xE1\xFA\xE4\xE5 \xEE\xE1\xED\xEE\xE2\xE5\xED\xE0", // ai 2026-06
 
-// modules/polls/polledit.php, row 209
+// modules/polls/polledit.php, row 214
 "Insert question and answers" => "\xC2\xFA\xE2\xE5\xE4\xE5\xF2\xE5 \xE2\xFA\xEF\xF0\xEE\xF1 \xE8 \xEE\xF2\xE3\xEE\xE2\xEE\xF0\xE8", // ai 2026-06
 
-// modules/polls/polledit.php, row 231, 238
+// modules/polls/polledit.php, row 233, 240
 "Headline" => "\xC7\xE0\xE3\xEB\xE0\xE2\xE8\xE5", // ai 2026-06
 
-// modules/polls/polledit.php, row 231, 238
+// modules/polls/polledit.php, row 233, 240
 "Question" => "\xC2\xFA\xEF\xF0\xEE\xF1", // ai 2026-06
 
-// modules/polls/polledit.php, row 232, 239
+// modules/polls/polledit.php, row 234, 241
 "Insert new answers and choose their order" => "\xC2\xFA\xE2\xE5\xE4\xE5\xF2\xE5 \xED\xEE\xE2\xE8 \xEE\xF2\xE3\xEE\xE2\xEE\xF0\xE8 \xE8 \xE8\xE7\xE1\xE5\xF0\xE5\xF2\xE5 \xF0\xE5\xE4\xE0 \xE8\xEC", // ai 2026-06
 
-// modules/polls/polledit.php, row 244
+// modules/polls/polledit.php, row 246
 "Polls settings" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8 \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE0\xF2\xE0", // ai 2026-06
 
-// modules/polls/polledit.php, row 246
+// modules/polls/polledit.php, row 248
 "Poll is locked" => "\xC0\xED\xEA\xE5\xF2\xE0\xF2\xE0 \xE5 \xE7\xE0\xEA\xEB\xFE\xF7\xE5\xED\xE0", // ai 2026-06
 
-// modules/polls/polledit.php, row 249
+// modules/polls/polledit.php, row 251
 "time in seconds" => "\xE2\xF0\xE5\xEC\xE5 \xE2 \xF1\xE5\xEA\xF3\xED\xE4\xE8", // ai 2026-06
 
-// modules/polls/polledit.php, row 252
+// modules/polls/polledit.php, row 254
 "Parameters" => "\xCF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8", // ai 2026-06
 
-// modules/polls/polledit.php, row 254
+// modules/polls/polledit.php, row 256
 "Polls design templates" => "\xD8\xE0\xE1\xEB\xEE\xED\xE8 \xE7\xE0 \xE4\xE8\xE7\xE0\xE9\xED \xED\xE0 \xE0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 261
 "Select design type - before vote" => "\xC4\xE8\xE7\xE0\xE9\xED \xEF\xF0\xE5\xE4\xE8 \xE3\xEB\xE0\xF1\xF3\xE2\xE0\xED\xE5", // ai 2026-06
 
-// modules/polls/polledit.php, row 263
+// modules/polls/polledit.php, row 262
 "Select design type - after vote" => "\xC4\xE8\xE7\xE0\xE9\xED \xF1\xEB\xE5\xE4 \xE3\xEB\xE0\xF1\xF3\xE2\xE0\xED\xE5", // ai 2026-06
 
-// modules/polls/polledit.php, row 263
+// modules/polls/polledit.php, row 262
 "If the design after vote should look differently, then specify it here." => "\xC0\xEA\xEE \xE4\xE8\xE7\xE0\xE9\xED\xFA\xF2 \xF1\xEB\xE5\xE4 \xE3\xEB\xE0\xF1\xF3\xE2\xE0\xED\xE5 \xF2\xF0\xFF\xE1\xE2\xE0 \xE4\xE0 \xE8\xE7\xE3\xEB\xE5\xE6\xE4\xE0 \xF0\xE0\xE7\xEB\xE8\xF7\xED\xEE, \xE7\xE0\xE4\xE0\xE9\xF2\xE5 \xE3\xEE \xF2\xF3\xEA.", // ai 2026-06
 ];

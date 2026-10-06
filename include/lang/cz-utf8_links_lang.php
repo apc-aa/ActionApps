@@ -13,6 +13,7 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Are you sure you want to empty trash?" => "Opravdu chcete vysypat koš?",
 // "ActionApps - Link Edit" => "Editace odkazu",
 // "Changed" => "Změněno",
 // "Bookmark" => "Přidej k oblíbeným",
@@ -43,7 +44,6 @@ return [
 // "Can't get link data" => "Údaje o odkazu nelze zobrazit.",
 // "No permission to change state of the link" => "Nemáte právo měnit údaje odkazu.",
 // "Base category not found" => "Nenalezena primární (base) kategorie",
-// "Module not found." => "Modul nenalezen",
 // "Links module successfully deleted" => "Modul správz odkazů bzl vzmazán",
 // "Items Page" => "Stránka odkazů",
 // "Stored search name" => "Jméno filtru",
@@ -72,130 +72,130 @@ return [
 // "Go" => "Proveď",
 // End of unused messages
 
-// include/searchbar.class.php, row 51
+// include/searchbar.class.php, row 54
 "Condition" => "Podmínka",
 
-// include/searchbar.class.php, row 52
+// include/searchbar.class.php, row 55
 "Readonly" => "Pouze pro čtení",
 
-// include/searchbar.class.php, row 142
+// include/searchbar.class.php, row 151
 "Search row" => "Řádek vyhledávání",
 
-// include/searchbar.class.php, row 143
+// include/searchbar.class.php, row 152
 "Order row" => "Řádek řazení",
 
-// include/searchbar.class.php, row 533, 534, 570
+// include/searchbar.class.php, row 566, 567, 607
 "Search" => "Vyhledat",
 
-// include/searchbar.class.php, row 533
+// include/searchbar.class.php, row 566
 "And" => "a zároveň",
 
-// include/searchbar.class.php, row 543
+// include/searchbar.class.php, row 576
 "contains" => "obsahuje",
 
-// include/searchbar.class.php, row 546
+// include/searchbar.class.php, row 580
 "begins with" => "začíná",
 
-// include/searchbar.class.php, row 549
+// include/searchbar.class.php, row 584
 "is" => "je",
 
-// include/searchbar.class.php, row 571
+// include/searchbar.class.php, row 608
 "Clear" => "Vyčistit",
 
-// include/searchbar.class.php, row 574
+// include/searchbar.class.php, row 611
 "Store search" => "Uložit",
 
-// include/searchbar.class.php, row 595
+// include/searchbar.class.php, row 633
 "Order" => "Seřadit",
 
-// include/searchbar.class.php, row 599
+// include/searchbar.class.php, row 637
 "Descending" => "Sestupně",
 
-// include/searchbar.class.php, row 613
+// include/searchbar.class.php, row 652
 "Filter" => "Filtr",
 
-// include/searchbar.class.php, row 664
+// include/searchbar.class.php, row 706
 "Advanced search" => "Rozšířené vyhledávání",
 
-// include/searchbar.class.php, row 728
+// include/searchbar.class.php, row 769
 "Save" => "Uložit",
 
-// include/searchbar.class.php, row 729
+// include/searchbar.class.php, row 770
 "Refine" => "Upřesnit",
 
-// include/searchbar.class.php, row 730
+// include/searchbar.class.php, row 771
 "Cancel" => "Storno",
 
-// include/searchbar.class.php, row 731
-// modules/links/constants.php, row 59, 171
+// include/searchbar.class.php, row 772
+// modules/links/constants.php, row 60, 173
 "Name" => "Název odkazu",
 
-// include/searchbar.class.php, row 732
+// include/searchbar.class.php, row 773
 "Share with all slice users" => "Sdílet se všemi uživateli webíku",
 
-// include/searchbar.class.php, row 733
+// include/searchbar.class.php, row 774
 "Save filter" => "Uložit filtr",
 
-// include/searchbar.class.php, row 734
+// include/searchbar.class.php, row 775
 "Rename filter" => "Přejmenovat filtr",
 
-// include/searchbar.class.php, row 735
+// include/searchbar.class.php, row 776
 "Are you sure you want to delete selected filter?" => "Opravdu chcete vybraný filtr smazat?",
 
-// include/searchbar.class.php, row 1017
+// include/searchbar.class.php, row 1065
 "Select one..." => "vyber ...",
 
-// include/searchbar.class.php, row 1032
+// include/searchbar.class.php, row 1080
 "My filters" => "Moje filtry",
 
-// include/searchbar.class.php, row 1035
+// include/searchbar.class.php, row 1083
 "Global filters" => "Globální filtry",
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Shared filter (click to apply)" => "Sdílený filtr (kliknutím použijete)",
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Osobní filtr (kliknutím použijete)",
 
-// include/searchbar.class.php, row 1083
+// include/searchbar.class.php, row 1124
 "Rename" => "Přejmenovat",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1126
 "Delete" => "Odstranit",
 
-// include/searchbar.class.php, row 1094
+// include/searchbar.class.php, row 1135
 "Manage filters" => "Správa filtrů",
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Chyba: chybí heslo pro čtení",
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Vzkaz z Toolkitu",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 // modules/links/check_url.php, row 52
 "Back" => "Zpět",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Znovu přihlásit",
 
-// modules/links/actions.php, row 47, 91, 112
+// modules/links/actions.php, row 48, 93, 115
 "Can't find link in given category" => "Odkaz v zadané kategorii nelze najít.",
 
-// modules/links/actions.php, row 52, 117
+// modules/links/actions.php, row 53, 120
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Nemáte oprávnění zrušit zařazení odkazu do kategorie - odkaz byl navržen na vymazání z této kategorie příslušnému správci.",
 
-// modules/links/actions.php, row 61, 126
+// modules/links/actions.php, row 62, 129
 "Can't get association information" => "Nelze zjistit údaje o zařazení odkazu do kategorie",
 
-// modules/links/actions.php, row 95
+// modules/links/actions.php, row 97
 "No permission to approve link to given category" => "Nemáte oprávnění pro potvrzení odkazu ve vybrané kategorii.",
 
-// modules/links/actions.php, row 162, 165
+// modules/links/actions.php, row 166, 169
 "No permission to move link" => "Nemáte práva přesunout odkaz",
 
 // modules/links/catedit.php, row 51
-// modules/links/catedit2.php, row 208
+// modules/links/catedit2.php, row 210
 "No permission to edit category" => "Nemáte právo editovat tuto kategorii.",
 
 // modules/links/catedit.php, row 74
@@ -208,7 +208,7 @@ return [
 "Category" => "Kategorie",
 
 // modules/links/catedit.php, row 104
-// modules/links/constants.php, row 58, 170
+// modules/links/constants.php, row 59, 172
 // modules/links/linkedit.php, row 430
 "Id" => "ID",
 
@@ -216,13 +216,13 @@ return [
 "Links in subtree" => "Počet odkazů v kategorii - včetně všech podkategorií",
 
 // modules/links/catedit.php, row 105
-// modules/links/catedit2.php, row 217
-// modules/links/constants.php, row 93, 191
+// modules/links/catedit2.php, row 219
+// modules/links/constants.php, row 94, 194
 "Category name" => "Název kategorie",
 
 // modules/links/catedit.php, row 106
-// modules/links/catedit2.php, row 218
-// modules/links/constants.php, row 97, 193
+// modules/links/catedit2.php, row 220
+// modules/links/constants.php, row 98, 196
 "Category description" => "Popis kategorie",
 
 // modules/links/catedit.php, row 107
@@ -232,17 +232,17 @@ return [
 "Disallow storing of the links to this category?" => "Tato kategorie nesmí obsahovat odkazy?",
 
 // modules/links/catedit.php, row 108
-// modules/links/catedit2.php, row 222
-// modules/links/constants.php, row 75
-// modules/links/link.class.php, row 674
-// modules/links/linkedit.php, row 473
+// modules/links/catedit2.php, row 224
+// modules/links/constants.php, row 76
+// modules/links/link.class.php, row 728
+// modules/links/linkedit.php, row 498
 "Editor's note" => "Poznámka",
 
 // modules/links/catedit.php, row 110
 "Subcategories" => "Podkategorie",
 
 // modules/links/catedit.php, row 113
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "Category tree" => "Strom kategorií celého katalogu",
 
 // modules/links/catedit.php, row 113
@@ -269,31 +269,31 @@ return [
 // modules/links/catedit.php, row 137
 "Change state" => "Změň stav podkategorie",
 
-// modules/links/catedit.php, row 142
+// modules/links/catedit.php, row 143
 "OK" => "",
 
-// modules/links/catedit2.php, row 153
+// modules/links/catedit2.php, row 154
 "Category reassigned" => "Kategorie byla přesunuta",
 
-// modules/links/catedit2.php, row 165
+// modules/links/catedit2.php, row 166
 "Subcategory deleted" => "Podkategorie byla zrušena",
 
-// modules/links/catedit2.php, row 167
+// modules/links/catedit2.php, row 168
 "Can't delete category which contains links" => "Nelze zrušit kategorii, která obsahuje odkazy.",
 
-// modules/links/catedit2.php, row 221
+// modules/links/catedit2.php, row 223
 "Additional information" => "Další informace",
 
-// modules/links/catedit2.php, row 231
+// modules/links/catedit2.php, row 233
 "Category data changed" => "Údaje pro kategorii byly změněny",
 
-// modules/links/catedit2.php, row 291
+// modules/links/catedit2.php, row 293
 "New category created" => "Byla vytovřena nová kategorie",
 
-// modules/links/catedit2.php, row 297
+// modules/links/catedit2.php, row 299
 "Foreign category assigned" => "Byla přiřazena crossreferencovaná kategorie",
 
-// modules/links/cattree.php, row 436
+// modules/links/cattree.php, row 458
 "Switch to category" => "Jdi",
 
 // modules/links/check_url.php, row 30
@@ -317,350 +317,353 @@ return [
 // modules/links/check_url.php, row 48
 "Page with the specified Url is not in database, yet" => "Tento odkaz v katalogu ještě není zařazen.",
 
-// modules/links/constants.php, row 60
+// modules/links/constants.php, row 61
 "Original name" => "Překlad názevu odkazu",
 
-// modules/links/constants.php, row 61, 174
-// modules/links/link.class.php, row 663
-// modules/links/linkedit.php, row 456
+// modules/links/constants.php, row 62, 176
+// modules/links/link.class.php, row 717
+// modules/links/linkedit.php, row 474
 "Description" => "Popis odkazu",
 
-// modules/links/constants.php, row 62, 122
-// modules/links/link.class.php, row 667
-// modules/links/linkedit.php, row 463
+// modules/links/constants.php, row 63, 124
+// modules/links/link.class.php, row 721
+// modules/links/linkedit.php, row 486
 "Link type" => "Obecná kategorie",
 
-// modules/links/constants.php, row 63
+// modules/links/constants.php, row 64
 "Rate" => "Hodnocení",
 
-// modules/links/constants.php, row 64
+// modules/links/constants.php, row 65
 "Votes" => "Počet hlasů",
 
-// modules/links/constants.php, row 65
-// modules/links/link.class.php, row 664
+// modules/links/constants.php, row 66
+// modules/links/link.class.php, row 718
 "Author" => "Vkladatel",
 
-// modules/links/constants.php, row 66
+// modules/links/constants.php, row 67
 "Insert date" => "Datum vložení",
 
-// modules/links/constants.php, row 67
-"Editor" => "Editor",
-
 // modules/links/constants.php, row 68
-"Last edit date" => "Datum poslední úpravy",
+"Editor" => "Upravil", // ai 2026-10
 
 // modules/links/constants.php, row 69
-"Revised by" => "Kontrolu provedl",
+"Last edit date" => "Datum poslední úpravy",
 
 // modules/links/constants.php, row 70
-"Revision date" => "Datum poslední kontroly",
+"Revised by" => "Kontrolu provedl",
 
 // modules/links/constants.php, row 71
-// modules/links/link.class.php, row 673
-// modules/links/linkedit.php, row 544
-"E-mail" => "",
+"Revision date" => "Datum poslední kontroly",
 
 // modules/links/constants.php, row 72
-// modules/links/link.class.php, row 665
+// modules/links/link.class.php, row 727
+// modules/links/linkedit.php, row 574
+"E-mail" => "",
+
+// modules/links/constants.php, row 73
+// modules/links/link.class.php, row 719
 // modules/links/linkedit.php, row 435
 "Url" => "URL",
 
-// modules/links/constants.php, row 73
+// modules/links/constants.php, row 74
 "Last vote time" => "Poslední hlasování",
 
-// modules/links/constants.php, row 74
+// modules/links/constants.php, row 75
 "Flag" => "Příznak",
 
-// modules/links/constants.php, row 76
+// modules/links/constants.php, row 77
 "Organization city" => "Organizace - Město ",
 
-// modules/links/constants.php, row 77
+// modules/links/constants.php, row 78
 "Organization street" => "Organizace - ulice",
 
-// modules/links/constants.php, row 78
+// modules/links/constants.php, row 79
 "Organization post code" => "Organizace - PSČ",
 
-// modules/links/constants.php, row 79
+// modules/links/constants.php, row 80
 "Organization phone" => "Organizace - telefon",
 
-// modules/links/constants.php, row 80
+// modules/links/constants.php, row 81
 "Organization fax" => "Organizace - fax",
 
-// modules/links/constants.php, row 81
+// modules/links/constants.php, row 82
 "Organization e-mail" => "Organizace - e-mail",
 
-// modules/links/constants.php, row 82
-// modules/links/linkedit.php, row 484
+// modules/links/constants.php, row 83
+// modules/links/linkedit.php, row 514
 "Folder" => "Schránka",
 
-// modules/links/constants.php, row 83
+// modules/links/constants.php, row 84
 "Last validation date" => "Datum kontroly dostupnosti",
 
-// modules/links/constants.php, row 84
+// modules/links/constants.php, row 85
 "Validation codes" => "Validační kódy",
 
-// modules/links/constants.php, row 85
+// modules/links/constants.php, row 86
 "Validity Rank" => "Dostupnost stránky",
 
-// modules/links/constants.php, row 86
+// modules/links/constants.php, row 87
 "Region id" => "Id regionu",
 
-// modules/links/constants.php, row 87
+// modules/links/constants.php, row 88
 "Region name" => "Region",
 
-// modules/links/constants.php, row 88
+// modules/links/constants.php, row 89
 "Region level" => "Úroveň regionu",
 
-// modules/links/constants.php, row 89
+// modules/links/constants.php, row 90
 "Language id" => "Id jazyka",
 
-// modules/links/constants.php, row 90
-// modules/links/linkedit.php, row 552
+// modules/links/constants.php, row 91
+// modules/links/linkedit.php, row 582
 "Language" => "Jazyk",
 
-// modules/links/constants.php, row 91
+// modules/links/constants.php, row 92
 "Language short name" => "Zkratka jazyka",
 
-// modules/links/constants.php, row 92, 190
+// modules/links/constants.php, row 93, 193
 "Category id" => "Id kategorie",
 
-// modules/links/constants.php, row 94
+// modules/links/constants.php, row 95
 "Category deleted" => "Kategorie smazána",
 
-// modules/links/constants.php, row 95
+// modules/links/constants.php, row 96
 "Category path" => "Cesta kategorie",
 
-// modules/links/constants.php, row 96
+// modules/links/constants.php, row 97
 "Category link count" => "Počet odkazů v kategorii",
 
-// modules/links/constants.php, row 98, 194
+// modules/links/constants.php, row 99, 197
 "Category editor's note" => "Poznámka redaktora kategorie",
 
-// modules/links/constants.php, row 99
+// modules/links/constants.php, row 100
 "Base" => "Primární",
 
-// modules/links/constants.php, row 100, 177
+// modules/links/constants.php, row 101, 179
 "State" => "Stav",
 
-// modules/links/constants.php, row 101
+// modules/links/constants.php, row 102
 "Change proposal" => "Návrh na změnu",
 
-// modules/links/constants.php, row 102
+// modules/links/constants.php, row 103
 "To be deleted" => "Ke smazání",
 
-// modules/links/constants.php, row 103, 176
+// modules/links/constants.php, row 104, 178
 "Priority" => "Priorita",
 
-// modules/links/constants.php, row 104
+// modules/links/constants.php, row 105
 // modules/links/linkedit.php, row 54
 "Change" => "Změna",
 
-// modules/links/constants.php, row 118
+// modules/links/constants.php, row 120
 "Link id" => "ID odkazu",
 
-// modules/links/constants.php, row 119
+// modules/links/constants.php, row 121
 "Link name" => "Název odkazu",
 
-// modules/links/constants.php, row 120
+// modules/links/constants.php, row 122
 "Link original name" => "Překlad názvu odkazu",
 
-// modules/links/constants.php, row 121
+// modules/links/constants.php, row 123
 "Link description" => "Popis odkazu",
 
-// modules/links/constants.php, row 123
+// modules/links/constants.php, row 125
 "Link rate" => "Hodnocení odkazu",
 
-// modules/links/constants.php, row 124
+// modules/links/constants.php, row 126
 "Link votes" => "Hlasování o odkazu",
 
-// modules/links/constants.php, row 125
+// modules/links/constants.php, row 127
 "Link - last vote date" => "Datum posledního hlasování o odkazu",
 
-// modules/links/constants.php, row 126
+// modules/links/constants.php, row 128
 "Link - created by" => "Vkladatele odkazu",
 
-// modules/links/constants.php, row 127
+// modules/links/constants.php, row 129
 "Link creation date" => "Data vložení odkazu",
 
-// modules/links/constants.php, row 128
+// modules/links/constants.php, row 130
 "Link - last edited by" => "Původce poslední úpravy odkazu",
 
-// modules/links/constants.php, row 129
+// modules/links/constants.php, row 131
 "Link - last edit date" => "Data poslední úpravy odkazu",
 
-// modules/links/constants.php, row 130
+// modules/links/constants.php, row 132
 "Link - checked by" => "Původce poslední kontroly odkazu",
 
-// modules/links/constants.php, row 131
+// modules/links/constants.php, row 133
 "Link - last checked date" => "Data poslední kontroly odkazu",
 
-// modules/links/constants.php, row 132
+// modules/links/constants.php, row 134
 "Link author's e-mail" => "E-mail vkladatele odkazu",
 
-// modules/links/constants.php, row 133
+// modules/links/constants.php, row 135
 "Link url" => "URL odkazu",
 
-// modules/links/constants.php, row 134
+// modules/links/constants.php, row 136
 "Link link" => "Odkaz",
 
-// modules/links/constants.php, row 135
+// modules/links/constants.php, row 137
 "Link flag" => "Příznak odkazu",
 
-// modules/links/constants.php, row 136
+// modules/links/constants.php, row 138
 "Link - validity rank" => "Dostupnost odkazu",
 
-// modules/links/constants.php, row 137
+// modules/links/constants.php, row 139
 "Link - last validation date" => "Odkaz - poslední kontrola dostupnosti",
 
-// modules/links/constants.php, row 138
+// modules/links/constants.php, row 140
 "Link editor's note" => "Odkaz - poznámka editora",
 
-// modules/links/constants.php, row 139
+// modules/links/constants.php, row 141
 "Link organization city" => "Odkaz - Organizace - město",
 
-// modules/links/constants.php, row 140
+// modules/links/constants.php, row 142
 "Link organization street" => "Odkaz - Organizace - ulice",
 
-// modules/links/constants.php, row 141
+// modules/links/constants.php, row 143
 "Link organization post code" => "Odkaz - Organizace - PSČ",
 
-// modules/links/constants.php, row 142
+// modules/links/constants.php, row 144
 "Link organization phone" => "Odkaz - Organizace - telefon",
 
-// modules/links/constants.php, row 143
+// modules/links/constants.php, row 145
 "Link organization fax" => "Odkaz - Organizace - fax",
 
-// modules/links/constants.php, row 144
+// modules/links/constants.php, row 146
 "Link organization e-mail" => "Odkaz - Organizace - e-mail",
 
-// modules/links/constants.php, row 145
+// modules/links/constants.php, row 147
 "Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Odkaz - Schránka (1~Aktivní, 2~Zásobník, 3~Koš)",
 
-// modules/links/constants.php, row 146
+// modules/links/constants.php, row 148
 "Link - ids of regions (comma separated)" => "Odkaz - Id regionů (oddělené čárkou)",
 
-// modules/links/constants.php, row 147
+// modules/links/constants.php, row 149
 "Link - names of regions (comma separated)" => "Odkaz - Jména regionů (oddělené čárkou)",
 
-// modules/links/constants.php, row 148
+// modules/links/constants.php, row 150
 "Link - ids of languages (comma separated)" => "Odkaz - Id jazyků (oddělené čárkou)",
 
-// modules/links/constants.php, row 149
+// modules/links/constants.php, row 151
 "Link - names of languages (comma separated)" => "Odkaz - jména jazyků (oddělené čárkou)",
 
-// modules/links/constants.php, row 150
+// modules/links/constants.php, row 152
 "Link - short names of languages (comma separated)" => "Odkaz - krátká jména jazyků (oddělené čárkou)",
 
-// modules/links/constants.php, row 151
+// modules/links/constants.php, row 153
 "Category ids (comma separated)" => "Id kategorií (oddělené čárkou)",
 
-// modules/links/constants.php, row 152
+// modules/links/constants.php, row 154
 "Category names (comma separated)" => "Jména kategorií (oddělené čárkou)",
 
-// modules/links/constants.php, row 153
+// modules/links/constants.php, row 155
 "State of link in this category (visible/highlighted)" => "Stav odkazu v této kategorii (viditelný/zvýrazněný)",
 
-// modules/links/constants.php, row 154
+// modules/links/constants.php, row 156
 "Link - validity color" => "Odkaz - barva platnosti",
 
-// modules/links/constants.php, row 155
+// modules/links/constants.php, row 157
 "Paths to the categories" => "Cesty ke kategoriím",
 
-// modules/links/constants.php, row 156
+// modules/links/constants.php, row 158
 "Number of found Links" => "Počet nalezených odkazů",
 
-// modules/links/constants.php, row 157
+// modules/links/constants.php, row 159
 "Link to link editing page (for admin interface only)" => "Odkaz na editaci odkazu (jen pro admin stránky)",
 
-// modules/links/constants.php, row 158
+// modules/links/constants.php, row 160
 "Category listing with links (for admin interface only)" => "Přehled kategorií s odkazy (jen pro admin stránky)",
 
-// modules/links/constants.php, row 172
+// modules/links/constants.php, row 174
 "Path" => "Cesta",
 
-// modules/links/constants.php, row 173
+// modules/links/constants.php, row 175
 "Link Count" => "Počet odkazů",
 
-// modules/links/constants.php, row 175
+// modules/links/constants.php, row 177
 "Note" => "Poznámka",
 
-// modules/links/constants.php, row 192
+// modules/links/constants.php, row 195
 "Number of links in category" => "Počet odkazů v kategorii",
 
-// modules/links/constants.php, row 195
+// modules/links/constants.php, row 198
 "Crossreferenced category" => "Krosreferencovaná kategorie",
 
-// modules/links/constants.php, row 196
+// modules/links/constants.php, row 199
 "Path to current category" => "Cesta k aktuální kategorii",
 
-// modules/links/constants.php, row 197
+// modules/links/constants.php, row 200
 "Is this category general one? (1/0)" => "Je tato kategorie obecná? (1/0)",
 
-// modules/links/constants.php, row 198
+// modules/links/constants.php, row 201
 "Print category priority, if category is general one." => "Vypíše prioritu kategorie, pokud je kategorie obecná.",
 
-// modules/links/getcat.php, row 51
+// modules/links/getcat.php, row 53
 "Category Tree" => "Strom kategorií",
 
-// modules/links/getcat.php, row 56
+// modules/links/getcat.php, row 58
 "Select category" => "Vyber kategorii",
 
 // modules/links/index.php, row 84
 "No permissions to edit links" => "Nemáte právo editovat tento odkaz",
 
-// modules/links/index.php, row 207
+// modules/links/index.php, row 183
+"Module not found." => "Modul nenalezen",
+
+// modules/links/index.php, row 215
 "HINT: \"social ecology\" AND environment" => "TIP: (právo AND informace) OR \"občanská práva\"",
 
-// modules/links/index.php, row 234
+// modules/links/index.php, row 242
 "Perform action on selected items" => "Vyber akci, která se provede s vybranými odkazy",
 
-// modules/links/index.php, row 257
+// modules/links/index.php, row 265
 "ActionApps - Links Manager" => "Správa odkazů",
 
-// modules/links/index.php, row 287
+// modules/links/index.php, row 295
 "All my links" => "Všechny mé odkazy",
 
-// modules/links/index.php, row 288
+// modules/links/index.php, row 296
 "Links to check" => "Ke kontrole",
 
-// modules/links/index.php, row 289
+// modules/links/index.php, row 297
 "Last edited" => "Naposledy editované",
 
-// modules/links/index.php, row 311
+// modules/links/index.php, row 319
 "Show Links" => "Zobraz odkazy",
 
-// modules/links/index.php, row 314
+// modules/links/index.php, row 322
 "Edit Category" => "Edituj kategorii",
 
-// modules/links/index.php, row 318
+// modules/links/index.php, row 326
 "Show subtree links" => "Zobrazuj odkazy i ze všech podkategorií",
 
-// modules/links/link.class.php, row 661
-// modules/links/linkedit.php, row 450
+// modules/links/link.class.php, row 715
+// modules/links/linkedit.php, row 452
 "Page name" => "Název odkazu",
 
-// modules/links/link.class.php, row 662
-// modules/links/linkedit.php, row 453
+// modules/links/link.class.php, row 716
+// modules/links/linkedit.php, row 463
 "Original page name" => "Překlad názvu",
 
-// modules/links/link.class.php, row 668
-// modules/links/linkedit.php, row 534
+// modules/links/link.class.php, row 722
+// modules/links/linkedit.php, row 564
 "City" => "Město / Obec",
 
-// modules/links/link.class.php, row 669
-// modules/links/linkedit.php, row 536
+// modules/links/link.class.php, row 723
+// modules/links/linkedit.php, row 566
 "Street" => "Ulice + cislo",
 
-// modules/links/link.class.php, row 670
-// modules/links/linkedit.php, row 538
+// modules/links/link.class.php, row 724
+// modules/links/linkedit.php, row 568
 "Post code" => "PSČ",
 
-// modules/links/link.class.php, row 671
-// modules/links/linkedit.php, row 540
+// modules/links/link.class.php, row 725
+// modules/links/linkedit.php, row 570
 "Phone" => "Telefon",
 
-// modules/links/link.class.php, row 672
-// modules/links/linkedit.php, row 542
+// modules/links/link.class.php, row 726
+// modules/links/linkedit.php, row 572
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
@@ -670,11 +673,11 @@ return [
 "unfilled" => "prázdná hodnota",
 
 // modules/links/linkedit.php, row 90
-// modules/links/menu.php, row 72, 73
+// modules/links/menu.php, row 73, 74
 "Edit Link" => "Editace odkazu",
 
 // modules/links/linkedit.php, row 97
-// modules/links/menu.php, row 72
+// modules/links/menu.php, row 73
 "Add Link" => "Nový odkaz",
 
 // modules/links/linkedit.php, row 102
@@ -720,61 +723,61 @@ return [
 // modules/links/linkedit.php, row 445
 "Do not fill, please:" => "Prosím nevyplňujte:",
 
-// modules/links/linkedit.php, row 451
+// modules/links/linkedit.php, row 457
 "English name of the page" => "Originální název odkazu (český nebo cizojazyčný)",
 
-// modules/links/linkedit.php, row 454
+// modules/links/linkedit.php, row 468
 "Name of the page in original language" => "Překlad originálního názvu odkazu je-li cizojazyčný. Slovenský název se nepřekládá.",
 
-// modules/links/linkedit.php, row 457
+// modules/links/linkedit.php, row 479
 "Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Popis = anotace odkazu. Maximální délka je 300 znaků - cca 2 věty. Používejte 3. osobu. Nepoužívejte slova typu nejlepší, nejúplnější, tyto stránky; neuvádějte kontaktní údaje.",
 
-// modules/links/linkedit.php, row 463
+// modules/links/linkedit.php, row 486
 "Select the type, if the link belongs to some special category" => "Je-li to relevantní, vyberte pro odkaz obecnou kategorii.",
 
-// modules/links/linkedit.php, row 471
+// modules/links/linkedit.php, row 494
 "Author's e-mail" => "E-mail vkladatele",
 
-// modules/links/linkedit.php, row 474
+// modules/links/linkedit.php, row 503
 "You can type any message here - it is never shown on the website" => "Poznámka pro správce - na webu se nikde neobjeví",
 
-// modules/links/linkedit.php, row 479
+// modules/links/linkedit.php, row 509
 "Last checked" => "Poslední kontrola:",
 
-// modules/links/linkedit.php, row 479, 480, 481
+// modules/links/linkedit.php, row 509, 510, 511
 "n/j/Y" => "j. n. Y",
 
-// modules/links/linkedit.php, row 480
+// modules/links/linkedit.php, row 510
 "Last changed" => "Poslední změna:",
 
-// modules/links/linkedit.php, row 481
+// modules/links/linkedit.php, row 511
 "Inserted" => "Vloženo:",
 
-// modules/links/linkedit.php, row 488
+// modules/links/linkedit.php, row 518
 "Show in category" => "Zařazení odkazu do kategorií",
 
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "select the category" => "Zde vybírejte kategorie.<br> Po nalistování kategorie ve stromu ji můžete přidat k odkazu kliknutím na šipku vpravo",
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "Selected categories" => "Vybrané kategorie, kde je odkaz zařazen",
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "go to the category you want to select and click on the right arrow button to select" => "Vyberte alespoň jednu kategorii, jinak se odkaz v kalalogu neobjeví!",
 
-// modules/links/linkedit.php, row 533
+// modules/links/linkedit.php, row 563
 "Organization" => "Kontaktní údaje (jde-li o organizaci)",
 
-// modules/links/linkedit.php, row 549
+// modules/links/linkedit.php, row 579
 "Regions and languages" => "Regiony a jazyky",
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "Region" => "Oblast", // ai 2026-06
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "select up to 4 regions" => "Region, kterého se stránky týkají. <br> Vyberte nejvýše 4 regiony. V případě, že pokrývá více, zařaďte odkaz do nadřazené kategorie.",
 
-// modules/links/linkedit.php, row 552
+// modules/links/linkedit.php, row 582
 "select page's languages" => "Jazyk(y), ve kterém jsou stránky psány. Uveďte všechny základní jazyky.",
 
 // modules/links/linkedit2.php, row 112
@@ -789,105 +792,102 @@ return [
 // modules/links/linkedit2.php, row 151
 "Continue" => "Pokračovat",
 
-// modules/links/menu.php, row 64
+// modules/links/menu.php, row 65
 "View site" => "Zobrazit web",
 
-// modules/links/menu.php, row 73
+// modules/links/menu.php, row 74
 "Add new link" => "Přidej nový odkaz",
 
-// modules/links/menu.php, row 80, 81
+// modules/links/menu.php, row 81, 82
 "Link Manager" => "Správa odkazů a kategorií",
 
-// modules/links/menu.php, row 88, 89
+// modules/links/menu.php, row 89, 90
 "Link Admin" => "Nastavení",
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders" => "Schránky odkazů",
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders with links, sorted by their status (active, changed, new, ...)" => "Odkazy rozdělené podle jejích stavu - aktivní, změněné, nové,...",
 
-// modules/links/menu.php, row 103
+// modules/links/menu.php, row 104
 "Active" => "Aktivní",
 
-// modules/links/menu.php, row 106
+// modules/links/menu.php, row 107
 "Changed Links" => "Návrhy na změnu",
 
-// modules/links/menu.php, row 109
+// modules/links/menu.php, row 110
 "New Links" => "Nové odkazy",
 
-// modules/links/menu.php, row 112
+// modules/links/menu.php, row 113
 "Holding bin" => "Zásobník",
 
-// modules/links/menu.php, row 115
+// modules/links/menu.php, row 116
 "Trash" => "Koš",
 
-// modules/links/menu.php, row 118
+// modules/links/menu.php, row 119
 "Unassigned" => "Nezařazené odkazy",
 
-// modules/links/menu.php, row 121
+// modules/links/menu.php, row 122
 "Unassigned - Trash" => "Nezařazené - koš",
 
-// modules/links/menu.php, row 122
+// modules/links/menu.php, row 123
 "Misc" => "Různé",
 
-// modules/links/menu.php, row 126
+// modules/links/menu.php, row 127
 "Empty trash" => "Vysypat koš",
 
-// modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "Opravdu chcete vysypat koš?",
-
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug OFF" => "Vypnout ladění (Debug OFF)",
 
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug ON" => "Zapnout ladění (Debug ON)",
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "Bookmarks" => "Záložky odkazů",
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "My own links" => "Moje vlastní odkazy",
 
-// modules/links/menu.php, row 158
+// modules/links/menu.php, row 159
 "Main settings" => "Hlavní nastavení",
 
-// modules/links/menu.php, row 161
+// modules/links/menu.php, row 162
 "Links" => "Správa odkazů",
 
-// modules/links/menu.php, row 162
+// modules/links/menu.php, row 163
 "Design" => "Vzhled",
 
-// modules/links/menu.php, row 170
+// modules/links/menu.php, row 171
 "New Category View" => "Nový přehled kategorií",
 
-// modules/links/menu.php, row 175
+// modules/links/menu.php, row 176
 "New Link View" => "Nový přehled odkazů",
 
-// modules/links/modedit.php, row 97
+// modules/links/modedit.php, row 106
 "No permission to add module" => "Chybí oprávnění přidat modul",
 
-// modules/links/modedit.php, row 102
+// modules/links/modedit.php, row 111
 "No permission to edit module" => "Chybí oprávnění upravit modul",
 
-// modules/links/modedit.php, row 119, 229, 232
+// modules/links/modedit.php, row 128, 238, 241
 "Start category id" => "Id výchozí kategorie",
 
-// modules/links/modedit.php, row 120, 235, 238
+// modules/links/modedit.php, row 129, 244, 247
 "Tree start id" => "Id počátku stromu",
 
-// modules/links/modedit.php, row 121, 236, 239
+// modules/links/modedit.php, row 130, 245, 248
 "Select start id" => "Vyberte výchozí id",
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Add Links module" => "Přidat modul odkazů",
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Edit Links module" => "Editovat modul odkazů",
 
-// modules/links/modedit.php, row 220
+// modules/links/modedit.php, row 229
 "Module Links data" => "Data modulu odkazů",
 
-// modules/links/modedit.php, row 225
+// modules/links/modedit.php, row 234
 "Used Language File" => "Použitý jazykový soubor",
 ];

@@ -13,121 +13,121 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 111
 "field&nbsp;id" => "フィールドid", // ai 2026-06
 
-// admin/param_wizard.php, row 117
+// admin/param_wizard.php, row 114
 "boolean:&nbsp;0=false,1=true" => "論理値:&nbsp;0=偽,1=真", // ai 2026-06
 
-// admin/param_wizard.php, row 141
+// admin/param_wizard.php, row 138
 "Wizard" => "ウィザード", // ai 2026-06
 
-// admin/param_wizard.php, row 230
+// admin/param_wizard.php, row 227
 "This is an undocumented %s. We don't recommend using it." => "これは文書化されていない%sです。使用はお勧めしません。", // ai 2026-06
 
-// admin/param_wizard.php, row 231
+// admin/param_wizard.php, row 228
 "Close the wizard" => "ウィザードを閉じる", // ai 2026-06
 
-// admin/param_wizard.php, row 245
+// admin/param_wizard.php, row 242
 "Available parameters: " => "利用可能なパラメータ:", // ai 2026-06
 
-// admin/param_wizard.php, row 265
+// admin/param_wizard.php, row 262
 "This %s has no parameters." => "この%sにはパラメータがありません。", // ai 2026-06
 
-// admin/param_wizard.php, row 275
+// admin/param_wizard.php, row 272
 "Have a look at these examples of parameters sets:" => "パラメータセットの例をご覧ください:", // ai 2026-06
 
-// admin/param_wizard.php, row 282
+// admin/param_wizard.php, row 279
 "Show" => "表示",
 
-// admin/param_wizard.php, row 293
+// admin/param_wizard.php, row 290
 "OK - Save" => "OK - 保存", // ai 2026-06
 
-// admin/param_wizard.php, row 294
+// admin/param_wizard.php, row 291
 "Cancel" => "中断",
 
-// admin/param_wizard.php, row 295
+// admin/param_wizard.php, row 292
 "Show example params" => "パラメータの例を表示", // ai 2026-06
 
-// admin/param_wizard.php, row 299
+// admin/param_wizard.php, row 296
 "OK" => "",
 
-// include/constants_param_wizard.php, row 66
+// include/constants_param_wizard.php, row 68
 "Parameters" => "パラメータ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 68
+// include/constants_param_wizard.php, row 70
 "Help: Parameter Wizard" => "ヘルプ: パラメータウィザード", // ai 2026-06
 
-// include/constants_param_wizard.php, row 75
+// include/constants_param_wizard.php, row 77
 "Input Validate Type" => "入力検証タイプ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 79
 "No validation" => "検証なし", // ai 2026-06
 
-// include/constants_param_wizard.php, row 80
+// include/constants_param_wizard.php, row 82
 "URL" => "",
 
-// include/constants_param_wizard.php, row 83
+// include/constants_param_wizard.php, row 85
 "E-mail" => "E-メール",
 
-// include/constants_param_wizard.php, row 86
+// include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = 正の整数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 89, 111
+// include/constants_param_wizard.php, row 91, 113
 "Min" => "最小", // ai 2026-06
 
-// include/constants_param_wizard.php, row 90, 112
+// include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "最小許容値", // ai 2026-06
 
-// include/constants_param_wizard.php, row 95, 117
+// include/constants_param_wizard.php, row 97, 119
 "Max" => "最大", // ai 2026-06
 
-// include/constants_param_wizard.php, row 96, 118
+// include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "最大許容値", // ai 2026-06
 
-// include/constants_param_wizard.php, row 101, 123
+// include/constants_param_wizard.php, row 103, 125
 "Step" => "ステップ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 108
+// include/constants_param_wizard.php, row 110
 "Number = (signed) integer number" => "Number = (符号付き)整数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 130
+// include/constants_param_wizard.php, row 132
 "Float - including scientific notation 1.2E+9" => "Float - 指数表記 1.2E+9 を含む", // ai 2026-06
 
-// include/constants_param_wizard.php, row 133
+// include/constants_param_wizard.php, row 135
 "Decimal" => "小数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 136
+// include/constants_param_wizard.php, row 138
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1〜32桁の16進数 [0-9a-f]", // ai 2026-06
 
-// include/constants_param_wizard.php, row 139
+// include/constants_param_wizard.php, row 141
 "Date = store as date" => "Date = 日付として保存", // ai 2026-06
 
-// include/constants_param_wizard.php, row 142
+// include/constants_param_wizard.php, row 144
 "Bool = store as bool" => "Bool = 論理値として保存", // ai 2026-06
 
-// include/constants_param_wizard.php, row 145
+// include/constants_param_wizard.php, row 147
 "User = does nothing ???" => "User = 何もしません ???", // ai 2026-06
 
-// include/constants_param_wizard.php, row 148
+// include/constants_param_wizard.php, row 150
 "Unique = prove uniqueness" => "Unique = 一意性を検証", // ai 2026-06
 
-// include/constants_param_wizard.php, row 149
+// include/constants_param_wizard.php, row 151
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "値がまだ使用されていない場合のみ有効とします。例えば\n"
    ."        E-メールや利用者名に便利です。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 153, 193
+// include/constants_param_wizard.php, row 155, 197
 "Field ID" => "フィールドID", // ai 2026-06
 
-// include/constants_param_wizard.php, row 154, 194
+// include/constants_param_wizard.php, row 156, 198
 "Field in which to look for matching values (default is current field)." => "一致する値を検索するフィールド(省略値は現在のフィールド)。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 159
+// include/constants_param_wizard.php, row 161
 "Scope" => "適用範囲", // ai 2026-06
 
-// include/constants_param_wizard.php, row 160
+// include/constants_param_wizard.php, row 163
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -137,46 +137,46 @@ return [
    ."                <b>0</b> = (省略値) 利用者名、特殊: 読者管理スライスと\n"
    ."                許可システムで一意性を検査します。常にフィールドID %1 を使用します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 171
+// include/constants_param_wizard.php, row 175
 "Regular Expression" => "正規表現", // ai 2026-06
 
-// include/constants_param_wizard.php, row 172
+// include/constants_param_wizard.php, row 176
 "Validation based on Regular Expressions" => "正規表現に基づく検証", // ai 2026-06
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 179
 "Regular Expressions" => "正規表現", // ai 2026-06
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 180
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "/^[0-9]*\$/ のように指定してください -「Regular Expressions」マニュアルを参照。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 181
+// include/constants_param_wizard.php, row 185
 "Error text" => "エラーテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 182
+// include/constants_param_wizard.php, row 186
 "error message" => "エラーメッセージ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 184
+// include/constants_param_wizard.php, row 188
 "Wrong value" => "不正な値", // ai 2026-06
 
-// include/constants_param_wizard.php, row 189
+// include/constants_param_wizard.php, row 193
 "Unique e-mail" => "一意なE-メール", // ai 2026-06
 
-// include/constants_param_wizard.php, row 190
+// include/constants_param_wizard.php, row 194
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "E-メールと一意性の検証を組み合わせたものです。値が有効なE-メールアドレスで、かつまだ使用されていない場合のみ有効とします。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 199
+// include/constants_param_wizard.php, row 203
 "Slice only" => "このスライスのみ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 200
+// include/constants_param_wizard.php, row 204
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "一意性の検査をこのスライスのみで行いますか、\n"
    ."                  それとも全てのスライスで行いますか?", // ai 2026-06
 
-// include/constants_param_wizard.php, row 208
+// include/constants_param_wizard.php, row 212
 "Password and Change Password" => "パスワードとパスワード変更", // ai 2026-06
 
-// include/constants_param_wizard.php, row 209
+// include/constants_param_wizard.php, row 213
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
@@ -186,466 +186,466 @@ return [
    ."        挿入\n"
    ."        関数が新しいパスワードを保存する前に再度検証を行うためです。</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 224
+// include/constants_param_wizard.php, row 228
 "Function" => "関数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 225
+// include/constants_param_wizard.php, row 229
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "このページの文中での書式の意味:<br>斜体の<i>フィールド</i>は「フィールド設定」ウィンドウで編集中のフィールドを表し、<br>太字の<b>パラメータ名</b>はこの画面のパラメータを表します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 232
 "just code" => "コードのみ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 233
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "パラメータ内のコードを出力します - _#this が使えます - f_t より簡単です(追加パラメータなし)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 236
 "null function" => "空の関数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 237
 "prints nothing" => "何も出力しません", // ai 2026-06
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 240
 "first value" => "最初の値", // ai 2026-06
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 241
 "prints first value, even if the field is multivalue" => "フィールドが複数値であっても、最初の値を出力します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 244
 "translated" => "翻訳", // ai 2026-06
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 245
 "prints translated field based on currently selected language" => "現在選択されている言語に応じた翻訳済みフィールドを出力します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 248
 "abstract" => "要約", // ai 2026-06
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 249
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "要約(存在する場合)または<b>全文</b>の冒頭を出力します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 252
 "length" => "長さ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 253
 "max number of characters grabbed from the <b>fulltext</b> field" => "<b>全文</b>フィールドから取得する最大文字数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 254
+// include/constants_param_wizard.php, row 258
 "fulltext" => "全文", // ai 2026-06
 
-// include/constants_param_wizard.php, row 255
+// include/constants_param_wizard.php, row 259
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "テキストの取得元となる全文フィールドのid(例: full_text.......)。空の場合は<i>フィールド</i>自体からテキストを取得します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 257, 299, 596
+// include/constants_param_wizard.php, row 261, 303, 600
 "full_text......." => "",
 
-// include/constants_param_wizard.php, row 260
+// include/constants_param_wizard.php, row 264
 "paragraph" => "段落", // ai 2026-06
 
-// include/constants_param_wizard.php, row 261
+// include/constants_param_wizard.php, row 265
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "<b>長さ</b>より短い場合、最初の段落(\\<BR\\>、\\<P\\>、\\</P\\>、または少なくとも'.'(ピリオド)までのテキスト)を取得します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 268
+// include/constants_param_wizard.php, row 272
 "extended fulltext link" => "拡張全文リンク", // ai 2026-06
 
-// include/constants_param_wizard.php, row 269
+// include/constants_param_wizard.php, row 273
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "全文へのリンク付きで<b>テキスト</b>(またはフィールドの内容)を出力します。f_f関数のより汎用的な版です。この関数は<i>フィールド</i>を使用しません。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 272, 406
+// include/constants_param_wizard.php, row 276, 410
 "link only" => "リンクのみ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 277
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "外部/内部項目の切り替えが保存されているフィールドのid(例: 'link_only.......')。(そのページにはSSI include ../slice.phpを含めてください。)未入力の場合、全文には項目一覧と同じページが使用されます(通常の動作です)。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 275, 409
+// include/constants_param_wizard.php, row 279, 413
 "link_only......." => "",
 
-// include/constants_param_wizard.php, row 278
+// include/constants_param_wizard.php, row 282
 "url_field" => "URLフィールド", // ai 2026-06
 
-// include/constants_param_wizard.php, row 279
+// include/constants_param_wizard.php, row 283
 "field id if field, where external URL is stored (like hl_href.........)" => "外部URLが保存されているフィールドのid(例: hl_href.........)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 281
+// include/constants_param_wizard.php, row 285
 "hl_href........." => "",
 
-// include/constants_param_wizard.php, row 284, 412
+// include/constants_param_wizard.php, row 288, 416
 "redirect" => "リダイレクト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 285, 413
+// include/constants_param_wizard.php, row 289, 417
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "項目の内容を表示する別のページのURL。(そのページにはSSI include ../slice.phpを含めてください。)未入力の場合、全文には項目一覧と同じページが使用されます(通常の動作です)。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 287, 415
+// include/constants_param_wizard.php, row 291, 419
 "http#://www.ecn.cz/articles/solar.shtml" => "",
 
-// include/constants_param_wizard.php, row 290
+// include/constants_param_wizard.php, row 294
 "text" => "テキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 291
+// include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "リンクで囲むテキスト。このパラメータがフィールドidの場合はそのフィールドの内容が使用され、それ以外はそのまま使用されます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 296
+// include/constants_param_wizard.php, row 300
 "condition field" => "条件フィールド", // ai 2026-06
 
-// include/constants_param_wizard.php, row 297
+// include/constants_param_wizard.php, row 301
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "指定したフィールドに内容がない場合、リンクは出力されず<b>テキスト</b>のみ出力されます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 302, 529
+// include/constants_param_wizard.php, row 306, 533
 "tag addition" => "タグ追加", // ai 2026-06
 
-// include/constants_param_wizard.php, row 303, 530
+// include/constants_param_wizard.php, row 307, 534
 "additional text to the \"\\<a\\>\" tag" => "\"\\<a\\>\"タグへの追加テキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 305, 532
+// include/constants_param_wizard.php, row 309, 536
 "target=_blank" => "",
 
-// include/constants_param_wizard.php, row 308, 418
+// include/constants_param_wizard.php, row 312, 422
 "no session id" => "セッションidなし", // ai 2026-06
 
-// include/constants_param_wizard.php, row 309, 419
+// include/constants_param_wizard.php, row 313, 423
 "If 1, the session id (AA_Session=...) is not added to url" => "1の場合、セッションid(AA_Session=...)をurlに追加しません", // ai 2026-06
 
-// include/constants_param_wizard.php, row 316, 320
+// include/constants_param_wizard.php, row 320, 324
 "condition" => "条件", // ai 2026-06
 
-// include/constants_param_wizard.php, row 317
+// include/constants_param_wizard.php, row 321
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "これは非常に強力な関数です。いくつかの既存関数のより良い代替として使用できます。<b>cond_field</b> = <b>条件</b>の場合、<b>begin</b> <i>フィールド</i> <b>end</b>を出力し、それ以外の場合は<b>else</b>を出力します。<b>cond_field</b>が指定されていない場合は<i>フィールド</i>が使用されます。条件は先頭の\"!\"で反転(否定)できます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 325
 "you may use \"!\" to reverse (negate) the condition" => "\"!\" を使って条件を反転(否定)できます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 326, 505
+// include/constants_param_wizard.php, row 330, 509
 "begin" => "開始", // ai 2026-06
 
-// include/constants_param_wizard.php, row 327
+// include/constants_param_wizard.php, row 331
 "text to print before <i>field</i>, if condition is true" => "条件が真の場合に<i>フィールド</i>の前に表示するテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 329
+// include/constants_param_wizard.php, row 333
 "Yes" => "はい", // ai 2026-06
 
-// include/constants_param_wizard.php, row 332
+// include/constants_param_wizard.php, row 336
 "end" => "終了", // ai 2026-06
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 337
 "text to print after <i>field</i>, if condition is true" => "条件が真の場合に<i>フィールド</i>の後に表示するテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 338
+// include/constants_param_wizard.php, row 342
 "else" => "それ以外", // ai 2026-06
 
-// include/constants_param_wizard.php, row 339
+// include/constants_param_wizard.php, row 343
 "text to print when condition is not satisfied" => "条件が満たされない場合に表示するテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 341
+// include/constants_param_wizard.php, row 345
 "No" => "いいえ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 344
+// include/constants_param_wizard.php, row 348
 "cond_field" => "条件フィールド", // ai 2026-06
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 349
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "<b>条件</b>と比較するフィールド - 未指定の場合は<i>フィールド</i>が使われます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 350
+// include/constants_param_wizard.php, row 354
 "skip_the_field" => "フィールドの省略", // ai 2026-06
 
-// include/constants_param_wizard.php, row 351
+// include/constants_param_wizard.php, row 355
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "1 に設定すると<i>フィールド</i>を省略します (<b>開始 終了</b>または<b>それ以外</b>のみ表示)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 358
+// include/constants_param_wizard.php, row 362
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "この例は例えば Highlight フィールドに使えます - フィールドの内容に応じて「はい」または「いいえ」を表示します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 359
+// include/constants_param_wizard.php, row 363
 "1:Yes::No::1" => "1:はい::いいえ::1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 366
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "e-mail フィールドが入力されている場合は \"Email: email@apc.org\" のように表示し、空の場合は何も表示しません", // ai 2026-06
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 367
 "!:Email#:&nbsp;" => "",
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 370
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "<i>フィールド</i>が入力されている場合は画像の height 属性を表示し、それ以外は何も表示しません。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 371
 "!:height=" => "",
 
-// include/constants_param_wizard.php, row 372
+// include/constants_param_wizard.php, row 376
 "date" => "日付", // ai 2026-06
 
-// include/constants_param_wizard.php, row 373
+// include/constants_param_wizard.php, row 377
 "prints date in a user defined format" => "ユーザー定義の書式で日付を表示します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 380
 "format" => "書式", // ai 2026-06
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 381
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "PHP と同様の書式 - <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHPマニュアル</a>を参照", // ai 2026-06
 
-// include/constants_param_wizard.php, row 379
+// include/constants_param_wizard.php, row 383
 "m-d-Y" => "Y-m-d", // ai 2026-06
 
-// include/constants_param_wizard.php, row 384
+// include/constants_param_wizard.php, row 388
 "edit item" => "項目の編集", // ai 2026-06
 
-// include/constants_param_wizard.php, row 385
+// include/constants_param_wizard.php, row 389
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM は管理ページ index.php で itemedit の URL に使用されます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 392
 "type" => "型", // ai 2026-06
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 393
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - ディスカッションの編集用<br>itemcount - 項目数の表示用<br>safe - 安全な html 用<br>slice_info - スライス情報からフィールドを選択<br>edit - 項目編集用の URL<br>add - 新規項目追加用の URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 391
+// include/constants_param_wizard.php, row 395
 "edit" => "編集", // ai 2026-06
 
-// include/constants_param_wizard.php, row 394
+// include/constants_param_wizard.php, row 398
 "return url" => "戻り先 URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 399
 "Return url being called from, usually leave blank and allow default" => "呼び出し元に戻るための URL。通常は空欄のままにして省略値を使用します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 397
+// include/constants_param_wizard.php, row 401
 "/mysite.shtml" => "",
 
-// include/constants_param_wizard.php, row 402
+// include/constants_param_wizard.php, row 406
 "fulltext link" => "全文へのリンク", // ai 2026-06
 
-// include/constants_param_wizard.php, row 403
+// include/constants_param_wizard.php, row 407
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "全文へのリンク内の URL を表示します - 外部項目の利用を可能にします。\"\\<a href=\" の直後で使用してください", // ai 2026-06
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 411
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "外部項目と内部項目を切り替えるスイッチが保存されているフィールド id ('link_only.......' など)。通常このフィールドはチェックボックスとして表示されます。チェックされている場合は<i>フィールド</i>が表示され、チェックされていない場合は全文へのリンクが表示されます (<b>redirect</b> パラメータにも依存します)。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 426
+// include/constants_param_wizard.php, row 430
 "image height" => "画像の高さ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 427
+// include/constants_param_wizard.php, row 431
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "旧式の関数です。<i>フィールド</i>を画像の高さの値 (\\<img height=...\\>) として表示するか、height 指定を削除します。\"height=\" の直後で使用してください。f_c 関数のパラメータ \":height=\" を使う方がより良い方法です。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 434
 "print HTML multiple" => "HTML出力 (複数値)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "html フラグに応じて<i>フィールド</i>の内容を表示します (html 特殊文字をエスケープするか、そのまま表示)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 438
 "delimiter" => "区切り文字", // ai 2026-06
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 439
 "if specified, a field with multiple values is displayed with the values delimited by it" => "指定すると、複数の値を持つフィールドの値がこの区切り文字で区切られて表示されます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 442
+// include/constants_param_wizard.php, row 446
 "image src" => "画像ソース", // ai 2026-06
 
-// include/constants_param_wizard.php, row 443
+// include/constants_param_wizard.php, row 447
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "<i>フィールド</i>を画像のソース (\\<img src=...\\>) として表示します - 画像がない場合は NO_PICTURE。f_c 関数のパラメータ :::NO_PICTURE でも同じことができます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 450
 "image size" => "画像サイズ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 451
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "<i>フィールド</i>を画像サイズ (height='xxx' width='yyy') (または他の画像情報) として表示し、取得できない場合は空文字列を返します。uploads ディレクトリの URL は特別扱いしません。将来対応するかもしれません!", // ai 2026-06
 
-// include/constants_param_wizard.php, row 450, 826
+// include/constants_param_wizard.php, row 454, 830
 "information" => "情報", // ai 2026-06
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 455
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "返される情報を指定します: <br> - <i>html</i> - (省略値) - 画像サイズを HTML 属性 (height='xxx' width='yyy') として返します<br> - <i>width</i> - 画像の幅をピクセル単位で返します<br> - <i>height</i> - 画像の高さをピクセル単位で返します<br> - <i>imgtype</i> - 画像の種類を示すフラグを返します: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - 画像の mimetype を返します ('image/gif', 'application/x-shockwave-flash' など)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 458
+// include/constants_param_wizard.php, row 462
 "substring with case change" => "部分文字列 (大文字小文字変換付き)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 459
+// include/constants_param_wizard.php, row 463
 "prints a part of <i>the field</i>" => "<i>フィールド</i>の一部を表示します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 466
 "start" => "開始位置", // ai 2026-06
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 467
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "部分文字列の開始位置 (0=最初, 1=2番目, -1=最後, -2=最後から2番目)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 468
+// include/constants_param_wizard.php, row 472
 "count" => "文字数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 469
+// include/constants_param_wizard.php, row 473
 "count of characters (0=until the end)" => "文字数 (0=最後まで)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 474
+// include/constants_param_wizard.php, row 478
 "case" => "大文字小文字", // ai 2026-06
 
-// include/constants_param_wizard.php, row 475
+// include/constants_param_wizard.php, row 479
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - 大文字に変換, lower - 小文字に変換, first - 先頭のみ大文字に変換; 省略値は変換なし", // ai 2026-06
 
-// include/constants_param_wizard.php, row 480
+// include/constants_param_wizard.php, row 484
 "add string" => "追加文字列", // ai 2026-06
 
-// include/constants_param_wizard.php, row 481
+// include/constants_param_wizard.php, row 485
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "文字列が短縮された場合、<i>追加文字列</i>が末尾に付加されます ([...] のようなもの)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 487
+// include/constants_param_wizard.php, row 491
 "Auto Update Checkbox" => "自動更新チェックボックス", // ai 2026-06
 
-// include/constants_param_wizard.php, row 489
+// include/constants_param_wizard.php, row 493
 "linked field" => "リンク付きフィールド", // ai 2026-06
 
-// include/constants_param_wizard.php, row 490
+// include/constants_param_wizard.php, row 494
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "<b>リンク URL</b> が NULL でない場合は<i>フィールド</i>をリンクとして表示し、それ以外は<i>フィールド</i>のみを表示します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 497
 "link URL" => "リンク URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 496
+// include/constants_param_wizard.php, row 500
 "source_href....." => "",
 
-// include/constants_param_wizard.php, row 501
+// include/constants_param_wizard.php, row 505
 "e-mail or link" => "E-メールまたはリンク", // ai 2026-06
 
-// include/constants_param_wizard.php, row 502
+// include/constants_param_wizard.php, row 506
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "mailto リンク - 表示: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>フィールド</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>。<i>フィールド</i>が入力されていない場合は <b>else_field/text</b> を表示します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 510
 "text before the link" => "リンクの前のテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 508
+// include/constants_param_wizard.php, row 512
 "e-mail" => "E-メール", // ai 2026-06
 
-// include/constants_param_wizard.php, row 511
+// include/constants_param_wizard.php, row 515
 "field/text" => "フィールド/テキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 516
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "このパラメータがフィールド id の場合はそのフィールドの内容が使用され、それ以外はそのまま使用されます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 517
+// include/constants_param_wizard.php, row 521
 "else_field/text" => "それ以外のフィールド/テキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 518
+// include/constants_param_wizard.php, row 522
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "<i>フィールド</i>が空の場合、このテキスト (またはフィールドの内容) のみが表示されます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 523
+// include/constants_param_wizard.php, row 527
 "linktype" => "リンクの種類", // ai 2026-06
 
-// include/constants_param_wizard.php, row 524
+// include/constants_param_wizard.php, row 528
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (省略値は mailto) - f_m 関数はリンクにも使えます - このパラメータに 'href' と入力するだけです", // ai 2026-06
 
-// include/constants_param_wizard.php, row 526
+// include/constants_param_wizard.php, row 530
 "href" => "",
 
-// include/constants_param_wizard.php, row 535
+// include/constants_param_wizard.php, row 539
 "hide email" => "E-メールを隠す", // ai 2026-06
 
-// include/constants_param_wizard.php, row 536
+// include/constants_param_wizard.php, row 540
 "if 1 then hide email from spam robots. Default is 0." => "1 にするとスパムロボットから E-メールを隠します。省略値は 0。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 543
+// include/constants_param_wizard.php, row 547
 "id" => "",
 
-// include/constants_param_wizard.php, row 544
+// include/constants_param_wizard.php, row 548
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "展開された (unpacked) id を表示します ('item id' や 'slice id' を表示したい場合に使用)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 551
 "'New' sign" => "'New' マーク", // ai 2026-06
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 552
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "<b>時間</b>に応じて 'New' や 'Old' などの任意のテキストを<b>新しい場合のテキスト</b>または<b>古い場合のテキスト</b>から表示します。時間は現在時刻からの分数で指定します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 555
 "time" => "時間", // ai 2026-06
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 556
 "Time in minutes from current time." => "現在時刻からの分単位の時間。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 554
+// include/constants_param_wizard.php, row 558
 "1440" => "",
 
-// include/constants_param_wizard.php, row 557
+// include/constants_param_wizard.php, row 561
 "newer text" => "新しい場合のテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 562
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "<i>フィールド</i>の日付が <i>現在時刻</i> - <b>時間</b> より新しい場合に表示されるテキスト。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 560
+// include/constants_param_wizard.php, row 564
 "NEW" => "新着", // ai 2026-06
 
-// include/constants_param_wizard.php, row 563
+// include/constants_param_wizard.php, row 567
 "older text" => "古い場合のテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 568
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "<i>フィールド</i>の日付が <i>current_time</i> - <b>time</b> より古い場合に出力されるテキスト", // ai 2026-06
 
-// include/constants_param_wizard.php, row 571
+// include/constants_param_wizard.php, row 575
 "text (blurb) from another slice" => "別のスライスからのテキスト（blurb）", // ai 2026-06
 
-// include/constants_param_wizard.php, row 572
+// include/constants_param_wizard.php, row 576
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "簡単な条件に基づいて、別のスライスから「blurb」（テキストの断片）を出力します。<br>現在のスライスの<i>フィールド</i>（または <b>stringToMatch</b> で指定したフィールド）が <b>blurbSliceId</b> の <b>fieldToMatch</b> の内容と一致する場合、<b>blurbSliceId</b> の <b>fieldToReturn</b> の内容を返します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 579
 "stringToMatch" => "",
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "省略時は<i>フィールド</i>になります。フィールドの id（headline........）または静的テキストのいずれかとして指定できます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 578
+// include/constants_param_wizard.php, row 582
 "category........" => "",
 
-// include/constants_param_wizard.php, row 581
+// include/constants_param_wizard.php, row 585
 "blurbSliceId" => "",
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "blurb テキストが保存されているスライスの長い（unpacked）id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 584
+// include/constants_param_wizard.php, row 588
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 587
+// include/constants_param_wizard.php, row 591
 "fieldToMatch" => "",
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "<b>stringToMatch</b> を検索する <b>blurbSliceId</b> 内のフィールドの id", // ai 2026-06
 
-// include/constants_param_wizard.php, row 590
+// include/constants_param_wizard.php, row 594
 "headline........" => "",
 
-// include/constants_param_wizard.php, row 593
+// include/constants_param_wizard.php, row 597
 "fieldToReturn" => "",
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "blurb テキストが保存されている <b>blurbSliceId</b> 内のフィールドの id（出力される内容）", // ai 2026-06
 
-// include/constants_param_wizard.php, row 601
+// include/constants_param_wizard.php, row 605
 "RSS tag" => "RSS タグ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 602
+// include/constants_param_wizard.php, row 606
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "定義済み RSS 別名（例: _#RSS_TITL）の内部用途のための機能です。RSS 0.91 準拠のタグを追加します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 605, 609, 801
+// include/constants_param_wizard.php, row 609, 613, 805
 "default" => "省略値", // ai 2026-06
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 610
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "<i>フィールド</i>を出力し、<i>フィールド</i>が空の場合は省略値を出力します。同じことは f_c 関数のパラメータ :::<b>default</b> でも実現できます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 614
 "default value" => "省略値", // ai 2026-06
 
-// include/constants_param_wizard.php, row 612
+// include/constants_param_wizard.php, row 616
 "javascript: window.alert('No source url specified')" => "javascript: window.alert('ソース URL が指定されていません')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 617
+// include/constants_param_wizard.php, row 621
 "print field" => "フィールドの出力", // ai 2026-06
 
-// include/constants_param_wizard.php, row 618
+// include/constants_param_wizard.php, row 622
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "html フラグに応じて<i>フィールド</i>の内容（または <i>unalias string</i>）を出力します（html フラグが設定されていない場合、内容を html に変換します。f_h 関数と異なり、（基本形では）改行も html に変換します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 625
 "unalias string" => "文字列", // ai 2026-06
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 626
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "<i>unalias string</i> が定義されている場合、関数は<i>フィールド</i>を無視して <i>unalias string</i> を出力します。この文字列の中ではもちろん任意の別名（や {headline.........} のようなフィールド）を使用できます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 624
+// include/constants_param_wizard.php, row 628
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 627
+// include/constants_param_wizard.php, row 631
 "output modify" => "出力修正", // ai 2026-06
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 632
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -664,175 +664,175 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - 文字列から HTML と PHP のタグを除去します<br>\n"
    ."                   &nbsp; - <i>asis</i>  - フィールドの内容を「そのまま」出力します - フィールドが「Plain text」に設定されていても行末に &lt;br&gt; を追加しません。「asis」パラメータは例えば項目管理の「Modify content...」機能に適しています<br>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 643
+// include/constants_param_wizard.php, row 647
 "user function" => "ユーザー関数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 644
+// include/constants_param_wizard.php, row 648
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "ユーザー定義の関数を呼び出します（<a href='https://actionapps.org/faq/#aliases'>FAQ</a> の「How to create new aliases」を参照）", // ai 2026-06
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 651
 "function" => "関数", // ai 2026-06
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 652
 "name of the function in the include/usr_aliasfnc.php file" => "include/usr_aliasfnc.php ファイル内の関数名", // ai 2026-06
 
-// include/constants_param_wizard.php, row 650
+// include/constants_param_wizard.php, row 654
 "usr_start_end_date_cz" => "",
 
-// include/constants_param_wizard.php, row 653
+// include/constants_param_wizard.php, row 657
 "parameter" => "パラメータ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 658
 "a parameter passed to the function" => "関数に渡されるパラメータ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 661
+// include/constants_param_wizard.php, row 665
 "view" => "表示", // ai 2026-06
 
-// include/constants_param_wizard.php, row 662
+// include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "ビューを操作できるようにします。これは <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a> に記載されている複雑で強力な機能で、別名の場所に任意のビューを表示できます。「関連記事」の表や、関連スライスの内容の表示に使用できます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 669
 "complex parameter" => "複合パラメータ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 670
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "このパラメータは view.php の URL パラメータで使うものと同じです - FAQ を参照", // ai 2026-06
 
-// include/constants_param_wizard.php, row 668
+// include/constants_param_wizard.php, row 672
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 673
+// include/constants_param_wizard.php, row 677
 "image width" => "画像の幅", // ai 2026-06
 
-// include/constants_param_wizard.php, row 674
+// include/constants_param_wizard.php, row 678
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "旧式の関数です。<i>フィールド</i>を画像の幅の値（\\<img width=...\\>）として出力するか、width タグを除去します。\"width=\" の直後で使用してください。f_c 関数のパラメータ \":width=\" を使えば、より良い方法で同じことができます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 681
 "transformation" => "変換", // ai 2026-06
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 682
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "フィールドの値を別の値に変換できます。<br>使い方: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br><i>フィールド</i>の内容が <b>content_1</b> と等しい場合、<b>return_value_1</b> が返されます。<i>フィールド</i>の内容が <b>content_2</b> と等しい場合、<b>return_value_2</b> が返されます。<i>フィールドがどの <b>content_x</b> とも等しくない場合、<b>default</b> が返されます</i>。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 681, 693, 705, 717, 729, 741, 753, 765, 777, 789
+// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
 "content" => "内容", // ai 2026-06
 
-// include/constants_param_wizard.php, row 682, 694, 706, 718, 730, 742, 754, 766, 778, 790
+// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
 "string for comparison with <i>the field</i> for following return value" => "次の戻り値のために<i>フィールド</i>と比較する文字列", // ai 2026-06
 
-// include/constants_param_wizard.php, row 687, 699, 711, 723, 735, 747, 759, 771, 783, 795
+// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
 "return value" => "戻り値", // ai 2026-06
 
-// include/constants_param_wizard.php, row 688, 700, 712, 724, 736, 748, 760, 772, 784, 796
+// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
 "string to return if previous content matches - You can use field_id too" => "直前の content が一致した場合に返す文字列 - field_id も使用できます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 690, 702, 714, 726, 738, 750, 762, 774, 786, 798, 804
+// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
 "Environment" => "環境", // ai 2026-06
 
-// include/constants_param_wizard.php, row 802
+// include/constants_param_wizard.php, row 806
 "if no content matches, use this string as return value" => "どの content も一致しない場合、この文字列を戻り値として使用します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 809
+// include/constants_param_wizard.php, row 813
 "expanded string" => "展開文字列", // ai 2026-06
 
-// include/constants_param_wizard.php, row 810
+// include/constants_param_wizard.php, row 814
 "expands the string in the parameter" => "パラメータ内の文字列を展開します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 817
 "string to expand" => "展開する文字列", // ai 2026-06
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 818
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "指定された場合はこの文字列が展開され、指定されない場合はフィールドの内容が展開されます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 822
+// include/constants_param_wizard.php, row 826
 "file information" => "ファイル情報", // ai 2026-06
 
-// include/constants_param_wizard.php, row 823
+// include/constants_param_wizard.php, row 827
 "prints <i>the field</i> as file information, its size or type" => "<i>フィールド</i>をファイル情報（サイズや種類）として出力します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 831
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "返される情報を指定します: <br> - <i>name</i> - ファイル名<br> - <i>type</i> - ファイルの種類を返します（TXT など）<br> - <i>size</i> - ファイルサイズを kB または MB で返します（12.1 kB など）<br> - <i>bytesize</i> - （12128 など）<br> - <i>link</i><br> - <i>typesize</i> - span 内の [種類 - サイズ]<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 841
+// include/constants_param_wizard.php, row 845
 "Transformation action" => "変換アクション", // ai 2026-06
 
-// include/constants_param_wizard.php, row 843
+// include/constants_param_wizard.php, row 847
 "AA Expression" => "AA式", // ai 2026-06
 
-// include/constants_param_wizard.php, row 844
+// include/constants_param_wizard.php, row 848
 "AA expression where we can use any AA {expressions}" => "任意の AA {expressions} を使用できる AA 式", // ai 2026-06
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 851
 "expression" => "式", // ai 2026-06
 
-// include/constants_param_wizard.php, row 856
+// include/constants_param_wizard.php, row 860
 "Store" => "保存", // ai 2026-06
 
-// include/constants_param_wizard.php, row 857
+// include/constants_param_wizard.php, row 861
 "Simply store a value from the input field" => "入力フィールドの値を単純に保存します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 864
 "lang (optional)" => "lang（省略可）", // ai 2026-06
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 865
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "2 文字 - cz | en | es | de。指定すると、値は指定した言語に保存されます（フィールドが翻訳を使用している必要があります）", // ai 2026-06
 
-// include/constants_param_wizard.php, row 869
+// include/constants_param_wizard.php, row 873
 "Remove string" => "文字列の削除", // ai 2026-06
 
-// include/constants_param_wizard.php, row 870
+// include/constants_param_wizard.php, row 874
 "Remove all occurrences of a string from the input field." => "入力フィールドから文字列のすべての出現を削除します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 873, 894
+// include/constants_param_wizard.php, row 877, 898
 "string parameter" => "文字列パラメータ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 878
 "Removed string" => "削除する文字列", // ai 2026-06
 
-// include/constants_param_wizard.php, row 880
+// include/constants_param_wizard.php, row 884
 "Format date" => "日付の書式化", // ai 2026-06
 
-// include/constants_param_wizard.php, row 881
+// include/constants_param_wizard.php, row 885
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "入力フィールドの日付（英語の日付形式を想定）を解析します。エラーの場合、変換は失敗します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 889
 "Add http prefix" => "http プレフィックスの追加", // ai 2026-06
 
-// include/constants_param_wizard.php, row 886
+// include/constants_param_wizard.php, row 890
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "フィールドが空でなく 'https://' で始まっていない場合、'https://' プレフィックスを追加します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 894
 "Store parameter" => "パラメータの保存", // ai 2026-06
 
-// include/constants_param_wizard.php, row 891
+// include/constants_param_wizard.php, row 895
 "Store parameter instead of the input field" => "入力フィールドの代わりにパラメータを保存します", // ai 2026-06
 
-// include/constants_param_wizard.php, row 901
+// include/constants_param_wizard.php, row 905
 "Store as long id" => "長い id として保存", // ai 2026-06
 
-// include/constants_param_wizard.php, row 902
+// include/constants_param_wizard.php, row 906
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "文字列から長い id を作成します。文字列はパラメータ!!、または（パラメータが指定されていない場合）slice_id と組み合わされます。同じ文字列（と同じパラメータ）からは常に同じ id が作成されます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 909
 "string to add" => "追加する文字列", // ai 2026-06
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 910
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "このパラメータは変換前に文字列に追加されます（空文字列を避けるためと、（異なるインポートで）よくある文字列に対して常に同じ id を生成しないようにするためです）。このパラメータが指定されていない場合、代わりに slice_id が使用されます。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 914
+// include/constants_param_wizard.php, row 918
 "Split input field by string" => "入力フィールドを文字列で分割", // ai 2026-06
 
-// include/constants_param_wizard.php, row 915
+// include/constants_param_wizard.php, row 919
 "Split input field by string parameter and store the result as multi-value." => "入力フィールドを文字列パラメータで分割し、結果を複数値として保存します。", // ai 2026-06
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 922
 "delimiter (+ possible languages)" => "区切り文字（+ 必要なら言語）", // ai 2026-06
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 923
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "入力フィールドの値を区切る文字列の区切り文字（\"|\" など）。さらに \"##\" で区切った言語を <delimiter>##<lang1>##<lang2> の形式で追加することもできます（\"Ahoj|Hi\" に対する \"|##cz##en\"）- これにより翻訳フィールドが埋められます", // ai 2026-06
 
-// include/constants_param_wizard.php, row 926
+// include/constants_param_wizard.php, row 930
 "Store default value" => "省略値を保存", // ai 2026-06
 
-// include/constants_param_wizard.php, row 927
+// include/constants_param_wizard.php, row 931
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"

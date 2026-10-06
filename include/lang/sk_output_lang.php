@@ -30,74 +30,74 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Alias pou\x9E\xEDvan\xFD v administrat\xEDvnych str\xE1nk\xE1ch index.php3 pre URL discedit.php3",
 // End of unused messages
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Chybn\xFD parameter inc - vkladan\xFD s\xFAbor mus\xED obsahova\x9D iba alfanumerick\xE9 znaky", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "S\xFAbor neexistuje", // ai 2026-06
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Neplatn\xE9 \xE8\xEDslo modulu alebo bol modul vymazan\xFD", // ai 2026-06
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "v\xFDstup slice.php je pre tento modul zak\xE1zan\xFD", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "ID session", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "\xE8\xEDslo aktu\xE1lnej str\xE1nky (v str\xE1nkovan\xED)", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "d\xE5\x9Eka str\xE1nky (po\xE8et spr\xE1v)", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "Nenalezena \x9E\xE1dn\xE1 zpr\xE1va",
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "Zobraz vybran\xE9",
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "Zobraz v\x9Aetko",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "Pridaj nov\xFD",
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "Alias pre %1", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "Alias pre predmet pr\xEDspevku",
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "Alias pre text pr\xEDspevku", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "Alias pre autora pr\xEDspevku", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "Alias pre e-mail autora",
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "Alias pre adresu WWW str\xE1nok autora ",
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "Alias pre popis WWW str\xE1nok autora",
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "Alias pre d\xE1tum a cas odoslania pr\xEDspevku",
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "Alias pre IP adresu po\xE8\xEDta\xE8a autora", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "Alias pre checkbox pre vybranie pr\xEDspevku",
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "Alias pre obr\xE1zky",
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -105,7 +105,7 @@ return [
    ."                             <i>Pou\x9Eitie: </i>v k\xF3de formul\xE1ra<br>\n"
    ."                             <i>Pr\xEDklad: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -113,7 +113,7 @@ return [
    ."                             <i>Pou\x9Eitie: </i>v k\xF3de formul\xE1ra<br>\n"
    ."                             <i>Pr\xEDklad: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -121,7 +121,7 @@ return [
    ."                             <i>Po\x9Eitie: </i>v k\xF3de formul\xE1ra<br>\n"
    ."                             <i>Pr\xEDklad: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -129,7 +129,7 @@ return [
    ."                             <i>Pou\x9Eitie: </i>v k\xF3de pre prehladov\xE9 zobrazenie pr\xEDspevkov<br>\n"
    ."                             <i>Pr\xEDklad: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>",
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -137,7 +137,7 @@ return [
    ."                             <i>Pou\x9Eitie: </i>v k\xF3de pre pln\xE9 znenie pr\xEDspevku<br>\n"
    ."                             <i>Pr\xEDklad: </i>&lt;a href=_#URLREPLY&gt;Odpovedat&lt;/a&gt;",
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -145,64 +145,64 @@ return [
    ."                             <i>Po\x9Eitie: </i>v k\xF3de formul\xE1ra<br>\n"
    ."                             <i>Pr\xEDklad: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">",
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "Alias pre tlac\xEDtka Zobrazit v\x9Aetko, Zobrazit vybran\xE9, Pridat nov\xFD<br>\n"
    ."                             <i>Pou\x9Eitie: </i>v spodnom HTML k\xF3de",
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "3. parameter vyplnen\xFD v polo\x9Eke DiscussionMailList", // ai 2026-06
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "%1. parameter vyplnen\xFD v polo\x9Eke DiscussionMailList", // ai 2026-06
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "Meno",
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "Prelo\x9Een\xFD n\xE1zov kon\x9Atanty", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "Hodnota",
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "Priorita",
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "Skupina hodn\xF4t",
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "Nadkateg\xF3rie (pou\x9Eiteln\xE9 len pre kateg\xF3rie)",
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "Poradov\xE9 c\xEDslo hodnoty",
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "Jedine\xE8n\xE9 id kon\x9Atanty (32 hexadecim\xE1lnych znakov)", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "Jedine\xE8n\xE9 kr\xE1tke id kon\x9Atanty (automaticky zvy\x9Aovan\xE9 od '1' pre ka\x9Ed\xFA kon\x9Atantu v syst\xE9me)", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "Popis kon\x9Atanty", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "\xDArove\xF2 kon\x9Atanty (pou\x9E\xEDva sa pre hierarchick\xE9 kon\x9Atanty)", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "Chyba: nespr\xE1vna funkcia aliasu %1 pre %2", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "Vybran\xE1 spr\xE1va", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "po\xE8et nalezen\xFDch \xE8l\xE1nk\xF9",
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "Nebol vybran\xFD \x9Eiaden pr\xEDspevok",
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "presn\xFD n\xE1zov skupiny", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -223,27 +223,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "Zvo\xBEte kateg\xF3riu", // ai 2026-06
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "V\x9Aetky kateg\xF3rie", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo pre \xE8\xEDtanie", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "Sp\xE4t",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Znovu prihl\xE1si\x9D", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "Formul\xE1r pre priradenie", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "Spracuje \xFAdaje o v\xE4zb\xE1ch spr\xE1vy odoslan\xE9 formul\xE1rom (POST)", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

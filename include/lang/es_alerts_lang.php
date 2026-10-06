@@ -10,6 +10,13 @@ $mgettext_lang = "es";
 
 return [
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Core settings for the Alerts." => "Configuraci\xF3n base para las Alertas",
+// "form URL" => "URL desde",
+// "Use AA Admin / Delete<br>to delete permanently" => "Use AA Admin / Borrar<br>para borrar permanentemente",
+// "created at" => "creado",
+// "created by" => "creado por",
+// "You don't have permissions to edit any collection or no collection exists." => "Usted no tiene permisos para editar ninguna colecci\xF3n o la colecci\xF3n no existe",
+// "Here you send the Alert emails manually." => "Ac\xE1 Usted puede enviar una alerta de correo manualmente",
 // "Collection Form Wizard" => "Colecci\xF3n desde asistente",
 // "Add Users" => "A\xF1adir Usuarios",
 // "Some errors occured: " => "Se produjeron Errores:",
@@ -66,222 +73,296 @@ return [
 //    ."            Para mayor informaci\xF3n, consulte <a href='http://apc-aa.sourceforge.net/faq/#1389'>el FAQ</a>.",
 // End of unused messages
 
-// modules/alerts/alerts_sending.php, row 417
+// modules/alerts/acf.php, row 45
+// modules/alerts/modedit.php, row 89
+"You do not have permissions to add slice" => "Usted no tiene permisos en este canal",
+
+// modules/alerts/acf.php, row 114
+"Alerts Selections" => "Selecciones de Alertas",
+
+// modules/alerts/acf.php, row 118
+"Choose selections which form the Alert email." => "Seleccione las opciomes que formar\xE1n la alerta de correo-e",
+
+// modules/alerts/acf.php, row 122, 149
+"order" => "orden",
+
+// modules/alerts/acf.php, row 122
+"selection" => "selecci\xF3n",
+
+// modules/alerts/acf.php, row 122
+"remove" => "",
+
+// modules/alerts/acf.php, row 131
+"No selections chosen yet." => "",
+
+// modules/alerts/acf.php, row 134
+"Save order" => "",
+
+// modules/alerts/acf.php, row 135
+"Remove checked" => "",
+
+// modules/alerts/acf.php, row 150
+"Add selection" => "",
+
+// modules/alerts/acf.php, row 152
+"No selections defined. You must define some." => "No se han definido selecciones. Defina alguna.",
+
+// modules/alerts/alerts_sending.php, row 515
 "alerts alert" => "alerta de alertas",
 
-// modules/alerts/alerts_sending.php, row 418
+// modules/alerts/alerts_sending.php, row 516
 "alerts welcome" => "bienvenida de alertas",
 
-// modules/alerts/alerts_sending.php, row 419
+// modules/alerts/alerts_sending.php, row 517
 "slice wizard welcome" => "bienvenida del asistente de canal",
 
-// modules/alerts/alerts_sending.php, row 420
+// modules/alerts/alerts_sending.php, row 518
 "user template" => "plantilla de usuario",
 
-// modules/alerts/alerts_sending.php, row 421
+// modules/alerts/alerts_sending.php, row 519
 "password change" => "cambio de contrase\xF1a",
 
-// modules/alerts/alerts_sending.php, row 422
+// modules/alerts/alerts_sending.php, row 520
 "other" => "otro",
 
-// modules/alerts/alerts_sending.php, row 432
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Alert" => "Alias para la alerta de alertas",
 
-// modules/alerts/alerts_sending.php, row 434
+// modules/alerts/alerts_sending.php, row 533
 "complete filter text" => "texto completo del filtro",
 
-// modules/alerts/alerts_sending.php, row 435, 444
+// modules/alerts/alerts_sending.php, row 534, 543
 "howoften" => "frecuencia",
 
-// modules/alerts/alerts_sending.php, row 436
+// modules/alerts/alerts_sending.php, row 535
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL del formulario an\xF3nimo (configurada en Administraci\xF3n de Alertas - Configuraci\xF3n)",
 
-// modules/alerts/alerts_sending.php, row 437
+// modules/alerts/alerts_sending.php, row 536
 "Unsubscribe Form URL" => "URL del formulario de baja",
 
-// modules/alerts/alerts_sending.php, row 442
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Alerts Welcome" => "Alias para la bienvenida de alertas",
 
-// modules/alerts/alerts_sending.php, row 445
+// modules/alerts/alerts_sending.php, row 544
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL del formulario de colecci\xF3n (configurada en Administraci\xF3n de Alertas - Configuraci\xF3n)",
 
-// modules/alerts/alerts_sending.php, row 446
+// modules/alerts/alerts_sending.php, row 545
 "email confirmed" => "email confirmado",
 
-// modules/alerts/alerts_sending.php, row 452
+// modules/alerts/alerts_sending.php, row 551
 "Aliases for Slice Wizard Welcome" => "Alias para la bienvenida del asistente de canal",
 
-// modules/alerts/alerts_sending.php, row 454, 466
+// modules/alerts/alerts_sending.php, row 553, 565
 "Slice name" => "Nombre del canal",
 
-// modules/alerts/alerts_sending.php, row 455, 467
+// modules/alerts/alerts_sending.php, row 554, 566
 "New user name" => "Nombre del nuevo usuario",
 
-// modules/alerts/alerts_sending.php, row 456
+// modules/alerts/alerts_sending.php, row 555
 "New user login name" => "Nombre de inicio de sesi\xF3n del nuevo usuario",
 
-// modules/alerts/alerts_sending.php, row 457
+// modules/alerts/alerts_sending.php, row 556
 "New user role (editor / admin)" => "Rol del nuevo usuario (editor / admin)",
 
-// modules/alerts/alerts_sending.php, row 458
+// modules/alerts/alerts_sending.php, row 557
 "My name" => "Mi nombre",
 
-// modules/alerts/alerts_sending.php, row 459
+// modules/alerts/alerts_sending.php, row 558
 "My email" => "Mi email",
 
-// modules/alerts/alerts_sending.php, row 464
+// modules/alerts/alerts_sending.php, row 563
 "Aliases for User Templates (you can use also all aliases of the user)" => "Alias para plantillas de usuario (tambi\xE9n puede usar todos los alias del usuario)",
 
-// modules/alerts/alerts_sending.php, row 472
+// modules/alerts/alerts_sending.php, row 571
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Alias para el email de cambio de contrase\xF1a (tambi\xE9n puede usar todos los alias del usuario)",
 
-// modules/alerts/alerts_sending.php, row 474
+// modules/alerts/alerts_sending.php, row 573
 "HTML link to the password change page for current user" => "Enlace HTML a la p\xE1gina de cambio de contrase\xF1a del usuario actual",
 
-// modules/alerts/alerts_sending.php, row 475
+// modules/alerts/alerts_sending.php, row 574
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Par\xE1metro de URL usado para el enlace de cambio de contrase\xF1a en _#PWD_LINK (puede usarlo si desea utilizar su propia url)",
 
-// modules/alerts/cf_common.php, row 41
+// modules/alerts/cf_common.php, row 42
 "Language" => "Idioma",
 
-// modules/alerts/cf_common.php, row 47
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/cf_common.php, row 48
+// modules/alerts/send_emails.php, row 71
 "Email" => "Correo-e",
 
-// modules/alerts/cf_common.php, row 53
+// modules/alerts/cf_common.php, row 54
 "Password" => "Clave",
 
-// modules/alerts/cf_common.php, row 58
+// modules/alerts/cf_common.php, row 59
 "First name" => "Nombre",
 
-// modules/alerts/cf_common.php, row 63
+// modules/alerts/cf_common.php, row 64
 "Last name" => "Apellidos",
 
-// modules/alerts/cf_common.php, row 71
+// modules/alerts/cf_common.php, row 72
 // modules/alerts/synchro2.php, row 65
 "How often" => "Frecuencia",
 
-// modules/alerts/cf_common.php, row 78
+// modules/alerts/cf_common.php, row 79
 "Change password" => "Cambiar clave",
 
-// modules/alerts/cf_common.php, row 84
+// modules/alerts/cf_common.php, row 85
 "Retype new password" => "Confirme nueva clave",
 
-// modules/alerts/menu.php, row 49, 50
-// modules/alerts/tableviews.php, row 158, 159
-"Alerts Settings" => "Configuraci\xF3n Alertas",
+// modules/alerts/emails.php, row 45
+"You do not have permission to manage Emails" => "No tiene permisos para administrar Emails",
 
-// modules/alerts/menu.php, row 87
-"Alerts Admin" => "Admin Alertas",
+// modules/alerts/emails.php, row 62
+"Owner" => "Due\xF1o",
 
-// modules/alerts/menu.php, row 91
-"Settings" => "Configuraci\xF3n",
-
-// modules/alerts/menu.php, row 95
-// modules/alerts/send_emails.php, row 136
-// modules/alerts/synchro2.php, row 77
-// modules/alerts/tableviews.php, row 103
-"Selections" => "Selecciones",
-
-// modules/alerts/menu.php, row 99
-"Send emails" => "Enviar correos-e",
-
-// modules/alerts/menu.php, row 104
-"Reader management" => "Administraci\xF3n Suscriptores",
-
-// modules/alerts/menu.php, row 107
-"Documentation" => "Documentaci\xF3n",
-
-// modules/alerts/menu.php, row 109
-"Common" => "Com\xFAn",
-
-// modules/alerts/menu.php, row 111
+// modules/alerts/emails.php, row 66
+// modules/alerts/menu.php, row 86
 "Email templates" => "Plantillas de correo",
 
-// modules/alerts/modedit.php, row 101
-"You do not have permissions to add slice" => "Usted no tiene permisos en este canal",
+// modules/alerts/menu.php, row 50, 51
+// modules/alerts/modedit.php, row 165, 168
+"Alerts Settings" => "Configuraci\xF3n Alertas",
 
-// modules/alerts/send_emails.php, row 55
+// modules/alerts/menu.php, row 62
+"Alerts Admin" => "Admin Alertas",
+
+// modules/alerts/menu.php, row 66
+"Settings" => "Configuraci\xF3n",
+
+// modules/alerts/menu.php, row 70
+// modules/alerts/send_emails.php, row 153
+// modules/alerts/synchro2.php, row 77
+"Selections" => "Selecciones",
+
+// modules/alerts/menu.php, row 74
+"Send emails" => "Enviar correos-e",
+
+// modules/alerts/menu.php, row 79
+"Reader management" => "Administraci\xF3n Suscriptores",
+
+// modules/alerts/menu.php, row 82
+"Documentation" => "Documentaci\xF3n",
+
+// modules/alerts/menu.php, row 84
+"Common" => "Com\xFAn",
+
+// modules/alerts/modedit.php, row 93
+"You do not have permissions to edit this Alerts module" => "",
+
+// modules/alerts/modedit.php, row 165
+"Add Alerts" => "",
+
+// modules/alerts/modedit.php, row 173
+"language" => "idioma",
+
+// modules/alerts/modedit.php, row 177
+"Alert emails" => "",
+
+// modules/alerts/modedit.php, row 181, 187
+"Edit '%1'" => "",
+
+// modules/alerts/modedit.php, row 183
+"welcome email" => "correo-e bienvenida",
+
+// modules/alerts/modedit.php, row 189
+// modules/alerts/send.php, row 76
+"alert email" => "correo-e alerta",
+
+// modules/alerts/modedit.php, row 192
+"alerts ID" => "ID alertas",
+
+// modules/alerts/send.php, row 44
+"You do not have permissions to access this page" => "Usted no tiene permisos a esta p\xE1gina",
+
+// modules/alerts/send.php, row 69
+"Send Emails" => "Env\xEDa correos-e",
+
+// modules/alerts/send.php, row 75
+"Alert email to send" => "",
+
+// modules/alerts/send.php, row 77
+"Set" => "",
+
+// modules/alerts/send_emails.php, row 64
 "Send now an example alert email to email" => "Enviar ahora un email de alerta de prueba a un email",
 
-// modules/alerts/send_emails.php, row 65, 76
+// modules/alerts/send_emails.php, row 72, 91
 "as if" => "como s\xED",
 
-// modules/alerts/send_emails.php, row 66, 77, 92
+// modules/alerts/send_emails.php, row 73, 92, 108
 "Go!" => "Ir",
 
-// modules/alerts/send_emails.php, row 74
+// modules/alerts/send_emails.php, row 83
 "Send now an example alert email to Reader" => "Enviar ahora un email de alerta de prueba a un suscriptor",
 
-// modules/alerts/send_emails.php, row 75
+// modules/alerts/send_emails.php, row 90
 "Reader" => "Suscriptor",
 
-// modules/alerts/send_emails.php, row 84
+// modules/alerts/send_emails.php, row 99
 "Send alerts" => "Env\xEDe alertas",
 
-// modules/alerts/send_emails.php, row 91
+// modules/alerts/send_emails.php, row 107
 "Send now alerts to all users subscribed to " => "Enviar ahora las alertas a todos los suscriptores",
 
-// modules/alerts/send_emails.php, row 91
+// modules/alerts/send_emails.php, row 107
 "Warning: This is a real command!" => "Atenci\xF3n: Este es un comando real!",
 
-// modules/alerts/send_emails.php, row 95
+// modules/alerts/send_emails.php, row 111
 "Last time the alerts were sent on:" => "Ultima vez que las alertas fueron enviadas",
 
-// modules/alerts/send_emails.php, row 106
+// modules/alerts/send_emails.php, row 122
 "%1 email(s) sent" => "%1 correo(s) enviados",
 
-// modules/alerts/send_emails.php, row 134
+// modules/alerts/send_emails.php, row 151
 "Slice" => "Canal",
 
-// modules/alerts/send_emails.php, row 135
+// modules/alerts/send_emails.php, row 152
 "View (Selection set)" => "Ver (Selecci\xF3n)",
 
-// modules/alerts/send_emails.php, row 140
+// modules/alerts/send_emails.php, row 157
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
  => "Defina las selecciones en los canales desde los que desea enviar alertas,\n"
    ."        en vistas de tipo Alerts Selection Set",
 
-// modules/alerts/synchro.php, row 63
+// modules/alerts/synchro.php, row 65
 "Synchronization with Reader Management Slice" => "Sincronizaci\xF3n con el canal de Administraci\xF3n de Lectura",
 
-// modules/alerts/synchro.php, row 93
+// modules/alerts/synchro.php, row 95
 "Not Yet Set" => "No configurado a\xFAn",
 
-// modules/alerts/synchro.php, row 102
+// modules/alerts/synchro.php, row 104
 "Choose Reader Management Slice" => "Seleccione el Canal de Administraci\xF3n de Lectura",
 
-// modules/alerts/synchro.php, row 103
+// modules/alerts/synchro.php, row 105
 "This Alerts Collection takes user data from the slice" => "Esta colecci\xF3n de alertas toma informaci\xF3n del usuario desde el canal",
 
-// modules/alerts/synchro.php, row 110
+// modules/alerts/synchro.php, row 112
 "Change to: " => "Cambiar a:",
 
-// modules/alerts/synchro.php, row 116
+// modules/alerts/synchro.php, row 118
 "and delete the %1-specific fields from %2" => "y borre los %1-campos espec\xEDficos de %2",
 
-// modules/alerts/synchro.php, row 120
+// modules/alerts/synchro.php, row 122
 "Change" => "Cambiar",
 
-// modules/alerts/synchro.php, row 130
+// modules/alerts/synchro.php, row 133
 "Add %1-specific fields to %2" => "A\xF1ada %1-campos espec\xEDficos de %2",
 
-// modules/alerts/synchro.php, row 132
+// modules/alerts/synchro.php, row 136
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
  => "A\xF1ada solamente campos con IDs que a\xFAn no existen en el canal. Refresque el grupo de constantes que contiene las selecciones si ya existen.",
 
-// modules/alerts/synchro.php, row 138
+// modules/alerts/synchro.php, row 142
 "Field Name" => "Nombre de Campo",
 
-// modules/alerts/synchro.php, row 139
+// modules/alerts/synchro.php, row 143
 "Field ID" => "ID Campo",
 
-// modules/alerts/synchro.php, row 148
+// modules/alerts/synchro.php, row 152
 "Add or refresh fields" => "A\xF1ada o refresque campos",
 
-// modules/alerts/synchro.php, row 150
+// modules/alerts/synchro.php, row 154
 "This command can not be used until you choose the Reader Management Slice." => "Este comando no puede ser utilizado hasta que Usted no seleccione el Canal de Administraci\xF3n de Lectura",
 
 // modules/alerts/synchro2.php, row 66, 74
@@ -299,93 +380,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "%1 campo(s) a\xF1adido(s)",
 
-// modules/alerts/synchro2.php, row 200
+// modules/alerts/synchro2.php, row 201
 "%1 field(s) and %2 constant group(s) deleted" => "%1 campo(s) y %2 grupo(s) de constantes borrado(s)",
 
-// modules/alerts/synchro2.php, row 228
+// modules/alerts/synchro2.php, row 229
 "not set" => "no activado",
 
-// modules/alerts/tableviews.php, row 65
-"No selections defined. You must define some." => "No se han definido selecciones. Defina alguna.",
-
-// modules/alerts/tableviews.php, row 102
-"Alerts Selections" => "Selecciones de Alertas",
-
-// modules/alerts/tableviews.php, row 106
-"Choose selections which form the Alert email." => "Seleccione las opciomes que formar\xE1n la alerta de correo-e",
-
-// modules/alerts/tableviews.php, row 114
-"selection" => "selecci\xF3n",
-
-// modules/alerts/tableviews.php, row 127
-"order" => "orden",
-
-// modules/alerts/tableviews.php, row 162
-"Core settings for the Alerts." => "Configuraci\xF3n base para las Alertas",
-
-// modules/alerts/tableviews.php, row 172
-"alerts ID" => "ID alertas",
-
-// modules/alerts/tableviews.php, row 180
-"name" => "nombre",
-
-// modules/alerts/tableviews.php, row 183
-"form URL" => "URL desde",
-
-// modules/alerts/tableviews.php, row 185
-"language" => "idioma",
-
-// modules/alerts/tableviews.php, row 189
-"deleted" => "borrado",
-
-// modules/alerts/tableviews.php, row 190
-"Use AA Admin / Delete<br>to delete permanently" => "Use AA Admin / Borrar<br>para borrar permanentemente",
-
-// modules/alerts/tableviews.php, row 195
-"welcome email" => "correo-e bienvenida",
-
-// modules/alerts/tableviews.php, row 204, 267
-"alert email" => "correo-e alerta",
-
-// modules/alerts/tableviews.php, row 223
-"created at" => "creado",
-
-// modules/alerts/tableviews.php, row 231
-"created by" => "creado por",
-
-// modules/alerts/tableviews.php, row 241, 261
-"You don't have permissions to edit any collection or no collection exists." => "Usted no tiene permisos para editar ninguna colecci\xF3n o la colecci\xF3n no existe",
-
-// modules/alerts/tableviews.php, row 255, 256
-"Send Emails" => "Env\xEDa correos-e",
-
-// modules/alerts/tableviews.php, row 263
-"Here you send the Alert emails manually." => "Ac\xE1 Usted puede enviar una alerta de correo manualmente",
-
-// modules/alerts/util.php, row 58
-"instant" => "instant\xE1neo",
-
-// modules/alerts/util.php, row 59
-"daily" => "diario",
+// modules/alerts/util.php, row 54
+"-- none --" => "",
 
 // modules/alerts/util.php, row 60
+"email" => "",
+
+// modules/alerts/util.php, row 87
+"instant" => "instant\xE1neo",
+
+// modules/alerts/util.php, row 88
+"daily" => "diario",
+
+// modules/alerts/util.php, row 89
 "weekly" => "semanal",
 
-// modules/alerts/util.php, row 61
+// modules/alerts/util.php, row 90
 "twoweeks" => "cada dos semanas",
 
-// modules/alerts/util.php, row 62
+// modules/alerts/util.php, row 91
 "monthly" => "mensual",
 
-// modules/alerts/util.php, row 63
+// modules/alerts/util.php, row 92
 "irregular" => "irregularmente", // ai 2026-06
 
-// modules/alerts/util.php, row 70
+// modules/alerts/util.php, row 99
 "Active" => "Aprobados",
 
-// modules/alerts/util.php, row 71
+// modules/alerts/util.php, row 100
 "Holding bin" => "Por aprobar",
 
-// modules/alerts/util.php, row 72
+// modules/alerts/util.php, row 101
 "Trash bin" => "Papelera",
 ];

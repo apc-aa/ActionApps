@@ -47,74 +47,74 @@ return [
 // "Constant level (used for hierachical constants)" => "Nivel jer\xE1rquico (para constantes jer\xE1rquicas)",
 // End of unused messages
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Error en par\xE1metro - el archivo a incluir debe estar en la misma carpeta que este .shtml y debe contener \xFAnicamente caracteres alfanum\xE9ricos",
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "No se encontr\xF3 el archivo",
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Identificador de canal no v\xE1lido, o el canal fu\xE9 borrado",
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "Salida de slice.php prohibida para este canal",
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "id de sesi\xF3n",
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "n\xFAmero de p\xE1gina actual (en numerador de p\xE1gina)",
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "longitud de la p\xE1gina (n\xFAmero de \xEDtems)",
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "No se encontraron items",
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "Mostrar seleccionados",
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "Mostrar todos",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "A\xF1adir nuevo",
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "Alias para %1",
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "Alias para el asunto del comentario",
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "Alias para el texto del comentario",
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "Alias para el autor",
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "Alias para el e-mail del autor",
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "Alias para url del autor del sitio",
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "Alias para la descripci\xF3n del sitio del autor",
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "Alias para la fecha de publicaci\xF3n",
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "Alias para la direcci\xF3n IP del computador del autor",
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "Alias para la caja de selecci\xF3n utilizada para seleccionar un comentario de la discusi\xF3n",
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "Alias para im\xE1genes",
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -122,7 +122,7 @@ return [
    ."                             <i>Uso: </i>en el c\xF3digo del formulario<br>\n"
    ."                             <i>Ejemplo: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">",
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -130,7 +130,7 @@ return [
    ."                             <i>Uso: </i>en el c\xF3digo del formulario<br>\n"
    ."                             <i>Ejemplo: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">",
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -138,7 +138,7 @@ return [
    ."                             <i>Uso: </i>c\xF3digo de entrada en formulario<br>\n"
    ."                             <i>Ejemplo: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">",
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -146,7 +146,7 @@ return [
    ."                             <i>Uso: </i>en c\xF3digo HTML para indexar la vista del comentario<br>\n"
    ."                             <i>Ejemplo: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>",
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -154,7 +154,7 @@ return [
    ."                             <i>Uso: </i>en c\xF3digo HTML para la vista de texto completo del comentario<br>\n"
    ."                             <i>Ejemplo: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;",
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -162,64 +162,64 @@ return [
    ."                             <i>Uso: </i>c\xF3digo de entrada en formulario<br>\n"
    ."                             <i>Ejemplo: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">",
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "Alias para botones de Mostrar todo, Mostrar seleccionados, A\xF1adir nuevo<br>\n"
    ."                             <i>Uso: </i> al final del c\xF3digo HMTL",
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "Tercer par\xE1metro llenado en el campo DiscussionMailList",
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "%1 par\xE1metro llenado en el campo DiscussionMailList",
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "Nombre de constante",
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "Nombre de constante traducido",
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "Valor de constante",
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "Prioridad de constante",
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "ID grupo de constante",
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "Clase de constante (solo para categor\xEDas)",
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "N\xFAmero de constante",
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "ID \xFAnico de constante (32 caracteres hexadecimales)",
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "ID \xFAnico de constante (autoincrementa desde 1 para cada constante en el sistema)",
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "Descripci\xF3n de constante",
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Nivel jer\xE1rquico (para constantes jer\xE1rquicas)",
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "Error: funci\xF3n de alias %1 incorrecta para %2",
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "\xCDtem seleccionado",
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "n\xFAmero de registros encontrados",
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "No hay ning\xFAn comentario seleccionado",
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "nombre exacto del grupo",
 
 // include/scroller.php, row 86
@@ -240,27 +240,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "Seleccione Categor\xEDa ",
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "Todas las categor\xEDas",
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Error: falta la contrase\xF1a de lectura",
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Mensaje de noticias del Toolkit",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "Atr\xE1s",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Volver a iniciar sesi\xF3n",
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "Formulario de asignaci\xF3n",
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "Obtiene los datos de relaciones de \xEDtems enviados por POST desde el formulario",
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];
