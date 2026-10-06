@@ -6244,6 +6244,16 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
     /** stands for the arguments of {import(..)} - only {import:..} reaches an import */
     private const NOT_COLON = "\x00(";
+    public const PREFIX = 'imp:';
+    /** the answer, besides those of StartResult::CODES, of a task whose saver may not import */
+    public const DENIED = 'denied';
+
+    /** every answer of {import} - PREFIX and a StartResult code or DENIED
+     *  @return list<string> */
+    public static function codes(): array
+    {
+        return array_map(static fn(string $code): string => self::PREFIX . $code, [...\AA\Import\StartResult::CODES, self::DENIED]);
+    }
 
     public static function parseParam(string $params, string $delimiter=':'): array
     {
@@ -6282,13 +6292,13 @@ class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
         }
         $user = (string)$task->getProperty('saved_by');
         if ($user === '') {
-            return 'imp:denied';
+            return self::PREFIX . self::DENIED;
         }
         $result = \AA\Import\Service::start($def, $mode, [], 'plan:' . $task->getId(), $user);
         if (($result->code === 'invalid') && ($result->reason === 'FORBIDDEN')) {
-            return 'imp:denied';
+            return self::PREFIX . self::DENIED;
         }
-        return 'imp:' . $result->code;
+        return self::PREFIX . $result->code;
     }
 }
 

@@ -47,6 +47,16 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
     /** who saved the task last - its {import} runs with his right to the slice. A uid: a task of a
      *  deleted user keeps it, so a new user given the same uid would inherit the task's imports. */
     protected $saved_by = '';
+    /** when the task last ran (unix time) and how it ended - resultCode(); the run writes them, never the form */
+    protected $lastrun = '';
+    protected $lastresult = '';
+
+    /** the properties the form neither shows nor posts - the task records them itself */
+    private const NOT_IN_FORM = ['saved_by' => 1, 'lastrun' => 1, 'lastresult' => 1];
+
+    /** a run with the result of the last one is noted again only after so many seconds - an event
+     *  task runs on every item an import or a bulk action saves */
+    private const RECORD_AGAIN_AFTER = 60;
 
     /** the task whose toexecutelater() runs now - an expression may act only inside a task */
     private static ?self $running = null;
@@ -68,25 +78,70 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             'shift' => new AA_Property('shift', _m("+ seconds"), 'int', false, true, '', false, _m('Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the "15-th in the month" by previous row, so you can combine both:<br> - "time" = "first day of this month 10:00"<br> - "+ seconds" = "1209600"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)')),
             'item_id' => new AA_Property('item_id', _m("Item ID"), 'string', false, true, 'id', false, _m("Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item.")),
             'saved_by' => new AA_Property('saved_by', _m("Saved by"), 'string', false, true),
+            // text, not int: save() then reads both values with one object_text query
+            'lastrun' => new AA_Property('lastrun', _m("Last run"), 'string', false, true),
+            'lastresult' => new AA_Property('lastresult', _m("Result of the last run"), 'string', false, true),
         ];
     }
 
-    /** The form leaves out who saved the task - save() records it. */
+    /** The form leaves out who saved the task and its last run - the task records them. */
     public static function addFormrows(AA_Form $form): void
     {
         if (static::USES_NAME) {
             self::getPropertyObject('aa_name')?->addPropertyFormrows($form);
         }
-        foreach (array_diff_key(static::getClassProperties(), ['saved_by' => 1]) as $property) {
+        foreach (array_diff_key(static::getClassProperties(), self::NOT_IN_FORM) as $property) {
             $property->addPropertyFormrows($form);
         }
     }
 
-    /** Records who saves the task - never a value of the form. */
+    /** Records who saves the task - never a value of the form - and keeps its last run as stored now:
+     *  the object of the form does not carry it, and save() rewrites every property. A run noted
+     *  between this read and the rewrite is lost - the previous run shows until the next one. */
     public function save(): false|string
     {
         $this->saved_by = AuthGetUid();
+        $stored = self::textRows((string) $this->getId(), false, ['lastrun', 'lastresult']);
+        $this->lastrun    = $stored['lastrun'] ?? '';
+        $this->lastresult = $stored['lastresult'] ?? '';
         return parent::save();
+    }
+
+    /** A short code of how a run ended, for the task list: the output itself may be long or hold
+     *  data, so only an {import} code passes as it is. */
+    public static function resultCode(string $output): string
+    {
+        $output = trim($output);
+        return match (true) {
+            $output === ''                              => 'empty',
+            in_array($output, AA_Stringexpand_Import::codes(), true) => $output,
+            default                                     => 'ok',
+        };
+    }
+
+    /** Notes the run in the stored task - only these two properties, so a user's edit saved meanwhile
+     *  stays. Under the lock of the task's rows; a task deleted meanwhile gets nothing back. The same
+     *  result within RECORD_AGAIN_AFTER is not written again, so the column may show a run up to
+     *  a minute older. */
+    private function recordRun(string $result): void
+    {
+        if (($result === $this->lastresult) && ((time() - (int) $this->lastrun) < self::RECORD_AGAIN_AFTER)) {
+            return;
+        }
+        $id = (string) $this->getId();
+        try {
+            DB_AA::transaction(function () use ($id, $result): void {
+                if ((self::textRows($id, DB_AA::inTransaction(), ['aa_type'])['aa_type'] ?? '') !== self::class) {
+                    return;
+                }
+                $this->lastrun    = (string) time();
+                $this->lastresult = $result;
+                $this->update(['lastrun', 'lastresult']);
+            });
+        } catch (\Throwable) {
+            // a failed commit or a second DB handle must not replace the task's own result or exception;
+            // a failed statement still ends the request - DB_PDO::halt() dies, it does not throw
+        }
     }
 
     // static function factoryFromForm($oowner, $otype=null)        ... could be redefined here, but we use the standard one from AA_Object
@@ -124,7 +179,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
           <table>
             <thead>
             <tr>
-              <th>' . implode("</th>\n<th scope=col>", ['', _m('Action'), _m('Name'), _m('Event'), _m('Time') . '<br>' . _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Task'), _m('ID'), _m('Module')]) . '</th>
+              <th>' . implode("</th>\n<th scope=col>", ['', _m('Action'), _m('Name'), _m('Event'), _m('Time') . '<br>' . _m('+ seconds'), _m('Computed time'), _m('Condition'), _m('Scheduled to'), _m('Last run'), _m('Task'), _m('ID'), _m('Module')]) . '</th>
             </tr>
             </thead>
             <tbody>
@@ -154,6 +209,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
               <td>{internal:' . self::class . ':computedtime}</td>
               <td>{expandable:{_#CONDITIO}:30:...:&raquo;:&laquo;}</td>
               <td>{internal:' . self::class . ':scheduledto}</td>
+              <td>{internal:' . self::class . ':lastrun}</td>
               <td>{expandable:{_#TASK____}:30:...:&raquo;:&laquo;}</td>
               <td><small>_#AA_ID___</small></td>
               <td><small title="_#AA_OWNER">_#AA_OW_NM</small></td>
@@ -200,6 +256,20 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
                 case 'scheduledto':
                     $task = Toexecute::scheduledTask(self::toexecuteSelector($task_id));
                     return '<span title="task.id:' . $task['id'] . '">' . ($task['execute_after'] ? date('Y-m-d H:i:s', $task['execute_after']) : '--') . '</span>';
+                case 'lastrun':
+                    $at = (int) $content->getAaValue('lastrun')->getValue();
+                    if (!$at) {
+                        return '--';
+                    }
+                    $code = (string) $content->getAaValue('lastresult')->getValue();
+                    $text = match ($code) {
+                        'ok'      => _m('done'),
+                        'empty'   => _m('done, no output'),
+                        'skipped' => _m('condition not met'),
+                        'error'   => _m('failed'),
+                        default   => $code,
+                    };
+                    return '<span title="' . safe($code) . '">' . date('Y-m-d H:i:s', $at) . '</span><br>' . safe($text);
                 case 'computedtime':
                     $task = AA_Object::load($task_id, 'AA_Plannedtask');
                     $time = $task?->nexttime();
@@ -219,6 +289,7 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
         // a task run by an event inside another task hands the context back when it ends
         $outer = self::$running;
         self::$running = $this;
+        $result = 'error';
         try {
             $ret = $this->aa_name;
             AA::$slice_id = $this->getOwnerId();
@@ -229,15 +300,15 @@ class AA_Plannedtask extends AA_Object implements LaterInterface, AA\Util\NamedI
             $condition_res = strlen($condition) ? trim(AA::Un($condition)) : '1';
             if (!strlen($condition_res) || ($condition_res === '0')) {
                 $ret .= ":Cond not met - $condition ($condition_res)";
+                $result = 'skipped';
             } else {
-                if (is_long_id($this->item_id)) {
-                    $ret .= ':=' . AA::Un($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l')));
-                } else {
-                    $ret .= ':=' . AA::Un($this->task);
-                }
+                $output = is_long_id($this->item_id) ? AA::Un($this->task, '', AA_Items::getItem(new zids($this->item_id, 'l'))) : AA::Un($this->task);
+                $ret .= ':=' . $output;
+                $result = self::resultCode($output);
             }
         } finally {
             self::$running = $outer;
+            $this->recordRun($result);
         }
         // AA_Log::write('TOEXECUTE', get_class($this) . ':' . $this->getId(), 'end' . ":$ret:x".AA::$slice_id);  // logged in Toexecute
         return $ret;
