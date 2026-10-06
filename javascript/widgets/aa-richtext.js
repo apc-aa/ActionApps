@@ -27,13 +27,41 @@ const sibling = (path) => {
     return url;
 };
 
+/**
+ * TinyMCE sits in a shadow root: page CSS written for the page's own markup (".row div:last-child
+ * { flex: 0 0 592px }") would otherwise reach its divs and squeeze the edit area to nothing.
+ * Only inherited properties get in; the skin and this look are set inside.
+ */
+let shadowSheet = null;
+const editorSheet = () => {
+    if (!shadowSheet) {
+        shadowSheet = new CSSStyleSheet();
+        // CKEditor 4 look: gray bar, framed groups, small buttons - two rows at 920 px
+        shadowSheet.replaceSync(`
+:host { display: block; }
+:host .tox.tox-tinymce { margin: 2px; border: 1px solid #b6b6b6; border-radius: 0; }
+:host .tox.tox-tinymce .tox-editor-header { padding: 2px 0; background: linear-gradient(#f8f8f8, #e8e8e8); border-bottom: 1px solid #b6b6b6; box-shadow: none; }
+:host .tox-tinymce .tox-toolbar-overlord, :host .tox-tinymce .tox-toolbar__primary, :host .tox-tinymce .tox-toolbar { background: transparent; border: 0; }
+:host .tox-tinymce .tox-toolbar__group { margin: 3px 3px 2px 5px; padding: 0 2px; background: linear-gradient(#fff, #e4e4e4); border: 1px solid #b6b6b6; border-radius: 3px; }
+:host .tox-tinymce .tox-tbtn { width: 26px; height: 24px; margin: 1px 0; border-radius: 2px; }
+:host .tox-tinymce .tox-tbtn svg { fill: #474747; transform: scale(.8); }
+:host .tox-tinymce .tox-tbtn--select, :host .tox-tinymce .tox-split-button .tox-tbtn, :host .tox-tinymce .tox-tbtn:has(.tox-tbtn__select-label) { width: auto; }
+:host .tox-tinymce .tox-tbtn__select-label { font: 12px Arial, sans-serif; }
+:host .tox-tinymce .tox-tbtn--bespoke .tox-tbtn__select-label { width: 4.6em; }
+:host .tox-tinymce .tox-split-button { height: 24px; margin: 1px 0; }
+:host .tox-tinymce .tox-statusbar { background: #e8e8e8; border-top: 1px solid #d1d1d1; }
+`);
+    }
+    return shadowSheet;
+};
+
 class AaRichtextElement extends HTMLElement {
     #textarea = null;           // the named one
     #sync = null;
     #mode = null;               // the view shown
     #target = null;             // the view last asked for
     #queue = Promise.resolve();
-    #rich = null;               // {copy, api}
+    #rich = null;               // {host, api}
     #code = null;               // <aa-code>
     #back = null;               // Editor button of the source view
     #wasRich = false;
@@ -242,7 +270,7 @@ class AaRichtextElement extends HTMLElement {
         if (this.#rich) {
             this.#flushRich();
             this.#rich.api?.destroy();
-            this.#rich.copy.remove();
+            this.#rich.host.remove();
             this.#rich = null;
             if (this.#textarea) {
                 this.#textarea.hidden = false;
@@ -284,9 +312,13 @@ class AaRichtextElement extends HTMLElement {
         const start = this.#textarea.value;
         copy.value = start;
         copy.placeholder = this.#textarea.placeholder;
-        this.#textarea.after(copy);
+        const host = document.createElement('aa-richtext-frame');
+        const root = host.attachShadow({ mode: 'open' });
+        root.adoptedStyleSheets = [editorSheet()];
+        root.append(copy);
+        this.#textarea.after(host);
         this.#textarea.hidden = true;
-        const state = { copy, api: null };
+        const state = { host, api: null };
         this.#rich = state;
         let api;
         try {
