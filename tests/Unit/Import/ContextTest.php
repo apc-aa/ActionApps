@@ -346,6 +346,7 @@ final class ContextTest extends TestCase
             [Client::class, 'request', ['url', 'body', 'headers']],
             [Client::class, 'limitedContent', ['url']],
             [(new Context([], new BatchBudget(microtime(true) + 30)))->http(), 'request', ['url', 'body', 'headers']],
+            [(new Context([], new BatchBudget(microtime(true) + 30)))->http(follow: false), 'request', ['url', 'body', 'headers']],
         ];
         foreach ($marked as [$class, $method, $names]) {
             $params = [];
@@ -442,6 +443,25 @@ final class ContextTest extends TestCase
 
         self::assertSame('redirects', $this->expectRefused(fn() => $ctx->http()->request('GET', 'https://1.1.1.1/a'))->detail);
         self::assertCount(4, $this->requests);
+    }
+
+    // a login carries its credentials in the body, which a 307/308 would resend to the new address
+    public function test_http_withoutRedirectsReturnsThe3xx(): void
+    {
+        $ctx    = $this->context([new MockResponse('', ['http_code' => 307, 'redirect_url' => 'https://1.1.1.2/login', 'response_headers' => ['Location: https://1.1.1.2/login']]), new MockResponse('ok')]);
+        $answer = $ctx->http(follow: false)->request('POST', 'https://1.1.1.1/login', 'password=secret');
+
+        self::assertSame([307, 'https://1.1.1.2/login'], [$answer->status, $answer->redirect]);
+        self::assertCount(1, $this->requests);
+    }
+
+    public function test_http_withoutRedirectsKeepsTheGuards(): void
+    {
+        $ctx = $this->context([new MockResponse(str_repeat('x', 11)), new MockResponse('a')], maxBytes: 10);
+
+        self::assertSame('address', $this->expectRefused(fn() => $ctx->http(follow: false)->request('POST', 'http://10.0.0.1/login', 'x'))->detail);
+        self::assertSame('too_large', $this->expectRefused(fn() => $ctx->http(follow: false)->request('POST', 'https://1.1.1.1/big', 'x'))->detail);
+        self::assertSame(['User-Agent: ' . Client::agent('import')], $this->requests[0]['options']['normalized_headers']['user-agent']);
     }
 
     // a conditional request answered "not modified" is not a redirect

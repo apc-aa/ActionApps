@@ -93,22 +93,23 @@ final class Context
     }
 
     /**
-     * HTTP(S) only to public addresses, also after a redirect, at most 3 redirects; the request
-     * ends with the step, and once its budget is spent none starts (BatchBudgetSpent - the step's
-     * own end, not a failure of the source). The port is not restricted: the source takes its URL
-     * from its settings. A non-2xx status is an answer - what it means is up to the caller. DNS is
+     * HTTP(S) only to public addresses, also after a redirect, at most 3 redirects - or none with
+     * $follow false: then a 3xx is the answer, so a login never resends its body (a 307/308 would)
+     * to another address. The request ends with the step, and once its budget is spent none
+     * starts (BatchBudgetSpent - the step's own end, not a failure of the source). The port is not
+     * restricted: the source takes its URL from its settings. A non-2xx status is an answer - what it means is up to the caller. DNS is
      * not limited by the budget: neither the guard's lookup nor the second one that sorts a blocked
      * host, so a failing resolver can take up to about twice its timeout.
      */
-    public function http(): ClientInterface
+    public function http(bool $follow = true): ClientInterface
     {
-        return new class ($this->send(...)) implements ClientInterface {
-            /** @param \Closure(string, string, ?string, array<string, string>): Response $send */
-            public function __construct(private readonly \Closure $send) {}
+        return new class ($this->send(...), $follow ? self::REDIRECTS : 0) implements ClientInterface {
+            /** @param \Closure(string, string, ?string, array<string, string>, int): Response $send */
+            public function __construct(private readonly \Closure $send, private readonly int $redirects) {}
 
             public function request(string $method, #[SensitiveParameter] string $url, #[SensitiveParameter] ?string $body = null, #[SensitiveParameter] array $headers = []): Response
             {
-                return ($this->send)($method, $url, $body, $headers);
+                return ($this->send)($method, $url, $body, $headers, $this->redirects);
             }
         };
     }
@@ -174,7 +175,7 @@ final class Context
      * @param array<string, string> $headers
      * @throws BatchBudgetSpent
      */
-    private function send(string $method, #[SensitiveParameter] string $url, #[SensitiveParameter] ?string $body, #[SensitiveParameter] array $headers): Response
+    private function send(string $method, #[SensitiveParameter] string $url, #[SensitiveParameter] ?string $body, #[SensitiveParameter] array $headers, int $redirects): Response
     {
         // the guard checks this too; kept here so the rule does not depend on the library
         if (preg_match('~^https?://~i', $url) !== 1) {
@@ -182,7 +183,7 @@ final class Context
         }
         $seconds = $this->budget->httpTimeout();
         $this->guarded ??= new NoPrivateNetworkHttpClient($this->transport ?? HttpClient::create());
-        $client = new Client(timeout: $seconds, idle: min(self::IDLE_SECONDS, $seconds), agent: Client::agent('import'), redirects: self::REDIRECTS, http: $this->guarded, maxBytes: $this->maxBytes);
+        $client = new Client(timeout: $seconds, idle: min(self::IDLE_SECONDS, $seconds), agent: Client::agent('import'), redirects: $redirects, http: $this->guarded, maxBytes: $this->maxBytes);
 
         try {
             $answer = $client->request($method, $url, $body, $headers);
@@ -191,9 +192,9 @@ final class Context
         } catch (TransportException $e) {
             throw $this->transportFailure($e, $url);
         }
-        // the guard hands over the last 3xx when redirects ran out
-        if ($answer->redirect !== '') {
-            throw $this->failure(false, 'More than ' . self::REDIRECTS . ' redirects', $url, SourceFailure::REDIRECTS);
+        // the guard hands over the last 3xx when redirects ran out; with none allowed it is the answer
+        if (($redirects > 0) && ($answer->redirect !== '')) {
+            throw $this->failure(false, "More than $redirects redirects", $url, SourceFailure::REDIRECTS);
         }
         return $answer;
     }
