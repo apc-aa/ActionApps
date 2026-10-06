@@ -47,6 +47,9 @@ final class Context
     /** the code of a remark whose own code does not match REMARK_PATTERN - its text tells that code */
     public const BAD_REMARK_CODE = 'REMARK_CODE';
 
+    /** codes of what the run itself reports: a source using one is kept as BAD_REMARK_CODE, so it cannot pass for the run */
+    public const RUN_REMARK_CODES = ['SOURCE_CYCLE'];
+
     /** characters of a bad code kept in the text */
     private const BAD_CODE_CHARS = 40;
 
@@ -164,20 +167,27 @@ final class Context
      * The same code and text count once in the run, the first REMARKS_COUNTED of them.
      * The text passes redact(), has control characters encoded and is cut to REMARK_CHARS; the page
      * shows it escaped, never expanded. Still, never put a key or personal data in it.
-     * @param string $code matching REMARK_PATTERN, e.g. INCOMPLETE_YEAR; another one is a bug of the
-     *                     source, kept as BAD_REMARK_CODE with that code in front of the text - the run goes on
+     * @param string $code matching REMARK_PATTERN, e.g. INCOMPLETE_YEAR; another one, or one of
+     *                     RUN_REMARK_CODES, is a bug of the source, kept as BAD_REMARK_CODE with that
+     *                     code in front of the text - the run goes on
      */
     public function remark(string $code, string $text): void
     {
-        if (preg_match(self::REMARK_PATTERN, $code) !== 1) {
+        if ((preg_match(self::REMARK_PATTERN, $code) !== 1) || in_array($code, self::RUN_REMARK_CODES, true)) {
             $text = 'Bad code ' . mb_substr(self::printable($this->redact($code)), 0, self::BAD_CODE_CHARS) . ': ' . $text;
             $code = self::BAD_REMARK_CODE;
         }
-        // redacted before the cut, which could leave a part of a key unmasked
-        $text = mb_substr(self::printable(trim($this->redact($text))), 0, self::REMARK_CHARS);
+        $text = $this->remarkText($text);
         if (count($this->remarks) < self::REMARKS_COUNTED) {
             $this->remarks[$code . "\0" . $text] = ['code' => $code, 'text' => $text];
         }
+    }
+
+    /** $text as a remark keeps it: redacted, control characters encoded, cut to REMARK_CHARS */
+    public function remarkText(string $text): string
+    {
+        // redacted before the cut, which could leave a part of a key unmasked
+        return mb_substr(self::printable(trim($this->redact($text))), 0, self::REMARK_CHARS);
     }
 
     /** for the run: the remarks of the step, each code and text once

@@ -545,6 +545,8 @@ final class RunWorkTest extends TestCase
         self::assertSame(2, TestRun::get($run->getId())?->counts()['read'], 'the 1000th job may start, the 1001st not - what got stored before counts');
         self::assertSame(['', 1], [TestRun::$committed[0]->retry, TestRun::get($run->getId())?->counts()['skipped_jobs']], 'the rest of the stream goes at once');
         self::assertSame(1, TestRun::get($run->getId())?->position()['i']);
+        self::assertSame(1, json_decode((string) TestRun::get($run->getId())?->getProperty('warnings'), true)[Run::SOURCE_CYCLE] ?? 0);
+        self::assertSame([['code' => Run::SOURCE_CYCLE, 'text' => 'Stream Stream 1 (s1): the source handed out more than ' . RunCursor::MAX_PAGES . ' jobs; the rest of the stream was skipped']], TestRun::get($run->getId())?->remarks());
     }
 
     /** a source declaring more jobs a stream (one per municipality) is no cycle at MAX_PAGES - only at its own limit */
@@ -921,6 +923,20 @@ final class RunWorkTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame([['code' => 'BAD_DEFINITION', 'text' => 'asked with key=***']], TestRun::get($run->getId())?->remarks());
+    }
+
+    /** a source cannot report a cycle of the run: no SOURCE_CYCLE warning, its remark kept as a bad code */
+    public function test_remark_runCodeOfTheSource_noRunWarning(): void
+    {
+        self::assertContains(Run::SOURCE_CYCLE, Context::RUN_REMARK_CODES);
+        $source         = self::source(streams: 1, jobs: 1, items: 1);
+        $source->onJobs = static fn(Stream $stream, Context $c) => $c->remark(Run::SOURCE_CYCLE, 'Stream s1: fake');
+        $run            = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame([['code' => Context::BAD_REMARK_CODE, 'text' => 'Bad code SOURCE_CYCLE: Stream s1: fake']], TestRun::get($run->getId())?->remarks());
+        self::assertSame([Run::REMARK => [Context::BAD_REMARK_CODE => 1]], json_decode((string) TestRun::get($run->getId())?->getProperty('warnings'), true));
     }
 
     public function test_remark_badCode_keptAndTheRunGoesOn(): void

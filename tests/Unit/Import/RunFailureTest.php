@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Tests\Unit\Import;
 
 use AA\Import\CheckResult;
+use AA\Import\Run;
 use AA\Import\RunCursor;
+use AA\Import\Stream;
 use AA\Import\StreamState;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
@@ -125,8 +127,26 @@ final class RunFailureTest extends TestCase
 
         self::runAll($run->getId());
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+        self::assertSame([Run::SOURCE_CYCLE => 1, Run::REMARK => [Run::SOURCE_CYCLE => 1]], self::warnings($run->getId()), 'no job failed: the source went round');
+        self::assertSame([['code' => Run::SOURCE_CYCLE, 'text' => 'Stream Stream 1 (s1): the source handed out the same job twice in a row; the rest of the stream was skipped']], TestRun::get($run->getId())?->remarks(), 'the operator sees which stream');
         self::assertSame([1, 1, 1], [TestRun::get($run->getId())?->counts()['jobs'], TestRun::get($run->getId())?->counts()['skipped_jobs'], TestRun::get($run->getId())?->counts()['streams']]);
+    }
+
+    /** a stream whose label is its key is named once */
+    public function test_cycle_labelSameAsKey_namedByTheKey(): void
+    {
+        $source             = self::source(streams: 1, jobs: 0, items: 0);
+        $source->minJob     = 0;
+        $source->streams    = [new Stream('s1', 's1', ['fld' => 'text...........1'])];
+        $source->jobs['s1'] = [
+            ['key' => 's1:a', 'items' => [['key' => 'k1', 'val' => 'v1']]],
+            ['key' => 's1:a', 'items' => [['key' => 'k2', 'val' => 'v2']]],
+        ];
+        $run = self::startRun($source);
+
+        self::runAll($run->getId());
+
+        self::assertSame('Stream s1: the source handed out the same job twice in a row; the rest of the stream was skipped', TestRun::get($run->getId())?->remarks()[0]['text'] ?? '');
     }
 
     /** a stream skipped for its cycle after it stored something still gets its expression */
@@ -144,7 +164,7 @@ final class RunFailureTest extends TestCase
         self::runAll($run->getId());
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
-        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+        self::assertSame([Run::SOURCE_CYCLE => 1, Run::REMARK => [Run::SOURCE_CYCLE => 1]], self::warnings($run->getId()));
         self::assertCount(1, TestRun::$evaluated, 's1, which stored k1 (s2 has no job)');
     }
 
@@ -187,7 +207,7 @@ final class RunFailureTest extends TestCase
         self::assertCount(2, $steps, implode(' | ', $steps));
         self::assertSame('', TestRun::$committed[0]->retry, 'the first step only ran out of time');
         self::assertSame(['k-p', 'k-p', 'k-p', 'k-s2:a-1'], TestRun::storedValues('relation........'), 'p1; then p2 and p3, the same, and s2');
-        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+        self::assertSame([Run::SOURCE_CYCLE => 1, Run::REMARK => [Run::SOURCE_CYCLE => 1]], self::warnings($run->getId()), 'once, though two steps saw the stream');
     }
 
     public function test_cycleABA_endsAfterMaxPagesSkippingRestOfStream(): void
@@ -206,7 +226,7 @@ final class RunFailureTest extends TestCase
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
         self::assertSame(['k-a', 'k-b', 'k-a', 'k-b', 'k-s2:a-1'], TestRun::storedValues('relation........'), 'A, B, A is no repeated key - the cap stops it');
-        self::assertSame(1, self::warnings($run->getId())['JOB_FAILED'] ?? 0);
+        self::assertSame(1, self::warnings($run->getId())[Run::SOURCE_CYCLE] ?? 0);
         self::assertSame(1, TestRun::get($run->getId())?->counts()['skipped_jobs']);
     }
 
@@ -227,7 +247,8 @@ final class RunFailureTest extends TestCase
 
         self::assertSame(['done', ''], self::errorOf($run->getId()));
         self::assertSame(['k-s1:a-1', 'k-a', 'k-s3:a-1'], TestRun::storedValues('relation........'));
-        self::assertSame(['JOB_FAILED' => 1], self::warnings($run->getId()));
+        self::assertSame([Run::SOURCE_CYCLE => 1, Run::REMARK => [Run::SOURCE_CYCLE => 1]], self::warnings($run->getId()));
+        self::assertStringStartsWith('Stream Stream 2 (s2): ', TestRun::get($run->getId())?->remarks()[0]['text'] ?? '');
     }
 
     public function test_continuingSameJobFromOffset_isNotRepeatedKey(): void
@@ -407,7 +428,7 @@ final class RunFailureTest extends TestCase
 
         self::runOne();
 
-        self::assertSame(['JOB_GONE' => 1, 'JOB_FAILED' => 1], self::warnings($run->getId()), 'the cursor\'s job is not among the first MAX_PAGES; the restarted stream ends at the cap');
+        self::assertSame(['JOB_GONE' => 1, Run::SOURCE_CYCLE => 1, Run::REMARK => [Run::SOURCE_CYCLE => 1]], self::warnings($run->getId()), 'the cursor\'s job is not among the first MAX_PAGES; the restarted stream ends at the cap');
         self::assertSame('', TestRun::$committed[0]->retry);
         self::assertLessThan(3 * RunCursor::MAX_PAGES, $yields);
     }

@@ -285,6 +285,45 @@ final class CheckImportsTest extends TestCase
         $this->assertNull(self::find($findings, 'items:' . self::DEF2));
     }
 
+    public function test_lastRunSkippedStreamsForCycle_warning(): void
+    {
+        $now = time();
+        self::definition(self::DEF, '<b>prices</b>');
+        self::definition(self::DEF2, 'rates');
+        self::definition(self::DEF3, 'old');
+        self::importRun(self::DEF, ['state' => Run::DONE, 'started' => (string) ($now - 200), 'finished' => (string) ($now - 100), 'warnings' => '{"SOURCE_CYCLE":2,"REMARK":{"SOURCE_CYCLE":2}}']);
+        // a later run that went through fixed it
+        self::importRun(self::DEF2, ['state' => Run::DONE, 'started' => (string) ($now - 900), 'finished' => (string) ($now - 800), 'warnings' => '{"SOURCE_CYCLE":1}']);
+        self::importRun(self::DEF2, ['state' => Run::DONE, 'started' => (string) ($now - 300), 'finished' => (string) ($now - 200), 'warnings' => '{"JOB_FAILED":1}']);
+        // too long ago to say anything of the source now
+        self::importRun(self::DEF3, ['state' => Run::DONE, 'started' => '100', 'finished' => '200', 'warnings' => '{"SOURCE_CYCLE":1}']);
+
+        $findings = self::findings($now);
+
+        $finding = self::only($findings, 'cycle:' . self::DEF);
+        $this->assertSame([Finding::WARNING, 2, $now - 100], [$finding->severity, $finding->count, $finding->last]);
+        $this->assertStringContainsString('&lt;b&gt;prices&lt;/b&gt;', self::text($finding));
+        $this->assertStringContainsString('check the source', self::text($finding));
+        $this->assertNull(self::find($findings, 'cycle:' . self::DEF2));
+        $this->assertNull(self::find($findings, 'cycle:' . self::DEF3));
+    }
+
+    public function test_lastRunSkippedOneStreamForCycle_singular(): void
+    {
+        self::definition(self::DEF, 'prices');
+        self::importRun(self::DEF, ['state' => Run::DONE, 'started' => (string) (time() - 20), 'finished' => (string) (time() - 10), 'warnings' => '{"SOURCE_CYCLE":1}']);
+
+        $this->assertSame('The last run of an import skipped 1 stream: the source went round', self::only(self::findings(time()), 'cycle:' . self::DEF)->title);
+    }
+
+    public function test_lastRunDamagedWarnings_noCycleFinding(): void
+    {
+        self::definition(self::DEF, 'prices');
+        self::importRun(self::DEF, ['state' => Run::DONE, 'started' => (string) (time() - 20), 'finished' => (string) (time() - 10), 'warnings' => '{broken']);
+
+        $this->assertNull(self::find(self::findings(time()), 'cycle:' . self::DEF));
+    }
+
     /** runs finished at the same second: the one started later is the last */
     public function test_lastRunItemErrors_tieByStart(): void
     {

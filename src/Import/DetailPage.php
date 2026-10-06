@@ -343,7 +343,7 @@ final class DetailPage
                 . self::countCellsHtml($run, $now, array_slice($heads, 3), $errors ? (string) $run->getId() : '')
                 . '</tr>';
             $samples = $run->samples();
-            $more    = self::runErrorHtml($p['error'] ?? null, ($p['role'] ?? '') === 'active') . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . self::filterKeptNoneHtml((int) ($p['warnings'][Run::FILTER_KEPT_NONE] ?? 0)) . self::remarksHtml($run->remarks(), $p['warnings'][Run::REMARK] ?? [], (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
+            $more    = self::runErrorHtml($p['error'] ?? null, ($p['role'] ?? '') === 'active') . self::itemErrorsHtml($errors, (string) $run->getId()) . self::emptyKeysHtml($run->emptyKeys(), (string) $run->getId()) . self::filterKeptNoneHtml((int) ($p['warnings'][Run::FILTER_KEPT_NONE] ?? 0)) . self::sourceCycleHtml((int) ($p['warnings'][Run::SOURCE_CYCLE] ?? 0)) . self::remarksHtml($run->remarks(), $p['warnings'][Run::REMARK] ?? [], (string) $run->getId()) . (($samples || ($run->isDry() && ($run->state() === Run::DONE))) ? self::samplesHtml($samples, (string) $run->getId()) : '');
             if ($more !== '') {
                 $html .= '<tr class="aa-import-run-more"><td colspan="' . count($heads) . '">' . $more . '</td></tr>';
             }
@@ -1042,6 +1042,16 @@ final class DetailPage
         }
         return '<p>' . (($jobs === 1) ? _m('The filter kept no item of 1 job.') : _m('The filter kept no item of %1 jobs.', [$jobs]))
             . ' ' . _m('If those items should be imported, check the filter in Mapping.') . '</p>';
+    }
+
+    /** streams skipped as the source went round - the remarks name them, unless the source's own fill the list */
+    private static function sourceCycleHtml(int $streams): string
+    {
+        if ($streams === 0) {
+            return '';
+        }
+        return '<p>' . (($streams === 1) ? _m('The source went round in 1 stream; the rest of it was skipped.') : _m('The source went round in %1 streams; the rest of each was skipped.', [$streams]))
+            . ' ' . _m('The source pages wrongly or changed its paging; check the source, then run the import again.') . '</p>';
     }
 
     /** what the source remarked - no error; the count comes from the warnings, which also hold the

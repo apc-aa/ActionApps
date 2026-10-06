@@ -567,6 +567,16 @@ final class ContextTest extends TestCase
         self::assertSame([['code' => Context::BAD_REMARK_CODE, 'text' => 'Bad code ' . mb_substr($code, 0, 40) . ': text']], $ctx->remarks());
     }
 
+    /** a code the run reports under is no source's: it would pass for the run's own finding */
+    public function test_remark_runCode_keptAsBadCode(): void
+    {
+        $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));
+
+        $ctx->remark('SOURCE_CYCLE', 'Stream x: fake');
+
+        self::assertSame([['code' => Context::BAD_REMARK_CODE, 'text' => 'Bad code SOURCE_CYCLE: Stream x: fake']], $ctx->remarks());
+    }
+
     public function test_remark_badCodeBoundedPrintableAndRedacted(): void
     {
         $ctx = new Context(self::CREDENTIALS, new BatchBudget(microtime(true) + 30));

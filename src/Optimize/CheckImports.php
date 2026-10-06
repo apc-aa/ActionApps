@@ -16,11 +16,11 @@ use AA\Later\BatchRun;
 use AA\Later\Toexecute;
 use AA_Log;
 
-/** Imports run in queue steps nobody watches, so a run stopped by an error or hanging, a definition
- *  that cannot run and the records a deleted import left behind are seen only here. Reads the small
- *  properties of the import objects in two index reads - never the stream versions or the catalog
- *  entries, which may be megabytes per import (CheckImportStores reads those) - and runs no code of
- *  a source. */
+/** Imports run in queue steps nobody watches, so a run stopped by an error or hanging, streams a run
+ *  skipped as the source went round, a definition that cannot run and the records a deleted import
+ *  left behind are seen only here. Reads the small properties of the import objects in two index
+ *  reads - never the stream versions or the catalog entries, which may be megabytes per import
+ *  (CheckImportStores reads those) - and runs no code of a source. */
 class CheckImports extends AbstractOptimize
 {
     /** how far back a failed check() and logged failures count */
@@ -28,7 +28,7 @@ class CheckImports extends AbstractOptimize
     private const LOGGED_ROWS = 5;
     private const CLASSES = [Definition::class, Run::class, StreamState::class, Catalog::class];
     /** what is read of each import object - small values only */
-    private const PROPS = ['aa_type', 'aa_owner', 'aa_name', 'source', 'enabled', 'subject', 'state', 'mode', 'dry', 'started', 'finished', 'error_code', 'counts', 'check', 'time'];
+    private const PROPS = ['aa_type', 'aa_owner', 'aa_name', 'source', 'enabled', 'subject', 'state', 'mode', 'dry', 'started', 'finished', 'error_code', 'counts', 'warnings', 'check', 'time'];
 
     public static function name(): string
     {
@@ -198,9 +198,14 @@ class CheckImports extends AbstractOptimize
             }
             $findings = [...$findings, ...self::stateFindings($o, $id, $about, $links, $runsOf[$id] ?? [], $now)];
             if (($last = self::lastFinished($o, $runsOf[$id] ?? [])) !== null) {
-                $errors = Run::countsOf($o['runs'][$last]['counts'] ?? '')['errors'];
+                $errors   = Run::countsOf($o['runs'][$last]['counts'] ?? '')['errors'];
+                $cycles   = self::cyclesOf($o['runs'][$last]['warnings'] ?? '');
+                $finished = (int) ($o['runs'][$last]['finished'] ?? 0);
+                if (($cycles > 0) && ($finished >= $now - self::WINDOW)) {
+                    // the stream names are the source's - the import detail lists them
+                    $findings[] = new Finding(Finding::WARNING, (($cycles === 1) ? _m('The last run of an import skipped 1 stream: the source went round') : _m('The last run of an import skipped %1 streams: the source went round', [$cycles])), count: $cycles, since: $finished, evidence: [$about + [_m('Finished') => self::date($finished)]], advice: _m('The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams.'), links: $links, key: "cycle:$id", last: $finished);
+                }
                 if ($errors > 0) {
-                    $finished   = (int) ($o['runs'][$last]['finished'] ?? 0);
                     $findings[] = new Finding(Finding::INFO, _m('The last run of an import had %1 item errors', [$errors]), count: $errors, since: $finished, evidence: [$about + [_m('Finished') => self::date($finished)]], advice: _m('The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again.'), links: $links, key: "items:$id", last: $finished);
                 }
             }
@@ -324,6 +329,13 @@ class CheckImports extends AbstractOptimize
             }
         }
         return $last;
+    }
+
+    /** @return int the streams a run skipped as the source went round, from its stored warnings */
+    private static function cyclesOf(string $warnings): int
+    {
+        $stored = json_decode($warnings, true);
+        return (is_array($stored) && is_int($stored[Run::SOURCE_CYCLE] ?? null)) ? $stored[Run::SOURCE_CYCLE] : 0;
     }
 
     /** @return array<string, true> the enabled definitions a planned task of their slice calls by name or id */

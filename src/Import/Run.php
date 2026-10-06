@@ -78,6 +78,10 @@ class Run extends BatchRun
     /** the warnings of the remarks of the source, by their code: {REMARK: {code: count}} */
     public const REMARK = 'REMARK';
 
+    /** the warning of a stream skipped as the source went round; a remark of the same code names the stream -
+     *  one of Context::RUN_REMARK_CODES, so no source can make it up */
+    public const SOURCE_CYCLE = 'SOURCE_CYCLE';
+
     /** the modes that store nothing in the slice: they ask the source and record what it says */
     public const SOURCE_ONLY_MODES = ['check', 'baseline'];
 
@@ -145,6 +149,8 @@ class Run extends BatchRun
     private ?Catalog $catalog = null;
     /** the Context of the step - the remarks of the source are in it */
     private ?Context $stepContext = null;
+    /** @var list<array{code: string, text: string}> what the run itself remarked in the step, under Context::RUN_REMARK_CODES */
+    private array $runRemarks = [];
     /** when work() of the step began */
     private ?float $workFrom = null;
 
@@ -406,6 +412,7 @@ class Run extends BatchRun
         $this->catalog        = null;
         // an instance may work more than one step; remarks of the one before must not count again
         $this->stepContext    = null;
+        $this->runRemarks     = [];
         $this->workFrom       = static::microNow();
         try {
             return $this->walk(RunCursor::fromPosition($from), $budget);
@@ -701,10 +708,12 @@ class Run extends BatchRun
                 if ($halt === self::STOP) {
                     return $this->limitReached() ? $this->result($pos, true, $keys) : $this->stopped($pos, $from, $keys, '');
                 }
-                if ($halt === 'SOURCE_CYCLE') {
+                if ($halt === self::SOURCE_CYCLE) {
                     // a source may see its cycle only among the pages it fetched in one step: a retry from
                     // the cursor would creep on by a page a step, so the rest of the stream goes now
-                    $this->note('JOB_FAILED');
+                    $this->note(self::SOURCE_CYCLE);
+                    // not through remark(): a source cannot use the code, so the run keeps its own
+                    $this->runRemarks[] = ['code' => self::SOURCE_CYCLE, 'text' => $ctx->remarkText(self::cycleRemark($stream, $pos, RunCursor::jobLimit($source)))];
                     $this->tally['skipped_jobs']++;
                     $this->tally['streams']++;
                     $pos = ['after' => $this->afterDue($pos, $stream->key)] + RunCursor::nextStream($pos);
@@ -1015,11 +1024,20 @@ class Run extends BatchRun
         AA::Un($expression, '', $item);
     }
 
+    /** what the report says of a stream skipped by walkJobs() at $pos: which one, and how the source went round */
+    private static function cycleRemark(Stream $stream, array $pos, int $limit): string
+    {
+        $name = (($stream->label !== '') && ($stream->label !== $stream->key)) ? "{$stream->label} ({$stream->key})" : $stream->key;
+        $how  = ($pos['pages'] >= $limit) ? "handed out more than $limit jobs" : 'handed out the same job twice in a row';
+        return "Stream $name: the source $how; the rest of the stream was skipped";
+    }
+
     /**
      * The jobs of one stream from the cursor on. A job gone from the source (its parameters changed)
      * restarts the stream once - storing by the key is idempotent; a source that keeps changing
      * under the run cannot be followed; one that repeats the key of the job before or hands out more
-     * than its maxJobsPerStream() goes round, and the run skips the rest of the stream.
+     * than its maxJobsPerStream() goes round, and the run skips the rest of the stream - warned as
+     * SOURCE_CYCLE, with a remark naming the stream.
      * @return string '' = the stream is done, STOP = the step stops at $pos, SOURCE_UNSTABLE = it stops
      *                there and cannot go on, SOURCE_CYCLE = the stream cannot go on
      */
@@ -1040,7 +1058,7 @@ class Run extends BatchRun
                 $seek = '';
             } else {
                 if (RunCursor::cycles($pos, $job->key, $limit)) {
-                    return 'SOURCE_CYCLE';
+                    return self::SOURCE_CYCLE;
                 }
                 $pos = RunCursor::started($pos, $job->key);
                 // a step past its lease starts no further job: Continue may give the run to another one
@@ -1264,8 +1282,8 @@ class Run extends BatchRun
     }
 
     /**
-     * The remarks of the step the run has not seen, and their count by code: jobs() of a stream runs
-     * again in each step that goes on with it and says the same. Past Context::REMARKS_COUNTED
+     * The remarks of the step the run has not seen - its own first - and their count by code: jobs()
+     * of a stream runs again in each step that goes on with it and says the same. Past Context::REMARKS_COUNTED
      * distinct ones the run drops new remarks, so the count is a lower bound then.
      * @return array{list<array{code: string, text: string}>, array<string, int>}
      */
@@ -1274,7 +1292,7 @@ class Run extends BatchRun
         $seen   = array_flip($this->remarksSeen());
         $new    = [];
         $counts = [];
-        foreach ($this->stepContext?->remarks() ?? [] as $r) {
+        foreach ([...$this->runRemarks, ...($this->stepContext?->remarks() ?? [])] as $r) {
             $hash = self::remarkHash($r);
             if (!isset($seen[$hash]) && (count($seen) < Context::REMARKS_COUNTED)) {
                 $seen[$hash]        = true;

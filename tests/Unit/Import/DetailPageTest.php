@@ -711,6 +711,24 @@ final class DetailPageTest extends TestCase
         $this->assertStringNotContainsString('aa-import-some', $html, 'no item error');
     }
 
+    /** a stream skipped as the source went round: said on its own, the stream named in the remarks, escaped */
+    public function test_runs_sourceCycle_saidWithTheStreamNamed(): void
+    {
+        self::definition();
+        $id = self::start()->runId;
+        self::storedSet($id, 'state', Run::DONE);
+        self::storedSet($id, 'warnings', json_encode([Run::SOURCE_CYCLE => 2, Run::REMARK => [Run::SOURCE_CYCLE => 1]], JSON_THROW_ON_ERROR));
+        self::storedSet($id, 'remarks', json_encode(['list' => [
+            ['code' => Run::SOURCE_CYCLE, 'text' => 'Stream <b>Pop</b> {user:password} (s1): the source handed out the same job twice in a row; the rest of the stream was skipped'],
+        ]], JSON_THROW_ON_ERROR));
+
+        $html = self::page()->runsHtml(time());
+
+        $this->assertStringContainsString('The source went round in 2 streams; the rest of each was skipped.', $html);
+        $this->assertStringContainsString('Stream &lt;b&gt;Pop&lt;/b&gt; {user:password} (s1): the source handed out', $html, 'escaped, never expanded');
+        $this->assertStringNotContainsString('<b>Pop</b>', $html);
+    }
+
     public function test_runs_remarksWithoutList_onlyTheCount(): void
     {
         self::definition();
