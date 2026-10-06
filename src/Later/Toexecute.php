@@ -193,11 +193,12 @@ class Toexecute
         $db = getDB();
         try {
             $db->query('SELECT GET_LOCK(' . $db->quote($lock_name) . ', 2)');
-            $task = self::scheduledTask($selector);  // ['id' => $id, 'time' => $time]
+            $task = self::scheduledTask($selector);
             if (!$task['id']) {
                 $this->later($object, $params, $selector, $priority, $time);
             } elseif ($task['time'] > $time) {
-                // we need it run earlier
+                // Never fires: scheduledTask() returns 'execute_after', so $task['time'] is null.
+                // Making it live needs a guard first - it would pull a claimed (leased) row back to due.
                 DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
             }
         } finally {
@@ -206,13 +207,13 @@ class Toexecute
         }
     }
 
-    /** @returns array scheduled ['id'=>.., 'time'=>..] or ['id'=>false, 'time'=>false]
-     *  @usage  ['id' => $id, 'time' => $time] = self::scheduledTask($selector);
+    /** @returns array scheduled ['id'=>.., 'execute_after'=>..] or ['id'=>false, 'execute_after'=>false]
+     *  @usage  ['id' => $id, 'execute_after' => $time] = self::scheduledTask($selector);
      */
     public static function scheduledTask($selector): array
     {
         $ret = DB_AA::select1([], "SELECT `id`,`execute_after` FROM `toexecute`", [['selector', $selector], ['priority', 0, '>']]);
-        return $ret ?: ['id' => false, 'time' => false];
+        return $ret ?: ['id' => false, 'execute_after' => false];
     }
 
 

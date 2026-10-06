@@ -589,6 +589,14 @@ namespace Tests\Unit\Later {
             $this->assertSame([$other, $longer], array_keys($this->queue()), 'every row of the selector, parked ones too, and only those');
         }
 
+        public function test_scheduledTask_names_the_time_execute_after_also_when_nothing_is_queued(): void
+        {
+            $this->seed(new RecordingTask('x'), 'test-other', 100, 1234567890);
+
+            $this->assertSame(['id' => false, 'execute_after' => false], Toexecute::scheduledTask('test-unscheduled'), 'callers read execute_after even for a selector not in the queue');
+            $this->assertSame(1234567890, (int) Toexecute::scheduledTask('test-other')['execute_after']);
+        }
+
         public function test_timeLeft_nested_round_gives_the_outer_one_back(): void
         {
             $this->requireDefaultRoundSize();
