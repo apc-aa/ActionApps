@@ -731,5 +731,257 @@ namespace Tests\Unit\Legacy {
             ]);
             $this->assertTrue($writer->getItemVarset()->isEmpty());
         }
+
+        // ------------------------------------------------------------ seq - number on insert
+
+        private function seqField(int $text_stored = 0, string $id = 'number..........'): AA_Field
+        {
+            return $this->field($id, ['input_insert_func' => 'seq', 'text_stored' => $text_stored]);
+        }
+
+        /** The value a seq field reaches _store_fields() with is stored as it is - number or text column. */
+        public function test_seq_stores_the_value_it_gets_as_is(): void
+        {
+            $this->store([$this->seqField(0), $this->seqField(1, 'text............')], ['number..........' => '7', 'text............' => '8']);
+
+            $this->assertContentTable([
+                $this->row(self::ITEM, 'number..........', 7, null, 0),
+                $this->row(self::ITEM, 'text............', 0, '8', 64),
+            ]);
+        }
+
+        /** _store_fields() runs no inserter for a field the content does not have, so a number
+         *  for an empty field must be in the content before it runs. */
+        public function test_field_missing_in_the_content_reaches_no_inserter(): void
+        {
+            $this->store([$this->seqField(), $this->field('headline........')], ['headline........' => 'x']);
+
+            $this->assertContentTable([$this->row(self::ITEM, 'headline........', 0, 'x', 64)]);
+        }
+
+        /** Answers the store's look-ups: the short_id, the maximum of a seq field and - when
+         *  $exists - the stored item, read from the `content` table as it is at that moment.
+         *  @param array<string, ?string> $max field id => what MAX() returns (null = no number yet) */
+        private function answerSeq(array $max, bool $exists = false): void
+        {
+            RecordingDb::$answer = static function (string $sql) use ($max, $exists): array {
+                if (str_starts_with($sql, 'SELECT short_id')) {
+                    return [['short_id' => '4711']];
+                }
+                if (str_starts_with($sql, 'SELECT MAX(')) {
+                    foreach ($max as $fid => $value) {
+                        if (str_contains($sql, "'$fid'")) {
+                            return [['seq' => $value]];
+                        }
+                    }
+                }
+                if (str_starts_with($sql, 'SELECT count(*) as cnt FROM `item`')) {
+                    return [['cnt' => $exists ? 1 : 0]];           // 'overwrite' asks before it writes the row (pdo_mysql gives an int)
+                }
+                if ($exists && str_starts_with($sql, 'SELECT * FROM item WHERE')) {
+                    return [['id' => pack_id(self::ITEM), 'slice_id' => pack_id(self::SLICE)] + array_fill_keys(AA::Metabase()->getColumnNames('item'), '1')];
+                }
+                if ($exists && str_starts_with($sql, 'SELECT * FROM content WHERE')) {
+                    return array_map(static fn(array $r) => ['item_id' => pack_id($r['item']), 'field_id' => $r['field'], 'number' => $r['number'], 'text' => $r['text'], 'flag' => $r['flag']], RecordingDb::$content);
+                }
+                return [];
+            };
+        }
+
+        /** the statements of one kind sent so far */
+        private function statements(string $start): array
+        {
+            return array_values(array_filter(RecordingDb::$log, static fn($s) => str_starts_with($s, $start)));
+        }
+
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_numbers_the_first_item_of_an_empty_slice_1(): void
+        {
+            $this->answerSeq(['number..........' => null]);
+            $this->storeItem('insert', [$this->seqField(), $this->field('headline........')], ['headline........' => 'first']);
+
+            $this->assertContentTable([
+                $this->row(self::ITEM, 'headline........', 0, 'first', 64),
+                $this->row(self::ITEM, 'number..........', 1, null, 0),
+            ]);
+        }
+
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_takes_the_maximum_plus_one_into_the_number_or_the_text_column(): void
+        {
+            $this->answerSeq(['number..........' => '41', 'text............' => '9']);
+            $this->storeItem('insert', [$this->seqField(0), $this->seqField(1, 'text............')], []);
+
+            $this->assertContentTable([
+                $this->row(self::ITEM, 'number..........', 42, null, 0),
+                $this->row(self::ITEM, 'text............', 0, '10', 64),
+            ]);
+        }
+
+        /** Uniqueness counts every item the slice has: no condition on the bin (status_code,
+         *  publish/expiry date), and a text-stored value counts only when it is a whole number. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_maximum_covers_all_bins_and_skips_non_numeric_text(): void
+        {
+            $this->answerSeq(['number..........' => '5']);
+            $this->storeItem('insert', [$this->seqField()], []);
+
+            [$max] = $this->statements('SELECT MAX(');
+            $this->assertStringContainsString('item.slice_id = 0x' . self::SLICE, $max);
+            $this->assertStringContainsString("content.field_id = 'number..........'", $max);
+            $this->assertStringContainsString('content.item_id = item.id', $max);
+            $this->assertMatchesRegularExpression('/content\.flag & 64.*REGEXP \'\^\[0-9\]\{1,18\}\$\'.*content\.number/s', $max, 'text rows count only when numeric, number rows always');
+            foreach (['status_code', 'publish_date', 'expiry_date'] as $bin) {
+                $this->assertStringNotContainsString($bin, $max, 'no bin is left out');
+            }
+        }
+
+        /** A copied number ({newitem} of a template, "Insert as new") would repeat the original's,
+         *  so a value the new item brings is replaced as well. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_replaces_a_value_the_inserted_item_brings(): void
+        {
+            $this->answerSeq(['number..........' => '41']);
+            $this->storeItem('insert', [$this->seqField()], ['number..........' => new AA_Value(['7', '8'], 0)]);
+
+            $this->assertContentTable([$this->row(self::ITEM, 'number..........', 42, null, 0)]);
+        }
+
+        /** A negative maximum does not make the next number 0 or less. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_starts_at_1_above_negative_numbers(): void
+        {
+            $this->answerSeq(['number..........' => '-3']);
+            $this->storeItem('insert', [$this->seqField()], []);
+
+            $this->assertContentTable([$this->row(self::ITEM, 'number..........', 1, null, 0)]);
+        }
+
+        /** Two inserts must not read the same maximum: the slice row is locked first in the
+         *  transaction storeItem() opens, so the plain read after it already sees the last commit. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_reads_the_maximum_under_the_slice_lock_inside_the_transaction(): void
+        {
+            $this->answerSeq(['number..........' => '1', 'text............' => '1']);
+            $this->storeItem('insert', [$this->seqField(0), $this->seqField(1, 'text............')], []);
+
+            $body = $this->transactionBody();
+            $this->assertSame('SELECT id FROM `slice` WHERE id = 0x' . self::SLICE . ' FOR UPDATE', $body[0], 'the lock first');
+            $this->assertCount(1, $this->statements('SELECT id FROM `slice`'), 'one lock for all seq fields');
+            $this->assertStringStartsWith('SELECT MAX(', $body[1]);
+            $this->assertStringNotContainsString('LOCK IN SHARE MODE', $body[1], 'no row locks over the whole slice');
+            $this->assertStringStartsWith('SELECT MAX(', $body[2]);
+            $this->assertStringStartsWith('INSERT INTO `item`', $body[3], 'before the item row');
+        }
+
+        /** Joined to an outer transaction, whose snapshot may predate the lock, the read must lock. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_reads_the_maximum_with_a_locking_read_inside_an_outer_transaction(): void
+        {
+            $this->answerSeq(['number..........' => '41']);
+            \AA\IO\DB\DB_AA::transaction(fn() => $this->storeItem('insert', [$this->seqField()], []));
+
+            $body = $this->transactionBody();
+            $this->assertStringEndsWith(' FOR UPDATE', $body[0], 'the lock first');
+            $this->assertStringStartsWith('SELECT MAX(', $body[1]);
+            $this->assertStringEndsWith(' LOCK IN SHARE MODE', $body[1]);
+            $this->assertSame(1, RecordingDb::count('BEGIN'));
+            $this->assertContentTable([$this->row(self::ITEM, 'number..........', 42, null, 0)]);
+        }
+
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_slice_without_seq_field_takes_no_lock_and_runs_no_extra_sql(): void
+        {
+            $this->answerSeq([]);
+            $this->storeItem('insert', [$this->field('headline........')], ['headline........' => 'x']);
+
+            $this->assertSame('BEGIN', RecordingDb::$log[0], 'nothing before the transaction');
+            $this->assertSame([], $this->statements('SELECT id FROM `slice`'));
+            $this->assertSame([], $this->statements('SELECT MAX('));
+        }
+
+        /** 'overwrite' and 'update/insert' of an id not in the database create the item - it is new. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_numbers_an_item_overwrite_or_update_insert_creates(): void
+        {
+            foreach (['overwrite', 'update/insert'] as $mode) {
+                RecordingDb::reset();
+                $this->answerSeq(['number..........' => '41']);
+                $this->storeItem($mode, [$this->seqField()], ['number..........' => '7']);
+
+                $this->assertContentTable([$this->row(self::ITEM, 'number..........', 42, null, 0)], $mode);
+            }
+        }
+
+        /** An existing item keeps its number: an empty value (cleared form field), a field missing in
+         *  'overwrite' (which deletes all rows) and a feed's value (the source's number) do not replace it. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_keeps_the_number_of_an_existing_item(): void
+        {
+            $cases = [
+                'update, cleared'   => ['update', ['number..........' => ''], ''],
+                'overwrite, absent' => ['overwrite', ['headline........' => 'x'], ''],
+                'update from feed'  => ['update', ['number..........' => '99'], 'feed'],
+            ];
+            foreach ($cases as $case => [$mode, $content, $context]) {
+                RecordingDb::reset();
+                RecordingDb::$content = [$this->row(self::ITEM, 'number..........', 3, null, 0)];
+                $this->answerSeq(['number..........' => '41'], true);
+                self::$slice->setFields(new FakeFields(self::SLICE, [$this->seqField(), $this->field('headline........')]));
+                $ic = new ItemContent();
+                $ic->setSliceID(self::SLICE);
+                $ic->setItemID(self::ITEM);
+                foreach ($content as $fid => $value) {
+                    $ic->setAaValue($fid, new AA_Value($value, 0));
+                }
+                $ic->storeItem($mode, [false, false, false], $context);
+
+                $this->assertSame([], $this->statements('SELECT MAX('), $case);
+                $numbers = array_values(array_filter(RecordingDb::$content, static fn($r) => $r['field'] === 'number..........'));
+                $this->assertSame([$this->row(self::ITEM, 'number..........', 3, null, 0)], $numbers, $case);
+            }
+        }
+
+        /** A feed must not bring the source's number - an item without one gets the next number. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_numbers_a_fed_item_that_has_no_number_yet(): void
+        {
+            RecordingDb::$content = [$this->row(self::ITEM, 'headline........', 0, 'x', 64)];
+            $this->answerSeq(['number..........' => '41'], true);
+            self::$slice->setFields(new FakeFields(self::SLICE, [$this->seqField(), $this->field('headline........')]));
+            $ic = new ItemContent();
+            $ic->setSliceID(self::SLICE);
+            $ic->setItemID(self::ITEM);
+            $ic->setAaValue('number..........', new AA_Value('99', 0));
+            $ic->storeItem('update', [false, false, false], 'feed');
+
+            $this->assertStringEndsWith(' FOR UPDATE', $this->transactionBody()[0]);
+            $this->assertContentTable([$this->row(self::ITEM, 'headline........', 0, 'x', 64), $this->row(self::ITEM, 'number..........', 42, null, 0)]);
+        }
+
+        /** A value typed into the edit form, or a field an update does not bring, is not touched. */
+        #[\PHPUnit\Framework\Attributes\WithoutErrorHandler]   // the full legacy storeItem() trips notices on unset keys
+        public function test_seq_update_stores_a_given_number_and_leaves_a_missing_field_alone(): void
+        {
+            RecordingDb::$content = [$this->row(self::ITEM, 'number..........', 3, null, 0)];
+            $this->answerSeq(['number..........' => '41'], true);
+            $this->storeItem('update', [$this->seqField(), $this->field('headline........')], ['number..........' => '5']);
+            $before = array_slice(RecordingDb::$log, 0, array_search('BEGIN', RecordingDb::$log, true));
+            $this->assertCount(1, array_filter($before, static fn($s) => str_starts_with($s, 'SELECT * FROM item')), 'only the old content storeItem() reads anyway - the number needs no stored item');
+            $this->assertSame([], $this->statements('SELECT id FROM `slice`'));
+            $this->assertSame([], $this->statements('SELECT MAX('));
+            $this->assertContentTable([$this->row(self::ITEM, 'number..........', 5, null, 0)]);
+
+            RecordingDb::reset();
+            RecordingDb::$content = [$this->row(self::ITEM, 'number..........', 3, null, 0)];
+            $this->answerSeq([], true);
+            $this->storeItem('update', [$this->seqField(), $this->field('headline........')], ['headline........' => 'x']);
+            $this->assertContentTable([$this->row(self::ITEM, 'number..........', 3, null, 0), $this->row(self::ITEM, 'headline........', 0, 'x', 64)]);
+        }
+
+        public function test_seq_field_may_be_left_empty_in_the_form(): void
+        {
+            $this->assertTrue(AA_Inserter::factoryByField($this->seqField())->isContentSelfGenerated());
+        }
     }
 }

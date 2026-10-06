@@ -629,11 +629,6 @@ parameters:
 			count: 1
 			path: src/Optimize/AddPolls.php
 
-		-
-			message: '#^Constant DB_NAME not found\.$#'
-			identifier: constant.notFound
-			count: 2
-			path: src/Optimize/Convert2innodb.php
 
 		-
 			message: '#^Constant DB_CHARACTER_SET not found\.$#'

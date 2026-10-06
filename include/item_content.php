@@ -1386,9 +1386,17 @@ class ItemContent extends AA_Content
             }
         }
 
+        $seq_fields = AA_Inserter_Seq::fieldIds($fields);
+        $seq_number = $seq_fields ? AA_Inserter_Seq::prepare($this, $id, $mode, $seq_fields, $context) : [];
+        $outer_tx   = DB_AA::inTransaction();
+
         // one transaction for the whole write - the old rows, the new rows and the item
         // row land together (3-5 commits become one; every commit is two fsyncs here)
-        DB_AA::transaction(function () use ($mode, $id, $slice_id, $fields, $context, $oldItemContent, $silent, $allow_edit) {
+        DB_AA::transaction(function () use ($mode, $id, $slice_id, $fields, $context, $oldItemContent, $silent, $allow_edit, $seq_number, $outer_tx) {
+            if ($seq_number) {
+                // first - the slice lock must precede every read and the item row
+                AA_Inserter_Seq::assignNumbers($this, $seq_number, $slice_id, $outer_tx);
+            }
             switch ($mode) {
                 case 'overwrite':
                     // delete content for all the fields but not the safe fields
