@@ -25,19 +25,19 @@ final class Catalog extends AA_Object
     /** a catalog key is the source's id of a thing (ČSÚ var|per|mon|day) */
     private const MAX_KEY = 255;
     private const MAX_TEXT = 1000;
-    /** {key: [name, updated, {meta}]} */
+    /** {key: [name, updated, {meta}, refusal]} */
     private const DEPTH = 3;
     /** {stream key: [catalog key, label]} */
     private const STREAMS_DEPTH = 2;
 
-    /** JSON {<catalog key>: [name, updated, {meta}]} */
+    /** JSON {<catalog key>: [name, updated, {meta}, refusal]}; refusal only when there is one */
     protected $entries = '';
     /** unixtime the last page came; '' while the catalog is being filled */
     protected $time = '';
     /** JSON {<stream key>: [catalog key, label]} of the streams that come from an entry, as the fill found them */
     protected $streams = '';
 
-    /** @var array<array-key, array{0: string, 1: string, 2: array<array-key, string>}>|null decoded $entries */
+    /** @var array<array-key, array{0: string, 1: string, 2: array<array-key, string>, 3?: string}>|null decoded $entries */
     private ?array $rows = null;
 
     public static function getClassProperties(): array
@@ -148,10 +148,10 @@ final class Catalog extends AA_Object
         return ($row === null) ? null : self::entryOf($key, $row);
     }
 
-    /** @param array{0: string, 1: string, 2: array<array-key, string>} $row */
+    /** @param array{0: string, 1: string, 2: array<array-key, string>, 3?: string} $row */
     private static function entryOf(string $key, array $row): CatalogEntry
     {
-        return new CatalogEntry($key, $row[0], array_map('strval', $row[2]), $row[1]);
+        return new CatalogEntry($key, $row[0], array_map('strval', $row[2]), $row[1], $row[3] ?? '');
     }
 
     /** a key an entry may have: it is stored, shown and posted back as it is */
@@ -199,20 +199,21 @@ final class Catalog extends AA_Object
         $this->storeOwned();
     }
 
-    /** @return array<array-key, array{0: string, 1: string, 2: array<array-key, string>}> */
+    /** @return array<array-key, array{0: string, 1: string, 2: array<array-key, string>, 3?: string}> */
     private function rows(): array
     {
         if ($this->rows === null) {
             $this->rows = [];
             foreach ($this->decode((string) $this->entries, self::DEPTH) as $key => $row) {
                 $row              = (array) $row;
-                $this->rows[$key] = [(string) ($row[0] ?? ''), (string) ($row[1] ?? ''), array_map('strval', (array) ($row[2] ?? []))];
+                $this->rows[$key] = [(string) ($row[0] ?? ''), (string) ($row[1] ?? ''), array_map('strval', (array) ($row[2] ?? []))]
+                    + (isset($row[3]) ? [3 => (string) $row[3]] : []);
             }
         }
         return $this->rows;
     }
 
-    /** @return array{0: string, 1: string, 2: array<array-key, string>} */
+    /** @return array{0: string, 1: string, 2: array<array-key, string>, 3?: string} */
     private static function row(CatalogEntry $e): array
     {
         $meta = [];
@@ -223,6 +224,8 @@ final class Catalog extends AA_Object
             // a JSON null of the source is an empty value
             $meta[self::clean((string) $name, self::MAX_KEY)] = self::clean((string) $value, self::MAX_TEXT);
         }
-        return [self::clean($e->name, self::MAX_TEXT), self::clean($e->updated, self::MAX_TEXT), $meta];
+        $refusal = self::clean($e->refusal, self::MAX_TEXT);
+        // an entry that may be added keeps its three parts, so it is stored as one without a refusal always was
+        return [self::clean($e->name, self::MAX_TEXT), self::clean($e->updated, self::MAX_TEXT), $meta] + (($refusal === '') ? [] : [3 => $refusal]);
     }
 }

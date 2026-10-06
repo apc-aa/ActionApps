@@ -126,7 +126,7 @@ final class DetailCatalog
     }
 
     /** One page of the entries with the streams that come from each; Add or Update when the source
-     *  adopts entries.
+     *  adopts entries - off, with the reason, for an entry the source said it would refuse.
      *  @param list<CatalogEntry> $entries  @param list<Stream> $streams */
     private function listingHtml(array $entries, array $streams, bool $adopts, int $page): string
     {
@@ -148,19 +148,21 @@ final class DetailCatalog
             $details = implode('; ', array_map(static fn(string $name, string $value): string => safe($name) . ': ' . safe($value), array_map('strval', array_keys($e->meta)), array_map('strval', $e->meta)));
             $html   .= '<tr><td>' . safe($e->key) . '</td><td>' . safe($e->name) . '</td><td>' . safe($e->updated) . '</td><td>' . $details . '</td>'
                 . '<td>' . ($keys ? safe(implode(', ', $keys)) : _m('new')) . '</td>'
-                . ($adopts ? '<td>' . $this->adoptFormHtml($e->key, $keys ? _m('Update') : _m('Add'), $why, $page) . '</td>' : '')
+                . ($adopts ? '<td>' . $this->adoptFormHtml($e->key, $keys ? _m('Update') : _m('Add'), $why, $e->refusal, $page) . '</td>' : '')
                 . '</tr>';
         }
         return $html . '</tbody></table>';
     }
 
-    private function adoptFormHtml(string $key, string $label, string $why, int $page): string
+    /** @param string $why for all entries, shown once above the table  @param string $refusal of this entry, shown with it */
+    private function adoptFormHtml(string $key, string $label, string $why, string $refusal, int $page): string
     {
         return '<form method="post" action="' . safe(DetailPage::urlOf($this->def)) . '" class="aa-import-adopt">'
             . DetailPage::tokenFields($this->id(), 'adopt')
             . DetailPage::hiddenInput('key', $key)
             . (($page > 1) ? DetailPage::hiddenInput('catalog_page', (string) $page) : '')
-            . DetailPage::button($label, $why, [])
+            . DetailPage::button($label, ($why !== '') ? $why : $refusal, [])
+            . DetailPage::whyHtml($refusal)
             . '</form>';
     }
 

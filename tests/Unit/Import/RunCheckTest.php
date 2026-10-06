@@ -226,13 +226,13 @@ final class RunCheckTest extends TestCase
         $source               = self::cataloged(streams: 0);
         $source::$credentials = [['vendor' => 'RUNCAT', 'context' => '']];
         $source->streams      = [new Stream('s1', 'Label sekret88', [], 'k-sekret88')];
-        $source->pages        = ['' => new CatalogPage([new CatalogEntry('k-sekret88', 'Label sekret88', ['sekret88' => 'u sekret88', 'n' => 88], 'at sekret88')])];
+        $source->pages        = ['' => new CatalogPage([new CatalogEntry('k-sekret88', 'Label sekret88', ['sekret88' => 'u sekret88', 'n' => 88], 'at sekret88', 'not sekret88')])];
         $run                  = self::startRun($source, ['mode' => 'check']);
 
         self::runAll($run->getId());
 
         $catalog = Catalog::forDefinition(self::DEF);
-        self::assertEquals([new CatalogEntry('k-***', 'Label ***', ['***' => 'u ***', 'n' => '88'], 'at ***')], $catalog?->entries());
+        self::assertEquals([new CatalogEntry('k-***', 'Label ***', ['***' => 'u ***', 'n' => '88'], 'at ***', 'not ***')], $catalog?->entries());
         self::assertSame([['s1', 'Label ***', 'k-***']], array_map(static fn(Stream $s): array => [$s->key, $s->label, $s->catalogKey], $catalog->streams()));
         self::assertSame(['new' => [], 'missing' => [], 'renamed' => []], $catalog->diff($catalog->streams()));
         foreach (TableDb::rows('object_text') as $row) {

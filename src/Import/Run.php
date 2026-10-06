@@ -974,7 +974,7 @@ class Run extends BatchRun
                 // anything but a plain value is refused by the catalog as it is
                 $meta[$ctx->redact((string) $name)] = is_scalar($value) ? $ctx->redact((string) $value) : $value;
             }
-            $entries[] = new CatalogEntry($ctx->redact($e->key), $ctx->redact($e->name), $meta, $ctx->redact($e->updated));
+            $entries[] = new CatalogEntry($ctx->redact($e->key), $ctx->redact($e->name), $meta, $ctx->redact($e->updated), $ctx->redact($e->refusal));
         }
         return new CatalogPage($entries, $page->next);
     }

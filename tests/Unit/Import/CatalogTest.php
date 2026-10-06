@@ -218,6 +218,28 @@ final class CatalogTest extends TestCase
         self::assertSame($clean("20\xff24"), $entry->updated);
     }
 
+    /** why the source would not add an entry is kept with it, cleaned as its other texts; an entry it
+     *  would add is stored as before, so catalogs stored earlier read the same */
+    public function test_addPage_refusalKept(): void
+    {
+        $catalog = Catalog::create(self::DEF);
+        $catalog->addPage(new CatalogPage([new CatalogEntry('ok', 'Fine'), new CatalogEntry('no', 'Bad', [], '2024', "empty\x07 per\xff")]), self::TIME);
+
+        self::assertStringStartsWith('{"ok":["Fine","",[]],"no":["Bad","2024",[],"empty', self::storedEntries($catalog));
+        $read = Catalog::forDefinition(self::DEF);
+        self::assertNotNull($read);
+        self::assertSame('', $read->entry('ok')?->refusal);
+        self::assertSame(mb_scrub("empty  per\xff", 'UTF-8'), $read->entry('no')?->refusal, 'a control character a space');
+        self::assertSame(['', mb_scrub("empty  per\xff", 'UTF-8')], array_map(static fn(CatalogEntry $e): string => $e->refusal, $read->entriesAt(0, 2)));
+
+        $long = Catalog::create(self::DEF);
+        $long->addPage(new CatalogPage([new CatalogEntry('k', 'Name', [], '', str_repeat('r', 2000))]), self::TIME);
+        self::assertSame(str_repeat('r', 1000), $long->entry('k')?->refusal, 'cut as the other texts');
+
+        self::storedSet($read->getId(), 'entries', '{"old":["Old","",[]]}');
+        self::assertEquals(new CatalogEntry('old', 'Old'), Catalog::forDefinition(self::DEF)?->entry('old'));
+    }
+
     public function test_store_unicodeRoundTripsAsAscii(): void
     {
         $catalog = Catalog::create(self::DEF);

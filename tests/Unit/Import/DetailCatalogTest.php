@@ -280,6 +280,36 @@ final class DetailCatalogTest extends TestCase
         $this->assertStringContainsString('only a superadmin', $html);
     }
 
+    /** an entry the source said it would not add stays listed with the reason, its Add or Update off;
+     *  a post of it still goes to the source, which decides on its own */
+    public function test_catalog_entryTheSourceRefusesSaysWhy(): void
+    {
+        self::definition();
+        self::catalog(
+            [new CatalogEntry('e1', 'Prices'), new CatalogEntry('e2', 'Wages', [], '', 'empty <b>per</b>'), new CatalogEntry('e3', 'Rents', [], '', 'empty per')],
+            [new Stream('s3', 'Rents', [], 'e3')],
+        );
+
+        $html    = self::catalogHtml();
+        $buttons = iterator_to_array(self::dom($html)->getElementsByTagName('button'));
+
+        $this->assertSame(['e1', 'e2', 'e3'], array_column(self::tableRows($html, 'aa-import-catalog'), 0), 'all of them listed');
+        $this->assertSame(['', 'disabled', 'disabled'], array_map(static fn(\DOMElement $b): string => $b->getAttribute('disabled'), $buttons));
+        $this->assertSame('empty <b>per</b>', $buttons[1]->getAttribute('title'));
+        $this->assertSame(['Add', 'Add empty <b>per</b>', 'Update empty per'], array_column(self::tableRows($html, 'aa-import-catalog'), 5));
+        $this->assertStringNotContainsString('<b>per', $html);
+
+        \AdoptSource::$credentials = [['vendor' => 'csu', 'context' => '']];
+        $keys = iterator_to_array(self::dom(self::catalogHtml())->getElementsByTagName('button'));
+        $this->assertStringContainsString('only a superadmin', $keys[1]->getAttribute('title'), 'a reason for all entries goes first');
+        $this->assertSame('Add empty <b>per</b>', self::tableRows(self::catalogHtml(), 'aa-import-catalog')[1][5], 'the reason of the entry stays beside it');
+        \AdoptSource::$credentials = [];
+
+        $msg = self::act(['action' => 'adopt', 'key' => 'e2']);
+        $this->assertStringContainsString('aa-ok', $msg, 'the fake source adopts anything');
+        $this->assertSame(['e2'], array_map(static fn(CatalogEntry $e): string => $e->key, \AdoptSource::$adopted));
+    }
+
     // ------------------------------------------------------------ adopt
 
     public function test_adopt_needsEditAllItemsOnAdoptSlice(): void
