@@ -104,6 +104,20 @@ final class HtmlMimeMailImagesTest extends TestCase
         self::assertSame('<img src="1p.jpg"><img src="1p.jpg">', $html);
     }
 
+    /** only the src is embedded - Apple Mail would show a srcset or <source> candidate instead, a link at best */
+    public function test_setHtml_responsiveCandidates_areDropped(): void
+    {
+        [$mail, $html, $embedded] = self::mail('', '<picture class=aa-picture>'
+            . '<source type="image/avif" srcset="/files/up/mC/pT/a/p.jpg!w=343!f=avif.avif 343w, /files/up/mC/pT/a/p.jpg!w=686!f=avif.avif 686w" sizes="auto, 343px">'
+            . '<img src="/files/up/a/p.jpg" srcset="/files/up/a/p.jpg 343w, /files/up/a/q.jpg 686w" SIZES=\'343px\' width=343 alt="srcset=x > y">'
+            . '</picture><video><source src="https://www.example.org/v.mp4"></video>');
+
+        self::assertSame(['https://img.example.org/files/up/a/p.jpg'], $mail->fetched);
+        self::assertSame(1, $embedded);
+        self::assertSame('<picture class=aa-picture><img src="1p.jpg" width=343 alt="srcset=x > y"></picture>'
+            . '<video><source src="https://www.example.org/v.mp4"></video>', $html);
+    }
+
     /** @return array<string, array{0: array<string, mixed>|false, 1: string}> */
     public static function leftAloneProvider(): array
     {

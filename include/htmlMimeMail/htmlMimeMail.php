@@ -312,7 +312,7 @@ class htmlMimeMail {
      */
 	public function setHtml($html, $text = null, $images_dir = null): void
     {
-        $this->html      = (string)$html;
+        $this->html      = self::srcOnly((string)$html);
         $this->html_text = $text;
         $this->_findHtmlImages($images_dir);
         // original code from the library, but not OK for us - we are looking for much more image sources, than original, so it makes sense to call it even without $images_dir - HM 2024-03-15
@@ -321,6 +321,27 @@ class htmlMimeMail {
         // }
 
     }
+    /**
+     * Drops the srcset and sizes of images and the <source> candidates of <picture>. The mail embeds
+     * only the src - the other candidates would stay links (root-relative ones broken), and Apple Mail
+     * prefers them to the embedded image.
+     */
+    private static function srcOnly(string $html): string
+    {
+        // read value by value - a quoted value may hold '>' or look like an attribute (alt="a > b")
+        $tag  = '(?:[^>"\']++|"[^"]*+"|\'[^\']*+\')*+>';
+        $html = (string) preg_replace_callback('~<picture\b.*?</picture>~is', static fn(array $m): string => (string) preg_replace("~<source\\b$tag~i", '', $m[0]), $html);
+        return (string) preg_replace_callback(
+            "~<img\\b$tag~i",
+            static fn(array $m): string => (string) preg_replace_callback(
+                '~(\s+)([^\s=>"\'/]+)(\s*=\s*(?:"[^"]*+"|\'[^\']*+\'|[^\s>"\']*+))?~',
+                static fn(array $a): string => \in_array(strtolower($a[2]), ['srcset', 'sizes'], true) ? '' : $a[0],
+                $m[0],
+            ),
+            $html,
+        );
+    }
+
     /**
      * Function for extracting images from html source. This function will look through the html code
      * supplied by add_html() and find any file that ends in one of the extensions defined in $obj->image_types.
