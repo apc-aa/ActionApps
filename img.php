@@ -7,7 +7,7 @@
 */
 
 require_once __DIR__ . "/include/config.php";   // we use some constants from AA in the config
-require_once __DIR__ . "/src/Util/PhpThumbParams.php";   // just the AVIF quality - the whole autoloader would include 16 files more
+require_once __DIR__ . "/src/Util/PhpThumbParams.php";   // AVIF quality and noEnlarge() - the whole autoloader would include 16 files more
 const AA_PHPTHUMB__DIR__ = __DIR__ . "/vendor/honzito/phpthumb";
 
 // This endpoint emits raw image bytes — a printed warning/notice/deprecation
@@ -373,5 +373,16 @@ function phpThumbURL($ParameterString, $path_to_phpThumb = 'phpThumb.php'): stri
     return $path_to_phpThumb . '?' . $ParameterString . $PHPTHUMB_CONFIG['high_security_url_separator'] . 'hash=' . hash_hmac('sha256', $ParameterString, $PHPTHUMB_CONFIG['high_security_password']);
 }
 // ---------- vendor/james-heinrich/phpthumb/phpThumb.config.php v2023-05-03 - end ---------
+
+// aoe=0 never enlarges a zc/iar box - the size of the source phpThumb reads next anyway
+$_GET = \AA\Util\PhpThumbParams::noEnlarge($_GET, static function () use ($PHPTHUMB_CONFIG): ?array {
+    $src = $_GET['src'] ?? null;
+    // a url or an unusual path: phpThumb resolves those its own way, unknown size enlarges as before
+    if (!is_string($src) || !str_starts_with($src, '/') || str_contains($src, '..') || str_contains($src, "\0")) {
+        return null;
+    }
+    $size = @getimagesize(rtrim((string) $PHPTHUMB_CONFIG['document_root'], '/') . $src);
+    return $size ? [(int) $size[0], (int) $size[1]] : null;
+});
 
 require_once AA_PHPTHUMB__DIR__ . "/phpThumb.php";

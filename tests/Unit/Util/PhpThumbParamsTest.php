@@ -127,6 +127,52 @@ final class PhpThumbParamsTest extends TestCase
         $this->assertSame($expected, PhpThumbParams::setFormat($params, 'avif'));
     }
 
+    /** @return array<string, array{0: array<string, string>, 1: ?array{0: int, 1: int}, 2: array<string, string>}> */
+    public static function noEnlargeBoxes(): array
+    {
+        $crop = ['src' => '/up/p.jpg', 'w' => '1600', 'h' => '900', 'zc' => '1', 'aoe' => '0'];
+        $iar  = ['src' => '/up/p.jpg', 'w' => '1600', 'h' => '900', 'iar' => '1', 'aoe' => '0'];
+        return [
+            'source big enough'          => [$crop, [4000, 3000], array_replace($crop, ['aoe' => '1'])],
+            'source narrower'            => [$crop, [1000, 667], array_replace($crop, ['w' => '1000', 'h' => '563', 'aoe' => '1'])],
+            'source lower'               => [$crop, [2000, 800], array_replace($crop, ['w' => '1422', 'h' => '800', 'aoe' => '1'])],
+            'tiny source'                => [$crop, [15, 16], array_replace($crop, ['w' => '15', 'h' => '8', 'aoe' => '1'])],
+            'stretched (iar)'            => [$iar, [1000, 667], array_replace($iar, ['w' => '1000', 'h' => '563', 'aoe' => '1'])],
+            'unknown source enlarges'    => [$crop, null, array_replace($crop, ['aoe' => '1'])],
+        ];
+    }
+
+    /** aoe=0 with zc or iar: the box shrinks to the source in its own aspect ratio, then phpThumb gets aoe=1 to fill it exactly
+     *  @param array<string, string> $get
+     *  @param ?array{0: int, 1: int} $source
+     *  @param array<string, string> $expected */
+    #[DataProvider('noEnlargeBoxes')]
+    public function test_no_enlarge_shrinks_the_box(array $get, ?array $source, array $expected): void
+    {
+        $this->assertSame($expected, PhpThumbParams::noEnlarge($get, static fn(): ?array => $source));
+    }
+
+    /** @return array<string, array{0: array<string, string>}> */
+    public static function noEnlargeUntouched(): array
+    {
+        $crop = ['src' => '/up/p.jpg', 'w' => '1600', 'h' => '900', 'zc' => '1', 'aoe' => '0'];
+        return [
+            'enlarging allowed'       => [array_replace($crop, ['aoe' => '1'])],
+            'aoe not given'           => [array_diff_key($crop, ['aoe' => 1])],
+            'fitted into the box'     => [array_diff_key($crop, ['zc' => 1])],   // phpThumb itself never enlarges a fit
+            'one dimension'           => [array_diff_key($crop, ['h' => 1])],
+            'unpredictable size'      => [['fltr' => ['crop|5']] + $crop],
+            'fixed aspect ratio'      => [['far' => 'C'] + array_diff_key($crop, ['zc' => 1])],
+        ];
+    }
+
+    /** @param array<string, mixed> $get */
+    #[DataProvider('noEnlargeUntouched')]
+    public function test_no_enlarge_leaves_other_requests_alone_without_reading_the_source(array $get): void
+    {
+        $this->assertSame($get, PhpThumbParams::noEnlarge($get, fn(): never => $this->fail('the source size is read only when needed')));
+    }
+
     public function test_clean_drops_control_bytes_only(): void
     {
         $this->assertSame('w=300&h=200&zc=1', PhpThumbParams::clean("w=300&h=200\r\n\t&zc=1\x00\x7F"));

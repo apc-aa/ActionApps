@@ -73,6 +73,32 @@ final class PhpThumbParams
         return $params . (str_contains($params, '&amp;') ? '&amp;' : '&') . 'aoe=1';
     }
 
+    /** For img.php: aoe=0 with a box phpThumb fills (zc crops into it, iar stretches) shrinks the
+     *  box to fit the source instead of enlarging it, in the box's aspect ratio. phpThumb alone
+     *  would enlarge anyway (GD) or return the source in its own aspect ratio (ImageMagick, see
+     *  addAoe4ZoomCrop()), which the width and height of the <img> would then stretch. The shrunk
+     *  box goes on with aoe=1, so it is filled exactly. A source of unknown size is enlarged as before.
+     *
+     *  @param array<string, mixed> $get           the request parameters, as phpThumb reads them
+     *  @param callable(): ?array{0: int, 1: int} $source_size  width and height of the source, null when unknown - called only when needed
+     *  @return array<string, mixed>
+     */
+    public static function noEnlarge(array $get, callable $source_size): array
+    {
+        $w = (int) ($get['w'] ?? 0);
+        $h = (int) ($get['h'] ?? 0);
+        if ((($get['aoe'] ?? null) !== '0') || !$w || !$h || (empty($get['zc']) && empty($get['iar'])) || !empty($get['far']) || self::hasUnpredictable($get)) {
+            return $get;
+        }
+        if ($size = $source_size()) {
+            $scale = min(1, $size[0] / $w, $size[1] / $h);
+            $get['w'] = (string) min($size[0], max(1, (int) round($w * $scale)));
+            $get['h'] = (string) min($size[1], max(1, (int) round($h * $scale)));
+        }
+        $get['aoe'] = '1';
+        return $get;
+    }
+
     /** Output dimensions for the parameter combinations where phpThumb always renders
      *  exactly w × h. For those {img} skips measuring the generated image -
      *  that is a self-HTTP request which also forces the thumbnail to be rendered
