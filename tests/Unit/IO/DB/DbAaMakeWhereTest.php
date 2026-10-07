@@ -100,4 +100,22 @@ final class DbAaMakeWhereTest extends TestCase
         $this->assertSame('WHERE c IS NULL ', DB_AA::makeWhere([['c', null, 'ISNULL']]));
         $this->assertSame('WHERE c IS NOT NULL ', DB_AA::makeWhere([['c', null, 'NOTNULL']]));
     }
+
+    public function test_contain_matches_the_exact_string_anywhere(): void
+    {
+        $this->assertSame("WHERE t LIKE '%a\\_b\\%c\\'%'", DB_AA::makeWhere([['t', "a_b%c'", 'CONTAIN']]));
+    }
+
+    public function test_contain_of_an_array_matches_any_of_the_strings(): void
+    {
+        $this->assertSame("WHERE (t LIKE '%&%' OR t LIKE '%\\'%')", DB_AA::makeWhere([['t', ['&', "'"], 'CONTAIN']]));
+        $this->assertSame("WHERE t LIKE '%&%'", DB_AA::makeWhere([['t', ['&'], 'CONTAIN']]));
+        $this->assertSame('WHERE 2=1', DB_AA::makeWhere([['t', [], 'CONTAIN']]));
+    }
+
+    public function test_contain_of_an_array_skips_empty_strings_and_keeps_any_keys(): void
+    {
+        $this->assertSame("WHERE t LIKE '%&%'", DB_AA::makeWhere([['t', [3 => '&', 4 => '', 5 => null], 'CONTAIN']]));
+        $this->assertSame('WHERE 2=1', DB_AA::makeWhere([['t', [''], 'CONTAIN']]));
+    }
 }

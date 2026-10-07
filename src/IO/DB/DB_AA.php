@@ -399,7 +399,7 @@ final class DB_AA
      *     RLIKE    -                   LIKE             single             ['selector', $item_id, 'RLIKE']
      *     BEGIN    -                   LIKE             single or array    ['selector', $item_id, 'BEGIN'] // similar to RLIKE, but the value must begin with exact match of the string (including "%" and "_" characters)
      *     NOT BEGIN-                   LIKE             single or array    ['selector', $item_id, 'BEGIN']
-     *     CONTAIN  -                   LIKE             single             ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
+     *     CONTAIN  -                   LIKE             single or array    ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
      *
@@ -438,7 +438,14 @@ final class DB_AA
                 }
                 continue;
             } elseif ($type === 'CONTAIN') {
-                $where[] = "$name LIKE '%" . addcslashes(quote($value), "_%") . "%'";
+                // an empty string in the list would match every row
+                $values  = is_array($value) ? array_filter($value, static fn($v) => (string) $v !== '') : [$value];
+                $likes   = array_map(fn($v) => "$name LIKE '%" . addcslashes(quote($v), "_%") . "%'", array_values($values));
+                $where[] = match (count($likes)) {
+                    0       => '2=1',
+                    1       => $likes[0],
+                    default => '(' . implode(' OR ', $likes) . ')',
+                };
                 continue;
             } elseif ($type === 's<>' || $type === 's!=') {
                 if (is_array($value)) {
