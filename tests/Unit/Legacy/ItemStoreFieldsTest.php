@@ -17,6 +17,8 @@ namespace {
         'DB_NAME'         => 'aa_test',
         'DB_USER'         => 'aa',
         'DB_PASSWORD'     => '',
+        // the charset of the Trim inserter (Langs::isUTF())
+        'DEFAULT_LANG_INCLUDE' => 'en-utf8_news_lang.php',
     ] as $k => $v) {
         if (!defined($k)) {
             define($k, $v);
@@ -187,6 +189,31 @@ namespace Tests\Unit\Legacy {
                 $this->row(self::ITEM, 'yes_no..........', 1, null, 0),
                 $this->row(self::ITEM, 'yes_no..........', 0, null, 0),
             ]);
+        }
+
+        public function test_trim_inserter_trims_unicode_whitespace_and_composes_accents(): void
+        {
+            $this->store(
+                [$this->field('headline........', ['input_insert_func' => 'trm:', 'multiple' => 1])],
+                ['headline........' => new AA_Value([" \tICO 123\r\n", "\u{00A0}Praha\u{3000}", "Cafe\u{0301}", ' '])],
+            );
+
+            $this->assertContentTable([
+                $this->row(self::ITEM, 'headline........', 0, 'ICO 123', 64),
+                $this->row(self::ITEM, 'headline........', 1, 'Praha', 64),
+                $this->row(self::ITEM, 'headline........', 2, "Caf\u{00E9}", 64),
+                $this->row(self::ITEM, 'headline........', 3, '', 64),
+            ]);
+        }
+
+        public function test_trim_inserter_keeps_text_that_is_not_valid_utf8(): void
+        {
+            $this->store(
+                [$this->field('headline........', ['input_insert_func' => 'trm'])],
+                ['headline........' => new AA_Value(" Br\xFCnn \n")],
+            );
+
+            $this->assertContentTable([$this->row(self::ITEM, 'headline........', 0, "Br\xFCnn", 64)]);
         }
 
         public function test_fields_are_written_in_content_order(): void

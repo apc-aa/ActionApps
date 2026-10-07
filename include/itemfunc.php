@@ -1084,8 +1084,16 @@ class AA_Inserter_Trm extends AA_Inserter
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
-        $value = Langs::isUTF() ? aa_trim(Normalizer::normalize($value)) : aa_trim($value);
-        parent::execute($fieldwriter, $item_id, $value, $order, $flag);
+        parent::execute($fieldwriter, $item_id, self::trimValue((string) $value), $order, $flag);
+    }
+
+    /** The value as this function stores it. Normalizer refuses text that is not valid UTF-8 -
+     *  such text is only trimmed, so it is not lost.
+     */
+    public static function trimValue(string $value): string
+    {
+        $normalized = Langs::isUTF() ? Normalizer::normalize($value) : false;
+        return aa_trim(($normalized === false) ? $value : $normalized);
     }
 }
 
