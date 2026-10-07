@@ -105,7 +105,7 @@ final class HtmlMimeMailImagesTest extends TestCase
     }
 
     /** only the src is embedded - Apple Mail would show a srcset or <source> candidate instead, a link at best */
-    public function test_setHtml_responsiveCandidates_areDropped(): void
+    public function test_setHtml_responsiveCandidates_areRenamed(): void
     {
         [$mail, $html, $embedded] = self::mail('', '<picture class=aa-picture>'
             . '<source type="image/avif" srcset="/files/up/mC/pT/a/p.jpg!w=343!f=avif.avif 343w, /files/up/mC/pT/a/p.jpg!w=686!f=avif.avif 686w" sizes="auto, 343px">'
@@ -114,8 +114,89 @@ final class HtmlMimeMailImagesTest extends TestCase
 
         self::assertSame(['https://img.example.org/files/up/a/p.jpg'], $mail->fetched);
         self::assertSame(1, $embedded);
-        self::assertSame('<picture class=aa-picture><img src="1p.jpg" width=343 alt="srcset=x > y"></picture>'
-            . '<video><source src="https://www.example.org/v.mp4"></video>', $html);
+        self::assertSame('<picture class=aa-picture>'
+            . '<source type="image/avif" data-srcset="/files/up/mC/pT/a/p.jpg!w=343!f=avif.avif 343w, /files/up/mC/pT/a/p.jpg!w=686!f=avif.avif 686w" data-sizes="auto, 343px">'
+            . '<img src="1p.jpg" data-srcset="/files/up/a/p.jpg 343w, /files/up/a/q.jpg 686w" data-SIZES=\'343px\' width=343 alt="srcset=x > y">'
+            . '</picture><video><source src="https://www.example.org/v.mp4"></video>', $html);
+    }
+
+    /** a renamed srcset of one url looks like any quoted image path - it must not become an attachment */
+    public function test_setHtml_renamedSrcset_isNotEmbedded(): void
+    {
+        [$mail, $html] = self::mail('', '<picture><source srcset="/files/up/a/x.jpg"><img src="/files/up/a/p.jpg" srcset=\'/files/up/a/y.jpg\'></picture>');
+
+        self::assertSame(['https://img.example.org/files/up/a/p.jpg'], $mail->fetched);
+        self::assertSame('<picture><source data-srcset="/files/up/a/x.jpg"><img src="1p.jpg" data-srcset=\'/files/up/a/y.jpg\'></picture>', $html);
+    }
+
+    private static function srcOnly(string $html): string
+    {
+        return (new \ReflectionMethod(\htmlMimeMail::class, 'srcOnly'))->invoke(null, $html);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function srcOnlyProvider(): array
+    {
+        return [
+            // a quote opens a value only right after '=' - as browsers read it
+            'apostrophe in an unquoted value' => ["<img alt=Tom's src=a.jpg srcset=\"b.jpg 2x\">", "<img alt=Tom's src=a.jpg data-srcset=\"b.jpg 2x\">"],
+            'text after the tag stays text'   => ["<img src=a srcset=b> it's <p sizes='x'>", "<img src=a data-srcset=b> it's <p sizes='x'>"],
+            'no space between attributes'     => ['<img src="a"srcset="b 2x">', '<img src="a"data-srcset="b 2x">'],
+            'right after the name'            => ['<img/srcset=b src=a>', '<img/data-srcset=b src=a>'],
+            'srcset= inside a value'          => ['<img alt="srcset=x > y" src=a>', '<img alt="srcset=x > y" src=a>'],
+            'vertical tab is no space'        => ["<img alt=a\x0Bsrcset=b src=c>", "<img alt=a\x0Bsrcset=b src=c>"],
+            'source of a picture'             => ['<picture><source srcset=a.avif sizes=auto type=image/avif><img src=a.jpg>', '<picture><source data-srcset=a.avif data-sizes=auto type=image/avif><img src=a.jpg>'],
+            'source of an audio'              => ['<audio><source src=a.mp3></audio>', '<audio><source src=a.mp3></audio>'],
+            // 2 MB in one <picture> once exhausted the backtrack limit and the mail went out empty
+            'data uri in a picture'           => ['<picture><img src="data:image/png;base64,' . str_repeat('A', 2_000_000) . '"></picture><img src=b srcset=c>', '<picture><img src="data:image/png;base64,' . str_repeat('A', 2_000_000) . '"></picture><img src=b data-srcset=c>'],
+        ];
+    }
+
+    #[DataProvider('srcOnlyProvider')]
+    public function test_setHtml_responsiveCandidates_areRenamedAsBrowsersReadTags(string $html, string $expected): void
+    {
+        self::assertSame($expected, self::srcOnly($html));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function misreadTagsProvider(): array
+    {
+        return [
+            'vertical tab before a name'  => ["<img alt=a\x0Bsrcset=\" title=\"x onerror=f() y\">"],
+            'vertical tab after the tag'  => ["<img\x0Bsrcset=' title='x><img src=x onerror=f()>'>"],
+            '= starting a name'           => ['<img ="x>srcset=<b title=" >  <img src=x onerror=f()>   ">'],
+            '= starting a name in source' => ['<picture><source ="x><img alt=" >  <img src=x onerror=f()> ">'],
+            '<img inside a value'         => ['<p title=\'<img srcset="\'> <b title=">\'> <img src=x onerror=f()> ">'],
+        ];
+    }
+
+    /** where a tag is read otherwise than a browser reads it, renaming still only inserts 'data-' -
+     *  deleting the attribute took its quotes along, which turned text into an onerror handler */
+    #[DataProvider('misreadTagsProvider')]
+    public function test_setHtml_misreadTag_onlyGainsDataPrefixes(string $html): void
+    {
+        self::assertSame($html, str_replace('data-', '', self::srcOnly($html)));
+    }
+
+    /** nothing is scanned twice, so hostile markup costs linear time even without the PCRE JIT - and is never lost */
+    public function test_setHtml_hostileMarkup_staysLinear(): void
+    {
+        $jit = ini_set('pcre.jit', '0');
+        try {
+            foreach ([
+                str_repeat('<picture', 20000),
+                '<picture>' . str_repeat('<source a="', 10000) . str_repeat("<source b='", 10000),
+                str_repeat('<img a="', 10000) . str_repeat("<img b='", 10000),
+                '<img ' . str_repeat(' ', 100000) . '/',
+                str_repeat('<img/x=', 20000),
+            ] as $html) {
+                $start = hrtime(true);
+                self::assertSame($html, self::srcOnly($html));
+                self::assertLessThan(1.0, (hrtime(true) - $start) / 1e9);   // ~10 ms linear, seconds quadratic
+            }
+        } finally {
+            ini_set('pcre.jit', (string) $jit);
+        }
     }
 
     /** @return array<string, array{0: array<string, mixed>|false, 1: string}> */

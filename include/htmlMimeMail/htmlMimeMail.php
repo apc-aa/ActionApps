@@ -321,25 +321,37 @@ class htmlMimeMail {
         // }
 
     }
+
+    /** whitespace as HTML knows it - PCRE's \s takes a vertical tab too, which HTML keeps in a name or value */
+    private const SPACE = '\t\n\f\r ';
+
     /**
-     * Drops the srcset and sizes of images and the <source> candidates of <picture>. The mail embeds
-     * only the src - the other candidates would stay links (root-relative ones broken), and Apple Mail
-     * prefers them to the embedded image.
+     * The rest of a tag after its name, attributes in group 1. A quote opens a value only right after '='
+     * (alt="a > b" stays one value, alt=a"b does not open one). Possessive: a scan never backtracks, so
+     * even hostile markup costs linear time.
+     */
+    private const TAG_REST = '(?=[' . self::SPACE . '/>])((?:[^<>=]++|=[' . self::SPACE . ']*+(?:"[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '<>]*+))*+)>';
+
+    /** One attribute (name in group 1) or one stray character, read in order, so a 'srcset=' inside a value never counts. */
+    private const ATTRIBUTE = '~\G[' . self::SPACE . ']*+(?:(=[^' . self::SPACE . '/>=]*+|[^' . self::SPACE . '/>=]++)(?:[' . self::SPACE . ']*+=[' . self::SPACE . ']*+("[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '>]*+))?|.)~s';
+
+    /**
+     * Renames srcset and sizes of <img> and <source> to data-srcset and data-sizes. The mail embeds only
+     * the src - the other candidates would stay links (root-relative ones broken), and Apple Mail prefers
+     * them to the embedded image; a <source> without srcset is skipped. Renaming only inserts letters, so
+     * even a tag read otherwise than a browser reads it keeps every quote and bracket where it was.
      */
     private static function srcOnly(string $html): string
     {
-        // read value by value - a quoted value may hold '>' or look like an attribute (alt="a > b")
-        $tag  = '(?:[^>"\']++|"[^"]*+"|\'[^\']*+\')*+>';
-        $html = (string) preg_replace_callback('~<picture\b.*?</picture>~is', static fn(array $m): string => (string) preg_replace("~<source\\b$tag~i", '', $m[0]), $html);
-        return (string) preg_replace_callback(
-            "~<img\\b$tag~i",
-            static fn(array $m): string => (string) preg_replace_callback(
-                '~(\s+)([^\s=>"\'/]+)(\s*=\s*(?:"[^"]*+"|\'[^\']*+\'|[^\s>"\']*+))?~',
-                static fn(array $a): string => \in_array(strtolower($a[2]), ['srcset', 'sizes'], true) ? '' : $a[0],
-                $m[0],
-            ),
+        return preg_replace_callback(
+            '~<(img|source)' . self::TAG_REST . '~i',
+            static fn(array $m): string => '<' . $m[1] . (preg_replace_callback(
+                self::ATTRIBUTE,
+                static fn(array $a): string => \in_array(strtolower($a[1] ?? ''), ['srcset', 'sizes'], true) ? substr_replace($a[0], 'data-', strspn($a[0], " \t\n\f\r"), 0) : $a[0],
+                $m[2],
+            ) ?? $m[2]) . '>',
             $html,
-        );
+        ) ?? $html;
     }
 
     /**
@@ -354,8 +366,9 @@ class htmlMimeMail {
         // Build the list of image extensions
         $extensions = array_keys($this->image_types);
 
-        // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail)
-        $sanit_text = str_ireplace(['href="', "href='"], ['', ''], $this->html);
+        // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail),
+        // nor a data-srcset left by srcOnly()
+        $sanit_text = str_ireplace(['href="', "href='", 'srcset="', "srcset='"], '', $this->html);
         preg_match_all('/["\']([^"\']+\.('.implode('|', $extensions).'))["\']/Ui', $sanit_text, $images); // (?:x) - non capturing parentheses - matches, but not in the result
         preg_match_all('~["\']([^"\']+/img\.php\?src=[^"\']+)["\']~Ui', $sanit_text, $images2);
 
