@@ -2186,10 +2186,14 @@ function aa_strrpos($haystack, $needle, $offset = 0): false|int
     return \AA\Util\Txt::strrpos($haystack, $needle, $offset);
 }
 
-/** trim  with utf in mind */
+/** trim  with utf in mind - in UTF-8 also the non-breaking and other Unicode spaces */
 function aa_trim(string $string = '', string $chars = ''): string
 {
-    return ($chars === '' && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+    if ($chars !== '') {
+        return trim($string, $chars);
+    }
+    // text that is not valid UTF-8 makes preg_replace() fail (null) - it is trimmed byte-wise then
+    return (Langs::isUTF() ? preg_replace("/^\s+|\s+$/u", "", $string) : null) ?? trim($string);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 
