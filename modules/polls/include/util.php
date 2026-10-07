@@ -63,12 +63,12 @@ class AA_Aliasgenerator_Answer extends AbstractAliasgenerator
     {
         $aliases = new AA_Aliases();
 
-        $aliases->addAlias(new AA_Alias('_#QUESTION', 'f_t:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));
-        $aliases->addAlias(new AA_Alias('_#POLLQUES', 'f_t:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));  // @deprecated
-        $aliases->addAlias(new AA_Alias('_#PUB_DATE', 'f_t:{poll:{_#POLL_ID_}:_#PUB_DATE}', '', _m('Poll publish date')));
-        $aliases->addAlias(new AA_Alias('_#EXP_DATE', 'f_t:{poll:{_#POLL_ID_}:_#EXP_DATE}', '', _m('Poll expiry date')));
-        $aliases->addAlias(new AA_Alias('_#PARAMS__', 'f_t:{poll:{_#POLL_ID_}:_#PARAMS__}', '', _m('Poll params')));
-        $aliases->addAlias(new AA_Alias('_#MODULEID', 'f_t:{poll:{_#POLL_ID_}:_#MODULEID}', '', _m('Module ID')));
+        $aliases->addAlias(new AA_Alias('_#QUESTION', 'f__:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));
+        $aliases->addAlias(new AA_Alias('_#POLLQUES', 'f__:{poll:{_#POLL_ID_}:_#QUESTION}', '', _m('Prints poll question')));  // @deprecated
+        $aliases->addAlias(new AA_Alias('_#PUB_DATE', 'f__:{poll:{_#POLL_ID_}:_#PUB_DATE}', '', _m('Poll publish date')));
+        $aliases->addAlias(new AA_Alias('_#EXP_DATE', 'f__:{poll:{_#POLL_ID_}:_#EXP_DATE}', '', _m('Poll expiry date')));
+        $aliases->addAlias(new AA_Alias('_#PARAMS__', 'f__:{poll:{_#POLL_ID_}:_#PARAMS__}', '', _m('Poll params')));
+        $aliases->addAlias(new AA_Alias('_#MODULEID', 'f__:{poll:{_#POLL_ID_}:_#MODULEID}', '', _m('Module ID')));
 
         $aliases->addAlias(new AA_Alias('_#POLL_ID_', 'f_1', 'poll_id', _m('Poll id (32 characters hexadecimal number - the same for all answers)'))); // generated automatically form the table column using metabase methods
 
@@ -76,8 +76,8 @@ class AA_Aliasgenerator_Answer extends AbstractAliasgenerator
         $aliases->addAlias(new AA_Alias('_#ANS_VOTE', 'f_1', 'votes', _m("Number of votes for this answer")));
         $aliases->addAlias(new AA_Alias('_#ANSWER__', 'f_1', 'answer', _m('Text of answer'))); // generated automatically form the table column using metabase methods
         $aliases->addAlias(new AA_Alias('_#ANS_ID__', 'f_1', 'id', _m('ID of answer (32 characters hexadecimal number)')));
-        $aliases->addAlias(new AA_Alias('_#ANS_PERC', 'f_t:{poll_share}', '', _m('Votes for this answer in percent. You can use also {poll_share}.')));
-        $aliases->addAlias(new AA_Alias('_#ANS_SUM_', 'f_t:{poll_sum}', '', _m('Sum of all votes. You can use also {poll_sum}.')));
+        $aliases->addAlias(new AA_Alias('_#ANS_PERC', 'f__:{poll_share}', '', _m('Votes for this answer in percent. You can use also {poll_share}.')));
+        $aliases->addAlias(new AA_Alias('_#ANS_SUM_', 'f__:{poll_sum}', '', _m('Sum of all votes. You can use also {poll_sum}.')));
 
         return $aliases;
     }

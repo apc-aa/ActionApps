@@ -124,7 +124,7 @@ class itemview
         // most probably filled by the right value. Later the $QueryIDsCount could be damaged
         // mainly if you use nested views, ... {view.php?vid=} which makes new queries
         $idcount = (string) ($GLOBALS['QueryIDsCount'] ?: ' 0');
-        $this->aa_aliases->addAlias(new AA_Alias('_#ID_COUNT', "f_t:$idcount", 'id..............', _m('number of found items')));
+        $this->aa_aliases->addAlias(new AA_Alias('_#ID_COUNT', "f__:$idcount", 'id..............', _m('number of found items')));
 
         $this->fields            = '';
         $this->zids              = $zids;

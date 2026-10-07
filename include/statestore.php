@@ -1256,7 +1256,7 @@ class AA_Aliasgenerator_Object extends AbstractAliasgenerator
         $aliases->addFromProperties($params['object_type']::getClassProperties());   // do not move up or down - must be in the same order as search fields (for getManagerConf)
         $aliases->addAlias(new AA_Alias('_#AA_ID___', 'f_1', 'aa_id', 'aa_id'));
         $aliases->addAlias(new AA_Alias('_#AA_OWNER', 'f_1', 'aa_owner', 'aa_owner'));
-        $aliases->addAlias(new AA_Alias('_#AA_OW_NM', 'f_t:{safe:{modulefield:{_#AA_OWNER}:name}}', 'aa_owner', 'aa_owner'));
+        $aliases->addAlias(new AA_Alias('_#AA_OW_NM', 'f__:{safe:{modulefield:{_#AA_OWNER}:name}}', 'aa_owner', 'aa_owner'));
         return $aliases;
     }
 }

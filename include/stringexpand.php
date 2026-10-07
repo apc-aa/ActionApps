@@ -9898,8 +9898,8 @@ class AA_Password_Manager_Reader {
         $pwd_link = "<a href=\"$url\">$url</a>";
 
         $add_alias = [
-            "_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link",  "", _m('Password link')),
-            "_#PWD_URLP" => GetAliasDef( "f_t:$pwd_param", "", _m('Password change url parameter')),
+            "_#PWD_LINK" => GetAliasDef( "f__:$pwd_link",  "", _m('Password link')),
+            "_#PWD_URLP" => GetAliasDef( "f__:$pwd_param", "", _m('Password change url parameter')),
         ];
 
         if ($template_id = DB_AA::select1('id', 'SELECT id FROM `email`', [

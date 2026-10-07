@@ -74,12 +74,12 @@ function add_user_and_welcome($welcome_id, $user_login, $slice_id, $role): strin
     $me = AA::$perm->getIDsInfo(AuthGetUid());
 
     $aliases               = [];
-    $aliases["_#SLICNAME"] = GetAliasDef("f_t:$slice_name", "id..............");
-    $aliases["_#LOGIN___"] = GetAliasDef("f_t:$user_login", "id..............");
-    $aliases["_#NAME____"] = GetAliasDef("f_t:" . $user["name"], "id..............");
-    $aliases["_#ROLE____"] = GetAliasDef("f_t:$role", "id..............");
-    $aliases["_#ME_MAIL_"] = GetAliasDef("f_t:" . $me["mail"], "id..............");
-    $aliases["_#ME_NAME_"] = GetAliasDef("f_t:" . $me["cn"], "id..............");
+    $aliases["_#SLICNAME"] = GetAliasDef("f__:$slice_name", "id..............");
+    $aliases["_#LOGIN___"] = GetAliasDef("f__:$user_login", "id..............");
+    $aliases["_#NAME____"] = GetAliasDef("f__:" . $user["name"], "id..............");
+    $aliases["_#ROLE____"] = GetAliasDef("f__:$role", "id..............");
+    $aliases["_#ME_MAIL_"] = GetAliasDef("f__:" . $me["mail"], "id..............");
+    $aliases["_#ME_NAME_"] = GetAliasDef("f__:" . $me["cn"], "id..............");
 
     $item = new AA_Item('', $aliases);
     if (AA_Mail::sendTemplate($welcome_id, [$me["mail"], $user["mail"]], $item) != 2) {
