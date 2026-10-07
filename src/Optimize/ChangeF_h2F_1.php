@@ -4,12 +4,11 @@ namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
 use AA_Field;
+use AA_Item;
 use AA_Module;
 use AA_Slice;
 
-/** Set Expiry date to maximum value for items in slices, where expiry_date.....
- *  field is not shown. It also sets the field's default to that value.
- */
+/** Replaces the f_h: alias (without parameter) by f_1, where f_1 prints every stored value of the field the same way */
 class ChangeF_h2F_1 extends AbstractOptimize
 {
     /** Name function
@@ -92,14 +91,56 @@ class ChangeF_h2F_1 extends AbstractOptimize
         return true; // $all_ok; ?
     }
 
+    /** alias function (without parameter) this optimization replaces */
+    protected const FNC = 'f_h:';
+
+    /** @var bool[] slice_id.field_id => f_1 prints all stored values of the field the same way */
+    private array $prints_as_is = [];
+
     protected function fieldtest(AA_Field $fld, string $aliasfld): string
     {
         $func  = $fld[$aliasfld . '_func'];
 
-        if (($func === 'f_h:') && ((($fld['html_default'] == 1) && ($fld['html_show'] == 0) && ($fld['multiple'] == 0)) || (strlen($fld['in_item_tbl']) > 1) || ($fld['text_stored'] == 0))) {
-            return self::alias_code($fld, $aliasfld, "f_h: used with field marked as non-multiple and html - consider using quicker f_1 function for direct content print");
+        if (($func === static::FNC) && $this->printsAsIs($fld)) {
+            return self::alias_code($fld, $aliasfld, static::FNC . " used where every stored value prints as is - consider using quicker f_1 function for direct content print");
         }
         return '';
+    }
+
+    /** Would f_1 print every stored value of the field the same as f_h: / f_t: (without parameter)?
+     *  They differ only for a value without FLAG_HTML - f_h escapes it and adds <br>. The field setting
+     *  does not guarantee the flag of the stored values (CSV import, feeds, content older than the
+     *  setting), so we look into the content.
+     */
+    protected function printsAsIs(AA_Field $fld): bool
+    {
+        // GetItemContent() gives FLAG_HTML to all values from the item table
+        if (strlen((string) $fld['in_item_tbl']) > 1) {
+            return true;
+        }
+        // f_h takes the flag of the first translation, but prints the current one
+        if ($fld->isMultilingual()) {
+            return false;
+        }
+        // values from the number column get FLAG_HTML, older text rows of the field keep their own flag
+        if (($fld['text_stored'] != 0) && (($fld['html_default'] != 1) || ($fld['html_show'] != 0))) {
+            return false;
+        }
+        $key = $fld->getSliceId() . $fld['id'];
+        return $this->prints_as_is[$key] ??= !$this->hasPlainValueText2HtmlChanges($fld);
+    }
+
+    /** Is there a value without FLAG_HTML in the content of the field, which text2Html() would change?
+     *  PHP reads a NULL flag as 0 (plain), so the SQL must too. */
+    protected function hasPlainValueText2HtmlChanges(AA_Field $fld): bool
+    {
+        return DB_AA::test(['content', 'item'], self::plainValueText2HtmlChangesWhere($fld));
+    }
+
+    /** @return array the condition for hasPlainValueText2HtmlChanges() */
+    public static function plainValueText2HtmlChangesWhere(AA_Field $fld): array
+    {
+        return [['content.item_id', 'item.id', 'j'], ['item.slice_id', $fld->getSliceId(), 'l'], ['content.field_id', $fld['id']], ['COALESCE(content.flag, 0)', FLAG_HTML, 'unset'], ['content.text', AA_Item::TEXT2HTML_CHANGES, 'CONTAIN']];
     }
 
     /**
