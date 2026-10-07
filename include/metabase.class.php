@@ -1080,12 +1080,13 @@ class AA_Metabase
      * @param  string   $tablename table, where to store data
      * @param  string[] $data[]    data array - all data unpacked. The values are converted to correct ones
      * @param  string|null $nohalt  'nohalt' - do not halt on database error
+     * @param  string   $history_key resource id the change is written to the history under ('' = no history)
      * @return bool|int   0|false on error
      */
-    public function doUpdate($tablename, $data, ?string $nohalt = null): bool|int
+    public function doUpdate($tablename, $data, ?string $nohalt = null, string $history_key = ''): bool|int
     {
         if (($varset = $this->getVarset4Data($tablename, $data)) && $this->isKeysFilled($tablename, $varset)) {
-            return $varset->doUpdate($tablename, $nohalt);
+            return $varset->doUpdate($tablename, $nohalt, $history_key);
         }
         return false;
     }

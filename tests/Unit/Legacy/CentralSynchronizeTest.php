@@ -361,7 +361,7 @@ final class CentralSynchronizeTest extends TestCase
                 $this->tables = \AA_Metabase::singleton()->tables;
             }
 
-            public function doUpdate($tablename, $data, ?string $nohalt = null): bool|int
+            public function doUpdate($tablename, $data, ?string $nohalt = null, string $history_key = ''): bool|int
             {
                 $this->calls[] = ['update', $tablename, $nohalt];
                 return false;
