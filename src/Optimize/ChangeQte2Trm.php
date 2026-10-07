@@ -6,19 +6,13 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use AA\Widget\CodWidget;
-use AA\Widget\Widget;
 use AA_Field;
 use AA_Field_Slicedef;
 use AA_Fields;
-use AA_Inserter_Trm;
 use AA_Module;
-use AA_Validate;
-use AA_Validate_Eunique;
-use AA_Validate_Unique;
 
 /** Switches text fields from the insert function "Text = don't modify" (qte) to Trim (trm), so spaces
- *  and new lines around a value are not stored any more - where Trim breaks nothing (keepReason()).
+ *  and new lines around a value are not stored any more - where Trim breaks nothing (AA_Field::trimRefusal()).
  */
 class ChangeQte2Trm extends AbstractOptimize
 {
@@ -122,7 +116,7 @@ class ChangeQte2Trm extends AbstractOptimize
             if (($field instanceof AA_Field_Slicedef) || $field->isProtected()) {
                 continue;
             }
-            $reason = self::keepReason($field);
+            $reason = $field->trimRefusal();
             if ($reason === '') {
                 $switch[] = $field;
             } else {
@@ -130,44 +124,6 @@ class ChangeQte2Trm extends AbstractOptimize
             }
         }
         return [$switch, $keep];
-    }
-
-    /** Why the text field keeps qte, '' - nothing, switch it */
-    public static function keepReason(AA_Field $field): string
-    {
-        if (self::isUnique($field)) {
-            return _m('unique value - it is checked before it is trimmed, so a duplicate could slip through');
-        }
-        // the widget parameters, not the widget: most widgets have no const property to ask for
-        $params = Widget::parseClassProperties((string) $field->getProperty('input_show_func'));
-        if (is_a($params['class'], CodWidget::class, true)) {
-            return _m('code - its indentation and the last new line are kept on purpose');
-        }
-        $const = (string) ($params['const'] ?? '');
-        if (str_starts_with($const, '#sLiCe-')) {
-            // ids of the related items have no spaces; with use_name the text of the item is stored
-            return empty($params['use_name']) ? '' : _m('stores the text of the selected items');
-        }
-        if (($const === '') && empty($params['const_arr'])) {
-            return '';
-        }
-        // a trimmed value would no longer match its constant
-        foreach ($field->getWidget()->getFormattedOptions() as $value => $name) {
-            foreach ([(string) $value, (string) $name] as $text) {
-                if (AA_Inserter_Trm::trimValue($text) !== $text) {
-                    return _m('the constant "%1" has spaces or new lines around - trim the constants first', [$text]);
-                }
-            }
-        }
-        return '';
-    }
-
-    /** The form checks a unique value before the insert function, the store not at all - with Trim
-     *  " jan" would pass next to "jan" and be stored as the same */
-    public static function isUnique(AA_Field $field): bool
-    {
-        $validator = AA_Validate::factoryByString((string) $field->getProperty('input_validate'));
-        return ($validator instanceof AA_Validate_Unique) || ($validator instanceof AA_Validate_Eunique);
     }
 
     /** the field as the reports name it, linked to its settings */

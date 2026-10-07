@@ -125,7 +125,7 @@ class TrimFieldValues extends AbstractOptimize implements LaterInterface
             // json shows the spaces and new lines around
             $example = safe((string) json_encode(mb_substr($example, 0, 60), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE));
             $label   = '<b>' . AA_Module::getModuleNameSafe($slice_id) . '</b> - ' . ChangeQte2Trm::fieldLink($field) . ': ';
-            if (ChangeQte2Trm::isUnique($field)) {
+            if ($field->isUniqueValidated()) {
                 // two values may trim to the same one - in other slices too, or differing in case or accents
                 $this->message($label . _m('%1 items with a unique value to trim by hand, e.g. %2', [count($ids), $example]));
                 continue;

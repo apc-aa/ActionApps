@@ -31,6 +31,7 @@ use AA\Cache\CacheStr2find;
 use AA\Util\Langs;
 use AA\Util\Searchfields;
 use AA\Util\Txt;
+use AA\Widget\CodWidget;
 use AA\Widget\Widget;
 
 /** for AA_Generator_*   */
@@ -140,6 +141,53 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         return str_starts_with($type, 'password') || str_starts_with($type, 'secret') || in_array($insert, ['pwd', '2fa'], true) || $this->isSafeStored() || $this->isPasswordCopy();
     }
 
+    /** the form checks a unique value before the insert function, the store not at all */
+    public function isUniqueValidated(): bool
+    {
+        $validate = (string) $this->data['input_validate'];
+        if (stripos($validate, 'unique') === false) {   // cheap - a field slice asks it for each of its fields
+            return false;
+        }
+        $validator = AA_Validate::factoryByString($validate);
+        return ($validator instanceof AA_Validate_Unique) || ($validator instanceof AA_Validate_Eunique);
+    }
+
+    /** Why the Trim insert function would break the field, '' - it breaks nothing. It must not read the other
+     *  fields of the slice: a field slice asks it while it builds them (isProtected() would loop).
+     *  @param bool $read_constants false: constants of a group are not read, the field is refused */
+    public function trimRefusal(bool $read_constants = true): string
+    {
+        if ($this->isUniqueValidated()) {
+            // " jan" would pass next to "jan" and be stored as the same
+            return _m('unique value - it is checked before it is trimmed, so a duplicate could slip through');
+        }
+        // the widget parameters, not the widget: most widgets have no const property to ask for
+        $params = $this->widgetParams();
+        if (is_a($params['class'] ?? '', CodWidget::class, true)) {
+            return _m('code - its indentation and the last new line are kept on purpose');
+        }
+        $const = (string) ($params['const'] ?? '');
+        if (str_starts_with($const, '#sLiCe-')) {
+            // ids of the related items have no spaces; with use_name the text of the item is stored
+            return empty($params['use_name']) ? '' : _m('stores the text of the selected items');
+        }
+        if (($const === '') && empty($params['const_arr'])) {
+            return '';
+        }
+        if (!$read_constants && ($const !== '')) {
+            return _m('constants of a group');
+        }
+        // a trimmed value would no longer match its constant
+        foreach (($read_constants ? $this->getWidget()->getFormattedOptions() : (array) $params['const_arr']) as $value => $name) {
+            foreach ([(string) $value, (string) $name] as $text) {
+                if (AA_Inserter_Trm::trimValue($text) !== $text) {
+                    return _m('the constant "%1" has spaces or new lines around - trim the constants first', [$text]);
+                }
+            }
+        }
+        return '';
+    }
+
     /** the field is the bck_field (copy of the password) of a pwd inserter in its slice */
     protected function isPasswordCopy(): bool
     {
@@ -207,14 +255,7 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         // just for cache. maybe it is not necessary...
         if (!isset($this->widget[$widget_hash])) {
 
-            // $this->widget = AA\Widget\Widget::factoryByString($widget_type ? $widget_type : $this->data['input_show_func']);
-            $widget_definition_string = $this->data['input_show_func'];
-            // legacy - in dates we used ' as delimiter some time in history of AA
-            if ($widget_definition_string && str_starts_with($widget_definition_string, 'dte:') && strpos($widget_definition_string, "'")) {
-                $widget_definition_string = str_replace("'", ":", $widget_definition_string);
-            }
-
-            $params       = $widget_definition_string ? Widget::parseClassProperties($widget_definition_string) : $this->widget_params;
+            $params       = $this->widgetParams();
             $widget_class = $widget_type ? Widget::constructClassName($widget_type) : $params['class'];
 
             if (!class_exists($widget_class) && !class_exists($widget_class = $params['class'])) {
@@ -230,6 +271,20 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
             $this->widget[$widget_hash] = $w;
         }
         return $this->widget[$widget_hash];
+    }
+
+    /** the class and properties of the widget - from input_show_func, or from the field slice */
+    protected function widgetParams(): array
+    {
+        $definition = (string) $this->data['input_show_func'];
+        if ($definition === '') {
+            return $this->widget_params;
+        }
+        // legacy - in dates we used ' as delimiter some time in history of AA
+        if (str_starts_with($definition, 'dte:') && strpos($definition, "'")) {
+            $definition = str_replace("'", ":", $definition);
+        }
+        return Widget::parseClassProperties($definition);
     }
 
 

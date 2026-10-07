@@ -27,13 +27,11 @@ namespace Tests\Unit\Optimize {
 
     use AA\Optimize\ChangeQte2Trm;
     use AA_Field;
-    use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Legacy\Fixtures\FakeFields;
     use Tests\Unit\Legacy\Fixtures\FakeSlice;
 
-    /** Which text fields the optimizer switches from qte to Trim. The constants of a group come from the
-     *  database, so the values array of the widget (const_arr) stands for them here. */
+    /** Which text fields the optimizer switches from qte to Trim - the rules themselves: FieldTrimRefusalTest */
     final class ChangeQte2TrmTest extends TestCase
     {
         private const SLICE = '22222222222222222222222222222222';
@@ -67,12 +65,6 @@ namespace Tests\Unit\Optimize {
             return $fake;
         }
 
-        public function test_a_plain_text_field_switches(): void
-        {
-            $this->inSlice([$field = $this->field('headline........')]);
-            $this->assertSame('', ChangeQte2Trm::keepReason($field));
-        }
-
         public function test_text_fields_are_the_content_text_with_the_insert_function(): void
         {
             $fields = $this->inSlice([
@@ -95,49 +87,6 @@ namespace Tests\Unit\Optimize {
                 $this->field('password.......2'),
             ]);
             $this->assertSame([[], []], ChangeQte2Trm::fieldsToTrim($fields), 'neither the copy of the password nor a password field by its id');
-        }
-
-        public static function unique(): array
-        {
-            return [
-                'unique in the slice' => ['unique:headline........:1'],
-                'unique username'     => ['unique'],
-                'unique e-mail'       => ['e-unique'],
-            ];
-        }
-
-        /** the form checks the value before Trim - a value with a space would pass next to the trimmed one */
-        #[DataProvider('unique')]
-        public function test_a_unique_field_keeps_qte(string $validate): void
-        {
-            $this->inSlice([$field = $this->field('headline........', ['input_validate' => $validate])]);
-            $this->assertStringContainsString('unique', ChangeQte2Trm::keepReason($field));
-        }
-
-        public function test_a_code_field_keeps_qte(): void
-        {
-            $this->inSlice([$field = $this->field('full_text.......', ['input_show_func' => 'cod:8'])]);
-            $this->assertStringContainsString('code', ChangeQte2Trm::keepReason($field));
-        }
-
-        public function test_constants_with_spaces_around_keep_qte(): void
-        {
-            $this->inSlice([
-                $spaced = $this->field('category........', ['input_show_func' => 'sel::::::::{"Praha\\r"#:"Praha"}']),
-                $clean  = $this->field('category.......1', ['input_show_func' => 'sel::::::::{"Praha"#:"Praha"}']),
-            ]);
-            $this->assertStringContainsString('Praha', ChangeQte2Trm::keepReason($spaced));
-            $this->assertSame('', ChangeQte2Trm::keepReason($clean));
-        }
-
-        public function test_related_item_ids_switch_but_their_text_keeps_qte(): void
-        {
-            $this->inSlice([
-                $ids  = $this->field('relation........', ['input_show_func' => 'sel:#sLiCe-' . self::SLICE . ':']),
-                $text = $this->field('relation.......1', ['input_show_func' => 'sel:#sLiCe-' . self::SLICE . ':headline........:1']),
-            ]);
-            $this->assertSame('', ChangeQte2Trm::keepReason($ids));
-            $this->assertStringContainsString('text', ChangeQte2Trm::keepReason($text));
         }
 
         public function test_fields_to_trim_lists_the_switched_fields_and_the_kept_ones_with_the_reason(): void
