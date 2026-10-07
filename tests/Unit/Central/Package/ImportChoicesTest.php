@@ -22,6 +22,10 @@ use Tests\Unit\Central\Package\Fixtures\FakeImportTarget;
 use Tests\Unit\Central\Package\Fixtures\PackageMutations;
 
 require_once __DIR__ . '/fixtures/PackageMutations.php';
+// the charset AA_Inserter_Trm trims in (Langs::isUTF())
+if (!\defined('DEFAULT_LANG_INCLUDE')) {
+    \define('DEFAULT_LANG_INCLUDE', 'en-utf8_news_lang.php');
+}
 
 final class ImportChoicesTest extends TestCase
 {
@@ -257,6 +261,16 @@ final class ImportChoicesTest extends TestCase
             self::assertContains('E ' . Planner::SETTING_INVALID . ' ' . self::S . '/setting-values/_email..........[0]', self::findings($email('no e-mail')), $validate);
             self::assertSame('jiny@example.org', $email('jiny@example.org')->settingDefaults[self::SLICE]['_email..........'][0]['value']);
         }
+    }
+
+    /** Trim stores the value trimmed - it is checked so, as a space around would fail the check of an e-mail */
+    public function test_a_typed_value_of_a_trim_field_is_checked_as_trim_stores_it(): void
+    {
+        $package = self::cell(self::example(), self::SLICE, 'field', self::fieldIndex('_email..........'), ['input_validate' => 'email', 'input_insert_func' => 'trm:']);
+        $plan    = self::plan(new ImportChoices(settings: [self::SLICE => ['_email..........' => " jiny@example.org\n"]]), $package);
+
+        self::assertNotContains('E ' . Planner::SETTING_INVALID . ' ' . self::S . '/setting-values/_email..........[0]', self::findings($plan));
+        self::assertSame('jiny@example.org', $plan->settingDefaults[self::SLICE]['_email..........'][0]['value']);
     }
 
     public function test_an_app_of_the_store_brings_no_translation_of_a_typed_setting(): void

@@ -28,6 +28,10 @@ use Tests\Unit\Central\Package\Fixtures\TableDb;
 use Tests\Unit\Central\Package\Fixtures\TableDbTarget;
 
 require_once __DIR__ . '/fixtures/ImportFixture.php';
+// the charset AA_Inserter_Trm trims in (Langs::isUTF())
+if (!\defined('DEFAULT_LANG_INCLUDE')) {
+    \define('DEFAULT_LANG_INCLUDE', 'en-utf8_news_lang.php');
+}
 
 final class SettingDefaultsTest extends TestCase
 {
@@ -108,6 +112,15 @@ final class SettingDefaultsTest extends TestCase
         self::assertCount(1, $since);
         self::assertGreaterThanOrEqual($before, $since[0][0]);
         self::assertLessThanOrEqual($after, $since[0][0]);
+    }
+
+    public function test_a_trim_field_gets_its_default_trimmed(): void
+    {
+        $plan = $this->plan(self::withSettings(['_name...........' => ["txt: Hello \t", ['input_insert_func' => 'trm:']]]));
+        $this->import($plan);
+
+        self::assertSame([[0, 'Hello', 64]], self::settings(self::id(2))['_name...........']);
+        self::assertSame([], self::skipped($plan));
     }
 
     public function test_a_text_default_is_converted_to_the_charset_of_the_slice(): void

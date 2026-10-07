@@ -514,7 +514,8 @@ final class Planner
             $flag   = SettingDefaults::flag($row, $this->schema);
             $insert = SettingDefaults::insert($row, $this->schema);
             $number = ($insert !== 'boo') && !($flag & FLAG_TEXT_STORED);
-            $value  = ($number || ($insert === 'boo')) ? trim($typed[$id]) : $typed[$id];
+            // checked as it gets stored - a space around a Trim value would fail the check of an e-mail
+            $value  = ($number || ($insert === 'boo')) ? trim($typed[$id]) : SettingDefaults::stored($insert, $typed[$id]);
             $at     = "$m->type[$m->id]/setting-values/{$id}[0]";
             if (!SettingDefaults::plainInsert($insert)) {
                 $this->add($at, LintFinding::ERROR, self::SETTING_INSERT, $insert);
