@@ -9,7 +9,8 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
- * Tests for AA_Stringexpand_Img::getUrl() picking between the MissCache url and img.php.
+ * Tests for AA_Stringexpand_Img::getUrl() picking between the MissCache url and img.php,
+ * and for the srcset of 'picture', 'img' and 'imgb' built from those urls.
  *
  * A resized image is served as a static file whenever this install can do it, and falls
  * back to img.php whenever it cannot. Getting the fallback wrong is invisible in
@@ -466,5 +467,125 @@ final class ImgCacheUrlTest extends TestCase
         self::assertSame([40, 30], \array_slice((array) self::measure($http), 0, 2));
         self::assertCount(2, $http->calls);
         self::assertSame([], $http->calls[1]['headers']);
+    }
+
+    /** what a 343 x 193 thumbnail of img_upload/a/p.jpg gives - in the cache, so its urls are short */
+    private const THUMB = '/img_upload/mC/pT/a/p.jpg';
+
+    private static function img(string $image, string $params, string $info, string $param1 = '', string $param2 = ''): string
+    {
+        $class = self::CLS;
+        return (new $class())->expand($image, $params, $info, $param1, $param2);
+    }
+
+    /** 'im' has no width and height, which a srcset would change - it stays one url */
+    public function testImKeepsOneUrl(): void
+    {
+        self::assertSame(
+            '<img src="' . self::THUMB . '!w=343!h=193!zc=1!aoe=1.jpg"  loading=lazy title="Cat" alt="Cat" />',
+            self::img('img_upload/a/p.jpg', 'w=343&h=193&zc=1', 'im', 'Cat'),
+        );
+    }
+
+    /** 1x, 1.5x and 2x in AVIF and in the format of the source - 1x is the src of before, the others are never enlarged (aoe=0)
+     *  and carry their density, by which img.php lowers their quality */
+    public function testPictureOffersDenserCandidatesInBothFormats(): void
+    {
+        $t = self::THUMB;
+        self::assertSame(
+            "<picture class=aa-picture>\n"
+            . "  <source srcset=\"$t!w=343!h=193!zc=1!f=avif!q=83!aoe=1.avif 343w, $t!w=515!h=290!zc=1!f=avif!q=83!aoe=0!dpr=1.5.avif 515w, $t!w=686!h=386!zc=1!f=avif!q=83!aoe=0!dpr=2.avif 686w\""
+            . ' sizes="auto, (max-width: 343px) 100vw, 343px" type="image/avif">' . "\n"
+            . "  <img src=\"$t!w=343!h=193!zc=1!aoe=1.jpg\" srcset=\"$t!w=343!h=193!zc=1!aoe=1.jpg 343w, $t!w=515!h=290!zc=1!aoe=0!dpr=1.5.jpg 515w, $t!w=686!h=386!zc=1!aoe=0!dpr=2.jpg 686w\""
+            . ' sizes="auto, (max-width: 343px) 100vw, 343px" style="contain:size;contain-intrinsic-size:343px 193px" width=343 height=193  loading=lazy  title="Cat" alt="Cat">' . "\n"
+            . '</picture>',
+            self::img('img_upload/a/p.jpg', 'w=343&h=193&zc=1', 'picture', 'Cat'),
+        );
+    }
+
+    /** the hero image: loading=eager, so neither lazy nor sizes=auto, which only a lazy image may use */
+    public function testEagerPicturePicksByTheViewport(): void
+    {
+        $html = self::img('img_upload/a/p.jpg', 'w=1200&h=675&zc=1', 'picture', 'Hero', 'loading=eager fetchpriority=high');
+
+        self::assertSame(2, substr_count($html, 'sizes="(max-width: 1200px) 100vw, 1200px"'));
+        self::assertStringNotContainsString('auto', $html);
+        self::assertStringNotContainsString('loading=lazy', $html);
+        self::assertStringContainsString('!w=900!h=506!zc=1!aoe=0.jpg 900w, ', $html);    // the smaller one for phones
+        self::assertStringContainsString('!w=2400!h=1350!zc=1!aoe=0!dpr=2.jpg 2400w"', $html);
+        // a candidate from a small source has fewer pixels than its w says - under img {width: auto} it would show smaller
+        self::assertStringContainsString('style="contain:size;contain-intrinsic-size:1200px 675px" width=1200', $html);
+    }
+
+    /** sizes of the template win - copied to the <source>, which has none of its own */
+    public function testSizesOfTheTemplateWin(): void
+    {
+        $html = self::img('img_upload/a/p.jpg', 'w=600&h=400&zc=1', 'picture', 'Cat', 'sizes="(min-width: 60em) 33vw, 100vw"');
+
+        self::assertStringContainsString('1200w" sizes="(min-width: 60em) 33vw, 100vw" type="image/avif">', $html);
+        self::assertSame(2, substr_count($html, 'sizes='));   // the <img> keeps just its own
+    }
+
+    /** a template with a srcset of its own gets the markup of before */
+    public function testSrcsetOfTheTemplateWins(): void
+    {
+        $html = self::img('img_upload/a/p.jpg', 'w=343&h=193&zc=1', 'picture', 'Cat', 'srcset="x.jpg 1x"');
+
+        self::assertStringContainsString('<source srcset="' . self::THUMB . '!w=343!h=193!zc=1!f=avif!q=83!aoe=1.avif" type="image/avif">', $html);
+        self::assertStringContainsString('<img src="' . self::THUMB . '!w=343!h=193!zc=1!aoe=1.jpg" width=343', $html);
+        self::assertSame(1, substr_count($html, 'srcset="x.jpg'));
+    }
+
+    /** 'img' gets the candidates in one format - the <picture> wrapper could break the CSS of the page */
+    public function testImgOffersDenserCandidates(): void
+    {
+        $t = self::THUMB;
+        self::assertSame(
+            "<img src=\"$t!w=343!h=193!zc=1!aoe=1.jpg\" srcset=\"$t!w=343!h=193!zc=1!aoe=1.jpg 343w, $t!w=515!h=290!zc=1!aoe=0!dpr=1.5.jpg 515w, $t!w=686!h=386!zc=1!aoe=0!dpr=2.jpg 686w\""
+            . ' sizes="auto, (max-width: 343px) 100vw, 343px" style="contain:size;contain-intrinsic-size:343px 193px" loading=lazy width="343" height="193"  title="Cat" alt="Cat"  />',
+            self::img('img_upload/a/p.jpg', 'w=343&h=193&zc=1', 'img', 'Cat'),
+        );
+        self::assertStringContainsString('686w" sizes="auto, (max-width: 343px) 100vw, 343px" style="contain:size;contain-intrinsic-size:343px 193px" loading=lazy', self::img('img_upload/a/p.jpg', 'w=343&h=193&zc=1', 'imgb', 'Cat'));
+    }
+
+    /** img.php urls do not encode whitespace, which would end the url in srcset */
+    public function testWhitespaceInAnImgPhpCandidateIsEncoded(): void
+    {
+        $html = self::img('apc-aa-files/my photo.jpg', 'w=343&h=193&zc=1', 'img');
+        self::assertStringContainsString('/apc-aa/img.php?src=/apc-aa-files/my%20photo.jpg&amp;w=515&amp;h=290&amp;zc=1&amp;aoe=0&amp;dpr=1.5 515w', $html);
+
+        $html = self::img("apc-aa-files/my\tphoto\n.jpg", 'w=343&h=193&zc=1', 'img');
+        self::assertStringContainsString('/apc-aa/img.php?src=/apc-aa-files/my%09photo%0A.jpg&amp;w=515&amp;h=290&amp;zc=1&amp;aoe=0&amp;dpr=1.5 515w', $html);
+    }
+
+    /** a style of the template would make the browser drop ours, which keeps the image its size - so no auto, which needs it most */
+    public function testStyleOfTheTemplateTurnsAutoOff(): void
+    {
+        $html = self::img('img_upload/a/p.jpg', 'w=343&h=193&zc=1', 'picture', 'Cat', 'style="border: 0"');
+
+        self::assertSame(2, substr_count($html, 'sizes="(max-width: 343px) 100vw, 343px"'));
+        self::assertStringNotContainsString('contain', $html);
+        self::assertStringContainsString('loading=lazy', $html);
+    }
+
+    /** phpThumb makes no AVIF of a PDF, so the alternative is WebP */
+    public function testPdfGetsWebpCandidates(): void
+    {
+        $html = self::img('img_upload/a/doc.pdf', 'w=343&h=193&zc=1', 'picture');
+
+        self::assertStringContainsString('type="image/webp"', $html);
+        self::assertStringContainsString('/img_upload/mC/pT/a/doc.pdf!w=686!h=386!zc=1!f=webp!aoe=0!dpr=2.webp 686w', $html);
+    }
+
+    /** a fixed aspect ratio pads the image - a denser candidate would pad it differently, so it keeps one url */
+    public function testPictureWithFixedAspectRatioKeepsOneUrl(): void
+    {
+        self::assertSame(
+            "<picture class=aa-picture>\n"
+            . '  <source srcset="' . self::THUMB . '!w=343!h=193!far=C!f=avif!q=83.avif" type="image/avif">' . "\n"
+            . '  <img src="' . self::THUMB . '!w=343!h=193!far=C.jpg" width=343 height=193 sizes=x loading=lazy  title="Cat" alt="Cat">' . "\n"
+            . '</picture>',
+            self::img('img_upload/a/p.jpg', 'w=343&h=193&far=C', 'picture', 'Cat', 'sizes=x'),
+        );
     }
 }

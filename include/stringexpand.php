@@ -8540,16 +8540,24 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *
  *  Usage:
  *     {img:_#this:w=168&h=127&zc=1:im:_#HEADLINE:width=168 height=127}  // this is the quickest - exact size (zc=1), no need to size check => im
- *     {img:_#this:w=168&h=127&zc=1:picture:_#HEADLINE}                  // preferred - create lazy loaded <picture> with quick WEBP picture alternative for current browsers
+ *     {img:_#this:w=168&h=127&zc=1:picture:_#HEADLINE}                  // preferred - lazy loaded <picture> with AVIF and sizes for dense screens
  *     <img src="{img:{img_url.........}:w=150&h=150}">  /"
  *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"        // iar - ignore aspect ratio - deform the image to exact size
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
  *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
- *     {img:_#this:w=800&h=450&zc=1:picture:_#HEADLINE:loading=eager}  // the hero image at the top of the page
+ *     {img:_#this:w=800&h=450&zc=1:picture:_#HEADLINE:loading=eager fetchpriority=high}  // the hero image at the top of the page
+ *     {img:_#this:w=600&h=400&zc=1:picture:_#HEADLINE:sizes="(min-width#: 60em) 33vw, 100vw"}  // a template which knows how wide it is shown (#: is the colon)
  *
  *  'im', 'img', 'imgb' and 'picture' are lazy loaded (loading=lazy) unless <param2> sets
  *  loading itself. Give loading=eager to the hero image - lazy delays its paint (LCP).
  *  Inside {rotator} only the first frame keeps it; hidden frames are always lazy.
+ *
+ *  'picture', 'img' and 'imgb' offer the image also 1.5x and 2x as wide for dense screens, at a
+ *  lower quality (the pixels are smaller), and a big one 0.75x for phones - each made only when a
+ *  browser asks for it and never enlarged beyond the source (srcset, aoe=0). w is taken as the
+ *  widest the image is shown: a lazy image is picked by the layout (sizes=auto - not with a style
+ *  in <param2>), an eager one and Safari by the viewport - a 'sizes' in <param2> overrides it.
+ *  'picture' adds AVIF; 'img' keeps one format, as a <picture> around it could break the page CSS.
  *
  *  Performance: every <info> which prints the size ('img', 'imgb', 'picture', 'width',
  *  'height', 'hw', 'html') normally has to measure the generated image over HTTP, which
@@ -8626,7 +8634,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'imgb':    $param2 .= ' border=0';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                 $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
-                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped').'" '.\AA\Util\LazyLoad::attr($param2).' '.$a[3] ." $alt $param2 />";
+                [$src, $srcset] = self::srcset($image, $phpthumb_params, (int)$a[0], (int)$a[1], $param2);
+                return '<img src="'.$src.'"'.$srcset.' '.\AA\Util\LazyLoad::attr($param2).' '.$a[3] ." $alt $param2 />";
         }
         return '';
     }
@@ -8641,51 +8650,48 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         $title = safe(strip_tags($title));
         $alt_title = $title ? " title=\"$title\" alt=\"$title\"" : '';
         $format = str_contains(strtolower($image), '.pdf') ? 'webp' : 'avif';  // phpThumb for some reason do not generate avif for pdf; HM 2025-01-31
-        // the alternative format is a different image, so it needs its own url - appending
+        // the alternative format is a different image, so it needs its own urls - appending
         // "&f=..." to the first one would silently produce a cache url with no effect
-        $src        = self::getUrl($image, $phpthumb_params, 'rel_escaped');
-        $format_src = self::getUrl($image, \AA\Util\PhpThumbParams::setFormat($phpthumb_params, $format), 'rel_escaped');
+        [$src, $srcset]               = self::srcset($image, $phpthumb_params, $w, $h, $add);
+        [$format_src, $format_srcset] = self::srcset($image, \AA\Util\PhpThumbParams::setFormat($phpthumb_params, $format), $w, $h, $add, true);
 
         return "<picture class=aa-picture>"
-             . "\n  <source srcset=\"$format_src\" type=\"image/$format\">"
-             . "\n  <img src=\"$src\" width=$w height=$h $add ".\AA\Util\LazyLoad::attr($add)." $alt_title>"  // lazy is enough on img for <picture> element
+             . "\n  <source " . (($format_srcset === '') ? "srcset=\"$format_src\"" : ltrim($format_srcset)) . " type=\"image/$format\">"
+             . "\n  <img src=\"$src\"$srcset width=$w height=$h $add ".\AA\Util\LazyLoad::attr($add)." $alt_title>"  // lazy is enough on img for <picture> element
              . "\n</picture>";
     }
 
-    /**
-     * Get array of ideal widths for srcset
-     * - efective width = min(original, desired)  // WITHOUT rounding
-     * - 0.5× a 2×, rounded to roundStep
-     * - no upscaling
-     * - minimal relative difference between widths
+    /** src of an image shown at most $width x $height CSS px, and ' srcset="..." sizes="..."' to go with it -
+     *  '' when the parameters give no candidates ({@see \AA\Util\PhpThumbParams::srcsetCandidates()})
+     *  or the template's $attrs bring a srcset. sizes are the template's own, or auto - the browser
+     *  picks by the layout, a lazy image only - and for an eager image or a browser without it
+     *  (Safari in 2026) the viewport, up to $width. An <img> with its own sizes keeps just those;
+     *  a <source>, which has no $attrs, gets them copied.
+     *  @return array{0: string, 1: string} HTML escaped
      */
-    protected static function idealImageWidths(int $originalWidth, int $desiredCssWidth): array {
-        define("ROUND_STEP", 64);
-        define("MIN_USEFUL_WIDTH", 320);
-        define("MIN_DELTA_PCT", 0.15); // 15 %
-
-        if ($originalWidth <= 0 || $desiredCssWidth <= 0) {
-            return [];
+    protected static function srcset(string $image, string $phpthumb_params, int $width, int $height, string $attrs, bool $for_source = false): array
+    {
+        $candidates = (\AA\Util\LazyLoad::attribute($attrs, 'srcset') === null) ? \AA\Util\PhpThumbParams::srcsetCandidates($phpthumb_params, $width) : [];
+        if (!$candidates) {
+            return [self::getUrl($image, $phpthumb_params, 'rel_escaped'), ''];
         }
-        $ret = [];
-
-        $eff = min($originalWidth, $desiredCssWidth);
-
-        // 0.5× efectictive width (rounded to roundStep)
-        $half = max(ROUND_STEP, (int)(round((int)floor($eff / 2) / ROUND_STEP) * ROUND_STEP));
-        if ($half >= MIN_USEFUL_WIDTH && $half < $eff &&  ($eff - $half) / $eff >= MIN_DELTA_PCT) {
-            $ret[] = $half;
+        $urls = $srcset = [];
+        foreach ($candidates as $descriptor => $params) {
+            $urls[$descriptor] = self::getUrl($image, $params, 'rel_escaped');
+            // img.php keeps whitespace of the file name, which would end the url
+            $srcset[] = strtr($urls[$descriptor], [' ' => '%20', "\t" => '%09', "\n" => '%0A', "\f" => '%0C', "\r" => '%0D']) . " {$descriptor}w";
         }
-
-        $ret[] = $eff;
-
-        // 2× efekctive width - only if it is still less than original width
-        $double = max(ROUND_STEP, (int)(round($eff * 2 / ROUND_STEP) * ROUND_STEP));
-        if ($double <= $originalWidth && $double > $eff && ($double - $eff) / $double >= MIN_DELTA_PCT) {
-            $ret[] = $double;
-        }
-
-        return $ret;
+        $own_sizes = \AA\Util\LazyLoad::attribute($attrs, 'sizes');
+        // Under a page's img {width: auto} the browser sizes the image by the candidate: one from a small
+        // source has fewer pixels than its w says (never enlarged), and Chrome takes an <img> with
+        // sizes=auto as 300 x 150. So the image keeps its own size - unless the template's style would
+        // hide ours, and then without auto.
+        $own_style = (\AA\Util\LazyLoad::attribute($attrs, 'style') !== null);
+        $auto      = ($own_sizes === null) && !$own_style && \AA\Util\LazyLoad::isLazy($attrs);
+        $sizes     = $own_sizes ?? (($auto ? 'auto, ' : '') . "(max-width: {$width}px) 100vw, {$width}px");
+        return [$urls[$width], ' srcset="' . implode(', ', $srcset) . '"'
+            . ((($own_sizes === null) || $for_source) ? ' sizes="' . safe($sizes) . '"' : '')
+            . (($own_style || $for_source) ? '' : " style=\"contain:size;contain-intrinsic-size:{$width}px {$height}px\"")];
     }
 
 

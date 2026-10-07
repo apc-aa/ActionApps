@@ -21,6 +21,24 @@ final class PhpThumbParams
      *  as big as the JPEG. */
     public const AVIF_QUALITY = 83;
 
+    /** img.php's default quality for every other format */
+    public const DEFAULT_QUALITY = 90;
+
+    /** srcset widths, as multiples of the CSS width - a denser screen than 2x is not worth the bytes */
+    private const SRCSET_FACTORS = [1, 1.5, 2];
+
+    /** The narrowest real need: a phone 360 CSS px wide at density 2. A big image gets one more,
+     *  smaller candidate - 0.75 of its width - when it is at least this wide. */
+    private const SRCSET_PHONE = 720;
+
+    /** No wider candidate - its bytes and its forging time grow with it */
+    private const SRCSET_MAX = 2560;
+
+    /** Quality of a candidate twice as dense as the CSS width, whose artefacts are half the size.
+     *  AVIF q65 at 2x measured (GD, SSIM, 8 photos) with less distortion than q83 at 1x when seen
+     *  at the same size, for 1.9x the bytes of the 1x image instead of 3.1x. */
+    private const HIDPI_QUALITY = ['avif' => 65, '' => 80];
+
     /** Parameters which make the output size depend on the source image, so it can't
      *  be predicted from the parameters alone:
      *    wp,hp,wl,hl,ws,hs - replace w/h based on the orientation of the source
@@ -45,8 +63,8 @@ final class PhpThumbParams
         }
         $parsed = [];
         parse_str(str_replace('&amp;', '&', $params), $parsed);
-        if (count(self::$parsed) > 64) {   // a page uses a handful of distinct parameter
-            self::$parsed = [];            // strings - guard against templates interpolating values into them
+        if (count(self::$parsed) > 256) {  // a page uses some dozens of distinct parameter strings (srcset
+            self::$parsed = [];            // candidates included) - guard against templates interpolating values into them
         }
         return self::$parsed[$params] = $parsed;
     }
@@ -74,7 +92,7 @@ final class PhpThumbParams
     }
 
     /** For img.php: aoe=0 with a box phpThumb fills (zc crops into it, iar stretches) shrinks the
-     *  box to fit the source instead of enlarging it, in the box's aspect ratio. phpThumb alone
+     *  box to fit the source instead of enlarging it - zc in the box's aspect ratio, iar side by side. phpThumb alone
      *  would enlarge anyway (GD) or return the source in its own aspect ratio (ImageMagick, see
      *  addAoe4ZoomCrop()), which the width and height of the <img> would then stretch. The shrunk
      *  box goes on with aoe=1, so it is filled exactly. A source of unknown size is enlarged as before.
@@ -90,12 +108,94 @@ final class PhpThumbParams
         if ((($get['aoe'] ?? null) !== '0') || !$w || !$h || (empty($get['zc']) && empty($get['iar'])) || !empty($get['far']) || self::hasUnpredictable($get)) {
             return $get;
         }
-        if ($size = $source_size()) {
+        if (($size = $source_size()) && empty($get['zc'])) {
+            // iar stretches the image anyway, so each side keeps all the source has
+            $get['w'] = (string) min($w, $size[0]);
+            $get['h'] = (string) min($h, $size[1]);
+        } elseif ($size) {
             $scale = min(1, $size[0] / $w, $size[1] / $h);
             $get['w'] = (string) min($size[0], max(1, (int) round($w * $scale)));
             $get['h'] = (string) min($size[1], max(1, (int) round($h * $scale)));
         }
         $get['aoe'] = '1';
+        return $get;
+    }
+
+    /** srcset of the image these parameters make, shown $width CSS px wide: descriptor width =>
+     *  parameters, narrowest first, $width itself always among them - with the parameters of the
+     *  src, so its cache file stays the one {img} has always made. The other candidates ask for
+     *  aoe=0, so none is enlarged beyond its source (see noEnlarge()), and the denser ones carry
+     *  their density (dpr), by which img.php lowers their quality (see densityQuality()). Empty
+     *  when the parameters do more than scale the image down.
+     *
+     *  @return array<int, string>
+     */
+    public static function srcsetCandidates(string $params, int $width): array
+    {
+        $parsed = self::parse($params);
+        $w      = (int) ($parsed['w'] ?? 0);
+        $h      = (int) ($parsed['h'] ?? 0);
+        if (($width < 1) || (!$w && !$h) || (!empty($parsed['zc']) && !($w && $h)) || !empty($parsed['far']) || self::hasUnpredictable($parsed)) {
+            return [];
+        }
+        $factors = (($width * 0.75) >= self::SRCSET_PHONE) ? [0.75, ...self::SRCSET_FACTORS] : self::SRCSET_FACTORS;
+        $resized = self::set($params, 'aoe', '0');
+
+        $candidates = [];
+        foreach ($factors as $factor) {
+            $descriptor = (int) round($width * $factor);
+            if (($factor > 1) && ($descriptor > self::SRCSET_MAX)) {
+                break;
+            }
+            if ($factor === 1) {
+                $candidates[$descriptor] = $params;
+                continue;
+            }
+            $candidate = $resized;
+            foreach (['w' => $w, 'h' => $h] as $name => $value) {
+                if ($value) {
+                    $candidate = self::set($candidate, $name, (string) (int) round($value * $factor));
+                }
+            }
+            $candidates[$descriptor] = ($factor > 1) ? self::set($candidate, 'dpr', (string) $factor) : $candidate;
+        }
+        return $candidates;
+    }
+
+    /** For img.php: the quality of a denser srcset candidate (dpr, see srcsetCandidates()) is lowered
+     *  only by the density its source can deliver - a source smaller than the box gives fewer pixels,
+     *  and one no larger than the 1x image none to spare. dpr itself goes away, but only as
+     *  srcsetCandidates() writes it - any other is left to phpThumb, which refuses a parameter it does not know.
+     *
+     *  @param array<string, mixed> $get           the request parameters, as phpThumb reads them
+     *  @param callable(): ?array{0: int, 1: int} $source_size  width and height of the source, null when unknown - called only when needed
+     *  @return array<string, mixed>
+     */
+    public static function densityQuality(array $get, callable $source_size): array
+    {
+        if (!\in_array($get['dpr'] ?? null, array_map('strval', self::SRCSET_FACTORS), true)) {
+            return $get;
+        }
+        $dpr = (float) $get['dpr'];
+        unset($get['dpr']);
+        $w      = (int) ($get['w'] ?? 0);
+        $h      = (int) ($get['h'] ?? 0);
+        $format = \is_string($get['f'] ?? null) ? strtolower($get['f']) : '';
+        if (($dpr <= 1) || (!$w && !$h) || ($format === 'png') || ($format === 'gif')) {
+            return $get;
+        }
+        if ($size = $source_size()) {
+            $shares = array_merge($w ? [$size[0] / $w] : [], $h ? [$size[1] / $h] : []);
+            // a zc or iar box is filled only with both sides, a plain fit with either of them
+            $share = ($w && $h && (!empty($get['zc']) || !empty($get['iar']))) ? min($shares) : max($shares);
+            $dpr   = max(1, $dpr * min(1, $share));
+        }
+        $quality = (is_numeric($get['q'] ?? null) ? (int) $get['q'] : 0) ?: (($format === 'avif') ? self::AVIF_QUALITY : self::DEFAULT_QUALITY);
+        $hidpi   = self::HIDPI_QUALITY[$format] ?? self::HIDPI_QUALITY[''];
+        $q       = (int) round($quality - max(0, $quality - $hidpi) * min(1, $dpr - 1));
+        if ($q < $quality) {
+            $get['q'] = (string) $q;
+        }
         return $get;
     }
 

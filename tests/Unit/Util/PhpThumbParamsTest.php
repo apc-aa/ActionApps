@@ -137,7 +137,9 @@ final class PhpThumbParamsTest extends TestCase
             'source narrower'            => [$crop, [1000, 667], array_replace($crop, ['w' => '1000', 'h' => '563', 'aoe' => '1'])],
             'source lower'               => [$crop, [2000, 800], array_replace($crop, ['w' => '1422', 'h' => '800', 'aoe' => '1'])],
             'tiny source'                => [$crop, [15, 16], array_replace($crop, ['w' => '15', 'h' => '8', 'aoe' => '1'])],
-            'stretched (iar)'            => [$iar, [1000, 667], array_replace($iar, ['w' => '1000', 'h' => '563', 'aoe' => '1'])],
+            'stretched (iar) side by side' => [$iar, [1000, 667], array_replace($iar, ['w' => '1000', 'h' => '667', 'aoe' => '1'])],
+            // {avatar}: the 2x of a 48 x 48 box from a 200 x 40 source must not drop to 40 x 40
+            'iar keeps the longer side'  => [array_replace($iar, ['w' => '96', 'h' => '96']), [200, 40], array_replace($iar, ['w' => '96', 'h' => '40', 'aoe' => '1'])],
             'unknown source enlarges'    => [$crop, null, array_replace($crop, ['aoe' => '1'])],
         ];
     }
@@ -171,6 +173,109 @@ final class PhpThumbParamsTest extends TestCase
     public function test_no_enlarge_leaves_other_requests_alone_without_reading_the_source(array $get): void
     {
         $this->assertSame($get, PhpThumbParams::noEnlarge($get, fn(): never => $this->fail('the source size is read only when needed')));
+    }
+
+    /** @return array<string, array{0: string, 1: int, 2: array<int, string>}> */
+    public static function srcsets(): array
+    {
+        return [
+            'thumbnail: 1x, 1.5x, 2x' => ['w=343&h=193&zc=1', 343, [
+                343 => 'w=343&h=193&zc=1',
+                515 => 'w=515&h=290&zc=1&aoe=0&dpr=1.5',
+                686 => 'w=686&h=386&zc=1&aoe=0&dpr=2',
+            ]],
+            'big image: 0.75x for phones' => ['w=1200&h=675&zc=1', 1200, [
+                900  => 'w=900&h=506&zc=1&aoe=0',
+                1200 => 'w=1200&h=675&zc=1',
+                1800 => 'w=1800&h=1013&zc=1&aoe=0&dpr=1.5',
+                2400 => 'w=2400&h=1350&zc=1&aoe=0&dpr=2',
+            ]],
+            'none wider than 2560' => ['w=1600&h=900&zc=1', 1600, [
+                1200 => 'w=1200&h=675&zc=1&aoe=0',
+                1600 => 'w=1600&h=900&zc=1',
+                2400 => 'w=2400&h=1350&zc=1&aoe=0&dpr=1.5',
+            ]],
+            'quality of the template kept' => ['w=200&f=avif&q=70', 200, [
+                200 => 'w=200&f=avif&q=70',
+                300 => 'w=300&f=avif&q=70&aoe=0&dpr=1.5',
+                400 => 'w=400&f=avif&q=70&aoe=0&dpr=2',
+            ]],
+            'aoe=1 of the template replaced' => ['w=200&amp;h=100&amp;zc=1&amp;aoe=1', 200, [
+                200 => 'w=200&amp;h=100&amp;zc=1&amp;aoe=1',
+                300 => 'w=300&amp;h=150&amp;zc=1&amp;aoe=0&amp;dpr=1.5',
+                400 => 'w=400&amp;h=200&amp;zc=1&amp;aoe=0&amp;dpr=2',
+            ]],
+            'height only, width measured' => ['h=100', 150, [
+                150 => 'h=100',
+                225 => 'h=150&aoe=0&dpr=1.5',
+                300 => 'h=200&aoe=0&dpr=2',
+            ]],
+            'no size asked'             => ['f=webp', 640, []],
+            'zc with one dimension'     => ['h=100&zc=1', 100, []],
+            'fixed aspect ratio'        => ['w=200&h=100&far=C', 200, []],
+            'filter'                    => ['w=200&h=100&zc=1&fltr[]=usm|80|0.5|3', 200, []],
+            'auto rotation'             => ['w=200&h=100&zc=1&ar=x', 200, []],
+            'unknown width'             => ['w=200&h=100&zc=1', 0, []],
+        ];
+    }
+
+    /** @param array<int, string> $expected */
+    #[DataProvider('srcsets')]
+    public function test_srcset_candidates(string $params, int $width, array $expected): void
+    {
+        $this->assertSame($expected, PhpThumbParams::srcsetCandidates($params, $width));
+    }
+
+    /** @return array<string, array{0: array<string, mixed>, 1: ?array{0: int, 1: int}, 2: ?string}> */
+    public static function densities(): array
+    {
+        $crop = ['src' => '/up/p.jpg', 'w' => '1600', 'h' => '900', 'zc' => '1', 'aoe' => '0', 'dpr' => '2'];
+        $fit  = ['src' => '/up/p.jpg', 'w' => '600', 'h' => '600', 'aoe' => '0', 'dpr' => '2'];
+        $big  = [4000, 3000];
+        return [
+            '2x'                              => [$crop, $big, '80'],
+            '1.5x'                            => [['dpr' => '1.5'] + $crop, $big, '85'],
+            'avif 2x'                         => [['f' => 'avif'] + $crop, $big, '65'],
+            'avif 1.5x'                       => [['f' => 'AVIF', 'dpr' => '1.5'] + $crop, $big, '74'],
+            'higher q of the template'        => [['q' => '95', 'dpr' => '1.5'] + $crop, $big, '88'],
+            'lower q of the template kept'    => [['q' => '60'] + $crop, $big, '60'],
+            'png keeps its compression'       => [['f' => 'png'] + $crop, $big, null],
+            'unknown source'                  => [$crop, null, '80'],
+            // the box shrinks to 1200 x 675, 1.5 times the 1x image
+            'source between 1x and 2x'        => [$crop, [1200, 900], '85'],
+            // the box shrinks to 800 x 450 - the very pixels of the 1x image
+            'source no larger than 1x'        => [$crop, [800, 600], null],
+            'fit filled by one side'          => [$fit, [400, 1000], '80'],
+            'fit smaller than the box'        => [$fit, [200, 300], null],
+            'fit by width'                    => [['src' => '/up/p.jpg', 'w' => '400', 'aoe' => '0', 'dpr' => '2'], [200, 100], null],
+        ];
+    }
+
+    /** a denser candidate gets a lower quality - as much lower as the pixels its source really has; dpr never reaches phpThumb
+     *  @param array<string, mixed> $get
+     *  @param ?array{0: int, 1: int} $source */
+    #[DataProvider('densities')]
+    public function test_density_quality_follows_the_pixels_of_the_source(array $get, ?array $source, ?string $q): void
+    {
+        $expected = array_diff_key($get, ['dpr' => 1]);
+        if ($q !== null) {
+            $expected['q'] = $q;
+        }
+        $this->assertSame($expected, PhpThumbParams::densityQuality($get, static fn(): ?array => $source));
+    }
+
+    /** @return array<string, array{0: mixed}> */
+    public static function foreignDensities(): array
+    {
+        return ['none' => [null], 'not a number' => ['x'], 'an array' => [['2']], 'infinite' => ['1e999'], 'another spelling' => ['2.0'], 'denser' => ['3']];
+    }
+
+    /** a dpr srcsetCandidates() never writes stays for phpThumb to refuse - no cache url gets a free field */
+    #[DataProvider('foreignDensities')]
+    public function test_density_quality_leaves_other_requests_alone_without_reading_the_source(mixed $dpr): void
+    {
+        $get = ['src' => '/up/p.jpg', 'w' => '1600', 'h' => '900', 'zc' => '1', 'q' => '70'] + (($dpr === null) ? [] : ['dpr' => $dpr]);
+        $this->assertSame($get, PhpThumbParams::densityQuality($get, fn(): never => $this->fail('the source size is read only when needed')));
     }
 
     public function test_clean_drops_control_bytes_only(): void

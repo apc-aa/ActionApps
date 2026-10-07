@@ -113,4 +113,41 @@ final class LazyLoadTest extends TestCase
             'name starting with ='  => ['=loading=eager', 'loading=lazy'],
         ];
     }
+
+    #[DataProvider('lazies')]
+    public function test_is_lazy_unless_the_attributes_choose_another_loading(string $attrs, bool $expected): void
+    {
+        self::assertSame($expected, LazyLoad::isLazy($attrs));
+    }
+
+    /** @return array<string, array{string, bool}> */
+    public static function lazies(): array
+    {
+        return [
+            'none'           => ['class=x', true],
+            'lazy'           => ['LOADING="Lazy"', true],
+            'eager'          => ['loading=eager fetchpriority=high', false],
+            'auto'           => ['loading=auto', false],
+            'in a value'     => ['alt="loading=eager"', true],
+        ];
+    }
+
+    #[DataProvider('attributes')]
+    public function test_attribute_reads_the_first_value_unquoted(string $attrs, string $name, ?string $expected): void
+    {
+        self::assertSame($expected, LazyLoad::attribute($attrs, $name));
+    }
+
+    /** @return array<string, array{string, string, ?string}> */
+    public static function attributes(): array
+    {
+        return [
+            'double quoted'      => ['class=x sizes="(max-width: 600px) 50vw, 300px"', 'sizes', '(max-width: 600px) 50vw, 300px'],
+            'single quoted'      => ["SIZES='100vw'", 'sizes', '100vw'],
+            'unquoted, first'    => ['sizes=50vw sizes=100vw', 'sizes', '50vw'],
+            'without value'      => ['srcset', 'srcset', ''],
+            'missing'            => ['alt="sizes=100vw"', 'sizes', null],
+            'longer name'        => ['data-sizes=100vw', 'sizes', null],
+        ];
+    }
 }
