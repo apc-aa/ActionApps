@@ -41,7 +41,7 @@ class TrimFieldValues extends AbstractOptimize implements LaterInterface
 
     public static function description(): string
     {
-        return _m('Trims the values stored before the field got the Trim insert function (see "%1") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported.', [ChangeQte2Trm::name()]);
+        return _m('Trims the values stored before the field got the Trim insert function (see "%1") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked.', [ChangeQte2Trm::name()]);
     }
 
     public static function actions(): array
@@ -100,8 +100,7 @@ class TrimFieldValues extends AbstractOptimize implements LaterInterface
         return $this->report();
     }
 
-    /** The slices of the user with a field that trims - one query instead of the fields of every slice.
-     *  A slice whose Trim fields all come from a field slice is not found. */
+    /** the slices of the user with a field that trims - one query instead of the fields of every slice */
     private static function trimSlices(): array
     {
         $trim = DB_AA::select('', 'SELECT DISTINCT LOWER(HEX(`slice_id`)) FROM `field`', [['input_insert_func', 'trm', 'BEGIN']]);

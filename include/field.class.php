@@ -166,16 +166,19 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
         if (is_a($params['class'] ?? '', CodWidget::class, true)) {
             return _m('code - its indentation and the last new line are kept on purpose');
         }
-        $const = (string) ($params['const'] ?? '');
-        if (str_starts_with($const, '#sLiCe-')) {
-            // ids of the related items have no spaces; with use_name the text of the item is stored
-            return empty($params['use_name']) ? '' : _m('stores the text of the selected items');
-        }
-        if (($const === '') && empty($params['const_arr'])) {
-            return '';
-        }
-        if (!$read_constants && ($const !== '')) {
-            return _m('constants of a group');
+        // the widget offers the values array (const_arr) before the constants of a group or slice
+        if (empty($params['const_arr'])) {
+            $const = (string) ($params['const'] ?? '');
+            if (str_starts_with($const, '#sLiCe-')) {
+                // ids of the related items have no spaces; with use_name the text of the item is stored
+                return empty($params['use_name']) ? '' : _m('stores the text of the selected items');
+            }
+            if ($const === '') {
+                return '';
+            }
+            if (!$read_constants) {
+                return _m('constants of a group');
+            }
         }
         // a trimmed value would no longer match its constant
         foreach (($read_constants ? $this->getWidget()->getFormattedOptions() : (array) $params['const_arr']) as $value => $name) {
@@ -822,7 +825,7 @@ class AA_Field_Slicedef extends AA_Field
         $fld_eval['_#FLD_PARM'] = $data->get_alias_subst('_#FLD_PARM', '');
         $fld_eval['_#FLD_TYPE'] = $data->get_alias_subst('_#FLD_TYPE', 'fld') ?: 'fld';
         $fld_eval['_#FLD_VALI'] = $data->get_alias_subst('_#FLD_VALI', '');
-        $fld_eval['_#FLD_INS_'] = $data->get_alias_subst('_#FLD_INS_', ($fld_eval['_#FLD_TYPE'] === 'fil') ? 'fil' : 'qte');
+        $fld_eval['_#FLD_INS_'] = $data->get_alias_subst('_#FLD_INS_', '');   // insertFunction() below
         $fld_eval['_#FLD_SHOW'] = (int) $data->get_alias_subst('_#FLD_SHOW', 1) ? 1 : 0;
         $fld_eval['_#FLD_STOR'] = (int) $data->get_alias_subst('_#FLD_STOR', 1) ? 1 : 0;
 
@@ -845,9 +848,10 @@ class AA_Field_Slicedef extends AA_Field
         $this->data['search_pri']        = $this->data['input_pri'];
         $this->data['html_default']      = 1;
         $this->data['input_validate']    = $fld_eval['_#FLD_VALI'];
-        $this->data['input_insert_func'] = $fld_eval['_#FLD_INS_'];
         $this->data['input_show']        = $fld_eval['_#FLD_SHOW'];
         $this->data['text_stored']       = $fld_eval['_#FLD_STOR'];
+        $fld_eval['_#FLD_INS_']          = $this->insertFunction($fld_eval['_#FLD_INS_'], $fld_eval['_#FLD_TYPE']);
+        $this->data['input_insert_func'] = $fld_eval['_#FLD_INS_'];
 
         // we want to replace _#FLD_STOR as well as {_#FLD_STOR}
         $fld_eval_plus = [];
@@ -869,6 +873,26 @@ class AA_Field_Slicedef extends AA_Field
                 }
             }
         }
+    }
+
+    /** The insert function the field slice sets for the field; if none, a file uploads and text trims -
+     *  unless Trim would break it. The constants of a group are not read: a page that misses the cache
+     *  builds all the fields at once. A password copy in such a field is not recognized (isProtected()
+     *  would read the fields being built). */
+    protected function insertFunction(string $set, string $type): string
+    {
+        if ($set !== '') {
+            return $set;
+        }
+        $type = strtolower($type);
+        if ($type === 'fil') {
+            return 'fil';
+        }
+        // a password or 2FA widget keeps what it always had
+        if (!$this->data['text_stored'] || in_array($type, ['pwd', 'tfa'], true)) {
+            return 'qte';
+        }
+        return ($this->trimRefusal(false) === '') ? 'trm' : 'qte';
     }
 
     /** prints admin row for the field in AA UI

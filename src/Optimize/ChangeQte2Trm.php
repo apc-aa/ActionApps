@@ -92,13 +92,14 @@ class ChangeQte2Trm extends AbstractOptimize
         return ($module_id === unpack_id(self::TEMPLATES)) ? [...$fields, ...AA_Fields::factoryFor($module_id, 1)] : $fields;
     }
 
-    /** the fields storing text in the content table with the insert function
+    /** The fields storing text in the content table with the insert function. Not those of a field slice:
+     *  they are set there, and a slice may get thousands of them.
      *  @param iterable<AA_Field> $fields @return list<AA_Field> */
     public static function textFields(iterable $fields, string $insert): array
     {
         $ret = [];
         foreach ($fields as $field) {
-            if (($field->storageColumn() === 'text') && (strtolower(explode(':', (string) $field->getProperty('input_insert_func'), 2)[0]) === $insert)) {
+            if (!($field instanceof AA_Field_Slicedef) && ($field->storageColumn() === 'text') && (strtolower(explode(':', (string) $field->getProperty('input_insert_func'), 2)[0]) === $insert)) {
                 $ret[] = $field;
             }
         }
@@ -112,8 +113,8 @@ class ChangeQte2Trm extends AbstractOptimize
         $switch = [];
         $keep   = [];
         foreach (self::textFields($fields, 'qte') as $field) {
-            // fields defined in a field slice keep their setting there; a password copy must keep its spaces
-            if (($field instanceof AA_Field_Slicedef) || $field->isProtected()) {
+            // a password copy must keep its spaces
+            if ($field->isProtected()) {
                 continue;
             }
             $reason = $field->trimRefusal();

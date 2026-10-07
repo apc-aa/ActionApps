@@ -27,6 +27,7 @@ namespace Tests\Unit\Optimize {
 
     use AA\Optimize\ChangeQte2Trm;
     use AA_Field;
+    use AA_Field_Slicedef;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Legacy\Fixtures\FakeFields;
     use Tests\Unit\Legacy\Fixtures\FakeSlice;
@@ -73,6 +74,13 @@ namespace Tests\Unit\Optimize {
                 $this->field('full_text.......', ['input_insert_func' => 'num:']),
                 $this->field('number..........', ['text_stored' => 0]),
                 $this->field('posted_by.......', ['in_item_tbl' => 'posted_by']),
+                // defined in a field slice - set there
+                new class (['id' => 'text...........1', 'text_stored' => 1, 'in_item_tbl' => '', 'input_insert_func' => 'trm']) extends AA_Field_Slicedef {
+                    public function __construct(array $data)
+                    {
+                        $this->data = $data;
+                    }
+                },
             ]);
 
             $this->assertSame([$qte], ChangeQte2Trm::textFields($fields, 'qte'));
