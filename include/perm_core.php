@@ -689,6 +689,28 @@ class AA_Perm {
         return [];
     }
 
+    /** Is $uid a superadmin of this AA, as IsSuperadmin() decides it for the logged-in user - but read
+     *  from the perm storage, so it may ask about anyone: cache() would put that user's perms into the
+     *  session of the request. */
+    public function isSuperadminUser(string $uid): bool
+    {
+        return ($uid !== '') && IsPerm((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''), self::ROLES['SUPER']['id']);
+    }
+
+    /** Has $uid the right $perm on slice $slice_id, as CheckPerms() decides it for the logged-in user -
+     *  but read from the perm storage, for the reason isSuperadminUser() gives. cache() + CheckPerms()
+     *  and getModulePerms() join the slice and AA rights too; this one resolves the roles into letters
+     *  (getModulePerms() does not) and never touches the session cache (cache() does). */
+    public function hasSlicePerm(string $uid, string $slice_id, string $perm): bool
+    {
+        if ($uid === '') {
+            return false;
+        }
+        $slice_perm = self::_resolve((string) ($this->getUserPerms($uid, 'slice')[$slice_id] ?? ''));
+        $aa_perm    = self::_resolve((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''));
+        return IsPerm(self::joinSliceAndAAPerm($slice_perm, $aa_perm), $perm);
+    }
+
     /**
      * @param $objectID
      * @param $objectType

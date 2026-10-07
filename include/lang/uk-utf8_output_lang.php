@@ -13,74 +13,74 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Хибний параметр inc - включений файл може містити лише буквено-цифрові символи", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "Такого файлу немає", // ai 2026-06
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Недійсний номер рубрики або рубрику видалено", // ai 2026-06
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "Вивід через slice.php для цієї рубрики заборонено", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "id сесії", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "номер поточної сторінки (у посторінковому перегляді)", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "довжина сторінки (кількість статей)", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "Жодної статті не знайдено", // ai 2026-06
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "Показати вибрані", // ai 2026-06
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "Показати всі", // ai 2026-06
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "Додати нову", // ai 2026-06
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "Аліас для %1", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "Аліас для теми коментаря обговорення", // ai 2026-06
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "Аліас для тексту коментаря обговорення", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "Аліас для автора", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "Аліас для e-mail автора", // ai 2026-06
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "Аліас для URL-адреси веб-сайту автора", // ai 2026-06
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "Аліас для опису веб-сайту автора", // ai 2026-06
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "Аліас для дати публікації", // ai 2026-06
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "Аліас для IP-адреси комп'ютера автора", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "Аліас для прапорця, що використовується для вибору коментаря обговорення", // ai 2026-06
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "Аліас для зображень", // ai 2026-06
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -88,7 +88,7 @@ return [
    ."                             <i>Використання: </i>у коді форми<br>\n"
    ."                             <i>Приклад: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -96,7 +96,7 @@ return [
    ."                             <i>Використання: </i>у коді форми<br>\n"
    ."                             <i>Приклад: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -104,7 +104,7 @@ return [
    ."                             <i>Використання: </i>у коді форми<br>\n"
    ."                             <i>Приклад: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -112,7 +112,7 @@ return [
    ."                             <i>Використання: </i>у HTML-коді для оглядового вигляду коментаря<br>\n"
    ."                             <i>Приклад: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -120,7 +120,7 @@ return [
    ."                             <i>Використання: </i>у HTML-коді для повнотекстового вигляду коментаря<br>\n"
    ."                             <i>Приклад: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;", // ai 2026-06
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -128,64 +128,64 @@ return [
    ."                             <i>Використання: </i>у коді форми<br>\n"
    ."                             <i>Приклад: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "Аліас для кнопок Показати все, Показати вибране, Додати нову<br>\n"
    ."                             <i>Використання: </i> у нижньому HTML-коді", // ai 2026-06
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "3-й параметр, заповнений у полі DiscussionMailList", // ai 2026-06
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "%1-й параметр, заповнений у полі DiscussionMailList", // ai 2026-06
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "Назва константи", // ai 2026-06
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "Перекладена назва константи", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "Значення константи", // ai 2026-06
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "Пріоритет константи", // ai 2026-06
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "ID групи констант", // ai 2026-06
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "Клас рубрики (лише для рубрик)", // ai 2026-06
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "Номер константи", // ai 2026-06
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "Унікальний ID константи (32 шістнадцяткові символи)", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "Унікальний короткий id константи (автоматично збільшується від '1' для кожної константи в системі)", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "Опис константи", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Рівень константи (використовується для ієрархічних констант)", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "Помилка: неправильна функція аліасу %1 для %2", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "Вибрана стаття", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "кількість знайдених статей", // ai 2026-06
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "Не вибрано жодного коментаря", // ai 2026-06
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "точна назва групи", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -206,27 +206,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "Виберіть рубрику", // ai 2026-06
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "Усі рубрики", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Помилка: відсутній пароль для читання", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Повідомлення застосунку", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "Назад", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Увійти знову", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "Форма призначення", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "Отримує дані про зв'язки статті, надіслані формою (POST)", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

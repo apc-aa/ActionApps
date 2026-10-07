@@ -123,7 +123,7 @@ for ($i = 0, $ino = strlen($mode); $i < $ino; ++$i) {
 
 $aliases = $slice->aliases();
 // special alias - will be automatically added as last column in manager view
-$aliases["_#AA_ACTIO"] = GetAliasDef("f_t:$mode_string", "id..............");
+$aliases["_#AA_ACTIO"] = GetAliasDef("f__:$mode_string", "id..............");
 
 $manager_vid = null;
 $format      = null;   //default manager format will be used (and _#AA_ACTIO alias expanded)

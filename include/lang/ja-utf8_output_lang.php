@@ -13,74 +13,74 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "inc パラメータが不正です - 挿入ファイル名には英数字のみ使用できます", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "ファイルが存在しません", // ai 2026-06
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "スライス番号が無効か、スライスが削除されています", // ai 2026-06
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "このスライスでは slice.php による出力は禁止されています", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "セッションID", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "現在のページ番号（ページ送り）", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "ページの長さ（項目数）", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "項目が見付かりません",
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "選択したものを表示", // ai 2026-06
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "すべて表示", // ai 2026-06
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "新規追加", // ai 2026-06
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "%1 の別名", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "ディスカッションコメントの件名の別名", // ai 2026-06
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "ディスカッションコメントの本文の別名", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "投稿者の別名", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "作者のE-メールの別名", // ai 2026-06
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "作者のWWWサイトのURLの別名", // ai 2026-06
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "作者のWWWサイトの説明の別名", // ai 2026-06
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "公開日時の別名", // ai 2026-06
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "作者のコンピュータのIPアドレスの別名", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "ディスカッションのコメントを選択するチェックボックスの別名", // ai 2026-06
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "画像の別名", // ai 2026-06
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -88,7 +88,7 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -96,7 +96,7 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -104,7 +104,7 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -112,7 +112,7 @@ return [
    ."                             <i>使用法: </i>コメントの一覧表示用HTMLコード内<br>\n"
    ."                             <i>例: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -120,7 +120,7 @@ return [
    ."                             <i>使用法: </i>コメントの全文表示用HTMLコード内<br>\n"
    ."                             <i>例: </i>&lt;a href=_#URLREPLY&gt;返信&lt;/a&gt;", // ai 2026-06
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -128,64 +128,64 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "「全て表示」「選択を表示」「新規追加」ボタンの別名<br>\n"
    ."                             <i>使用法: </i>最後のHTMLコード内", // ai 2026-06
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "DiscussionMailListフィールドに入力された3番目のパラメータ", // ai 2026-06
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "DiscussionMailListフィールドに入力された%1番目のパラメータ", // ai 2026-06
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "定数名", // ai 2026-06
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "翻訳された定数名", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "定数の値", // ai 2026-06
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "定数の優先度", // ai 2026-06
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "定数グループID", // ai 2026-06
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "分類クラス（分類のみ）", // ai 2026-06
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "定数番号", // ai 2026-06
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "定数の一意なID（16進数32文字）", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "定数の一意な短縮ID（システム内の各定数で '1' から自動増加）", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "定数の記述", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "定数のレベル（階層定数で使用）", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "エラー: %2 に対する別名関数 %1 が不正です", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "選択された項目", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "見付かった項目数", // ai 2026-06
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "コメントが選択されていません", // ai 2026-06
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "正確なグループ名", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -206,27 +206,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "分類を選択", // ai 2026-06
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "全ての分類", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "エラー: 読み取りパスワードがありません", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "アプリケーションのお知らせ", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "戻る", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "再ログイン", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "割り当てフォーム", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "フォームからPOSTされた項目の関連データを取得します", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

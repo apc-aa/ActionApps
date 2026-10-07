@@ -23,15 +23,22 @@ final class ImportLint
 
     /** @param Package|null $ids the package whose ids the rewrite maps - the whole one, when $package leaves
      *                           out what an existing slice keeps; null = $package
+     *  @return array<string, true> the modules outside the package the texts link to (MODULE_OUTSIDE), lower
+     *                              case - all of them, though $into keeps only some findings of a code
      *  @throws RewriteFailed a regex failed */
-    public function check(Package $package, FindingList $into, ?Package $ids = null): void
+    public function check(Package $package, FindingList $into, ?Package $ids = null): array
     {
-        $lint = new ReferenceLint(self::identity($ids ?? $package));
+        $lint    = new ReferenceLint(self::identity($ids ?? $package));
+        $outside = [];
         foreach ($this->texts($package) as $entry) {
             foreach (LintTexts::lint($lint, ...$entry) as $finding) {
                 $into->add($entry[0], $finding);
+                if ($finding->code === ReferenceLint::MODULE_OUTSIDE) {
+                    $outside[strtolower($finding->ref)] = true;
+                }
             }
         }
+        return array_filter($outside, static fn(string $id): bool => (bool) preg_match('/^[0-9a-f]{32}\z/', $id), ARRAY_FILTER_USE_KEY);
     }
 
     /** the ids of the package, each mapped to itself */

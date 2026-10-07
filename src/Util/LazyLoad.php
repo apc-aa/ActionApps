@@ -52,17 +52,31 @@ final class LazyLoad
         return (self::loading($attrs) === null) ? 'loading=lazy' : '';
     }
 
-    /** Value of the first loading attribute in $attrs, lowercase; null without one. */
-    private static function loading(string $attrs): ?string
+    /** Whether the tag ends up lazy - attr() makes it so unless $attrs choose another loading.
+     *  Only a lazy image may let the browser pick from its srcset by layout (sizes="auto"). */
+    public static function isLazy(string $attrs): bool
     {
-        if ((stripos($attrs, 'loading') === false) || !preg_match_all(self::ATTRIBUTE, $attrs, $tokens, PREG_SET_ORDER)) {
+        return \in_array(self::loading($attrs), [null, 'lazy'], true);
+    }
+
+    /** Value of the first attribute $name in $attrs, unquoted; null without one. */
+    public static function attribute(string $attrs, string $name): ?string
+    {
+        if ((stripos($attrs, $name) === false) || !preg_match_all(self::ATTRIBUTE, $attrs, $tokens, PREG_SET_ORDER)) {
             return null;
         }
         foreach ($tokens as $token) {
-            if (strcasecmp($token[1] ?? '', 'loading') === 0) {
-                return strtolower(trim($token[2] ?? '', '"\''));
+            if (strcasecmp($token[1] ?? '', $name) === 0) {
+                return trim($token[2] ?? '', '"\'');
             }
         }
         return null;
+    }
+
+    /** Value of the first loading attribute in $attrs, lowercase; null without one. */
+    private static function loading(string $attrs): ?string
+    {
+        $value = self::attribute($attrs, 'loading');
+        return ($value === null) ? null : strtolower($value);
     }
 }

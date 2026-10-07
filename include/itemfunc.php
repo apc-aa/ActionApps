@@ -161,7 +161,7 @@ function GetItemSummaryHtml($item, bool $full = false): string
     }
 
     // headline, or (no _#HEADLINE) a slice-name + short-id fallback, never a literal "_#HEADLINE"
-    $name = $headline !== '' ? safe($headline)
+    $name = $headline !== '' ? Adminlink::headlineText($headline)
           : trim(($slice ? safe($slice->getName()) : '') . ' <span class="aa-id">' . safe($short_id) . '</span>');
 
     // Public-site link: the item's live URL when the slice resolves one (an explicit preview-URL
@@ -1084,8 +1084,16 @@ class AA_Inserter_Trm extends AA_Inserter
 
     public function execute(AA_Field_Writer $fieldwriter, $item_id, $value, int $order = 0, int $flag = 0): void
     {
-        $value = Langs::isUTF() ? aa_trim(Normalizer::normalize($value)) : aa_trim($value);
-        parent::execute($fieldwriter, $item_id, $value, $order, $flag);
+        parent::execute($fieldwriter, $item_id, self::trimValue((string) $value), $order, $flag);
+    }
+
+    /** The value as this function stores it. Normalizer refuses text that is not valid UTF-8 -
+     *  such text is only trimmed, so it is not lost.
+     */
+    public static function trimValue(string $value): string
+    {
+        $normalized = Langs::isUTF() ? Normalizer::normalize($value) : false;
+        return aa_trim(($normalized === false) ? $value : $normalized);
     }
 }
 
@@ -1354,7 +1362,9 @@ class AA_Inserter_Seo extends AA_Inserter
     }
 }
 
-/** AA_Inserter_Seq */
+/** AA_Inserter_Seq - the next number in the slice for a new item. storeItem() sets the number
+ *  (assignNumbers()) or keeps the stored one (prepare()) before the fields are stored;
+ *  execute() then stores it as any value. */
 class AA_Inserter_Seq extends AA_Inserter
 {
     public static function name(): string
@@ -1363,8 +1373,106 @@ class AA_Inserter_Seq extends AA_Inserter
     }             // see NamedInterface
     public static function description(): string
     {
-        return _m('Unique number in sequence 1,2,3,...');
+        return _m('A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number.');
     }      // see NamedInterface
+
+    public function isContentSelfGenerated(): bool
+    {
+        return true;
+    }
+
+    /** @return string[] ids of the seq fields of the slice */
+    public static function fieldIds(AA_Fields $fields): array
+    {
+        $ids = [];
+        foreach ($fields as $fid => $field) {
+            [$insert] = explode(':', strtolower((string) $field->getProperty('input_insert_func')), 2);
+            if ($insert === 'seq') {
+                $ids[] = (string) $fid;
+            }
+        }
+        return $ids;
+    }
+
+    /** Before storeItem() writes: an existing item keeps its stored number where the incoming
+     *  content would drop it - an empty value (a cleared form field), a field missing in an
+     *  'overwrite' (which deletes all rows) or any value from a feed (the source's number would
+     *  repeat in this slice). 'add' only adds values, so it is left alone. The stored item is
+     *  read only when one of these cases can apply.
+     *  @param string[] $field_ids  see fieldIds()
+     *  @return string[] the fields assignNumbers() must number: all of a new item (also an
+     *                   'overwrite' of an id not in the database), a fed field with no number yet
+     */
+    public static function prepare(ItemContent $content, string $id, string $mode, array $field_ids, string $context): array
+    {
+        if ($mode === 'insert') {
+            return $field_ids;
+        }
+        if (($mode !== 'overwrite') && ($mode !== 'update')) {
+            return [];
+        }
+        $replaced = static fn(string $fid): bool => ($context === 'feed') || (trim((string) $content->getValue($fid)) === '');
+        // an update leaves the fields it does not bring untouched
+        $check = ($mode === 'overwrite') ? $field_ids : array_values(array_filter($field_ids, static fn($fid) => $content->isSet($fid) && $replaced($fid)));
+        if (!$check) {
+            return [];
+        }
+        // the reading password must not hide the item - it would look new and lose its number
+        $stored = new ItemContent();
+        $stored->setByItemID($id, true);
+        if ($stored->isEmpty()) {
+            return ($mode === 'overwrite') ? $field_ids : [];     // only 'overwrite' creates the item row
+        }
+        $to_number = [];
+        foreach ($check as $fid) {
+            if (!$replaced($fid)) {
+                continue;                     // an 'overwrite' bringing its own number
+            }
+            $number = trim((string) $stored->getValue($fid));
+            if ($number !== '') {
+                $content->setAaValue($fid, new AA_Value($number));
+            } elseif ($context === 'feed') {
+                $to_number[] = $fid;
+            }
+        }
+        return $to_number;
+    }
+
+    /** Sets the next number into the given seq fields. Called by storeItem() as the first
+     *  statement of its transaction, before the item row exists.
+     *
+     *  The slice row locked FOR UPDATE serialises the numbering: a concurrent numbering in the
+     *  slice waits until this transaction commits. When storeItem() opened the transaction, the
+     *  lock comes before any read, so the plain read of the maximum already sees the last commit.
+     *  Joined to an outer transaction (e.g. an import step run in one), the lock is held until the
+     *  outer commit, and because the outer snapshot may be older the maximum is a locking read: it
+     *  takes next-key locks on the slice's ranges of the item and content indexes, so updates and
+     *  inserts of those items wait for the outer commit too. A new tag item stored by
+     *  AA_Inserter_Ids into another seq slice locks that slice second; an insert going the other
+     *  way round may deadlock, and InnoDB then rolls one of them back. MyISAM ignores the locks.
+     *  @param string[] $field_ids          see prepare()
+     *  @param bool     $outer_transaction  storeItem() joined a transaction it did not open
+     */
+    public static function assignNumbers(ItemContent $content, array $field_ids, string $slice_id, bool $outer_transaction): void
+    {
+        if (!$field_ids) {
+            return;
+        }
+        DB_AA::select('id', 'SELECT id FROM `slice` ' . DB_AA::makeWhere([['id', $slice_id, 'l']]) . ' FOR UPDATE');
+        foreach ($field_ids as $fid) {
+            $content->setAaValue($fid, new AA_Value(max(0, self::maxNumber($slice_id, $fid, $outer_transaction)) + 1));
+        }
+    }
+
+    /** The highest whole number the field has in the slice, 0 when none. A text stored value
+     *  counts only when it is all digits, a number stored one always. The flag decides per row,
+     *  because rows stored before a change of text_stored keep their column. */
+    private static function maxNumber(string $slice_id, string $field_id, bool $locking): int
+    {
+        $where = [['content.item_id', 'item.id', 'j'], ['item.slice_id', $slice_id, 'l'], ['content.field_id', $field_id]];
+        $max   = DB_AA::select('seq', 'SELECT MAX(IF(content.flag & ' . FLAG_TEXT_STORED . ", IF(TRIM(content.text) REGEXP '^[0-9]{1,18}$', CAST(TRIM(content.text) AS SIGNED), NULL), content.number)) AS seq FROM `item`, `content` " . DB_AA::makeWhere($where) . ($locking ? ' LOCK IN SHARE MODE' : ''));
+        return (int) ($max[0] ?? 0);
+    }
 }
 
 /** AA_Inserter_Fil  - File = uploaded file

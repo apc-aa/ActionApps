@@ -163,7 +163,7 @@ class AA_Aliasgenerator_History extends AbstractAliasgenerator
         // $aliases->addAlias(new AA_Alias('_#HI_TYPE_', 'f_t', 'vtype',       _m('Type of value')));
         $aliases->addAlias(new AA_Alias('_#HI_TIME_', 'f_d:j.n.Y H:i:s', 'time', _m('Time of change')));
         $aliases->addAlias(new AA_Alias('_#HI_USER_', 'f_1', 'user', _m('User')));
-        $aliases->addAlias(new AA_Alias('_#HI_UNAME', 'f_t:{userinfo:{_#HI_USER_}}', 'user', _m('User')));
+        $aliases->addAlias(new AA_Alias('_#HI_UNAME', 'f__:{userinfo:{_#HI_USER_}}', 'user', _m('User')));
         $aliases->addAlias(new AA_Alias('_#HI_ITEM_', 'f_1', 'resource_id', _m('Item ID')));
         return $aliases;
     }

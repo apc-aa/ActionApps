@@ -29,7 +29,11 @@
 // Miscellaneous utility functions
 //
 
+use AA\Http\Client;
+use AA\Http\ResponseTooLargeException;
+use AA\Http\TransportException;
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckBlockedRequests;
 use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
@@ -1458,11 +1462,32 @@ function inner_trim(string $string): string
     return str_replace([' ', "\n", "\t", "\r"], '', $string);
 }
 
-function ReadFileSafe($url): void
+/** Prints the page at an http(s) address - the answer of filler.php with inline=1 (its ok_url), of
+ *  fillform.php (show_result) and slice.php (inc). They come from the request, so an address of the
+ *  server's own network is refused and logged for State Check.
+ *  @param string $purpose the request parameter the address came in, for the log
+ *  @return bool the page was printed
+ */
+function ReadFileSafe($url, string $purpose): bool
 {
-    if ((stripos($url, 'http://') === 0 || stripos($url, 'https://') === 0) && !str_contains($url, '..')) {
-        readfile($url);
+    $url = trim((string) $url);
+    if (!preg_match('~^https?://~i', $url) || str_contains($url, '..')) {
+        return false;
     }
+    try {
+        $answer = Client::publicOnly(timeout: 60, idle: 60, redirects: 10, maxBytes: 16 * 1024 * 1024)->request('GET', $url);
+    } catch (TransportException $e) {
+        CheckBlockedRequests::record($e, $purpose, (string) ($_SERVER['REMOTE_ADDR'] ?? ''));
+        return false;
+    } catch (ResponseTooLargeException) {
+        return false;
+    }
+    // an error page is not the result the form promised
+    if (!$answer->ok()) {
+        return false;
+    }
+    echo $answer->body;
+    return true;
 }
 
 /** add_post2shtml_vars function
@@ -2161,10 +2186,14 @@ function aa_strrpos($haystack, $needle, $offset = 0): false|int
     return \AA\Util\Txt::strrpos($haystack, $needle, $offset);
 }
 
-/** trim  with utf in mind */
+/** trim  with utf in mind - in UTF-8 also the non-breaking and other Unicode spaces */
 function aa_trim(string $string = '', string $chars = ''): string
 {
-    return ($chars === '' && Langs::isUTF()) ? preg_replace("/^\s+|\s+$/u", "", $string) : trim($string, $chars);
+    if ($chars !== '') {
+        return trim($string, $chars);
+    }
+    // text that is not valid UTF-8 makes preg_replace() fail (null) - it is trimmed byte-wise then
+    return (Langs::isUTF() ? preg_replace("/^\s+|\s+$/u", "", $string) : null) ?? trim($string);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 

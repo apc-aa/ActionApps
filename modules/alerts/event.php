@@ -52,7 +52,7 @@ function AlertsSendWelcome($slice_id, $itemContent): void
     if (! $itemContent->getValue(FIELDID_MAIL_CONFIRMED)) {   // switch..........
 
         while ($mydb->next_record()) {
-            $aliases["_#COLLFORM"] = GetAliasDef("f_t:" . get_url($mydb->f("slice_url"), ['aw' => $itemContent->getValue(FIELDID_ACCESS_CODE)]), "id..............");
+            $aliases["_#COLLFORM"] = GetAliasDef("f__:" . get_url($mydb->f("slice_url"), ['aw' => $itemContent->getValue(FIELDID_ACCESS_CODE)]), "id..............");
             $aliases["_#HOWOFTEN"] = GetAliasDef("f_h", getAlertsField(FIELDID_HOWOFTEN, $mydb->f("id")));
             $aliases["_#CONFIRM_"] = GetAliasDef("f_h", FIELDID_MAIL_CONFIRMED);
             $item  = new AA_Item($itemContent, $aliases);

@@ -12,6 +12,9 @@ setlocale(LC_ALL, 'pl_PL.utf8', 'pl_PL');  // sort, date, uppercase, ..
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "Site module not found" => "Nie znaleziono modułu Site", // ai 2026-06
+// End of unused messages
 
 // modules/site/aliases.php, row 36
 "You do not have permissions to manage tasks" => "Nie masz uprawnień do zarządzania zadaniami", // ai 2026-06
@@ -19,66 +22,63 @@ return [
 // modules/site/aliases.php, row 41
 "Manage %1" => "Zarządzaj %1", // ai 2026-06
 
-// modules/site/index.php, row 57
-"Site module not found" => "Nie znaleziono modułu Site", // ai 2026-06
-
-// modules/site/index.php, row 63
+// modules/site/index.php, row 64
 "You do not have permission to edit items in this slice" => "Nie masz uprawnień do edycji artykułów w tej rubryce", // ai 2026-06
 
 // modules/site/index.php, row 68
 "Starting spot not found" => "Nie znaleziono początkowego spotu", // ai 2026-06
 
-// modules/site/index.php, row 149
+// modules/site/index.php, row 157
 "Editor window - site code manager" => "Okno edycji - menedżer kodu witryny", // ai 2026-06
 
-// modules/site/index.php, row 169
+// modules/site/index.php, row 177
 "Add&nbsp;spot" => "Dodaj&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 170
+// modules/site/index.php, row 178
 "Add&nbsp;choice" => "Dodaj&nbsp;wybór", // ai 2026-06
 
-// modules/site/index.php, row 173
+// modules/site/index.php, row 181
 "Move&nbsp;up" => "Przesuń&nbsp;w górę", // ai 2026-06
 
-// modules/site/index.php, row 174
+// modules/site/index.php, row 182
 "Move&nbsp;down" => "Przesuń&nbsp;w dół", // ai 2026-06
 
-// modules/site/index.php, row 177
+// modules/site/index.php, row 185
 "Move&nbsp;left" => "Przesuń&nbsp;w lewo", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 186
 "Move&nbsp;right" => "Przesuń&nbsp;w prawo", // ai 2026-06
 
-// modules/site/index.php, row 181
-// modules/site/sitetree.php, row 785, 806
+// modules/site/index.php, row 189
+// modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Usuń", // ai 2026-06
 
-// modules/site/index.php, row 181
+// modules/site/index.php, row 189
 "Are you sure you want to delete the spot?" => "Czy na pewno chcesz usunąć ten spot?", // ai 2026-06
 
-// modules/site/index.php, row 184
+// modules/site/index.php, row 192
 "Enable" => "Włącz", // ai 2026-06
 
-// modules/site/index.php, row 185
+// modules/site/index.php, row 193
 "Disable" => "Wyłącz", // ai 2026-06
 
-// modules/site/index.php, row 206
+// modules/site/index.php, row 214
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Możliwe systemowe require - &lcub;require:...&rcub; lub &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
-// modules/site/menu.php, row 46
+// modules/site/menu.php, row 47
 "View site" => "Pokaż witrynę", // ai 2026-06
 
-// modules/site/menu.php, row 53
-// modules/site/modedit.php, row 270
+// modules/site/menu.php, row 55
+// modules/site/modedit.php, row 318
 "Site" => "Witryna", // ai 2026-06
 
-// modules/site/menu.php, row 78
+// modules/site/menu.php, row 80
 "Module Settings" => "Ustawienia modułu", // ai 2026-06
 
-// modules/site/menu.php, row 79
+// modules/site/menu.php, row 81
 "Code Manager" => "Menedżer kodu", // ai 2026-06
 
-// modules/site/menu.php, row 80
+// modules/site/menu.php, row 82
 "Aliases" => "Aliasy", // ai 2026-06
 
 // modules/site/moddelete.php, row 45
@@ -90,57 +90,102 @@ return [
 // modules/site/moddelete.php, row 69
 "Slice successfully deleted, tables are optimized" => "Rubryka została pomyślnie usunięta, tabele zostały zoptymalizowane", // ai 2026-06
 
-// modules/site/modedit.php, row 104
+// modules/site/modedit.php, row 116
 "You do not have permissions to add slice" => "Nie masz uprawnień do dodania rubryki", // ai 2026-06
 
-// modules/site/modedit.php, row 109
+// modules/site/modedit.php, row 121
 "You do not have permissions to edit this slice" => "Nie masz uprawnień do edycji tej rubryki", // ai 2026-06
 
-// modules/site/modedit.php, row 132
+// modules/site/modedit.php, row 129
+"The settings and the other fields of this page were not saved." => "",
+
+// modules/site/modedit.php, row 144
 "State file" => "Plik stanu", // ai 2026-06
 
-// modules/site/modedit.php, row 133, 278
+// modules/site/modedit.php, row 145, 326
 "Router" => "",
 
-// modules/site/modedit.php, row 134, 292
+// modules/site/modedit.php, row 146, 340
 "Uses modules" => "Używa modułów", // ai 2026-06
 
-// modules/site/modedit.php, row 257
+// modules/site/modedit.php, row 156
+"You can not use these modules in the site - you have no permission to them: %1" => "",
+
+// modules/site/modedit.php, row 230
+"The form has expired; reload the page and try again." => "",
+
+// modules/site/modedit.php, row 241
+"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "",
+
+// modules/site/modedit.php, row 305
 "Add Site" => "Dodaj witrynę", // ai 2026-06
 
-// modules/site/modedit.php, row 257
+// modules/site/modedit.php, row 305
 "Edit Site" => "Edytuj witrynę", // ai 2026-06
 
-// modules/site/modedit.php, row 277
+// modules/site/modedit.php, row 325
 "Used Language File" => "Używany plik językowy", // ai 2026-06
 
-// modules/site/modedit.php, row 278
+// modules/site/modedit.php, row 326
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Użyj AA_Router_Seo. W przeciwnym razie zastosujesz stare podejście modułu site z 'plikiem sterującym', którego nie zalecamy.", // ai 2026-06
 
-// modules/site/modedit.php, row 279
+// modules/site/modedit.php, row 327
 "Home or State file" => "Strona główna lub plik stanu", // ai 2026-06
 
-// modules/site/modedit.php, row 279
+// modules/site/modedit.php, row 327
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Dla AA_Router_Seo wpisz <b>domyślny url</b> (stronę główną) - np. <em>/en/home</em> lub pozostaw puste<br><br>Dla starszych witryn bez AA_Router_Seo wpisz nazwę <b>pliku sterującego witryny</b> - zostanie umieszczony w katalogu /modules/site/sites/. Do podanej nazwy zostanie dodany przedrostek 'site_', więc jeśli na przykład nazwiesz plik 'apc.php', plik sterujący witryny będzie miał postać /modules/site/sites/site_apc.php.", // ai 2026-06
 
-// modules/site/modedit.php, row 294
+// modules/site/modedit.php, row 342
 "Additional setting" => "Ustawienie dodatkowe", // ai 2026-06
 
-// modules/site/sitetree.php, row 782
+// modules/site/modedit.php, row 347
+"App store" => "",
+
+// modules/site/modedit.php, row 349
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "",
+
+// modules/site/modedit.php, row 353
+"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "",
+
+// modules/site/modedit.php, row 354
+"Approve the changed modules: %1" => "",
+
+// modules/site/modedit.php, row 354
+"Their templates, fields, views and constants then go to the app store with the site." => "",
+
+// modules/site/modedit.php, row 356
+"Publish in the app store" => "",
+
+// modules/site/modedit.php, row 356
+"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "",
+
+// modules/site/modedit.php, row 357
+"App description" => "",
+
+// modules/site/modedit.php, row 357
+"What the app does, for the list of the app store." => "",
+
+// modules/site/modedit.php, row 358
+"App version" => "",
+
+// modules/site/modedit.php, row 358
+"Like 1.2.0." => "",
+
+// modules/site/sitetree.php, row 1005
 "Spot&nbsp;variables" => "Zmienne&nbsp;spotu", // ai 2026-06
 
-// modules/site/sitetree.php, row 788, 817
+// modules/site/sitetree.php, row 1011, 1040
 "Add" => "Dodaj", // ai 2026-06
 
-// modules/site/sitetree.php, row 796
+// modules/site/sitetree.php, row 1019
 "Spot&nbsp;conditions" => "Warunki&nbsp;spotu", // ai 2026-06
 
-// modules/site/sitetree.php, row 805
+// modules/site/sitetree.php, row 1028
 "Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression." => "Ostrzeżenie: warunek zaczyna się lub kończy znakiem odstępu (białym znakiem). Sprawdź, czy w Twoim wyrażeniu jest to poprawne.", // ai 2026-06
 
-// modules/site/sitetree.php, row 812
+// modules/site/sitetree.php, row 1035
 "contains" => "zawiera", // ai 2026-06
 
-// modules/site/sitetree.php, row 813
+// modules/site/sitetree.php, row 1036
 "Regular Expression" => "Wyrażenie regularne", // ai 2026-06
 ];

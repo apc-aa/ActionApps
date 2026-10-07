@@ -43,6 +43,8 @@ class JsonResponse
             header('Content-Type: application/json; charset=utf-8');
             header('X-Content-Type-Options: nosniff');
         }
-        echo json_encode($this->payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        // < and & escaped: a body that ends up rendered as HTML (output before the header) carries no
+        // markup; an invalid byte of foreign data becomes U+FFFD instead of an empty body
+        echo json_encode($this->payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP | JSON_INVALID_UTF8_SUBSTITUTE);
     }
 }

@@ -7,7 +7,7 @@
 */
 
 require_once __DIR__ . "/include/config.php";   // we use some constants from AA in the config
-require_once __DIR__ . "/src/Util/PhpThumbParams.php";   // just the AVIF quality - the whole autoloader would include 16 files more
+require_once __DIR__ . "/src/Util/PhpThumbParams.php";   // AVIF quality, densityQuality() and noEnlarge() - the whole autoloader would include 16 files more
 const AA_PHPTHUMB__DIR__ = __DIR__ . "/vendor/honzito/phpthumb";
 
 // This endpoint emits raw image bytes — a printed warning/notice/deprecation
@@ -335,7 +335,7 @@ $PHPTHUMB_DEFAULTS_DISABLEGETPARAMS  = false; // if true, GETstring parameters w
 //$PHPTHUMB_DEFAULTS['w']    = 200;
 //$PHPTHUMB_DEFAULTS['fltr'] = array('blur|10');
 // 90 suits JPEG and WebP; AVIF at 90 is nearly lossless in GD and as big as the JPEG
-$PHPTHUMB_DEFAULTS['q'] = (is_string($_GET['f'] ?? null) && (strtolower($_GET['f']) === 'avif')) ? \AA\Util\PhpThumbParams::AVIF_QUALITY : 90;
+$PHPTHUMB_DEFAULTS['q'] = (is_string($_GET['f'] ?? null) && (strtolower($_GET['f']) === 'avif')) ? \AA\Util\PhpThumbParams::AVIF_QUALITY : \AA\Util\PhpThumbParams::DEFAULT_QUALITY;
 //$PHPTHUMB_DEFAULTS['q'] = 80;   // 80-85 for webp should be the same as 90 for jpeg
 //$PHPTHUMB_DEFAULTS['f'] = 'webp';
 
@@ -373,5 +373,22 @@ function phpThumbURL($ParameterString, $path_to_phpThumb = 'phpThumb.php'): stri
     return $path_to_phpThumb . '?' . $ParameterString . $PHPTHUMB_CONFIG['high_security_url_separator'] . 'hash=' . hash_hmac('sha256', $ParameterString, $PHPTHUMB_CONFIG['high_security_password']);
 }
 // ---------- vendor/james-heinrich/phpthumb/phpThumb.config.php v2023-05-03 - end ---------
+
+// the quality of a srcset candidate and the box of aoe=0 depend on the size of the source - phpThumb reads it next anyway
+$source_size = static function () use ($PHPTHUMB_CONFIG): ?array {
+    static $size = false;
+    if ($size === false) {
+        $src  = $_GET['src'] ?? null;
+        $size = null;
+        // a url or an unusual path: phpThumb resolves those its own way, the size stays unknown
+        if (is_string($src) && str_starts_with($src, '/') && !str_contains($src, '..') && !str_contains($src, "\0")) {
+            $read = @getimagesize(rtrim((string) $PHPTHUMB_CONFIG['document_root'], '/') . $src);
+            $size = ($read && ($read[0] > 0) && ($read[1] > 0)) ? [(int) $read[0], (int) $read[1]] : null;
+        }
+    }
+    return $size;
+};
+$_GET = \AA\Util\PhpThumbParams::densityQuality($_GET, $source_size);   // first: it compares the source with the box as asked
+$_GET = \AA\Util\PhpThumbParams::noEnlarge($_GET, $source_size);
 
 require_once AA_PHPTHUMB__DIR__ . "/phpThumb.php";

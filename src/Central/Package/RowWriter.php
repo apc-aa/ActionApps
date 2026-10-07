@@ -15,7 +15,8 @@ use LogicException;
  *  per module `module` and the rows of its type; then the constant groups. Every value through RowStore.
  *
  *  Structured references are mapped, not rewritten. Outside the package: slice.vid and profile input_view
- *  stay (W); slice.mlxctrl = '' (a target slice would control this one's languages); alerts references
+ *  stay (W); slice.mlxctrl = '' (a target slice would control this one's languages) unless the preview sent
+ *  the links to it to a slice of the target (ImportPlan::$outside); alerts references
  *  to the target are the Validator's E - a new collection must not mail target views to the package's
  *  readers - here a LogicException. 0 / empty is "none".
  *  A transfer brings the state of the source installation (Module::$transfer): the owner, found on the
@@ -151,7 +152,7 @@ final class RowWriter
             'fileman_dir' => '',         // as the slice settings save "no directory"
         ]
             + self::mapped($slice, 'vid', $this->view(...))
-            + self::mapped($slice, 'mlxctrl', fn(string $v): string => $this->map->module($v) ?? '');
+            + self::mapped($slice, 'mlxctrl', fn(string $v): string => $this->map->module($v) ?? $this->plan->outside->links[strtolower($v)] ?? '');
         if (isset($m->transfer['reading-password'])) {
             $fixed['reading_password'] = $this->store->plain($m->transfer['reading-password'], $this->charset($m), "$m->type[$m->id]/reading-password", $this->store->limit('slice', 'reading_password'));
         }

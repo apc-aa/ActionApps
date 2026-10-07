@@ -23,7 +23,6 @@ return [
 // "ActionApps - Links Admin" => "APC AA - administracija veza",
 // "URL of .shtml page" => "Web adresa .shtml stranice",
 // "Use following SSI command to include links to the page: " => "Koristite slijede\xE6u SSI naredbu za uklju\xE8iti veze na stranicu",
-// "Owner" => "Vlasnik/ica",
 // "New Owner" => "Novi vlasnik/ica",
 // "New Owner's E-mail" => "E-mail novog vlasnika/ice",
 // "Can't get link data" => "Ne mogu prona\xE8i podatke o vezi",
@@ -39,130 +38,130 @@ return [
 // "No item found" => "Nije prona\xF0ena stavka",
 // End of unused messages
 
-// include/searchbar.class.php, row 51
+// include/searchbar.class.php, row 54
 "Condition" => "Uvjet", // ai 2026-06
 
-// include/searchbar.class.php, row 52
+// include/searchbar.class.php, row 55
 "Readonly" => "Samo za \xE8itanje", // ai 2026-06
 
-// include/searchbar.class.php, row 142
+// include/searchbar.class.php, row 151
 "Search row" => "Redak pretra\x9Eivanja", // ai 2026-06
 
-// include/searchbar.class.php, row 143
+// include/searchbar.class.php, row 152
 "Order row" => "Redak sortiranja", // ai 2026-06
 
-// include/searchbar.class.php, row 533, 534, 570
+// include/searchbar.class.php, row 566, 567, 607
 "Search" => "Pretra\x9Eite",
 
-// include/searchbar.class.php, row 533
+// include/searchbar.class.php, row 566
 "And" => "I",
 
-// include/searchbar.class.php, row 543
+// include/searchbar.class.php, row 576
 "contains" => "sadr\x9Ei",
 
-// include/searchbar.class.php, row 546
+// include/searchbar.class.php, row 580
 "begins with" => "po\xE8inje sa",
 
-// include/searchbar.class.php, row 549
+// include/searchbar.class.php, row 584
 "is" => "je",
 
-// include/searchbar.class.php, row 571
+// include/searchbar.class.php, row 608
 "Clear" => "O\xE8istite", // ai 2026-06
 
-// include/searchbar.class.php, row 574
+// include/searchbar.class.php, row 611
 "Store search" => "Spremite pretragu", // ai 2026-06
 
-// include/searchbar.class.php, row 595
+// include/searchbar.class.php, row 633
 "Order" => "Redoslijed",
 
-// include/searchbar.class.php, row 599
+// include/searchbar.class.php, row 637
 "Descending" => "Silazno",
 
-// include/searchbar.class.php, row 613
+// include/searchbar.class.php, row 652
 "Filter" => "Filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 664
+// include/searchbar.class.php, row 706
 "Advanced search" => "Napredna pretraga", // ai 2026-06
 
-// include/searchbar.class.php, row 728
+// include/searchbar.class.php, row 769
 "Save" => "Spremi", // ai 2026-06
 
-// include/searchbar.class.php, row 729
+// include/searchbar.class.php, row 770
 "Refine" => "Suzite", // ai 2026-06
 
-// include/searchbar.class.php, row 730
+// include/searchbar.class.php, row 771
 "Cancel" => "Poni\x9Ati",
 
-// include/searchbar.class.php, row 731
-// modules/links/constants.php, row 59, 171
+// include/searchbar.class.php, row 772
+// modules/links/constants.php, row 60, 173
 "Name" => "Ime",
 
-// include/searchbar.class.php, row 732
+// include/searchbar.class.php, row 773
 "Share with all slice users" => "Podijelite sa svim korisnicima stranice", // ai 2026-06
 
-// include/searchbar.class.php, row 733
+// include/searchbar.class.php, row 774
 "Save filter" => "Spremite filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 734
+// include/searchbar.class.php, row 775
 "Rename filter" => "Preimenujte filtar", // ai 2026-06
 
-// include/searchbar.class.php, row 735
+// include/searchbar.class.php, row 776
 "Are you sure you want to delete selected filter?" => "Jeste li sigurni da \x9Eelite obrisati odabrani filtar?", // ai 2026-06
 
-// include/searchbar.class.php, row 1017
+// include/searchbar.class.php, row 1065
 "Select one..." => "Odaberite...", // ai 2026-06
 
-// include/searchbar.class.php, row 1032
+// include/searchbar.class.php, row 1080
 "My filters" => "Moji filtri", // ai 2026-06
 
-// include/searchbar.class.php, row 1035
+// include/searchbar.class.php, row 1083
 "Global filters" => "Globalni filtri", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Shared filter (click to apply)" => "Zajedni\xE8ki filtar (kliknite za primjenu)", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Osobni filtar (kliknite za primjenu)", // ai 2026-06
 
-// include/searchbar.class.php, row 1083
+// include/searchbar.class.php, row 1124
 "Rename" => "Preimenujte", // ai 2026-06
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1126
 "Delete" => "Obri\x9Aite",
 
-// include/searchbar.class.php, row 1094
+// include/searchbar.class.php, row 1135
 "Manage filters" => "Upravljanje filtrima", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Gre\x9Aka: nedostaje lozinka za \xE8itanje",
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Alata za nove poruke",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 // modules/links/check_url.php, row 52
 "Back" => "Povratak",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
-// modules/links/actions.php, row 47, 91, 112
+// modules/links/actions.php, row 48, 93, 115
 "Can't find link in given category" => "Ne mogu prona\xE6i vezu u datoj kategoriji",
 
-// modules/links/actions.php, row 52, 117
+// modules/links/actions.php, row 53, 120
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Nemate dozvolu za obristai vezu iz kategorije - veza je potavljena kao PONUDA za BRISANJE sa date kategorije",
 
-// modules/links/actions.php, row 61, 126
+// modules/links/actions.php, row 62, 129
 "Can't get association information" => "Nije mogu\xE6e dohvatiti podatke o pridru\x9Eivanju kategoriji", // ai 2026-06
 
-// modules/links/actions.php, row 95
+// modules/links/actions.php, row 97
 "No permission to approve link to given category" => "Neamte dozvolu za potvrdu veze u datoj kategoriji",
 
-// modules/links/actions.php, row 162, 165
+// modules/links/actions.php, row 166, 169
 "No permission to move link" => "Nemate dozvolu za micanje veze",
 
 // modules/links/catedit.php, row 51
-// modules/links/catedit2.php, row 208
+// modules/links/catedit2.php, row 210
 "No permission to edit category" => "Nemate dozvolu za ure\xF0ivanje kategorija",
 
 // modules/links/catedit.php, row 74
@@ -175,7 +174,7 @@ return [
 "Category" => "Kategorija",
 
 // modules/links/catedit.php, row 104
-// modules/links/constants.php, row 58, 170
+// modules/links/constants.php, row 59, 172
 // modules/links/linkedit.php, row 430
 "Id" => "ID",
 
@@ -183,13 +182,13 @@ return [
 "Links in subtree" => "Veze u podkategoriji",
 
 // modules/links/catedit.php, row 105
-// modules/links/catedit2.php, row 217
-// modules/links/constants.php, row 93, 191
+// modules/links/catedit2.php, row 219
+// modules/links/constants.php, row 94, 194
 "Category name" => "Ime kategorije",
 
 // modules/links/catedit.php, row 106
-// modules/links/catedit2.php, row 218
-// modules/links/constants.php, row 97, 193
+// modules/links/catedit2.php, row 220
+// modules/links/constants.php, row 98, 196
 "Category description" => "Opis kategorije",
 
 // modules/links/catedit.php, row 107
@@ -199,17 +198,17 @@ return [
 "Disallow storing of the links to this category?" => "Zabraniti spremanje poveznica u ovu kategoriju?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
-// modules/links/catedit2.php, row 222
-// modules/links/constants.php, row 75
-// modules/links/link.class.php, row 674
-// modules/links/linkedit.php, row 473
+// modules/links/catedit2.php, row 224
+// modules/links/constants.php, row 76
+// modules/links/link.class.php, row 728
+// modules/links/linkedit.php, row 498
 "Editor's note" => "Poruka urednika/ice",
 
 // modules/links/catedit.php, row 110
 "Subcategories" => "Podkategorije",
 
 // modules/links/catedit.php, row 113
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "Category tree" => "Stablo kategorije",
 
 // modules/links/catedit.php, row 113
@@ -236,31 +235,31 @@ return [
 // modules/links/catedit.php, row 137
 "Change state" => "Promijemite osobine",
 
-// modules/links/catedit.php, row 142
+// modules/links/catedit.php, row 143
 "OK" => "U redu",
 
-// modules/links/catedit2.php, row 153
+// modules/links/catedit2.php, row 154
 "Category reassigned" => "Kategorija predodijeljena",
 
-// modules/links/catedit2.php, row 165
+// modules/links/catedit2.php, row 166
 "Subcategory deleted" => "Podkategorija obrisana",
 
-// modules/links/catedit2.php, row 167
+// modules/links/catedit2.php, row 168
 "Can't delete category which contains links" => "Ne mogu obrisati kategoriju koja sadr\x9Ei veze",
 
-// modules/links/catedit2.php, row 221
+// modules/links/catedit2.php, row 223
 "Additional information" => "Dodatna informacija",
 
-// modules/links/catedit2.php, row 231
+// modules/links/catedit2.php, row 233
 "Category data changed" => "Promijenjeni podaci o kategoriji",
 
-// modules/links/catedit2.php, row 291
+// modules/links/catedit2.php, row 293
 "New category created" => "Napravljena nova kategorija",
 
-// modules/links/catedit2.php, row 297
+// modules/links/catedit2.php, row 299
 "Foreign category assigned" => "Dodijeljena strana kategorija",
 
-// modules/links/cattree.php, row 436
+// modules/links/cattree.php, row 458
 "Switch to category" => "Prebacite se na kategoriju",
 
 // modules/links/check_url.php, row 30
@@ -284,350 +283,353 @@ return [
 // modules/links/check_url.php, row 48
 "Page with the specified Url is not in database, yet" => "Stranica sa tom web adresom ne postoji u bazi",
 
-// modules/links/constants.php, row 60
+// modules/links/constants.php, row 61
 "Original name" => "Stvarno ime",
 
-// modules/links/constants.php, row 61, 174
-// modules/links/link.class.php, row 663
-// modules/links/linkedit.php, row 456
+// modules/links/constants.php, row 62, 176
+// modules/links/link.class.php, row 717
+// modules/links/linkedit.php, row 474
 "Description" => "Obja\x9Anjenje",
 
-// modules/links/constants.php, row 62, 122
-// modules/links/link.class.php, row 667
-// modules/links/linkedit.php, row 463
+// modules/links/constants.php, row 63, 124
+// modules/links/link.class.php, row 721
+// modules/links/linkedit.php, row 486
 "Link type" => "Tip veze",
 
-// modules/links/constants.php, row 63
+// modules/links/constants.php, row 64
 "Rate" => "Postotak",
 
-// modules/links/constants.php, row 64
+// modules/links/constants.php, row 65
 "Votes" => "Glasova",
 
-// modules/links/constants.php, row 65
-// modules/links/link.class.php, row 664
+// modules/links/constants.php, row 66
+// modules/links/link.class.php, row 718
 "Author" => "Autor/ica",
 
-// modules/links/constants.php, row 66
+// modules/links/constants.php, row 67
 "Insert date" => "Umetnite datum",
 
-// modules/links/constants.php, row 67
+// modules/links/constants.php, row 68
 "Editor" => "Urednik/ica",
 
-// modules/links/constants.php, row 68
+// modules/links/constants.php, row 69
 "Last edit date" => "Datum zadnjeg ure\xF0ivanja",
 
-// modules/links/constants.php, row 69
+// modules/links/constants.php, row 70
 "Revised by" => "Revidirali/revidirala",
 
-// modules/links/constants.php, row 70
+// modules/links/constants.php, row 71
 "Revision date" => "Datum revizije",
 
-// modules/links/constants.php, row 71
-// modules/links/link.class.php, row 673
-// modules/links/linkedit.php, row 544
+// modules/links/constants.php, row 72
+// modules/links/link.class.php, row 727
+// modules/links/linkedit.php, row 574
 "E-mail" => "e-mail",
 
-// modules/links/constants.php, row 72
-// modules/links/link.class.php, row 665
+// modules/links/constants.php, row 73
+// modules/links/link.class.php, row 719
 // modules/links/linkedit.php, row 435
 "Url" => "Web adresa",
 
-// modules/links/constants.php, row 73
+// modules/links/constants.php, row 74
 "Last vote time" => "Vrijeme zadnjeg glasanja",
 
-// modules/links/constants.php, row 74
+// modules/links/constants.php, row 75
 "Flag" => "Oznaka",
 
-// modules/links/constants.php, row 76
+// modules/links/constants.php, row 77
 "Organization city" => "Grad organizatora",
 
-// modules/links/constants.php, row 77
+// modules/links/constants.php, row 78
 "Organization street" => "Ulica organizatora",
 
-// modules/links/constants.php, row 78
+// modules/links/constants.php, row 79
 "Organization post code" => "Po\x9Atanski broj organizacije",
 
-// modules/links/constants.php, row 79
+// modules/links/constants.php, row 80
 "Organization phone" => "Telefon organizacije",
 
-// modules/links/constants.php, row 80
+// modules/links/constants.php, row 81
 "Organization fax" => "Fax organizacije",
 
-// modules/links/constants.php, row 81
+// modules/links/constants.php, row 82
 "Organization e-mail" => "E-mail organizacije",
 
-// modules/links/constants.php, row 82
-// modules/links/linkedit.php, row 484
+// modules/links/constants.php, row 83
+// modules/links/linkedit.php, row 514
 "Folder" => "Mapa",
 
-// modules/links/constants.php, row 83
+// modules/links/constants.php, row 84
 "Last validation date" => "Zadnji datum provjere",
 
-// modules/links/constants.php, row 84
+// modules/links/constants.php, row 85
 "Validation codes" => "Kodovi provjere",
 
-// modules/links/constants.php, row 85
+// modules/links/constants.php, row 86
 "Validity Rank" => "Nivo provjere",
 
-// modules/links/constants.php, row 86
+// modules/links/constants.php, row 87
 "Region id" => "ID regije",
 
-// modules/links/constants.php, row 87
+// modules/links/constants.php, row 88
 "Region name" => "Ime regije",
 
-// modules/links/constants.php, row 88
+// modules/links/constants.php, row 89
 "Region level" => "Nivo regije",
 
-// modules/links/constants.php, row 89
+// modules/links/constants.php, row 90
 "Language id" => "Id jezika",
 
-// modules/links/constants.php, row 90
-// modules/links/linkedit.php, row 552
+// modules/links/constants.php, row 91
+// modules/links/linkedit.php, row 582
 "Language" => "Jezik",
 
-// modules/links/constants.php, row 91
+// modules/links/constants.php, row 92
 "Language short name" => "Skra\xE6eno ime jezika",
 
-// modules/links/constants.php, row 92, 190
+// modules/links/constants.php, row 93, 193
 "Category id" => "ID kategorije",
 
-// modules/links/constants.php, row 94
+// modules/links/constants.php, row 95
 "Category deleted" => "Kategorija je obrisana",
 
-// modules/links/constants.php, row 95
+// modules/links/constants.php, row 96
 "Category path" => "Adresa kategorije",
 
-// modules/links/constants.php, row 96
+// modules/links/constants.php, row 97
 "Category link count" => "Broj veza u kategoriji",
 
-// modules/links/constants.php, row 98, 194
+// modules/links/constants.php, row 99, 197
 "Category editor's note" => "Poruke urednika/ice kategorije",
 
-// modules/links/constants.php, row 99
+// modules/links/constants.php, row 100
 "Base" => "Glavno",
 
-// modules/links/constants.php, row 100, 177
+// modules/links/constants.php, row 101, 179
 "State" => "Dr\x9Eava",
 
-// modules/links/constants.php, row 101
+// modules/links/constants.php, row 102
 "Change proposal" => "Promjenite oglas",
 
-// modules/links/constants.php, row 102
+// modules/links/constants.php, row 103
 "To be deleted" => "Za brisanje",
 
-// modules/links/constants.php, row 103, 176
+// modules/links/constants.php, row 104, 178
 "Priority" => "Va\x9Enost",
 
-// modules/links/constants.php, row 104
+// modules/links/constants.php, row 105
 // modules/links/linkedit.php, row 54
 "Change" => "Promijenite",
 
-// modules/links/constants.php, row 118
+// modules/links/constants.php, row 120
 "Link id" => "ID veze",
 
-// modules/links/constants.php, row 119
+// modules/links/constants.php, row 121
 "Link name" => "Ime veze",
 
-// modules/links/constants.php, row 120
+// modules/links/constants.php, row 122
 "Link original name" => "Originalno ime veze",
 
-// modules/links/constants.php, row 121
+// modules/links/constants.php, row 123
 "Link description" => "Opis veze",
 
-// modules/links/constants.php, row 123
+// modules/links/constants.php, row 125
 "Link rate" => "Postotak veze",
 
-// modules/links/constants.php, row 124
+// modules/links/constants.php, row 126
 "Link votes" => "Glasova za vezu",
 
-// modules/links/constants.php, row 125
+// modules/links/constants.php, row 127
 "Link - last vote date" => "Veza - zadnji dan glasanja",
 
-// modules/links/constants.php, row 126
+// modules/links/constants.php, row 128
 "Link - created by" => "Vezu napravio/la",
 
-// modules/links/constants.php, row 127
+// modules/links/constants.php, row 129
 "Link creation date" => "Datum kreiranja linka",
 
-// modules/links/constants.php, row 128
+// modules/links/constants.php, row 130
 "Link - last edited by" => "Veza- uredio/la",
 
-// modules/links/constants.php, row 129
+// modules/links/constants.php, row 131
 "Link - last edit date" => "Veza - datum zadnje promjene",
 
-// modules/links/constants.php, row 130
+// modules/links/constants.php, row 132
 "Link - checked by" => "Veza -provjerio/la",
 
-// modules/links/constants.php, row 131
+// modules/links/constants.php, row 133
 "Link - last checked date" => "Veza - datum zadnje provjere",
 
-// modules/links/constants.php, row 132
+// modules/links/constants.php, row 134
 "Link author's e-mail" => "E-mail autora/ice veze",
 
-// modules/links/constants.php, row 133
+// modules/links/constants.php, row 135
 "Link url" => "Web adresa veze",
 
-// modules/links/constants.php, row 134
+// modules/links/constants.php, row 136
 "Link link" => "Veza na vezu",
 
-// modules/links/constants.php, row 135
+// modules/links/constants.php, row 137
 "Link flag" => "Oznaka veze",
 
-// modules/links/constants.php, row 136
+// modules/links/constants.php, row 138
 "Link - validity rank" => "Veza - nivo vrijednosti",
 
-// modules/links/constants.php, row 137
+// modules/links/constants.php, row 139
 "Link - last validation date" => "Veza - datum zadnje provjere",
 
-// modules/links/constants.php, row 138
+// modules/links/constants.php, row 140
 "Link editor's note" => "Poruka urednika/ice veze",
 
-// modules/links/constants.php, row 139
+// modules/links/constants.php, row 141
 "Link organization city" => "Veza na grad organizatora",
 
-// modules/links/constants.php, row 140
+// modules/links/constants.php, row 142
 "Link organization street" => "Poveznica - ulica organizacije", // ai 2026-06
 
-// modules/links/constants.php, row 141
+// modules/links/constants.php, row 143
 "Link organization post code" => "Veza na po\x9Atanski broj organizacije",
 
-// modules/links/constants.php, row 142
+// modules/links/constants.php, row 144
 "Link organization phone" => "Veza na telefonski broj organizacije",
 
-// modules/links/constants.php, row 143
+// modules/links/constants.php, row 145
 "Link organization fax" => "Veza na fax organizacije",
 
-// modules/links/constants.php, row 144
+// modules/links/constants.php, row 146
 "Link organization e-mail" => "Veza na e-mail organizacije",
 
-// modules/links/constants.php, row 145
+// modules/links/constants.php, row 147
 "Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Mapa veza - oznake aktivnosti 1~aktivno, 2~na \xE8ekanju, 3~sme\xE6e",
 
-// modules/links/constants.php, row 146
+// modules/links/constants.php, row 148
 "Link - ids of regions (comma separated)" => "Veza - Oznake regija (odvojeno zarezom)",
 
-// modules/links/constants.php, row 147
+// modules/links/constants.php, row 149
 "Link - names of regions (comma separated)" => "Veza - Imena regija (odvojeno zarezom)",
 
-// modules/links/constants.php, row 148
+// modules/links/constants.php, row 150
 "Link - ids of languages (comma separated)" => "Veza - oznake jezika (odvojeno zarezom)",
 
-// modules/links/constants.php, row 149
+// modules/links/constants.php, row 151
 "Link - names of languages (comma separated)" => "Veza - imena jezika (odvojeno zarezom)",
 
-// modules/links/constants.php, row 150
+// modules/links/constants.php, row 152
 "Link - short names of languages (comma separated)" => "Veza - kratka imena jezika (odvojeno zarezom)",
 
-// modules/links/constants.php, row 151
+// modules/links/constants.php, row 153
 "Category ids (comma separated)" => "Oznake kategorije",
 
-// modules/links/constants.php, row 152
+// modules/links/constants.php, row 154
 "Category names (comma separated)" => "Oznake kategorija (odvojeno zarezom)",
 
-// modules/links/constants.php, row 153
+// modules/links/constants.php, row 155
 "State of link in this category (visible/highlighted)" => "Stanje veze u ovoj kategoriji (vidkjivo/ozna\xE8eno)",
 
-// modules/links/constants.php, row 154
+// modules/links/constants.php, row 156
 "Link - validity color" => "Veza - boja provjere",
 
-// modules/links/constants.php, row 155
+// modules/links/constants.php, row 157
 "Paths to the categories" => "Putanje do kategorija",
 
-// modules/links/constants.php, row 156
+// modules/links/constants.php, row 158
 "Number of found Links" => "Broj prona\xF0enih veza",
 
-// modules/links/constants.php, row 157
+// modules/links/constants.php, row 159
 "Link to link editing page (for admin interface only)" => "Veza na stranicu za ure\xF0ivanje veza (samo admin su\xE8elje)",
 
-// modules/links/constants.php, row 158
+// modules/links/constants.php, row 160
 "Category listing with links (for admin interface only)" => "Izlist kategorija sa vezama (samo admin su\xE8elje)",
 
-// modules/links/constants.php, row 172
+// modules/links/constants.php, row 174
 "Path" => "Putanja",
 
-// modules/links/constants.php, row 173
+// modules/links/constants.php, row 175
 "Link Count" => "Broj veza",
 
-// modules/links/constants.php, row 175
+// modules/links/constants.php, row 177
 "Note" => "Poruka",
 
-// modules/links/constants.php, row 192
+// modules/links/constants.php, row 195
 "Number of links in category" => "Broj veza u kategoriji",
 
-// modules/links/constants.php, row 195
+// modules/links/constants.php, row 198
 "Crossreferenced category" => "Unakrsno povezane kategorije",
 
-// modules/links/constants.php, row 196
+// modules/links/constants.php, row 199
 "Path to current category" => "Putanja do trenutne kategorije",
 
-// modules/links/constants.php, row 197
+// modules/links/constants.php, row 200
 "Is this category general one? (1/0)" => "Da li jo ovo glavna kategorija?",
 
-// modules/links/constants.php, row 198
+// modules/links/constants.php, row 201
 "Print category priority, if category is general one." => "Prika\x9Eite va\x9Enost kategorije, ako je ovo glavna kategorija",
 
-// modules/links/getcat.php, row 51
+// modules/links/getcat.php, row 53
 "Category Tree" => "Stablo kategorije",
 
-// modules/links/getcat.php, row 56
+// modules/links/getcat.php, row 58
 "Select category" => "Odaberite kategoriju",
 
 // modules/links/index.php, row 84
 "No permissions to edit links" => "Nemate dozvolu za ure\xF0ivanje veza",
 
-// modules/links/index.php, row 207
+// modules/links/index.php, row 183
+"Module not found." => "Modul nije prona\xF0en",
+
+// modules/links/index.php, row 215
 "HINT: \"social ecology\" AND environment" => "SAVJET: \"socijalna ekologija\" AND okoli\x9A", // ai 2026-06
 
-// modules/links/index.php, row 234
+// modules/links/index.php, row 242
 "Perform action on selected items" => "Izvr\x9Aite akciju na odabranim stavkama", // ai 2026-06
 
-// modules/links/index.php, row 257
+// modules/links/index.php, row 265
 "ActionApps - Links Manager" => "APC - AA - Ure\xF0ivanje veza",
 
-// modules/links/index.php, row 287
+// modules/links/index.php, row 295
 "All my links" => "Sve moje veze",
 
-// modules/links/index.php, row 288
+// modules/links/index.php, row 296
 "Links to check" => "Veze za provjeru",
 
-// modules/links/index.php, row 289
+// modules/links/index.php, row 297
 "Last edited" => "Zadnje ure\xF0eno",
 
-// modules/links/index.php, row 311
+// modules/links/index.php, row 319
 "Show Links" => "Prika\x9Ei veze",
 
-// modules/links/index.php, row 314
+// modules/links/index.php, row 322
 "Edit Category" => "Uredite kategoriju",
 
-// modules/links/index.php, row 318
+// modules/links/index.php, row 326
 "Show subtree links" => "Poka\x9Eite veze pofkategorija",
 
-// modules/links/link.class.php, row 661
-// modules/links/linkedit.php, row 450
+// modules/links/link.class.php, row 715
+// modules/links/linkedit.php, row 452
 "Page name" => "Ime stranice",
 
-// modules/links/link.class.php, row 662
-// modules/links/linkedit.php, row 453
+// modules/links/link.class.php, row 716
+// modules/links/linkedit.php, row 463
 "Original page name" => "Originalno ime stranice",
 
-// modules/links/link.class.php, row 668
-// modules/links/linkedit.php, row 534
+// modules/links/link.class.php, row 722
+// modules/links/linkedit.php, row 564
 "City" => "Mjesto",
 
-// modules/links/link.class.php, row 669
-// modules/links/linkedit.php, row 536
+// modules/links/link.class.php, row 723
+// modules/links/linkedit.php, row 566
 "Street" => "Ulica ",
 
-// modules/links/link.class.php, row 670
-// modules/links/linkedit.php, row 538
+// modules/links/link.class.php, row 724
+// modules/links/linkedit.php, row 568
 "Post code" => "Po\x9Atanski broj",
 
-// modules/links/link.class.php, row 671
-// modules/links/linkedit.php, row 540
+// modules/links/link.class.php, row 725
+// modules/links/linkedit.php, row 570
 "Phone" => "Telefon",
 
-// modules/links/link.class.php, row 672
-// modules/links/linkedit.php, row 542
+// modules/links/link.class.php, row 726
+// modules/links/linkedit.php, row 572
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
@@ -637,11 +639,11 @@ return [
 "unfilled" => "neispunjeno", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
-// modules/links/menu.php, row 72, 73
+// modules/links/menu.php, row 73, 74
 "Edit Link" => "Uredite vezu",
 
 // modules/links/linkedit.php, row 97
-// modules/links/menu.php, row 72
+// modules/links/menu.php, row 73
 "Add Link" => "Dodajte vezu",
 
 // modules/links/linkedit.php, row 102
@@ -687,61 +689,61 @@ return [
 // modules/links/linkedit.php, row 445
 "Do not fill, please:" => "Molimo, ne ispunjavajte:", // ai 2026-06
 
-// modules/links/linkedit.php, row 451
+// modules/links/linkedit.php, row 457
 "English name of the page" => "Ime stranice na engleskom jeziku",
 
-// modules/links/linkedit.php, row 454
+// modules/links/linkedit.php, row 468
 "Name of the page in original language" => "Ime stranice na originalnom jeziku",
 
-// modules/links/linkedit.php, row 457
+// modules/links/linkedit.php, row 479
 "Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Nemojte koristiti HTML kod",
 
-// modules/links/linkedit.php, row 463
+// modules/links/linkedit.php, row 486
 "Select the type, if the link belongs to some special category" => "Izaberite tip, ako veza pripada nekoj posebnoj kategoriji",
 
-// modules/links/linkedit.php, row 471
+// modules/links/linkedit.php, row 494
 "Author's e-mail" => "E-mail autora/ice",
 
-// modules/links/linkedit.php, row 474
+// modules/links/linkedit.php, row 503
 "You can type any message here - it is never shown on the website" => "Ovdje mo\x9Eete upisati bilo kakvu poruku - nije nikad prikazana na web stranici",
 
-// modules/links/linkedit.php, row 479
+// modules/links/linkedit.php, row 509
 "Last checked" => "Datum zadnje provjere",
 
-// modules/links/linkedit.php, row 479, 480, 481
+// modules/links/linkedit.php, row 509, 510, 511
 "n/j/Y" => "j.n.Y", // ai 2026-06
 
-// modules/links/linkedit.php, row 480
+// modules/links/linkedit.php, row 510
 "Last changed" => "Datum zadnje provjere",
 
-// modules/links/linkedit.php, row 481
+// modules/links/linkedit.php, row 511
 "Inserted" => "Umetnuto",
 
-// modules/links/linkedit.php, row 488
+// modules/links/linkedit.php, row 518
 "Show in category" => "Prika\x9Eite u kategoriji",
 
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "select the category" => "Odaberite kategoriju",
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "Selected categories" => "Odabrane kategorije",
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "go to the category you want to select and click on the right arrow button to select" => "Preselite se u kategoriju koju \x9Eelite i odaberite klikom na desnu strelicu",
 
-// modules/links/linkedit.php, row 533
+// modules/links/linkedit.php, row 563
 "Organization" => "Organizacija",
 
-// modules/links/linkedit.php, row 549
+// modules/links/linkedit.php, row 579
 "Regions and languages" => "Regije i jezici",
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "Region" => "Regija",
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "select up to 4 regions" => "Odaberite najvi\x9Ae 4 regije",
 
-// modules/links/linkedit.php, row 552
+// modules/links/linkedit.php, row 582
 "select page's languages" => "Odaberite jezik stranica",
 
 // modules/links/linkedit2.php, row 112
@@ -756,105 +758,102 @@ return [
 // modules/links/linkedit2.php, row 151
 "Continue" => "Nastavite", // ai 2026-06
 
-// modules/links/menu.php, row 64
+// modules/links/menu.php, row 65
 "View site" => "Pogledajte site",
 
-// modules/links/menu.php, row 73
+// modules/links/menu.php, row 74
 "Add new link" => "Dodajte novu vezu",
 
-// modules/links/menu.php, row 80, 81
+// modules/links/menu.php, row 81, 82
 "Link Manager" => "Ure\xF0ivanje veze",
 
-// modules/links/menu.php, row 88, 89
+// modules/links/menu.php, row 89, 90
 "Link Admin" => "Administracija veze",
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders" => "Mape",
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders with links, sorted by their status (active, changed, new, ...)" => "Mape s poveznicama, razvrstane prema statusu (aktivne, izmijenjene, nove, ...)", // ai 2026-06
 
-// modules/links/menu.php, row 103
+// modules/links/menu.php, row 104
 "Active" => "Aktivno",
 
-// modules/links/menu.php, row 106
+// modules/links/menu.php, row 107
 "Changed Links" => "Promijenjene veze",
 
-// modules/links/menu.php, row 109
+// modules/links/menu.php, row 110
 "New Links" => "Nove veze",
 
-// modules/links/menu.php, row 112
+// modules/links/menu.php, row 113
 "Holding bin" => "Mapa za dokumente na \xE8ekanju",
 
-// modules/links/menu.php, row 115
+// modules/links/menu.php, row 116
 "Trash" => "Sme\xE6e",
 
-// modules/links/menu.php, row 118
+// modules/links/menu.php, row 119
 "Unassigned" => "Nedodijeljeno",
 
-// modules/links/menu.php, row 121
+// modules/links/menu.php, row 122
 "Unassigned - Trash" => "Nerazvrstano - sme\xE6e", // ai 2026-06
 
-// modules/links/menu.php, row 122
+// modules/links/menu.php, row 123
 "Misc" => "Razno",
 
-// modules/links/menu.php, row 126
+// modules/links/menu.php, row 127
 "Empty trash" => "Ispraznite sme\xE6e",
 
-// modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "Jeste li sigurni da \x9Eelite isprazniti sme\xE6e?", // ai 2026-06
-
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug OFF" => "Isklju\xE8ite debug", // ai 2026-06
 
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug ON" => "Uklju\xE8ite debug", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "Bookmarks" => "Spisak veza",
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "My own links" => "Moje vlastite poveznice", // ai 2026-06
 
-// modules/links/menu.php, row 158
+// modules/links/menu.php, row 159
 "Main settings" => "Osnovne postavke",
 
-// modules/links/menu.php, row 161
+// modules/links/menu.php, row 162
 "Links" => "Veze",
 
-// modules/links/menu.php, row 162
+// modules/links/menu.php, row 163
 "Design" => "Dizajn",
 
-// modules/links/menu.php, row 170
+// modules/links/menu.php, row 171
 "New Category View" => "POglede na novu kategoriju",
 
-// modules/links/menu.php, row 175
+// modules/links/menu.php, row 176
 "New Link View" => "Pogled na novu vezu",
 
-// modules/links/modedit.php, row 97
+// modules/links/modedit.php, row 106
 "No permission to add module" => "Nemate dozvolu za dodavanje modula",
 
-// modules/links/modedit.php, row 102
+// modules/links/modedit.php, row 111
 "No permission to edit module" => "Nemate dozvolu za ure\xF0ivanje modula",
 
-// modules/links/modedit.php, row 119, 229, 232
+// modules/links/modedit.php, row 128, 238, 241
 "Start category id" => "Oznaka po\xE8etne kategorije",
 
-// modules/links/modedit.php, row 120, 235, 238
+// modules/links/modedit.php, row 129, 244, 247
 "Tree start id" => "Oznaka po\xE8etka stabla mape",
 
-// modules/links/modedit.php, row 121, 236, 239
+// modules/links/modedit.php, row 130, 245, 248
 "Select start id" => "Odaberite po\xE8etnu oznaku",
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Add Links module" => "Dodajte modul za Veze",
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Edit Links module" => "Uredite modul za veze",
 
-// modules/links/modedit.php, row 220
+// modules/links/modedit.php, row 229
 "Module Links data" => "Podaci o modulima za veze",
 
-// modules/links/modedit.php, row 225
+// modules/links/modedit.php, row 234
 "Used Language File" => "Kori\x9Atena jezi\xE8na datoteka",
 ];

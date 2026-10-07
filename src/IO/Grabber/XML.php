@@ -28,6 +28,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA\IO\SourceRefused;
 use AA_Content;
 use AA_Property;
 use Exception;
@@ -63,7 +64,7 @@ class XML extends AbstractGrabber
     /**
      * XML constructor.
      * @param        $file
-     * @param null   $post_body
+     * @param string|null $post_body
      * @param string $direct_input
      * @param string $item_xpath
      */
@@ -117,6 +118,11 @@ class XML extends AbstractGrabber
         return $this;
     }
 
+    public function fetchesViaLoadData(): bool
+    {
+        return true;
+    }
+
     /** loads all the data based on grabber setting and return it */
     public function getSources(): array
     {
@@ -134,7 +140,9 @@ class XML extends AbstractGrabber
         // remove namespaces (it is pain to work with it in simple XML interface)
         // $data = str_replace(array('<rsp:', '</rsp:'), array('<rsp_', '</rsp_'), $data);
         //   - now not necessary - we  registerXPathNamespace so we can use //rsp:xxx  in the xpath ...
-        if (false === ($xml = simplexml_load_string($data))) {
+        if ($this->hasHttp()) {
+            $xml = self::parseQuietly($data) ?? throw new SourceRefused('SOURCE', 'The answer is not XML');
+        } elseif (false === ($xml = simplexml_load_string($data))) {
             throw new Exception('xml parse error: ' . $data);
         }
 
@@ -150,7 +158,9 @@ class XML extends AbstractGrabber
                     $replace[] = "xmlns_$prefix";
                 }
                 $data = str_replace($search, $replace, $data);
-                if (false === ($xml = simplexml_load_string($data))) {
+                if ($this->hasHttp()) {
+                    $xml = self::parseQuietly($data) ?? throw new SourceRefused('SOURCE', 'The answer is not XML once namespaces are renamed');
+                } elseif (false === ($xml = simplexml_load_string($data))) {
                     throw new Exception('xml parse of modified data error: ' . $data);
                 }
             } else {
@@ -174,6 +184,19 @@ class XML extends AbstractGrabber
         $this->message(__CLASS__ . ' -> ' . __FUNCTION__);
         $this->message("parsed items " . count($this->_items));
         reset($this->_items);
+    }
+
+    /** a login page or a proxy error instead of the data must not fill the log with libxml warnings */
+    private static function parseQuietly(string $data): ?\SimpleXMLElement
+    {
+        $previous = libxml_use_internal_errors(true);
+        try {
+            $xml = simplexml_load_string($data, null, LIBXML_NONET);
+            libxml_clear_errors();
+        } finally {
+            libxml_use_internal_errors($previous);
+        }
+        return ($xml === false) ? null : $xml;
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */

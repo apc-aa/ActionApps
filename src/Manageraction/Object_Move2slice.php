@@ -6,6 +6,7 @@ use AA;
 use AA\Managed_Object;
 use AA\Manager;
 use AA_Object;
+use AA_Plannedtask;
 use AA_Slice;
 use zids;
 
@@ -50,12 +51,26 @@ class Object_Move2slice extends \AA\Manageraction\Item_Move2Slice
         }
         $class = $managed->getClass();    // AA_Plannedtask
         [$zids2change, $refused] = $managed->actionable($manager, $item_zids, PS_FULLTEXT);
+        $msg = $refused ? [_m('Some of the selected objects were not moved - they belong to a module you can not change them in.')] : [];
+        $feeding = IfSlPerm(PS_FEEDING, $dest_slice_id);
         foreach ($zids2change as $id) {
-            AA_Object::load($id, $class)?->setOwnerId($dest_slice_id)->update(['aa_owner']);
+            $object = AA_Object::load($id, $class);
+            // an import belongs to the users who manage the feeding - also in the slice the task moves to
+            if (($object instanceof AA_Plannedtask) && !$feeding && $object->usesImport()) {
+                $msg[] = _m('The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there.', [safe((string) $object->getName())]);
+                continue;
+            }
+            if ($object instanceof AA_Plannedtask) {
+                // its {import} ran with the right of whoever saved it in the old slice - the task is
+                // saved again in the new one before it imports there
+                $object->setOwnerId($dest_slice_id)->setProperty('saved_by', '')->update(['aa_owner', 'saved_by']);
+                continue;
+            }
+            $object?->setOwnerId($dest_slice_id)->update(['aa_owner']);
         }
 
         AA::Pagecache()->invalidateFor([$this->slice_id, $dest_slice_id]);  // invalidate old cached values
-        return $refused ? _m('Some of the selected objects were not moved - they belong to a module you can not change them in.') : false;
+        return $msg ? implode('<br>', $msg) : false;
     }
 
     /** Checks if the user have enough permission to perform the action

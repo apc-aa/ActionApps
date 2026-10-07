@@ -28,74 +28,74 @@ return [
 // "Home" => "Povratak na po\xE8etnu stranicu",
 // End of unused messages
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Neispravan parametar inc - uklju\xE8ena datoteka smije sadr\x9Eavati samo alfanumeri\xE8ke znakove", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "Ne postoji datoteka",
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Krivi broj stranice ili je stranica obrisana",
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "Izlaz preko slice.php zabranjen je za ovu stranicu", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "ID sesije", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "broj trenutne stranice (u strani\xE8enju)", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "duljina stranice (broj stavki)", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "Nije prona\xF0ena stavka",
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "Prika\x9Ei odabrano",
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "Prika\x9Ei sve",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "Dodajte novo",
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "Sinonim za %1",
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "Sinonim za naslov komentara diskusije",
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "Sinonim za tekst komentara diskusije",
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "Sininim za napisao/la",
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "Sininim za e-mail autora/ice",
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "Sinonim za web adresu web stranica autora/ice",
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "Sinonim za opis web stranica autora/ice",
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "Sinonim za objavljeno dana",
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "Sinonim za IP adresu ra\xE8unala autora/ice",
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "Sinonim za ku\xE6icu kori\x9Atenu za odabir komentara diskusije",
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "Sinonim za slikovne datoteke",
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -103,7 +103,7 @@ return [
    ."                             <i>Upotreba: </i>u kodu forme<br>\n"
    ."                             <i>Primjer: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -111,87 +111,87 @@ return [
    ."                             <i>Upotreba: </i>u kodu forme<br>\n"
    ."                             <i>Primjer: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
  => "Sinonim za stavku",
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
  => "Sinonim za vezu na tekst kometara diskusije",
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
  => "Sinonim za vezu na formu",
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
  => "Sinonim za vezu na diskusije",
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "Sinonim za gumbe Prika\x9Ei sve, Prika\x9Ei odabrano, Dodaj novo",
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "tre\xE6i parametar ispunjen u polju mailimng lista diskusija",
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "prvi parametar ispunjen u polju mailimng lista diskusija",
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "Ime konstante",
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "Prevedeni naziv konstante", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "Vrijednost konstante",
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "Va\x9Enost konstante",
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "Oznaka grupe konstanti",
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "Vrsta kategorije (samo za kategorije)",
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "Broj konstante",
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "Jedinstveni ID konstante (32 heksadecimalna znaka)", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "Jedinstvena oznaka konstante (samorastu\xE8a od '1' za svaku konstantu na sistemu",
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "Opis konstanti",
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Razina konstante (koristi se za hijerarhijske konstante)", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "Gre\x9Aka: pogre\x9Ana funkcija sinonima %1 za %2", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "Odabrana stavka", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "broj prona\xF0enih stavki",
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "Nije odabran nijedan komentar",
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "to\xE8an naziv grupe", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -212,27 +212,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "Odaberite kategoriju",
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "Sve kategorije",
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "GRE\x8AKA: Nema lozinke za \xE8itanje",
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Alat za nove poruke",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "Ntrag",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "Forma za pridru\x9Eivanje", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "Preuzima podatke o vezama stavki poslane formom (POST)", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

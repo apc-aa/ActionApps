@@ -123,9 +123,9 @@ function get_aamenus(): array
             "header2"     => _m("Misc"),
             "empty_trash" => ["cond" => IsSuperadmin(),
                 "hide" => !IsSuperadmin(),
-                "href" => $module_location . "index.php?DeleteTrash=1",
+                "href" => $module_location . "index.php",
                 "label" => _m("Empty trash"),
-                "js" => "EmptyTrashQuestion('{href}','" . _m("Are you sure you want to empty trash?") . "')"],
+                "js" => \AA\Manager::emptyTrashJs('{href}')],
             "debug" => ["cond" => IsSuperadmin(),
                 "hide" => !IsSuperadmin(),
                 "js" => "ToggleCookie('aa_debug','1')",
@@ -137,7 +137,7 @@ function get_aamenus(): array
         $aamenus['linkmanager_submenu']['items']['bookmark' . $bookid]
             = [
                 "href" => $module_location . "index.php?GoBookmark=$bookid",
-                "label" => $bookname,
+                "label" => safe($bookname),
             ];
     }
     /*    $aamenus['linkmanager_submenu']['items']['header3'] = _m('Misc');

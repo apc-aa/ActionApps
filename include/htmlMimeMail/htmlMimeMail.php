@@ -9,6 +9,12 @@
 * AA CVS: $Id$
 */
 
+use AA\Cache\ImgCache;
+use AA\Http\Client;
+use AA\Http\ResponseTooLargeException;
+use AA\Http\TransportException;
+use AA\Optimize\CheckBlockedRequests;
+
 require_once __DIR__."/mimePart.php";
 
 class htmlMimeMail {
@@ -122,7 +128,27 @@ class htmlMimeMail {
      */
     function getFile($filename): string
     {
-        return AA_File_Wrapper::wrapper($filename)->contents();
+        return self::readFile((string) $filename);
+    }
+
+    /**
+     * The mail may carry item content, so a web address goes through the SSRF guard, and no stream
+     * but a local path (php://, file://, ...) is opened.
+     */
+    public static function readFile(string $filename): string
+    {
+        if (preg_match('~^https?://~i', $filename)) {
+            try {
+                $answer = Client::publicOnly(timeout: 60, idle: 30, redirects: 5, maxBytes: 25 * 1024 * 1024)->request('GET', $filename);
+            } catch (TransportException $e) {
+                CheckBlockedRequests::record($e, 'mail', '');
+                return '';
+            } catch (ResponseTooLargeException) {
+                return '';
+            }
+            return $answer->ok() ? $answer->body : '';
+        }
+        return str_contains($filename, '://') ? '' : AA_File_Wrapper::wrapper($filename)->contents();
     }
 
     /**
@@ -286,7 +312,7 @@ class htmlMimeMail {
      */
 	public function setHtml($html, $text = null, $images_dir = null): void
     {
-        $this->html      = (string)$html;
+        $this->html      = self::srcOnly((string)$html);
         $this->html_text = $text;
         $this->_findHtmlImages($images_dir);
         // original code from the library, but not OK for us - we are looking for much more image sources, than original, so it makes sense to call it even without $images_dir - HM 2024-03-15
@@ -295,6 +321,39 @@ class htmlMimeMail {
         // }
 
     }
+
+    /** whitespace as HTML knows it - PCRE's \s takes a vertical tab too, which HTML keeps in a name or value */
+    private const SPACE = '\t\n\f\r ';
+
+    /**
+     * The rest of a tag after its name, attributes in group 1. A quote opens a value only right after '='
+     * (alt="a > b" stays one value, alt=a"b does not open one). Possessive: a scan never backtracks, so
+     * even hostile markup costs linear time.
+     */
+    private const TAG_REST = '(?=[' . self::SPACE . '/>])((?:[^<>=]++|=[' . self::SPACE . ']*+(?:"[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '<>]*+))*+)>';
+
+    /** One attribute (name in group 1) or one stray character, read in order, so a 'srcset=' inside a value never counts. */
+    private const ATTRIBUTE = '~\G[' . self::SPACE . ']*+(?:(=[^' . self::SPACE . '/>=]*+|[^' . self::SPACE . '/>=]++)(?:[' . self::SPACE . ']*+=[' . self::SPACE . ']*+("[^"]*+"|\'[^\']*+\'|[^' . self::SPACE . '>]*+))?|.)~s';
+
+    /**
+     * Renames srcset and sizes of <img> and <source> to data-srcset and data-sizes. The mail embeds only
+     * the src - the other candidates would stay links (root-relative ones broken), and Apple Mail prefers
+     * them to the embedded image; a <source> without srcset is skipped. Renaming only inserts letters, so
+     * even a tag read otherwise than a browser reads it keeps every quote and bracket where it was.
+     */
+    private static function srcOnly(string $html): string
+    {
+        return preg_replace_callback(
+            '~<(img|source)' . self::TAG_REST . '~i',
+            static fn(array $m): string => '<' . $m[1] . (preg_replace_callback(
+                self::ATTRIBUTE,
+                static fn(array $a): string => \in_array(strtolower($a[1] ?? ''), ['srcset', 'sizes'], true) ? substr_replace($a[0], 'data-', strspn($a[0], " \t\n\f\r"), 0) : $a[0],
+                $m[2],
+            ) ?? $m[2]) . '>',
+            $html,
+        ) ?? $html;
+    }
+
     /**
      * Function for extracting images from html source. This function will look through the html code
      * supplied by add_html() and find any file that ends in one of the extensions defined in $obj->image_types.
@@ -307,12 +366,16 @@ class htmlMimeMail {
         // Build the list of image extensions
         $extensions = array_keys($this->image_types);
 
-        // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail)
-        $sanit_text = str_ireplace(['href="', "href='"], ['', ''], $this->html);
+        // str_ireplace make the regexp not match <a href="some-image.jpg"> (otherwise it add such image into the mail),
+        // nor a data-srcset left by srcOnly()
+        $sanit_text = str_ireplace(['href="', "href='", 'srcset="', "srcset='"], '', $this->html);
         preg_match_all('/["\']([^"\']+\.('.implode('|', $extensions).'))["\']/Ui', $sanit_text, $images); // (?:x) - non capturing parentheses - matches, but not in the result
         preg_match_all('~["\']([^"\']+/img\.php\?src=[^"\']+)["\']~Ui', $sanit_text, $images2);
 
         $images      = array_unique(array_merge($images[1], $images2[1]));
+        // {img} links the image cache root-relative on a page served by the host of IMG_UPLOAD_URL -
+        // a mail has no page to resolve that against. With the uploads at the domain root no prefix tells them apart.
+        $upload_path = (ImgCache::configured() && (ImgCache::srcBase() !== '')) ? '/' . ImgCache::srcBase() : null;
 
         $img_content = [];
         $img_name    = [];
@@ -323,26 +386,31 @@ class htmlMimeMail {
             if (stripos($img, 'http') === 0) {
                 $image_path = $img;
                 if ($pos = strpos($img,'/img.php?src=')) {
-                    $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+                    $img_name[$image_path] ??= (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
                 } else {
-                    $img_name[$image_path] = (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
+                    $img_name[$image_path] ??= (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
                 }
             } elseif (false !== ($pos = strpos($img,'/img.php?src='))) {
                 // this one is used in new versions of AA - Honza 14.8.2013
                 $image_path            = AA_INSTAL_URL . substr($img,$pos+1);
                 $pos                   = strpos($image_path,'/img.php?src='); // recompute for full url and use the same approach as above
-                $img_name[$image_path] = (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+                $img_name[$image_path] ??= (string)$i.basename( parse_url( substr($image_path, $pos+13, strpos($image_path,'&')-$pos-13), PHP_URL_PATH) );
+            } elseif (($upload_path !== null) && str_starts_with($img, $upload_path)) {
+                $image_path            = rtrim(ImgCache::uploadUrl(), '/') . '/' . substr($img, strlen($upload_path));
+                $img_name[$image_path] ??= (string)$i.basename( parse_url($image_path, PHP_URL_PATH) );
             } else {
                 $image_path            = $images_dir . $img;
-                $img_name[$image_path] = (string)$i.basename( $image_path );
+                $img_name[$image_path] ??= (string)$i.basename( $image_path );
             }
 
             if (!isset($img_content[$image_path])) {
                 $img_content[$image_path] = $this->getFile(str_replace('&amp;', '&', $image_path));
             }
             if ($img_content[$image_path]) {
-                $html_images[] = $image_path;
-                $this->html = str_replace($img, $img_name[$image_path], $this->html);
+                $html_images[$image_path] = $image_path;   // one attachment for an image linked in two spellings
+                // the quoted value only - the same path may stand inside another url, as the src of img.php
+                $name       = $img_name[$image_path];
+                $this->html = str_replace(["\"$img\"", "'$img'"], ["\"$name\"", "'$name'"], $this->html);
             }
         }
 

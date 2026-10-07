@@ -35,74 +35,74 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Pseudonim folosit în pagina admin index.php3 pentru editare url discuţii",
 // End of unused messages
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Parametru inc greșit - fișierul inclus trebuie să conțină doar caractere alfanumerice", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "Fișierul nu există", // ai 2026-06
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Număr de secțiune invalid sau secțiunea a fost ștearsă", // ai 2026-06
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "Afișarea prin slice.php este interzisă pentru această secțiune", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "id sesiune", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "numărul paginii curente (în pagescroller)", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "lungimea paginii (număr de articole)", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "Nu am găsit nici un articol",
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "Afişează selectat",
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "Afişează tot",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "Adaugă nou",
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "Alias pentru %1", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "Pseudonim pentru subiectul la comentariu discuţie",
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "Alias pentru textul comentariului la discuţie", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "Alias pentru scris de", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "Pseudonim pentru adresa e-mail al autorului",
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "Pseudonim pentru adresa url al sitului autorului",
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "Pseudonim pentru descrierea sitului autorului",
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "Pseudonim pentru data publicării",
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "Alias pentru adresa IP a calculatorului autorului", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "Pseudonim pentru căsuţa folosită la alegerea comentariului discuţiei",
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "Pseudonim pentru imagini",
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -110,7 +110,7 @@ return [
    ."                             <i>Utilizare: </i>în codul formularului<br>\n"
    ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -118,7 +118,7 @@ return [
    ."                             <i>Utilizare: </i>în codul formularului<br>\n"
    ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -126,7 +126,7 @@ return [
    ."                             <i>Utilizare: </i>în codul formularului<br>\n"
    ."                             <i>Exemplu: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -134,7 +134,7 @@ return [
    ."                             <i>Utilizare: </i>în codul HTML pentru vederea sumar al comentariului<br>\n"
    ."                             <i>Exemplu: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>",
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -142,7 +142,7 @@ return [
    ."                             <i>Utilizare: </i>în codul HTML pentru vederea de text întreg al comentariului<br>\n"
    ."                             <i>Exemplu: </i>&lt;a href=_#URLREPLY&gt;Răspuns&lt;/a&gt;",
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -150,64 +150,64 @@ return [
    ."                             <i>Utilizare: </i>în codul formularului<br>\n"
    ."                             <i>Exemplu: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">",
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "Pseudonim pentru butoane Afişează tot, Afişează selectat, Adaugă nou<br>\n"
    ."                             <i>Utilizare: </i> în codul HTML de la sfîrşit",
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "parametrul al 3-lea completat în cîmpul DiscussionMailList",
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "parametrul nr. %1 completat în cîmpul DiscussionMailList",
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "Nume constantă",
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "Numele tradus al constantei", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "Valoare constantă",
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "Prioritate constantă",
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "grup id al constantei",
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "Clasă categorie (numai pentru categorii)",
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "Număr constante",
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "ID unic al constantei (32 de caractere hexazecimale)", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "ID scurt unic al constantei (autoincrementat de la '1' pentru fiecare constantă din sistem)", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "Descrierea constantei", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Nivelul constantei (folosit pentru constante ierarhice)", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "Eroare: funcție de alias %1 greșită pentru %2", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "Articol selectat", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "numărul articolelor găsite",
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "Nu a fost selectat nici un comentariu",
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "numele exact al grupului", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -228,27 +228,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "Selectaţi categoria",
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "Toate categoriile",
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Eroare: Lipsește parola de citire", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Mesaj stiri toolkit",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "Înapoi",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Reautentificare", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "Formular de atribuire", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "Preia datele despre relațiile articolului trimise de formular (POST)", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

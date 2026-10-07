@@ -662,6 +662,9 @@ class AA_Item
         return $this->content4id->getSliceID();
     }
 
+    /** Characters text2Html() changes in a value without FLAG_HTML (safe() + nl2br()) */
+    public const TEXT2HTML_CHANGES = ['&', '<', '>', '"', "'", "\n", "\r"];
+
     /** text2Html function
      * @param $txt string
      * @param $flag

@@ -37,6 +37,8 @@ final readonly class ImportPlan
      *                                                         '' = none (a transfer brings the source's)
      * @param array{name: string, email: string}|null $newOwner the owner the writer creates (or finds by name and
      *                                                         e-mail) for the modules an install creates, instead of $owner
+     * @param OutsideLinks                      $outside       the links to modules outside the app: the slices of this
+     *                                                         AA the map sends them to; it classified the findings
      */
     public function __construct(
         public Package $package,
@@ -52,6 +54,7 @@ final readonly class ImportPlan
         public array $settingDefaults = [],
         public string $owner = '',
         public ?array $newOwner = null,
+        public OutsideLinks $outside = new OutsideLinks(),
     ) {}
 
     /** no E: the writer may start once the S findings were confirmed and the rights checked */

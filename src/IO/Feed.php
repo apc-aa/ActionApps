@@ -3,9 +3,11 @@
 namespace AA\IO;
 
 use AA;
+use AA\Http\Client;
+use AA\Http\TransportException;
 use AA\IO\DB\DB_AA;
 use AA\Later\Toexecute;
-use AA_File_Wrapper;
+use AA\Optimize\CheckBlockedRequests;
 use AA_Slice;
 use itemview;
 use zids;
@@ -231,9 +233,14 @@ class FeedUtil
         if ($GLOBALS['debugfeed'] >= 8) {
             print("http_fetch:$url\n");
         }
-        $file = AA_File_Wrapper::wrapper($url);
-        // $file->contents(); opens the stream, reads the data and close the stream
-        $data = $file->contents();
+        // the address is set by anyone with the feeding permission - public addresses only
+        try {
+            $answer = Client::publicOnly(timeout: 120, idle: 60, redirects: 5)->request('GET', $url);
+            $data   = $answer->ok() ? $answer->body : '';
+        } catch (TransportException $e) {
+            CheckBlockedRequests::record($e, 'feed', '');
+            $data = '';
+        }
         if ($GLOBALS['debugfeed'] >= 8) {
             huhl('data obtained:', $data);
         }

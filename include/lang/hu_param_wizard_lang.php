@@ -10,121 +10,121 @@ $mgettext_lang = "hu";
 
 return [
 
-// admin/param_wizard.php, row 114
+// admin/param_wizard.php, row 111
 "field&nbsp;id" => "mez\xF5&nbsp;id", // ai 2026-06
 
-// admin/param_wizard.php, row 117
+// admin/param_wizard.php, row 114
 "boolean:&nbsp;0=false,1=true" => "logikai \xE9rt\xE9k:&nbsp;0=hamis,1=igaz", // ai 2026-06
 
-// admin/param_wizard.php, row 141
+// admin/param_wizard.php, row 138
 "Wizard" => "Var\xE1zsl\xF3", // ai 2026-06
 
-// admin/param_wizard.php, row 230
+// admin/param_wizard.php, row 227
 "This is an undocumented %s. We don't recommend using it." => "Ez egy nem dokument\xE1lt %s. Haszn\xE1lat\xE1t nem javasoljuk.", // ai 2026-06
 
-// admin/param_wizard.php, row 231
+// admin/param_wizard.php, row 228
 "Close the wizard" => "Var\xE1zsl\xF3 bez\xE1r\xE1sa", // ai 2026-06
 
-// admin/param_wizard.php, row 245
+// admin/param_wizard.php, row 242
 "Available parameters: " => "El\xE9rhet\xF5 param\xE9terek:", // ai 2026-06
 
-// admin/param_wizard.php, row 265
+// admin/param_wizard.php, row 262
 "This %s has no parameters." => "A(z) %s nem tartalmaz param\xE9tereket.", // ai 2026-06
 
-// admin/param_wizard.php, row 275
+// admin/param_wizard.php, row 272
 "Have a look at these examples of parameters sets:" => "N\xE9zze meg az al\xE1bbi param\xE9terk\xE9szlet-p\xE9ld\xE1kat:", // ai 2026-06
 
-// admin/param_wizard.php, row 282
+// admin/param_wizard.php, row 279
 "Show" => "Megjelen\xEDt\xE9s", // ai 2026-06
 
-// admin/param_wizard.php, row 293
+// admin/param_wizard.php, row 290
 "OK - Save" => "OK - Ment\xE9s", // ai 2026-06
 
-// admin/param_wizard.php, row 294
+// admin/param_wizard.php, row 291
 "Cancel" => "M\xE9gse", // ai 2026-06
 
-// admin/param_wizard.php, row 295
+// admin/param_wizard.php, row 292
 "Show example params" => "P\xE9ldaparam\xE9terek megjelen\xEDt\xE9se", // ai 2026-06
 
-// admin/param_wizard.php, row 299
+// admin/param_wizard.php, row 296
 "OK" => "",
 
-// include/constants_param_wizard.php, row 66
+// include/constants_param_wizard.php, row 68
 "Parameters" => "Param\xE9terek", // ai 2026-06
 
-// include/constants_param_wizard.php, row 68
+// include/constants_param_wizard.php, row 70
 "Help: Parameter Wizard" => "S\xFAg\xF3: Param\xE9ter-var\xE1zsl\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 75
+// include/constants_param_wizard.php, row 77
 "Input Validate Type" => "Beviteli ellen\xF5rz\xE9s t\xEDpusa (valid\xE1l\xE1s)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 77
+// include/constants_param_wizard.php, row 79
 "No validation" => "Ellen\xF5rz\xE9s n\xE9lk\xFCl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 80
+// include/constants_param_wizard.php, row 82
 "URL" => "",
 
-// include/constants_param_wizard.php, row 83
+// include/constants_param_wizard.php, row 85
 "E-mail" => "",
 
-// include/constants_param_wizard.php, row 86
+// include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = pozit\xEDv eg\xE9sz sz\xE1m", // ai 2026-06
 
-// include/constants_param_wizard.php, row 89, 111
+// include/constants_param_wizard.php, row 91, 113
 "Min" => "",
 
-// include/constants_param_wizard.php, row 90, 112
+// include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Megengedett legkisebb \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 95, 117
+// include/constants_param_wizard.php, row 97, 119
 "Max" => "",
 
-// include/constants_param_wizard.php, row 96, 118
+// include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Megengedett legnagyobb \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 101, 123
+// include/constants_param_wizard.php, row 103, 125
 "Step" => "L\xE9p\xE9sk\xF6z", // ai 2026-06
 
-// include/constants_param_wizard.php, row 108
+// include/constants_param_wizard.php, row 110
 "Number = (signed) integer number" => "Number = (el\xF5jeles) eg\xE9sz sz\xE1m", // ai 2026-06
 
-// include/constants_param_wizard.php, row 130
+// include/constants_param_wizard.php, row 132
 "Float - including scientific notation 1.2E+9" => "Float - a tudom\xE1nyos jel\xF6l\xE9st (1.2E+9) is bele\xE9rtve", // ai 2026-06
 
-// include/constants_param_wizard.php, row 133
+// include/constants_param_wizard.php, row 135
 "Decimal" => "Tizedes sz\xE1m", // ai 2026-06
 
-// include/constants_param_wizard.php, row 136
+// include/constants_param_wizard.php, row 138
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 hexadecim\xE1lis sz\xE1mjegy [0-9a-f]", // ai 2026-06
 
-// include/constants_param_wizard.php, row 139
+// include/constants_param_wizard.php, row 141
 "Date = store as date" => "Date = d\xE1tumk\xE9nt t\xE1rolja", // ai 2026-06
 
-// include/constants_param_wizard.php, row 142
+// include/constants_param_wizard.php, row 144
 "Bool = store as bool" => "Bool = logikai \xE9rt\xE9kk\xE9nt t\xE1rolja", // ai 2026-06
 
-// include/constants_param_wizard.php, row 145
+// include/constants_param_wizard.php, row 147
 "User = does nothing ???" => "User = nem csin\xE1l semmit ???", // ai 2026-06
 
-// include/constants_param_wizard.php, row 148
+// include/constants_param_wizard.php, row 150
 "Unique = prove uniqueness" => "Unique = egyedis\xE9g ellen\xF5rz\xE9se", // ai 2026-06
 
-// include/constants_param_wizard.php, row 149
+// include/constants_param_wizard.php, row 151
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
  => "Csak akkor \xE9rv\xE9nyes, ha az \xE9rt\xE9k m\xE9g nincs haszn\xE1latban. Hasznos pl.\n"
    ."        e-mail c\xEDmekn\xE9l vagy felhaszn\xE1l\xF3nevekn\xE9l.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 153, 193
+// include/constants_param_wizard.php, row 155, 197
 "Field ID" => "Mez\xF5 ID", // ai 2026-06
 
-// include/constants_param_wizard.php, row 154, 194
+// include/constants_param_wizard.php, row 156, 198
 "Field in which to look for matching values (default is current field)." => "A mez\xF5, amelyben az egyez\xF5 \xE9rt\xE9keket keresi (alap\xE9rtelmez\xE9s az aktu\xE1lis mez\xF5).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 159
+// include/constants_param_wizard.php, row 161
 "Scope" => "Hat\xF3k\xF6r", // ai 2026-06
 
-// include/constants_param_wizard.php, row 160
+// include/constants_param_wizard.php, row 163
 "<b>1</b> = This slice only.\n"
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
@@ -134,46 +134,46 @@ return [
    ."                <b>0</b> = (alap\xE9rtelmezett) Felhaszn\xE1l\xF3n\xE9v, speci\xE1lis: az egyedis\xE9get az olvas\xF3kezel\xF5\n"
    ."                rovatokban \xE9s a jogosults\xE1gi rendszerben ellen\xF5rzi. Mindig a(z) %1 ID-j\xFB mez\xF5t haszn\xE1lja", // ai 2026-06
 
-// include/constants_param_wizard.php, row 171
+// include/constants_param_wizard.php, row 175
 "Regular Expression" => "Regul\xE1ris kifejez\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 172
+// include/constants_param_wizard.php, row 176
 "Validation based on Regular Expressions" => "Regul\xE1ris kifejez\xE9seken alapul\xF3 ellen\xF5rz\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 175
+// include/constants_param_wizard.php, row 179
 "Regular Expressions" => "Regul\xE1ris kifejez\xE9sek", // ai 2026-06
 
-// include/constants_param_wizard.php, row 176
+// include/constants_param_wizard.php, row 180
 "use something like: /^[0-9]*\$/ - see \"Regular Expressions\" manual." => "haszn\xE1ljon valami ilyesmit: /^[0-9]*\$/ - l\xE1sd a \"Regular Expressions\" k\xE9zik\xF6nyvet.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 181
+// include/constants_param_wizard.php, row 185
 "Error text" => "Hibasz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 182
+// include/constants_param_wizard.php, row 186
 "error message" => "hiba\xFCzenet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 184
+// include/constants_param_wizard.php, row 188
 "Wrong value" => "Hib\xE1s \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 189
+// include/constants_param_wizard.php, row 193
 "Unique e-mail" => "Egyedi e-mail", // ai 2026-06
 
-// include/constants_param_wizard.php, row 190
+// include/constants_param_wizard.php, row 194
 "Combines the e-mail and unique validations. Validates only if the value is a valid email address and not yet used." => "Az e-mail \xE9s az egyedis\xE9g ellen\xF5rz\xE9s\xE9t kombin\xE1lja. Csak akkor \xE9rv\xE9nyes, ha az \xE9rt\xE9k \xE9rv\xE9nyes e-mail c\xEDm, \xE9s m\xE9g nincs haszn\xE1latban.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 199
+// include/constants_param_wizard.php, row 203
 "Slice only" => "Csak ez a rovat", // ai 2026-06
 
-// include/constants_param_wizard.php, row 200
+// include/constants_param_wizard.php, row 204
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
  => "Csak ebben a rovatban k\xEDv\xE1nja ellen\xF5rizni az egyedis\xE9get,\n"
    ."                  vagy minden rovatban?", // ai 2026-06
 
-// include/constants_param_wizard.php, row 208
+// include/constants_param_wizard.php, row 212
 "Password and Change Password" => "Jelsz\xF3 \xE9s Jelsz\xF3m\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 209
+// include/constants_param_wizard.php, row 213
 "Validates the passwords do not differ when changing password.\n"
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
@@ -183,466 +183,466 @@ return [
    ."        mert a besz\xFAr\xF3\n"
    ."        f\xFCggv\xE9ny az \xFAj jelsz\xF3 ment\xE9se el\xF5tt \xFAjra elv\xE9gzi az ellen\xF5rz\xE9st.</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 224
+// include/constants_param_wizard.php, row 228
 "Function" => "F\xFCggv\xE9ny", // ai 2026-06
 
-// include/constants_param_wizard.php, row 225
+// include/constants_param_wizard.php, row 229
 "How the formatting in the text on this page is used:<br><i>the field</i> in italics stands for the field edited in the \"configure Fields\" window,<br><b>parameter name</b> in bold stands for a parameter on this screen." => "Az oldalon haszn\xE1lt sz\xF6vegform\xE1z\xE1s jelent\xE9se:<br>a d\xF5lt bet\xFBs <i>mez\xF5</i> a \"Mez\xF5k be\xE1ll\xEDt\xE1sa\" ablakban szerkesztett mez\xF5t jel\xF6li,<br>a f\xE9lk\xF6v\xE9r <b>param\xE9tern\xE9v</b> az ezen a k\xE9perny\xF5n l\xE1that\xF3 param\xE9tert jel\xF6li.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 228
+// include/constants_param_wizard.php, row 232
 "just code" => "csak k\xF3d", // ai 2026-06
 
-// include/constants_param_wizard.php, row 229
+// include/constants_param_wizard.php, row 233
 "prints the code in parameter - _#this could be used - easier than f_t (no additional parameter)" => "ki\xEDrja a param\xE9terben megadott k\xF3dot - haszn\xE1lhat\xF3 a _#this - egyszer\xFBbb, mint az f_t (nincs tov\xE1bbi param\xE9ter)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 232
+// include/constants_param_wizard.php, row 236
 "null function" => "\xFCres f\xFCggv\xE9ny", // ai 2026-06
 
-// include/constants_param_wizard.php, row 233
+// include/constants_param_wizard.php, row 237
 "prints nothing" => "nem \xEDr ki semmit", // ai 2026-06
 
-// include/constants_param_wizard.php, row 236
+// include/constants_param_wizard.php, row 240
 "first value" => "els\xF5 \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 237
+// include/constants_param_wizard.php, row 241
 "prints first value, even if the field is multivalue" => "az els\xF5 \xE9rt\xE9ket \xEDrja ki, akkor is, ha a mez\xF5 t\xF6bb\xE9rt\xE9k\xFB", // ai 2026-06
 
-// include/constants_param_wizard.php, row 240
+// include/constants_param_wizard.php, row 244
 "translated" => "ford\xEDt\xE1s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 241
+// include/constants_param_wizard.php, row 245
 "prints translated field based on currently selected language" => "a mez\xF5 ford\xEDt\xE1s\xE1t \xEDrja ki az aktu\xE1lisan kiv\xE1lasztott nyelv szerint", // ai 2026-06
 
-// include/constants_param_wizard.php, row 244
+// include/constants_param_wizard.php, row 248
 "abstract" => "kivonat", // ai 2026-06
 
-// include/constants_param_wizard.php, row 245
+// include/constants_param_wizard.php, row 249
 "prints abstract (if exists) or the beginning of the <b>fulltext</b>" => "ki\xEDrja a kivonatot (ha van), vagy a <b>fulltext</b> mez\xF5 elej\xE9t", // ai 2026-06
 
-// include/constants_param_wizard.php, row 248
+// include/constants_param_wizard.php, row 252
 "length" => "hossz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 249
+// include/constants_param_wizard.php, row 253
 "max number of characters grabbed from the <b>fulltext</b> field" => "a <b>fulltext</b> mez\xF5b\xF5l \xE1tvett karakterek maxim\xE1lis sz\xE1ma", // ai 2026-06
 
-// include/constants_param_wizard.php, row 254
+// include/constants_param_wizard.php, row 258
 "fulltext" => "teljes sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 255
+// include/constants_param_wizard.php, row 259
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "a fulltext mez\xF5 id-ja (pl. full_text.......), amelyb\xF5l a sz\xF6veg \xE1tv\xE9telre ker\xFCl. Ha \xFCres, a sz\xF6veg mag\xE1b\xF3l a <i>mez\xF5b\xF5l</i> sz\xE1rmazik.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 257, 299, 596
+// include/constants_param_wizard.php, row 261, 303, 600
 "full_text......." => "",
 
-// include/constants_param_wizard.php, row 260
+// include/constants_param_wizard.php, row 264
 "paragraph" => "bekezd\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 261
+// include/constants_param_wizard.php, row 265
 "take first paragraph (text until \\<BR\\> or \\<P\\> or \\</P\\> or at least '.' (dot)) if shorter than <b>length</b>" => "az els\xF5 bekezd\xE9st veszi (sz\xF6veg a \\<BR\\> vagy \\<P\\> vagy \\</P\\> jelig, vagy legal\xE1bb a '.' (pont) jelig), ha r\xF6videbb, mint a <b>hossz</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 268
+// include/constants_param_wizard.php, row 272
 "extended fulltext link" => "b\xF5v\xEDtett hivatkoz\xE1s a teljes sz\xF6vegre", // ai 2026-06
 
-// include/constants_param_wizard.php, row 269
+// include/constants_param_wizard.php, row 273
 "Prints some <b>text</b> (or field content) with a link to the fulltext. A more general version of the f_f function. This function doesn't use <i>the field</i>." => "Ki\xEDr valamilyen <b>sz\xF6veget</b> (vagy mez\xF5tartalmat) a teljes sz\xF6vegre mutat\xF3 hivatkoz\xE1ssal. Az f_f f\xFCggv\xE9ny \xE1ltal\xE1nosabb v\xE1ltozata. Ez a f\xFCggv\xE9ny nem haszn\xE1lja a <i>mez\xF5t</i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 272, 406
+// include/constants_param_wizard.php, row 276, 410
 "link only" => "csak hivatkoz\xE1s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 273
+// include/constants_param_wizard.php, row 277
 "field id (like 'link_only.......') where switch between external and internal item is stored.  (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "annak a mez\xF5nek az id-ja (pl. 'link_only.......'), amely a k\xFCls\xF5 \xE9s bels\xF5 cikk k\xF6z\xF6tti kapcsol\xF3t t\xE1rolja. (Az oldalnak tartalmaznia kell az SSI include ../slice.php h\xEDv\xE1st.) Ha nincs kit\xF6ltve, a teljes sz\xF6veghez ugyanaz az oldal haszn\xE1latos, mint a cikklist\xE1hoz (ami a mag\xE1t\xF3l \xE9rtet\xF5d\xF5 viselked\xE9s).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 275, 409
+// include/constants_param_wizard.php, row 279, 413
 "link_only......." => "",
 
-// include/constants_param_wizard.php, row 278
+// include/constants_param_wizard.php, row 282
 "url_field" => "URL-mez\xF5", // ai 2026-06
 
-// include/constants_param_wizard.php, row 279
+// include/constants_param_wizard.php, row 283
 "field id if field, where external URL is stored (like hl_href.........)" => "annak a mez\xF5nek az id-ja, amelyben a k\xFCls\xF5 URL t\xE1rol\xF3dik (pl. hl_href.........)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 281
+// include/constants_param_wizard.php, row 285
 "hl_href........." => "",
 
-// include/constants_param_wizard.php, row 284, 412
+// include/constants_param_wizard.php, row 288, 416
 "redirect" => "\xE1tir\xE1ny\xEDt\xE1s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 285, 413
+// include/constants_param_wizard.php, row 289, 417
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "Egy m\xE1sik oldal URL-je, amely a cikk tartalm\xE1t jelen\xEDti meg. (Az oldalnak tartalmaznia kell az SSI include ../slice.php h\xEDv\xE1st.) Ha nincs kit\xF6ltve, a teljes sz\xF6veghez ugyanaz az oldal haszn\xE1latos, mint a cikklist\xE1hoz (ami a mag\xE1t\xF3l \xE9rtet\xF5d\xF5 viselked\xE9s).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 287, 415
+// include/constants_param_wizard.php, row 291, 419
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.honlapom.hu/cikkek/szolar.shtml", // ai 2026-06
 
-// include/constants_param_wizard.php, row 290
+// include/constants_param_wizard.php, row 294
 "text" => "sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 291
+// include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "A hivatkoz\xE1sba foglalt sz\xF6veg. Ha ez a param\xE9ter egy mez\xF5 azonos\xEDt\xF3ja, a mez\xF5 tartalm\xE1t haszn\xE1lja, k\xFCl\xF6nben v\xE1ltozatlan form\xE1ban jelenik meg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 296
+// include/constants_param_wizard.php, row 300
 "condition field" => "felt\xE9tel mez\xF5", // ai 2026-06
 
-// include/constants_param_wizard.php, row 297
+// include/constants_param_wizard.php, row 301
 "when the specified field hasn't any content, no link is printed, but only the <b>text</b>" => "ha a megadott mez\xF5nek nincs tartalma, nem jelenik meg hivatkoz\xE1s, csak a <b>sz\xF6veg</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 302, 529
+// include/constants_param_wizard.php, row 306, 533
 "tag addition" => "tag-kieg\xE9sz\xEDt\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 303, 530
+// include/constants_param_wizard.php, row 307, 534
 "additional text to the \"\\<a\\>\" tag" => "tov\xE1bbi sz\xF6veg a \"\\<a\\>\" tagbe", // ai 2026-06
 
-// include/constants_param_wizard.php, row 305, 532
+// include/constants_param_wizard.php, row 309, 536
 "target=_blank" => "",
 
-// include/constants_param_wizard.php, row 308, 418
+// include/constants_param_wizard.php, row 312, 422
 "no session id" => "session id n\xE9lk\xFCl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 309, 419
+// include/constants_param_wizard.php, row 313, 423
 "If 1, the session id (AA_Session=...) is not added to url" => "Ha 1, a session id (AA_Session=...) nem ad\xF3dik hozz\xE1 az url-hez", // ai 2026-06
 
-// include/constants_param_wizard.php, row 316, 320
+// include/constants_param_wizard.php, row 320, 324
 "condition" => "felt\xE9tel", // ai 2026-06
 
-// include/constants_param_wizard.php, row 317
+// include/constants_param_wizard.php, row 321
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "Ez egy nagyon hat\xE9kony funkci\xF3. N\xE9h\xE1ny kor\xE1bbi funkci\xF3 jobb helyettes\xEDt\xF5jek\xE9nt haszn\xE1lhat\xF3. Ha <b>felt\xE9tel_mez\xF5</b> = <b>felt\xE9tel</b>, ki\xEDrja: <b>kezdet</b> <i>mez\xF5</i> <b>v\xE9g</b>, k\xFCl\xF6nben ki\xEDrja: <b>egy\xE9bk\xE9nt</b>. Ha a <b>felt\xE9tel_mez\xF5</b> nincs megadva, <i>a mez\xF5</i> ker\xFCl felhaszn\xE1l\xE1sra. A felt\xE9tel megford\xEDthat\xF3 (tagadhat\xF3) az elej\xE9re tett \"!\" karakterrel.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 321
+// include/constants_param_wizard.php, row 325
 "you may use \"!\" to reverse (negate) the condition" => "a \"!\" karakterrel megford\xEDthatja (tagadhatja) a felt\xE9telt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 326, 505
+// include/constants_param_wizard.php, row 330, 509
 "begin" => "kezdet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 327
+// include/constants_param_wizard.php, row 331
 "text to print before <i>field</i>, if condition is true" => "a <i>mez\xF5</i> el\xF5tt ki\xEDrt sz\xF6veg, ha a felt\xE9tel teljes\xFCl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 329
+// include/constants_param_wizard.php, row 333
 "Yes" => "Igen", // ai 2026-06
 
-// include/constants_param_wizard.php, row 332
+// include/constants_param_wizard.php, row 336
 "end" => "v\xE9g", // ai 2026-06
 
-// include/constants_param_wizard.php, row 333
+// include/constants_param_wizard.php, row 337
 "text to print after <i>field</i>, if condition is true" => "a <i>mez\xF5</i> ut\xE1n ki\xEDrt sz\xF6veg, ha a felt\xE9tel teljes\xFCl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 338
+// include/constants_param_wizard.php, row 342
 "else" => "egy\xE9bk\xE9nt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 339
+// include/constants_param_wizard.php, row 343
 "text to print when condition is not satisfied" => "a felt\xE9tel nem teljes\xFCl\xE9sekor ki\xEDrt sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 341
+// include/constants_param_wizard.php, row 345
 "No" => "Nem", // ai 2026-06
 
-// include/constants_param_wizard.php, row 344
+// include/constants_param_wizard.php, row 348
 "cond_field" => "felt\xE9tel_mez\xF5", // ai 2026-06
 
-// include/constants_param_wizard.php, row 345
+// include/constants_param_wizard.php, row 349
 "field to compare with the <b>condition</b> - if not filled, <i>field</i> is used" => "a <b>felt\xE9tellel</b> \xF6sszehasonl\xEDtott mez\xF5 - ha nincs kit\xF6ltve, <i>a mez\xF5</i> ker\xFCl felhaszn\xE1l\xE1sra", // ai 2026-06
 
-// include/constants_param_wizard.php, row 350
+// include/constants_param_wizard.php, row 354
 "skip_the_field" => "mez\xF5_kihagy\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 351
+// include/constants_param_wizard.php, row 355
 "if set to 1, skip <i>the field</i> (print only <b>begin end</b> or <b>else</b>)" => "ha 1-re van \xE1ll\xEDtva, kihagyja <i>a mez\xF5t</i> (csak a <b>kezdet v\xE9g</b> vagy az <b>egy\xE9bk\xE9nt</b> jelenik meg)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 358
+// include/constants_param_wizard.php, row 362
 "This example is usable e.g. for Highlight field - it shows Yes or No depending on the field content" => "Ez a p\xE9lda pl. a Highlight (kiemel\xE9s) mez\xF5h\xF6z haszn\xE1lhat\xF3 - a mez\xF5 tartalm\xE1t\xF3l f\xFCgg\xF5en Igen vagy Nem jelenik meg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 359
+// include/constants_param_wizard.php, row 363
 "1:Yes::No::1" => "1:Igen::Nem::1", // ai 2026-06
 
-// include/constants_param_wizard.php, row 362
+// include/constants_param_wizard.php, row 366
 "When e-mail field is filled, prints something like \"Email: email@apc.org\", when it is empty, prints nothing" => "Ha az e-mail mez\xF5 ki van t\xF6ltve, valami ilyesmit \xEDr ki: \"Email: email@apc.org\", ha \xFCres, nem \xEDr ki semmit", // ai 2026-06
 
-// include/constants_param_wizard.php, row 363
+// include/constants_param_wizard.php, row 367
 "!:Email#:&nbsp;" => "",
 
-// include/constants_param_wizard.php, row 366
+// include/constants_param_wizard.php, row 370
 "Print image height attribute, if <i>the field</i> is filled, nothing otherwise." => "Ki\xEDrja a k\xE9p magass\xE1g attrib\xFAtum\xE1t, ha <i>a mez\xF5</i> ki van t\xF6ltve, k\xFCl\xF6nben semmit.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 367
+// include/constants_param_wizard.php, row 371
 "!:height=" => "",
 
-// include/constants_param_wizard.php, row 372
+// include/constants_param_wizard.php, row 376
 "date" => "d\xE1tum", // ai 2026-06
 
-// include/constants_param_wizard.php, row 373
+// include/constants_param_wizard.php, row 377
 "prints date in a user defined format" => "ki\xEDrja a d\xE1tumot a felhaszn\xE1l\xF3 \xE1ltal megadott form\xE1tumban", // ai 2026-06
 
-// include/constants_param_wizard.php, row 376
+// include/constants_param_wizard.php, row 380
 "format" => "form\xE1tum", // ai 2026-06
 
-// include/constants_param_wizard.php, row 377
+// include/constants_param_wizard.php, row 381
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "PHP-szer\xFB form\xE1tum - l\xE1sd a <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP k\xE9zik\xF6nyvet</a>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 379
+// include/constants_param_wizard.php, row 383
 "m-d-Y" => "Y-m-d", // ai 2026-06
 
-// include/constants_param_wizard.php, row 384
+// include/constants_param_wizard.php, row 388
 "edit item" => "cikk szerkeszt\xE9se", // ai 2026-06
 
-// include/constants_param_wizard.php, row 385
+// include/constants_param_wizard.php, row 389
 "_#EDITITEM used on admin page index.php for itemedit url" => "Az _#EDITITEM az index.php adminisztr\xE1ci\xF3s oldalon haszn\xE1latos az itemedit url-hez", // ai 2026-06
 
-// include/constants_param_wizard.php, row 388
+// include/constants_param_wizard.php, row 392
 "type" => "t\xEDpus", // ai 2026-06
 
-// include/constants_param_wizard.php, row 389
+// include/constants_param_wizard.php, row 393
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - hozz\xE1sz\xF3l\xE1sok szerkeszt\xE9s\xE9hez<br>itemcount - a cikkek sz\xE1m\xE1nak ki\xEDr\xE1s\xE1hoz<br>safe - biztons\xE1gos html-hez<br>slice_info - mez\xF5 kiv\xE1laszt\xE1sa a rovat adataib\xF3l<br>edit - URL a cikk szerkeszt\xE9s\xE9hez<br>add - URL \xFAj cikk hozz\xE1ad\xE1s\xE1hoz", // ai 2026-06
 
-// include/constants_param_wizard.php, row 391
+// include/constants_param_wizard.php, row 395
 "edit" => "szerkeszt\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 394
+// include/constants_param_wizard.php, row 398
 "return url" => "visszat\xE9r\xE9si url", // ai 2026-06
 
-// include/constants_param_wizard.php, row 395
+// include/constants_param_wizard.php, row 399
 "Return url being called from, usually leave blank and allow default" => "Visszat\xE9r\xE9si url, ahonnan a h\xEDv\xE1s t\xF6rt\xE9nt; \xE1ltal\xE1ban hagyja \xFCresen, ekkor az alap\xE9rtelmezett \xE9rv\xE9nyes\xFCl", // ai 2026-06
 
-// include/constants_param_wizard.php, row 397
+// include/constants_param_wizard.php, row 401
 "/mysite.shtml" => "/honlapom.shtml", // ai 2026-06
 
-// include/constants_param_wizard.php, row 402
+// include/constants_param_wizard.php, row 406
 "fulltext link" => "hivatkoz\xE1s a teljes sz\xF6vegre", // ai 2026-06
 
-// include/constants_param_wizard.php, row 403
+// include/constants_param_wizard.php, row 407
 "Prints the URL name inside a link to the fulltext - enables using external items. To be used immediately after \"\\<a href=\"" => "Ki\xEDrja az URL-t a teljes sz\xF6vegre mutat\xF3 hivatkoz\xE1shoz - lehet\xF5v\xE9 teszi k\xFCls\xF5 cikkek haszn\xE1lat\xE1t. K\xF6zvetlen\xFCl a \"\\<a href=\" ut\xE1n haszn\xE1land\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 407
+// include/constants_param_wizard.php, row 411
 "field id (like 'link_only.......') where switch between external and internal item is stored. Usually this field is represented as checkbox. If the checkbox is checked, <i>the field</i> is printed, if unchecked, link to fulltext is printed (it depends on <b>redirect</b> parameter, too)." => "mez\xF5azonos\xEDt\xF3 (pl. 'link_only.......'), amelyben a k\xFCls\xF5 \xE9s bels\xF5 cikk k\xF6z\xF6tti kapcsol\xF3 t\xE1rol\xF3dik. Ez a mez\xF5 \xE1ltal\xE1ban jel\xF6l\xF5n\xE9gyzetk\xE9nt jelenik meg. Ha a jel\xF6l\xF5n\xE9gyzet be van jel\xF6lve, <i>a mez\xF5</i> jelenik meg, ha nincs bejel\xF6lve, a teljes sz\xF6vegre mutat\xF3 hivatkoz\xE1s jelenik meg (a <b>redirect</b> param\xE9tert\xF5l is f\xFCgg).", // ai 2026-06
 
-// include/constants_param_wizard.php, row 426
+// include/constants_param_wizard.php, row 430
 "image height" => "k\xE9p magass\xE1ga", // ai 2026-06
 
-// include/constants_param_wizard.php, row 427
+// include/constants_param_wizard.php, row 431
 "An old-style function. Prints <i>the field</i> as image height value (\\<img height=...\\>) or erases the height tag. To be used immediately after \"height=\".The f_c function provides a better way of doing this with parameters \":height=\". " => "R\xE9gi t\xEDpus\xFA funkci\xF3. Ki\xEDrja <i>a mez\xF5t</i> a k\xE9p magass\xE1g\xE9rt\xE9kek\xE9nt (\\<img height=...\\>), vagy t\xF6rli a height attrib\xFAtumot. K\xF6zvetlen\xFCl a \"height=\" ut\xE1n haszn\xE1land\xF3. Az f_c funkci\xF3 jobb megold\xE1st ny\xFAjt erre a \":height=\" param\xE9terekkel.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 430
+// include/constants_param_wizard.php, row 434
 "print HTML multiple" => "HTML ki\xEDr\xE1sa (t\xF6bb\xE9rt\xE9k\xFB)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 431
+// include/constants_param_wizard.php, row 435
 "prints <i>the field</i> content depending on the html flag (escape html special characters or just print)" => "ki\xEDrja <i>a mez\xF5</i> tartalm\xE1t a html jelz\xF5t\xF5l f\xFCgg\xF5en (escape-eli a speci\xE1lis html karaktereket, vagy egyszer\xFBen ki\xEDrja)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 434
+// include/constants_param_wizard.php, row 438
 "delimiter" => "elv\xE1laszt\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 435
+// include/constants_param_wizard.php, row 439
 "if specified, a field with multiple values is displayed with the values delimited by it" => "ha meg van adva, a t\xF6bb\xE9rt\xE9k\xFB mez\xF5 \xE9rt\xE9kei ezzel elv\xE1lasztva jelennek meg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 442
+// include/constants_param_wizard.php, row 446
 "image src" => "k\xE9p forr\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 443
+// include/constants_param_wizard.php, row 447
 "prints <i>the field</i> as image source (\\<img src=...\\>) - NO_PICTURE for none. The same could be done by the f_c function with parameters :::NO_PICTURE. " => "ki\xEDrja <i>a mez\xF5t</i> a k\xE9p forr\xE1sak\xE9nt (\\<img src=...\\>) - NO_PICTURE, ha nincs. Ugyanez el\xE9rhet\xF5 az f_c funkci\xF3val a :::NO_PICTURE param\xE9terekkel.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 446
+// include/constants_param_wizard.php, row 450
 "image size" => "k\xE9p m\xE9rete", // ai 2026-06
 
-// include/constants_param_wizard.php, row 447
+// include/constants_param_wizard.php, row 451
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "ki\xEDrja <i>a mez\xF5t</i> k\xE9pm\xE9retk\xE9nt (height='xxx' width='yyy') (vagy m\xE1s k\xE9pinform\xE1ci\xF3k\xE9nt), vagy \xFCres karakterl\xE1ncot, ha nem siker\xFCl meg\xE1llap\xEDtani; az uploads k\xF6nyvt\xE1rb\xF3l sz\xE1rmaz\xF3 URL-eket nem kezeli k\xFCl\xF6n, tal\xE1n majd k\xE9s\xF5bb!", // ai 2026-06
 
-// include/constants_param_wizard.php, row 450, 826
+// include/constants_param_wizard.php, row 454, 830
 "information" => "inform\xE1ci\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 451
+// include/constants_param_wizard.php, row 455
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "meghat\xE1rozza a visszaadott inform\xE1ci\xF3t: <br> - <i>html</i> - (alap\xE9rtelmezett) - a k\xE9p m\xE9ret\xE9t HTML attrib\xFAtumokk\xE9nt adja vissza (height='xxx' width='yyy')<br> - <i>width</i> - a k\xE9p sz\xE9less\xE9g\xE9t adja vissza pixelben<br> - <i>height</i> - a k\xE9p magass\xE1g\xE1t adja vissza pixelben<br> - <i>imgtype</i> - a k\xE9p t\xEDpus\xE1t jelz\xF5 \xE9rt\xE9ket ad vissza: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel b\xE1jtsorrend), 8 = TIFF(motorola b\xE1jtsorrend), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - a k\xE9p mimetype-j\xE1t adja vissza (pl. 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 458
+// include/constants_param_wizard.php, row 462
 "substring with case change" => "r\xE9szkarakterl\xE1nc kis-/nagybet\xFB v\xE1lt\xE1ssal", // ai 2026-06
 
-// include/constants_param_wizard.php, row 459
+// include/constants_param_wizard.php, row 463
 "prints a part of <i>the field</i>" => "ki\xEDrja <i>a mez\xF5</i> egy r\xE9sz\xE9t", // ai 2026-06
 
-// include/constants_param_wizard.php, row 462
+// include/constants_param_wizard.php, row 466
 "start" => "kezd\xF5poz\xEDci\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 463
+// include/constants_param_wizard.php, row 467
 "position of substring start (0=first, 1=second, -1=last,-2=two from end)" => "a r\xE9szkarakterl\xE1nc kezd\xF5poz\xEDci\xF3ja (0=els\xF5, 1=m\xE1sodik, -1=utols\xF3, -2=a v\xE9g\xE9t\xF5l a m\xE1sodik)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 468
+// include/constants_param_wizard.php, row 472
 "count" => "darabsz\xE1m", // ai 2026-06
 
-// include/constants_param_wizard.php, row 469
+// include/constants_param_wizard.php, row 473
 "count of characters (0=until the end)" => "karakterek sz\xE1ma (0=a v\xE9g\xE9ig)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 474
+// include/constants_param_wizard.php, row 478
 "case" => "kis-/nagybet\xFB", // ai 2026-06
 
-// include/constants_param_wizard.php, row 475
+// include/constants_param_wizard.php, row 479
 "upper - convert to UPPERCASE, lower - convert to lowercase, first - convert to First Upper; default is don't change" => "upper - NAGYBET\xDBSRE alak\xEDt, lower - kisbet\xFBsre alak\xEDt, first - Sz\xF3kezd\xF5 Nagybet\xFBsre alak\xEDt; alap\xE9rtelmez\xE9s szerint nem v\xE1ltoztat", // ai 2026-06
 
-// include/constants_param_wizard.php, row 480
+// include/constants_param_wizard.php, row 484
 "add string" => "hozz\xE1f\xFBz\xF6tt sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 481
+// include/constants_param_wizard.php, row 485
 "if string is shortened, <i>add string</i> is appended to the string (probably something like [...])" => "ha a sz\xF6veg ler\xF6vid\xFCl, a <i>hozz\xE1f\xFBz\xF6tt sz\xF6veg</i> ker\xFCl a v\xE9g\xE9re (val\xF3sz\xEDn\xFBleg valami ilyesmi: [...])", // ai 2026-06
 
-// include/constants_param_wizard.php, row 487
+// include/constants_param_wizard.php, row 491
 "Auto Update Checkbox" => "Automatikusan friss\xFCl\xF5 jel\xF6l\xF5n\xE9gyzet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 489
+// include/constants_param_wizard.php, row 493
 "linked field" => "mez\xF5 hivatkoz\xE1ssal", // ai 2026-06
 
-// include/constants_param_wizard.php, row 490
+// include/constants_param_wizard.php, row 494
 "prints <i>the field</i> as a link if the <b>link URL</b> is not NULL, otherwise prints just <i>the field</i>" => "ki\xEDrja <i>a mez\xF5t</i> hivatkoz\xE1sk\xE9nt, ha a <b>hivatkoz\xE1s URL</b> nem NULL, k\xFCl\xF6nben csak <i>a mez\xF5t</i> \xEDrja ki", // ai 2026-06
 
-// include/constants_param_wizard.php, row 493
+// include/constants_param_wizard.php, row 497
 "link URL" => "hivatkoz\xE1s URL", // ai 2026-06
 
-// include/constants_param_wizard.php, row 496
+// include/constants_param_wizard.php, row 500
 "source_href....." => "",
 
-// include/constants_param_wizard.php, row 501
+// include/constants_param_wizard.php, row 505
 "e-mail or link" => "e-mail vagy hivatkoz\xE1s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 502
+// include/constants_param_wizard.php, row 506
 "mailto link - prints: <br>\"<b>begin</b>\\<a href=\"(mailto:)<i>the field</i>\" <b>tag addition</b>\\><b>field/text</b>\\</a\\>. If <i>the field</i> is not filled, prints <b>else_field/text</b>." => "mailto hivatkoz\xE1s - ki\xEDrja: <br>\"<b>kezdet</b>\\<a href=\"(mailto:)<i>a mez\xF5</i>\" <b>tag-kieg\xE9sz\xEDt\xE9s</b>\\><b>mez\xF5/sz\xF6veg</b>\\</a\\>. Ha <i>a mez\xF5</i> nincs kit\xF6ltve, az <b>else_field/text</b> jelenik meg.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 506
+// include/constants_param_wizard.php, row 510
 "text before the link" => "sz\xF6veg a hivatkoz\xE1s el\xF5tt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 508
+// include/constants_param_wizard.php, row 512
 "e-mail" => "",
 
-// include/constants_param_wizard.php, row 511
+// include/constants_param_wizard.php, row 515
 "field/text" => "mez\xF5/sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 512
+// include/constants_param_wizard.php, row 516
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ha ez a param\xE9ter egy mez\xF5 azonos\xEDt\xF3ja, a mez\xF5 tartalm\xE1t haszn\xE1lja, k\xFCl\xF6nben v\xE1ltozatlan form\xE1ban jelenik meg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 517
+// include/constants_param_wizard.php, row 521
 "else_field/text" => "egy\xE9bk\xE9nt mez\xF5/sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 518
+// include/constants_param_wizard.php, row 522
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ha a <i>mez\xF5</i> \xFCres, csak ez a sz\xF6veg (vagy a mez\xF5 tartalma) \xEDr\xF3dik ki", // ai 2026-06
 
-// include/constants_param_wizard.php, row 523
+// include/constants_param_wizard.php, row 527
 "linktype" => "hivatkoz\xE1s t\xEDpusa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 524
+// include/constants_param_wizard.php, row 528
 "mailto / href (default is mailto) - it is possible to use f_m function for links, too - just type 'href' as this parameter" => "mailto / href (alap\xE9rtelmezett a mailto) - az f_m f\xFCggv\xE9ny linkekhez is haszn\xE1lhat\xF3 - csak \xEDrja be a 'href'-et ebbe a param\xE9terbe", // ai 2026-06
 
-// include/constants_param_wizard.php, row 526
+// include/constants_param_wizard.php, row 530
 "href" => "",
 
-// include/constants_param_wizard.php, row 535
+// include/constants_param_wizard.php, row 539
 "hide email" => "e-mail elrejt\xE9se", // ai 2026-06
 
-// include/constants_param_wizard.php, row 536
+// include/constants_param_wizard.php, row 540
 "if 1 then hide email from spam robots. Default is 0." => "ha 1, elrejti az e-mailt a spamrobotok el\xF5l. Az alap\xE9rtelmez\xE9s 0.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 543
+// include/constants_param_wizard.php, row 547
 "id" => "azonos\xEDt\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 544
+// include/constants_param_wizard.php, row 548
 "prints unpacked id (use it, if you want to show 'item id' or 'slice id')" => "ki\xEDrja a kicsomagolt (unpacked) id-t (haszn\xE1lja, ha a 'cikk id'-t vagy a 'rovat id'-t szeretn\xE9 megjelen\xEDteni)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 547
+// include/constants_param_wizard.php, row 551
 "'New' sign" => "'New' jelz\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 548
+// include/constants_param_wizard.php, row 552
 "prints 'New' or 'Old' or any other text in <b>newer text</b> or <b>older text</b> depending on <b>time</b>. Time is specified in minutes from current time." => "ki\xEDrja a 'New' vagy 'Old' sz\xF3t, vagy b\xE1rmilyen m\xE1s, az <b>\xFAjabb sz\xF6veg</b> vagy <b>r\xE9gebbi sz\xF6veg</b> mez\xF5ben megadott sz\xF6veget az <b>id\xF5</b> \xE9rt\xE9k\xE9t\xF5l f\xFCgg\xF5en. Az id\xF5 az aktu\xE1lis id\xF5t\xF5l sz\xE1m\xEDtott percekben adand\xF3 meg.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 551
+// include/constants_param_wizard.php, row 555
 "time" => "id\xF5", // ai 2026-06
 
-// include/constants_param_wizard.php, row 552
+// include/constants_param_wizard.php, row 556
 "Time in minutes from current time." => "Az id\xF5 percekben, az aktu\xE1lis id\xF5t\xF5l sz\xE1m\xEDtva.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 554
+// include/constants_param_wizard.php, row 558
 "1440" => "",
 
-// include/constants_param_wizard.php, row 557
+// include/constants_param_wizard.php, row 561
 "newer text" => "\xFAjabb sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 558
+// include/constants_param_wizard.php, row 562
 "Text to be printed, if the date in <i>the field</i> is newer than <i>current_time</i> - <b>time</b>." => "A ki\xEDrand\xF3 sz\xF6veg, ha a <i>mez\xF5ben</i> l\xE9v\xF5 d\xE1tum \xFAjabb, mint az <i>aktu\xE1lis id\xF5</i> - <b>id\xF5</b>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 560
+// include/constants_param_wizard.php, row 564
 "NEW" => "\xDAJ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 563
+// include/constants_param_wizard.php, row 567
 "older text" => "r\xE9gebbi sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 564
+// include/constants_param_wizard.php, row 568
 "Text to be printed, if the date in <i>the field</i> is older than <i>current_time</i> - <b>time</b>" => "A ki\xEDrand\xF3 sz\xF6veg, ha a <i>mez\xF5ben</i> l\xE9v\xF5 d\xE1tum r\xE9gebbi, mint az <i>aktu\xE1lis id\xF5</i> - <b>id\xF5</b>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 571
+// include/constants_param_wizard.php, row 575
 "text (blurb) from another slice" => "sz\xF6veg (blurb) m\xE1sik rovatb\xF3l", // ai 2026-06
 
-// include/constants_param_wizard.php, row 572
+// include/constants_param_wizard.php, row 576
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "ki\xEDrja a 'blurb'-\xF6t (sz\xF6vegr\xE9szletet) egy m\xE1sik rovatb\xF3l egy egyszer\xFB felt\xE9tel alapj\xE1n.<br>Ha a <i>mez\xF5</i> (vagy a <b>stringToMatch</b> param\xE9terben megadott mez\xF5) az aktu\xE1lis rovatban megegyezik a <b>fieldToMatch</b> tartalm\xE1val a <b>blurbSliceId</b> rovatban, akkor a <b>blurbSliceId</b> rovat <b>fieldToReturn</b> mez\xF5j\xE9nek tartalm\xE1t adja vissza.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 575
+// include/constants_param_wizard.php, row 579
 "stringToMatch" => "",
 
-// include/constants_param_wizard.php, row 576
+// include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Alap\xE9rtelmez\xE9s szerint a <i>mez\xF5</i>.  Megadhat\xF3 mez\xF5 id-k\xE9nt (headline........) VAGY statikus sz\xF6vegk\xE9nt.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 578
+// include/constants_param_wizard.php, row 582
 "category........" => "",
 
-// include/constants_param_wizard.php, row 581
+// include/constants_param_wizard.php, row 585
 "blurbSliceId" => "",
 
-// include/constants_param_wizard.php, row 582
+// include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "annak a rovatnak a kicsomagolt (unpacked) id-ja, amelyben a blurb sz\xF6veg t\xE1rolva van", // ai 2026-06
 
-// include/constants_param_wizard.php, row 584
+// include/constants_param_wizard.php, row 588
 "41415f436f72655f4669656c64732e2e" => "",
 
-// include/constants_param_wizard.php, row 587
+// include/constants_param_wizard.php, row 591
 "fieldToMatch" => "",
 
-// include/constants_param_wizard.php, row 588
+// include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "annak a mez\xF5nek az id-ja a <b>blurbSliceId</b> rovatban, amelyben a <b>stringToMatch</b> keresend\xF5", // ai 2026-06
 
-// include/constants_param_wizard.php, row 590
+// include/constants_param_wizard.php, row 594
 "headline........" => "",
 
-// include/constants_param_wizard.php, row 593
+// include/constants_param_wizard.php, row 597
 "fieldToReturn" => "",
 
-// include/constants_param_wizard.php, row 594
+// include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "annak a mez\xF5nek az id-ja a <b>blurbSliceId</b> rovatban, amelyben a blurb sz\xF6veg t\xE1rolva van (ami ki\xEDrand\xF3)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 601
+// include/constants_param_wizard.php, row 605
 "RSS tag" => "RSS-tag", // ai 2026-06
 
-// include/constants_param_wizard.php, row 602
+// include/constants_param_wizard.php, row 606
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "az el\xF5re defini\xE1lt RSS aliasok bels\xF5 c\xE9ljait szolg\xE1lja (pl. _#RSS_TITL). Hozz\xE1adja az RSS 0.91 szabv\xE1nynak megfelel\xF5 tageket.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 605, 609, 801
+// include/constants_param_wizard.php, row 609, 613, 805
 "default" => "alap\xE9rtelmezett \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 606
+// include/constants_param_wizard.php, row 610
 "prints <i>the field</i> or a default value if <i>the field</i> is empty. The same could be done by the f_c function with parameters :::<b>default</b>." => "ki\xEDrja a <i>mez\xF5t</i>, vagy egy alap\xE9rtelmezett \xE9rt\xE9ket, ha a <i>mez\xF5</i> \xFCres. Ugyanez el\xE9rhet\xF5 az f_c f\xFCggv\xE9nnyel a :::<b>default</b> param\xE9terekkel.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 610
+// include/constants_param_wizard.php, row 614
 "default value" => "alap\xE9rtelmezett \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 612
+// include/constants_param_wizard.php, row 616
 "javascript: window.alert('No source url specified')" => "javascript: window.alert('Nincs megadva forr\xE1s url')", // ai 2026-06
 
-// include/constants_param_wizard.php, row 617
+// include/constants_param_wizard.php, row 621
 "print field" => "mez\xF5 ki\xEDr\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 618
+// include/constants_param_wizard.php, row 622
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "ki\xEDrja a <i>mez\xF5</i> tartalm\xE1t (vagy az <i>unalias string</i>-et) a html jelz\xF5t\xF5l f\xFCgg\xF5en (ha a html jelz\xF5 nincs be\xE1ll\xEDtva, a tartalmat html-re alak\xEDtja. Az f_h f\xFCggv\xE9nyt\xF5l elt\xE9r\xF5en a sort\xF6r\xE9seket is html-re alak\xEDtja (alap v\xE1ltozat\xE1ban)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 621
+// include/constants_param_wizard.php, row 625
 "unalias string" => "feloldand\xF3 sz\xF6veg", // ai 2026-06
 
-// include/constants_param_wizard.php, row 622
+// include/constants_param_wizard.php, row 626
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ha az <i>unalias string</i> meg van adva, a f\xFCggv\xE9ny figyelmen k\xEDv\xFCl hagyja a <i>mez\xF5t</i>, \xE9s ink\xE1bb az <i>unalias string</i>-et \xEDrja ki. Ebben a sztringben term\xE9szetesen haszn\xE1lhat b\xE1rmilyen aliast (vagy mez\xF5t, mint pl. {headline.........})", // ai 2026-06
 
-// include/constants_param_wizard.php, row 624
+// include/constants_param_wizard.php, row 628
 "<img src={img_src.........1} _#IMG_WDTH _#IMG_HGHT>" => "",
 
-// include/constants_param_wizard.php, row 627
+// include/constants_param_wizard.php, row 631
 "output modify" => "kimenet m\xF3dos\xEDt\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 628
+// include/constants_param_wizard.php, row 632
 "You can use some output modifications:<br>\n"
    ."                   &nbsp; - [<i>empty</i>] - no modification<br>\n"
    ."                   &nbsp; - <i>csv</i>  - prints the field for CSV file (Comma Separated Values) export<br>\n"
@@ -662,175 +662,175 @@ return [
    ."                   &nbsp; - <i>asis</i>  - a mez\xF5 tartalm\xE1t '\xFAgy, ahogy van' \xEDrja ki - nem ad &lt;br&gt;-t a sorok v\xE9g\xE9hez akkor sem, ha a mez\xF5 'Plain text'-k\xE9nt van megjel\xF6lve. Az 'asis' param\xE9ter j\xF3l haszn\xE1lhat\xF3 p\xE9ld\xE1ul az Item Manager 'Modify content...' funkci\xF3j\xE1hoz<br>\n"
    ."                   ", // ai 2026-06
 
-// include/constants_param_wizard.php, row 643
+// include/constants_param_wizard.php, row 647
 "user function" => "felhaszn\xE1l\xF3i f\xFCggv\xE9ny", // ai 2026-06
 
-// include/constants_param_wizard.php, row 644
+// include/constants_param_wizard.php, row 648
 "calls a user defined function (see How to create new aliases in <a href='https://actionapps.org/faq/#aliases'>FAQ</a>)" => "egy felhaszn\xE1l\xF3 \xE1ltal defini\xE1lt f\xFCggv\xE9nyt h\xEDv meg (l\xE1sd a 'How to create new aliases' r\xE9szt a <a href='https://actionapps.org/faq/#aliases'>FAQ</a>-ban)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 647
+// include/constants_param_wizard.php, row 651
 "function" => "f\xFCggv\xE9ny", // ai 2026-06
 
-// include/constants_param_wizard.php, row 648
+// include/constants_param_wizard.php, row 652
 "name of the function in the include/usr_aliasfnc.php file" => "a f\xFCggv\xE9ny neve az include/usr_aliasfnc.php f\xE1jlban", // ai 2026-06
 
-// include/constants_param_wizard.php, row 650
+// include/constants_param_wizard.php, row 654
 "usr_start_end_date_cz" => "",
 
-// include/constants_param_wizard.php, row 653
+// include/constants_param_wizard.php, row 657
 "parameter" => "param\xE9ter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 654
+// include/constants_param_wizard.php, row 658
 "a parameter passed to the function" => "a f\xFCggv\xE9nynek \xE1tadott param\xE9ter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 661
+// include/constants_param_wizard.php, row 665
 "view" => "n\xE9zet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 662
+// include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "lehet\xF5v\xE9 teszi a n\xE9zetek kezel\xE9s\xE9t. Ez egy bonyolult \xE9s hat\xE9kony f\xFCggv\xE9ny, amelyet a <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a> \xEDr le, \xE9s amellyel b\xE1rmilyen n\xE9zet megjelen\xEDthet\xF5 az alias hely\xE9n. Haszn\xE1lhat\xF3 'kapcsol\xF3d\xF3 cikkek' t\xE1bl\xE1zathoz vagy egy kapcsol\xF3d\xF3 rovat tartalm\xE1nak megjelen\xEDt\xE9s\xE9hez.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 665
+// include/constants_param_wizard.php, row 669
 "complex parameter" => "komplex param\xE9ter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 666
+// include/constants_param_wizard.php, row 670
 "this parameter is the same as we use in view.php url parameter - see the FAQ" => "ez a param\xE9ter ugyanaz, mint amit a view.php url param\xE9ter\xE9ben haszn\xE1lunk - l\xE1sd a FAQ-t", // ai 2026-06
 
-// include/constants_param_wizard.php, row 668
+// include/constants_param_wizard.php, row 672
 "vid=4&amp;cmd[23]=v-25" => "",
 
-// include/constants_param_wizard.php, row 673
+// include/constants_param_wizard.php, row 677
 "image width" => "k\xE9psz\xE9less\xE9g", // ai 2026-06
 
-// include/constants_param_wizard.php, row 674
+// include/constants_param_wizard.php, row 678
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "R\xE9gi st\xEDlus\xFA f\xFCggv\xE9ny. Ki\xEDrja a <i>mez\xF5t</i> k\xE9p sz\xE9less\xE9g \xE9rt\xE9kk\xE9nt (\\<img width=...\\>), vagy t\xF6rli a width taget. K\xF6zvetlen\xFCl a \"width=\" ut\xE1n haszn\xE1land\xF3.Az f_c f\xFCggv\xE9ny jobb megold\xE1st k\xEDn\xE1l erre a \":width=\" param\xE9terekkel.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 677
+// include/constants_param_wizard.php, row 681
 "transformation" => "transzform\xE1ci\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 678
+// include/constants_param_wizard.php, row 682
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Lehet\xF5v\xE9 teszi a mez\xF5 \xE9rt\xE9k\xE9nek \xE1talak\xEDt\xE1s\xE1t egy m\xE1sik \xE9rt\xE9kre.<br>Haszn\xE1lat: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Ha a <i>mez\xF5</i> tartalma megegyezik a <b>content_1</b> \xE9rt\xE9kkel, a <b>return_value_1</b> ker\xFCl visszaad\xE1sra. Ha a <i>mez\xF5</i> tartalma megegyezik a <b>content_2</b> \xE9rt\xE9kkel, a <b>return_value_2</b> ker\xFCl visszaad\xE1sra. Ha <i>a mez\xF5 egyik <b>content_x</b> \xE9rt\xE9kkel sem egyezik, a <b>default</b> ker\xFCl visszaad\xE1sra</i>.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 681, 693, 705, 717, 729, 741, 753, 765, 777, 789
+// include/constants_param_wizard.php, row 685, 697, 709, 721, 733, 745, 757, 769, 781, 793
 "content" => "tartalom", // ai 2026-06
 
-// include/constants_param_wizard.php, row 682, 694, 706, 718, 730, 742, 754, 766, 778, 790
+// include/constants_param_wizard.php, row 686, 698, 710, 722, 734, 746, 758, 770, 782, 794
 "string for comparison with <i>the field</i> for following return value" => "sztring a <i>mez\xF5vel</i> val\xF3 \xF6sszehasonl\xEDt\xE1shoz a k\xF6vetkez\xF5 visszat\xE9r\xE9si \xE9rt\xE9khez", // ai 2026-06
 
-// include/constants_param_wizard.php, row 687, 699, 711, 723, 735, 747, 759, 771, 783, 795
+// include/constants_param_wizard.php, row 691, 703, 715, 727, 739, 751, 763, 775, 787, 799
 "return value" => "visszat\xE9r\xE9si \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 688, 700, 712, 724, 736, 748, 760, 772, 784, 796
+// include/constants_param_wizard.php, row 692, 704, 716, 728, 740, 752, 764, 776, 788, 800
 "string to return if previous content matches - You can use field_id too" => "a visszaadott sztring, ha az el\xF5z\xF5 content egyezik - field_id is haszn\xE1lhat\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 690, 702, 714, 726, 738, 750, 762, 774, 786, 798, 804
+// include/constants_param_wizard.php, row 694, 706, 718, 730, 742, 754, 766, 778, 790, 802, 808
 "Environment" => "K\xF6rnyezetv\xE9delem", // ai 2026-06
 
-// include/constants_param_wizard.php, row 802
+// include/constants_param_wizard.php, row 806
 "if no content matches, use this string as return value" => "ha egyik content sem egyezik, ez a sztring lesz a visszat\xE9r\xE9si \xE9rt\xE9k", // ai 2026-06
 
-// include/constants_param_wizard.php, row 809
+// include/constants_param_wizard.php, row 813
 "expanded string" => "expand\xE1lt sztring", // ai 2026-06
 
-// include/constants_param_wizard.php, row 810
+// include/constants_param_wizard.php, row 814
 "expands the string in the parameter" => "expand\xE1lja a param\xE9terben megadott sztringet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 813
+// include/constants_param_wizard.php, row 817
 "string to expand" => "expand\xE1land\xF3 sztring", // ai 2026-06
 
-// include/constants_param_wizard.php, row 814
+// include/constants_param_wizard.php, row 818
 "if specified then this string is expanded, if not specified then expands the contents of the field" => "ha meg van adva, ez a sztring expand\xE1l\xF3dik; ha nincs megadva, a mez\xF5 tartalma expand\xE1l\xF3dik", // ai 2026-06
 
-// include/constants_param_wizard.php, row 822
+// include/constants_param_wizard.php, row 826
 "file information" => "f\xE1jlinform\xE1ci\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 823
+// include/constants_param_wizard.php, row 827
 "prints <i>the field</i> as file information, its size or type" => "ki\xEDrja a <i>mez\xF5t</i> f\xE1jlinform\xE1ci\xF3k\xE9nt, annak m\xE9ret\xE9t vagy t\xEDpus\xE1t", // ai 2026-06
 
-// include/constants_param_wizard.php, row 827
+// include/constants_param_wizard.php, row 831
 "specifies returned information: <br> - <i>name</i> - filename<br> - <i>type</i> - returns type of file (like TXT)<br> - <i>size</i> - returns size of file in kB or MB (like 12.1 kB)<br> - <i>bytesize</i> - (like 12128)<br> - <i>link</i><br> - <i>typesize</i> - [type - size] in span<br> - <i>crc</i><br> - <i>time</i>" => "meghat\xE1rozza a visszaadott inform\xE1ci\xF3t: <br> - <i>name</i> - f\xE1jln\xE9v<br> - <i>type</i> - a f\xE1jl t\xEDpus\xE1t adja vissza (pl. TXT)<br> - <i>size</i> - a f\xE1jl m\xE9ret\xE9t adja vissza kB-ban vagy MB-ban (pl. 12.1 kB)<br> - <i>bytesize</i> - (pl. 12128)<br> - <i>link</i><br> - <i>typesize</i> - [t\xEDpus - m\xE9ret] span elemben<br> - <i>crc</i><br> - <i>time</i>", // ai 2026-06
 
-// include/constants_param_wizard.php, row 841
+// include/constants_param_wizard.php, row 845
 "Transformation action" => "Transzform\xE1ci\xF3s m\xFBvelet", // ai 2026-06
 
-// include/constants_param_wizard.php, row 843
+// include/constants_param_wizard.php, row 847
 "AA Expression" => "AA kifejez\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 844
+// include/constants_param_wizard.php, row 848
 "AA expression where we can use any AA {expressions}" => "AA kifejez\xE9s, amelyben b\xE1rmilyen AA {expressions} haszn\xE1lhat\xF3", // ai 2026-06
 
-// include/constants_param_wizard.php, row 847
+// include/constants_param_wizard.php, row 851
 "expression" => "kifejez\xE9s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 856
+// include/constants_param_wizard.php, row 860
 "Store" => "T\xE1rol\xE1s", // ai 2026-06
 
-// include/constants_param_wizard.php, row 857
+// include/constants_param_wizard.php, row 861
 "Simply store a value from the input field" => "Egyszer\xFBen elt\xE1rolja a beviteli mez\xF5 \xE9rt\xE9k\xE9t", // ai 2026-06
 
-// include/constants_param_wizard.php, row 860
+// include/constants_param_wizard.php, row 864
 "lang (optional)" => "lang (opcion\xE1lis)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 861
+// include/constants_param_wizard.php, row 865
 "two letters - cz | en | es | de. If provided the value will be stored to specified language (the field must use translations)" => "k\xE9t bet\xFB - cz | en | es | de. Ha meg van adva, az \xE9rt\xE9k a megadott nyelven ker\xFCl t\xE1rol\xE1sra (a mez\xF5nek ford\xEDt\xE1sokat kell haszn\xE1lnia)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 869
+// include/constants_param_wizard.php, row 873
 "Remove string" => "Sztring elt\xE1vol\xEDt\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 870
+// include/constants_param_wizard.php, row 874
 "Remove all occurrences of a string from the input field." => "Elt\xE1vol\xEDtja egy sztring \xF6sszes el\xF5fordul\xE1s\xE1t a beviteli mez\xF5b\xF5l.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 873, 894
+// include/constants_param_wizard.php, row 877, 898
 "string parameter" => "karakterl\xE1nc-param\xE9ter", // ai 2026-06
 
-// include/constants_param_wizard.php, row 874
+// include/constants_param_wizard.php, row 878
 "Removed string" => "Elt\xE1vol\xEDtand\xF3 karakterl\xE1nc", // ai 2026-06
 
-// include/constants_param_wizard.php, row 880
+// include/constants_param_wizard.php, row 884
 "Format date" => "D\xE1tum form\xE1z\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 881
+// include/constants_param_wizard.php, row 885
 "Parse the date in the input field expected to be in English date format. In case of error, the transformation fails" => "\xC9rtelmezi a beviteli mez\xF5ben l\xE9v\xF5, angol d\xE1tumform\xE1tumban v\xE1rt d\xE1tumot. Hiba eset\xE9n az \xE1talak\xEDt\xE1s meghi\xFAsul", // ai 2026-06
 
-// include/constants_param_wizard.php, row 885
+// include/constants_param_wizard.php, row 889
 "Add http prefix" => "Http el\xF5tag hozz\xE1ad\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 886
+// include/constants_param_wizard.php, row 890
 "Adds 'https://' prefix to the field if not beginning with 'https://' and not empty." => "Hozz\xE1adja a 'https://' el\xF5tagot a mez\xF5h\xF6z, ha az nem 'https://'-vel kezd\xF5dik \xE9s nem \xFCres.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 890
+// include/constants_param_wizard.php, row 894
 "Store parameter" => "Param\xE9ter t\xE1rol\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 891
+// include/constants_param_wizard.php, row 895
 "Store parameter instead of the input field" => "A param\xE9tert t\xE1rolja a beviteli mez\xF5 helyett", // ai 2026-06
 
-// include/constants_param_wizard.php, row 901
+// include/constants_param_wizard.php, row 905
 "Store as long id" => "T\xE1rol\xE1s hossz\xFA id-k\xE9nt", // ai 2026-06
 
-// include/constants_param_wizard.php, row 902
+// include/constants_param_wizard.php, row 906
 "Creates long id from the string. The string is combined with the parameter!! or with slice_id (if the parameter is not provided). From the same string (and the same parameter) we always create the same id." => "Hossz\xFA id-t hoz l\xE9tre a karakterl\xE1ncb\xF3l. A karakterl\xE1nc a param\xE9terrel!! vagy a slice_id-vel kombin\xE1l\xF3dik (ha a param\xE9ter nincs megadva). Ugyanabb\xF3l a karakterl\xE1ncb\xF3l (\xE9s ugyanabb\xF3l a param\xE9terb\xF5l) mindig ugyanaz az id j\xF6n l\xE9tre.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 905
+// include/constants_param_wizard.php, row 909
 "string to add" => "hozz\xE1f\xFBzend\xF5 karakterl\xE1nc", // ai 2026-06
 
-// include/constants_param_wizard.php, row 906
+// include/constants_param_wizard.php, row 910
 "this parameter will be added to the string before conversion (the reason is to avoid empty strings and also in order we do not generate always the same id for common strings (in different imports). If this param is not specified, slice_id is used instead." => "ez a param\xE9ter az \xE1talak\xEDt\xE1s el\xF5tt hozz\xE1ad\xF3dik a karakterl\xE1nchoz (c\xE9l az \xFCres karakterl\xE1ncok elker\xFCl\xE9se, \xE9s hogy ne mindig ugyanazt az id-t gener\xE1ljuk a gyakori karakterl\xE1ncokhoz (k\xFCl\xF6nb\xF6z\xF5 importokban). Ha ez a param\xE9ter nincs megadva, helyette a slice_id haszn\xE1latos.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 914
+// include/constants_param_wizard.php, row 918
 "Split input field by string" => "Beviteli mez\xF5 feloszt\xE1sa karakterl\xE1nc szerint", // ai 2026-06
 
-// include/constants_param_wizard.php, row 915
+// include/constants_param_wizard.php, row 919
 "Split input field by string parameter and store the result as multi-value." => "Felosztja a beviteli mez\xF5t a karakterl\xE1nc-param\xE9ter szerint, \xE9s az eredm\xE9nyt t\xF6bb\xE9rt\xE9k\xFBk\xE9nt t\xE1rolja.", // ai 2026-06
 
-// include/constants_param_wizard.php, row 918
+// include/constants_param_wizard.php, row 922
 "delimiter (+ possible languages)" => "elv\xE1laszt\xF3 (+ esetleg nyelvek)", // ai 2026-06
 
-// include/constants_param_wizard.php, row 919
+// include/constants_param_wizard.php, row 923
 "string delimiter which separates the values of the input field (like \"|\"). Another option is to add also languages separated by \"##\" in the form <delimiter>##<lang1>##<lang2> (\"|##cz##en\" for \"Ahoj|Hi\") - this will fill translated fields" => "karakterl\xE1nc-elv\xE1laszt\xF3, amely a beviteli mez\xF5 \xE9rt\xE9keit v\xE1lasztja el (pl. \"|\"). Tov\xE1bbi lehet\xF5s\xE9g a nyelvek megad\xE1sa is \"##\" jelekkel elv\xE1lasztva, <delimiter>##<lang1>##<lang2> form\xE1ban (\"|##cz##en\" az \"Ahoj|Hi\" eset\xE9n) - ez kit\xF6lti a ford\xEDtott mez\xF5ket", // ai 2026-06
 
-// include/constants_param_wizard.php, row 926
+// include/constants_param_wizard.php, row 930
 "Store default value" => "Alap\xE9rtelmezett \xE9rt\xE9k t\xE1rol\xE1sa", // ai 2026-06
 
-// include/constants_param_wizard.php, row 927
+// include/constants_param_wizard.php, row 931
 "Store these default values for the following output fields. The other output fields will filled form <i>From</i> field (if specified). Else it is filled by <i>Action parameters</i> string.\n"
    ."    <table>\n"
    ."        <tr><td><b>Output field</b></td><td><b>Value</b></td><td><b>Description</b></td></tr></b>\n"

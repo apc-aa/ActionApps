@@ -83,7 +83,7 @@ class AddSeoFieldTemplate extends \AA\Optimize\AbstractOptimize
             'html_show'         => '0',
             'in_item_tbl'       => '0',
             'input_validate'    => 'text',
-            'input_insert_func' => 'qte',
+            'input_insert_func' => 'trm',
             'input_show'        => '1',
             'text_stored'       => '1',
         ];

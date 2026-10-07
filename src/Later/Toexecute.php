@@ -77,6 +77,15 @@ class Toexecute
      *  task retries after the lease expires. */
     public const CLAIM_LEASE = 1800;
 
+    /** Seconds before a task whose class is missing here is due again, at least. Another AA tree over
+     *  the same database (staging vs. production) may have the class and takes the task within this
+     *  time; the claim's lease would hold it back for half an hour, its lowered priority would lose it at 0. */
+    public const MISSING_CLASS_RETRY = 60;
+
+    /** ... and at most: the wait grows with the task's age (missingClassDelay()), so a class missing
+     *  everywhere costs a round one look per row an hour, not one a minute. */
+    public const MISSING_CLASS_RETRY_MAX = 3600;
+
     /** Task classes AA no longer has: their queued rows can never run and are removed. Only these -
      *  during a deploy or with a stale classmap a live class may be missing for a moment. */
     public const REMOVED_TASK_CLASSES = ['AA_Task_Import_Module_Chunk', 'AA\\Central\\Task\\ImportModuleChunk'];
@@ -84,11 +93,35 @@ class Toexecute
     /** log.type of the removed-class tasks dropped from the queue */
     public const LOG_CLASS_GONE = 'TASK_GONE';
 
-    /** log.type of the tasks left in the queue because their class is missing */
+    /** log.type of the tasks left in the queue because a class they need is missing here */
     public const LOG_CLASS_MISSING = 'TASK_MISS';
 
     /** log.type of a task that threw (log.type is 10 bytes); CheckQueue reports them */
     public const FAILED_EVENT = 'TOEXEC_ERR';
+
+    /** The running round as [microtime(true) of its start, allowed seconds]; null outside a round.
+     *  execute() and executeTask() restore the previous value when they end, because a task may
+     *  run another round by hand and the outer round must get its own value back.
+     *  @var array{float, float}|null */
+    private static ?array $round = null;
+
+    /** Seconds left in the queue round that is running now, so a long task can stop in time
+     *  @return float|null null when not called from inside a round */
+    public static function timeLeft(): ?float
+    {
+        if (self::$round === null) {
+            return null;
+        }
+        [$start, $allowed] = self::$round;
+        return max(0.0, $allowed - (microtime(true) - $start));
+    }
+
+    /** The whole allowed duration of the queue round that is running now
+     *  @return float|null null when not called from inside a round */
+    public static function roundSeconds(): ?float
+    {
+        return self::$round[1] ?? null;
+    }
 
     /** later function
      *  Stores the object and params to the database for later execution.
@@ -160,11 +193,12 @@ class Toexecute
         $db = getDB();
         try {
             $db->query('SELECT GET_LOCK(' . $db->quote($lock_name) . ', 2)');
-            $task = self::scheduledTask($selector);  // ['id' => $id, 'time' => $time]
+            $task = self::scheduledTask($selector);
             if (!$task['id']) {
                 $this->later($object, $params, $selector, $priority, $time);
             } elseif ($task['time'] > $time) {
-                // we need it run earlier
+                // Never fires: scheduledTask() returns 'execute_after', so $task['time'] is null.
+                // Making it live needs a guard first - it would pull a claimed (leased) row back to due.
                 DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
             }
         } finally {
@@ -173,13 +207,13 @@ class Toexecute
         }
     }
 
-    /** @returns array scheduled ['id'=>.., 'time'=>..] or ['id'=>false, 'time'=>false]
-     *  @usage  ['id' => $id, 'time' => $time] = self::scheduledTask($selector);
+    /** @returns array scheduled ['id'=>.., 'execute_after'=>..] or ['id'=>false, 'execute_after'=>false]
+     *  @usage  ['id' => $id, 'execute_after' => $time] = self::scheduledTask($selector);
      */
     public static function scheduledTask($selector): array
     {
         $ret = DB_AA::select1([], "SELECT `id`,`execute_after` FROM `toexecute`", [['selector', $selector], ['priority', 0, '>']]);
-        return $ret ?: ['id' => false, 'time' => false];
+        return $ret ?: ['id' => false, 'execute_after' => false];
     }
 
 
@@ -196,13 +230,12 @@ class Toexecute
         $this->later($object, $params, $selector, $priority, self::TOEXECUTE_USER_TASK_TIME);
     }
 
-    /** cancel_all function
-     * @param $selector
+    /** removes every queued row of $selector, parked user-queue rows too
+     * @param string $selector
      */
     public function cancel_all($selector): void
     {
-        $varset = new Cvarset();
-        $varset->doDeleteWhere('toexecute', "selector='" . quote($selector) . "'");
+        DB_AA::delete('toexecute', [['selector', (string) $selector]]);
     }
 
     /** One queue run as the cron entry points do it: plan the AA maintenance
@@ -265,6 +298,8 @@ class Toexecute
         $execute_start = microtime(true);
         $count = 0;
         $started = 0;
+        $outer_round = self::$round;
+        self::$round = [$execute_start, $allowed_time];
 
         // get just ids - the task itself we will grab later, since the objects
         // in the database could be pretty big, so we want to grab it one by one
@@ -272,17 +307,22 @@ class Toexecute
         // because the script tries execute it several times and without success.
         // @todo such task should be removed by some garbage collector
 
-        while ($task = DB_AA::select1('', 'SELECT * FROM `toexecute`', [['execute_after', time(), '<'], ['priority', 0, '>']], ['priority-'])) {
-            ++$started;
-            $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
-            if ($ret > 0) {
+        try {
+            while ($task = DB_AA::select1('', 'SELECT * FROM `toexecute`', [['execute_after', time(), '<'], ['priority', 0, '>']], ['priority-'])) {
+                $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+                if ($ret < 0) {
+                    // a concurrent runner claimed it, or a class is missing here and the row is due only
+                    // later; not counted as started - CheckQueue reads started > done as a round out of time
+                    continue;
+                }
+                ++$started;
+                if ($ret === 0) {
+                    break;
+                }
                 ++$count;
-            } elseif ($ret === 0) {
-                break;
             }
-            // $ret < 0: a concurrent runner claimed the task, or its class is missing and
-            // it stays queued - either way its execute_after moved ahead, so the next
-            // SELECT skips it; just carry on
+        } finally {
+            self::$round = $outer_round;
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
@@ -312,37 +352,46 @@ class Toexecute
         $count = 0;
         $started = 0;
 
-        foreach ($tasks as $task_id) {
-            $task = DB_AA::select1('', 'SELECT * FROM toexecute', [['id', $task_id, 'i']]);
-            if (!$task) {
-                $this->message("#$task_id: " . _m('task is no longer in the queue'));
-                continue;   // task finished (deleted) meanwhile
-            }
-            if (isset($expected[$task_id]) && (int) $expected[$task_id] !== (int) $task['priority']) {
-                $this->message("#$task_id: " . _m('skipped - the task changed meanwhile (reload the list)'));
-                continue;   // claimed or executed since the UI list was rendered
-            }
-            // No lease-window check here, deliberately: this is the explicit
-            // "Execute" action in the Task Manager UI - the user may re-run
-            // even a task another runner is just executing (with a reloaded,
-            // matching priority), and a task scheduled for the near future
-            // must stay manually runnable. The CAS in _exeOne() still
-            // collapses two concurrent clicks (same snapshot) into one run.
-            ++$started;
-            $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
-            if ($ret > 0) {
+        $outer_round = self::$round;
+        self::$round = [$execute_start, $allowed_time];
+
+        try {
+            foreach ($tasks as $task_id) {
+                $task = DB_AA::select1('', 'SELECT * FROM toexecute', [['id', $task_id, 'i']]);
+                if (!$task) {
+                    $this->message("#$task_id: " . _m('task is no longer in the queue'));
+                    continue;   // task finished (deleted) meanwhile
+                }
+                if (isset($expected[$task_id]) && (int) $expected[$task_id] !== (int) $task['priority']) {
+                    $this->message("#$task_id: " . _m('skipped - the task changed meanwhile (reload the list)'));
+                    continue;   // claimed or executed since the UI list was rendered
+                }
+                // No lease-window check here, deliberately: this is the explicit
+                // "Execute" action in the Task Manager UI - the user may re-run
+                // even a task another runner is just executing (with a reloaded,
+                // matching priority), and a task scheduled for the near future
+                // must stay manually runnable. The CAS in _exeOne() still
+                // collapses two concurrent clicks (same snapshot) into one run.
+                $ret = $this->_exeOne($task, $execute_times, $execute_start, $allowed_time);
+                if ($ret < 0) {
+                    continue;   // claimed by a concurrent runner meanwhile, or its class is missing here
+                }
+                ++$started;
+                if ($ret === 0) {
+                    break;
+                }
                 ++$count;
-            } elseif ($ret === 0) {
-                break;
             }
-            // $ret < 0: claimed by a concurrent runner meanwhile, or its class is missing - skip it
+        } finally {
+            self::$round = $outer_round;
         }
         AA_Log::write('TOEXECUTE', 'AA\Later\Toexecute', new AA_Logentry_Xrun(['done' => $count, 'started' => $started, 'duration' => sprintf('%.3g', microtime(true) - $execute_start), 'allowed' => $allowed_time]));
     }
 
     /** @return int 1 = task executed (or failed and left for a retry), 0 = out of
      *              allowed time (caller stops), -1 = lost the claim to a concurrent
-     *              runner, or the task's class is missing and the task stays queued (caller skips) */
+     *              runner, or a class the task needs is missing and the task is due again
+     *              later, see parkMissingClass() (caller goes on) */
     public function _exeOne($task, &$execute_times, $execute_start, $allowed_time): int
     {
         $task_type = get_if($task['selector'], 'aa_unspecified');
@@ -367,8 +416,9 @@ class Toexecute
         $lease = ((int) $task['execute_after'] === self::TOEXECUTE_USER_TASK_TIME)
             ? self::TOEXECUTE_USER_TASK_TIME
             : time() + self::CLAIM_LEASE;
+        $claimed_priority = max((int) $task['priority'] - 1, 0);
         $claimed = DB_AA::update('toexecute', [
-            ['priority', max($task['priority'] - 1, 0), 'i'],
+            ['priority', $claimed_priority, 'i'],
             ['execute_after', $lease, 'i'],
         ], [
             ['id', $task['id'], 'i'],
@@ -382,16 +432,23 @@ class Toexecute
         try {
             $object = unserialize($task['object']);   // __wakeup() is task code too
             if ($object instanceof \__PHP_Incomplete_Class) {
-                return $this->taskOfMissingClass($task, $object);
+                $class = (string) (((array) $object)['__PHP_Incomplete_Class_Name'] ?? '');
+                return in_array($class, self::REMOVED_TASK_CLASSES, true)
+                    ? $this->dropRemovedClass($task, $class)
+                    : $this->parkMissingClass($task, $claimed_priority, $lease, $class);
+            }
+            $class = self::missingRequiredClass($object);
+            if ($class !== null) {
+                return $this->parkMissingClass($task, $claimed_priority, $lease, $class);
             }
             $params = unserialize((string) $task['params']);   // also fed to the log row below, so unserialize once
             if (is_object($object)) {
                 $retcode = $this->execute_one($object, $params);
-                $this->message($retcode);
+                $this->message(safe($retcode));   // the Task Manager prints the report as HTML
                 $selector = AA_Log::selector($object);
             } else {
                 // id + class + size only - the serialized object may hold credentials
-                $what = "#{$task['id']} " . (preg_match('/^[OC]:\d+:"([^"]+)"/', (string) $task['object'], $m) ? $m[1] : '?') . ' (' . strlen((string) $task['object']) . ' B)';
+                $what = "#{$task['id']} " . (self::serializedClass((string) $task['object']) ?? '?') . ' (' . strlen((string) $task['object']) . ' B)';
                 $this->message('Toexecute:execute - unserialize err: ' . $what);
                 $retcode = 'no execute, removed from queue';
                 $selector = AA_Log::selector('no object', $what);
@@ -418,30 +475,80 @@ class Toexecute
         return 1;
     }
 
-    /** A task whose class is not declared. Of a removed class it is dropped; of any other it stays
-     *  queued - the claim's lease delays the retry and its lowered priority retires the row after about
-     *  100 attempts, long enough to survive a deploy. The log gets one row a day per class, not one per
-     *  task - there may be thousands of them (State Check: CheckQueuedClassMissing).
-     *  @return int 1 = dropped, -1 = left in the queue (the caller goes on) */
-    private function taskOfMissingClass(array $task, \__PHP_Incomplete_Class $object): int
+    /** A task of a class AA no longer has: it can never run, so its row goes. One log row a day per
+     *  class - there may be thousands of such rows.
+     *  @return int 1 = done with it (the caller goes on) */
+    private function dropRemovedClass(array $task, string $class): int
     {
-        $class = (string) (((array) $object)['__PHP_Incomplete_Class_Name'] ?? '');
-        if (in_array($class, self::REMOVED_TASK_CLASSES, true)) {
-            DB_AA::delete('toexecute', [['id', $task['id'], 'i']]);
-            LogOnce::daily(self::LOG_CLASS_GONE, $class, (string) $task['selector']);
-            $this->message("Toexecute: class $class no longer exists - task removed from the queue");
-            return 1;
-        }
+        DB_AA::delete('toexecute', [['id', $task['id'], 'i']]);
+        LogOnce::daily(self::LOG_CLASS_GONE, $class, (string) $task['selector']);
+        $this->message('Toexecute: class ' . safe($class) . ' no longer exists - task removed from the queue');
+        return 1;
+    }
+
+    /** A claimed task that needs a class this AA cannot load. Another AA tree over the same database
+     *  may have it, so the row gets its priority back - each miss would sink it until 0 retires it - and
+     *  is due again in missingClassDelay() instead of after the lease. A user-queue task stays parked.
+     *  The write matches the claim, so a runner that took the row meanwhile keeps it. One log row a day
+     *  per class (State Check: CheckQueuedClassMissing).
+     *  @return int -1 = left in the queue (the caller goes on) */
+    private function parkMissingClass(array $task, int $claimed_priority, int $lease, string $class): int
+    {
+        $due = ($lease === self::TOEXECUTE_USER_TASK_TIME) ? $lease : time() + self::missingClassDelay(time() - (int) ($task['created'] ?? 0));
+        DB_AA::update('toexecute', [
+            ['priority', (int) $task['priority'], 'i'],
+            ['execute_after', $due, 'i'],
+        ], [
+            ['id', $task['id'], 'i'],
+            ['execute_after', $lease, 'i'],
+            ['priority', $claimed_priority, 'i'],
+        ]);
         LogOnce::daily(self::LOG_CLASS_MISSING, $class, (string) $task['selector']);
-        $this->message("Toexecute: class $class is missing - task left in the queue");
+        $this->message('Toexecute: class ' . safe($class) . " is missing - task #{$task['id']} left in the queue for a runner that has it");
         return -1;
+    }
+
+    /** Seconds a task of a missing class waits: a 24th of its age, from MISSING_CLASS_RETRY (the first
+     *  24 minutes) to MISSING_CLASS_RETRY_MAX (from a day on). A deploy skew of an hour delays a fresh
+     *  task by a few minutes; the age is counted from the insert, as no column says when the class went
+     *  missing. */
+    public static function missingClassDelay(int $age): int
+    {
+        return min(self::MISSING_CLASS_RETRY_MAX, max(self::MISSING_CLASS_RETRY, intdiv($age, 24)));
+    }
+
+    /** The first class the task needs beyond its own (RequiresClasses) that this AA cannot load, else
+     *  null. A name that is no class name at all is not waited for - the task itself refuses it. */
+    private static function missingRequiredClass(mixed $object): ?string
+    {
+        if (!$object instanceof RequiresClasses) {
+            return null;
+        }
+        foreach ($object->requiredClasses() as $class) {
+            if (self::isClassName($class) && !class_exists($class)) {
+                return $class;
+            }
+        }
+        return null;
+    }
+
+    /** the class a serialized object names, if it is a valid class name - a row's bytes are not trusted */
+    private static function serializedClass(string $serialized): ?string
+    {
+        return (preg_match('/^[OC]:\d+:"([^"]*)"/', $serialized, $m) && self::isClassName($m[1])) ? $m[1] : null;
+    }
+
+    private static function isClassName(string $name): bool
+    {
+        return (bool) preg_match('/^[A-Za-z_\x80-\xff\\\\][A-Za-z0-9_\x80-\xff\\\\]*$/D', $name);
     }
 
     /** The FAILED_EVENT row: "#id Class file:line", never the message (it may carry
      *  passwords). The AA-relative path gives up its head first, so the file name and
      *  line survive the log.params width.
+     *  @param int|string $id the queue row, or the batch run whose step failed
      */
-    public static function failureParams(int $id, \Throwable $e): string
+    public static function failureParams(int|string $id, \Throwable $e): string
     {
         $head  = "#$id " . $e::class . ' ';
         $where = FatalLogger::format('', $e->getFile(), $e->getLine(), defined('AA_BASE_PATH') ? (string) constant('AA_BASE_PATH') : '')['selector'];

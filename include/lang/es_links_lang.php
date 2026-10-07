@@ -10,6 +10,7 @@ $mgettext_lang = "es";
 
 return [
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Are you sure you want to empty trash?" => "\xBFEst\xE1 seguro de que desea vaciar la papelera?",
 // "Can't copy image  %s to %s" => "No se puede copiar la imagen de %s a %s",
 // "No permissions to manage links" => "No tiene permisos para administrar enlaces",
 // "No permissions to info page" => "No tiene permisos para la p\xE1gina de informaci\xF3n",
@@ -30,7 +31,6 @@ return [
 // "Title" => "T\xEDtulo",
 // "URL of .shtml page" => "URL para p\xE1gina .shtml",
 // "Use following SSI command to include links to the page: " => "Utilice el siguiente SSI para incluir enlaces a la p\xE1gina:",
-// "Owner" => "Propietario",
 // "New Owner" => "Nuevo propietario",
 // "New Owner's E-mail" => "Correo-e de nuevo propietario",
 // "Deleted" => "Borrado",
@@ -38,7 +38,6 @@ return [
 // "No permission to change state of the link" => "No tiene permisos para cambiar el estado de los enlaces",
 // "Base category not found" => "La categoria base no se encuentra",
 // "You don't have permissions to delete a links module." => "Usted no tiene permisos para borrar el m\xF3dulo de enlaces",
-// "Module not found." => "M\xF3dulo no encontrado",
 // "Links module successfully deleted" => "M\xF3dulo de enlaces borrado satisfactoriamente",
 // "Items Page" => "P\xE1gina de \xEDtems",
 // "Stored search name" => "Nombre de b\xFAsqueda",
@@ -58,130 +57,130 @@ return [
 // "Selected items" => "Items seleccionados",
 // End of unused messages
 
-// include/searchbar.class.php, row 51
+// include/searchbar.class.php, row 54
 "Condition" => "Condici\xF3n",
 
-// include/searchbar.class.php, row 52
+// include/searchbar.class.php, row 55
 "Readonly" => "Solo lectura",
 
-// include/searchbar.class.php, row 142
+// include/searchbar.class.php, row 151
 "Search row" => "Fila de b\xFAsqueda",
 
-// include/searchbar.class.php, row 143
+// include/searchbar.class.php, row 152
 "Order row" => "Fila de ordenaci\xF3n",
 
-// include/searchbar.class.php, row 533, 534, 570
+// include/searchbar.class.php, row 566, 567, 607
 "Search" => "Buscar",
 
-// include/searchbar.class.php, row 533
+// include/searchbar.class.php, row 566
 "And" => "Y",
 
-// include/searchbar.class.php, row 543
+// include/searchbar.class.php, row 576
 "contains" => "Contiene",
 
-// include/searchbar.class.php, row 546
+// include/searchbar.class.php, row 580
 "begins with" => "comienza con",
 
-// include/searchbar.class.php, row 549
+// include/searchbar.class.php, row 584
 "is" => "es",
 
-// include/searchbar.class.php, row 571
+// include/searchbar.class.php, row 608
 "Clear" => "Borrar",
 
-// include/searchbar.class.php, row 574
+// include/searchbar.class.php, row 611
 "Store search" => "Almacenar",
 
-// include/searchbar.class.php, row 595
+// include/searchbar.class.php, row 633
 "Order" => "Orden",
 
-// include/searchbar.class.php, row 599
+// include/searchbar.class.php, row 637
 "Descending" => "Descendente",
 
-// include/searchbar.class.php, row 613
+// include/searchbar.class.php, row 652
 "Filter" => "Filtro",
 
-// include/searchbar.class.php, row 664
+// include/searchbar.class.php, row 706
 "Advanced search" => "B\xFAsqueda avanzada",
 
-// include/searchbar.class.php, row 728
+// include/searchbar.class.php, row 769
 "Save" => "Guardar",
 
-// include/searchbar.class.php, row 729
+// include/searchbar.class.php, row 770
 "Refine" => "Refinar",
 
-// include/searchbar.class.php, row 730
+// include/searchbar.class.php, row 771
 "Cancel" => "Cancelar",
 
-// include/searchbar.class.php, row 731
-// modules/links/constants.php, row 59, 171
+// include/searchbar.class.php, row 772
+// modules/links/constants.php, row 60, 173
 "Name" => "Nombre",
 
-// include/searchbar.class.php, row 732
+// include/searchbar.class.php, row 773
 "Share with all slice users" => "Compartir con todos los usuarios del canal",
 
-// include/searchbar.class.php, row 733
+// include/searchbar.class.php, row 774
 "Save filter" => "Guardar filtro",
 
-// include/searchbar.class.php, row 734
+// include/searchbar.class.php, row 775
 "Rename filter" => "Renombrar filtro",
 
-// include/searchbar.class.php, row 735
+// include/searchbar.class.php, row 776
 "Are you sure you want to delete selected filter?" => "\xBFEst\xE1 seguro de que desea eliminar el filtro seleccionado?",
 
-// include/searchbar.class.php, row 1017
+// include/searchbar.class.php, row 1065
 "Select one..." => "Seleccione uno...",
 
-// include/searchbar.class.php, row 1032
+// include/searchbar.class.php, row 1080
 "My filters" => "Mis filtros",
 
-// include/searchbar.class.php, row 1035
+// include/searchbar.class.php, row 1083
 "Global filters" => "Filtros globales",
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Shared filter (click to apply)" => "Filtro compartido (haga clic para aplicar)",
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "Filtro personal (haga clic para aplicar)",
 
-// include/searchbar.class.php, row 1083
+// include/searchbar.class.php, row 1124
 "Rename" => "Renombrar",
 
-// include/searchbar.class.php, row 1085
+// include/searchbar.class.php, row 1126
 "Delete" => "Borrar",
 
-// include/searchbar.class.php, row 1094
+// include/searchbar.class.php, row 1135
 "Manage filters" => "Administrar filtros",
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Error: Clave de lectura no se encuentra",
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Mensaje de noticias de la caja de herramientas",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 // modules/links/check_url.php, row 52
 "Back" => "Regresar",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Volver a iniciar sesi\xF3n",
 
-// modules/links/actions.php, row 47, 91, 112
+// modules/links/actions.php, row 48, 93, 115
 "Can't find link in given category" => "No se puede encontrar el enlace para la categoria dada",
 
-// modules/links/actions.php, row 52, 117
+// modules/links/actions.php, row 53, 120
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "No tiene permisos para borrar el enlace de la categoria - configure el enlace como PROPUESTA para BORRAR desde la categoria dada",
 
-// modules/links/actions.php, row 61, 126
+// modules/links/actions.php, row 62, 129
 "Can't get association information" => "No es posible obtener informaci\xF3n de asociaci\xF3n",
 
-// modules/links/actions.php, row 95
+// modules/links/actions.php, row 97
 "No permission to approve link to given category" => "No tiene permisos para aprobar el enlace a la categoria dada",
 
-// modules/links/actions.php, row 162, 165
+// modules/links/actions.php, row 166, 169
 "No permission to move link" => "No tiene permisos para mover el enlace",
 
 // modules/links/catedit.php, row 51
-// modules/links/catedit2.php, row 208
+// modules/links/catedit2.php, row 210
 "No permission to edit category" => "Sin permisos para editar la categoria",
 
 // modules/links/catedit.php, row 74
@@ -194,7 +193,7 @@ return [
 "Category" => "Categoria",
 
 // modules/links/catedit.php, row 104
-// modules/links/constants.php, row 58, 170
+// modules/links/constants.php, row 59, 172
 // modules/links/linkedit.php, row 430
 "Id" => "",
 
@@ -202,13 +201,13 @@ return [
 "Links in subtree" => "Enlaces del subdirectorio",
 
 // modules/links/catedit.php, row 105
-// modules/links/catedit2.php, row 217
-// modules/links/constants.php, row 93, 191
+// modules/links/catedit2.php, row 219
+// modules/links/constants.php, row 94, 194
 "Category name" => "Nombre de categoria",
 
 // modules/links/catedit.php, row 106
-// modules/links/catedit2.php, row 218
-// modules/links/constants.php, row 97, 193
+// modules/links/catedit2.php, row 220
+// modules/links/constants.php, row 98, 196
 "Category description" => "Descripci\xF3n de categoria",
 
 // modules/links/catedit.php, row 107
@@ -218,17 +217,17 @@ return [
 "Disallow storing of the links to this category?" => "Deshabilitar el almacenamiento de enlaces en esta categoria?",
 
 // modules/links/catedit.php, row 108
-// modules/links/catedit2.php, row 222
-// modules/links/constants.php, row 75
-// modules/links/link.class.php, row 674
-// modules/links/linkedit.php, row 473
+// modules/links/catedit2.php, row 224
+// modules/links/constants.php, row 76
+// modules/links/link.class.php, row 728
+// modules/links/linkedit.php, row 498
 "Editor's note" => "Nota del editor",
 
 // modules/links/catedit.php, row 110
 "Subcategories" => "Subcategorias",
 
 // modules/links/catedit.php, row 113
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "Category tree" => "Arbol de categoria",
 
 // modules/links/catedit.php, row 113
@@ -255,31 +254,31 @@ return [
 // modules/links/catedit.php, row 137
 "Change state" => "Cambiar estado",
 
-// modules/links/catedit.php, row 142
+// modules/links/catedit.php, row 143
 "OK" => "Aceptar",
 
-// modules/links/catedit2.php, row 153
+// modules/links/catedit2.php, row 154
 "Category reassigned" => "Categoria reasignada",
 
-// modules/links/catedit2.php, row 165
+// modules/links/catedit2.php, row 166
 "Subcategory deleted" => "Subcategoria borrada",
 
-// modules/links/catedit2.php, row 167
+// modules/links/catedit2.php, row 168
 "Can't delete category which contains links" => "No se puede borrar una categoria que tiene v\xEDnculos",
 
-// modules/links/catedit2.php, row 221
+// modules/links/catedit2.php, row 223
 "Additional information" => "Informaci\xF3n adicional",
 
-// modules/links/catedit2.php, row 231
+// modules/links/catedit2.php, row 233
 "Category data changed" => "Datos de la categoria cambiados",
 
-// modules/links/catedit2.php, row 291
+// modules/links/catedit2.php, row 293
 "New category created" => "Nueva categoria creada",
 
-// modules/links/catedit2.php, row 297
+// modules/links/catedit2.php, row 299
 "Foreign category assigned" => "Categoria foranea asignada",
 
-// modules/links/cattree.php, row 436
+// modules/links/cattree.php, row 458
 "Switch to category" => "Cambiar a categoria",
 
 // modules/links/check_url.php, row 30
@@ -303,350 +302,353 @@ return [
 // modules/links/check_url.php, row 48
 "Page with the specified Url is not in database, yet" => "La p\xE1gina con el Url especificado no est\xE1 a\xFAn en la base de datos",
 
-// modules/links/constants.php, row 60
+// modules/links/constants.php, row 61
 "Original name" => "Nombre original",
 
-// modules/links/constants.php, row 61, 174
-// modules/links/link.class.php, row 663
-// modules/links/linkedit.php, row 456
+// modules/links/constants.php, row 62, 176
+// modules/links/link.class.php, row 717
+// modules/links/linkedit.php, row 474
 "Description" => "Descripci\xF3n",
 
-// modules/links/constants.php, row 62, 122
-// modules/links/link.class.php, row 667
-// modules/links/linkedit.php, row 463
+// modules/links/constants.php, row 63, 124
+// modules/links/link.class.php, row 721
+// modules/links/linkedit.php, row 486
 "Link type" => "Tipo de enlace",
 
-// modules/links/constants.php, row 63
+// modules/links/constants.php, row 64
 "Rate" => "Calificaci\xF3n",
 
-// modules/links/constants.php, row 64
+// modules/links/constants.php, row 65
 "Votes" => "Votos",
 
-// modules/links/constants.php, row 65
-// modules/links/link.class.php, row 664
+// modules/links/constants.php, row 66
+// modules/links/link.class.php, row 718
 "Author" => "Autor",
 
-// modules/links/constants.php, row 66
+// modules/links/constants.php, row 67
 "Insert date" => "Insertar fecha",
 
-// modules/links/constants.php, row 67
+// modules/links/constants.php, row 68
 "Editor" => "Modificado por", // ai 2026-06
 
-// modules/links/constants.php, row 68
+// modules/links/constants.php, row 69
 "Last edit date" => "Fecha de \xFAltima edici\xF3n",
 
-// modules/links/constants.php, row 69
+// modules/links/constants.php, row 70
 "Revised by" => "Revisado por",
 
-// modules/links/constants.php, row 70
+// modules/links/constants.php, row 71
 "Revision date" => "Fecha de revisi\xF3n",
 
-// modules/links/constants.php, row 71
-// modules/links/link.class.php, row 673
-// modules/links/linkedit.php, row 544
+// modules/links/constants.php, row 72
+// modules/links/link.class.php, row 727
+// modules/links/linkedit.php, row 574
 "E-mail" => "Correo-e",
 
-// modules/links/constants.php, row 72
-// modules/links/link.class.php, row 665
+// modules/links/constants.php, row 73
+// modules/links/link.class.php, row 719
 // modules/links/linkedit.php, row 435
 "Url" => "URL", // ai 2026-06
 
-// modules/links/constants.php, row 73
+// modules/links/constants.php, row 74
 "Last vote time" => "Ultima fecha de votaci\xF3n",
 
-// modules/links/constants.php, row 74
+// modules/links/constants.php, row 75
 "Flag" => "Bandera",
 
-// modules/links/constants.php, row 76
+// modules/links/constants.php, row 77
 "Organization city" => "Ciudad de la organizaci\xF3n",
 
-// modules/links/constants.php, row 77
+// modules/links/constants.php, row 78
 "Organization street" => "Direcci\xF3n de la organizaci\xF3n",
 
-// modules/links/constants.php, row 78
+// modules/links/constants.php, row 79
 "Organization post code" => "C\xF3digo postal de la organizaci\xF3n",
 
-// modules/links/constants.php, row 79
+// modules/links/constants.php, row 80
 "Organization phone" => "Tel\xE9fono de la organizaci\xF3n",
 
-// modules/links/constants.php, row 80
+// modules/links/constants.php, row 81
 "Organization fax" => "Fax de la organizaci\xF3n",
 
-// modules/links/constants.php, row 81
+// modules/links/constants.php, row 82
 "Organization e-mail" => "Correo-e de la organizaci\xF3n",
 
-// modules/links/constants.php, row 82
-// modules/links/linkedit.php, row 484
+// modules/links/constants.php, row 83
+// modules/links/linkedit.php, row 514
 "Folder" => "Carpeta",
 
-// modules/links/constants.php, row 83
+// modules/links/constants.php, row 84
 "Last validation date" => "Ultima fecha de validaci\xF3n",
 
-// modules/links/constants.php, row 84
+// modules/links/constants.php, row 85
 "Validation codes" => "C\xF3digos de validaci\xF3n",
 
-// modules/links/constants.php, row 85
+// modules/links/constants.php, row 86
 "Validity Rank" => "Validez de calificaci\xF3n",
 
-// modules/links/constants.php, row 86
+// modules/links/constants.php, row 87
 "Region id" => "Id de la regi\xF3n",
 
-// modules/links/constants.php, row 87
+// modules/links/constants.php, row 88
 "Region name" => "Nombre de la regi\xF3n",
 
-// modules/links/constants.php, row 88
+// modules/links/constants.php, row 89
 "Region level" => "Nivel de la regi\xF3n",
 
-// modules/links/constants.php, row 89
+// modules/links/constants.php, row 90
 "Language id" => "Id de lenguaje",
 
-// modules/links/constants.php, row 90
-// modules/links/linkedit.php, row 552
+// modules/links/constants.php, row 91
+// modules/links/linkedit.php, row 582
 "Language" => "Lenguaje",
 
-// modules/links/constants.php, row 91
+// modules/links/constants.php, row 92
 "Language short name" => "Nombre corto de lenguaje",
 
-// modules/links/constants.php, row 92, 190
+// modules/links/constants.php, row 93, 193
 "Category id" => "Id de categoria",
 
-// modules/links/constants.php, row 94
+// modules/links/constants.php, row 95
 "Category deleted" => "Categoria borrada",
 
-// modules/links/constants.php, row 95
+// modules/links/constants.php, row 96
 "Category path" => "Ruta de la categoria",
 
-// modules/links/constants.php, row 96
+// modules/links/constants.php, row 97
 "Category link count" => "Contador de enlaces de la categoria",
 
-// modules/links/constants.php, row 98, 194
+// modules/links/constants.php, row 99, 197
 "Category editor's note" => "Nota del editor de la categoria",
 
-// modules/links/constants.php, row 99
+// modules/links/constants.php, row 100
 "Base" => "Principal", // ai 2026-06
 
-// modules/links/constants.php, row 100, 177
+// modules/links/constants.php, row 101, 179
 "State" => "Estado",
 
-// modules/links/constants.php, row 101
+// modules/links/constants.php, row 102
 "Change proposal" => "Cambiar propuesta",
 
-// modules/links/constants.php, row 102
+// modules/links/constants.php, row 103
 "To be deleted" => "A ser borrado",
 
-// modules/links/constants.php, row 103, 176
+// modules/links/constants.php, row 104, 178
 "Priority" => "Prioridad",
 
-// modules/links/constants.php, row 104
+// modules/links/constants.php, row 105
 // modules/links/linkedit.php, row 54
 "Change" => "Cambiar",
 
-// modules/links/constants.php, row 118
+// modules/links/constants.php, row 120
 "Link id" => "Id de enlace",
 
-// modules/links/constants.php, row 119
+// modules/links/constants.php, row 121
 "Link name" => "Nombre del enlace",
 
-// modules/links/constants.php, row 120
+// modules/links/constants.php, row 122
 "Link original name" => "Nombre original del enlace",
 
-// modules/links/constants.php, row 121
+// modules/links/constants.php, row 123
 "Link description" => "Descripci\xF3n del enlace",
 
-// modules/links/constants.php, row 123
+// modules/links/constants.php, row 125
 "Link rate" => "Calificaci\xF3n del enlace",
 
-// modules/links/constants.php, row 124
+// modules/links/constants.php, row 126
 "Link votes" => "Votos del enlace",
 
-// modules/links/constants.php, row 125
+// modules/links/constants.php, row 127
 "Link - last vote date" => "Enlace - Ultima fecha de votaci\xF3n",
 
-// modules/links/constants.php, row 126
+// modules/links/constants.php, row 128
 "Link - created by" => "Enlace - creado por",
 
-// modules/links/constants.php, row 127
+// modules/links/constants.php, row 129
 "Link creation date" => "Fecha de creaci\xF3n del enlace",
 
-// modules/links/constants.php, row 128
+// modules/links/constants.php, row 130
 "Link - last edited by" => "Enlaces - ultima edici\xF3n por",
 
-// modules/links/constants.php, row 129
+// modules/links/constants.php, row 131
 "Link - last edit date" => "Enlaces - ultima fecha de edici\xF3n",
 
-// modules/links/constants.php, row 130
+// modules/links/constants.php, row 132
 "Link - checked by" => "Enlaces - seleccionado por",
 
-// modules/links/constants.php, row 131
+// modules/links/constants.php, row 133
 "Link - last checked date" => "Enlaces - \xFAltima fecha de revisi\xF3n",
 
-// modules/links/constants.php, row 132
+// modules/links/constants.php, row 134
 "Link author's e-mail" => "Correo-e de autor del enlace",
 
-// modules/links/constants.php, row 133
+// modules/links/constants.php, row 135
 "Link url" => "Url del enlace",
 
-// modules/links/constants.php, row 134
+// modules/links/constants.php, row 136
 "Link link" => "Enlazar enlace",
 
-// modules/links/constants.php, row 135
+// modules/links/constants.php, row 137
 "Link flag" => "Bandera del enlace",
 
-// modules/links/constants.php, row 136
+// modules/links/constants.php, row 138
 "Link - validity rank" => "Enlace - Calificaci\xF3n de validez",
 
-// modules/links/constants.php, row 137
+// modules/links/constants.php, row 139
 "Link - last validation date" => "Enlace - \xFAltima fecha de validaci\xF3n",
 
-// modules/links/constants.php, row 138
+// modules/links/constants.php, row 140
 "Link editor's note" => "Nota del editor del enlace",
 
-// modules/links/constants.php, row 139
+// modules/links/constants.php, row 141
 "Link organization city" => "Ciudad de la Organizaci\xF3n del enlace",
 
-// modules/links/constants.php, row 140
+// modules/links/constants.php, row 142
 "Link organization street" => "Direcci\xF3n de la Organizaci\xF3n del enlace",
 
-// modules/links/constants.php, row 141
+// modules/links/constants.php, row 143
 "Link organization post code" => "C\xF3digo postal de la Organizaci\xF3n del enlace",
 
-// modules/links/constants.php, row 142
+// modules/links/constants.php, row 144
 "Link organization phone" => "Tel\xE9fono de la Organizaci\xF3n del enlace",
 
-// modules/links/constants.php, row 143
+// modules/links/constants.php, row 145
 "Link organization fax" => "Fax de la Organizaci\xF3n del enlace",
 
-// modules/links/constants.php, row 144
+// modules/links/constants.php, row 146
 "Link organization e-mail" => "Correo-e de la Organizaci\xF3n del enlace",
 
-// modules/links/constants.php, row 145
+// modules/links/constants.php, row 147
 "Link folder (status code) - 1~Active, 2~Holding, 3~Trash" => "Carpeta del enlace (c\xF3digo de estado) - 1~Aprobado, 2~Por Aprobar, 3~Papelera",
 
-// modules/links/constants.php, row 146
+// modules/links/constants.php, row 148
 "Link - ids of regions (comma separated)" => "Enlaces - Ids de las regiones (separadas por coma)",
 
-// modules/links/constants.php, row 147
+// modules/links/constants.php, row 149
 "Link - names of regions (comma separated)" => "Enlaces - Nombres de las regiones (separadas por coma)",
 
-// modules/links/constants.php, row 148
+// modules/links/constants.php, row 150
 "Link - ids of languages (comma separated)" => "Enlaces - Ids de los idiomas (separadas por coma)",
 
-// modules/links/constants.php, row 149
+// modules/links/constants.php, row 151
 "Link - names of languages (comma separated)" => "Enlaces - Nombre de los idiomas (separadas por coma)",
 
-// modules/links/constants.php, row 150
+// modules/links/constants.php, row 152
 "Link - short names of languages (comma separated)" => "Enlaces - Nombres cortos de los lenguajes (separados por coma)",
 
-// modules/links/constants.php, row 151
+// modules/links/constants.php, row 153
 "Category ids (comma separated)" => "Ids de las categorias (separadas por comas)",
 
-// modules/links/constants.php, row 152
+// modules/links/constants.php, row 154
 "Category names (comma separated)" => "Nombres de las categorias (separadas por comas)",
 
-// modules/links/constants.php, row 153
+// modules/links/constants.php, row 155
 "State of link in this category (visible/highlighted)" => "Estado del enlace en esta categoria (visible/resaltado) ",
 
-// modules/links/constants.php, row 154
+// modules/links/constants.php, row 156
 "Link - validity color" => "Enlaces - Validaci\xF3n del color",
 
-// modules/links/constants.php, row 155
+// modules/links/constants.php, row 157
 "Paths to the categories" => "Rutas a las categorias",
 
-// modules/links/constants.php, row 156
+// modules/links/constants.php, row 158
 "Number of found Links" => "N\xFAmero de enlaces encontrados",
 
-// modules/links/constants.php, row 157
+// modules/links/constants.php, row 159
 "Link to link editing page (for admin interface only)" => "Enlaces a los enlaces de la po\xE1gina (solamente para la interfaz de administraci\xF3n)",
 
-// modules/links/constants.php, row 158
+// modules/links/constants.php, row 160
 "Category listing with links (for admin interface only)" => "Listados de categorias con enlaces (solamente para la interfaz de administraci\xF3n)",
 
-// modules/links/constants.php, row 172
+// modules/links/constants.php, row 174
 "Path" => "Ruta",
 
-// modules/links/constants.php, row 173
+// modules/links/constants.php, row 175
 "Link Count" => "Contador de enlaces",
 
-// modules/links/constants.php, row 175
+// modules/links/constants.php, row 177
 "Note" => "Nota",
 
-// modules/links/constants.php, row 192
+// modules/links/constants.php, row 195
 "Number of links in category" => "N\xFAmero de enlaces en la categoria",
 
-// modules/links/constants.php, row 195
+// modules/links/constants.php, row 198
 "Crossreferenced category" => "Categoria con referencias mutuas",
 
-// modules/links/constants.php, row 196
+// modules/links/constants.php, row 199
 "Path to current category" => "Ruta a categoria actual",
 
-// modules/links/constants.php, row 197
+// modules/links/constants.php, row 200
 "Is this category general one? (1/0)" => "Esta es una categoria general? (1/0)",
 
-// modules/links/constants.php, row 198
+// modules/links/constants.php, row 201
 "Print category priority, if category is general one." => "Muestre la prioridad de la categoria, si la categoria es una general.",
 
-// modules/links/getcat.php, row 51
+// modules/links/getcat.php, row 53
 "Category Tree" => "Arbol de categoria",
 
-// modules/links/getcat.php, row 56
+// modules/links/getcat.php, row 58
 "Select category" => "Seleccionar Categoria",
 
 // modules/links/index.php, row 84
 "No permissions to edit links" => "No tiene permisos para editar v\xEDnculos",
 
-// modules/links/index.php, row 207
+// modules/links/index.php, row 183
+"Module not found." => "M\xF3dulo no encontrado",
+
+// modules/links/index.php, row 215
 "HINT: \"social ecology\" AND environment" => "Truco: \"ecolog\xEDa social\" AND ambiente",
 
-// modules/links/index.php, row 234
+// modules/links/index.php, row 242
 "Perform action on selected items" => "Realice la acci\xF3n en los \xEDtems seleccionados",
 
-// modules/links/index.php, row 257
+// modules/links/index.php, row 265
 "ActionApps - Links Manager" => "AAs - Administrador de enlaces",
 
-// modules/links/index.php, row 287
+// modules/links/index.php, row 295
 "All my links" => "Todos mis enlaces",
 
-// modules/links/index.php, row 288
+// modules/links/index.php, row 296
 "Links to check" => "Enlaces a revisar",
 
-// modules/links/index.php, row 289
+// modules/links/index.php, row 297
 "Last edited" => "Ultima edici\xF3n",
 
-// modules/links/index.php, row 311
+// modules/links/index.php, row 319
 "Show Links" => "Mostrar enlaces",
 
-// modules/links/index.php, row 314
+// modules/links/index.php, row 322
 "Edit Category" => "Editar categoria",
 
-// modules/links/index.php, row 318
+// modules/links/index.php, row 326
 "Show subtree links" => "Mostrar subdirectorios de enlaces",
 
-// modules/links/link.class.php, row 661
-// modules/links/linkedit.php, row 450
+// modules/links/link.class.php, row 715
+// modules/links/linkedit.php, row 452
 "Page name" => "Nombre de p\xE1gina",
 
-// modules/links/link.class.php, row 662
-// modules/links/linkedit.php, row 453
+// modules/links/link.class.php, row 716
+// modules/links/linkedit.php, row 463
 "Original page name" => "Nombre original de la p\xE1gina",
 
-// modules/links/link.class.php, row 668
-// modules/links/linkedit.php, row 534
+// modules/links/link.class.php, row 722
+// modules/links/linkedit.php, row 564
 "City" => "Ciudad",
 
-// modules/links/link.class.php, row 669
-// modules/links/linkedit.php, row 536
+// modules/links/link.class.php, row 723
+// modules/links/linkedit.php, row 566
 "Street" => "Calle",
 
-// modules/links/link.class.php, row 670
-// modules/links/linkedit.php, row 538
+// modules/links/link.class.php, row 724
+// modules/links/linkedit.php, row 568
 "Post code" => "C\xF3digo postal",
 
-// modules/links/link.class.php, row 671
-// modules/links/linkedit.php, row 540
+// modules/links/link.class.php, row 725
+// modules/links/linkedit.php, row 570
 "Phone" => "Tel\xE9fono",
 
-// modules/links/link.class.php, row 672
-// modules/links/linkedit.php, row 542
+// modules/links/link.class.php, row 726
+// modules/links/linkedit.php, row 572
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
@@ -656,11 +658,11 @@ return [
 "unfilled" => "sin rellenar",
 
 // modules/links/linkedit.php, row 90
-// modules/links/menu.php, row 72, 73
+// modules/links/menu.php, row 73, 74
 "Edit Link" => "Editar enlace",
 
 // modules/links/linkedit.php, row 97
-// modules/links/menu.php, row 72
+// modules/links/menu.php, row 73
 "Add Link" => "A\xF1adir enlace",
 
 // modules/links/linkedit.php, row 102
@@ -699,61 +701,61 @@ return [
 // modules/links/linkedit.php, row 445
 "Do not fill, please:" => "No rellenar, por favor:",
 
-// modules/links/linkedit.php, row 451
+// modules/links/linkedit.php, row 457
 "English name of the page" => "Nombre en Espa\xF1ol de la p\xE1gina",
 
-// modules/links/linkedit.php, row 454
+// modules/links/linkedit.php, row 468
 "Name of the page in original language" => "Nombre original de la p\xE1gina en lenguaje original",
 
-// modules/links/linkedit.php, row 457
+// modules/links/linkedit.php, row 479
 "Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "No utilice etiquetas de HTML y no escriba palabras como \"mejor p\xE1gina\", ... La m\xE1xima longitud de la descripci\xF3n debe ser de 250 caracteres.",
 
-// modules/links/linkedit.php, row 463
+// modules/links/linkedit.php, row 486
 "Select the type, if the link belongs to some special category" => "Seleccione el tipo, si el enlace pertenece a una categoria en particular",
 
-// modules/links/linkedit.php, row 471
+// modules/links/linkedit.php, row 494
 "Author's e-mail" => "Correo-e del autor",
 
-// modules/links/linkedit.php, row 474
+// modules/links/linkedit.php, row 503
 "You can type any message here - it is never shown on the website" => "Usted puede escribir mensajes aqu\xED - estos no ser\xE1n mostrados en el sitio",
 
-// modules/links/linkedit.php, row 479
+// modules/links/linkedit.php, row 509
 "Last checked" => "Ultima revisi\xF3n",
 
-// modules/links/linkedit.php, row 479, 480, 481
+// modules/links/linkedit.php, row 509, 510, 511
 "n/j/Y" => "d/m/a",
 
-// modules/links/linkedit.php, row 480
+// modules/links/linkedit.php, row 510
 "Last changed" => "Ultima modificaci\xF3n",
 
-// modules/links/linkedit.php, row 481
+// modules/links/linkedit.php, row 511
 "Inserted" => "Insertado",
 
-// modules/links/linkedit.php, row 488
+// modules/links/linkedit.php, row 518
 "Show in category" => "Mostrar en categoria",
 
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 524
 "select the category" => "seleccione la categoria",
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "Selected categories" => "Categorias seleccionadas",
 
-// modules/links/linkedit.php, row 497
+// modules/links/linkedit.php, row 527
 "go to the category you want to select and click on the right arrow button to select" => "vaya a la categoria que deseada y utilice el boton derecho para seleccionar",
 
-// modules/links/linkedit.php, row 533
+// modules/links/linkedit.php, row 563
 "Organization" => "Organizaci\xF3n",
 
-// modules/links/linkedit.php, row 549
+// modules/links/linkedit.php, row 579
 "Regions and languages" => "Regiones y lenguajes",
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "Region" => "Regi\xF3n",
 
-// modules/links/linkedit.php, row 551
+// modules/links/linkedit.php, row 581
 "select up to 4 regions" => "seleccione hasta 4 regiones",
 
-// modules/links/linkedit.php, row 552
+// modules/links/linkedit.php, row 582
 "select page's languages" => "seleccione p\xE1ginas de lenguajes",
 
 // modules/links/linkedit2.php, row 112
@@ -768,105 +770,102 @@ return [
 // modules/links/linkedit2.php, row 151
 "Continue" => "Continuar",
 
-// modules/links/menu.php, row 64
+// modules/links/menu.php, row 65
 "View site" => "Ver sitio",
 
-// modules/links/menu.php, row 73
+// modules/links/menu.php, row 74
 "Add new link" => "A\xF1adir nuevo enlace",
 
-// modules/links/menu.php, row 80, 81
+// modules/links/menu.php, row 81, 82
 "Link Manager" => "Administrador de enlaces",
 
-// modules/links/menu.php, row 88, 89
+// modules/links/menu.php, row 89, 90
 "Link Admin" => "Admin de enlaces",
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders" => "Carpetas",
 
-// modules/links/menu.php, row 100
+// modules/links/menu.php, row 101
 "Folders with links, sorted by their status (active, changed, new, ...)" => "Carpetas con enlaces, ordenados por su estado (Aprobado, cambiado, nuevo, ...)",
 
-// modules/links/menu.php, row 103
+// modules/links/menu.php, row 104
 "Active" => "Aprobado",
 
-// modules/links/menu.php, row 106
+// modules/links/menu.php, row 107
 "Changed Links" => "Enlaces cambiados",
 
-// modules/links/menu.php, row 109
+// modules/links/menu.php, row 110
 "New Links" => "Nuevos enlaces",
 
-// modules/links/menu.php, row 112
+// modules/links/menu.php, row 113
 "Holding bin" => "Por Aprobar",
 
-// modules/links/menu.php, row 115
+// modules/links/menu.php, row 116
 "Trash" => "Papelera",
 
-// modules/links/menu.php, row 118
+// modules/links/menu.php, row 119
 "Unassigned" => "Sin asignar",
 
-// modules/links/menu.php, row 121
+// modules/links/menu.php, row 122
 "Unassigned - Trash" => "Sin asignar - Papelera",
 
-// modules/links/menu.php, row 122
+// modules/links/menu.php, row 123
 "Misc" => "Varios",
 
-// modules/links/menu.php, row 126
+// modules/links/menu.php, row 127
 "Empty trash" => "Vaciar papelera",
 
-// modules/links/menu.php, row 127
-"Are you sure you want to empty trash?" => "\xBFEst\xE1 seguro de que desea vaciar la papelera?",
-
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug OFF" => "Apagar debug",
 
-// modules/links/menu.php, row 131
+// modules/links/menu.php, row 132
 "Set Debug ON" => "Prender debug",
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "Bookmarks" => "Marcadores",
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 133
 "My own links" => "Mis enlaces",
 
-// modules/links/menu.php, row 158
+// modules/links/menu.php, row 159
 "Main settings" => "Configuraci\xF3n principal",
 
-// modules/links/menu.php, row 161
+// modules/links/menu.php, row 162
 "Links" => "Enlaces",
 
-// modules/links/menu.php, row 162
+// modules/links/menu.php, row 163
 "Design" => "Dise\xF1o",
 
-// modules/links/menu.php, row 170
+// modules/links/menu.php, row 171
 "New Category View" => "Vista Nueva categoria",
 
-// modules/links/menu.php, row 175
+// modules/links/menu.php, row 176
 "New Link View" => "Nueva vista de enlaces",
 
-// modules/links/modedit.php, row 97
+// modules/links/modedit.php, row 106
 "No permission to add module" => "No hay permisos para a\xF1adir m\xF3dulo",
 
-// modules/links/modedit.php, row 102
+// modules/links/modedit.php, row 111
 "No permission to edit module" => "No tiene permisos para editar el m\xF3dulo",
 
-// modules/links/modedit.php, row 119, 229, 232
+// modules/links/modedit.php, row 128, 238, 241
 "Start category id" => "Id de inicio de categoria",
 
-// modules/links/modedit.php, row 120, 235, 238
+// modules/links/modedit.php, row 129, 244, 247
 "Tree start id" => "Id del \xE1rbol de inicio",
 
-// modules/links/modedit.php, row 121, 236, 239
+// modules/links/modedit.php, row 130, 245, 248
 "Select start id" => "Seleccione el Id de inicio",
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Add Links module" => "A\xF1adir m\xF3dulo de enlaces",
 
-// modules/links/modedit.php, row 217
+// modules/links/modedit.php, row 226
 "Edit Links module" => "Editar m\xF3dulo de enlaces",
 
-// modules/links/modedit.php, row 220
+// modules/links/modedit.php, row 229
 "Module Links data" => "M\xF3dulo de informaci\xF3n de enlaces",
 
-// modules/links/modedit.php, row 225
+// modules/links/modedit.php, row 234
 "Used Language File" => "Archivo de lenguaje",
 ];

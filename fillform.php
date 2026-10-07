@@ -126,9 +126,9 @@ echo fillFormFromVars($fillConds);
 
 if ($show_result) {
     if ($result) {
-        ReadFileSafe(con_url($show_result, "result=" . rawurlencode(serialize($result))));
+        ReadFileSafe(con_url($show_result, "result=" . rawurlencode(serialize($result))), 'show_result');
     } else {
-        ReadFileSafe($show_result);
+        ReadFileSafe($show_result, 'show_result');
     }
 } elseif (is_array($result)) {
     echo "<b>";

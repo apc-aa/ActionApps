@@ -122,8 +122,9 @@ class AA_Aliasfunc extends AA_Object implements NamedInterface {
 }
 
 
-if (defined('AA_CUSTOM_DIR')) {
-    include_once ("custom/". AA_CUSTOM_DIR. '/stringexpand.php');
+// optional - an install may set AA_CUSTOM_DIR only for other custom files
+if (defined('AA_CUSTOM_DIR') && is_file(__DIR__. '/custom/'. AA_CUSTOM_DIR. '/stringexpand.php')) {
+    include_once(__DIR__. '/custom/'. AA_CUSTOM_DIR. '/stringexpand.php');
 }
 
 // we need it for preg_replace_callback when unalias sometimes gives empty results (empty spots in site, ...)
@@ -3087,9 +3088,13 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
 
         $xsl_cond = ($number>0) ? '[position() &lt; '. ($number+1) .']' : '';
 
-        // load XML document
-        $xml = new DomDocument();
-        $xml->load($rss_url);
+        // through the SSRF guard, and the XML loads nothing more by itself
+        $feed = HttpInclude::fetch('GET', $rss_url);
+        $xml  = new DomDocument();
+        if (($feed === '') || !@$xml->loadXML($feed, LIBXML_NONET)) {
+            warn('No RSS feed at ' . Txt::safe($rss_url));
+            return '';
+        }
 
         if (empty($format)) {
             $format = <<<XML
@@ -3114,8 +3119,9 @@ class AA_Stringexpand_Rss2html extends AA_Stringexpand {
             </xsl:stylesheet>
         ');
 
-        // create XSLT processor
+        // create XSLT processor; document() in the format must not read files or other addresses
         $proc = new xsltprocessor();
+        $proc->setSecurityPrefs(XSL_SECPREF_DEFAULT | XSL_SECPREF_READ_FILE | XSL_SECPREF_READ_NETWORK);
         $proc->importStylesheet($xsl);
 
         // perform transformation and display result
@@ -5368,7 +5374,7 @@ class AA_Stringexpand_Ajax extends AA_Stringexpand_Nevercache {
 
                     //$ret .= "<div class=\"ajax_container\" id=\"ajaxc_$input_id\" onclick=\"displayInput('ajaxv_$input_id', '$iid', '$field_id', '$widget_type', '$widget_properties')\" style=\"display:inline-block;width:100%\">";
                     $data_onsuccess = $onsuccess ? 'data-aa-onsuccess="'.safe($onsuccess).'"' : '';
-                    $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".safe(base64_encode($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
+                    $ret .= "<div class=\"ajax_value\" id=\"ajaxv_$input_id\" data-aa-alias=\"".safe(\AA\Security\SignedExpression::sign($show_alias))."\" $data_onsuccess style=\"display:inline\">$repre_value</div>";
                     $ret .= "<div class=\"ajax_changes\" id=\"ajaxch_$input_id\" style=\"display:inline\"></div>";
                     $ret .= "</div>";
                     AA::Stringexpander()->addRequire('aa-jslib');  // for DisplayInput()
@@ -6226,6 +6232,76 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
     }
 }
 
+/** {import:<import>[:run|changed|check]} - in a planned task, queues a run of the import of the task's
+ *  slice given by its id or name; run is the default mode. Anywhere else - a view, a page, a step of an
+ *  import - it does nothing; a call the task's own text does not write is invalid. The import runs with the right of whoever saved the task last.
+ *  Answers imp:queued, imp:busy (a run is in the way), imp:off (the import is disabled), imp:unknown
+ *  (no such import of the slice), imp:invalid (a wrong call, a name two imports share, a task run on
+ *  an event, an import that cannot start - logged) or imp:denied (the task was saved before tasks
+ *  recorded who saved them, or that user does not manage the feeding of the slice).
+ *  {import:prices:changed}
+ */
+class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
+    /** stands for the arguments of {import(..)} - only {import:..} reaches an import */
+    private const NOT_COLON = "\x00(";
+    public const PREFIX = 'imp:';
+    /** the answer, besides those of StartResult::CODES, of a task whose saver may not import */
+    public const DENIED = 'denied';
+
+    /** every answer of {import} - PREFIX and a StartResult code or DENIED
+     *  @return list<string> */
+    public static function codes(): array
+    {
+        return array_map(static fn(string $code): string => self::PREFIX . $code, [...\AA\Import\StartResult::CODES, self::DENIED]);
+    }
+
+    public static function parseParam(string $params, string $delimiter=':'): array
+    {
+        return ($delimiter === '(') ? [self::NOT_COLON] : parent::parseParam($params, $delimiter);
+    }
+
+    /** the log of a task keeps 40 bytes of its name and output - so a short code, nothing more */
+    function expand($ref='', $mode='', ...$more): string
+    {
+        $task = AA_Plannedtask::running();
+        // a step of an import may save items whose event runs a task
+        if (!$task || \AA\Later\BatchStep::running()) {
+            return '';
+        }
+        if ($more || ($ref === self::NOT_COLON)) {
+            return 'imp:invalid';
+        }
+        [$ref, $mode] = AA_Plannedtask::importCall((string)$ref, (string)$mode);
+        // a call the task does not write itself comes from a view or a text it shows - their author
+        // did not save the task
+        if (($ref === '') || !in_array($mode, ['run', 'changed', 'check'], true) || !$task->callsImport($ref, $mode)) {
+            return 'imp:invalid';
+        }
+        // an event task: its import would save items and run the task again, for good
+        if ($task->hasEvent() || !preg_match('/^[0-9a-f]{32}\z/', (string)$task->getId())) {
+            return 'imp:invalid';
+        }
+        $slice = (string)$task->getOwnerId();
+        $def   = \AA\Import\Definition::byNameOrId($slice, $ref);
+        if (!$def) {
+            $named = \AA\Import\Definition::named($slice, $ref);
+            foreach ((count($named) > 1) ? $named : [] as $id) {
+                \AA\Util\LogOnce::daily(\AA\Import\Definition::ERROR_EVENT, "Import_$id", "#$id AMBIGUOUS");
+            }
+            return (count($named) > 1) ? 'imp:invalid' : 'imp:unknown';
+        }
+        $user = (string)$task->getProperty('saved_by');
+        if ($user === '') {
+            return self::PREFIX . self::DENIED;
+        }
+        $result = \AA\Import\Service::start($def, $mode, [], 'plan:' . $task->getId(), $user);
+        if (($result->code === 'invalid') && ($result->reason === 'FORBIDDEN')) {
+            return self::PREFIX . self::DENIED;
+        }
+        return self::PREFIX . $result->code;
+    }
+}
+
 /** include file / URL {include:<url>:<type>:<headers>:<body>:<err>}
  *  $url     - filename / URL
  *  $type    - hint on where to find it  (http, ajax, site, readfile, GET, POST, PUT, DELETE, PATCH, OPTIONS, HEAD, fileman) - http is default
@@ -6597,7 +6673,7 @@ class AA_Unalias_Callback {
         // the longest php function name in whole PHP is 38 chars - test 40 should be enough
 
         $initiallen = strspn(strtolower(aa_substr($out,0,40)), 'abcdefghijklmnopqrstuvwxyz0123456789_');
-        $cmd_delim  = $out[$initiallen];
+        $cmd_delim  = $out[$initiallen] ?? '';   // {now} has no delimiter after the name
         if ( ($outcmd   = aa_substr($out,0,$initiallen)) && ($initiallen === strlen($out) || $cmd_delim === ':' || $cmd_delim === '(') ) {
         // if ( $outcmd   = aa_substr($out,0,$initiallen) ) {   // older - it also runs {math on {Math.parse(...
             $outparam = aa_substr($out,$initiallen+1);  // skip one more char - delimiter
@@ -8464,16 +8540,24 @@ class AA_Stringexpand_Avatar extends AA_Stringexpand {
  *
  *  Usage:
  *     {img:_#this:w=168&h=127&zc=1:im:_#HEADLINE:width=168 height=127}  // this is the quickest - exact size (zc=1), no need to size check => im
- *     {img:_#this:w=168&h=127&zc=1:picture:_#HEADLINE}                  // preferred - create lazy loaded <picture> with quick WEBP picture alternative for current browsers
+ *     {img:_#this:w=168&h=127&zc=1:picture:_#HEADLINE}                  // preferred - lazy loaded <picture> with AVIF and sizes for dense screens
  *     <img src="{img:{img_url.........}:w=150&h=150}">  /"
  *     <img src="{img:{img_url.........}:w=150&h=150&iar=1}">  /"        // iar - ignore aspect ratio - deform the image to exact size
  *     <div>{img:{img_url.........}::imgb:Logo {_#HEADLINE}}</div>
  *     <div>{img:{img_url.........}:w=300:imgb:Logo {_#HEADLINE}:class="big"}</div>
- *     {img:_#this:w=800&h=450&zc=1:picture:_#HEADLINE:loading=eager}  // the hero image at the top of the page
+ *     {img:_#this:w=800&h=450&zc=1:picture:_#HEADLINE:loading=eager fetchpriority=high}  // the hero image at the top of the page
+ *     {img:_#this:w=600&h=400&zc=1:picture:_#HEADLINE:sizes="(min-width#: 60em) 33vw, 100vw"}  // a template which knows how wide it is shown (#: is the colon)
  *
  *  'im', 'img', 'imgb' and 'picture' are lazy loaded (loading=lazy) unless <param2> sets
  *  loading itself. Give loading=eager to the hero image - lazy delays its paint (LCP).
  *  Inside {rotator} only the first frame keeps it; hidden frames are always lazy.
+ *
+ *  'picture', 'img' and 'imgb' offer the image also 1.5x and 2x as wide for dense screens, at a
+ *  lower quality (the pixels are smaller), and a big one 0.75x for phones - each made only when a
+ *  browser asks for it and never enlarged beyond the source (srcset, aoe=0). w is taken as the
+ *  widest the image is shown: a lazy image is picked by the layout (sizes=auto - not with a style
+ *  in <param2>), an eager one and Safari by the viewport - a 'sizes' in <param2> overrides it.
+ *  'picture' adds AVIF; 'img' keeps one format, as a <picture> around it could break the page CSS.
  *
  *  Performance: every <info> which prints the size ('img', 'imgb', 'picture', 'width',
  *  'height', 'hw', 'html') normally has to measure the generated image over HTTP, which
@@ -8530,7 +8614,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         if (($size = \AA\Util\PhpThumbParams::knownSize($info, $phpthumb_params)) !== null) {
             $a = [$size[0], $size[1], 0, 'width="'.$size[0].'" height="'.$size[1].'"'];  // same shape as getimagesize(); $a[3] is read only when both are known
         } else {
-            $a = @getimagesize(self::getUrl($image, $phpthumb_params, 'measure'));      // slow - self-HTTP request which also renders the thumbnail
+            $a = self::measure(self::getUrl($image, $phpthumb_params, 'measure'));      // slow - self-HTTP request which also renders the thumbnail
             if (! $a) {
                 return '';
             }
@@ -8550,7 +8634,8 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             case 'imgb':    $param2 .= ' border=0';  // no break!!!
             case 'img':     $param1 = safe(strip_tags($param1));
                 $alt = $param1 ? " title=\"$param1\" alt=\"$param1\"" : '';
-                return '<img src="'.self::getUrl($image, $phpthumb_params, 'rel_escaped').'" '.\AA\Util\LazyLoad::attr($param2).' '.$a[3] ." $alt $param2 />";
+                [$src, $srcset] = self::srcset($image, $phpthumb_params, (int)$a[0], (int)$a[1], $param2);
+                return '<img src="'.$src.'"'.$srcset.' '.\AA\Util\LazyLoad::attr($param2).' '.$a[3] ." $alt $param2 />";
         }
         return '';
     }
@@ -8565,53 +8650,68 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
         $title = safe(strip_tags($title));
         $alt_title = $title ? " title=\"$title\" alt=\"$title\"" : '';
         $format = str_contains(strtolower($image), '.pdf') ? 'webp' : 'avif';  // phpThumb for some reason do not generate avif for pdf; HM 2025-01-31
-        // the alternative format is a different image, so it needs its own url - appending
+        // the alternative format is a different image, so it needs its own urls - appending
         // "&f=..." to the first one would silently produce a cache url with no effect
-        $src        = self::getUrl($image, $phpthumb_params, 'rel_escaped');
-        $format_src = self::getUrl($image, \AA\Util\PhpThumbParams::setFormat($phpthumb_params, $format), 'rel_escaped');
+        [$src, $srcset]               = self::srcset($image, $phpthumb_params, $w, $h, $add);
+        [$format_src, $format_srcset] = self::srcset($image, \AA\Util\PhpThumbParams::setFormat($phpthumb_params, $format), $w, $h, $add, true);
 
         return "<picture class=aa-picture>"
-             . "\n  <source srcset=\"$format_src\" type=\"image/$format\">"
-             . "\n  <img src=\"$src\" width=$w height=$h $add ".\AA\Util\LazyLoad::attr($add)." $alt_title>"  // lazy is enough on img for <picture> element
+             . "\n  <source " . (($format_srcset === '') ? "srcset=\"$format_src\"" : ltrim($format_srcset)) . " type=\"image/$format\">"
+             . "\n  <img src=\"$src\"$srcset width=$w height=$h $add ".\AA\Util\LazyLoad::attr($add)." $alt_title>"  // lazy is enough on img for <picture> element
              . "\n</picture>";
     }
 
-    /**
-     * Get array of ideal widths for srcset
-     * - efective width = min(original, desired)  // WITHOUT rounding
-     * - 0.5× a 2×, rounded to roundStep
-     * - no upscaling
-     * - minimal relative difference between widths
+    /** src of an image shown at most $width x $height CSS px, and ' srcset="..." sizes="..."' to go with it -
+     *  '' when the parameters give no candidates ({@see \AA\Util\PhpThumbParams::srcsetCandidates()})
+     *  or the template's $attrs bring a srcset. sizes are the template's own, or auto - the browser
+     *  picks by the layout, a lazy image only - and for an eager image or a browser without it
+     *  (Safari in 2026) the viewport, up to $width. An <img> with its own sizes keeps just those;
+     *  a <source>, which has no $attrs, gets them copied.
+     *  @return array{0: string, 1: string} HTML escaped
      */
-    protected static function idealImageWidths(int $originalWidth, int $desiredCssWidth): array {
-        define("ROUND_STEP", 64);
-        define("MIN_USEFUL_WIDTH", 320);
-        define("MIN_DELTA_PCT", 0.15); // 15 %
-
-        if ($originalWidth <= 0 || $desiredCssWidth <= 0) {
-            return [];
+    protected static function srcset(string $image, string $phpthumb_params, int $width, int $height, string $attrs, bool $for_source = false): array
+    {
+        $candidates = (\AA\Util\LazyLoad::attribute($attrs, 'srcset') === null) ? \AA\Util\PhpThumbParams::srcsetCandidates($phpthumb_params, $width) : [];
+        if (!$candidates) {
+            return [self::getUrl($image, $phpthumb_params, 'rel_escaped'), ''];
         }
-        $ret = [];
-
-        $eff = min($originalWidth, $desiredCssWidth);
-
-        // 0.5× efectictive width (rounded to roundStep)
-        $half = max(ROUND_STEP, (int)(round((int)floor($eff / 2) / ROUND_STEP) * ROUND_STEP));
-        if ($half >= MIN_USEFUL_WIDTH && $half < $eff &&  ($eff - $half) / $eff >= MIN_DELTA_PCT) {
-            $ret[] = $half;
+        $urls = $srcset = [];
+        foreach ($candidates as $descriptor => $params) {
+            $urls[$descriptor] = self::getUrl($image, $params, 'rel_escaped');
+            // img.php keeps whitespace of the file name, which would end the url
+            $srcset[] = strtr($urls[$descriptor], [' ' => '%20', "\t" => '%09', "\n" => '%0A', "\f" => '%0C', "\r" => '%0D']) . " {$descriptor}w";
         }
-
-        $ret[] = $eff;
-
-        // 2× efekctive width - only if it is still less than original width
-        $double = max(ROUND_STEP, (int)(round($eff * 2 / ROUND_STEP) * ROUND_STEP));
-        if ($double <= $originalWidth && $double > $eff && ($double - $eff) / $double >= MIN_DELTA_PCT) {
-            $ret[] = $double;
-        }
-
-        return $ret;
+        $own_sizes = \AA\Util\LazyLoad::attribute($attrs, 'sizes');
+        // Under a page's img {width: auto} the browser sizes the image by the candidate: one from a small
+        // source has fewer pixels than its w says (never enlarged), and Chrome takes an <img> with
+        // sizes=auto as 300 x 150. So the image keeps its own size - unless the template's style would
+        // hide ours, and then without auto.
+        $own_style = (\AA\Util\LazyLoad::attribute($attrs, 'style') !== null);
+        $auto      = ($own_sizes === null) && !$own_style && \AA\Util\LazyLoad::isLazy($attrs);
+        $sizes     = $own_sizes ?? (($auto ? 'auto, ' : '') . "(max-width: {$width}px) 100vw, {$width}px");
+        return [$urls[$width], ' srcset="' . implode(', ', $srcset) . '"'
+            . ((($own_sizes === null) || $for_source) ? ' sizes="' . safe($sizes) . '"' : '')
+            . (($own_style || $for_source) ? '' : " style=\"contain:size;contain-intrinsic-size:{$width}px {$height}px\"")];
     }
 
+
+    /** getimagesize() of the image: a web address goes through the SSRF guard, a local path is read
+     *  from disk, and no other stream (php://, phar://, ...) is opened
+     *  @return array<int|string, mixed>|false
+     */
+    private static function measure(string $url): array|false
+    {
+        if (preg_match('~^https?://~i', $url)) {
+            // the size sits in the header, so a listing of 8 MB photos must not download them whole;
+            // only a JPEG with large EXIF/ICC blocks before the frame header needs the rest
+            $body = \AA\Expand\HttpInclude::fetch('GET', $url, '', ['Range' => 'bytes=0-65535']);
+            if ((strlen($body) === 65536) && !@getimagesizefromstring($body)) {
+                $body = \AA\Expand\HttpInclude::fetch('GET', $url);
+            }
+            return ($body === '') ? false : @getimagesizefromstring($body);
+        }
+        return str_contains($url, '://') ? false : @getimagesize($url);
+    }
 
     /** Url of the resized image - through {@see useCache() MissCache} when this install
      *  can serve it as a static file, otherwise the plain img.php link.
@@ -8641,7 +8741,7 @@ class AA_Stringexpand_Img extends AA_Stringexpand_Nevercache {
             $image = preg_replace("~^(http[s]?:)?//(www\.)?(.+)\.([a-z]{1,6})/(.+)~", "\\5", $image);
         }
 
-        // 'measure' is the internal call behind @getimagesize() and deliberately stays on
+        // 'measure' is the internal call behind measuring the image and deliberately stays on
         // img.php: through the cache the miss would be forged synchronously inside the page
         // render (91 ms vs 72 ms measured), while this way it warms phpThumb's own cache, so
         // the browser's later request for the cache url only has to copy the bytes.
@@ -8908,7 +9008,7 @@ class AA_Stringexpand_Fileinfo extends AA_Stringexpand {
                     $size = @filesize($filename);
                 } else {
                     $fullurl = $url[0] === '/' ? 'https://'.$_SERVER['HTTP_HOST'].$url : $url;
-                    $size = @strlen(file_get_contents($fullurl));
+                    $size = strlen(HttpInclude::fetch('GET', $fullurl));
                 }
 
                 if ($size) {
@@ -9252,7 +9352,7 @@ class AA_Stringexpand_Encrypt extends AA_Stringexpand {
      * @param string $key
      * @param null $output_type - no longer used - previously used 'url' to encode result in url-friendly base64_url, now it is always
      */
-    function expand($text='', $key='', $output_type=null): string
+    function expand(#[\SensitiveParameter] $text='', #[\SensitiveParameter] $key='', $output_type=null): string
     {
         return AA\Util\Crypt::encryptAesGcm($text,$key);
     }
@@ -9296,7 +9396,7 @@ class AA_Stringexpand_Decrypt extends AA_Stringexpand {
      * @return string|void
      * @see {encode}
      */
-    function expand($text='', $key='', $output_type=null): string
+    function expand($text='', #[\SensitiveParameter] $key='', $output_type=null): string
     {
         if (false !== ($ret = AA\Util\Crypt::decryptAesGcm($text,$key))) {
             return $ret;
@@ -9804,8 +9904,8 @@ class AA_Password_Manager_Reader {
         $pwd_link = "<a href=\"$url\">$url</a>";
 
         $add_alias = [
-            "_#PWD_LINK" => GetAliasDef( "f_t:$pwd_link",  "", _m('Password link')),
-            "_#PWD_URLP" => GetAliasDef( "f_t:$pwd_param", "", _m('Password change url parameter')),
+            "_#PWD_LINK" => GetAliasDef( "f__:$pwd_link",  "", _m('Password link')),
+            "_#PWD_URLP" => GetAliasDef( "f__:$pwd_param", "", _m('Password change url parameter')),
         ];
 
         if ($template_id = DB_AA::select1('id', 'SELECT id FROM `email`', [
@@ -10668,7 +10768,8 @@ class AA_Stringexpand_Form extends AA_Stringexpand_Nevercache {
         //return $form->getAjaxHtml($ret_code);
         AA::Stringexpander()->addRequire('aa-jslib');  // for {AA_AjaxSendForm}
         try {
-            return $form->getAjaxHtml($ok_code, 'inplace');
+            // aliases in a plain text are substituted when the page renders, as before; an expression waits for the new item
+            return $form->getAjaxHtml(str_contains((string)$ok_code, '{') ? \AA\Security\SignedExpression::sign((string)$ok_code) : (string)$ok_code, 'inplace');
         } catch (Exception $e) {
             return MsgErr($e->getMessage());
         }

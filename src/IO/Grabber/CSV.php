@@ -11,6 +11,7 @@ namespace AA\IO\Grabber;
 
 use AA_Content;
 use AA_Property;
+use AA_Value;
 use ItemContent;
 
 /** AA\IO\AbstractGrabber\AbstractGrabber\CSV - CSV (Comma Separated Values) format grabber */
@@ -111,6 +112,11 @@ class CSV extends AbstractGrabber
         return $properties;
     }
 
+    public function fetchesViaLoadData(): bool
+    {
+        return true;
+    }
+
     /** loads all the data based on grabber setting and return it */
     public function getSources(): array
     {
@@ -124,13 +130,8 @@ class CSV extends AbstractGrabber
     {
         $this->_items    = [];
         $this->_colnames = [];
-        $data = implode('', $this->getSources());
-
-        // fgetcsv works on streams - we have to use stream (we do not want to use str_getcsv() - it is hard to work with \n inside fields)
-        $stream = fopen('php://memory', 'rb+');
-        fwrite($stream, $data);
-        rewind($stream);
-        $array = fgetcsv($stream, 0, $this->delimiter, $this->enclosure);
+        $stream = $this->open();
+        $array = $this->nextRow($stream);
 
         if (!$array) {
             return;
@@ -139,7 +140,7 @@ class CSV extends AbstractGrabber
         if ($this->caption) {
             $this->_colnames = $array;
             // read the first data row
-            $array = fgetcsv($stream, 0, $this->delimiter, $this->enclosure);
+            $array = $this->nextRow($stream);
         } else {
             $this->_colnames = array_fill(0, count($array), 'field');
             array_walk($this->_colnames, function (&$v, $k) {
@@ -149,11 +150,46 @@ class CSV extends AbstractGrabber
 
         while ($array !== false) {
             $this->_items[] = $array;
-            $array = fgetcsv($stream, 0, $this->delimiter, $this->enclosure);
+            $array = $this->nextRow($stream);
         }
         $this->message(__CLASS__ . ' -> ' . __FUNCTION__);
         $this->message("parsed items " . count($this->_items));
         reset($this->_items);
+    }
+
+    /** The first row - the column names when the first row names them - without parsing the rest */
+    public function firstRow(): array
+    {
+        return $this->nextRow($this->open()) ?: [];
+    }
+
+    /** @return resource the data as a stream */
+    private function open()
+    {
+        $data = implode('', $this->getSources());
+        // Excel's "CSV UTF-8" starts with a BOM; it would stick to the first column name
+        if (str_starts_with($data, "\xEF\xBB\xBF")) {
+            $data = substr($data, 3);
+        }
+        // fgetcsv works on streams - we have to use stream (we do not want to use str_getcsv() - it is hard to work with \n inside fields)
+        $stream = fopen('php://memory', 'rb+');
+        fwrite($stream, $data);
+        rewind($stream);
+        return $stream;
+    }
+
+    /**
+     * The next row, blank lines skipped - fgetcsv() gives [null] for them, which would become an item
+     * without values. false at the end.
+     * @param resource $stream
+     * @return array<int, ?string>|false
+     */
+    private function nextRow($stream): array|false
+    {
+        do {
+            $row = fgetcsv($stream, 0, $this->delimiter, $this->enclosure, '\\');
+        } while ($row === [null]);
+        return $row;
     }
 
     /** Method called by the AA\IO\Saver to get next item from the data input */
@@ -166,7 +202,8 @@ class CSV extends AbstractGrabber
 
         $item = new ItemContent();
         foreach ($this->_colnames as $k => $colname) {
-            $item->setValue($colname, $data[$k]);    // stav importu
+            // flag 0: plain text - a transformation copying the value as it is (copyfield) stores it so
+            $item->setAaValue($colname, new AA_Value([['value' => $data[$k] ?? null, 'flag' => 0]]));
         }
         return $item;
     }

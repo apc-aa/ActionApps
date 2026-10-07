@@ -33,74 +33,74 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Alias používaný v administratívnych stránkách index.php3 pre URL discedit.php3",
 // End of unused messages
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Chybný parameter inc - vkladaný súbor musí obsahovať iba alfanumerické znaky", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "Súbor neexistuje", // ai 2026-06
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "Neplatné číslo modulu alebo bol modul vymazaný", // ai 2026-06
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "výstup slice.php je pre tento modul zakázaný", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "ID session", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "číslo aktuálnej stránky (v stránkovaní)", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "dĺžka stránky (počet správ)", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "Nenalezena žádná zpráva",
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "Zobraz vybrané",
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "Zobraz všetko",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "Pridaj nový",
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "Alias pre %1", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "Alias pre predmet príspevku",
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "Alias pre text príspevku", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "Alias pre autora príspevku", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "Alias pre e-mail autora",
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "Alias pre adresu WWW stránok autora ",
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "Alias pre popis WWW stránok autora",
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "Alias pre dátum a cas odoslania príspevku",
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "Alias pre IP adresu počítača autora", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "Alias pre checkbox pre vybranie príspevku",
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "Alias pre obrázky",
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -108,7 +108,7 @@ return [
    ."                             <i>Použitie: </i>v kóde formulára<br>\n"
    ."                             <i>Príklad: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -116,7 +116,7 @@ return [
    ."                             <i>Použitie: </i>v kóde formulára<br>\n"
    ."                             <i>Príklad: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -124,7 +124,7 @@ return [
    ."                             <i>Požitie: </i>v kóde formulára<br>\n"
    ."                             <i>Príklad: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -132,7 +132,7 @@ return [
    ."                             <i>Použitie: </i>v kóde pre prehladové zobrazenie príspevkov<br>\n"
    ."                             <i>Príklad: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>",
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -140,7 +140,7 @@ return [
    ."                             <i>Použitie: </i>v kóde pre plné znenie príspevku<br>\n"
    ."                             <i>Príklad: </i>&lt;a href=_#URLREPLY&gt;Odpovedat&lt;/a&gt;",
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -148,64 +148,64 @@ return [
    ."                             <i>Požitie: </i>v kóde formulára<br>\n"
    ."                             <i>Príklad: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">",
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "Alias pre tlacítka Zobrazit všetko, Zobrazit vybrané, Pridat nový<br>\n"
    ."                             <i>Použitie: </i>v spodnom HTML kóde",
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "3. parameter vyplnený v položke DiscussionMailList", // ai 2026-06
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "%1. parameter vyplnený v položke DiscussionMailList", // ai 2026-06
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "Meno",
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "Preložený názov konštanty", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "Hodnota",
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "Priorita",
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "Skupina hodnôt",
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "Nadkategórie (použitelné len pre kategórie)",
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "Poradové císlo hodnoty",
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "Jedinečné id konštanty (32 hexadecimálnych znakov)", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "Jedinečné krátke id konštanty (automaticky zvyšované od '1' pre každú konštantu v systéme)", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "Popis konštanty", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Úroveň konštanty (používa sa pre hierarchické konštanty)", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "Chyba: nesprávna funkcia aliasu %1 pre %2", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "Vybraná správa", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "počet nalezených článků",
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "Nebol vybraný žiaden príspevok",
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "presný názov skupiny", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -226,27 +226,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "Zvoľte kategóriu", // ai 2026-06
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "Všetky kategórie", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "Chyba: chýba heslo pre čítanie", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "Spät",
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "Znovu prihlásiť", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "Formulár pre priradenie", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "Spracuje údaje o väzbách správy odoslané formulárom (POST)", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

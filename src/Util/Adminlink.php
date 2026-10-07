@@ -101,7 +101,7 @@ class Adminlink
         }
         $seo  = safe($item->getValue('seo.............') ?: 'Item');   // raw editor input - AA_Inserter_Seo slugifies only an empty field
         $hdln = current(AA_Items::getFormatted(new zids($item_id, 'l'), '_#HEADLINE', AA_BIN_ALL));  // we want also headline of items in trash
-        $hdln = ($hdln && $hdln !== '_#HEADLINE') ? " ($hdln)" : '';
+        $hdln = ($hdln && $hdln !== '_#HEADLINE') ? ' (' . self::headlineText($hdln) . ')' : '';
 
         if (!$item->isActive()) {
             $seo = "<s>$seo</s>";
@@ -123,6 +123,13 @@ class Adminlink
             'show'       => 1,
         ]), _m('Statistics'));
         return $item_id . Txt::additionalInfo($info);
+    }
+
+    /** _#HEADLINE output as safe link text: an editor may put HTML in the headline, and the link
+     *  is shown to the superadmin, so only the text of it is kept */
+    public static function headlineText(string $html): string
+    {
+        return Txt::safe(html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
     }
 
     public static function searchLink(string $searchtext, string $label = "🔍"): string

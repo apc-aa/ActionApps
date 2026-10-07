@@ -10,16 +10,16 @@ use AA\IO\DB\DB_AA;
 use AA_Metabase;
 use LogicException;
 
-/** Writes the items of a batch inside the transaction Importer::writeBatch() opens: per item the `item`
- *  row (a colliding id fails on its PRIMARY key), then its `content` rows as AA_Field_Writer::contentRow()
- *  builds them. The field types are the target slice's (TargetSlice) - the batch has no definition.
+/** Writes the items of a batch inside the transaction of a step of the run (Importer::writeItems()): per
+ *  item the `item` row (a colliding id fails on its PRIMARY key), then its `content` rows as
+ *  AA_Field_Writer::contentRow() builds them. The field types are the target slice's (TargetSlice) - the batch has no definition.
  *  posted_by / edited_by stay the source's text: a transfer moves the items with their authors.
  *  Password fields (`pwd`) carry HASHES - written byte for byte, so readers of a moved ReaderManagement
  *  slice log in; ItemLint checks their logins, as the direct insert skips isUsernameFree().
  *  Not ItemContent::storeItem(): it stores user input - hashes the hashes again, sets author and 2FA
  *  secrets, writes reverse relations, feeds, runs events and computed fields, die()s on a DB error and may
  *  take a second handle outside the transaction.
- *  @internal only Importer calls it - the rights are checked there (Importer::writeBatch()). */
+ *  @internal only Importer calls it - the rights are checked by the step of the run (InstallRun::fetch()). */
 final class ItemWriter
 {
     private IdMap $map;

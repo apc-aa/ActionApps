@@ -18,7 +18,78 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
-// "You don't have permissions to view item history." => "項目の履歴を表示する許可がありません。", // ai 2026-06
+// "Data source" => "データソース", // ai 2026-06
+// "Upload periodically" => "定期的にアップロード", // ai 2026-06
+// "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - スライスのコピー (1/2) - コピー元 ActionApps の選択", // ai 2026-06
+// "%1 import actions planned. See" => "%1件のインポート操作を計画しました。参照:", // ai 2026-06
+// "Central - Copy Slice (2/2) - Slices to Copy" => "Central - スライスのコピー (2/2) - コピーするスライス", // ai 2026-06
+// "* this ActionApps" => "* この ActionApps", // ai 2026-06
+// "Modules to Copy from %1" => "%1 からコピーするモジュール", // ai 2026-06
+// "Slices to copy" => "コピーするスライス", // ai 2026-06
+// "Copy definitions" => "定義をコピー", // ai 2026-06
+// "Copy slice, fields, views, .... of selected slices above" => "上で選択したスライスのスライス、フィールド、ビューなどをコピーします", // ai 2026-06
+// "Copy also items" => "項目もコピー", // ai 2026-06
+// "Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice" => "上で選択したスライスの項目データ（items、content、discussions テーブル）もコピーします - このチェックボックスだけをオンにして、あらかじめ用意した（空の）スライスにスライスの内容をコピーすることもできます", // ai 2026-06
+// "Site modules to copy" => "コピーする Site モジュール", // ai 2026-06
+// "Alerts modules to copy" => "コピーする Alerts モジュール", // ai 2026-06
+// "Destination AAs" => "コピー先の AA", // ai 2026-06
+// "ActionApps installation to update" => "更新対象の ActionApps インストール", // ai 2026-06
+// "CSV file for upload. Each AA on its own row, fields separated by comma, the fields must be in following order (just like in central_conf table):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD" => "アップロードする CSV ファイル。各 AA を1行ずつ、フィールドはカンマ区切りで、次の順序で並べてください（central_conf テーブルと同じ）:<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD", // ai 2026-06
+// "Authenticated" => "認証済み", // ai 2026-06
+// "Legacy password" => "旧パスワード", // ai 2026-06
+// "Slice with id '%1' is not valid." => "ID '%1' のスライスは無効です。", // ai 2026-06
+// "Copy Slice..." => "スライスをコピー...", // ai 2026-06
+// "order ascending" => "昇順に並べ替え", // ai 2026-06
+// "order descending" => "降順に並べ替え", // ai 2026-06
+// "Nothing to be shown." => "表示するものがありません。", // ai 2026-06
+// "search" => "検索", // ai 2026-06
+// "delete" => "削除", // ai 2026-06
+// "insert" => "挿入", // ai 2026-06
+// "delete checked" => "チェックしたレコードを削除", // ai 2026-06
+// "update" => "更新", // ai 2026-06
+// "update all" => "全て更新", // ai 2026-06
+// "browse" => "閲覧", // ai 2026-06
+// "Are you sure you want to permanently DELETE all the checked records?" => "本当にチェックしたすべてのレコードを完全に削除しますか？", // ai 2026-06
+// "Insert was successful." => "挿入に成功しました。", // ai 2026-06
+// "Update was successful." => "更新に成功しました。", // ai 2026-06
+// "Delete was successful." => "削除に成功しました。", // ai 2026-06
+// "Value of %1 should be between %2 and %3." => "%1の値は%2から%3の間でなければなりません。", // ai 2026-06
+// "Table does not have a primary key set on a single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit" => "テーブルに単一の列の主キーが設定されていません。tableeditのパラメータ primary => array (field1, field2, ...) で主キーを指定できます", // ai 2026-06
+// "Wrong value: a number between %1 and %2 is expected." => "不正な値: %1から%2の間の数値が必要です。", // ai 2026-06
+// "Reply to" => "返信先 (Reply-To)", // ai 2026-06
+// "Errors to" => "エラー送信先 (Errors-To)", // ai 2026-06
+// "Sender" => "送信者", // ai 2026-06
+// "Adds cron entry for Alerts Sending into AA cron" => "AA cronにアラート送信(Alerts)用のエントリを追加します", // ai 2026-06
+// "It however does not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)" => "ただし、AA用のシステムcronはインストールされません。ご自身で設定してください (/misc/aa-http-request スクリプトを参照)", // ai 2026-06
+// "Cron entry for Alerts Sending is not installed in AA Cron" => "アラート送信(Alerts)のcronエントリはAA cronにインストールされていません", // ai 2026-06
+// "Deleting AA Cron entry for Alerts Sending" => "アラート送信(Alerts)のAA cronエントリを削除しています", // ai 2026-06
+// "Adding AA cron entry for Alerts Sending" => "アラート送信(Alerts)のAA cronエントリを追加しています", // ai 2026-06
+// "AA cron entry for Alerts Sending - done." => "アラート送信(Alerts)のAA cronエントリ - 完了。", // ai 2026-06
+// "Adds cron entry for Feeding into AA cron" => "AA cronにフィード(Feeding)用のエントリを追加します", // ai 2026-06
+// "Cron entry for Feeding is not installed in AA Cron" => "フィード(Feeding)のcronエントリはAA cronにインストールされていません", // ai 2026-06
+// "Deleting AA Cron entry for Feeding" => "フィード(Feeding)のAA cronエントリを削除しています", // ai 2026-06
+// "Adding AA cron entry for Feeding" => "フィード(Feeding)のAA cronエントリを追加しています", // ai 2026-06
+// "AA cron entry for Feeding - done." => "フィード(Feeding)のAA cronエントリ - 完了。", // ai 2026-06
+// "Adds cron entry for Link checking in Links Module into AA cron" => "AA cronにLinksモジュールのリンクチェック用エントリを追加します", // ai 2026-06
+// "Cron entry for \"Checking link status in Links module\" is not installed in AA Cron" => "「Linksモジュールのリンク状態チェック」のcronエントリはAA cronにインストールされていません", // ai 2026-06
+// "Deleting AA Cron entry for Checking link status in Links module" => "Linksモジュールのリンク状態チェックのAA cronエントリを削除しています", // ai 2026-06
+// "Adding AA cron entry for Checking link status in Links module" => "Linksモジュールのリンク状態チェックのAA cronエントリを追加しています", // ai 2026-06
+// "AA cron entry for \"Checking link status in Links module\" - done." => "「Linksモジュールのリンク状態チェック」のAA cronエントリ - 完了。", // ai 2026-06
+// "Adds cron entry for Database Optimization into AA cron" => "AA cron にデータベース最適化用の cronエントリを追加します", // ai 2026-06
+// "Cron entry for Database Optimization is not installed in AA Cron" => "データベース最適化用の cronエントリは AA cron にインストールされていません", // ai 2026-06
+// "Deleting AA Cron entry for Database Optimization" => "データベース最適化用の AA cronエントリを削除しています", // ai 2026-06
+// "Adding AA cron entry for Database Optimization" => "データベース最適化用の AA cronエントリを追加しています", // ai 2026-06
+// "AA cron entry for Database Optimization - done." => "データベース最適化用の AA cronエントリ - 完了。", // ai 2026-06
+// "Adds cron entry for Toexecute queue execution into AA cron" => "AA cron に Toexecute キュー実行用の cronエントリを追加します", // ai 2026-06
+// "Cron entry for \"Toexecute queue execution\" is not installed in AA Cron" => "\"Toexecute キュー実行\" 用の cronエントリは AA cron にインストールされていません", // ai 2026-06
+// "Deleting AA Cron entry for Toexecute queue execution" => "Toexecute キュー実行用の AA cronエントリを削除しています", // ai 2026-06
+// "Adding AA cron entry for Toexecute queue execution" => "Toexecute キュー実行用の AA cronエントリを追加しています", // ai 2026-06
+// "AA cron entry for Toexecute queue execution - done." => "Toexecute キュー実行用の AA cronエントリ - 完了。", // ai 2026-06
+// "Convert database from 1Byte latin1 encoding to utf8mb4 collation" => "データベースを1バイトのlatin1エンコーディングからutf8mb4照合順序に変換", // ai 2026-06
+// "Convert database from 1Byte latin1 encoding to utf8mb4 for all tables and set database default to utf8mb4" => "データベースの全テーブルを1バイトのlatin1エンコーディングからutf8mb4に変換し、データベースの省略値をutf8mb4に設定します", // ai 2026-06
+// "Checks if all tables have right columns and indexes" => "全テーブルが正しい列とインデックスを持つか確認します", // ai 2026-06
+// "From time to time we add a new table or column to an existing table so that we can support new features. This option will update the datastructure to the last one. No data will be lost." => "新機能をサポートするため、時々既存のテーブルに新しいテーブルや列を追加しています。このオプションはデータ構造を最新のものに更新します。データは失われません。", // ai 2026-06
+// "Check items for duplicate SEO name inside sitemodule" => "Site モジュール内の項目に重複した SEO 名がないか確認します", // ai 2026-06
 // "validate" => "検証", // ai 2026-06
 // "RSS feeds testing page." => "RSSフィードのテストページです。", // ai 2026-06
 // "No RSS Feeds set." => "RSSフィードが設定されていません。", // ai 2026-06
@@ -57,297 +128,551 @@ return [
 //    ."                         以下のshtmlコードを追加して下さい: ",
 // End of unused messages
 
-// admin/aa_cron.php, row 41
+// admin/aa_cron.php, row 42
 "You do not have permission to manage Cron" => "Cronを管理する許可がありません", // ai 2026-06
 
-// admin/aa_cron.php, row 46
+// admin/aa_cron.php, row 47
+// src/Import/Definition.php, row 135, 163
+// src/Optimize/CheckCron.php, row 69
 "Last run" => "最終実行", // ai 2026-06
 
-// admin/aa_cron.php, row 98
+// admin/aa_cron.php, row 99
 "never" => "未実行", // ai 2026-06
 
-// admin/aa_cron.php, row 99
-// include/field.class.php, row 615
-// src/Util/Adminlink.php, row 30
+// admin/aa_cron.php, row 100
+// include/field.class.php, row 656
+// src/Util/Adminlink.php, row 31
 "disabled" => "無効", // ai 2026-06
 
-// admin/aa_cron.php, row 99
+// admin/aa_cron.php, row 100
 "enabled" => "有効", // ai 2026-06
 
-// admin/aa_cron.php, row 102
+// admin/aa_cron.php, row 103
+"AA's own jobs (alerts, feeding, link check, table optimization) run from the task queue since 2026-09; this table is only for scripts you added yourself." => "",
+
+// admin/aa_cron.php, row 104
+"For a new periodic task prefer %1 - they run from the queue too, with no system cron row to keep." => "",
+
+// admin/aa_cron.php, row 104
+// include/menu.php, row 171
+// include/menu_util.php, row 75
+"Planned Tasks" => "予定されたタスク", // ai 2026-06
+
+// admin/aa_cron.php, row 105
 "For help see FAQ: " => "ヘルプはFAQを参照してください: ", // ai 2026-06
 
-// admin/aa_cron.php, row 103
+// admin/aa_cron.php, row 106
 "To run cron manually now: " => "Cronを今すぐ手動で実行するには: ", // ai 2026-06
 
-// admin/aa_cron.php, row 104
+// admin/aa_cron.php, row 107
 "Post-response cron fallback" => "応答後のCron代替実行", // ai 2026-06
 
-// admin/aa_cron.php, row 104
+// admin/aa_cron.php, row 107
 "last run" => "最終実行", // ai 2026-06
 
-// admin/aa_cron.php, row 108
+// admin/aa_cron.php, row 111
 // include/menu_util.php, row 76
+// src/Optimize/CheckCron.php, row 52
+// src/Optimize/CheckQueue.php, row 59
 "Cron" => "",
 
-// admin/aa_emails.php, row 41
-// admin/se_emails.php, row 41
+// admin/aa_dataimports.php, row 34
+"You do not have permissions to see the imports of all slices" => "",
+
+// admin/aa_dataimports.php, row 39
+"Imports of all slices" => "",
+
+// admin/aa_dataimports.php, row 40
+"The imports of every slice of this installation. A new import is added on the Imports page of its slice." => "",
+
+// admin/aa_emails.php, row 42
+// admin/se_emails.php, row 42
 "You do not have permission to manage Emails" => "E-メールを管理する許可がありません", // ai 2026-06
 
-// admin/aa_emails.php, row 48
-// admin/se_emails.php, row 48
+// admin/aa_emails.php, row 49
+// admin/se_emails.php, row 49
 "Manage Emails" => "E-メールの管理", // ai 2026-06
 
-// admin/aa_log.php, row 40
-// admin/aa_searchlog.php, row 36
+// admin/aa_log.php, row 39
+// admin/aa_searchlog.php, row 37
 "You do not have permission to manage ActionApps logs" => "ActionAppsのログを管理する許可がありません", // ai 2026-06
 
-// admin/aa_log.php, row 57
+// admin/aa_log.php, row 56
 // include/menu_util.php, row 77
 "View Log" => "ログを表示", // ai 2026-06
 
-// admin/aa_optimize.php, row 47
-// include/feeding.php, row 455, 487
+// admin/aa_note.php, row 54
+"You do not have permissions to write notes" => "",
+
+// admin/aa_note.php, row 58
+// admin/aa_security.php, row 59
+// admin/aa_statecheck.php, row 133
+// admin/aafinder.php, row 98
+// central/appstore.php, row 67
+// central/installapp.php, row 139, 140
+// src/Import/DetailPage.php, row 510
+"The form has expired; reload the page and try again." => "",
+
+// admin/aa_optimize.php, row 50
+// include/feeding.php, row 465, 501
 "Test" => "テスト", // ai 2026-06
 
-// admin/aa_optimize.php, row 61
+// admin/aa_optimize.php, row 65
 "No %1 action in %2." => "%2にアクション%1がありません。", // ai 2026-06
 
-// admin/aa_optimize.php, row 64
+// admin/aa_optimize.php, row 68
 "No optimize class found (%1)." => "最適化クラスが見つかりません (%1)。", // ai 2026-06
 
-// admin/aa_optimize.php, row 101
+// admin/aa_optimize.php, row 113
 "Test current" => "現在のモジュールをテスト", // ai 2026-06
 
-// admin/aa_optimize.php, row 110
+// admin/aa_optimize.php, row 129
+// admin/aa_statecheck.php, row 84
 "Repair" => "修復", // ai 2026-06
 
-// admin/aa_optimize.php, row 119
+// admin/aa_optimize.php, row 145
 "Repair current" => "現在のモジュールを修復", // ai 2026-06
 
-// admin/aa_optimize.php, row 128
+// admin/aa_optimize.php, row 161
 "Revert" => "元に戻す", // ai 2026-06
 
-// admin/aa_optimize.php, row 133
+// admin/aa_optimize.php, row 167
 "You don't have permissions to do optimize tests." => "最適化テストを実行する許可がありません。", // ai 2026-06
 
-// admin/aa_optimize.php, row 140
+// admin/aa_optimize.php, row 174
 "Admin - Optimize a Repair ActionApps" => "管理 - ActionAppsの最適化と修復", // ai 2026-06
 
-// admin/aa_searchlog.php, row 68
+// admin/aa_searchlog.php, row 69
 // include/menu_util.php, row 78
 "View SearchLog" => "検索ログを表示", // ai 2026-06
 
-// admin/aa_statistics.php, row 50
-// admin/se_statistics.php, row 50
+// admin/aa_security.php, row 53
+"You do not have permissions to change the security protections" => "",
+
+// admin/aa_security.php, row 70
+"Not measured: AA cannot tell whether a site relies on this protection." => "",
+
+// admin/aa_security.php, row 84
+"No form sent an unsigned expression in the last %1 days." => "",
+
+// admin/aa_security.php, row 85
+"Last %1 days: %2 refused, %3 run (counted once per page and day)." => "",
+
+// admin/aa_security.php, row 86
+// src/Optimize/CheckAjaxUnsigned.php, row 86
+// src/Optimize/CheckAlertitemRefusals.php, row 95
+// src/Optimize/CheckAnonymousEditRefusals.php, row 93
+// src/Optimize/CheckBlockedRequests.php, row 94
+// src/Optimize/CheckCkeditorUse.php, row 102
+// src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckObjectFormRefusals.php, row 106
+// src/Optimize/CheckPhpFatals.php, row 68
+// src/Optimize/CheckQueue.php, row 89, 99
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckSecurityProtections.php, row 103
+// src/Optimize/CheckSessionidUse.php, row 105
+// src/Optimize/CheckUploadRefusals.php, row 98
+// src/Optimize/CheckUserAliasFunctionLog.php, row 74
+"Log rows" => "",
+
+// admin/aa_security.php, row 93
+"On" => "",
+
+// admin/aa_security.php, row 96
+"Off since %1, %2" => "",
+
+// admin/aa_security.php, row 96
+// src/Import/DetailPage.php, row 726
+"Off" => "",
+
+// admin/aa_security.php, row 101
+// include/menu_util.php, row 82
+// src/Optimize/CheckSecurityProtections.php, row 69
+"Security" => "",
+
+// admin/aa_security.php, row 128
+"Saved. Changes are written to the log." => "",
+
+// admin/aa_security.php, row 132
+"Each protection is on unless you switch it off here. Switch one off only for an old site whose forms still use the older way, and only until they are converted." => "",
+
+// admin/aa_security.php, row 143
+"Switch this protection off" => "",
+
+// admin/aa_security.php, row 144
+"State Check reminds you until it is on again." => "",
+
+// admin/aa_security.php, row 147
+"How to convert older forms" => "",
+
+// admin/aa_security.php, row 152
+// admin/se_csv_import2.php, row 392
+// include/searchbar.class.php, row 769
+// src/Widget/MflWidget.php, row 120
+// src/Widget/RioWidget.php, row 124
+// src/Widget/TxtWidget.php, row 110
+// src/Widget/Widget.php, row 445
+"Save" => "保存", // ai 2026-06
+
+// admin/aa_statecheck.php, row 59
+"You do not have permissions to see State Check" => "",
+
+// admin/aa_statecheck.php, row 70
+"Problem" => "",
+
+// admin/aa_statecheck.php, row 71
+"Warning" => "",
+
+// admin/aa_statecheck.php, row 72
+"Advice" => "",
+
+// admin/aa_statecheck.php, row 73
+// admin/constants_sel.php, row 110
+// admin/prev_navigation.php, row 57
+// src/Manageraction/Central_Linkcheck.php, row 42
+"OK" => "",
+
+// admin/aa_statecheck.php, row 88
+"Recheck" => "",
+
+// admin/aa_statecheck.php, row 99, 249
+// include/logs.php, row 681
+"Severity" => "",
+
+// admin/aa_statecheck.php, row 99, 249
+"Check" => "",
+
+// admin/aa_statecheck.php, row 99, 249
+// include/logs.php, row 683
+"Finding" => "",
+
+// admin/aa_statecheck.php, row 99
+// include/formutil.php, row 3280
+// include/logs.php, row 682, 942
+"Count" => "件数", // ai 2026-06
+
+// admin/aa_statecheck.php, row 99
+"Since" => "",
+
+// admin/aa_statecheck.php, row 99
+// admin/discedit.php, row 134
+// admin/related_sel.php, row 152
+// admin/se_views.php, row 136
+// src/Import/DetailPage.php, row 313
+// src/Manager.php, row 230
+// src/Optimize/AbstractOptimize.php, row 173
+"Actions" => "操作", // ai 2026-06
+
+// admin/aa_statecheck.php, row 135
+"No such check: %1" => "",
+
+// admin/aa_statecheck.php, row 137
+"%1 has no repair action" => "",
+
+// admin/aa_statecheck.php, row 142
+"Repair of %1 done." => "",
+
+// admin/aa_statecheck.php, row 142
+"Repair of %1 failed." => "",
+
+// admin/aa_statecheck.php, row 186
+"Checked again at %1: still there. %2" => "",
+
+// admin/aa_statecheck.php, row 187
+"Checked again at %1: the problem is gone." => "",
+
+// admin/aa_statecheck.php, row 202
+// include/menu_util.php, row 81
+"State Check" => "",
+
+// admin/aa_statecheck.php, row 227
+"%1 problems, %2 warnings, %3 recommendations, %4 checks passed." => "",
+
+// admin/aa_statecheck.php, row 228
+"Basic checks ran now in %1 s." => "",
+
+// admin/aa_statecheck.php, row 229
+"Extended checks ran now in %1 s." => "",
+
+// admin/aa_statecheck.php, row 229
+"Extended checks were not run." => "",
+
+// admin/aa_statecheck.php, row 230
+"Slow checks ran now in %1 s." => "",
+
+// admin/aa_statecheck.php, row 231
+"The daily snapshot last ran %1." => "",
+
+// admin/aa_statecheck.php, row 231
+"No daily snapshot yet." => "",
+
+// admin/aa_statecheck.php, row 234
+// include/logs.php, row 701
+"Problems" => "",
+
+// admin/aa_statecheck.php, row 234
+"No problems found. %1 checks passed at %2." => "",
+
+// admin/aa_statecheck.php, row 236
+// include/logs.php, row 702
+"Warnings" => "",
+
+// admin/aa_statecheck.php, row 239
+// include/logs.php, row 703
+"Recommendations" => "",
+
+// admin/aa_statecheck.php, row 249
+"Resolution" => "",
+
+// admin/aa_statecheck.php, row 251
+"Resolved" => "",
+
+// admin/aa_statecheck.php, row 253
+"Passed checks" => "",
+
+// admin/aa_statecheck.php, row 253
+"No check passed." => "",
+
+// admin/aa_statecheck.php, row 257
+"Extended checks" => "",
+
+// admin/aa_statecheck.php, row 258
+"Full scans of the database; they take seconds to minutes on a large installation. Their findings are merged into the sections above once run." => "",
+
+// admin/aa_statecheck.php, row 260
+"Run extended checks now" => "",
+
+// admin/aa_statecheck.php, row 265
+"Slow checks" => "",
+
+// admin/aa_statecheck.php, row 266
+"Full scans of the largest tables; on a big installation they take many minutes and load the database server, so they are not part of the daily snapshot. Run them now and then, preferably outside peak hours. Their findings are merged into the sections above once run." => "",
+
+// admin/aa_statecheck.php, row 268
+"Run slow checks now" => "",
+
+// admin/aa_statecheck.php, row 271
+// src/Optimize/CheckEnvironment.php, row 18
+"Environment" => "環境", // ai 2026-06
+
+// admin/aa_statistics.php, row 58
+// admin/se_statistics.php, row 53
 "You do not have permissions to see statistics" => "統計を表示する許可がありません", // ai 2026-06
 
-// admin/aa_statistics.php, row 78
-// admin/se_statistics.php, row 61
+// admin/aa_statistics.php, row 86
+// admin/se_statistics.php, row 64
 "Admin - Statistics" => "管理 - 統計", // ai 2026-06
 
-// admin/aa_statistics.php, row 83
-// admin/anonym_wizard.php, row 222
-// admin/console.php, row 57
-// admin/se_fields.php, row 382
-// admin/se_statistics.php, row 66
-// admin/se_views.php, row 144
-// include/formutil.php, row 1413, 1416, 1998
-// src/Widget/FilWidget.php, row 153, 232
+// admin/aa_statistics.php, row 91
+// admin/anonym_wizard.php, row 223
+// admin/console.php, row 58
+// admin/se_fields.php, row 303
+// admin/se_statistics.php, row 69
+// admin/se_views.php, row 148
+// include/formutil.php, row 1427, 1430, 2016
+// src/Widget/FilWidget.php, row 154, 233
 // src/Widget/FldWidget.php, row 156
 "Show" => "表示",
 
-// admin/aa_statistics.php, row 86
-// admin/se_statistics.php, row 69
+// admin/aa_statistics.php, row 94
+// admin/se_statistics.php, row 72
 "years" => "年", // ai 2026-06
 
-// admin/aa_statistics.php, row 87
-// admin/se_statistics.php, row 70
+// admin/aa_statistics.php, row 95
+// admin/se_statistics.php, row 73
 "months" => "月", // ai 2026-06
 
-// admin/aa_statistics.php, row 88
-// admin/se_statistics.php, row 71
+// admin/aa_statistics.php, row 96
+// admin/se_statistics.php, row 74
 "weeks" => "週", // ai 2026-06
 
-// admin/aa_statistics.php, row 89
-// admin/se_statistics.php, row 72
+// admin/aa_statistics.php, row 97
+// admin/se_statistics.php, row 75
 "days" => "日", // ai 2026-06
 
-// admin/aa_statistics.php, row 90
-// admin/se_statistics.php, row 73
+// admin/aa_statistics.php, row 98
+// admin/se_statistics.php, row 76
 "hours" => "時間", // ai 2026-06
 
-// admin/aa_statistics.php, row 91
-// admin/se_statistics.php, row 74
+// admin/aa_statistics.php, row 99
+// admin/se_statistics.php, row 77
 "minutes" => "分", // ai 2026-06
 
-// admin/aa_statistics.php, row 92
-// admin/se_statistics.php, row 75
+// admin/aa_statistics.php, row 100
+// admin/se_statistics.php, row 78
 "day-hours" => "時間帯", // ai 2026-06
 
-// admin/aa_statistics.php, row 93
-// admin/se_statistics.php, row 76
+// admin/aa_statistics.php, row 101
+// admin/se_statistics.php, row 79
 "week-days" => "曜日", // ai 2026-06
 
-// admin/aa_statistics.php, row 97
+// admin/aa_statistics.php, row 105
 "Most hits" => "最多アクセス", // ai 2026-06
 
-// admin/aa_statistics.php, row 98
+// admin/aa_statistics.php, row 106
 "Most server time" => "最多サーバー時間", // ai 2026-06
 
-// admin/aa_statistics.php, row 99
+// admin/aa_statistics.php, row 107
 "Slowest (avg ms)" => "最も遅い (平均ms)", // ai 2026-06
 
-// admin/aa_statistics.php, row 100
+// admin/aa_statistics.php, row 108
 "Fastest (avg ms)" => "最も速い (平均ms)", // ai 2026-06
 
-// admin/aa_statistics.php, row 101
+// admin/aa_statistics.php, row 109
 "Worst cached" => "キャッシュ効率最低", // ai 2026-06
 
-// admin/aa_statistics.php, row 102
+// admin/aa_statistics.php, row 110
 "Best cached" => "キャッシュ効率最高", // ai 2026-06
 
-// admin/aa_statistics.php, row 103
+// admin/aa_statistics.php, row 111
 "Most wasted (NC+NM)" => "最も無駄が多い (NC+NM)", // ai 2026-06
 
-// admin/aa_statistics.php, row 104
+// admin/aa_statistics.php, row 112
 "Slowed down vs prior period" => "前期間より低速化", // ai 2026-06
 
-// admin/aa_statistics.php, row 105
+// admin/aa_statistics.php, row 113
 "Sped up vs prior period" => "前期間より高速化", // ai 2026-06
 
-// admin/aa_statistics.php, row 106
-// admin/se_statistics.php, row 80
+// admin/aa_statistics.php, row 114
+// admin/se_statistics.php, row 83
 "Specified below" => "下記で指定", // ai 2026-06
 
-// admin/aa_statistics.php, row 110
+// admin/aa_statistics.php, row 118
 "Last day" => "過去1日", // ai 2026-06
 
-// admin/aa_statistics.php, row 111
+// admin/aa_statistics.php, row 119
 "Last week" => "過去1週間", // ai 2026-06
 
-// admin/aa_statistics.php, row 112
+// admin/aa_statistics.php, row 120
 "Last month" => "過去1か月", // ai 2026-06
 
-// admin/aa_statistics.php, row 113
+// admin/aa_statistics.php, row 121
 "Last year" => "過去1年", // ai 2026-06
 
-// admin/aa_statistics.php, row 114
+// admin/aa_statistics.php, row 122
 "This day" => "今日", // ai 2026-06
 
-// admin/aa_statistics.php, row 115
+// admin/aa_statistics.php, row 123
 "This week" => "今週", // ai 2026-06
 
-// admin/aa_statistics.php, row 116
+// admin/aa_statistics.php, row 124
 "This month" => "今月", // ai 2026-06
 
-// admin/aa_statistics.php, row 117
+// admin/aa_statistics.php, row 125
 "This year" => "今年", // ai 2026-06
 
-// admin/aa_statistics.php, row 118
+// admin/aa_statistics.php, row 126
 "All time" => "全期間", // ai 2026-06
 
-// admin/aa_statistics.php, row 122
+// admin/aa_statistics.php, row 130
 "All AA" => "AA全体", // ai 2026-06
 
-// admin/aa_statistics.php, row 123
+// admin/aa_statistics.php, row 131
 "Sites" => "サイト", // ai 2026-06
 
-// admin/aa_statistics.php, row 127
-// admin/aafinder.php, row 499, 512
-// admin/se_inputform.php, row 291
-// include/searchlib.php, row 970
+// admin/aa_statistics.php, row 135
+// admin/aafinder.php, row 507, 520
+// admin/se_inputform.php, row 292
+// central/appstore.php, row 164
+// include/searchlib.php, row 1015
+// src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "スライス", // ai 2026-06
 
-// admin/aa_statistics.php, row 155
+// admin/aa_statistics.php, row 162
+"Version progress" => "",
+
+// admin/aa_statistics.php, row 173
+"Queue progress" => "",
+
+// admin/aa_statistics.php, row 184
 "Quick diagnostics" => "クイック診断", // ai 2026-06
 
-// admin/aa_statistics.php, row 185
+// admin/aa_statistics.php, row 208
 "Slice comparison" => "スライス比較", // ai 2026-06
 
-// admin/aa_statistics.php, row 208
-// admin/se_statistics.php, row 135
+// admin/aa_statistics.php, row 231
+// admin/se_statistics.php, row 138
 "Stats to show" => "表示する統計", // ai 2026-06
 
-// admin/aa_statistics.php, row 209
+// admin/aa_statistics.php, row 232
 "Granularity" => "粒度", // ai 2026-06
 
-// admin/aa_statistics.php, row 213
+// admin/aa_statistics.php, row 236
 "Items to show" => "表示する項目", // ai 2026-06
 
-// admin/aa_statistics.php, row 214
+// admin/aa_statistics.php, row 237
 "Display for module" => "表示対象モジュール", // ai 2026-06
 
-// admin/aa_statistics.php, row 215
+// admin/aa_statistics.php, row 238
 "Sort items by" => "項目の並び順", // ai 2026-06
 
-// admin/aa_statistics.php, row 216
+// admin/aa_statistics.php, row 239
 "Period (item ranking)" => "期間 (項目ランキング)", // ai 2026-06
 
-// admin/aa_statistics.php, row 217
-// admin/se_statistics.php, row 95
+// admin/aa_statistics.php, row 240
+// admin/se_statistics.php, row 98
 "Exact items to show" => "表示する項目を指定", // ai 2026-06
 
-// admin/aa_statistics.php, row 217
-// admin/se_statistics.php, row 95
+// admin/aa_statistics.php, row 240
+// admin/se_statistics.php, row 98
 "dash-separated list of item ids/short_ids or AA expression like {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}}" => "項目のid/short_idをハイフン区切りで並べたリスト、または {ids:{_#SLICE_ID}:d-publish_date....-gt-{timestamp:2023-08-22}}} のようなAA式", // ai 2026-06
 
-// admin/aa_statistics.php, row 218
-// admin/se_statistics.php, row 96
+// admin/aa_statistics.php, row 241
+// admin/se_statistics.php, row 99
 "Number of items to show" => "表示する項目数", // ai 2026-06
 
-// admin/aa_statistics.php, row 222
+// admin/aa_statistics.php, row 245
 "Show for period" => "表示する期間", // ai 2026-06
 
-// admin/aa_statistics.php, row 223
-// admin/se_statistics.php, row 97
+// admin/aa_statistics.php, row 246
+// admin/se_statistics.php, row 100
 "From date" => "開始日", // ai 2026-06
 
-// admin/aa_statistics.php, row 232
-// admin/se_statistics.php, row 141
+// admin/aa_statistics.php, row 255
+// admin/se_statistics.php, row 144
 "Display Statistics for Item" => "項目の統計を表示", // ai 2026-06
 
-// admin/aa_statistics.php, row 309
-// admin/se_statistics.php, row 168
+// admin/aa_statistics.php, row 341
+// admin/se_statistics.php, row 171
 "Items found" => "見付かった項目", // ai 2026-06
 
-// admin/aa_statistics.php, row 313
-// admin/se_statistics.php, row 179
+// admin/aa_statistics.php, row 345
+// admin/se_statistics.php, row 182
 "No items found" => "項目が見付かりません", // ai 2026-06
 
-// admin/aa_statistics.php, row 325
-// admin/se_statistics.php, row 176
+// admin/aa_statistics.php, row 357
+// admin/se_statistics.php, row 179
 "Server configuration changes" => "サーバー設定の変更", // ai 2026-06
 
-// admin/aa_tasks.php, row 34
-// admin/se_tasks.php, row 47
+// admin/aa_tasks.php, row 35
+// admin/se_tasks.php, row 39
 "You do not have permissions to manage tasks" => "タスクを管理する許可がありません", // ai 2026-06
 
-// admin/aa_tasks.php, row 43
-// admin/aa_toexecute.php, row 42
-// admin/se_forms.php, row 49
-// admin/se_taskmanager.php, row 76
-// admin/se_tasks.php, row 52
-// include/metabase.class.php, row 1610
+// admin/aa_tasks.php, row 45
+// admin/aa_toexecute.php, row 43
+// admin/se_forms.php, row 50
+// admin/se_taskmanager.php, row 77
+// admin/se_tasks.php, row 44
+// include/metabase.class.php, row 1700
 "Manage %1" => "%1の管理", // ai 2026-06
 
-// admin/aa_tasks.php, row 44
-// admin/se_tasks.php, row 53
+// admin/aa_tasks.php, row 46
+// admin/se_tasks.php, row 45
 "You can plan a task for specified time, or as the reaction to some event. The task will probably be sending e-mails using {mail...} expression, or recounting some fields after update by {recount...}" => "タスクは指定した時刻に実行するよう計画することも、何らかのイベントへの反応として計画することもできます。タスクの内容は多くの場合、{mail...} 式によるE-メールの送信や、更新後の {recount...} によるフィールドの再計算です。", // ai 2026-06
 
-// admin/aa_toexecute.php, row 37
+// admin/aa_toexecute.php, row 38
 "You do not have permission to see currently scheduled tasks" => "現在予定されているタスクを表示する許可がありません", // ai 2026-06
 
-// admin/aa_toexecute.php, row 42
+// admin/aa_toexecute.php, row 43
 "Scheduled Tasks" => "予定されたタスク", // ai 2026-06
 
-// admin/aa_uiprefs.php, row 30
+// admin/aa_uiprefs.php, row 31
 "You must be logged in." => "ログインが必要です。", // ai 2026-06
 
-// admin/aa_uiprefs.php, row 115
+// admin/aa_uiprefs.php, row 118
 "Thanks — your note reached the AA team." => "ありがとうございます — ご意見はAAチームに届きました。", // ai 2026-06
 
-// admin/aa_uiprefs.php, row 117
+// admin/aa_uiprefs.php, row 120
 "Couldn't send right now. Please email us directly: %1" => "ただ今送信できませんでした。直接メールでご連絡ください: %1", // ai 2026-06
 
 // admin/aa_wizardtemplate.php, row 41
@@ -356,608 +681,626 @@ return [
 // admin/aa_wizardtemplate.php, row 75
 "Wizard Templates" => "ウィザードテンプレート", // ai 2026-06
 
-// admin/aafinder.php, row 86
+// admin/aafinder.php, row 90
 "You don't have permissions to do search." => "検索する許可がありません。", // ai 2026-06
 
-// admin/aafinder.php, row 98
+// admin/aafinder.php, row 109
 "Show results with string" => "件の結果が次の文字列を含みます:", // ai 2026-06
 
-// admin/aafinder.php, row 100
+// admin/aafinder.php, row 111
+// src/Optimize/CheckAlertitemRefusals.php, row 90
 "Item" => "項目", // ai 2026-06
 
-// admin/aafinder.php, row 124
-// admin/feed_to.php, row 66
-// admin/se_fields.php, row 112
-// admin/slicedit.php, row 244
-// include/itemfunc.php, row 185
-// include/logs.php, row 528
-// include/menu.php, row 132
-// include/slice.class.php, row 468
-// include/sliceadd.php, row 52, 77
+// admin/aafinder.php, row 135
+// admin/feed_to.php, row 65
+// admin/se_fields.php, row 110
+// admin/slicedit.php, row 249
+// central/installapp.php, row 1357, 1437, 1472
+// include/itemfunc.php, row 197
+// include/logs.php, row 1044
+// include/menu.php, row 133
+// include/slice.class.php, row 587
+// include/sliceadd.php, row 54, 79
+// src/Central/FindingText.php, row 496
+// src/Optimize/CheckAjaxUnsigned.php, row 79
+// src/Optimize/CheckAlertitemRefusals.php, row 88
+// src/Optimize/CheckAnonymousEditRefusals.php, row 84
+// src/Optimize/CheckImports.php, row 367
+// src/Optimize/CheckUploadRefusals.php, row 84
+// src/Optimize/CheckUserAliasFunctionLog.php, row 84
+// src/Optimize/CheckUserAliasFunctions.php, row 86
 "Slice" => "スライス",
 
-// admin/aafinder.php, row 128
-// src/AA_Plannedtask.php, row 102
+// admin/aafinder.php, row 139
+// central/installapp.php, row 1271
+// src/AA_Plannedtask.php, row 127
+// src/Optimize/CheckCkeditorUse.php, row 97
+// src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "モジュール", // ai 2026-06
 
-// admin/aafinder.php, row 133, 134, 135, 136
+// admin/aafinder.php, row 144, 145, 146, 147
 // include/um_util.php, row 102
+// src/Optimize/CheckObjectFormRefusals.php, row 97
 "Object" => "オブジェクト", // ai 2026-06
 
-// admin/aafinder.php, row 139
-// include/itemfunc.php, row 274
-// include/logs.php, row 234
-// src/AA_Plannedtask.php, row 117
+// admin/aafinder.php, row 150
+// include/itemfunc.php, row 306
+// include/logs.php, row 293
+// src/AA_Plannedtask.php, row 149
 "Log" => "ログ", // ai 2026-06
 
-// admin/aafinder.php, row 161
-// include/sliceadd.php, row 36
-// include/slicedit.php, row 150
-"You do not have permissions to add slice" => "スライスを追加する許可がありません",
-
-// admin/aafinder.php, row 167
+// admin/aafinder.php, row 172
 // include/menu_util.php, row 79
 "AA finder" => "AA検索", // ai 2026-06
 
-// admin/aafinder.php, row 247
+// admin/aafinder.php, row 252
 "Jump" => "移動", // ai 2026-06
 
-// admin/aafinder.php, row 466, 518
-// admin/itemhistory.php, row 43
-// include/itemfunc.php, row 83, 84, 254, 376
-// include/menu.php, row 161
-// include/menu_util.php, row 82
+// admin/aafinder.php, row 474, 526
+// admin/itemhistory.php, row 47
+// include/itemfunc.php, row 82, 83, 286, 408
+// include/menu.php, row 163
+// include/menu_util.php, row 84
 "History" => "履歴", // ai 2026-06
 
-// admin/aafinder.php, row 478
+// admin/aafinder.php, row 486
 "Manage" => "管理", // ai 2026-06
 
-// admin/aafinder.php, row 481
+// admin/aafinder.php, row 489
 "Manage User:" => "利用者の管理:", // ai 2026-06
 
-// admin/aafinder.php, row 483, 489, 505, 533, 546
+// admin/aafinder.php, row 491, 497, 513, 541, 554
 "Go!" => "実行！", // ai 2026-06
 
-// admin/aafinder.php, row 487
+// admin/aafinder.php, row 495
 "Manage Group:" => "グループの管理:", // ai 2026-06
 
-// admin/aafinder.php, row 493, 523
-// admin/um_gedit.php, row 208, 325
-// admin/um_uedit.php, row 249
-// include/se_users.php, row 131, 136
-// include/searchbar.class.php, row 533, 534, 570
-// include/tabledit.php, row 584
-// include/transformation.class.php, row 760, 837
+// admin/aafinder.php, row 501, 531
+// admin/um_gedit.php, row 207, 324
+// admin/um_uedit.php, row 248
+// include/se_users.php, row 138, 143
+// include/searchbar.class.php, row 566, 567, 607
+// include/transformation.class.php, row 829, 910
 // include/um_gsrch.php, row 47
 // src/Widget/GpsWidget.php, row 434
+// src/Widget/RichtextMarkup.php, row 72
 "Search" => "検索",
 
-// admin/aafinder.php, row 496
+// admin/aafinder.php, row 504
 "Find in" => "検索対象", // ai 2026-06
 
-// admin/aafinder.php, row 497
+// admin/aafinder.php, row 505
 "ID & SEO" => "ID・SEO", // ai 2026-06
 
-// admin/aafinder.php, row 498, 511
-// include/itemfunc.php, row 183
-// include/menu.php, row 143
+// admin/aafinder.php, row 506, 519
+// include/itemfunc.php, row 195
+// include/menu.php, row 144
 "Views" => "ビュー", // ai 2026-06
 
-// admin/aafinder.php, row 500, 513
-// admin/anonym_wizard.php, row 216
-// include/exporter.class.php, row 522
-// include/itemfunc.php, row 351
-// include/menu.php, row 133
-// include/searchlib.php, row 167
+// admin/aafinder.php, row 508, 521
+// admin/anonym_wizard.php, row 217
+// include/exporter.class.php, row 550
+// include/itemfunc.php, row 383
+// include/menu.php, row 134
+// include/searchlib.php, row 171
 "Fields" => "フィールド", // ai 2026-06
 
-// admin/aafinder.php, row 501, 514
+// admin/aafinder.php, row 509, 522
 "Site spots" => "サイトスポット", // ai 2026-06
 
-// admin/aafinder.php, row 502, 519
+// admin/aafinder.php, row 510, 527
 "Discussion comments" => "ディスカッションコメント", // ai 2026-06
 
-// admin/aafinder.php, row 510
+// admin/aafinder.php, row 518
 "Search and Replace in" => "検索・置換の対象", // ai 2026-06
 
-// admin/aafinder.php, row 515
+// admin/aafinder.php, row 523
 "Objects" => "オブジェクト", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 524
 "Items from slices with 'Slice Type' like Code... " => "「Slice Type」が Code... であるスライスの項目", // ai 2026-06
 
-// admin/aafinder.php, row 516
+// admin/aafinder.php, row 524
 "Code Items" => "コード項目", // ai 2026-06
 
-// admin/aafinder.php, row 517
+// admin/aafinder.php, row 525
 "All Items" => "全ての項目", // ai 2026-06
 
-// admin/aafinder.php, row 521
+// admin/aafinder.php, row 529
 "minimum 2 characters for replace function" => "置換機能には2文字以上必要です", // ai 2026-06
 
-// admin/aafinder.php, row 522
+// admin/aafinder.php, row 530
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "置換機能には6文字以上必要です（空文字列に置換するには {#AAA} を使用してください）", // ai 2026-06
 
-// admin/aafinder.php, row 524
+// admin/aafinder.php, row 532
 "Replace!" => "置換！", // ai 2026-06
 
-// admin/aafinder.php, row 531
+// admin/aafinder.php, row 539
 "Get all information about the ITEM" => "項目の全情報を取得", // ai 2026-06
 
-// admin/aafinder.php, row 538
+// admin/aafinder.php, row 546
 "Shortcut to edit ITEM" => "項目編集へのショートカット", // ai 2026-06
 
-// admin/aafinder.php, row 541
-// include/searchbar.class.php, row 543
-// include/searchlib.php, row 47, 48, 124, 133
+// admin/aafinder.php, row 549
+// include/searchbar.class.php, row 576
+// include/searchlib.php, row 48, 49, 127, 136
 "contains" => "含む", // ai 2026-06
 
-// admin/aafinder.php, row 542
-// include/searchbar.class.php, row 549
-// include/searchlib.php, row 124, 133
+// admin/aafinder.php, row 550
+// include/searchbar.class.php, row 584
+// include/searchlib.php, row 127, 136
 "is" => "一致", // ai 2026-06
 
-// admin/aafinder.php, row 543
-// admin/se_profile.php, row 98
+// admin/aafinder.php, row 551
+// admin/se_profile.php, row 97
 "Item number" => "項目数", // ai 2026-06
 
-// admin/aafinder.php, row 544
+// admin/aafinder.php, row 552
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
-// admin/se_filters.php, row 52
+// admin/se_filters.php, row 51
 // admin/se_filters2.php, row 64
-// admin/se_import.php, row 48
+// admin/se_import.php, row 47
 // admin/se_import2.php, row 52
-// admin/se_inter_export.php, row 53
-// admin/se_inter_import.php, row 45
+// admin/se_inter_export.php, row 52
+// admin/se_inter_import.php, row 44
 // admin/se_inter_import2.php, row 38
 // admin/se_inter_import3.php, row 40
-// admin/se_mapping.php, row 49
+// admin/se_mapping.php, row 48
 // admin/se_mapping2.php, row 55
 // admin/se_rssfeeds.php, row 37
+// admin/xmlclient.php, row 107
 "You do not have permissions to change feeding setting" => "フィード設定を変更する許可がありません", // ai 2026-06
 
 // admin/aarsstest.php, row 46
 // admin/se_rssfeeds.php, row 46
 "Remote RSS Feed administration" => "リモートRSSフィードの管理", // ai 2026-06
 
-// admin/anonym_wizard.php, row 85
+// admin/anonym_wizard.php, row 87
 "ActionApps Anonymous form" => "ActionApps 匿名フォーム", // ai 2026-06
 
-// admin/anonym_wizard.php, row 127
-// admin/write_mail.php, row 257
-// include/menu_util.php, row 599
-// include/stringexpand.php, row 9646, 9726
+// admin/anonym_wizard.php, row 129
+// admin/write_mail.php, row 260
+// include/menu_util.php, row 618
+// include/stringexpand.php, row 9858, 9937
 "Send" => "送信", // ai 2026-06
 
-// admin/anonym_wizard.php, row 149
-// admin/mailman_create_list.php, row 66
-// admin/se_constant.php, row 88
-// admin/se_constant_import.php, row 61
-// admin/se_fieldid.php, row 88
-// admin/se_fields.php, row 87
-// admin/se_inputform.php, row 128
-// admin/se_javascript.php, row 48
+// admin/anonym_wizard.php, row 151
+// admin/mailman_create_list.php, row 68
+// admin/se_constant.php, row 87
+// admin/se_constant_import.php, row 63
+// admin/se_fieldid.php, row 90
+// admin/se_fields.php, row 86
+// admin/se_inputform.php, row 130
+// admin/se_javascript.php, row 50
 "You do not have permissions to change fields settings" => "フィールド設定を変更する許可がありません", // ai 2026-06
 
-// admin/anonym_wizard.php, row 164
+// admin/anonym_wizard.php, row 166
 "WARNING: You did not permit anonymous posting in slice settings." => "警告: スライス設定で匿名投稿が許可されていません。", // ai 2026-06
 
-// admin/anonym_wizard.php, row 167
+// admin/anonym_wizard.php, row 168
 "WARNING: You did not permit anonymous editing in slice settings. A form allowing only anonymous posting will be shown." => "警告: スライス設定で匿名編集が許可されていません。匿名投稿のみ可能なフォームが表示されます。", // ai 2026-06
 
-// admin/anonym_wizard.php, row 175
+// admin/anonym_wizard.php, row 176
 "WARNING: You want to show password, but you did not set 'Authorized by a password field' in Settings - Anonymous editing." => "警告: パスワードを表示しようとしていますが、「設定 - 匿名編集」で「パスワードフィールドによる認証」が設定されていません。", // ai 2026-06
 
-// admin/anonym_wizard.php, row 199
+// admin/anonym_wizard.php, row 200
 "Admin - Anonymous Form Wizard" => "管理 - 匿名フォームウィザード", // ai 2026-06
 
-// admin/anonym_wizard.php, row 204
+// admin/anonym_wizard.php, row 205
 "Show Form" => "フォームを表示", // ai 2026-06
 
-// admin/anonym_wizard.php, row 210
+// admin/anonym_wizard.php, row 211
 "Help" => "ヘルプ", // ai 2026-06
 
-// admin/anonym_wizard.php, row 210
+// admin/anonym_wizard.php, row 211
 "Help - Documentation" => "ヘルプ - ドキュメント", // ai 2026-06
 
-// admin/anonym_wizard.php, row 211
+// admin/anonym_wizard.php, row 212
 "URLs shown after the form was sent" => "フォーム送信後に表示されるURL", // ai 2026-06
 
-// admin/anonym_wizard.php, row 212
+// admin/anonym_wizard.php, row 213
 "OK page" => "OKページ", // ai 2026-06
 
-// admin/anonym_wizard.php, row 213
+// admin/anonym_wizard.php, row 214
 "Error page" => "エラーページ", // ai 2026-06
 
-// admin/anonym_wizard.php, row 214
+// admin/anonym_wizard.php, row 215
 "Use a PHP script to show the result on the OK and Error pages:" => "OKページとエラーページに結果を表示するPHPスクリプトを使用:", // ai 2026-06
 
-// admin/anonym_wizard.php, row 220
-// admin/se_fieldid.php, row 308
-// admin/se_fields.php, row 193, 378
-// admin/se_javascript.php, row 90
-// admin/se_profile.php, row 208
-// admin/search_replace.php, row 173
-// admin/sliceexp_text.php, row 364
-// include/form.class.php, row 183
-// include/searchlib.php, row 357
-// src/Util/ChangesMonitor.php, row 455
+// admin/anonym_wizard.php, row 221
+// admin/se_fieldid.php, row 310
+// admin/se_fields.php, row 299
+// admin/se_javascript.php, row 92
+// admin/se_profile.php, row 207
+// admin/search_replace.php, row 176
+// admin/sliceexp_text.php, row 365
+// include/field.class.php, row 1253, 1257
+// include/form.class.php, row 211
+// include/searchlib.php, row 367
+// src/Optimize/CheckAjaxUnsigned.php, row 80
+// src/Optimize/CheckAnonymousEditRefusals.php, row 85
+// src/Optimize/CheckRequiredSettings.php, row 69
+// src/Optimize/CheckUserAliasFunctionLog.php, row 85
+// src/Optimize/CheckUserAliasFunctions.php, row 87
+// src/Util/ChangesMonitor.php, row 454
 "Field" => "フィールド", // ai 2026-06
 
-// admin/anonym_wizard.php, row 221
-// admin/se_fieldid.php, row 308
-// admin/se_fields.php, row 379
-// admin/se_history.php, row 136
-// admin/se_javascript.php, row 90
-// admin/slicedit.php, row 277
-// include/constants.php, row 409
+// admin/anonym_wizard.php, row 222
+// admin/se_fieldid.php, row 310
+// admin/se_fields.php, row 300
+// admin/se_history.php, row 140
+// admin/se_javascript.php, row 92
+// admin/slicedit.php, row 282
+// central/installapp.php, row 1271
+// include/constants.php, row 458
+// src/Central/FindingText.php, row 186, 192
+// src/Optimize/CheckImports.php, row 218
 "Id" => "ID", // ai 2026-06
 
-// admin/anonym_wizard.php, row 223
+// admin/anonym_wizard.php, row 224
 "Field Id in Form" => "フォーム内のフィールドID", // ai 2026-06
 
-// admin/anonym_wizard.php, row 246
+// admin/anonym_wizard.php, row 247
 "Only fields marked as \"Show\" on the \"Fields\" page\n"
    ."         are offered on this page."
  => "このページでは、「フィールド」ページで「表示」とマークされた\n"
    ."フィールドのみが選択できます。", // ai 2026-06
 
-// admin/console.php, row 43
+// admin/console.php, row 44
 "You do not have permissions to access Console" => "コンソールにアクセスする許可がありません", // ai 2026-06
 
-// admin/console.php, row 52
+// admin/console.php, row 53
 "ActionApps Console" => "ActionApps コンソール", // ai 2026-06
 
-// admin/console.php, row 60
-// include/menu_util.php, row 84
+// admin/console.php, row 61
+// include/menu_util.php, row 86
 "Console" => "コンソール", // ai 2026-06
 
-// admin/console.php, row 61
-// admin/se_javascript.php, row 79
-// include/stringexpand.php, row 91
+// admin/console.php, row 62
+// admin/se_javascript.php, row 81
+// include/stringexpand.php, row 94
+// src/Import/DetailPage.php, row 1025, 1091
+// src/Optimize/CheckImports.php, row 236, 238
 "Code" => "コード", // ai 2026-06
 
-// admin/console.php, row 62
+// admin/console.php, row 63
 "HTML output" => "HTML出力", // ai 2026-06
 
-// admin/console.php, row 64
-// src/Optimize/AbstractOptimize.php, row 130
+// admin/console.php, row 65
+// src/Optimize/AbstractOptimize.php, row 176
 "Result" => "結果", // ai 2026-06
 
-// admin/constants_sel.php, row 63
+// admin/constants_sel.php, row 62
 "Editor window - item manager" => "編集ウィンドウ - 項目管理", // ai 2026-06
 
-// admin/constants_sel.php, row 63
+// admin/constants_sel.php, row 62
 "select constants window" => "定数選択ウィンドウ", // ai 2026-06
 
-// admin/constants_sel.php, row 103
+// admin/constants_sel.php, row 102
 "Select constants" => "定数を選択", // ai 2026-06
 
-// admin/constants_sel.php, row 111
-// admin/prev_navigation.php, row 58
-"OK" => "",
-
-// admin/discedit.php, row 56
+// admin/discedit.php, row 58
 "You don't have permissions to edit all items." => "全ての項目を編集する許可がありません。", // ai 2026-06
 
-// admin/discedit.php, row 101
+// admin/discedit.php, row 103
 "Are you sure you want to delete selected comment?" => "選択したコメントを削除してもよろしいですか？", // ai 2026-06
 
-// admin/discedit.php, row 107
+// admin/discedit.php, row 109
 "Are you sure you want to delete ALL comments? There is no way back!" => "全てのコメントを削除してもよろしいですか？この操作は元に戻せません！", // ai 2026-06
 
-// admin/discedit.php, row 113
+// admin/discedit.php, row 115
 "Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!" => "非表示でないコメント（隠されていないコメント）を全て削除してもよろしいですか？この操作は元に戻せません！", // ai 2026-06
 
-// admin/discedit.php, row 121
+// admin/discedit.php, row 123
 "Admin - Discussion comments management" => "管理 - ディスカッションコメントの管理", // ai 2026-06
 
-// admin/discedit.php, row 126
+// admin/discedit.php, row 128
 "Item: " => "項目:", // ai 2026-06
 
-// admin/discedit.php, row 128
-// include/modutils.php, row 77, 178
-// include/slicedit.php, row 190
+// admin/discedit.php, row 130
+// include/modutils.php, row 78, 179
+// include/slicedit.php, row 193
 "Title" => "題名",
 
-// admin/discedit.php, row 129
-// admin/discedit2.php, row 91, 148
-// admin/se_users.php, row 121, 181
-// include/se_users.php, row 102, 173
+// admin/discedit.php, row 131
+// admin/discedit2.php, row 93, 150
+// admin/se_users.php, row 125, 185
+// include/se_users.php, row 108, 180
+// src/Util/Note.php, row 61
 "Author" => "作者",
 
-// admin/discedit.php, row 130
-// include/logs.php, row 442
+// admin/discedit.php, row 132
+// include/logs.php, row 729
 "IP Address" => "IPアドレス", // ai 2026-06
 
-// admin/discedit.php, row 131
-// admin/discedit2.php, row 151
+// admin/discedit.php, row 133
+// admin/discedit2.php, row 153
 // src/Widget/DteWidget.php, row 36
 "Date" => "日付", // ai 2026-06
 
-// admin/discedit.php, row 132
-// admin/related_sel.php, row 148
-// admin/se_views.php, row 132
-// src/Manager.php, row 201
-// src/Optimize/AbstractOptimize.php, row 127
-"Actions" => "操作", // ai 2026-06
-
-// admin/discedit.php, row 138
+// admin/discedit.php, row 140
 "No discussion comments" => "ディスカッションコメントはありません", // ai 2026-06
 
-// admin/discedit.php, row 161
-// admin/prev_navigation.php, row 48
-// admin/se_views.php, row 143
-// admin/um_gedit.php, row 224
-// admin/um_uedit.php, row 266
-// include/field.class.php, row 597
-// include/filedit.php, row 114
-// include/formutil.php, row 1755, 3346
-// include/metabase.class.php, row 1552
-// include/mlx.php, row 367
-// include/statestore.php, row 1025
+// admin/discedit.php, row 163
+// admin/prev_navigation.php, row 47
+// admin/se_views.php, row 147
+// admin/um_gedit.php, row 223
+// admin/um_uedit.php, row 265
+// include/field.class.php, row 638
+// include/filedit.php, row 115
+// include/formutil.php, row 1773, 3379
+// include/metabase.class.php, row 1642
+// include/mlx.php, row 373
+// include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
 // modules/jump/modedit.php, row 144
 "Edit" => "編集", // ai 2026-06
 
-// admin/discedit.php, row 162
+// admin/discedit.php, row 164
 "Hide" => "非表示", // ai 2026-06
 
-// admin/discedit.php, row 162
+// admin/discedit.php, row 164
 "Approve" => "承認", // ai 2026-06
 
-// admin/discedit.php, row 163
-// admin/se_inter_export.php, row 134
-// admin/se_inter_import.php, row 78, 98
-// admin/se_views.php, row 146
-// admin/slicedel.php, row 65
-// admin/um_gedit.php, row 226
-// admin/um_uedit.php, row 268
-// central/include/actionapps.class.php, row 778
-// include/field.class.php, row 601
-// include/formutil.php, row 1766, 1903
+// admin/discedit.php, row 165
+// admin/se_inter_export.php, row 133
+// admin/se_inter_import.php, row 77, 97
+// admin/se_views.php, row 150
+// admin/slicedel.php, row 68
+// admin/um_gedit.php, row 225
+// admin/um_uedit.php, row 267
+// central/include/actionapps.class.php, row 274
+// include/field.class.php, row 642
+// include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
-// include/profile.php, row 67
-// include/searchbar.class.php, row 1085
+// include/profile.php, row 69
+// include/searchbar.class.php, row 1126
 // include/um_gsrch.php, row 53
+// src/Manageraction/Import_Delete.php, row 25
 // src/Manageraction/Object_Delete.php, row 24
 // src/Manageraction/Table_Row_Delete.php, row 23
-// src/Widget/FilWidget.php, row 200
+// src/Widget/FilWidget.php, row 201
 "Delete" => "削除", // ai 2026-06
 
-// admin/discedit.php, row 169
-// include/adminpage.class.php, row 331
-// include/se_users.php, row 121
-// include/util.php, row 1318
+// admin/discedit.php, row 171
+// include/adminpage.class.php, row 345
+// include/se_users.php, row 128
+// include/util.php, row 1369
 "Back" => "戻る", // ai 2026-06
 
-// admin/discedit.php, row 170
+// admin/discedit.php, row 172
 "Delete All" => "全て削除", // ai 2026-06
 
-// admin/discedit.php, row 171
+// admin/discedit.php, row 173
 "Delete All Unhidden" => "非表示以外を全て削除", // ai 2026-06
 
-// admin/discedit2.php, row 77
+// admin/discedit2.php, row 79
 "You do not have permission to edit items in this slice" => "このスライスの項目を編集する許可がありません", // ai 2026-06
 
-// admin/discedit2.php, row 90, 147
-// admin/write_mail.php, row 119, 237
-// include/mail.php, row 567
-// include/tv_email.php, row 82, 148
+// admin/discedit2.php, row 92, 149
+// admin/write_mail.php, row 120, 240
+// include/logs.php, row 891
+// include/mail.php, row 663
 "Subject" => "件名", // ai 2026-06
 
-// admin/discedit2.php, row 92, 149
-// admin/setup.php, row 103, 246
-// admin/slicewiz.php, row 84
-// admin/um_passwd.php, row 116
-// admin/um_uedit.php, row 326
+// admin/discedit2.php, row 94, 151
+// admin/setup.php, row 104, 247
+// admin/slicewiz.php, row 90
+// admin/um_passwd.php, row 118
+// admin/um_uedit.php, row 325
 // include/um_util.php, row 308, 309, 310
+// src/Central/FindingText.php, row 106
 "E-mail" => "E-メール",
 
-// admin/discedit2.php, row 93, 150
+// admin/discedit2.php, row 95, 152
 "Text of discussion comment" => "コメント本文", // ai 2026-06
 
-// admin/discedit2.php, row 94, 152
+// admin/discedit2.php, row 96, 154
 "Author's WWW  - URL" => "作者のWWW - URL", // ai 2026-06
 
-// admin/discedit2.php, row 95, 153
+// admin/discedit2.php, row 97, 155
 "Author's WWW - description" => "作者のWWW - 記述", // ai 2026-06
 
-// admin/discedit2.php, row 96, 154
+// admin/discedit2.php, row 98, 156
 "Remote address" => "リモートアドレス", // ai 2026-06
 
-// admin/discedit2.php, row 97
+// admin/discedit2.php, row 99
 "Free1" => "自由1", // ai 2026-06
 
-// admin/discedit2.php, row 98, 156
+// admin/discedit2.php, row 100, 158
 "Tracking" => "追跡", // ai 2026-06
 
-// admin/discedit2.php, row 134
+// admin/discedit2.php, row 136
 "Items management - Discussion comments management - Edit comment" => "項目管理 - ディスカッションコメント管理 - コメントの編集", // ai 2026-06
 
-// admin/discedit2.php, row 145
+// admin/discedit2.php, row 147
 "Edit comment" => "コメントの編集", // ai 2026-06
 
-// admin/discedit2.php, row 155
+// admin/discedit2.php, row 157
 "Free 1" => "自由 1", // ai 2026-06
 
-// admin/feed_to.php, row 58
+// admin/feed_to.php, row 57
 "Export Item to Selected Slice" => "選択したスライスへ項目をエクスポート", // ai 2026-06
 
-// admin/feed_to.php, row 67
+// admin/feed_to.php, row 66
 // include/itemfunc.php, row 153
 "Holding bin" => "保留箱", // ai 2026-06
 
-// admin/feed_to.php, row 68
-// admin/se_export.php, row 120
-// admin/se_filters.php, row 191
-// admin/slicedit.php, row 139, 145
-// include/exporter.class.php, row 483
-// include/menu.php, row 187
-// include/menu_util.php, row 119
+// admin/feed_to.php, row 67
+// admin/se_export.php, row 119
+// admin/se_filters.php, row 190
+// admin/slicedit.php, row 141, 147
+// include/exporter.class.php, row 511
+// include/menu.php, row 189
+// include/menu_util.php, row 122
+// src/Central/FindingText.php, row 416
 // src/Module/Poll/Menu.php, row 61
 "Active" => "活動中",
 
-// admin/feed_to.php, row 69
+// admin/feed_to.php, row 68
 "Do not export to this slice" => "このスライスへエクスポートしない", // ai 2026-06
 
-// admin/feed_to.php, row 86
+// admin/feed_to.php, row 85
 "No permission to set feeding for any slice" => "どのスライスにもフィードを設定する許可がありません", // ai 2026-06
 
-// admin/feed_to.php, row 89
-// admin/se_export.php, row 112
-// include/exporter.class.php, row 626
-// include/menu_util.php, row 92
+// admin/feed_to.php, row 88
+// admin/se_export.php, row 111
+// include/exporter.class.php, row 657
+// include/menu_util.php, row 95
 "Export" => "エクスポート", // ai 2026-06
 
-// admin/fileman.php, row 76
+// admin/fileman.php, row 78
 "No permissions for file manager." => "ファイルマネージャを使用する許可がありません。", // ai 2026-06
 
-// admin/fileman.php, row 81
+// admin/fileman.php, row 83
 "Unable to run File Manager" => "ファイルマネージャを起動できません", // ai 2026-06
 
-// admin/fileman.php, row 81
+// admin/fileman.php, row 83
 "doesn't exist" => "が存在しません", // ai 2026-06
 
-// admin/fileman.php, row 87
+// admin/fileman.php, row 89
 "Unable to mkdir" => "ディレクトリを作成できません", // ai 2026-06
 
-// admin/fileman.php, row 114
-// include/filedit.php, row 66
-// include/menu.php, row 165
+// admin/fileman.php, row 116
+// include/filedit.php, row 67
+// include/menu.php, row 167
 "File Manager" => "ファイルマネージャ", // ai 2026-06
 
-// admin/fileman.php, row 116
-// include/fileman.php, row 131, 149
+// admin/fileman.php, row 118
+// include/fileman.php, row 134, 152
+// src/Optimize/ImgCacheWritable.php, row 47
 "Directory" => "ディレクトリ", // ai 2026-06
 
-// admin/fileman.php, row 176
+// admin/fileman.php, row 179
 "Unselect all" => "全選択解除", // ai 2026-06
 
-// admin/fileman.php, row 177
-// admin/slicedel.php, row 90
+// admin/fileman.php, row 180
+// admin/slicedel.php, row 93
 "Delete selected" => "選択したものを削除", // ai 2026-06
 
-// admin/fileman.php, row 214
+// admin/fileman.php, row 217
 "Create new file" => "新規ファイル作成", // ai 2026-06
 
-// admin/fileman.php, row 217
+// admin/fileman.php, row 221
 "Upload file" => "ファイルをアップロード", // ai 2026-06
 
-// admin/fileman.php, row 227
+// admin/fileman.php, row 232
 "Copy template dir" => "テンプレートディレクトリをコピー", // ai 2026-06
 
-// admin/fileman.php, row 230
+// admin/fileman.php, row 235
 "Create new directory" => "新規ディレクトリ作成", // ai 2026-06
 
-// admin/index.php, row 99
-// include/init_page.php, row 127
+// admin/index.php, row 102
+// include/init_page.php, row 120
 "You do not have permission to edit items in the slice:" => "次のスライスで項目を編集する許可がありません:", // ai 2026-06
 
-// admin/index.php, row 181
+// admin/index.php, row 182
 "ActionApps - Reader Manager" => "ActionApps - 読者管理", // ai 2026-06
 
-// admin/index.php, row 181
+// admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - 項目管理", // ai 2026-06
 
-// admin/itemedit.php, row 287
-// include/date.php, row 185
-// include/validate.php, row 52, 56
+// admin/itemedit.php, row 305
+// include/date.php, row 189
+// include/field.class.php, row 1253
+// include/validate.php, row 54, 58
 "Error in" => "エラー:", // ai 2026-06
 
-// admin/itemedit.php, row 333
-// admin/slicefieldsedit.php, row 106
+// admin/itemedit.php, row 349
+// admin/slicefieldsedit.php, row 126
 "Error: no fields." => "エラー: フィールドがありません。", // ai 2026-06
 
-// admin/itemedit.php, row 341
-// admin/slicefieldsedit.php, row 114
+// admin/itemedit.php, row 357
+// admin/slicefieldsedit.php, row 134
 "Bad item ID id=%1" => "不正な項目ID id=%1", // ai 2026-06
 
-// admin/itemedit.php, row 353
+// admin/itemedit.php, row 369
 "Error: You have no rights to edit item." => "エラー: 項目を編集する許可がありません。", // ai 2026-06
 
-// admin/itemedit.php, row 387, 388
+// admin/itemedit.php, row 404, 405
 "Edit Item" => "項目の編集",
 
-// admin/itemedit.php, row 387, 388
-// include/menu.php, row 82
+// admin/itemedit.php, row 404, 405
+// include/menu.php, row 83
 "Add Item" => "項目の追加",
 
-// admin/itemhistory.php, row 28
-// admin/iteminfo.php, row 29
-// admin/itemstats.php, row 31
+// admin/itemhistory.php, row 32
+"You don't have permissions to view item history." => "項目の履歴を表示する許可がありません。", // ai 2026-06
+
+// admin/itemhistory.php, row 40
+// admin/iteminfo.php, row 32
+// admin/itemstats.php, row 34
 "Item not found." => "項目が見付かりません。", // ai 2026-06
 
-// admin/itemhistory.php, row 36
-// admin/iteminfo.php, row 36
+// admin/iteminfo.php, row 39
 "You have no rights to this item." => "この項目に対する許可がありません。", // ai 2026-06
 
-// admin/iteminfo.php, row 43
-// include/itemfunc.php, row 73
+// admin/iteminfo.php, row 46
+// include/itemfunc.php, row 74
 "Item info" => "項目情報", // ai 2026-06
 
-// admin/itemstats.php, row 23
+// admin/itemstats.php, row 26
 "You don't have permissions to view item statistics." => "項目の統計を表示する許可がありません。", // ai 2026-06
 
-// admin/itemstats.php, row 38
-// include/itemfunc.php, row 88, 457
-// include/menu.php, row 162
-// include/menu_util.php, row 81
-// src/Util/Adminlink.php, row 119
+// admin/itemstats.php, row 41
+// include/itemfunc.php, row 87, 492
+// include/menu.php, row 164
+// include/menu_util.php, row 83
+// src/Util/Adminlink.php, row 124
 "Statistics" => "統計", // ai 2026-06
 
-// admin/mailman_create_list.php, row 71
+// admin/mailman_create_list.php, row 73
 "Admin - Create Mailman List" => "管理 - Mailmanリストの作成", // ai 2026-06
 
-// admin/mailman_create_list.php, row 76
+// admin/mailman_create_list.php, row 78
 "First set Mailman Lists Field in Slice Settings." => "まずスライス設定でMailmanリストのフィールドを設定してください。", // ai 2026-06
 
-// admin/mailman_create_list.php, row 102
+// admin/mailman_create_list.php, row 104
 "Error: This list name is already used." => "エラー: このリスト名は既に使用されています。", // ai 2026-06
 
-// admin/mailman_create_list.php, row 135
+// admin/mailman_create_list.php, row 138
 "The list was successfully created." => "リストは正常に作成されました。", // ai 2026-06
 
-// admin/mailman_create_list.php, row 156
+// admin/mailman_create_list.php, row 160
 "List Settings" => "リスト設定", // ai 2026-06
 
-// admin/mailman_create_list.php, row 157
+// admin/mailman_create_list.php, row 161
 "The list will be added to mailman and also\n"
    ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."
  => "リストはmailmanに追加され、\n"
    ."    スライス設定でMailmanリストのフィールドとして選択されたフィールド%1の定数グループにも追加されます。", // ai 2026-06
 
-// admin/mailman_create_list.php, row 159
+// admin/mailman_create_list.php, row 163
 "All the fields are required." => "全てのフィールドは必須です。", // ai 2026-06
 
-// admin/mailman_create_list.php, row 160
+// admin/mailman_create_list.php, row 164
 "List name" => "リスト名", // ai 2026-06
 
-// admin/mailman_create_list.php, row 162
+// admin/mailman_create_list.php, row 166
 "Admin email" => "管理者のE-メール", // ai 2026-06
 
-// admin/mailman_create_list.php, row 164
+// admin/mailman_create_list.php, row 168
 "Admin password" => "管理者のパスワード", // ai 2026-06
 
-// admin/mailman_create_list.php, row 168
-// admin/setup.php, row 108, 232
+// admin/mailman_create_list.php, row 172
+// admin/setup.php, row 109, 233
 // modules/jump/modedit.php, row 182
 "Create" => "作成", // ai 2026-06
 
 // admin/preview.php, row 49
 "Wrong slice_id." => "slice_idが不正です。", // ai 2026-06
 
-// admin/related_sel.php, row 148
-// src/Manager.php, row 201
+// admin/related_sel.php, row 152
+// src/Manager.php, row 230
 "Publish date" => "公開日", // ai 2026-06
 
-// admin/related_sel.php, row 148
-// src/Manager.php, row 201
+// admin/related_sel.php, row 152
+// src/Manager.php, row 230
 "Headline" => "見出し", // ai 2026-06
 
-// admin/related_sel.php, row 176
+// admin/related_sel.php, row 180
 "Editor window - item manager, related selection window" => "編集ウィンドウ - 項目管理、関連項目の選択ウィンドウ", // ai 2026-06
 
 // admin/rsstest.php, row 36
@@ -966,627 +1309,650 @@ return [
 // admin/rsstest.php, row 46
 "RSS Feed import test" => "RSSフィードのインポートテスト", // ai 2026-06
 
-// admin/se_admin.php, row 72
+// admin/se_admin.php, row 74
 "You have no permission to set configuration parameters of this slice" => "このスライスの設定パラメータを設定する許可がありません", // ai 2026-06
 
-// admin/se_admin.php, row 81, 173
-// admin/se_compact.php, row 94, 238
-// include/constants.php, row 605, 655, 675, 729, 764, 795, 819, 862, 891, 917, 951
+// admin/se_admin.php, row 83, 177
+// admin/se_compact.php, row 93, 237
+// include/constants.php, row 654, 704, 724, 778, 813, 844, 868, 911, 940, 966, 1000
 "Top HTML" => "先頭のHTML",
 
-// admin/se_admin.php, row 82, 176
+// admin/se_admin.php, row 84, 189
 "Item format" => "項目の書式", // ai 2026-06
 
-// admin/se_admin.php, row 83, 179
-// admin/se_compact.php, row 95, 248
-// include/constants.php, row 610, 657, 677, 733, 766, 797, 822, 867, 893, 922, 956
+// admin/se_admin.php, row 85, 201
+// admin/se_compact.php, row 94, 247
+// include/constants.php, row 659, 706, 726, 782, 815, 846, 871, 916, 942, 971, 1005
 "Bottom HTML" => "最後のHTML",
 
-// admin/se_admin.php, row 84, 182
-// admin/se_compact.php, row 96, 276
-// admin/se_fulltext.php, row 69, 168
-// include/constants.php, row 611, 658, 734, 823, 868, 894, 923, 957, 989
+// admin/se_admin.php, row 86, 213
+// admin/se_compact.php, row 95, 275
+// admin/se_fulltext.php, row 71, 199
+// include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
 "Remove strings" => "削除する文字列", // ai 2026-06
 
-// admin/se_admin.php, row 85, 184
-// include/constants.php, row 645, 668, 755, 781, 812, 845, 879, 909, 943, 977
+// admin/se_admin.php, row 87, 222
+// include/constants.php, row 694, 717, 804, 830, 861, 894, 928, 958, 992, 1026
 "HTML code for \"No item found\" message" => "「項目が見付かりません」メッセージのHTMLコード", // ai 2026-06
 
-// admin/se_admin.php, row 86
-// admin/se_fulltext.php, row 70, 171, 175
+// admin/se_admin.php, row 88
+// admin/se_fulltext.php, row 72, 207, 211
 "Show discussion" => "ディスカッションを表示", // ai 2026-06
 
-// admin/se_admin.php, row 98
-// admin/se_compact.php, row 128
-// admin/se_fulltext.php, row 91
-// admin/se_view.php, row 198, 203, 375
+// admin/se_admin.php, row 100
+// admin/se_compact.php, row 127
+// admin/se_fulltext.php, row 93
+// admin/se_view.php, row 170, 339
 "Can't change slice settings" => "スライス設定を変更できません", // ai 2026-06
 
-// admin/se_admin.php, row 110
+// admin/se_admin.php, row 112
 "Admin fields update successful" => "管理フィールドは正常に更新されました", // ai 2026-06
 
-// admin/se_admin.php, row 159
+// admin/se_admin.php, row 161
 "Admin - design Item Manager view" => "管理 - design 項目管理 view",
 
-// admin/se_admin.php, row 168
-// admin/se_compact.php, row 228
-// admin/se_fulltext.php, row 153
-// admin/se_inputform.php, row 187, 439
+// admin/se_admin.php, row 170
+// admin/se_compact.php, row 227
+// admin/se_fulltext.php, row 155
+// admin/se_inputform.php, row 189, 439
 // src/Util/UiPrefs.php, row 56
 "Default" => "省略値",
 
-// admin/se_admin.php, row 171
+// admin/se_admin.php, row 173
 "Listing of items in Admin interface" => "管理画面での項目一覧", // ai 2026-06
 
-// admin/se_admin.php, row 174
-// admin/se_compact.php, row 239, 268
-// admin/se_fulltext.php, row 160
+// admin/se_admin.php, row 182
+// admin/se_compact.php, row 238, 267
+// admin/se_fulltext.php, row 168
 "HTML code which appears at the top of slice area" => "スライス領域の先頭に表示されるHTMLコード", // ai 2026-06
 
-// admin/se_admin.php, row 177
-// admin/se_compact.php, row 242, 271
-// admin/se_fulltext.php, row 163
+// admin/se_admin.php, row 194
+// admin/se_compact.php, row 241, 270
+// admin/se_fulltext.php, row 180
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "このページの下部にある別名と組み合わせたHTMLコードをここに記入してください\n"
    ."                     <br>別名はページに出力される際にデータベースの実際の値に置き換えられます", // ai 2026-06
 
-// admin/se_admin.php, row 180
-// admin/se_compact.php, row 249, 274
-// admin/se_fulltext.php, row 166
+// admin/se_admin.php, row 206
+// admin/se_compact.php, row 248, 273
+// admin/se_fulltext.php, row 192
 "HTML code which appears at the bottom of slice area" => "スライス領域の末尾に表示されるHTMLコード", // ai 2026-06
 
-// admin/se_admin.php, row 183
-// admin/se_compact.php, row 277
-// admin/se_fulltext.php, row 169
+// admin/se_admin.php, row 218
+// admin/se_compact.php, row 276
+// admin/se_fulltext.php, row 204
 "Removes empty brackets etc. Use ## as delimiter." => "空の括弧などを削除します。区切りには##を使用してください。", // ai 2026-06
 
-// admin/se_admin.php, row 185
+// admin/se_admin.php, row 227
 "Code to be printed when no item is filled (or user has no permission to any item in the slice)" => "項目が入力されていない場合(または利用者がスライス内のどの項目にも許可がない場合)に表示されるコード", // ai 2026-06
 
-// admin/se_admin.php, row 187
+// admin/se_admin.php, row 234
 "Use special view" => "特別なビューを使用", // ai 2026-06
 
-// admin/se_admin.php, row 188
+// admin/se_admin.php, row 238
 "You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)" => "入力フォームのテンプレートとして特別なビューを「デザイン」→「ビュー」ページで設定できます (inputform view)", // ai 2026-06
 
-// admin/se_admin.php, row 193
-// admin/se_compact.php, row 285
-// admin/se_fulltext.php, row 180
-// admin/se_view.php, row 616
+// admin/se_admin.php, row 244
+// admin/se_compact.php, row 284
+// admin/se_fulltext.php, row 216
+// admin/se_view.php, row 580
 "Use these aliases for database fields" => "データベースフィールドには以下の別名を使用してください", // ai 2026-06
 
-// admin/se_compact.php, row 84
+// admin/se_compact.php, row 83
 "You do not have permissions to change compact view formatting" => "コンパクトビューの書式を変更する許可がありません", // ai 2026-06
 
-// admin/se_compact.php, row 93, 241
-// include/constants.php, row 606, 656, 730, 765, 796, 863, 918, 952
+// admin/se_compact.php, row 92, 240
+// include/constants.php, row 655, 705, 779, 814, 845, 912, 967, 1001
 "Odd Rows" => "奇数行",
 
-// admin/se_compact.php, row 97, 278
+// admin/se_compact.php, row 96, 277
 "'No item found' message" => "「項目が見つかりません」メッセージ", // ai 2026-06
 
-// admin/se_compact.php, row 99, 245
-// include/constants.php, row 608, 731, 865, 920, 954
+// admin/se_compact.php, row 98, 244
+// include/constants.php, row 657, 780, 914, 969, 1003
 "Even Rows" => "偶数行",
 
-// admin/se_compact.php, row 102, 267
+// admin/se_compact.php, row 101, 266
 "Category top HTML" => "分類の先頭のHTML", // ai 2026-06
 
-// admin/se_compact.php, row 103, 270
+// admin/se_compact.php, row 102, 269
 "Category Headline" => "分類の見出し", // ai 2026-06
 
-// admin/se_compact.php, row 104, 273
+// admin/se_compact.php, row 103, 272
 "Category bottom HTML" => "分類の最後のHTML", // ai 2026-06
 
-// admin/se_compact.php, row 135
+// admin/se_compact.php, row 134
 "Design of compact design successfully changed" => "コンパクトビューのデザインを変更しました", // ai 2026-06
 
-// admin/se_compact.php, row 215
+// admin/se_compact.php, row 214
 "Admin - design Index view" => "管理 - design Index view",
 
-// admin/se_compact.php, row 216
+// admin/se_compact.php, row 215
 "Use these boxes ( and the tags listed below ) to control what appears on summary page" => "以下のボックス(と下記のタグ)を使って、一覧ページに表示される内容を設定します", // ai 2026-06
 
-// admin/se_compact.php, row 233
+// admin/se_compact.php, row 232
 "HTML code for index view" => "インデックスビュー用のHTMLコード", // ai 2026-06
 
-// admin/se_compact.php, row 244
-// include/constants.php, row 607, 756, 864, 919, 953
+// admin/se_compact.php, row 243
+// include/constants.php, row 656, 805, 913, 968, 1002
 "Use different HTML code for even rows" => "偶数行に異なるHTMLコードを使用", // ai 2026-06
 
-// admin/se_compact.php, row 246
+// admin/se_compact.php, row 245
 "You can define different code for odd and even rows\n"
    ."                         <br>first red, second black, for example"
  => "奇数行と偶数行に異なるコードを定義できます\n"
    ."                         <br>例えば、1行目は赤、2行目は黒", // ai 2026-06
 
-// admin/se_compact.php, row 251
-// include/constants.php, row 624, 740, 873, 928, 962
+// admin/se_compact.php, row 250
+// include/constants.php, row 673, 789, 922, 977, 1011
 "Group by" => "グループ化", // ai 2026-06
 
-// admin/se_compact.php, row 258
-// admin/se_profile.php, row 115
-// admin/se_view.php, row 225, 226, 250
+// admin/se_compact.php, row 257
+// admin/se_profile.php, row 114
+// admin/se_view.php, row 188, 189, 213
 "Ascending" => "昇順", // ai 2026-06
 
-// admin/se_compact.php, row 259
-// admin/se_profile.php, row 115
-// admin/se_view.php, row 225, 226, 250
-// include/searchbar.class.php, row 599
-// include/searchlib.php, row 358
+// admin/se_compact.php, row 258
+// admin/se_profile.php, row 114
+// admin/se_view.php, row 188, 189, 213
+// include/searchbar.class.php, row 637
+// include/searchlib.php, row 368
 "Descending" => "降順", // ai 2026-06
 
-// admin/se_compact.php, row 260
-// admin/se_view.php, row 226
+// admin/se_compact.php, row 259
+// admin/se_view.php, row 189
 "Ascending by Priority" => "優先度の昇順", // ai 2026-06
 
-// admin/se_compact.php, row 261
-// admin/se_view.php, row 226
+// admin/se_compact.php, row 260
+// admin/se_view.php, row 189
 "Descending by Priority" => "優先度の降順", // ai 2026-06
 
-// admin/se_compact.php, row 264
+// admin/se_compact.php, row 263
 "'by Priority' is usable just for fields using constants (like category)" => "「優先度順」は定数を使用するフィールド(分類など)でのみ使用できます", // ai 2026-06
 
-// admin/se_compact.php, row 279
+// admin/se_compact.php, row 278
 "message to show in place of slice.php, if no item matches the query" => "クエリに一致する項目がない場合に slice.php の代わりに表示するメッセージ", // ai 2026-06
 
-// admin/se_constant.php, row 110
-"You do not have permissions to change fields settings for the slice owning this group" => "このグループを所有するスライスのフィールド設定を変更する許可がありません", // ai 2026-06
+// admin/se_constant.php, row 95, 186
+// include/constedit_util.php, row 629, 752
+"Wrong constant group id" => "",
 
-// admin/se_constant.php, row 199
-" items changed to new value " => "件の項目が新しい値に変更されました", // ai 2026-06
+// admin/se_constant.php, row 119
+"Can't delete constant group" => "",
 
-// admin/se_constant.php, row 219, 401
-// admin/se_users.php, row 181
-// admin/se_views.php, row 130
-// admin/um_gedit.php, row 299, 302
-// include/constants.php, row 403
+// admin/se_constant.php, row 175, 377
+// admin/se_users.php, row 185
+// admin/se_views.php, row 134
+// admin/um_gedit.php, row 298, 301
+// central/installapp.php, row 831, 846
+// include/constants.php, row 452
 // include/constedit.php, row 73
-// include/fileman.php, row 31
-// include/se_users.php, row 173
-// include/searchbar.class.php, row 731
-// include/um_gedit.php, row 31
-// src/AA_Plannedtask.php, row 102
-// src/Optimize/AbstractOptimize.php, row 125
+// include/fileman.php, row 32
+// include/logs.php, row 1031
+// include/se_users.php, row 180
+// include/searchbar.class.php, row 772
+// include/um_gedit.php, row 32
+// src/AA_Plannedtask.php, row 127
+// src/Import/DetailCatalog.php, row 143
+// src/Optimize/AbstractOptimize.php, row 171
+// src/Optimize/CheckRequiredSettings.php, row 69
 "Name" => "名前",
 
-// admin/se_constant.php, row 220, 402
-// admin/se_mapping.php, row 183
-// admin/se_profile.php, row 210
-// include/constants.php, row 404
+// admin/se_constant.php, row 176, 378
+// admin/se_mapping.php, row 182
+// admin/se_profile.php, row 209
+// include/constants.php, row 453
 // include/constedit.php, row 76
-// include/searchlib.php, row 171
+// include/searchlib.php, row 175
+// src/Central/FindingText.php, row 94, 98
 "Value" => "値", // ai 2026-06
 
-// admin/se_constant.php, row 221, 403
+// admin/se_constant.php, row 177, 379
 // admin/se_inputform.php, row 528
-// admin/se_view.php, row 154
-// admin/um_gedit.php, row 300, 303
-// include/constants.php, row 410
+// admin/se_view.php, row 153
+// admin/um_gedit.php, row 299, 302
+// include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 92
-// include/tv_email.php, row 73, 142
-// include/um_gedit.php, row 32
-// src/Manageraction/Central_Linkcheck.php, row 30
-// src/Optimize/AbstractOptimize.php, row 126
+// include/stringexpand.php, row 95
+// include/um_gedit.php, row 33
+// src/Manageraction/Central_Linkcheck.php, row 31
+// src/Optimize/AbstractOptimize.php, row 172
 "Description" => "記述",
 
-// admin/se_constant.php, row 222, 404
-// admin/se_fields.php, row 194, 380
-// include/constants.php, row 405
+// admin/se_constant.php, row 178, 380
+// admin/se_fields.php, row 301
+// include/constants.php, row 454
 // include/constedit.php, row 82
-// src/Optimize/AbstractOptimize.php, row 129
+// include/field.class.php, row 1257
+// src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "優先度", // ai 2026-06
 
-// admin/se_constant.php, row 228, 351
-// admin/se_constant_import.php, row 72, 118
-// admin/se_inputform.php, row 281
-// include/constants.php, row 735
+// admin/se_constant.php, row 184, 327
+// admin/se_constant_import.php, row 74, 126
+// admin/se_inputform.php, row 282
+// include/constants.php, row 784
 "Constant Group" => "定数グループ", // ai 2026-06
 
-// admin/se_constant.php, row 233
-// include/constedit_util.php, row 624
+// admin/se_constant.php, row 192
+// include/constedit_util.php, row 635
 "This constant group already exists" => "この定数グループは既に存在します", // ai 2026-06
 
-// admin/se_constant.php, row 307
-// admin/se_constant_import.php, row 100
+// admin/se_constant.php, row 214
+"You do not have permissions to change fields settings in the new owner slice" => "",
+
+// admin/se_constant.php, row 277
+// admin/se_constant_import.php, row 109
 "Constants update successful" => "定数を更新しました", // ai 2026-06
 
-// admin/se_constant.php, row 316
+// admin/se_constant.php, row 286
 "Admin - Constants Setting" => "管理 - 定数の設定", // ai 2026-06
 
-// admin/se_constant.php, row 324
+// admin/se_constant.php, row 288
+"The constant group can be only viewed here" => "",
+
+// admin/se_constant.php, row 297
 "Delete whole group" => "グループ全体を削除", // ai 2026-06
 
-// admin/se_constant.php, row 328
+// admin/se_constant.php, row 301
 "Edit in Hierarchical editor" => "階層エディタで編集", // ai 2026-06
 
-// admin/se_constant.php, row 330
+// admin/se_constant.php, row 303
 "Edit in Hierarchical editor (allows to create constant hierarchy)" => "階層エディタで編集(定数の階層を作成できます)", // ai 2026-06
 
-// admin/se_constant.php, row 343
-// admin/se_constant_import.php, row 73, 117, 128
+// admin/se_constant.php, row 319
+// admin/se_constant_import.php, row 75, 125, 136
 // admin/se_inputform.php, row 418
 "Constants" => "定数", // ai 2026-06
 
-// admin/se_constant.php, row 357
+// admin/se_constant.php, row 333
 "alphanumeric 5-16 character long identifier" => "5〜16文字の英数字の識別子", // ai 2026-06
 
-// admin/se_constant.php, row 359
+// admin/se_constant.php, row 335
 "Import Constants..." => "定数のインポート...", // ai 2026-06
 
-// admin/se_constant.php, row 367
+// admin/se_constant.php, row 343
 "Constants used in slice" => "スライスで使用されている定数", // ai 2026-06
 
-// admin/se_constant.php, row 379
+// admin/se_constant.php, row 355
 "Constant group owner - slice" => "定数グループの所有者 - スライス", // ai 2026-06
 
-// admin/se_constant.php, row 383
+// admin/se_constant.php, row 359
 "Whoever first updates values becomes owner." => "最初に値を更新した者が所有者になります。", // ai 2026-06
 
-// admin/se_constant.php, row 393
+// admin/se_constant.php, row 369
 "Change owner" => "所有者を変更", // ai 2026-06
 
-// admin/se_constant.php, row 399
+// admin/se_constant.php, row 375
 "Propagate changes into current items" => "変更を既存の項目に反映", // ai 2026-06
 
-// admin/se_constant.php, row 401
+// admin/se_constant.php, row 377
 // include/constedit.php, row 73
 "shown&nbsp;on&nbsp;inputpage" => "入力フォームに表示", // ai 2026-06
 
-// admin/se_constant.php, row 402
+// admin/se_constant.php, row 378
 // include/constedit.php, row 76
 "stored&nbsp;in&nbsp;database" => "データベースに保存", // ai 2026-06
 
-// admin/se_constant.php, row 403
+// admin/se_constant.php, row 379
 "can be viewed by {constant:&lt;group&gt;:&lt;value&gt;:description}" => "{constant:&lt;group&gt;:&lt;value&gt;:description} で表示できます", // ai 2026-06
 
-// admin/se_constant.php, row 404
+// admin/se_constant.php, row 380
 // include/constedit.php, row 82
 "constant&nbsp;order" => "定数の順序", // ai 2026-06
 
-// admin/se_constant.php, row 405
+// admin/se_constant.php, row 381
 "Used" => "使用", // ai 2026-06
 
-// admin/se_constant.php, row 405
+// admin/se_constant.php, row 381
 "times" => "回数", // ai 2026-06
 
-// admin/se_constant.php, row 441
+// admin/se_constant.php, row 417
 "Are you sure you want to PERMANENTLY DELETE this group?" => "本当にこのグループを完全に削除してもよろしいですか?", // ai 2026-06
 
-// admin/se_constant_import.php, row 80
-// include/constedit_util.php, row 628
+// admin/se_constant_import.php, row 82
+// include/constedit_util.php, row 639
 "No constants specified" => "定数が指定されていません", // ai 2026-06
 
-// admin/se_constant_import.php, row 107
+// admin/se_constant_import.php, row 115
 "Admin - Constants Import" => "管理 - 定数のインポート", // ai 2026-06
 
-// admin/se_constant_import.php, row 127
+// admin/se_constant_import.php, row 135
 "Name - Value delimiter" => "名前と値の区切り文字", // ai 2026-06
 
-// admin/se_constant_import.php, row 128
+// admin/se_constant_import.php, row 136
 "write each constant to new row in form <name><delimiter><value> (or just <name> if the values should be the same as names)" => "各定数を <name><delimiter><value> の形式で1行ずつ記入してください(値を名前と同じにする場合は <name> のみ)", // ai 2026-06
 
-// admin/se_csv_import.php, row 98
+// admin/se_csv_import.php, row 96
 "You do not have permissions to import files" => "ファイルをインポートする許可がありません", // ai 2026-06
 
-// admin/se_csv_import.php, row 103
+// admin/se_csv_import.php, row 101
 "Missing slice" => "スライスがありません", // ai 2026-06
 
-// admin/se_csv_import.php, row 137
+// admin/se_csv_import.php, row 133
+// admin/se_csv_import2.php, row 214
+"The data to import are no longer on the server - load them again" => "",
+
+// admin/se_csv_import.php, row 142
 "Cannot read input url" => "入力URLを読み込めません", // ai 2026-06
 
-// admin/se_csv_import.php, row 171
+// admin/se_csv_import.php, row 173
 "Admin - Import CSV (1/2) - Source data" => "管理 - CSVインポート (1/2) - ソースデータ", // ai 2026-06
 
-// admin/se_csv_import.php, row 177
+// admin/se_csv_import.php, row 179
 "Cannot open a file for preview" => "プレビュー用にファイルを開けません", // ai 2026-06
 
-// admin/se_csv_import.php, row 179
+// admin/se_csv_import.php, row 181
 "File preview" => "ファイルのプレビュー", // ai 2026-06
 
-// admin/se_csv_import.php, row 212
+// admin/se_csv_import.php, row 214
 "CSV format settings" => "CSV形式の設定", // ai 2026-06
 
-// admin/se_csv_import.php, row 236, 241
-// include/filedit.php, row 66
-// include/logs.php, row 543
+// admin/se_csv_import.php, row 238, 243
+// include/filedit.php, row 67
+// include/logs.php, row 1061
+// src/Optimize/CheckUserAliasFunctionLog.php, row 86
 "File" => "ファイル", // ai 2026-06
 
-// admin/se_csv_import.php, row 237, 242
-// src/Manageraction/Central_Linkcheck.php, row 28
-// src/Widget/Widget.php, row 874
+// admin/se_csv_import.php, row 239, 244
+// src/Manageraction/Central_Linkcheck.php, row 29
+// src/Widget/Widget.php, row 903
 "URL" => "",
 
-// admin/se_csv_import.php, row 238, 243
+// admin/se_csv_import.php, row 240, 245
 // admin/se_inputform.php, row 471, 472
-// include/itemfunc.php, row 590, 679, 703
+// include/itemfunc.php, row 668, 777, 806
+// src/Util/Note.php, row 63
 "Text" => "テキスト", // ai 2026-06
 
-// admin/se_csv_import.php, row 251
+// admin/se_csv_import.php, row 253
 "Source of CSV data" => "CSVデータのソース", // ai 2026-06
 
-// admin/se_csv_import.php, row 275
-// admin/se_csv_import2.php, row 373
+// admin/se_csv_import.php, row 277
+// admin/se_csv_import2.php, row 382
+// central/installapp.php, row 434, 558, 1368
 // src/Manageraction/Item_Preview.php, row 11
 "Preview" => "プレビュー", // ai 2026-06
 
-// admin/se_csv_import.php, row 276
+// admin/se_csv_import.php, row 278
 // include/scroller.php, row 86
+// src/Import/DetailPage.php, row 422
 "Next" => "次へ", // ai 2026-06
 
-// admin/se_csv_import2.php, row 193
+// admin/se_csv_import2.php, row 196
 "You have not permissions to setting " => "設定する許可がありません:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 204
+// admin/se_csv_import2.php, row 202
 "Invalid additional parameters for import" => "インポートの追加パラメータが不正です", // ai 2026-06
 
-// admin/se_csv_import2.php, row 269
+// admin/se_csv_import2.php, row 280
 "Item:" => "項目:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 277
+// admin/se_csv_import2.php, row 288
 "Cannot store item to DB" => "項目をDBに保存できません", // ai 2026-06
 
-// admin/se_csv_import2.php, row 282
+// admin/se_csv_import2.php, row 293
 "Transformation error:" => "変換エラー:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 284
+// admin/se_csv_import2.php, row 295
 "Ok: Item %1 stored" => "OK: 項目 %1 を保存しました", // ai 2026-06
 
-// admin/se_csv_import2.php, row 305
+// admin/se_csv_import2.php, row 313
 "Added to slice" => "スライスに追加しました", // ai 2026-06
 
-// admin/se_csv_import2.php, row 327
+// admin/se_csv_import2.php, row 336
 "Mapping preview" => "マッピングのプレビュー", // ai 2026-06
 
-// admin/se_csv_import2.php, row 378
+// admin/se_csv_import2.php, row 387
 "Finish" => "完了", // ai 2026-06
 
-// admin/se_csv_import2.php, row 383
-// include/searchbar.class.php, row 728
-// src/Widget/MflWidget.php, row 120
-// src/Widget/RioWidget.php, row 124
-// src/Widget/TxtWidget.php, row 109
-// src/Widget/Widget.php, row 416
-"Save" => "保存", // ai 2026-06
-
-// admin/se_csv_import2.php, row 388
+// admin/se_csv_import2.php, row 397
 "Load" => "読み込み", // ai 2026-06
 
-// admin/se_csv_import2.php, row 398
+// admin/se_csv_import2.php, row 407
 "Mapping settings" => "マッピングの設定", // ai 2026-06
 
-// admin/se_csv_import2.php, row 401
-// admin/se_filters.php, row 190
-// admin/se_mapping.php, row 181
+// admin/se_csv_import2.php, row 410
+// admin/se_filters.php, row 189
+// admin/se_mapping.php, row 180
 "To" => "先", // ai 2026-06
 
-// admin/se_csv_import2.php, row 402
-// admin/se_filters.php, row 189
-// admin/se_mapping.php, row 182
-// include/tv_email.php, row 159
+// admin/se_csv_import2.php, row 411
+// admin/se_filters.php, row 188
+// admin/se_mapping.php, row 181
 "From" => "元", // ai 2026-06
 
-// admin/se_csv_import2.php, row 403
-// admin/search_replace.php, row 178
-// include/metabase.class.php, row 1577
-// include/statestore.php, row 975, 1289
-// src/AA_Plannedtask.php, row 102
+// admin/se_csv_import2.php, row 412
+// admin/search_replace.php, row 185
+// include/metabase.class.php, row 1667
+// include/statestore.php, row 1077, 1414
+// src/AA_Plannedtask.php, row 127
+// src/Import/Definition.php, row 135, 165
+// src/Import/DetailCatalog.php, row 145
 "Action" => "操作", // ai 2026-06
 
-// admin/se_csv_import2.php, row 404
+// admin/se_csv_import2.php, row 413
 "Html" => "HTML", // ai 2026-06
 
-// admin/se_csv_import2.php, row 405
+// admin/se_csv_import2.php, row 414
 "Action parameters" => "アクションのパラメータ", // ai 2026-06
 
-// admin/se_csv_import2.php, row 406
+// admin/se_csv_import2.php, row 415
 "Parameter wizard" => "パラメータウィザード", // ai 2026-06
 
-// admin/se_csv_import2.php, row 431
+// admin/se_csv_import2.php, row 440
 "Import options" => "インポートオプション", // ai 2026-06
 
-// admin/se_csv_import2.php, row 446
+// admin/se_csv_import2.php, row 455
 "Map item id from" => "項目IDのマッピング元", // ai 2026-06
 
-// admin/se_csv_import2.php, row 450
+// admin/se_csv_import2.php, row 459
 "unpacked long id (32 characters)" => "アンパックされたロングID（32文字）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 451
+// admin/se_csv_import2.php, row 460
 "packed long id (16 characters)" => "パックされたロングID（16文字）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 452
+// admin/se_csv_import2.php, row 461
 "string to be converted (string2id) - with param:" => "変換する文字列（string2id）- パラメータ付き:", // ai 2026-06
 
-// admin/se_csv_import2.php, row 460
+// admin/se_csv_import2.php, row 469
 "Select, how to store the items" => "項目の保存方法を選択してください", // ai 2026-06
 
-// admin/se_csv_import2.php, row 462
+// admin/se_csv_import2.php, row 471
 "Do not store the item" => "項目を保存しない", // ai 2026-06
 
-// admin/se_csv_import2.php, row 463
+// admin/se_csv_import2.php, row 472
 "Store the item with new id" => "新しいIDで項目を保存", // ai 2026-06
 
-// admin/se_csv_import2.php, row 464
+// admin/se_csv_import2.php, row 473
 "Update the item (overwrite)" => "項目を更新（上書き）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 465
+// admin/se_csv_import2.php, row 474
 "Add the values in parallel to current values (the multivalues are stored, where possible)" => "現在の値に並行して値を追加（可能な場合は複数値として保存されます）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 466
+// admin/se_csv_import2.php, row 475
 "Rewrite only the fields, for which the action is defined and compute all computed fields, ..." => "アクションが定義されているフィールドのみ書き換え、すべての計算フィールドを計算する、...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 467
+// admin/se_csv_import2.php, row 476
 "Rewrite only the fields, for which the action is defined (do not update lastedit, computed, ... fields = Silent)" => "アクションが定義されているフィールドのみ書き換える（lastedit や計算フィールドなどは更新しない = サイレント）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 468
+// admin/se_csv_import2.php, row 477
 "Rewrite only the fields, for which the action is defined and its value is not empty (computed fields will be computed)" => "アクションが定義され、値が空でないフィールドのみ書き換える（計算フィールドは計算されます）", // ai 2026-06
 
-// admin/se_csv_import2.php, row 471
+// admin/se_csv_import2.php, row 480
 "If the item id is already in the slice" => "項目IDが既にスライスにある場合", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
-// admin/search_replace.php, row 176
+// admin/se_csv_import2.php, row 481
+// admin/search_replace.php, row 183
 "Silent" => "サイレント", // ai 2026-06
 
-// admin/se_csv_import2.php, row 472
+// admin/se_csv_import2.php, row 481
 "Do not perform any other operations like evaluate-computed-field, feed, send e-mail to Readers of Alerts..." => "計算フィールドの評価、フィード、アラート読者へのメール送信などのその他の操作を行いません...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 473
-"Data source" => "データソース", // ai 2026-06
-
-// admin/se_csv_import2.php, row 474
-// include/feeding.php, row 456, 488
-"Source" => "ソース", // ai 2026-06
-
-// admin/se_csv_import2.php, row 476
+// admin/se_csv_import2.php, row 483
 "Store settings..." => "設定を保存...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 482
+// admin/se_csv_import2.php, row 489
 "Load setting" => "設定を読み込む", // ai 2026-06
 
-// admin/se_csv_import2.php, row 484
+// admin/se_csv_import2.php, row 491
 "Save setting as" => "名前を付けて設定を保存", // ai 2026-06
 
-// admin/se_csv_import2.php, row 487
-"Upload periodically" => "定期的にアップロード", // ai 2026-06
-
-// admin/se_csv_import2.php, row 538
+// admin/se_csv_import2.php, row 545
 "Admin - Import CSV (2/2) - Mapping and Actions" => "管理 - CSVインポート (2/2) - マッピングとアクション", // ai 2026-06
 
-// admin/se_export.php, row 75
+// admin/se_dataimport.php, row 59
+// admin/se_dataimports.php, row 35
+"You do not have permissions to manage the imports of this slice" => "",
+
+// admin/se_dataimport.php, row 66
+"There is no such import in this slice." => "",
+
+// admin/se_dataimport.php, row 77
+"Import: %1" => "",
+
+// admin/se_dataimports.php, row 40
+// include/menu.php, row 156
+// include/menu_util.php, row 92
+// src/Optimize/CheckImports.php, row 35
+"Imports" => "",
+
+// admin/se_dataimports.php, row 41
+"An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "",
+
+// admin/se_export.php, row 74
 "You do not have permissions to export" => "エクスポートする許可がありません", // ai 2026-06
 
-// admin/se_export.php, row 101
+// admin/se_export.php, row 100
 "Admin - Export Items" => "管理 - 項目のエクスポート", // ai 2026-06
 
-// admin/se_export.php, row 114
-// include/exporter.class.php, row 503
+// admin/se_export.php, row 113
+// include/exporter.class.php, row 531
 "Item Contents" => "項目の内容", // ai 2026-06
 
-// admin/se_export.php, row 115
-// include/constants.php, row 674
-// include/exporter.class.php, row 504
+// admin/se_export.php, row 114
+// include/constants.php, row 723
+// include/exporter.class.php, row 532
 "Discussion" => "ディスカッション", // ai 2026-06
 
-// admin/se_export.php, row 119
-// include/exporter.class.php, row 482
+// admin/se_export.php, row 118
+// include/exporter.class.php, row 510
 // include/scroller.php, row 88
 "All" => "全て", // ai 2026-06
 
-// admin/se_export.php, row 121
-// include/exporter.class.php, row 484
+// admin/se_export.php, row 120
+// include/exporter.class.php, row 512
 "Pending" => "待機中",
 
-// admin/se_export.php, row 122
-// include/exporter.class.php, row 485
+// admin/se_export.php, row 121
+// include/exporter.class.php, row 513
 // include/itemfunc.php, row 146
 "Expired" => "期限切れ", // ai 2026-06
 
-// admin/se_export.php, row 123
-// include/exporter.class.php, row 486
+// admin/se_export.php, row 122
+// include/exporter.class.php, row 514
 "Approved" => "承認済み", // ai 2026-06
 
-// admin/se_export.php, row 124
-// include/exporter.class.php, row 487
+// admin/se_export.php, row 123
+// include/exporter.class.php, row 515
 "Holding" => "保留箱", // ai 2026-06
 
-// admin/se_export.php, row 125
-// include/exporter.class.php, row 488
+// admin/se_export.php, row 124
+// include/exporter.class.php, row 516
 // include/itemfunc.php, row 156
 // src/Manageraction/Central_MoveItem.php, row 43
 "Trash" => "ごみ箱", // ai 2026-06
 
-// admin/se_export.php, row 135
-// include/exporter.class.php, row 492
+// admin/se_export.php, row 134
+// include/exporter.class.php, row 520
 "Database backup (as stored in DB)" => "データベースバックアップ（DBに保存されている形式のまま）", // ai 2026-06
 
-// admin/se_export.php, row 136
-// include/exporter.class.php, row 493
+// admin/se_export.php, row 135
+// include/exporter.class.php, row 521
 "Human - dates converted to Y-m-d format, ..." => "人間向け - 日付をY-m-d形式に変換、...", // ai 2026-06
 
-// admin/se_export.php, row 149
+// admin/se_export.php, row 148
 "Export Items" => "項目のエクスポート", // ai 2026-06
 
-// admin/se_export.php, row 151
-// include/exporter.class.php, row 508
+// admin/se_export.php, row 150
+// include/exporter.class.php, row 536
 "Output Format" => "出力形式", // ai 2026-06
 
-// admin/se_export.php, row 152
-// admin/se_history.php, row 138
-// admin/se_users.php, row 181
-// admin/se_views.php, row 131
-// admin/sliceexp_text.php, row 364
-// include/exporter.class.php, row 509
-// include/fileman.php, row 33
-// include/logs.php, row 346
-// include/se_users.php, row 173
-// src/Widget/Widget.php, row 724
+// admin/se_export.php, row 151
+// admin/se_history.php, row 142
+// admin/se_users.php, row 185
+// admin/se_views.php, row 135
+// admin/sliceexp_text.php, row 365
+// central/installapp.php, row 831, 1271
+// include/exporter.class.php, row 537
+// include/fileman.php, row 34
+// include/logs.php, row 488
+// include/se_users.php, row 180
+// src/Widget/Widget.php, row 753
 "Type" => "種類", // ai 2026-06
 
-// admin/se_export.php, row 153
-// include/exporter.class.php, row 510
+// admin/se_export.php, row 152
+// include/exporter.class.php, row 538
 "Bins" => "箱", // ai 2026-06
 
-// admin/se_export.php, row 154
-// include/exporter.class.php, row 524
+// admin/se_export.php, row 153
+// include/exporter.class.php, row 552
 "Filename" => "ファイル名", // ai 2026-06
 
-// admin/se_export.php, row 154
-// include/exporter.class.php, row 524
+// admin/se_export.php, row 153
+// include/exporter.class.php, row 552
 "save as..." => "名前を付けて保存...", // ai 2026-06
 
-// admin/se_export.php, row 155
-// include/exporter.class.php, row 525
-// include/searchlib.php, row 966
+// admin/se_export.php, row 154
+// include/exporter.class.php, row 553
+// include/searchlib.php, row 1011
 "Conditions" => "条件", // ai 2026-06
 
-// admin/se_export.php, row 155
-// include/exporter.class.php, row 525
+// admin/se_export.php, row 154
+// include/exporter.class.php, row 553
 "conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "条件は \"d-...\" または \"conds[]\" の形式です - 例:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (ここでの既定の演算子はRLIKEです!)", // ai 2026-06
 
-// admin/se_export.php, row 156
-// include/exporter.class.php, row 526
-// include/searchlib.php, row 968
+// admin/se_export.php, row 155
+// include/exporter.class.php, row 554
+// include/searchlib.php, row 1013
 "Sort" => "並べ替え", // ai 2026-06
 
-// admin/se_export.php, row 156
-// include/exporter.class.php, row 526
+// admin/se_export.php, row 155
+// include/exporter.class.php, row 554
 "like: publish_date....-" => "例: publish_date....-", // ai 2026-06
 
-// admin/se_export.php, row 157
-// include/exporter.class.php, row 523
+// admin/se_export.php, row 156
+// include/exporter.class.php, row 551
 "Custom columns" => "カスタム列", // ai 2026-06
 
-// admin/se_export.php, row 157
+// admin/se_export.php, row 156
 "Add any AA {expression} as extra column - each row = one column" => "任意のAA {expression} を追加の列として記入できます - 各行 = 1列", // ai 2026-06
 
-// admin/se_fieldid.php, row 222
+// admin/se_fieldid.php, row 224
 "The new ID is the same as the old one" => "新しいIDが古いIDと同じです", // ai 2026-06
 
-// admin/se_fieldid.php, row 224
+// admin/se_fieldid.php, row 226
 "The old ID is not valid" => "古いIDが無効です", // ai 2026-06
 
-// admin/se_fieldid.php, row 226
+// admin/se_fieldid.php, row 228
 "The new ID is not valid" => "新しいIDが無効です", // ai 2026-06
 
-// admin/se_fieldid.php, row 228
+// admin/se_fieldid.php, row 230
 "This ID is reserved" => "このIDは予約されています", // ai 2026-06
 
-// admin/se_fieldid.php, row 230
+// admin/se_fieldid.php, row 232
 "This ID is already used" => "このIDは既に使用されています", // ai 2026-06
 
-// admin/se_fieldid.php, row 257
+// admin/se_fieldid.php, row 259
 "Admin - change Field IDs" => "管理 - フィールドIDの変更", // ai 2026-06
 
-// admin/se_fieldid.php, row 261
+// admin/se_fieldid.php, row 263
 "field IDs were changed" => "フィールドIDを変更しました", // ai 2026-06
 
-// admin/se_fieldid.php, row 266
+// admin/se_fieldid.php, row 268
 "Change Field IDs" => "フィールドIDの変更", // ai 2026-06
 
-// admin/se_fieldid.php, row 268
+// admin/se_fieldid.php, row 270
 "This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
@@ -1596,232 +1962,239 @@ return [
    ."    変更するフィールドIDと新しい名前・番号を選択してください。ドット ..... は\n"
    ."    自動的に補われます。<br>", // ai 2026-06
 
-// admin/se_fieldid.php, row 269
+// admin/se_fieldid.php, row 271
 "Change from" => "変更元", // ai 2026-06
 
-// admin/se_fieldid.php, row 281
-// admin/sliceexp.php, row 133
+// admin/se_fieldid.php, row 283
+// admin/sliceexp.php, row 132
 "to" => "→", // ai 2026-06
 
-// admin/se_fields.php, row 110
+// admin/se_fields.php, row 108
 "Add new field from template" => "テンプレートから新しいフィールドを追加", // ai 2026-06
 
-// admin/se_fields.php, row 118
-" (this)" => " (このスライス)", // ai 2026-06
-
-// admin/se_fields.php, row 144
+// admin/se_fields.php, row 139
 "Field delete OK" => "フィールドを削除しました", // ai 2026-06
 
-// admin/se_fields.php, row 152
+// admin/se_fields.php, row 147
 "Invalid move alias parameters" => "別名移動のパラメータが無効です", // ai 2026-06
 
-// admin/se_fields.php, row 164
+// admin/se_fields.php, row 159
 "No free space for alias in this field" => "このフィールドには別名の空きがありません", // ai 2026-06
 
-// admin/se_fields.php, row 175
+// admin/se_fields.php, row 170
 "Alias moved OK" => "別名を移動しました", // ai 2026-06
 
-// admin/se_fields.php, row 265
-// admin/se_inputform.php, row 274
+// admin/se_fields.php, row 184
+// admin/se_inputform.php, row 276
 "Fields update successful" => "フィールドを更新しました", // ai 2026-06
 
-// admin/se_fields.php, row 287
+// admin/se_fields.php, row 204
 "Alias <b>%1</b> is duplicated" => "別名 <b>%1</b> が重複しています", // ai 2026-06
 
-// admin/se_fields.php, row 294
+// admin/se_fields.php, row 211
 "Do you really want to move alias to another field?" => "本当に別名を別のフィールドに移動しますか？", // ai 2026-06
 
-// admin/se_fields.php, row 317
+// admin/se_fields.php, row 234
 "Do you really want to delete this field from this slice?" => "本当にこのフィールドをこのスライスから削除しますか？", // ai 2026-06
 
-// admin/se_fields.php, row 332
+// admin/se_fields.php, row 249
 // admin/se_inputform.php, row 386
 "Admin - configure Fields" => "管理 - フィールドの設定", // ai 2026-06
 
-// admin/se_fields.php, row 359
+// admin/se_fields.php, row 281
 "change all" => "すべて変更", // ai 2026-06
 
-// admin/se_fields.php, row 373
+// admin/se_fields.php, row 294
 "Analyze" => "分析", // ai 2026-06
 
-// admin/se_fields.php, row 381
+// admin/se_fields.php, row 302
 "Required" => "必要",
 
-// admin/se_fields.php, row 384
-// include/stringexpand.php, row 105
+// admin/se_fields.php, row 305
+// include/stringexpand.php, row 108
 "Aliases" => "別名", // ai 2026-06
 
-// admin/se_filters.php, row 86
-// admin/se_mapping.php, row 107
+// admin/se_filters.php, row 85
+// admin/se_mapping.php, row 106
 "There are no imported slices" => "インポートされたスライスがありません", // ai 2026-06
 
-// admin/se_filters.php, row 108
+// admin/se_filters.php, row 107
 "-- The same --" => "-- 同じ --", // ai 2026-06
 
-// admin/se_filters.php, row 163
+// admin/se_filters.php, row 162
 "Admin - Content Pooling - Filters" => "管理 - Content Pooling - Filters",
 
-// admin/se_filters.php, row 170
-// admin/se_import.php, row 130
-// admin/se_mapping.php, row 162
-// admin/um_gedit.php, row 281
-// admin/um_uedit.php, row 389
-// central/include/actionapps.class.php, row 781
-// include/formutil.php, row 188, 2894
+// admin/se_filters.php, row 169
+// admin/se_import.php, row 129
+// admin/se_mapping.php, row 161
+// admin/um_gedit.php, row 280
+// admin/um_uedit.php, row 388
+// central/include/actionapps.class.php, row 279
+// include/formutil.php, row 190, 2925
 // modules/jump/modedit.php, row 182
+// src/Import/DetailCatalog.php, row 151
 "Update" => "更新", // ai 2026-06
 
-// admin/se_filters.php, row 177
+// admin/se_filters.php, row 176
 "Content Pooling - Configure Filters" => "Content Pooling - フィルタの設定", // ai 2026-06
 
-// admin/se_filters.php, row 180
+// admin/se_filters.php, row 179
 "Filter for imported slice" => "インポートされたスライスのフィルタ", // ai 2026-06
 
-// admin/se_filters.php, row 184
+// admin/se_filters.php, row 183
 "Categories" => "分類",
 
-// admin/se_filters.php, row 202
+// admin/se_filters.php, row 201
 "All Categories" => "全ての分類",
 
-// admin/se_filters.php, row 209, 233
+// admin/se_filters.php, row 208, 232
 "No category defined" => "分類が定義されていません",
 
-// admin/se_filters.php, row 269
-// src/Manager.php, row 1108
+// admin/se_filters.php, row 268
+// src/Manager.php, row 1404
 "Select all" => "すべて選択", // ai 2026-06
 
-// admin/se_filters.php, row 331
+// admin/se_filters.php, row 330
 "No From category selected!" => "元の分類が選択されていません！", // ai 2026-06
 
-// admin/se_filters2.php, row 109
-// src/IO/Feed.php, row 568
+// admin/se_filters2.php, row 110
+// src/IO/Feed.php, row 581
 "Other categories" => "その他の分類", // ai 2026-06
 
-// admin/se_filters2.php, row 178
+// admin/se_filters2.php, row 179
 // admin/se_import2.php, row 144, 146
 "Content Pooling update successful" => "Content Pooling を更新しました", // ai 2026-06
 
-// admin/se_forms.php, row 36
+// admin/se_forms.php, row 37
 "You do not have permissions to manage forms" => "フォームを管理する許可がありません", // ai 2026-06
 
-// admin/se_fulltext.php, row 66, 159
+// admin/se_fulltext.php, row 68, 163
 "Top HTML code" => "先頭のHTMLコード", // ai 2026-06
 
-// admin/se_fulltext.php, row 67, 162
+// admin/se_fulltext.php, row 69, 175
 "Fulltext HTML code" => "全文のHTMLコード", // ai 2026-06
 
-// admin/se_fulltext.php, row 68, 165
+// admin/se_fulltext.php, row 70, 187
 "Bottom HTML code" => "最後のHTMLコード", // ai 2026-06
 
-// admin/se_fulltext.php, row 99
+// admin/se_fulltext.php, row 101
 "Fulltext format update successful" => "全文の書式を更新しました", // ai 2026-06
 
-// admin/se_fulltext.php, row 133
+// admin/se_fulltext.php, row 135
 "Admin - design Fulltext view" => "管理 - design 全文 view", // ai 2026-06
 
-// admin/se_fulltext.php, row 134
+// admin/se_fulltext.php, row 136
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "これらのボックス（下記のタグを使用）で、各項目の全文表示に表示される内容を設定します", // ai 2026-06
 
-// admin/se_fulltext.php, row 158
+// admin/se_fulltext.php, row 160
 "HTML code for fulltext view" => "全文表示用のHTMLコード", // ai 2026-06
 
-// admin/se_fulltext.php, row 171, 175
+// admin/se_fulltext.php, row 207, 211
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "ディスカッションのテンプレートは「デザイン」->「ビュー」のページで設定できます", // ai 2026-06
 
-// admin/se_fulltext.php, row 172
+// admin/se_fulltext.php, row 208
 "Use HTML tags" => "HTMLタグを使用", // ai 2026-06
 
-// admin/se_fulltext.php, row 173
+// admin/se_fulltext.php, row 209
 "New comments disabled" => "新規コメントを禁止", // ai 2026-06
 
-// admin/se_history.php, row 55
+// admin/se_history.php, row 57
 "You do not have permissions to view history" => "履歴を表示する許可がありません", // ai 2026-06
 
-// admin/se_history.php, row 68
+// admin/se_history.php, row 71
 "Set again this old values" => "この古い値を再設定", // ai 2026-06
 
-// admin/se_history.php, row 78
+// admin/se_history.php, row 81
 "You do not have permissions to change items" => "項目を変更する許可がありません", // ai 2026-06
 
-// admin/se_history.php, row 137
+// admin/se_history.php, row 141
 "Resource ID" => "リソースID", // ai 2026-06
 
-// admin/se_history.php, row 139, 160, 161
-// admin/um_uedit.php, row 263
-// admin/usershow.php, row 87
-// include/perm_sql.php, row 354, 395
+// admin/se_history.php, row 143, 165, 166
+// admin/um_uedit.php, row 262
+// admin/usershow.php, row 89
+// include/perm_sql.php, row 389, 430
+// src/Optimize/CheckAlertitemRefusals.php, row 89
+// src/Optimize/CheckInstallRuns.php, row 56
+// src/Optimize/CheckObjectFormRefusals.php, row 101
 "User" => "利用者", // ai 2026-06
 
-// admin/se_history.php, row 140
-// src/AA_Plannedtask.php, row 102
+// admin/se_history.php, row 144
+// src/AA_Plannedtask.php, row 127
+// src/Optimize/CheckImports.php, row 287
+// src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "時刻", // ai 2026-06
 
-// admin/se_history.php, row 155
+// admin/se_history.php, row 160
 "Change ID" => "変更ID", // ai 2026-06
 
-// admin/se_history.php, row 159
+// admin/se_history.php, row 164
 "Time of change" => "変更時刻", // ai 2026-06
 
-// admin/se_history.php, row 162
-// include/itemfunc.php, row 189
-// src/AA_Plannedtask.php, row 63
+// admin/se_history.php, row 167
+// include/itemfunc.php, row 201
+// src/AA_Plannedtask.php, row 69
 "Item ID" => "項目ID", // ai 2026-06
 
-// admin/se_history.php, row 211, 212
+// admin/se_history.php, row 216, 217
 "ActionApps - History Manager" => "ActionApps - 履歴管理", // ai 2026-06
 
-// admin/se_import.php, row 121
+// admin/se_import.php, row 120
 "Admin - configure Content Pooling" => "管理 - Content Pooling の設定", // ai 2026-06
 
-// admin/se_import.php, row 136
+// admin/se_import.php, row 135
 "Enable export to slice:" => "スライスへのエクスポートを許可:", // ai 2026-06
 
-// admin/se_import.php, row 139
+// admin/se_import.php, row 138
 "Export disable" => "エクスポート禁止", // ai 2026-06
 
-// admin/se_import.php, row 141
+// admin/se_import.php, row 140
 "Export enable" => "エクスポート許可", // ai 2026-06
 
-// admin/se_import.php, row 175
+// admin/se_import.php, row 174
 "Enable export to any slice" => "すべてのスライスへのエクスポートを許可", // ai 2026-06
 
-// admin/se_import.php, row 177
+// admin/se_import.php, row 176
 "Currently exported to" => "現在のエクスポート先", // ai 2026-06
 
-// admin/se_import.php, row 180
+// admin/se_import.php, row 179
 "Wrong export (non-existent slice!):" => "不正なエクスポート（存在しないスライス！）:", // ai 2026-06
 
-// admin/se_import.php, row 185
+// admin/se_import.php, row 184
 "Import from slice:" => "インポート元のスライス:", // ai 2026-06
 
-// admin/se_import.php, row 194
+// admin/se_import.php, row 193
 "Do not import" => "インポートしない", // ai 2026-06
 
-// admin/se_import.php, row 196
-// include/menu_util.php, row 93
+// admin/se_import.php, row 195
+// include/menu_util.php, row 96
+// src/Import/Definition.php, row 135, 161
+// src/Optimize/CheckImportStores.php, row 53
+// src/Optimize/CheckImports.php, row 176, 178, 287, 367
 "Import" => "インポート", // ai 2026-06
 
-// admin/se_inputform.php, row 184, 494
+// admin/se_inputform.php, row 186, 494
 "Before HTML code" => "フィールド前のHTMLコード", // ai 2026-06
 
-// admin/se_inputform.php, row 185, 492
+// admin/se_inputform.php, row 187, 492
 "Help for this field" => "このフィールドのヘルプ", // ai 2026-06
 
-// admin/se_inputform.php, row 186, 493
+// admin/se_inputform.php, row 188, 493
 "More help" => "詳細ヘルプ", // ai 2026-06
 
-// admin/se_inputform.php, row 188
+// admin/se_inputform.php, row 190
 "Input show function" => "入力表示関数", // ai 2026-06
 
-// admin/se_inputform.php, row 190
+// admin/se_inputform.php, row 192
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "別名は常に _# + 大文字8文字でなければなりません。例: _#<b>SOMTHING</b>。", // ai 2026-06
 
-// admin/se_inputform.php, row 195, 525
-// include/stringexpand.php, row 90
+// admin/se_inputform.php, row 197, 525
+// include/stringexpand.php, row 93
+// src/Optimize/CheckUserAliasFunctions.php, row 88
 "Alias" => "別名", // ai 2026-06
 
-// admin/se_inputform.php, row 199, 526
-// admin/se_profile.php, row 209
+// admin/se_inputform.php, row 201, 526
+// admin/se_profile.php, row 208
 "Function" => "関数", // ai 2026-06
 
 // admin/se_inputform.php, row 303
@@ -1834,19 +2207,19 @@ return [
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "警告: 内容を十分理解していない場合は、この設定を変更しないでください！", // ai 2026-06
 
 // admin/se_inputform.php, row 401
-// include/formutil.php, row 189
+// include/formutil.php, row 191
 "Update & Edit" => "更新して編集", // ai 2026-06
 
 // admin/se_inputform.php, row 402
-// admin/se_view.php, row 529
-// include/slice.class.php, row 1112
+// admin/se_view.php, row 493
+// include/slice.class.php, row 1307
 "Show History" => "履歴を表示", // ai 2026-06
 
 // admin/se_inputform.php, row 406
 "Field properties" => "フィールドのプロパティ", // ai 2026-06
 
 // admin/se_inputform.php, row 414
-// src/Widget/Widget.php, row 736
+// src/Widget/Widget.php, row 765
 "Input type" => "入力タイプ", // ai 2026-06
 
 // admin/se_inputform.php, row 417
@@ -1868,7 +2241,7 @@ return [
 "How to generate the default value" => "省略値の生成方法", // ai 2026-06
 
 // admin/se_inputform.php, row 453
-// include/feeding.php, row 457, 489
+// include/feeding.php, row 467
 "Validate" => "検証", // ai 2026-06
 
 // admin/se_inputform.php, row 464
@@ -1878,12 +2251,13 @@ return [
 "Stored in <em>item</em> table - it is not possible to change store method" => "<em>item</em> テーブルに保存されています - 保存方法は変更できません", // ai 2026-06
 
 // admin/se_inputform.php, row 471, 472
+// src/Central/FindingText.php, row 176, 186
 "Number" => "数値", // ai 2026-06
 
 // admin/se_inputform.php, row 480
-// admin/sliceimp.php, row 428
-// include/form.class.php, row 409, 411
-// include/formutil.php, row 207, 2905
+// admin/sliceimp.php, row 427
+// include/form.class.php, row 474, 476
+// include/formutil.php, row 209, 2936
 "Insert" => "挿入",
 
 // admin/se_inputform.php, row 483
@@ -1929,180 +2303,186 @@ return [
 "8 UPPERCASE letters or _" => "大文字または _ の8文字", // ai 2026-06
 
 // admin/se_inputform.php, row 520
+// src/Import/DetailPage.php, row 604
+// src/Import/RunView.php, row 188
 "Disabled" => "無効", // ai 2026-06
 
 // admin/se_inputform.php, row 521
-// src/Util/ChangesMonitor.php, row 514
+// src/Util/ChangesMonitor.php, row 513
 "Copy to clipboard" => "クリップボードにコピー", // ai 2026-06
 
 // admin/se_inputform.php, row 522
 "Reset" => "リセット", // ai 2026-06
 
 // admin/se_inputform.php, row 527
-// include/logs.php, row 361
+// include/logs.php, row 568
+// src/Import/DetailConfig.php, row 369
 "Parameters" => "パラメータ", // ai 2026-06
 
-// admin/se_inter_export.php, row 99
+// admin/se_inter_export.php, row 98
 "No selected export" => "エクスポートが選択されていません", // ai 2026-06
 
-// admin/se_inter_export.php, row 102
+// admin/se_inter_export.php, row 101
 "Are you sure you want to delete the export?" => "本当にこのエクスポートを削除しますか？", // ai 2026-06
 
-// admin/se_inter_export.php, row 111, 115
+// admin/se_inter_export.php, row 110, 114
 "Inter node export settings" => "ノード間エクスポート設定", // ai 2026-06
 
-// admin/se_inter_export.php, row 117
+// admin/se_inter_export.php, row 116
 "Existing exports of the slice " => "このスライスの既存のエクスポート", // ai 2026-06
 
-// admin/se_inter_export.php, row 137
+// admin/se_inter_export.php, row 136
 "Insert new item" => "新規追加", // ai 2026-06
 
-// admin/se_inter_export.php, row 139
+// admin/se_inter_export.php, row 138
 "Remote Nodes" => "リモートノード", // ai 2026-06
 
-// admin/se_inter_export.php, row 150
+// admin/se_inter_export.php, row 149
 "User name" => "利用者名", // ai 2026-06
 
-// admin/se_inter_import.php, row 76, 98
-// admin/se_inter_import2.php, row 102
+// admin/se_inter_import.php, row 75, 97
+// admin/se_inter_import2.php, row 110
 "Exact copy" => "完全コピー", // ai 2026-06
 
-// admin/se_inter_import.php, row 77
+// admin/se_inter_import.php, row 76
 "Missing!!!" => "存在しません!!!", // ai 2026-06
 
-// admin/se_inter_import.php, row 88
-// admin/se_inter_import2.php, row 89
+// admin/se_inter_import.php, row 87
+// admin/se_inter_import2.php, row 95
 "Inter node import settings" => "ノード間インポート設定", // ai 2026-06
 
-// admin/se_inter_import.php, row 93
+// admin/se_inter_import.php, row 92
 "Create new feed from node" => "ノードから新規フィードを作成", // ai 2026-06
 
-// admin/se_inter_import.php, row 98
-// include/feeding.php, row 528
+// admin/se_inter_import.php, row 97
+// include/feeding.php, row 541
 "Remote slice" => "リモートスライス", // ai 2026-06
 
-// admin/se_inter_import.php, row 98
+// admin/se_inter_import.php, row 97
 "Node" => "ノード", // ai 2026-06
 
-// admin/se_inter_import.php, row 98
-// misc/datovka/datovka.php, row 114
+// admin/se_inter_import.php, row 97
+// misc/datovka/datovka.php, row 119
+// src/Import/DetailConfig.php, row 291
+// src/Import/DetailPage.php, row 377
+// src/Util/Note.php, row 64
 "State" => "状態", // ai 2026-06
 
-// admin/se_inter_import.php, row 99
+// admin/se_inter_import.php, row 98
 "Existing remote imports into the slice" => "このスライスへの既存のリモートインポート", // ai 2026-06
 
-// admin/se_inter_import.php, row 101
+// admin/se_inter_import.php, row 100
 "No remote imports into the slice" => "このスライスへのリモートインポートはありません", // ai 2026-06
 
-// admin/se_inter_import.php, row 106
-// include/menu.php, row 152
+// admin/se_inter_import.php, row 105
+// include/menu.php, row 153
 "Inter Node Import" => "ノード間インポート", // ai 2026-06
 
-// admin/se_inter_import.php, row 107
+// admin/se_inter_import.php, row 106
 "Add from remote node" => "リモートノードから追加", // ai 2026-06
 
-// admin/se_inter_import.php, row 117
+// admin/se_inter_import.php, row 116
 "Are you sure you want to delete the import?" => "本当にこのインポートを削除しますか？", // ai 2026-06
 
-// admin/se_inter_import.php, row 126
+// admin/se_inter_import.php, row 125
 "No selected node" => "ノードが選択されていません", // ai 2026-06
 
-// admin/se_inter_import2.php, row 61, 78
+// admin/se_inter_import2.php, row 62, 67, 84
 "Unable to connect and/or retrieve data from the remote node. Contact the administrator of the local node." => "リモートノードに接続できないか、データを取得できませんでした。ローカルノードの管理者に連絡してください。", // ai 2026-06
 
-// admin/se_inter_import2.php, row 68
+// admin/se_inter_import2.php, row 74
 "No slices available. You do not have permissions to import any data of that node. Contact the administrator of the remote slice and check, that he obtained your correct username." => "利用可能なスライスがありません。このノードのデータをインポートする許可がありません。リモートスライスの管理者に連絡し、正しい利用者名が伝わっているか確認してください。", // ai 2026-06
 
-// admin/se_inter_import2.php, row 69
+// admin/se_inter_import2.php, row 75
 "Invalid password for the node name:" => "次のノードのパスワードが無効です:", // ai 2026-06
 
-// admin/se_inter_import2.php, row 69
+// admin/se_inter_import2.php, row 75
 "Contact the administrator of the local node." => "ローカルノードの管理者に連絡してください。", // ai 2026-06
 
-// admin/se_inter_import2.php, row 70
+// admin/se_inter_import2.php, row 76
 "Remote server returns following error:" => "リモートサーバーが次のエラーを返しました:", // ai 2026-06
 
-// admin/se_inter_import2.php, row 94
+// admin/se_inter_import2.php, row 100
 "Choose slice" => "スライスを選択", // ai 2026-06
 
-// admin/se_inter_import2.php, row 100
+// admin/se_inter_import2.php, row 106
 "List of available slices from the node " => "ノードから利用可能なスライスの一覧", // ai 2026-06
 
-// admin/se_inter_import2.php, row 101
+// admin/se_inter_import2.php, row 107
 "Slice to import" => "インポートするスライス", // ai 2026-06
 
-// admin/se_inter_import2.php, row 103
+// admin/se_inter_import2.php, row 116
 "The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "スライスはリモートスライスの完全コピーになります。保留箱とごみ箱の項目を含め、すべての項目がコピーされます。また、リモート項目に変更があるたびに、その内容が項目のローカルコピーにコピーされます。項目は同じ長いID(短いIDではありません!)を持ちます。ローカルコピーの項目を変更しても意味がありません - リモートのマスターから上書きされます。", // ai 2026-06
 
-// admin/se_inter_import3.php, row 63
+// admin/se_inter_import3.php, row 66
 "The import was already created" => "インポートは既に作成されています", // ai 2026-06
 
-// admin/se_inter_import3.php, row 113
+// admin/se_inter_import3.php, row 116
 "The import was successfully created" => "インポートは正常に作成されました", // ai 2026-06
 
-// admin/se_javascript.php, row 71
-// include/menu.php, row 164
+// admin/se_javascript.php, row 73
+// include/menu.php, row 166
 "Field Triggers" => "フィールドトリガー", // ai 2026-06
 
-// admin/se_javascript.php, row 78
+// admin/se_javascript.php, row 80
 "JavaScript for fields" => "フィールド用JavaScript", // ai 2026-06
 
-// admin/se_javascript.php, row 79
+// admin/se_javascript.php, row 81
 "Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)." => "JavaScript言語でコードを入力してください。項目の追加／編集ページ (itemedit.php) に組み込まれます。", // ai 2026-06
 
-// admin/se_javascript.php, row 94
+// admin/se_javascript.php, row 96
 "Field IDs" => "フィールドID", // ai 2026-06
 
-// admin/se_javascript.php, row 96
+// admin/se_javascript.php, row 98
 "Write trigger functions like" => "トリガー関数は次のように書きます", // ai 2026-06
 
-// admin/se_javascript.php, row 96
+// admin/se_javascript.php, row 98
 "see FAQ</a> for more details and examples" => "FAQをご覧ください</a>(詳細と例について)", // ai 2026-06
 
-// admin/se_javascript.php, row 97
+// admin/se_javascript.php, row 99
 "You can place {require:...} anywhere in the code to load any js library. If you do not use any {require:...}, AA will use default {require:aa-fillform@1} {require:aa-jslib@1}. Feel free to use just {require:aa-fillform} if you do not need old {require:aa-jslib@1}." => "コードのどこにでも {require:...} を書いて任意のjsライブラリを読み込めます。{require:...} を一つも使わない場合、AAは既定の {require:aa-fillform@1} {require:aa-jslib@1} を使用します。古い {require:aa-jslib@1} が不要なら、{require:aa-fillform} だけでもかまいません。", // ai 2026-06
 
-// admin/se_javascript.php, row 98
+// admin/se_javascript.php, row 100
 "If you want to use javascript without any library, use {require:} or // {require:}." => "ライブラリなしでjavascriptを使う場合は、{require:} または // {require:} を使用してください。", // ai 2026-06
 
-// admin/se_javascript.php, row 99
+// admin/se_javascript.php, row 101
 "Field Type" => "フィールドタイプ", // ai 2026-06
 
-// admin/se_javascript.php, row 99
+// admin/se_javascript.php, row 101
 "Triggers Available -- see some JavaScript help for when a trigger is run" => "利用可能なトリガー -- トリガーがいつ実行されるかはJavaScriptのヘルプを参照してください", // ai 2026-06
 
-// admin/se_javascript.php, row 103
+// admin/se_javascript.php, row 105
 "Triggers" => "トリガー", // ai 2026-06
 
-// admin/se_mapping.php, row 128, 200
+// admin/se_mapping.php, row 127, 199
 // admin/se_mapping2.php, row 80
 "-- Not map --" => "-- マップしない --", // ai 2026-06
 
-// admin/se_mapping.php, row 129, 194
+// admin/se_mapping.php, row 128, 193
 // admin/se_mapping2.php, row 83
 "-- Value --" => "-- 値 --", // ai 2026-06
 
-// admin/se_mapping.php, row 130, 197
-// admin/se_mapping2.php, row 86
+// admin/se_mapping.php, row 129, 196
+// admin/se_mapping2.php, row 87
 "-- Joined fields --" => "-- フィールドの結合 --", // ai 2026-06
 
-// admin/se_mapping.php, row 131, 208
-// admin/se_mapping2.php, row 89
+// admin/se_mapping.php, row 130, 207
+// admin/se_mapping2.php, row 91
 "-- RSS field or expr --" => "-- RSSフィールドまたは式 --", // ai 2026-06
 
-// admin/se_mapping.php, row 151
+// admin/se_mapping.php, row 150
 "Admin - Content Pooling - Fields' Mapping" => "管理 - Content Pooling - フィールドのマッピング", // ai 2026-06
 
-// admin/se_mapping.php, row 169
+// admin/se_mapping.php, row 168
 "Content Pooling - Fields' mapping" => "Content Pooling - フィールドのマッピング", // ai 2026-06
 
-// admin/se_mapping.php, row 172
+// admin/se_mapping.php, row 171
 "Mapping from slice" => "スライスからのマッピング", // ai 2026-06
 
-// admin/se_mapping.php, row 176
+// admin/se_mapping.php, row 175
 "Fields' mapping" => "フィールドのマッピング", // ai 2026-06
 
-// admin/se_mapping2.php, row 126
+// admin/se_mapping2.php, row 127
 "Fields' mapping update successful" => "フィールドのマッピングを更新しました", // ai 2026-06
 
 // admin/se_nodes.php, row 37
@@ -2111,650 +2491,659 @@ return [
 // admin/se_nodes.php, row 45
 "Remote node administration" => "リモートノードの管理", // ai 2026-06
 
-// admin/se_notify.php, row 120
-// include/slicedit.php, row 145
+// admin/se_notify.php, row 122
+// include/slicedit.php, row 146
 "You do not have permissions to edit this slice" => "スライスを編集する許可がありません",
 
-// admin/se_notify.php, row 227, 239
+// admin/se_notify.php, row 233, 245
 "Email Notifications of Events" => "イベントのメール通知", // ai 2026-06
 
-// admin/se_notify.php, row 241
+// admin/se_notify.php, row 247
 "E-mail is sent only if body is not empty.<br>You can use this for selective e-mails. For example: {ifset:{category........}:e-mail text}" => "本文が空でない場合のみメールが送信されます。<br>これを選択的なメールに利用できます。例: {ifset:{category........}:e-mail text}", // ai 2026-06
 
-// admin/se_notify.php, row 243
+// admin/se_notify.php, row 249
 "<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>保留箱の新規項目</h4> 項目が作成され保留箱に入ったとき、メールで通知できます。この機能を利用するには、受信者のメールアドレスを下に入力してください。続くフィールドで、受信するメールの形式をカスタマイズできます。", // ai 2026-06
 
-// admin/se_notify.php, row 244, 249, 254, 259
+// admin/se_notify.php, row 250, 255, 260, 265
 "Email addresses, one per line" => "メールアドレス(1行に1つ)", // ai 2026-06
 
-// admin/se_notify.php, row 245, 250, 255, 260
+// admin/se_notify.php, row 251, 256, 261, 266
 "Subject of the Email message" => "メールの件名", // ai 2026-06
 
-// admin/se_notify.php, row 246, 251, 256, 261
+// admin/se_notify.php, row 252, 257, 262, 267
 "Body of the Email message" => "メールの本文", // ai 2026-06
 
-// admin/se_notify.php, row 248
+// admin/se_notify.php, row 254
 "<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>保留箱の項目が変更されました</h4> 保留箱の項目が変更されたとき、メールで通知できます。この機能を利用するには、受信者のメールアドレスを下に入力してください。続くフィールドで、受信するメールの形式をカスタマイズできます。", // ai 2026-06
 
-// admin/se_notify.php, row 253
+// admin/se_notify.php, row 259
 "<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>承認箱の新規項目</h4> 項目が作成され承認箱に入ったとき、メールで通知できます。この機能を利用するには、受信者のメールアドレスを下に入力してください。続くフィールドで、受信するメールの形式をカスタマイズできます。", // ai 2026-06
 
-// admin/se_notify.php, row 258
+// admin/se_notify.php, row 264
 "<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive." => "<h4>承認箱の項目が変更されました</h4> 承認箱の項目が変更されたとき、メールで通知できます。この機能を利用するには、受信者のメールアドレスを下に入力してください。続くフィールドで、受信するメールの形式をカスタマイズできます。", // ai 2026-06
 
-// admin/se_profile.php, row 61
-// admin/se_users.php, row 60
+// admin/se_profile.php, row 60
+// admin/se_users.php, row 62
 "You do not have permissions to manage users" => "利用者を管理する許可がありません", // ai 2026-06
 
-// admin/se_profile.php, row 77
-// include/profile.class.php, row 346
+// admin/se_profile.php, row 76
+// include/profile.class.php, row 363
 "Rule deleted" => "ルールを削除しました", // ai 2026-06
 
-// admin/se_profile.php, row 81
+// admin/se_profile.php, row 80
 "Error: Can't add rule" => "エラー: ルールを追加できません", // ai 2026-06
 
-// admin/se_profile.php, row 99
+// admin/se_profile.php, row 98
 "Input view ID" => "入力用ビューID", // ai 2026-06
 
-// admin/se_profile.php, row 100
+// admin/se_profile.php, row 99
 "Item filter" => "項目フィルター", // ai 2026-06
 
-// admin/se_profile.php, row 101
+// admin/se_profile.php, row 100
 "Item order" => "項目の並び順", // ai 2026-06
 
-// admin/se_profile.php, row 102
+// admin/se_profile.php, row 101
 "Item permissions" => "項目の許可", // ai 2026-06
 
-// admin/se_profile.php, row 103
+// admin/se_profile.php, row 102
 "Hide field" => "フィールドを隠す", // ai 2026-06
 
-// admin/se_profile.php, row 104
+// admin/se_profile.php, row 103
 "Show field" => "フィールドを表示", // ai 2026-06
 
-// admin/se_profile.php, row 105
+// admin/se_profile.php, row 104
 "Hide and Fill" => "隠して入力", // ai 2026-06
 
-// admin/se_profile.php, row 106
-// admin/search_replace.php, row 172
+// admin/se_profile.php, row 105
+// admin/search_replace.php, row 173
 "Fill field" => "フィールドに入力", // ai 2026-06
 
-// admin/se_profile.php, row 107
+// admin/se_profile.php, row 106
 "Predefine field" => "フィールドを事前設定", // ai 2026-06
 
-// admin/se_profile.php, row 108
+// admin/se_profile.php, row 107
 "Stored query" => "保存された検索", // ai 2026-06
 
-// admin/se_profile.php, row 109
+// admin/se_profile.php, row 108
 "UI - manager" => "UI - マネージャー", // ai 2026-06
 
-// admin/se_profile.php, row 110
+// admin/se_profile.php, row 109
 "UI - manager - hide" => "UI - マネージャー - 隠す", // ai 2026-06
 
-// admin/se_profile.php, row 111
+// admin/se_profile.php, row 110
 "UI - inputform" => "UI - 入力フォーム", // ai 2026-06
 
-// admin/se_profile.php, row 112
+// admin/se_profile.php, row 111
 "UI - inputform - hide" => "UI - 入力フォーム - 隠す", // ai 2026-06
 
-// admin/se_profile.php, row 118
+// admin/se_profile.php, row 117
 "Logo (top)" => "ロゴ(上部)", // ai 2026-06
 
-// admin/se_profile.php, row 119
+// admin/se_profile.php, row 118
 "View site (top)" => "サイト表示(上部)", // ai 2026-06
 
-// admin/se_profile.php, row 120
+// admin/se_profile.php, row 119
 "Add Item link (top)" => "項目の追加リンク(上部)", // ai 2026-06
 
-// admin/se_profile.php, row 121
+// admin/se_profile.php, row 120
 "Item Manager link (top)" => "項目管理リンク(上部)", // ai 2026-06
 
-// admin/se_profile.php, row 122
+// admin/se_profile.php, row 121
 "Slice Admin link (top)" => "スライス管理リンク(上部)", // ai 2026-06
 
-// admin/se_profile.php, row 123
+// admin/se_profile.php, row 122
 "AA link (top)" => "AAリンク(上部)", // ai 2026-06
 
-// admin/se_profile.php, row 124
+// admin/se_profile.php, row 123
 "Central link (top)" => "Centralリンク(上部)", // ai 2026-06
 
-// admin/se_profile.php, row 125
+// admin/se_profile.php, row 124
 "Title (top)" => "題名（上部）", // ai 2026-06
 
-// admin/se_profile.php, row 126
+// admin/se_profile.php, row 125
 "Logout link (top)" => "ログアウトリンク（上部）", // ai 2026-06
 
-// admin/se_profile.php, row 127
+// admin/se_profile.php, row 126
 "User Info link (top)" => "利用者情報リンク（上部）", // ai 2026-06
 
-// admin/se_profile.php, row 128
+// admin/se_profile.php, row 127
 "Module Selectbox (top)" => "モジュール選択ボックス（上部）", // ai 2026-06
 
-// admin/se_profile.php, row 129
+// admin/se_profile.php, row 128
 "Module Switch text (top)" => "モジュール切替テキスト（上部）", // ai 2026-06
 
-// admin/se_profile.php, row 130
+// admin/se_profile.php, row 129
 "Item Manager Menu: Header (left)" => "項目管理メニュー：ヘッダー（左）", // ai 2026-06
 
-// admin/se_profile.php, row 131
+// admin/se_profile.php, row 130
 "Item Manager Menu: Add Item (left)" => "項目管理メニュー：項目の追加（左）", // ai 2026-06
 
-// admin/se_profile.php, row 132
+// admin/se_profile.php, row 131
 "Item Manager Menu: Active (left)" => "項目管理メニュー：活動中（左）", // ai 2026-06
 
-// admin/se_profile.php, row 133
+// admin/se_profile.php, row 132
 "Item Manager Menu: Pending (left)" => "項目管理メニュー：待機中（左）", // ai 2026-06
 
-// admin/se_profile.php, row 134
+// admin/se_profile.php, row 133
 "Item Manager Menu: Expired (left)" => "項目管理メニュー：期限切れ（左）", // ai 2026-06
 
-// admin/se_profile.php, row 135
+// admin/se_profile.php, row 134
 "Item Manager Menu: Holding (left)" => "項目管理メニュー：保留箱（左）", // ai 2026-06
 
-// admin/se_profile.php, row 136
+// admin/se_profile.php, row 135
 "Item Manager Menu: Trash (left)" => "項目管理メニュー：ごみ箱（左）", // ai 2026-06
 
-// admin/se_profile.php, row 137
+// admin/se_profile.php, row 136
 "Item Manager Menu: Bookmarks show (left)" => "項目管理メニュー：ブックマーク表示（左）", // ai 2026-06
 
-// admin/se_profile.php, row 138
+// admin/se_profile.php, row 137
 "Item Manager Menu: Additional 1 (left)" => "項目管理メニュー：その他 1（左）", // ai 2026-06
 
-// admin/se_profile.php, row 139
+// admin/se_profile.php, row 138
 "Item Manager Menu: Header 2 (left)" => "項目管理メニュー：ヘッダー 2（左）", // ai 2026-06
 
-// admin/se_profile.php, row 140
+// admin/se_profile.php, row 139
 "Item Manager Menu: Slice Setting (left)" => "項目管理メニュー：スライス設定（左）", // ai 2026-06
 
-// admin/se_profile.php, row 141
+// admin/se_profile.php, row 140
 "Item Manager Menu: Empty Trash (left)" => "項目管理メニュー：ごみ箱を空にする（左）", // ai 2026-06
 
-// admin/se_profile.php, row 142
+// admin/se_profile.php, row 141
 "Item Manager Menu: CSV Import (left)" => "項目管理メニュー：CSVインポート（左）", // ai 2026-06
 
-// admin/se_profile.php, row 143
+// admin/se_profile.php, row 142
 "Item Manager Menu: Debug (left)" => "項目管理メニュー：デバッグ（左）", // ai 2026-06
 
-// admin/se_profile.php, row 144
+// admin/se_profile.php, row 143
 "Item Manager Menu: Additional 2 (left)" => "項目管理メニュー：その他 2（左）", // ai 2026-06
 
-// admin/se_profile.php, row 145
+// admin/se_profile.php, row 144
 "Add CSS file" => "CSSファイルを追加", // ai 2026-06
 
-// admin/se_profile.php, row 149
+// admin/se_profile.php, row 148
 "Manager Actions" => "管理アクション", // ai 2026-06
 
-// admin/se_profile.php, row 150
+// admin/se_profile.php, row 149
 "Searchbar - Search Rows" => "検索バー - 検索行", // ai 2026-06
 
-// admin/se_profile.php, row 151
+// admin/se_profile.php, row 150
 "Searchbar - Order Rows" => "検索バー - 並べ替え行", // ai 2026-06
 
-// admin/se_profile.php, row 152
+// admin/se_profile.php, row 151
 "Searchbar - Bookmarks" => "検索バー - ブックマーク", // ai 2026-06
 
-// admin/se_profile.php, row 156
+// admin/se_profile.php, row 155
 "Top menu (admin header)" => "上部メニュー（管理ヘッダー）", // ai 2026-06
 
-// admin/se_profile.php, row 157
+// admin/se_profile.php, row 156
 "Left menu (item context)" => "左メニュー（項目コンテキスト）", // ai 2026-06
 
-// admin/se_profile.php, row 161
+// admin/se_profile.php, row 160
 "Title (add form)" => "題名（追加フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 162
+// admin/se_profile.php, row 161
 "Top HTML code (add form)" => "先頭のHTMLコード（追加フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 163
+// admin/se_profile.php, row 162
 "Bottom HTML code (add form)" => "最後のHTMLコード（追加フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 164
+// admin/se_profile.php, row 163
 "Button \"Insert\" / \"Insert as new\" (add form)" => "「挿入」／「新規として挿入」ボタン（追加フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 165
+// admin/se_profile.php, row 164
 "Button \"Insert & Edit\" (add form)" => "「挿入して編集」ボタン（追加フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 166
+// admin/se_profile.php, row 165
 "Button \"Insert & View\" (add form)" => "「挿入して見る」ボタン（追加フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 167
+// admin/se_profile.php, row 166
 "Button \"Cancel\" (add form)" => "「中断」ボタン（追加フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 168
+// admin/se_profile.php, row 167
 "Title (edit form)" => "題名（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 169
+// admin/se_profile.php, row 168
 "Top HTML code (edit form)" => "先頭のHTMLコード（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 170
+// admin/se_profile.php, row 169
 "Bottom HTML code (edit form)" => "最後のHTMLコード（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 171
+// admin/se_profile.php, row 170
 "Button \"Update\" (edit form)" => "「更新」ボタン（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 172
+// admin/se_profile.php, row 171
 "Button \"Update & Edit\" (edit form)" => "「更新して編集」ボタン（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 173
+// admin/se_profile.php, row 172
 "Button \"Update & View\" (edit form)" => "「更新して見る」ボタン（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 174
+// admin/se_profile.php, row 173
 "Button \"Reset form\" (edit form)" => "「フォームをリセット」ボタン（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 175
+// admin/se_profile.php, row 174
 "Button \"Cancel\" (edit form)" => "「中断」ボタン（編集フォーム）", // ai 2026-06
 
-// admin/se_profile.php, row 182
+// admin/se_profile.php, row 181
 "Admin - user Profiles" => "管理 - 利用者プロファイル", // ai 2026-06
 
-// admin/se_profile.php, row 189
+// admin/se_profile.php, row 188
 "Rules" => "ルール", // ai 2026-06
 
-// admin/se_profile.php, row 197
+// admin/se_profile.php, row 196
 "No rule is set" => "ルールが設定されていません", // ai 2026-06
 
-// admin/se_profile.php, row 204
+// admin/se_profile.php, row 203
 "Add Rule" => "ルールを追加", // ai 2026-06
 
-// admin/se_profile.php, row 207
+// admin/se_profile.php, row 206
 "Rule" => "ルール", // ai 2026-06
 
-// admin/se_profile.php, row 211
-// include/formutil.php, row 1211
-// include/transformation.class.php, row 181, 356, 426, 510, 680
-// include/widget.class.php, row 569
+// admin/se_profile.php, row 210
+// include/formutil.php, row 1225
+// include/transformation.class.php, row 192, 381, 454, 548, 738
+// include/widget.class.php, row 661
 "HTML" => "",
 
-// admin/se_profile.php, row 218
+// admin/se_profile.php, row 217
 "Author Role" => "作者ロール", // ai 2026-06
 
-// admin/se_profile.php, row 219
+// admin/se_profile.php, row 218
 "Editor Role" => "編集者ロール", // ai 2026-06
 
-// admin/se_profile.php, row 220
+// admin/se_profile.php, row 219
 "Administrator Role" => "管理者ロール", // ai 2026-06
 
-// admin/se_profile.php, row 221
+// admin/se_profile.php, row 220
 "Superadmin Role" => "超管理者ロール", // ai 2026-06
 
-// admin/se_profile.php, row 226
+// admin/se_profile.php, row 225
 "number of item displayed in Item Manager" => "項目管理に表示される項目数", // ai 2026-06
 
-// admin/se_profile.php, row 227
+// admin/se_profile.php, row 226
 "id of view used for item input" => "項目入力に使うビューのid", // ai 2026-06
 
-// admin/se_profile.php, row 228
+// admin/se_profile.php, row 227
 "preset \"Search\" in Item Manager" => "項目管理の「検索」の事前設定", // ai 2026-06
 
-// admin/se_profile.php, row 229
+// admin/se_profile.php, row 228
 "preset \"Order\" in Item Manager" => "項目管理の「並べ替え」の事前設定", // ai 2026-06
 
-// admin/se_profile.php, row 230
+// admin/se_profile.php, row 229
 "ID of \"Item Set\" which defines the permissions for item - see \"Admin - Item Set\"" => "項目の許可を定義する「項目セット」のID - 「管理 - 項目セット」参照", // ai 2026-06
 
-// admin/se_profile.php, row 231
+// admin/se_profile.php, row 230
 "hide the field in inputform" => "入力フォームでフィールドを隠す", // ai 2026-06
 
-// admin/se_profile.php, row 232
+// admin/se_profile.php, row 231
 "show (= unhide) the field in inputform (reverts hide made by group profile,...)" => "入力フォームでフィールドを表示する（= 隠さない）（グループプロファイルなどによる非表示を解除）", // ai 2026-06
 
-// admin/se_profile.php, row 233
+// admin/se_profile.php, row 232
 "hide the field in inputform and fill it by the value" => "入力フォームでフィールドを隠し、この値で埋める", // ai 2026-06
 
-// admin/se_profile.php, row 234
+// admin/se_profile.php, row 233
 "fill the field in inputform by the value" => "入力フォームのフィールドをこの値で埋める", // ai 2026-06
 
-// admin/se_profile.php, row 235
+// admin/se_profile.php, row 234
 "predefine value of the field in inputform" => "入力フォームのフィールドの値を事前設定する", // ai 2026-06
 
-// admin/se_profile.php, row 236
+// admin/se_profile.php, row 235
 "redefine manager UI - (empty values = do not show)" => "管理画面のUIを再定義 -（空の値 = 非表示）", // ai 2026-06
 
-// admin/se_profile.php, row 237
+// admin/se_profile.php, row 236
 "hide this UI element" => "このUI要素を隠す", // ai 2026-06
 
-// admin/se_profile.php, row 238
+// admin/se_profile.php, row 237
 "redefine inputform UI - (empty values = do not show)" => "入力フォームのUIを再定義 -（空の値 = 非表示）", // ai 2026-06
 
-// admin/se_profile.php, row 239
+// admin/se_profile.php, row 238
 "hide this UI element in the inputform" => "入力フォームでこのUI要素を隠す", // ai 2026-06
 
-// admin/se_profile.php, row 266
+// admin/se_profile.php, row 265
 "Copy Profile from" => "プロファイルのコピー元", // ai 2026-06
 
-// admin/se_profile.php, row 268
-// central/copyslice2.php, row 116
-// src/Util/ChangesMonitor.php, row 514
+// admin/se_profile.php, row 267
+// src/Util/ChangesMonitor.php, row 513
 "Copy" => "コピー", // ai 2026-06
 
-// admin/se_sets.php, row 64
+// admin/se_sets.php, row 66
 "You do not have permissions to change sets" => "セットを変更する許可がありません", // ai 2026-06
 
-// admin/se_sets.php, row 79
+// admin/se_sets.php, row 81
 "Name %1" => "名前 %1", // ai 2026-06
 
-// admin/se_sets.php, row 80
+// admin/se_sets.php, row 82
 "Slice %1" => "スライス %1", // ai 2026-06
 
-// admin/se_sets.php, row 81
+// admin/se_sets.php, row 83
 "Condition %1" => "条件 %1", // ai 2026-06
 
-// admin/se_sets.php, row 82, 133, 140
+// admin/se_sets.php, row 84, 135, 142
 "Sort %1" => "並べ替え %1", // ai 2026-06
 
-// admin/se_sets.php, row 83
+// admin/se_sets.php, row 85
 "Object ID %1" => "オブジェクトID %1", // ai 2026-06
 
-// admin/se_sets.php, row 104
+// admin/se_sets.php, row 106
 "Sets stored successfully" => "セットは正常に保存されました", // ai 2026-06
 
-// admin/se_sets.php, row 110
+// admin/se_sets.php, row 112
 "Admin - Item Sets" => "管理 - 項目セット", // ai 2026-06
 
-// admin/se_sets.php, row 117
+// admin/se_sets.php, row 119
 "Sets" => "セット", // ai 2026-06
 
-// admin/se_sets.php, row 118
+// admin/se_sets.php, row 120
 "Conditions are in \"d-...\" or \"conds[]\" form - just like:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (default operator is RLIKE, here!)" => "条件は「d-...」または「conds[]」の形式で指定します - 例:<br> &nbsp; d-headline........,category.......1-BEGIN-Bio (d-&lt;fields&gt;-&lt;operator&gt;-&lt;value&gt;-&lt;fields&gt;-&lt;op...)<br> &nbsp; conds[0][category........]=first&conds[1][switch.........1]=1 (ここでの省略時の演算子はRLIKEです!)", // ai 2026-06
 
-// admin/se_sets.php, row 129
-// admin/sliceexp_text.php, row 364
-// include/feeding.php, row 472, 529
-// include/statestore.php, row 975
-// src/AA_Plannedtask.php, row 102
-// src/Optimize/AbstractOptimize.php, row 124
+// admin/se_sets.php, row 131
+// admin/sliceexp_text.php, row 365
+// include/feeding.php, row 485, 542
+// include/statestore.php, row 1077
+// src/AA_Plannedtask.php, row 127
+// src/Optimize/AbstractOptimize.php, row 170
 "ID" => "",
 
-// admin/se_sets.php, row 130, 137
+// admin/se_sets.php, row 132, 139
 "Set name %1" => "セット名 %1", // ai 2026-06
 
-// admin/se_sets.php, row 130, 137
+// admin/se_sets.php, row 132, 139
 "use alphanumeric characters only" => "英数字のみ使用してください", // ai 2026-06
 
-// admin/se_sets.php, row 131, 138
+// admin/se_sets.php, row 133, 140
 "Slices %1" => "スライス %1", // ai 2026-06
 
-// admin/se_sets.php, row 131, 138
+// admin/se_sets.php, row 133, 140
 "possibly dash separated" => "ハイフン区切りも可", // ai 2026-06
 
-// admin/se_sets.php, row 132, 139
+// admin/se_sets.php, row 134, 141
 "Conditions %1" => "条件 %1", // ai 2026-06
 
-// admin/se_sets.php, row 132, 139
+// admin/se_sets.php, row 134, 141
 "Use \"d-...\" or \"conds[]\" conditions" => "\"d-...\" または \"conds[]\" の条件を使用してください", // ai 2026-06
 
-// admin/se_sets.php, row 133
+// admin/se_sets.php, row 135
 "Use \"headline.......,publish_date....-\" or \"sort[]\" conditions" => "\"headline.......,publish_date....-\" または \"sort[]\" の条件を使用してください", // ai 2026-06
 
-// admin/se_sets.php, row 140
+// admin/se_sets.php, row 142
 "Use \"headline........,publish_date....-\" or \"sort[]\" conditions" => "\"headline........,publish_date....-\" または \"sort[]\" の条件を使用してください", // ai 2026-06
 
-// admin/se_statistics.php, row 81
+// admin/se_statistics.php, row 84
 "Top all time" => "全期間のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 82
+// admin/se_statistics.php, row 85
 "Top this year" => "今年のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 83
+// admin/se_statistics.php, row 86
 "Top this month" => "今月のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 84
+// admin/se_statistics.php, row 87
 "Top this week" => "今週のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 85
+// admin/se_statistics.php, row 88
 "Top this day" => "今日のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 86
+// admin/se_statistics.php, row 89
 "Top last year" => "昨年のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 87
+// admin/se_statistics.php, row 90
 "Top last month" => "先月のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 88
+// admin/se_statistics.php, row 91
 "Top last week" => "先週のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 89
+// admin/se_statistics.php, row 92
 "Top last day" => "昨日のトップ", // ai 2026-06
 
-// admin/se_statistics.php, row 93
+// admin/se_statistics.php, row 96
 "Item Statistics" => "項目の統計", // ai 2026-06
 
-// admin/se_statistics.php, row 94
+// admin/se_statistics.php, row 97
 "Show items" => "項目を表示", // ai 2026-06
 
-// admin/se_taskmanager.php, row 38
+// admin/se_taskmanager.php, row 39
 "You do not have permission to manage ActionApps tasks" => "ActionApps のタスクを管理する許可がありません", // ai 2026-06
 
-// admin/se_taskmanager.php, row 76
+// admin/se_taskmanager.php, row 77
 "User Tasks" => "利用者のタスク", // ai 2026-06
 
-// admin/se_users.php, row 122, 181
-// admin/slicewiz.php, row 78
-// include/se_users.php, row 103, 173
+// admin/se_users.php, row 126, 185
+// admin/slicewiz.php, row 82
+// include/se_users.php, row 109, 180
 "Editor" => "編集者",
 
-// admin/se_users.php, row 123, 181
-// include/se_users.php, row 104, 173
+// admin/se_users.php, row 127, 185
+// include/se_users.php, row 110, 180
 "Administrator" => "管理者",
 
-// admin/se_users.php, row 124, 181
+// admin/se_users.php, row 128, 185
 // include/um_util.php, row 104, 155
 "Revoke" => "取り消す", // ai 2026-06
 
-// admin/se_users.php, row 132, 181, 193
+// admin/se_users.php, row 136, 185, 197
 "Profile" => "プロフィール", // ai 2026-06
 
-// admin/se_users.php, row 140
+// admin/se_users.php, row 144
 "Admin - Permissions" => "管理 - 許可",
 
-// admin/se_users.php, row 154
+// admin/se_users.php, row 158
 "Change current permissions" => "現在の許可を変更",
 
-// admin/se_users.php, row 181
-// central/index.php, row 154
-// include/se_users.php, row 173
+// admin/se_users.php, row 185
+// central/index.php, row 139
+// include/se_users.php, row 180
 // src/Widget/TfaWidget.php, row 71
 "Username" => "利用者名", // ai 2026-06
 
-// admin/se_users.php, row 181
-// admin/usershow.php, row 87
-// include/se_users.php, row 173
+// admin/se_users.php, row 185
+// admin/usershow.php, row 89
+// include/se_users.php, row 180
 "Email" => "E-メール", // ai 2026-06
 
-// admin/se_users.php, row 192
+// admin/se_users.php, row 196
 "Default user profile" => "既定の利用者プロフィール", // ai 2026-06
 
-// admin/se_view.php, row 135
+// admin/se_view.php, row 134
 "Group by selections" => "選択ごとにグループ化", // ai 2026-06
 
-// admin/se_view.php, row 138
+// admin/se_view.php, row 137
 "Yes. Write sort[] to the conds[] field for each Selection." => "はい。各選択の conds[] フィールドに sort[] を記入してください。", // ai 2026-06
 
-// admin/se_view.php, row 141
+// admin/se_view.php, row 140
 "No. Use this sort[]:" => "いいえ。次の sort[] を使用:", // ai 2026-06
 
-// admin/se_view.php, row 154
+// admin/se_view.php, row 153
 "Alerts Selection" => "アラートの選択", // ai 2026-06
 
-// admin/se_view.php, row 157
+// admin/se_view.php, row 156
 "If you need more selections, use 'Update' and on next Edit two empty boxes appear." => "さらに選択が必要な場合は「更新」を押すと、次の編集時に空欄が2つ追加されます。", // ai 2026-06
 
-// admin/se_view.php, row 250
+// admin/se_view.php, row 213
 "Ascending (numeric)" => "昇順（数値）", // ai 2026-06
 
-// admin/se_view.php, row 250
+// admin/se_view.php, row 213
 "Descending (numeric)" => "降順（数値）", // ai 2026-06
 
-// admin/se_view.php, row 255
+// admin/se_view.php, row 218
 "you can sort items by alias instead of fields, but it is very slow (computed for all the items)" => "フィールドの代わりに別名で項目を並べ替えることもできますが、非常に低速です（全項目について計算されます）", // ai 2026-06
 
-// admin/se_view.php, row 319
-// admin/se_views.php, row 54
+// admin/se_view.php, row 282
+// admin/se_views.php, row 53
 "You do not have permission to change views" => "ビューを変更する許可がありません", // ai 2026-06
 
-// admin/se_view.php, row 379
-// admin/sliceimp_xml.php, row 297
+// admin/se_view.php, row 343
+// admin/sliceimp_xml.php, row 269
 "Can't insert into view." => "ビューに挿入できません。", // ai 2026-06
 
-// admin/se_view.php, row 394
+// admin/se_view.php, row 358
 "View successfully changed" => "ビューは正常に変更されました", // ai 2026-06
 
-// admin/se_view.php, row 517
-// admin/se_views.php, row 100
+// admin/se_view.php, row 481
+// admin/se_views.php, row 103
 "Admin - design View" => "管理 - design View", // ai 2026-06
 
-// admin/se_view.php, row 530
+// admin/se_view.php, row 494
 "Save as new" => "新規として保存", // ai 2026-06
 
-// admin/se_view.php, row 538
+// admin/se_view.php, row 502
 "Defined Views" => "定義済みビュー", // ai 2026-06
 
-// admin/se_view.php, row 574
-// admin/se_views.php, row 144
+// admin/se_view.php, row 538
+// admin/se_views.php, row 148
 "show this view" => "このビューを表示", // ai 2026-06
 
-// admin/se_view.php, row 589
-// include/stringexpand.php, row 1864
+// admin/se_view.php, row 553
+// central/installapp.php, row 1167
+// include/slice.class.php, row 1627
+// include/stringexpand.php, row 1854
 "No" => "いいえ", // ai 2026-06
 
-// admin/se_view.php, row 589
+// admin/se_view.php, row 553
 "Accept {xpage}" => "{xpage} を受け付ける", // ai 2026-06
 
-// admin/se_view.php, row 589
+// admin/se_view.php, row 553
 "Use infinite scrolling" => "無限スクロールを使用", // ai 2026-06
 
-// admin/se_view.php, row 632
+// admin/se_view.php, row 596
 "To include view in your sitemodule webpage use" => "site モジュールのページにビューを含めるには次を使用してください", // ai 2026-06
 
-// admin/se_view.php, row 638
+// admin/se_view.php, row 602
 "See documentation" => "ドキュメントを参照", // ai 2026-06
 
-// admin/se_view.php, row 642
+// admin/se_view.php, row 606
 "Last from log" => "ログの最新記録", // ai 2026-06
 
 // admin/se_views.php, row 70
 "View successfully deleted" => "ビューは正常に削除されました", // ai 2026-06
 
-// admin/se_views.php, row 145, 218
+// admin/se_views.php, row 72
+"The view was not found in this slice." => "",
+
+// admin/se_views.php, row 149, 223
 "Create new view from this one" => "このビューから新規作成", // ai 2026-06
 
-// admin/se_views.php, row 145, 198, 218
-// include/formutil.php, row 1752, 1759
+// admin/se_views.php, row 149, 203, 223
+// include/formutil.php, row 1770, 1777
+// src/Import/DetailPage.php, row 329, 666
 "New" => "新規",
 
-// admin/se_views.php, row 146
+// admin/se_views.php, row 150
 "Are you sure you want to delete selected view?" => "選択したビューを削除してもよろしいですか？", // ai 2026-06
 
-// admin/se_views.php, row 188
+// admin/se_views.php, row 193
 "Create new view" => "新規ビューを作成", // ai 2026-06
 
-// admin/se_views.php, row 191
+// admin/se_views.php, row 196
 "by&nbsp;type:" => "種類別:&nbsp;", // ai 2026-06
 
-// admin/se_views.php, row 203
+// admin/se_views.php, row 208
 "by&nbsp;template:" => "テンプレート別:&nbsp;", // ai 2026-06
 
-// admin/search_replace.php, row 75
+// admin/search_replace.php, row 77
 "You do not have permission to edit items this way in this slice" => "このスライスで項目をこの方法で編集する許可がありません", // ai 2026-06
 
-// admin/search_replace.php, row 111
+// admin/search_replace.php, row 113
 "Items selected: %1, Items successfully updated: %2, Items planned: %3" => "選択された項目: %1、正常に更新: %2、タスクに計画済み: %3", // ai 2026-06
 
-// admin/search_replace.php, row 126, 132
+// admin/search_replace.php, row 127, 133
 "Modify items" => "項目の変更", // ai 2026-06
 
-// admin/search_replace.php, row 151
+// admin/search_replace.php, row 152
 "Select field..." => "フィールドを選択...", // ai 2026-06
 
-// admin/search_replace.php, row 166
-// include/slice.class.php, row 553
+// admin/search_replace.php, row 167
+// central/installapp.php, row 832
+// include/slice.class.php, row 678
+// src/Optimize/SeoDuplicates.php, row 148
 "Items" => "項目", // ai 2026-06
 
-// admin/search_replace.php, row 166
-// admin/write_mail.php, row 225
+// admin/search_replace.php, row 167
+// admin/write_mail.php, row 228
 "Stored searches for " => "保存済み検索: ", // ai 2026-06
 
-// admin/search_replace.php, row 168
+// admin/search_replace.php, row 169
 "View items" => "項目を見る", // ai 2026-06
 
-// admin/search_replace.php, row 169
-// src/Manager.php, row 1113
+// admin/search_replace.php, row 170
+// src/Manager.php, row 1409
 "Selected items" => "選択された項目群",
 
-// admin/search_replace.php, row 174
+// admin/search_replace.php, row 180
 "Be very careful with this. Changes in some fields (Status Code, Publish Date, Slice ID, ...) could be very crucial for your item's data. There is no data validity check - what you will type will be written to the database.<br>You should also know there is no UNDO operation (at least now)." => "この機能には十分注意してください。一部のフィールド（Status Code、Publish Date、Slice ID など）の変更は項目のデータに重大な影響を与える可能性があります。データの妥当性チェックは行われません。入力した内容がそのままデータベースに書き込まれます。<br>また、元に戻す（UNDO）操作は（少なくとも現時点では）存在しないことにご注意ください。", // ai 2026-06
 
-// admin/search_replace.php, row 176
+// admin/search_replace.php, row 183
 "Just update the field and do not perform any other operations like set-last-edit, evaluate-computed-field, feed, ..." => "フィールドの更新のみを行い、set-last-edit、evaluate-computed-field、feed などの他の操作は実行しません", // ai 2026-06
 
-// admin/search_replace.php, row 180
+// admin/search_replace.php, row 187
 "Run as Tasks - fill number of items in one task" => "タスクとして実行 - 1 タスクあたりの項目数を入力", // ai 2026-06
 
-// admin/search_replace.php, row 180
+// admin/search_replace.php, row 187
 "If you want to run this operation as tasks, enter the number of items in one task here. The operation will be split into tasks. The tasks will be run in the background. You can check the status of the tasks in the task manager." => "この操作をタスクとして実行する場合は、1 タスクあたりの項目数をここに入力してください。操作はタスクに分割され、バックグラウンドで実行されます。タスクの状態はタスクマネージャで確認できます。", // ai 2026-06
 
-// admin/search_replace.php, row 183
+// admin/search_replace.php, row 190
 "Fill" => "変更", // ai 2026-06
 
-// admin/search_replace.php, row 184
-// admin/usershow.php, row 176
-// admin/write_mail.php, row 258
+// admin/search_replace.php, row 191
+// admin/usershow.php, row 179
+// admin/write_mail.php, row 261
+// src/Widget/RichtextMarkup.php, row 74
 "Close" => "閉じる", // ai 2026-06
 
-// admin/setup.php, row 60, 63
+// admin/setup.php, row 61, 64
 "ActionApps Setup" => "ActionApps セットアップ", // ai 2026-06
 
-// admin/setup.php, row 71
+// admin/setup.php, row 72
 "This script can't be used on a configured system." => "このスクリプトは設定済みのシステムでは使用できません。", // ai 2026-06
 
-// admin/setup.php, row 94
-// admin/um_uedit.php, row 331
+// admin/setup.php, row 95
+// admin/um_uedit.php, row 330
 "Superadmin account" => "超管理者 アカウント",
 
-// admin/setup.php, row 98, 239
-// admin/slicewiz.php, row 79
-// admin/um_passwd.php, row 109
-// admin/um_uedit.php, row 314, 318
-// include/itemfunc.php, row 548, 1049
+// admin/setup.php, row 99, 240
+// admin/slicewiz.php, row 85
+// admin/um_passwd.php, row 111
+// admin/um_uedit.php, row 313, 317
+// include/itemfunc.php, row 613, 1194
 // include/um_util.php, row 296
 "Login name" => "ログイン名",
 
-// admin/setup.php, row 99, 240
-// admin/slicewiz.php, row 80
-// admin/um_passwd.php, row 112
-// admin/um_uedit.php, row 322
-// central/index.php, row 155
+// admin/setup.php, row 100, 241
+// admin/slicewiz.php, row 86
+// admin/um_passwd.php, row 114
+// admin/um_uedit.php, row 321
+// central/index.php, row 140
+// central/installapp.php, row 566
 // include/um_util.php, row 301
 // src/Widget/PwdWidget.php, row 71
 // src/Widget/TfaWidget.php, row 75
 "Password" => "パスワード",
 
-// admin/setup.php, row 100, 242
-// include/formutil.php, row 2178
+// admin/setup.php, row 101, 243
+// include/formutil.php, row 2196
 "Retype Password" => "パスワードを繰り返す", // ai 2026-06
 
-// admin/setup.php, row 101, 244
-// admin/slicewiz.php, row 82
-// admin/um_passwd.php, row 114
-// admin/um_uedit.php, row 324
+// admin/setup.php, row 102, 245
+// admin/slicewiz.php, row 88
+// admin/um_passwd.php, row 116
+// admin/um_uedit.php, row 323
 // include/um_util.php, row 298
 "First name" => "名前",
 
-// admin/setup.php, row 102, 245
+// admin/setup.php, row 103, 246
 "Last name" => "姓", // ai 2026-06
 
-// admin/setup.php, row 119
+// admin/setup.php, row 120
 "Welcome! Use this script to create the superadmin account.<p>If you are installing a new copy of AA, press <b>Init</b>.<br>" => "ようこそ！このスクリプトで超管理者アカウントを作成します。<p>AA を新規にインストールする場合は <b>初期化</b> を押してください。<br>", // ai 2026-06
 
-// admin/setup.php, row 120
+// admin/setup.php, row 121
 "If you deleted your superadmin account by mistake, press <b>Recover</b>.<br>" => "誤って超管理者アカウントを削除してしまった場合は <b>復旧</b> を押してください。<br>", // ai 2026-06
 
-// admin/setup.php, row 124, 193
+// admin/setup.php, row 125, 194
 " Init " => " 初期化 ", // ai 2026-06
 
-// admin/setup.php, row 125, 207
+// admin/setup.php, row 126, 208
 "Recover" => "復旧", // ai 2026-06
 
-// admin/setup.php, row 148
+// admin/setup.php, row 149
 "Database is not configured correctly or the database is empty.<br>\n"
    ."             Check please the database credentials in <b>include/config.php</b>\n"
    ."             file <br>or run <a href=\"../service/sql_update.php\">/service/sql_update.php</a> script,\n"
@@ -2764,271 +3153,285 @@ return [
    ."             AA のテーブルを作成する <a href=\"../service/sql_update.php\">/service/sql_update.php</a>\n"
    ."             スクリプトを実行してください。", // ai 2026-06
 
-// admin/setup.php, row 202
+// admin/setup.php, row 203
 "Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>" => "基本の許可オブジェクトを追加できません。<br>許可システムへのアクセス設定を確認してください。<br>超管理者アカウントを削除した直後の場合は <b>復旧</b> を使用してください", // ai 2026-06
 
-// admin/setup.php, row 217
+// admin/setup.php, row 218
 "Can't delete invalid permission." => "無効な許可を削除できません。", // ai 2026-06
 
-// admin/setup.php, row 219
+// admin/setup.php, row 220
 "Invalid permission deleted (no such user/group): " => "無効な許可を削除しました（該当する利用者/グループがありません）: ", // ai 2026-06
 
-// admin/setup.php, row 249
+// admin/setup.php, row 250
 // include/um_util.php, row 304
 "Retyped password is not the same as the first one" => "再入力されたパスワードが最初のものと一致しません", // ai 2026-06
 
-// admin/setup.php, row 271
+// admin/setup.php, row 272
 // include/um_util.php, row 337
 "It is impossible to add user to permission system" => "利用者を許可システムに追加できません", // ai 2026-06
 
-// admin/setup.php, row 284
+// admin/setup.php, row 285
 "Congratulations! The account was created." => "おめでとうございます！アカウントが作成されました。", // ai 2026-06
 
-// admin/setup.php, row 286
+// admin/setup.php, row 287
 "Use this account to login and add your first slice:" => "このアカウントでログインして最初のスライスを追加してください:", // ai 2026-06
 
-// admin/setup.php, row 287
-// admin/slicedit.php, row 235
+// admin/setup.php, row 288
+// admin/slicedit.php, row 240
 "Add Slice" => "スライスを追加",
 
-// admin/setup.php, row 290
+// admin/setup.php, row 291
 "Can't assign super access permission." => "超管理者の許可を割り当てられません。", // ai 2026-06
 
-// admin/sliceadd.php, row 73
+// admin/sliceadd.php, row 75
 "Create New Slice / Module" => "新規スライス / モジュールの作成", // ai 2026-06
 
-// admin/sliceadd.php, row 79
+// admin/sliceadd.php, row 81
 "Modules" => "モジュール", // ai 2026-06
 
-// admin/sliceadd.php, row 93
-// admin/um_gedit.php, row 274
-// admin/um_uedit.php, row 379
-// include/formutil.php, row 1749
-// include/mlx.php, row 371
-// include/profile.php, row 163
-// include/sliceadd.php, row 69, 83
-// src/Manager.php, row 210
+// admin/sliceadd.php, row 95
+// admin/um_gedit.php, row 273
+// admin/um_uedit.php, row 378
+// include/formutil.php, row 1767
+// include/mlx.php, row 377
+// include/profile.php, row 170
+// include/sliceadd.php, row 71, 85
+// src/Import/DetailCatalog.php, row 151
+// src/Manager.php, row 239, 1261
 "Add" => "追加",
 
-// admin/slicedel.php, row 46
+// admin/slicedel.php, row 48
 "You don't have permissions to delete module." => "モジュールを削除する許可がありません。", // ai 2026-06
 
-// admin/slicedel.php, row 73
+// admin/slicedel.php, row 76
 "Do you really want to delete this module and all its fields and all its items?" => "本当にこのモジュールと、その全てのフィールドおよび項目を削除しますか？", // ai 2026-06
 
-// admin/slicedel.php, row 83
+// admin/slicedel.php, row 86
 "Admin - Delete Module" => "管理 - モジュールの削除", // ai 2026-06
 
-// admin/slicedel.php, row 98
+// admin/slicedel.php, row 101
 "Select module to delete" => "削除するモジュールを選択", // ai 2026-06
 
-// admin/slicedel.php, row 99
+// admin/slicedel.php, row 104
 "Modules to show" => "表示するモジュール", // ai 2026-06
 
-// admin/slicedel.php, row 99
+// admin/slicedel.php, row 105
 "Marked as \"Deleted\"" => "「削除済み」の印が付いたもの", // ai 2026-06
 
-// admin/slicedel.php, row 100
+// admin/slicedel.php, row 108
 "This option allows you to display all the slices and delete them, so be careful!" => "このオプションは全てのスライスを表示して削除できるようにします。ご注意ください！", // ai 2026-06
 
-// admin/slicedel.php, row 102
+// admin/slicedel.php, row 114
 "Modules to delete" => "削除するモジュール", // ai 2026-06
 
-// admin/slicedel.php, row 116
+// admin/slicedel.php, row 128
 "No module marked for deletion" => "削除の印が付いたモジュールはありません", // ai 2026-06
 
 // admin/slicedel2.php, row 57, 62
 "You don't have permissions to delete slice." => "スライスを削除する許可がありません。", // ai 2026-06
 
 // admin/slicedel2.php, row 70
-// include/modutils.php, row 273
+// include/modutils.php, row 275
 "No such module." => "そのようなモジュールはありません。", // ai 2026-06
 
 // admin/slicedel2.php, row 79
 "Slice successfully deleted, tables are optimized" => "スライスは削除され、テーブルは最適化されました", // ai 2026-06
 
-// admin/slicedit.php, row 137, 144, 151
+// admin/slicedit.php, row 139, 146, 153
 "Not allowed" => "許可しない", // ai 2026-06
 
-// admin/slicedit.php, row 138
+// admin/slicedit.php, row 140
+// src/Central/FindingText.php, row 416
 "Active with antiSPAM tokens" => "antiSPAMトークン付きで有効", // ai 2026-06
 
-// admin/slicedit.php, row 140, 146
-// include/menu.php, row 190
-// include/menu_util.php, row 120
+// admin/slicedit.php, row 142, 148
+// include/menu.php, row 192
+// include/menu_util.php, row 123
+// src/Central/FindingText.php, row 416
 // src/Module/Poll/Menu.php, row 64
 "Hold bin" => "保留箱",
 
-// admin/slicedit.php, row 152
-// include/formutil.php, row 3260
+// admin/slicedit.php, row 154
+// include/formutil.php, row 3293
+// src/Central/FindingText.php, row 417
 "All items" => "全ての項目", // ai 2026-06
 
-// admin/slicedit.php, row 153
+// admin/slicedit.php, row 155
+// src/Central/FindingText.php, row 417
 "Only items posted anonymously" => "匿名で投稿された項目のみ", // ai 2026-06
 
-// admin/slicedit.php, row 154
+// admin/slicedit.php, row 156
+// src/Central/FindingText.php, row 417
 "-\"- and not edited in AA" => "-\"- かつAAで未編集のもの", // ai 2026-06
 
-// admin/slicedit.php, row 155
+// admin/slicedit.php, row 157
+// src/Central/FindingText.php, row 418
 "Authorized by a password field" => "パスワードフィールドで認証されたもの", // ai 2026-06
 
-// admin/slicedit.php, row 156
+// admin/slicedit.php, row 158
+// src/Central/FindingText.php, row 418
 "Readers, authorized by HTTP auth" => "HTTP認証で認証された読者", // ai 2026-06
 
-// admin/slicedit.php, row 157
+// admin/slicedit.php, row 159
+// src/Central/FindingText.php, row 418
 "Only by Planned tasks (cron-toexecute)" => "計画タスク（cron-toexecute）のみ", // ai 2026-06
 
-// admin/slicedit.php, row 235
+// admin/slicedit.php, row 240
 "Admin - Slice settings" => "管理 - スライス設定", // ai 2026-06
 
-// admin/slicedit.php, row 253
-// include/menu_util.php, row 605
+// admin/slicedit.php, row 258
+// include/menu_util.php, row 624
 "Language" => "言語", // ai 2026-06
 
-// admin/slicedit.php, row 255
-// include/slicedit.php, row 193
+// admin/slicedit.php, row 260
+// include/slicedit.php, row 196
 "Slice Type" => "スライスの種類", // ai 2026-06
 
-// admin/slicedit.php, row 259
-// central/include/actionapps.class.php, row 674
-// include/sliceadd.php, row 62
+// admin/slicedit.php, row 264
+// include/sliceadd.php, row 64
+// src/Central/Difference.php, row 106, 191
 "Template" => "テンプレート", // ai 2026-06
 
-// admin/slicedit.php, row 262
+// admin/slicedit.php, row 267
 "Show content of expired items" => "期限切れ項目の内容を表示", // ai 2026-06
 
-// admin/slicedit.php, row 263
+// admin/slicedit.php, row 268
 "Show content of pending items" => "待機中項目の内容を表示", // ai 2026-06
 
-// admin/slicedit.php, row 264
-// include/slicedit.php, row 196
+// admin/slicedit.php, row 269
+// include/slicedit.php, row 199
+// src/Central/FindingText.php, row 430
 "Allow anonymous posting of items" => "項目の匿名投稿を許可", // ai 2026-06
 
-// admin/slicedit.php, row 265
-// include/slicedit.php, row 197
+// admin/slicedit.php, row 270
+// include/slicedit.php, row 200
+// src/Central/FindingText.php, row 431
 "Allow anonymous editing of items" => "項目の匿名編集を許可", // ai 2026-06
 
-// admin/slicedit.php, row 266
-// include/slicedit.php, row 198
+// admin/slicedit.php, row 271
+// include/slicedit.php, row 201
 "Allow off-line item filling" => "オフラインでの項目入力を許可", // ai 2026-06
 
-// admin/slicedit.php, row 272
+// admin/slicedit.php, row 277
+// src/Central/FindingText.php, row 433
 "Auth Group Field" => "認証グループフィールド", // ai 2026-06
 
-// admin/slicedit.php, row 273
+// admin/slicedit.php, row 278
 "Mailman Lists Field" => "Mailmanリストフィールド", // ai 2026-06
 
-// admin/slicedit.php, row 275
+// admin/slicedit.php, row 280
 "Password for Reading" => "閲覧用パスワード", // ai 2026-06
 
-// admin/slicedit.php, row 281
-// include/itemfunc.php, row 181
+// admin/slicedit.php, row 286
+// include/itemfunc.php, row 193
+// src/Util/Note.php, row 60
 "Created" => "作成", // ai 2026-06
 
-// admin/slicedit.php, row 281
+// admin/slicedit.php, row 286
 "by" => "作成者:", // ai 2026-06
 
-// admin/slicedit.php, row 284
+// admin/slicedit.php, row 289
 "Additional setting" => "追加設定", // ai 2026-06
 
-// admin/slicedit.php, row 288
+// admin/slicedit.php, row 293
 "Settings for older AA - you will probably not use it for new slices" => "旧バージョンAA用の設定 - 新しいスライスではおそらく使用しません", // ai 2026-06
 
-// admin/slicedit.php, row 289
-// include/constants.php, row 639, 754, 780, 811, 844, 908, 942, 976
-// include/slicedit.php, row 201
-// src/Widget/Widget.php, row 781
+// admin/slicedit.php, row 294
+// include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
+// include/slicedit.php, row 204
+// src/Widget/Widget.php, row 810
 "Listing length" => "一覧の長さ",
 
-// admin/slicedit.php, row 289
+// admin/slicedit.php, row 294
 "Used by slice.php. Fill 0 to disable slice.php output for this slice (recommended for all newer slices - they are presented by Site Module)." => "slice.phpで使用されます。このスライスのslice.php出力を無効にするには0を入力してください（新しいスライスには推奨 - それらはSiteモジュールで表示されます）。", // ai 2026-06
 
-// admin/slicedit.php, row 293
+// admin/slicedit.php, row 298
 "MLX Control Slice for" => "MLX Control Slice の対象", // ai 2026-06
 
-// admin/slicedit.php, row 296
+// admin/slicedit.php, row 301
 "MLX: Language Control Slice" => "MLX: 言語制御スライス", // ai 2026-06
 
-// admin/slicedit.php, row 300
-// include/slicedit.php, row 205
+// admin/slicedit.php, row 305
+// include/slicedit.php, row 208
+// src/Central/FindingText.php, row 432
 "File Manager Access" => "ファイルマネージャへのアクセス", // ai 2026-06
 
-// admin/slicedit.php, row 301
-// include/slicedit.php, row 206
+// admin/slicedit.php, row 306
+// include/slicedit.php, row 209
 "File Manager Directory" => "ファイルマネージャのディレクトリ", // ai 2026-06
 
-// admin/sliceexp.php, row 79
-// admin/sliceimp.php, row 64
+// admin/sliceexp.php, row 78
+// admin/sliceimp.php, row 63
 "You are not allowed to export / import slices" => "スライスをエクスポート / インポートする許可がありません", // ai 2026-06
 
-// admin/sliceexp.php, row 103, 108
+// admin/sliceexp.php, row 102, 107
 "Export slice structure" => "スライス構造のエクスポート", // ai 2026-06
 
-// admin/sliceexp.php, row 118
+// admin/sliceexp.php, row 117
 "Choose, if you want to export slices structure, data or both." => "スライスの構造、データ、または両方のどれをエクスポートするか選択してください。", // ai 2026-06
 
-// admin/sliceexp.php, row 119
+// admin/sliceexp.php, row 118
 "Export structure" => "構造をエクスポート", // ai 2026-06
 
-// admin/sliceexp.php, row 120
+// admin/sliceexp.php, row 119
 "Export data" => "データをエクスポート", // ai 2026-06
 
-// admin/sliceexp.php, row 121
+// admin/sliceexp.php, row 120
 "Export views" => "ビューをエクスポート", // ai 2026-06
 
-// admin/sliceexp.php, row 124
+// admin/sliceexp.php, row 123
 "Use compression" => "圧縮を使用", // ai 2026-06
 
-// admin/sliceexp.php, row 126
+// admin/sliceexp.php, row 125
 "HEX output" => "HEX出力", // ai 2026-06
 
-// admin/sliceexp.php, row 127
+// admin/sliceexp.php, row 126
 "Store exported data in file" => "エクスポートデータをファイルに保存", // ai 2026-06
 
-// admin/sliceexp.php, row 128
+// admin/sliceexp.php, row 127
 "Convert to UTF" => "UTFに変換", // ai 2026-06
 
-// admin/sliceexp.php, row 131
+// admin/sliceexp.php, row 130
 "Export data from specified dates: " => "指定した日付のデータをエクスポート:", // ai 2026-06
 
-// admin/sliceexp.php, row 132
+// admin/sliceexp.php, row 131
 "From " => "開始", // ai 2026-06
 
-// admin/sliceexp.php, row 139
+// admin/sliceexp.php, row 138
 "Choose one of two export kinds:" => "2種類のエクスポート方法から1つ選択してください:", // ai 2026-06
 
-// admin/sliceexp.php, row 145
+// admin/sliceexp.php, row 144
 "When exporting \"to Backup\" you may choose more slices at once." => "「バックアップへ」エクスポートする場合は、複数のスライスを一度に選択できます。", // ai 2026-06
 
-// admin/sliceexp.php, row 146
+// admin/sliceexp.php, row 145
 "Select slices which you WANT to export:" => "エクスポートしたいスライスを選択してください:", // ai 2026-06
 
-// admin/sliceexp.php, row 162
+// admin/sliceexp.php, row 161
 "When exporting \"to another ActionApps\" only the current slice will be exported and you choose its new identifier." => "When exporting \"to another ActionApps\" only the current slice will be exported and you choose her new identificator.",
 
-// admin/sliceexp.php, row 163
+// admin/sliceexp.php, row 162
 "Choose a new slice identifier exactly 16 characters long: " => "ちょうど16文字の新しいスライス識別子を入力してください:", // ai 2026-06
 
-// admin/sliceexp.php, row 170
+// admin/sliceexp.php, row 169
 "Export to Backup" => "バックアップへエクスポート", // ai 2026-06
 
-// admin/sliceexp.php, row 171
+// admin/sliceexp.php, row 170
 "Show Datastructure Documentation" => "データ構造のドキュメントを表示", // ai 2026-06
 
-// admin/sliceexp.php, row 173
+// admin/sliceexp.php, row 172
 "Export to another ActionApps" => "別のActionAppsへエクスポート", // ai 2026-06
 
-// admin/sliceexp.php, row 185
+// admin/sliceexp.php, row 184
 "The identifier should be 16 characters long, not " => "識別子は16文字でなければなりません。実際の長さ:", // ai 2026-06
 
-// admin/sliceexp.php, row 200
+// admin/sliceexp.php, row 199
 "You must select one or more slices to backup" => "バックアップするスライスを1つ以上選択してください", // ai 2026-06
 
-// admin/sliceexp_text.php, row 78
+// admin/sliceexp_text.php, row 77
 "Wrong slice ID length: " => "スライスIDの長さが不正です:", // ai 2026-06
 
-// admin/sliceexp_text.php, row 171, 408
-// include/exporter.class.php, row 77, 130
+// admin/sliceexp_text.php, row 171, 410
+// include/exporter.class.php, row 80, 143
 "Can't create temporary file." => "一時ファイルを作成できません。", // ai 2026-06
 
 // admin/sliceexp_text.php, row 202
@@ -3037,547 +3440,1131 @@ return [
 // admin/sliceexp_text.php, row 281
 "Save this text. You may use it to import the slices into any ActionApps:" => "このテキストを保存してください。任意のActionAppsへスライスをインポートするのに使用できます:", // ai 2026-06
 
-// admin/sliceexp_text.php, row 364, 368
+// admin/sliceexp_text.php, row 365, 369
 "Hidden" => "非表示", // ai 2026-06
 
-// admin/slicefieldsedit.php, row 126
+// admin/slicefieldsedit.php, row 146
 "Slice Setting" => "スライス設定", // ai 2026-06
 
-// admin/sliceimp.php, row 80
+// admin/sliceimp.php, row 79
 "Slice_ID (%1) has wrong length (%2, should be 32)" => "Slice_ID (%1) の長さが不正です (%2、正しくは32)", // ai 2026-06
 
-// admin/sliceimp.php, row 105, 147, 427
-// admin/sliceimp_xml.php, row 284
+// admin/sliceimp.php, row 104, 146, 426
+// admin/sliceimp_xml.php, row 256
 "Overwrite" => "上書き", // ai 2026-06
 
-// admin/sliceimp.php, row 178, 184, 243, 249, 429
+// admin/sliceimp.php, row 177, 183, 242, 248, 428
 "Insert with new ids" => "新しいIDで挿入", // ai 2026-06
 
-// admin/sliceimp.php, row 318
+// admin/sliceimp.php, row 317
 "Import exported data (slice structure and content)" => "エクスポートデータのインポート（スライス構造と内容）", // ai 2026-06
 
-// admin/sliceimp.php, row 322
+// admin/sliceimp.php, row 321
 "Import exported data" => "エクスポートデータのインポート", // ai 2026-06
 
-// admin/sliceimp.php, row 327
+// admin/sliceimp.php, row 326
 "Count of imported slices: %d." => "インポートされたスライス数: %d.", // ai 2026-06
 
-// admin/sliceimp.php, row 329, 344
+// admin/sliceimp.php, row 328, 343
 "Added were:" => "追加されたもの:", // ai 2026-06
 
-// admin/sliceimp.php, row 335, 350
+// admin/sliceimp.php, row 334, 349
 "Overwritten were:" => "上書きされたもの:", // ai 2026-06
 
-// admin/sliceimp.php, row 341
+// admin/sliceimp.php, row 340
 "Count of imported stories: %d." => "インポートされた項目数: %d.", // ai 2026-06
 
-// admin/sliceimp.php, row 356
+// admin/sliceimp.php, row 355
 "Failed were:" => "失敗したもの:", // ai 2026-06
 
-// admin/sliceimp.php, row 367
+// admin/sliceimp.php, row 366
 "Here you can import exported data to ActionApps. You can use two types of import:" => "ここでエクスポートしたデータを ActionApps にインポートできます。2種類のインポートが使えます:", // ai 2026-06
 
-// admin/sliceimp.php, row 373
+// admin/sliceimp.php, row 372
 "Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>" => "一部の ID を持つスライスは既に存在します。矢印の右側の ID を変更してください。<br> 16進数の文字 0-9,a-f のみを使用してください。誤った操作をした場合 (文字数の誤り、誤った文字、または矢印の左側の ID を変更した場合)、その ID は変更されなかったものと見なされます。</p>", // ai 2026-06
 
-// admin/sliceimp.php, row 391
+// admin/sliceimp.php, row 390
 "<p>Views with some of the same IDs exist already. Please edit on the right-hand side of the arrow</p>" => "<p>同じ ID を持つビューが既に存在します。矢印の右側で編集してください</p>", // ai 2026-06
 
-// admin/sliceimp.php, row 406
+// admin/sliceimp.php, row 405
 "<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>" => "<p>一部の ID を持つスライスの内容は既に存在します。矢印の右側の ID を変更してください。<br> 16進数の文字 0-9,a-f のみを使用してください。 </p>", // ai 2026-06
 
-// admin/sliceimp.php, row 419
+// admin/sliceimp.php, row 418
 "<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures get new ids and their content too.</p>" => "<p>OVERWRITE を選ぶと、ID が変更されていないスライスとデータは上書きされ、新しいものが追加されます。<br>INSERT を選ぶと、ID が競合するスライスとデータは無視され、新しいものが追加されます。<br>そして「Insert with new ids」を選ぶと、スライスの構造とその内容に新しい ID が付与されます。</p>", // ai 2026-06
 
-// admin/sliceimp.php, row 430, 476
+// admin/sliceimp.php, row 429, 475
 "cancel" => "中断", // ai 2026-06
 
-// admin/sliceimp.php, row 439
+// admin/sliceimp.php, row 438
 "1) If you have exported data in file, insert its name here (eg. D:\\data\\apc_aa_slice.aaxml):" => "1) エクスポートしたデータがファイルにある場合は、ここにそのファイル名を入力してください (例: D:\\data\\apc_aa_slice.aaxml):", // ai 2026-06
 
-// admin/sliceimp.php, row 442
+// admin/sliceimp.php, row 441
 "Send file with slice structure and data" => "スライスの構造とデータのファイルを送信", // ai 2026-06
 
-// admin/sliceimp.php, row 449
+// admin/sliceimp.php, row 448
 "2) If you have exported data in browser's window, insert the exported text into the textarea below:" => "2) エクスポートしたデータがブラウザのウィンドウにある場合は、エクスポートしたテキストを下のテキストエリアに貼り付けてください:", // ai 2026-06
 
-// admin/sliceimp.php, row 466
+// admin/sliceimp.php, row 465
 "Here specify, what do you want to import:" => "ここで何をインポートするかを指定してください:", // ai 2026-06
 
-// admin/sliceimp.php, row 467
+// admin/sliceimp.php, row 466
 "Import slice definition" => "スライス定義をインポート", // ai 2026-06
 
-// admin/sliceimp.php, row 468
+// admin/sliceimp.php, row 467
 "Import slice items" => "スライスの項目をインポート", // ai 2026-06
 
-// admin/sliceimp.php, row 469
+// admin/sliceimp.php, row 468
 "Import into this slice - whatever file says" => "このスライスにインポート - ファイルの指定に関わらず", // ai 2026-06
 
-// admin/sliceimp.php, row 470
+// admin/sliceimp.php, row 469
+// src/Import/DetailPage.php, row 303
 "Dry run" => "試験実行", // ai 2026-06
 
-// admin/sliceimp.php, row 472
+// admin/sliceimp.php, row 471
 "Send the slice structure and data" => "スライスの構造とデータを送信", // ai 2026-06
 
-// admin/sliceimp_xml.php, row 130
+// admin/sliceimp_xml.php, row 86
 "\n"
    ."ERROR: File doesn't contain SLICEEXPORT"
  => "\n"
    ."エラー: ファイルに SLICEEXPORT が含まれていません", // ai 2026-06
 
-// admin/sliceimp_xml.php, row 145, 170, 208
+// admin/sliceimp_xml.php, row 102, 127, 179
 "ERROR: Text is not OK. Check whether you copied it well from the Export." => "エラー: テキストが正しくありません。エクスポートから正しくコピーしたか確認してください。", // ai 2026-06
 
-// admin/sliceimp_xml.php, row 220
+// admin/sliceimp_xml.php, row 192
 "ERROR: Unsupported version for import" => "エラー: インポートに対応していないバージョンです", // ai 2026-06
 
-// admin/sliceimp_xml.php, row 287
+// admin/sliceimp_xml.php, row 259
 "<br>Overwriting view %1" => "<br>ビュー %1 を上書きしています", // ai 2026-06
 
-// admin/slicewiz.php, row 67
+// admin/slicewiz.php, row 69
 "Add Slice Wizard" => "スライス追加ウィザード", // ai 2026-06
 
-// admin/slicewiz.php, row 74
+// admin/slicewiz.php, row 76
 "[Optional] Create New User" => "[任意] 新規利用者の作成", // ai 2026-06
 
-// admin/slicewiz.php, row 77
+// admin/slicewiz.php, row 81
 "Level of Access" => "アクセスレベル", // ai 2026-06
 
-// admin/slicewiz.php, row 78
-// include/constants.php, row 1145
+// admin/slicewiz.php, row 82
+// include/constants.php, row 1194
 "Slice Administrator" => "スライス管理者", // ai 2026-06
 
-// admin/slicewiz.php, row 81
-// admin/um_passwd.php, row 113
-// admin/um_uedit.php, row 323
+// admin/slicewiz.php, row 87
+// admin/um_passwd.php, row 115
+// admin/um_uedit.php, row 322
 // include/um_util.php, row 302
 "Retype password" => "パスワードを繰り返す",
 
-// admin/slicewiz.php, row 83
-// admin/um_passwd.php, row 115
-// admin/um_uedit.php, row 325
+// admin/slicewiz.php, row 89
+// admin/um_passwd.php, row 117
+// admin/um_uedit.php, row 324
 // include/um_util.php, row 297
 "Surname" => "姓",
 
-// admin/slicewiz.php, row 89
+// admin/slicewiz.php, row 95
 "Do Not Email Welcome" => "歓迎メールを送信しない", // ai 2026-06
 
-// admin/slicewiz.php, row 91
+// admin/slicewiz.php, row 97
 "Email Welcome" => "歓迎メールを送信", // ai 2026-06
 
-// admin/slicewiz.php, row 100
+// admin/slicewiz.php, row 106
 "Go: Add Slice" => "実行: スライスを追加", // ai 2026-06
 
-// admin/um_gedit.php, row 96
-// admin/um_uedit.php, row 111
+// admin/um_gedit.php, row 95
+// admin/um_uedit.php, row 110
 "No permission to create new user" => "新しい利用者を作成する許可がありません",
 
-// admin/um_gedit.php, row 114
-// admin/um_uedit.php, row 135, 138, 155
+// admin/um_gedit.php, row 113
+// admin/um_uedit.php, row 134, 137, 154
 "Too many groups found." => "見付かったグループが多すぎます。", // ai 2026-06
 
-// admin/um_gedit.php, row 114
-// admin/um_uedit.php, row 135, 138
+// admin/um_gedit.php, row 113
+// admin/um_uedit.php, row 134, 137
 "No groups found" => "グループが見付かりません",
 
-// admin/um_gedit.php, row 121, 129
-// admin/um_uedit.php, row 129, 144, 168
-// include/se_users.php, row 168
+// admin/um_gedit.php, row 120, 128
+// admin/um_uedit.php, row 128, 143, 167
+// include/se_users.php, row 175
 // include/um_gsrch.php, row 31
 "Too many users or groups found." => "見付かった利用者またはグループが多すぎます。", // ai 2026-06
 
-// admin/um_gedit.php, row 121
-// admin/um_uedit.php, row 129, 144
-// include/se_users.php, row 170
+// admin/um_gedit.php, row 120
+// admin/um_uedit.php, row 128, 143
+// include/se_users.php, row 177
 // include/um_gsrch.php, row 34
 "No user (group) found" => "利用者(グループ)が見付かりません",
 
-// admin/um_gedit.php, row 144
-// include/um_gedit.php, row 49
+// admin/um_gedit.php, row 143
+// include/um_gedit.php, row 50
 "Group successfully added to permission system" => "グループは許可システムに正常に追加されました", // ai 2026-06
 
-// admin/um_gedit.php, row 144
+// admin/um_gedit.php, row 143
 "Group successfully updated" => "グループは正常に更新されました", // ai 2026-06
 
-// admin/um_gedit.php, row 158
+// admin/um_gedit.php, row 157
 "Are you sure you want to delete selected group from whole permission system?" => "選択したグループを許可システム全体から削除してもよろしいですか?", // ai 2026-06
 
-// admin/um_gedit.php, row 190, 200
-// admin/um_uedit.php, row 337, 343
+// admin/um_gedit.php, row 189, 199
+// admin/um_uedit.php, row 336, 342
 // include/menu_util.php, row 71
-// include/se_users.php, row 134
+// include/se_users.php, row 141
 // include/um_gsrch.php, row 41
 "Groups" => "グループ群",
 
-// admin/um_gedit.php, row 190
+// admin/um_gedit.php, row 189
 "Add new group" => "新規グループを追加", // ai 2026-06
 
-// admin/um_gedit.php, row 197
+// admin/um_gedit.php, row 196
 "Add group" => "グループを追加", // ai 2026-06
 
-// admin/um_gedit.php, row 207
+// admin/um_gedit.php, row 206
 "Find group" => "グループを検索", // ai 2026-06
 
-// admin/um_gedit.php, row 221
-// include/constants.php, row 406
-// include/perm_sql.php, row 372
+// admin/um_gedit.php, row 220
+// include/constants.php, row 455
+// include/perm_sql.php, row 407
 // include/um_gsrch.php, row 50
 "Group" => "グループ", // ai 2026-06
 
-// admin/um_gedit.php, row 257
+// admin/um_gedit.php, row 256
 "Edit group" => "グループの編集",
 
-// admin/um_gedit.php, row 259
+// admin/um_gedit.php, row 258
 "New group" => "新規グループ",
 
-// admin/um_gedit.php, row 295
+// admin/um_gedit.php, row 294
 "Group Id" => "グループ Id",
 
-// admin/um_gedit.php, row 306
+// admin/um_gedit.php, row 305
 "Superadmin group" => "超管理者グループ",
 
-// admin/um_gedit.php, row 313
-// admin/um_uedit.php, row 231, 242
-// include/logs.php, row 453
+// admin/um_gedit.php, row 312
+// admin/um_uedit.php, row 230, 241
+// include/logs.php, row 742
 // include/menu_util.php, row 70
-// include/se_users.php, row 129
+// include/se_users.php, row 136
 "Users" => "利用者群",
 
-// admin/um_gedit.php, row 321
+// admin/um_gedit.php, row 320
 "All Users" => "全てのグループ",
 
-// admin/um_gedit.php, row 323
+// admin/um_gedit.php, row 322
 "Group's Users" => "グループの利用者",
 
-// admin/um_passwd.php, row 59
+// admin/um_passwd.php, row 61
 "You do not have permissions to change user data" => "利用者のデータを変更する許可がありません", // ai 2026-06
 
-// admin/um_passwd.php, row 69, 111
+// admin/um_passwd.php, row 71, 113
 // src/Widget/PwdWidget.php, row 66
 "Current password" => "現在のパスワード", // ai 2026-06
 
-// admin/um_passwd.php, row 71
+// admin/um_passwd.php, row 73
 "Error in current password - password is not changed" => "現在のパスワードが誤っています - パスワードは変更されませんでした", // ai 2026-06
 
-// admin/um_passwd.php, row 80
-// admin/um_uedit.php, row 184
+// admin/um_passwd.php, row 82
+// admin/um_uedit.php, row 183
 "User data modified" => "利用者データを変更しました", // ai 2026-06
 
-// admin/um_passwd.php, row 99
+// admin/um_passwd.php, row 101
 "Change user data" => "利用者データの変更", // ai 2026-06
 
-// admin/um_passwd.php, row 108
-// admin/um_uedit.php, row 313
+// admin/um_passwd.php, row 110
+// admin/um_uedit.php, row 312
 "Edit User" => "利用者の編集",
 
-// admin/um_passwd.php, row 110
-// admin/um_uedit.php, row 315
+// admin/um_passwd.php, row 112
+// admin/um_uedit.php, row 314
 "User Id" => "利用者 Id", // ai 2026-06
 
-// admin/um_uedit.php, row 184
+// admin/um_uedit.php, row 183
 // include/um_util.php, row 344
 "User successfully added to permission system" => "利用者は許可システムに正常に追加されました", // ai 2026-06
 
-// admin/um_uedit.php, row 199
+// admin/um_uedit.php, row 198
 "Are you sure you want to delete selected user from whole permission system?" => "選択した利用者を許可システム全体から削除してもよろしいですか?", // ai 2026-06
 
-// admin/um_uedit.php, row 231
+// admin/um_uedit.php, row 230
 "Add new user" => "新規利用者を追加", // ai 2026-06
 
-// admin/um_uedit.php, row 239
+// admin/um_uedit.php, row 238
 "Add user" => "利用者を追加", // ai 2026-06
 
-// admin/um_uedit.php, row 248
+// admin/um_uedit.php, row 247
 "Find user" => "利用者を検索", // ai 2026-06
 
-// admin/um_uedit.php, row 317
+// admin/um_uedit.php, row 316
 "New user" => "新規利用者",
 
-// admin/um_uedit.php, row 343
+// admin/um_uedit.php, row 342
 "All Writable Groups" => "書き込み可能な全グループ", // ai 2026-06
 
-// admin/um_uedit.php, row 343
+// admin/um_uedit.php, row 342
 "User's Groups" => "利用者のグループ",
 
-// admin/um_uedit.php, row 348
+// admin/um_uedit.php, row 347
 "Member of Unwritable Groups" => "書き込み不可のグループのメンバー", // ai 2026-06
 
-// admin/usershow.php, row 74
+// admin/usershow.php, row 76
 "You do not have permission to see the users in this slice:" => "このスライスの利用者を見る許可がありません:", // ai 2026-06
 
-// admin/usershow.php, row 119
+// admin/usershow.php, row 122
 "Show selected users" => "選択した利用者を表示", // ai 2026-06
 
-// admin/write_mail.php, row 120, 244
-// include/mail.php, row 568
-// include/tv_email.php, row 87, 151
+// admin/write_mail.php, row 121, 247
+// include/mail.php, row 666
 "Body" => "本文", // ai 2026-06
 
-// admin/write_mail.php, row 121, 245
-// include/tv_email.php, row 92
+// admin/write_mail.php, row 122, 248
 "From (email)" => "差出人 (E-メール)", // ai 2026-06
 
-// admin/write_mail.php, row 122, 246
-// include/mail.php, row 570
-// include/tv_email.php, row 95
+// admin/write_mail.php, row 123, 249
+// include/mail.php, row 668
 "Reply to (email)" => "返信先 (E-メール)", // ai 2026-06
 
-// admin/write_mail.php, row 123, 247
-// include/mail.php, row 571
-// include/tv_email.php, row 98
+// admin/write_mail.php, row 124, 250
+// include/mail.php, row 669
 "Errors to (email)" => "エラー送付先 (E-メール)", // ai 2026-06
 
-// admin/write_mail.php, row 124, 248
+// admin/write_mail.php, row 125, 251
 "Sender (email)" => "送信者 (E-メール)", // ai 2026-06
 
-// admin/write_mail.php, row 125, 249
-// include/mail.php, row 564
-// include/tv_email.php, row 104
+// admin/write_mail.php, row 126, 252
+// include/mail.php, row 658
 "Language (charset)" => "言語 (文字セット)", // ai 2026-06
 
-// admin/write_mail.php, row 126, 250
-// include/mail.php, row 562
-// include/tv_email.php, row 109
+// admin/write_mail.php, row 127, 253
+// include/mail.php, row 656
 "Use HTML" => "HTMLを使用", // ai 2026-06
 
-// admin/write_mail.php, row 127, 241
-// include/tv_email.php, row 63
+// admin/write_mail.php, row 128, 244
 "Email template" => "E-メールテンプレート", // ai 2026-06
 
-// admin/write_mail.php, row 164
+// admin/write_mail.php, row 166
 "No template set (which is strange - template was just written to the database)" => "テンプレートが設定されていません (奇妙です - テンプレートはたった今データベースに書き込まれたばかりです)", // ai 2026-06
 
-// admin/write_mail.php, row 181
+// admin/write_mail.php, row 183
 "Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-メールを正常に送信しました (利用者: %1、送信メール数 (有効なアドレス...): %2、テンプレート ID: %3)", // ai 2026-06
 
-// admin/write_mail.php, row 185
+// admin/write_mail.php, row 187
 "Manually selected" => "手動で選択", // ai 2026-06
 
-// admin/write_mail.php, row 191
-// include/searchbar.class.php, row 613
+// admin/write_mail.php, row 193
+// include/searchbar.class.php, row 652
+// src/Import/Definition.php, row 92
+// src/Import/DetailConfig.php, row 394
 "Filter" => "フィルター", // ai 2026-06
 
-// admin/write_mail.php, row 197
+// admin/write_mail.php, row 199
 "Can't update email template" => "E-メールテンプレートを更新できません", // ai 2026-06
 
-// admin/write_mail.php, row 204
+// admin/write_mail.php, row 206
 "Bulk Email Wizard" => "一括メールウィザード", // ai 2026-06
 
-// admin/write_mail.php, row 205
+// admin/write_mail.php, row 207
 "Write email to users" => "利用者にE-メールを書く", // ai 2026-06
 
-// admin/write_mail.php, row 225
+// admin/write_mail.php, row 228
+// include/logs.php, row 890
 "Recipients" => "受信者", // ai 2026-06
 
-// admin/write_mail.php, row 227
+// admin/write_mail.php, row 230
 "View Recipients" => "受信者を表示", // ai 2026-06
 
-// admin/write_mail.php, row 228
+// admin/write_mail.php, row 231
 "Selected users" => "選択された利用者", // ai 2026-06
 
-// admin/write_mail.php, row 229
+// admin/write_mail.php, row 232
 "Test email address(es)" => "テスト用E-メールアドレス", // ai 2026-06
 
-// admin/write_mail.php, row 235
+// admin/write_mail.php, row 238
 "Write the email" => "E-メールを書く", // ai 2026-06
 
-// admin/write_mail.php, row 250
-// include/sliceadd.php, row 91
-// include/tabledit_column.php, row 270, 273
+// admin/write_mail.php, row 253
+// include/sliceadd.php, row 93
+// src/Optimize/CheckPhpFatals.php, row 66
 "no" => "いいえ", // ai 2026-06
 
-// admin/write_mail.php, row 250
-// include/sliceadd.php, row 91
-// include/tabledit_column.php, row 270, 273
+// admin/write_mail.php, row 253
+// include/sliceadd.php, row 93
+// src/Optimize/CheckPhpFatals.php, row 66
 "yes" => "はい", // ai 2026-06
 
-// admin/write_mail.php, row 251
+// admin/write_mail.php, row 254
 "Attachment 1" => "添付ファイル 1", // ai 2026-06
 
-// admin/write_mail.php, row 252
+// admin/write_mail.php, row 255
 "Attachment 2" => "添付ファイル 2", // ai 2026-06
 
-// admin/write_mail.php, row 253
+// admin/write_mail.php, row 256
 "Attachment 3" => "添付ファイル 3", // ai 2026-06
 
-// central/copyslice.php, row 30
-// central/copyslice2.php, row 31
-// central/synchronize.php, row 30
-// central/synchronize2.php, row 29
-// central/synchronize3.php, row 49
-"You don't have permissions to synchronize slices." => "スライスを同期する許可がありません。", // ai 2026-06
+// central/appstore.php, row 64
+"Only a superadmin may install apps from the app store." => "",
 
-// central/copyslice.php, row 38
-"Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - スライスのコピー (1/2) - コピー元 ActionApps の選択", // ai 2026-06
+// central/appstore.php, row 71, 105
+"App store" => "",
 
-// central/copyslice.php, row 50
-// central/copyslice2.php, row 128
-// central/synchronize.php, row 50
-// central/synchronize2.php, row 68
-// central/synchronize3.php, row 164
-"Template ActionApps" => "テンプレート ActionApps", // ai 2026-06
+// central/appstore.php, row 100
+"The app store" => "",
 
-// central/copyslice.php, row 50
-// central/synchronize.php, row 50
-"ActionApps installation used as template" => "テンプレートとして使用する ActionApps のインストール", // ai 2026-06
+// central/appstore.php, row 106
+"Apps of" => "",
 
-// central/copyslice2.php, row 87
-"%1 import actions planned. See" => "%1件のインポート操作を計画しました。参照:", // ai 2026-06
+// central/appstore.php, row 106
+"This AA logs in to it by the public account of the app store; it lists the apps that AA publishes." => "",
 
-// central/copyslice2.php, row 88
-// central/synchronize3.php, row 94
-// include/menu.php, row 168
-// include/menu_util.php, row 74
-"Task Manager" => "タスクマネージャー", // ai 2026-06
+// central/appstore.php, row 108
+"Show the apps" => "",
 
-// central/copyslice2.php, row 96
-"Central - Copy Slice (2/2) - Slices to Copy" => "Central - スライスのコピー (2/2) - コピーするスライス", // ai 2026-06
+// central/appstore.php, row 115
+// central/installapp.php, row 463, 519
+"No such AA in the Central list." => "",
 
-// central/copyslice2.php, row 100
-"* this ActionApps" => "* この ActionApps", // ai 2026-06
+// central/appstore.php, row 123
+"That AA has no app store account (Optimize \"App store account\" creates it there), or it is too old." => "",
 
-// central/copyslice2.php, row 129
-"Modules to Copy from %1" => "%1 からコピーするモジュール", // ai 2026-06
+// central/appstore.php, row 130
+// central/installapp.php, row 387
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "",
 
-// central/copyslice2.php, row 130
-"Slices to copy" => "コピーするスライス", // ai 2026-06
+// central/appstore.php, row 142
+// central/installapp.php, row 723, 1214
+"This preview is no longer open - it was written already or forgotten." => "",
 
-// central/copyslice2.php, row 131
-"Copy definitions" => "定義をコピー", // ai 2026-06
+// central/appstore.php, row 160
+"That AA publishes no app." => "",
 
-// central/copyslice2.php, row 131
-"Copy slice, fields, views, .... of selected slices above" => "上で選択したスライスのスライス、フィールド、ビューなどをコピーします", // ai 2026-06
+// central/appstore.php, row 164
+"App" => "",
 
-// central/copyslice2.php, row 132
-"Copy also items" => "項目もコピー", // ai 2026-06
+// central/appstore.php, row 164
+// include/logs.php, row 1032
+"Version" => "",
 
-// central/copyslice2.php, row 132
-"Copy also item data (items, content, discussions tables) of selected slices above - You can also check only this checkbox to copy the content of the slice into previously prepared (and empty) slice" => "上で選択したスライスの項目データ（items、content、discussions テーブル）もコピーします - このチェックボックスだけをオンにして、あらかじめ用意した（空の）スライスにスライスの内容をコピーすることもできます", // ai 2026-06
+// central/appstore.php, row 164
+// central/installapp.php, row 1357
+// include/menu.php, row 232
+// include/menu_util.php, row 437, 747
+// include/slice.class.php, row 1394
+// src/Central/FindingText.php, row 496
+"Alerts" => "アラート", // ai 2026-06
 
-// central/copyslice2.php, row 133
-"Site modules to copy" => "コピーする Site モジュール", // ai 2026-06
+// central/appstore.php, row 166
+"not published" => "",
 
-// central/copyslice2.php, row 134
-"Alerts modules to copy" => "コピーする Alerts モジュール", // ai 2026-06
+// central/appstore.php, row 171
+// central/installapp.php, row 479, 831, 1205
+"Install" => "",
 
-// central/copyslice2.php, row 135
-"Destination AAs" => "コピー先の AA", // ai 2026-06
+// central/appstore.php, row 173
+"Install shows a preview first; nothing is written before you confirm it." => "",
 
-// central/copyslice2.php, row 135
-"ActionApps installation to update" => "更新対象の ActionApps インストール", // ai 2026-06
-
-// central/import_csv.php, row 30
+// central/import_csv.php, row 33
 "You don't have permissions to import sites from CSV." => "CSV からサイトをインポートする許可がありません。", // ai 2026-06
 
-// central/import_csv.php, row 52
+// central/import_csv.php, row 42
+"No CSV file received (upload error %1)." => "",
+
+// central/import_csv.php, row 53
+"The first line is empty. It must hold the column names." => "",
+
+// central/import_csv.php, row 56
+"The file looks semicolon-separated. Separate the fields by comma." => "",
+
+// central/import_csv.php, row 59
+"The first line must hold the column names (see below), none of them was found." => "",
+
+// central/import_csv.php, row 62
+"Column %1 is in the first line twice, nothing was imported." => "",
+
+// central/import_csv.php, row 77
 "inserted" => "挿入されました", // ai 2026-06
 
-// central/import_csv.php, row 55
+// central/import_csv.php, row 80
+"Ignored columns" => "",
+
+// central/import_csv.php, row 83
+"Row %1 skipped - it has %2 fields, the first row has a different number." => "",
+
+// central/import_csv.php, row 85
 "Done" => "完了", // ai 2026-06
 
-// central/import_csv.php, row 61
+// central/import_csv.php, row 89
+"Database error at row %1 - import rolled back, nothing was inserted." => "",
+
+// central/import_csv.php, row 90
+"Database error - import rolled back, nothing was inserted." => "",
+
+// central/import_csv.php, row 97
 "Central - Import Sites from CSV" => "Central - CSV からのサイトのインポート", // ai 2026-06
 
-// central/import_csv.php, row 70
+// central/import_csv.php, row 106
 "CSV file" => "CSV ファイル", // ai 2026-06
 
-// central/import_csv.php, row 70
-"CSV file for upload. Each AA on its own row, fields separated by comma, the fields must be in following order (just like in central_conf table):<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD" => "アップロードする CSV ファイル。各 AA を1行ずつ、フィールドはカンマ区切りで、次の順序で並べてください（central_conf テーブルと同じ）:<br>dns_conf, dns_serial, dns_web, dns_mx, dns_db, dns_prim, dns_sec, web_conf, web_path, db_server, db_name, db_user, db_pwd, AA_SITE_PATH, AA_BASE_DIR, AA_HTTP_DOMAIN, AA_ID, ORG_NAME, ERROR_REPORTING_EMAIL, ALERTS_EMAIL, IMG_UPLOAD_MAX_SIZE, IMG_UPLOAD_URL, IMG_UPLOAD_PATH, SCROLLER_LENGTH, FILEMAN_BASE_DIR, FILEMAN_BASE_URL, FILEMAN_UPLOAD_TIME_LIMIT, AA_ADMIN_USER, AA_ADMIN_PWD", // ai 2026-06
+// central/import_csv.php, row 106
+"CSV file for upload, fields separated by comma. The first row holds the column names, in any order; each following row is one AA. Accepted column names (others are ignored):<br>%1" => "",
 
-// central/include/actionapps.class.php, row 177
-"Can't get org_name - " => "org_name を取得できません -", // ai 2026-06
-
-// central/include/actionapps.class.php, row 636
-"%1 is not array in template slice" => "%1 はテンプレートスライスでは配列ではありません", // ai 2026-06
-
-// central/include/actionapps.class.php, row 639
-"%1 is not array in destination slice" => "%1 は同期先スライスでは配列ではありません", // ai 2026-06
-
-// central/include/actionapps.class.php, row 642
-"%1 is not defined for both AAs" => "%1 は両方の AA で定義されていません", // ai 2026-06
-
-// central/include/actionapps.class.php, row 665
-"There is no such key (%1) in destination slice for %2" => "同期先スライスに %2 のキー (%1) がありません", // ai 2026-06
-
-// central/include/actionapps.class.php, row 672
-"Destination" => "同期先", // ai 2026-06
-
-// central/include/actionapps.class.php, row 675
-"The value for key %1 in %2 array is different %3" => "%2 配列のキー %1 の値が異なります %3", // ai 2026-06
-
-// central/include/actionapps.class.php, row 684
-"The record for %1 is different" => "%1 のレコードが異なります", // ai 2026-06
-
-// central/include/actionapps.class.php, row 696
-"There is no such key (%1) in template slice for %2" => "テンプレートスライスに %2 のキー (%1) がありません", // ai 2026-06
-
-// central/include/actionapps.class.php, row 700
-"%1 are identical" => "%1 は同一です", // ai 2026-06
-
-// central/include/actionapps.class.php, row 779
+// central/include/actionapps.class.php, row 276
 // include/menu_util.php, row 59
 "Create new" => "新規作成", // ai 2026-06
 
-// central/include/actionapps.class.php, row 810
-"Wrong command - row is not defined - %1" => "不正なコマンド - 行が定義されていません - %1", // ai 2026-06
-
-// central/include/actionapps.class.php, row 816
-"%1 %2 in slice %3 updated" => "スライス %3 の %1 %2 を更新しました", // ai 2026-06
-
-// central/include/actionapps.class.php, row 822
-"%1 %2 inserted into slice %3" => "スライス %3 に %1 %2 を挿入しました", // ai 2026-06
-
-// central/include/actionapps.class.php, row 828
-"%1 %2 deleted from slice %3" => "スライス %3 から %1 %2 を削除しました", // ai 2026-06
-
-// central/include/actionapps.class.php, row 830
-"Unknown action (%1) for field %2 in slice %3" => "スライス %3 のフィールド %2 に対する不明な操作 (%1)", // ai 2026-06
-
-// central/index.php, row 66
+// central/index.php, row 71
 "You do not have permission to manage ActionApps installations" => "ActionApps のインストールを管理する許可がありません", // ai 2026-06
 
-// central/index.php, row 81
+// central/index.php, row 78
+"The authentication was not performed - start it from the ActionApps Central page" => "",
+
+// central/index.php, row 89
 "Successfully authenticated to %1" => "%1 への認証に成功しました", // ai 2026-06
 
-// central/index.php, row 83
+// central/index.php, row 91, 95
 "Authentication failed for %1: %2" => "%1 への認証に失敗しました: %2", // ai 2026-06
 
-// central/index.php, row 131
+// central/index.php, row 126
+// src/Optimize/CheckCentralCredentials.php, row 63
 "ActionApps Central" => "",
 
-// central/index.php, row 134
+// central/index.php, row 129
 "Admin Link" => "管理リンク", // ai 2026-06
 
-// central/index.php, row 145
-"Authenticated" => "認証済み", // ai 2026-06
-
-// central/index.php, row 147
-"Legacy password" => "旧パスワード", // ai 2026-06
-
-// central/index.php, row 149
-"Not configured" => "未設定", // ai 2026-06
-
-// central/index.php, row 152
+// central/index.php, row 137
 "Authenticate" => "認証", // ai 2026-06
 
-// central/index.php, row 156
+// central/index.php, row 141
 "Get Token" => "トークン取得", // ai 2026-06
 
-// central/index.php, row 160
-// src/Manageraction/Central_Linkcheck.php, row 31
+// central/index.php, row 145
+// src/Manageraction/Central_Linkcheck.php, row 32
 "Auth" => "認証", // ai 2026-06
 
-// central/responder.php, row 597
+// central/index.php, row 148
+"Apps" => "",
+
+// central/index.php, row 148
+"Install an app from this AA..." => "",
+
+// central/installapp.php, row 135, 136
+"You may not install apps (PS_INSTALL_APP)." => "",
+
+// central/installapp.php, row 147, 148
+"Only a superadmin may transfer apps with their items." => "",
+
+// central/installapp.php, row 152
+"Only a superadmin may install apps from another AA." => "",
+
+// central/installapp.php, row 179
+"No such transfer, or not yours." => "",
+
+// central/installapp.php, row 184
+"The request failed - details are in the PHP error log." => "",
+
+// central/installapp.php, row 189
+"Install an app" => "",
+
+// central/installapp.php, row 359
+"%1 failed (%2) - details are in the PHP error log." => "",
+
+// central/installapp.php, row 380
+"Open the app store again" => "",
+
+// central/installapp.php, row 381, 1434
+"Log in to the source AA again" => "",
+
+// central/installapp.php, row 417
+"Unfinished transfers" => "",
+
+// central/installapp.php, row 430
+"What to install from this AA" => "",
+
+// central/installapp.php, row 445
+"This AA" => "",
+
+// central/installapp.php, row 451
+// include/feeding.php, row 466, 502
+// include/logs.php, row 1033
+// src/Import/Definition.php, row 85, 113
+// src/Import/DetailConfig.php, row 188, 202
+// src/Optimize/CheckImports.php, row 176, 178
+// src/Widget/RichtextMarkup.php, row 71
+"Source" => "ソース", // ai 2026-06
+
+// central/installapp.php, row 452
+"Install from" => "",
+
+// central/installapp.php, row 452
+"Another AA asks for the login of its superadmin." => "",
+
+// central/installapp.php, row 454
+"Choose the source" => "",
+
+// central/installapp.php, row 467
+"Install an app from %1" => "",
+
+// central/installapp.php, row 471
+"Log in and choose the app" => "",
+
+// central/installapp.php, row 480
+"a site" => "",
+
+// central/installapp.php, row 481
+"slices and Alerts" => "",
+
+// central/installapp.php, row 484, 1357
+// include/slice.class.php, row 1145
+// src/Central/FindingText.php, row 496
+// src/Optimize/SeoDuplicates.php, row 66
+"Site" => "サイト", // ai 2026-06
+
+// central/installapp.php, row 488
+"The site brings the slices and Alerts modules it uses." => "",
+
+// central/installapp.php, row 491
+"Slices and Alerts" => "",
+
+// central/installapp.php, row 495
+"Hold Ctrl to choose more of them." => "",
+
+// central/installapp.php, row 505
+// include/logs.php, row 1075
+"Mode" => "モード", // ai 2026-06
+
+// central/installapp.php, row 506
+"Install - a clean app, no items" => "",
+
+// central/installapp.php, row 507
+"Transfer - a copy with the items and readers" => "",
+
+// central/installapp.php, row 508
+"Items of" => "",
+
+// central/installapp.php, row 509
+"the active bin" => "",
+
+// central/installapp.php, row 510
+"all bins" => "",
+
+// central/installapp.php, row 540
+"Choose the app from the list of its apps" => "",
+
+// central/installapp.php, row 555, 829
+"What to install" => "",
+
+// central/installapp.php, row 555, 1363
+"transfer with the items" => "",
+
+// central/installapp.php, row 555, 1363
+"install, no items" => "",
+
+// central/installapp.php, row 564
+"Username on the source AA" => "",
+
+// central/installapp.php, row 565
+"A superadmin of the source AA. The password is used for this request only; this AA keeps a login token for a day, until the transfer ends." => "",
+
+// central/installapp.php, row 567
+"2FA code" => "",
+
+// central/installapp.php, row 568
+"Only when the user has two-factor login on the source AA." => "",
+
+// central/installapp.php, row 662
+"You may not change the module %1 - it cannot be exported." => "",
+
+// central/installapp.php, row 663
+"The source has no such app, or you may not export it." => "",
+
+// central/installapp.php, row 672
+"Reading the app" => "",
+
+// central/installapp.php, row 699, 727
+"Choose a site, or slices and Alerts modules - not both." => "",
+
+// central/installapp.php, row 739
+"Choose another app" => "",
+
+// central/installapp.php, row 749
+"The run has moved on meanwhile." => "",
+
+// central/installapp.php, row 749
+"Show the run" => "",
+
+// central/installapp.php, row 779, 1239
+"The app cannot be installed - see the errors (E) above." => "",
+
+// central/installapp.php, row 788
+"a new slice" => "",
+
+// central/installapp.php, row 790
+"existing: %1" => "",
+
+// central/installapp.php, row 801
+"chosen by its role: %1" => "",
+
+// central/installapp.php, row 803
+"the views and fields of the app will work on its live reader data" => "",
+
+// central/installapp.php, row 831, 842
+"Into" => "",
+
+// central/installapp.php, row 838, 839
+"Install %1" => "",
+
+// central/installapp.php, row 841
+"not installed" => "",
+
+// central/installapp.php, row 843
+"a new module" => "",
+
+// central/installapp.php, row 853
+"A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice." => "",
+
+// central/installapp.php, row 862
+"Check the changes" => "",
+
+// central/installapp.php, row 862
+"After a change, check it before installing." => "",
+
+// central/installapp.php, row 870
+"Check the changes first" => "",
+
+// central/installapp.php, row 885
+"Links outside the app" => "",
+
+// central/installapp.php, row 885
+"The app links to these slices (or sites), but neither the app nor this AA has them. Send the links to a slice of this AA, or keep the id - it then leads nowhere." => "",
+
+// central/installapp.php, row 886
+"Outside the app" => "",
+
+// central/installapp.php, row 886, 891
+"Links go to" => "",
+
+// central/installapp.php, row 890, 1419, 1495
+"and %1 more" => "",
+
+// central/installapp.php, row 892
+"keep the id - leads nowhere" => "",
+
+// central/installapp.php, row 896
+"as an earlier install from the same source" => "",
+
+// central/installapp.php, row 906, 908, 909, 910
+"of %1 items" => "",
+
+// central/installapp.php, row 907, 912
+"items" => "",
+
+// central/installapp.php, row 924
+"Transfer only some items" => "",
+
+// central/installapp.php, row 925
+"Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above." => "",
+
+// central/installapp.php, row 943
+"all items" => "",
+
+// central/installapp.php, row 967
+"Cannot be used." => "",
+
+// central/installapp.php, row 968
+"Takes every item." => "",
+
+// central/installapp.php, row 968
+"It narrows nothing; empty the field if all the items should go." => "",
+
+// central/installapp.php, row 991
+"The slice has %1 \"%2\"." => "",
+
+// central/installapp.php, row 1003
+"Links will point nowhere." => "",
+
+// central/installapp.php, row 1005
+"%1 values link to items a condition leaves behind." => "",
+
+// central/installapp.php, row 1010
+"%1 values link to items of %2 that stay behind." => "",
+
+// central/installapp.php, row 1011
+"To take only the items linking to items that go:" => "",
+
+// central/installapp.php, row 1051
+"relation to %1, holds the item id" => "",
+
+// central/installapp.php, row 1051, 1071
+"another slice" => "",
+
+// central/installapp.php, row 1052
+"checkbox, 1 when ticked" => "",
+
+// central/installapp.php, row 1053
+"date" => "日付", // ai 2026-06
+
+// central/installapp.php, row 1071
+"The items of %1 linked to one item of %2: %3 is a relation field, it holds the item id of the linked item (32 characters, the id= in the address of its edit page), not its name." => "",
+
+// central/installapp.php, row 1078
+"equals the value exactly" => "",
+
+// central/installapp.php, row 1078
+"contains the text; \"a\" OR \"b\" for either" => "",
+
+// central/installapp.php, row 1078
+"differs from the value (one word or number)" => "",
+
+// central/installapp.php, row 1079
+"is smaller or greater (numbers)" => "",
+
+// central/installapp.php, row 1079
+"begins with the text" => "",
+
+// central/installapp.php, row 1079
+"is not set (write any value)" => "",
+
+// central/installapp.php, row 1080
+"is set (write any value)" => "",
+
+// central/installapp.php, row 1080
+"lies between two numbers" => "",
+
+// central/installapp.php, row 1080
+"matches the regular expression" => "",
+
+// central/installapp.php, row 1081
+"is before or after a date (any form PHP strtotime reads)" => "",
+
+// central/installapp.php, row 1081
+"is before or after a date written dd.mm.yyyy" => "",
+
+// central/installapp.php, row 1082
+"How to write a condition, with field ids" => "",
+
+// central/installapp.php, row 1083
+"Parts" => "",
+
+// central/installapp.php, row 1084
+"field id" => "",
+
+// central/installapp.php, row 1084
+"16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end." => "",
+
+// central/installapp.php, row 1085
+"operator" => "",
+
+// central/installapp.php, row 1085
+"how to compare, see the operators below." => "",
+
+// central/installapp.php, row 1086
+"value" => "",
+
+// central/installapp.php, row 1086
+"what to compare with. Capitals count. A dash inside a value is written doubled, see below." => "",
+
+// central/installapp.php, row 1087
+"Examples" => "",
+
+// central/installapp.php, row 1088
+"Edited after 1 January %1. d:> is after, d:< before." => "",
+
+// central/installapp.php, row 1089
+"Operators" => "",
+
+// central/installapp.php, row 1089
+// include/searchlib.php, row 173
+"Operator" => "演算子", // ai 2026-06
+
+// central/installapp.php, row 1089
+"Keeps the items whose field" => "",
+
+// central/installapp.php, row 1089
+"Value, e.g." => "",
+
+// central/installapp.php, row 1093
+"More than one condition" => "",
+
+// central/installapp.php, row 1093
+"Repeat field, operator and value after the first one, without a second d-. An item must match all of them. Up to %1 conditions and %2 characters." => "",
+
+// central/installapp.php, row 1095
+"A dash inside a value" => "",
+
+// central/installapp.php, row 1095
+"A single dash ends the value, so a dash in a date or a name is written doubled (--). Otherwise the condition cannot be used." => "",
+
+// central/installapp.php, row 1097
+"Field ids" => "",
+
+// central/installapp.php, row 1099
+"%1 fields" => "",
+
+// central/installapp.php, row 1114, 1116
+"Owner of the new modules" => "",
+
+// central/installapp.php, row 1122
+// include/modutils.php, row 85
+"+ Add new owner" => "+ 新しい所有者を追加", // ai 2026-06
+
+// central/installapp.php, row 1123
+// include/modutils.php, row 44, 96
+// include/slicedit.php, row 173
+"New Owner" => "新しい所有者", // ai 2026-06
+
+// central/installapp.php, row 1124
+// include/modutils.php, row 45, 97
+// include/slicedit.php, row 174
+"New Owner's E-mail" => "新しい所有者のE-メール", // ai 2026-06
+
+// central/installapp.php, row 1126
+"A slice going into an existing slice keeps the owner of that slice." => "",
+
+// central/installapp.php, row 1164
+"The field changes the value when it is saved - fill it in the slice after installing." => "",
+
+// central/installapp.php, row 1166, 1173
+"keep the value of the app" => "",
+
+// central/installapp.php, row 1167
+// include/slice.class.php, row 1627
+// include/stringexpand.php, row 1854
+"Yes" => "はい", // ai 2026-06
+
+// central/installapp.php, row 1178
+// src/Util/ChangesMonitor.php, row 510
+"(empty)" => "(空)", // ai 2026-06
+
+// central/installapp.php, row 1183
+"Slice settings" => "",
+
+// central/installapp.php, row 1183
+"Values that hold for the whole slice, not for single items. Leave a field empty to keep the value of the app; you can change them later in the slice under Setting." => "",
+
+// central/installapp.php, row 1184
+// include/menu.php, row 219
+// src/Optimize/CheckRequiredSettings.php, row 71
+"Setting" => "設定", // ai 2026-06
+
+// central/installapp.php, row 1184
+"Value of the app" => "",
+
+// central/installapp.php, row 1184
+"New value" => "",
+
+// central/installapp.php, row 1200
+"I have read the security findings (S) and want to install the app with them." => "",
+
+// central/installapp.php, row 1203
+"Do not edit the source while the transfer runs. The items then go in batches in the task queue of this AA - the progress page only shows them, it may be closed." => "",
+
+// central/installapp.php, row 1205
+"Writing the definitions…" => "",
+
+// central/installapp.php, row 1205
+"Write the definitions and transfer the items" => "",
+
+// central/installapp.php, row 1221, 1251
+"The choice changed since the preview - preview again." => "",
+
+// central/installapp.php, row 1234
+"The source changed since the preview - preview again." => "",
+
+// central/installapp.php, row 1254
+"Writing the app" => "",
+
+// central/installapp.php, row 1273
+"existing slice" => "",
+
+// central/installapp.php, row 1281
+"The definitions are written; modules: %1" => "",
+
+// central/installapp.php, row 1287
+"The definitions are written." => "",
+
+// central/installapp.php, row 1300
+"Slice settings to fill in" => "",
+
+// central/installapp.php, row 1301
+"Some slices have settings - values that hold for the whole slice, not for single items (an address, a version, a switch shown on the pages). These got no value: neither the app nor you gave one, so the pages that show them show nothing." => "",
+
+// central/installapp.php, row 1302, 1340
+// src/Central/TransferText.php, row 119
+"What to do" => "",
+
+// central/installapp.php, row 1303
+"Fill them in by the links below, or later: in the slice open Setting in the menu of the item manager." => "",
+
+// central/installapp.php, row 1307
+"fill them in" => "",
+
+// central/installapp.php, row 1334
+"in conditions" => "",
+
+// central/installapp.php, row 1343
+// src/Optimize/CheckUniversalAnalytics.php, row 109
+// src/Optimize/ImgMeasuring.php, row 53
+"Where" => "",
+
+// central/installapp.php, row 1343
+"Found" => "",
+
+// central/installapp.php, row 1368
+"Transferring the items" => "",
+
+// central/installapp.php, row 1368
+// src/Import/RunView.php, row 61, 63
+"Stopped by an error" => "",
+
+// central/installapp.php, row 1369
+// src/Import/RunView.php, row 60
+// src/Optimize/CheckImports.php, row 206, 209
+"Finished" => "",
+
+// central/installapp.php, row 1369
+"Ended" => "",
+
+// central/installapp.php, row 1380
+"No such install run of yours." => "",
+
+// central/installapp.php, row 1388
+"This app was previewed, but not installed yet." => "",
+
+// central/installapp.php, row 1388
+"Preview it again" => "",
+
+// central/installapp.php, row 1393
+"The app is installed." => "",
+
+// central/installapp.php, row 1406
+"Transferring a batch…" => "",
+
+// central/installapp.php, row 1407
+"Waiting for the task queue…" => "",
+
+// central/installapp.php, row 1408
+"The source failed (%1 of %2 tries) - the next try at %3" => "",
+
+// central/installapp.php, row 1409
+"No batch has come for a long time - is the task queue of this AA running? Continue tries at once." => "",
+
+// central/installapp.php, row 1410
+"Written %1 of %2 items (%3 %)" => "",
+
+// central/installapp.php, row 1411
+"Written %1 items" => "",
+
+// central/installapp.php, row 1412
+"Last progress: %1" => "",
+
+// central/installapp.php, row 1413
+"checked at %1" => "",
+
+// central/installapp.php, row 1414
+"This page lost the connection to the server - the transfer goes on without it. Asking again…" => "",
+
+// central/installapp.php, row 1415
+"A batch may still be working - press Continue again in a few minutes." => "",
+
+// central/installapp.php, row 1416
+"Log in to the source AA again, then press Continue." => "",
+
+// central/installapp.php, row 1417
+"End the transfer? The items written so far stay." => "",
+
+// central/installapp.php, row 1418
+"The session has expired - log in again and reload this page." => "",
+
+// central/installapp.php, row 1422
+"The app is installed and works - only the finish of its run waits for the task queue of this AA." => "",
+
+// central/installapp.php, row 1430
+"The transfer runs in the task queue of this AA; you may close this page. Do not edit the source until it finishes." => "",
+
+// central/installapp.php, row 1432
+"Show the final check" => "",
+
+// central/installapp.php, row 1436
+// src/Import/DetailPage.php, row 938, 947
+"Continue" => "続行", // ai 2026-06
+
+// central/installapp.php, row 1436
+// src/Import/DetailPage.php, row 958
+"End" => "",
+
+// central/installapp.php, row 1437, 1472
+"Written" => "",
+
+// central/installapp.php, row 1437, 1472
+"On the source" => "",
+
+// central/installapp.php, row 1472
+"The transfer is finished. Checked at %1:" => "",
+
+// central/installapp.php, row 1472
+"On this AA" => "",
+
+// central/installapp.php, row 1479
+"Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "",
+
+// central/responder.php, row 110
+"Get_Jwt needs ttl as seconds and scope admin or apps" => "",
+
+// central/responder.php, row 116
+"A token needs a login by the username and password in this request, of a user whose password change this AA can detect" => "",
+
+// central/responder.php, row 194
+"Unknown module type" => "",
+
+// central/responder.php, row 222
+"Wrong command - not a synchronization action" => "",
+
+// central/responder.php, row 226
+"Wrong command - %1" => "",
+
+// central/responder.php, row 775
+"Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "",
+
+// central/responder.php, row 806
 "No request sent for responder.php" => "responder.php へのリクエストが送信されていません", // ai 2026-06
 
-// central/responder.php, row 603
+// central/responder.php, row 812
 "Bad request sent for responder.php - %1" => "responder.php に不正なリクエストが送信されました - %1", // ai 2026-06
 
-// central/responder.php, row 608
+// central/responder.php, row 819
+"This command is not accepted in the URL" => "",
+
+// central/responder.php, row 823
+"This command must be sent by POST" => "",
+
+// central/responder.php, row 829
+"Request from another site refused" => "",
+
+// central/responder.php, row 846
+"The login token does not allow %1" => "",
+
+// central/responder.php, row 847
+"The app store account may not run %1" => "",
+
+// central/responder.php, row 848
+"The app store is busy - try again later" => "",
+
+// central/responder.php, row 849
 "You (%2) don't have permissions to run %1" => "あなた (%2) には %1 を実行する許可がありません", // ai 2026-06
+
+// central/synchronize.php, row 31
+// central/synchronize2.php, row 31
+// central/synchronize3.php, row 57
+"You don't have permissions to synchronize slices." => "スライスを同期する許可がありません。", // ai 2026-06
 
 // central/synchronize.php, row 35
 "Central - Synchronize ActionApps (1/3) - Select ActionApps for Comparison" => "Central - ActionApps の同期 (1/3) - 比較する ActionApps の選択", // ai 2026-06
+
+// central/synchronize.php, row 50
+// central/synchronize2.php, row 74
+// central/synchronize3.php, row 182
+"Template ActionApps" => "テンプレート ActionApps", // ai 2026-06
+
+// central/synchronize.php, row 50
+"ActionApps installation used as template" => "テンプレートとして使用する ActionApps のインストール", // ai 2026-06
 
 // central/synchronize.php, row 51
 "AA to compare" => "比較する AA", // ai 2026-06
@@ -3585,375 +4572,385 @@ return [
 // central/synchronize.php, row 51
 "ActionApps installation to check for differences (just checking right now - noting is changed by this step)" => "差分を確認する ActionApps インストール（今は確認のみ - このステップでは何も変更されません）", // ai 2026-06
 
-// central/synchronize2.php, row 34
+// central/synchronize2.php, row 35
 "Central - Synchronize ActionApps (2/3) - Slices to Compare" => "Central - ActionApps の同期 (2/3) - 比較するスライス", // ai 2026-06
 
-// central/synchronize2.php, row 51
+// central/synchronize2.php, row 54
 "do not compare" => "比較しない", // ai 2026-06
 
-// central/synchronize2.php, row 56
+// central/synchronize2.php, row 62
 "Compare" => "比較", // ai 2026-06
 
-// central/synchronize2.php, row 69
+// central/synchronize2.php, row 75
 "Slice Mapping" => "スライスの対応付け", // ai 2026-06
 
-// central/synchronize3.php, row 38
-"Comparison slice (%1) does not exist" => "比較するスライス (%1) が存在しません", // ai 2026-06
+// central/synchronize3.php, row 44
+"Template AA sent no definition for slice %1" => "",
 
-// central/synchronize3.php, row 93
+// central/synchronize3.php, row 109
 "%1 synchronization actions planned. See" => "%1件の同期操作を計画しました。参照:", // ai 2026-06
 
-// central/synchronize3.php, row 98
+// central/synchronize3.php, row 110
+// include/menu.php, row 170
+// include/menu_util.php, row 74
+// src/Optimize/CheckAlerts.php, row 50
+// src/Optimize/CheckQueue.php, row 58
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"Task Manager" => "タスクマネージャー", // ai 2026-06
+
+// central/synchronize3.php, row 114
 "Central - Synchronize ActionApps (3/3) - Synchronize Slices" => "Central - ActionApps の同期 (3/3) - スライスの同期", // ai 2026-06
 
-// central/synchronize3.php, row 114, 163
+// central/synchronize3.php, row 132, 181
 "Synchronize" => "同期", // ai 2026-06
 
-// central/synchronize3.php, row 121
+// central/synchronize3.php, row 139
 "Slice Comparison - %1 x %2" => "スライスの比較 - %1 x %2", // ai 2026-06
 
-// central/synchronize3.php, row 154
+// central/synchronize3.php, row 172
 "Hide/show info values" => "情報値の表示/非表示", // ai 2026-06
 
-// central/synchronize3.php, row 155
+// central/synchronize3.php, row 173
 "Check/Uncheck" => "チェック/解除", // ai 2026-06
 
-// central/synchronize3.php, row 165
+// central/synchronize3.php, row 183
 "Compared and Updated ActionApps" => "比較・更新された ActionApps", // ai 2026-06
 
-// filldisc.php, row 104, 145
-// filler.php, row 399
+// filldisc.php, row 103, 144
+// filler.php, row 412
 "Not accepted, sorry. Looks like spam." => "受け付けられません。スパムのようです。", // ai 2026-06
 
-// filldisc.php, row 111
-// filler.php, row 289
+// filldisc.php, row 110
+// filler.php, row 300
 "Wrong result, not possible to post comments." => "結果が正しくないため、コメントを投稿できません。", // ai 2026-06
 
-// filldisc.php, row 120
+// filldisc.php, row 119
 "Comment to wrong item - item's slice not found." => "不正な項目へのコメント - 項目のスライスが見つかりません。", // ai 2026-06
 
-// filldisc.php, row 124
+// filldisc.php, row 123
 "New comments disabled." => "新規コメントは無効です。", // ai 2026-06
 
-// filldisc.php, row 186
+// filldisc.php, row 185
 "Not accepted, your IP address is banned." => "受け付けられません。お使いの IP アドレスはブロックされています。", // ai 2026-06
 
-// filldisc.php, row 197
+// filldisc.php, row 196
 "Not accepted, item is not published or does not exist." => "受け付けられません。項目が公開されていないか存在しません。", // ai 2026-06
 
-// filler.php, row 283
+// filler.php, row 294
 "Not allowed to post comments" => "コメントの投稿は許可されていません", // ai 2026-06
 
-// filler.php, row 324, 361
+// filler.php, row 335, 374
 "Bad Token. Not allowed to post comments" => "不正なトークンです。コメントの投稿は許可されていません", // ai 2026-06
 
-// filler.php, row 348
+// filler.php, row 361
 "Slice ID not defined" => "スライス ID が定義されていません", // ai 2026-06
 
-// filler.php, row 354
+// filler.php, row 367
 "Bad slice ID" => "不正なスライス ID", // ai 2026-06
 
-// filler.php, row 420
+// filler.php, row 433
 "Anonymous posting not admitted." => "匿名投稿は許可されていません。", // ai 2026-06
 
-// filler.php, row 462
+// filler.php, row 475
 "You are not allowed to update this item." => "この項目を更新する許可がありません。", // ai 2026-06
 
-// filler.php, row 473
+// filler.php, row 486
 "Some error in store item." => "項目の保存中にエラーが発生しました。", // ai 2026-06
 
 // include/adminpage.class.php, row 68
 "Error in page parameter: %1" => "ページパラメータのエラー: %1", // ai 2026-06
 
-// include/constants.php, row 402
+// include/constants.php, row 451
 "Short Id" => "短縮 ID", // ai 2026-06
 
-// include/constants.php, row 407
+// include/constants.php, row 456
+// include/logs.php, row 781, 813
+// src/Optimize/CheckQueuedClassMissing.php, row 65
 "Class" => "クラス", // ai 2026-06
 
-// include/constants.php, row 411
-// include/constedit_util.php, row 139
+// include/constants.php, row 460
+// include/constedit_util.php, row 143
 "Level" => "レベル", // ai 2026-06
 
-// include/constants.php, row 460
-// include/logs.php, row 507
+// include/constants.php, row 509
+// include/logs.php, row 992
 "Feed" => "フィードする", // ai 2026-06
 
-// include/constants.php, row 461
+// include/constants.php, row 510
 "Do not feed" => "フィードしない", // ai 2026-06
 
-// include/constants.php, row 462
+// include/constants.php, row 511
 "Feed locked" => "フィード(変更不可)", // ai 2026-06
 
-// include/constants.php, row 463
+// include/constants.php, row 512
 "Feed & update" => "フィードして更新", // ai 2026-06
 
-// include/constants.php, row 464
+// include/constants.php, row 513
 "Feed & update & lock" => "フィードして更新(変更不可)", // ai 2026-06
 
-// include/constants.php, row 550
+// include/constants.php, row 599
 "Month List" => "月別一覧", // ai 2026-06
 
-// include/constants.php, row 551
+// include/constants.php, row 600
 "Month Table" => "月別表", // ai 2026-06
 
-// include/constants.php, row 559
+// include/constants.php, row 608
 "Whole text" => "テキスト全体", // ai 2026-06
 
-// include/constants.php, row 560
+// include/constants.php, row 609
 "1st letter" => "先頭1文字", // ai 2026-06
 
-// include/constants.php, row 561, 562, 563, 564, 565, 566, 567, 568
+// include/constants.php, row 610, 611, 612, 613, 614, 615, 616, 617
 "letters" => "文字", // ai 2026-06
 
-// include/constants.php, row 569
+// include/constants.php, row 618
 "all before " => "次の文字より前: ", // ai 2026-06
 
-// include/constants.php, row 590
+// include/constants.php, row 639
 "vid" => "",
 
-// include/constants.php, row 591
+// include/constants.php, row 640
 "now possible to use non numeric vid - like: photo_list and usage as {view:photo_list:...} or ..?vid=photo_list... Use only smallcaps - [a-z_]." => "数字以外の vid も使用できます。例: photo_list — {view:photo_list:...} や ..?vid=photo_list... のように使います。小文字のみ使用してください - [a-z_]。", // ai 2026-06
 
-// include/constants.php, row 595
+// include/constants.php, row 644
 "Disabled view" => "ビューを無効化", // ai 2026-06
 
-// include/constants.php, row 597
+// include/constants.php, row 646
 "Log view usage" => "ビューの使用を記録", // ai 2026-06
 
-// include/constants.php, row 598
+// include/constants.php, row 647
 "Be careful with this. It really logs every view use! Good for debugging and checking, if disabled view is not used anymore..." => "注意して使ってください。本当にビューの使用を毎回記録します! デバッグや、無効化したビューがもう使われていないかの確認に便利です...", // ai 2026-06
 
-// include/constants.php, row 604
+// include/constants.php, row 653
 "Item listing" => "項目一覧", // ai 2026-06
 
-// include/constants.php, row 609, 732, 866, 921, 955
+// include/constants.php, row 658, 781, 915, 970, 1004
 "Row Delimiter" => "行区切り", // ai 2026-06
 
-// include/constants.php, row 618, 736, 767, 798, 824, 869, 895, 924, 958
+// include/constants.php, row 667, 785, 816, 847, 873, 918, 944, 973, 1007
 "Sort primary" => "第1ソート", // ai 2026-06
 
-// include/constants.php, row 620, 738, 769, 800, 826, 871, 897, 926, 960
+// include/constants.php, row 669, 787, 818, 849, 875, 920, 946, 975, 1009
 "Sort secondary" => "第2ソート", // ai 2026-06
 
-// include/constants.php, row 622
+// include/constants.php, row 671
 "Sort alias" => "ソート用別名", // ai 2026-06
 
-// include/constants.php, row 627, 743, 876, 931, 965
+// include/constants.php, row 676, 792, 925, 980, 1014
 "Group title format" => "グループ見出しの書式", // ai 2026-06
 
-// include/constants.php, row 628, 744, 877, 932, 966
+// include/constants.php, row 677, 793, 926, 981, 1015
 "Group bottom format" => "グループ末尾の書式", // ai 2026-06
 
-// include/constants.php, row 630, 659, 745, 771, 802, 835, 899, 933, 967
+// include/constants.php, row 679, 708, 794, 820, 851, 884, 948, 982, 1016
 "Condition 1" => "条件 1", // ai 2026-06
 
-// include/constants.php, row 633, 662, 748, 774, 805, 838, 902, 936, 970
+// include/constants.php, row 682, 711, 797, 823, 854, 887, 951, 985, 1019
 "Condition 2" => "条件 2", // ai 2026-06
 
-// include/constants.php, row 636, 665, 751, 777, 808, 841, 905, 939, 973
+// include/constants.php, row 685, 714, 800, 826, 857, 890, 954, 988, 1022
 "Condition 3" => "条件 3", // ai 2026-06
 
-// include/constants.php, row 641
+// include/constants.php, row 690
 "Accept site module paging - {xpage}" => "siteモジュールのページングを受け付ける - {xpage}", // ai 2026-06
 
-// include/constants.php, row 642
+// include/constants.php, row 691
 "if 'Accept {xpage}', no need to pass page-{xpage} param to the view<br>if 'Use infinite...' the invisible scroller is added to the view and the content is loaded by AJAX by observing the scroll position" => "「{xpage} を受け付ける」の場合、ビューに page-{xpage} パラメータを渡す必要はありません<br>「無限...を使用」の場合、ビューに不可視のスクローラーが追加され、スクロール位置を監視して AJAX でコンテンツが読み込まれます", // ai 2026-06
 
-// include/constants.php, row 646
+// include/constants.php, row 695
 "use {#} if you do not want print anything" => "何も出力したくない場合は {#} を使ってください", // ai 2026-06
 
-// include/constants.php, row 648, 669, 757, 788, 846, 880, 910, 944, 978, 991
+// include/constants.php, row 697, 718, 806, 837, 895, 929, 959, 993, 1027, 1040
 "Add view ID as HTML comment" => "ビューIDをHTMLコメントとして追加", // ai 2026-06
 
-// include/constants.php, row 654
+// include/constants.php, row 703
 "Fulltext view" => "全文ビュー", // ai 2026-06
 
-// include/constants.php, row 676
+// include/constants.php, row 725
 "HTML code for index view of the comment" => "コメントの一覧表示用HTMLコード", // ai 2026-06
 
-// include/constants.php, row 678
+// include/constants.php, row 727
 "HTML code for \"Show selected\" button" => "「選択を表示」ボタンのHTMLコード", // ai 2026-06
 
-// include/constants.php, row 679
+// include/constants.php, row 728
 "HTML code for \"Show all\" button" => "「全て表示」ボタンのHTMLコード", // ai 2026-06
 
-// include/constants.php, row 680
+// include/constants.php, row 729
 "HTML code for \"Add\" button" => "「追加」ボタンのHTMLコード", // ai 2026-06
 
-// include/constants.php, row 681
+// include/constants.php, row 730
 "Show images" => "画像を表示", // ai 2026-06
 
-// include/constants.php, row 682
+// include/constants.php, row 731
 "Order by" => "並び順", // ai 2026-06
 
-// include/constants.php, row 683
+// include/constants.php, row 732
 "View image 1" => "画像 1", // ai 2026-06
 
-// include/constants.php, row 684
+// include/constants.php, row 733
 "View image 2" => "画像 2", // ai 2026-06
 
-// include/constants.php, row 685
+// include/constants.php, row 734
 "View image 3" => "画像 3", // ai 2026-06
 
-// include/constants.php, row 686
+// include/constants.php, row 735
 "View image 4" => "画像 4", // ai 2026-06
 
-// include/constants.php, row 687
+// include/constants.php, row 736
 "HTML code for fulltext view of the comment" => "コメントの全文表示用HTMLコード", // ai 2026-06
 
-// include/constants.php, row 688
+// include/constants.php, row 737
 "HTML code for space before comment" => "コメント前の余白用HTMLコード", // ai 2026-06
 
-// include/constants.php, row 689
+// include/constants.php, row 738
 "HTML code of the form for posting comment" => "コメント投稿フォームのHTMLコード", // ai 2026-06
 
-// include/constants.php, row 691
+// include/constants.php, row 740
 "E-mail template" => "E-メールテンプレート", // ai 2026-06
 
-// include/constants.php, row 693
+// include/constants.php, row 742
 "Number of e-mail template used for posting new comments to users" => "新しいコメントを利用者に送るE-メールテンプレートの番号", // ai 2026-06
 
-// include/constants.php, row 695
+// include/constants.php, row 744
 "Allow HTML tags in the comments" => "コメント内でHTMLタグを許可", // ai 2026-06
 
-// include/constants.php, row 701
+// include/constants.php, row 750
 "Discussion To Mail" => "ディスカッションのメール送信", // ai 2026-06
 
-// include/constants.php, row 702
+// include/constants.php, row 751
 "From: (email header)" => "From:(メールヘッダ)", // ai 2026-06
 
-// include/constants.php, row 703
+// include/constants.php, row 752
 "Reply-To:" => "返信先:", // ai 2026-06
 
-// include/constants.php, row 704
+// include/constants.php, row 753
 "Errors-To:" => "エラー送信先:", // ai 2026-06
 
-// include/constants.php, row 705
+// include/constants.php, row 754
 "Sender:" => "送信者:", // ai 2026-06
 
-// include/constants.php, row 706
+// include/constants.php, row 755
 "Mail Subject:" => "メールの件名:", // ai 2026-06
 
-// include/constants.php, row 707
+// include/constants.php, row 756
 "Mail Body:" => "メール本文:", // ai 2026-06
 
-// include/constants.php, row 728
+// include/constants.php, row 777
 "View of Constants" => "定数一覧", // ai 2026-06
 
-// include/constants.php, row 763
+// include/constants.php, row 812
 "RSS exchange" => "RSS交換", // ai 2026-06
 
-// include/constants.php, row 786
+// include/constants.php, row 835
 "Static page" => "静的ページ", // ai 2026-06
 
-// include/constants.php, row 787
+// include/constants.php, row 836
 "HTML code" => "HTMLコード", // ai 2026-06
 
-// include/constants.php, row 794
+// include/constants.php, row 843
 "Javascript item exchange" => "JavaScriptによる項目交換", // ai 2026-06
 
-// include/constants.php, row 817
+// include/constants.php, row 866
 "Calendar" => "カレンダー", // ai 2026-06
 
-// include/constants.php, row 818
+// include/constants.php, row 867
 "Calendar Type" => "カレンダーの種類", // ai 2026-06
 
-// include/constants.php, row 820
+// include/constants.php, row 869
 "Additional attribs to the TD event tag" => "イベントのTDタグへの追加属性", // ai 2026-06
 
-// include/constants.php, row 821
+// include/constants.php, row 870
 "Event format" => "イベントの書式", // ai 2026-06
 
-// include/constants.php, row 828
+// include/constants.php, row 877
 "Start date field" => "開始日フィールド", // ai 2026-06
 
-// include/constants.php, row 829
+// include/constants.php, row 878
 "End date field" => "終了日フィールド", // ai 2026-06
 
-// include/constants.php, row 830
+// include/constants.php, row 879
 "Day cell top format" => "日セルの上部書式", // ai 2026-06
 
-// include/constants.php, row 831
+// include/constants.php, row 880
 "Day cell bottom format" => "日セルの下部書式", // ai 2026-06
 
-// include/constants.php, row 832
+// include/constants.php, row 881
 "Use other header for empty cells" => "空セルに別の見出しを使用", // ai 2026-06
 
-// include/constants.php, row 833
+// include/constants.php, row 882
 "Empty day cell top format" => "空の日セルの上部書式", // ai 2026-06
 
-// include/constants.php, row 834
+// include/constants.php, row 883
 "Empty day cell bottom format" => "空の日セルの下部書式", // ai 2026-06
 
-// include/constants.php, row 854
+// include/constants.php, row 903
 "Alerts Selection Set" => "アラートの選択セット", // ai 2026-06
 
-// include/constants.php, row 857
+// include/constants.php, row 906
 "Fulltext URL" => "全文URL", // ai 2026-06
 
-// include/constants.php, row 859
+// include/constants.php, row 908
 "Link to the .shtml page used\n"
    ."                                 to create headline links."
  => "見出しリンクの作成に使用する\n"
    ."                                 .shtmlページへのリンク", // ai 2026-06
 
-// include/constants.php, row 878
+// include/constants.php, row 927
 "Max number of items" => "項目の最大数", // ai 2026-06
 
-// include/constants.php, row 890
+// include/constants.php, row 939
 "URL listing" => "URL一覧", // ai 2026-06
 
-// include/constants.php, row 892
+// include/constants.php, row 941
 "Row HTML" => "行のHTML", // ai 2026-06
 
-// include/constants.php, row 916
+// include/constants.php, row 965
 "Link listing" => "リンク一覧", // ai 2026-06
 
-// include/constants.php, row 950
+// include/constants.php, row 999
 "Category listing" => "分類一覧", // ai 2026-06
 
-// include/constants.php, row 984
+// include/constants.php, row 1033
 "Input Form" => "入力フォーム", // ai 2026-06
 
-// include/constants.php, row 986
+// include/constants.php, row 1035
 "New item form template" => "新規項目フォームのテンプレート", // ai 2026-06
 
-// include/constants.php, row 987
+// include/constants.php, row 1036
 "Use different template for editing" => "編集に別のテンプレートを使用", // ai 2026-06
 
-// include/constants.php, row 988
+// include/constants.php, row 1037
 "Edit item form template" => "項目編集フォームのテンプレート", // ai 2026-06
 
-// include/constants.php, row 1037
-// include/discussion.php, row 220
+// include/constants.php, row 1086
+// include/discussion.php, row 222
 "Show selected" => "選択したものを表示", // ai 2026-06
 
-// include/constants.php, row 1038
-// include/discussion.php, row 221
+// include/constants.php, row 1087
+// include/discussion.php, row 223
 "Show all" => "すべて表示", // ai 2026-06
 
-// include/constants.php, row 1039
-// include/constedit_util.php, row 132
-// include/discussion.php, row 222
+// include/constants.php, row 1088
+// include/constedit_util.php, row 136
+// include/discussion.php, row 224
 "Add new" => "新規追加", // ai 2026-06
 
-// include/constants.php, row 1074
+// include/constants.php, row 1123
 "Calendar: Time stamp at 0:00 of processed cell" => "カレンダー: 処理中セルの0:00のタイムスタンプ", // ai 2026-06
 
-// include/constants.php, row 1075
+// include/constants.php, row 1124
 "Calendar: Time stamp at 24:00 of processed cell" => "カレンダー: 処理中セルの24:00のタイムスタンプ", // ai 2026-06
 
-// include/constants.php, row 1076
+// include/constants.php, row 1125
 "Calendar: Day in month of processed cell" => "カレンダー: 処理中セルの月内の日", // ai 2026-06
 
-// include/constants.php, row 1077
+// include/constants.php, row 1126
 "Calendar: Month number of processed cell" => "カレンダー: 処理中セルの月番号", // ai 2026-06
 
-// include/constants.php, row 1078
+// include/constants.php, row 1127
 "Calendar: Year number of processed cell" => "カレンダー: 処理中セルの年", // ai 2026-06
 
-// include/constants.php, row 1143
+// include/constants.php, row 1192
 "Superadmin" => "超管理者", // ai 2026-06
 
 // include/constedit.php, row 55
@@ -3984,190 +4981,209 @@ return [
 "Levels horizontal" => "階層を横に表示", // ai 2026-06
 
 // include/constedit.php, row 102
-// src/Widget/Widget.php, row 841
+// src/Widget/Widget.php, row 870
 "Level count" => "階層数", // ai 2026-06
 
-// include/constedit_util.php, row 133, 136
+// include/constedit_util.php, row 137, 140
+// src/Import/Definition.php, row 140
 "Select" => "選択", // ai 2026-06
 
-// include/constedit_util.php, row 618
+// include/constedit_util.php, row 626
 "No group id specified" => "グループIDが指定されていません", // ai 2026-06
 
-// include/date.php, row 35
+// include/constedit_util.php, row 755
+"This constant group is used by ActionApps itself and can't be changed here" => "",
+
+// include/constedit_util.php, row 758
+"You do not have permissions to change fields settings for the slice owning this group" => "このグループを所有するスライスのフィールド設定を変更する許可がありません", // ai 2026-06
+
+// include/constedit_util.php, row 763
+"The constant group is used also in slice you do not have permissions to change fields settings" => "",
+
+// include/constedit_util.php, row 813
+" items changed to new value " => "件の項目が新しい値に変更されました", // ai 2026-06
+
+// include/date.php, row 36
 "January" => "1月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "February" => "2月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "March" => "3月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "April" => "4月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "May" => "5月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "June" => "6月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "July" => "7月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "August" => "8月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "September" => "9月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "October" => "10月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "November" => "11月", // ai 2026-06
 
-// include/date.php, row 35
+// include/date.php, row 36
 "December" => "12月", // ai 2026-06
 
-// include/exporter.class.php, row 507
+// include/exporter.class.php, row 535
 "What to export" => "エクスポートする内容", // ai 2026-06
 
-// include/exporter.class.php, row 522
+// include/exporter.class.php, row 550
 "you can put there field id (like headline........) or any AA expression (like _#HEADLINE)<br>to export all the fields, leave this field blank" => "フィールドid（例: headline........）または任意のAA式（例: _#HEADLINE）を入力できます<br>すべてのフィールドをエクスポートするには空欄のままにしてください", // ai 2026-06
 
-// include/exporter.class.php, row 523
+// include/exporter.class.php, row 551
 "Add any AA expression as extra column. Each row = one column." => "任意のAA式を追加の列として追加できます。各行 = 1列。", // ai 2026-06
 
-// include/exporter.class.php, row 536
+// include/exporter.class.php, row 564
 "No slice specified" => "スライスが指定されていません", // ai 2026-06
 
-// include/exporter.class.php, row 604
+// include/exporter.class.php, row 634
 "Bad file format - specify format" => "ファイル形式が不正です - 形式を指定してください", // ai 2026-06
 
-// include/feeding.php, row 453, 491
+// include/feeding.php, row 463, 504
 "Map" => "マッピング", // ai 2026-06
 
-// include/feeding.php, row 454, 490
+// include/feeding.php, row 464, 503
 "Run (queue)" => "実行（キュー）", // ai 2026-06
 
-// include/feeding.php, row 464, 470, 527
+// include/feeding.php, row 477, 483, 540
 "Local slice" => "ローカルスライス", // ai 2026-06
 
-// include/feeding.php, row 473
+// include/feeding.php, row 486
 "URL of the feed" => "フィードのURL", // ai 2026-06
 
-// include/feeding.php, row 473
+// include/feeding.php, row 486
 "e.g. https://www.someplace.com/rss/index.xml" => "例: https://www.someplace.com/rss/index.xml", // ai 2026-06
 
-// include/feeding.php, row 473
+// include/feeding.php, row 486
 "Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!" => "マッピングを設定済みの場合、このURLを変更しないでください（変更した場合はマッピングを更新してください）。マッピングはこのURLに結び付いています!", // ai 2026-06
 
-// include/feeding.php, row 474
+// include/feeding.php, row 487
 "RSS Feed name" => "RSSフィード名", // ai 2026-06
 
-// include/feeding.php, row 475, 531
+// include/feeding.php, row 488, 544
 "warnings last hour" => "過去1時間の警告", // ai 2026-06
 
-// include/feeding.php, row 475, 531
+// include/feeding.php, row 488, 544
 "warnings last day" => "過去1日の警告", // ai 2026-06
 
-// include/feeding.php, row 475, 531
+// include/feeding.php, row 488, 544
 "warnings last month" => "過去1か月の警告", // ai 2026-06
 
-// include/feeding.php, row 480, 535
+// include/feeding.php, row 493, 548
 "Warnings in log [hour/day/month]" => "ログ内の警告 [時間/日/月]", // ai 2026-06
 
-// include/feeding.php, row 526
+// include/feeding.php, row 539
 "Remote node" => "リモートノード", // ai 2026-06
 
-// include/field.class.php, row 610
+// include/field.class.php, row 651
 "Move to another field" => "別のフィールドへ移動", // ai 2026-06
 
-// include/field.class.php, row 957
-// include/itemview.php, row 124
+// include/field.class.php, row 1005
+// include/itemview.php, row 127
 "number of found items" => "見付かった項目数", // ai 2026-06
 
-// include/field.class.php, row 958
+// include/field.class.php, row 1006
 "index of item within whole listing (begins with 0)" => "一覧全体での項目の順番（0から始まる）", // ai 2026-06
 
-// include/field.class.php, row 959
+// include/field.class.php, row 1007
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "ページ内での項目の順番（pagescrollerで表示される各ページごとに0から始まる）", // ai 2026-06
 
-// include/field.class.php, row 960
+// include/field.class.php, row 1008
 "index of a group on page (it begins from 0 on each page)" => "ページ内のグループの順番（各ページで0から始まる）", // ai 2026-06
 
-// include/field.class.php, row 961
+// include/field.class.php, row 1009
 "index of item within a group on page (it begins from 0 on each group)" => "ページ内のグループ内での項目の順番（各グループで0から始まる）", // ai 2026-06
 
-// include/field.class.php, row 962
+// include/field.class.php, row 1010
 "alias for Item ID" => "項目 IDの 別名",
 
-// include/field.class.php, row 963
+// include/field.class.php, row 1011
 "alias for Short Item ID" => "短縮項目IDの別名", // ai 2026-06
 
-// include/field.class.php, row 971, 972
+// include/field.class.php, row 1019, 1020
 "alias used on admin page index.php for itemedit url" => "管理ページ index.php で itemedit のURLに使う別名", // ai 2026-06
 
-// include/field.class.php, row 973
+// include/field.class.php, row 1021
 "Alias used on admin page index.php for edit discussion url" => "管理ページ index.php でディスカッション編集のURLに使う別名", // ai 2026-06
 
-// include/field.class.php, row 974
+// include/field.class.php, row 1022
 "Title of Slice for RSS" => "RSS用のスライスの題名", // ai 2026-06
 
-// include/field.class.php, row 975
+// include/field.class.php, row 1023
 "Link to the Slice for RSS" => "RSS用のスライスへのリンク", // ai 2026-06
 
-// include/field.class.php, row 976
+// include/field.class.php, row 1024
 "Short description (owner and name) of slice for RSS" => "RSS用のスライスの短い記述（所有者と名前）", // ai 2026-06
 
-// include/field.class.php, row 977
+// include/field.class.php, row 1025
 "Date RSS information is generated, in RSS date format" => "RSS情報の生成日時（RSS日付形式）", // ai 2026-06
 
-// include/field.class.php, row 978
+// include/field.class.php, row 1026
 "Slice name" => "スライス名", // ai 2026-06
 
-// include/field.class.php, row 980
+// include/field.class.php, row 1028
 "Current MLX language" => "現在のMLX言語", // ai 2026-06
 
-// include/field.class.php, row 981
+// include/field.class.php, row 1029
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTMLの文字方向タグ（例: DIR=RTL）", // ai 2026-06
 
-// include/field.class.php, row 1063, 1245
+// include/field.class.php, row 1112, 1393
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- 任意のテキストフィールド --", // ai 2026-06
 
-// include/filedit.php, row 81
-"Back to file list" => "ファイル一覧へ戻る", // ai 2026-06
+// include/field.class.php, row 1221
+" (this)" => " (このスライス)", // ai 2026-06
+
+// include/field.class.php, row 1275, 1288, 1301
+"Can't copy field" => "",
 
 // include/filedit.php, row 82
-"Download (right-click)" => "ダウンロード（右クリック）", // ai 2026-06
+"Back to file list" => "ファイル一覧へ戻る", // ai 2026-06
 
 // include/filedit.php, row 83
+"Download (right-click)" => "ダウンロード（右クリック）", // ai 2026-06
+
+// include/filedit.php, row 84
 "Rename to" => "名前を変更", // ai 2026-06
 
-// include/filedit.php, row 88
-// include/fileman.php, row 130, 500
+// include/filedit.php, row 89
+// include/fileman.php, row 133, 499
 "Text file" => "テキストファイル", // ai 2026-06
 
-// include/filedit.php, row 88
-// include/fileman.php, row 128
+// include/filedit.php, row 89
+// include/fileman.php, row 131
 "Web file" => "Webファイル", // ai 2026-06
 
-// include/filedit.php, row 88
-// include/fileman.php, row 127, 500
+// include/filedit.php, row 89
+// include/fileman.php, row 130, 499
 "HTML file" => "HTMLファイル", // ai 2026-06
 
-// include/filedit.php, row 123
+// include/filedit.php, row 124
 "Save changes" => "変更を保存", // ai 2026-06
 
-// include/filedit.php, row 124
+// include/filedit.php, row 125
 "Reset content" => "内容を元に戻す", // ai 2026-06
 
 // include/filedit.php, row 130
 "File content" => "ファイルの内容", // ai 2026-06
 
 // include/filedit.php, row 138
-// include/fileman.php, row 129
+// include/fileman.php, row 132
 "Image file" => "画像ファイル", // ai 2026-06
 
 // include/filedit.php, row 141
@@ -4176,40 +5192,40 @@ return [
 // include/filedit.php, row 141
 "I can't view it. If you want to view or edit it, change its extension." => "表示できません。表示または編集したい場合は、拡張子を変更してください。", // ai 2026-06
 
-// include/fileman.php, row 32
+// include/fileman.php, row 33
 "Size" => "サイズ", // ai 2026-06
 
-// include/fileman.php, row 34
+// include/fileman.php, row 35
 "Last modified" => "最終更新", // ai 2026-06
 
-// include/fileman.php, row 132, 145
+// include/fileman.php, row 135, 148
 "Parent" => "親ディレクトリ", // ai 2026-06
 
-// include/fileman.php, row 133, 161
+// include/fileman.php, row 136, 164
 "Other" => "その他", // ai 2026-06
 
-// include/fileman.php, row 335
+// include/fileman.php, row 337
 "Wrong file name." => "ファイル名が不正です。", // ai 2026-06
 
-// include/fileman.php, row 343
+// include/fileman.php, row 345
 "File already exists" => "ファイルは既に存在します", // ai 2026-06
 
-// include/fileman.php, row 347, 503
+// include/fileman.php, row 349, 502
 "Unable to create file" => "ファイルを作成できません", // ai 2026-06
 
-// include/fileman.php, row 358
+// include/fileman.php, row 360
 "Wrong directory name." => "ディレクトリ名が不正です。", // ai 2026-06
 
-// include/fileman.php, row 364
+// include/fileman.php, row 366
 "Unable to create directory" => "ディレクトリを作成できません", // ai 2026-06
 
-// include/fileman.php, row 374
+// include/fileman.php, row 376
 "First delete all files from directory" => "先にディレクトリ内の全ファイルを削除してください", // ai 2026-06
 
-// include/fileman.php, row 376
+// include/fileman.php, row 378
 "Unable to delete directory" => "ディレクトリを削除できません", // ai 2026-06
 
-// include/fileman.php, row 379
+// include/fileman.php, row 381
 "Unable to delete file" => "ファイルを削除できません", // ai 2026-06
 
 // include/fileman.php, row 399
@@ -4218,252 +5234,253 @@ return [
 // include/fileman.php, row 411
 "Unable to open file for writing" => "書き込み用にファイルを開けません", // ai 2026-06
 
-// include/fileman.php, row 416
+// include/fileman.php, row 415
 "Error writing to file" => "ファイルへの書き込みエラー", // ai 2026-06
 
-// include/fileman.php, row 425
+// include/fileman.php, row 424
 "File with this name already exists" => "同名のファイルが既に存在します", // ai 2026-06
 
-// include/fileman.php, row 428
+// include/fileman.php, row 426
 "Unable to rename" => "名前を変更できません", // ai 2026-06
 
-// include/fileman.php, row 487
+// include/fileman.php, row 486
 "Wrong directory name" => "ディレクトリ名が不正です", // ai 2026-06
 
-// include/fileman.php, row 496
+// include/fileman.php, row 495
 "Files with the same names as some in the template already exist. Please change the file names first." => "テンプレート内の一部と同名のファイルが既に存在します。先にファイル名を変更してください。", // ai 2026-06
 
-// include/fileman.php, row 546
+// include/fileman.php, row 545
 "Are you sure you want to delete the selected files and folders?" => "選択したファイルとフォルダを削除してもよろしいですか？", // ai 2026-06
 
-// include/files.class.php, row 87
+// include/files.class.php, row 113
 "No destination directory for image uploads specified" => "画像アップロード先のディレクトリが指定されていません", // ai 2026-06
 
-// include/files.class.php, row 91
+// include/files.class.php, row 117
 "Can't create directory for image uploads" => "画像アップロード用のディレクトリを作成できません", // ai 2026-06
 
-// include/files.class.php, row 144
+// include/files.class.php, row 171
 "Can't read the file %1" => "ファイル %1 を読み込めません", // ai 2026-06
 
-// include/files.class.php, row 177
+// include/files.class.php, row 204
 "No destination file specified" => "出力先ファイルが指定されていません", // ai 2026-06
 
-// include/files.class.php, row 193
+// include/files.class.php, row 220
 "type of uploaded file not allowed" => "アップロードされたファイルの種類は許可されていません", // ai 2026-06
 
-// include/files.class.php, row 217
+// include/files.class.php, row 244
 "Can't move image  %1 to %2 (%3)" => "画像 %1 を %2 に移動できません (%3)", // ai 2026-06
 
-// include/files.class.php, row 224
+// include/files.class.php, row 251
 "Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "アップロードされたファイルの権限を変更できません: %1 - %2。config.php の IMG_UPLOAD_FILE_MODE を確認してください", // ai 2026-06
 
-// include/files.class.php, row 249
+// include/files.class.php, row 276
 "Can't open file for writing: %1" => "書き込み用にファイルを開けません: %1", // ai 2026-06
 
-// include/files.class.php, row 255
+// include/files.class.php, row 282
 "Can't write to file: %1" => "ファイルに書き込めません: %1", // ai 2026-06
 
-// include/files.class.php, row 328
+// include/files.class.php, row 356
 "can't create backup of the file" => "ファイルのバックアップを作成できません", // ai 2026-06
 
-// include/files.class.php, row 1302
+// include/files.class.php, row 1421
 ": No such directory" => ": ディレクトリが存在しません", // ai 2026-06
 
-// include/form.class.php, row 96
+// include/form.class.php, row 104
 "Fields to show" => "表示するフィールド", // ai 2026-06
 
-// include/form.class.php, row 147
+// include/form.class.php, row 170
 "Property" => "プロパティ", // ai 2026-06
 
-// include/form.class.php, row 148
+// include/form.class.php, row 171
 "Widget" => "",
 
-// include/form.class.php, row 184
-// src/Manageraction/Item_Move2Slice.php, row 51
+// include/form.class.php, row 212
+// src/Manageraction/Item_Move2Slice.php, row 52
 "Slice ID" => "スライス ID", // ai 2026-06
 
-// include/form.class.php, row 203
+// include/form.class.php, row 232
 "Form Row - special widget for form setting" => "フォーム行 - フォーム設定用の特殊ウィジェット", // ai 2026-06
 
-// include/form.class.php, row 217
-// src/Widget/Widget.php, row 721
+// include/form.class.php, row 248
+// src/Widget/Widget.php, row 750
 "Values array" => "値の配列", // ai 2026-06
 
-// include/form.class.php, row 217
+// include/form.class.php, row 248
 "Directly specified array of values (do not use Constants, if filled)" => "直接指定する値の配列（入力した場合は定数を使用しないでください）", // ai 2026-06
 
-// include/form.class.php, row 291
-// src/Widget/Widget.php, row 709
+// include/form.class.php, row 332
+// src/Widget/Widget.php, row 738
 "Rows" => "行", // ai 2026-06
 
-// include/form.class.php, row 301
-// include/menu.php, row 146
+// include/form.class.php, row 343
+// include/menu.php, row 147
 "Forms" => "フォーム", // ai 2026-06
 
-// include/formutil.php, row 191
+// include/formutil.php, row 193
 "Update & View" => "更新して 見る",
 
-// include/formutil.php, row 198
+// include/formutil.php, row 200
 "Insert as new" => "新規として挿入", // ai 2026-06
 
-// include/formutil.php, row 202, 2926
+// include/formutil.php, row 204, 2957
 "Reset form" => "フォームをリセット", // ai 2026-06
 
-// include/formutil.php, row 205, 210, 2918, 2922
-// include/searchbar.class.php, row 730
+// include/formutil.php, row 207, 212, 2949, 2953
+// include/searchbar.class.php, row 771
 // src/Widget/LupWidget.php, row 118
 "Cancel" => "中断",
 
-// include/formutil.php, row 208
+// include/formutil.php, row 210
 "Insert & Edit" => "挿入して編集", // ai 2026-06
 
-// include/formutil.php, row 209
+// include/formutil.php, row 211
 "Insert & View" => "挿入して見る", // ai 2026-06
 
-// include/formutil.php, row 289
+// include/formutil.php, row 303
 "Part" => "パート", // ai 2026-06
 
-// include/formutil.php, row 353
+// include/formutil.php, row 367
 "No fields defined for this slice" => "このスライスにはフィールドが定義されていません", // ai 2026-06
 
-// include/formutil.php, row 904
+// include/formutil.php, row 918
 "set" => "オン", // ai 2026-06
 
-// include/formutil.php, row 904
+// include/formutil.php, row 918
 "unset" => "オフ", // ai 2026-06
 
-// include/formutil.php, row 1034
+// include/formutil.php, row 1048
 "Unable to find tagprefix table %1" => "tagprefix テーブル %1 が見つかりません", // ai 2026-06
 
-// include/formutil.php, row 1186
+// include/formutil.php, row 1200
 "import" => "インポート", // ai 2026-06
 
-// include/formutil.php, row 1201
-// src/Widget/TxtWidget.php, row 250
+// include/formutil.php, row 1215
+// src/Widget/RichtextMarkup.php, row 70
+// src/Widget/TxtWidget.php, row 226
 "Edit in Editor" => "エディタで編集", // ai 2026-06
 
-// include/formutil.php, row 1214
-// include/transformation.class.php, row 182, 357, 427, 511, 681
-// include/widget.class.php, row 570
+// include/formutil.php, row 1228
+// include/transformation.class.php, row 193, 382, 455, 549, 739
+// include/widget.class.php, row 662
 "Plain text" => "プレーンテキスト", // ai 2026-06
 
-// include/formutil.php, row 1256
-// include/transformation.class.php, row 604
+// include/formutil.php, row 1270
+// include/transformation.class.php, row 661
 "Translate" => "翻訳", // ai 2026-06
 
-// include/formutil.php, row 1759, 1763
+// include/formutil.php, row 1777, 1781
 "Enter the value" => "値を入力してください", // ai 2026-06
 
-// include/formutil.php, row 1763
-// include/menu.php, row 139
-// src/Util/ChangesMonitor.php, row 455
+// include/formutil.php, row 1781
+// include/menu.php, row 140
+// src/Import/DetailCatalog.php, row 124
+// src/Util/ChangesMonitor.php, row 454
 "Change" => "変更",
 
-// include/formutil.php, row 1906, 2093
-// src/Widget/MchWidget.php, row 134
-// src/Widget/Widget.php, row 808
+// include/formutil.php, row 1924, 2111
+// src/Widget/MchWidget.php, row 135
+// src/Widget/Widget.php, row 837
 "Selected" => "選択済み", // ai 2026-06
 
-// include/formutil.php, row 2092
+// include/formutil.php, row 2110
 "Offer" => "候補", // ai 2026-06
 
-// include/formutil.php, row 2157
-// include/stringexpand.php, row 10624, 10647
+// include/formutil.php, row 2175
+// include/stringexpand.php, row 10850, 10873
+// src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
-// src/Widget/RimWidget.php, row 240
+// src/Widget/RimWidget.php, row 287
 "new" => "新規", // ai 2026-06
 
-// include/formutil.php, row 2177
+// include/formutil.php, row 2195
 "Change Password" => "パスワードの変更", // ai 2026-06
 
-// include/formutil.php, row 2179
+// include/formutil.php, row 2197
 "Delete Password" => "パスワードの削除", // ai 2026-06
 
-// include/formutil.php, row 2188
-// include/searchlib.php, row 58, 124, 127, 130, 133, 136
+// include/formutil.php, row 2206
+// include/searchlib.php, row 59, 127, 130, 133, 136, 139
+// src/Central/FindingText.php, row 412
+// src/Import/Credential/Store.php, row 54
 "not set" => "未設定", // ai 2026-06
 
-// include/formutil.php, row 2929
+// include/formutil.php, row 2960
 "Submit" => "送信", // ai 2026-06
 
-// include/formutil.php, row 3246
+// include/formutil.php, row 3279
 "Group Name" => "グループ名", // ai 2026-06
 
-// include/formutil.php, row 3247
-// include/logs.php, row 497
-"Count" => "件数", // ai 2026-06
-
-// include/formutil.php, row 3248
+// include/formutil.php, row 3281
 "Created on" => "作成日", // ai 2026-06
 
-// include/formutil.php, row 3249
+// include/formutil.php, row 3282
 "Created by" => "作成者", // ai 2026-06
 
-// include/formutil.php, row 3250
+// include/formutil.php, row 3283
 "Last updated" => "最終更新", // ai 2026-06
 
-// include/formutil.php, row 3251
+// include/formutil.php, row 3284
 "Updated by" => "更新者", // ai 2026-06
 
-// include/formutil.php, row 3252
+// include/formutil.php, row 3285
 "Last used" => "最終使用", // ai 2026-06
 
-// include/formutil.php, row 3259
+// include/formutil.php, row 3292
 "All active items" => "全ての活動中の項目", // ai 2026-06
 
-// include/formutil.php, row 3261
+// include/formutil.php, row 3294
 "All pending items" => "全ての待機中の項目", // ai 2026-06
 
-// include/formutil.php, row 3262
+// include/formutil.php, row 3295
 "All expired items" => "全ての期限切れの項目", // ai 2026-06
 
-// include/formutil.php, row 3263
+// include/formutil.php, row 3296
 "All items in holding bin" => "保留箱の全項目", // ai 2026-06
 
-// include/formutil.php, row 3264
+// include/formutil.php, row 3297
 "All items in trash bin" => "ごみ箱の全項目", // ai 2026-06
 
-// include/init_page.php, row 94
-// include/locauth.php, row 85
+// include/init_page.php, row 87
+// include/locauth.php, row 98
 "Either your username or your password is not valid" => "利用者名またはパスワードが正しくありません", // ai 2026-06
 
-// include/init_page.php, row 151
+// include/init_page.php, row 144
 "No slice found for you" => "あなたのスライスが見つかり出来ません",
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "%1 の別名", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "ディスカッションコメントの件名の別名", // ai 2026-06
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "ディスカッションコメントの本文の別名", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "投稿者の別名", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "作者のE-メールの別名", // ai 2026-06
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "作者のWWWサイトのURLの別名", // ai 2026-06
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "作者のWWWサイトの説明の別名", // ai 2026-06
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "公開日時の別名", // ai 2026-06
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "作者のコンピュータのIPアドレスの別名", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "ディスカッションのコメントを選択するチェックボックスの別名", // ai 2026-06
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "画像の別名", // ai 2026-06
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -4471,7 +5488,7 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -4479,7 +5496,7 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -4487,7 +5504,7 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -4495,7 +5512,7 @@ return [
    ."                             <i>使用法: </i>コメントの一覧表示用HTMLコード内<br>\n"
    ."                             <i>例: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -4503,7 +5520,7 @@ return [
    ."                             <i>使用法: </i>コメントの全文表示用HTMLコード内<br>\n"
    ."                             <i>例: </i>&lt;a href=_#URLREPLY&gt;返信&lt;/a&gt;", // ai 2026-06
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -4511,79 +5528,79 @@ return [
    ."                             <i>使用法: </i>フォームのコード内<br>\n"
    ."                             <i>例: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "「全て表示」「選択を表示」「新規追加」ボタンの別名<br>\n"
    ."                             <i>使用法: </i>最後のHTMLコード内", // ai 2026-06
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "DiscussionMailListフィールドに入力された3番目のパラメータ", // ai 2026-06
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "DiscussionMailListフィールドに入力された%1番目のパラメータ", // ai 2026-06
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "定数名", // ai 2026-06
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "翻訳された定数名", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "定数の値", // ai 2026-06
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "定数の優先度", // ai 2026-06
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "定数グループID", // ai 2026-06
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "分類クラス（分類のみ）", // ai 2026-06
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "定数番号", // ai 2026-06
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "定数の一意なID（16進数32文字）", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "定数の一意な短縮ID（システム内の各定数で '1' から自動増加）", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "定数の記述", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "定数のレベル（階層定数で使用）", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "エラー: %2 に対する別名関数 %1 が不正です", // ai 2026-06
 
-// include/item_content.php, row 1023, 1079
+// include/item_content.php, row 1126, 1184
 "No Slice Id specified" => "スライスIDが指定されていません", // ai 2026-06
 
-// include/item_content.php, row 1068
+// include/item_content.php, row 1172
 "No Permission to insert Item for user %1" => "利用者 %1 には項目を挿入する許可がありません", // ai 2026-06
 
-// include/item_content.php, row 1083
+// include/item_content.php, row 1188
 "Bad Item Id" => "項目IDが不正です", // ai 2026-06
 
-// include/item_content.php, row 1218
+// include/item_content.php, row 1329
 "No Id specified (%1 - %2)" => "IDが指定されていません (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1223
+// include/item_content.php, row 1334
 "Duplicated ID - skipped (%1 - %2)" => "重複したID - スキップしました (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1248
+// include/item_content.php, row 1359
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "スライス %1 の StoreItem - id = '%2' のパラメータチェックに失敗しました", // ai 2026-06
 
-// include/item_content.php, row 1258
+// include/item_content.php, row 1369
 "No Status code" => "状態コードがありません", // ai 2026-06
 
-// include/itemfunc.php, row 66
+// include/itemfunc.php, row 67
 "Add item" => "項目の追加", // ai 2026-06
 
-// include/itemfunc.php, row 71
+// include/itemfunc.php, row 72
 "Edit item" => "項目の編集", // ai 2026-06
 
 // include/itemfunc.php, row 130
@@ -4598,650 +5615,680 @@ return [
 // include/itemfunc.php, row 147, 154, 157
 "not on the public site" => "公開サイトにはありません", // ai 2026-06
 
-// include/itemfunc.php, row 150, 179
+// include/itemfunc.php, row 150, 191
 "Published" => "公開済み", // ai 2026-06
 
-// include/itemfunc.php, row 176
+// include/itemfunc.php, row 174
+"View on public site" => "",
+
+// include/itemfunc.php, row 188
 "Never" => "無期限", // ai 2026-06
 
-// include/itemfunc.php, row 177
+// include/itemfunc.php, row 189
 "not used on this site" => "このサイトでは使用されていません", // ai 2026-06
 
-// include/itemfunc.php, row 180
+// include/itemfunc.php, row 192
 "Expires" => "有効期限", // ai 2026-06
 
-// include/itemfunc.php, row 182
+// include/itemfunc.php, row 194
 "Last edited" => "最終編集", // ai 2026-06
 
-// include/itemfunc.php, row 184
+// include/itemfunc.php, row 196
 "Revisions" => "リビジョン", // ai 2026-06
 
-// include/itemfunc.php, row 186
+// include/itemfunc.php, row 198
 "Short ID" => "短縮ID", // ai 2026-06
 
-// include/itemfunc.php, row 192
+// include/itemfunc.php, row 204
+// src/Import/DetailCatalog.php, row 143
 "Details" => "詳細", // ai 2026-06
 
-// include/itemfunc.php, row 227
+// include/itemfunc.php, row 245
 "Item table record for the item" => "この項目の item テーブルのレコード", // ai 2026-06
 
-// include/itemfunc.php, row 251
+// include/itemfunc.php, row 283
 "Content table records for the item" => "この項目の content テーブルのレコード", // ai 2026-06
 
-// include/itemfunc.php, row 270
+// include/itemfunc.php, row 302
 "Referenced items" => "参照されている項目", // ai 2026-06
 
-// include/itemfunc.php, row 279
+// include/itemfunc.php, row 311
 "AA_Item structure" => "AA_Item 構造", // ai 2026-06
 
-// include/itemfunc.php, row 310
+// include/itemfunc.php, row 342
 "Technical details" => "技術的な詳細", // ai 2026-06
 
-// include/itemfunc.php, row 351
+// include/itemfunc.php, row 383
 "When" => "日時", // ai 2026-06
 
-// include/itemfunc.php, row 351
+// include/itemfunc.php, row 383
 "Changed by" => "変更者", // ai 2026-06
 
-// include/itemfunc.php, row 379
+// include/itemfunc.php, row 412
 "Full history" => "全履歴", // ai 2026-06
 
-// include/itemfunc.php, row 404
+// include/itemfunc.php, row 439
 "Total views" => "合計表示回数", // ai 2026-06
 
-// include/itemfunc.php, row 423
+// include/itemfunc.php, row 458
 "Average / day" => "平均/日", // ai 2026-06
 
-// include/itemfunc.php, row 427
+// include/itemfunc.php, row 462
 "Last 7 days" => "過去7日間", // ai 2026-06
 
-// include/itemfunc.php, row 428
+// include/itemfunc.php, row 463
 "Last 30 days" => "過去30日間", // ai 2026-06
 
-// include/itemfunc.php, row 430
+// include/itemfunc.php, row 465
 "Last viewed" => "最終表示", // ai 2026-06
 
-// include/itemfunc.php, row 434
+// include/itemfunc.php, row 469
 "Avg response" => "平均応答", // ai 2026-06
 
-// include/itemfunc.php, row 437
+// include/itemfunc.php, row 472
 "Served from cache" => "キャッシュから配信", // ai 2026-06
 
-// include/itemfunc.php, row 460
+// include/itemfunc.php, row 496
 "Full statistics" => "全統計", // ai 2026-06
 
-// include/itemfunc.php, row 485
+// include/itemfunc.php, row 523
 "No detailed view statistics have been recorded for this item yet." => "この項目の詳細な表示統計はまだ記録されていません。", // ai 2026-06
 
-// include/itemfunc.php, row 488
+// include/itemfunc.php, row 527
 "Open full statistics" => "全統計を開く", // ai 2026-06
 
-// include/itemfunc.php, row 515
+// include/itemfunc.php, row 564
 "Now, i.e. current date" => "現在、すなわち現在の日付", // ai 2026-06
 
-// include/itemfunc.php, row 525
+// include/itemfunc.php, row 580
 "Never, i.e. maximum date" => "無期限、すなわち最大の日付", // ai 2026-06
 
-// include/itemfunc.php, row 536
+// include/itemfunc.php, row 597
 "User ID" => "利用者ID", // ai 2026-06
 
-// include/itemfunc.php, row 562
+// include/itemfunc.php, row 631
 "Date + 'Parameter' days" => "日付 + 'パラメータ' 日", // ai 2026-06
 
-// include/itemfunc.php, row 569
+// include/itemfunc.php, row 640
 "Number of days" => "日数", // ai 2026-06
 
-// include/itemfunc.php, row 583
+// include/itemfunc.php, row 659
 "Text from 'Parameter'" => "'パラメータ' のテキスト", // ai 2026-06
 
-// include/itemfunc.php, row 617
+// include/itemfunc.php, row 702
 "Random string" => "ランダム文字列", // ai 2026-06
 
-// include/itemfunc.php, row 619
+// include/itemfunc.php, row 707
 "Random alphanumeric [A-Z0-9] string." => "ランダムな英数字 [A-Z0-9] の文字列。", // ai 2026-06
 
-// include/itemfunc.php, row 626
+// include/itemfunc.php, row 716
 "String length" => "文字列の長さ", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 717
 "Field to check" => "チェックするフィールド", // ai 2026-06
 
-// include/itemfunc.php, row 627
+// include/itemfunc.php, row 717
 "If you need a unique code, you must send the field ID, the function will then look into this field to ensure uniqueness." => "一意なコードが必要な場合はフィールドIDを指定してください。関数はそのフィールドを参照して一意性を保証します。", // ai 2026-06
 
-// include/itemfunc.php, row 628
+// include/itemfunc.php, row 718
 "Slice only" => "このスライスのみ", // ai 2026-06
 
-// include/itemfunc.php, row 628
+// include/itemfunc.php, row 718
 "Do you want to check for uniqueness this slice only or all slices?" => "一意性をこのスライスのみで確認しますか、それとも全スライスで確認しますか？", // ai 2026-06
 
-// include/itemfunc.php, row 670
+// include/itemfunc.php, row 763
 "AA Expression" => "AA式", // ai 2026-06
 
-// include/itemfunc.php, row 672
+// include/itemfunc.php, row 768
 "any text with possible {AA expressions} like: {date:Y}" => "{date:Y} のような {AA expressions} を含む任意のテキスト", // ai 2026-06
 
-// include/itemfunc.php, row 696
+// include/itemfunc.php, row 797
 "Multivalue" => "複数値", // ai 2026-06
 
-// include/itemfunc.php, row 704
-// include/transformation.class.php, row 525
+// include/itemfunc.php, row 807
+// include/transformation.class.php, row 572
 "Delimiter" => "区切り文字", // ai 2026-06
 
-// include/itemfunc.php, row 795
-"Slice with id '%1' is not valid." => "ID '%1' のスライスは無効です。", // ai 2026-06
-
-// include/itemfunc.php, row 895
+// include/itemfunc.php, row 982
 "Text = don't modify" => "テキスト = 変更しない", // ai 2026-06
 
-// include/itemfunc.php, row 896
+// include/itemfunc.php, row 986
 "Does not modify the value." => "値を変更しません。", // ai 2026-06
 
-// include/itemfunc.php, row 901
+// include/itemfunc.php, row 995
 "Date = don't modify" => "日付 = 変更しない", // ai 2026-06
 
-// include/itemfunc.php, row 902, 911
+// include/itemfunc.php, row 999, 1015
 "Does not modify the value (just like Text), but it is better to separate it for future usage." => "値を変更しません(テキストと同じ)が、将来の利用のために分けておく方がよいでしょう。", // ai 2026-06
 
-// include/itemfunc.php, row 910
+// include/itemfunc.php, row 1011
 "Number = don't modify" => "数値 = 変更しない", // ai 2026-06
 
-// include/itemfunc.php, row 916
+// include/itemfunc.php, row 1024
 "Boolean = store 0 or 1" => "Boolean = 0か1を保存", // ai 2026-06
 
-// include/itemfunc.php, row 927
+// include/itemfunc.php, row 1042
 "Float" => "浮動小数点数", // ai 2026-06
 
-// include/itemfunc.php, row 928
+// include/itemfunc.php, row 1046
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "本来のfloat - 大きな数値を指数表記 (1.23E+29) に変換することがあります", // ai 2026-06
 
-// include/itemfunc.php, row 938
+// include/itemfunc.php, row 1060
 "Decimal" => "小数", // ai 2026-06
 
-// include/itemfunc.php, row 939
+// include/itemfunc.php, row 1064
 "The same as Float, but does not convert big numbers to  scientific notation (1.23E+29)" => "Floatと同じですが、大きな数値を指数表記 (1.23E+29) に変換しません", // ai 2026-06
 
-// include/itemfunc.php, row 949
+// include/itemfunc.php, row 1078
 "Trim" => "トリム", // ai 2026-06
 
-// include/itemfunc.php, row 950
+// include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "先頭と末尾の空白を除去し、UTF (NFC) も正規化します", // ai 2026-06
 
-// include/itemfunc.php, row 961
+// include/itemfunc.php, row 1097
 "Item IDs" => "項目ID", // ai 2026-06
 
-// include/itemfunc.php, row 1028
+// include/itemfunc.php, row 1132
+"The tag '%1' could not be stored: %2" => "",
+
+// include/itemfunc.php, row 1166
 "User ID = always store current user ID" => "利用者ID = 常に現在の利用者IDを保存", // ai 2026-06
 
-// include/itemfunc.php, row 1029
+// include/itemfunc.php, row 1170
 "Inserts the identity of the current user, no matter what the user sets." => "利用者が何を入力しても、現在の利用者の識別情報を挿入します。", // ai 2026-06
 
-// include/itemfunc.php, row 1070
+// include/itemfunc.php, row 1222
 "Now = always store current time" => "現在 = 常に現在の時刻を保存", // ai 2026-06
 
-// include/itemfunc.php, row 1071
+// include/itemfunc.php, row 1226
 "Inserts the current time, no matter what the user sets." => "利用者が何を入力しても、現在の時刻を挿入します。", // ai 2026-06
 
-// include/itemfunc.php, row 1101
+// include/itemfunc.php, row 1260
 "Computed field for INSERT/UPDATE" => "INSERT/UPDATE用の計算フィールド", // ai 2026-06
 
-// include/itemfunc.php, row 1102
+// include/itemfunc.php, row 1264
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "このフィールドは「別名解決用コード」に書かれた式の結果です。項目の表示時に計算すると遅くなるため、事前に計算できる値すべてに適した方法です。はい、ここでは {view...}、{include...}、{switch...} を使えます", // ai 2026-06
 
-// include/itemfunc.php, row 1109
+// include/itemfunc.php, row 1273
 "Code for unaliasing (INSERT)" => "別名解決用コード (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1109, 1138
+// include/itemfunc.php, row 1273, 1309
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "ここには任意の文字列を書けます。文字列は項目の保存時に別名解決されるため、任意の {...} 構文やフィールドの別名を使えます", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1274
 "Code for unaliasing (UPDATE)" => "別名解決用コード (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1110
+// include/itemfunc.php, row 1274
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "上と同じですが、UPDATE操作のみが対象です。未入力の場合、フィールドの値は変更されません", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1275
 "Multivalue delimiter" => "複数値の区切り文字", // ai 2026-06
 
-// include/itemfunc.php, row 1111
+// include/itemfunc.php, row 1275
 "Character or string, which will split the computed string into multiple values (the same field)" => "計算された文字列を(同じフィールドの)複数の値に分割する文字または文字列", // ai 2026-06
 
-// include/itemfunc.php, row 1112
+// include/itemfunc.php, row 1276
 "Recompute every" => "再計算間隔", // ai 2026-06
 
-// include/itemfunc.php, row 1112
+// include/itemfunc.php, row 1276
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "フィールドは毎分、毎時、…(上のUPDATEコードを使って)再計算されます。時間は正確ではなく、分は約1〜10分を意味します。未入力の場合、フィールドは項目の挿入/更新時にのみ再計算されます。", // ai 2026-06
 
-// include/itemfunc.php, row 1130
+// include/itemfunc.php, row 1296
 "Computed field" => "計算フィールド", // ai 2026-06
 
-// include/itemfunc.php, row 1131
+// include/itemfunc.php, row 1300
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "このフィールドは\\\"別名解決用コード\\\"に書かれた式の結果です。項目の表示時に計算すると遅くなるため、事前に計算できる値すべてに適した方法です。はい、ここでは {view...}、{include...}、{switch...} を使えます", // ai 2026-06
 
-// include/itemfunc.php, row 1138
+// include/itemfunc.php, row 1309
 "Code for unaliasing (INSERT+UPDATE)" => "別名解決用コード (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1158
+// include/itemfunc.php, row 1331
 "SEO Name" => "SEO名", // ai 2026-06
 
-// include/itemfunc.php, row 1159
+// include/itemfunc.php, row 1335
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "フィールドが未入力の場合、_#HEADLINE別名(または指定されていれば別の別名)からseonameを計算します。これは、このスライスが「Uses slices」設定に記載されているサイトモジュール内のすべてのスライスにわたって一意です。基本的にSEO名の別名は、{ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}} を使った計算フィールドの省略形です", // ai 2026-06
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1344
 "Alias to compute from" => "計算元の別名", // ai 2026-06
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1344
 "if not specified, the _#HEADLINE is used" => "指定がなければ _#HEADLINE が使われます", // ai 2026-06
 
-// include/itemfunc.php, row 1181
+// include/itemfunc.php, row 1362
 "Unique number for this field (from 1,..)" => "このフィールドの一意な番号 (1から…)", // ai 2026-06
 
-// include/itemfunc.php, row 1182
+// include/itemfunc.php, row 1366
 "Unique number in sequence 1,2,3,..." => "1,2,3,... の連続した一意な番号", // ai 2026-06
 
-// include/itemfunc.php, row 1204
+// include/itemfunc.php, row 1391
 "File = uploaded file" => "ファイル = アップロードされたファイル", // ai 2026-06
 
-// include/itemfunc.php, row 1205
+// include/itemfunc.php, row 1395
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "アップロードされたファイルとそのリンクを保存します。パラメータはタイプが image/something の場合のみ適用されます。", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1404
 "Mime types accepted" => "受け付けるMIMEタイプ", // ai 2026-06
 
-// include/itemfunc.php, row 1212
+// include/itemfunc.php, row 1404
 "Only files of matching mime types will be accepted" => "一致するMIMEタイプのファイルのみが受け付けられます", // ai 2026-06
 
-// include/itemfunc.php, row 1213
+// include/itemfunc.php, row 1405
 "Maximum image width" => "画像の最大幅", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1406
 "Maximum image height" => "画像の最大高さ", // ai 2026-06
 
-// include/itemfunc.php, row 1214
+// include/itemfunc.php, row 1406
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "画像は縦横比を保ったまま、これらの制限内に収まるようリサンプルされます。", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1407
 "Other fields" => "他のフィールド", // ai 2026-06
 
-// include/itemfunc.php, row 1215
+// include/itemfunc.php, row 1407
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "この画像を受け取る他のフィールドのリスト(## 区切り)。複数アップロードではうまく動作しません。", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1408
 "Upload policy" => "アップロードポリシー", // ai 2026-06
 
-// include/itemfunc.php, row 1216
+// include/itemfunc.php, row 1408
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>このパラメータは、アップロードしたファイルが既に存在する場合の動作を指定します:<br>new - AAは(_x を末尾に付けて)新しいファイル名を作成し、その新しい名前で保存します(省略値)<br>overwrite - 同じ名前の古いファイルは上書きされます<br>backup - 古いファイルは新しい(存在しない)ファイルにコピーされ、現在のファイルは現在の名前で保存されます。<br>いずれの場合もファイル名はエスケープされ、単語以外の文字はアンダースコアに置き換えられます。", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1409
 "Exact dimensions" => "正確な寸法", // ai 2026-06
 
-// include/itemfunc.php, row 1217
+// include/itemfunc.php, row 1409
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "1に設定すると、画像は指定された寸法ちょうどに縮小されます(必要に応じて切り抜かれます)。省略値は0または空: 画像のリサイズ時に縦横比を保ちます。", // ai 2026-06
 
-// include/itemfunc.php, row 1218
+// include/itemfunc.php, row 1410
 "Filename template" => "ファイル名テンプレート", // ai 2026-06
 
-// include/itemfunc.php, row 1218
+// include/itemfunc.php, row 1410
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "テンプレートに従ってファイル名を変更します。AA式のほか、特別な別名 _#name、_#ext、_#full(ファイル名、拡張子、完全な名前)も使えます。AA式内の項目の別名はINSERTでは機能しません(ファイル書き込み時点では項目が存在しないため)。UPDATEでは機能します。", // ai 2026-06
 
-// include/itemfunc.php, row 1375
+// include/itemfunc.php, row 1566
 "Password and Change Password" => "パスワードとパスワード変更", // ai 2026-06
 
-// include/itemfunc.php, row 1376
+// include/itemfunc.php, row 1570
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "「パスワードとパスワード変更」フィールドタイプの値を保存します。まず新しいパスワードが再入力されたものと一致することを確認し、一致すれば新しいパスワードを暗号化して保存します。", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1579
 "Copy of password" => "パスワードのコピー", // ai 2026-06
 
-// include/itemfunc.php, row 1383
+// include/itemfunc.php, row 1579
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "パスワードのコピーを保存したいField_id。利用者が自分の古いパスワードを取得できるようにしたい場合に役立つことがあります。平文で保存せず暗号化することを強くお勧めします。第2パラメータを参照してください。", // ai 2026-06
 
-// include/itemfunc.php, row 1384, 1423
+// include/itemfunc.php, row 1580, 1626
 "Encrypt phrase" => "暗号化フレーズ", // ai 2026-06
 
-// include/itemfunc.php, row 1384
+// include/itemfunc.php, row 1580
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "「パスワードのコピー」フィールドを指定する場合は、データベース内のパスワードを暗号化することをお勧めします。任意の文字列を入力してください。後でパスワードが必要になったら、同じフレーズを使ってフィールドから復号できます - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1415
+// include/itemfunc.php, row 1613
 "2FA Secret" => "2FAシークレット", // ai 2026-06
 
-// include/itemfunc.php, row 1416
+// include/itemfunc.php, row 1617
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "二要素認証用のシークレットを生成して保存します。パスワードで暗号化することもできます", // ai 2026-06
 
-// include/itemfunc.php, row 1423
+// include/itemfunc.php, row 1626
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "このフィールドの値の暗号化に適用されるパスワード。AA式や別名を含められます(読者管理スライスの利用者項目用)", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "選択された項目", // ai 2026-06
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "コメントが選択されていません", // ai 2026-06
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "正確なグループ名", // ai 2026-06
 
-// include/locauth.php, row 86
+// include/locauth.php, row 99
 "Please try again!" => "もう一度お試しください！", // ai 2026-06
 
-// include/locauth.php, row 87
+// include/locauth.php, row 100
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "パスワードを正しく入力したと確信される場合は、<a href=mailto:%1>%1</a> までメールでご連絡ください", // ai 2026-06
 
-// include/logs.php, row 336
+// include/logs.php, row 476
 "Created time" => "作成日時", // ai 2026-06
 
-// include/logs.php, row 337
+// include/logs.php, row 477
 "Readers to be emailed" => "メール送信対象の読者", // ai 2026-06
 
-// include/logs.php, row 347
+// include/logs.php, row 489
+// src/Optimize/CheckCkeditorUse.php, row 96
+// src/Optimize/CheckSecurityProtections.php, row 98
 "Page" => "ページ", // ai 2026-06
 
-// include/logs.php, row 357, 397, 410
+// include/logs.php, row 564, 608, 623
 "Time [s]" => "時間 [s]", // ai 2026-06
 
-// include/logs.php, row 358, 399
+// include/logs.php, row 565, 610
 "Memory usage [MB]" => "メモリ使用量 [MB]", // ai 2026-06
 
-// include/logs.php, row 359
+// include/logs.php, row 566
 "Memory peak [MB]" => "最大メモリ [MB]", // ai 2026-06
 
-// include/logs.php, row 360
+// include/logs.php, row 567
 "Return code" => "戻りコード", // ai 2026-06
 
-// include/logs.php, row 374
+// include/logs.php, row 583
 "Tasks done" => "完了したタスク", // ai 2026-06
 
-// include/logs.php, row 375
+// include/logs.php, row 584
 "Tasks started" => "開始したタスク", // ai 2026-06
 
-// include/logs.php, row 376
+// include/logs.php, row 585
 "Duration [s]" => "所要時間 [秒]", // ai 2026-06
 
-// include/logs.php, row 377
+// include/logs.php, row 586
 "Allowed [s]" => "許容時間 [秒]", // ai 2026-06
 
-// include/logs.php, row 395
+// include/logs.php, row 606
 "Cached" => "キャッシュ済み", // ai 2026-06
 
-// include/logs.php, row 396
+// include/logs.php, row 607
 "Not Modified (304)" => "未変更 (304)", // ai 2026-06
 
-// include/logs.php, row 398
+// include/logs.php, row 609
 "Time + Cached + 304" => "時間 + キャッシュ + 304", // ai 2026-06
 
-// include/logs.php, row 400, 411, 443, 475
+// include/logs.php, row 611, 624, 730, 916
+// src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 421
+// include/logs.php, row 651
 // include/menu_util.php, row 45
+// src/Optimize/CheckCentralCredentials.php, row 51
+// src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 422
+// include/logs.php, row 652
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 423
+// include/logs.php, row 653
+// src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 424
+// include/logs.php, row 654
 "DB" => "",
 
-// include/logs.php, row 425
+// include/logs.php, row 655
+// src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "メモリ", // ai 2026-06
 
-// include/logs.php, row 426
+// include/logs.php, row 656
+// src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 440
+// include/logs.php, row 657
+// src/Optimize/CheckEnvironment.php, row 64
+"Server settings" => "",
+
+// include/logs.php, row 704
+"Checks" => "",
+
+// include/logs.php, row 727
 "Identifier" => "識別子", // ai 2026-06
 
-// include/logs.php, row 441, 570, 583
+// include/logs.php, row 728, 1092, 1107
 // modules/jump/modedit.php, row 180
-// src/Manager.php, row 584
+// src/Manager.php, row 816
 "Module ID" => "モジュールID", // ai 2026-06
 
-// include/logs.php, row 452
+// include/logs.php, row 741
 "Template id" => "テンプレート Id", // ai 2026-06
 
-// include/logs.php, row 454
+// include/logs.php, row 743
 "Emails sent" => "送信したメール", // ai 2026-06
 
-// include/logs.php, row 463
+// include/logs.php, row 782
+"Object id" => "",
+
+// include/logs.php, row 814
+"Mail template" => "",
+
+// include/logs.php, row 815
+"Reader item" => "",
+
+// include/logs.php, row 816
+"Origin" => "",
+
+// include/logs.php, row 887
+"Transport" => "",
+
+// include/logs.php, row 888
+"Recipients sent" => "",
+
+// include/logs.php, row 889
+"Server response" => "",
+
+// include/logs.php, row 902
 "Items selected" => "選択された項目", // ai 2026-06
 
-// include/logs.php, row 464
+// include/logs.php, row 903
 "Items updated" => "更新された項目", // ai 2026-06
 
-// include/logs.php, row 465
+// include/logs.php, row 904
 "Items planned" => "予定された項目", // ai 2026-06
 
-// include/logs.php, row 474
+// include/logs.php, row 915
+// src/Import/DetailPage.php, row 1025
+// src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "メッセージ", // ai 2026-06
 
-// include/logs.php, row 476
+// include/logs.php, row 917
 "Referer" => "参照元", // ai 2026-06
 
-// include/logs.php, row 485
+// include/logs.php, row 928
 "New name" => "新しい名前", // ai 2026-06
 
-// include/logs.php, row 486
+// include/logs.php, row 929
 "Old name" => "古い名前", // ai 2026-06
 
-// include/logs.php, row 495, 518
+// include/logs.php, row 940, 1005
 "Phase" => "段階", // ai 2026-06
 
-// include/logs.php, row 496
+// include/logs.php, row 941
+// src/Optimize/CheckAlertitemRefusals.php, row 87
+// src/Optimize/CheckAlerts.php, row 72
 "Collection" => "コレクション", // ai 2026-06
 
-// include/logs.php, row 498, 509, 519
+// include/logs.php, row 943, 994, 1006
+// src/Import/Definition.php, row 154
+// src/Optimize/CheckUploadRefusals.php, row 87
 "Detail" => "詳細", // ai 2026-06
 
-// include/logs.php, row 508
+// include/logs.php, row 993
+// src/Import/Definition.php, row 135, 162
 "Status" => "状態", // ai 2026-06
 
-// include/logs.php, row 529
+// include/logs.php, row 1045
 "Processed" => "処理済み", // ai 2026-06
 
-// include/logs.php, row 530
+// include/logs.php, row 1046
 "Stored" => "保存済み", // ai 2026-06
 
-// include/logs.php, row 531
+// include/logs.php, row 1047
 "Errors" => "エラー", // ai 2026-06
 
-// include/logs.php, row 542
+// include/logs.php, row 1060
+// src/Import/DetailPage.php, row 329
 "Outcome" => "結果", // ai 2026-06
 
-// include/logs.php, row 555
-"Mode" => "モード", // ai 2026-06
-
-// include/logs.php, row 556
+// include/logs.php, row 1076
 "Flags" => "フラグ", // ai 2026-06
 
-// include/logs.php, row 557
+// include/logs.php, row 1077
 "Context" => "コンテキスト", // ai 2026-06
 
-// include/logs.php, row 571
+// include/logs.php, row 1093
 "Feed counterpart" => "フィードの対応先", // ai 2026-06
 
-// include/logs.php, row 584
+// include/logs.php, row 1108
 "Field ID" => "フィールドID", // ai 2026-06
 
-// include/mail.php, row 563
-// include/tv_email.php, row 77, 145
+// include/mail.php, row 657
 "Email type" => "メールの種類", // ai 2026-06
 
-// include/mail.php, row 565
-// include/modutils.php, row 90, 179
-// include/slicedit.php, row 191
-// include/statestore.php, row 975
-// include/tv_email.php, row 114
+// include/mail.php, row 661
+"— all modules (global) —" => "",
+
+// include/mail.php, row 661
+// include/modutils.php, row 91, 180
+// include/slicedit.php, row 194
+// include/statestore.php, row 1077
+// src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "所有者", // ai 2026-06
 
-// include/mail.php, row 566
+// include/mail.php, row 662
 "Description/Result" => "記述/結果", // ai 2026-06
 
-// include/mail.php, row 569
+// include/mail.php, row 667
 "From (email) " => "差出人（E-メール）", // ai 2026-06
 
-// include/mail.php, row 572
-// include/tv_email.php, row 101
+// include/mail.php, row 670
 "Envelop sender (email)" => "エンベロープ送信者（E-メール）", // ai 2026-06
 
-// include/mail.php, row 573
-// misc/datovka/datovka.php, row 112
+// include/mail.php, row 671
+// misc/datovka/datovka.php, row 117
 "Attachments" => "添付ファイル", // ai 2026-06
 
-// include/menu.php, row 65
+// include/menu.php, row 66
 "View site" => "サイトを見る",
 
-// include/menu.php, row 90, 91, 142
+// include/menu.php, row 91, 92, 143
 "Item Manager" => "項目管理",
 
-// include/menu.php, row 99
+// include/menu.php, row 100
 "Slice Admin" => "スライス管理", // ai 2026-06
 
-// include/menu.php, row 100
+// include/menu.php, row 101
 "Slice Administration" => "スライスの管理", // ai 2026-06
 
-// include/menu.php, row 131
+// include/menu.php, row 132
 // src/Module/Poll/Menu.php, row 82
 "Main settings" => "主な設定",
 
-// include/menu.php, row 134
+// include/menu.php, row 135
 "Slice Fields" => "スライスのフィールド", // ai 2026-06
 
-// include/menu.php, row 135
+// include/menu.php, row 136
 "Email Notification" => "メール通知", // ai 2026-06
 
-// include/menu.php, row 137
+// include/menu.php, row 138
 // include/menu_util.php, row 69
 // include/um_util.php, row 100, 103
 "Permissions" => "許可",
 
-// include/menu.php, row 138
+// include/menu.php, row 139
 "Assign" => "代入",
 
-// include/menu.php, row 141
+// include/menu.php, row 142
 "Design" => "デザイン",
 
-// include/menu.php, row 144
+// include/menu.php, row 145
 "Fulltext" => "全文",
 
-// include/menu.php, row 145
+// include/menu.php, row 146
 "Index" => "項目一覧", // ai 2026-06
 
-// include/menu.php, row 147
+// include/menu.php, row 148
 "Sets of Items" => "項目セット", // ai 2026-06
 
-// include/menu.php, row 149
+// include/menu.php, row 150
 "Content Pooling" => "コンテンツ共有", // ai 2026-06
 
-// include/menu.php, row 150
+// include/menu.php, row 151
 "Nodes" => "ノード", // ai 2026-06
 
-// include/menu.php, row 151
+// include/menu.php, row 152
 "Inner Node Feeding" => "ノード内フィード", // ai 2026-06
 
-// include/menu.php, row 153
+// include/menu.php, row 154
 "Inter Node Export" => "ノード間エクスポート", // ai 2026-06
 
-// include/menu.php, row 154
+// include/menu.php, row 155
 "RSS Feeds" => "RSSフィード", // ai 2026-06
 
-// include/menu.php, row 155
+// include/menu.php, row 157
 "Filters" => "フィルター", // ai 2026-06
 
-// include/menu.php, row 156
+// include/menu.php, row 158
+// src/Import/Definition.php, row 87
+// src/Import/DetailConfig.php, row 359
 "Mapping" => "マッピング", // ai 2026-06
 
-// include/menu.php, row 157, 219
+// include/menu.php, row 159, 221
 "Import CSV" => "CSVインポート", // ai 2026-06
 
-// include/menu.php, row 158
+// include/menu.php, row 160
 // src/Manageraction/Item_Export.php, row 20
 "Export to file" => "ファイルへエクスポート", // ai 2026-06
 
-// include/menu.php, row 160, 216
-// include/menu_util.php, row 73, 123
+// include/menu.php, row 162, 218
+// include/menu_util.php, row 73, 126
 // src/Module/Poll/Menu.php, row 67
 "Misc" => "その他", // ai 2026-06
 
-// include/menu.php, row 163
+// include/menu.php, row 165
 "Change field IDs" => "フィールドIDの変更", // ai 2026-06
 
-// include/menu.php, row 166
+// include/menu.php, row 168
 "Anonymous Form Wizard" => "匿名フォームウィザード", // ai 2026-06
 
-// include/menu.php, row 167
-// include/tv_email.php, row 134
+// include/menu.php, row 169
 "Email templates" => "メールテンプレート", // ai 2026-06
 
-// include/menu.php, row 169
-// include/menu_util.php, row 75
-"Planned Tasks" => "予定されたタスク", // ai 2026-06
-
-// include/menu.php, row 177
+// include/menu.php, row 179
 "Mailman: create list" => "Mailman: リスト作成", // ai 2026-06
 
-// include/menu.php, row 185
-// include/menu_util.php, row 118
+// include/menu.php, row 187
+// include/menu_util.php, row 121
 // src/Module/Poll/Menu.php, row 60
 "Folders" => "フォルダ", // ai 2026-06
 
-// include/menu.php, row 188
+// include/menu.php, row 190
 // src/Module/Poll/Menu.php, row 62
 "... pending" => "待機中",
 
-// include/menu.php, row 189
+// include/menu.php, row 191
 // src/Module/Poll/Menu.php, row 63
 "... expired" => "期限切れ",
 
-// include/menu.php, row 191
-// include/menu_util.php, row 121
+// include/menu.php, row 193
+// include/menu_util.php, row 124
 // src/Module/Poll/Menu.php, row 65
 "Trash bin" => "ゴミ箱",
 
-// include/menu.php, row 207
+// include/menu.php, row 209
 "Bookmarks" => "ブックマーク", // ai 2026-06
 
-// include/menu.php, row 217
-"Setting" => "設定", // ai 2026-06
-
-// include/menu.php, row 218
-// include/menu_util.php, row 126
+// include/menu.php, row 220
+// include/menu_util.php, row 130
 // src/Module/Poll/Menu.php, row 68
 "Empty trash" => "ゴミ箱を空にする",
 
-// include/menu.php, row 218
-// include/menu_util.php, row 126
-// src/Module/Poll/Menu.php, row 68
-"Are you sure you want to empty trash?" => "本当にゴミ箱を空にしますか？", // ai 2026-06
-
-// include/menu.php, row 220
+// include/menu.php, row 222
 "Set Debug OFF" => "デバッグをオフ", // ai 2026-06
 
-// include/menu.php, row 220
+// include/menu.php, row 222
 "Set Debug ON" => "デバッグをオン", // ai 2026-06
 
-// include/menu.php, row 230
-// include/menu_util.php, row 419, 726
-// include/slice.class.php, row 1194
-"Alerts" => "アラート", // ai 2026-06
-
-// include/menu.php, row 230
+// include/menu.php, row 232
 "List of Alerts modules using this slice as Reader Management." => "このスライスを読者管理として使用しているアラートモジュールの一覧。", // ai 2026-06
 
-// include/menu.php, row 232
+// include/menu.php, row 234
 "Bulk Emails" => "一括メール", // ai 2026-06
 
-// include/menu.php, row 232
+// include/menu.php, row 234
 "Send bulk email to selected users or to users in Stored searches" => "選択した利用者または保存された検索の利用者に一括メールを送信", // ai 2026-06
 
-// include/menu.php, row 236
+// include/menu.php, row 238
 "Send emails" => "メール送信", // ai 2026-06
 
-// include/menu.php, row 245
+// include/menu.php, row 247
 "Alerts Sent" => "アラート送信", // ai 2026-06
 
-// include/menu.php, row 245
+// include/menu.php, row 247
 "List of Alerts modules sending items from this slice." => "このスライスから項目を送信しているアラートモジュールの一覧。", // ai 2026-06
 
 // include/menu_util.php, row 46
@@ -5254,182 +6301,179 @@ return [
 "Edit Jump" => "Jumpの編集", // ai 2026-06
 
 // include/menu_util.php, row 80
+// src/Optimize/CheckCron.php, row 77
 "Optimize" => "最適化", // ai 2026-06
 
-// include/menu_util.php, row 83
+// include/menu_util.php, row 85
 "Mgettext" => "",
 
-// include/menu_util.php, row 86
+// include/menu_util.php, row 88
 "Feeds" => "フィード", // ai 2026-06
 
-// include/menu_util.php, row 87
+// include/menu_util.php, row 89
 "RSS test" => "RSSテスト", // ai 2026-06
 
-// include/menu_util.php, row 88
+// include/menu_util.php, row 90
 "AA RSS test" => "AA RSSテスト", // ai 2026-06
 
-// include/menu_util.php, row 89
+// include/menu_util.php, row 91
 "Run feeding" => "フィードを実行", // ai 2026-06
 
-// include/menu_util.php, row 91
+// include/menu_util.php, row 94
 "Slice structure" => "スライス構造", // ai 2026-06
 
-// include/menu_util.php, row 95
+// include/menu_util.php, row 98
 "Wizard" => "ウィザード", // ai 2026-06
 
-// include/menu_util.php, row 96
+// include/menu_util.php, row 99
 "Welcomes" => "ウェルカムメール", // ai 2026-06
 
-// include/menu_util.php, row 97
+// include/menu_util.php, row 100
 "Templates" => "テンプレート", // ai 2026-06
 
-// include/menu_util.php, row 99
+// include/menu_util.php, row 102
 "Documentation" => "ドキュメント", // ai 2026-06
 
-// include/menu_util.php, row 100
+// include/menu_util.php, row 103
 "Style Guide" => "スタイルガイド", // ai 2026-06
 
-// include/menu_util.php, row 106
+// include/menu_util.php, row 109
 "Central" => "",
 
-// include/menu_util.php, row 107
+// include/menu_util.php, row 110
 "AA Central" => "",
 
-// include/menu_util.php, row 124
+// include/menu_util.php, row 127
+"Install an app..." => "",
+
+// include/menu_util.php, row 128
+"App store..." => "",
+
+// include/menu_util.php, row 129
 "Synchronize..." => "同期...", // ai 2026-06
 
-// include/menu_util.php, row 125
-"Copy Slice..." => "スライスをコピー...", // ai 2026-06
-
-// include/menu_util.php, row 127
+// include/menu_util.php, row 131
 "Import conf from CSV..." => "CSVから設定をインポート...", // ai 2026-06
 
-// include/menu_util.php, row 397
+// include/menu_util.php, row 415
 "Part of %s" => "%s の一部", // ai 2026-06
 
-// include/menu_util.php, row 414
+// include/menu_util.php, row 432
 "Other slices" => "その他のスライス", // ai 2026-06
 
-// include/menu_util.php, row 418
+// include/menu_util.php, row 436
 "Reader Management Slice" => "読者管理スライス", // ai 2026-06
 
-// include/menu_util.php, row 420
+// include/menu_util.php, row 438
 "Jump inside control panel" => "管理画面内のジャンプ", // ai 2026-06
 
-// include/menu_util.php, row 421
-// include/slice.class.php, row 1226
+// include/menu_util.php, row 439
+// include/slice.class.php, row 1429
+// src/Central/FindingText.php, row 311
 "Links" => "リンク", // ai 2026-06
 
-// include/menu_util.php, row 422
+// include/menu_util.php, row 440
 "MySQL Auth (old version)" => "MySQL認証（旧バージョン）", // ai 2026-06
 
-// include/menu_util.php, row 423
+// include/menu_util.php, row 441
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "アンケート", // ai 2026-06
 
-// include/menu_util.php, row 444
+// include/menu_util.php, row 462
 "New slice" => "新規スライス",
 
-// include/menu_util.php, row 448
+// include/menu_util.php, row 466
 "Switch module" => "モジュール切り替え", // ai 2026-06
 
-// include/menu_util.php, row 578, 589
+// include/menu_util.php, row 600, 611
 "Apply" => "適用", // ai 2026-06
 
-// include/menu_util.php, row 582
+// include/menu_util.php, row 604
 "-- Default for module --" => "-- モジュールの省略値 --", // ai 2026-06
 
-// include/menu_util.php, row 590
+// include/menu_util.php, row 612
 "Switches the admin interface language; the page reloads." => "管理画面の言語を切り替えます。ページが再読み込みされます。", // ai 2026-06
 
-// include/menu_util.php, row 598
+// include/menu_util.php, row 617
 "What's working, what isn't — tell the AA team." => "うまくいっていること、いないこと — AAチームにお知らせください。", // ai 2026-06
 
-// include/menu_util.php, row 601
+// include/menu_util.php, row 620
+// src/Import/Definition.php, row 86
 "Settings" => "設定", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 623
 "Theme" => "テーマ", // ai 2026-06
 
-// include/menu_util.php, row 606
+// include/menu_util.php, row 625
 "Feedback" => "フィードバック", // ai 2026-06
 
-// include/menu_util.php, row 730
-// include/slice.class.php, row 554
+// include/menu_util.php, row 751
+// include/slice.class.php, row 679
 "Reader management" => "読者管理", // ai 2026-06
 
-// include/menu_util.php, row 742
+// include/menu_util.php, row 763
 "logout" => "ログアウト", // ai 2026-06
 
-// include/menu_util.php, row 750
+// include/menu_util.php, row 771
 "Search.." => "検索..", // ai 2026-06
 
-// include/menu_util.php, row 829
+// include/menu_util.php, row 850
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 839
+// include/menu_util.php, row 860
 "Collapse / expand menu" => "メニューの折りたたみ / 展開", // ai 2026-06
 
-// include/metabase.class.php, row 1572
+// include/metabase.class.php, row 1662
 "More" => "その他", // ai 2026-06
 
-// include/mlx.php, row 381
+// include/mlx.php, row 387
+// src/Central/FindingText.php, row 456
 "view" => "表示", // ai 2026-06
 
-// include/mlx.php, row 421
+// include/mlx.php, row 427
 "Bad item ID %1" => "項目ID %1 が不正です", // ai 2026-06
 
-// include/mlx.php, row 426
+// include/mlx.php, row 432
 "No ID for MLX" => "MLX用のIDがありません", // ai 2026-06
-
-// include/modutils.php, row 43, 95
-// include/slicedit.php, row 170
-"New Owner" => "新しい所有者", // ai 2026-06
-
-// include/modutils.php, row 44, 96
-// include/slicedit.php, row 171
-"New Owner's E-mail" => "新しい所有者のE-メール", // ai 2026-06
-
-// include/modutils.php, row 78, 180
-// include/slicedit.php, row 192
-"URL of .shtml page (often leave blank)" => ".shtmlページのURL（通常は空欄）", // ai 2026-06
 
 // include/modutils.php, row 79, 181
 // include/slicedit.php, row 195
+"URL of .shtml page (often leave blank)" => ".shtmlページのURL（通常は空欄）", // ai 2026-06
+
+// include/modutils.php, row 80, 182
+// include/slicedit.php, row 198
 "Priority (order in slice-menu)" => "優先度（スライスメニュー内の順序）", // ai 2026-06
 
-// include/modutils.php, row 84
-"+ Add new owner" => "+ 新しい所有者を追加", // ai 2026-06
-
-// include/modutils.php, row 85
+// include/modutils.php, row 86
 "× Cancel" => "× 中断", // ai 2026-06
 
-// include/modutils.php, row 135
+// include/modutils.php, row 136
 "Deleted" => "抹消済",
 
-// include/modutils.php, row 182
-// include/slicedit.php, row 199
+// include/modutils.php, row 183
+// include/slicedit.php, row 202
 "Used Language File" => "使用する言語ファイル", // ai 2026-06
 
-// include/modutils.php, row 257
+// include/modutils.php, row 258
 "Select owner" => "所有者を選択", // ai 2026-06
 
-// include/perm_core.php, row 1124, 1147
+// include/perm_core.php, row 1202, 1225
 "Reader Slice" => "読者スライス", // ai 2026-06
 
-// include/perm_core.php, row 1132, 1149
+// include/perm_core.php, row 1210, 1227
 "Reader Set" => "読者セット", // ai 2026-06
 
-// include/profile.class.php, row 343, 353, 362, 371, 380, 389, 397
+// include/profile.class.php, row 360, 370, 379, 388, 397, 406, 414
 "Rule added" => "ルールを追加しました", // ai 2026-06
 
-// include/profile.php, row 109
+// include/profile.php, row 111
 "--disabled-- (added by \"Show field\" rule)" => "--無効-- (「Show field」ルールにより追加)", // ai 2026-06
 
-// include/request.class.php, row 213
+// include/request.class.php, row 107
 "Array returned" => "配列が返されました", // ai 2026-06
 
 // include/scroller.php, row 87
+// src/Import/DetailPage.php, row 420
 "Previous" => "前へ", // ai 2026-06
 
 // include/scroller.php, row 296
@@ -5441,295 +6485,325 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/se_users.php, row 75
+// include/se_users.php, row 76
+"deleted user" => "",
+
+// include/se_users.php, row 81
 "Reader" => "読者", // ai 2026-06
 
-// include/se_users.php, row 78
+// include/se_users.php, row 84
 "ReaderGroup" => "読者グループ", // ai 2026-06
 
-// include/se_users.php, row 126
+// include/se_users.php, row 133
 "Search user or group" => "利用者かグループの検索",
 
-// include/se_users.php, row 141
+// include/se_users.php, row 148
 // include/um_util.php, row 108
 "Assign new permissions" => "新しい許可を代入",
 
-// include/se_users.php, row 168
+// include/se_users.php, row 175
 "Try to be more specific." => "もっと具体的に指定してください。", // ai 2026-06
 
-// include/se_users.php, row 185
+// include/se_users.php, row 192
 "More users found. Refine your search." => "利用者が多数見つかりました。検索を絞り込んでください。", // ai 2026-06
 
-// include/searchbar.class.php, row 51
-// src/AA_Plannedtask.php, row 56, 102
+// include/searchbar.class.php, row 54
+// src/AA_Plannedtask.php, row 62, 127
 "Condition" => "条件", // ai 2026-06
 
-// include/searchbar.class.php, row 52
+// include/searchbar.class.php, row 55
 "Readonly" => "読み取り専用", // ai 2026-06
 
-// include/searchbar.class.php, row 142
+// include/searchbar.class.php, row 151
 "Search row" => "検索行", // ai 2026-06
 
-// include/searchbar.class.php, row 143
+// include/searchbar.class.php, row 152
 "Order row" => "並べ替え行", // ai 2026-06
 
-// include/searchbar.class.php, row 533
+// include/searchbar.class.php, row 566
 "And" => "かつ", // ai 2026-06
 
-// include/searchbar.class.php, row 546
-// include/searchlib.php, row 50, 53, 124, 133
+// include/searchbar.class.php, row 580
+// include/searchlib.php, row 51, 54, 127, 136
 "begins with" => "で始まる", // ai 2026-06
 
-// include/searchbar.class.php, row 571
+// include/searchbar.class.php, row 608
 "Clear" => "クリア", // ai 2026-06
 
-// include/searchbar.class.php, row 574
+// include/searchbar.class.php, row 611
 "Store search" => "検索を保存", // ai 2026-06
 
-// include/searchbar.class.php, row 595
+// include/searchbar.class.php, row 633
 "Order" => "並べ替え", // ai 2026-06
 
-// include/searchbar.class.php, row 664
+// include/searchbar.class.php, row 706
 "Advanced search" => "高度な検索", // ai 2026-06
 
-// include/searchbar.class.php, row 729
+// include/searchbar.class.php, row 770
 "Refine" => "絞り込み", // ai 2026-06
 
-// include/searchbar.class.php, row 732
+// include/searchbar.class.php, row 773
 "Share with all slice users" => "スライスの全利用者と共有", // ai 2026-06
 
-// include/searchbar.class.php, row 733
+// include/searchbar.class.php, row 774
 "Save filter" => "フィルタを保存", // ai 2026-06
 
-// include/searchbar.class.php, row 734
+// include/searchbar.class.php, row 775
 "Rename filter" => "フィルタ名を変更", // ai 2026-06
 
-// include/searchbar.class.php, row 735
+// include/searchbar.class.php, row 776
 "Are you sure you want to delete selected filter?" => "選択したフィルタを削除してもよろしいですか？", // ai 2026-06
 
-// include/searchbar.class.php, row 1017
+// include/searchbar.class.php, row 1065
 "Select one..." => "選択してください...", // ai 2026-06
 
-// include/searchbar.class.php, row 1032
+// include/searchbar.class.php, row 1080
 "My filters" => "自分のフィルタ", // ai 2026-06
 
-// include/searchbar.class.php, row 1035
+// include/searchbar.class.php, row 1083
 "Global filters" => "グローバルフィルタ", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Shared filter (click to apply)" => "共有フィルタ (クリックで適用)", // ai 2026-06
 
-// include/searchbar.class.php, row 1073
+// include/searchbar.class.php, row 1114
 "Personal filter (click to apply)" => "個人フィルタ (クリックで適用)", // ai 2026-06
 
-// include/searchbar.class.php, row 1083
+// include/searchbar.class.php, row 1124
 "Rename" => "名前を変更", // ai 2026-06
 
-// include/searchbar.class.php, row 1094
+// include/searchbar.class.php, row 1135
 "Manage filters" => "フィルタの管理", // ai 2026-06
 
-// include/searchlib.php, row 54
+// include/searchlib.php, row 55
 "LLIKE" => "",
 
-// include/searchlib.php, row 55
+// include/searchlib.php, row 56
 "XLIKE" => "",
 
-// include/searchlib.php, row 56
+// include/searchlib.php, row 57
 "BETWEEN" => "",
 
-// include/searchlib.php, row 57
+// include/searchlib.php, row 58
 "bit is set" => "ビットが設定されている", // ai 2026-06
 
-// include/searchlib.php, row 59, 124, 127, 130, 133, 136
+// include/searchlib.php, row 60, 127, 130, 133, 136, 139
 "is set" => "値あり", // ai 2026-06
 
-// include/searchlib.php, row 60, 124
+// include/searchlib.php, row 61, 127
 "is e-mail" => "E-メールである", // ai 2026-06
 
-// include/searchlib.php, row 61, 124
+// include/searchlib.php, row 62, 127
 "not e-mail" => "E-メールでない", // ai 2026-06
 
-// include/searchlib.php, row 62, 124, 133
+// include/searchlib.php, row 63, 127, 136
 "match (RegExp)" => "一致する (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 63, 124, 133
+// include/searchlib.php, row 64, 127, 136
 "not match (RegExp)" => "一致しない (RegExp)", // ai 2026-06
 
-// include/searchlib.php, row 124, 133
+// include/searchlib.php, row 127, 136
 "is not" => "等しくない", // ai 2026-06
 
-// include/searchlib.php, row 133, 136
-// include/statestore.php, row 1239
+// include/searchlib.php, row 136, 139
+// include/statestore.php, row 1363
 "select ..." => "選択 ...", // ai 2026-06
 
-// include/searchlib.php, row 169
-"Operator" => "演算子", // ai 2026-06
-
-// include/searchlib.php, row 359
+// include/searchlib.php, row 369
 "Limit" => "件数制限", // ai 2026-06
 
-// include/slice.class.php, row 333
+// include/slice.class.php, row 428
 "Error while loading module settings form:" => "モジュール設定フォームの読み込み中にエラー:", // ai 2026-06
 
-// include/slice.class.php, row 555
+// include/slice.class.php, row 680
 "Code - Pages" => "コード - ページ", // ai 2026-06
 
-// include/slice.class.php, row 556
+// include/slice.class.php, row 681
 "Code - Views / Snippets" => "コード - ビュー / スニペット", // ai 2026-06
 
-// include/slice.class.php, row 557
+// include/slice.class.php, row 682
+// src/Optimize/CheckImports.php, row 272
 "Constant" => "定数", // ai 2026-06
 
-// include/slice.class.php, row 558
-// include/transformation.class.php, row 692
+// include/slice.class.php, row 683
+// include/transformation.class.php, row 752
 "Translations" => "翻訳", // ai 2026-06
 
-// include/slice.class.php, row 559
+// include/slice.class.php, row 684
 "Field definitions" => "フィールド定義", // ai 2026-06
 
-// include/slice.class.php, row 764
-// include/util.php, row 950
+// include/slice.class.php, row 909
+// include/util.php, row 993
 "Error: Missing Reading Password" => "エラー: 読み取りパスワードがありません", // ai 2026-06
 
-// include/slice.class.php, row 980
-"Site" => "サイト", // ai 2026-06
-
-// include/slice.class.php, row 1102
+// include/slice.class.php, row 1297
 "Spot ID" => "スポットID", // ai 2026-06
 
-// include/slice.class.php, row 1102
+// include/slice.class.php, row 1297
 "You can include this spot code in another spot by using {sitespot:%1}" => "このスポットのコードは {sitespot:%1} を使って別のスポットに挿入できます", // ai 2026-06
 
-// include/slice.class.php, row 1120
+// include/slice.class.php, row 1315
 "Spot name" => "スポット名", // ai 2026-06
 
-// include/slice.class.php, row 1251
+// include/slice.class.php, row 1457
 "Jump inside AA control panel" => "AA管理画面内へのジャンプ", // ai 2026-06
 
-// include/slice.class.php, row 1273
+// include/slice.class.php, row 1482
 "Polls for AA" => "AAのアンケート", // ai 2026-06
 
-// include/slice.class.php, row 1336
+// include/slice.class.php, row 1551
 "Languages for translation" => "翻訳する言語", // ai 2026-06
 
-// include/slice.class.php, row 1336
+// include/slice.class.php, row 1551
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "内容を翻訳したい言語のコードを指定してください - 小文字2文字 - 例: en, es, de, ...", // ai 2026-06
 
-// include/slice.class.php, row 1337
+// include/slice.class.php, row 1552
 "Automatic field creation" => "フィールドの自動作成", // ai 2026-06
 
-// include/slice.class.php, row 1337
+// include/slice.class.php, row 1552
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "チェックすると、該当する text....* フィールドがスライスに定義されていなくても、text....* フィールドへ値を保存できます。フィールドは text............ フィールドをテンプレートとして作成されます。", // ai 2026-06
 
-// include/slice.class.php, row 1338
+// include/slice.class.php, row 1553
 "Fields defined by another slice" => "別のスライスで定義されたフィールド", // ai 2026-06
 
-// include/slice.class.php, row 1338
+// include/slice.class.php, row 1553
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "追加フィールドの定義に特別なスライスを使えます。ここにフィールドを定義するスライスの ID を入力します。<br>利用者が作成したフォームの値を保存するデータスライスに利用できます。", // ai 2026-06
 
-// include/slice.class.php, row 1339
+// include/slice.class.php, row 1554
 "Store item history for N days" => "項目の履歴を N 日間保存", // ai 2026-06
 
-// include/slice.class.php, row 1339
+// include/slice.class.php, row 1554
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - 履歴ログを削除しない (省略値)<br>0 - 項目の履歴を保存しない (ログの ITEM_UPD/ITEM_NEW イベントも保存しない)<br><em>数値</em> - 項目の履歴が削除されるまでの日数", // ai 2026-06
 
-// include/slice.class.php, row 1340
+// include/slice.class.php, row 1555
 "No pending items" => "待機中の項目なし", // ai 2026-06
 
-// include/slice.class.php, row 1340
+// include/slice.class.php, row 1555
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - このスライスで待機箱を完全に無効化 (publish_date フィールドは通常のフィールドとして動作)<br>{aa-expression} - 1 と評価された場合、待機チェックを無効化 (ビュー、スライス、{ids...} 用) (ここでは {if:{qss:..}, {var:..}, {server:..} の式を使用)", // ai 2026-06
 
-// include/slice.class.php, row 1341
+// include/slice.class.php, row 1556
 "No expired items" => "期限切れの項目なし", // ai 2026-06
 
-// include/slice.class.php, row 1341
+// include/slice.class.php, row 1556
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - このスライスで期限切れ箱を完全に無効化 (expiry_date フィールドは通常のフィールドとして動作)<br>{aa-expression} - 1 と評価された場合、期限切れチェックを無効化 (ビュー、スライス、{ids...} 用) (ここでは {if:{qss:..}, {var:..}, {server:..} の式を使用)", // ai 2026-06
 
-// include/slice.class.php, row 1386
+// include/slice.class.php, row 1615
 "Slice with translations" => "翻訳用スライス", // ai 2026-06
 
-// include/slice.class.php, row 1386
+// include/slice.class.php, row 1615
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "{tr:text...} の翻訳に使うスライス (このスライスでは headline........ フィールドのみを「Allow translation」に設定する必要があります)", // ai 2026-06
 
-// include/slice.class.php, row 1387
+// include/slice.class.php, row 1616
 "Additional aliases" => "追加の別名", // ai 2026-06
 
-// include/slice.class.php, row 1387
+// include/slice.class.php, row 1616
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "追加の {_:...} 別名を探すサイトモジュールを選択してください", // ai 2026-06
 
-// include/slice.class.php, row 1388
+// include/slice.class.php, row 1617
 "Languages on website" => "ウェブサイトの言語", // ai 2026-06
 
-// include/slice.class.php, row 1388
+// include/slice.class.php, row 1617
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "サイトモジュールを使用する全ての言語を列挙してください - en, es, cz, ..<br>1 つの言語のみ使用する場合でも<b>必ず記入</b>してください。<br>Apache から新しい方法でサイトモジュールを呼び出す場合に必要です:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
-// include/slice.class.php, row 1389
+// include/slice.class.php, row 1618
 "Page not Found (404)" => "ページが見つかりません (404)", // ai 2026-06
 
-// include/slice.class.php, row 1389
+// include/slice.class.php, row 1618
 "Do not care" => "何もしない", // ai 2026-06
 
-// include/slice.class.php, row 1389
+// include/slice.class.php, row 1618
 "Send standard 404 page, when {xid} is empty" => "{xid} が空のとき標準の404ページを送信", // ai 2026-06
 
-// include/slice.class.php, row 1389
+// include/slice.class.php, row 1618
 "Send code below" => "下記のコードを送信", // ai 2026-06
 
-// include/slice.class.php, row 1389
+// include/slice.class.php, row 1618
 "When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "最初の選択肢「何もしない」を選んだ場合 (従来の動作)、未設定の {xid} はサイトモジュール内で自分でテストする必要があります", // ai 2026-06
 
-// include/slice.class.php, row 1390
+// include/slice.class.php, row 1619
 "HTML code for \"Page not Found\" (404)" => "「ページが見つかりません」(404) 用のHTMLコード", // ai 2026-06
 
-// include/slice.class.php, row 1391
+// include/slice.class.php, row 1620
 "sitemap.xml alias" => "sitemap.xml の別名", // ai 2026-06
 
-// include/slice.class.php, row 1391
+// include/slice.class.php, row 1620
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "sitemap.xml は、指定した別名 (例: _#SMAP_URL) が存在する全てのスライス (上記の順序) から生成されます。この別名は各スライスで項目の完全な URL を生成する必要があります。非公開/隠し項目では、URL が表示されないよう空文字列を生成してください。", // ai 2026-06
 
-// include/slice.class.php, row 1392
+// include/slice.class.php, row 1621
 "Permission alias" => "許可の別名", // ai 2026-06
 
-// include/slice.class.php, row 1392
+// include/slice.class.php, row 1621
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "表示されるすべての {xid}（=ページ）に対して評価される別名を定義できます。値が \"Valid\" という語であればページが表示されます。そうでなければログインフォーム（下記参照）が表示されます。もちろんこの機能を使わず、従来どおり site モジュールのツリーで直接設定することもできます。", // ai 2026-06
 
-// include/slice.class.php, row 1393
+// include/slice.class.php, row 1622
 "HTML code for \"Login page\"" => "「ログインページ」のHTMLコード", // ai 2026-06
 
-// include/slice.class.php, row 1394
+// include/slice.class.php, row 1623
+// src/Central/FindingText.php, row 434
 "User login databases" => "利用者ログイン用データベース", // ai 2026-06
 
-// include/slice.class.php, row 1394
+// include/slice.class.php, row 1623
+// src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "「使用するスライス」の最初の読者管理スライス", // ai 2026-06
 
-// include/slice.class.php, row 1394
+// include/slice.class.php, row 1623
+// src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "「使用するスライス」のすべての読者管理スライス", // ai 2026-06
 
-// include/slice.class.php, row 1394
+// include/slice.class.php, row 1623
+// src/Central/FindingText.php, row 411
 "AA + all Reader Management slices in AA (old behavior)" => "AA + AA内のすべての読者管理スライス（旧動作）", // ai 2026-06
 
-// include/slice.class.php, row 1394
+// include/slice.class.php, row 1623
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "推奨は「最初の読者管理スライス」です。このスライスの利用者だけが公開ページにログインできます。選択しない場合は「AA + すべての読者管理スライス」が使われます。", // ai 2026-06
 
-// include/slice.class.php, row 1395
+// include/slice.class.php, row 1624
 "Google analytics tracking id" => "Google Analytics トラッキングID", // ai 2026-06
 
-// include/slice.class.php, row 1395
+// include/slice.class.php, row 1624
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "site モジュールのコードで {generate:HEAD} と {generate:FOOT} を使っている場合、このトラッキングIDでGoogle Analyticsのコードが生成されます。Googleがスニペットを変更すると、生成されるコードも将来変わる可能性があります。<br>Cookie同意バーを使うには、サイトに {eucookies} または {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} を追加してください。", // ai 2026-06
 
-// include/slice.class.php, row 1396
+// include/slice.class.php, row 1625
 "Alternate URL" => "代替URL", // ai 2026-06
 
-// include/slice.class.php, row 1396
+// include/slice.class.php, row 1625
 "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "このウェブを表示する別のドメイン。ただし、SEOの観点からは、サーバー側リダイレクトで単一ドメインに統一することを検討してください。", // ai 2026-06
 
-// include/slice.php, row 68
+// include/slice.class.php, row 1627
+"Publish in the app store" => "",
+
+// include/slice.class.php, row 1627
+"Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "",
+
+// include/slice.class.php, row 1628
+"App description" => "",
+
+// include/slice.class.php, row 1628
+"What the app does, for the list of the app store." => "",
+
+// include/slice.class.php, row 1629
+"App version" => "",
+
+// include/slice.class.php, row 1629
+"Like 1.2.0." => "",
+
+// include/slice.class.php, row 1631
+"Published modules" => "",
+
+// include/slice.class.php, row 1678
+"The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "",
+
+// include/slice.php, row 69
 "Select Category " => "分類を選択", // ai 2026-06
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "全ての分類", // ai 2026-06
 
-// include/sliceadd.php, row 55
+// include/sliceadd.php, row 38
+// include/slicedit.php, row 151
+"You do not have permissions to add slice" => "スライスを追加する許可がありません",
+
+// include/sliceadd.php, row 57
 "To create the new Slice, please choose a template.\n"
    ."        The new slice will inherit the template's default fields.  \n"
    ."        You can also choose a non-template slice to base the new slice on, \n"
@@ -5739,76 +6813,76 @@ return [
    ."        必要なフィールドを持っていれば、テンプレート以外の\n"
    ."        既存スライスを元にして作成することもできます。", // ai 2026-06
 
-// include/sliceadd.php, row 73
+// include/sliceadd.php, row 75
 "No templates" => "テンプレートがありません", // ai 2026-06
 
-// include/sliceadd.php, row 87
+// include/sliceadd.php, row 89
 "No slices" => "スライスがありません", // ai 2026-06
 
-// include/sliceadd.php, row 91
+// include/sliceadd.php, row 93
 "Copy Views" => "ビューをコピー", // ai 2026-06
 
-// include/sliceadd.php, row 92
+// include/sliceadd.php, row 94
 "Categories/Constants" => "分類/定数", // ai 2026-06
 
-// include/sliceadd.php, row 93
+// include/sliceadd.php, row 95
 "Share with Template" => "テンプレートと共有", // ai 2026-06
 
-// include/sliceadd.php, row 94
+// include/sliceadd.php, row 96
 "Copy from Template" => "テンプレートからコピー", // ai 2026-06
 
-// include/slicedit.php, row 56
+// include/slicedit.php, row 57
 "User not found" => "利用者が見付かりません", // ai 2026-06
 
-// include/slicedit.php, row 71
+// include/slicedit.php, row 72
 "Slice not found." => "スライスが見付かりません。", // ai 2026-06
 
-// include/slicedit.php, row 85
+// include/slicedit.php, row 86
 "Error mailing" => "メール送信エラー", // ai 2026-06
 
-// include/slicedit.php, row 194
+// include/slicedit.php, row 163
+"The settings and the other fields of this page were not saved." => "",
+
+// include/slicedit.php, row 197
 "Upload URL" => "アップロードURL", // ai 2026-06
 
-// include/slicedit.php, row 203
+// include/slicedit.php, row 206
 "Language Control Slice" => "翻訳管理スライス", // ai 2026-06
 
-// include/slicedit.php, row 209
+// include/slicedit.php, row 212
 "This File Manager Directory is already used by another slice." => "このファイルマネージャのディレクトリは既に別のスライスで使われています。", // ai 2026-06
 
-// include/slicedit.php, row 352
+// include/slicedit.php, row 355
 "Error when copying constants." => "定数のコピーでエラーが発生しました。", // ai 2026-06
 
-// include/slicedit.php, row 361
+// include/slicedit.php, row 366
 "Error when copying views." => "ビューのコピーでエラーが発生しました。", // ai 2026-06
 
-// include/slicedit.php, row 369
+// include/slicedit.php, row 374
 "Internal error when changing user role." => "利用者の役割変更中に内部エラーが発生しました。", // ai 2026-06
 
-// include/statestore.php, row 975
+// include/statestore.php, row 1077
 "Owner ID" => "所有者ID", // ai 2026-06
 
-// include/statestore.php, row 1057
+// include/statestore.php, row 1171
 "No object found" => "オブジェクトが見付かりません", // ai 2026-06
 
-// include/statestore.php, row 1320
+// include/statestore.php, row 1445
 "Manage components" => "コンポーネントの管理", // ai 2026-06
 
-// include/stringexpand.php, row 90
+// include/stringexpand.php, row 93
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "別名は {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]} として呼び出されます", // ai 2026-06
 
-// include/stringexpand.php, row 91
+// include/stringexpand.php, row 94
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "別名が出力するコード。別名はパラメータを持つことができ、変数 _#P1、_#P2、... で参照できます", // ai 2026-06
 
-// include/stringexpand.php, row 93
+// include/stringexpand.php, row 96
 "Usage example" => "使用例", // ai 2026-06
 
-// include/stringexpand.php, row 907
+// include/stringexpand.php, row 911
 "Jabber Online Status Indicator" => "Jabber オンライン状態インジケータ", // ai 2026-06
 
-// include/stringexpand.php, row 1864
-"Yes" => "はい", // ai 2026-06
-
-// include/stringexpand.php, row 5437
+// include/stringexpand.php, row 5439
 "save changes" => "変更を保存", // ai 2026-06
 
 // include/stringexpand.php, row 5655
@@ -5829,266 +6903,199 @@ return [
 // include/stringexpand.php, row 5683
 "No permit_anonymous_edit permission for the slice" => "スライスに permit_anonymous_edit 許可がありません", // ai 2026-06
 
-// include/stringexpand.php, row 6065
+// include/stringexpand.php, row 6078
 "No dictionaries specified for {dictionary}" => "{dictionary} に辞書が指定されていません", // ai 2026-06
 
-// include/stringexpand.php, row 6148
+// include/stringexpand.php, row 6161
 "No module for dictionary slice" => "辞書スライスのモジュールがありません", // ai 2026-06
 
-// include/stringexpand.php, row 7716
+// include/stringexpand.php, row 7789
 "version" => "バージョン", // ai 2026-06
 
-// include/stringexpand.php, row 7900
+// include/stringexpand.php, row 7973
 "show" => "表示", // ai 2026-06
 
-// include/stringexpand.php, row 7901
+// include/stringexpand.php, row 7974
 "hide" => "隠す", // ai 2026-06
 
-// include/stringexpand.php, row 7902
+// include/stringexpand.php, row 7975
 "loading" => "読み込み中", // ai 2026-06
 
-// include/stringexpand.php, row 8889
+// include/stringexpand.php, row 9100
 "E-mail confirmed." => "E-メールが確認されました。", // ai 2026-06
 
-// include/stringexpand.php, row 8893
+// include/stringexpand.php, row 9104
 "E-mail unsubscribed" => "E-メールの購読を解除しました", // ai 2026-06
 
-// include/stringexpand.php, row 9641
+// include/stringexpand.php, row 9853
 "Forgot your password? Fill in your email." => "パスワードをお忘れですか？E-メールを入力してください。", // ai 2026-06
 
-// include/stringexpand.php, row 9643
+// include/stringexpand.php, row 9855
+// src/Central/FindingText.php, row 457
 "e-mail" => "E-メール", // ai 2026-06
 
-// include/stringexpand.php, row 9661, 9665
+// include/stringexpand.php, row 9873, 9877
 "Unable to find user - please check if it has been misspelled." => "利用者が見付かりません。綴りに間違いがないか確認してください。", // ai 2026-06
 
-// include/stringexpand.php, row 9680
+// include/stringexpand.php, row 9891
 "Password link" => "パスワードリンク", // ai 2026-06
 
-// include/stringexpand.php, row 9681
+// include/stringexpand.php, row 9892
 "Password change url parameter" => "パスワード変更のURLパラメータ", // ai 2026-06
 
-// include/stringexpand.php, row 9693
+// include/stringexpand.php, row 9904
 "Password change" => "パスワード変更", // ai 2026-06
 
-// include/stringexpand.php, row 9694
+// include/stringexpand.php, row 9905
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "パスワードを変更するには、次のアドレスにアクセスしてください:<br>%1<br>変更は2時間のみ可能です。その後はキーの有効期限が切れるため、新しいキーを請求する必要があります。", // ai 2026-06
 
-// include/stringexpand.php, row 9703
+// include/stringexpand.php, row 9914
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "パスワード変更用のキーを記載したE-メールを次のアドレスに送信しました: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9714, 9743
+// include/stringexpand.php, row 9925, 9954
 "Bad or expired key." => "キーが不正か期限切れです。", // ai 2026-06
 
-// include/stringexpand.php, row 9719
+// include/stringexpand.php, row 9930
 "Fill in the new password" => "新しいパスワードを入力してください", // ai 2026-06
 
-// include/stringexpand.php, row 9721
+// include/stringexpand.php, row 9932
 "New password" => "新しいパスワード", // ai 2026-06
 
-// include/stringexpand.php, row 9722
+// include/stringexpand.php, row 9933
 "Retype New Password" => "新しいパスワードを繰り返す", // ai 2026-06
 
-// include/stringexpand.php, row 9746
+// include/stringexpand.php, row 9957
 "Passwords do not match - please try again." => "パスワードが一致しません。もう一度お試しください。", // ai 2026-06
 
-// include/stringexpand.php, row 9749
+// include/stringexpand.php, row 9960
 "The password must be at least 6 characters long." => "パスワードは6文字以上にしてください。", // ai 2026-06
 
-// include/stringexpand.php, row 9755
+// include/stringexpand.php, row 9966
 "Password changed." => "パスワードを変更しました。", // ai 2026-06
 
-// include/stringexpand.php, row 9757
+// include/stringexpand.php, row 9968
 "An error occurred during password change - please contact: %1." => "パスワード変更中にエラーが発生しました。%1 までご連絡ください。", // ai 2026-06
 
-// include/stringexpand.php, row 10621, 10644
-// include/tabledit_util.php, row 680
+// include/stringexpand.php, row 10847, 10870
 "Are you sure you want to permanently DELETE this record?" => "このレコードを完全に削除してもよろしいですか？", // ai 2026-06
 
-// include/stringexpand.php, row 10627, 10630, 10650, 10653
-// include/tabledit.php, row 708, 808
-// src/Widget/RimWidget.php, row 224
+// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// src/Widget/RimWidget.php, row 270
 "edit" => "編集", // ai 2026-06
 
-// include/stringexpand.php, row 10633, 10656
+// include/stringexpand.php, row 10859, 10882
 "back" => "戻る", // ai 2026-06
 
-// include/stringexpand.php, row 10636, 10659
-// src/Widget/RimWidget.php, row 249
+// include/stringexpand.php, row 10862, 10885
+// src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "ここにファイルをドロップするか、クリックしてアップロード", // ai 2026-06
 
-// include/tabledit.php, row 260
-"No record matches your search condition." => "検索条件に一致するレコードはありません。", // ai 2026-06
-
-// include/tabledit.php, row 395
-"order ascending" => "昇順に並べ替え", // ai 2026-06
-
-// include/tabledit.php, row 397
-"order descending" => "降順に並べ替え", // ai 2026-06
-
-// include/tabledit.php, row 486
-"Nothing to be shown." => "表示するものがありません。", // ai 2026-06
-
-// include/tabledit.php, row 590
-"search" => "検索", // ai 2026-06
-
-// include/tabledit.php, row 815
-"add" => "追加", // ai 2026-06
-
-// include/tabledit.php, row 822, 831
-"delete" => "削除", // ai 2026-06
-
-// include/tabledit.php, row 831, 846
-"insert" => "挿入", // ai 2026-06
-
-// include/tabledit.php, row 839
-"delete checked" => "チェックしたレコードを削除", // ai 2026-06
-
-// include/tabledit.php, row 846
-"update" => "更新", // ai 2026-06
-
-// include/tabledit.php, row 853
-"update all" => "全て更新", // ai 2026-06
-
-// include/tabledit.php, row 860
-"browse" => "閲覧", // ai 2026-06
-
-// include/tabledit.php, row 927
-"Are you sure you want to permanently DELETE all the checked records?" => "本当にチェックしたすべてのレコードを完全に削除しますか？", // ai 2026-06
-
-// include/tabledit_util.php, row 67, 449
-"Insert was successful." => "挿入に成功しました。", // ai 2026-06
-
-// include/tabledit_util.php, row 73, 96, 362
-"Update was successful." => "更新に成功しました。", // ai 2026-06
-
-// include/tabledit_util.php, row 110, 115
-"Delete was successful." => "削除に成功しました。", // ai 2026-06
-
-// include/tabledit_util.php, row 531
-"Value of %1 should be between %2 and %3." => "%1の値は%2から%3の間でなければなりません。", // ai 2026-06
-
-// include/tabledit_util.php, row 566
-"Table does not have a primary key set on a single column. You can specify primary key by primary => array (field1, field2, ...) parameter for tableedit" => "テーブルに単一の列の主キーが設定されていません。tableeditのパラメータ primary => array (field1, field2, ...) で主キーを指定できます", // ai 2026-06
-
-// include/tabledit_util.php, row 670
-"Wrong value: a number between %1 and %2 is expected." => "不正な値: %1から%2の間の数値が必要です。", // ai 2026-06
-
-// include/transformation.class.php, row 149
+// include/transformation.class.php, row 159
 "Fill by value" => "値で埋める", // ai 2026-06
 
-// include/transformation.class.php, row 156
+// include/transformation.class.php, row 167
 "Returns single value (not multivalue) which is created as result of AA expression specified in Expression. You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ..." => "「式」で指定したAA式の評価結果として作成される単一の値（複数値ではない）を返します。{ifset:{_#HEADLINE}:...} などの任意のAA式を使用できます", // ai 2026-06
 
-// include/transformation.class.php, row 183, 428, 512
+// include/transformation.class.php, row 194, 456, 550
 "As for other values of this field" => "このフィールドの他の値と同様に", // ai 2026-06
 
-// include/transformation.class.php, row 192, 364, 437, 522, 691
+// include/transformation.class.php, row 203, 389, 465, 560, 749
 "Mark as" => "設定値", // ai 2026-06
 
-// include/transformation.class.php, row 193, 253, 438
+// include/transformation.class.php, row 206, 274, 468
 "New content" => "新しい内容", // ai 2026-06
 
-// include/transformation.class.php, row 194, 439, 524
+// include/transformation.class.php, row 211, 473, 568
 "You can use also aliases, so the content \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" is perfectly OK" => "別名も使用できます。例えば \"&lt;i&gt;{abstract........}&lt;/i&gt;&lt;br&gt;{full_text......1}\" という内容でも問題ありません", // ai 2026-06
 
-// include/transformation.class.php, row 217
+// include/transformation.class.php, row 237
 "Fill by exact values" => "そのままの値で埋める", // ai 2026-06
 
-// include/transformation.class.php, row 224
+// include/transformation.class.php, row 245
 "Returns values exactly as specified (no evaluation, ...)" => "指定された通りの値を返します（評価なし、...）", // ai 2026-06
 
-// include/transformation.class.php, row 253
+// include/transformation.class.php, row 274
 "Exact value only - no AA expressions" => "そのままの値のみ - AA式は不可", // ai 2026-06
 
-// include/transformation.class.php, row 274
+// include/transformation.class.php, row 295
 "Recompute field" => "フィールドの再計算", // ai 2026-06
 
-// include/transformation.class.php, row 281
+// include/transformation.class.php, row 303
 "Just recomputes field as specified in the field setting. Works just for Computed fields, of course. No parameters needed. If the Silent is not checked, all the computed fields are recomputed (just like with other transformations)" => "フィールドをその設定に従って再計算するだけです。もちろん計算フィールドにのみ機能します。パラメータは不要です。Silentがチェックされていない場合は、すべての計算フィールドが再計算されます（他の変換と同様）", // ai 2026-06
 
-// include/transformation.class.php, row 326
+// include/transformation.class.php, row 350
 "Set HTML/Plain-text flag" => "HTML/プレーンテキストフラグの設定", // ai 2026-06
 
-// include/transformation.class.php, row 333
+// include/transformation.class.php, row 358
 "Changes the HTML or Plain-text flag for the field." => "フィールドのHTMLまたはプレーンテキストフラグを変更します。", // ai 2026-06
 
-// include/transformation.class.php, row 393
+// include/transformation.class.php, row 420
 "Add value to field" => "フィールドに値を追加", // ai 2026-06
 
-// include/transformation.class.php, row 400
+// include/transformation.class.php, row 428
 "Add new value to current content of field, so the field becomes multivalue.<br>You can use any AA expressions like {ifset:{_#HEADLINE}:...}, ... for new value." => "フィールドの現在の内容に新しい値を追加するため、フィールドは複数値になります。<br>新しい値には {ifset:{_#HEADLINE}:...} などの任意のAA式を使用できます。", // ai 2026-06
 
-// include/transformation.class.php, row 468
+// include/transformation.class.php, row 505
 "Divide the text to multiple values (also for multilingual values)" => "テキストを複数の値に分割（多言語値にも対応）", // ai 2026-06
 
-// include/transformation.class.php, row 475
+// include/transformation.class.php, row 513
 "Parses the input text and looks for the delimiter. Separates the parts and stores them as multiple values to destination field" => "入力テキストを解析して区切り文字を探します。各部分を分けて、複数の値として対象フィールドに保存します", // ai 2026-06
 
-// include/transformation.class.php, row 523
+// include/transformation.class.php, row 563
 "Source text" => "元のテキスト", // ai 2026-06
 
-// include/transformation.class.php, row 526
+// include/transformation.class.php, row 577
 "use simple delimiter like | or longer like ---ENDTEXT---<br>use AA_LANG constant in delimiter to parse multilingual values like:   delimiter: |AA_LANG|   for Source text: |cz|text jedna|de|Ein text|en|text one" => "| のような単純な区切り文字や ---ENDTEXT--- のような長いものを使用してください<br>多言語値を解析するには区切り文字にAA_LANG定数を使用します。例:   区切り文字: |AA_LANG|   元のテキスト: |cz|text jedna|de|Ein text|en|text one", // ai 2026-06
 
-// include/transformation.class.php, row 611
+// include/transformation.class.php, row 669
 "Translates one value after other according to translation table. The result is multivalue, since each value of multivalue field is translated separately." => "翻訳テーブルに従って値を一つずつ翻訳します。複数値フィールドの各値は個別に翻訳されるため、結果は複数値になります。", // ai 2026-06
 
-// include/transformation.class.php, row 623
+// include/transformation.class.php, row 681
 "No translations specified." => "翻訳が指定されていません。", // ai 2026-06
 
-// include/transformation.class.php, row 682
+// include/transformation.class.php, row 740
 "Unchanged" => "変更なし", // ai 2026-06
 
-// include/transformation.class.php, row 693
+// include/transformation.class.php, row 757
 "Each translation on new line, translations separated by colon : (escape character for colon is #:).<br>You can use also aliases in the translation. There is also special alias _#0, which contain matching text - following translation is perfectly OK:<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>You can also use Regular Expressions - in such case the line would be \"<code>:regexp:<regular expression>:<output></code>\". You can use _#0 alias in <output>, which contains whole matching text.<br>Sometimes you want to remove specific value. In such case use <code>AA_NULL</code> text as translated text:<br> <code>Bio:AA_NULL</code><br>You may want also create more than one value from a value. Then separate the values by colon:<br> <code>Bio:Environment:Ecology</code> (\"Bio\" is replaced by two values). You can use any number of values here." => "各翻訳は新しい行に記述し、翻訳はコロン : で区切ります（コロンのエスケープ文字は #: です）。<br>翻訳には別名も使用できます。一致したテキストを含む特別な別名 _#0 もあります。次の翻訳はまったく問題ありません:<br><code> Bio:&lt;img src=\"_#0.jpg\"&gt; ({publish_date....})</code><br>正規表現も使用できます。その場合、行は \"<code>:regexp:<regular expression>:<output></code>\" となります。<output> では一致したテキスト全体を含む別名 _#0 を使用できます。<br>特定の値を削除したい場合は、翻訳後のテキストとして <code>AA_NULL</code> を使用してください:<br> <code>Bio:AA_NULL</code><br>一つの値から複数の値を作成することもできます。その場合は値をコロンで区切ります:<br> <code>Bio:Environment:Ecology</code>（\"Bio\" は二つの値に置き換えられます）。ここでは任意の数の値を使用できます。", // ai 2026-06
 
-// include/transformation.class.php, row 716
+// include/transformation.class.php, row 784
 "Search and Replace" => "検索と置換", // ai 2026-06
 
-// include/transformation.class.php, row 723
+// include/transformation.class.php, row 792
 "Search the content of text and replaces it with another text. No other transformations/unaliasing are applied - just basic search and replace." => "テキストの内容を検索し、別のテキストに置き換えます。他の変換や別名展開は行われません - 単純な検索と置換のみです。", // ai 2026-06
 
-// include/transformation.class.php, row 734, 803
+// include/transformation.class.php, row 803, 876
 "No searchstring specified." => "検索文字列が指定されていません。", // ai 2026-06
 
-// include/transformation.class.php, row 761, 838
+// include/transformation.class.php, row 830, 911
 "Replace" => "置換", // ai 2026-06
 
-// include/transformation.class.php, row 785
+// include/transformation.class.php, row 857
 "Regular Expressions Search and Replace" => "正規表現による検索と置換", // ai 2026-06
 
-// include/transformation.class.php, row 792
+// include/transformation.class.php, row 865
 "Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "正規表現を使ってテキストの内容を検索し、別のテキストに置き換えます。結果の文字列では別名が展開されます。<br>例:<br> - 検索: ^.*x=([0-9]*)\$<br> - 置換: {item:\$1:_#SEO_URL_}<br> - 別名展開: はい<br>結果: URLフィールド内の旧形式のリンクをすべて新形式に置き換えます <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)", // ai 2026-06
 
-// include/transformation.class.php, row 839
+// include/transformation.class.php, row 912
 "Unalias" => "別名展開", // ai 2026-06
 
-// include/transformation.class.php, row 839
+// include/transformation.class.php, row 912
 "perform unaliasing on result strings" => "結果の文字列で別名展開を行う", // ai 2026-06
 
-// include/transformation.class.php, row 860, 898
+// include/transformation.class.php, row 935, 976
 "Copy field" => "フィールドのコピー", // ai 2026-06
 
-// include/transformation.class.php, row 867, 899
+// include/transformation.class.php, row 943, 980
 "Selected field will be copied to the \"Field\" (including multivalues)" => "選択したフィールドが「フィールド」にコピーされます（複数値を含む）", // ai 2026-06
 
-// include/transformation.class.php, row 879
+// include/transformation.class.php, row 955
 "Source or destination field is not specified." => "コピー元またはコピー先のフィールドが指定されていません。", // ai 2026-06
 
-// include/tv_email.php, row 162
-"Reply to" => "返信先 (Reply-To)", // ai 2026-06
-
-// include/tv_email.php, row 165
-"Errors to" => "エラー送信先 (Errors-To)", // ai 2026-06
-
-// include/tv_email.php, row 168
-"Sender" => "送信者", // ai 2026-06
-
-// include/um_gedit.php, row 43
+// include/um_gedit.php, row 44
 "It is impossible to add group to permission system" => "許可システムにグループを追加できません", // ai 2026-06
 
-// include/um_gedit.php, row 54
+// include/um_gedit.php, row 55
 "Can't change group" => "グループを変更できません", // ai 2026-06
 
 // include/um_util.php, row 151, 175
@@ -6103,256 +7110,257 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "利用者を変更できません", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "アプリケーションのお知らせ", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "再ログイン", // ai 2026-06
 
-// include/validate.php, row 52
+// include/validate.php, row 54
 "it must be filled" => "入力が必要です", // ai 2026-06
 
-// include/validate.php, row 151
+// include/validate.php, row 175
 "Bad validator type: %1" => "不正なバリデータの種類: %1", // ai 2026-06
 
-// include/validate.php, row 237, 517, 566
+// include/validate.php, row 268, 573, 626
 "Allowed minimum value" => "最小許容値", // ai 2026-06
 
-// include/validate.php, row 238, 518, 567
+// include/validate.php, row 269, 574, 627
 "Allowed maximum value" => "最大許容値", // ai 2026-06
 
-// include/validate.php, row 239
+// include/validate.php, row 270
 "Step" => "ステップ", // ai 2026-06
 
-// include/validate.php, row 240, 368, 822
+// include/validate.php, row 271, 407, 899
 "Maximum length" => "最大長", // ai 2026-06
 
-// include/validate.php, row 252
+// include/validate.php, row 284
 "No integer value" => "整数ではありません", // ai 2026-06
 
-// include/validate.php, row 256, 534, 583
+// include/validate.php, row 288, 591, 644
 "Out of range - too big" => "範囲外 - 大きすぎます", // ai 2026-06
 
-// include/validate.php, row 259, 537, 586
+// include/validate.php, row 291, 594, 647
 "Out of range - too small" => "範囲外 - 小さすぎます", // ai 2026-06
 
-// include/validate.php, row 366
+// include/validate.php, row 405
 "Regular expression" => "正規表現", // ai 2026-06
 
-// include/validate.php, row 367
+// include/validate.php, row 406
 "Empty expression" => "空の式", // ai 2026-06
 
-// include/validate.php, row 380, 638, 667, 834
+// include/validate.php, row 420, 704, 734, 912
 "Too long" => "長すぎます", // ai 2026-06
 
-// include/validate.php, row 385
+// include/validate.php, row 425
 "Do not match the pattern" => "パターンに一致しません", // ai 2026-06
 
-// include/validate.php, row 466, 497
+// include/validate.php, row 518, 551
 "No ID value" => "ID値ではありません", // ai 2026-06
 
-// include/validate.php, row 482
+// include/validate.php, row 535
 "No packed ID value" => "packed ID の値ではありません", // ai 2026-06
 
-// include/validate.php, row 530
+// include/validate.php, row 587
 "No float value" => "浮動小数点数 (float) ではありません", // ai 2026-06
 
-// include/validate.php, row 579
+// include/validate.php, row 640
 "No decimal value" => "小数 (decimal) ではありません", // ai 2026-06
 
-// include/validate.php, row 608
+// include/validate.php, row 672
 "Possible values" => "可能な値", // ai 2026-06
 
-// include/validate.php, row 619
+// include/validate.php, row 684
 "Out of range - not in the list" => "範囲外 - リストにありません", // ai 2026-06
 
-// include/validate.php, row 635, 664
+// include/validate.php, row 701, 731
 "Too short" => "短すぎます", // ai 2026-06
 
-// include/validate.php, row 640
+// include/validate.php, row 706
 "Wrong characters - you should use a-z, A-Z and 0-9 characters" => "不正な文字 - a-z、A-Z、0-9 の文字を使用してください", // ai 2026-06
 
-// include/validate.php, row 703, 783
+// include/validate.php, row 772, 857
 "Field id" => "フィールドID", // ai 2026-06
 
-// include/validate.php, row 704, 784
+// include/validate.php, row 773, 858
 "Scope" => "適用範囲", // ai 2026-06
 
-// include/validate.php, row 704
+// include/validate.php, row 773
 "username | slice | allslices" => "",
 
-// include/validate.php, row 705, 785
+// include/validate.php, row 774, 859
 "Item id which we do not count" => "カウントしない項目ID", // ai 2026-06
 
-// include/validate.php, row 727
+// include/validate.php, row 800
 "Username is not unique" => "利用者名が一意ではありません", // ai 2026-06
 
-// include/validate.php, row 734, 742
+// include/validate.php, row 807, 815
 "Wrong parameter field_id for unique check" => "一意性チェックのパラメータ field_id が不正です", // ai 2026-06
 
-// include/validate.php, row 754
+// include/validate.php, row 827
 "Not unique - value already used" => "一意ではありません - 値は既に使用されています", // ai 2026-06
 
-// include/validate.php, row 784
+// include/validate.php, row 858
 "username | slice | <b>allslices</b>" => "",
 
-// include/validate.php, row 881
+// include/validate.php, row 964
 "This field is required." => "このフィールドは必須です。", // ai 2026-06
 
-// include/validate.php, row 881
+// include/validate.php, row 964
 "This field is required (marked by *)." => "このフィールドは必須です（* 印）。", // ai 2026-06
 
-// include/validate.php, row 888
+// include/validate.php, row 971
 "Not a valid integer number." => "有効な整数ではありません。", // ai 2026-06
 
-// include/validate.php, row 891
+// include/validate.php, row 974
 "Not a valid file name." => "有効なファイル名ではありません。", // ai 2026-06
 
-// include/validate.php, row 895
+// include/validate.php, row 978
 "Not a valid email address." => "有効なメールアドレスではありません。", // ai 2026-06
 
-// include/validate.php, row 898
+// include/validate.php, row 981
 "The two password copies differ." => "2つのパスワードが一致しません。", // ai 2026-06
 
-// include/view.class.php, row 314
+// include/view.class.php, row 322
 "Jump to view:" => "ビューへ移動:", // ai 2026-06
 
-// include/widget.class.php, row 168
+// include/widget.class.php, row 179
 "id" => "",
 
-// include/widget.class.php, row 169
+// include/widget.class.php, row 180
+// src/Central/FindingText.php, row 474
 "name" => "名前", // ai 2026-06
 
-// include/widget.class.php, row 170
+// include/widget.class.php, row 181
 "type" => "型", // ai 2026-06
 
-// include/widget.class.php, row 171
+// include/widget.class.php, row 182
 "multi" => "複数値", // ai 2026-06
 
-// include/widget.class.php, row 172
+// include/widget.class.php, row 183
 "persistent" => "",
 
-// include/widget.class.php, row 173
+// include/widget.class.php, row 184
 "validator" => "バリデータ", // ai 2026-06
 
-// include/widget.class.php, row 174
+// include/widget.class.php, row 185
 "required" => "必要", // ai 2026-06
 
-// include/widget.class.php, row 175
+// include/widget.class.php, row 186
 "input_help" => "",
 
-// include/widget.class.php, row 176
+// include/widget.class.php, row 187
 "input_morehlp" => "",
 
-// include/widget.class.php, row 177
+// include/widget.class.php, row 188
 "example" => "例", // ai 2026-06
 
-// include/widget.class.php, row 178
+// include/widget.class.php, row 189
 "show_content_type_switch" => "",
 
-// include/widget.class.php, row 179
+// include/widget.class.php, row 190
 "content_type_switch_default" => "",
 
-// include/widget.class.php, row 180
+// include/widget.class.php, row 191
 "perm" => "",
 
-// include/widget.class.php, row 181
+// include/widget.class.php, row 192
 "const_arr" => "",
 
-// include/widget.class.php, row 182
+// include/widget.class.php, row 193
 "default" => "省略値", // ai 2026-06
 
-// include/widget.class.php, row 381
+// include/widget.class.php, row 470
 "Not filled (%1)" => "未入力 (%1)", // ai 2026-06
 
-// misc/datovka/datovka.php, row 110
+// misc/datovka/datovka.php, row 115
 "Datovka ID" => "データボックスID", // ai 2026-06
 
-// misc/datovka/datovka.php, row 111
+// misc/datovka/datovka.php, row 116
 "Return URL" => "戻り先URL", // ai 2026-06
 
-// misc/datovka/datovka.php, row 113
+// misc/datovka/datovka.php, row 118
 "Configuration" => "設定", // ai 2026-06
 
-// misc/datovka/datovka.php, row 113
+// misc/datovka/datovka.php, row 118
 "standard|test" => "",
 
-// misc/datovka/datovka.php, row 115
+// misc/datovka/datovka.php, row 120
 "State text" => "状態テキスト", // ai 2026-06
 
-// misc/datovka/datovka.php, row 116
+// misc/datovka/datovka.php, row 121
 "State time" => "状態時刻", // ai 2026-06
 
-// misc/datovka/datovka.php, row 117
+// misc/datovka/datovka.php, row 122
 "Related to" => "関連先", // ai 2026-06
 
-// misc/datovka/datovka.php, row 119
+// misc/datovka/datovka.php, row 124
 "Recipient ID" => "受信者ID", // ai 2026-06
 
-// misc/datovka/datovka.php, row 120
+// misc/datovka/datovka.php, row 125
 "Annotation" => "注釈", // ai 2026-06
 
-// misc/datovka/datovka.php, row 121
+// misc/datovka/datovka.php, row 126
 "To hands" => "担当者宛", // ai 2026-06
 
-// misc/datovka/datovka.php, row 122
+// misc/datovka/datovka.php, row 127
 "Recipient reference number" => "受信者の整理番号", // ai 2026-06
 
-// misc/datovka/datovka.php, row 123
+// misc/datovka/datovka.php, row 128
 "Recipient identifier" => "受信者の識別子", // ai 2026-06
 
-// misc/datovka/datovka.php, row 124
+// misc/datovka/datovka.php, row 129
 "Recipient org unit" => "受信者の組織単位", // ai 2026-06
 
-// misc/datovka/datovka.php, row 125
+// misc/datovka/datovka.php, row 130
 "Recipient org unit number" => "受信者の組織単位番号", // ai 2026-06
 
-// misc/datovka/datovka.php, row 126
+// misc/datovka/datovka.php, row 131
 "Sender reference number" => "送信者の整理番号", // ai 2026-06
 
-// misc/datovka/datovka.php, row 127
+// misc/datovka/datovka.php, row 132
 "Sender identifier" => "送信者の識別子", // ai 2026-06
 
-// misc/datovka/datovka.php, row 128
+// misc/datovka/datovka.php, row 133
 "Sender org unit" => "送信者の組織単位", // ai 2026-06
 
-// misc/datovka/datovka.php, row 129
+// misc/datovka/datovka.php, row 134
 "Sender org unit number" => "送信者の組織単位番号", // ai 2026-06
 
-// misc/datovka/datovka.php, row 130
+// misc/datovka/datovka.php, row 135
 "Legal title law" => "法的根拠 - 法律", // ai 2026-06
 
-// misc/datovka/datovka.php, row 131
+// misc/datovka/datovka.php, row 136
 "Legal title year" => "法的根拠 - 年", // ai 2026-06
 
-// misc/datovka/datovka.php, row 132
+// misc/datovka/datovka.php, row 137
 "Legal title section" => "法的根拠 - 条", // ai 2026-06
 
-// misc/datovka/datovka.php, row 133
+// misc/datovka/datovka.php, row 138
 "Legal title paragraph" => "法的根拠 - 項", // ai 2026-06
 
-// misc/datovka/datovka.php, row 134
+// misc/datovka/datovka.php, row 139
 "Legal title point" => "法的根拠 - 号", // ai 2026-06
 
-// misc/datovka/datovka.php, row 135
+// misc/datovka/datovka.php, row 140
 "Personal delivery" => "本人限定受取", // ai 2026-06
 
-// misc/datovka/datovka.php, row 136
+// misc/datovka/datovka.php, row 141
 "Allow substitute delivery" => "代替送達を許可", // ai 2026-06
 
-// misc/msconvert/index.php, row 20
+// misc/msconvert/index.php, row 23
 "Foreign Formats Convertor" => "外部形式コンバータ", // ai 2026-06
 
-// misc/msconvert/index.php, row 32
+// misc/msconvert/index.php, row 35
 "Action Apps PDF/DOC Convertor" => "Action Apps PDF/DOC コンバータ", // ai 2026-06
 
-// misc/msconvert/index.php, row 33
+// misc/msconvert/index.php, row 36
 "Experimental feature" => "実験的機能", // ai 2026-06
 
-// modules/jump/modedit.php, row 71
+// modules/jump/modedit.php, row 72
 "Edit Jump module" => "Jumpモジュールの編集", // ai 2026-06
 
-// modules/jump/modedit.php, row 71
+// modules/jump/modedit.php, row 72
 "Create new Jump module" => "新規Jumpモジュールの作成", // ai 2026-06
 
 // modules/jump/modedit.php, row 134
@@ -6373,84 +7381,1225 @@ return [
 // modules/jump/modedit.php, row 164
 "Jump to slice" => "スライスへ移動", // ai 2026-06
 
-// slice.php, row 232
+// slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "inc パラメータが不正です - 挿入ファイル名には英数字のみ使用できます", // ai 2026-06
 
-// slice.php, row 236
+// slice.php, row 240
 "No such file" => "ファイルが存在しません", // ai 2026-06
 
-// slice.php, row 263
+// slice.php, row 265
 "Invalid slice number or slice was deleted" => "スライス番号が無効か、スライスが削除されています", // ai 2026-06
 
-// slice.php, row 266
+// slice.php, row 268
 "slice.php output forbidden for this slice" => "このスライスでは slice.php による出力は禁止されています", // ai 2026-06
 
-// slice.php, row 321
+// slice.php, row 323
 "session id" => "セッションID", // ai 2026-06
 
-// slice.php, row 580
+// slice.php, row 581
 "number of current page (on pagescroller)" => "現在のページ番号（ページ送り）", // ai 2026-06
 
-// slice.php, row 581
+// slice.php, row 582
 "page length (number of items)" => "ページの長さ（項目数）", // ai 2026-06
 
-// slice.php, row 616
-// src/Manager.php, row 649
+// slice.php, row 617
+// src/Manager.php, row 881
 "No item found" => "項目が見付かりません",
 
-// src/AA_Plannedtask.php, row 55, 102
+// src/AA_Plannedtask.php, row 61, 127
+// src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "タスク", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 56
+// src/AA_Plannedtask.php, row 62
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "指定すると、「条件」がゼロでも空でもない値に評価された場合にのみタスクが実行されます", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 57
+// src/AA_Plannedtask.php, row 63
 "Event to run" => "実行イベント", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 59
+// src/AA_Plannedtask.php, row 65
 "New Item" => "新規項目", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 59
+// src/AA_Plannedtask.php, row 65
 "Item Updated" => "項目の更新", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 60
+// src/AA_Plannedtask.php, row 66
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "タスクを実行するイベント。下の「時刻」設定とは独立しています（イベント発生時と指定時刻の両方でタスクを実行できます）。「+ 秒」パラメータを指定しないか 0 にすると、タスクは直ちに実行されます。「+ 秒」のオフセットを設定すると、タスクは x 秒後に一度だけ実行されるよう予約されます。", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 61
+// src/AA_Plannedtask.php, row 67
 "Time to run" => "実行時刻", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 61
+// src/AA_Plannedtask.php, row 67
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "タスクを実行する時刻を指定してください。以降この時刻に定期的に処理されます。時刻は「<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">相対フォーマット</a>」で指定します。例:<br>\"midnight\" - 毎日深夜0時に実行 <br>\"+1 hour\" - 1時間ごとに実行、<br>\"+30 min\" - 30分ごとに実行、<br>\"16:00\" - 毎日16:00に実行<br>\"Monday 10:00\" - 毎週月曜の16:00に実行<br>\"first day of this month 10:00\"<br>時刻は正確ではありません。タスクは約5分ごとに動くスクリプトが順番に実行します。", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 62, 102
+// src/AA_Plannedtask.php, row 68, 127
 "+ seconds" => "+ 秒", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 68
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "任意で、前の時刻に加算する追加の時間オフセットを指定します(秒単位)。<br>前の行では「毎月15日」を指定するのが難しいため、両方を組み合わせることができます:<br> - 「時刻」= \"first day of this month 10:00\"<br> - 「+ 秒」= \"1209600\"<br> (60秒 * 60分 * 24時間 * 14日) - 14に注意してください(1日 + 14 = 15日)", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 69
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "任意で、コンテキスト(タスクが実行される対象項目の長いID)を指定します。タスク内で {id..............} などの項目の別名を使用できます。項目のIDは変数 {var:aa_event_for} からも取得できます。「イベント」タスク(項目の更新/新規)では、常に変更された項目のIDが設定されます。", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 77
+// src/AA_Plannedtask.php, row 70
+"Saved by" => "",
+
+// src/AA_Plannedtask.php, row 102
 "Planned tasks" => "予定タスク", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 97
+// src/AA_Plannedtask.php, row 122
 "Current time on server" => "サーバーの現在時刻", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 127
 "Event" => "イベント", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 127
 "Computed time" => "計算された時刻", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 127
 "Scheduled to" => "実行予定", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 220
+// src/AA_Plannedtask.php, row 315
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+
+// src/AA_Plannedtask.php, row 318
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+
+// src/AA_Plannedtask.php, row 382
 "not scheduled, yet" => "まだ予定されていません", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 224
+// src/AA_Plannedtask.php, row 386
 "next run" => "次回実行", // ai 2026-06
+
+// src/Api/Controller/FilesController.php, row 51, 72
+"The file is too big" => "",
+
+// src/Api/Controller/FilesController.php, row 64
+"You may not upload files here. If you were editing, your login may have expired - reload the page." => "",
+
+// src/Api/Controller/FilesController.php, row 67
+"Too many uploads - try again in an hour" => "",
+
+// src/Api/Controller/FilesController.php, row 75, 240
+"No file received" => "",
+
+// src/Api/Controller/FilesController.php, row 83
+"Files of this type cannot be uploaded here: %1" => "",
+
+// src/Api/Controller/FilesController.php, row 86
+"The content of the file does not match its extension %1" => "",
+
+// src/Api/Controller/FilesController.php, row 89
+"The image is bigger than %1 MB" => "",
+
+// src/Api/Controller/FilesController.php, row 92
+"The image has more than %1 megapixels" => "",
+
+// src/Api/Controller/FilesController.php, row 97
+"The upload directory of the slice is not writable" => "",
+
+// src/Api/Controller/FilesController.php, row 107
+"The file could not be stored" => "",
+
+// src/Api/Controller/FilesController.php, row 129
+"Only editors of the slice can browse its files" => "",
+
+// src/Central/Actionapps.php, row 179
+"This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "",
+
+// src/Central/Actionapps.php, row 207
+"Not configured" => "未設定", // ai 2026-06
+
+// src/Central/Actionapps.php, row 207
+"Not authenticated - get a token" => "",
+
+// src/Central/Actionapps.php, row 210
+"Authenticated until %1" => "",
+
+// src/Central/Actionapps.php, row 210
+"Expired - get a token" => "",
+
+// src/Central/Actionapps.php, row 234
+"The remote AA gave no login token - update it" => "",
+
+// src/Central/Actionapps.php, row 235
+"The remote AA gave a token for longer than a day - update the remote AA" => "",
+
+// src/Central/Actionapps.php, row 271
+"Can't get org_name - " => "org_name を取得できません -", // ai 2026-06
+
+// src/Central/Actionapps.php, row 337
+"the update may still be running on the remote AA - wait, then run Test before retrying" => "",
+
+// src/Central/Actionapps.php, row 348
+"Unexpected response from remote AA" => "",
+
+// src/Central/Actionapps.php, row 351
+"This AA does not support this command (update it first)" => "",
+
+// src/Central/Actionapps.php, row 362
+"The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "",
+
+// src/Central/Actionapps.php, row 363
+"No login token for this AA - Authenticate this AA on the ActionApps Central page" => "",
+
+// src/Central/Difference.php, row 55
+"Template slice %1 has no definition" => "",
+
+// src/Central/Difference.php, row 58
+"Comparison slice (%1) does not exist" => "比較するスライス (%1) が存在しません", // ai 2026-06
+
+// src/Central/Difference.php, row 96
+"The template sent no %1 rows" => "",
+
+// src/Central/Difference.php, row 105
+"no unique named view or name" => "",
+
+// src/Central/Difference.php, row 105
+"no unique description" => "",
+
+// src/Central/Difference.php, row 106, 189
+"Destination" => "同期先", // ai 2026-06
+
+// src/Central/Difference.php, row 108
+"%1: %2 %3 '%4' not compared - %5" => "",
+
+// src/Central/Difference.php, row 118, 217
+"%1 are identical" => "%1 は同一です", // ai 2026-06
+
+// src/Central/Difference.php, row 118, 160
+"%1 is not array in destination slice" => "%1 は同期先スライスでは配列ではありません", // ai 2026-06
+
+// src/Central/Difference.php, row 156
+"%1 is not array in template slice" => "%1 はテンプレートスライスでは配列ではありません", // ai 2026-06
+
+// src/Central/Difference.php, row 163
+"%1 is not defined for both AAs" => "%1 は両方の AA で定義されていません", // ai 2026-06
+
+// src/Central/Difference.php, row 183
+"There is no such key (%1) in destination slice for %2" => "同期先スライスに %2 のキー (%1) がありません", // ai 2026-06
+
+// src/Central/Difference.php, row 192
+"The value for key %1 in %2 array is different %3" => "%2 配列のキー %1 の値が異なります %3", // ai 2026-06
+
+// src/Central/Difference.php, row 202
+"The record for %1 is different" => "%1 のレコードが異なります", // ai 2026-06
+
+// src/Central/Difference.php, row 213
+"There is no such key (%1) in template slice for %2" => "テンプレートスライスに %2 のキー (%1) がありません", // ai 2026-06
+
+// src/Central/FindingText.php, row 28
+"Security findings (S)" => "",
+
+// src/Central/FindingText.php, row 28
+"Errors (E)" => "",
+
+// src/Central/FindingText.php, row 28
+"Warnings (W)" => "",
+
+// src/Central/FindingText.php, row 28
+"Notes (I)" => "",
+
+// src/Central/FindingText.php, row 35
+"Parts of the app that could harm this AA or its visitors if the app is not what it claims. They block nothing, but you confirm them before installing." => "",
+
+// src/Central/FindingText.php, row 36
+"The app cannot be installed until they are solved." => "",
+
+// src/Central/FindingText.php, row 37
+"The app can be installed; check these places after installing." => "",
+
+// src/Central/FindingText.php, row 38
+"For your information - usually nothing to do." => "",
+
+// src/Central/FindingText.php, row 53
+"Prints facts about the installation" => "",
+
+// src/Central/FindingText.php, row 54
+"{debug}, {version} or {serverload} show visitors debugging output, the version of AA or the load of the server." => "",
+
+// src/Central/FindingText.php, row 55
+"Usually harmless. Remove it from public pages if visitors should not see it." => "",
+
+// src/Central/FindingText.php, row 56
+"Shows data of the signed-in user" => "",
+
+// src/Central/FindingText.php, row 57
+"The text prints something of the user who is signed in, such as the name - not the password." => "",
+
+// src/Central/FindingText.php, row 58, 64, 67, 132, 161, 213, 235, 265
+"Nothing to do." => "",
+
+// src/Central/FindingText.php, row 59
+"Calls a function of this AA" => "",
+
+// src/Central/FindingText.php, row 60
+"The field alias calls a usr_ function; such functions are defined by each AA in include/usr_aliasfnc.php." => "",
+
+// src/Central/FindingText.php, row 61
+"Check that this AA has the function, otherwise the field shows nothing." => "",
+
+// src/Central/FindingText.php, row 62
+"A thumbnail of a picture of the app" => "",
+
+// src/Central/FindingText.php, row 63
+"The text makes a thumbnail of a picture of the app or of a field of the item." => "",
+
+// src/Central/FindingText.php, row 65
+"Sets a common HTTP header" => "",
+
+// src/Central/FindingText.php, row 66
+"The text sets a status code, the type of the content, a file name or a common protective header - nothing that allows browsers more." => "",
+
+// src/Central/FindingText.php, row 70
+"The other AA did not give the app" => "",
+
+// src/Central/FindingText.php, row 71
+"The AA the app comes from refused to export it or failed while exporting." => "",
+
+// src/Central/FindingText.php, row 72
+"Check that you are signed in there and may edit all the slices of the app. Then try again; if it repeats, look at the logs of that AA." => "",
+
+// src/Central/FindingText.php, row 73
+"The app package is damaged" => "",
+
+// src/Central/FindingText.php, row 74
+"The package has a part in a form AA never writes - it was edited by hand, cut, or made by another version of AA." => "",
+
+// src/Central/FindingText.php, row 75
+"Export the app from its AA again. When the error stays, update the AA it comes from (or this one) to the current version." => "",
+
+// src/Central/FindingText.php, row 75
+"The part is left out. Usually nothing to do." => "",
+
+// src/Central/FindingText.php, row 76
+"Parts this AA does not know" => "",
+
+// src/Central/FindingText.php, row 77
+"The package was made by a newer version of AA, or edited by hand; this AA leaves out what it does not know." => "",
+
+// src/Central/FindingText.php, row 78
+"Usually nothing. When something of the app is missing after installing, update this AA and install again." => "",
+
+// src/Central/FindingText.php, row 79
+"Items in a published app" => "",
+
+// src/Central/FindingText.php, row 80
+"A published app carries only definitions - no items, readers or passwords." => "",
+
+// src/Central/FindingText.php, row 81
+"Publish the app without its items; items travel only in a transfer between two AAs." => "",
+
+// src/Central/FindingText.php, row 82
+"The server converts characters wrongly" => "",
+
+// src/Central/FindingText.php, row 83
+"The PHP of this server converts the Central European characters wrongly, so no text of the app could be trusted." => "",
+
+// src/Central/FindingText.php, row 84
+"Ask the administrator of the server to fix the iconv of PHP." => "",
+
+// src/Central/FindingText.php, row 87
+"Database tables without transactions" => "",
+
+// src/Central/FindingText.php, row 88
+"Some tables of this AA are not InnoDB. An install that failed in the middle could not be taken back and would leave half an app." => "",
+
+// src/Central/FindingText.php, row 89
+"Run the optimization named in the value (AA > Optimize) and preview the app again." => "",
+
+// src/Central/FindingText.php, row 90
+"Tables" => "",
+
+// src/Central/FindingText.php, row 91
+"A setting takes a number" => "",
+
+// src/Central/FindingText.php, row 92
+"The value you typed for this slice setting is no whole number, and the field stores whole numbers only." => "",
+
+// src/Central/FindingText.php, row 93
+"Type a number, or leave the field empty to keep the value of the app, and check the changes." => "",
+
+// src/Central/FindingText.php, row 95
+"A setting refuses the value" => "",
+
+// src/Central/FindingText.php, row 96
+"The value you typed for this slice setting does not pass the check of its field (an e-mail, a URL, a number, a value of a list, yes or no, ...)." => "",
+
+// src/Central/FindingText.php, row 97
+"Type a value the field takes, or leave the field empty to keep the value of the app, and check the changes." => "",
+
+// src/Central/FindingText.php, row 99
+"A setting to fill in later" => "",
+
+// src/Central/FindingText.php, row 100
+"The field of this slice setting changes the value when it is saved (a password stores its hash, for example), so a value typed here would be stored wrong." => "",
+
+// src/Central/FindingText.php, row 101
+"Leave the field empty and check the changes; after installing fill it in: in the slice open Setting in the menu of the item manager." => "",
+
+// src/Central/FindingText.php, row 102
+"Insert function" => "",
+
+// src/Central/FindingText.php, row 103
+"The new owner is not complete" => "",
+
+// src/Central/FindingText.php, row 104
+"A new owner needs a name and a valid e-mail, each at most 80 bytes (a letter with an accent may take two) and in characters the new modules can store." => "",
+
+// src/Central/FindingText.php, row 105
+"Fill in both in \"Owner of the new modules\" above and check the changes." => "",
+
+// src/Central/FindingText.php, row 107
+"Alerts lose a part of a slice left out" => "",
+
+// src/Central/FindingText.php, row 108
+"The Alerts module uses a slice you left out - its readers, the view of a filter or an e-mail template. The Alerts module is installed without it." => "",
+
+// src/Central/FindingText.php, row 109
+"After installing set the reader slice, the filters and the e-mails in the settings of the Alerts module - or install that slice too." => "",
+
+// src/Central/FindingText.php, row 110
+"Slice, view or e-mail" => "",
+
+// src/Central/FindingText.php, row 111
+"A list of values of a slice left out" => "",
+
+// src/Central/FindingText.php, row 112
+"The list of values (constant group) belongs to a slice you left out, and other parts of the app use it - it is installed without an owner." => "",
+
+// src/Central/FindingText.php, row 113
+"Usually nothing." => "",
+
+// src/Central/FindingText.php, row 114
+"Slice left out" => "",
+
+// src/Central/FindingText.php, row 115
+"No owner for the new modules" => "",
+
+// src/Central/FindingText.php, row 116
+"The new slices and sites need an owner of this AA, and none was chosen." => "",
+
+// src/Central/FindingText.php, row 117
+"Choose the owner in \"Owner of the new modules\" above and check the changes." => "",
+
+// src/Central/FindingText.php, row 118
+"Reader logins with broken characters" => "",
+
+// src/Central/FindingText.php, row 119
+"Login names of some readers in the AA the app comes from are not valid text, so this AA cannot check whether they collide with its own logins." => "",
+
+// src/Central/FindingText.php, row 120
+"Fix the login names of those readers in the AA the app comes from and transfer again." => "",
+
+// src/Central/FindingText.php, row 121
+"A text this AA cannot store" => "",
+
+// src/Central/FindingText.php, row 122
+"The text is longer than this AA can store in that place." => "",
+
+// src/Central/FindingText.php, row 122
+"The text has characters the character set of this AA (or of the slice) cannot hold - usually an old windows-1250 slice and a character like an emoji." => "",
+
+// src/Central/FindingText.php, row 123
+"Shorten or change the text in the AA the app comes from and preview again, or install into a UTF-8 slice." => "",
+
+// src/Central/FindingText.php, row 124
+"A text may not fit" => "",
+
+// src/Central/FindingText.php, row 125
+"The text is close to the length this AA stores there; it may be cut." => "",
+
+// src/Central/FindingText.php, row 126
+"After installing check the end of the text." => "",
+
+// src/Central/FindingText.php, row 127
+"An item too big to transfer" => "",
+
+// src/Central/FindingText.php, row 128
+"One item alone is bigger than the transfer carries at once." => "",
+
+// src/Central/FindingText.php, row 129
+"Make the item smaller in its AA (move big texts or files out) and transfer again." => "",
+
+// src/Central/FindingText.php, row 130
+"Language of a module" => "",
+
+// src/Central/FindingText.php, row 131
+"The module has a language this AA does not know, so it does not know its character set either." => "",
+
+// src/Central/FindingText.php, row 131
+"The language file of the module is written as this AA names it; the language stays the same." => "",
+
+// src/Central/FindingText.php, row 132
+"Set a language in the settings of the module in the AA the app comes from and export again." => "",
+
+// src/Central/FindingText.php, row 133
+"The tree of the site" => "",
+
+// src/Central/FindingText.php, row 135
+"The tree of the pages (spots) of the site is damaged." => "",
+
+// src/Central/FindingText.php, row 136
+"Contents of spots no longer in the tree of the site - they are left out." => "",
+
+// src/Central/FindingText.php, row 137
+"The site has no tree of pages - it starts empty." => "",
+
+// src/Central/FindingText.php, row 138
+"A name or a condition of a spot contains HTML tags; the tags are removed from the names, conditions stay as they are." => "",
+
+// src/Central/FindingText.php, row 140
+"Open the site in its AA, save its tree in Code Manager and export again." => "",
+
+// src/Central/FindingText.php, row 140
+"Nothing to do; check the names and conditions of the spots after installing." => "",
+
+// src/Central/FindingText.php, row 141
+"A control file of the other AA" => "",
+
+// src/Central/FindingText.php, row 142
+"The site names a file on the server of the AA it comes from, which this AA would run - it cannot be installed so." => "",
+
+// src/Central/FindingText.php, row 142
+"The site names a file on the server of the AA it comes from; it is left out." => "",
+
+// src/Central/FindingText.php, row 143
+"Remove the file from the site settings in the AA the app comes from and export again." => "",
+
+// src/Central/FindingText.php, row 143
+"Nothing to do, unless the site needs such a file here - then set it in Module Settings of the site." => "",
+
+// src/Central/FindingText.php, row 144
+"Values of a slice outside the published app" => "",
+
+// src/Central/FindingText.php, row 145
+"The app uses a list of values (a constant group) of a slice no published site carries - publishing would show its values." => "",
+
+// src/Central/FindingText.php, row 146
+"Let the field use another list of values, or publish the slice that owns it." => "",
+
+// src/Central/FindingText.php, row 147
+"Lists of values (constant groups)" => "",
+
+// src/Central/FindingText.php, row 149
+"There is no free name for a list of values of the app." => "",
+
+// src/Central/FindingText.php, row 150
+"This AA already has a list of values of that name, so the app gets its list under a new name; the app is changed to use it." => "",
+
+// src/Central/FindingText.php, row 151
+"A field offers values of a list that does not exist - it offers nothing." => "",
+
+// src/Central/FindingText.php, row 152
+"The text reads a list of values the app does not carry; this AA must have a list of that name." => "",
+
+// src/Central/FindingText.php, row 153
+"The existing slice keeps its own list of values; the app uses that one." => "",
+
+// src/Central/FindingText.php, row 154
+"The text names a list of values in a form the install does not rewrite; when the list gets a new name here, the text keeps the old one." => "",
+
+// src/Central/FindingText.php, row 155
+"A list of values is used as it is." => "",
+
+// src/Central/FindingText.php, row 158
+"Rename or delete some of the lists of values in this AA and preview again." => "",
+
+// src/Central/FindingText.php, row 159
+"After installing, create the list or choose another one in the field settings." => "",
+
+// src/Central/FindingText.php, row 160
+"When the list is renamed (see the notes), change the name in the text after installing." => "",
+
+// src/Central/FindingText.php, row 163
+"List" => "",
+
+// src/Central/FindingText.php, row 164
+"A list of values without its slice" => "",
+
+// src/Central/FindingText.php, row 165
+"A list of values (a constant group) belongs to a slice that is not in the app or no longer exists. The list travels anyway; only the character set is taken from this AA." => "",
+
+// src/Central/FindingText.php, row 166
+"Usually nothing. On a UTF-8 AA it makes no difference." => "",
+
+// src/Central/FindingText.php, row 167
+"Owner (slice id)" => "",
+
+// src/Central/FindingText.php, row 168
+"Broken characters" => "",
+
+// src/Central/FindingText.php, row 169
+"A text is not valid UTF-8 - probably damaged in its AA. It travels byte by byte." => "",
+
+// src/Central/FindingText.php, row 170
+"After installing check the text and fix wrong characters." => "",
+
+// src/Central/FindingText.php, row 173
+"Alerts use a part outside the app" => "",
+
+// src/Central/FindingText.php, row 174
+"An Alerts collection or filter uses a view or an e-mail template that is not in the app." => "",
+
+// src/Central/FindingText.php, row 175
+"Add the slice with that view or template to the app, or change the Alerts setting in the AA the app comes from, and preview again." => "",
+
+// src/Central/FindingText.php, row 177
+"A link to a part outside the app" => "",
+
+// src/Central/FindingText.php, row 179
+"The text shows a view by its number, and that view is not in the app. Here the number means another view, or none." => "",
+
+// src/Central/FindingText.php, row 180
+"The text sends an e-mail template by its number, and that template is not in the app. Here the number means another template, or none." => "",
+
+// src/Central/FindingText.php, row 181
+"The text reads a slice or a site that is not in the app. Here that id means nothing." => "",
+
+// src/Central/FindingText.php, row 184
+"Add the slice with it to the app (for a site: to its Uses) and preview again; or, when the preview of the install lists it under Links outside the app, send the links to a slice of the AA it goes to." => "",
+
+// src/Central/FindingText.php, row 185
+"Add the slice with it to the app (for a site: to its Uses) and preview again, or after installing change the number to the right one here." => "",
+
+// src/Central/FindingText.php, row 187
+"A link to a slice of this AA" => "",
+
+// src/Central/FindingText.php, row 189
+"The text reads a slice or a site that is not in the app, but this AA has it - the link keeps going there." => "",
+
+// src/Central/FindingText.php, row 190
+"The text reads a slice that is neither in the app nor in this AA; as chosen in Links outside the app, it goes to a slice of this AA." => "",
+
+// src/Central/FindingText.php, row 191
+"Usually nothing. Check after installing that it is the slice meant." => "",
+
+// src/Central/FindingText.php, row 192, 196
+"Id => slice" => "",
+
+// src/Central/FindingText.php, row 193
+"A link goes to no slice" => "",
+
+// src/Central/FindingText.php, row 194
+"A link outside the app was sent to a slice that this AA does not have, or that you may not change." => "",
+
+// src/Central/FindingText.php, row 195
+"Choose another slice under Links outside the app, or keep the id, and check the changes." => "",
+
+// src/Central/FindingText.php, row 197
+"A link the check cannot follow" => "",
+
+// src/Central/FindingText.php, row 199
+"The number of a view or an e-mail is computed when the page is shown, so it cannot be renumbered for this AA." => "",
+
+// src/Central/FindingText.php, row 200
+"A number equal to the number of a view of the app, in a place where it may mean something else (a width, a date) - left as it is." => "",
+
+// src/Central/FindingText.php, row 201
+"{form:...} uses a form of this AA; forms do not travel with an app." => "",
+
+// src/Central/FindingText.php, row 202
+"The link is written in a form the install does not rewrite; it stays as it is." => "",
+
+// src/Central/FindingText.php, row 204
+"When it is a view there, change it after installing to the new number of that view." => "",
+
+// src/Central/FindingText.php, row 204
+"After installing check that the place shows the right thing." => "",
+
+// src/Central/FindingText.php, row 205
+"Modules outside the app" => "",
+
+// src/Central/FindingText.php, row 207
+"The Alerts module sends items of a slice that is not in the app." => "",
+
+// src/Central/FindingText.php, row 208
+"An Alerts module that is not in the app sends items of its slice; it stays behind." => "",
+
+// src/Central/FindingText.php, row 209
+"The site uses a module of a kind an app does not carry (polls, links, jump) - it is left out." => "",
+
+// src/Central/FindingText.php, row 210
+"The site lists a module that no longer exists - AA ignores it, so does the install." => "",
+
+// src/Central/FindingText.php, row 211
+"An Alerts setting of a module outside the app is written as it is; here it does nothing." => "",
+
+// src/Central/FindingText.php, row 213
+"Add that slice to the app, or remove it from the Alerts collection." => "",
+
+// src/Central/FindingText.php, row 214
+"An e-mail address of the other organisation" => "",
+
+// src/Central/FindingText.php, row 215
+"An e-mail template has a fixed address (the sender, a copy) - it travels with the app." => "",
+
+// src/Central/FindingText.php, row 216
+"After installing change the address in the e-mail templates to your own." => "",
+
+// src/Central/FindingText.php, row 217
+"An e-mail attachment left out" => "",
+
+// src/Central/FindingText.php, row 218
+"An e-mail template attaches a file of the server; that would attach a file of this server, so it is removed." => "",
+
+// src/Central/FindingText.php, row 219
+"After installing set the attachment again if it is needed." => "",
+
+// src/Central/FindingText.php, row 220
+"Site settings left out" => "",
+
+// src/Central/FindingText.php, row 221
+"The Google Analytics id, other domains of the site and app settings belong to the other AA; they are not installed." => "",
+
+// src/Central/FindingText.php, row 222
+"Set them in Module Settings of the site after installing." => "",
+
+// src/Central/FindingText.php, row 223
+"A slice setting without a value" => "",
+
+// src/Central/FindingText.php, row 224
+"A setting of the slice has a default that depends on who installs (a user, a random code, an expression) - it is left empty." => "",
+
+// src/Central/FindingText.php, row 225
+"Fill it in the Setting of the slice after installing." => "",
+
+// src/Central/FindingText.php, row 226
+"Objects the app does not carry" => "",
+
+// src/Central/FindingText.php, row 227
+"Some objects of the module do not travel: forms, notes on admin pages and similar helpers of the other AA." => "",
+
+// src/Central/FindingText.php, row 228
+"Usually nothing. A form the pages show ({form:...}) has to be made here again." => "",
+
+// src/Central/FindingText.php, row 229
+"Kind (count)" => "",
+
+// src/Central/FindingText.php, row 230
+"A part of an object is missing" => "",
+
+// src/Central/FindingText.php, row 231
+"An object (an alias, a form or a similar setting) refers to a part that no longer exists; the part is left out." => "",
+
+// src/Central/FindingText.php, row 232
+"After installing check the settings of the module that use the object." => "",
+
+// src/Central/FindingText.php, row 233
+"An unknown profile setting" => "",
+
+// src/Central/FindingText.php, row 234
+"A default profile of the slice has a setting this AA does not know; AA ignores it." => "",
+
+// src/Central/FindingText.php, row 238
+"Who may write into the slice" => "",
+
+// src/Central/FindingText.php, row 239
+"The slice lets visitors of the web (not signed in) add or edit items, gives access to its file manager, or lets readers of a group field sign in. That is right for a public form - a sign-up, a comment - and wrong elsewhere." => "",
+
+// src/Central/FindingText.php, row 240
+"After installing check in Slice Admin > Slice that the slice should allow it; otherwise switch it off there." => "",
+
+// src/Central/FindingText.php, row 241, 245
+"Set to" => "",
+
+// src/Central/FindingText.php, row 242
+"Who can sign in to the site" => "",
+
+// src/Central/FindingText.php, row 243
+"The site does not say which readers may sign in to its pages, so every user of this AA and the readers of all its Reader Management slices can." => "",
+
+// src/Central/FindingText.php, row 244
+"After installing open Module Settings of the site and set \"User login databases\" to \"first Reader Management slice listed in Uses slices\"." => "",
+
+// src/Central/FindingText.php, row 246
+"An existing slice was chosen" => "",
+
+// src/Central/FindingText.php, row 248
+"The app goes into your existing Reader Management slice - its views and fields will work with your real readers." => "",
+
+// src/Central/FindingText.php, row 249
+"A slice of the same role exists, but it cannot take the slice of the app; a new slice is made." => "",
+
+// src/Central/FindingText.php, row 250
+"The slice of the app goes into your existing slice of the same role." => "",
+
+// src/Central/FindingText.php, row 252
+"Choose another slice (or \"a new slice\") in the table above if this is not what you want." => "",
+
+// src/Central/FindingText.php, row 255
+"The chosen slice cannot take the app" => "",
+
+// src/Central/FindingText.php, row 257
+"A transfer into the very slice it copies would copy its items into it again." => "",
+
+// src/Central/FindingText.php, row 258
+"One of the slices keeps the logins of readers (Reader Management) and the other not - the logins would not work." => "",
+
+// src/Central/FindingText.php, row 259
+"A field of the chosen slice stores its values otherwise (text or number, a password) - the items would be broken." => "",
+
+// src/Central/FindingText.php, row 260
+"The slice chosen in \"Into\" does not exist, you may not edit it, or it is chosen twice - the value says which." => "",
+
+// src/Central/FindingText.php, row 262
+"Choose another slice, or \"a new slice\", in the table above and preview again." => "",
+
+// src/Central/FindingText.php, row 263
+"Into an existing slice" => "",
+
+// src/Central/FindingText.php, row 264
+"The slice of the app goes into an existing slice; what the slice has (its views, e-mails, settings) stays and the app uses it." => "",
+
+// src/Central/FindingText.php, row 266
+"The existing slice differs" => "",
+
+// src/Central/FindingText.php, row 268
+"A relation field of the existing slice selects from another slice than the app expects - the transferred links would point elsewhere." => "",
+
+// src/Central/FindingText.php, row 269
+"The existing slice has a view of the same name, but another one; the slice keeps its view." => "",
+
+// src/Central/FindingText.php, row 270
+"The existing slice has the field, but set otherwise; the slice keeps its setting." => "",
+
+// src/Central/FindingText.php, row 272
+"If the app behaves oddly after installing, compare these settings with the ones of the app." => "",
+
+// src/Central/FindingText.php, row 273
+"Differs in" => "",
+
+// src/Central/FindingText.php, row 274
+"Maybe twice" => "",
+
+// src/Central/FindingText.php, row 275
+"A view, an e-mail or an object without a unique name cannot be matched with the existing slice, so it is added - the slice may then have it twice." => "",
+
+// src/Central/FindingText.php, row 276
+"After installing delete the duplicate." => "",
+
+// src/Central/FindingText.php, row 277
+"Values that must be unique" => "",
+
+// src/Central/FindingText.php, row 278
+"The slice has fields whose values must not repeat (a unique field, an SEO name, a sequence); transferred items may repeat values of the items already there." => "",
+
+// src/Central/FindingText.php, row 279
+"After the transfer check these fields of the new items." => "",
+
+// src/Central/FindingText.php, row 282
+"The items are here already" => "",
+
+// src/Central/FindingText.php, row 283
+"This AA already has items with the same ids - the app was probably transferred here before (maybe deleted since, but not purged from the trash)." => "",
+
+// src/Central/FindingText.php, row 284
+"Transfer into the slice that has them (choose it in \"Into\"), or delete the earlier copy completely, including the trash, and try again." => "",
+
+// src/Central/FindingText.php, row 285
+"Reader logins collide" => "",
+
+// src/Central/FindingText.php, row 287
+"A reader has the same login name or e-mail as a user of this AA with rights to the administration." => "",
+
+// src/Central/FindingText.php, row 288
+"A reader of this AA already has the same login name or e-mail." => "",
+
+// src/Central/FindingText.php, row 289
+"Two transferred readers have the same login name or e-mail." => "",
+
+// src/Central/FindingText.php, row 290
+"A reader has more login names or e-mails." => "",
+
+// src/Central/FindingText.php, row 292
+"Change the login of the reader in the AA it comes from (or of the user here) and preview again." => "",
+
+// src/Central/FindingText.php, row 292
+"After the transfer check these readers can sign in." => "",
+
+// src/Central/FindingText.php, row 293
+// src/Optimize/CheckSessionidUse.php, row 100
+"Login" => "",
+
+// src/Central/FindingText.php, row 294
+"Passwords of the readers travel" => "",
+
+// src/Central/FindingText.php, row 295
+"The transfer carries the logins of readers with their password hashes (and two-factor secrets)." => "",
+
+// src/Central/FindingText.php, row 296
+"Nothing to do here; do not keep downloaded packages of such apps." => "",
+
+// src/Central/FindingText.php, row 297
+"Item values left out" => "",
+
+// src/Central/FindingText.php, row 298
+"An item is in no bin (active, holding, trash) - no list of the slice will show it." => "",
+
+// src/Central/FindingText.php, row 298
+"Items have values of a field the slice does not have - they are left out." => "",
+
+// src/Central/FindingText.php, row 299
+"Usually nothing to do." => "",
+
+// src/Central/FindingText.php, row 300
+"A condition of the items to transfer cannot be used" => "",
+
+// src/Central/FindingText.php, row 301
+"AA cannot read the condition as it is written, or the source AA did not check it. A condition read wrongly could take other items than you mean, so no items are counted and the app cannot be installed until the condition passes a check." => "",
+
+// src/Central/FindingText.php, row 302
+"Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "",
+
+// src/Central/FindingText.php, row 303
+// src/Optimize/CheckImports.php, row 176, 178
+// src/Optimize/ImgMeasuring.php, row 55
+"Why" => "",
+
+// src/Central/FindingText.php, row 304
+"A condition that takes every item" => "",
+
+// src/Central/FindingText.php, row 305
+"Every item of the slice matches, so the condition leaves nothing out and the whole slice goes. That is allowed, but a condition is usually written to narrow: it may name a field every item has set, or a value they all share." => "",
+
+// src/Central/FindingText.php, row 306
+"If all the items should go, empty the field. If not, change the condition so that it narrows; the Items column of the plan shows how many items it takes." => "",
+
+// src/Central/FindingText.php, row 307
+"Items matching" => "",
+
+// src/Central/FindingText.php, row 308
+"Links to items a condition leaves behind" => "",
+
+// src/Central/FindingText.php, row 309
+"Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere." => "",
+
+// src/Central/FindingText.php, row 310
+"Widen or empty the condition of the slice that leaves items behind; or give the slice with the links a condition that follows the link (printed under its field when there is one); or accept the links and clean them up after the transfer." => "",
+
+// src/Central/FindingText.php, row 312
+"Check the transferred items" => "",
+
+// src/Central/FindingText.php, row 314
+"The slice here has another number of items than the one it comes from (there => here). Into an existing slice that is expected - its own items stay." => "",
+
+// src/Central/FindingText.php, row 315
+"Items were edited in the other AA while the transfer ran; the changes may be missing here." => "",
+
+// src/Central/FindingText.php, row 316
+"Some items link to items this AA does not have." => "",
+
+// src/Central/FindingText.php, row 317
+"The other AA did not say how many items it has, so the transfer cannot be compared." => "",
+
+// src/Central/FindingText.php, row 319
+"Transfer also the slice with the linked items." => "",
+
+// src/Central/FindingText.php, row 319
+"Run the transfer again when the numbers should match." => "",
+
+// src/Central/FindingText.php, row 320
+"A domain of the site left out" => "",
+
+// src/Central/FindingText.php, row 321
+"The site answers to this domain in its AA, but here it belongs to another site or to this AA itself." => "",
+
+// src/Central/FindingText.php, row 322
+"Nothing to do, unless the domain should move here - then set it in the site settings." => "",
+
+// src/Central/FindingText.php, row 332
+"Reads a file or a web address" => "",
+
+// src/Central/FindingText.php, row 333
+"The text makes this AA read a file or a URL. The server asks for it, not the visitor: it can read local files of the server or reach addresses of the internal network; a relative URL is fetched with the cookies of the visitor." => "",
+
+// src/Central/FindingText.php, row 334
+"Fine when it reads a public address the app needs (a feed, an image or a page of its own site). Do not install it when it points to a local path (../, /etc/, file://), to an internal address (localhost, 10.x, 192.168.x) or when the address is built from what a visitor sends (URL parameters)." => "",
+
+// src/Central/FindingText.php, row 335
+"Prints data of the visitor, a user or the server" => "",
+
+// src/Central/FindingText.php, row 336
+"The text prints data of the request, of a user or of the server: {server} server variables, {cookie} the cookies of the visitor, {userinfo} the login log of any user, {user:password} the password the user signed in with." => "",
+
+// src/Central/FindingText.php, row 337
+"Fine when it shows the visitors their own data (their name, the address of the page). Do not install it when it prints passwords or server settings, or sends such data out - in a URL, an e-mail or a hidden form field." => "",
+
+// src/Central/FindingText.php, row 338
+"Carries a password or another secret" => "",
+
+// src/Central/FindingText.php, row 339
+"The text carries or issues a secret: a reading password of a slice ({credentials}), a signed token ({jwtencode}), a stored secret ({setsecret}) or a change of a password ({changepwd...}). A secret written in the app travels with it to every AA it is installed on." => "",
+
+// src/Central/FindingText.php, row 340
+"Expected only in apps with a login or an API. Check that the secret is never printed to visitors; after installing replace it with a secret of this AA." => "",
+
+// src/Central/FindingText.php, row 341
+"Sends e-mail" => "",
+
+// src/Central/FindingText.php, row 342
+"The app sends e-mail from this AA. When a visitor may choose the recipient, anyone can send mail through this AA (spam); attachments are downloaded by the server, a field filled by a visitor lets the visitor choose what is attached." => "",
+
+// src/Central/FindingText.php, row 343
+"Check that the recipients are fixed addresses or those of the item, not a value from the URL or a form, that the attachments are public files of the app, and that the mail is not sent by a page anyone can load again and again." => "",
+
+// src/Central/FindingText.php, row 344
+"Writes data whenever it is shown" => "",
+
+// src/Central/FindingText.php, row 345
+"The text writes data whenever it is shown: it creates or changes items ({newitem}, {updateitem}, {ensureitem}, {recompute}) or sends a data box message ({datovka})." => "",
+
+// src/Central/FindingText.php, row 346
+"Check which slice it writes into - it should be a slice of this app. Writing into another slice by its id, or with values taken from the URL, is suspicious; {datovka} on a public page sends a message on every load." => "",
+
+// src/Central/FindingText.php, row 347
+"Calls PHP code of AA" => "",
+
+// src/Central/FindingText.php, row 348
+"The text calls an internal PHP method of AA with the data of the item." => "",
+
+// src/Central/FindingText.php, row 349
+"Apps rarely need it - install only when you know why the app calls it." => "",
+
+// src/Central/FindingText.php, row 350
+"Sends the visitor elsewhere" => "",
+
+// src/Central/FindingText.php, row 351
+"The text sends the visitor to another address. An address taken from the URL lets anyone make a link of your site that leads to a foreign (phishing) page." => "",
+
+// src/Central/FindingText.php, row 352
+"Fine with a fixed address of the site; not with an address built from URL parameters." => "",
+
+// src/Central/FindingText.php, row 353
+"Sets a security header" => "",
+
+// src/Central/FindingText.php, row 354
+"The text sets an HTTP header which decides what browsers allow: Content-Security-Policy (CSP - which scripts and styles may run), CORS (which other sites may read the answers), Report-To and NEL (where the browsers of the visitors send their error reports), Referrer-Policy (to which sites the browsers send the address of the page). A status code or a content type is only a note (I)." => "",
+
+// src/Central/FindingText.php, row 355
+"Check that the CSP allows no scripts of foreign domains, that CORS is not opened to * unless the page is a public API, that Report-To and NEL send the reports to an address you trust, and that Referrer-Policy is neither unsafe-url nor no-referrer-when-downgrade. Security headers the site sets on purpose are fine - confirm them." => "",
+
+// src/Central/FindingText.php, row 356
+"Runs a text as a template again" => "",
+
+// src/Central/FindingText.php, row 357
+"The text expands a text as a template again. When that text comes from visitors (an item of a public form, a URL parameter), they can put AA commands into it and run them with the rights of this AA." => "",
+
+// src/Central/FindingText.php, row 358
+"Fine over the texts of the app itself; do not install it when it expands item content filled by anonymous posting or parameters of the URL." => "",
+
+// src/Central/FindingText.php, row 359
+"Calls a PHP function" => "",
+
+// src/Central/FindingText.php, row 360
+"The field alias calls a PHP function by its name, and it is not a literal usr_ function the check could recognise." => "",
+
+// src/Central/FindingText.php, row 361
+"Ask the author which function it calls; install only when it is a usr_ function defined in include/usr_aliasfnc.php of this AA." => "",
+
+// src/Central/FindingText.php, row 362
+"A command whose name is built when shown" => "",
+
+// src/Central/FindingText.php, row 363
+"The name of a command is built only when the page is shown (from another command, a placeholder, JSON escapes or the internal quoting of AA), so the check cannot tell which command runs - it may be any of the dangerous ones." => "",
+
+// src/Central/FindingText.php, row 364
+"Read the text around it. Common templates do not need that; unless you see why it is built this way, do not install the app." => "",
+
+// src/Central/FindingText.php, row 365
+"Too complex to check" => "",
+
+// src/Central/FindingText.php, row 366
+"The text is so complex that the check ran out of its limits - it is not checked completely." => "",
+
+// src/Central/FindingText.php, row 367
+"Read the text yourself before installing." => "",
+
+// src/Central/FindingText.php, row 368
+"A reading password in a URL" => "",
+
+// src/Central/FindingText.php, row 369
+"A URL carries the reading password of a slice (slice_pwd=...). The password travels with the app and shows in pages and server logs." => "",
+
+// src/Central/FindingText.php, row 370
+"After installing remove it from the URL and set a new reading password of the slice on this AA." => "",
+
+// src/Central/FindingText.php, row 371
+"The domain moves with the site" => "",
+
+// src/Central/FindingText.php, row 372
+"The site answers to this domain in its AA; the transfer gives the domain to the new site here." => "",
+
+// src/Central/FindingText.php, row 373
+"Confirm it when the site moves here. When the site in the other AA stays in use, remove the domain from the settings of the new site after the transfer." => "",
+
+// src/Central/FindingText.php, row 392
+"Longer than %1 bytes." => "",
+
+// src/Central/FindingText.php, row 393
+"More than %1 conditions." => "",
+
+// src/Central/FindingText.php, row 394
+"A condition starts with d-." => "",
+
+// src/Central/FindingText.php, row 395
+"Not in threes of field, operator and value - most likely a dash inside a value or a date, which is written doubled: 2026--01--01." => "",
+
+// src/Central/FindingText.php, row 396
+"A control character, a line break or a backslash." => "",
+
+// src/Central/FindingText.php, row 397
+"No field %1 in this slice." => "",
+
+// src/Central/FindingText.php, row 398
+"\"%1\" is not an operator of AA." => "",
+
+// src/Central/FindingText.php, row 399
+"A value is missing, cannot be read, or would match every item." => "",
+
+// src/Central/FindingText.php, row 400
+"<> takes one exact value - no OR, AND, NOT or quotes." => "",
+
+// src/Central/FindingText.php, row 401
+"The value compared with %1 cannot be read." => "",
+
+// src/Central/FindingText.php, row 402
+"A value has a character the slice cannot store." => "",
+
+// src/Central/FindingText.php, row 403
+"The source AA did not answer about it. An older AA cannot filter items and has to be updated first; otherwise check the changes again." => "",
+
+// src/Central/FindingText.php, row 435
+"alias %1" => "",
+
+// src/Central/FindingText.php, row 454
+"spot" => "",
+
+// src/Central/FindingText.php, row 455
+"field" => "",
+
+// src/Central/FindingText.php, row 458
+"filter" => "",
+
+// src/Central/FindingText.php, row 459
+"collection" => "",
+
+// src/Central/FindingText.php, row 460
+"object" => "",
+
+// src/Central/FindingText.php, row 461
+"item" => "",
+
+// src/Central/FindingText.php, row 462
+"constant group" => "",
+
+// src/Central/FindingText.php, row 463
+"constant" => "",
+
+// src/Central/FindingText.php, row 464
+"settings" => "",
+
+// src/Central/FindingText.php, row 465
+"values of the settings" => "",
+
+// src/Central/FindingText.php, row 466, 474
+"variable" => "",
+
+// src/Central/FindingText.php, row 467
+"condition" => "条件", // ai 2026-06
+
+// src/Central/RemoteHtml.php, row 22
+"(no output)" => "",
+
+// src/Central/SyncExecutor.php, row 37
+"Wrong command - this table is not synchronized" => "",
+
+// src/Central/SyncExecutor.php, row 42
+"Wrong command - row is not defined - %1" => "不正なコマンド - 行が定義されていません - %1", // ai 2026-06
+
+// src/Central/SyncExecutor.php, row 50
+"%1 %2 in slice %3: nothing to update" => "",
+
+// src/Central/SyncExecutor.php, row 53
+"Error: %1 %2 in slice %3 not updated" => "",
+
+// src/Central/SyncExecutor.php, row 54
+"%1 %2 in slice %3 updated" => "スライス %3 の %1 %2 を更新しました", // ai 2026-06
+
+// src/Central/SyncExecutor.php, row 66
+"Error: %1 %2 not inserted into slice %3" => "",
+
+// src/Central/SyncExecutor.php, row 70
+"%1 %2 inserted into slice %3 as %4" => "",
+
+// src/Central/SyncExecutor.php, row 71
+"%1 %2 inserted into slice %3" => "スライス %3 に %1 %2 を挿入しました", // ai 2026-06
+
+// src/Central/SyncExecutor.php, row 77
+"Error: %1 %2 not deleted from slice %3" => "",
+
+// src/Central/SyncExecutor.php, row 78
+"%1 %2 deleted from slice %3" => "スライス %3 から %1 %2 を削除しました", // ai 2026-06
+
+// src/Central/SyncExecutor.php, row 80
+"Unknown action (%1) for field %2 in slice %3" => "スライス %3 のフィールド %2 に対する不明な操作 (%1)", // ai 2026-06
+
+// src/Central/Task/RemoteAaTask.php, row 41
+"Err: no central_conf row for the AA (id %1) - the task is not run" => "",
+
+// src/Central/TransferText.php, row 89
+"A cache was not cleared after the transfer" => "",
+
+// src/Central/TransferText.php, row 92
+"Pages of the new modules may show old content until their cache expires; the details are in the PHP error log." => "",
+
+// src/Central/TransferText.php, row 133
+"The source AA refused the login" => "",
+
+// src/Central/TransferText.php, row 134
+"The source AA cannot be reached" => "",
+
+// src/Central/TransferText.php, row 135
+"The source AA did not answer in time" => "",
+
+// src/Central/TransferText.php, row 136
+"The source AA gave no usable answer" => "",
+
+// src/Central/TransferText.php, row 137
+"The source could not read the items" => "",
+
+// src/Central/TransferText.php, row 138
+"The source gives no items of the slice" => "",
+
+// src/Central/TransferText.php, row 139
+"The user who started the transfer is no superadmin of this AA any more" => "",
+
+// src/Central/TransferText.php, row 140
+"Writing the items failed - the details are in the PHP error log of this AA" => "",
+
+// src/Central/TransferText.php, row 141
+"The batch did not fit into the time of a queue step, not even a smaller one" => "",
+
+// src/Central/TransferText.php, row 142
+"The batch step stopped before its end several times - the details are in the PHP error log of this AA" => "",
+
+// src/Central/TransferText.php, row 143
+"The check at the end failed - the details are in the PHP error log of this AA" => "",
+
+// src/Central/TransferText.php, row 144
+"The batch step failed - the details are in the PHP error log of this AA" => "",
+
+// src/Central/TransferText.php, row 145
+"The database of this AA refused to write - the details are in the PHP error log of this AA" => "",
+
+// src/Central/TransferText.php, row 146
+"A slice the transfer writes into was deleted meanwhile" => "",
+
+// src/Central/TransferText.php, row 147
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize" => "",
+
+// src/Central/TransferText.php, row 166
+"item %1" => "",
 
 // src/IO/Grabber/AARSS.php, row 117
 "AA RSS" => "",
@@ -6458,28 +8607,29 @@ return [
 // src/IO/Grabber/AARSS.php, row 125
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "汎用RSSまたはAA RSSからデータを取得します(異なるAAインストール間の項目交換に使用)", // ai 2026-06
 
-// src/IO/Grabber/CSV.php, row 66
+// src/IO/Grabber/CSV.php, row 67
 "CSV" => "",
 
-// src/IO/Grabber/CSV.php, row 75
+// src/IO/Grabber/CSV.php, row 76
 "Import data from CSV (Comma Separated Values) format" => "CSV(Comma Separated Values)形式からデータをインポート", // ai 2026-06
 
-// src/IO/Grabber/CSV.php, row 93
-// src/IO/Grabber/JsonLD.php, row 103
-// src/IO/Grabber/XML.php, row 107
+// src/IO/Grabber/CSV.php, row 94
+// src/IO/Grabber/JsonLD.php, row 104
+// src/IO/Grabber/XML.php, row 108
+// src/Import/Source/CsvurlSource.php, row 53
 "URL of the file" => "ファイルのURL", // ai 2026-06
 
-// src/IO/Grabber/CSV.php, row 94
-// src/IO/Grabber/XML.php, row 109
+// src/IO/Grabber/CSV.php, row 95
+// src/IO/Grabber/XML.php, row 110
 "use direct text instead of file" => "ファイルの代わりにテキストを直接使用", // ai 2026-06
 
-// src/IO/Grabber/CSV.php, row 95
+// src/IO/Grabber/CSV.php, row 96
 "Delimiter of fields" => "フィールドの区切り文字", // ai 2026-06
 
-// src/IO/Grabber/CSV.php, row 106
+// src/IO/Grabber/CSV.php, row 107
 "Enclosure" => "囲み文字(enclosure)", // ai 2026-06
 
-// src/IO/Grabber/CSV.php, row 110
+// src/IO/Grabber/CSV.php, row 111
 "Use first row as field names" => "先頭行をフィールド名として使用", // ai 2026-06
 
 // src/IO/Grabber/CTK.php, row 51
@@ -6524,21 +8674,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "取得する情報", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 68
+// src/IO/Grabber/Form.php, row 74
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "フォーム", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 76
+// src/IO/Grabber/Form.php, row 82
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "AAフォームからPOSTされたデータを取得します", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 161
+// src/IO/Grabber/Form.php, row 167
 "No slice found: %1" => "スライスが見付かりません: %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 164
+// src/IO/Grabber/Form.php, row 170
 "No file, img_upload, or img_src field type found in slice %1" => "スライス %1 に file、img_upload、img_src のいずれのタイプのフィールドも見付かりません", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 197
+// src/IO/Grabber/Form.php, row 203
 "no POST nor FILES sent" => "POSTもFILESも送信されていません", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -6547,10 +8697,10 @@ return [
 // src/IO/Grabber/Ical.php, row 51
 "Import data from iCal (.ics) format" => "iCal (.ics) 形式からデータをインポート", // ai 2026-06
 
-// src/IO/Grabber/JsonLD.php, row 77
+// src/IO/Grabber/JsonLD.php, row 78
 "JSON-LD" => "",
 
-// src/IO/Grabber/JsonLD.php, row 85
+// src/IO/Grabber/JsonLD.php, row 86
 "General JSON-LD file" => "汎用JSON-LDファイル", // ai 2026-06
 
 // src/IO/Grabber/PohodaOrdersResult.php, row 32
@@ -6604,28 +8754,28 @@ return [
 // src/IO/Grabber/SQL.php, row 116
 "Charset (utf8mb4,...)" => "文字セット (utf8mb4,...)", // ai 2026-06
 
-// src/IO/Grabber/Slice.php, row 51
+// src/IO/Grabber/Slice.php, row 50
 "Items from slice" => "スライスの項目", // ai 2026-06
 
-// src/IO/Grabber/Slice.php, row 59
+// src/IO/Grabber/Slice.php, row 58
 "grabs items from some slice" => "あるスライスから項目を取得します", // ai 2026-06
 
-// src/IO/Grabber/XML.php, row 81
+// src/IO/Grabber/XML.php, row 82
 "XML" => "",
 
-// src/IO/Grabber/XML.php, row 89
+// src/IO/Grabber/XML.php, row 90
 "General XML file" => "汎用XMLファイル", // ai 2026-06
 
-// src/IO/Grabber/XML.php, row 108
+// src/IO/Grabber/XML.php, row 109
 "POST request body" => "POSTリクエスト本文", // ai 2026-06
 
-// src/IO/Grabber/XML.php, row 110
+// src/IO/Grabber/XML.php, row 111
 "XPath to one item" => "1つの項目へのXPath", // ai 2026-06
 
-// src/IO/Grabber/XML.php, row 110
+// src/IO/Grabber/XML.php, row 111
 "Specify, how to grab one item from the file using XPath expression" => "XPath式を使ってファイルから1つの項目を取得する方法を指定してください", // ai 2026-06
 
-// src/IO/Grabber/XML.php, row 110
+// src/IO/Grabber/XML.php, row 111
 "//item" => "",
 
 // src/IO/Grabber/XMLIekis.php, row 33
@@ -6640,86 +8790,1226 @@ return [
 // src/IO/OnPageChanger.php, row 55
 "No permission - no user is authenticated. Try to relogin, please." => "許可がありません - 認証された利用者がいません。再ログインしてください。", // ai 2026-06
 
+// src/Import/Credential/Store.php, row 55
+"damaged (a line break or NUL in %1)" => "",
+
+// src/Import/Credential/Store.php, row 56
+"set (%1)" => "",
+
+// src/Import/Definition.php, row 88
+// src/Import/DetailConfig.php, row 390
+"Key fields" => "",
+
+// src/Import/Definition.php, row 89
+// src/Import/DetailConfig.php, row 391
+"Store mode" => "",
+
+// src/Import/Definition.php, row 90
+// src/Import/DetailConfig.php, row 392
+"Validation" => "",
+
+// src/Import/Definition.php, row 91
+// src/Import/DetailConfig.php, row 393
+"After a stream" => "",
+
+// src/Import/Definition.php, row 93
+// src/Import/DetailPage.php, row 604
+"Enabled" => "",
+
+// src/Import/Definition.php, row 113
+"The source is changed in the import detail." => "",
+
+// src/Import/Definition.php, row 129
+"The slice has no import yet." => "",
+
+// src/Import/Definition.php, row 135, 164
+"Next plan" => "",
+
+// src/Import/Definition.php, row 367
+"None - the import is disabled" => "",
+
+// src/Import/Definition.php, row 370
+"Not planned - no task starts it" => "",
+
+// src/Import/Definition.php, row 423
+"The import needs a name." => "",
+
+// src/Import/Definition.php, row 427
+"The name of an import may not contain a colon (:) or look like an id." => "",
+
+// src/Import/Definition.php, row 430
+"Another import of the slice has this name." => "",
+
+// src/Import/Definition.php, row 438
+"Change the source in the import detail." => "",
+
+// src/Import/Definition.php, row 446
+// src/Import/DetailPage.php, row 545
+"Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "",
+
+// src/Import/Definition.php, row 455
+"The mapping of the import is not valid." => "",
+
+// src/Import/Definition.php, row 477
+"The import source refused these settings: %1" => "",
+
+// src/Import/Definition.php, row 480
+"Only a user who manages the feeding of the slice may change its imports." => "",
+
+// src/Import/Definition.php, row 481
+"This import uses API keys, so only a superadmin may change or delete it." => "",
+
+// src/Import/Definition.php, row 482
+"The import was not saved - it is not an import of this slice." => "",
+
+// src/Import/Definition.php, row 483
+// src/Import/DetailPage.php, row 546
+"The import source is not available." => "",
+
+// src/Import/Definition.php, row 484
+"The import source did not give its mapping." => "",
+
+// src/Import/Definition.php, row 485
+"The mapping of the import does not fit the slice." => "",
+
+// src/Import/Definition.php, row 486
+// src/Import/DetailPage.php, row 548
+"A setting of the import source is not valid." => "",
+
+// src/Import/Definition.php, row 486
+"The setting \"%1\" of the import source is not valid." => "",
+
+// src/Import/Definition.php, row 487
+// src/Import/DetailPage.php, row 549
+"The settings name a slice whose feeding you do not manage." => "",
+
+// src/Import/Definition.php, row 487
+"The setting \"%1\" names a slice whose feeding you do not manage." => "",
+
+// src/Import/Definition.php, row 488
+"The settings of the import changed meanwhile. Reload the page and set them again." => "",
+
+// src/Import/Definition.php, row 489
+"The import source refused these settings." => "",
+
+// src/Import/DetailCatalog.php, row 31
+"No catalog yet. Check source lists what the source offers." => "",
+
+// src/Import/DetailCatalog.php, row 37
+"The stored catalog cannot be read. The next check of the source lists it again." => "",
+
+// src/Import/DetailCatalog.php, row 41
+"The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "",
+
+// src/Import/DetailCatalog.php, row 42
+"Listed by the check of %1: %2 entries." => "",
+
+// src/Import/DetailCatalog.php, row 47
+"Pages of the catalog" => "",
+
+// src/Import/DetailCatalog.php, row 74
+"The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "",
+
+// src/Import/DetailCatalog.php, row 75
+"The catalog has no such entry. Check the source to list its catalog again." => "",
+
+// src/Import/DetailCatalog.php, row 76, 77
+"Nothing was added from the catalog:" => "",
+
+// src/Import/DetailCatalog.php, row 85
+"This import uses API keys, so only a superadmin may add streams from its catalog." => "",
+
+// src/Import/DetailCatalog.php, row 86
+"Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "",
+
+// src/Import/DetailCatalog.php, row 87
+"The import source cannot add streams from its catalog." => "",
+
+// src/Import/DetailCatalog.php, row 88
+"The import source could not be reached or did not answer. Try again later." => "",
+
+// src/Import/DetailCatalog.php, row 102
+"1 entry is new at the source - no stream comes from it." => "",
+
+// src/Import/DetailCatalog.php, row 103
+"%1 entries are new at the source - no stream comes from them." => "",
+
+// src/Import/DetailCatalog.php, row 111
+"Missing at the source" => "",
+
+// src/Import/DetailCatalog.php, row 111
+"Renamed at the source" => "",
+
+// src/Import/DetailCatalog.php, row 124, 143
+// src/Import/DetailPage.php, row 377, 1025, 1046
+"Stream" => "",
+
+// src/Import/DetailCatalog.php, row 124
+"Catalog key" => "",
+
+// src/Import/DetailCatalog.php, row 124
+"Name of the stream" => "",
+
+// src/Import/DetailCatalog.php, row 124
+"Name in the catalog" => "",
+
+// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailConfig.php, row 291
+"Key" => "",
+
+// src/Import/DetailCatalog.php, row 143
+// src/Import/DetailPage.php, row 329, 666
+"Updated" => "",
+
+// src/Import/DetailCatalog.php, row 169
+"Catalog of the source" => "",
+
+// src/Import/DetailConfig.php, row 136
+"The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "",
+
+// src/Import/DetailConfig.php, row 137
+"The mapping is the same as the source gives - nothing changed." => "",
+
+// src/Import/DetailConfig.php, row 138, 139
+"The mapping was not reset:" => "",
+
+// src/Import/DetailConfig.php, row 140
+"The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "",
+
+// src/Import/DetailConfig.php, row 141
+"The settings are the same as stored - nothing changed." => "",
+
+// src/Import/DetailConfig.php, row 142
+"The settings were not saved:" => "",
+
+// src/Import/DetailConfig.php, row 144
+"Choose a source." => "",
+
+// src/Import/DetailConfig.php, row 155, 179
+"Settings of the source" => "",
+
+// src/Import/DetailConfig.php, row 159
+"Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "",
+
+// src/Import/DetailConfig.php, row 161
+"Change the settings or the source in %1 below." => "",
+
+// src/Import/DetailConfig.php, row 188
+"No other source is available." => "",
+
+// src/Import/DetailConfig.php, row 192
+"(current)" => "",
+
+// src/Import/DetailConfig.php, row 203
+"Show its settings" => "",
+
+// src/Import/DetailConfig.php, row 204
+"Keep the current source" => "",
+
+// src/Import/DetailConfig.php, row 214
+"This source is not available, so its settings cannot be shown. Choose another source above." => "",
+
+// src/Import/DetailConfig.php, row 222
+"The stored settings cannot be read; saving the form stores them again." => "",
+
+// src/Import/DetailConfig.php, row 228
+"The source did not describe its settings, so they cannot be changed now." => "",
+
+// src/Import/DetailConfig.php, row 232
+"You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "",
+
+// src/Import/DetailConfig.php, row 233
+"Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "",
+
+// src/Import/DetailConfig.php, row 234
+"Change the source and save" => "",
+
+// src/Import/DetailConfig.php, row 236
+"Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "",
+
+// src/Import/DetailConfig.php, row 237
+"Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "",
+
+// src/Import/DetailConfig.php, row 238
+"Save the settings" => "",
+
+// src/Import/DetailConfig.php, row 272
+"The source has no settings." => "",
+
+// src/Import/DetailConfig.php, row 283
+"Keys" => "",
+
+// src/Import/DetailConfig.php, row 285
+"The source did not say which keys it needs." => "",
+
+// src/Import/DetailConfig.php, row 288
+"The source needs no key." => "",
+
+// src/Import/DetailConfig.php, row 291
+// src/Widget/Widget.php, row 849
+"Hint" => "ヒント", // ai 2026-06
+
+// src/Import/DetailConfig.php, row 297
+"Key is set" => "",
+
+// src/Import/DetailConfig.php, row 298
+"Key is damaged" => "",
+
+// src/Import/DetailConfig.php, row 299
+"Key is missing" => "",
+
+// src/Import/DetailConfig.php, row 305
+"The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "",
+
+// src/Import/DetailConfig.php, row 327
+"define one of %1 in config.php" => "",
+
+// src/Import/DetailConfig.php, row 350
+"The mapping of the import cannot be read. Reset it from the source." => "",
+
+// src/Import/DetailConfig.php, row 356
+"Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "",
+
+// src/Import/DetailConfig.php, row 357
+"Reset mapping from the source" => "",
+
+// src/Import/DetailConfig.php, row 358
+"Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "",
+
+// src/Import/DetailConfig.php, row 366
+"The mapping has no rows." => "",
+
+// src/Import/DetailConfig.php, row 369
+"Target" => "",
+
+// src/Import/DetailConfig.php, row 369
+"Transformation" => "",
+
+// src/Import/DetailConfig.php, row 379
+"the field the job parameter names" => "",
+
+// src/Import/DetailPage.php, row 269
+"This page is out of date – reload it." => "",
+
+// src/Import/DetailPage.php, row 282
+"Last import" => "",
+
+// src/Import/DetailPage.php, row 283
+"Next start" => "",
+
+// src/Import/DetailPage.php, row 284
+"Last check of the source" => "",
+
+// src/Import/DetailPage.php, row 290
+"Overview" => "",
+
+// src/Import/DetailPage.php, row 300, 367, 800
+// src/Manageraction/Import_Run.php, row 29
+"Run" => "",
+
+// src/Import/DetailPage.php, row 300
+"Imports every stream." => "",
+
+// src/Import/DetailPage.php, row 301, 801
+"Run changed only" => "",
+
+// src/Import/DetailPage.php, row 301
+"Skips the streams the source says did not change." => "",
+
+// src/Import/DetailPage.php, row 302, 367, 802
+"Check source" => "",
+
+// src/Import/DetailPage.php, row 302
+"Asks the source whether it works. Stores nothing." => "",
+
+// src/Import/DetailPage.php, row 303
+"Reads up to 500 items and shows what it would store. Stores nothing." => "",
+
+// src/Import/DetailPage.php, row 309
+"More actions" => "",
+
+// src/Import/DetailPage.php, row 327, 352
+"Runs" => "",
+
+// src/Import/DetailPage.php, row 327
+"No run yet." => "",
+
+// src/Import/DetailPage.php, row 329
+// src/Optimize/CheckImports.php, row 150, 154
+// src/Optimize/CheckInstallRuns.php, row 54
+"Started" => "",
+
+// src/Import/DetailPage.php, row 329
+"Took" => "",
+
+// src/Import/DetailPage.php, row 329, 666
+"Read" => "",
+
+// src/Import/DetailPage.php, row 329, 666
+"Skipped" => "",
+
+// src/Import/DetailPage.php, row 329, 666
+"Filtered out" => "",
+
+// src/Import/DetailPage.php, row 329, 666
+"Item errors" => "",
+
+// src/Import/DetailPage.php, row 342
+"working %1" => "",
+
+// src/Import/DetailPage.php, row 366
+"The stored state of the streams cannot be read." => "",
+
+// src/Import/DetailPage.php, row 367
+"No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "",
+
+// src/Import/DetailPage.php, row 368, 396
+"Streams" => "",
+
+// src/Import/DetailPage.php, row 377
+"Records" => "",
+
+// src/Import/DetailPage.php, row 377
+"Last recorded" => "",
+
+// src/Import/DetailPage.php, row 377
+"Source checked" => "",
+
+// src/Import/DetailPage.php, row 377
+"Data version" => "",
+
+// src/Import/DetailPage.php, row 390
+"by the run started %1" => "",
+
+// src/Import/DetailPage.php, row 395
+"Pages of the streams" => "",
+
+// src/Import/DetailPage.php, row 421
+"Page %1 of %2" => "",
+
+// src/Import/DetailPage.php, row 507
+"The run is queued. It goes on in the background; reload the page to see how far it got." => "",
+
+// src/Import/DetailPage.php, row 508
+"The run goes on - its next step is queued." => "",
+
+// src/Import/DetailPage.php, row 509
+"The run is ended. What it imported stays." => "",
+
+// src/Import/DetailPage.php, row 511
+"No such action." => "",
+
+// src/Import/DetailPage.php, row 512
+"Choose a stream of the source." => "",
+
+// src/Import/DetailPage.php, row 513
+"Not started." => "",
+
+// src/Import/DetailPage.php, row 515
+"Its last step may still be working. Try again in a few minutes." => "",
+
+// src/Import/DetailPage.php, row 516
+"This import no longer exists in this slice." => "",
+
+// src/Import/DetailPage.php, row 517
+"No such run of this import." => "",
+
+// src/Import/DetailPage.php, row 518
+"The run is finished already." => "",
+
+// src/Import/DetailPage.php, row 520
+"The action failed. The log of import failures has its cause." => "",
+
+// src/Import/DetailPage.php, row 531
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "",
+
+// src/Import/DetailPage.php, row 531
+"The last run stopped by an error. Continue it or End it first." => "",
+
+// src/Import/DetailPage.php, row 532
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "",
+
+// src/Import/DetailPage.php, row 532
+"No step has worked on the last run for a long time. Continue it or End it first." => "",
+
+// src/Import/DetailPage.php, row 533
+"The last step of the previous run is still finishing. Try again in a few minutes." => "",
+
+// src/Import/DetailPage.php, row 534
+"Its next step is already on its way." => "",
+
+// src/Import/DetailPage.php, row 535
+"The last run is still running." => "",
+
+// src/Import/DetailPage.php, row 544
+"Only a user who manages the feeding of the slice may run its imports." => "",
+
+// src/Import/DetailPage.php, row 547
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "",
+
+// src/Import/DetailPage.php, row 550
+"The source has no such stream now." => "",
+
+// src/Import/DetailPage.php, row 551
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "",
+
+// src/Import/DetailPage.php, row 552
+"The first row of the file lacks columns the mapping needs." => "",
+
+// src/Import/DetailPage.php, row 553
+"The source did not accept the key." => "",
+
+// src/Import/DetailPage.php, row 554
+"The key of the source is damaged in the configuration." => "",
+
+// src/Import/DetailPage.php, row 555
+"The source could not be reached." => "",
+
+// src/Import/DetailPage.php, row 556
+"The run is finished; it cannot go on." => "",
+
+// src/Import/DetailPage.php, row 557
+"The import is switched off." => "",
+
+// src/Import/DetailPage.php, row 558
+"This import uses API keys, so only a superadmin may do this." => "",
+
+// src/Import/DetailPage.php, row 559
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "",
+
+// src/Import/DetailPage.php, row 560
+"The import source refused: %1" => "",
+
+// src/Import/DetailPage.php, row 571
+"The request to the source failed." => "",
+
+// src/Import/DetailPage.php, row 572
+"The source is not available now." => "",
+
+// src/Import/DetailPage.php, row 588
+// src/Import/RunView.php, row 177
+"No import yet" => "",
+
+// src/Import/DetailPage.php, row 589
+"Latest run: %1" => "",
+
+// src/Import/DetailPage.php, row 595
+"Since then: %1" => "",
+
+// src/Import/DetailPage.php, row 604
+"Source: %1" => "",
+
+// src/Import/DetailPage.php, row 604
+"this source is not available" => "",
+
+// src/Import/DetailPage.php, row 626
+"First item error:" => "",
+
+// src/Import/DetailPage.php, row 653
+"Latest runs" => "",
+
+// src/Import/DetailPage.php, row 653
+"Outcomes of the latest runs, newest first" => "",
+
+// src/Import/DetailPage.php, row 654
+"Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "",
+
+// src/Import/DetailPage.php, row 679
+"The open run" => "",
+
+// src/Import/DetailPage.php, row 681
+"Streams done: %1 of %2." => "",
+
+// src/Import/DetailPage.php, row 684
+"Now at: %1." => "",
+
+// src/Import/DetailPage.php, row 686
+"Last progress: %1." => "",
+
+// src/Import/DetailPage.php, row 689
+"Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "",
+
+// src/Import/DetailPage.php, row 690
+"Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "",
+
+// src/Import/DetailPage.php, row 691
+"No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "",
+
+// src/Import/DetailPage.php, row 692
+"A step is working now." => "",
+
+// src/Import/DetailPage.php, row 694
+"Waiting to try again at %1 after 1 failed try." => "",
+
+// src/Import/DetailPage.php, row 695
+"Waiting to try again at %1 after %2 failed tries." => "",
+
+// src/Import/DetailPage.php, row 696
+"Waiting to try again at %1." => "",
+
+// src/Import/DetailPage.php, row 698, 944
+"Its last step may still be working." => "",
+
+// src/Import/DetailPage.php, row 699
+"Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "",
+
+// src/Import/DetailPage.php, row 708
+"Its next step waits in the task queue until %1." => "",
+
+// src/Import/DetailPage.php, row 708
+"Its next step waits in the task queue." => "",
+
+// src/Import/DetailPage.php, row 726
+"The import is disabled, so no planned task starts it." => "",
+
+// src/Import/DetailPage.php, row 732
+"Not planned" => "",
+
+// src/Import/DetailPage.php, row 733
+"A planned task calls it, but none has a time to start it." => "",
+
+// src/Import/DetailPage.php, row 734
+"It runs only when you start it. To run it on a schedule, add a planned task." => "",
+
+// src/Import/DetailPage.php, row 745
+"Written by hand, a planned task starts it with %1." => "",
+
+// src/Import/DetailPage.php, row 756
+"Planned tasks need the Forms permission" => "",
+
+// src/Import/DetailPage.php, row 760
+"Planned tasks: %1" => "",
+
+// src/Import/DetailPage.php, row 761
+"Planned tasks: %1, next %2" => "",
+
+// src/Import/DetailPage.php, row 763, 778
+"Schedule" => "",
+
+// src/Import/DetailPage.php, row 766
+"(import off)" => "",
+
+// src/Import/DetailPage.php, row 773
+"next %1" => "",
+
+// src/Import/DetailPage.php, row 773
+"no time set" => "",
+
+// src/Import/DetailPage.php, row 774
+"save the task again to let it start the import" => "",
+
+// src/Import/DetailPage.php, row 775
+"queued" => "",
+
+// src/Import/DetailPage.php, row 775
+"not queued" => "",
+
+// src/Import/DetailPage.php, row 793
+"Import %1" => "",
+
+// src/Import/DetailPage.php, row 803
+"mode set by an expression" => "",
+
+// src/Import/DetailPage.php, row 803
+"unknown mode %1" => "",
+
+// src/Import/DetailPage.php, row 826, 833
+"Passed" => "",
+
+// src/Import/DetailPage.php, row 826, 833
+"Failed" => "",
+
+// src/Import/DetailPage.php, row 828
+"Taken from the run list: the stream state holds no newer check result." => "",
+
+// src/Import/DetailPage.php, row 831
+"The stored result cannot be read." => "",
+
+// src/Import/DetailPage.php, row 831
+"Never checked" => "",
+
+// src/Import/DetailPage.php, row 849
+"The mapping of the import cannot be read; no run starts until it is set again." => "",
+
+// src/Import/DetailPage.php, row 856
+"The mapping does not fit the slice; no run starts until it is fixed:" => "",
+
+// src/Import/DetailPage.php, row 899
+"No stream is known yet - run the import or check the source first." => "",
+
+// src/Import/DetailPage.php, row 903
+"One stream" => "",
+
+// src/Import/DetailPage.php, row 904
+"Run the stream" => "",
+
+// src/Import/DetailPage.php, row 905
+"Dry run of the stream" => "",
+
+// src/Import/DetailPage.php, row 918
+"Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "",
+
+// src/Import/DetailPage.php, row 919
+"Record the current state of the source" => "",
+
+// src/Import/DetailPage.php, row 921
+"Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "",
+
+// src/Import/DetailPage.php, row 937
+"No run is open." => "",
+
+// src/Import/DetailPage.php, row 943
+"Its step is working now." => "",
+
+// src/Import/DetailPage.php, row 947
+"Try now" => "",
+
+// src/Import/DetailPage.php, row 957
+"End the run for good? What it imported stays; the next run starts from the beginning." => "",
+
+// src/Import/DetailPage.php, row 1024
+"The first item errors (%1)" => "",
+
+// src/Import/DetailPage.php, row 1025, 1046
+"Job" => "",
+
+// src/Import/DetailPage.php, row 1036
+"Skipped - the key came out empty (%1)" => "",
+
+// src/Import/DetailPage.php, row 1046
+"Source value" => "",
+
+// src/Import/DetailPage.php, row 1056
+"The filter kept no item of 1 job." => "",
+
+// src/Import/DetailPage.php, row 1056
+"The filter kept no item of %1 jobs." => "",
+
+// src/Import/DetailPage.php, row 1057
+"If those items should be imported, check the filter in Mapping." => "",
+
+// src/Import/DetailPage.php, row 1066
+"The source went round in 1 stream; the rest of it was skipped." => "",
+
+// src/Import/DetailPage.php, row 1066
+"The source went round in %1 streams; the rest of each was skipped." => "",
+
+// src/Import/DetailPage.php, row 1067
+"The source pages wrongly or changed its paging; check the source, then run the import again." => "",
+
+// src/Import/DetailPage.php, row 1082
+"Remarks of the source (%1)" => "",
+
+// src/Import/DetailPage.php, row 1091
+"Remark" => "",
+
+// src/Import/DetailPage.php, row 1099
+"The dry run found no item to store." => "",
+
+// src/Import/DetailPage.php, row 1101
+"What the dry run would store - the first %1 items" => "",
+
+// src/Import/DetailPage.php, row 1123
+"Last try failed:" => "",
+
+// src/Import/DetailPage.php, row 1123
+"Error:" => "エラー:", // ai 2026-10
+
+// src/Import/DetailPage.php, row 1124
+"At: %1" => "",
+
+// src/Import/DetailPage.php, row 1126
+"What to do:" => "",
+
+// src/Import/DetailPage.php, row 1136
+"Check the address of the source in its settings, then Continue or End the run." => "",
+
+// src/Import/DetailPage.php, row 1140
+"Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "",
+
+// src/Import/DetailPage.php, row 1141
+"Check the key of the source in its settings, then run Check source." => "",
+
+// src/Import/DetailPage.php, row 1142
+"Enter the key of the source again in its settings, then run Check source." => "",
+
+// src/Import/DetailPage.php, row 1143
+"The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "",
+
+// src/Import/DetailPage.php, row 1144
+"Correct the settings of the source, then run Check source." => "",
+
+// src/Import/DetailPage.php, row 1145
+"Choose a stream the source still has, then start the import again." => "",
+
+// src/Import/DetailPage.php, row 1146
+"Check that every mapped field exists in the slice, then start the import again." => "",
+
+// src/Import/DetailPage.php, row 1147
+"Look the failure up in the log of import failures, then Continue or End the run." => "",
+
+// src/Import/DetailPage.php, row 1156
+"full run" => "",
+
+// src/Import/DetailPage.php, row 1190
+"Baseline only" => "",
+
+// src/Import/DetailPage.php, row 1190
+"Nothing imported yet. Run changed only takes what changes after this." => "",
+
+// src/Import/DetailPage.php, row 1198, 1199
+"Imported with item errors" => "",
+
+// src/Import/DetailPage.php, row 1198
+"1 item error in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1199
+"%1 item errors in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1201
+"Imported" => "",
+
+// src/Import/DetailPage.php, row 1201
+"The source was asked again after the import." => "",
+
+// src/Import/DetailPage.php, row 1201
+"The source has not been asked since." => "",
+
+// src/Import/DetailPage.php, row 1205
+"Checked, not imported yet" => "",
+
+// src/Import/DetailPage.php, row 1205
+"Run imports it; Run changed only too, as it has no version to compare." => "",
+
+// src/Import/DetailPage.php, row 1206
+"Not seen yet" => "",
+
+// src/Import/DetailPage.php, row 1206
+"No run has imported or checked it." => "",
+
+// src/Import/DetailPage.php, row 1219
+"%1 read" => "",
+
+// src/Import/DetailPage.php, row 1220
+"%1 new, %2 updated, %3 skipped" => "",
+
+// src/Import/DetailPage.php, row 1221
+"%1 filtered out" => "",
+
+// src/Import/DetailPage.php, row 1222
+"dry run - nothing stored" => "",
+
+// src/Import/DetailPage.php, row 1222
+"all streams of the run together" => "",
+
+// src/Import/DetailPage.php, row 1241
+"None yet - an import records it" => "",
+
+// src/Import/DetailPage.php, row 1242
+"None - the source gives no version" => "",
+
+// src/Import/DetailPage.php, row 1295
+"took %1" => "",
+
+// src/Import/DetailPage.php, row 1295
+"took %1, working %2" => "",
+
+// src/Import/DetailPage.php, row 1301
+"%1 s" => "",
+
+// src/Import/DetailPage.php, row 1304
+"%1 min %2 s" => "",
+
+// src/Import/DetailPage.php, row 1304, 1306
+"%1 min" => "",
+
+// src/Import/DetailPage.php, row 1306
+"%1 h" => "",
+
+// src/Import/Mapping.php, row 219
+"The slice of the import is not available." => "",
+
+// src/Import/Mapping.php, row 220
+"A row of the mapping uses a transformation that does not exist." => "",
+
+// src/Import/Mapping.php, row 221
+"A row of the mapping has parameters its transformation does not take." => "",
+
+// src/Import/Mapping.php, row 222
+"The mapping fills a field the slice does not have: %1." => "",
+
+// src/Import/Mapping.php, row 222
+"The mapping fills a field the slice does not have." => "",
+
+// src/Import/Mapping.php, row 223
+"The mapping fills a field an import may not set." => "",
+
+// src/Import/Mapping.php, row 224
+"Two rows of the mapping fill the same field." => "",
+
+// src/Import/Mapping.php, row 225
+"The mapping has no key field, so an item cannot be found again." => "",
+
+// src/Import/Mapping.php, row 226
+"A key field is not filled by the mapping." => "",
+
+// src/Import/Mapping.php, row 227
+"The mapping has a problem." => "",
+
+// src/Import/RunView.php, row 60
+"Finished with item errors" => "",
+
+// src/Import/RunView.php, row 64
+"then ended - the settings changed" => "",
+
+// src/Import/RunView.php, row 65
+"then ended - a planned run started" => "",
+
+// src/Import/RunView.php, row 66
+"then ended by hand" => "",
+
+// src/Import/RunView.php, row 69
+"Ended - the settings changed" => "",
+
+// src/Import/RunView.php, row 70
+"Ended - a planned run started" => "",
+
+// src/Import/RunView.php, row 71
+"Ended by hand" => "",
+
+// src/Import/RunView.php, row 74
+"Stuck — see State Check" => "",
+
+// src/Import/RunView.php, row 75, 171
+"Running" => "",
+
+// src/Import/RunView.php, row 76
+"Waiting to retry" => "",
+
+// src/Import/RunView.php, row 77
+"Queued" => "",
+
+// src/Import/RunView.php, row 97
+"Ended before reading anything" => "",
+
+// src/Import/RunView.php, row 97
+"Stopped before reading anything" => "",
+
+// src/Import/RunView.php, row 106
+"The source answered %1." => "",
+
+// src/Import/RunView.php, row 109
+"The address of the source could not be resolved (DNS)." => "",
+
+// src/Import/RunView.php, row 110
+"The source did not answer in time." => "",
+
+// src/Import/RunView.php, row 111
+"The secure connection to the source failed (TLS)." => "",
+
+// src/Import/RunView.php, row 112
+"The source refused the connection." => "",
+
+// src/Import/RunView.php, row 113
+"The address of the source is not allowed or not valid." => "",
+
+// src/Import/RunView.php, row 114
+"The answer of the source is too large." => "",
+
+// src/Import/RunView.php, row 115
+"The source redirected too many times." => "",
+
+// src/Import/RunView.php, row 127
+"just now" => "",
+
+// src/Import/RunView.php, row 128
+"%1 min ago" => "",
+
+// src/Import/RunView.php, row 129
+"%1 h ago" => "",
+
+// src/Import/RunView.php, row 130
+"1 day ago" => "",
+
+// src/Import/RunView.php, row 131
+"%1 days ago" => "",
+
+// src/Import/RunView.php, row 159, 162, 165, 169
+"Failing" => "",
+
+// src/Import/RunView.php, row 159
+"The source of this import is not available, so it cannot run." => "",
+
+// src/Import/RunView.php, row 162
+"The mapping does not fit the slice, so no run can start until it is fixed." => "",
+
+// src/Import/RunView.php, row 169
+"A run has made no progress for a long time - cron may not be running its steps." => "",
+
+// src/Import/RunView.php, row 170, 178, 181, 182, 183
+"Needs attention" => "",
+
+// src/Import/RunView.php, row 170
+"A run failed a step and waits to try again." => "",
+
+// src/Import/RunView.php, row 171
+"A run is in progress: %1." => "",
+
+// src/Import/RunView.php, row 176
+"Never ran" => "",
+
+// src/Import/RunView.php, row 176
+"No run yet. Run starts the first import." => "",
+
+// src/Import/RunView.php, row 177
+"Only source checks or dry runs so far - nothing was imported." => "",
+
+// src/Import/RunView.php, row 179
+"The last import stopped by an error and was then ended, so the data may be incomplete." => "",
+
+// src/Import/RunView.php, row 180
+"The last import was ended before it finished, so the data may be incomplete." => "",
+
+// src/Import/RunView.php, row 181
+"The last import finished, but 1 item could not be stored." => "",
+
+// src/Import/RunView.php, row 182
+"The last import finished, but %1 items could not be stored." => "",
+
+// src/Import/RunView.php, row 183
+"The last full import read nothing - the source may be empty." => "",
+
+// src/Import/RunView.php, row 184, 185
+"Healthy" => "",
+
+// src/Import/RunView.php, row 184
+"The last import finished without errors; nothing had changed." => "",
+
+// src/Import/RunView.php, row 185
+"The last import finished without errors (%1 read)." => "",
+
+// src/Import/RunView.php, row 188
+"Runs only by hand." => "",
+
+// src/Import/RunView.php, row 197
+"The last dry run stopped by an error. Nothing more is imported until you act." => "",
+
+// src/Import/RunView.php, row 198
+"The last source check stopped by an error. Nothing more is imported until you act." => "",
+
+// src/Import/RunView.php, row 199
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "",
+
+// src/Import/RunView.php, row 200
+"The last import stopped by an error. Nothing more is imported until you act." => "",
+
+// src/Import/RunView.php, row 212
+"Source check failed - nothing imported" => "",
+
+// src/Import/RunView.php, row 213
+"Source check under way" => "",
+
+// src/Import/RunView.php, row 215
+"Source reachable - nothing imported" => "",
+
+// src/Import/RunView.php, row 217
+"Nothing had changed" => "",
+
+// src/Import/RunView.php, row 218
+"Nothing read" => "",
+
+// src/Import/RunView.php, row 219
+"%1 read, %2 new, %3 changed" => "",
+
+// src/Import/RunView.php, row 221
+"%1 (nothing stored)" => "",
+
+// src/Import/RunView.php, row 227
+"Recorded the state of 1 stream - nothing imported" => "",
+
+// src/Import/RunView.php, row 227
+"Recorded the state of %1 streams - nothing imported" => "",
+
+// src/Import/RunView.php, row 228
+"%1 without a version" => "",
+
+// src/Import/RunView.php, row 237
+"changed only" => "",
+
+// src/Import/RunView.php, row 238
+"check" => "",
+
+// src/Import/RunView.php, row 239
+"recording the state of the source" => "",
+
+// src/Import/RunView.php, row 242
+"dry run" => "",
+
+// src/Import/RunView.php, row 244
+"by hand" => "",
+
+// src/Import/RunView.php, row 245
+"planned" => "",
+
+// src/Import/RunView.php, row 246
+"on an event" => "",
+
+// src/Import/RunView.php, row 259
+"Disabled - it does not start" => "",
+
+// src/Import/RunView.php, row 268
+"No run yet" => "",
+
+// src/Import/RunView.php, row 280
+"1 item error" => "",
+
+// src/Import/RunView.php, row 281
+"%1 item errors" => "",
+
+// src/Import/RunView.php, row 284
+"Last import: %1" => "",
+
+// src/Import/SliceIdSetting.php, row 22
+"No slice ID" => "",
+
+// src/Import/Source/CsvColumnsSetting.php, row 31
+"Expected a JSON object {\"column\": \"field id\"}" => "",
+
+// src/Import/Source/CsvurlSource.php, row 42
+"CSV file at a URL" => "",
+
+// src/Import/Source/CsvurlSource.php, row 47
+"Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "",
+
+// src/Import/Source/CsvurlSource.php, row 53
+"http or https only, on a public address, without a user name and password" => "",
+
+// src/Import/Source/CsvurlSource.php, row 55
+// src/Widget/Widget.php, row 744, 813
+"Columns" => "列", // ai 2026-06
+
+// src/Import/Source/CsvurlSource.php, row 55
+"JSON object: the column name in the first row => the field it fills" => "",
+
+// src/Import/Source/CsvurlSource.php, row 56
+"Key column" => "",
+
+// src/Import/Source/CsvurlSource.php, row 56
+"The column that identifies the item; it must be one of the columns" => "",
+
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "%2 件の項目を含む %1 個のチャンクを予定しました", // ai 2026-06
 
-// src/Manager.php, row 463
+// src/Later/Toexecute.php, row 364
+"task is no longer in the queue" => "",
+
+// src/Later/Toexecute.php, row 368
+"skipped - the task changed meanwhile (reload the list)" => "",
+
+// src/Later/Toexecute.php, row 459
+"the task failed with %1" => "",
+
+// src/Manager.php, row 430
+"You can not save this object here." => "",
+
+// src/Manager.php, row 445
+"The object was not saved - it changed meanwhile. Reload and try again." => "",
+
+// src/Manager.php, row 460
+"This object can not be edited here - it is not an object of this module." => "",
+
+// src/Manager.php, row 481
+"The object was not saved - it is not the object of this form in this module." => "",
+
+// src/Manager.php, row 606
 "Optional" => "任意", // ai 2026-06
 
-// src/Manager.php, row 580
+// src/Manager.php, row 649
+"The row was not saved - it is not the row of this form in this module." => "",
+
+// src/Manager.php, row 668
+"You can not save this row here." => "",
+
+// src/Manager.php, row 812
 "Searchbar" => "検索バー", // ai 2026-06
 
-// src/Manager.php, row 581
+// src/Manager.php, row 813
 "Scroller" => "ページ送り", // ai 2026-06
 
-// src/Manager.php, row 582
+// src/Manager.php, row 814
 "Msg" => "メッセージ", // ai 2026-06
 
-// src/Manager.php, row 583
+// src/Manager.php, row 815
 "Bin" => "箱", // ai 2026-06
 
-// src/Manager.php, row 585
+// src/Manager.php, row 817
 "Manager ID" => "マネージャーID", // ai 2026-06
 
-// src/Manager.php, row 979
+// src/Manager.php, row 1180
+"The action was not performed - use the button on the page." => "",
+
+// src/Manager.php, row 1261
 "Edit id" => "編集用ID", // ai 2026-06
 
-// src/Manager.php, row 992
+// src/Manager.php, row 1275
 "Hold Shift and click to select multiple rows" => "Shiftキーを押しながらクリックすると複数行を選択できます", // ai 2026-06
 
-// src/Manager.php, row 1119
+// src/Manager.php, row 1313
+"Are you sure you want to empty trash?" => "本当にゴミ箱を空にしますか？", // ai 2026-06
+
+// src/Manager.php, row 1415
 "Go" => "実行", // ai 2026-06
 
-// src/Manager.php, row 1132
+// src/Manager.php, row 1428
 "No item selected. Perform action for all filtered items? " => "項目が選択されていません。絞り込まれた全ての項目に対して操作を実行しますか?", // ai 2026-06
 
-// src/Manager.php, row 1132
+// src/Manager.php, row 1428
 "Run for %1 items" => "%1 件の項目に対して実行", // ai 2026-06
 
-// src/Manageraction/AbstractManageraction.php, row 46
+// src/Manageraction/AbstractManageraction.php, row 47
 "Action ID" => "アクションID", // ai 2026-06
 
-// src/Manageraction/AbstractManageraction.php, row 47
+// src/Manageraction/AbstractManageraction.php, row 48
 "URL to open" => "開くURL", // ai 2026-06
 
-// src/Manageraction/AbstractManageraction.php, row 48
+// src/Manageraction/AbstractManageraction.php, row 49
 "Additional URL parameters" => "追加のURLパラメータ", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 30
 // src/Manageraction/Item_DeleteTrash.php, row 34
-// src/Manageraction/Polls_DeleteTrash.php, row 70
+// src/Manageraction/Polls_DeleteTrash.php, row 71
 "Remove (delete from database)" => "削除(データベースから削除)", // ai 2026-06
 
 // src/Manageraction/Central_DeleteTrash.php, row 37
 // src/Manageraction/Item_DeleteTrash.php, row 43
-// src/Manageraction/Taskmanager_Execute.php, row 26
+// src/Manageraction/Taskmanager_Execute.php, row 24
 "You do not have permissions to remove items" => "項目を削除する許可がありません", // ai 2026-06
 
-// src/Manageraction/Central_Linkcheck.php, row 16
+// src/Manageraction/Central_Linkcheck.php, row 17
 "Check the AA availability" => "AAの可用性を確認", // ai 2026-06
 
-// src/Manageraction/Central_Linkcheck.php, row 27
+// src/Manageraction/Central_Linkcheck.php, row 28
 "AA (Organization)" => "AA (組織)", // ai 2026-06
 
-// src/Manageraction/Central_Linkcheck.php, row 29
+// src/Manageraction/Central_Linkcheck.php, row 30
 "Status code" => "ステータスコード", // ai 2026-06
 
 // src/Manageraction/Central_MoveItem.php, row 26
 // src/Manageraction/Item_MoveItem.php, row 29
 // src/Manageraction/Links_Move.php, row 26
-// src/Manageraction/Polls_MoveItem.php, row 28
+// src/Manageraction/Polls_MoveItem.php, row 29
 "Move to Active" => "活動中へ移動",
 
 // src/Manageraction/Central_MoveItem.php, row 27
 // src/Manageraction/Item_MoveItem.php, row 30
 // src/Manageraction/Links_Move.php, row 27
-// src/Manageraction/Polls_MoveItem.php, row 29
+// src/Manageraction/Polls_MoveItem.php, row 30
 "Move to Holding bin" => "保留箱へ移動",
 
 // src/Manageraction/Central_MoveItem.php, row 28
 // src/Manageraction/Item_MoveItem.php, row 31
 // src/Manageraction/Links_Move.php, row 28
-// src/Manageraction/Polls_MoveItem.php, row 30
+// src/Manageraction/Polls_MoveItem.php, row 31
 "Move to Trash" => "ゴミ箱に移動",
 
 // src/Manageraction/Central_MoveItem.php, row 41
@@ -6728,8 +10018,60 @@ return [
 // src/Manageraction/Central_MoveItem.php, row 42
 "Hold" => "保留箱へ", // ai 2026-06
 
-// src/Manageraction/Central_Sqlupdate.php, row 27
+// src/Manageraction/Central_OptimizeType.php, row 34
 "Update DB (sql_update)" => "DBを更新 (sql_update)", // ai 2026-06
+
+// src/Manageraction/Central_OptimizeType.php, row 49
+"Error: %1" => "",
+
+// src/Manageraction/Import_Delete.php, row 19
+// src/Manageraction/Object_Delete.php, row 17
+// src/Manageraction/Table_Row_Delete.php, row 16
+"Delete row" => "行を削除", // ai 2026-06
+
+// src/Manageraction/Import_Delete.php, row 27
+"Do you really want to delete this import? Its runs, its stream state and its catalog are deleted with it; a running import stops." => "",
+
+// src/Manageraction/Import_Delete.php, row 38
+// src/Manageraction/Import_Run.php, row 42
+// src/Manageraction/Object_Delete.php, row 43
+// src/Manageraction/Object_Move2slice.php, row 50
+// src/Manageraction/Plannedtask_Runnow.php, row 41
+// src/Manageraction/Polls_DeleteTrash.php, row 83
+// src/Manageraction/Polls_MoveItem.php, row 41
+// src/Manageraction/Table_Row_Delete.php, row 40
+"This action does not work on this page." => "",
+
+// src/Manageraction/Import_Delete.php, row 58
+"Some of the selected imports were not deleted." => "",
+
+// src/Manageraction/Import_Delete.php, row 64
+// src/Manageraction/Object_Delete.php, row 51
+"Some of the selected objects were not deleted - they belong to a module you can not change them in." => "",
+
+// src/Manageraction/Import_Run.php, row 23
+"Run import" => "",
+
+// src/Manageraction/Import_Run.php, row 31
+"Run the import now? It stores the items of the source into the slice. The run goes on in the background; the import detail shows its progress." => "",
+
+// src/Manageraction/Import_Run.php, row 47
+"Some of the selected objects were not run - they belong to a module you can not change them in." => "",
+
+// src/Manageraction/Import_Run.php, row 89
+"Imports queued to run: %1. The import detail shows their progress." => "",
+
+// src/Manageraction/Import_Run.php, row 92
+"Imports not started - their last run is still running: %1." => "",
+
+// src/Manageraction/Import_Run.php, row 95
+"Imports not started - their last run stopped by an error; continue or end it in the import detail: %1." => "",
+
+// src/Manageraction/Import_Run.php, row 98
+"Imports not started - the last step of their previous run is still finishing; try again in a few minutes: %1." => "",
+
+// src/Manageraction/Import_Run.php, row 101
+"Imports not started: %1 (%2). The import detail tells more." => "",
 
 // src/Manageraction/Item_Duplicate.php, row 23
 "Duplicate Item" => "項目を複製", // ai 2026-06
@@ -6737,26 +10079,38 @@ return [
 // src/Manageraction/Item_Email.php, row 13
 "Send email" => "E-メールを送信", // ai 2026-06
 
-// src/Manageraction/Item_Feed.php, row 32
+// src/Manageraction/Item_Feed.php, row 31
 "Export to slice" => "スライスへエクスポート", // ai 2026-06
 
-// src/Manageraction/Item_Feed.php, row 39
-// src/Manageraction/Item_Move2Slice.php, row 83
-// src/Manageraction/Object_Move2slice.php, row 31
-// src/Manageraction/View_Move2slice.php, row 29
+// src/Manageraction/Item_Feed.php, row 38, 58
+// src/Manageraction/Item_Move2Slice.php, row 85
+// src/Manageraction/Object_Move2slice.php, row 33
+// src/Manageraction/View_Move2slice.php, row 31
 "No slice selected" => "スライスが選択されていません", // ai 2026-06
+
+// src/Manageraction/Item_Feed.php, row 50
+"Items can be exported only to a slice." => "",
+
+// src/Manageraction/Item_Feed.php, row 52
+"You do not have permission to export items to the slice %1." => "",
+
+// src/Manageraction/Item_Feed.php, row 68
+"Some of the selected items were not exported - they are not items of this slice." => "",
 
 // src/Manageraction/Item_Modifycontent.php, row 13
 "Modify content" => "内容を変更", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 36
-// src/Manageraction/Object_Move2slice.php, row 24
+// src/Manageraction/Item_Move2Slice.php, row 37
+// src/Manageraction/Object_Move2slice.php, row 25
 "Move to another slice" => "別のスライスへ移動", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 74
+// src/Manageraction/Item_Move2Slice.php, row 75
 "Move to slice" => "スライスへ移動", // ai 2026-06
 
-// src/Manageraction/Item_Move2Slice.php, row 87
+// src/Manageraction/Item_Move2Slice.php, row 89
+"Items can be moved only to a slice." => "",
+
+// src/Manageraction/Item_Move2Slice.php, row 93
 "You do not have permissions to move items" => "項目を移動する許可がありません", // ai 2026-06
 
 // src/Manageraction/Links_Add2Cat.php, row 21
@@ -6777,19 +10131,48 @@ return [
 // src/Manageraction/Links_Move2Cat.php, row 21
 "Move to category" => "分類へ移動", // ai 2026-06
 
-// src/Manageraction/Object_Delete.php, row 17
-// src/Manageraction/Table_Row_Delete.php, row 16
-"Delete row" => "行を削除", // ai 2026-06
-
 // src/Manageraction/Object_Delete.php, row 26
 // src/Manageraction/Table_Row_Delete.php, row 25
 "Do you really want to delete this row?" => "本当にこの行を削除しますか？", // ai 2026-06
 
-// src/Manageraction/Object_Move2slice.php, row 35
+// src/Manageraction/Object_Move2slice.php, row 37
+"Tasks can be moved only to a slice." => "",
+
+// src/Manageraction/Object_Move2slice.php, row 41
 "You do not have permissions to move it" => "移動する許可がありません", // ai 2026-06
 
-// src/Manageraction/Polls_DeleteTrash.php, row 77
+// src/Manageraction/Object_Move2slice.php, row 54
+"Some of the selected objects were not moved - they belong to a module you can not change them in." => "",
+
+// src/Manageraction/Object_Move2slice.php, row 60
+"The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "",
+
+// src/Manageraction/Plannedtask_Runnow.php, row 20, 27
+"Run now" => "",
+
+// src/Manageraction/Plannedtask_Runnow.php, row 29
+"Run the task now? It may send e-mails or change data." => "",
+
+// src/Manageraction/Plannedtask_Runnow.php, row 44
+"Some of the selected tasks were not run - they belong to a module you can not change them in." => "",
+
+// src/Manageraction/Plannedtask_Runnow.php, row 54
+"The task %1 was not run - only a user who manages the feeding of the slice may run a task with {import}." => "",
+
+// src/Manageraction/Plannedtask_Runnow.php, row 60
+"The task %1 is already waiting in the queue." => "",
+
+// src/Manageraction/Polls_DeleteTrash.php, row 78
 "You do not have permissions to remove polls" => "アンケートを削除する許可がありません", // ai 2026-06
+
+// src/Manageraction/Polls_DeleteTrash.php, row 97
+"Some of the selected polls were not removed - they belong to another module." => "",
+
+// src/Manageraction/Polls_MoveItem.php, row 47
+"Some of the selected polls were not moved - they belong to another module." => "",
+
+// src/Manageraction/Table_Row_Delete.php, row 54
+"Some of the selected rows were not deleted - they belong to another module." => "",
 
 // src/Manageraction/Taskmanager_Delete.php, row 15
 "Remove (cancel task)" => "削除(タスクを中止)", // ai 2026-06
@@ -6797,13 +10180,16 @@ return [
 // src/Manageraction/Taskmanager_Delete.php, row 24
 "You do not have permissions to remove tasks" => "タスクを削除する許可がありません", // ai 2026-06
 
-// src/Manageraction/Taskmanager_Execute.php, row 17
+// src/Manageraction/Taskmanager_Execute.php, row 15
 "Execute" => "実行", // ai 2026-06
 
-// src/Manageraction/View_Move2slice.php, row 22
+// src/Manageraction/View_Move2slice.php, row 23
 "Move view to another slice" => "ビューを別のスライスへ移動", // ai 2026-06
 
 // src/Manageraction/View_Move2slice.php, row 35
+"Views can be moved only to a slice." => "",
+
+// src/Manageraction/View_Move2slice.php, row 39
 "You do not have permissions to move views" => "ビューを移動する許可がありません", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 25
@@ -6827,10 +10213,10 @@ return [
 // src/Module/Poll/Menu.php, row 84
 "Designs" => "デザイン", // ai 2026-06
 
-// src/Optimize/AbstractOptimize.php, row 128
+// src/Optimize/AbstractOptimize.php, row 174
 "Types" => "種類", // ai 2026-06
 
-// src/Optimize/AbstractOptimize.php, row 131
+// src/Optimize/AbstractOptimize.php, row 177
 "Result text" => "結果テキスト", // ai 2026-06
 
 // src/Optimize/AbstractOptimizeById.php, row 42
@@ -6838,28 +10224,6 @@ return [
 
 // src/Optimize/AddAddressFieldTemplate.php, row 10
 "Add address field template" => "addressフィールドテンプレートを追加", // ai 2026-06
-
-// src/Optimize/AddAlertsCronEntry.php, row 13
-"Adds cron entry for Alerts Sending into AA cron" => "AA cronにアラート送信(Alerts)用のエントリを追加します", // ai 2026-06
-
-// src/Optimize/AddAlertsCronEntry.php, row 19
-// src/Optimize/AddFeedingCronEntry.php, row 19
-// src/Optimize/AddLinkcheckCronEntry.php, row 19
-// src/Optimize/AddOptimizeCronEntry.php, row 19
-// src/Optimize/AddToexecuteCronEntry.php, row 19
-"It however does not install the system cron for AA - you should do it by yourself (see /misc/aa-http-request script)" => "ただし、AA用のシステムcronはインストールされません。ご自身で設定してください (/misc/aa-http-request スクリプトを参照)", // ai 2026-06
-
-// src/Optimize/AddAlertsCronEntry.php, row 36
-"Cron entry for Alerts Sending is not installed in AA Cron" => "アラート送信(Alerts)のcronエントリはAA cronにインストールされていません", // ai 2026-06
-
-// src/Optimize/AddAlertsCronEntry.php, row 46
-"Deleting AA Cron entry for Alerts Sending" => "アラート送信(Alerts)のAA cronエントリを削除しています", // ai 2026-06
-
-// src/Optimize/AddAlertsCronEntry.php, row 49
-"Adding AA cron entry for Alerts Sending" => "アラート送信(Alerts)のAA cronエントリを追加しています", // ai 2026-06
-
-// src/Optimize/AddAlertsCronEntry.php, row 52
-"AA cron entry for Alerts Sending - done." => "アラート送信(Alerts)のAA cronエントリ - 完了。", // ai 2026-06
 
 // src/Optimize/AddAuthGroupFieldTemplate.php, row 10
 "Add auth_group...... field template" => "auth_group......フィールドテンプレートを追加", // ai 2026-06
@@ -6928,21 +10292,6 @@ return [
 // src/Optimize/AddFaxFieldTemplate.php, row 10
 "Add fax field template" => "faxフィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddFeedingCronEntry.php, row 13
-"Adds cron entry for Feeding into AA cron" => "AA cronにフィード(Feeding)用のエントリを追加します", // ai 2026-06
-
-// src/Optimize/AddFeedingCronEntry.php, row 36
-"Cron entry for Feeding is not installed in AA Cron" => "フィード(Feeding)のcronエントリはAA cronにインストールされていません", // ai 2026-06
-
-// src/Optimize/AddFeedingCronEntry.php, row 46
-"Deleting AA Cron entry for Feeding" => "フィード(Feeding)のAA cronエントリを削除しています", // ai 2026-06
-
-// src/Optimize/AddFeedingCronEntry.php, row 50
-"Adding AA cron entry for Feeding" => "フィード(Feeding)のAA cronエントリを追加しています", // ai 2026-06
-
-// src/Optimize/AddFeedingCronEntry.php, row 53
-"AA cron entry for Feeding - done." => "フィード(Feeding)のAA cronエントリ - 完了。", // ai 2026-06
-
 // src/Optimize/AddHit1FieldTemplate.php, row 10
 "Add hit_1 field template" => "hit_1フィールドテンプレートを追加", // ai 2026-06
 
@@ -6960,21 +10309,6 @@ return [
 
 // src/Optimize/AddIpFieldTemplate.php, row 10
 "Add ip field template" => "ipフィールドテンプレートを追加", // ai 2026-06
-
-// src/Optimize/AddLinkcheckCronEntry.php, row 13
-"Adds cron entry for Link checking in Links Module into AA cron" => "AA cronにLinksモジュールのリンクチェック用エントリを追加します", // ai 2026-06
-
-// src/Optimize/AddLinkcheckCronEntry.php, row 36
-"Cron entry for \"Checking link status in Links module\" is not installed in AA Cron" => "「Linksモジュールのリンク状態チェック」のcronエントリはAA cronにインストールされていません", // ai 2026-06
-
-// src/Optimize/AddLinkcheckCronEntry.php, row 46
-"Deleting AA Cron entry for Checking link status in Links module" => "Linksモジュールのリンク状態チェックのAA cronエントリを削除しています", // ai 2026-06
-
-// src/Optimize/AddLinkcheckCronEntry.php, row 49
-"Adding AA cron entry for Checking link status in Links module" => "Linksモジュールのリンク状態チェックのAA cronエントリを追加しています", // ai 2026-06
-
-// src/Optimize/AddLinkcheckCronEntry.php, row 52
-"AA cron entry for \"Checking link status in Links module\" - done." => "「Linksモジュールのリンク状態チェック」のAA cronエントリ - 完了。", // ai 2026-06
 
 // src/Optimize/AddLocationFieldTemplate.php, row 10
 "Add location field template" => "locationフィールドテンプレートを追加", // ai 2026-06
@@ -7014,21 +10348,6 @@ return [
 // src/Optimize/AddNameFieldTemplate.php, row 10
 "Add name field template" => "name フィールドテンプレートを追加", // ai 2026-06
 
-// src/Optimize/AddOptimizeCronEntry.php, row 13
-"Adds cron entry for Database Optimization into AA cron" => "AA cron にデータベース最適化用の cronエントリを追加します", // ai 2026-06
-
-// src/Optimize/AddOptimizeCronEntry.php, row 36
-"Cron entry for Database Optimization is not installed in AA Cron" => "データベース最適化用の cronエントリは AA cron にインストールされていません", // ai 2026-06
-
-// src/Optimize/AddOptimizeCronEntry.php, row 46
-"Deleting AA Cron entry for Database Optimization" => "データベース最適化用の AA cronエントリを削除しています", // ai 2026-06
-
-// src/Optimize/AddOptimizeCronEntry.php, row 49
-"Adding AA cron entry for Database Optimization" => "データベース最適化用の AA cronエントリを追加しています", // ai 2026-06
-
-// src/Optimize/AddOptimizeCronEntry.php, row 52
-"AA cron entry for Database Optimization - done." => "データベース最適化用の AA cronエントリ - 完了。", // ai 2026-06
-
 // src/Optimize/AddPhoneFieldTemplate.php, row 10
 "Add phone field template" => "phone フィールドテンプレートを追加", // ai 2026-06
 
@@ -7041,7 +10360,7 @@ return [
 // src/Optimize/AddPolls.php, row 60
 "Poll module is not installed" => "アンケートモジュールはインストールされていません", // ai 2026-06
 
-// src/Optimize/AddPolls.php, row 94
+// src/Optimize/AddPolls.php, row 95
 "Polls module created" => "アンケートモジュールを作成しました", // ai 2026-06
 
 // src/Optimize/AddRangeFieldTemplate.php, row 10
@@ -7070,21 +10389,6 @@ return [
 
 // src/Optimize/AddSeoFieldTemplate.php, row 116
 "New \"%1\" field template added" => "新しい \"%1\" フィールドテンプレートを追加しました", // ai 2026-06
-
-// src/Optimize/AddToexecuteCronEntry.php, row 13
-"Adds cron entry for Toexecute queue execution into AA cron" => "AA cron に Toexecute キュー実行用の cronエントリを追加します", // ai 2026-06
-
-// src/Optimize/AddToexecuteCronEntry.php, row 35
-"Cron entry for \"Toexecute queue execution\" is not installed in AA Cron" => "\"Toexecute キュー実行\" 用の cronエントリは AA cron にインストールされていません", // ai 2026-06
-
-// src/Optimize/AddToexecuteCronEntry.php, row 45
-"Deleting AA Cron entry for Toexecute queue execution" => "Toexecute キュー実行用の AA cronエントリを削除しています", // ai 2026-06
-
-// src/Optimize/AddToexecuteCronEntry.php, row 48
-"Adding AA cron entry for Toexecute queue execution" => "Toexecute キュー実行用の AA cronエントリを追加しています", // ai 2026-06
-
-// src/Optimize/AddToexecuteCronEntry.php, row 51
-"AA cron entry for Toexecute queue execution - done." => "Toexecute キュー実行用の AA cronエントリ - 完了。", // ai 2026-06
 
 // src/Optimize/AddUploadUrlFieldTemplate.php, row 10
 "Add _upload_url field template" => "_upload_url フィールドテンプレートを追加", // ai 2026-06
@@ -7164,8 +10468,898 @@ return [
 "Changing ID for table %1 (%2)" => "テーブル %1 (%2) の ID を変更しています", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 62
+// src/Optimize/Convert2innodb.php, row 68
 "Converted %1 tables" => "%1 個のテーブルを変換しました", // ai 2026-06
+
+// src/Optimize/CheckAjaxUnsigned.php, row 24
+"Unsigned {ajax} widget settings" => "",
+
+// src/Optimize/CheckAjaxUnsigned.php, row 29
+"Lists the fields whose {ajax} edits came without a valid signature of their widget type and properties in the last 30 days, so AA used the field's own widget instead." => "",
+
+// src/Optimize/CheckAjaxUnsigned.php, row 75
+"{ajax} edit of field %1 in slice %2 came without a valid signature" => "",
+
+// src/Optimize/CheckAjaxUnsigned.php, row 81
+// src/Optimize/CheckHttp.php, row 62
+// src/Optimize/CheckUploadRefusals.php, row 85
+"Reason" => "",
+
+// src/Optimize/CheckAjaxUnsigned.php, row 82
+// src/Optimize/CheckAlertitemRefusals.php, row 91
+// src/Optimize/CheckAnonymousEditRefusals.php, row 89
+// src/Optimize/CheckBlockedRequests.php, row 90
+// src/Optimize/CheckCkeditorUse.php, row 98
+// src/Optimize/CheckObjectFormRefusals.php, row 102
+// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckSecurityProtections.php, row 99
+// src/Optimize/CheckSessionidUse.php, row 101
+// src/Optimize/CheckUploadRefusals.php, row 88
+// src/Optimize/CheckUserAliasFunctionLog.php, row 87
+"Days seen" => "",
+
+// src/Optimize/CheckAjaxUnsigned.php, row 83
+// src/Optimize/CheckAlertitemRefusals.php, row 92
+// src/Optimize/CheckAnonymousEditRefusals.php, row 90
+// src/Optimize/CheckBlockedRequests.php, row 91
+// src/Optimize/CheckCkeditorUse.php, row 99
+// src/Optimize/CheckObjectFormRefusals.php, row 103
+// src/Optimize/CheckPhpFatals.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckSecurityProtections.php, row 100
+// src/Optimize/CheckSessionidUse.php, row 102
+// src/Optimize/CheckUploadRefusals.php, row 89
+// src/Optimize/CheckUserAliasFunctionLog.php, row 88
+"Last" => "",
+
+// src/Optimize/CheckAjaxUnsigned.php, row 85
+"The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice." => "",
+
+// src/Optimize/CheckAjaxUnsigned.php, row 91
+"No unsigned {ajax} widget settings in the last 30 days" => "",
+
+// src/Optimize/CheckAlertitemRefusals.php, row 28
+"Refused alert sends" => "",
+
+// src/Optimize/CheckAlertitemRefusals.php, row 33
+"Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "",
+
+// src/Optimize/CheckAlertitemRefusals.php, row 83
+"Alert send of an item of slice %1 through collection %2 was refused" => "",
+
+// src/Optimize/CheckAlertitemRefusals.php, row 94
+"An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection's reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection." => "",
+
+// src/Optimize/CheckAlertitemRefusals.php, row 100
+"No alert send was refused in the last 30 days" => "",
+
+// src/Optimize/CheckAlerts.php, row 23
+"Alerts sending" => "",
+
+// src/Optimize/CheckAlerts.php, row 28
+"Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "",
+
+// src/Optimize/CheckAlerts.php, row 73
+"Frequency" => "",
+
+// src/Optimize/CheckAlerts.php, row 74
+"Last sent" => "",
+
+// src/Optimize/CheckAlerts.php, row 75
+"Would skip" => "",
+
+// src/Optimize/CheckAlerts.php, row 75
+"up to %1 days" => "",
+
+// src/Optimize/CheckAlerts.php, row 83
+"%1 alert collections are so far behind that the next sweep will skip items" => "",
+
+// src/Optimize/CheckAlerts.php, row 86
+"A sweep never reaches back more than two of its periods, so everything older is dropped, not mailed. Check that the task queue plans this frequency and decide whether to let the gap go or to send it by hand from the module." => "",
+
+// src/Optimize/CheckAlerts.php, row 97
+"Readers can subscribe to a frequency nothing sweeps: %1" => "",
+
+// src/Optimize/CheckAlerts.php, row 99
+"AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 26
+"Forms without login changing accounts or authors" => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 31
+"Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 70
+"replace" => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 70
+"add" => "追加", // ai 2026-06
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 70
+"remove" => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 80
+"A form without login tried to change the field %1 of an item in slice %2 (last %3)" => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 87
+"Item mode" => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 88
+// src/Optimize/CheckCron.php, row 68
+"Script" => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 92
+"The field was left as stored, the rest of the item was saved. Either a form of the site sends this field without a login - then the site must let the reader log in before the form is sent - or the request was forged to take over a reader's account or the item." => "",
+
+// src/Optimize/CheckAnonymousEditRefusals.php, row 98
+"No form without login tried to change an account or author field in the last 30 days" => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 42
+"Refused requests to the local network" => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 47
+"Lists the addresses AA refused to fetch in the last 30 days because they lead to the local or private network of the server." => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 83
+"%1 from %2 asked for %3, which was refused" => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 87
+"Asked by" => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 88
+"Client" => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 89
+"Host" => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 93
+"AA fetches only public addresses for forms and templates - otherwise whoever chooses the address reads the internal services of the server. Most often this is a probe. If it is a site of yours, use its public domain name." => "",
+
+// src/Optimize/CheckBlockedRequests.php, row 99
+"No address was refused in the last 30 days" => "",
+
+// src/Optimize/CheckCentralCredentials.php, row 16
+"Central logins" => "",
+
+// src/Optimize/CheckCentralCredentials.php, row 21
+"Checks that ActionApps Central keeps the logins to its AAs only as encrypted tokens - no passwords or plain tokens in the database." => "",
+
+// src/Optimize/CheckCentralCredentials.php, row 55
+"Central keeps no password and no plain token" => "",
+
+// src/Optimize/CheckCentralCredentials.php, row 59
+"Central keeps a password or a plain token of %1 AAs" => "",
+
+// src/Optimize/CheckCentralCredentials.php, row 62
+"Central never sends them. Press Get Token for that AA on the ActionApps Central page (it overwrites the value)." => "",
+
+// src/Optimize/CheckCkeditorUse.php, row 41
+"CKEditor 4 use" => "",
+
+// src/Optimize/CheckCkeditorUse.php, row 46
+"Lists the pages that loaded the old CKEditor 4 by {require:ckeditor} in the last 30 days. AA edits text with TinyMCE now; CKEditor 4 will be removed once no template asks for it." => "",
+
+// src/Optimize/CheckCkeditorUse.php, row 92
+"CKEditor 4 loaded on %1" => "",
+
+// src/Optimize/CheckCkeditorUse.php, row 101
+"A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "",
+
+// src/Optimize/CheckCkeditorUse.php, row 107
+"No page loaded CKEditor 4 in the last 30 days" => "",
+
+// src/Optimize/CheckCron.php, row 24
+"Cron table" => "",
+
+// src/Optimize/CheckCron.php, row 29
+"Checks the AA cron table: unreadable schedules, scripts scheduled twice, rows that have not run for twice their period, and AA jobs that belong to the queue." => "",
+
+// src/Optimize/CheckCron.php, row 57
+"Cron row %1 (%2) has an unreadable schedule: %3" => "",
+
+// src/Optimize/CheckCron.php, row 57
+"cron.php skips a row it cannot parse, so the script never runs. Allowed are digits, commas, ranges and */step; fix the fields or delete the row." => "",
+
+// src/Optimize/CheckCron.php, row 62
+"Job %1 is scheduled %2 times" => "",
+
+// src/Optimize/CheckCron.php, row 62
+"Usually an old .php3 row next to the .php one, so the script runs twice. Delete the older row." => "",
+
+// src/Optimize/CheckCron.php, row 70
+"Expected every" => "",
+
+// src/Optimize/CheckCron.php, row 72
+"%1 cron rows have not run for longer than twice their period" => "",
+
+// src/Optimize/CheckCron.php, row 72
+"cron.php runs (see the task queue) but skipped these rows, or their schedule means something else than you expect." => "",
+
+// src/Optimize/CheckCron.php, row 77
+"AA jobs are still in the cron table and run twice" => "",
+
+// src/Optimize/CheckCron.php, row 77
+"Run service/sql_update.php." => "",
+
+// src/Optimize/CheckCron.php, row 81
+"%1 cron rows, all readable and running on schedule" => "",
+
+// src/Optimize/CheckEnvironment.php, row 23
+"Shows the AA version, SVN revision, PHP and database versions from the last system status row, and when they last changed." => "",
+
+// src/Optimize/CheckEnvironment.php, row 45
+"No system status recorded yet; the task queue writes one every 10 minutes" => "",
+
+// src/Optimize/CheckEnvironment.php, row 51
+"SVN" => "",
+
+// src/Optimize/CheckEnvironment.php, row 53
+"Database" => "",
+
+// src/Optimize/CheckEnvironment.php, row 56
+"Unchanged since" => "",
+
+// src/Optimize/CheckEnvironment.php, row 57
+"Recorded changes" => "",
+
+// src/Optimize/CheckEnvironment.php, row 66
+"AA %1 (%2), PHP %3, %4; unchanged since %5" => "",
+
+// src/Optimize/CheckHttp.php, row 29
+"Outgoing HTTP" => "",
+
+// src/Optimize/CheckHttp.php, row 34
+"Fetches this installation's own address to check that PHP can make HTTP requests at all - {include} of local pages, Central and the link checker all need it." => "",
+
+// src/Optimize/CheckHttp.php, row 61
+"PHP cannot fetch %1" => "",
+
+// src/Optimize/CheckHttp.php, row 63
+"Check that this server resolves its own hostname, that outgoing HTTP is not blocked by a firewall, and that PHP has a CA bundle for https. Until this works, {include} of local pages renders nothing and Central cannot reach its installations." => "",
+
+// src/Optimize/CheckHttp.php, row 71
+"AA_INSTAL_URL redirects to %1" => "",
+
+// src/Optimize/CheckHttp.php, row 72
+"Configured" => "",
+
+// src/Optimize/CheckHttp.php, row 72
+"Answered" => "",
+
+// src/Optimize/CheckHttp.php, row 73
+"Set AA_INSTAL_URL in config.php to the address the server actually serves. Every extra hop is paid on each local request, and a redirect that drops the session cookie breaks included pages." => "",
+
+// src/Optimize/CheckHttp.php, row 81
+"This installation's own address answers HTTP %1" => "",
+
+// src/Optimize/CheckHttp.php, row 82, 91
+// src/Optimize/CheckSessionidUse.php, row 99
+// src/Optimize/CheckUploadRefusals.php, row 86
+"Address" => "",
+
+// src/Optimize/CheckHttp.php, row 82
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"Answer" => "",
+
+// src/Optimize/CheckHttp.php, row 83
+"AA can reach the network, but AA_INSTAL_URL does not lead to this installation. Included local pages will render the error instead of the page." => "",
+
+// src/Optimize/CheckHttp.php, row 90
+"The server reaches its own address (HTTP %1)" => "",
+
+// src/Optimize/CheckHttp.php, row 103
+"curl" => "",
+
+// src/Optimize/CheckImportStores.php, row 19
+"Import stream states and catalogs" => "",
+
+// src/Optimize/CheckImportStores.php, row 24
+"Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "",
+
+// src/Optimize/CheckImportStores.php, row 48
+// src/Optimize/CheckImports.php, row 80
+"No import is defined" => "",
+
+// src/Optimize/CheckImportStores.php, row 60
+"The stream state of an import cannot be read" => "",
+
+// src/Optimize/CheckImportStores.php, row 60
+"Its versions read as empty, so the next run of changed data imports everything; that run stores the state again." => "",
+
+// src/Optimize/CheckImportStores.php, row 67
+"The catalog of an import source cannot be read" => "",
+
+// src/Optimize/CheckImportStores.php, row 67
+"It reads as empty, so the import detail lists every stream as missing at the source. Check the source again to fill it anew." => "",
+
+// src/Optimize/CheckImportStores.php, row 71
+"The stream states and catalogs of %1 imports can be read" => "",
+
+// src/Optimize/CheckImports.php, row 40
+"Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "",
+
+// src/Optimize/CheckImports.php, row 80
+"%1 imports, none needs attention" => "",
+
+// src/Optimize/CheckImports.php, row 93
+"Removed %1 runs and %2 stream states and catalogs of deleted imports." => "",
+
+// src/Optimize/CheckImports.php, row 150
+"An import stopped by an error" => "",
+
+// src/Optimize/CheckImports.php, row 150, 287
+// src/Optimize/CheckInstallRuns.php, row 62
+// src/Optimize/CheckQueue.php, row 88, 98
+"Error" => "エラー", // ai 2026-10
+
+// src/Optimize/CheckImports.php, row 150
+"Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "",
+
+// src/Optimize/CheckImports.php, row 154
+"An import has not moved on for %1 hours" => "",
+
+// src/Optimize/CheckImports.php, row 154
+"Idle since" => "",
+
+// src/Optimize/CheckImports.php, row 154
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "",
+
+// src/Optimize/CheckImports.php, row 171
+"Imports cannot run: a table does not support transactions" => "",
+
+// src/Optimize/CheckImports.php, row 171
+"Table" => "",
+
+// src/Optimize/CheckImports.php, row 171
+"Every run is refused. Convert the table to InnoDB or ask the server administrator." => "",
+
+// src/Optimize/CheckImports.php, row 176
+"not found" => "",
+
+// src/Optimize/CheckImports.php, row 180
+"%1 imports have a source that is not available" => "",
+
+// src/Optimize/CheckImports.php, row 180
+"A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "",
+
+// src/Optimize/CheckImports.php, row 197
+"Another record holds the place of the stream state or catalog of an import" => "",
+
+// src/Optimize/CheckImports.php, row 197
+"The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "",
+
+// src/Optimize/CheckImports.php, row 206
+"The last run of an import skipped 1 stream: the source went round" => "",
+
+// src/Optimize/CheckImports.php, row 206
+"The last run of an import skipped %1 streams: the source went round" => "",
+
+// src/Optimize/CheckImports.php, row 206
+"The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "",
+
+// src/Optimize/CheckImports.php, row 209
+"The last run of an import had %1 item errors" => "",
+
+// src/Optimize/CheckImports.php, row 209
+"The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "",
+
+// src/Optimize/CheckImports.php, row 213
+"An enabled import has no planned task" => "",
+
+// src/Optimize/CheckImports.php, row 213
+"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "",
+
+// src/Optimize/CheckImports.php, row 218
+"%1 imports of one slice have the same name" => "",
+
+// src/Optimize/CheckImports.php, row 218
+"{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "",
+
+// src/Optimize/CheckImports.php, row 233
+"The last check of an import source cannot be read" => "",
+
+// src/Optimize/CheckImports.php, row 233
+"Its stored result is damaged. The next check of the source stores it again." => "",
+
+// src/Optimize/CheckImports.php, row 236
+"The last check of an import source failed" => "",
+
+// src/Optimize/CheckImports.php, row 236, 238
+"Checked" => "",
+
+// src/Optimize/CheckImports.php, row 236
+"A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "",
+
+// src/Optimize/CheckImports.php, row 238
+"The last check of an import source passed with a remark" => "",
+
+// src/Optimize/CheckImports.php, row 238
+"The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "",
+
+// src/Optimize/CheckImports.php, row 244
+"The catalog of an import source is incomplete" => "",
+
+// src/Optimize/CheckImports.php, row 244
+"The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "",
+
+// src/Optimize/CheckImports.php, row 260
+"%1 records of deleted imports are left: runs, stream states, catalogs" => "",
+
+// src/Optimize/CheckImports.php, row 262
+"A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "",
+
+// src/Optimize/CheckImports.php, row 262
+"Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "",
+
+// src/Optimize/CheckImports.php, row 272
+"A key in config.php is damaged" => "",
+
+// src/Optimize/CheckImports.php, row 272
+"The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "",
+
+// src/Optimize/CheckImports.php, row 291
+"Imports logged %1 failures in the last 7 days" => "",
+
+// src/Optimize/CheckImports.php, row 295
+"A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "",
+
+// src/Optimize/CheckImports.php, row 296
+"Failed steps" => "",
+
+// src/Optimize/CheckImports.php, row 296
+"Other failures" => "",
+
+// src/Optimize/CheckImports.php, row 373
+"Import detail" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 16
+"App transfers" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 21
+"Warns about app transfers that hang and lists those stopped by an error." => "",
+
+// src/Optimize/CheckInstallRuns.php, row 55
+"Last progress" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 58
+"Items written" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 67
+"An app transfer stopped by an error" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 68
+"An app transfer has not moved on for %1 hours" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 69
+"An installed app has waited for its finish for %1 hours" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 74
+"The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written." => "",
+
+// src/Optimize/CheckInstallRuns.php, row 75
+"The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it." => "",
+
+// src/Optimize/CheckInstallRuns.php, row 76
+"Progress page" => "",
+
+// src/Optimize/CheckInstallRuns.php, row 80
+"No app transfer is stuck" => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 34
+"Refused object forms" => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 39
+"Lists the settings and Manager forms and actions refused in the last 30 days because they posted an object or row of another module, of another type or other than the edited one." => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 88
+"(no such object)" => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 92
+"The Item Manager of %1 tried to export the item %2 of another slice" => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 92
+"A form of %1 tried to write the object %2" => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 98
+"Form type" => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 99
+"Stored type" => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 105
+"The export to slice posted an item of another slice (Owner) to copy it out of there; it was not exported. The Item Manager lists only the items of its slice, so unless the item was moved meanwhile, the user edited the request, most likely to read or copy the items of a slice he has no rights to. Find out who the user is." => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 105
+"The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is." => "",
+
+// src/Optimize/CheckObjectFormRefusals.php, row 111
+"No object form was refused in the last 30 days" => "",
+
+// src/Optimize/CheckPhpFatals.php, row 24
+"PHP fatal errors" => "",
+
+// src/Optimize/CheckPhpFatals.php, row 29
+"Lists PHP fatal errors logged in the last 7 days by file and line, with counts and whether they appeared after the last deployment. Warns when fatal errors are not logged at all." => "",
+
+// src/Optimize/CheckPhpFatals.php, row 50
+"PHP fatal errors are not logged" => "",
+
+// src/Optimize/CheckPhpFatals.php, row 50
+"Add define('AA_LOG_PHP_FATALS', true); to include/config.php. Until then a page that dies leaves no trace here, only in the web server error log." => "",
+
+// src/Optimize/CheckPhpFatals.php, row 56
+"No PHP fatal errors in the last 7 days" => "",
+
+// src/Optimize/CheckPhpFatals.php, row 66
+"Started after last deployment" => "",
+
+// src/Optimize/CheckPhpFatals.php, row 70
+"Open page" => "",
+
+// src/Optimize/CheckPhpFatals.php, row 72
+"PHP fatal error in %1" => "",
+
+// src/Optimize/CheckPhpFatals.php, row 72
+"Open the file at that line. Every occurrence is a page the visitor never got." => "",
+
+// src/Optimize/CheckQueue.php, row 31
+"Task queue" => "",
+
+// src/Optimize/CheckQueue.php, row 36
+"Checks that the task queue runs, whether OS cron or only the post-response fallback drives it, how often runs exceed their time limit, and which tasks were given up." => "",
+
+// src/Optimize/CheckQueue.php, row 66
+"The task queue has never run" => "",
+
+// src/Optimize/CheckQueue.php, row 66
+"Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback." => "",
+
+// src/Optimize/CheckQueue.php, row 68
+"The task queue has not run since %1" => "",
+
+// src/Optimize/CheckQueue.php, row 68
+"Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php)." => "",
+
+// src/Optimize/CheckQueue.php, row 75
+"OS cron has not called cron.php since %1; the post-response fallback keeps the queue alive" => "",
+
+// src/Optimize/CheckQueue.php, row 75
+"OS cron has never called cron.php; the post-response fallback keeps the queue alive" => "",
+
+// src/Optimize/CheckQueue.php, row 77
+"The fallback only runs after a visit, so mails, alerts and feeds arrive late on a quiet site. Let the system crontab call cron.php every minute." => "",
+
+// src/Optimize/CheckQueue.php, row 89
+"The post-response cron fallback failed %1 times in the last 7 days" => "",
+
+// src/Optimize/CheckQueue.php, row 99
+"Queued tasks failed %1 times in the last 7 days" => "",
+
+// src/Optimize/CheckQueue.php, row 99
+"A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords." => "",
+
+// src/Optimize/CheckQueue.php, row 106
+"%1 of %2 queue runs in the last 7 days exceeded the allowed %3 s (longest %4 s); %5 runs left tasks waiting" => "",
+
+// src/Optimize/CheckQueue.php, row 109
+"Long tasks block everything behind them - imports of dead feeds and mass mails most often. Disable or slow down the feeds listed, or raise TOEXECUTE_ALLOWED_TIME in config.php." => "",
+
+// src/Optimize/CheckQueue.php, row 117
+"%1 queued tasks were given up after repeated failures" => "",
+
+// src/Optimize/CheckQueue.php, row 117
+"They never run again on their own. Open the Task Manager, see what they are, and delete them or fix the cause." => "",
+
+// src/Optimize/CheckQueue.php, row 121
+"%1 queued tasks have been waiting for more than an hour" => "",
+
+// src/Optimize/CheckQueue.php, row 121
+"The queue does not keep up, or these tasks fail and get postponed (their priority sinks with each failure)." => "",
+
+// src/Optimize/CheckQueue.php, row 125
+"Queue ran at %1; %2 runs in the last 7 days, %3 over the time limit" => "",
+
+// src/Optimize/CheckQueue.php, row 179
+"Runs (24 h)" => "",
+
+// src/Optimize/CheckQueue.php, row 180
+"Average [s]" => "",
+
+// src/Optimize/CheckQueue.php, row 181
+"Longest [s]" => "",
+
+// src/Optimize/CheckQueuedClassMissing.php, row 22
+"Queued tasks of a missing class" => "",
+
+// src/Optimize/CheckQueuedClassMissing.php, row 27
+"Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
+
+// src/Optimize/CheckQueuedClassMissing.php, row 61
+"Queued tasks of class %1 cannot run - the class is missing" => "",
+
+// src/Optimize/CheckQueuedClassMissing.php, row 66
+"Selector" => "",
+
+// src/Optimize/CheckQueuedClassMissing.php, row 70
+"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "",
+
+// src/Optimize/CheckQueuedClassMissing.php, row 76
+"No queued task with a missing class in the last 30 days" => "",
+
+// src/Optimize/CheckRequiredSettings.php, row 17
+"Required slice settings" => "",
+
+// src/Optimize/CheckRequiredSettings.php, row 22
+"Warns about slices whose required settings fields have no value." => "",
+
+// src/Optimize/CheckRequiredSettings.php, row 44
+"No slice has a required settings field" => "",
+
+// src/Optimize/CheckRequiredSettings.php, row 67
+"Slice \"%1\" has %2 required settings without a value" => "",
+
+// src/Optimize/CheckRequiredSettings.php, row 70
+"Fill them in on the Setting page of the slice - templates reading them show nothing until then." => "",
+
+// src/Optimize/CheckRequiredSettings.php, row 75
+"All %1 required settings fields have a value" => "",
+
+// src/Optimize/CheckRunner.php, row 57
+"Check %1 failed: %2" => "",
+
+// src/Optimize/CheckRunner.php, row 57
+"The check itself is broken; the state it watches is unknown." => "",
+
+// src/Optimize/CheckSecret.php, row 19
+"Server secret" => "",
+
+// src/Optimize/CheckSecret.php, row 24
+"Checks that AA_SECRET is set in config.php - the key for login tokens, mail forms and password reset links." => "",
+
+// src/Optimize/CheckSecret.php, row 50
+"AA_SECRET is set" => "",
+
+// src/Optimize/CheckSecret.php, row 52
+"Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET." => "",
+
+// src/Optimize/CheckSecret.php, row 54
+"AA_SECRET is shorter than %1 bytes, so it is ignored" => "",
+
+// src/Optimize/CheckSecret.php, row 57
+"AA_SECRET is not set and the database password is short, so login tokens, mail forms and password reset links could be guessed offline" => "",
+
+// src/Optimize/CheckSecret.php, row 59
+"AA_SECRET is not set - the keys are derived from the database password" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 24
+"Security protections" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 29
+"Lists the security protections switched off on this install and the unsigned expressions forms sent in the last %1 days." => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 74
+"Protection \"%1\" is switched off" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 77
+"Protection" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 78
+// src/Security/Settings.php, row 28
+"Switched off" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 78
+"unknown" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 79
+"By" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 81
+"Switch it on again once the older forms are converted." => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 92
+"A form on %1 sent an unsigned expression in %2; it was refused" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 92, 93
+"an unknown page" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 93
+"A form on %1 sent an unsigned expression in %2; it ran because the protection was off" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 97
+"Parameter" => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 102
+"If you do not know the page, the request did not come from your forms and nothing needs to change." => "",
+
+// src/Optimize/CheckSecurityProtections.php, row 108
+"All protections are on and no form sent an unsigned expression in the last %1 days" => "",
+
+// src/Optimize/CheckSessionidUse.php, row 45
+"Get_Sessionid use" => "",
+
+// src/Optimize/CheckSessionidUse.php, row 50
+"Lists who asked for a session id by the Get_Sessionid remote command in the last 30 days - scripts logging in to the admin pages, or external sites using AA_ClientAuth." => "",
+
+// src/Optimize/CheckSessionidUse.php, row 77
+"An external site logs its readers in by AA_ClientAuth (free/freepwd)." => "",
+
+// src/Optimize/CheckSessionidUse.php, row 78
+"A username and password login - a script using the admin pages, or an ActionApps Central older than this AA." => "",
+
+// src/Optimize/CheckSessionidUse.php, row 79
+"An external site resumes its reader sessions by AA_ClientAuth (the AA_Sess cookie, checked on each page view)." => "",
+
+// src/Optimize/CheckSessionidUse.php, row 95
+"Get_Sessionid called from %1 (%2 login)" => "",
+
+// src/Optimize/CheckSessionidUse.php, row 110
+"Nobody called Get_Sessionid in the last 30 days" => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 18
+"Site state files" => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 23
+"Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 66
+"Site module \"%1\" has no state file" => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 68
+"Missing file" => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 69
+"State file setting" => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 71
+"Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 72
+// src/Optimize/CheckUniversalAnalytics.php, row 83
+"Site settings" => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 77
+"All %1 site state files are in place" => "",
+
+// src/Optimize/CheckSiteStateFiles.php, row 77
+"No site module uses a state file" => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 26
+"Old Google Analytics (Universal Analytics)" => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 31
+"Lists the sites and slices whose templates or settings still use a Universal Analytics id (UA-...). Google stopped collecting its data on 1 July 2023, so such code measures no visits." => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 110
+"Old id (UA)" => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 111
+"New id (GA4, Tag Manager)" => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 121
+"%1 still uses the old Google Analytics (UA-...) - no visits are measured" => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 124
+"Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 129
+"%1 still has the old Google Analytics code (UA-...) next to the new one - it can be removed" => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 132
+"The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "",
+
+// src/Optimize/CheckUniversalAnalytics.php, row 136
+"No template uses the old Google Analytics (Universal Analytics)" => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 23
+"Refused uploads" => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 28
+"Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 77
+"Slice %1 cannot store uploads - its directory is not writable" => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 78
+"Slice %1 could not store an upload" => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 79
+"Uploads to slice %1 refused: %2" => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 92
+"PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 93
+"An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 94
+"Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 95
+"Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 96
+"The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "",
+
+// src/Optimize/CheckUploadRefusals.php, row 103
+"No refused uploads in the last 30 days" => "",
+
+// src/Optimize/CheckUserAliasFunctionLog.php, row 24
+"f_u calls on pages" => "",
+
+// src/Optimize/CheckUserAliasFunctionLog.php, row 29
+"Lists the f_u alias calls of the last 30 days that AA refused (PHP or AA functions, undefined ones) or still made only for compatibility (installation functions without the usr_ prefix), by field and slice." => "",
+
+// src/Optimize/CheckUserAliasFunctionLog.php, row 76
+"Field settings" => "",
+
+// src/Optimize/CheckUserAliasFunctionLog.php, row 80
+"field %1 of slice %2" => "",
+
+// src/Optimize/CheckUserAliasFunctionLog.php, row 91
+"The call is in the definition of the field or in a template using {alias:<field>:f_u:..}." => "",
+
+// src/Optimize/CheckUserAliasFunctionLog.php, row 97
+"Every f_u call of the last 30 days called a usr_* function" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 31
+"f_u functions in field definitions" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 36
+"Lists the field alias definitions using f_u whose function AA does not call (PHP or AA functions, undefined ones) or still calls only for compatibility (installation functions without the usr_ prefix)." => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 89
+"Definition" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 109
+"All %1 f_u field definitions call usr_* functions" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 109
+"No field definition uses f_u" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 131
+"f_u calls %1, an installation function without the usr_ prefix" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 132
+"f_u without a function name" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 133
+"f_u names %1, which is not defined" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 134
+"f_u names %1, a PHP function - not called" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 135
+"f_u names %1, a function of AA itself (%2) - not called" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 136
+"f_u names %1, defined outside AA in %2 - not called" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 137
+"f_u call of %1 failed" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 138
+"f_u names \"%1\", which is not a function name - not called" => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 146
+"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 147
+"The alias shows nothing (it never did). Remove it or name a usr_* function." => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 148
+"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 149
+"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 150
+"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 151
+"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "",
+
+// src/Optimize/CheckUserAliasFunctions.php, row 152
+"The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "",
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "pagecache をクリア", // ai 2026-06
@@ -7193,42 +11387,42 @@ return [
 // src/Optimize/ClearPagecache.php, row 55
 "Old pagecache_*_bak tables dropped" => "古い pagecache_*_bak テーブルを削除しました", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 17
+// src/Optimize/Convert2innodb.php, row 23
 "Convert database engine to InnoDB" => "データベースエンジンを InnoDB に変換", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 25
+// src/Optimize/Convert2innodb.php, row 31
 "Converts older MyISAM database storage engine to InnoDB for all tables" => "全てのテーブルについて、古い MyISAM ストレージエンジンを InnoDB に変換します", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 41
+// src/Optimize/Convert2innodb.php, row 47
 "engine for %1 table is %2" => "テーブル %1 のエンジンは %2 です", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 44
-// src/Optimize/Convert2utf8mb4.php, row 43
-// src/Optimize/Convertlatin2Utf8Mb4.php, row 42
+// src/Optimize/Convert2innodb.php, row 50
+// src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "変換が必要なテーブルが %1 個見付かりました", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 58
+// src/Optimize/Convert2innodb.php, row 64
 "Convert table %1 (%2) to InnoDB" => "テーブル %1 (%2) を InnoDB に変換", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 17
+// src/Optimize/Convert2utf8mb4.php, row 23
 "Convert old database collation utf8 to utf8mb4" => "古いデータベース照合順序 utf8 を utf8mb4 に変換", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 25
+// src/Optimize/Convert2utf8mb4.php, row 31
 "Convert old database collation utf8 (or utf8mb3) to utf8mb4 for all tables and set database default to utf8mb4" => "全てのテーブルについて古い照合順序 utf8（または utf8mb3）を utf8mb4 に変換し、データベースの省略値を utf8mb4 に設定します", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 40
-// src/Optimize/Convertlatin2Utf8Mb4.php, row 39
+// src/Optimize/Convert2utf8mb4.php, row 41
 "collation for %1 table is %2" => "テーブル %1 の照合順序は %2 です", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 56
-// src/Optimize/Convertlatin2Utf8Mb4.php, row 64
+// src/Optimize/Convert2utf8mb4.php, row 65
+"Convert table %1 (%2) to %3" => "テーブル %1 (%2) を %3 に変換", // ai 2026-06
+
+// src/Optimize/Convert2utf8mb4.php, row 69
 "Database default set to %1" => "データベースの省略値を %1 に設定しました", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 57
+// src/Optimize/Convert2utf8mb4.php, row 71
 "Please do not forget to change DB_CHARACTER_SET to \"utf8mb4\" and DB_COLLATION_CONNECTION to \"%1\" in your config.php" => "config.php で DB_CHARACTER_SET を \"utf8mb4\" に、DB_COLLATION_CONNECTION を \"%1\" に変更するのを忘れないでください", // ai 2026-06
 
-// src/Optimize/Convert2utf8mb4.php, row 71
-"Convert table %1 (%2) to %3" => "テーブル %1 (%2) を %3 に変換", // ai 2026-06
+// src/Optimize/Convert2utf8mb4.php, row 136
+"Convert the MyISAM tables %1 to InnoDB first - Optimize \"%2\"." => "",
 
 // src/Optimize/ConvertSliceEncoding.php, row 18
 "Convert Slice Encoding to UTF" => "スライスのエンコーディングを UTF に変換", // ai 2026-06
@@ -7258,10 +11452,13 @@ return [
 "\"%1\" module is not in %2 encoding. Skipping." => "「%1」モジュールは%2エンコーディングではありません。スキップします。", // ai 2026-06
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 17
-"Convert database from 1Byte latin1 encoding to utf8mb4 collation" => "データベースを1バイトのlatin1エンコーディングからutf8mb4照合順序に変換", // ai 2026-06
+"Convert database from 1Byte encoding (latin1, cp1250, ...) to utf8mb4 collation" => "",
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 25
-"Convert database from 1Byte latin1 encoding to utf8mb4 for all tables and set database default to utf8mb4" => "データベースの全テーブルを1バイトのlatin1エンコーディングからutf8mb4に変換し、データベースの省略値をutf8mb4に設定します", // ai 2026-06
+"Convert all tables with 1Byte encoded texts (latin1, cp1250, ...) to utf8mb4 and set database default to utf8mb4. Texts keep the characters AA reads from them now." => "",
+
+// src/Optimize/Convertlatin2Utf8Mb4.php, row 43
+"DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "",
 
 // src/Optimize/CopyContent.php, row 13
 "Copy Content Table" => "contentテーブルのコピー", // ai 2026-06
@@ -7284,6 +11481,36 @@ return [
 // src/Optimize/CopyItemsFromBackup.php, row 77
 "Deleted items to be recreated: %1." => "再作成される削除済み項目: %1.", // ai 2026-06
 
+// src/Optimize/CreateAppStoreAccount.php, row 14
+"App store account" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 19
+"Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 34
+"No app store account - this AA publishes no apps" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 39
+"The user %1 exists, but not with the public password of the app store - rename it, then repair" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 44
+"The app store account %1 has rights or groups - remove them" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 47
+"The app store account is ready" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 55
+"Only a superadmin may create the app store account" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 67
+"The app store account could not be created" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 70
+"The app store account %1 is created" => "",
+
+// src/Optimize/CreateAppStoreAccount.php, row 77
+"The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "",
+
 // src/Optimize/CreateUploadDir.php, row 16
 "Create upload directory for current slice" => "現在のスライス用のアップロードディレクトリを作成", // ai 2026-06
 
@@ -7293,106 +11520,115 @@ return [
 // src/Optimize/CreateUploadDir.php, row 48
 "OK, %1 created" => "OK, %1 を作成しました", // ai 2026-06
 
-// src/Optimize/DatabaseStructure.php, row 13
-"Checks if all tables have right columns and indexes" => "全テーブルが正しい列とインデックスを持つか確認します", // ai 2026-06
-
-// src/Optimize/DatabaseStructure.php, row 21
-"From time to time we add a new table or column to an existing table so that we can support new features. This option will update the datastructure to the last one. No data will be lost." => "新機能をサポートするため、時々既存のテーブルに新しいテーブルや列を追加しています。このオプションはデータ構造を最新のものに更新します。データは失われません。", // ai 2026-06
-
-// src/Optimize/DbBinaryTrailingZeros.php, row 21
+// src/Optimize/DbBinaryTrailingZeros.php, row 27
 "Fix user login problem, constants editing problem, ..." => "利用者ログインの問題、定数編集の問題などを修正", // ai 2026-06
 
-// src/Optimize/DbBinaryTrailingZeros.php, row 29
+// src/Optimize/DbBinaryTrailingZeros.php, row 35
 "Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17" => "binaryフィールドをvarbinaryに置き換え、末尾のゼロを削除します。MySQL > 5.0.17 で必要", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 16
+// src/Optimize/DbFeedInconsistency.php, row 22
 "Feeds table inconsistent records" => "feedsテーブルの不整合レコード", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 24
+// src/Optimize/DbFeedInconsistency.php, row 30
 "Testing if feeds table does not contain relations to non-existent slices (after slice deletion)" => "feedsテーブルが存在しないスライスへの関連を含んでいないか検査します (スライス削除後)", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 41
+// src/Optimize/DbFeedInconsistency.php, row 47
 "Wrong destination slice id: %1 -> %2" => "誤った宛先スライスid: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 52
+// src/Optimize/DbFeedInconsistency.php, row 58
 "Wrong source slice id: %1 -> %2" => "誤った元スライスid: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 57
-// src/Optimize/DbInconsistency.php, row 64
+// src/Optimize/DbFeedInconsistency.php, row 63
+// src/Optimize/DbInconsistency.php, row 70
 "No wrong references found, hurray!" => "誤った参照は見付かりませんでした、万歳!", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 14
+// src/Optimize/DbInconsistency.php, row 20
 "Check database consistency" => "データベースの整合性を確認", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 22
+// src/Optimize/DbInconsistency.php, row 28
 "Test content table for records without item table reference, test discussion for the same, ..." => "contentテーブルにitemテーブルへの参照のないレコードがないか検査し、discussionテーブルも同様に検査します、...", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 39
+// src/Optimize/DbInconsistency.php, row 45
 "Wrong slice id in item table: %1" => "itemテーブル内の誤ったスライスid: %1", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 49
+// src/Optimize/DbInconsistency.php, row 55
 "Wrong item id in content table: %1 -> %2" => "contentテーブル内の誤った項目id: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 59
+// src/Optimize/DbInconsistency.php, row 65
 "Wrong item id in discussion table: %1 -> %2" => "discussionテーブル内の誤った項目id: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 83
+// src/Optimize/DbInconsistency.php, row 89
 "Data for slice id %1 in item table deleted" => "itemテーブルのスライスid %1 のデータを削除しました", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 94
+// src/Optimize/DbInconsistency.php, row 100
 "Data for item id %1 in content table deleted" => "contentテーブルの項目id %1 のデータを削除しました", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 105
+// src/Optimize/DbInconsistency.php, row 111
 "Data for item id %1 in discussion table deleted" => "discussionテーブルの項目id %1 のデータを削除しました", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 17
+// src/Optimize/DbInconsistencyConstants.php, row 29
 "Check for unused constants" => "未使用の定数を確認", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 25
+// src/Optimize/DbInconsistencyConstants.php, row 37
 "Test constant table for never used constants groups" => "constantテーブルで一度も使われていない定数グループを検査します", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 82
+// src/Optimize/DbInconsistencyConstants.php, row 94
 "Non ASCII chars in group_id" => "group_id内の非ASCII文字", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 87
+// src/Optimize/DbInconsistencyConstants.php, row 99
 "Found %1 Non ASCII" => "非ASCII文字が %1 件見付かりました", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 92
+// src/Optimize/DbInconsistencyConstants.php, row 104
 "Not used constant group" => "未使用の定数グループ", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 97
+// src/Optimize/DbInconsistencyConstants.php, row 109
 "Found %1 unused constant groups" => "未使用の定数グループが %1 件見付かりました", // ai 2026-06
 
-// src/Optimize/DbInconsistencyConstants.php, row 110
+// src/Optimize/DbInconsistencyConstants.php, row 122
 "Deleted %1 constants in %2 (%3) unused constant groups" => "%2 (%3) 個の未使用定数グループの定数 %1 件を削除しました", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 15
+// src/Optimize/DbRelationDups.php, row 21
 "Relation table duplicate records" => "relationテーブルの重複レコード", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 23
+// src/Optimize/DbRelationDups.php, row 29
 "Testing if relation table contains records, where values in both columns are identical (which was a bug fixed in Jan 2006)" => "relationテーブルに両方の列の値が同一のレコードがないか検査します (2006年1月に修正されたバグ)", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 35
+// src/Optimize/DbRelationDups.php, row 41
 "%1 duplicates found" => "重複が %1 件見付かりました", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 38
+// src/Optimize/DbRelationDups.php, row 44
 // src/Optimize/FieldDuplicates.php, row 50, 66
 "No duplicates found" => "重複は見付かりませんでした", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 14
+// src/Optimize/DbRelationStartsxy.php, row 20
 "Slices relation started by x or y records" => "x または y で始まるスライス関連レコード", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 22
+// src/Optimize/DbRelationStartsxy.php, row 28
 "Testing if relations between slices are OK (without x or y chars on the beginning)" => "スライス間の関連が正常か検査します (先頭に x や y の文字がないこと)", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 34, 50
+// src/Optimize/DbRelationStartsxy.php, row 40, 56
 "%1 bad relation records found" => "誤った関連レコードが %1 件見付かりました", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 37
+// src/Optimize/DbRelationStartsxy.php, row 43
 "No bad relation records found" => "誤った関連レコードは見付かりませんでした", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 52
+// src/Optimize/DbRelationStartsxy.php, row 58
 "repair value: %1 with item_id: %2" => "値の修復: %1、item_id: %2", // ai 2026-06
+
+// src/Optimize/DebuglogLeftover.php, row 23
+"Find forgotten {debuglog} expressions" => "",
+
+// src/Optimize/DebuglogLeftover.php, row 28
+"Lists views, slice/module/site settings, fields, site spots, alias functions and Code slice items which contain {debuglog}, and the DEBUG log rows written in the last 24 hours. Remove the expression once the debugging is over - it logs on every render of the page." => "",
+
+// src/Optimize/DebuglogLeftover.php, row 60
+"DEBUG rows in the last 24 hours" => "",
+
+// src/Optimize/DebuglogLeftover.php, row 62
+"%1 rows, last %2" => "",
+
+// src/Optimize/DebuglogLeftover.php, row 67
+"No {debuglog} found in code points, no DEBUG rows logged in the last 24 hours" => "",
 
 // src/Optimize/DropBackupTables.php, row 20
 "Delete backup tables" => "バックアップテーブルを削除", // ai 2026-06
@@ -7412,28 +11648,28 @@ return [
 // src/Optimize/FieldDuplicates.php, row 80
 "Field %2 in slice %1 fixed" => "スライス %1 のフィールド %2 を修正しました", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 15
+// src/Optimize/FixContentColumn.php, row 21
 "Set right content column for field" => "フィールドに正しいcontent列を設定", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 23
+// src/Optimize/FixContentColumn.php, row 29
 "Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for number fields" => "テキストフィールドと指定されている全コンテンツにFLAG_TEXT_STOREDフラグを設定し、数値フィールドでは解除します", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 39
+// src/Optimize/FixContentColumn.php, row 45
 "No problem found, hurray" => "問題は見付かりませんでした、万歳", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 47
+// src/Optimize/FixContentColumn.php, row 54
 "slice %1: field_id: %2 item_id: %3" => "スライス %1: field_id: %2 item_id: %3", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 50, 73
+// src/Optimize/FixContentColumn.php, row 57, 80
 "and more..." => "その他...", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 53
+// src/Optimize/FixContentColumn.php, row 60
 "We found %1 inconsistent rows in content table" => "contentテーブルに不整合な行が %1 件見付かりました", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 71
+// src/Optimize/FixContentColumn.php, row 78
 "fixed (id-field): %1 - %2 (%3)" => "修正済み (id-フィールド): %1 - %2 (%3)", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 76
+// src/Optimize/FixContentColumn.php, row 83
 "We fixed %1 inconsistent rows in content table" => "contentテーブルの不整合な行 %1 件を修正しました", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 18
@@ -7445,26 +11681,26 @@ return [
 // src/Optimize/FixDatewidget.php, row 36
 "We found %1 old delimiters:" => "古い区切り文字が %1 件見付かりました:", // ai 2026-06
 
-// src/Optimize/FixDatewidget.php, row 38
-// src/Optimize/RemoveUndefineAlias.php, row 71, 92
+// src/Optimize/FixDatewidget.php, row 39
+// src/Optimize/RemoveUndefineAlias.php, row 72, 94
 "%1 - %2 (%3) Params: %4" => "%1 - %2 (%3) パラメータ: %4", // ai 2026-06
 
-// src/Optimize/FixDatewidget.php, row 46
+// src/Optimize/FixDatewidget.php, row 47
 "OK - There are no old delimiters" => "OK - 古い区切り文字はありません", // ai 2026-06
 
-// src/Optimize/FixDatewidget.php, row 58
+// src/Optimize/FixDatewidget.php, row 59
 "Fixed %1 fields" => "フィールド %1 件を修正しました", // ai 2026-06
 
-// src/Optimize/FixPagecache.php, row 19
+// src/Optimize/FixPagecache.php, row 25
 "Fix inconsistency in pagecache" => "pagecacheの不整合を修正", // ai 2026-06
 
-// src/Optimize/FixPagecache.php, row 27
+// src/Optimize/FixPagecache.php, row 33
 "Delete non-existent keys in pagecache_str2find table and vice versa" => "pagecache_str2findテーブル内の存在しないキーを削除し、その逆も行います", // ai 2026-06
 
-// src/Optimize/FixPagecache.php, row 76
+// src/Optimize/FixPagecache.php, row 82
 "%1 inconsistent rows in pagecache_str2find removed" => "pagecache_str2find内の不整合な行 %1 件を削除しました", // ai 2026-06
 
-// src/Optimize/FixPagecache.php, row 80
+// src/Optimize/FixPagecache.php, row 86
 "%1 inconsistent rows in pagecache removed" => "pagecache内の不整合な行 %1 件を削除しました", // ai 2026-06
 
 // src/Optimize/GenerateJslibsArray.php, row 17
@@ -7478,6 +11714,54 @@ return [
 
 // src/Optimize/GenerateMetabase.php, row 50
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "プログラマ専用 - 現在のデータベースから生成した include/metabase_schema.php の内容 (期待されるDBスキーマ、読みやすいPHP配列) を出力します。ファイルにコピーしてコミットしてください。", // ai 2026-06
+
+// src/Optimize/ImgCacheWritable.php, row 17
+"Image cache can store" => "",
+
+// src/Optimize/ImgCacheWritable.php, row 22
+"Resized images are generated once and kept in the cache directory in IMG_UPLOAD_PATH. Where PHP cannot write there, every request for such an image generates it again." => "",
+
+// src/Optimize/ImgCacheWritable.php, row 50
+"The image cache directory is a symbolic link" => "",
+
+// src/Optimize/ImgCacheWritable.php, row 50
+"Resized images are stored through it, but AA neither purges old ones there nor writes the routing rule - the cache grows without limit. Replace the link with a directory, or keep it small by other means." => "",
+
+// src/Optimize/ImgCacheWritable.php, row 53
+"The image cache can store resized images" => "",
+
+// src/Optimize/ImgCacheWritable.php, row 54
+"The image cache cannot store resized images" => "",
+
+// src/Optimize/ImgCacheWritable.php, row 54
+"The images show, but each one which is not in the cache yet is generated again on every request - the load and delay of a site without the cache. Let the PHP user write into the directory, or into the upload directory, where AA creates it." => "",
+
+// src/Optimize/ImgMeasuring.php, row 22
+"{img} which measures the image on every page view" => "",
+
+// src/Optimize/ImgMeasuring.php, row 27
+"Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "",
+
+// src/Optimize/ImgMeasuring.php, row 54
+"Expression" => "",
+
+// src/Optimize/ImgMeasuring.php, row 60
+"No {img} in the templates measures its image" => "",
+
+// src/Optimize/ImgMeasuring.php, row 64
+"%1 {img} expressions measure the image on every page view" => "",
+
+// src/Optimize/ImgMeasuring.php, row 67
+"Give both w and h together with zc, iar or far, and leave out parameters which make the size depend on the photo (ar, ra, wp, hp, wl, hl, ws, hs, sx, sy, sw, sh, fltr) - then the size follows from the parameters. Or print just the url (info \"url\" or \"im\") and set the size in the HTML or CSS." => "",
+
+// src/Optimize/ImgMeasuring.php, row 83
+"\"%1\" needs the output format, which only the image tells" => "",
+
+// src/Optimize/ImgMeasuring.php, row 84
+"the parameters are computed - check that every variant tells the size" => "",
+
+// src/Optimize/ImgMeasuring.php, row 85
+"the parameters do not tell the size" => "",
 
 // src/Optimize/ItemDiscussion.php, row 16
 "Delete discussion comments for non-existent items" => "存在しない項目のディスカッションコメントを削除", // ai 2026-06
@@ -7557,47 +11841,120 @@ return [
 // src/Optimize/LdapPermsToSql.php, row 286
 "Groups: created=%1 reused=%2 failed=%3" => "グループ: 作成=%1 再利用=%2 失敗=%3", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 324
+// src/Optimize/LdapPermsToSql.php, row 325
 "Memberships: added=%1 skipped_unmapped=%2" => "メンバーシップ: 追加=%1 スキップ（未マッピング）=%2", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 365
+// src/Optimize/LdapPermsToSql.php, row 366
 "Permission rows migrated: %1" => "移行された許可行数: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 387
+// src/Optimize/LdapPermsToSql.php, row 388
 "No mapping entries - nothing to rewrite." => "マッピングのエントリがありません - 書き換える対象はありません。", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 406
+// src/Optimize/LdapPermsToSql.php, row 407
 "Rewrite %1.%2: %3 rows" => "%1.%2 の書き換え: %3 行", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 416
+// src/Optimize/LdapPermsToSql.php, row 417
 "Mapping table is empty - nothing to revert." => "マッピングテーブルが空です - 元に戻すものはありません。", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 432
+// src/Optimize/LdapPermsToSql.php, row 433
 "Revert %1.%2: %3 rows" => "%1.%2 の復元: %3 行", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 449
+// src/Optimize/LdapPermsToSql.php, row 451
 "Deleted SQL users=%1 groups=%2" => "削除されたSQL利用者=%1 グループ=%2", // ai 2026-06
 
-// src/Optimize/MultivalueDuplicates.php, row 14
+// src/Optimize/MissCacheRouting.php, row 37
+"Image cache routing" => "",
+
+// src/Optimize/MissCacheRouting.php, row 42
+"Resized images are served as static files; a request for one which is not generated yet has to reach AA. Repair writes the .htaccess which routes it there, the extended State Check asks the web server whether such a request really gets through." => "",
+
+// src/Optimize/MissCacheRouting.php, row 62
+"%1 is missing" => "",
+
+// src/Optimize/MissCacheRouting.php, row 74
+"AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "",
+
+// src/Optimize/MissCacheRouting.php, row 78
+// src/Util/Imgfunc.php, row 252
+"Cannot write %1" => "",
+
+// src/Optimize/MissCacheRouting.php, row 87
+"The image cache is switched off or not configured - {img} uses img.php" => "",
+
+// src/Optimize/MissCacheRouting.php, row 97
+"Probe" => "",
+
+// src/Optimize/MissCacheRouting.php, row 98, 129
+"none" => "",
+
+// src/Optimize/MissCacheRouting.php, row 99
+".htaccess" => "",
+
+// src/Optimize/MissCacheRouting.php, row 99
+"present" => "",
+
+// src/Optimize/MissCacheRouting.php, row 99
+"missing" => "",
+
+// src/Optimize/MissCacheRouting.php, row 99
+"the cache directory is a symbolic link, AA does not write there" => "",
+
+// src/Optimize/MissCacheRouting.php, row 101
+"A request for an image which is not generated yet does not reach AA" => "",
+
+// src/Optimize/MissCacheRouting.php, row 104
+"A request for an image which is not generated yet reaches AA" => "",
+
+// src/Optimize/MissCacheRouting.php, row 105
+"Every image which is not generated yet shows broken. Repair writes the .htaccess into the cache directory (service/sql_update.php does the same); on nginx add the rule from config.php.default to the server configuration." => "",
+
+// src/Optimize/MissCacheRouting.php, row 106
+"The server cannot load its own image url" => "",
+
+// src/Optimize/MissCacheRouting.php, row 106
+"Check that the server resolves and reaches the host of IMG_UPLOAD_URL." => "",
+
+// src/Optimize/MissCacheRouting.php, row 107
+"The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration." => "",
+
+// src/Optimize/MissCacheRouting.php, row 128
+"img.php does not answer the server itself" => "",
+
+// src/Optimize/MissCacheRouting.php, row 130
+"Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects." => "",
+
+// src/Optimize/MultivalueDuplicates.php, row 35
 "Multivalue Duplicates" => "複数値の重複", // ai 2026-06
 
-// src/Optimize/MultivalueDuplicates.php, row 22
+// src/Optimize/MultivalueDuplicates.php, row 43
 "Removes duplicate values in multivalue text fields" => "複数値テキストフィールド内の重複した値を削除します", // ai 2026-06
 
-// src/Optimize/MultivalueDuplicates.php, row 37, 84
+// src/Optimize/MultivalueDuplicates.php, row 55, 110
 "%1 duplicates found in text fields" => "テキストフィールドで%1件の重複が見つかりました", // ai 2026-06
 
-// src/Optimize/MultivalueDuplicates.php, row 39
+// src/Optimize/MultivalueDuplicates.php, row 57
 "Duplicates (%4) in item %1 - field %2 - value %3" => "重複（%4）: 項目 %1 - フィールド %2 - 値 %3", // ai 2026-06
 
-// src/Optimize/MultivalueDuplicates.php, row 53, 96
+// src/Optimize/MultivalueDuplicates.php, row 69, 113
 "%1 duplicates found in numeric fields" => "数値フィールドで%1件の重複が見つかりました", // ai 2026-06
 
-// src/Optimize/MultivalueDuplicates.php, row 55
+// src/Optimize/MultivalueDuplicates.php, row 71
 "Duplicates (%4) in item %1 - field %2 - value %3 - numeric" => "重複（%4）: 項目 %1 - フィールド %2 - 値 %3 - 数値", // ai 2026-06
 
-// src/Optimize/MultivalueDuplicates.php, row 66, 105
+// src/Optimize/MultivalueDuplicates.php, row 81, 106
 "No duplicates found, hurray!" => "重複は見つかりませんでした。万歳！", // ai 2026-06
+
+// src/Optimize/MultivalueDuplicates.php, row 123
+"The repair stopped after %1 rows deleted: %2" => "",
+
+// src/Optimize/MultivalueDuplicates.php, row 123
+"no database transaction could be started" => "",
+
+// src/Optimize/MultivalueDuplicates.php, row 126
+"%1 rows deleted" => "",
+
+// src/Optimize/MultivalueDuplicates.php, row 139
+"The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "",
 
 // src/Optimize/ReadersLogin2id.php, row 15
 "Convert Readers login to reader id" => "読者のログインを読者IDに変換", // ai 2026-06
@@ -7620,43 +11977,43 @@ return [
 // src/Optimize/ReadersLogin2id.php, row 98
 "Column item.edited_by updated for %1 (id: %2)." => "%1（id: %2）の item.edited_by 列を更新しました。", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 15
+// src/Optimize/RedefineCoreConstants.php, row 18
 "Redefine core constants" => "コア定数の再定義", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 23
+// src/Optimize/RedefineCoreConstants.php, row 26
 "Updates core constants - like Code-pages, Language Constants and AA Bins" => "コア定数を更新します - コードページ、言語定数、AA Bins など", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 43
+// src/Optimize/RedefineCoreConstants.php, row 46
 "Code-pages constants (lt_codepages) are not up-to-date - found: %1 from 9" => "コードページ定数（lt_codepages）が最新ではありません - 見つかった数: 9 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 50
+// src/Optimize/RedefineCoreConstants.php, row 53
 "Language constants (lt_languages) are not up-to-date - found: %1 from 46" => "言語定数（lt_languages）が最新ではありません - 見つかった数: 46 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 57
+// src/Optimize/RedefineCoreConstants.php, row 60
 "AA Bins constants (AA_Core_Bins....) are not up-to-date - found: %1 from 3" => "AA Bins定数（AA_Core_Bins....）が最新ではありません - 見つかった数: 3 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 64
+// src/Optimize/RedefineCoreConstants.php, row 67
 "APC-wide categories (lt_apcCategories) are not up-to-date - found: %1 from 82" => "APC共通分類（lt_apcCategories）が最新ではありません - 見つかった数: 82 中 %1", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 78
+// src/Optimize/RedefineCoreConstants.php, row 81
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "コードページ、言語定数、AA Bins定数、APC共通分類を削除しています", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 81
+// src/Optimize/RedefineCoreConstants.php, row 84
 "Recreate Code-pages" => "コードページの再作成", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 92
+// src/Optimize/RedefineCoreConstants.php, row 95
 "Recreate Languages" => "言語の再作成", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 140
+// src/Optimize/RedefineCoreConstants.php, row 143
 "Recreate AA Bins" => "AA Binsの再作成", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 145
+// src/Optimize/RedefineCoreConstants.php, row 148
 "APC wide categories" => "APC共通分類", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 229
+// src/Optimize/RedefineCoreConstants.php, row 232
 "Make sure, the constants are registered" => "定数が登録されていることを確認", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 235
+// src/Optimize/RedefineCoreConstants.php, row 240
 "Redefine core constants - done." => "コア定数の再定義 - 完了。", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 43
@@ -7665,23 +12022,23 @@ return [
 // src/Optimize/RedefineFieldTemplates.php, row 51
 "Updates field templates (in ActionApps Core slice), which is used when you are adding new field to slice" => "スライスに新しいフィールドを追加する際に使われるフィールドテンプレート（ActionApps Coreスライス内）を更新します", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 70
+// src/Optimize/RedefineFieldTemplates.php, row 77
 "template fields are not present" => "テンプレートフィールドが存在しません", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 88
+// src/Optimize/RedefineFieldTemplates.php, row 95
 // src/Optimize/RedefineSliceNewsTemplates.php, row 57
 "Deleting all fields from \"ActionApps Core\" slice" => "\"ActionApps Core\"スライスから全フィールドを削除しています", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 91
+// src/Optimize/RedefineFieldTemplates.php, row 98
 "Make sure slice owner Action Applications System exists and reset to defaults" => "スライス所有者 Action Applications System が存在することを確認し、既定の設定に戻す", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 94
+// src/Optimize/RedefineFieldTemplates.php, row 101
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "\"ActionApps Core\"スライスが存在することを確認し、既定の設定に戻す", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 98
+// src/Optimize/RedefineFieldTemplates.php, row 105
 "Recreate field definitions" => "フィールド定義の再作成", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 188
+// src/Optimize/RedefineFieldTemplates.php, row 195
 "Redefine field defaults - done." => "フィールド省略値の再定義 - 完了。", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -7817,6 +12174,18 @@ return [
 // src/Optimize/RedefineViewUrlsTemplates.php, row 10
 "Redefine urls template view" => "urls テンプレートビューの再定義", // ai 2026-06
 
+// src/Optimize/RemoveAaCronEntries.php, row 22
+"Removes the AA jobs from the cron table" => "",
+
+// src/Optimize/RemoveAaCronEntries.php, row 27
+"Alerts sending, feeding, link checking, table optimization and the queue run itself are queue tasks since 2026-09 (cron.php runs the queue directly). A cron table row still calling one of those scripts runs the job twice, so it is deleted; your own rows stay." => "",
+
+// src/Optimize/RemoveAaCronEntries.php, row 49
+"AA job still in the cron table: %1 %2" => "",
+
+// src/Optimize/RemoveAaCronEntries.php, row 60
+"%1 AA cron rows deleted" => "",
+
 // src/Optimize/RemoveUndefineAlias.php, row 45
 "Remove _#UNDEFINE alias and default help.html for more help text in field" => "_#UNDEFINE 別名と省略値の help.html をフィールドの追加ヘルプから削除", // ai 2026-06
 
@@ -7826,37 +12195,34 @@ return [
 // src/Optimize/RemoveUndefineAlias.php, row 69
 "We found %1 old _#UNDEFINE aliases:" => "古い _#UNDEFINE 別名が %1 件見つかりました:", // ai 2026-06
 
-// src/Optimize/RemoveUndefineAlias.php, row 79
+// src/Optimize/RemoveUndefineAlias.php, row 80
 "OK - There is no _#UNDEFINE alias" => "OK - _#UNDEFINE 別名はありません", // ai 2026-06
 
-// src/Optimize/RemoveUndefineAlias.php, row 90
+// src/Optimize/RemoveUndefineAlias.php, row 91
 "We found %1 old help.html help link:" => "古い help.html ヘルプリンクが %1 件見つかりました:", // ai 2026-06
 
-// src/Optimize/RemoveUndefineAlias.php, row 101
+// src/Optimize/RemoveUndefineAlias.php, row 103
 "OK - There is no old help.html help link" => "OK - 古い help.html ヘルプリンクはありません", // ai 2026-06
 
-// src/Optimize/RemoveUndefineAlias.php, row 114
+// src/Optimize/RemoveUndefineAlias.php, row 116
 "Removed %1 _#UNDEFINE aliases" => "_#UNDEFINE 別名を %1 件削除しました", // ai 2026-06
 
-// src/Optimize/RemoveUndefineAlias.php, row 117
+// src/Optimize/RemoveUndefineAlias.php, row 119
 "Removed %1 old help links" => "古いヘルプリンクを %1 件削除しました", // ai 2026-06
 
-// src/Optimize/RequiredChecboxes.php, row 18
+// src/Optimize/RequiredChecboxes.php, row 24
 "List Checkbox fields marked as required" => "「必要」に指定されたチェックボックスフィールドの一覧", // ai 2026-06
 
-// src/Optimize/RequiredChecboxes.php, row 26
+// src/Optimize/RequiredChecboxes.php, row 32
 "AA is now more strict about Required field, so checkboxes marked as Required must be filled (=checked). This could be a problem if you accidentally have it set in history. This test just lists all of such fields, in order you can check it." => "AA は必須フィールドの扱いがより厳格になったため、「必要」に指定されたチェックボックスは必ず入力(=チェック)されなければなりません。過去に誤って設定していた場合、問題になる可能性があります。このテストは確認できるよう、該当するフィールドをすべて一覧表示するだけです。", // ai 2026-06
 
-// src/Optimize/RequiredChecboxes.php, row 53
-// src/Optimize/SeoDuplicates.php, row 54
+// src/Optimize/RequiredChecboxes.php, row 59
 "We found %1 required checkbox fields:" => "「必要」指定のチェックボックスフィールドが %1 件見つかりました:", // ai 2026-06
 
-// src/Optimize/RequiredChecboxes.php, row 55
-// src/Optimize/SeoDuplicates.php, row 56
+// src/Optimize/RequiredChecboxes.php, row 62
 "%1 - %2 (%3) Show: %4" => "%1 - %2 (%3) 表示: %4", // ai 2026-06
 
-// src/Optimize/RequiredChecboxes.php, row 63
-// src/Optimize/SeoDuplicates.php, row 64
+// src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - 「必要」指定のチェックボックスフィールドはありません", // ai 2026-06
 
 // src/Optimize/RestoreBckTables.php, row 19
@@ -7874,11 +12240,32 @@ return [
 // src/Optimize/RestoreBckTables.php, row 61
 "Replace table bck_%1 -> %1" => "テーブルの置き換え bck_%1 -> %1", // ai 2026-06
 
-// src/Optimize/SeoDuplicates.php, row 19
+// src/Optimize/SeoDuplicates.php, row 44
 "SEO name duplicates" => "SEO 名の重複", // ai 2026-06
 
-// src/Optimize/SeoDuplicates.php, row 27
-"Check items for duplicate SEO name inside sitemodule" => "Site モジュール内の項目に重複した SEO 名がないか確認します", // ai 2026-06
+// src/Optimize/SeoDuplicates.php, row 49
+"Lists items which share one SEO name inside a site module - such items compete for the same URL. Active, pending and expired items are compared; items waiting in the holding bin and in the trash own no URL, so they are not. Which item to rename is the editor's call, so there is no repair." => "",
+
+// src/Optimize/SeoDuplicates.php, row 73
+"OK - no duplicate SEO names in any site module" => "",
+
+// src/Optimize/SeoDuplicates.php, row 87
+"%1: %2 SEO names are used by more than one item" => "",
+
+// src/Optimize/SeoDuplicates.php, row 90
+"The site resolves such a URL to whichever item the query returns first, so the visitor may land on the wrong one. Rename all but one of them." => "",
+
+// src/Optimize/SeoDuplicates.php, row 96
+"No duplicate SEO names in any site module" => "",
+
+// src/Optimize/SeoDuplicates.php, row 147
+"SEO name" => "",
+
+// src/Optimize/SeoDuplicates.php, row 149
+"Which" => "",
+
+// src/Optimize/SeoDuplicates.php, row 171
+"... and %1 more" => "",
 
 // src/Optimize/SetExpirydate.php, row 18
 "Set Expiry date to maximum value" => "有効期限を最大値に設定", // ai 2026-06
@@ -7931,49 +12318,55 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "旧テーブルをバックアップ %1 -> bck_%1 し、代わりに新テーブルを使用 tmp_%1 -> %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 93
+// src/Security/Protection.php, row 19
+"Forms run only expressions signed by AA" => "",
+
+// src/Security/Protection.php, row 27
+"ret_code and ok_url sent to filler.php" => "",
+
+// src/Security/Protection.php, row 39
+"Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases." => "",
+
+// src/Util/ChangesMonitor.php, row 92
 "history (%1)" => "履歴 (%1)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 336
+// src/Util/ChangesMonitor.php, row 335
 "No recorded changes for this item." => "この項目には記録された変更がありません。", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 360
+// src/Util/ChangesMonitor.php, row 359
 "1 field changed" => "1 フィールドが変更されました", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 360
+// src/Util/ChangesMonitor.php, row 359
 "%1 fields changed" => "%1 フィールドが変更されました", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 369, 456
+// src/Util/ChangesMonitor.php, row 368, 455
 "Restore" => "復元", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 383
+// src/Util/ChangesMonitor.php, row 382
 "(this change)" => "(この変更)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 387, 573, 577
+// src/Util/ChangesMonitor.php, row 386, 572, 576
 "Current (live)" => "現在 (ライブ)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 388
+// src/Util/ChangesMonitor.php, row 387
 "Compare to" => "比較対象", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 397
+// src/Util/ChangesMonitor.php, row 396
 "change %1 | uid %2 | %3 ns | resource %4" => "変更 %1 | uid %2 | %3 ns | リソース %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 449
+// src/Util/ChangesMonitor.php, row 448
 "View" => "表示", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 450
+// src/Util/ChangesMonitor.php, row 449
 "Diff" => "差分", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 481
+// src/Util/ChangesMonitor.php, row 480
 "seq %1" => "順序 %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 488
+// src/Util/ChangesMonitor.php, row 487
 "No change between these versions." => "これらのバージョン間に変更はありません。", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 511
-"(empty)" => "(空)", // ai 2026-06
-
-// src/Util/ChangesMonitor.php, row 571
+// src/Util/ChangesMonitor.php, row 570
 "Original" => "オリジナル", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
@@ -7984,6 +12377,97 @@ return [
 
 // src/Util/Imgfunc.php, row 178
 "ResampleImage unable to %1" => "ResampleImage: %1 に失敗しました", // ai 2026-06
+
+// src/Util/Imgfunc.php, row 215
+"This type of image cannot be uploaded here" => "",
+
+// src/Util/Imgfunc.php, row 218
+"The image has too many pixels" => "",
+
+// src/Util/Imgfunc.php, row 222
+"The image cannot be read" => "",
+
+// src/Util/Note.php, row 47
+"Note" => "メモ", // ai 2026-06
+
+// src/Util/Note.php, row 52
+"A note on an admin page, a view or a State Check finding" => "",
+
+// src/Util/Note.php, row 59
+"Resource" => "",
+
+// src/Util/Note.php, row 62
+"For" => "",
+
+// src/Util/Note.php, row 62
+"everyone" => "",
+
+// src/Util/Note.php, row 62
+"me only" => "",
+
+// src/Util/Note.php, row 64
+"valid" => "",
+
+// src/Util/Note.php, row 64
+// src/Util/Notes.php, row 96
+"resolved" => "",
+
+// src/Util/Note.php, row 64
+"deleted" => "削除済み", // ai 2026-06
+
+// src/Util/Note.php, row 65
+"Until" => "",
+
+// src/Util/Notes.php, row 54
+"Notes on this page" => "",
+
+// src/Util/Notes.php, row 57
+"Add a note to this page" => "",
+
+// src/Util/Notes.php, row 67
+"Note text (a little HTML is fine)" => "",
+
+// src/Util/Notes.php, row 69
+"for everyone" => "",
+
+// src/Util/Notes.php, row 70, 93
+"only for me" => "",
+
+// src/Util/Notes.php, row 73
+"Add note" => "",
+
+// src/Util/Notes.php, row 96
+"until %1" => "",
+
+// src/Util/Notes.php, row 96, 116
+"forever" => "",
+
+// src/Util/Notes.php, row 102
+"Unresolve" => "",
+
+// src/Util/Notes.php, row 116
+"today" => "",
+
+// src/Util/Notes.php, row 116
+"a week" => "",
+
+// src/Util/Notes.php, row 116
+"a month" => "",
+
+// src/Util/Notes.php, row 116, 125
+"a date" => "",
+
+// src/Util/Notes.php, row 123
+"Hide for" => "",
+
+// src/Util/Notes.php, row 126
+"Why (optional)" => "",
+
+// src/Util/Notes.php, row 128
+"Mark resolved" => "",
+
+// src/Util/Notes.php, row 129
+"Resolve" => "",
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- 任意の数値フィールド --", // ai 2026-06
@@ -8000,21 +12484,22 @@ return [
 // src/Widget/EdtWidget.php, row 21
 "Rich Edit Text Area" => "リッチエディットテキストエリア", // ai 2026-06
 
-// src/Widget/FilWidget.php, row 37
+// src/Widget/FilWidget.php, row 38
 "File Upload" => "ファイルアップロード", // ai 2026-06
 
-// src/Widget/FilWidget.php, row 205, 235
+// src/Widget/FilWidget.php, row 206, 236
+// src/Widget/RichtextMarkup.php, row 73
 "Upload" => "アップロード", // ai 2026-06
 
-// src/Widget/FilWidget.php, row 249
-// src/Widget/Widget.php, row 575
+// src/Widget/FilWidget.php, row 250
+// src/Widget/Widget.php, row 604
 "EXIT WITHOUT CHANGE" => "変更せずに終了", // ai 2026-06
 
 // src/Widget/FldWidget.php, row 34
 "Text Field" => "テキストフィールド", // ai 2026-06
 
-// src/Widget/FldWidget.php, row 160
-// src/Widget/TxtWidget.php, row 269, 271, 273
+// src/Widget/FldWidget.php, row 166
+// src/Widget/TxtWidget.php, row 247
 "translate from" => "翻訳元", // ai 2026-06
 
 // src/Widget/GpsWidget.php, row 34
@@ -8064,8 +12549,8 @@ return [
 
 // src/Widget/MflWidget.php, row 120
 // src/Widget/RioWidget.php, row 124
-// src/Widget/TxtWidget.php, row 109
-// src/Widget/Widget.php, row 416
+// src/Widget/TxtWidget.php, row 110
+// src/Widget/Widget.php, row 445
 "To save changes click here or outside the field." => "変更を保存するには、ここかフィールドの外をクリックしてください。", // ai 2026-06
 
 // src/Widget/MngWidget.php, row 32
@@ -8086,10 +12571,25 @@ return [
 // src/Widget/PwdWidget.php, row 37
 "Password and Change password" => "パスワードとパスワード変更", // ai 2026-06
 
+// src/Widget/RichtextMarkup.php, row 75
+"Loading..." => "",
+
+// src/Widget/RichtextMarkup.php, row 76
+"No files" => "",
+
+// src/Widget/RichtextMarkup.php, row 77
+"Uploading..." => "",
+
+// src/Widget/RichtextMarkup.php, row 78
+"Upload failed" => "",
+
 // src/Widget/RimWidget.php, row 43
 "Related Item Manager" => "関連項目マネージャー", // ai 2026-06
 
-// src/Widget/RimWidget.php, row 237
+// src/Widget/RimWidget.php, row 239
+"No record matches your search condition." => "検索条件に一致するレコードはありません。", // ai 2026-06
+
+// src/Widget/RimWidget.php, row 283
 "search in existing" => "既存から検索", // ai 2026-06
 
 // src/Widget/RioWidget.php, row 40
@@ -8116,450 +12616,444 @@ return [
 // src/Widget/TprWidget.php, row 27
 "Textarea with Presets" => "プリセット付きテキストエリア", // ai 2026-06
 
-// src/Widget/TxtWidget.php, row 43
+// src/Widget/TxtWidget.php, row 40
 "Text Area" => "テキストエリア", // ai 2026-06
 
 // src/Widget/Wi2Widget.php, row 32
 "Two Boxes" => "2つのボックス", // ai 2026-06
 
-// src/Widget/Widget.php, row 574
+// src/Widget/Widget.php, row 603
 "SAVE CHANGE" => "変更を保存", // ai 2026-06
 
-// src/Widget/Widget.php, row 712
+// src/Widget/Widget.php, row 741
 "Max characters" => "最大文字数", // ai 2026-06
 
-// src/Widget/Widget.php, row 712
+// src/Widget/Widget.php, row 741
 "max count of characters entered (maxlength parameter)" => "入力できる最大文字数(maxlengthパラメータ)", // ai 2026-06
 
-// src/Widget/Widget.php, row 715, 784
-"Columns" => "列", // ai 2026-06
-
-// src/Widget/Widget.php, row 718
+// src/Widget/Widget.php, row 747
 "Constants or slice" => "定数またはスライス", // ai 2026-06
 
-// src/Widget/Widget.php, row 718
+// src/Widget/Widget.php, row 747
 "Constants (or slice) which is used for value selection" => "値の選択に使用する定数(またはスライス)", // ai 2026-06
 
-// src/Widget/Widget.php, row 721
+// src/Widget/Widget.php, row 750
 "Directly specified array of values like [\"1\",\"2\",\"3\"] or {\"1\":\"Yes\",\"0\":\"No\"}. (do not use Constants, if filled)" => "[\"1\",\"2\",\"3\"] や {\"1\":\"Yes\",\"0\":\"No\"} のように直接指定する値の配列。(入力した場合は「定数」を使用しないでください)", // ai 2026-06
 
-// src/Widget/Widget.php, row 730
+// src/Widget/Widget.php, row 759
 "type: class (default) / iframe" => "タイプ: class(省略値)/ iframe", // ai 2026-06
 
-// src/Widget/Widget.php, row 733, 947
+// src/Widget/Widget.php, row 762, 976
 "Width" => "幅", // ai 2026-06
 
-// src/Widget/Widget.php, row 733
+// src/Widget/Widget.php, row 762
 "width of the field in characters (size parameter)" => "フィールドの幅(文字数、sizeパラメータ)", // ai 2026-06
 
-// src/Widget/Widget.php, row 736
+// src/Widget/Widget.php, row 765
 "type of input - email|tel|url|number. Can be used for other types (time), but in most cases it will be better to create new Widget type - like checkbox, password, color" => "入力タイプ - email|tel|url|number。他のタイプ(time)にも使用できますが、多くの場合は checkbox、password、color のような新しいウィジェットタイプを作成する方がよいでしょう", // ai 2026-06
 
-// src/Widget/Widget.php, row 739, 838
+// src/Widget/Widget.php, row 768, 867
 "Buttons to show" => "表示するボタン", // ai 2026-06
 
-// src/Widget/Widget.php, row 739
+// src/Widget/Widget.php, row 768
 "Which action buttons to show:<br>M - Move (up and down)<br>D - Delete value,<br>A - Add new value<br>C - Change the value<br>Use 'MDAC' (default), 'DAC', just 'M' or any other combination. The order of letters M,D,A,C is not important." => "表示する操作ボタン:<br>M - 移動(上下)<br>D - 値の削除<br>A - 新しい値の追加<br>C - 値の変更<br>'MDAC'(省略値)、'DAC'、'M' のみ、その他任意の組み合わせを使用できます。M,D,A,C の文字の順序は問いません。", // ai 2026-06
 
-// src/Widget/Widget.php, row 742
+// src/Widget/Widget.php, row 771
 "Row count" => "行数", // ai 2026-06
 
-// src/Widget/Widget.php, row 745
+// src/Widget/Widget.php, row 774
 "Slice field" => "スライスのフィールド", // ai 2026-06
 
-// src/Widget/Widget.php, row 745
+// src/Widget/Widget.php, row 774
 "field (or format string) that will be displayed in select box. if not specified, headlines or constant name for constants are displayed in select box. you can use also any AA formatstring here (like: _#HEADLINE, _#PUB_DATE (for slices) or _#NAME###_, _#TR_NAME_, _#VALUE##_, _#PRIORITY, _#GROUP##_, _#CLASS##_, _#COUNTER_, _#CONST_ID, _#SHORT_ID (for constants))." => "セレクトボックスに表示するフィールド(または書式文字列)。指定しない場合、セレクトボックスには見出し、定数では定数名が表示されます。任意のAA書式文字列も使用できます(例: _#HEADLINE、_#PUB_DATE(スライス用)、_#NAME###_、_#TR_NAME_、_#VALUE##_、_#PRIORITY、_#GROUP##_、_#CLASS##_、_#COUNTER_、_#CONST_ID、_#SHORT_ID(定数用))。", // ai 2026-06
 
-// src/Widget/Widget.php, row 748
+// src/Widget/Widget.php, row 777
 "Use name" => "名前を使用", // ai 2026-06
 
-// src/Widget/Widget.php, row 748
+// src/Widget/Widget.php, row 777
 "if set (=1), then the name of selected constant is used, instead of the value. Default is 0" => "設定(=1)すると、値の代わりに選択した定数の名前を使用します。省略値は 0 です", // ai 2026-06
 
-// src/Widget/Widget.php, row 751
+// src/Widget/Widget.php, row 780
 "Adding" => "追加", // ai 2026-06
 
-// src/Widget/Widget.php, row 751
+// src/Widget/Widget.php, row 780
 "adding the selected items to input field comma separated" => "選択した項目をカンマ区切りで入力フィールドに追加します", // ai 2026-06
 
-// src/Widget/Widget.php, row 754
+// src/Widget/Widget.php, row 783
 "Second Field" => "第二フィールド", // ai 2026-06
 
-// src/Widget/Widget.php, row 754
+// src/Widget/Widget.php, row 783
 "field_id of another text field, where value of this selectbox will be propagated too (in main text area will be text and there will be value)" => "このセレクトボックスの値を併せて書き込む別のテキストフィールドの field_id(メインのテキストエリアにはテキスト、そちらには値が入ります)", // ai 2026-06
 
-// src/Widget/Widget.php, row 757
+// src/Widget/Widget.php, row 786
 "Add to Constant" => "定数に追加", // ai 2026-06
 
-// src/Widget/Widget.php, row 757
+// src/Widget/Widget.php, row 786
 "if set to 1, user typed value in inputform is stored into constants (only if the value is not already there)" => "1 に設定すると、利用者が入力フォームに入力した値が定数に保存されます(その値がまだ存在しない場合のみ)", // ai 2026-06
 
-// src/Widget/Widget.php, row 760
+// src/Widget/Widget.php, row 789
 "Show items from bins" => "箱の項目を表示", // ai 2026-06
 
-// src/Widget/Widget.php, row 760
+// src/Widget/Widget.php, row 789
 "(for slices only) To show items from selected bins, use following values:<br>Active bin - '%1'<br>Pending bin - '%2'<br>Expired bin - '%3'<br>Holding bin - '%4'<br>Trash bin - '%5'<br>Value is created as follows: eg. You want to show headlines from Active, Expired and Holding bins. Value for this combination is counted like %1+%3+%4&nbsp;=&nbsp;13" => "(スライスのみ)選択した箱の項目を表示するには、次の値を使用します:<br>活動中箱 - '%1'<br>待機中箱 - '%2'<br>期限切れ箱 - '%3'<br>保留箱 - '%4'<br>ごみ箱 - '%5'<br>値は次のように作成します。例えば活動中・期限切れ・保留の各箱の見出しを表示したい場合、この組み合わせの値は %1+%3+%4&nbsp;=&nbsp;13 と計算します", // ai 2026-06
 
-// src/Widget/Widget.php, row 769
+// src/Widget/Widget.php, row 798
 "Filtering conditions" => "絞り込み条件", // ai 2026-06
 
-// src/Widget/Widget.php, row 769
+// src/Widget/Widget.php, row 798
 "(for slices only) Conditions for filtering items in selection. Use d-.. condition or conds[] array." => "(スライスのみ)選択時に項目を絞り込む条件。d-.. 条件または conds[] 配列を使用してください。", // ai 2026-06
 
-// src/Widget/Widget.php, row 772
+// src/Widget/Widget.php, row 801
 "Sort by" => "並び順", // ai 2026-06
 
-// src/Widget/Widget.php, row 772
+// src/Widget/Widget.php, row 801
 "(for slices only) Sort the items in specified order. Use <fld>[+-]<fld>[+-]... or even any alias _#SOME_ALS." => "(スライスのみ)指定した順序で項目を並べ替えます。<fld>[+-]<fld>[+-]... または任意の別名 _#SOME_ALS も使用できます。", // ai 2026-06
 
-// src/Widget/Widget.php, row 775
+// src/Widget/Widget.php, row 804
 "Slice password" => "スライスのパスワード", // ai 2026-06
 
-// src/Widget/Widget.php, row 775
+// src/Widget/Widget.php, row 804
 "(for slices only) If the related slice is protected by 'Slice Password', fill it here" => "(スライスのみ)関連スライスが「スライスのパスワード」で保護されている場合、ここに入力してください", // ai 2026-06
 
-// src/Widget/Widget.php, row 778
+// src/Widget/Widget.php, row 807
 "Filtering conditions - changeable" => "絞り込み条件 - 変更可能", // ai 2026-06
 
-// src/Widget/Widget.php, row 778
+// src/Widget/Widget.php, row 807
 "Conditions for filtering items. This conds site admin change through widget_property parameter." => "項目を絞り込む条件。これらの条件はサイト管理者が widget_property パラメータで変更できます。", // ai 2026-06
 
-// src/Widget/Widget.php, row 781
+// src/Widget/Widget.php, row 810
 "Items per page. Default is 20." => "1ページあたりの項目数。省略値は 20 です。", // ai 2026-06
 
-// src/Widget/Widget.php, row 784
+// src/Widget/Widget.php, row 813
 "Number of columns. If unfilled, the checkboxes are all on one line. If filled, they are formatted in a table." => "列数。未入力の場合、チェックボックスはすべて1行に並びます。入力した場合は表形式に整形されます。", // ai 2026-06
 
-// src/Widget/Widget.php, row 787
+// src/Widget/Widget.php, row 816
 "Move right" => "右へ移動", // ai 2026-06
 
-// src/Widget/Widget.php, row 787
+// src/Widget/Widget.php, row 816
 "Should the function move right or down to the next value?" => "次の値へ右に進むか、下に進むかを指定します", // ai 2026-06
 
-// src/Widget/Widget.php, row 790
+// src/Widget/Widget.php, row 819
 "Starting Year" => "開始年", // ai 2026-06
 
-// src/Widget/Widget.php, row 790
+// src/Widget/Widget.php, row 819
 "The (relative) start of the year interval" => "年間隔の（相対的な）開始", // ai 2026-06
 
-// src/Widget/Widget.php, row 793
+// src/Widget/Widget.php, row 822
 "Ending Year" => "終了年", // ai 2026-06
 
-// src/Widget/Widget.php, row 793
+// src/Widget/Widget.php, row 822
 "The (relative) end of the year interval" => "年間隔の（相対的な）終了", // ai 2026-06
 
-// src/Widget/Widget.php, row 796
+// src/Widget/Widget.php, row 825
 "Relative" => "相対", // ai 2026-06
 
-// src/Widget/Widget.php, row 796
+// src/Widget/Widget.php, row 825
 "If this is 1, the starting and ending year will be taken as relative - the interval will start at (this year - starting year) and end at (this year + ending year). If this is 0, the starting and ending years will be taken as absolute." => "1の場合、開始年と終了年は相対値として扱われ、間隔は（今年 - 開始年）から始まり（今年 + 終了年）で終わります。0の場合、開始年と終了年は絶対値として扱われます。", // ai 2026-06
 
-// src/Widget/Widget.php, row 799
+// src/Widget/Widget.php, row 828
 "Date-time input type" => "日時の入力タイプ", // ai 2026-06
 
-// src/Widget/Widget.php, row 799
+// src/Widget/Widget.php, row 828
 "0 - three selects for <b>date</b><br>1 - three selects for date + the <b>time</b> input<br>2 - HTML5 <b>input type=date</b>" => "0 - <b>日付</b>用の3つのセレクト<br>1 - 日付用の3つのセレクト + <b>時刻</b>入力<br>2 - HTML5の<b>input type=date</b>", // ai 2026-06
 
-// src/Widget/Widget.php, row 802
+// src/Widget/Widget.php, row 831
 "Height" => "高さ", // ai 2026-06
 
-// src/Widget/Widget.php, row 802
+// src/Widget/Widget.php, row 831
 "Max height of the widget in pixels" => "ウィジェットの最大高さ（ピクセル）", // ai 2026-06
 
-// src/Widget/Widget.php, row 805
+// src/Widget/Widget.php, row 834
 "Title of \"Offer\" selectbox" => "「候補」セレクトボックスのタイトル", // ai 2026-06
 
-// src/Widget/Widget.php, row 805
+// src/Widget/Widget.php, row 834
 "Our offer" => "選択候補", // ai 2026-06
 
-// src/Widget/Widget.php, row 808
+// src/Widget/Widget.php, row 837
 "Title of \"Selected\" selectbox" => "「選択済み」セレクトボックスのタイトル", // ai 2026-06
 
-// src/Widget/Widget.php, row 811
+// src/Widget/Widget.php, row 840
 "Add Form" => "追加用フォーム", // ai 2026-06
 
-// src/Widget/Widget.php, row 811
+// src/Widget/Widget.php, row 840
 "(for slices only) ID of the form for adding items into related slice" => "（スライスのみ）関連スライスに項目を追加するためのフォームのID", // ai 2026-06
 
-// src/Widget/Widget.php, row 814
+// src/Widget/Widget.php, row 843
 "Allowed file types" => "許可するファイルタイプ", // ai 2026-06
 
-// src/Widget/Widget.php, row 814
+// src/Widget/Widget.php, row 843
 "Used for accept attribute - image/*,.doc,.docx,.pdf" => "accept属性に使用されます - image/*,.doc,.docx,.pdf", // ai 2026-06
 
-// src/Widget/Widget.php, row 817
+// src/Widget/Widget.php, row 846
 "Label" => "ラベル", // ai 2026-06
 
-// src/Widget/Widget.php, row 817
+// src/Widget/Widget.php, row 846
 "To be printed before the file upload field" => "ファイルアップロード欄の前に表示されます", // ai 2026-06
 
-// src/Widget/Widget.php, row 817
+// src/Widget/Widget.php, row 846
 "File: " => "ファイル:", // ai 2026-06
 
-// src/Widget/Widget.php, row 820
-"Hint" => "ヒント", // ai 2026-06
-
-// src/Widget/Widget.php, row 820
+// src/Widget/Widget.php, row 849
 "appears beneath the file upload field" => "ファイルアップロード欄の下に表示されます", // ai 2026-06
 
-// src/Widget/Widget.php, row 820
+// src/Widget/Widget.php, row 849
 "You can select a file ..." => "ファイルを選択できます ...", // ai 2026-06
 
-// src/Widget/Widget.php, row 823
+// src/Widget/Widget.php, row 852
 "Display URL" => "URLの表示", // ai 2026-06
 
-// src/Widget/Widget.php, row 823
+// src/Widget/Widget.php, row 852
 "0 - show, 1 - show if not empty, 2 - do not show" => "0 - 表示、1 - 空でなければ表示、2 - 表示しない", // ai 2026-06
 
-// src/Widget/Widget.php, row 826
+// src/Widget/Widget.php, row 855
 "Multiple" => "複数", // ai 2026-06
 
-// src/Widget/Widget.php, row 826
+// src/Widget/Widget.php, row 855
 "Allows to upload multiple files in the field" => "このフィールドに複数のファイルをアップロードできるようにします", // ai 2026-06
 
-// src/Widget/Widget.php, row 829
+// src/Widget/Widget.php, row 858
 "Actions to show" => "表示する操作", // ai 2026-06
 
-// src/Widget/Widget.php, row 829
+// src/Widget/Widget.php, row 858
 "Defines, which buttons to show in item selection:<br>A - Add<br>M - add Mutual<br>B - Backward<br> Use 'AMB' (default), 'MA', just 'A' or any other combination. The order of letters A,M,B is important." => "項目選択時に表示するボタンを指定します:<br>A - Add（追加）<br>M - add Mutual（相互に追加）<br>B - Backward（逆方向）<br> 'AMB'（省略値）、'MA'、'A'のみ、その他任意の組み合わせが使えます。A,M,Bの文字の順序は重要です。", // ai 2026-06
 
-// src/Widget/Widget.php, row 832
+// src/Widget/Widget.php, row 861
 "Admin design" => "管理画面デザイン", // ai 2026-06
 
-// src/Widget/Widget.php, row 832
+// src/Widget/Widget.php, row 861
 "If set (=1), the items in related selection window will be listed in the same design as in the Item manager - 'Design - Item Manager' settings will be used. Only the checkbox will be replaced by the buttons (see above). It is important that the checkbox must be defined as:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i> (which is default).<br> If unset (=0), just headline is shown (default)." => "設定（=1）の場合、関連項目選択ウィンドウの項目は項目管理と同じデザインで一覧表示されます - 「デザイン - 項目管理」の設定が使用されます。チェックボックスだけがボタンに置き換えられます（上記参照）。チェックボックスは次のように定義されている必要があります:<br> <i>&lt;input type=checkbox name=\"chb[x_#ITEM_ID#]\" value=\"1\"&gt;</i>（これが省略値です）。<br> 未設定（=0）の場合、見出しのみが表示されます（省略値）。", // ai 2026-06
 
-// src/Widget/Widget.php, row 835
+// src/Widget/Widget.php, row 864
 "Tag Prefix" => "タグのプレフィックス", // ai 2026-06
 
-// src/Widget/Widget.php, row 835
+// src/Widget/Widget.php, row 864
 "Deprecated: selects tag set ('AMB' / 'GYR'). Ask Mitra for more details." => "非推奨: タグセット（'AMB' / 'GYR'）を選択します。詳細はMitraに尋ねてください。", // ai 2026-06
 
-// src/Widget/Widget.php, row 838
+// src/Widget/Widget.php, row 867
 "Which action to show:<br>M - Move (change order)<br>D - Delete relation,<br>R - add Relation to existing item<br>N - insert New item in related slice and make it related<br>E - Edit related item<br>F - File upload to related slice (just for Related Item Manager Widget)<br><br>Use 'DR' (default), 'MDRNEF', just 'N' or any other combination. The order of letters M,D,R,N,E,F is not important." => "表示する操作:<br>M - Move（順序の変更）<br>D - Delete（関連の削除）<br>R - add Relation（既存項目への関連の追加）<br>N - insert New（関連スライスに新規項目を挿入して関連付け）<br>E - Edit（関連項目の編集）<br>F - File upload（関連スライスへのファイルアップロード、Related Item Manager Widgetのみ）<br><br>'DR'（省略値）、'MDRNEF'、'N'のみ、その他任意の組み合わせが使えます。M,D,R,N,E,Fの文字の順序は重要ではありません。", // ai 2026-06
 
-// src/Widget/Widget.php, row 841
+// src/Widget/Widget.php, row 870
 "Count of level boxes" => "レベルボックスの数", // ai 2026-06
 
-// src/Widget/Widget.php, row 844
+// src/Widget/Widget.php, row 873
 "Box width" => "ボックスの幅", // ai 2026-06
 
-// src/Widget/Widget.php, row 844
+// src/Widget/Widget.php, row 873
 "Width in characters" => "幅（文字数）", // ai 2026-06
 
-// src/Widget/Widget.php, row 847
+// src/Widget/Widget.php, row 876
 "Size of target" => "ターゲットのサイズ", // ai 2026-06
 
-// src/Widget/Widget.php, row 847
+// src/Widget/Widget.php, row 876
 "Lines in the target select box" => "ターゲットセレクトボックスの行数", // ai 2026-06
 
-// src/Widget/Widget.php, row 850
+// src/Widget/Widget.php, row 879
 "Horizontal" => "水平", // ai 2026-06
 
-// src/Widget/Widget.php, row 850
+// src/Widget/Widget.php, row 879
 "Show levels horizontally" => "レベルを水平に表示", // ai 2026-06
 
-// src/Widget/Widget.php, row 853
+// src/Widget/Widget.php, row 882
 "First selectable" => "最初の選択可能レベル", // ai 2026-06
 
-// src/Widget/Widget.php, row 853
+// src/Widget/Widget.php, row 882
 "First level which will have a Select button" => "「選択」ボタンが付く最初のレベル", // ai 2026-06
 
-// src/Widget/Widget.php, row 856
+// src/Widget/Widget.php, row 885
 "Level names" => "レベル名", // ai 2026-06
 
-// src/Widget/Widget.php, row 856
+// src/Widget/Widget.php, row 885
 "Names of level boxes, separated by tilde (~). Replace the default Level 0, Level 1, ..." => "レベルボックスの名前。チルダ（~）区切り。省略値の Level 0, Level 1, ... を置き換えます。", // ai 2026-06
 
-// src/Widget/Widget.php, row 856
+// src/Widget/Widget.php, row 885
 "Top level~Second level~Keyword" => "最上位レベル~第2レベル~キーワード", // ai 2026-06
 
-// src/Widget/Widget.php, row 859
+// src/Widget/Widget.php, row 888
 "Label for Change Password" => "「パスワード変更」のラベル", // ai 2026-06
 
-// src/Widget/Widget.php, row 859
+// src/Widget/Widget.php, row 888
 "Replaces the default 'Change Password'" => "省略値の 'Change Password' を置き換えます", // ai 2026-06
 
-// src/Widget/Widget.php, row 859
+// src/Widget/Widget.php, row 888
 "Change your password" => "パスワードを変更してください", // ai 2026-06
 
-// src/Widget/Widget.php, row 862
+// src/Widget/Widget.php, row 891
 "Label for Retype New Password" => "「新しいパスワードの再入力」のラベル", // ai 2026-06
 
-// src/Widget/Widget.php, row 862
+// src/Widget/Widget.php, row 891
 "Replaces the default \"Retype New Password\"" => "省略値の \"Retype New Password\" を置き換えます", // ai 2026-06
 
-// src/Widget/Widget.php, row 862
+// src/Widget/Widget.php, row 891
 "Retype the new password" => "新しいパスワードを再入力してください", // ai 2026-06
 
-// src/Widget/Widget.php, row 865
+// src/Widget/Widget.php, row 894
 "Label for Delete Password" => "「パスワード削除」のラベル", // ai 2026-06
 
-// src/Widget/Widget.php, row 865
+// src/Widget/Widget.php, row 894
 "Replaces the default \"Delete Password\"" => "省略値の \"Delete Password\" を置き換えます", // ai 2026-06
 
-// src/Widget/Widget.php, row 865
+// src/Widget/Widget.php, row 894
 "Delete password (set to empty)" => "パスワードを削除（空に設定）", // ai 2026-06
 
-// src/Widget/Widget.php, row 868
+// src/Widget/Widget.php, row 897
 "Help for Change Password" => "「パスワード変更」のヘルプ", // ai 2026-06
 
-// src/Widget/Widget.php, row 868
+// src/Widget/Widget.php, row 897
 "Help text under the Change Password box (default: no text)" => "「パスワード変更」欄の下のヘルプテキスト（省略値: テキストなし）", // ai 2026-06
 
-// src/Widget/Widget.php, row 868
+// src/Widget/Widget.php, row 897
 "To change password, enter the new password here and below" => "パスワードを変更するには、新しいパスワードをここと下の欄に入力してください", // ai 2026-06
 
-// src/Widget/Widget.php, row 871
+// src/Widget/Widget.php, row 900
 "Help for Retype New Password" => "「新しいパスワードの再入力」のヘルプ", // ai 2026-06
 
-// src/Widget/Widget.php, row 871
+// src/Widget/Widget.php, row 900
 "Help text under the Retype New Password box (default: no text)" => "「新しいパスワードの再入力」欄の下のヘルプテキスト（省略値: テキストなし）", // ai 2026-06
 
-// src/Widget/Widget.php, row 871
+// src/Widget/Widget.php, row 900
 "Retype the new password exactly the same as you entered into \"Change Password\"." => "「パスワード変更」に入力したものと正確に同じ新しいパスワードを再入力してください。", // ai 2026-06
 
-// src/Widget/Widget.php, row 874
+// src/Widget/Widget.php, row 903
 "The URL of your local web server from where you want to start browsing for a particular URL." => "特定のURLを探す際にブラウズを開始する、ローカルWebサーバーのURLです。", // ai 2026-06
 
-// src/Widget/Widget.php, row 874
+// src/Widget/Widget.php, row 903
 "http#://www.ecn.cz/articles/solar.shtml" => "",
 
-// src/Widget/Widget.php, row 877
+// src/Widget/Widget.php, row 906
 "Ajax inline" => "Ajaxインライン", // ai 2026-06
 
-// src/Widget/Widget.php, row 877
+// src/Widget/Widget.php, row 906
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "{ajax...} として呼び出された場合に表示を変更します - inline: 旧方式（ウィンドウ内ではなくインライン）", // ai 2026-06
 
-// src/Widget/Widget.php, row 880
+// src/Widget/Widget.php, row 909
 "Enable voice dictation" => "音声入力を有効化", // ai 2026-06
 
-// src/Widget/Widget.php, row 880
+// src/Widget/Widget.php, row 909
 "Show a microphone button next to the textarea. Uses the browser's Web Speech API when available, otherwise falls back to server-side OpenAI transcription (requires AA_APIKEY_OPENAI define)." => "テキストエリアの横にマイクボタンを表示します。利用可能な場合はブラウザのWeb Speech APIを使用し、それ以外はサーバー側のOpenAI文字起こしを使用します（AA_APIKEY_OPENAIのdefineが必要）。", // ai 2026-06
 
-// src/Widget/Widget.php, row 883
+// src/Widget/Widget.php, row 912
 "Max dictation seconds" => "音声入力の最大秒数", // ai 2026-06
 
-// src/Widget/Widget.php, row 883
+// src/Widget/Widget.php, row 912
 "Upper bound for a single dictation recording. Overrides the AA_SPEECH_MAX_SECONDS define. Enforced client-side (auto-stop) and server-side (reject oversized uploads)." => "1回の音声入力録音の上限です。AA_SPEECH_MAX_SECONDSのdefineより優先されます。クライアント側（自動停止）とサーバー側（大きすぎるアップロードの拒否）で適用されます。", // ai 2026-06
 
-// src/Widget/Widget.php, row 886
+// src/Widget/Widget.php, row 915
 "Dictation language" => "音声入力の言語", // ai 2026-06
 
-// src/Widget/Widget.php, row 886
+// src/Widget/Widget.php, row 915
 "BCP-47 locale code for voice recognition (e.g. cs-CZ, en-US, sk-SK, de-DE). Leave blank to auto-infer from the page's &lt;html lang&gt; attribute — which is usually the admin UI language, not the content language, so setting this explicitly is recommended." => "音声認識用のBCP-47ロケールコード（例: cs-CZ, en-US, sk-SK, de-DE）。空欄の場合はページの &lt;html lang&gt; 属性から自動推定されます — これは通常コンテンツの言語ではなく管理画面の言語なので、明示的に設定することを推奨します。", // ai 2026-06
 
-// src/Widget/Widget.php, row 889
+// src/Widget/Widget.php, row 918
 "Dictation engine" => "音声入力エンジン", // ai 2026-06
 
-// src/Widget/Widget.php, row 892
+// src/Widget/Widget.php, row 921
 "Auto — browser Web Speech when available, server OpenAI as fallback" => "自動 — 利用可能な場合はブラウザのWeb Speech、フォールバックとしてサーバーのOpenAI", // ai 2026-06
 
-// src/Widget/Widget.php, row 893
+// src/Widget/Widget.php, row 922
 "Browser Web Speech API only (free, no server key, Chromium-based browsers)" => "ブラウザのWeb Speech APIのみ（無料、サーバーキー不要、Chromium系ブラウザ）", // ai 2026-06
 
-// src/Widget/Widget.php, row 894
+// src/Widget/Widget.php, row 923
 "Server-side OpenAI gpt-4o-transcribe only (requires AA_APIKEY_OPENAI, better accuracy)" => "サーバー側のOpenAI gpt-4o-transcribeのみ（AA_APIKEY_OPENAIが必要、より高精度）", // ai 2026-06
 
-// src/Widget/Widget.php, row 896
+// src/Widget/Widget.php, row 925
 "Which speech-to-text engine to use." => "使用する音声認識エンジンを指定します。", // ai 2026-06
 
-// src/Widget/Widget.php, row 899
+// src/Widget/Widget.php, row 928
 "Store audio recording" => "音声録音を保存", // ai 2026-06
 
-// src/Widget/Widget.php, row 899
+// src/Widget/Widget.php, row 928
 "Save the uploaded audio to the slice's upload directory (img_upload/&lt;slice_id&gt;/) as audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt;. Server enforces this flag from the field config — clients cannot opt in by themselves." => "アップロードされた音声をスライスのアップロードディレクトリ（img_upload/&lt;slice_id&gt;/）に audio-&lt;item_id&gt;-&lt;field_id&gt;-&lt;YYYYMMDD-HHMMSS&gt;.&lt;ext&gt; として保存します。サーバーはこのフラグをフィールド設定から強制適用します — クライアント側で勝手に有効化することはできません。", // ai 2026-06
 
-// src/Widget/Widget.php, row 902
+// src/Widget/Widget.php, row 931
 "New item template ID" => "新規項目テンプレートID", // ai 2026-06
 
-// src/Widget/Widget.php, row 902
+// src/Widget/Widget.php, row 931
 "The ID of item in destination slice used as Template for new items (probably in Holding bin)" => "新規項目のテンプレートとして使用される、対象スライス内の項目のID（おそらく保留箱内）", // ai 2026-06
 
-// src/Widget/Widget.php, row 905
+// src/Widget/Widget.php, row 934
 "Code to show" => "表示するコード", // ai 2026-06
 
-// src/Widget/Widget.php, row 905
+// src/Widget/Widget.php, row 934
 "HTML code with possible AA expressions to show. If not filled, the {_#this} will be displayed" => "表示するHTMLコード（AA式を含められます）。未入力の場合は {_#this} が表示されます", // ai 2026-06
 
-// src/Widget/Widget.php, row 908
+// src/Widget/Widget.php, row 937
 "Disable new tags" => "新規タグを禁止", // ai 2026-06
 
-// src/Widget/Widget.php, row 908
+// src/Widget/Widget.php, row 937
 "Disallow creation of new tags - new items in related slice" => "新しいタグ（関連スライスの新規項目）の作成を禁止します", // ai 2026-06
 
-// src/Widget/Widget.php, row 911
+// src/Widget/Widget.php, row 940
 "Max values" => "最大値数", // ai 2026-06
 
-// src/Widget/Widget.php, row 911
+// src/Widget/Widget.php, row 940
 "Limit the number of values entered. If 0 or empty, the number is unlimited" => "入力できる値の数を制限します。0 または空の場合は無制限です", // ai 2026-06
 
-// src/Widget/Widget.php, row 914
+// src/Widget/Widget.php, row 943
 "Related field" => "関連フィールド", // ai 2026-06
 
-// src/Widget/Widget.php, row 914
+// src/Widget/Widget.php, row 943
 "Field to use for related items (relation........ is default)" => "関連項目に使用するフィールド（省略値は relation........）", // ai 2026-06
 
-// src/Widget/Widget.php, row 917
+// src/Widget/Widget.php, row 946
 "Row Code" => "行コード", // ai 2026-06
 
-// src/Widget/Widget.php, row 917
+// src/Widget/Widget.php, row 946
 "Alias in constant slice or HTML code to use for each related item (_#ROW_CODE is default)" => "各関連項目に使用する定数スライス内の別名またはHTMLコード（省略値は _#ROW_CODE）", // ai 2026-06
 
-// src/Widget/Widget.php, row 920
+// src/Widget/Widget.php, row 949
 "Row Edit Code" => "行編集コード", // ai 2026-06
 
-// src/Widget/Widget.php, row 920
+// src/Widget/Widget.php, row 949
 "Alias in constant slice or HTML code to use for editing related item (_#ROW_EDIT is default)" => "関連項目の編集に使用する定数スライス内の別名またはHTMLコード（省略値は _#ROW_EDIT）", // ai 2026-06
 
-// src/Widget/Widget.php, row 923
+// src/Widget/Widget.php, row 952
 "Buttons to Show" => "表示するボタン", // ai 2026-06
 
-// src/Widget/Widget.php, row 923
+// src/Widget/Widget.php, row 952
 "N - new<br>D - delete (with json you can specify also Dconfirm:&lt;question&gt;<br>S - setting (edit item in Toolbox)<br>E - edit - used with \"Row Edit Code\" parameter<br>B - back - used with \"Row Edit Code\" parameter<br>F - file upload to first file...........x or img_upload.....x or img_src........x field<br>- - no manage (just view)<br>Could be also defined as JSON asoc array - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}" => "N - 新規<br>D - 削除（json では Dconfirm:&lt;質問&gt; も指定できます）<br>S - 設定（Toolbox で項目を編集）<br>E - 編集 - 「行編集コード」パラメータと共に使用<br>B - 戻る - 「行編集コード」パラメータと共に使用<br>F - 最初の file...........x、img_upload.....x または img_src........x フィールドへのファイルアップロード<br>- - 管理なし（表示のみ）<br>JSON 連想配列としても定義できます - {\"N\":\"Add item\",\"D\":\"Delete item\",\"Dconfirm\":\"Are you sure to delete item?\"}", // ai 2026-06
 
-// src/Widget/Widget.php, row 926
+// src/Widget/Widget.php, row 955
 "Class prefix" => "クラス接頭辞", // ai 2026-06
 
-// src/Widget/Widget.php, row 926
+// src/Widget/Widget.php, row 955
 "Component identifier to select from" => "選択元のコンポーネント識別子", // ai 2026-06
 
-// src/Widget/Widget.php, row 929
+// src/Widget/Widget.php, row 958
 "Address field" => "住所フィールド", // ai 2026-06
 
-// src/Widget/Widget.php, row 929
+// src/Widget/Widget.php, row 958
 "field_id of another text field, from which user can grab address search" => "住所検索用の住所を取得できる別のテキストフィールドの field_id", // ai 2026-06
 
-// src/Widget/Widget.php, row 932
+// src/Widget/Widget.php, row 961
 "Allowed shapes" => "許可する図形", // ai 2026-06
 
-// src/Widget/Widget.php, row 932
+// src/Widget/Widget.php, row 961
 "M - Marker (point) - default<br>L - Line<br>P - Polygon<br>R - Rectangle" => "M - マーカー（点）- 省略値<br>L - 線<br>P - ポリゴン<br>R - 長方形", // ai 2026-06
 
-// src/Widget/Widget.php, row 935
+// src/Widget/Widget.php, row 964
 "Multiple shapes" => "複数の図形", // ai 2026-06
 
-// src/Widget/Widget.php, row 935
+// src/Widget/Widget.php, row 964
 "Allow multiple shapes at a time" => "同時に複数の図形を許可します", // ai 2026-06
 
-// src/Widget/Widget.php, row 938
+// src/Widget/Widget.php, row 967
 "Text option for Other" => "「その他」のテキスト選択肢", // ai 2026-06
 
-// src/Widget/Widget.php, row 938
+// src/Widget/Widget.php, row 967
 "Last option is considered as \"Other\" with the possibility to write text value" => "最後の選択肢を「その他」とみなし、テキスト値を入力できるようにします", // ai 2026-06
 
-// src/Widget/Widget.php, row 941
+// src/Widget/Widget.php, row 970
 "Searchable" => "検索可能", // ai 2026-06
 
-// src/Widget/Widget.php, row 941
+// src/Widget/Widget.php, row 970
 "Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "部分文字列で検索できる特別なセレクトボックスウィジェットを使用します。<br>自作スクリプトでは現在の実装に依存しないでください。", // ai 2026-06
 
-// src/Widget/Widget.php, row 944
+// src/Widget/Widget.php, row 973
 "Placeholder" => "プレースホルダー", // ai 2026-06
 
-// src/Widget/Widget.php, row 944
+// src/Widget/Widget.php, row 973
 "Placeholder for input" => "入力欄のプレースホルダー", // ai 2026-06
 
-// src/Widget/Widget.php, row 947
+// src/Widget/Widget.php, row 976
 "Width of one displayed item in pixels (300) or in % (50%)<br>Minimum is 150px, default is 250px.<br>For one item per row use 100%." => "表示される項目1つの幅。ピクセル（300）または %（50%）で指定<br>最小は 150px、省略値は 250px。<br>1行に1項目の場合は 100% を使用してください。", // ai 2026-06
 ];

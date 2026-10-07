@@ -34,6 +34,7 @@ use AA\IO\DB\DB_AA;
 use AA\IO\Grabber\ObjectForm;
 use AA\Managed;
 use AA\Managed_Object;
+use AA\Manageraction\AbstractManageraction;
 use AA\Manageraction\Manageractions;
 use AA\Manageraction\Object_Delete;
 use AA\Util\AbstractAliasgenerator;
@@ -474,6 +475,24 @@ class AA_Object extends AA_Storable implements AA_iEditable
         return $this;
     }
 
+    /** Why the object posted in a form may not be saved - a translated message; null = it may.
+     *  The form shows the message and stores nothing; saving from code is not checked.
+     */
+    public function formRefusal(): ?string
+    {
+        return null;
+    }
+
+    /** The values a link may fill into the form of a new object, picked from the raw request
+     *  $requested (any type). None by default: a value the user would just click through to save
+     *  must be one the class can vouch for.
+     *  @return array<string, string>  property id => value
+     */
+    public static function formPrefill(mixed $requested): array
+    {
+        return [];
+    }
+
     /** AA_iEditable method - save the object to the database
      *
      * @return string|false - id of saved data or false
@@ -658,6 +677,22 @@ class AA_Object extends AA_Storable implements AA_iEditable
     public static function loadProperties($ids, $property): array
     {
         return DB_AA::select(['object_id' => '+value'], 'SELECT object_id, value FROM `object_text`', [['object_id', $ids], ['property', $property]]);
+    }
+
+    /** The object_text rows of object $id as stored now - load() caches per request. One value per
+     *  property (the last row of a multi-value one).
+     *  @param bool     $lock        SELECT ... FOR UPDATE - inside the caller's transaction
+     *  @param string[] $properties  only these; [] = all
+     *  @return array<string, string> property => value
+     */
+    protected static function textRows(string $id, bool $lock = false, array $properties = []): array
+    {
+        $where = [['object_id', $id]];
+        if ($properties) {
+            $where[] = ['property', $properties];
+        }
+        $sql = 'SELECT property, value FROM `object_text` ' . DB_AA::makeWhere($where) . ($lock ? ' FOR UPDATE' : '');
+        return array_map('strval', DB_AA::select(['property' => 'value'], $sql));
     }
 
     /** the tables an object's properties live in - the order matters: load() merges them in it,
@@ -854,7 +889,7 @@ class AA_Object extends AA_Storable implements AA_iEditable
             $cond_flds   = [];
             $store       = '';
             foreach ($cond as $fid => $v) {
-                if (AA_Condition::CONDS_NOT_FIELD_NAMES[$fid]) {
+                if (isset(AA_Condition::CONDS_NOT_FIELD_NAMES[$fid])) {
                     if ($fid === 'all_fields') {
                         $cond_flds[] = $fid;
                         $store = 'object_text';
@@ -1063,6 +1098,14 @@ class AA_Object extends AA_Storable implements AA_iEditable
             ';
     }
 
+    /** The Delete of a row of the Manager - a class whose objects own records of their own deletes
+     *  them with it; null = the Manager does not delete the objects. The id stays DeleteObject, the
+     *  id of the row button. */
+    protected static function deleteAction(): ?AbstractManageraction
+    {
+        return new Object_Delete('DeleteObject');
+    }
+
     /** generate manager from object structure
      *
      * @static
@@ -1084,7 +1127,10 @@ class AA_Object extends AA_Storable implements AA_iEditable
         if (!is_object($actions)) {
             $actions   = new Manageractions();
         }
-        $actions->addAction(new Object_Delete('DeleteObject'));
+        $delete = static::deleteAction();
+        if ($delete) {
+            $actions->addAction($delete);
+        }
 
         $buttons  = [
             'Edit'   => a_href(get_url(Managed::MANGED_URL, [
@@ -1206,11 +1252,11 @@ class AA_Aliasgenerator_Object extends AbstractAliasgenerator
         $aliases = new AA_Aliases();
 
         // the order is important - must be in the same order as search fields (for getManagerConf)
-        $aliases->addAlias(new AA_Alias('_#AA_NAME_', 'f_1', 'aa_name', 'aa_name'));
+        $aliases->addAlias(new AA_Alias('_#AA_NAME_', 'f_h', 'aa_name', 'aa_name'));
         $aliases->addFromProperties($params['object_type']::getClassProperties());   // do not move up or down - must be in the same order as search fields (for getManagerConf)
         $aliases->addAlias(new AA_Alias('_#AA_ID___', 'f_1', 'aa_id', 'aa_id'));
         $aliases->addAlias(new AA_Alias('_#AA_OWNER', 'f_1', 'aa_owner', 'aa_owner'));
-        $aliases->addAlias(new AA_Alias('_#AA_OW_NM', 'f_t:{modulefield:{_#AA_OWNER}:name}', 'aa_owner', 'aa_owner'));
+        $aliases->addAlias(new AA_Alias('_#AA_OW_NM', 'f__:{safe:{modulefield:{_#AA_OWNER}:name}}', 'aa_owner', 'aa_owner'));
         return $aliases;
     }
 }

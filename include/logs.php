@@ -61,9 +61,16 @@ ALIAS_FU        level:slice_id:field_id:function  reason:file                   
 ALERT_DENY      collection:slice_id:user        item_id                        // Alertitem send refused, once a day (AA_Collection::logRefusal(), LogOnce)
 JWT_DENY        client IP                       reason                         // Bearer token refused on central/responder.php, once a day (AA_Auth, LogOnce)
 OBJ_DENY        module_id:object_id|-:user      form_class:stored_class:stored_owner  // object form or Manager action refused - not its object or table row (-: none stored at the posted id; form_class of a table: _T<table>), once a day (AA\Managed_Object, AA\Managed_Table, LogOnce)
+ANON_DENY       slice_id:field_id               u|i|r:script                   // aa[...] form input with no user logged in tried to change flags, posted_by, a password, 2FA secret or reader login of an existing item, or move it to another slice (field_id slice_id........) - the field left as stored; script: basename of the entry script, never the value, once a day (AA\IO\Grabber\Form, LogOnce)
 SESSID_USE      client IP:reader|password|session                              // Get_Sessionid answered to a login, once a day (AA\Optimize\CheckSessionidUse, LogOnce)
 APP_INST        module_id (a row per new module; none: AA_ID)  App:name:version:source_url  // aa-app package installed (AA\Central\Package\AaAfterCommit)
+APP_DENY        source (central_conf id | store)  reason:error            // an admin's login to another AA for an app install or transfer failed - SourceFailed reason, error number of the source (AA\Central\RemoteSource::login())
 APPSTORE        command:client (IPv4; IPv6 "/48 /64")  command               // a request of the app store's public account - the hourly limits count them, keep it logged (AA\Central\AppStore::admit())
+HTTP_BLOCK      purpose:client IP               host                           // an address of the local or private network refused by Client::publicOnly(), once a day (AA\Optimize\CheckBlockedRequests, LogOnce)
+SECURITY        protection                      on|off                         // a security protection switched on or off on admin/aa_security.php; the user column says who (AA\Security\Settings)
+EXPR_SIGN       refused|allowed:parameter:page                                 // a form sent an unsigned AA expression in ret_code/ok_url, once a day (AA\Security\SignedExpression, LogOnce)
+IMPORT_ERR      Import_{definition_id}          #id Class file:line            // an import failure outside a queue step; never the message - it may carry a secret (AA\Import\Definition::logError())
+IMPORT_BL       Import_{definition_id}          #id run_id user                // a baseline of an import started: versions recorded without importing (AA\Import\Service::start())
 AA_WARN
 */
 

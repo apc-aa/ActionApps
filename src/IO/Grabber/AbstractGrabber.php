@@ -28,6 +28,12 @@
 
 namespace AA\IO\Grabber;
 
+use AA\Http\ClientInterface;
+use AA\Http\ResponseTooLargeException;
+use AA\Http\TransportException;
+use AA\IO\SourceFailure;
+use AA\IO\SourceRefused;
+use AA\IO\SourceUnavailable;
 use AA\Util\NamedInterface;
 use AA\Util\ReportTrait;
 use AA_Components;
@@ -49,6 +55,9 @@ abstract class AbstractGrabber implements NamedInterface
 
     /** @var float|null wait in order we do not contact the same domain more often than $load_frequency miliseconds */
     protected ?float $load_frequency = null;
+
+    /** fetches instead of file_get_contents() when set; never serialized */
+    private ?ClientInterface $http = null;
 
     /** @todo - not yet implemented */
     public static function factoryFromFile($file): AbstractGrabber
@@ -98,8 +107,11 @@ abstract class AbstractGrabber implements NamedInterface
      *
      * @return string data
      */
-    protected function loadUrl(string $url, ?string $post_body = ''): string
+    protected function loadUrl(#[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $post_body = ''): string
     {
+        if ($this->hasHttp()) {
+            return $post_body ? $this->fetch('POST', $url, $post_body, ['Content-Type' => 'text/xml']) : $this->fetch('GET', $url);
+        }
         $context = $post_body ? stream_context_create(['http' => ['method'  => 'POST', 'header'  => 'Content-Type: text/xml', 'content' => $post_body ]]) : null;
         return file_get_contents($url, false, $context);
     }
@@ -114,7 +126,7 @@ abstract class AbstractGrabber implements NamedInterface
      * @return false|string
      * @throws Exception
      */
-    protected function loadData($url, $direct_input = '', $post_body = '', $source_encoding = ''): false|string
+    protected function loadData(#[\SensitiveParameter] $url, $direct_input = '', #[\SensitiveParameter] $post_body = '', $source_encoding = ''): false|string
     {
         if (strlen($direct_input)) {
             return $direct_input;
@@ -126,6 +138,9 @@ abstract class AbstractGrabber implements NamedInterface
         }
 
         if (false === $this->loadAuth()) {
+            if ($this->hasHttp()) {
+                throw new SourceRefused('AUTH', 'Authentication failed for ' . self::host($url));
+            }
             throw new Exception('Authentication error: ' . $url);
         }
 
@@ -133,7 +148,9 @@ abstract class AbstractGrabber implements NamedInterface
             throw new Exception('file not loaded: ' . $url);
         }
         $this->message(__CLASS__ . ' -> ' . __FUNCTION__);
-        $this->message("read " . strlen($data) . " Bytes of data <br><pre>" . safe(substr($data, 0, 1000)) . "...</pre>");
+        $this->message("read " . strlen($data) . " Bytes of data");
+        // the data may be personal or carry keys of the source; only for whoever debugs the grabber
+        $this->message("<pre>" . safe(substr($data, 0, 1000)) . "...</pre>", 2);
 
         if ($source_encoding && $source_encoding !== 'utf-8') {
             $data = ConvertCharset::singleton()->Convert($data, $source_encoding, 'utf-8');
@@ -147,6 +164,80 @@ abstract class AbstractGrabber implements NamedInterface
     public function getSources(): array
     {
         return [];
+    }
+
+    /**
+     * Fetch through this client instead of file_get_contents(). A failed fetch then throws
+     * SourceUnavailable (worth asking again) or SourceRefused, and so does an unreadable answer.
+     * Only for grabbers whose fetchesViaLoadData() is true - the others would ignore it.
+     */
+    public function setHttp(?ClientInterface $http): static
+    {
+        if (!is_null($http) && !$this->fetchesViaLoadData()) {
+            throw new \LogicException(static::class . ' does not fetch through loadData()');
+        }
+        $this->http = $http;
+        return $this;
+    }
+
+    /** true when the grabber gets its data through loadData(), so setHttp() has an effect */
+    public function fetchesViaLoadData(): bool
+    {
+        return false;
+    }
+
+    /**
+     * Feed grabbers wait in the queue serialized; a client holds connections and belongs to the
+     * run that set it. Everything else as before, private properties of subclasses included.
+     */
+    public function __sleep(): array
+    {
+        return array_keys(array_diff_key((array) $this, ["\0" . self::class . "\0http" => null]));
+    }
+
+    protected function hasHttp(): bool
+    {
+        return !is_null($this->http);
+    }
+
+    /**
+     * The body of a 2xx answer from the client of setHttp(). The message names only the host:
+     * the URL may carry a key, and SourceFailure messages are stored.
+     * @param  array<string, string> $headers
+     * @throws SourceFailure
+     * @throws \AA\Later\BatchBudgetSpent from the client of an import step whose time is up -
+     *                                    passed through: it ends the step, it is not the source's fault
+     */
+    protected function fetch(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): string
+    {
+        $http = $this->http ?? throw new \LogicException('No client set by setHttp()');
+        try {
+            $answer = $http->request($method, $url, $body, $headers);
+        } catch (TransportException $e) {
+            throw $e->malformedAddress()
+                ? new SourceRefused('SOURCE', 'Malformed address of ' . self::host($url), $e->kind())
+                : new SourceUnavailable('TRANSPORT', 'No answer from ' . self::host($url), $e->kind());
+        } catch (ResponseTooLargeException) {
+            throw new SourceRefused('SOURCE', 'The answer from ' . self::host($url) . ' is too large', SourceFailure::TOO_LARGE);
+        }
+        $failure = SourceFailure::forStatus($answer->status, 'HTTP ' . $answer->status . ' from ' . self::host($url));
+        if (!is_null($failure)) {
+            throw $failure;
+        }
+        return $answer->body;
+    }
+
+    /** whether both URLs name the same host, whatever the scheme and port; a URL without a host matches none */
+    protected static function sameHost(#[\SensitiveParameter] string $url, #[\SensitiveParameter] string $other): bool
+    {
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        return ($host !== '') && ($host === strtolower((string) parse_url($other, PHP_URL_HOST)));
+    }
+
+    protected static function host(#[\SensitiveParameter] string $url): string
+    {
+        $host = parse_url($url, PHP_URL_HOST);
+        return is_string($host) && ($host !== '') ? $host : 'the source';
     }
 
     /** htmlSetting function
@@ -291,12 +382,19 @@ abstract class AbstractGrabber implements NamedInterface
         return $this;
     }
 
+    /** milliseconds between requests to one domain; null = no wait. An import refuses a grabber
+     *  that waits: the wait (usleep) knows nothing of the step's budget. */
+    public function loadFrequency(): ?float
+    {
+        return $this->load_frequency;
+    }
+
     /** wait in order we do not contact the same domain more often than $protect miliseconds
      * @param string $domain
      */
     protected function waitForDomain($domain): void
     {
-        $time_diff = microtime(true) - (self::$last_request_4_domain[$domain] ?: 0);
+        $time_diff = microtime(true) - (self::$last_request_4_domain[$domain] ?? 0);
         if ($time_diff < ($this->load_frequency / 1000.0)) {   // protect is in miliseconds, $time_diff in seconds
             usleep((int) (1000000 * (($this->load_frequency / 1000.0) - $time_diff)));
         }

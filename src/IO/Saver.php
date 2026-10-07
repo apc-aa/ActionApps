@@ -30,13 +30,23 @@ namespace AA\IO;
 
 use AA;
 use AA\IO\Grabber\AbstractGrabber;
+use AA\Later\BatchBudget;
 use AA\Util\ReportTrait;
 use AA_Condition;
+use AA_Content;
 use AA_Item;
+use AA_Module;
 use AA_Set;
+use AA_Slice;
 use AA_Transformation;
+use AA_Transformation_CopyField;
+use AA_Transformation_Replace;
+use AA_Transformation_Setflag;
+use AA_Value;
 use Exception;
 use ItemContent;
+use UnexpectedValueException;
+use zids;
 
 /** Saver class - Used for filling items into AA
  * @param AbstractGrabber grabber          - provides source for item data
@@ -91,6 +101,69 @@ class Saver implements AA\Later\LaterInterface
     /** array of slice ids with rewritten items (after run()) - the long ones */
     private array $_updated_slices = [];
 
+    /** the last run() took items until the grabber had no more */
+    private bool $reached_end = false;
+
+    /** an import run: see setImportMode() */
+    private bool $import_mode = false;
+
+    /** @var array<string, string|list<string>> job parameters the validation sees as fields */
+    private array $context = [];
+
+    /** @var ?\Closure(string): string masks secrets in the data errors() and samples() show */
+    private ?\Closure $redact = null;
+
+    /** @var array{new: int, updated: int, skipped: int, errors: int} */
+    private array $counts = self::NO_COUNTS;
+
+    /** @var list<array{code: string, msg: string}> the first ERRORS_KEPT item errors */
+    private array $errors = [];
+
+    /** @var list<array<string, list<string>>> the first SAMPLES_KEPT items of an import dry run */
+    private array $samples = [];
+
+    /** @var array<string, true> hashes of the keys an import met since clear_ids() */
+    private array $keys_seen = [];
+
+    /** items of an import whose key an item before them had */
+    private int $collisions = 0;
+
+    /** items of an import skipped since clear_ids() as their key came out empty */
+    private int $empty_keys = 0;
+
+    /** @var list<array<string, string>> the first EMPTY_KEYS_KEPT of them: the source values of their key */
+    private array $empty_key_samples = [];
+
+    /** an item of an import since clear_ids() had its key */
+    private bool $keyed = false;
+
+    /** @var array<string, list<string>> key field => the source fields its transformation reads */
+    private array $key_reads = [];
+
+    private const NO_COUNTS = ['new' => 0, 'updated' => 0, 'skipped' => 0, 'errors' => 0];
+
+    /** errors() and samples() keep this many - the rest is only counted */
+    public const ERRORS_KEPT  = 20;
+    public const SAMPLES_KEPT = 5;
+    /** a sample shows at most this many fields, values per field, and characters per value */
+    public const SAMPLE_FIELDS = 50;
+    public const SAMPLE_VALUES = 10;
+    public const SAMPLE_CHARS  = 200;
+    /** a key value in an error message is cut to this many characters */
+    public const KEY_CHARS = 40;
+    /** emptyKeySamples() keeps this many, each with at most this many source fields */
+    public const EMPTY_KEYS_KEPT  = 20;
+    public const EMPTY_KEY_FIELDS = 5;
+
+    /** the messages of errors() - never the validation output or the text of an exception, which
+     *  may carry a key or a URL with one */
+    private const ERROR_MESSAGES = [
+        'EMPTY_KEY' => 'key field %s is empty',
+        'VALIDATE'  => 'the item failed the validation',
+        'COMPLETE'  => 'the item could not be completed for insert',
+        'STORE'     => 'the item was not stored (failed, or a skipped duplicate)',
+    ];
+
     // protected $_messages = [];
 
 
@@ -119,38 +192,171 @@ class Saver implements AA\Later\LaterInterface
         $this->_new_ids = [];
         $this->_updated_ids = [];
         $this->_updated_slices = [];
+        $this->counts  = self::NO_COUNTS;
+        $this->errors  = [];
+        $this->samples = [];
+        $this->keys_seen  = [];
+        $this->collisions = 0;
+        $this->empty_keys        = 0;
+        $this->empty_key_samples = [];
+        $this->keyed             = false;
+    }
+
+    /** An import run: an exception from prepare() is thrown, not swallowed - the import tells a
+     *  transport failure from the rest; a dry run prints no report, item errors go to errors() only
+     *  and samples() keeps examples; new and updated are told apart by the key lookup; a store does
+     *  not invalidate the page cache of the slice - the import does it once for its step. */
+    public function setImportMode(bool $on = true): static
+    {
+        $this->import_mode = $on;
+        return $this;
+    }
+
+    /** Job parameters (name => value or values) the validation expressions read as fields of the
+     *  item - {index:name}. They are not stored with it. A parameter named as a field of the target
+     *  slice is left out: the validation must check the value that is stored. */
+    public function setContext(array $params): static
+    {
+        $this->context = $params;
+        return $this;
+    }
+
+    /** Masks the secrets of the source (AA\Import\Context::redact()) in the values errors() and
+     *  samples() show - before they are cut, when the whole secret is still there to be found. */
+    public function setRedact(\Closure $redact): static
+    {
+        $this->redact = $redact;
+        return $this;
+    }
+
+    /** The messages carry key values - data of the source: escape them (safe(), textContent in JS),
+     *  never pass them through {…} or unalias.
+     *  @return list<array{code: string, msg: string}> the first $max item errors since clear_ids() */
+    public function errors(int $max = 20): array
+    {
+        return array_slice($this->errors, 0, max(0, $max));
+    }
+
+    /** Data of the source: escape it (safe(), textContent in JS), never pass it through {…} or unalias.
+     *  @return list<array<string, list<string>>> the first $max items an import dry run would store
+     *          (field => values), shortened; password fields left out */
+    public function samples(int $max = 5): array
+    {
+        return array_slice($this->samples, 0, max(0, $max));
+    }
+
+    /** skipped = the key lookup found an item the store mode does not update, or found none and it
+     *  does not insert
+     *  @return array{new: int, updated: int, skipped: int, errors: int} items since clear_ids(), dry runs included */
+    public function counts(): array
+    {
+        return $this->counts;
+    }
+
+    /** Items of an import since clear_ids() skipped as their key came out empty, counted in counts()
+     *  as skipped too - a code of a territory the slice does not know is no error of the data, and an
+     *  error would keep the stream from its version. Whether no item of a whole job had its key (a
+     *  broken mapping) only the caller can tell: a job may span several Savers - see keyed(). */
+    public function emptyKeys(): int
+    {
+        return $this->empty_keys;
+    }
+
+    /** Data of the source: escape it (safe(), textContent in JS), never pass it through {…} or unalias.
+     *  @return list<array<string, string>> for the first $max emptyKeys(): the source fields the key
+     *          is computed from => value, masked and shortened */
+    public function emptyKeySamples(int $max = 20): array
+    {
+        return array_slice($this->empty_key_samples, 0, max(0, $max));
+    }
+
+    /** an item of an import since clear_ids() had every key field filled */
+    public function keyed(): bool
+    {
+        return $this->keyed;
+    }
+
+    /** Items of an import since clear_ids() whose key fields hold the values of an item before
+     *  them, so both may end in one item. A lower bound: values compare exactly (the key lookup in the
+     *  slice may not), only items of this Saver are compared, and an earlier item counts even when it
+     *  was skipped or failed. An item with an empty key field has no key. */
+    public function collisions(): int
+    {
+        return $this->collisions;
     }
 
     /** run function
      * Now import all items to the slice
      *
-     * @param  bool  $fire
+     * The budget and the limit are checked before prepare() and before each item, so an item
+     * taken is always processed to the end; reachedEnd() tells whether the grabber ran out.
+     * The grabber's finish() follows every regular end, early stops included - not an exception
+     * from the loop, a failed prepare() or a budget spent before prepare(). finish() does not
+     * mean all was read: AARSS stores its newest-item mark there, so do not stop it early.
+     *
+     * @param  bool         $fire
+     * @param ?BatchBudget  $budget its time; no further item is taken once spent() - null = no limit
+     * @param  int          $limit  at most this many items taken from the grabber (stored or not); 0 = all
      *
      * @return int[] count of [changed,error] items
      */
-    public function run(bool $fire = true): array
+    public function run(bool $fire = true, ?BatchBudget $budget = null, int $limit = 0): array
     {
+        // the validation needs the slice of each item; the caller gets its own back
+        $slice_id = AA::$slice_id;
+        try {
+            return $this->runItems($fire, $budget, $limit);
+        } finally {
+            AA::$slice_id = $slice_id;
+        }
+    }
+
+    /** run() without restoring AA::$slice_id */
+    private function runItems(bool $fire, ?BatchBudget $budget, int $limit): array
+    {
+        $this->reached_end = false;
+        if ($budget?->spent()) {
+            return [0, 0];
+        }
         try {
             $this->grabber->prepare();    // maybe some initialization in grabber
         } catch (Exception $e) {
+            if ($this->import_mode) {
+                throw $e;
+            }
             $this->message("grabber->prepare() Error: " . $e->getMessage());
             return [0,1];
         }
+
+        // the old dry-run report; an import keeps errors() and samples() instead
+        $report = !$fire && !$this->import_mode;
 
         // returns grabber prepared item of just parsed source structure, which have to be converted to item by transformations?
         $directfill = $this->grabber->isDirectfill();
 
         $ok_count = 0;
         $err_count = 0;
+        $taken = 0;
 
-        while ($source_content4id = $this->grabber->getItem()) {
-            if (!$fire) {
+        while (!$this->outOfBudget($budget, $limit, $taken)) {
+            if (!($source_content4id = $this->grabber->getItem())) {
+                $this->reached_end = true;
+                break;
+            }
+            $taken++;
+            $key_found = null;
+            $key_desc  = '';
+            if ($report) {
                 $this->message("AA\IO\Saver->run(): grabbed item: ", 2);
                 $this->message($source_content4id);
             }
 
             // check, if grabber returns already prepared item
             $content4id = $directfill ? $source_content4id : new ItemContent();
+            if (!($content4id instanceof ItemContent)) {
+                // storing needs ItemContent - a direct-fill grabber must hand it over
+                throw new UnexpectedValueException('Grabber ' . $this->grabber::class . ' returned ' . $content4id::class . ' instead of ItemContent');
+            }
 
             // if we want some Transformations, do them here
             foreach ($this->transformations as $field_id => $transformation) {
@@ -168,7 +374,7 @@ class Saver implements AA\Later\LaterInterface
             $id_mode = ($this->id_mode === 'by_grabber') ? $this->grabber->getIdMode() : $this->id_mode;
             $store_mode = ($this->store_mode === 'by_grabber') ? $this->grabber->getStoreMode() : $this->store_mode;
 
-            if (!$fire) {
+            if ($report) {
                 $this->message("AA\IO\Saver->run(): id_mode: $id_mode, store_mode: $store_mode, transformed item: ", 2);
                 $this->message($content4id, 2);
             }
@@ -205,29 +411,41 @@ class Saver implements AA\Later\LaterInterface
                         // update and insert_if_new restrict previous just for updates or inserts
 
                         $set = new AA_Set([$this->slice_id]);
+                        $key_desc = $this->import_mode ? $this->describeKey($content4id, $flds) : '';
                         foreach ($flds as $fld) {
                             $condval = $content4id->getValue($fld);
                             if (trim($condval) === '') {
+                                if ($this->import_mode) {
+                                    $this->skipEmptyKey($source_content4id, $fld);
+                                    continue 3;
+                                }
                                 $err_count++;
-                                $this->message(['err' => "AA\IO\Saver->run(): key condition empty for $fld"]);
+                                $this->itemError('EMPTY_KEY', $taken, $key_desc, "AA\IO\Saver->run(): key condition empty for $fld", $fld);
                                 continue 3; // another item
                             }
 
                             $set->addCondition(new AA_Condition($fld, '==', $content4id->getValue($fld)));
                         }
-                        $zids = $set->query(null, 1);
-                        if (!$fire) {
+                        if ($this->import_mode) {
+                            $this->noteKey($content4id, $flds);
+                            $this->keyed = true;
+                        }
+                        $zids = $this->findByKey($set);
+                        $key_found = !$zids->isEmpty();
+                        if ($report) {
                             $this->message("AA\IO\Saver->run(): update/insert - condition:", 2);
                             $this->message($set, 2);
                             $this->message($zids, 2);
                         }
                         if (!$zids->isEmpty()) {
                             if (!str_contains($store_mode, 'update')) {
+                                $this->counts['skipped']++;
                                 continue 2; // another item
                             }
                             $new_item_id = $zids->longids(0);
                         } else {
                             if (!str_contains($store_mode, 'insert')) {
+                                $this->counts['skipped']++;
                                 continue 2; // another item
                             }
                             $new_item_id = new_id();
@@ -252,24 +470,27 @@ class Saver implements AA\Later\LaterInterface
 
             $item = ($this->compute || $this->validate) ? new AA_Item($content4id) : null;
 
-            if ($this->validate && ($err_arr = $this->test_validate($item))) {
+            if ($this->validate && ($err_arr = $this->test_validate($this->context ? $this->withContext($content4id) : $item))) {
                 $err_count++;
-                $this->message(['err' => "AA\IO\Saver->run(): validate failed: " . implode("\n", $err_arr)]);
+                $this->itemError('VALIDATE', $taken, $key_desc, "AA\IO\Saver->run(): validate failed: " . implode("\n", $err_arr));
                 continue;
             }
 
             if ($store_mode === 'overwrite' || str_starts_with($store_mode, 'insert')) {
                 if (!$content4id->complete4Insert($this->error_mode)) {
                     $err_count++;
-                    $this->message(['err' => "AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg()]);
+                    $this->itemError('COMPLETE', $taken, $key_desc, "AA\IO\Saver->run(): complete4Insert failed: " . ItemContent::lastErrMsg());
                     continue;
                 }
             } elseif (!$content4id->validate4Update()) {
                 // @todo do validation for updates
                 $err_count++;
-                $this->message(['err' => "AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg()]);
+                $this->itemError('COMPLETE', $taken, $key_desc, "AA\IO\Saver->run(): validate4Update failed: " . ItemContent::lastErrMsg());
                 continue;
             }
+
+            // outside an import, as ever: new only for 'insert'
+            $is_new = ($this->import_mode && ($key_found !== null)) ? !$key_found : ($store_mode === 'insert');
 
             if ($this->compute) {
                 is_null($this->compute_key)
@@ -282,17 +503,18 @@ class Saver implements AA\Later\LaterInterface
             if ($fire) {
                 // id_mode - overwrite or insert_if_new
                 // (the $new_item_id should not be changed by storeItem)
-                if (!($new_item_id = $content4id->storeItem($store_mode))) {     // invalidatecache, feed
+                if (!($new_item_id = $this->store($content4id, $store_mode, $this->import_mode ? [false] : []))) {     // invalidatecache, feed
                     // AA\IO\Saver->run(): storeItem failed or skiped duplicate:
                     $err_count++;
-                    $this->message(['err' => 'AA\IO\Saver->run(): storeItem failed or skipped duplicate: ' . ItemContent::lastErrMsg()]);
+                    $this->itemError('STORE', $taken, $key_desc, 'AA\IO\Saver->run(): storeItem failed or skipped duplicate: ' . ItemContent::lastErrMsg());
                 } else {
                     // @todo better check of new ids
-                    if ($store_mode === 'insert') {
+                    if ($is_new) {
                         $this->_new_ids[] = $new_item_id;
                     } else {
                         $this->_updated_ids[] = $new_item_id;
                     }
+                    $this->counts[$is_new ? 'new' : 'updated']++;
                     $ok_count++;
 
                     // Update relation table to show where came from
@@ -302,19 +524,212 @@ class Saver implements AA\Later\LaterInterface
                 }
             } else {
                 $ok_count++;
-                $this->message("AA\IO\Saver->run(): would be stored ID / content: " . ItemContent::lastErrMsg(), 2);
-                $this->message($new_item_id, 2);
-                $this->message($content4id);
+                $this->counts[$is_new ? 'new' : 'updated']++;
+                if ($report) {
+                    $this->message("AA\IO\Saver->run(): would be stored ID / content: " . ItemContent::lastErrMsg(), 2);
+                    $this->message($new_item_id, 2);
+                    $this->message($content4id);
+                } elseif (count($this->samples) < self::SAMPLES_KEPT) {
+                    $this->samples[] = $this->sample($content4id);
+                }
             }
         } // while grabber->getItem()
         $this->grabber->finish();    // maybe some finalization in grabber
 
-        $this->message("AA\IO\Saver->run(): finish - $ok_count OK, $err_count Err." . ItemContent::lastErrMsg());
+        // lastErrMsg() may hold values of the source
+        $this->message("AA\IO\Saver->run(): finish - $ok_count OK, $err_count Err." . ($this->import_mode ? '' : ItemContent::lastErrMsg()));
 
-        if (!$fire) {
+        if ($report) {
             print($this->report());
         }
         return [$ok_count, $err_count];
+    }
+
+    /** true when the last run() took items until the grabber had none left. False after a stop at
+     *  the budget or limit - even one hit at the last item, the grabber is not asked again - and
+     *  after a failed prepare(). */
+    public function reachedEnd(): bool
+    {
+        return $this->reached_end;
+    }
+
+    /** Records an item error: structured for errors(), outside an import as the report message.
+     *  @param int    $item     the item's number in the run
+     *  @param string $key_desc the key values of the item (describeKey())
+     *  @param string ...$args  for the code's message - names from the definition */
+    private function itemError(string $code, int $item, string $key_desc, string $report_message, string ...$args): void
+    {
+        $this->counts['errors']++;
+        if (count($this->errors) < self::ERRORS_KEPT) {
+            $msg            = vsprintf(self::ERROR_MESSAGES[$code], array_map(fn(string $a): string => $this->clip($a, self::KEY_CHARS), $args));
+            $this->errors[] = ['code' => $code, 'msg' => "Item $item" . ($key_desc === '' ? '' : " ($key_desc)") . ": $msg"];
+        }
+        if (!$this->import_mode) {
+            $this->message(['err' => $report_message]);
+        }
+    }
+
+    /** an item of an import skipped for its empty key, with what the key came from */
+    private function skipEmptyKey(AA_Content $source, string $field): void
+    {
+        $this->counts['skipped']++;
+        $this->empty_keys++;
+        if (count($this->empty_key_samples) < self::EMPTY_KEYS_KEPT) {
+            $this->empty_key_samples[] = $this->keySource($source, $field);
+        }
+    }
+
+    /**
+     * The fields of the source item the transformation of key field $field reads, those the job
+     * does not give: which of them gave the empty key cannot be told without evaluating the
+     * expression piece by piece. Names that look like a secret are left out - the expression may
+     * read a token to build the key.
+     * @return array<string, string> field => its first value, masked and shortened
+     */
+    private function keySource(AA_Content $source, string $field): array
+    {
+        $this->key_reads[$field] ??= $this->keyReads($field);
+        $content = $source->getContent();
+        $slice   = is_string($this->slice_id) ? AA_Slice::getModule($this->slice_id) : null;
+        $sample  = [];
+        foreach ($this->key_reads[$field] as $name) {
+            if (!array_key_exists($name, $content) || isset($this->context[$name]) || $this->hidden($name, $slice)
+                || preg_match('/pass|pwd|heslo|token|secret|auth|cred|cookie|session|jwt|bearer|(api|private|access).?key/i', $name)) {
+                continue;
+            }
+            // a blank key field beside the fields the expression names would only repeat that the key is empty
+            if (($name === $field) && (count($this->key_reads[$field]) > 1) && (trim((string) $source->getValue($name)) === '')) {
+                continue;
+            }
+            $sample[$this->clip($name, 32)] = $this->clip((string) $source->getValue($name), self::SAMPLE_CHARS);
+            if (count($sample) >= self::EMPTY_KEY_FIELDS) {
+                break;
+            }
+        }
+        return $sample;
+    }
+
+    /**
+     * The source fields the transformation of key field $field names the way AA reads a field of
+     * the item: field2copy of copyfield, {index:name} or {index:name:…} and {name} in its other
+     * texts (a name may hold spaces); the key field itself always, except for copyfield.
+     * @return list<string>
+     */
+    private function keyReads(string $field): array
+    {
+        $t13n = $this->transformations[$field] ?? null;
+        if ($t13n === null) {
+            return [$field];
+        }
+        if ($t13n instanceof AA_Transformation_CopyField) {
+            return [(string) $t13n->field2copy];
+        }
+        if (($t13n instanceof AA_Transformation_Replace) || ($t13n instanceof AA_Transformation_Setflag)) {
+            // they change the value the field already has
+            return [$field];
+        }
+        // first the field itself: translate, regexpreplace or addvalue start from the value it has
+        $names = [$field];
+        foreach (get_object_vars($t13n) as $text) {
+            if (is_string($text) && preg_match_all('/\{(?:index:([^:{}]+)[:}]|([^:{}]+)\})/u', $text, $m)) {
+                $names = [...$names, ...array_filter([...$m[1], ...$m[2]], static fn(string $name): bool => $name !== '')];
+            }
+        }
+        return array_values(array_unique($names));
+    }
+
+    /** counts a key met before; a hash, so a long job keeps no source data */
+    private function noteKey(ItemContent $content, array $fields): void
+    {
+        $hash = sha1(serialize(array_map(static fn($fld): string => (string) $content->getValue($fld), $fields)), true);
+        $this->collisions += isset($this->keys_seen[$hash]) ? 1 : 0;
+        $this->keys_seen[$hash] = true;
+    }
+
+    /** "field=value, ..." of the key fields, each value shortened */
+    private function describeKey(ItemContent $content, array $fields): string
+    {
+        return implode(', ', array_map(
+            fn($fld): string => $this->clip((string) $fld, self::KEY_CHARS) . '=' . $this->clip((string) $content->getValue($fld), self::KEY_CHARS),
+            $fields,
+        ));
+    }
+
+    /** data of the source as shorten() gives it, its secrets masked first */
+    private function clip(string $text, int $chars): string
+    {
+        return self::shorten($this->redact ? ($this->redact)($text) : $text, $chars);
+    }
+
+    /** valid UTF-8 without control characters, at most $chars characters */
+    private static function shorten(string $text, int $chars): string
+    {
+        return mb_substr((string) preg_replace('/\p{Cc}/u', ' ', mb_scrub($text, 'UTF-8')), 0, $chars);
+    }
+
+    /** the item the validation sees: a copy with the job parameters, so they are never stored */
+    private function withContext(ItemContent $content): AA_Item
+    {
+        $slice = AA_Slice::getModule($content->getSliceID());
+        $copy  = clone $content;
+        foreach ($this->context as $name => $value) {
+            if ($slice?->getField((string) $name) === null) {
+                // the flag given, AA_Value does not look into the value (an empty array has no [0])
+                $copy->setAaValue($name, new AA_Value($value, 0));
+            }
+        }
+        return new AA_Item($copy);
+    }
+
+    /** @return array<string, list<string>> the item's fields, shortened for a preview */
+    private function sample(ItemContent $content): array
+    {
+        $slice  = AA_Slice::getModule($content->getSliceID());
+        $sample = [];
+        foreach ($content->getContent() as $field_id => $values) {
+            $field_id = (string) $field_id;
+            if (!is_array($values) || $this->hidden($field_id, $slice)) {
+                continue;
+            }
+            $sample[self::shorten($field_id, 32)] = array_map(
+                fn($v): string => $this->clip((string) (is_array($v) ? ($v['value'] ?? '') : $v), self::SAMPLE_CHARS),
+                array_slice(array_values($values), 0, self::SAMPLE_VALUES),
+            );
+            if (count($sample) >= self::SAMPLE_FIELDS) {
+                break;
+            }
+        }
+        return $sample;
+    }
+
+    /** Packed ids are binary (their unpacked twins are there); protected fields are no preview - the
+     *  list covers a password the slice has no field for. */
+    private function hidden(string $field_id, ?AA_Module $slice): bool
+    {
+        return in_array($field_id, ['id..............', 'slice_id........', 'password........'], true)
+            || (($slice instanceof AA_Slice) && ($slice->getField($field_id)?->isProtected() ?? false));
+    }
+
+    private function outOfBudget(?BatchBudget $budget, int $limit, int $taken): bool
+    {
+        return (($limit > 0) && ($taken >= $limit)) || ($budget?->spent() ?? false);
+    }
+
+    /** The item the key fields of an incoming item point to - at most one
+     *  @param AA_Set $set the destination slice with one == condition per key field
+     */
+    protected function findByKey(AA_Set $set): zids
+    {
+        return $set->query(null, 1);
+    }
+
+    /** Stores the item
+     *  @param array $flags passed to ItemContent::storeItem()
+     *  @return string|false the id of the stored item, false when nothing was stored
+     */
+    protected function store(ItemContent $content, string $mode, array $flags = []): string|false
+    {
+        return $content->storeItem($mode, $flags);
     }
 
     /** Checks if the item is valid based on custom validate string
@@ -329,7 +744,8 @@ class Saver implements AA\Later\LaterInterface
             $array        = preg_split("/\R/", $validate_str);
             foreach ($array as $row) {
                 $row = trim($row);
-                if ($row && $row[0] !== '1') {
+                // not a truthy test: a bare "0" would pass, and {ifeq:…:1:0} with it
+                if ($row !== '' && $row[0] !== '1') {
                     $err_array[] = $row;
                 }
             }
@@ -396,7 +812,8 @@ class Saver implements AA\Later\LaterInterface
 
     /**
      * @param string $validate
-     * {aa-expression} - expression to validate the inserted item - if set, must be equal to '1' for storing the item
+     * {aa-expression} - expression to validate the inserted item - every non-empty row of the output must
+     * begin with '1' for storing the item; anything else, "0" included, is an error of the item
      */
     public function addValidate(string $validate): static
     {

@@ -79,6 +79,7 @@ function GetCommonMenu(AA_Profile $profile): array {
         "aafinder"    => ["label"=>_m("AA finder"),       "cond"=>IsSuperadmin(),        "href"=>"admin/aafinder.php"],
         'optimize'    => ["label"=>_m("Optimize"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_optimize.php"],
         'statecheck'  => ["label"=>_m("State Check"),     "cond"=>IsSuperadmin(),        "href"=>"admin/aa_statecheck.php"],
+        'security'    => ["label"=>_m("Security"),        "cond"=>IsSuperadmin(),        "href"=>"admin/aa_security.php"],
         "statistics"  => ["label"=>_m("Statistics"),      "cond"=>IsSuperadmin(),        'ico'=>'ico-statistics.png', "href"=>"admin/aa_statistics.php"],
         "history"     => ["label"=>_m("History"),         "cond"=>IfSlPerm(PS_HISTORY),  'ico'=>'ico-history.png',    "href"=>"admin/se_history.php"],
         "xmgettext"   => ["label"=>_m("Mgettext"),        "cond"=>IsSuperadmin(),        "exact_href"=>"../misc/mgettext/index.php"],
@@ -88,6 +89,7 @@ function GetCommonMenu(AA_Profile $profile): array {
         "rsstest"     => ["label"=>_m("RSS test"),        "cond"=>IsSuperadmin(),        "href"=>"admin/rsstest.php"],
         "aarsstest"   => ["label"=>_m("AA RSS test"),     "cond"=>IsSuperadmin(),        "href"=>"admin/aarsstest.php"],
         "testrss"     => ["label"=>_m("Run feeding"),     "cond"=>IsSuperadmin(),        "href"=>"admin/xmlclient.php?debugfeed=4"],
+        "dataimports" => ["label"=>_m("Imports"),         "cond"=>IsSuperadmin(),        "href"=>"admin/aa_dataimports.php"],
 
         "header5"     =>_m("Slice structure"),
         "sliceexp"    => ["label"=>_m("Export"),          "cond"=>IfSlPerm(PS_ADD),      "href"=>"admin/sliceexp.php"],
@@ -125,7 +127,7 @@ function GetCommonMenu(AA_Profile $profile): array {
             "installapp"  => ["cond"=>\AA\Central\Package\Importer::hasInstallPermission((string) AuthGetUid()), "href"=>"central/installapp.php",   "label"=>_m("Install an app...")],
             "appstore"    => ["cond"=>IsSuperadmin(),              "href"=>"central/appstore.php",                                      "label"=>_m("App store...")],
             "synchronize" => ["cond"=>IsSuperadmin(),              "href"=>"central/synchronize.php",                                    "label"=>_m("Synchronize...")],
-            "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php?DeleteTrash=1",                           "label"=>_m("Empty trash"), "js"=>"EmptyTrashQuestion('{href}','"._m("Are you sure you want to empty trash?")."')"],
+            "item6"       => ["cond"=>IsSuperadmin(),              "href"=>"central/index.php",                                          "label"=>_m("Empty trash"), "js"=>\AA\Manager::emptyTrashJs('{href}')],
             "importcsv"   => ["cond"=>IsSuperadmin(),              "href"=>"central/import_csv.php",                                     "label"=>_m("Import conf from CSV...")],
         ]
     ];
@@ -324,15 +326,26 @@ function GetModuleSelection(): string {
         // Switching to a slice of the *same module type* keeps the user on the page they are
         // on: a bare "?module_id=$id" href resolves against the current document URL, so e.g.
         // se_fields.php stays se_fields.php for the new slice (the long-standing convenience).
-        // The exception is the per-item pages (item editor / info / history / statistics): they
-        // need an item id on top of module_id, so staying would land on a foreign, item-less
-        // page (the "strange page" bug). For those - and for a switch to a different module type
-        // - we open the target module's manager (index) instead.
-        $cur_url      = AA::$module_id ? AA_Module::getModuleInfo('url', AA::$module_id) : '';
-        // SCRIPT_NAME only feeds the closed in_array() whitelist below - a spoofed value just
-        // falls through to the (safe) full-index branch, so no sanitisation beyond basename is needed.
-        $cur_script   = basename(parse_url($_SERVER['SCRIPT_NAME'] ?? '', PHP_URL_PATH) ?: '');
-        $on_item_page = in_array($cur_script, ['itemedit.php', 'iteminfo.php', 'itemhistory.php', 'itemstats.php'], true);
+        // The href drops every other parameter, so a detail page that needs its own id (item,
+        // field, view, constant group) would open empty or fail ("No field found"); those
+        // open their listing in the new slice instead ('' = the module's manager), and so does
+        // a switch to a different module type.
+        $cur_url    = AA::$module_id ? AA_Module::getModuleInfo('url', AA::$module_id) : '';
+        // SCRIPT_NAME only feeds the closed lookup below - a spoofed value just keeps the
+        // "?module_id=" href, so no sanitisation beyond basename is needed.
+        $cur_script = basename(parse_url($_SERVER['SCRIPT_NAME'] ?? '', PHP_URL_PATH) ?: '');
+        $listing    = [
+            'itemedit.php'           => '',
+            'iteminfo.php'           => '',
+            'itemhistory.php'        => '',
+            'itemstats.php'          => '',
+            'discedit.php'           => '',
+            'discedit2.php'          => '',
+            'se_inputform.php'       => 'se_fields.php',
+            'se_constant.php'        => 'se_fields.php',
+            'se_constant_import.php' => 'se_fields.php',
+            'se_view.php'            => 'se_views.php',
+        ][$cur_script] ?? null;
 
         // Track whether the HTML 'selected' attribute has already been emitted: a slice
         // that lives under multiple sites would otherwise get 'selected' on every row,
@@ -341,13 +354,13 @@ function GetModuleSelection(): string {
         $emitOption = static function (string $id, string $name, bool $deleted,
                                        string $site_id = '', int $indent = 0,
                                        string $class = '', string $aria_desc = '',
-                                       bool $disabled = false, string $icon = '') use (&$selected_emitted, $cur_url, $on_item_page): string {
+                                       bool $disabled = false, string $icon = '') use (&$selected_emitted, $cur_url, $listing): string {
             $mod_dir = AA_Module::getModuleInfo('url', $id);
-            // Same module type as the current page (and a page that lives on module_id alone):
-            // keep the user where they are. Otherwise open the target module's manager.
-            $val = ($cur_url !== '' && $mod_dir === $cur_url && !$on_item_page)
-                 ? "?module_id=$id"
-                 : AA_INSTAL_PATH.$mod_dir . "?module_id=$id";
+            if ($cur_url === '' || $mod_dir !== $cur_url || $listing === '') {
+                $val = AA_INSTAL_PATH . $mod_dir . "?module_id=$id";
+            } else {
+                $val = ($listing ?? '') . "?module_id=$id";
+            }
             $label   = safe($name);
             if ($deleted) {
                 $label = "&times;&times;&times; $label &times;&times;&times;";

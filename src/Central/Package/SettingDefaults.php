@@ -6,6 +6,7 @@ namespace AA\Central\Package;
 
 use AA\Central\Package\Model\Module;
 use AA_Generator;
+use AA_Inserter_Trm;
 use AA_Validate;
 use Throwable;
 
@@ -24,8 +25,8 @@ final class SettingDefaults
 
     /** AA_Generator classes of input_default (their shortcut) that depend on no user and no request */
     private const SAFE = ['txt', 'qte', 'now', 'never', 'dte', 'mul'];
-    /** input_insert_func that store the value as it is; boo only turns it into 0 or 1 */
-    private const PLAIN_INSERT = ['', 'qte', 'dte', 'num', 'boo'];
+    /** input_insert_func that store the value as it is; boo only turns it into 0 or 1, trm trims it */
+    private const PLAIN_INSERT = ['', 'qte', 'dte', 'num', 'boo', 'trm'];
     /** input_validate types (AA_Validate::factoryCached()) that judge the value alone - unique, login, password
      *  need the item, a user or the DB; packedid, markedid depend on the widget */
     private const PLAIN_VALIDATE = ['text', 'string', 'field', 'all', 'email', 'e-mail', 'url', 'number', 'num', 'int', 'integer', 'short_id', 'float', 'decimal',
@@ -83,16 +84,20 @@ final class SettingDefaults
         return strtolower(explode(':', self::column($row, 'input_insert_func', $schema), 2)[0]);
     }
 
-    /** the insert function (insert()) stores a value as it is, or only as 0 / 1 */
+    /** the insert function (insert()) stores a value as it is, only as 0 / 1, or trimmed */
     public static function plainInsert(string $insert): bool
     {
         return in_array($insert, self::PLAIN_INSERT, true);
     }
 
-    /** a value as a plain insert function stores it: boo as AA_Inserter_Boo, 0 or 1 */
+    /** a value as a plain insert function stores it: boo as AA_Inserter_Boo, 0 or 1; trm as AA_Inserter_Trm */
     public static function stored(string $insert, string $value): string
     {
-        return ($insert === 'boo') ? ($value ? '1' : '0') : $value;
+        return match ($insert) {
+            'boo'   => $value ? '1' : '0',
+            'trm'   => AA_Inserter_Trm::trimValue($value),
+            default => $value,
+        };
     }
 
     /** $value as the field's input_validate leaves it (as in the item form, it may normalize it); null = it

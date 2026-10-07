@@ -8,13 +8,18 @@ use InvalidArgumentException;
 use JsonException;
 
 /** What the admin chose in the preview of an install besides "Into": new names of the modules, slices
- *  left out, the owner of the new modules (one of this AA's or a new one) and values of the settings
- *  fields of the slices. The run keeps them (InstallRun), so the write plans exactly what the preview showed.
+ *  left out, the owner of the new modules (one of this AA's or a new one), values of the settings
+ *  fields of the slices, in a transfer the conditions of the items each slice takes, and the slices of
+ *  this AA the links to modules outside the app go to. The run keeps them (InstallRun), so the write
+ *  plans exactly what the preview showed.
  *  All strings are request text - the planner checks them as package text (charset, length, lint). */
 final readonly class ImportChoices
 {
     /** a module id of the choices: a long id, lower case */
     private const ID_RE = '/^[0-9a-f]{32}\z/';
+
+    /** a filter sent as no text: kept as one ItemFilter refuses - a filter left out would take all the items */
+    public const NOT_TEXT = "\u{FFFD}";
 
     /**
      * @param array<string, string>                $names    source module id => its new name (trimmed, not empty)
@@ -23,6 +28,10 @@ final readonly class ImportChoices
      * @param array{name: string, email: string}|null $newOwner an owner the write creates instead of $owner
      * @param array<string, array<string, string>> $settings source slice id => settings field id => value typed
      *                                                       ('' fields left out: the value of the app stays)
+     * @param array<string, string>                $filters  source slice id => ItemFilter text, trimmed, not empty
+     * @param array<string, string>                $links    module outside the app => slice of this AA its links go
+     *                                                       to; '' = they keep its id (a choice too: no suggestion
+     *                                                       of an earlier run replaces it)
      */
     public function __construct(
         public array $names = [],
@@ -30,8 +39,10 @@ final readonly class ImportChoices
         public string $owner = '',
         public ?array $newOwner = null,
         public array $settings = [],
+        public array $filters = [],
+        public array $links = [],
     ) {
-        foreach ([...array_keys($names), ...$skip, ...array_keys($settings)] as $id) {
+        foreach ([...array_keys($names), ...$skip, ...array_keys($settings), ...array_keys($filters), ...array_keys($links), ...array_filter($links)] as $id) {
             if (!preg_match(self::ID_RE, (string) $id)) {
                 throw new InvalidArgumentException('A module of the choices is a long id, lower case');
             }
@@ -49,8 +60,10 @@ final readonly class ImportChoices
     }
 
     /** The choices a preview form sends: name[<module>], skip[<slice>], owner, new_owner, new_owner_email,
-     *  setting[<slice>][<field>]; what is of no shape left out, text that is no UTF-8 too (no browser sends
-     *  it) - the planner reports what is wrong. The form sends every name back: choose() renames only by another.
+     *  setting[<slice>][<field>], filter[<slice>], link[<module outside>]; what is of no shape left out,
+     *  text that is no UTF-8 too (no browser sends it) - the planner reports what is wrong. A filter is
+     *  never left out: one of no text is NOT_TEXT, the filter of a slice left out goes with it. The form
+     *  sends every name back: choose() renames only by another.
      *  @param array<mixed, mixed> $post */
     public static function fromPost(array $post): self
     {
@@ -76,13 +89,26 @@ final readonly class ImportChoices
                 }
             }
         }
+        $filters = [];
+        foreach ((array) ($post['filter'] ?? []) as $id => $value) {
+            $value = $text($value) ? trim($value) : self::NOT_TEXT;
+            if ($long($id) && ($value !== '') && !in_array(strtolower((string) $id), $skip, true)) {
+                $filters[strtolower((string) $id)] = $value;
+            }
+        }
+        $links = [];
+        foreach ((array) ($post['link'] ?? []) as $id => $to) {
+            if ($long($id) && (($to === '') || $long($to))) {
+                $links[strtolower((string) $id)] = strtolower($to);
+            }
+        }
         $owner     = is_string($post['owner'] ?? null) && $long($post['owner']) ? strtolower($post['owner']) : '';
         $new_name  = is_string($post['new_owner'] ?? null) ? trim($post['new_owner']) : '';
         $new_email = is_string($post['new_owner_email'] ?? null) ? trim($post['new_owner_email']) : '';
         // the planner says what is too long or no text - a new owner asked for is never the list's instead
         $new_owner = ($new_name === '') ? null : ['name' => $text($new_name) ? $new_name : '', 'email' => $text($new_email) ? $new_email : ''];
         sort($skip);
-        return new self($names, array_values(array_unique($skip)), $new_owner ? '' : $owner, $new_owner, $settings);
+        return new self($names, array_values(array_unique($skip)), $new_owner ? '' : $owner, $new_owner, $settings, $filters, $links);
     }
 
     /** the choices without the values typed for some settings fields @param array<string, list<string>> $fields source slice id => field ids */
@@ -94,21 +120,31 @@ final readonly class ImportChoices
                 $settings[$slice] = array_diff_key($settings[$slice], array_flip($ids));
             }
         }
-        return new self($this->names, $this->skip, $this->owner, $this->newOwner, array_filter($settings));
+        return new self($this->names, $this->skip, $this->owner, $this->newOwner, array_filter($settings), $this->filters, $this->links);
+    }
+
+    /** the choices with links for the modules they do not decide yet @param array<string, string> $links */
+    public function withLinks(array $links): self
+    {
+        return new self($this->names, $this->skip, $this->owner, $this->newOwner, $this->settings, $this->filters, $this->links + $links);
     }
 
     /** the choices as the run keeps them - key order fixed, so equal choices give an equal text */
     public function toJson(): string
     {
         $names    = $this->names;
+        $filters  = $this->filters;
+        $links    = $this->links;
         $settings = array_map(static function (array $f): array {
             ksort($f);
             return $f;
         }, $this->settings);
         ksort($names);
         ksort($settings);
+        ksort($filters);
+        ksort($links);
         return json_encode(
-            ['names' => $names, 'skip' => $this->skip, 'owner' => $this->owner, 'newOwner' => $this->newOwner, 'settings' => $settings],
+            ['names' => $names, 'skip' => $this->skip, 'owner' => $this->owner, 'newOwner' => $this->newOwner, 'settings' => $settings, 'filters' => $filters, 'links' => $links],
             JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES,
         );
     }
@@ -131,6 +167,8 @@ final readonly class ImportChoices
             (string) ($d['owner'] ?? ''),
             is_array($owner) ? ['name' => (string) ($owner['name'] ?? ''), 'email' => (string) ($owner['email'] ?? '')] : null,
             (array) ($d['settings'] ?? []),
+            array_map('strval', (array) ($d['filters'] ?? [])),
+            array_map('strval', (array) ($d['links'] ?? [])),
         );
     }
 

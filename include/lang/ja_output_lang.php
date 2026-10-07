@@ -10,74 +10,74 @@ $mgettext_lang = "ja";
 
 return [
 
-// ./slice.php, row 232
+// ./slice.php, row 236
 "Bad inc parameter - included file must contain only alphanumeric characters" => "inc \xA5\xD1\xA5\xE9\xA5\xE1\xA1\xBC\xA5\xBF\xA4\xAC\xC9\xD4\xC0\xB5\xA4\xC7\xA4\xB9 - \xC1\xDE\xC6\xFE\xA5\xD5\xA5\xA1\xA5\xA4\xA5\xEB\xCC\xBE\xA4\xCB\xA4\xCF\xB1\xD1\xBF\xF4\xBB\xFA\xA4\xCE\xA4\xDF\xBB\xC8\xCD\xD1\xA4\xC7\xA4\xAD\xA4\xDE\xA4\xB9", // ai 2026-06
 
-// ./slice.php, row 236
+// ./slice.php, row 240
 "No such file" => "\xA5\xD5\xA5\xA1\xA5\xA4\xA5\xEB\xA4\xAC\xC2\xB8\xBA\xDF\xA4\xB7\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
-// ./slice.php, row 263
+// ./slice.php, row 265
 "Invalid slice number or slice was deleted" => "\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xC8\xD6\xB9\xE6\xA4\xAC\xCC\xB5\xB8\xFA\xA4\xAB\xA1\xA2\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xAC\xBA\xEF\xBD\xFC\xA4\xB5\xA4\xEC\xA4\xC6\xA4\xA4\xA4\xDE\xA4\xB9", // ai 2026-06
 
-// ./slice.php, row 266
+// ./slice.php, row 268
 "slice.php output forbidden for this slice" => "\xA4\xB3\xA4\xCE\xA5\xB9\xA5\xE9\xA5\xA4\xA5\xB9\xA4\xC7\xA4\xCF slice.php \xA4\xCB\xA4\xE8\xA4\xEB\xBD\xD0\xCE\xCF\xA4\xCF\xB6\xD8\xBB\xDF\xA4\xB5\xA4\xEC\xA4\xC6\xA4\xA4\xA4\xDE\xA4\xB9", // ai 2026-06
 
-// ./slice.php, row 321
+// ./slice.php, row 323
 "session id" => "\xA5\xBB\xA5\xC3\xA5\xB7\xA5\xE7\xA5\xF3ID", // ai 2026-06
 
-// ./slice.php, row 580
+// ./slice.php, row 581
 "number of current page (on pagescroller)" => "\xB8\xBD\xBA\xDF\xA4\xCE\xA5\xDA\xA1\xBC\xA5\xB8\xC8\xD6\xB9\xE6\xA1\xCA\xA5\xDA\xA1\xBC\xA5\xB8\xC1\xF7\xA4\xEA\xA1\xCB", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 582
 "page length (number of items)" => "\xA5\xDA\xA1\xBC\xA5\xB8\xA4\xCE\xC4\xB9\xA4\xB5\xA1\xCA\xB9\xE0\xCC\xDC\xBF\xF4\xA1\xCB", // ai 2026-06
 
-// ./slice.php, row 616
-// include/view.php, row 346
+// ./slice.php, row 617
+// include/view.php, row 361
 "No item found" => "\xB9\xE0\xCC\xDC\xA4\xAC\xB8\xAB\xC9\xD5\xA4\xAB\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3",
 
-// include/discussion.php, row 220
+// include/discussion.php, row 222
 "Show selected" => "\xC1\xAA\xC2\xF2\xA4\xB7\xA4\xBF\xA4\xE2\xA4\xCE\xA4\xF2\xC9\xBD\xBC\xA8", // ai 2026-06
 
-// include/discussion.php, row 221
+// include/discussion.php, row 223
 "Show all" => "\xA4\xB9\xA4\xD9\xA4\xC6\xC9\xBD\xBC\xA8", // ai 2026-06
 
-// include/discussion.php, row 222
+// include/discussion.php, row 224
 "Add new" => "\xBF\xB7\xB5\xAC\xC4\xC9\xB2\xC3", // ai 2026-06
 
-// include/item.php, row 104
+// include/item.php, row 113
 "Alias for %1" => "%1 \xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 358
+// include/item.php, row 376
 "Alias for subject of the discussion comment" => "\xA5\xC7\xA5\xA3\xA5\xB9\xA5\xAB\xA5\xC3\xA5\xB7\xA5\xE7\xA5\xF3\xA5\xB3\xA5\xE1\xA5\xF3\xA5\xC8\xA4\xCE\xB7\xEF\xCC\xBE\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 359
+// include/item.php, row 377
 "Alias for text of the discussion comment" => "\xA5\xC7\xA5\xA3\xA5\xB9\xA5\xAB\xA5\xC3\xA5\xB7\xA5\xE7\xA5\xF3\xA5\xB3\xA5\xE1\xA5\xF3\xA5\xC8\xA4\xCE\xCB\xDC\xCA\xB8\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 360
+// include/item.php, row 378
 "Alias for written by" => "\xC5\xEA\xB9\xC6\xBC\xD4\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 361
+// include/item.php, row 379
 "Alias for author's e-mail" => "\xBA\xEE\xBC\xD4\xA4\xCEE-\xA5\xE1\xA1\xBC\xA5\xEB\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 362
+// include/item.php, row 380
 "Alias for url address of author's www site" => "\xBA\xEE\xBC\xD4\xA4\xCEWWW\xA5\xB5\xA5\xA4\xA5\xC8\xA4\xCEURL\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 363
+// include/item.php, row 381
 "Alias for description of author's www site" => "\xBA\xEE\xBC\xD4\xA4\xCEWWW\xA5\xB5\xA5\xA4\xA5\xC8\xA4\xCE\xC0\xE2\xCC\xC0\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 364
+// include/item.php, row 382
 "Alias for publish date" => "\xB8\xF8\xB3\xAB\xC6\xFC\xBB\xFE\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 365
+// include/item.php, row 383
 "Alias for IP address of author's computer" => "\xBA\xEE\xBC\xD4\xA4\xCE\xA5\xB3\xA5\xF3\xA5\xD4\xA5\xE5\xA1\xBC\xA5\xBF\xA4\xCEIP\xA5\xA2\xA5\xC9\xA5\xEC\xA5\xB9\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 366
+// include/item.php, row 384
 "Alias for checkbox used for choosing discussion comment" => "\xA5\xC7\xA5\xA3\xA5\xB9\xA5\xAB\xA5\xC3\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xCE\xA5\xB3\xA5\xE1\xA5\xF3\xA5\xC8\xA4\xF2\xC1\xAA\xC2\xF2\xA4\xB9\xA4\xEB\xA5\xC1\xA5\xA7\xA5\xC3\xA5\xAF\xA5\xDC\xA5\xC3\xA5\xAF\xA5\xB9\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 367
+// include/item.php, row 385
 "Alias for images" => "\xB2\xE8\xC1\xFC\xA4\xCE\xCA\xCC\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 368
+// include/item.php, row 386
 "Alias for comment ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">"
@@ -85,7 +85,7 @@ return [
    ."                             <i>\xBB\xC8\xCD\xD1\xCB\xA1: </i>\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCE\xA5\xB3\xA1\xBC\xA5\xC9\xC6\xE2<br>\n"
    ."                             <i>\xCE\xE3: </i>&lt;input type=hidden name=d_item_id value=\"_#DITEM_ID\">", // ai 2026-06
 
-// include/item.php, row 369
+// include/item.php, row 387
 "Alias for comment ID (the same as _#DITEM_ID<br>)\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">"
@@ -93,7 +93,7 @@ return [
    ."                             <i>\xBB\xC8\xCD\xD1\xCB\xA1: </i>\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCE\xA5\xB3\xA1\xBC\xA5\xC9\xC6\xE2<br>\n"
    ."                             <i>\xCE\xE3: </i>&lt;input type=hidden name=d_item_id value=\"_#ITEM_ID#\">", // ai 2026-06
 
-// include/item.php, row 370
+// include/item.php, row 388
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
@@ -101,7 +101,7 @@ return [
    ."                             <i>\xBB\xC8\xCD\xD1\xCB\xA1: </i>\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCE\xA5\xB3\xA1\xBC\xA5\xC9\xC6\xE2<br>\n"
    ."                             <i>\xCE\xE3: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-06
 
-// include/item.php, row 371
+// include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
    ."                             <i>Usage: </i>in HTML code for index view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>"
@@ -109,7 +109,7 @@ return [
    ."                             <i>\xBB\xC8\xCD\xD1\xCB\xA1: </i>\xA5\xB3\xA5\xE1\xA5\xF3\xA5\xC8\xA4\xCE\xB0\xEC\xCD\xF7\xC9\xBD\xBC\xA8\xCD\xD1HTML\xA5\xB3\xA1\xBC\xA5\xC9\xC6\xE2<br>\n"
    ."                             <i>\xCE\xE3: </i>&lt;a href=_#URL_BODY>_#SUBJECT#&lt;/a>", // ai 2026-06
 
-// include/item.php, row 372
+// include/item.php, row 390
 "Alias for link to a form<br>\n"
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
@@ -117,7 +117,7 @@ return [
    ."                             <i>\xBB\xC8\xCD\xD1\xCB\xA1: </i>\xA5\xB3\xA5\xE1\xA5\xF3\xA5\xC8\xA4\xCE\xC1\xB4\xCA\xB8\xC9\xBD\xBC\xA8\xCD\xD1HTML\xA5\xB3\xA1\xBC\xA5\xC9\xC6\xE2<br>\n"
    ."                             <i>\xCE\xE3: </i>&lt;a href=_#URLREPLY&gt;\xCA\xD6\xBF\xAE&lt;/a&gt;", // ai 2026-06
 
-// include/item.php, row 373
+// include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
@@ -125,64 +125,64 @@ return [
    ."                             <i>\xBB\xC8\xCD\xD1\xCB\xA1: </i>\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xCE\xA5\xB3\xA1\xBC\xA5\xC9\xC6\xE2<br>\n"
    ."                             <i>\xCE\xE3: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-06
 
-// include/item.php, row 374
+// include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
  => "\xA1\xD6\xC1\xB4\xA4\xC6\xC9\xBD\xBC\xA8\xA1\xD7\xA1\xD6\xC1\xAA\xC2\xF2\xA4\xF2\xC9\xBD\xBC\xA8\xA1\xD7\xA1\xD6\xBF\xB7\xB5\xAC\xC4\xC9\xB2\xC3\xA1\xD7\xA5\xDC\xA5\xBF\xA5\xF3\xA4\xCE\xCA\xCC\xCC\xBE<br>\n"
    ."                             <i>\xBB\xC8\xCD\xD1\xCB\xA1: </i>\xBA\xC7\xB8\xE5\xA4\xCEHTML\xA5\xB3\xA1\xBC\xA5\xC9\xC6\xE2", // ai 2026-06
 
-// include/item.php, row 389
+// include/item.php, row 408
 "3rd parameter filled in DiscussionMailList field" => "DiscussionMailList\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xCB\xC6\xFE\xCE\xCF\xA4\xB5\xA4\xEC\xA4\xBF3\xC8\xD6\xCC\xDC\xA4\xCE\xA5\xD1\xA5\xE9\xA5\xE1\xA1\xBC\xA5\xBF", // ai 2026-06
 
-// include/item.php, row 391
+// include/item.php, row 410
 "%1th parameter filled in DiscussionMailList field" => "DiscussionMailList\xA5\xD5\xA5\xA3\xA1\xBC\xA5\xEB\xA5\xC9\xA4\xCB\xC6\xFE\xCE\xCF\xA4\xB5\xA4\xEC\xA4\xBF%1\xC8\xD6\xCC\xDC\xA4\xCE\xA5\xD1\xA5\xE9\xA5\xE1\xA1\xBC\xA5\xBF", // ai 2026-06
 
-// include/item.php, row 406
+// include/item.php, row 426
 "Constant name" => "\xC4\xEA\xBF\xF4\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 407
+// include/item.php, row 427
 "Translated constant name" => "\xCB\xDD\xCC\xF5\xA4\xB5\xA4\xEC\xA4\xBF\xC4\xEA\xBF\xF4\xCC\xBE", // ai 2026-06
 
-// include/item.php, row 408
+// include/item.php, row 428
 "Constant value" => "\xC4\xEA\xBF\xF4\xA4\xCE\xC3\xCD", // ai 2026-06
 
-// include/item.php, row 409
+// include/item.php, row 429
 "Constant priority" => "\xC4\xEA\xBF\xF4\xA4\xCE\xCD\xA5\xC0\xE8\xC5\xD9", // ai 2026-06
 
-// include/item.php, row 410
+// include/item.php, row 430
 "Constant group id" => "\xC4\xEA\xBF\xF4\xA5\xB0\xA5\xEB\xA1\xBC\xA5\xD7ID", // ai 2026-06
 
-// include/item.php, row 411
+// include/item.php, row 431
 "Category class (for categories only)" => "\xCA\xAC\xCE\xE0\xA5\xAF\xA5\xE9\xA5\xB9\xA1\xCA\xCA\xAC\xCE\xE0\xA4\xCE\xA4\xDF\xA1\xCB", // ai 2026-06
 
-// include/item.php, row 412
+// include/item.php, row 432
 "Constant number" => "\xC4\xEA\xBF\xF4\xC8\xD6\xB9\xE6", // ai 2026-06
 
-// include/item.php, row 413
+// include/item.php, row 433
 "Constant unique id (32-hexadecimal characters)" => "\xC4\xEA\xBF\xF4\xA4\xCE\xB0\xEC\xB0\xD5\xA4\xCAID\xA1\xCA16\xBF\xCA\xBF\xF432\xCA\xB8\xBB\xFA\xA1\xCB", // ai 2026-06
 
-// include/item.php, row 414
+// include/item.php, row 434
 "Constant unique short id (autoincremented from '1' for each constant in the system)" => "\xC4\xEA\xBF\xF4\xA4\xCE\xB0\xEC\xB0\xD5\xA4\xCA\xC3\xBB\xBD\xCCID\xA1\xCA\xA5\xB7\xA5\xB9\xA5\xC6\xA5\xE0\xC6\xE2\xA4\xCE\xB3\xC6\xC4\xEA\xBF\xF4\xA4\xC7 '1' \xA4\xAB\xA4\xE9\xBC\xAB\xC6\xB0\xC1\xFD\xB2\xC3\xA1\xCB", // ai 2026-06
 
-// include/item.php, row 415
+// include/item.php, row 435
 "Constant description" => "\xC4\xEA\xBF\xF4\xA4\xCE\xB5\xAD\xBD\xD2", // ai 2026-06
 
-// include/item.php, row 416
+// include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "\xC4\xEA\xBF\xF4\xA4\xCE\xA5\xEC\xA5\xD9\xA5\xEB\xA1\xCA\xB3\xAC\xC1\xD8\xC4\xEA\xBF\xF4\xA4\xC7\xBB\xC8\xCD\xD1\xA1\xCB", // ai 2026-06
 
-// include/item.php, row 787
+// include/item.php, row 827
 "Error: wrong alias function %1 for %2" => "\xA5\xA8\xA5\xE9\xA1\xBC: %2 \xA4\xCB\xC2\xD0\xA4\xB9\xA4\xEB\xCA\xCC\xCC\xBE\xB4\xD8\xBF\xF4 %1 \xA4\xAC\xC9\xD4\xC0\xB5\xA4\xC7\xA4\xB9", // ai 2026-06
 
-// include/itemview.php, row 117
+// include/itemview.php, row 120
 "Selected item" => "\xC1\xAA\xC2\xF2\xA4\xB5\xA4\xEC\xA4\xBF\xB9\xE0\xCC\xDC", // ai 2026-06
 
-// include/itemview.php, row 124
+// include/itemview.php, row 127
 "number of found items" => "\xB8\xAB\xC9\xD5\xA4\xAB\xA4\xC3\xA4\xBF\xB9\xE0\xCC\xDC\xBF\xF4", // ai 2026-06
 
-// include/itemview.php, row 359
+// include/itemview.php, row 375
 "No comment was selected" => "\xA5\xB3\xA5\xE1\xA5\xF3\xA5\xC8\xA4\xAC\xC1\xAA\xC2\xF2\xA4\xB5\xA4\xEC\xA4\xC6\xA4\xA4\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
-// include/itemview.php, row 680, 688
+// include/itemview.php, row 707, 715
 "exact group name" => "\xC0\xB5\xB3\xCE\xA4\xCA\xA5\xB0\xA5\xEB\xA1\xBC\xA5\xD7\xCC\xBE", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -203,27 +203,30 @@ return [
 // include/scroller.php, row 453
 "&laquo;" => "",
 
-// include/slice.php, row 68
+// include/slice.php, row 69
 "Select Category " => "\xCA\xAC\xCE\xE0\xA4\xF2\xC1\xAA\xC2\xF2", // ai 2026-06
 
-// include/slice.php, row 70
+// include/slice.php, row 71
 "All categories" => "\xC1\xB4\xA4\xC6\xA4\xCE\xCA\xAC\xCE\xE0", // ai 2026-06
 
-// include/util.php, row 950
+// include/util.php, row 993
 "Error: Missing Reading Password" => "\xA5\xA8\xA5\xE9\xA1\xBC: \xC6\xC9\xA4\xDF\xBC\xE8\xA4\xEA\xA5\xD1\xA5\xB9\xA5\xEF\xA1\xBC\xA5\xC9\xA4\xAC\xA4\xA2\xA4\xEA\xA4\xDE\xA4\xBB\xA4\xF3", // ai 2026-06
 
-// include/util.php, row 1304
+// include/util.php, row 1355
 "Toolkit news message" => "\xA5\xA2\xA5\xD7\xA5\xEA\xA5\xB1\xA1\xBC\xA5\xB7\xA5\xE7\xA5\xF3\xA4\xCE\xA4\xAA\xC3\xCE\xA4\xE9\xA4\xBB", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Back" => "\xCC\xE1\xA4\xEB", // ai 2026-06
 
-// include/util.php, row 1318
+// include/util.php, row 1369
 "Relogin" => "\xBA\xC6\xA5\xED\xA5\xB0\xA5\xA4\xA5\xF3", // ai 2026-06
 
-// misc/proposefieldchange.php, row 71
+// misc/proposefieldchange.php, row 90
 "Assignment form" => "\xB3\xE4\xA4\xEA\xC5\xF6\xA4\xC6\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0", // ai 2026-06
 
-// misc/proposefieldchange.php, row 76
+// misc/proposefieldchange.php, row 98
 "Grabs item relations data POSTed by form" => "\xA5\xD5\xA5\xA9\xA1\xBC\xA5\xE0\xA4\xAB\xA4\xE9POST\xA4\xB5\xA4\xEC\xA4\xBF\xB9\xE0\xCC\xDC\xA4\xCE\xB4\xD8\xCF\xA2\xA5\xC7\xA1\xBC\xA5\xBF\xA4\xF2\xBC\xE8\xC6\xC0\xA4\xB7\xA4\xDE\xA4\xB9", // ai 2026-06
+
+// modules/site/site.php, row 289
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];
