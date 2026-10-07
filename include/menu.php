@@ -75,7 +75,7 @@ function get_aamenus(): array
 
     // On the per-item pages "+ Add Item" only confuses — ghost it (invisible but
     // space-preserving, see admin-ecn.css .aa-ui-ghost). Same item-page whitelist
-    // idiom as $on_item_page in menu_util.php.
+    // idiom as the module switcher in menu_util.php.
     $cur_script = basename(parse_url($_SERVER['SCRIPT_NAME'] ?? '', PHP_URL_PATH) ?: '');
     $ghost = in_array($cur_script, ['itemedit.php', 'iteminfo.php', 'itemhistory.php', 'itemstats.php'], true) ? ' aa-ui-ghost' : '';
 
