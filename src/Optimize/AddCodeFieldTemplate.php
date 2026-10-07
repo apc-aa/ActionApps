@@ -19,6 +19,7 @@ class AddCodeFieldTemplate extends \AA\Optimize\AddSeoFieldTemplate
     /** field settings different from standard field setting  */
     protected function fieldSpecialSetting(): array
     {
-        return ['input_show_func' => 'cod'];
+        // Trim would cut the indentation of the first line and the last new line
+        return ['input_show_func' => 'cod', 'input_insert_func' => 'qte'];
     }
 }
