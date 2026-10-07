@@ -609,8 +609,8 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
      */
     public function getRelation(): array
     {
-        $showfunc = Widget::parseClassProperties($this->data['input_show_func']);
-        if (!$showfunc['const']) {
+        $showfunc = $this->widgetParams();
+        if (empty($showfunc['const'])) {
             return [];
         }
         // prefix indicates select from items
@@ -632,14 +632,14 @@ class AA_Field implements ArrayAccess, Countable, IteratorAggregate
     /** isMultiline - @return bool - if the default widget allows block elements  */
     public function isMultiline(): bool
     {
-        $params = Widget::parseClassProperties($this->data['input_show_func']);
-        return in_array($params['class'], ['AA\Widget\TxtWidget', 'AA\Widget\TprWidget', 'AA\Widget\EdtWidget']);
+        $params = $this->widgetParams();
+        return in_array($params['class'] ?? '', ['AA\Widget\TxtWidget', 'AA\Widget\TprWidget', 'AA\Widget\EdtWidget']);
     }
 
     /** fields which use Manager Widget prevents using "Insert as new" itemedit action (it makes mess) - use duplicate item in the Itemmanager instead */
     public function disable_insert_as_new(): bool
     {
-        return Widget::parseClassProperties($this->data['input_show_func'])['class'] === 'AA\Widget\MngWidget';
+        return ($this->widgetParams()['class'] ?? '') === 'AA\Widget\MngWidget';
     }
 
     public function cloneWithId($id): AA_Field|static
