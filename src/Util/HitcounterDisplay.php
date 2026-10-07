@@ -545,7 +545,6 @@ class HitcounterDisplay
         }
 
         // ---- Pass 1: per-(day, item) aggregates + chart-data arrays + per-row/col maxes
-        $timex      = new LogarithmIndex(.002, 80, 63);
         ksort($stat);
         $cols       = [];   // [sid => [H => [], ncmH => [], … avgMs => []]]
         $labels     = [];
@@ -561,22 +560,22 @@ class HitcounterDisplay
                 $cols[$sid]['H'][] = $hits;
 
                 $b0_cnt = ($counts[$sid][2] ?? '0');
-                $b0_dur = $b0_cnt ? \StrExp('math', [1000 * $timex->index2float($counts[$sid][1] ?? '0'), 1, 'EN']) : 0;
+                $b0_dur = self::bucketMs((int) $b0_cnt, (float) ($counts[$sid][1] ?? 0));
                 $cols[$sid]['ncmH'][] = $b0_cnt;
                 $cols[$sid]['ncmD'][] = $b0_dur;
 
                 $b1_cnt = ($counts[$sid][4] ?? '0');
-                $b1_dur = $b1_cnt ? \StrExp('math', [1000 * $timex->index2float($counts[$sid][3] ?? '0'), 1, 'EN']) : 0;
+                $b1_dur = self::bucketMs((int) $b1_cnt, (float) ($counts[$sid][3] ?? 0));
                 $cols[$sid]['ncnmH'][] = $b1_cnt;
                 $cols[$sid]['ncnmD'][] = $b1_dur;
 
                 $b2_cnt = ($counts[$sid][6] ?? '0');
-                $b2_dur = $b2_cnt ? \StrExp('math', [1000 * $timex->index2float($counts[$sid][5] ?? '0'), 1, 'EN']) : 0;
+                $b2_dur = self::bucketMs((int) $b2_cnt, (float) ($counts[$sid][5] ?? 0));
                 $cols[$sid]['cmH'][] = $b2_cnt;
                 $cols[$sid]['cmD'][] = $b2_dur;
 
                 $b3_cnt = ($counts[$sid][8] ?? '0');
-                $b3_dur = $b3_cnt ? \StrExp('math', [1000 * $timex->index2float($counts[$sid][7] ?? '0'), 1, 'EN']) : 0;
+                $b3_dur = self::bucketMs((int) $b3_cnt, (float) ($counts[$sid][7] ?? 0));
                 $cols[$sid]['cnmH'][] = $b3_cnt;
                 $cols[$sid]['cnmD'][] = $b3_dur;
 
@@ -586,10 +585,10 @@ class HitcounterDisplay
                     : null;
                 $avg_ms = $bucket_sum
                     ? round(
-                        ((float) $b0_dur * (int) $b0_cnt
-                         + (float) $b1_dur * (int) $b1_cnt
-                         + (float) $b2_dur * (int) $b2_cnt
-                         + (float) $b3_dur * (int) $b3_cnt) / $bucket_sum,
+                        ($b0_dur * (int) $b0_cnt
+                         + $b1_dur * (int) $b1_cnt
+                         + $b2_dur * (int) $b2_cnt
+                         + $b3_dur * (int) $b3_cnt) / $bucket_sum,
                         1,
                     )
                     : null;
@@ -610,10 +609,10 @@ class HitcounterDisplay
                 // separate series so each cache-state cohort gets its own chart. Blending
                 // C+M with C+NM (or NC+M with NC+NM) would hide the very differences we want
                 // to benchmark. 0 means "no hits in this bucket on this day".
-                $cols[$sid]['avgMsB2'][] = (float) $b2_dur;   // C+M   — cached, 200
-                $cols[$sid]['avgMsB3'][] = (float) $b3_dur;   // C+NM  — cached, 304
-                $cols[$sid]['avgMsB0'][] = (float) $b0_dur;   // NC+M  — uncached, 200
-                $cols[$sid]['avgMsB1'][] = (float) $b1_dur;   // NC+NM — uncached, 304
+                $cols[$sid]['avgMsB2'][] = $b2_dur;   // C+M   — cached, 200
+                $cols[$sid]['avgMsB3'][] = $b3_dur;   // C+NM  — cached, 304
+                $cols[$sid]['avgMsB0'][] = $b0_dur;   // NC+M  — uncached, 200
+                $cols[$sid]['avgMsB1'][] = $b1_dur;   // NC+NM — uncached, 304
                 if ((int) $hits > $row_max_hits) {
                     $row_max_hits = (int) $hits;
                 }
@@ -658,6 +657,21 @@ class HitcounterDisplay
 
         \AA::Stringexpander()->addRequire('chartjs@4');
         return $ret;
+    }
+
+    /**
+     * Average duration of one cache-state bucket in ms, from its hit-weighted mean log index.
+     * Kept numeric — averages and charts compute with it; format only via formatMs().
+     */
+    public static function bucketMs(int $count, float $index): float
+    {
+        return $count ? round(1000 * (new LogarithmIndex(.002, 80, 63))->index2float($index), 1) : 0.0;
+    }
+
+    /** ms for the stats table: one decimal, thin no-break space between thousands. */
+    public static function formatMs(float $ms): string
+    {
+        return number_format($ms, 1, '.', "\u{202F}");
     }
 
     /**
@@ -978,7 +992,7 @@ class HitcounterDisplay
                     $col_max  = $col_max_ms[$sid] ?? 0.0;
                     $am_pct   = ($col_max > 0 && !is_null($am)) ? (int) round(((float) $am / $col_max) * 100) : 0;
                     $am_zero  = (is_null($am) || (float) $am === 0.0) ? ' aa-stat-zero' : '';
-                    $am_str   = is_null($am) ? '&ndash;' : \safe((string) $am);
+                    $am_str   = is_null($am) ? '&ndash;' : \safe(self::formatMs((float) $am));
                     $ret .= "\n      <td class=\"aa-stat-bar aa-stat-bar--ms$all_cls$am_zero\" style=\"--pct:$am_pct\">$am_str</td>";
 
                     $ret .= "\n      <td class=\"$all_cls\">";
@@ -997,7 +1011,7 @@ class HitcounterDisplay
                             $d_zero = ((int) $d_cnt === 0) ? ' class="aa-stat-zero"' : '';
                             $ret .= '<tr' . $d_zero . '><td>' . \safe((string) $d_label) . '</td>'
                                   . '<td>' . \safe((string) $d_cnt) . '</td>'
-                                  . '<td>' . ((int) $d_cnt ? \safe((string) $d_dur) : '&ndash;') . '</td></tr>';
+                                  . '<td>' . ((int) $d_cnt ? \safe(self::formatMs($d_dur)) : '&ndash;') . '</td></tr>';
                         }
                         $ret .= '</tbody></table></details>';
                     }
