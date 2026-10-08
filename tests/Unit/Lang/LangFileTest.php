@@ -179,6 +179,20 @@ final class LangFileTest extends TestCase
         $this->assertSame($this->lf->read($path), $this->lf->read($path . '2'));
     }
 
+    public function test_unused_block_survives_carriage_return_and_php_close_tag(): void
+    {
+        // either one would end a // comment line and leave the file unparsable
+        $path = $this->dir . '/xx_test_lang.php';
+        $unused = ['cr gone' => "a\rb", 'crlf gone' => "a\r\nb", 'tag gone' => 'echo ?> here'];
+        $this->lf->write($path, 'xx', [$this->entry('Hello', 'Ahoj'), $this->entry('tag ?> active', 'x ?> y')], $unused);
+
+        $this->assertSame(['Hello' => 'Ahoj', 'tag ?> active' => 'x ?> y'], (static fn() => include $path)());
+        $read = $this->lf->read($path);
+        foreach ($unused as $message => $translation) {
+            $this->assertSame($translation, $read[$message] ?? null, "message [$message]");
+        }
+    }
+
     // --- runtime-translated (_mdelayed) messages stay active ---
 
     public function test_runtime_block_is_active_at_runtime(): void

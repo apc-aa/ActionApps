@@ -374,7 +374,8 @@ class LangFile
      */
     public static function phpStringLiteral(string $str, bool $ascii = false): string
     {
-        $str = str_replace(['\\', '"', '$'], ['\\\\', '\\"', '\\$'], $str);
+        // CR or a PHP close tag would end a line of the commented-out block of retired messages
+        $str = str_replace(['\\', '"', '$', "\r", '?>'], ['\\\\', '\\"', '\\$', '\\r', '?\\x3E'], $str);
         if ($ascii) {
             $str = preg_replace_callback(
                 '/[\x80-\xFF]/',
