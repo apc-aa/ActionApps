@@ -47,7 +47,7 @@ return [
 "Store search" => "Uložiť", // ai 2026-06
 
 // include/searchbar.class.php, row 633
-"Order" => "Zoradit",
+"Order" => "Zoradiť", // ai 2026-10
 
 // include/searchbar.class.php, row 637
 "Descending" => "Zostupne",
@@ -285,7 +285,7 @@ return [
 "Insert date" => "Dátum vloženia", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "",
+"Edited by" => "Upravil", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Dátum poslednej úpravy", // ai 2026-06

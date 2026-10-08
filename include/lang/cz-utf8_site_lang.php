@@ -103,7 +103,7 @@ return [
 "State file" => "Stavový soubor",
 
 // modules/site/modedit.php, row 145, 326
-"Router" => "Směrovač", // ai 2026-10
+"Router" => "Router",
 
 // modules/site/modedit.php, row 146, 340
 "Uses modules" => "Používá moduly",
@@ -142,7 +142,7 @@ return [
 "App store" => "Katalog aplikací", // ai 2026-10
 
 // modules/site/modedit.php, row 349
-"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Zveřejněný web si z této AA může nainstalovat kterákoli AA - i s webíky a Zasíláním, které používá: jejich šablony, políčka, pohledy a hodnoty, nikdy však články. Nastavit to může jen superadmin.", // ai 2026-10
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Zveřejněný web si z tohoto AA může nainstalovat kterékoli AA - i s webíky a moduly Zasílání, které web používá: jejich šablony, políčka, pohledy a hodnoty, nikdy však články. Nastavit to může jen superadmin.", // ai 2026-10
 
 // modules/site/modedit.php, row 353
 "The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Moduly webu se od zveřejnění změnily: %1 - katalog aplikací web nenabídne, dokud je neschválí superadmin.", // ai 2026-10

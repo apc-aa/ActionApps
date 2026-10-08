@@ -12,6 +12,9 @@ setlocale(LC_ALL, 'de_DE.utf8', 'de_DE', 'de', 'ge');  // sort, date, uppercase,
 setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA_Stringexpand_If)
 
 return [
+// Unused messages — no longer found in the sources; kept commented for reference.
+// "Editor" => "Bearbeitet von", // ai 2026-10
+// End of unused messages
 
 // include/searchbar.class.php, row 54
 "Condition" => "Bedingung", // ai 2026-06
@@ -285,7 +288,7 @@ return [
 "Insert date" => "Erstellungsdatum", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "Herausgeber",
+"Edited by" => "Bearbeitet von", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Letzte Bearbeitung", // ai 2026-06

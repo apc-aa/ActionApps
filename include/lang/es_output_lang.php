@@ -207,7 +207,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Nivel jer\xE1rquico (para constantes jer\xE1rquicas)",
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Error: funci\xF3n de alias %1 incorrecta para %2",
 
 // include/itemview.php, row 120
@@ -232,7 +232,7 @@ return [
 "All" => "Todo",
 
 // include/scroller.php, row 296
-"found" => "encontrado",
+"found" => "encontrados", // ai 2026-10
 
 // include/scroller.php, row 452
 "&raquo;" => "",

@@ -20,6 +20,7 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Unique number in sequence 1,2,3,..." => "Număr unic în secvența 1,2,3,...", // ai 2026-06
 // "Data source" => "Sursă de date", // ai 2026-06
 // "Upload periodically" => "Încarcă periodic", // ai 2026-06
 // "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - Copiere secțiune (1/2) - Selectați ActionApps sursă", // ai 2026-06
@@ -252,6 +253,7 @@ return [
 "You do not have permission to manage Cron" => "Nu aveți dreptul să administrați Cron", // ai 2026-06
 
 // admin/aa_cron.php, row 47
+// src/AA_Plannedtask.php, row 82, 182
 // src/Import/Definition.php, row 135, 163
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Ultima rulare", // ai 2026-06
@@ -260,7 +262,7 @@ return [
 "never" => "niciodată", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 656
+// include/field.class.php, row 714
 // src/Util/Adminlink.php, row 31
 "disabled" => "dezactivat", // ai 2026-06
 
@@ -388,7 +390,7 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 98
@@ -773,7 +775,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1701
 "Manage %1" => "Administrare %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -829,11 +831,12 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Sectiune",
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "Modul",
@@ -846,7 +849,7 @@ return [
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
 // include/logs.php, row 293
-// src/AA_Plannedtask.php, row 149
+// src/AA_Plannedtask.php, row 204
 "Log" => "Jurnal", // ai 2026-06
 
 // admin/aafinder.php, row 172
@@ -982,8 +985,8 @@ return [
 
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 260
-// include/menu_util.php, row 618
-// include/stringexpand.php, row 9858, 9937
+// include/menu_util.php, row 629
+// include/stringexpand.php, row 9874, 9953
 "Send" => "Trimite", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -1036,7 +1039,7 @@ return [
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1253, 1257
+// include/field.class.php, row 1332, 1336
 // include/form.class.php, row 211
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
@@ -1148,10 +1151,10 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 638
+// include/field.class.php, row 696
 // include/filedit.php, row 115
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1642
+// include/metabase.class.php, row 1643
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
@@ -1172,7 +1175,7 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 642
+// include/field.class.php, row 700
 // include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
 // include/profile.php, row 69
@@ -1324,7 +1327,7 @@ return [
 
 // admin/itemedit.php, row 305
 // include/date.php, row 189
-// include/field.class.php, row 1253
+// include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Eroare introducere",
 
@@ -1613,7 +1616,7 @@ return [
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 171
 // src/Optimize/CheckRequiredSettings.php, row 69
@@ -1644,7 +1647,7 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1257
+// include/field.class.php, row 1336
 // src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "Prioritate",
 
@@ -1844,9 +1847,9 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
+// include/metabase.class.php, row 1668
 // include/statestore.php, row 1077, 1414
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
 "Action" => "Acțiune", // ai 2026-06
@@ -2240,7 +2243,7 @@ return [
 "User" => "Utilizator",
 
 // admin/se_history.php, row 144
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckImports.php, row 287
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "Timp", // ai 2026-06
@@ -2253,7 +2256,7 @@ return [
 
 // admin/se_history.php, row 167
 // include/itemfunc.php, row 201
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Item ID" => "ID articol", // ai 2026-06
 
 // admin/se_history.php, row 216, 217
@@ -2959,7 +2962,7 @@ return [
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 485, 542
 // include/statestore.php, row 1077
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 170
 "ID" => "",
 
@@ -3222,7 +3225,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 111
 // admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1194
+// include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Nume utilizator",
 
@@ -3400,7 +3403,7 @@ return [
 "Admin - Slice settings" => "Admin - Setări secţiune",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 624
+// include/menu_util.php, row 635
 "Language" => "Limbă", // ai 2026-06
 
 // admin/slicedit.php, row 260
@@ -3966,7 +3969,7 @@ return [
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
-// include/menu_util.php, row 437, 747
+// include/menu_util.php, row 448, 758
 // include/slice.class.php, row 1394
 // src/Central/FindingText.php, row 496
 "Alerts" => "Alerte", // ai 2026-06
@@ -4135,7 +4138,7 @@ return [
 // include/slice.class.php, row 1145
 // src/Central/FindingText.php, row 496
 // src/Optimize/SeoDuplicates.php, row 66
-"Site" => "Sit", // ai 2026-06
+"Site" => "Site",
 
 // central/installapp.php, row 488
 "The site brings the slices and Alerts modules it uses." => "",
@@ -4715,7 +4718,7 @@ return [
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 "Task Manager" => "Administrator sarcini", // ai 2026-06
 
 // central/synchronize3.php, row 114
@@ -4785,7 +4788,7 @@ return [
 
 // include/constants.php, row 456
 // include/logs.php, row 781, 813
-// src/Optimize/CheckQueuedClassMissing.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Clasă", // ai 2026-06
 
 // include/constants.php, row 460
@@ -5210,66 +5213,81 @@ return [
 // include/feeding.php, row 539
 "Remote node" => "Nod distant", // ai 2026-06
 
-// include/field.class.php, row 651
+// include/field.class.php, row 162
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+
+// include/field.class.php, row 167
+"code - its indentation and the last new line are kept on purpose" => "",
+
+// include/field.class.php, row 174
+"stores the text of the selected items" => "",
+
+// include/field.class.php, row 180
+"constants of a group" => "",
+
+// include/field.class.php, row 187
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+
+// include/field.class.php, row 709
 "Move to another field" => "Mută în alt câmp", // ai 2026-06
 
-// include/field.class.php, row 1005
+// include/field.class.php, row 1084
 // include/itemview.php, row 127
 "number of found items" => "numărul articolelor găsite",
 
-// include/field.class.php, row 1006
+// include/field.class.php, row 1085
 "index of item within whole listing (begins with 0)" => "indexul articolului în întreaga listă (începe cu 0)", // ai 2026-06
 
-// include/field.class.php, row 1007
+// include/field.class.php, row 1086
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "indexul articolului în cadrul unei pagini (începe de la 0 pe fiecare pagină listată de pagescroller)", // ai 2026-06
 
-// include/field.class.php, row 1008
+// include/field.class.php, row 1087
 "index of a group on page (it begins from 0 on each page)" => "indexul unui grup pe pagină (începe de la 0 pe fiecare pagină)", // ai 2026-06
 
-// include/field.class.php, row 1009
+// include/field.class.php, row 1088
 "index of item within a group on page (it begins from 0 on each group)" => "indexul articolului în cadrul unui grup pe pagină (începe de la 0 în fiecare grup)", // ai 2026-06
 
-// include/field.class.php, row 1010
+// include/field.class.php, row 1089
 "alias for Item ID" => "denumire pentru ID articol",
 
-// include/field.class.php, row 1011
+// include/field.class.php, row 1090
 "alias for Short Item ID" => "alias pentru ID scurt de articol",
 
-// include/field.class.php, row 1019, 1020
+// include/field.class.php, row 1098, 1099
 "alias used on admin page index.php for itemedit url" => "alias folosit pe pagina de administrare index.php pentru URL-ul itemedit", // ai 2026-06
 
-// include/field.class.php, row 1021
+// include/field.class.php, row 1100
 "Alias used on admin page index.php for edit discussion url" => "Alias folosit pe pagina de administrare index.php pentru URL-ul de editare discuție", // ai 2026-06
 
-// include/field.class.php, row 1022
+// include/field.class.php, row 1101
 "Title of Slice for RSS" => "Titlul secţiunii pentru RSS",
 
-// include/field.class.php, row 1023
+// include/field.class.php, row 1102
 "Link to the Slice for RSS" => "Link la secţiunea pentru RSS",
 
-// include/field.class.php, row 1024
+// include/field.class.php, row 1103
 "Short description (owner and name) of slice for RSS" => "Descriere scurtă (proprietar şi nume) a secţiunii pentru RSS",
 
-// include/field.class.php, row 1025
+// include/field.class.php, row 1104
 "Date RSS information is generated, in RSS date format" => "Informaţia dată RSS este generat, în format dată RSS",
 
-// include/field.class.php, row 1026
+// include/field.class.php, row 1105
 "Slice name" => "Denumire secţiune",
 
-// include/field.class.php, row 1028
+// include/field.class.php, row 1107
 "Current MLX language" => "Limba MLX curentă", // ai 2026-06
 
-// include/field.class.php, row 1029
+// include/field.class.php, row 1108
 "HTML markup direction tag (e.g. DIR=RTL)" => "Tag HTML pentru direcția textului (de ex. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1112, 1393
+// include/field.class.php, row 1191, 1472
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- orice câmp text --", // ai 2026-06
 
-// include/field.class.php, row 1221
+// include/field.class.php, row 1300
 " (this)" => " (aceasta)", // ai 2026-06
 
-// include/field.class.php, row 1275, 1288, 1301
+// include/field.class.php, row 1354, 1367, 1380
 "Can't copy field" => "",
 
 // include/filedit.php, row 82
@@ -5506,7 +5524,7 @@ return [
 "Offer" => "Oferă",
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10850, 10873
+// include/stringexpand.php, row 10866, 10889
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5693,7 +5711,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Nivelul constantei (folosit pentru constante ierarhice)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Eroare: funcție de alias %1 greșită pentru %2", // ai 2026-06
 
 // include/item_content.php, row 1126, 1184
@@ -5905,151 +5923,151 @@ return [
 // include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Elimină spațiile de la început și de la sfârșit și normalizează UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1105
 "Item IDs" => "ID articole",
 
-// include/itemfunc.php, row 1132
+// include/itemfunc.php, row 1140
 "The tag '%1' could not be stored: %2" => "",
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "ID utilizator = stochează întotdeauna ID-ul utilizatorului curent", // ai 2026-06
 
-// include/itemfunc.php, row 1170
+// include/itemfunc.php, row 1178
 "Inserts the identity of the current user, no matter what the user sets." => "Inserează identitatea utilizatorului curent, indiferent ce setează utilizatorul.", // ai 2026-06
 
-// include/itemfunc.php, row 1222
+// include/itemfunc.php, row 1230
 "Now = always store current time" => "Acum = stochează întotdeauna ora curentă", // ai 2026-06
 
-// include/itemfunc.php, row 1226
+// include/itemfunc.php, row 1234
 "Inserts the current time, no matter what the user sets." => "Inserează ora curentă, indiferent ce setează utilizatorul.", // ai 2026-06
 
-// include/itemfunc.php, row 1260
+// include/itemfunc.php, row 1268
 "Computed field for INSERT/UPDATE" => "Câmp calculat pentru INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1264
+// include/itemfunc.php, row 1272
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Câmpul este rezultatul expresiei scrise în \"Cod pentru rezolvarea aliasurilor\". Este o soluție bună pentru toate valorile care pot fi precalculate, deoarece calcularea lor la afișarea articolului ar fi lentă. Da, puteți folosi aici {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1273
+// include/itemfunc.php, row 1281
 "Code for unaliasing (INSERT)" => "Cod pentru rezolvarea aliasurilor (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1273, 1309
+// include/itemfunc.php, row 1281, 1317
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Aici puteți scrie orice șir. La salvarea articolului, aliasurile din șir vor fi rezolvate, deci puteți folosi orice construcție {...}, precum și aliasuri de câmp", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "Code for unaliasing (UPDATE)" => "Cod pentru rezolvarea aliasurilor (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "La fel ca mai sus, dar doar pentru operația UPDATE. Dacă nu este completat, valoarea câmpului rămâne neschimbată", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Multivalue delimiter" => "Delimitator multivaloare", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Character or string, which will split the computed string into multiple values (the same field)" => "Caracter sau șir care va împărți șirul calculat în mai multe valori (același câmp)", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "Recompute every" => "Recalculează la fiecare", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Câmpul va fi recalculat la fiecare minut, oră, ... (folosind codul UPDATE de mai sus). Timpii nu sunt exacți - minutul înseamnă ceva între 1-10 minute. Dacă nu este completat, câmpul va fi recalculat doar la inserarea/actualizarea articolului.", // ai 2026-06
 
-// include/itemfunc.php, row 1296
+// include/itemfunc.php, row 1304
 "Computed field" => "Câmp calculat", // ai 2026-06
 
-// include/itemfunc.php, row 1300
+// include/itemfunc.php, row 1308
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Câmpul este rezultatul expresiei scrise în \\\"Cod pentru expandarea aliasurilor\\\". Este o soluție bună pentru toate valorile care pot fi precalculate, deoarece calcularea lor la momentul afișării articolului ar fi lentă. Da, puteți folosi {view...}, {include...}, {switch...} aici", // ai 2026-06
 
-// include/itemfunc.php, row 1309
+// include/itemfunc.php, row 1317
 "Code for unaliasing (INSERT+UPDATE)" => "Cod pentru expandarea aliasurilor (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1331
+// include/itemfunc.php, row 1339
 "SEO Name" => "Nume SEO", // ai 2026-06
 
-// include/itemfunc.php, row 1335
+// include/itemfunc.php, row 1343
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Dacă câmpul nu este completat, calculează seoname din aliasul _#HEADLINE (sau altul, dacă este specificat), unic pentru toate secțiunile din modulele site unde secțiunea este menționată în setările \"Uses slices\". Practic, aliasul Nume SEO este o prescurtare pentru un câmp calculat cu {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "Alias to compute from" => "Alias din care se calculează", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "if not specified, the _#HEADLINE is used" => "dacă nu este specificat, se folosește _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1372
 "Unique number for this field (from 1,..)" => "Număr unic pentru acest câmp (de la 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1366
-"Unique number in sequence 1,2,3,..." => "Număr unic în secvența 1,2,3,...", // ai 2026-06
+// include/itemfunc.php, row 1376
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
 
-// include/itemfunc.php, row 1391
+// include/itemfunc.php, row 1499
 "File = uploaded file" => "Fișier = fișier încărcat", // ai 2026-06
 
-// include/itemfunc.php, row 1395
+// include/itemfunc.php, row 1503
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Stochează fișierul încărcat și un link către acesta; parametrii se aplică doar dacă tipul este image/ceva.", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Mime types accepted" => "Tipuri MIME acceptate", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Only files of matching mime types will be accepted" => "Vor fi acceptate doar fișierele cu tipuri MIME corespunzătoare", // ai 2026-06
 
-// include/itemfunc.php, row 1405
+// include/itemfunc.php, row 1513
 "Maximum image width" => "Lățime maximă imagine", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "Maximum image height" => "Înălțime maximă imagine", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Imaginea va fi redimensionată pentru a se încadra în aceste limite, păstrând raportul de aspect.", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "Other fields" => "Alte câmpuri", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Lista altor câmpuri care vor primi această imagine, separate prin ##. Nu funcționează bine la încărcări multiple.", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "Upload policy" => "Politica de încărcare", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Acest parametru controlează ce se întâmplă dacă fișierul încărcat există deja:<br>new - AA creează un nume de fișier nou (adăugând sufixul _x) și îl stochează cu acest nume nou (implicit)<br>overwrite - fișierul vechi cu același nume este suprascris<br>backup - fișierul vechi este copiat într-un fișier nou (inexistent), iar fișierul curent este stocat cu numele curent.<br>În toate cazurile numele fișierului este escapat, astfel orice caracter care nu este literă sau cifră va fi înlocuit cu o liniuță de subliniere.", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "Exact dimensions" => "Dimensiuni exacte", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Dacă este setat la 1, imaginea va fi micșorată exact la dimensiunile specificate (și decupată dacă este necesar). Implicit este 0 sau gol: raportul de aspect este păstrat la redimensionarea imaginii.", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Filename template" => "Șablon nume fișier", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Redenumește fișierul conform șablonului. Puteți folosi expresii AA, precum și aliasurile speciale _#name și _#ext sau _#full (numele fișierului, extensia și numele complet). Aliasurile articolului din expresiile AA nu funcționează la INSERT (articolul nu există în momentul scrierii fișierului). Vor funcționa la UPDATE.", // ai 2026-06
 
-// include/itemfunc.php, row 1566
+// include/itemfunc.php, row 1674
 "Password and Change Password" => "Parolă și schimbare parolă", // ai 2026-06
 
-// include/itemfunc.php, row 1570
+// include/itemfunc.php, row 1678
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Stochează valoarea dintr-un câmp de tip \"Parolă și schimbare parolă\". Mai întâi verifică dacă parola nouă corespunde cu parola nouă retastată și, dacă da, criptează parola nouă și o stochează.", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Copy of password" => "Copie a parolei", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id în care doriți să stocați copia parolei. Uneori util dacă vreți să permiteți utilizatorilor să-și recupereze parola veche. Se recomandă insistent să nu o stocați în text simplu, ci criptată. Vedeți al doilea parametru.", // ai 2026-06
 
-// include/itemfunc.php, row 1580, 1626
+// include/itemfunc.php, row 1688, 1734
 "Encrypt phrase" => "Frază de criptare", // ai 2026-06
 
-// include/itemfunc.php, row 1580
+// include/itemfunc.php, row 1688
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Dacă specificați câmpul \"Copie a parolei\", se recomandă criptarea parolei în baza de date. Introduceți aici orice șir. Dacă apoi aveți nevoie de parolă, o puteți decripta din câmp folosind aceeași frază - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1613
+// include/itemfunc.php, row 1721
 "2FA Secret" => "Secret 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1617
+// include/itemfunc.php, row 1725
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Generează și stochează secretul pentru autentificarea cu doi factori, eventual criptat cu parolă", // ai 2026-06
 
-// include/itemfunc.php, row 1626
+// include/itemfunc.php, row 1734
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Parola folosită pentru criptarea valorii acestui câmp. Poate conține expresii AA sau aliasuri (pentru articolul utilizatorului din secțiunea Administrare cititori)", // ai 2026-06
 
 // include/itemview.php, row 120
@@ -6475,75 +6493,75 @@ return [
 // include/menu_util.php, row 131
 "Import conf from CSV..." => "Import conf din CSV...", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 426
 "Part of %s" => "Parte din %s", // ai 2026-06
 
-// include/menu_util.php, row 432
+// include/menu_util.php, row 443
 "Other slices" => "Alte secțiuni", // ai 2026-06
 
-// include/menu_util.php, row 436
+// include/menu_util.php, row 447
 "Reader Management Slice" => "Secțiune administrare cititori", // ai 2026-06
 
-// include/menu_util.php, row 438
+// include/menu_util.php, row 449
 "Jump inside control panel" => "Salt în panoul de control", // ai 2026-06
 
-// include/menu_util.php, row 439
+// include/menu_util.php, row 450
 // include/slice.class.php, row 1429
 // src/Central/FindingText.php, row 311
 "Links" => "Legături", // ai 2026-06
 
-// include/menu_util.php, row 440
+// include/menu_util.php, row 451
 "MySQL Auth (old version)" => "Autentificare MySQL (versiune veche)", // ai 2026-06
 
-// include/menu_util.php, row 441
+// include/menu_util.php, row 452
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Sondaje", // ai 2026-06
 
-// include/menu_util.php, row 462
+// include/menu_util.php, row 473
 "New slice" => "Secţiune nouă",
 
-// include/menu_util.php, row 466
+// include/menu_util.php, row 477
 "Switch module" => "Schimbă modulul", // ai 2026-06
 
-// include/menu_util.php, row 600, 611
+// include/menu_util.php, row 611, 622
 "Apply" => "Aplică", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 615
 "-- Default for module --" => "-- Implicit pentru modul --", // ai 2026-06
 
-// include/menu_util.php, row 612
+// include/menu_util.php, row 623
 "Switches the admin interface language; the page reloads." => "Schimbă limba interfeţei de administrare; pagina se reîncarcă.", // ai 2026-06
 
-// include/menu_util.php, row 617
+// include/menu_util.php, row 628
 "What's working, what isn't — tell the AA team." => "Ce funcţionează, ce nu — spuneţi echipei AA.", // ai 2026-06
 
-// include/menu_util.php, row 620
+// include/menu_util.php, row 631
 // src/Import/Definition.php, row 86
 "Settings" => "Setări", // ai 2026-06
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 634
 "Theme" => "Temă", // ai 2026-06
 
-// include/menu_util.php, row 625
+// include/menu_util.php, row 636
 "Feedback" => "",
 
-// include/menu_util.php, row 751
+// include/menu_util.php, row 762
 // include/slice.class.php, row 679
 "Reader management" => "Administrare cititori", // ai 2026-06
 
-// include/menu_util.php, row 763
+// include/menu_util.php, row 774
 "logout" => "deconectare", // ai 2026-06
 
-// include/menu_util.php, row 771
+// include/menu_util.php, row 782
 "Search.." => "Căutare..", // ai 2026-06
 
-// include/menu_util.php, row 850
+// include/menu_util.php, row 861
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 860
+// include/menu_util.php, row 871
 "Collapse / expand menu" => "Restrânge / extinde meniul", // ai 2026-06
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1663
 "More" => "Mai mult", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6628,7 +6646,7 @@ return [
 "More users found. Refine your search." => "Au fost găsiți mai mulți utilizatori. Rafinați căutarea.", // ai 2026-06
 
 // include/searchbar.class.php, row 54
-// src/AA_Plannedtask.php, row 62, 127
+// src/AA_Plannedtask.php, row 72, 182
 "Condition" => "Condiție", // ai 2026-06
 
 // include/searchbar.class.php, row 55
@@ -7029,84 +7047,84 @@ return [
 // include/stringexpand.php, row 6161
 "No module for dictionary slice" => "Niciun modul pentru secțiunea de dicționar", // ai 2026-06
 
-// include/stringexpand.php, row 7789
+// include/stringexpand.php, row 7799
 "version" => "versiune", // ai 2026-06
 
-// include/stringexpand.php, row 7973
+// include/stringexpand.php, row 7983
 "show" => "arată", // ai 2026-06
 
-// include/stringexpand.php, row 7974
+// include/stringexpand.php, row 7984
 "hide" => "ascunde", // ai 2026-06
 
-// include/stringexpand.php, row 7975
+// include/stringexpand.php, row 7985
 "loading" => "se încarcă", // ai 2026-06
 
-// include/stringexpand.php, row 9100
+// include/stringexpand.php, row 9116
 "E-mail confirmed." => "E-mail confirmat.", // ai 2026-06
 
-// include/stringexpand.php, row 9104
+// include/stringexpand.php, row 9120
 "E-mail unsubscribed" => "E-mail dezabonat", // ai 2026-06
 
-// include/stringexpand.php, row 9853
+// include/stringexpand.php, row 9869
 "Forgot your password? Fill in your email." => "Ați uitat parola? Introduceți adresa de e-mail.", // ai 2026-06
 
-// include/stringexpand.php, row 9855
+// include/stringexpand.php, row 9871
 // src/Central/FindingText.php, row 457
 "e-mail" => "",
 
-// include/stringexpand.php, row 9873, 9877
+// include/stringexpand.php, row 9889, 9893
 "Unable to find user - please check if it has been misspelled." => "Utilizatorul nu a fost găsit - verificați dacă nu a fost scris greșit.", // ai 2026-06
 
-// include/stringexpand.php, row 9891
+// include/stringexpand.php, row 9907
 "Password link" => "Link pentru parolă", // ai 2026-06
 
-// include/stringexpand.php, row 9892
+// include/stringexpand.php, row 9908
 "Password change url parameter" => "Parametru URL pentru schimbarea parolei", // ai 2026-06
 
-// include/stringexpand.php, row 9904
+// include/stringexpand.php, row 9920
 "Password change" => "Schimbarea parolei", // ai 2026-06
 
-// include/stringexpand.php, row 9905
+// include/stringexpand.php, row 9921
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pentru a schimba parola, accesați următoarea adresă:<br>%1<br>Schimbarea va fi posibilă timp de două ore - după aceea cheia va expira și va trebui să solicitați una nouă.", // ai 2026-06
 
-// include/stringexpand.php, row 9914
+// include/stringexpand.php, row 9930
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "Un e-mail cu cheia pentru schimbarea parolei tocmai a fost trimis la adresa de e-mail: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9925, 9954
+// include/stringexpand.php, row 9941, 9970
 "Bad or expired key." => "Cheie greșită sau expirată.", // ai 2026-06
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 9946
 "Fill in the new password" => "Introduceți parola nouă", // ai 2026-06
 
-// include/stringexpand.php, row 9932
+// include/stringexpand.php, row 9948
 "New password" => "Parolă nouă", // ai 2026-06
 
-// include/stringexpand.php, row 9933
+// include/stringexpand.php, row 9949
 "Retype New Password" => "Reintroduceți parola nouă", // ai 2026-06
 
-// include/stringexpand.php, row 9957
+// include/stringexpand.php, row 9973
 "Passwords do not match - please try again." => "Parolele nu se potrivesc - vă rugăm să încercați din nou.", // ai 2026-06
 
-// include/stringexpand.php, row 9960
+// include/stringexpand.php, row 9976
 "The password must be at least 6 characters long." => "Parola trebuie să aibă cel puțin 6 caractere.", // ai 2026-06
 
-// include/stringexpand.php, row 9966
+// include/stringexpand.php, row 9982
 "Password changed." => "Parola a fost schimbată.", // ai 2026-06
 
-// include/stringexpand.php, row 9968
+// include/stringexpand.php, row 9984
 "An error occurred during password change - please contact: %1." => "A apărut o eroare la schimbarea parolei - vă rugăm să contactați: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10847, 10870
+// include/stringexpand.php, row 10863, 10886
 "Are you sure you want to permanently DELETE this record?" => "Sunteţi sigur că vreţi să ŞTERGEŢI irevocabil această înregistrare?",
 
-// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// include/stringexpand.php, row 10869, 10872, 10892, 10895
 // src/Widget/RimWidget.php, row 270
 "edit" => "editare",
 
-// include/stringexpand.php, row 10859, 10882
+// include/stringexpand.php, row 10875, 10898
 "back" => "înapoi", // ai 2026-06
 
-// include/stringexpand.php, row 10862, 10885
+// include/stringexpand.php, row 10878, 10901
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "trageți fișierele aici sau dați clic pentru a încărca", // ai 2026-06
 
@@ -7526,68 +7544,83 @@ return [
 // src/Manager.php, row 881
 "No item found" => "Nu am găsit nici un articol",
 
-// src/AA_Plannedtask.php, row 61, 127
+// src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "Sarcină", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Dacă este specificată, sarcina este executată doar dacă Condiția se evaluează la o valoare diferită de zero sau goală", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 73
 "Event to run" => "Eveniment declanșator", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "New Item" => "Articol nou", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "Item Updated" => "Articol actualizat", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 66
+// src/AA_Plannedtask.php, row 76
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "Evenimentul la care trebuie executată sarcina. Este independent de setarea de timp de mai jos (deci puteți rula sarcina atât la apariția evenimentului, cât și la o oră anume). Dacă nu specificați parametrul \"+ secunde\" sau îl setați la 0, sarcina se execută imediat. Dacă decalajul \"+ secunde\" este setat, sarcina este planificată să se execute o dată după x secunde.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Time to run" => "Ora de rulare", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "Specificați ora la care trebuie executată sarcina. Va fi apoi procesată periodic la această oră. Ora trebuie specificată în \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">format relativ</a>\", de exemplu:<br>\"midnight\" - rulează în fiecare zi la miezul nopții <br>\"+1 hour\" - rulează în fiecare oră, <br>\"+30 min\" - rulează la fiecare 30 de minute, <br>\"16:00\" - rulează zilnic la 16:00<br>\"Monday 10:00\" - rulează în fiecare luni la 16:00<br>\"first day of this month 10:00\"<br>Orele nu sunt exacte, sarcinile sunt executate una după alta de scriptul care rulează cam la fiecare 5 minute.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68, 127
+// src/AA_Plannedtask.php, row 78, 182
 "+ seconds" => "+ secunde", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68
+// src/AA_Plannedtask.php, row 78
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "Opțional, specificați decalajul suplimentar de timp adăugat la ora precedentă (în secunde).<br>Este greu de specificat \"a 15-a zi a lunii\" prin rândul precedent, așa că le puteți combina:<br> - \"ora\" = \"first day of this month 10:00\"<br> - \"+ secunde\" = \"1209600\"<br> (60 secunde * 60 minute * 24 ore * 14 zile) - observați cifra 14 (1 + 14 = 15)", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Opțional, specificați contextul - Id-ul lung al articolului pentru care va fi executată sarcina. Puteți apoi folosi {id..............} și alte aliasuri ale articolului în sarcină. Id-ul articolului poate fi obținut și din variabila {var:aa_event_for}. Pentru sarcinile de tip \"event\" (articol actualizat/nou) este completat întotdeauna cu id-ul articolului modificat.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 70
+// src/AA_Plannedtask.php, row 80
 "Saved by" => "",
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 83
+"Result of the last run" => "",
+
+// src/AA_Plannedtask.php, row 157
 "Planned tasks" => "Sarcini planificate", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 122
+// src/AA_Plannedtask.php, row 177
 "Current time on server" => "Ora curentă pe server", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Event" => "Eveniment", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Computed time" => "Ora calculată", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Scheduled to" => "Programat la", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 315
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+// src/AA_Plannedtask.php, row 266
+"done" => "",
 
-// src/AA_Plannedtask.php, row 318
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+// src/AA_Plannedtask.php, row 267
+"done, no output" => "",
 
-// src/AA_Plannedtask.php, row 382
-"not scheduled, yet" => "încă neprogramat", // ai 2026-06
+// src/AA_Plannedtask.php, row 268
+"condition not met" => "",
+
+// src/AA_Plannedtask.php, row 269
+"failed" => "",
 
 // src/AA_Plannedtask.php, row 386
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+
+// src/AA_Plannedtask.php, row 389
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+
+// src/AA_Plannedtask.php, row 453
+"not scheduled, yet" => "încă neprogramat", // ai 2026-06
+
+// src/AA_Plannedtask.php, row 457
 "next run" => "următoarea rulare", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 51, 72
@@ -9081,7 +9114,7 @@ return [
 // src/Import/DetailPage.php, row 329, 666
 "Updated" => "",
 
-// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailCatalog.php, row 171
 "Catalog of the source" => "",
 
 // src/Import/DetailConfig.php, row 136
@@ -9668,82 +9701,88 @@ return [
 // src/Import/DetailPage.php, row 1147
 "Look the failure up in the log of import failures, then Continue or End the run." => "",
 
-// src/Import/DetailPage.php, row 1156
+// src/Import/DetailPage.php, row 1161
 "full run" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Baseline only" => "",
+// src/Import/DetailPage.php, row 1162
+"one stream (%1)" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Nothing imported yet. Run changed only takes what changes after this." => "",
-
-// src/Import/DetailPage.php, row 1198, 1199
-"Imported with item errors" => "",
-
-// src/Import/DetailPage.php, row 1198
-"1 item error in the run that imported it - see Runs." => "",
+// src/Import/DetailPage.php, row 1163
+"%1 streams" => "",
 
 // src/Import/DetailPage.php, row 1199
+"Baseline only" => "",
+
+// src/Import/DetailPage.php, row 1199
+"Nothing imported yet. Run changed only takes what changes after this." => "",
+
+// src/Import/DetailPage.php, row 1207, 1208
+"Imported with item errors" => "",
+
+// src/Import/DetailPage.php, row 1207
+"1 item error in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1208
 "%1 item errors in the run that imported it - see Runs." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "Imported" => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source was asked again after the import." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source has not been asked since." => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Checked, not imported yet" => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Run imports it; Run changed only too, as it has no version to compare." => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "Not seen yet" => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "No run has imported or checked it." => "",
 
-// src/Import/DetailPage.php, row 1219
+// src/Import/DetailPage.php, row 1228
 "%1 read" => "",
 
-// src/Import/DetailPage.php, row 1220
+// src/Import/DetailPage.php, row 1229
 "%1 new, %2 updated, %3 skipped" => "",
 
-// src/Import/DetailPage.php, row 1221
+// src/Import/DetailPage.php, row 1230
 "%1 filtered out" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "dry run - nothing stored" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "all streams of the run together" => "",
 
-// src/Import/DetailPage.php, row 1241
+// src/Import/DetailPage.php, row 1250
 "None yet - an import records it" => "",
 
-// src/Import/DetailPage.php, row 1242
+// src/Import/DetailPage.php, row 1251
 "None - the source gives no version" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1, working %2" => "",
 
-// src/Import/DetailPage.php, row 1301
+// src/Import/DetailPage.php, row 1310
 "%1 s" => "",
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1313
 "%1 min %2 s" => "",
 
-// src/Import/DetailPage.php, row 1304, 1306
+// src/Import/DetailPage.php, row 1313, 1315
 "%1 min" => "",
 
-// src/Import/DetailPage.php, row 1306
+// src/Import/DetailPage.php, row 1315
 "%1 h" => "",
 
 // src/Import/Mapping.php, row 219
@@ -10020,13 +10059,13 @@ return [
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "S-au planificat %1 loturi cu %2 articole", // ai 2026-06
 
-// src/Later/Toexecute.php, row 364
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "",
 
-// src/Later/Toexecute.php, row 368
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "",
 
-// src/Later/Toexecute.php, row 459
+// src/Later/Toexecute.php, row 462
 "the task failed with %1" => "",
 
 // src/Manager.php, row 430
@@ -10554,16 +10593,16 @@ return [
 // src/Optimize/CategorySort2groupBy.php, row 37
 "All slices are already converted" => "Toate secțiunile sunt deja convertite", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 20
+// src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "Optimizează aliasul f_h în f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 28
+// src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Înlocuiește aliasul f_h pentru câmpurile marcate ca nemultiple și html cu funcția mai rapidă f_1 pentru afișarea directă a conținutului", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 18
+// src/Optimize/ChangeF_t2F_1.php, row 15
 "Optimize f_t alias to f_1" => "Optimizează aliasul f_t în f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 26
+// src/Optimize/ChangeF_t2F_1.php, row 23
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Înlocuiește aliasul f_t pentru câmpurile marcate ca nemultiple și html cu funcția mai rapidă f_1 pentru afișarea directă a conținutului", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -10588,8 +10627,32 @@ return [
 "Changing ID for table %1 (%2)" => "Schimbare ID pentru tabelul %1 (%2)", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 68
+// src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "%1 tabele convertite", // ai 2026-06
+
+// src/Optimize/ChangeQte2Trm.php, row 24
+"Trim text fields" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 29
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields switched to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields to switch to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 139
+"Field templates" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"switched to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"to switch to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 145
+"%1 keeps \"Text = don't modify\": %2" => "",
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
 "Unsigned {ajax} widget settings" => "",
@@ -10611,7 +10674,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 102
-// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 99
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -10625,7 +10688,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
-// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 100
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckUploadRefusals.php, row 89
@@ -11188,22 +11251,22 @@ return [
 // src/Optimize/CheckQueue.php, row 181
 "Longest [s]" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 22
+// src/Optimize/CheckQueuedClassMissing.php, row 23
 "Queued tasks of a missing class" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 27
+// src/Optimize/CheckQueuedClassMissing.php, row 28
 "Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 61
+// src/Optimize/CheckQueuedClassMissing.php, row 62
 "Queued tasks of class %1 cannot run - the class is missing" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 66
+// src/Optimize/CheckQueuedClassMissing.php, row 67
 "Selector" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 70
-"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "",
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 76
+// src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "",
 
 // src/Optimize/CheckRequiredSettings.php, row 17
@@ -11520,7 +11583,13 @@ return [
 // src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "Am găsit %1 tabele care trebuie convertite", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 64
+// src/Optimize/Convert2innodb.php, row 71
+"Unique numbers (seq) may repeat" => "",
+
+// src/Optimize/Convert2innodb.php, row 71
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+
+// src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "Conversie tabel %1 (%2) în InnoDB", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 23
@@ -12398,6 +12467,30 @@ return [
 
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "valoarea implicită a câmpului expiry_date..... modificată în %1 /%2 secțiuni: %3)", // ai 2026-06
+
+// src/Optimize/TrimFieldValues.php, row 39
+"Trim stored values" => "",
+
+// src/Optimize/TrimFieldValues.php, row 44
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+
+// src/Optimize/TrimFieldValues.php, row 63
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+
+// src/Optimize/TrimFieldValues.php, row 68
+"%1 items to trim" => "",
+
+// src/Optimize/TrimFieldValues.php, row 80
+"Trimming of %1 slices planned in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 91
+"%1 items planned to be trimmed in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 129
+"%1 items with a unique value to trim by hand, e.g. %2" => "",
+
+// src/Optimize/TrimFieldValues.php, row 139
+"%1 items to trim, e.g. %2" => "",
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Actualizează structura bazei de date", // ai 2026-06

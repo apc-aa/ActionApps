@@ -212,7 +212,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Úroveň hodnoty (používá se pro hierarchické hodnoty)",
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: chybná funkce aliasu %1 pro %2",
 
 // include/itemview.php, row 120

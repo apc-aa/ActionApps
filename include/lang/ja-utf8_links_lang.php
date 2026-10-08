@@ -285,7 +285,7 @@ return [
 "Insert date" => "登録日", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "編集者",
+"Edited by" => "編集者", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "最終編集日", // ai 2026-06

@@ -263,7 +263,7 @@ return [
 "language" => "jazyk",
 
 // modules/alerts/modedit.php, row 177
-"Alert emails" => "E-maily s novinkami", // ai 2026-10
+"Alert emails" => "E-maily Zasílání", // ai 2026-10
 
 // modules/alerts/modedit.php, row 181, 187
 "Edit '%1'" => "Upravit '%1'", // ai 2026-10

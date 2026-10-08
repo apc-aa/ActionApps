@@ -13,6 +13,7 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Editor" => "Utoljára szerkesztette", // ai 2026-06
 // "Are you sure you want to empty trash?" => "Biztosan ki szeretné üríteni a lomtárat?", // ai 2026-06
 // End of unused messages
 
@@ -288,7 +289,7 @@ return [
 "Insert date" => "Hozzáadás dátuma", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "Utoljára szerkesztette", // ai 2026-06
+"Edited by" => "Szerkesztette", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Utolsó szerkesztés dátuma", // ai 2026-06
@@ -643,7 +644,7 @@ return [
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "Ebben az űrlapban új hivatkozást vehet fel a katalógusba; nem kötelező\\nminden mezőt kitölteni. A hivatkozás könnyű besorolásához azonban kérjük,\\ntöltse ki legalább a hivatkozás <b>URL</b>-jét, <b>NEVÉT</b>, és\\nsorolja be a hivatkozást valamelyik <b>KATEGÓRIÁBA</b>. Ha van tapasztalata a weboldalakkal,\\nkitöltheti a hivatkozás leírását is.<br>\\n<b>Kérjük, ne vegyen fel \"kereskedelmi\" hivatkozásokat a katalógusba.</b> Ezek a hivatkozások nem jelennek meg a katalógusban.<br>\\n Köszönjük.", // ai 2026-06
+"<!--NewPublicLinkText-->" => "Ebben az űrlapban új hivatkozást vehet fel a katalógusba; nem kötelező minden mezőt kitölteni. A hivatkozás könnyű besorolásához azonban kérjük, töltse ki legalább a hivatkozás <b>URL</b>-jét, <b>NEVÉT</b>, és sorolja be a hivatkozást valamelyik <b>KATEGÓRIÁBA</b>. Ha van tapasztalata a weboldalakkal, kitöltheti a hivatkozás leírását is.<br> <b>Kérjük, ne vegyen fel \"kereskedelmi\" hivatkozásokat a katalógusba.</b> Ezek a hivatkozások nem jelennek meg a katalógusban.<br> Köszönjük.", // ai 2026-10
 
 // modules/links/linkedit.php, row 425
 "Link" => "Hivatkozás", // ai 2026-06

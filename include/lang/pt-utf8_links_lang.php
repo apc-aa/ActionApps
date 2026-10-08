@@ -285,7 +285,7 @@ return [
 "Insert date" => "Data de inserção", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "Editado por", // ai 2026-06
+"Edited by" => "Editado por", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Data da última edição", // ai 2026-06
@@ -640,7 +640,7 @@ return [
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "Neste formulário para inserir uma nova ligação no catálogo\\npode, mas não tem de, preencher todos os campos. Para facilitar a inclusão da ligação\\nno catálogo, pedimos que preencha sobretudo o <b>URL</b> da ligação, o <b>NOME</b> e\\na inclusão da ligação numa <b>CATEGORIA</b>. Se tiver experiência com as páginas,\\npode também preencher a descrição da ligação.<br>\\n<b>Não insira no catálogo, por favor, ligações \"comerciais\".</b> Essas ligações não serão apresentadas no catálogo.<br>\\n Obrigado.", // ai 2026-06
+"<!--NewPublicLinkText-->" => "Neste formulário para inserir uma nova ligação no catálogo pode, mas não tem de, preencher todos os campos. Para facilitar a inclusão da ligação no catálogo, pedimos que preencha sobretudo o <b>URL</b> da ligação, o <b>NOME</b> e a inclusão da ligação numa <b>CATEGORIA</b>. Se tiver experiência com as páginas, pode também preencher a descrição da ligação.<br> <b>Não insira no catálogo, por favor, ligações \"comerciais\".</b> Essas ligações não serão apresentadas no catálogo.<br> Obrigado.", // ai 2026-10
 
 // modules/links/linkedit.php, row 425
 "Link" => "Ligação", // ai 2026-06

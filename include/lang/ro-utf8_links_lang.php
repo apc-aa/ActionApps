@@ -285,7 +285,7 @@ return [
 "Insert date" => "Data adăugării", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "",
+"Edited by" => "Editat de", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Data ultimei editări", // ai 2026-06

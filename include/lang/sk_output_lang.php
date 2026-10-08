@@ -190,7 +190,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "\xDArove\xF2 kon\x9Atanty (pou\x9E\xEDva sa pre hierarchick\xE9 kon\x9Atanty)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: nespr\xE1vna funkcia aliasu %1 pre %2", // ai 2026-06
 
 // include/itemview.php, row 120

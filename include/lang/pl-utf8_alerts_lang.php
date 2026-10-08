@@ -270,7 +270,8 @@ return [
 // modules/alerts/send_emails.php, row 157
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
- => "Zdefiniuj wybory w rubrykach, z których chcesz wysyłać powiadomienia,\\n        w widokach typu Alerts Selection Set", // ai 2026-06
+ => "Zdefiniuj wybory w rubrykach, z których chcesz wysyłać powiadomienia,\n"
+   ."        w widokach typu Alerts Selection Set", // ai 2026-10
 
 // modules/alerts/synchro.php, row 65
 "Synchronization with Reader Management Slice" => "Synchronizacja z rubryką zarządzania czytelnikami", // ai 2026-06
@@ -299,7 +300,8 @@ return [
 // modules/alerts/synchro.php, row 136
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
- => "Dodaje tylko pola, których ID jeszcze nie istnieją w rubryce.\\n    Odświeża grupę stałych zawierającą wybory, jeśli już istnieje.", // ai 2026-06
+ => "Dodaje tylko pola, których ID jeszcze nie istnieją w rubryce.\n"
+   ."    Odświeża grupę stałych zawierającą wybory, jeśli już istnieje.", // ai 2026-10
 
 // modules/alerts/synchro.php, row 142
 "Field Name" => "Nazwa pola", // ai 2026-06

@@ -102,7 +102,7 @@ return [
 "State file" => "Stavov\xFD soubor",
 
 // modules/site/modedit.php, row 145, 326
-"Router" => "Sm\xECrova\xE8", // ai 2026-10
+"Router" => "Router",
 
 // modules/site/modedit.php, row 146, 340
 "Uses modules" => "Pou\x9E\xEDv\xE1 moduly",
@@ -141,7 +141,7 @@ return [
 "App store" => "Katalog aplikac\xED", // ai 2026-10
 
 // modules/site/modedit.php, row 349
-"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Zve\xF8ejn\xECn\xFD web si z t\xE9to AA m\xF9\x9Ee nainstalovat kter\xE1koli AA - i s web\xEDky a Zas\xEDl\xE1n\xEDm, kter\xE9 pou\x9E\xEDv\xE1: jejich \x9Aablony, pol\xED\xE8ka, pohledy a hodnoty, nikdy v\x9Aak \xE8l\xE1nky. Nastavit to m\xF9\x9Ee jen superadmin.", // ai 2026-10
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Zve\xF8ejn\xECn\xFD web si z tohoto AA m\xF9\x9Ee nainstalovat kter\xE9koli AA - i s web\xEDky a moduly Zas\xEDl\xE1n\xED, kter\xE9 web pou\x9E\xEDv\xE1: jejich \x9Aablony, pol\xED\xE8ka, pohledy a hodnoty, nikdy v\x9Aak \xE8l\xE1nky. Nastavit to m\xF9\x9Ee jen superadmin.", // ai 2026-10
 
 // modules/site/modedit.php, row 353
 "The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Moduly webu se od zve\xF8ejn\xECn\xED zm\xECnily: %1 - katalog aplikac\xED web nenab\xEDdne, dokud je neschv\xE1l\xED superadmin.", // ai 2026-10

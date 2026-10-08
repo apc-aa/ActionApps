@@ -50,10 +50,10 @@ return [
 "OK" => "Confirmer",
 
 // include/constants_param_wizard.php, row 68
-"Parameters" => "Param\xEF\xBF\xBDtres",
+"Parameters" => "Param\xE8tres", // ai 2026-10
 
 // include/constants_param_wizard.php, row 70
-"Help: Parameter Wizard" => "Assistance: Param\xEF\xBF\xBDtre assistant",
+"Help: Parameter Wizard" => "Assistance: Param\xE8tre assistant", // ai 2026-10
 
 // include/constants_param_wizard.php, row 77
 "Input Validate Type" => "Type de validation de saisie", // ai 2026-06
@@ -83,7 +83,7 @@ return [
 "Allowed maximum value" => "Valeur maximale autoris\xE9e", // ai 2026-06
 
 // include/constants_param_wizard.php, row 103, 125
-"Step" => "\xEF\xBF\xBDtape",
+"Step" => "\xC9tape", // ai 2026-10
 
 // include/constants_param_wizard.php, row 110
 "Number = (signed) integer number" => "Number = nombre entier (sign\xE9)", // ai 2026-06
@@ -683,7 +683,7 @@ return [
 "a parameter passed to the function" => "param\xE8tre pass\xE9 \xE0 la fonction", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "voir", // ai 2026-06
+"view" => "vue", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "permet de manipuler les vues. C'est une fonction complexe et puissante, d\xE9crite dans la <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, qui permet d'afficher n'importe quelle vue \xE0 la place de l'alias. Elle peut servir pour un tableau d'\xAB articles li\xE9s \xBB ou pour afficher le contenu d'une section li\xE9e.", // ai 2026-06

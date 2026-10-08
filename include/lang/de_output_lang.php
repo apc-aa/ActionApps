@@ -170,7 +170,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Ebene der Konstante (f\xFCr hierarchische Konstanten verwendet)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Fehler: falsche Alias-Funktion %1 f\xFCr %2", // ai 2026-06
 
 // include/itemview.php, row 120

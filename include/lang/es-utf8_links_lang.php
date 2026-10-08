@@ -332,7 +332,7 @@ return [
 "Insert date" => "Insertar fecha",
 
 // modules/links/constants.php, row 68
-"Editor" => "Modificado por", // ai 2026-06
+"Edited by" => "Editado por", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Fecha de última edición",
@@ -687,7 +687,7 @@ return [
 "ActionApps" => "Aplicaciones de Acción de APC",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "En este formulario para añadir un nuevo enlace al catálogo puede, pero no es obligatorio, rellenar todos los campos. Sin embargo, para clasificar fácilmente el enlace en el catálogo, le rogamos que rellene sobre todo la <b>URL</b> del enlace, el <b>NOMBRE</b> y la clasificación del enlace en alguna <b>CATEGORÍA</b>. Si tiene experiencia con las páginas, también puede rellenar la descripción del enlace.<br>\\n<b>Por favor, no añada enlaces \"comerciales\" al catálogo.</b> Estos enlaces no se publicarán en el catálogo.<br>\\n Gracias.", // ai 2026-06
+"<!--NewPublicLinkText-->" => "En este formulario para añadir un nuevo enlace al catálogo puede, pero no es obligatorio, rellenar todos los campos. Sin embargo, para clasificar fácilmente el enlace en el catálogo, le rogamos que rellene sobre todo la <b>URL</b> del enlace, el <b>NOMBRE</b> y la clasificación del enlace en alguna <b>CATEGORÍA</b>. Si tiene experiencia con las páginas, también puede rellenar la descripción del enlace.<br> <b>Por favor, no añada enlaces \"comerciales\" al catálogo.</b> Estos enlaces no se publicarán en el catálogo.<br> Gracias.", // ai 2026-10
 
 // modules/links/linkedit.php, row 425
 "Link" => "Enlace",

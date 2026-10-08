@@ -34,6 +34,7 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Unique number in sequence 1,2,3,..." => "Jedinstveni broj u nizu 1,2,3,...", // ai 2026-06
 // "Data source" => "Izvor podataka", // ai 2026-06
 // "Upload periodically" => "Učitavaj periodično", // ai 2026-06
 // "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - Kopiranje stranice (1/2) - Odabir izvornog ActionApps", // ai 2026-06
@@ -416,6 +417,7 @@ return [
 "You do not have permission to manage Cron" => "Nemate dozvolu za upravljanje Cronom", // ai 2026-06
 
 // admin/aa_cron.php, row 47
+// src/AA_Plannedtask.php, row 82, 182
 // src/Import/Definition.php, row 135, 163
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Zadnje pokretanje", // ai 2026-06
@@ -424,7 +426,7 @@ return [
 "never" => "nikad", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 656
+// include/field.class.php, row 714
 // src/Util/Adminlink.php, row 31
 "disabled" => "onemogućeno", // ai 2026-06
 
@@ -552,7 +554,7 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 98
@@ -937,7 +939,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1701
 "Manage %1" => "Upravljanje %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -993,11 +995,12 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Stranica",
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "Modul",
@@ -1010,7 +1013,7 @@ return [
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
 // include/logs.php, row 293
-// src/AA_Plannedtask.php, row 149
+// src/AA_Plannedtask.php, row 204
 "Log" => "Zapisnik", // ai 2026-06
 
 // admin/aafinder.php, row 172
@@ -1146,8 +1149,8 @@ return [
 
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 260
-// include/menu_util.php, row 618
-// include/stringexpand.php, row 9858, 9937
+// include/menu_util.php, row 629
+// include/stringexpand.php, row 9874, 9953
 "Send" => "Pošaljite",
 
 // admin/anonym_wizard.php, row 151
@@ -1200,7 +1203,7 @@ return [
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1253, 1257
+// include/field.class.php, row 1332, 1336
 // include/form.class.php, row 211
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
@@ -1311,10 +1314,10 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 638
+// include/field.class.php, row 696
 // include/filedit.php, row 115
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1642
+// include/metabase.class.php, row 1643
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
@@ -1335,7 +1338,7 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 642
+// include/field.class.php, row 700
 // include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
 // include/profile.php, row 69
@@ -1487,7 +1490,7 @@ return [
 
 // admin/itemedit.php, row 305
 // include/date.php, row 189
-// include/field.class.php, row 1253
+// include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Greška u",
 
@@ -1773,7 +1776,7 @@ return [
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 171
 // src/Optimize/CheckRequiredSettings.php, row 69
@@ -1804,7 +1807,7 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1257
+// include/field.class.php, row 1336
 // src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "Važnost",
 
@@ -2004,9 +2007,9 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
+// include/metabase.class.php, row 1668
 // include/statestore.php, row 1077, 1414
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
 "Action" => "Akcija",
@@ -2397,7 +2400,7 @@ return [
 "User" => "Korisnik\\ica",
 
 // admin/se_history.php, row 144
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckImports.php, row 287
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "Vrijeme", // ai 2026-06
@@ -2410,7 +2413,7 @@ return [
 
 // admin/se_history.php, row 167
 // include/itemfunc.php, row 201
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Item ID" => "ID stavke", // ai 2026-06
 
 // admin/se_history.php, row 216, 217
@@ -3116,7 +3119,7 @@ return [
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 485, 542
 // include/statestore.php, row 1077
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 170
 "ID" => "Oznaka",
 
@@ -3379,7 +3382,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 111
 // admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1194
+// include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Korisničko ime",
 
@@ -3557,7 +3560,7 @@ return [
 "Admin - Slice settings" => "Admin - postavke stranice",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 624
+// include/menu_util.php, row 635
 "Language" => "Jezik",
 
 // admin/slicedit.php, row 260
@@ -4122,7 +4125,7 @@ return [
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
-// include/menu_util.php, row 437, 747
+// include/menu_util.php, row 448, 758
 // include/slice.class.php, row 1394
 // src/Central/FindingText.php, row 496
 "Alerts" => "Upozorenja",
@@ -4520,7 +4523,7 @@ return [
 "Parts" => "",
 
 // central/installapp.php, row 1084
-"field id" => "oznaka polja",
+"field id" => "ID polja", // ai 2026-10
 
 // central/installapp.php, row 1084
 "16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end." => "",
@@ -4871,7 +4874,7 @@ return [
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 "Task Manager" => "Upravitelj zadataka", // ai 2026-06
 
 // central/synchronize3.php, row 114
@@ -4941,7 +4944,7 @@ return [
 
 // include/constants.php, row 456
 // include/logs.php, row 781, 813
-// src/Optimize/CheckQueuedClassMissing.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "klasa",
 
 // include/constants.php, row 460
@@ -5365,66 +5368,81 @@ return [
 // include/feeding.php, row 539
 "Remote node" => "Udaljeni čvor", // ai 2026-06
 
-// include/field.class.php, row 651
+// include/field.class.php, row 162
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+
+// include/field.class.php, row 167
+"code - its indentation and the last new line are kept on purpose" => "",
+
+// include/field.class.php, row 174
+"stores the text of the selected items" => "",
+
+// include/field.class.php, row 180
+"constants of a group" => "",
+
+// include/field.class.php, row 187
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+
+// include/field.class.php, row 709
 "Move to another field" => "Premjestite u drugo polje", // ai 2026-06
 
-// include/field.class.php, row 1005
+// include/field.class.php, row 1084
 // include/itemview.php, row 127
 "number of found items" => "broj pronađenih stavki",
 
-// include/field.class.php, row 1006
+// include/field.class.php, row 1085
 "index of item within whole listing (begins with 0)" => "indeks stavke unutar cijelog popisa (počinje od 0)", // ai 2026-06
 
-// include/field.class.php, row 1007
+// include/field.class.php, row 1086
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "indeks stavke unutar stranice (počinje od 0 na svakoj stranici koju prikazuje pagescroller)", // ai 2026-06
 
-// include/field.class.php, row 1008
+// include/field.class.php, row 1087
 "index of a group on page (it begins from 0 on each page)" => "indeks grupe na stranici (počinje od 0 na svakoj stranici)", // ai 2026-06
 
-// include/field.class.php, row 1009
+// include/field.class.php, row 1088
 "index of item within a group on page (it begins from 0 on each group)" => "indeks stavke unutar grupe na stranici (počinje od 0 u svakoj grupi)", // ai 2026-06
 
-// include/field.class.php, row 1010
+// include/field.class.php, row 1089
 "alias for Item ID" => "Sinonim za ID stavke",
 
-// include/field.class.php, row 1011
+// include/field.class.php, row 1090
 "alias for Short Item ID" => "Sinonim za kratki ID stavke",
 
-// include/field.class.php, row 1019, 1020
+// include/field.class.php, row 1098, 1099
 "alias used on admin page index.php for itemedit url" => "alias korišten na administracijskoj stranici index.php za URL uređivanja stavke", // ai 2026-06
 
-// include/field.class.php, row 1021
+// include/field.class.php, row 1100
 "Alias used on admin page index.php for edit discussion url" => "Alias korišten na administracijskoj stranici index.php za URL uređivanja diskusije", // ai 2026-06
 
-// include/field.class.php, row 1022
+// include/field.class.php, row 1101
 "Title of Slice for RSS" => "Naslov stranica za RSS",
 
-// include/field.class.php, row 1023
+// include/field.class.php, row 1102
 "Link to the Slice for RSS" => "Veza na stranicu za RSS",
 
-// include/field.class.php, row 1024
+// include/field.class.php, row 1103
 "Short description (owner and name) of slice for RSS" => "Kratki opis (vlasnik/ica i ime) stranice za RSS",
 
-// include/field.class.php, row 1025
+// include/field.class.php, row 1104
 "Date RSS information is generated, in RSS date format" => "Generiran je datum RSS informacija, u RSS obliku datuma",
 
-// include/field.class.php, row 1026
+// include/field.class.php, row 1105
 "Slice name" => "Ime stranice",
 
-// include/field.class.php, row 1028
+// include/field.class.php, row 1107
 "Current MLX language" => "Trenutni MLX jezik", // ai 2026-06
 
-// include/field.class.php, row 1029
+// include/field.class.php, row 1108
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML oznaka smjera teksta (npr. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1112, 1393
+// include/field.class.php, row 1191, 1472
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- bilo koje tekstualno polje --", // ai 2026-06
 
-// include/field.class.php, row 1221
+// include/field.class.php, row 1300
 " (this)" => " (ovo)", // ai 2026-06
 
-// include/field.class.php, row 1275, 1288, 1301
+// include/field.class.php, row 1354, 1367, 1380
 "Can't copy field" => "",
 
 // include/filedit.php, row 82
@@ -5661,7 +5679,7 @@ return [
 "Offer" => "Ponuđeno",
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10850, 10873
+// include/stringexpand.php, row 10866, 10889
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5839,7 +5857,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Razina konstante (koristi se za hijerarhijske konstante)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Greška: pogrešna funkcija sinonima %1 za %2", // ai 2026-06
 
 // include/item_content.php, row 1126, 1184
@@ -6051,151 +6069,151 @@ return [
 // include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Uklanja razmake s početka i kraja te normalizira UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1105
 "Item IDs" => "ID stavki",
 
-// include/itemfunc.php, row 1132
+// include/itemfunc.php, row 1140
 "The tag '%1' could not be stored: %2" => "",
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "Korisnički ID = uvijek sprema trenutni korisnički ID",
 
-// include/itemfunc.php, row 1170
+// include/itemfunc.php, row 1178
 "Inserts the identity of the current user, no matter what the user sets." => "Umeće identitet trenutnog korisnika bez obzira na to što korisnik unese.", // ai 2026-06
 
-// include/itemfunc.php, row 1222
+// include/itemfunc.php, row 1230
 "Now = always store current time" => "Sada = uvijek sprema trenutno vrijeme",
 
-// include/itemfunc.php, row 1226
+// include/itemfunc.php, row 1234
 "Inserts the current time, no matter what the user sets." => "Umeće stvarno trenutno vrijeme",
 
-// include/itemfunc.php, row 1260
+// include/itemfunc.php, row 1268
 "Computed field for INSERT/UPDATE" => "Izračunato polje za INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1264
+// include/itemfunc.php, row 1272
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polje je rezultat izraza upisanog u \"Kod za razrješavanje aliasa\". Dobro je rješenje za sve vrijednosti koje se mogu unaprijed izračunati, jer bi njihovo izračunavanje pri prikazu stavke bilo sporo. Da, ovdje možete koristiti {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1273
+// include/itemfunc.php, row 1281
 "Code for unaliasing (INSERT)" => "Kod za razrješavanje aliasa (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1273, 1309
+// include/itemfunc.php, row 1281, 1317
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Ovdje možete upisati bilo koji niz znakova. Niz će se razriješiti pri spremanju stavke, pa ovdje možete koristiti bilo koji {...} konstrukt kao i aliase polja", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "Code for unaliasing (UPDATE)" => "Kod za razrješavanje aliasa (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Isto kao gore, ali samo za operaciju UPDATE. Ako nije ispunjeno, vrijednost polja ostaje nepromijenjena", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Multivalue delimiter" => "Razdjelnik višestrukih vrijednosti", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Character or string, which will split the computed string into multiple values (the same field)" => "Znak ili niz znakova koji će izračunati niz podijeliti na više vrijednosti (istog polja)", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "Recompute every" => "Interval ponovnog izračuna", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Polje će se ponovno izračunavati svake minute, sata, ... (pomoću UPDATE koda gore). Vremena nisu točna - minuta znači otprilike 1-10 minuta. Ako nije ispunjeno, polje će se ponovno izračunati samo pri unosu/izmjeni stavke.", // ai 2026-06
 
-// include/itemfunc.php, row 1296
+// include/itemfunc.php, row 1304
 "Computed field" => "Izračunato polje", // ai 2026-06
 
-// include/itemfunc.php, row 1300
+// include/itemfunc.php, row 1308
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polje je rezultat izraza upisanog u \\\"Kod za razrješavanje aliasa\\\". Dobro je rješenje za sve vrijednosti koje se mogu unaprijed izračunati, jer bi njihovo izračunavanje pri prikazu stavke bilo sporo. Da, ovdje možete koristiti {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1309
+// include/itemfunc.php, row 1317
 "Code for unaliasing (INSERT+UPDATE)" => "Kod za razrješavanje aliasa (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1331
+// include/itemfunc.php, row 1339
 "SEO Name" => "SEO naziv", // ai 2026-06
 
-// include/itemfunc.php, row 1335
+// include/itemfunc.php, row 1343
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Ako polje nije ispunjeno, seoname se izračunava iz aliasa _#HEADLINE (ili drugog, ako je naveden), jedinstven za sve stranice u site modulima u kojima je stranica navedena u postavci \"Uses slices\". Alias SEO naziva u osnovi je kratica za izračunato polje s {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "Alias to compute from" => "Alias iz kojeg se izračunava", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "if not specified, the _#HEADLINE is used" => "ako nije naveden, koristi se _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1372
 "Unique number for this field (from 1,..)" => "Jedinstveni broj za ovo polje (od 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1366
-"Unique number in sequence 1,2,3,..." => "Jedinstveni broj u nizu 1,2,3,...", // ai 2026-06
+// include/itemfunc.php, row 1376
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
 
-// include/itemfunc.php, row 1391
+// include/itemfunc.php, row 1499
 "File = uploaded file" => "Datoteka = poslana datoteka",
 
-// include/itemfunc.php, row 1395
+// include/itemfunc.php, row 1503
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Sprema poslanu datoteku i vezu na nju, osobine datteke se primjenjuju samo ako je datoteka tipa slika/nešto",
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Mime types accepted" => "Prihvaćen Mime tip",
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Only files of matching mime types will be accepted" => "Samo datoteke odgovarajućeg Mime tipa će biti prihvaćene",
 
-// include/itemfunc.php, row 1405
+// include/itemfunc.php, row 1513
 "Maximum image width" => "Najveća dozvoljena širina slikovne datoteke",
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "Maximum image height" => "Najveća dozvoljena visina slikovne datoteke",
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Slika će biti promijenjena unutar tih granica zadržavajući razmjere",
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "Other fields" => "Ostala polja",
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Popis drugih polja koja će primiti ovu sliku, odvojenih s ##. Ne radi dobro za višestruke prijenose.", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "Upload policy" => "Pravila prijenosa", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Ovaj parametar određuje što učiniti ako prenesena datoteka već postoji:<br>new - AA stvara novi naziv datoteke (dodavanjem nastavka _x) i sprema je pod tim novim nazivom (zadano)<br>overwrite - stara datoteka istog naziva se prepisuje<br>backup - stara datoteka se kopira u novu (nepostojeću) datoteku, a trenutna datoteka se sprema pod trenutnim nazivom.<br>U svim slučajevima naziv datoteke se pročišćava, tako da će svi ne-slovni znakovi biti zamijenjeni donjom crtom.", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "Exact dimensions" => "Točne dimenzije", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ako je postavljeno na 1, slika će se smanjiti točno na navedene dimenzije (i obrezati po potrebi). Zadano je 0 ili prazno: pri smanjivanju slike zadržava se omjer širine i visine.", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Filename template" => "Predložak naziva datoteke", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Preimenuje datoteku prema predlošku. Možete koristiti AA izraze kao i posebne aliase _#name i _#ext ili _#full (naziv datoteke, ekstenzija i puni naziv). Aliasi stavke u AA izrazima ne rade pri INSERT (stavka ne postoji u trenutku zapisa datoteke). Radit će pri UPDATE.", // ai 2026-06
 
-// include/itemfunc.php, row 1566
+// include/itemfunc.php, row 1674
 "Password and Change Password" => "Lozinka i promjena lozinke",
 
-// include/itemfunc.php, row 1570
+// include/itemfunc.php, row 1678
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Sprema vrijednost iz polja tipa \"Lozinka i promjena lozinke\". Najprije provjerava podudara li se nova lozinka s ponovno upisanom novom lozinkom i, ako da, šifrira novu lozinku i sprema je.", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Copy of password" => "Kopija lozinke", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id u koji želite spremiti kopiju lozinke. Ponekad korisno ako želite omogućiti ljudima da dobiju svoju staru lozinku. Izričito se preporučuje da je ne spremate u čistom tekstu nego da je šifrirate. Vidi drugi parametar.", // ai 2026-06
 
-// include/itemfunc.php, row 1580, 1626
+// include/itemfunc.php, row 1688, 1734
 "Encrypt phrase" => "Fraza za šifriranje", // ai 2026-06
 
-// include/itemfunc.php, row 1580
+// include/itemfunc.php, row 1688
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ako navedete polje \"Kopija lozinke\", preporučuje se šifrirati lozinku u bazi podataka. Upišite ovdje bilo koji niz znakova. Ako vam zatim zatreba lozinka, možete je dešifrirati iz polja koristeći istu frazu - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1613
+// include/itemfunc.php, row 1721
 "2FA Secret" => "2FA tajni ključ", // ai 2026-06
 
-// include/itemfunc.php, row 1617
+// include/itemfunc.php, row 1725
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Generira i sprema tajni ključ za dvofaktorsku autentifikaciju, po želji šifriran lozinkom", // ai 2026-06
 
-// include/itemfunc.php, row 1626
+// include/itemfunc.php, row 1734
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Lozinka koja će se primijeniti za šifriranje vrijednosti ovog polja. Može sadržavati AA izraze ili aliase (za stavku korisnika u stranici Upravljanje čitateljima)", // ai 2026-06
 
 // include/itemview.php, row 120
@@ -6621,75 +6639,75 @@ return [
 // include/menu_util.php, row 131
 "Import conf from CSV..." => "Uvezite postavke iz CSV-a...", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 426
 "Part of %s" => "Dio %s", // ai 2026-06
 
-// include/menu_util.php, row 432
+// include/menu_util.php, row 443
 "Other slices" => "Ostale stranice", // ai 2026-06
 
-// include/menu_util.php, row 436
+// include/menu_util.php, row 447
 "Reader Management Slice" => "Stranica za uređivanje postavki za čitanje",
 
-// include/menu_util.php, row 438
+// include/menu_util.php, row 449
 "Jump inside control panel" => "Prebacite se u Kontrol panel",
 
-// include/menu_util.php, row 439
+// include/menu_util.php, row 450
 // include/slice.class.php, row 1429
 // src/Central/FindingText.php, row 311
 "Links" => "Veze",
 
-// include/menu_util.php, row 440
+// include/menu_util.php, row 451
 "MySQL Auth (old version)" => "MySQL autentifikacija",
 
-// include/menu_util.php, row 441
+// include/menu_util.php, row 452
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Glasanja",
 
-// include/menu_util.php, row 462
+// include/menu_util.php, row 473
 "New slice" => "Nova stranica",
 
-// include/menu_util.php, row 466
+// include/menu_util.php, row 477
 "Switch module" => "Promijenite modul", // ai 2026-06
 
-// include/menu_util.php, row 600, 611
+// include/menu_util.php, row 611, 622
 "Apply" => "Primijeni", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 615
 "-- Default for module --" => "-- Zadano za modul --", // ai 2026-06
 
-// include/menu_util.php, row 612
+// include/menu_util.php, row 623
 "Switches the admin interface language; the page reloads." => "Mijenja jezik administracijskog sučelja; stranica se ponovno učitava.", // ai 2026-06
 
-// include/menu_util.php, row 617
+// include/menu_util.php, row 628
 "What's working, what isn't — tell the AA team." => "Što radi, a što ne — javite AA timu.", // ai 2026-06
 
-// include/menu_util.php, row 620
+// include/menu_util.php, row 631
 // src/Import/Definition.php, row 86
 "Settings" => "Podešavanje",
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 634
 "Theme" => "Tema", // ai 2026-06
 
-// include/menu_util.php, row 625
+// include/menu_util.php, row 636
 "Feedback" => "Povratne informacije", // ai 2026-06
 
-// include/menu_util.php, row 751
+// include/menu_util.php, row 762
 // include/slice.class.php, row 679
 "Reader management" => "Podaci o alatu za čitanje",
 
-// include/menu_util.php, row 763
+// include/menu_util.php, row 774
 "logout" => "odjava", // ai 2026-06
 
-// include/menu_util.php, row 771
+// include/menu_util.php, row 782
 "Search.." => "Traži..", // ai 2026-06
 
-// include/menu_util.php, row 850
+// include/menu_util.php, row 861
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 860
+// include/menu_util.php, row 871
 "Collapse / expand menu" => "Sažmite / proširite izbornik", // ai 2026-06
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1663
 "More" => "Više", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6774,7 +6792,7 @@ return [
 "More users found. Refine your search." => "Pronađeno je više korisnika. Suzite pretragu.", // ai 2026-06
 
 // include/searchbar.class.php, row 54
-// src/AA_Plannedtask.php, row 62, 127
+// src/AA_Plannedtask.php, row 72, 182
 "Condition" => "Uvjet", // ai 2026-06
 
 // include/searchbar.class.php, row 55
@@ -7172,84 +7190,84 @@ return [
 // include/stringexpand.php, row 6161
 "No module for dictionary slice" => "Nema modula za stranicu rječnika", // ai 2026-06
 
-// include/stringexpand.php, row 7789
+// include/stringexpand.php, row 7799
 "version" => "verzija", // ai 2026-06
 
-// include/stringexpand.php, row 7973
+// include/stringexpand.php, row 7983
 "show" => "prikaži", // ai 2026-06
 
-// include/stringexpand.php, row 7974
+// include/stringexpand.php, row 7984
 "hide" => "sakrij", // ai 2026-06
 
-// include/stringexpand.php, row 7975
+// include/stringexpand.php, row 7985
 "loading" => "učitavanje", // ai 2026-06
 
-// include/stringexpand.php, row 9100
+// include/stringexpand.php, row 9116
 "E-mail confirmed." => "E-mail potvrđen.", // ai 2026-06
 
-// include/stringexpand.php, row 9104
+// include/stringexpand.php, row 9120
 "E-mail unsubscribed" => "E-mail odjavljen", // ai 2026-06
 
-// include/stringexpand.php, row 9853
+// include/stringexpand.php, row 9869
 "Forgot your password? Fill in your email." => "Zaboravili ste lozinku? Upišite svoju e-mail adresu.", // ai 2026-06
 
-// include/stringexpand.php, row 9855
+// include/stringexpand.php, row 9871
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-pošta", // ai 2026-06
 
-// include/stringexpand.php, row 9873, 9877
+// include/stringexpand.php, row 9889, 9893
 "Unable to find user - please check if it has been misspelled." => "Korisnik nije pronađen - provjerite je li ispravno napisan.", // ai 2026-06
 
-// include/stringexpand.php, row 9891
+// include/stringexpand.php, row 9907
 "Password link" => "Poveznica za lozinku", // ai 2026-06
 
-// include/stringexpand.php, row 9892
+// include/stringexpand.php, row 9908
 "Password change url parameter" => "URL parametar za promjenu lozinke", // ai 2026-06
 
-// include/stringexpand.php, row 9904
+// include/stringexpand.php, row 9920
 "Password change" => "Promjena lozinke", // ai 2026-06
 
-// include/stringexpand.php, row 9905
+// include/stringexpand.php, row 9921
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Za promjenu lozinke posjetite sljedeću adresu:<br>%1<br>Promjena će biti moguća dva sata - nakon toga ključ istječe i morat ćete zatražiti novi.", // ai 2026-06
 
-// include/stringexpand.php, row 9914
+// include/stringexpand.php, row 9930
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s ključem za promjenu lozinke upravo je poslan na adresu: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9925, 9954
+// include/stringexpand.php, row 9941, 9970
 "Bad or expired key." => "Neispravan ili istekao ključ.", // ai 2026-06
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 9946
 "Fill in the new password" => "Upišite novu lozinku", // ai 2026-06
 
-// include/stringexpand.php, row 9932
+// include/stringexpand.php, row 9948
 "New password" => "Nova lozinka", // ai 2026-06
 
-// include/stringexpand.php, row 9933
+// include/stringexpand.php, row 9949
 "Retype New Password" => "Utipkajte ponovo novu lozinku",
 
-// include/stringexpand.php, row 9957
+// include/stringexpand.php, row 9973
 "Passwords do not match - please try again." => "Lozinke se ne podudaraju - pokušajte ponovno.", // ai 2026-06
 
-// include/stringexpand.php, row 9960
+// include/stringexpand.php, row 9976
 "The password must be at least 6 characters long." => "Lozinka mora imati najmanje 6 znakova.", // ai 2026-06
 
-// include/stringexpand.php, row 9966
+// include/stringexpand.php, row 9982
 "Password changed." => "Lozinka promijenjena.", // ai 2026-06
 
-// include/stringexpand.php, row 9968
+// include/stringexpand.php, row 9984
 "An error occurred during password change - please contact: %1." => "Došlo je do greške pri promjeni lozinke - kontaktirajte: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10847, 10870
+// include/stringexpand.php, row 10863, 10886
 "Are you sure you want to permanently DELETE this record?" => "Jeste li sigurni da želite ZAUVIJEK obrisati označene zapis",
 
-// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// include/stringexpand.php, row 10869, 10872, 10892, 10895
 // src/Widget/RimWidget.php, row 270
 "edit" => "Uredite",
 
-// include/stringexpand.php, row 10859, 10882
+// include/stringexpand.php, row 10875, 10898
 "back" => "natrag", // ai 2026-06
 
-// include/stringexpand.php, row 10862, 10885
+// include/stringexpand.php, row 10878, 10901
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "povucite datoteke ovdje ili kliknite za prijenos", // ai 2026-06
 
@@ -7669,68 +7687,83 @@ return [
 // src/Manager.php, row 881
 "No item found" => "Nije pronađeno",
 
-// src/AA_Plannedtask.php, row 61, 127
+// src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "Zadatak", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Ako je zadano, zadatak se izvršava samo ako se Uvjet vrednuje u vrijednost različitu od nule ili prazne vrijednosti", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 73
 "Event to run" => "Događaj za pokretanje", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "New Item" => "Nova stavka", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "Item Updated" => "Stavka ažurirana", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 66
+// src/AA_Plannedtask.php, row 76
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "Događaj pri kojem se zadatak treba izvršiti. Neovisan je o postavci vremena ispod (zadatak dakle možete pokrenuti pri događaju, a također i u određeno vrijeme). Ako ne navedete parametar \"+ sekunde\" ili ga postavite na 0, zadatak se izvršava odmah. Ako je pomak \"+ sekunde\" postavljen, zadatak se planira za jednokratno izvršenje nakon x sekundi.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Time to run" => "Vrijeme pokretanja", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "Navedite vrijeme kada se zadatak treba izvršiti. Tada će se periodički obrađivati u to vrijeme. Vrijeme navedite u \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">relativnom formatu</a>\", dakle na primjer:<br>\"midnight\" - pokreće se svake ponoći <br>\"+1 hour\" - pokreće se svaki sat, <br>\"+30 min\" - pokreće se svakih 30 minuta, <br>\"16:00\" - pokreće se svaki dan u 16:00<br>\"Monday 10:00\" - pokreće se svaki ponedjeljak u 16:00<br>\"first day of this month 10:00\"<br>Vremena nisu točna - zadatke jedan za drugim obrađuje skripta koja se pokreće otprilike svakih 5 minuta.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68, 127
+// src/AA_Plannedtask.php, row 78, 182
 "+ seconds" => "+ sekunde", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68
+// src/AA_Plannedtask.php, row 78
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "Po želji navedite dodatni vremenski pomak koji se dodaje prethodnom vremenu (u sekundama).<br>Prethodnim retkom teško je zadati \"15. dan u mjesecu\", pa možete kombinirati oboje:<br> - \"vrijeme\" = \"first day of this month 10:00\"<br> - \"+ sekunde\" = \"1209600\"<br> (60 sekundi * 60 minuta * 24 sata * 14 dana) - obratite pažnju na 14 (1. + 14 = 15.)", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Po želji navedite kontekst - dugi ID stavke za koju će se zadatak izvršiti. U zadatku tada možete koristiti {id..............} i ostale sinonime stavke. ID stavke moguće je dobiti i u varijabli {var:aa_event_for}. Kod \"događajnih\" zadataka (Stavka ažurirana/nova) uvijek je popunjen ID-om izmijenjene stavke.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 70
+// src/AA_Plannedtask.php, row 80
 "Saved by" => "",
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 83
+"Result of the last run" => "",
+
+// src/AA_Plannedtask.php, row 157
 "Planned tasks" => "Planirani zadaci", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 122
+// src/AA_Plannedtask.php, row 177
 "Current time on server" => "Trenutno vrijeme na poslužitelju", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Event" => "Događaj", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Computed time" => "Izračunato vrijeme", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Scheduled to" => "Planirano za", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 315
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+// src/AA_Plannedtask.php, row 266
+"done" => "",
 
-// src/AA_Plannedtask.php, row 318
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+// src/AA_Plannedtask.php, row 267
+"done, no output" => "",
 
-// src/AA_Plannedtask.php, row 382
-"not scheduled, yet" => "još nije planirano", // ai 2026-06
+// src/AA_Plannedtask.php, row 268
+"condition not met" => "",
+
+// src/AA_Plannedtask.php, row 269
+"failed" => "",
 
 // src/AA_Plannedtask.php, row 386
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+
+// src/AA_Plannedtask.php, row 389
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+
+// src/AA_Plannedtask.php, row 453
+"not scheduled, yet" => "još nije planirano", // ai 2026-06
+
+// src/AA_Plannedtask.php, row 457
 "next run" => "sljedeće pokretanje", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 51, 72
@@ -9224,7 +9257,7 @@ return [
 // src/Import/DetailPage.php, row 329, 666
 "Updated" => "",
 
-// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailCatalog.php, row 171
 "Catalog of the source" => "",
 
 // src/Import/DetailConfig.php, row 136
@@ -9811,82 +9844,88 @@ return [
 // src/Import/DetailPage.php, row 1147
 "Look the failure up in the log of import failures, then Continue or End the run." => "",
 
-// src/Import/DetailPage.php, row 1156
+// src/Import/DetailPage.php, row 1161
 "full run" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Baseline only" => "",
+// src/Import/DetailPage.php, row 1162
+"one stream (%1)" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Nothing imported yet. Run changed only takes what changes after this." => "",
-
-// src/Import/DetailPage.php, row 1198, 1199
-"Imported with item errors" => "",
-
-// src/Import/DetailPage.php, row 1198
-"1 item error in the run that imported it - see Runs." => "",
+// src/Import/DetailPage.php, row 1163
+"%1 streams" => "",
 
 // src/Import/DetailPage.php, row 1199
+"Baseline only" => "",
+
+// src/Import/DetailPage.php, row 1199
+"Nothing imported yet. Run changed only takes what changes after this." => "",
+
+// src/Import/DetailPage.php, row 1207, 1208
+"Imported with item errors" => "",
+
+// src/Import/DetailPage.php, row 1207
+"1 item error in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1208
 "%1 item errors in the run that imported it - see Runs." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "Imported" => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source was asked again after the import." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source has not been asked since." => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Checked, not imported yet" => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Run imports it; Run changed only too, as it has no version to compare." => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "Not seen yet" => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "No run has imported or checked it." => "",
 
-// src/Import/DetailPage.php, row 1219
+// src/Import/DetailPage.php, row 1228
 "%1 read" => "",
 
-// src/Import/DetailPage.php, row 1220
+// src/Import/DetailPage.php, row 1229
 "%1 new, %2 updated, %3 skipped" => "",
 
-// src/Import/DetailPage.php, row 1221
+// src/Import/DetailPage.php, row 1230
 "%1 filtered out" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "dry run - nothing stored" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "all streams of the run together" => "",
 
-// src/Import/DetailPage.php, row 1241
+// src/Import/DetailPage.php, row 1250
 "None yet - an import records it" => "",
 
-// src/Import/DetailPage.php, row 1242
+// src/Import/DetailPage.php, row 1251
 "None - the source gives no version" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1, working %2" => "",
 
-// src/Import/DetailPage.php, row 1301
+// src/Import/DetailPage.php, row 1310
 "%1 s" => "",
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1313
 "%1 min %2 s" => "",
 
-// src/Import/DetailPage.php, row 1304, 1306
+// src/Import/DetailPage.php, row 1313, 1315
 "%1 min" => "",
 
-// src/Import/DetailPage.php, row 1306
+// src/Import/DetailPage.php, row 1315
 "%1 h" => "",
 
 // src/Import/Mapping.php, row 219
@@ -10163,13 +10202,13 @@ return [
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "Planirano %1 dijelova s %2 stavki", // ai 2026-06
 
-// src/Later/Toexecute.php, row 364
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "",
 
-// src/Later/Toexecute.php, row 368
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "",
 
-// src/Later/Toexecute.php, row 459
+// src/Later/Toexecute.php, row 462
 "the task failed with %1" => "",
 
 // src/Manager.php, row 430
@@ -10474,7 +10513,7 @@ return [
 "Polls admin" => "Administracija anketa", // ai 2026-06
 
 // src/Module/Poll/Menu.php, row 84
-"Designs" => "Izgledi", // ai 2026-06
+"Designs" => "Dizajni", // ai 2026-10
 
 // src/Optimize/AbstractOptimize.php, row 174
 "Types" => "Tipovi", // ai 2026-06
@@ -10697,16 +10736,16 @@ return [
 // src/Optimize/CategorySort2groupBy.php, row 37
 "All slices are already converted" => "Sve stranice su već pretvorene", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 20
+// src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "Optimiziraj alias f_h u f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 28
+// src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Zamjenjuje alias f_h za polje označeno kao ne-višestruko i html bržom funkcijom f_1 za izravan ispis sadržaja", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 18
+// src/Optimize/ChangeF_t2F_1.php, row 15
 "Optimize f_t alias to f_1" => "Optimiziraj alias f_t u f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 26
+// src/Optimize/ChangeF_t2F_1.php, row 23
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Zamjenjuje alias f_t za polje označeno kao ne-višestruko i html bržom funkcijom f_1 za izravan ispis sadržaja", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -10731,8 +10770,32 @@ return [
 "Changing ID for table %1 (%2)" => "Promjena ID-a za tablicu %1 (%2)", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 68
+// src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Pretvoreno %1 tablica", // ai 2026-06
+
+// src/Optimize/ChangeQte2Trm.php, row 24
+"Trim text fields" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 29
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields switched to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields to switch to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 139
+"Field templates" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"switched to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"to switch to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 145
+"%1 keeps \"Text = don't modify\": %2" => "",
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
 "Unsigned {ajax} widget settings" => "",
@@ -10754,7 +10817,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 102
-// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 99
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -10768,7 +10831,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
-// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 100
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckUploadRefusals.php, row 89
@@ -11331,22 +11394,22 @@ return [
 // src/Optimize/CheckQueue.php, row 181
 "Longest [s]" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 22
+// src/Optimize/CheckQueuedClassMissing.php, row 23
 "Queued tasks of a missing class" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 27
+// src/Optimize/CheckQueuedClassMissing.php, row 28
 "Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 61
+// src/Optimize/CheckQueuedClassMissing.php, row 62
 "Queued tasks of class %1 cannot run - the class is missing" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 66
+// src/Optimize/CheckQueuedClassMissing.php, row 67
 "Selector" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 70
-"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "",
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 76
+// src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "",
 
 // src/Optimize/CheckRequiredSettings.php, row 17
@@ -11663,7 +11726,13 @@ return [
 // src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "Pronađeno je %1 tablica koje treba pretvoriti", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 64
+// src/Optimize/Convert2innodb.php, row 71
+"Unique numbers (seq) may repeat" => "",
+
+// src/Optimize/Convert2innodb.php, row 71
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+
+// src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "Pretvori tablicu %1 (%2) u InnoDB", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 23
@@ -12542,6 +12611,30 @@ return [
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "zadana vrijednost polja expiry_date..... promijenjena u %1 /%2 stranica: %3)", // ai 2026-06
 
+// src/Optimize/TrimFieldValues.php, row 39
+"Trim stored values" => "",
+
+// src/Optimize/TrimFieldValues.php, row 44
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+
+// src/Optimize/TrimFieldValues.php, row 63
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+
+// src/Optimize/TrimFieldValues.php, row 68
+"%1 items to trim" => "",
+
+// src/Optimize/TrimFieldValues.php, row 80
+"Trimming of %1 slices planned in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 91
+"%1 items planned to be trimmed in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 129
+"%1 items with a unique value to trim by hand, e.g. %2" => "",
+
+// src/Optimize/TrimFieldValues.php, row 139
+"%1 items to trim, e.g. %2" => "",
+
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Ažuriraj strukturu baze podataka", // ai 2026-06
 
@@ -12651,7 +12744,7 @@ return [
 "The image cannot be read" => "",
 
 // src/Util/Note.php, row 47
-"Note" => "Poruka",
+"Note" => "Bilješka", // ai 2026-10
 
 // src/Util/Note.php, row 52
 "A note on an admin page, a view or a State Check finding" => "",

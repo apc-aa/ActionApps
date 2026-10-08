@@ -329,7 +329,7 @@ return [
 "Insert date" => "Insertar fecha",
 
 // modules/links/constants.php, row 68
-"Editor" => "Modificado por", // ai 2026-06
+"Edited by" => "Editado por", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Fecha de \xFAltima edici\xF3n",
@@ -684,7 +684,7 @@ return [
 "ActionApps" => "Aplicaciones de Acci\xF3n de APC",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "En este formulario para a\xF1adir un nuevo enlace al cat\xE1logo puede, pero no es obligatorio, rellenar todos los campos. Sin embargo, para clasificar f\xE1cilmente el enlace en el cat\xE1logo, le rogamos que rellene sobre todo la <b>URL</b> del enlace, el <b>NOMBRE</b> y la clasificaci\xF3n del enlace en alguna <b>CATEGOR\xCDA</b>. Si tiene experiencia con las p\xE1ginas, tambi\xE9n puede rellenar la descripci\xF3n del enlace.<br>\\n<b>Por favor, no a\xF1ada enlaces \"comerciales\" al cat\xE1logo.</b> Estos enlaces no se publicar\xE1n en el cat\xE1logo.<br>\\n Gracias.", // ai 2026-06
+"<!--NewPublicLinkText-->" => "En este formulario para a\xF1adir un nuevo enlace al cat\xE1logo puede, pero no es obligatorio, rellenar todos los campos. Sin embargo, para clasificar f\xE1cilmente el enlace en el cat\xE1logo, le rogamos que rellene sobre todo la <b>URL</b> del enlace, el <b>NOMBRE</b> y la clasificaci\xF3n del enlace en alguna <b>CATEGOR\xCDA</b>. Si tiene experiencia con las p\xE1ginas, tambi\xE9n puede rellenar la descripci\xF3n del enlace.<br> <b>Por favor, no a\xF1ada enlaces \"comerciales\" al cat\xE1logo.</b> Estos enlaces no se publicar\xE1n en el cat\xE1logo.<br> Gracias.", // ai 2026-10
 
 // modules/links/linkedit.php, row 425
 "Link" => "Enlace",

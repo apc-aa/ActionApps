@@ -271,7 +271,7 @@ return [
 "alerts ID" => "ID alertas",
 
 // modules/alerts/send.php, row 44
-"You do not have permissions to access this page" => "Usted no tiene permisos a esta p\xE1gina",
+"You do not have permissions to access this page" => "No tiene permisos para acceder a esta p\xE1gina", // ai 2026-10
 
 // modules/alerts/send.php, row 69
 "Send Emails" => "Env\xEDa correos-e",

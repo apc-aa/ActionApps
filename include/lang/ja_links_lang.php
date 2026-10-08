@@ -282,7 +282,7 @@ return [
 "Insert date" => "\xC5\xD0\xCF\xBF\xC6\xFC", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "\xCA\xD4\xBD\xB8\xBC\xD4",
+"Edited by" => "\xCA\xD4\xBD\xB8\xBC\xD4", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "\xBA\xC7\xBD\xAA\xCA\xD4\xBD\xB8\xC6\xFC", // ai 2026-06

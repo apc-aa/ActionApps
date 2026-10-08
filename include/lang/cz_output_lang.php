@@ -211,7 +211,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "\xDArove\xF2 hodnoty (pou\x9E\xEDv\xE1 se pro hierarchick\xE9 hodnoty)",
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: chybn\xE1 funkce aliasu %1 pro %2",
 
 // include/itemview.php, row 120

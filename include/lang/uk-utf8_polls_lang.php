@@ -145,7 +145,7 @@ return [
 "Polls" => "Опитування", // ai 2026-06
 
 // modules/polls/menu.php, row 119
-"Designs" => "Вигляди", // ai 2026-06
+"Designs" => "Дизайни", // ai 2026-10
 
 // modules/polls/modedit.php, row 102
 "You do not have permissions to add polls" => "Ви не маєте права додавати опитування", // ai 2026-06

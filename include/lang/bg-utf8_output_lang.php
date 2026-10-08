@@ -173,7 +173,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Ниво на константата (използва се за йерархични константи)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Грешка: грешна функция за алиас %1 за %2", // ai 2026-06
 
 // include/itemview.php, row 120

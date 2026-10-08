@@ -115,7 +115,8 @@ return [
 // include/constants_param_wizard.php, row 151
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
- => "Válido apenas se o valor ainda não estiver em uso. Útil p. ex.\\n        para e-mails ou nomes de utilizador.", // ai 2026-06
+ => "Válido apenas se o valor ainda não estiver em uso. Útil p. ex.\n"
+   ."        para e-mails ou nomes de utilizador.", // ai 2026-10
 
 // include/constants_param_wizard.php, row 155, 197
 "Field ID" => "ID do campo", // ai 2026-06
@@ -131,7 +132,10 @@ return [
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"
- => "<b>1</b> = Apenas esta secção.\\n                <b>2</b> = Todas as secções.<br>\\n                <b>0</b> = (predefinição) Nome de utilizador, especial: verifica a unicidade nas secções\\n                de gestão de leitores e no sistema de permissões. Usa sempre o campo com ID %1", // ai 2026-06
+ => "<b>1</b> = Apenas esta secção.\n"
+   ."                <b>2</b> = Todas as secções.<br>\n"
+   ."                <b>0</b> = (predefinição) Nome de utilizador, especial: verifica a unicidade nas secções\n"
+   ."                de gestão de leitores e no sistema de permissões. Usa sempre o campo com ID %1", // ai 2026-10
 
 // include/constants_param_wizard.php, row 175
 "Regular Expression" => "Expressão regular", // ai 2026-06
@@ -166,7 +170,8 @@ return [
 // include/constants_param_wizard.php, row 204
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
- => "Pretende verificar a unicidade apenas nesta secção\\n                  ou em todas as secções?", // ai 2026-06
+ => "Pretende verificar a unicidade apenas nesta secção\n"
+   ."                  ou em todas as secções?", // ai 2026-10
 
 // include/constants_param_wizard.php, row 212
 "Password and Change Password" => "Palavra-passe e Alterar palavra-passe", // ai 2026-06
@@ -176,7 +181,10 @@ return [
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
    ."        function does the validation again before inserting the new password.</i>"
- => "Verifica que as palavras-passe não diferem ao alterar a palavra-passe.\\n        <i>A validação é fornecida apenas por JavaScript e não por ValidateInput(),\\n        porque a função de inserção\\n        efetua novamente a validação antes de inserir a nova palavra-passe.</i>", // ai 2026-06
+ => "Verifica que as palavras-passe não diferem ao alterar a palavra-passe.\n"
+   ."        <i>A validação é fornecida apenas por JavaScript e não por ValidateInput(),\n"
+   ."        porque a função de inserção\n"
+   ."        efetua novamente a validação antes de inserir a nova palavra-passe.</i>", // ai 2026-10
 
 // include/constants_param_wizard.php, row 228
 "Function" => "Função", // ai 2026-06
@@ -678,7 +686,7 @@ return [
 "a parameter passed to the function" => "um parâmetro passado à função", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "ver", // ai 2026-06
+"view" => "vista", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "permite manipular as vistas. É uma função complexa e poderosa, descrita nas <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, que permite apresentar qualquer vista no lugar do alias. Pode ser utilizada para uma tabela de 'artigos relacionados' ou para apresentar o conteúdo de uma secção relacionada.", // ai 2026-06

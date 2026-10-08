@@ -270,7 +270,8 @@ return [
 // modules/alerts/send_emails.php, row 157
 "Define selections in slices from which you want to send Alerts,\n"
    ."        in views of type Alerts Selection Set"
- => "Hãy định nghĩa các lựa chọn trong những chuyên mục mà bạn muốn gửi cảnh báo,\\n        trong các khung hiển thị thuộc loại Alerts Selection Set", // ai 2026-06
+ => "Hãy định nghĩa các lựa chọn trong những chuyên mục mà bạn muốn gửi cảnh báo,\n"
+   ."        trong các khung hiển thị thuộc loại Alerts Selection Set", // ai 2026-10
 
 // modules/alerts/synchro.php, row 65
 "Synchronization with Reader Management Slice" => "Đồng bộ với chuyên mục quản lý người đọc", // ai 2026-06
@@ -299,7 +300,8 @@ return [
 // modules/alerts/synchro.php, row 136
 "Adds only fields the IDs of which don't yet exist in the slice.\n"
    ."    Refreshes the constant group containing selections if it already exists."
- => "Chỉ thêm những trường có ID chưa tồn tại trong chuyên mục.\\n    Làm mới nhóm hằng số chứa các lựa chọn nếu nó đã tồn tại.", // ai 2026-06
+ => "Chỉ thêm những trường có ID chưa tồn tại trong chuyên mục.\n"
+   ."    Làm mới nhóm hằng số chứa các lựa chọn nếu nó đã tồn tại.", // ai 2026-10
 
 // modules/alerts/synchro.php, row 142
 "Field Name" => "Tên trường", // ai 2026-06
