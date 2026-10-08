@@ -357,6 +357,8 @@ foreach (array_keys($LANG_GROUPS) as $group) {
                 }
                 if ($old_1b) {
                     $old = apply_renames(LangFile::toUtf8($old_1b, Langs::getCharset($code)), $rename_map);
+                    // legacy one-byte files wrote the English source as "not translated yet"
+                    $old = array_filter($old, fn($t, $m) => $t !== (string) $m, ARRAY_FILTER_USE_BOTH);
                     echo "  seeding {$master}_{$group} from $src (" . count($old) . " messages)\n";
                     break;
                 }
@@ -400,11 +402,9 @@ foreach (array_keys($LANG_GROUPS) as $group) {
             foreach ($locations as $file => $rows) {
                 $comments[] = "$file, row " . implode(', ', array_unique($rows));
             }
-            // a stored translation equal to the English source means "not translated yet"
+            // a translation equal to the English source is a decision to keep English here
+            // (another section may translate the same text) — kept, never refilled by the carry
             $translation = $old[$message] ?? '';
-            if ($translation === $message) {
-                $translation = '';
-            }
             $mark = $old_marks[$master][$group][$message] ?? null;
             if ($translation === '') {
                 $mark = null;
