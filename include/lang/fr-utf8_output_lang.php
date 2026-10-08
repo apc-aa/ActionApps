@@ -13,9 +13,7 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 // Unused messages — no longer found in the sources; kept commented for reference.
-// "February" => "FÃ©vrier",
 // "August" => "AoÅ±t",
-// "December" => "DÃ©cembre",
 // End of unused messages
 
 // ./slice.php, row 236
@@ -41,10 +39,10 @@ return [
 
 // ./slice.php, row 617
 // include/view.php, row 361
-"No item found" => "Pas d'item trouvï¿½",
+"No item found" => "Pas d'item trouvé", // ai 2026-10
 
 // include/discussion.php, row 222
-"Show selected" => "Montrer sï¿½lection",
+"Show selected" => "Montrer sélection", // ai 2026-10
 
 // include/discussion.php, row 223
 "Show all" => "Montrer tout",
@@ -80,7 +78,7 @@ return [
 "Alias for IP address of author's computer" => "Alias pour adresse IP de l'ordinateur de l'auteur",
 
 // include/item.php, row 384
-"Alias for checkbox used for choosing discussion comment" => "Alias pour la boï¿½te de contrï¿½le utilisï¿½e pour choisir le commentaire",
+"Alias for checkbox used for choosing discussion comment" => "Alias pour la boîte de contrôle utilisée pour choisir le commentaire", // ai 2026-10
 
 // include/item.php, row 385
 "Alias for images" => "Alias pour images",
@@ -105,9 +103,9 @@ return [
 "Alias for item ID<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">"
- => "Alias pour identitï¿½ des item<br>\n"
+ => "Alias pour identité des item<br>\n"
    ."                             <i>Usage: </i>dans le code du formulaire<br>\n"
-   ."                             <i>Exemple: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">",
+   ."                             <i>Exemple: </i>&lt;input type=hidden name=d_parent value=\"_#DISC_ID#\">", // ai 2026-10
 
 // include/item.php, row 389
 "Alias for link to text of the discussion comment<br>\n"
@@ -122,28 +120,28 @@ return [
    ."                             <i>Usage: </i>in HTML code for fulltext view of the comment<br>\n"
    ."                             <i>Example: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt;"
  => "Alias pour lier au formulaire<br>\n"
-   ."                             <i>Usage: </i>dans le cade HTML pour une vue complï¿½te du commentaire<br>\n"
-   ."                             <i>Exemple: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt",
+   ."                             <i>Usage: </i>dans le cade HTML pour une vue complète du commentaire<br>\n"
+   ."                             <i>Exemple: </i>&lt;a href=_#URLREPLY&gt;Reply&lt;/a&gt", // ai 2026-10
 
 // include/item.php, row 391
 "Alias for link to discussion<br>\n"
    ."                             <i>Usage: </i>in form code<br>\n"
    ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">"
- => "Alias pour lier ï¿½ la discussion<br>\n"
+ => "Alias pour lier à la discussion<br>\n"
    ."                             <i>Usage: </i>dans le code du formulaire<br>\n"
-   ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">",
+   ."                             <i>Example: </i>&lt;input type=hidden name=url value=\"_#DISC_URL\">", // ai 2026-10
 
 // include/item.php, row 392
 "Alias for buttons Show all, Show selected, Add new<br>\n"
    ."                             <i>Usage: </i> in the Bottom HTML code"
- => "Alias pour les boutons Montrer tout, montrer sï¿½lection, Ajouter nouveau<br>\n"
-   ."                             <i>Usage: </i> ï¿½ la fi ndu code HTML",
+ => "Alias pour les boutons Montrer tout, montrer sélection, Ajouter nouveau<br>\n"
+   ."                             <i>Usage: </i> à la fi ndu code HTML", // ai 2026-10
 
 // include/item.php, row 408
-"3rd parameter filled in DiscussionMailList field" => "3e paramï¿½tre rempli dans le champ de discussion de liste courrier",
+"3rd parameter filled in DiscussionMailList field" => "3e paramètre rempli dans le champ de discussion de liste courrier", // ai 2026-10
 
 // include/item.php, row 410
-"%1th parameter filled in DiscussionMailList field" => "%eme paramï¿½tre rempli dans le champ de discussion de liste courrier",
+"%1th parameter filled in DiscussionMailList field" => "%1e paramètre rempli dans le champ de discussion de liste courrier", // ai 2026-10
 
 // include/item.php, row 426
 "Constant name" => "Nom constant",
@@ -155,40 +153,40 @@ return [
 "Constant value" => "Valeur constante",
 
 // include/item.php, row 429
-"Constant priority" => "prioritï¿½ constante",
+"Constant priority" => "priorité constante", // ai 2026-10
 
 // include/item.php, row 430
-"Constant group id" => "Identitï¿½ constante du groupe",
+"Constant group id" => "Identité constante du groupe", // ai 2026-10
 
 // include/item.php, row 431
-"Category class (for categories only)" => "Catï¿½gorie de classe (pour catï¿½gories seulement)",
+"Category class (for categories only)" => "Catégorie de classe (pour catégories seulement)", // ai 2026-10
 
 // include/item.php, row 432
 "Constant number" => "Nombre constant",
 
 // include/item.php, row 433
-"Constant unique id (32-hexadecimal characters)" => "Identitï¿½ constante unique (32 caractï¿½res hexadï¿½cimals)",
+"Constant unique id (32-hexadecimal characters)" => "Identité constante unique (32 caractères hexadécimals)", // ai 2026-10
 
 // include/item.php, row 434
-"Constant unique short id (autoincremented from '1' for each constant in the system)" => "Courte identitï¿½ unique et constante (incrï¿½mentï¿½ automatiquement de '1' pour chaque constante dans le systï¿½me",
+"Constant unique short id (autoincremented from '1' for each constant in the system)" => "Courte identité unique et constante (incrémenté automatiquement de '1' pour chaque constante dans le système", // ai 2026-10
 
 // include/item.php, row 435
 "Constant description" => "Decription constante",
 
 // include/item.php, row 436
-"Constant level (used for hierarchical constants)" => "Niveau constant (utilisï¿½ pour les constantes hierarchiques)",
+"Constant level (used for hierarchical constants)" => "Niveau constant (utilisé pour les constantes hierarchiques)", // ai 2026-10
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Erreur : fonction d'alias %1 incorrecte pour %2", // ai 2026-06
 
 // include/itemview.php, row 120
 "Selected item" => "Item sélectionné", // ai 2026-06
 
 // include/itemview.php, row 127
-"number of found items" => "Nombre d'items trouvï¿½s",
+"number of found items" => "Nombre d'items trouvés", // ai 2026-10
 
 // include/itemview.php, row 375
-"No comment was selected" => "Aucun commentaire sï¿½lectionnï¿½",
+"No comment was selected" => "Aucun commentaire sélectionné", // ai 2026-10
 
 // include/itemview.php, row 707, 715
 "exact group name" => "nom exact du groupe", // ai 2026-06
@@ -197,7 +195,7 @@ return [
 "Next" => "Suivant",
 
 // include/scroller.php, row 87
-"Previous" => "Prï¿½cï¿½dent",
+"Previous" => "Précédent", // ai 2026-10
 
 // include/scroller.php, row 88
 "All" => "Tout",
@@ -212,7 +210,7 @@ return [
 "&laquo;" => "",
 
 // include/slice.php, row 69
-"Select Category " => "Sï¿½lectionner la catï¿½gorie",
+"Select Category " => "Sélectionner la catégorie", // ai 2026-10
 
 // include/slice.php, row 71
 "All categories" => "Toute les categories",

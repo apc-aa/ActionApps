@@ -173,7 +173,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Konstans szintje (hierarchikus konstansoknál használatos)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Hiba: hibás %1 aliasfüggvény ehhez: %2", // ai 2026-06
 
 // include/itemview.php, row 120
@@ -198,7 +198,7 @@ return [
 "All" => "Összes", // ai 2026-06
 
 // include/scroller.php, row 296
-"found" => "találat", // ai 2026-06
+"found" => "összesen", // ai 2026-10
 
 // include/scroller.php, row 452
 "&raquo;" => "",

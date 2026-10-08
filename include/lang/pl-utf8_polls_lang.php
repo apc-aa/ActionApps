@@ -145,7 +145,7 @@ return [
 "Polls" => "Ankiety", // ai 2026-06
 
 // modules/polls/menu.php, row 119
-"Designs" => "Wyglądy", // ai 2026-06
+"Designs" => "Wygląd", // ai 2026-10
 
 // modules/polls/modedit.php, row 102
 "You do not have permissions to add polls" => "Nie masz uprawnień do dodawania ankiet", // ai 2026-06

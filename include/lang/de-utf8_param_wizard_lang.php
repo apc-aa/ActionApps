@@ -689,7 +689,7 @@ return [
 "a parameter passed to the function" => "ein Parameter, der an die Funktion übergeben wird", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "ansehen", // ai 2026-06
+"view" => "Ansicht", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "ermöglicht das Arbeiten mit Ansichten. Dies ist eine komplexe und mächtige Funktion, beschrieben in den <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, mit der Sie anstelle des Alias eine beliebige Ansicht anzeigen können. Sie kann z. B. für eine Tabelle verwandter Artikel ('related stories') oder zur Anzeige des Inhalts einer verwandten Rubrik verwendet werden.", // ai 2026-06

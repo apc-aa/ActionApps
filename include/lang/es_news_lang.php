@@ -25,6 +25,7 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Unique number in sequence 1,2,3,..." => "N\xFAmero \xFAnico en la secuencia 1,2,3,...",
 // "Data source" => "Fuente de datos",
 // "Upload periodically" => "Subir peri\xF3dicamente",
 // "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - Copiar canal (1/2) - Seleccione el ActionApps de origen",
@@ -446,6 +447,7 @@ return [
 "You do not have permission to manage Cron" => "No tiene permisos para administrar Cron",
 
 // admin/aa_cron.php, row 47
+// src/AA_Plannedtask.php, row 82, 182
 // src/Import/Definition.php, row 135, 163
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "\xDAltima ejecuci\xF3n",
@@ -454,7 +456,7 @@ return [
 "never" => "nunca",
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 656
+// include/field.class.php, row 714
 // src/Util/Adminlink.php, row 31
 "disabled" => "desactivado",
 
@@ -582,7 +584,7 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 98
@@ -767,7 +769,7 @@ return [
 
 // admin/aa_statecheck.php, row 271
 // src/Optimize/CheckEnvironment.php, row 18
-"Environment" => "Educaci\xF3n",
+"Environment" => "Entorno", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
 // admin/se_statistics.php, row 53
@@ -967,7 +969,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1701
 "Manage %1" => "Administrar %1",
 
 // admin/aa_tasks.php, row 46
@@ -1023,11 +1025,12 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Canal",
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "M\xF3dulo",
@@ -1040,7 +1043,7 @@ return [
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
 // include/logs.php, row 293
-// src/AA_Plannedtask.php, row 149
+// src/AA_Plannedtask.php, row 204
 "Log" => "Registro",
 
 // admin/aafinder.php, row 172
@@ -1176,8 +1179,8 @@ return [
 
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 260
-// include/menu_util.php, row 618
-// include/stringexpand.php, row 9858, 9937
+// include/menu_util.php, row 629
+// include/stringexpand.php, row 9874, 9953
 "Send" => "Enviar",
 
 // admin/anonym_wizard.php, row 151
@@ -1230,7 +1233,7 @@ return [
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1253, 1257
+// include/field.class.php, row 1332, 1336
 // include/form.class.php, row 211
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
@@ -1341,10 +1344,10 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 638
+// include/field.class.php, row 696
 // include/filedit.php, row 115
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1642
+// include/metabase.class.php, row 1643
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
@@ -1365,7 +1368,7 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 642
+// include/field.class.php, row 700
 // include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
 // include/profile.php, row 69
@@ -1517,7 +1520,7 @@ return [
 
 // admin/itemedit.php, row 305
 // include/date.php, row 189
-// include/field.class.php, row 1253
+// include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Error en",
 
@@ -1805,7 +1808,7 @@ return [
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 171
 // src/Optimize/CheckRequiredSettings.php, row 69
@@ -1836,7 +1839,7 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1257
+// include/field.class.php, row 1336
 // src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "Prioridad",
 
@@ -2036,9 +2039,9 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
+// include/metabase.class.php, row 1668
 // include/statestore.php, row 1077, 1414
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
 "Action" => "Acci\xF3n",
@@ -2429,7 +2432,7 @@ return [
 "User" => "Usuario",
 
 // admin/se_history.php, row 144
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckImports.php, row 287
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "Hora",
@@ -2442,7 +2445,7 @@ return [
 
 // admin/se_history.php, row 167
 // include/itemfunc.php, row 201
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Item ID" => "ID del \xEDtem",
 
 // admin/se_history.php, row 216, 217
@@ -3148,7 +3151,7 @@ return [
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 485, 542
 // include/statestore.php, row 1077
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 170
 "ID" => "",
 
@@ -3218,7 +3221,7 @@ return [
 // admin/se_users.php, row 126, 185
 // admin/slicewiz.php, row 82
 // include/se_users.php, row 109, 180
-"Editor" => "Modificado por", // ai 2026-06
+"Editor" => "Editor",
 
 // admin/se_users.php, row 127, 185
 // include/se_users.php, row 110, 180
@@ -3411,7 +3414,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 111
 // admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1194
+// include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Nombre de usuario (login)",
 
@@ -3589,7 +3592,7 @@ return [
 "Admin - Slice settings" => "Administraci\xF3n - Propiedades canal",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 624
+// include/menu_util.php, row 635
 "Language" => "Idioma",
 
 // admin/slicedit.php, row 260
@@ -4155,7 +4158,7 @@ return [
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
-// include/menu_util.php, row 437, 747
+// include/menu_util.php, row 448, 758
 // include/slice.class.php, row 1394
 // src/Central/FindingText.php, row 496
 "Alerts" => "Alertas",
@@ -4904,7 +4907,7 @@ return [
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 "Task Manager" => "Administrador de tareas",
 
 // central/synchronize3.php, row 114
@@ -4974,7 +4977,7 @@ return [
 
 // include/constants.php, row 456
 // include/logs.php, row 781, 813
-// src/Optimize/CheckQueuedClassMissing.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Clase",
 
 // include/constants.php, row 460
@@ -5398,66 +5401,81 @@ return [
 // include/feeding.php, row 539
 "Remote node" => "Nodo remoto",
 
-// include/field.class.php, row 651
+// include/field.class.php, row 162
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+
+// include/field.class.php, row 167
+"code - its indentation and the last new line are kept on purpose" => "",
+
+// include/field.class.php, row 174
+"stores the text of the selected items" => "",
+
+// include/field.class.php, row 180
+"constants of a group" => "",
+
+// include/field.class.php, row 187
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+
+// include/field.class.php, row 709
 "Move to another field" => "Mover a otro campo",
 
-// include/field.class.php, row 1005
+// include/field.class.php, row 1084
 // include/itemview.php, row 127
 "number of found items" => "n\xFAmero de \xEDtems encontrados",
 
-// include/field.class.php, row 1006
+// include/field.class.php, row 1085
 "index of item within whole listing (begins with 0)" => "Indice del \xEDtem dentro del listado completo (comienza con 0) ",
 
-// include/field.class.php, row 1007
+// include/field.class.php, row 1086
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "Indice del \xEDtem dentro de la p\xE1gina (comienza con 0 en cada p\xE1gina listada por scroll de p\xE1gina",
 
-// include/field.class.php, row 1008
+// include/field.class.php, row 1087
 "index of a group on page (it begins from 0 on each page)" => "\xEDndice del grupo en la p\xE1gina (comienza en 0 en cada p\xE1gina)",
 
-// include/field.class.php, row 1009
+// include/field.class.php, row 1088
 "index of item within a group on page (it begins from 0 on each group)" => "\xEDndice del \xEDtem dentro del grupo en la p\xE1gina (comienza en 0 en cada grupo)",
 
-// include/field.class.php, row 1010
+// include/field.class.php, row 1089
 "alias for Item ID" => "alias para el Id del \xEDtem",
 
-// include/field.class.php, row 1011
+// include/field.class.php, row 1090
 "alias for Short Item ID" => "alias para el \"short\" Id del \xEDtem",
 
-// include/field.class.php, row 1019, 1020
+// include/field.class.php, row 1098, 1099
 "alias used on admin page index.php for itemedit url" => "alias usado en la p\xE1gina de administraci\xF3n index.php para el url de edici\xF3n del \xEDtem",
 
-// include/field.class.php, row 1021
+// include/field.class.php, row 1100
 "Alias used on admin page index.php for edit discussion url" => "Alias usado en la p\xE1gina de administraci\xF3n index.php para el URL de los comentarios",
 
-// include/field.class.php, row 1022
+// include/field.class.php, row 1101
 "Title of Slice for RSS" => "Nombre del Canal para RSS",
 
-// include/field.class.php, row 1023
+// include/field.class.php, row 1102
 "Link to the Slice for RSS" => "Enlace al canal para RSS",
 
-// include/field.class.php, row 1024
+// include/field.class.php, row 1103
 "Short description (owner and name) of slice for RSS" => "Descripci\xF3n corta (propietario y nombre) del canal para RSS",
 
-// include/field.class.php, row 1025
+// include/field.class.php, row 1104
 "Date RSS information is generated, in RSS date format" => "La informaci\xF3n de fecha para RSS se genera en formato RSS",
 
-// include/field.class.php, row 1026
+// include/field.class.php, row 1105
 "Slice name" => "Nombre Canal",
 
-// include/field.class.php, row 1028
+// include/field.class.php, row 1107
 "Current MLX language" => "Lenguaje MLX actual",
 
-// include/field.class.php, row 1029
+// include/field.class.php, row 1108
 "HTML markup direction tag (e.g. DIR=RTL)" => "Tag de direcci\xF3n de marca HTML (p.e. DIR=RTL)",
 
-// include/field.class.php, row 1112, 1393
+// include/field.class.php, row 1191, 1472
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- cualquier campo de texto --",
 
-// include/field.class.php, row 1221
+// include/field.class.php, row 1300
 " (this)" => " (este)",
 
-// include/field.class.php, row 1275, 1288, 1301
+// include/field.class.php, row 1354, 1367, 1380
 "Can't copy field" => "",
 
 // include/filedit.php, row 82
@@ -5694,7 +5712,7 @@ return [
 "Offer" => "Ofrecer",
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10850, 10873
+// include/stringexpand.php, row 10866, 10889
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5880,7 +5898,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Nivel Constante (para constantes jer\xE1rquicas)",
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Error: funci\xF3n de alias %1 incorrecta para %2",
 
 // include/item_content.php, row 1126, 1184
@@ -6092,151 +6110,151 @@ return [
 // include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Elimina los espacios al principio y al final y adem\xE1s normaliza UTF (NFC)",
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1105
 "Item IDs" => "ID",
 
-// include/itemfunc.php, row 1132
+// include/itemfunc.php, row 1140
 "The tag '%1' could not be stored: %2" => "",
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "ID de usuario = guardar siempre el ID del usuario actual",
 
-// include/itemfunc.php, row 1170
+// include/itemfunc.php, row 1178
 "Inserts the identity of the current user, no matter what the user sets." => "Inserta la identidad del usuario actual, sin importar lo que el usuario indique.",
 
-// include/itemfunc.php, row 1222
+// include/itemfunc.php, row 1230
 "Now = always store current time" => "Ahora = guardar siempre la hora actual",
 
-// include/itemfunc.php, row 1226
+// include/itemfunc.php, row 1234
 "Inserts the current time, no matter what the user sets." => "Inserta la hora actual, sin importar lo que el usuario indique.",
 
-// include/itemfunc.php, row 1260
+// include/itemfunc.php, row 1268
 "Computed field for INSERT/UPDATE" => "Campo calculado para INSERT/UPDATE",
 
-// include/itemfunc.php, row 1264
+// include/itemfunc.php, row 1272
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "El campo es el resultado de la expresi\xF3n escrita en \"C\xF3digo para resolver alias\". Es una buena soluci\xF3n para todos los valores que pueden precalcularse, ya que calcularlos al mostrar el \xEDtem ser\xEDa lento. S\xED, aqu\xED puede usar {view...}, {include...}, {switch...}",
 
-// include/itemfunc.php, row 1273
+// include/itemfunc.php, row 1281
 "Code for unaliasing (INSERT)" => "C\xF3digo para resolver alias (INSERT)",
 
-// include/itemfunc.php, row 1273, 1309
+// include/itemfunc.php, row 1281, 1317
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Ah\xED puede escribir cualquier cadena. La cadena se resolver\xE1 al guardar el \xEDtem, as\xED que puede usar cualquier construcci\xF3n {...} y tambi\xE9n alias de campo",
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "Code for unaliasing (UPDATE)" => "C\xF3digo para resolver alias (UPDATE)",
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Igual que el anterior, pero solo para la operaci\xF3n UPDATE. Si no se rellena, el valor del campo no cambia",
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Multivalue delimiter" => "Delimitador de multivalor",
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Character or string, which will split the computed string into multiple values (the same field)" => "Car\xE1cter o cadena que dividir\xE1 la cadena calculada en m\xFAltiples valores (del mismo campo)",
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "Recompute every" => "Recalcular cada",
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "El campo se recalcular\xE1 cada minuto, hora, ... (usando el c\xF3digo UPDATE anterior). Los tiempos no son exactos - minuto significa entre 1 y 10 minutos. Si no se rellena, el campo solo se recalcular\xE1 al insertar/actualizar el \xEDtem.",
 
-// include/itemfunc.php, row 1296
+// include/itemfunc.php, row 1304
 "Computed field" => "Campo calculado",
 
-// include/itemfunc.php, row 1300
+// include/itemfunc.php, row 1308
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "El campo es el resultado de la expresi\xF3n escrita en \\\"C\xF3digo para resolver alias\\\". Es una buena soluci\xF3n para todos los valores que pueden precalcularse, ya que calcularlos al mostrar el \xEDtem ser\xEDa lento. S\xED, aqu\xED puede usar {view...}, {include...}, {switch...}",
 
-// include/itemfunc.php, row 1309
+// include/itemfunc.php, row 1317
 "Code for unaliasing (INSERT+UPDATE)" => "C\xF3digo para resolver alias (INSERT+UPDATE)",
 
-// include/itemfunc.php, row 1331
+// include/itemfunc.php, row 1339
 "SEO Name" => "Nombre SEO",
 
-// include/itemfunc.php, row 1335
+// include/itemfunc.php, row 1343
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Si el campo no est\xE1 relleno, calcula el seoname a partir del alias _#HEADLINE (u otro si se especifica), \xFAnico entre todos los canales de los m\xF3dulos de sitio donde el canal aparece en la configuraci\xF3n \"Uses slices\". B\xE1sicamente, el alias Nombre SEO es un atajo de un campo calculado con {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}",
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "Alias to compute from" => "Alias desde el que calcular",
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "if not specified, the _#HEADLINE is used" => "si no se especifica, se usa _#HEADLINE",
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1372
 "Unique number for this field (from 1,..)" => "N\xFAmero \xFAnico para este campo (desde 1,..)",
 
-// include/itemfunc.php, row 1366
-"Unique number in sequence 1,2,3,..." => "N\xFAmero \xFAnico en la secuencia 1,2,3,...",
+// include/itemfunc.php, row 1376
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
 
-// include/itemfunc.php, row 1391
+// include/itemfunc.php, row 1499
 "File = uploaded file" => "Archivo = archivo subido",
 
-// include/itemfunc.php, row 1395
+// include/itemfunc.php, row 1503
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Guarda el archivo subido y un enlace a \xE9l; los par\xE1metros solo se aplican si el tipo es image/algo.",
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Mime types accepted" => "Tipos MIME aceptados",
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Only files of matching mime types will be accepted" => "Solo se aceptar\xE1n archivos cuyo tipo MIME coincida",
 
-// include/itemfunc.php, row 1405
+// include/itemfunc.php, row 1513
 "Maximum image width" => "Ancho m\xE1ximo de la imagen",
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "Maximum image height" => "Alto m\xE1ximo de la imagen",
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "La imagen se remuestrear\xE1 para ajustarse a estos l\xEDmites, manteniendo la relaci\xF3n de aspecto.",
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "Other fields" => "Otros campos",
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Lista de otros campos que recibir\xE1n esta imagen, separados por ##. No funciona bien con subidas m\xFAltiples.",
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "Upload policy" => "Pol\xEDtica de subida",
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Este par\xE1metro controla qu\xE9 hacer si el archivo subido ya existe:<br>new - AA crea un nuevo nombre de archivo (a\xF1adiendo el sufijo _x) y lo guarda con ese nuevo nombre (predeterminado)<br>overwrite - el archivo antiguo del mismo nombre se sobrescribe<br>backup - el archivo antiguo se copia a un archivo nuevo (inexistente) y el archivo actual se guarda con el nombre actual.<br>En todos los casos el nombre de archivo se escapa, de modo que cualquier car\xE1cter no alfanum\xE9rico se reemplaza por un guion bajo.",
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "Exact dimensions" => "Dimensiones exactas",
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Si se establece en 1, la imagen se reducir\xE1 exactamente a las dimensiones especificadas (y se recortar\xE1 si es necesario). El valor predeterminado es 0 o vac\xEDo: mantener la relaci\xF3n de aspecto al redimensionar la imagen.",
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Filename template" => "Plantilla del nombre de archivo",
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Renombra el archivo seg\xFAn la plantilla. Puede usar expresiones AA y tambi\xE9n los alias especiales _#name y _#ext o _#full (nombre de archivo, extensi\xF3n y nombre completo). Los alias de \xEDtem en expresiones AA no funcionan en INSERT (el \xEDtem no existe en el momento de escribir el archivo). Funcionar\xE1n en UPDATE.",
 
-// include/itemfunc.php, row 1566
+// include/itemfunc.php, row 1674
 "Password and Change Password" => "Contrase\xF1a y Cambiar contrase\xF1a",
 
-// include/itemfunc.php, row 1570
+// include/itemfunc.php, row 1678
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Guarda el valor de un campo de tipo \"Contrase\xF1a y Cambiar contrase\xF1a\". Primero verifica que la nueva contrase\xF1a coincida con la nueva contrase\xF1a reescrita y, si es as\xED, cifra la nueva contrase\xF1a y la guarda.",
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Copy of password" => "Copia de la contrase\xF1a",
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id donde desea guardar la copia de la contrase\xF1a. A veces es \xFAtil si quiere permitir que las personas recuperen su contrase\xF1a anterior. Se recomienda encarecidamente no guardarla en texto plano y cifrarla. Vea el segundo par\xE1metro.",
 
-// include/itemfunc.php, row 1580, 1626
+// include/itemfunc.php, row 1688, 1734
 "Encrypt phrase" => "Frase de cifrado",
 
-// include/itemfunc.php, row 1580
+// include/itemfunc.php, row 1688
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Si especifica el campo \"Copia de la contrase\xF1a\", se recomienda cifrar la contrase\xF1a en la base de datos. Escriba ah\xED cualquier cadena. Si luego necesita la contrase\xF1a, puede descifrarla del campo usando la misma frase - {decrypt:{password.......1}:Some Phrase}",
 
-// include/itemfunc.php, row 1613
+// include/itemfunc.php, row 1721
 "2FA Secret" => "Secreto 2FA",
 
-// include/itemfunc.php, row 1617
+// include/itemfunc.php, row 1725
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Genera y guarda el secreto para la autenticaci\xF3n de dos factores, opcionalmente cifrado con contrase\xF1a",
 
-// include/itemfunc.php, row 1626
+// include/itemfunc.php, row 1734
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Contrase\xF1a que se aplicar\xE1 para cifrar el valor de este campo. Puede contener expresiones AA o alias (del \xEDtem del usuario en el canal de Gesti\xF3n de lectores)",
 
 // include/itemview.php, row 120
@@ -6662,75 +6680,75 @@ return [
 // include/menu_util.php, row 131
 "Import conf from CSV..." => "Importar configuraci\xF3n desde CSV...",
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 426
 "Part of %s" => "Parte de %s",
 
-// include/menu_util.php, row 432
+// include/menu_util.php, row 443
 "Other slices" => "Otros canales",
 
-// include/menu_util.php, row 436
+// include/menu_util.php, row 447
 "Reader Management Slice" => "Canal de Suscriptores",
 
-// include/menu_util.php, row 438
+// include/menu_util.php, row 449
 "Jump inside control panel" => "Ir al panel de control",
 
-// include/menu_util.php, row 439
+// include/menu_util.php, row 450
 // include/slice.class.php, row 1429
 // src/Central/FindingText.php, row 311
 "Links" => "Enlaces",
 
-// include/menu_util.php, row 440
+// include/menu_util.php, row 451
 "MySQL Auth (old version)" => "MySQL Auth (versi\xF3n vieja)",
 
-// include/menu_util.php, row 441
+// include/menu_util.php, row 452
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Encuestas",
 
-// include/menu_util.php, row 462
+// include/menu_util.php, row 473
 "New slice" => "Nuevo canal",
 
-// include/menu_util.php, row 466
+// include/menu_util.php, row 477
 "Switch module" => "Cambiar de m\xF3dulo",
 
-// include/menu_util.php, row 600, 611
+// include/menu_util.php, row 611, 622
 "Apply" => "Aplicar", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 615
 "-- Default for module --" => "-- Predeterminado para el m\xF3dulo --", // ai 2026-06
 
-// include/menu_util.php, row 612
+// include/menu_util.php, row 623
 "Switches the admin interface language; the page reloads." => "Cambia el idioma de la interfaz de administraci\xF3n; la p\xE1gina se recarga.", // ai 2026-06
 
-// include/menu_util.php, row 617
+// include/menu_util.php, row 628
 "What's working, what isn't \xE2\x80\x94 tell the AA team." => "Qu\xE9 funciona y qu\xE9 no -- d\xEDganselo al equipo de AA.", // ai 2026-06
 
-// include/menu_util.php, row 620
+// include/menu_util.php, row 631
 // src/Import/Definition.php, row 86
 "Settings" => "Configuraci\xF3n",
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 634
 "Theme" => "Tema", // ai 2026-06
 
-// include/menu_util.php, row 625
+// include/menu_util.php, row 636
 "Feedback" => "Comentarios", // ai 2026-06
 
-// include/menu_util.php, row 751
+// include/menu_util.php, row 762
 // include/slice.class.php, row 679
 "Reader management" => "Administraci\xF3n Suscriptores",
 
-// include/menu_util.php, row 763
+// include/menu_util.php, row 774
 "logout" => "Salir",
 
-// include/menu_util.php, row 771
+// include/menu_util.php, row 782
 "Search.." => "Buscar..",
 
-// include/menu_util.php, row 850
+// include/menu_util.php, row 861
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "(C) Todos los derechos reservados <a href=\"https://www.apc.org\">Asociaci\xF3n para el Progreso de las Comunicaciones - APC</a> ",
 
-// include/menu_util.php, row 860
+// include/menu_util.php, row 871
 "Collapse / expand menu" => "Contraer / expandir men\xFA",
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1663
 "More" => "M\xE1s",
 
 // include/mlx.php, row 387
@@ -6784,7 +6802,7 @@ return [
 "Previous" => "Anterior",
 
 // include/scroller.php, row 296
-"found" => "encontrado",
+"found" => "encontrados", // ai 2026-10
 
 // include/scroller.php, row 452
 "&raquo;" => "",
@@ -6815,7 +6833,7 @@ return [
 "More users found. Refine your search." => "Se encontraron m\xE1s usuarios. Refine su b\xFAsqueda.",
 
 // include/searchbar.class.php, row 54
-// src/AA_Plannedtask.php, row 62, 127
+// src/AA_Plannedtask.php, row 72, 182
 "Condition" => "Condici\xF3n",
 
 // include/searchbar.class.php, row 55
@@ -7215,84 +7233,84 @@ return [
 // include/stringexpand.php, row 6161
 "No module for dictionary slice" => "No hay m\xF3dulo para el canal de diccionario",
 
-// include/stringexpand.php, row 7789
+// include/stringexpand.php, row 7799
 "version" => "versi\xF3n",
 
-// include/stringexpand.php, row 7973
+// include/stringexpand.php, row 7983
 "show" => "mostrar",
 
-// include/stringexpand.php, row 7974
+// include/stringexpand.php, row 7984
 "hide" => "ocultar",
 
-// include/stringexpand.php, row 7975
+// include/stringexpand.php, row 7985
 "loading" => "cargando",
 
-// include/stringexpand.php, row 9100
+// include/stringexpand.php, row 9116
 "E-mail confirmed." => "E-mail confirmado.",
 
-// include/stringexpand.php, row 9104
+// include/stringexpand.php, row 9120
 "E-mail unsubscribed" => "E-mail dado de baja",
 
-// include/stringexpand.php, row 9853
+// include/stringexpand.php, row 9869
 "Forgot your password? Fill in your email." => "\xBFOlvid\xF3 su contrase\xF1a? Escriba su email.",
 
-// include/stringexpand.php, row 9855
+// include/stringexpand.php, row 9871
 // src/Central/FindingText.php, row 457
 "e-mail" => "Correo-e:",
 
-// include/stringexpand.php, row 9873, 9877
+// include/stringexpand.php, row 9889, 9893
 "Unable to find user - please check if it has been misspelled." => "No se pudo encontrar al usuario - compruebe si est\xE1 mal escrito.",
 
-// include/stringexpand.php, row 9891
+// include/stringexpand.php, row 9907
 "Password link" => "Enlace de contrase\xF1a",
 
-// include/stringexpand.php, row 9892
+// include/stringexpand.php, row 9908
 "Password change url parameter" => "Par\xE1metro url de cambio de contrase\xF1a",
 
-// include/stringexpand.php, row 9904
+// include/stringexpand.php, row 9920
 "Password change" => "Cambio de contrase\xF1a",
 
-// include/stringexpand.php, row 9905
+// include/stringexpand.php, row 9921
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Para cambiar la contrase\xF1a, visite la siguiente direcci\xF3n:<br>%1<br>El cambio ser\xE1 posible durante dos horas - despu\xE9s la clave expirar\xE1 y deber\xE1 solicitar una nueva.",
 
-// include/stringexpand.php, row 9914
+// include/stringexpand.php, row 9930
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "Se acaba de enviar un correo electr\xF3nico con una clave para cambiar la contrase\xF1a a la direcci\xF3n: %1",
 
-// include/stringexpand.php, row 9925, 9954
+// include/stringexpand.php, row 9941, 9970
 "Bad or expired key." => "Clave incorrecta o caducada.",
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 9946
 "Fill in the new password" => "Introduzca la nueva contrase\xF1a",
 
-// include/stringexpand.php, row 9932
+// include/stringexpand.php, row 9948
 "New password" => "Nueva contrase\xF1a",
 
-// include/stringexpand.php, row 9933
+// include/stringexpand.php, row 9949
 "Retype New Password" => "Reescriba nueva clave",
 
-// include/stringexpand.php, row 9957
+// include/stringexpand.php, row 9973
 "Passwords do not match - please try again." => "Las contrase\xF1as no coinciden - int\xE9ntelo de nuevo.",
 
-// include/stringexpand.php, row 9960
+// include/stringexpand.php, row 9976
 "The password must be at least 6 characters long." => "La contrase\xF1a debe tener al menos 6 caracteres.",
 
-// include/stringexpand.php, row 9966
+// include/stringexpand.php, row 9982
 "Password changed." => "Contrase\xF1a cambiada.",
 
-// include/stringexpand.php, row 9968
+// include/stringexpand.php, row 9984
 "An error occurred during password change - please contact: %1." => "Se produjo un error al cambiar la contrase\xF1a - por favor contacte con: %1.",
 
-// include/stringexpand.php, row 10847, 10870
+// include/stringexpand.php, row 10863, 10886
 "Are you sure you want to permanently DELETE this record?" => "\xBFEst\xE1 seguro/a que quiere borrar PERMANENTEMENTE este registro?",
 
-// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// include/stringexpand.php, row 10869, 10872, 10892, 10895
 // src/Widget/RimWidget.php, row 270
 "edit" => "editar",
 
-// include/stringexpand.php, row 10859, 10882
+// include/stringexpand.php, row 10875, 10898
 "back" => "volver",
 
-// include/stringexpand.php, row 10862, 10885
+// include/stringexpand.php, row 10878, 10901
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "suelte los archivos aqu\xED o haga clic para subirlos",
 
@@ -7712,68 +7730,83 @@ return [
 // src/Manager.php, row 881
 "No item found" => "No se encontr\xF3 ning\xFAn item",
 
-// src/AA_Plannedtask.php, row 61, 127
+// src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "Tarea",
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Si se especifica, la tarea se ejecuta solo si la Condici\xF3n se eval\xFAa a un valor distinto de cero o de vac\xEDo",
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 73
 "Event to run" => "Evento de ejecuci\xF3n",
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "New Item" => "Nuevo \xEDtem",
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "Item Updated" => "\xCDtem actualizado",
 
-// src/AA_Plannedtask.php, row 66
+// src/AA_Plannedtask.php, row 76
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "Evento en el que debe ejecutarse la tarea. Es independiente del ajuste de Hora de abajo (as\xED que puede ejecutar la tarea cuando ocurre el evento y tambi\xE9n a una hora concreta). Si no especifica el par\xE1metro \"+ segundos\" o lo establece en 0, la tarea se ejecuta directamente. Si se establece el desplazamiento \"+ segundos\", la tarea se planifica para ejecutarse una vez tras x segundos.",
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Time to run" => "Hora de ejecuci\xF3n",
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "Especifique la hora a la que debe ejecutarse la tarea. Se procesar\xE1 entonces peri\xF3dicamente a esa hora. La hora debe especificarse en \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Formato relativo</a>\", por ejemplo:<br>\"midnight\" - se ejecuta cada medianoche <br>\"+1 hour\" - se ejecuta cada hora, <br>\"+30 min\" - se ejecuta cada 30 minutos, <br>\"16:00\" - se ejecuta cada d\xEDa a las 16:00<br>\"Monday 10:00\" - se ejecuta cada lunes a las 16:00<br>\"first day of this month 10:00\"<br>Las horas no son exactas; las tareas se ejecutan una tras otra por el script, que se ejecuta aproximadamente cada 5 minutos.",
 
-// src/AA_Plannedtask.php, row 68, 127
+// src/AA_Plannedtask.php, row 78, 182
 "+ seconds" => "+ segundos",
 
-// src/AA_Plannedtask.php, row 68
+// src/AA_Plannedtask.php, row 78
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "Opcionalmente especifique el desplazamiento de tiempo extra a\xF1adido a la hora anterior (en segundos).<br>Es dif\xEDcil especificar \"el d\xEDa 15 del mes\" con la fila anterior, as\xED que puede combinar ambos:<br> - \"hora\" = \"first day of this month 10:00\"<br> - \"+ segundos\" = \"1209600\"<br> (60 segundos * 60 minutos * 24 horas * 14 d\xEDas) - observe el 14 (1 + 14 = 15)",
 
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Opcionalmente especifique el contexto - el Id largo del \xEDtem para el cual se ejecutar\xE1 la tarea. Podr\xE1 entonces usar {id..............} y otros alias del \xEDtem en la tarea. El id del \xEDtem tambi\xE9n puede obtenerse en la variable {var:aa_event_for}. Para tareas de \"evento\" (\xCDtem actualizado/nuevo) siempre se rellena con el id del \xEDtem modificado.",
 
-// src/AA_Plannedtask.php, row 70
+// src/AA_Plannedtask.php, row 80
 "Saved by" => "",
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 83
+"Result of the last run" => "",
+
+// src/AA_Plannedtask.php, row 157
 "Planned tasks" => "Tareas planificadas",
 
-// src/AA_Plannedtask.php, row 122
+// src/AA_Plannedtask.php, row 177
 "Current time on server" => "Hora actual del servidor",
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Event" => "Evento",
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Computed time" => "Hora calculada",
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Scheduled to" => "Programada para",
 
-// src/AA_Plannedtask.php, row 315
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+// src/AA_Plannedtask.php, row 266
+"done" => "",
 
-// src/AA_Plannedtask.php, row 318
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+// src/AA_Plannedtask.php, row 267
+"done, no output" => "",
 
-// src/AA_Plannedtask.php, row 382
-"not scheduled, yet" => "a\xFAn no programada",
+// src/AA_Plannedtask.php, row 268
+"condition not met" => "",
+
+// src/AA_Plannedtask.php, row 269
+"failed" => "",
 
 // src/AA_Plannedtask.php, row 386
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+
+// src/AA_Plannedtask.php, row 389
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+
+// src/AA_Plannedtask.php, row 453
+"not scheduled, yet" => "a\xFAn no programada",
+
+// src/AA_Plannedtask.php, row 457
 "next run" => "pr\xF3xima ejecuci\xF3n",
 
 // src/Api/Controller/FilesController.php, row 51, 72
@@ -9267,7 +9300,7 @@ return [
 // src/Import/DetailPage.php, row 329, 666
 "Updated" => "",
 
-// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailCatalog.php, row 171
 "Catalog of the source" => "",
 
 // src/Import/DetailConfig.php, row 136
@@ -9854,82 +9887,88 @@ return [
 // src/Import/DetailPage.php, row 1147
 "Look the failure up in the log of import failures, then Continue or End the run." => "",
 
-// src/Import/DetailPage.php, row 1156
+// src/Import/DetailPage.php, row 1161
 "full run" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Baseline only" => "",
+// src/Import/DetailPage.php, row 1162
+"one stream (%1)" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Nothing imported yet. Run changed only takes what changes after this." => "",
-
-// src/Import/DetailPage.php, row 1198, 1199
-"Imported with item errors" => "",
-
-// src/Import/DetailPage.php, row 1198
-"1 item error in the run that imported it - see Runs." => "",
+// src/Import/DetailPage.php, row 1163
+"%1 streams" => "",
 
 // src/Import/DetailPage.php, row 1199
+"Baseline only" => "",
+
+// src/Import/DetailPage.php, row 1199
+"Nothing imported yet. Run changed only takes what changes after this." => "",
+
+// src/Import/DetailPage.php, row 1207, 1208
+"Imported with item errors" => "",
+
+// src/Import/DetailPage.php, row 1207
+"1 item error in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1208
 "%1 item errors in the run that imported it - see Runs." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "Imported" => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source was asked again after the import." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source has not been asked since." => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Checked, not imported yet" => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Run imports it; Run changed only too, as it has no version to compare." => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "Not seen yet" => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "No run has imported or checked it." => "",
 
-// src/Import/DetailPage.php, row 1219
+// src/Import/DetailPage.php, row 1228
 "%1 read" => "",
 
-// src/Import/DetailPage.php, row 1220
+// src/Import/DetailPage.php, row 1229
 "%1 new, %2 updated, %3 skipped" => "",
 
-// src/Import/DetailPage.php, row 1221
+// src/Import/DetailPage.php, row 1230
 "%1 filtered out" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "dry run - nothing stored" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "all streams of the run together" => "",
 
-// src/Import/DetailPage.php, row 1241
+// src/Import/DetailPage.php, row 1250
 "None yet - an import records it" => "",
 
-// src/Import/DetailPage.php, row 1242
+// src/Import/DetailPage.php, row 1251
 "None - the source gives no version" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1, working %2" => "",
 
-// src/Import/DetailPage.php, row 1301
+// src/Import/DetailPage.php, row 1310
 "%1 s" => "",
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1313
 "%1 min %2 s" => "",
 
-// src/Import/DetailPage.php, row 1304, 1306
+// src/Import/DetailPage.php, row 1313, 1315
 "%1 min" => "",
 
-// src/Import/DetailPage.php, row 1306
+// src/Import/DetailPage.php, row 1315
 "%1 h" => "",
 
 // src/Import/Mapping.php, row 219
@@ -10206,13 +10245,13 @@ return [
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "Planificados %1 bloques con %2 \xEDtems",
 
-// src/Later/Toexecute.php, row 364
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "",
 
-// src/Later/Toexecute.php, row 368
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "",
 
-// src/Later/Toexecute.php, row 459
+// src/Later/Toexecute.php, row 462
 "the task failed with %1" => "",
 
 // src/Manager.php, row 430
@@ -10740,16 +10779,16 @@ return [
 // src/Optimize/CategorySort2groupBy.php, row 37
 "All slices are already converted" => "Todos los canales ya est\xE1n convertidos",
 
-// src/Optimize/ChangeF_h2F_1.php, row 20
+// src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "Optimizar el alias f_h a f_1",
 
-// src/Optimize/ChangeF_h2F_1.php, row 28
+// src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Reemplaza el alias f_h de los campos marcados como no m\xFAltiples y html por la funci\xF3n m\xE1s r\xE1pida f_1 para impresi\xF3n directa del contenido",
 
-// src/Optimize/ChangeF_t2F_1.php, row 18
+// src/Optimize/ChangeF_t2F_1.php, row 15
 "Optimize f_t alias to f_1" => "Optimizar el alias f_t a f_1",
 
-// src/Optimize/ChangeF_t2F_1.php, row 26
+// src/Optimize/ChangeF_t2F_1.php, row 23
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Reemplaza el alias f_t de los campos marcados como no m\xFAltiples y html por la funci\xF3n m\xE1s r\xE1pida f_1 para impresi\xF3n directa del contenido",
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -10774,8 +10813,32 @@ return [
 "Changing ID for table %1 (%2)" => "Cambiando el ID de la tabla %1 (%2)",
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 68
+// src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Convertidas %1 tablas",
+
+// src/Optimize/ChangeQte2Trm.php, row 24
+"Trim text fields" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 29
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields switched to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields to switch to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 139
+"Field templates" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"switched to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"to switch to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 145
+"%1 keeps \"Text = don't modify\": %2" => "",
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
 "Unsigned {ajax} widget settings" => "",
@@ -10797,7 +10860,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 102
-// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 99
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -10811,7 +10874,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
-// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 100
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckUploadRefusals.php, row 89
@@ -11374,22 +11437,22 @@ return [
 // src/Optimize/CheckQueue.php, row 181
 "Longest [s]" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 22
+// src/Optimize/CheckQueuedClassMissing.php, row 23
 "Queued tasks of a missing class" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 27
+// src/Optimize/CheckQueuedClassMissing.php, row 28
 "Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 61
+// src/Optimize/CheckQueuedClassMissing.php, row 62
 "Queued tasks of class %1 cannot run - the class is missing" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 66
+// src/Optimize/CheckQueuedClassMissing.php, row 67
 "Selector" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 70
-"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "",
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 76
+// src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "",
 
 // src/Optimize/CheckRequiredSettings.php, row 17
@@ -11706,7 +11769,13 @@ return [
 // src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "Se encontraron %1 tablas que deben convertirse",
 
-// src/Optimize/Convert2innodb.php, row 64
+// src/Optimize/Convert2innodb.php, row 71
+"Unique numbers (seq) may repeat" => "",
+
+// src/Optimize/Convert2innodb.php, row 71
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+
+// src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "Convertir la tabla %1 (%2) a InnoDB",
 
 // src/Optimize/Convert2utf8mb4.php, row 23
@@ -12584,6 +12653,30 @@ return [
 
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "valor predeterminado del campo cambiado para expiry_date..... en %1 /%2 canales: %3)",
+
+// src/Optimize/TrimFieldValues.php, row 39
+"Trim stored values" => "",
+
+// src/Optimize/TrimFieldValues.php, row 44
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+
+// src/Optimize/TrimFieldValues.php, row 63
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+
+// src/Optimize/TrimFieldValues.php, row 68
+"%1 items to trim" => "",
+
+// src/Optimize/TrimFieldValues.php, row 80
+"Trimming of %1 slices planned in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 91
+"%1 items planned to be trimmed in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 129
+"%1 items with a unique value to trim by hand, e.g. %2" => "",
+
+// src/Optimize/TrimFieldValues.php, row 139
+"%1 items to trim, e.g. %2" => "",
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Actualizar la estructura de la base de datos",

@@ -9,6 +9,9 @@
 $mgettext_lang = "fr";
 
 return [
+// Unused messages - no longer found in the sources; kept commented for reference.
+// "Editor" => "Modifi\xE9 par", // ai 2026-10
+// End of unused messages
 
 // include/searchbar.class.php, row 54
 "Condition" => "",
@@ -47,7 +50,7 @@ return [
 "Order" => "ordre",
 
 // include/searchbar.class.php, row 637
-"Descending" => "D\xEF\xBF\xBDcroissant",
+"Descending" => "D\xE9croissant", // ai 2026-10
 
 // include/searchbar.class.php, row 652
 "Filter" => "Filtre", // ai 2026-06
@@ -81,7 +84,7 @@ return [
 "Are you sure you want to delete selected filter?" => "Voulez-vous vraiment supprimer le filtre s\xE9lectionn\xE9 ?", // ai 2026-06
 
 // include/searchbar.class.php, row 1065
-"Select one..." => "S\xEF\xBF\xBDlectionner un",
+"Select one..." => "S\xE9lectionner un", // ai 2026-10
 
 // include/searchbar.class.php, row 1080
 "My filters" => "Mes filtres", // ai 2026-06
@@ -143,12 +146,12 @@ return [
 "Category Edit" => "Modification de cat\xE9gorie", // ai 2026-06
 
 // modules/links/catedit.php, row 103
-"Category" => "Cat\xEF\xBF\xBDgorie",
+"Category" => "Cat\xE9gorie", // ai 2026-10
 
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 59, 172
 // modules/links/linkedit.php, row 430
-"Id" => "Identit\xEF\xBF\xBD",
+"Id" => "Identit\xE9", // ai 2026-10
 
 // modules/links/catedit.php, row 104
 "Links in subtree" => "Liens dans la sous-arborescence", // ai 2026-06
@@ -261,7 +264,7 @@ return [
 // modules/links/constants.php, row 62, 176
 // modules/links/link.class.php, row 717
 // modules/links/linkedit.php, row 474
-"Description" => "D\xEF\xBF\xBDinscription",
+"Description" => "Description", // ai 2026-10
 
 // modules/links/constants.php, row 63, 124
 // modules/links/link.class.php, row 721
@@ -282,7 +285,7 @@ return [
 "Insert date" => "Date d'insertion", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "Editeur",
+"Edited by" => "Modifi\xE9 par", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Date de derni\xE8re modification", // ai 2026-06
@@ -387,7 +390,7 @@ return [
 "To be deleted" => "\xC0 supprimer", // ai 2026-06
 
 // modules/links/constants.php, row 104, 178
-"Priority" => "Priorit\xEF\xBF\xBD",
+"Priority" => "Priorit\xE9", // ai 2026-10
 
 // modules/links/constants.php, row 105
 // modules/links/linkedit.php, row 54
@@ -637,7 +640,7 @@ return [
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "Dans ce formulaire d'ajout d'un nouveau lien au catalogue, vous pouvez,\\nmais n'\xEAtes pas oblig\xE9, de remplir tous les champs. Pour faciliter le classement\\ndu lien dans le catalogue, nous vous prions toutefois de renseigner avant tout l'<b>URL</b> du lien, son <b>TITRE</b> et\\nde classer le lien dans une <b>CAT\xC9GORIE</b>. Si vous avez de l'exp\xE9rience avec ces pages,\\nvous pouvez aussi remplir la description du lien.<br>\\n<b>Merci de ne pas ajouter de liens \xAB commerciaux \xBB au catalogue.</b> Ces liens ne seront pas affich\xE9s dans le catalogue.<br>\\n Merci.", // ai 2026-06
+"<!--NewPublicLinkText-->" => "Dans ce formulaire d'ajout d'un nouveau lien au catalogue, vous pouvez, mais n'\xEAtes pas oblig\xE9, de remplir tous les champs. Pour faciliter le classement du lien dans le catalogue, nous vous prions toutefois de renseigner avant tout l'<b>URL</b> du lien, son <b>TITRE</b> et de classer le lien dans une <b>CAT\xC9GORIE</b>. Si vous avez de l'exp\xE9rience avec ces pages, vous pouvez aussi remplir la description du lien.<br> <b>Merci de ne pas ajouter de liens \xAB commerciaux \xBB au catalogue.</b> Ces liens ne seront pas affich\xE9s dans le catalogue.<br> Merci.", // ai 2026-10
 
 // modules/links/linkedit.php, row 425
 "Link" => "Lien", // ai 2026-06
@@ -766,7 +769,7 @@ return [
 "Misc" => "Divers",
 
 // modules/links/menu.php, row 127
-"Empty trash" => "Supprimer d\xEF\xBF\xBDtritus",
+"Empty trash" => "Supprimer d\xE9tritus", // ai 2026-10
 
 // modules/links/menu.php, row 132
 "Set Debug OFF" => "D\xE9sactiver le d\xE9bogage", // ai 2026-06
@@ -820,5 +823,5 @@ return [
 "Module Links data" => "Donn\xE9es du module Liens", // ai 2026-06
 
 // modules/links/modedit.php, row 234
-"Used Language File" => "Fichier de langue utilis\xEF\xBF\xBD",
+"Used Language File" => "Fichier de langue utilis\xE9", // ai 2026-10
 ];

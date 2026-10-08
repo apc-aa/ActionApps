@@ -388,7 +388,7 @@ return [
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM は管理ページ index.php で itemedit の URL に使用されます", // ai 2026-06
 
 // include/constants_param_wizard.php, row 392
-"type" => "型", // ai 2026-06
+"type" => "種類", // ai 2026-10
 
 // include/constants_param_wizard.php, row 393
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - ディスカッションの編集用<br>itemcount - 項目数の表示用<br>safe - 安全な html 用<br>slice_info - スライス情報からフィールドを選択<br>edit - 項目編集用の URL<br>add - 新規項目追加用の URL", // ai 2026-06
@@ -686,7 +686,7 @@ return [
 "a parameter passed to the function" => "関数に渡されるパラメータ", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "表示", // ai 2026-06
+"view" => "ビュー", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "ビューを操作できるようにします。これは <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a> に記載されている複雑で強力な機能で、別名の場所に任意のビューを表示できます。「関連記事」の表や、関連スライスの内容の表示に使用できます。", // ai 2026-06

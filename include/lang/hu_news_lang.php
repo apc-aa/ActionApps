@@ -15,6 +15,7 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Unique number in sequence 1,2,3,..." => "Egyedi sz\xE1m az 1,2,3,... sorozatban", // ai 2026-06
 // "Data source" => "Adatforr\xE1s", // ai 2026-06
 // "Upload periodically" => "Rendszeres felt\xF6lt\xE9s", // ai 2026-06
 // "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - Rovat m\xE1sol\xE1sa (1/2) - Forr\xE1s ActionApps kiv\xE1laszt\xE1sa", // ai 2026-06
@@ -116,6 +117,7 @@ return [
 "You do not have permission to manage Cron" => "Nincs jogosults\xE1ga a Cron kezel\xE9s\xE9hez", // ai 2026-06
 
 // admin/aa_cron.php, row 47
+// src/AA_Plannedtask.php, row 82, 182
 // src/Import/Definition.php, row 135, 163
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Utols\xF3 fut\xE1s", // ai 2026-06
@@ -124,7 +126,7 @@ return [
 "never" => "soha", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 656
+// include/field.class.php, row 714
 // src/Util/Adminlink.php, row 31
 "disabled" => "letiltva", // ai 2026-06
 
@@ -252,7 +254,7 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 98
@@ -437,7 +439,7 @@ return [
 
 // admin/aa_statecheck.php, row 271
 // src/Optimize/CheckEnvironment.php, row 18
-"Environment" => "K\xF6rnyezetv\xE9delem", // ai 2026-06
+"Environment" => "Rendszerk\xF6rnyezet", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
 // admin/se_statistics.php, row 53
@@ -637,7 +639,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1701
 "Manage %1" => "%1 kezel\xE9se", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -693,11 +695,12 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Rovat", // ai 2026-06
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "Modul", // ai 2026-06
@@ -710,7 +713,7 @@ return [
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
 // include/logs.php, row 293
-// src/AA_Plannedtask.php, row 149
+// src/AA_Plannedtask.php, row 204
 "Log" => "Napl\xF3", // ai 2026-06
 
 // admin/aafinder.php, row 172
@@ -846,8 +849,8 @@ return [
 
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 260
-// include/menu_util.php, row 618
-// include/stringexpand.php, row 9858, 9937
+// include/menu_util.php, row 629
+// include/stringexpand.php, row 9874, 9953
 "Send" => "K\xFCld\xE9s", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -900,7 +903,7 @@ return [
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1253, 1257
+// include/field.class.php, row 1332, 1336
 // include/form.class.php, row 211
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
@@ -1012,10 +1015,10 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 638
+// include/field.class.php, row 696
 // include/filedit.php, row 115
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1642
+// include/metabase.class.php, row 1643
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
@@ -1036,7 +1039,7 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 642
+// include/field.class.php, row 700
 // include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
 // include/profile.php, row 69
@@ -1188,7 +1191,7 @@ return [
 
 // admin/itemedit.php, row 305
 // include/date.php, row 189
-// include/field.class.php, row 1253
+// include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Hiba itt:", // ai 2026-06
 
@@ -1477,7 +1480,7 @@ return [
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 171
 // src/Optimize/CheckRequiredSettings.php, row 69
@@ -1508,7 +1511,7 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1257
+// include/field.class.php, row 1336
 // src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "Priorit\xE1s", // ai 2026-06
 
@@ -1708,9 +1711,9 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
+// include/metabase.class.php, row 1668
 // include/statestore.php, row 1077, 1414
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
 "Action" => "M\xFBvelet", // ai 2026-06
@@ -2104,7 +2107,7 @@ return [
 "User" => "Felhaszn\xE1l\xF3", // ai 2026-06
 
 // admin/se_history.php, row 144
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckImports.php, row 287
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "Id\xF5", // ai 2026-06
@@ -2117,7 +2120,7 @@ return [
 
 // admin/se_history.php, row 167
 // include/itemfunc.php, row 201
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Item ID" => "Cikk ID", // ai 2026-06
 
 // admin/se_history.php, row 216, 217
@@ -2823,7 +2826,7 @@ return [
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 485, 542
 // include/statestore.php, row 1077
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 170
 "ID" => "",
 
@@ -3086,7 +3089,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 111
 // admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1194
+// include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Bejelentkez\xE9si n\xE9v", // ai 2026-06
 
@@ -3264,7 +3267,7 @@ return [
 "Admin - Slice settings" => "Admin - Rovatbe\xE1ll\xEDt\xE1sok", // ai 2026-06
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 624
+// include/menu_util.php, row 635
 "Language" => "Nyelv", // ai 2026-06
 
 // admin/slicedit.php, row 260
@@ -3830,7 +3833,7 @@ return [
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
-// include/menu_util.php, row 437, 747
+// include/menu_util.php, row 448, 758
 // include/slice.class.php, row 1394
 // src/Central/FindingText.php, row 496
 "Alerts" => "\xC9rtes\xEDt\xE9sek", // ai 2026-06
@@ -4579,7 +4582,7 @@ return [
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 "Task Manager" => "Feladatkezel\xF5", // ai 2026-06
 
 // central/synchronize3.php, row 114
@@ -4649,7 +4652,7 @@ return [
 
 // include/constants.php, row 456
 // include/logs.php, row 781, 813
-// src/Optimize/CheckQueuedClassMissing.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Oszt\xE1ly", // ai 2026-06
 
 // include/constants.php, row 460
@@ -5074,66 +5077,81 @@ return [
 // include/feeding.php, row 539
 "Remote node" => "T\xE1voli csom\xF3pont", // ai 2026-06
 
-// include/field.class.php, row 651
+// include/field.class.php, row 162
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+
+// include/field.class.php, row 167
+"code - its indentation and the last new line are kept on purpose" => "",
+
+// include/field.class.php, row 174
+"stores the text of the selected items" => "",
+
+// include/field.class.php, row 180
+"constants of a group" => "",
+
+// include/field.class.php, row 187
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+
+// include/field.class.php, row 709
 "Move to another field" => "\xC1thelyez\xE9s m\xE1sik mez\xF5be", // ai 2026-06
 
-// include/field.class.php, row 1005
+// include/field.class.php, row 1084
 // include/itemview.php, row 127
 "number of found items" => "a tal\xE1lt cikkek sz\xE1ma", // ai 2026-06
 
-// include/field.class.php, row 1006
+// include/field.class.php, row 1085
 "index of item within whole listing (begins with 0)" => "a cikk indexe a teljes list\xE1ban (0-t\xF3l indul)", // ai 2026-06
 
-// include/field.class.php, row 1007
+// include/field.class.php, row 1086
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "a cikk indexe az oldalon bel\xFCl (a lapoz\xF3 \xE1ltal list\xE1zott minden oldalon 0-t\xF3l indul)", // ai 2026-06
 
-// include/field.class.php, row 1008
+// include/field.class.php, row 1087
 "index of a group on page (it begins from 0 on each page)" => "a csoport indexe az oldalon (minden oldalon 0-t\xF3l indul)", // ai 2026-06
 
-// include/field.class.php, row 1009
+// include/field.class.php, row 1088
 "index of item within a group on page (it begins from 0 on each group)" => "a cikk indexe az oldalon l\xE9v\xF5 csoporton bel\xFCl (minden csoportban 0-t\xF3l indul)", // ai 2026-06
 
-// include/field.class.php, row 1010
+// include/field.class.php, row 1089
 "alias for Item ID" => "a cikkazonos\xEDt\xF3 (Item ID) aliasa", // ai 2026-06
 
-// include/field.class.php, row 1011
+// include/field.class.php, row 1090
 "alias for Short Item ID" => "a r\xF6vid cikkazonos\xEDt\xF3 (Short Item ID) aliasa", // ai 2026-06
 
-// include/field.class.php, row 1019, 1020
+// include/field.class.php, row 1098, 1099
 "alias used on admin page index.php for itemedit url" => "az admin index.php oldalon a cikkszerkeszt\xE9si URL-hez haszn\xE1lt alias", // ai 2026-06
 
-// include/field.class.php, row 1021
+// include/field.class.php, row 1100
 "Alias used on admin page index.php for edit discussion url" => "Az admin index.php oldalon a hozz\xE1sz\xF3l\xE1s-szerkeszt\xE9si URL-hez haszn\xE1lt alias", // ai 2026-06
 
-// include/field.class.php, row 1022
+// include/field.class.php, row 1101
 "Title of Slice for RSS" => "A rovat c\xEDme az RSS-hez", // ai 2026-06
 
-// include/field.class.php, row 1023
+// include/field.class.php, row 1102
 "Link to the Slice for RSS" => "A rovat hivatkoz\xE1sa az RSS-hez", // ai 2026-06
 
-// include/field.class.php, row 1024
+// include/field.class.php, row 1103
 "Short description (owner and name) of slice for RSS" => "A rovat r\xF6vid le\xEDr\xE1sa (tulajdonos \xE9s n\xE9v) az RSS-hez", // ai 2026-06
 
-// include/field.class.php, row 1025
+// include/field.class.php, row 1104
 "Date RSS information is generated, in RSS date format" => "Az RSS-adatok gener\xE1l\xE1s\xE1nak d\xE1tuma, RSS-d\xE1tumform\xE1tumban", // ai 2026-06
 
-// include/field.class.php, row 1026
+// include/field.class.php, row 1105
 "Slice name" => "Rovat neve", // ai 2026-06
 
-// include/field.class.php, row 1028
+// include/field.class.php, row 1107
 "Current MLX language" => "Aktu\xE1lis MLX nyelv", // ai 2026-06
 
-// include/field.class.php, row 1029
+// include/field.class.php, row 1108
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML \xEDr\xE1sir\xE1ny-attrib\xFAtum (pl. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1112, 1393
+// include/field.class.php, row 1191, 1472
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- b\xE1rmely sz\xF6vegmez\xF5 --", // ai 2026-06
 
-// include/field.class.php, row 1221
+// include/field.class.php, row 1300
 " (this)" => " (ez)", // ai 2026-06
 
-// include/field.class.php, row 1275, 1288, 1301
+// include/field.class.php, row 1354, 1367, 1380
 "Can't copy field" => "",
 
 // include/filedit.php, row 82
@@ -5370,7 +5388,7 @@ return [
 "Offer" => "K\xEDn\xE1lat", // ai 2026-06
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10850, 10873
+// include/stringexpand.php, row 10866, 10889
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5557,7 +5575,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "A konstans szintje (hierarchikus konstansokn\xE1l haszn\xE1latos)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Hiba: hib\xE1s aliasf\xFCggv\xE9ny (%1) ehhez: %2", // ai 2026-06
 
 // include/item_content.php, row 1126, 1184
@@ -5769,151 +5787,151 @@ return [
 // include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Elt\xE1vol\xEDtja a sz\xF3k\xF6z\xF6ket az elej\xE9r\xF5l \xE9s a v\xE9g\xE9r\xF5l, \xE9s normaliz\xE1lja az UTF-k\xF3dol\xE1st (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1105
 "Item IDs" => "Cikkazonos\xEDt\xF3k", // ai 2026-06
 
-// include/itemfunc.php, row 1132
+// include/itemfunc.php, row 1140
 "The tag '%1' could not be stored: %2" => "",
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "Felhaszn\xE1l\xF3i azonos\xEDt\xF3 = mindig az aktu\xE1lis felhaszn\xE1l\xF3 azonos\xEDt\xF3j\xE1t t\xE1rolja", // ai 2026-06
 
-// include/itemfunc.php, row 1170
+// include/itemfunc.php, row 1178
 "Inserts the identity of the current user, no matter what the user sets." => "Az aktu\xE1lis felhaszn\xE1l\xF3 azonos\xEDt\xF3j\xE1t sz\xFArja be, f\xFCggetlen\xFCl att\xF3l, hogy a felhaszn\xE1l\xF3 mit ad meg.", // ai 2026-06
 
-// include/itemfunc.php, row 1222
+// include/itemfunc.php, row 1230
 "Now = always store current time" => "Most = mindig az aktu\xE1lis id\xF5t t\xE1rolja", // ai 2026-06
 
-// include/itemfunc.php, row 1226
+// include/itemfunc.php, row 1234
 "Inserts the current time, no matter what the user sets." => "Az aktu\xE1lis id\xF5t sz\xFArja be, f\xFCggetlen\xFCl att\xF3l, mit \xE1ll\xEDt be a felhaszn\xE1l\xF3.", // ai 2026-06
 
-// include/itemfunc.php, row 1260
+// include/itemfunc.php, row 1268
 "Computed field for INSERT/UPDATE" => "Sz\xE1m\xEDtott mez\xF5 INSERT/UPDATE m\xFBveletekhez", // ai 2026-06
 
-// include/itemfunc.php, row 1264
+// include/itemfunc.php, row 1272
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "A mez\xF5 \xE9rt\xE9ke az ,,Aliasfelold\xF3 k\xF3d\" mez\xF5be \xEDrt kifejez\xE9s eredm\xE9nye. J\xF3 megold\xE1s minden el\xF5re kisz\xE1m\xEDthat\xF3 \xE9rt\xE9khez, mivel a megjelen\xEDt\xE9skor t\xF6rt\xE9n\xF5 kisz\xE1m\xEDt\xE1s lass\xFA lenne. Igen, haszn\xE1lhat itt {view...}, {include...} \xE9s {switch...} kifejez\xE9seket is", // ai 2026-06
 
-// include/itemfunc.php, row 1273
+// include/itemfunc.php, row 1281
 "Code for unaliasing (INSERT)" => "Aliasfelold\xF3 k\xF3d (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1273, 1309
+// include/itemfunc.php, row 1281, 1317
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Ide b\xE1rmilyen sz\xF6veg \xEDrhat\xF3. A sz\xF6veg aliasai a cikk ment\xE9sekor felold\xF3dnak, \xEDgy haszn\xE1lhat b\xE1rmilyen {...} szerkezetet \xE9s mez\xF5aliasokat is", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "Code for unaliasing (UPDATE)" => "Aliasfelold\xF3 k\xF3d (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Ugyanaz, mint fent, de csak az UPDATE m\xFBvelethez. Ha nincs kit\xF6ltve, a mez\xF5 \xE9rt\xE9ke v\xE1ltozatlan marad", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Multivalue delimiter" => "T\xF6bb \xE9rt\xE9k elv\xE1laszt\xF3ja", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Character or string, which will split the computed string into multiple values (the same field)" => "Karakter vagy sz\xF6veg, amely a kisz\xE1m\xEDtott sz\xF6veget t\xF6bb \xE9rt\xE9kre bontja (ugyanabban a mez\xF5ben)", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "Recompute every" => "\xDAjrasz\xE1m\xEDt\xE1s gyakoris\xE1ga", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "A mez\xF5 percenk\xE9nt, \xF3r\xE1nk\xE9nt stb. \xFAjrasz\xE1m\xEDt\xF3dik (a fenti UPDATE k\xF3d alapj\xE1n). Az id\xF5z\xEDt\xE9s nem pontos - a perc kb. 1-10 percet jelent. Ha nincs kit\xF6ltve, a mez\xF5 csak a cikk besz\xFAr\xE1sakor/friss\xEDt\xE9sekor sz\xE1m\xEDt\xF3dik \xFAjra.", // ai 2026-06
 
-// include/itemfunc.php, row 1296
+// include/itemfunc.php, row 1304
 "Computed field" => "Sz\xE1m\xEDtott mez\xF5", // ai 2026-06
 
-// include/itemfunc.php, row 1300
+// include/itemfunc.php, row 1308
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "A mez\xF5 \xE9rt\xE9ke az ,,Aliasfelold\xF3 k\xF3d\" mez\xF5be \xEDrt kifejez\xE9s eredm\xE9nye. J\xF3 megold\xE1s minden el\xF5re kisz\xE1m\xEDthat\xF3 \xE9rt\xE9khez, mivel a megjelen\xEDt\xE9skor t\xF6rt\xE9n\xF5 kisz\xE1m\xEDt\xE1s lass\xFA lenne. Igen, haszn\xE1lhat itt {view...}, {include...} \xE9s {switch...} kifejez\xE9seket is", // ai 2026-06
 
-// include/itemfunc.php, row 1309
+// include/itemfunc.php, row 1317
 "Code for unaliasing (INSERT+UPDATE)" => "Aliasfelold\xF3 k\xF3d (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1331
+// include/itemfunc.php, row 1339
 "SEO Name" => "SEO n\xE9v", // ai 2026-06
 
-// include/itemfunc.php, row 1335
+// include/itemfunc.php, row 1343
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Ha a mez\xF5 nincs kit\xF6ltve, a seoname az _#HEADLINE aliasb\xF3l (vagy ha meg van adva, m\xE1sikb\xF3l) sz\xE1m\xEDt\xF3dik, egyedi m\xF3don az \xF6sszes rovatra azokban a site modulokban, ahol a rovat szerepel a ,,Uses slices\" be\xE1ll\xEDt\xE1sban. A SEO n\xE9v alias l\xE9nyeg\xE9ben a k\xF6vetkez\xF5 sz\xE1m\xEDtott mez\xF5t r\xF6vid\xEDti: {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "Alias to compute from" => "Alias, amelyb\xF5l sz\xE1m\xEDtand\xF3", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "if not specified, the _#HEADLINE is used" => "ha nincs megadva, az _#HEADLINE haszn\xE1latos", // ai 2026-06
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1372
 "Unique number for this field (from 1,..)" => "Egyedi sz\xE1m ehhez a mez\xF5h\xF6z (1-t\xF5l kezdve)", // ai 2026-06
 
-// include/itemfunc.php, row 1366
-"Unique number in sequence 1,2,3,..." => "Egyedi sz\xE1m az 1,2,3,... sorozatban", // ai 2026-06
+// include/itemfunc.php, row 1376
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
 
-// include/itemfunc.php, row 1391
+// include/itemfunc.php, row 1499
 "File = uploaded file" => "F\xE1jl = felt\xF6lt\xF6tt f\xE1jl", // ai 2026-06
 
-// include/itemfunc.php, row 1395
+// include/itemfunc.php, row 1503
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Elt\xE1rolja a felt\xF6lt\xF6tt f\xE1jlt \xE9s a r\xE1 mutat\xF3 hivatkoz\xE1st; a param\xE9terek csak akkor \xE9rv\xE9nyesek, ha a t\xEDpus image/valami.", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Mime types accepted" => "Elfogadott MIME-t\xEDpusok", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Only files of matching mime types will be accepted" => "Csak az egyez\xF5 MIME-t\xEDpus\xFA f\xE1jlokat fogadja el", // ai 2026-06
 
-// include/itemfunc.php, row 1405
+// include/itemfunc.php, row 1513
 "Maximum image width" => "Maxim\xE1lis k\xE9psz\xE9less\xE9g", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "Maximum image height" => "Maxim\xE1lis k\xE9pmagass\xE1g", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "A k\xE9p e hat\xE1rokon bel\xFClre lesz \xE1tm\xE9retezve, az oldalar\xE1ny megtart\xE1s\xE1val.", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "Other fields" => "Egy\xE9b mez\xF5k", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Azon tov\xE1bbi mez\xF5k list\xE1ja, ##-tel elv\xE1lasztva, amelyek megkapj\xE1k ezt a k\xE9pet. T\xF6bbsz\xF6r\xF6s felt\xF6lt\xE9sn\xE9l nem m\xFBk\xF6dik j\xF3l.", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "Upload policy" => "Felt\xF6lt\xE9si m\xF3d", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Ez a param\xE9ter szab\xE1lyozza, mi t\xF6rt\xE9njen, ha a felt\xF6lt\xF6tt f\xE1jl m\xE1r l\xE9tezik:<br>new - az AA \xFAj f\xE1jlnevet hoz l\xE9tre (_x ut\xF3tag hozz\xE1ad\xE1s\xE1val), \xE9s ezen az \xFAj n\xE9ven t\xE1rolja a f\xE1jlt (alap\xE9rtelmezett)<br>overwrite - az azonos nev\xFB r\xE9gi f\xE1jl fel\xFCl\xEDr\xF3dik<br>backup - a r\xE9gi f\xE1jl egy \xFAj (m\xE9g nem l\xE9tez\xF5) f\xE1jlba m\xE1sol\xF3dik, \xE9s az aktu\xE1lis f\xE1jl az eredeti n\xE9ven t\xE1rol\xF3dik.<br>A f\xE1jln\xE9v minden esetben \xE1talak\xEDt\xE1sra ker\xFCl: a nem alfanumerikus karakterek al\xE1h\xFAz\xE1sra cser\xE9l\xF5dnek.", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "Exact dimensions" => "Pontos m\xE9retek", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ha 1-re van \xE1ll\xEDtva, a k\xE9p pontosan a megadott m\xE9retekre lesz kicsiny\xEDtve (\xE9s sz\xFCks\xE9g eset\xE9n lev\xE1gva). Alap\xE9rtelmez\xE9s 0 vagy \xFCres: a k\xE9p \xE1tm\xE9retez\xE9se az oldalar\xE1ny megtart\xE1s\xE1val t\xF6rt\xE9nik.", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Filename template" => "F\xE1jln\xE9vsablon", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "A f\xE1jlt a sablon szerint nevezi \xE1t. Haszn\xE1lhat AA-kifejez\xE9seket, valamint a speci\xE1lis _#name, _#ext \xE9s _#full aliasokat (f\xE1jln\xE9v, kiterjeszt\xE9s \xE9s teljes n\xE9v). Az AA-kifejez\xE9sekben a cikkaliasok INSERT-n\xE9l nem m\xFBk\xF6dnek (a cikk a f\xE1jl \xEDr\xE1sakor m\xE9g nem l\xE9tezik). UPDATE-n\xE9l m\xFBk\xF6dni fognak.", // ai 2026-06
 
-// include/itemfunc.php, row 1566
+// include/itemfunc.php, row 1674
 "Password and Change Password" => "Jelsz\xF3 \xE9s Jelsz\xF3m\xF3dos\xEDt\xE1s", // ai 2026-06
 
-// include/itemfunc.php, row 1570
+// include/itemfunc.php, row 1678
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "A ,,Jelsz\xF3 \xE9s Jelsz\xF3m\xF3dos\xEDt\xE1s\" mez\xF5t\xEDpus \xE9rt\xE9k\xE9t t\xE1rolja. El\xF5sz\xF6r ellen\xF5rzi, hogy az \xFAj jelsz\xF3 megegyezik-e a megism\xE9telt \xFAj jelsz\xF3val, \xE9s ha igen, titkos\xEDtja \xE9s elt\xE1rolja az \xFAj jelsz\xF3t.", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Copy of password" => "Jelsz\xF3 m\xE1solata", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id, amelyben a jelsz\xF3 m\xE1solat\xE1t t\xE1rolni k\xEDv\xE1nja. N\xE9ha hasznos, ha lehet\xF5v\xE9 akarja tenni a felhaszn\xE1l\xF3knak r\xE9gi jelszavuk visszak\xE9r\xE9s\xE9t. Er\xF5sen aj\xE1nlott nem egyszer\xFB sz\xF6vegk\xE9nt t\xE1rolni, hanem titkos\xEDtani. L\xE1sd a m\xE1sodik param\xE9tert.", // ai 2026-06
 
-// include/itemfunc.php, row 1580, 1626
+// include/itemfunc.php, row 1688, 1734
 "Encrypt phrase" => "Titkos\xEDt\xE1si jelmondat", // ai 2026-06
 
-// include/itemfunc.php, row 1580
+// include/itemfunc.php, row 1688
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ha megadja a ,,Copy of password\" (jelsz\xF3 m\xE1solata) mez\xF5t, aj\xE1nlott a jelsz\xF3t titkos\xEDtva t\xE1rolni az adatb\xE1zisban. \xCDrjon ide tetsz\xF5leges sz\xF6veget. Ha k\xE9s\xF5bb sz\xFCks\xE9ge lesz a jelsz\xF3ra, ugyanezzel a jelmondattal visszafejtheti a mez\xF5b\xF5l - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1613
+// include/itemfunc.php, row 1721
 "2FA Secret" => "2FA titkos kulcs", // ai 2026-06
 
-// include/itemfunc.php, row 1617
+// include/itemfunc.php, row 1725
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Titkos kulcsot gener\xE1l \xE9s t\xE1rol a k\xE9tfaktoros hiteles\xEDt\xE9shez, opcion\xE1lisan jelsz\xF3val titkos\xEDtva", // ai 2026-06
 
-// include/itemfunc.php, row 1626
+// include/itemfunc.php, row 1734
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "A mez\xF5\xE9rt\xE9k titkos\xEDt\xE1s\xE1hoz haszn\xE1lt jelsz\xF3. Tartalmazhat AA-kifejez\xE9seket vagy aliasokat (a felhaszn\xE1l\xF3i cikkhez a Reader Management rovatban)", // ai 2026-06
 
 // include/itemview.php, row 120
@@ -6339,75 +6357,75 @@ return [
 // include/menu_util.php, row 131
 "Import conf from CSV..." => "Konfigur\xE1ci\xF3 import\xE1l\xE1sa CSV-b\xF5l...", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 426
 "Part of %s" => "%s r\xE9sze", // ai 2026-06
 
-// include/menu_util.php, row 432
+// include/menu_util.php, row 443
 "Other slices" => "Egy\xE9b rovatok", // ai 2026-06
 
-// include/menu_util.php, row 436
+// include/menu_util.php, row 447
 "Reader Management Slice" => "Olvas\xF3kezel\xF5 rovat", // ai 2026-06
 
-// include/menu_util.php, row 438
+// include/menu_util.php, row 449
 "Jump inside control panel" => "Ugr\xE1s az adminisztr\xE1ci\xF3n bel\xFCl", // ai 2026-06
 
-// include/menu_util.php, row 439
+// include/menu_util.php, row 450
 // include/slice.class.php, row 1429
 // src/Central/FindingText.php, row 311
 "Links" => "Hivatkoz\xE1sok", // ai 2026-06
 
-// include/menu_util.php, row 440
+// include/menu_util.php, row 451
 "MySQL Auth (old version)" => "MySQL hiteles\xEDt\xE9s (r\xE9gi verzi\xF3)", // ai 2026-06
 
-// include/menu_util.php, row 441
+// include/menu_util.php, row 452
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Szavaz\xE1sok", // ai 2026-06
 
-// include/menu_util.php, row 462
+// include/menu_util.php, row 473
 "New slice" => "\xDAj rovat", // ai 2026-06
 
-// include/menu_util.php, row 466
+// include/menu_util.php, row 477
 "Switch module" => "Modulv\xE1lt\xE1s", // ai 2026-06
 
-// include/menu_util.php, row 600, 611
+// include/menu_util.php, row 611, 622
 "Apply" => "Alkalmaz", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 615
 "-- Default for module --" => "-- Modul alap\xE9rtelmez\xE9se --", // ai 2026-06
 
-// include/menu_util.php, row 612
+// include/menu_util.php, row 623
 "Switches the admin interface language; the page reloads." => "\xC1tv\xE1ltja az adminisztr\xE1ci\xF3s fel\xFClet nyelv\xE9t; az oldal \xFAjrat\xF6lt\xF5dik.", // ai 2026-06
 
-// include/menu_util.php, row 617
+// include/menu_util.php, row 628
 "What's working, what isn't \xE2\x80\x94 tell the AA team." => "Mi m\xFBk\xF6dik \xE9s mi nem -- ossza meg az AA csapattal.", // ai 2026-06
 
-// include/menu_util.php, row 620
+// include/menu_util.php, row 631
 // src/Import/Definition.php, row 86
 "Settings" => "Be\xE1ll\xEDt\xE1sok", // ai 2026-06
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 634
 "Theme" => "T\xE9ma", // ai 2026-06
 
-// include/menu_util.php, row 625
+// include/menu_util.php, row 636
 "Feedback" => "Visszajelz\xE9s", // ai 2026-06
 
-// include/menu_util.php, row 751
+// include/menu_util.php, row 762
 // include/slice.class.php, row 679
 "Reader management" => "Olvas\xF3kezel\xE9s", // ai 2026-06
 
-// include/menu_util.php, row 763
+// include/menu_util.php, row 774
 "logout" => "kijelentkez\xE9s", // ai 2026-06
 
-// include/menu_util.php, row 771
+// include/menu_util.php, row 782
 "Search.." => "Keres\xE9s..", // ai 2026-06
 
-// include/menu_util.php, row 850
+// include/menu_util.php, row 861
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 860
+// include/menu_util.php, row 871
 "Collapse / expand menu" => "Men\xFC \xF6sszecsuk\xE1sa / kibont\xE1sa", // ai 2026-06
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1663
 "More" => "T\xF6bb", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6492,7 +6510,7 @@ return [
 "More users found. Refine your search." => "T\xF6bb felhaszn\xE1l\xF3 tal\xE1lhat\xF3. Pontos\xEDtsa a keres\xE9st.", // ai 2026-06
 
 // include/searchbar.class.php, row 54
-// src/AA_Plannedtask.php, row 62, 127
+// src/AA_Plannedtask.php, row 72, 182
 "Condition" => "Felt\xE9tel", // ai 2026-06
 
 // include/searchbar.class.php, row 55
@@ -6893,84 +6911,84 @@ return [
 // include/stringexpand.php, row 6161
 "No module for dictionary slice" => "Nincs modul a sz\xF3t\xE1rrovathoz", // ai 2026-06
 
-// include/stringexpand.php, row 7789
+// include/stringexpand.php, row 7799
 "version" => "verzi\xF3", // ai 2026-06
 
-// include/stringexpand.php, row 7973
+// include/stringexpand.php, row 7983
 "show" => "megjelen\xEDt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 7974
+// include/stringexpand.php, row 7984
 "hide" => "elrejt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 7975
+// include/stringexpand.php, row 7985
 "loading" => "bet\xF6lt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 9100
+// include/stringexpand.php, row 9116
 "E-mail confirmed." => "E-mail meger\xF5s\xEDtve.", // ai 2026-06
 
-// include/stringexpand.php, row 9104
+// include/stringexpand.php, row 9120
 "E-mail unsubscribed" => "E-mail leiratkoztatva", // ai 2026-06
 
-// include/stringexpand.php, row 9853
+// include/stringexpand.php, row 9869
 "Forgot your password? Fill in your email." => "Elfelejtette jelszav\xE1t? Adja meg e-mail-c\xEDm\xE9t.", // ai 2026-06
 
-// include/stringexpand.php, row 9855
+// include/stringexpand.php, row 9871
 // src/Central/FindingText.php, row 457
 "e-mail" => "",
 
-// include/stringexpand.php, row 9873, 9877
+// include/stringexpand.php, row 9889, 9893
 "Unable to find user - please check if it has been misspelled." => "A felhaszn\xE1l\xF3 nem tal\xE1lhat\xF3 - ellen\xF5rizze, nem \xEDrta-e el.", // ai 2026-06
 
-// include/stringexpand.php, row 9891
+// include/stringexpand.php, row 9907
 "Password link" => "Jelsz\xF3-hivatkoz\xE1s", // ai 2026-06
 
-// include/stringexpand.php, row 9892
+// include/stringexpand.php, row 9908
 "Password change url parameter" => "Jelsz\xF3v\xE1ltoztat\xE1si URL-param\xE9ter", // ai 2026-06
 
-// include/stringexpand.php, row 9904
+// include/stringexpand.php, row 9920
 "Password change" => "Jelsz\xF3v\xE1ltoztat\xE1s", // ai 2026-06
 
-// include/stringexpand.php, row 9905
+// include/stringexpand.php, row 9921
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "A jelsz\xF3 megv\xE1ltoztat\xE1s\xE1hoz keresse fel a k\xF6vetkez\xF5 c\xEDmet:<br>%1<br>A v\xE1ltoztat\xE1s k\xE9t \xF3r\xE1n bel\xFCl lehets\xE9ges - ut\xE1na a kulcs lej\xE1r, \xE9s \xFAjat kell k\xE9rnie.", // ai 2026-06
 
-// include/stringexpand.php, row 9914
+// include/stringexpand.php, row 9930
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "A jelsz\xF3v\xE1ltoztat\xE1shoz sz\xFCks\xE9ges kulcsot tartalmaz\xF3 e-mailt elk\xFCldt\xFCk a k\xF6vetkez\xF5 c\xEDmre: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9925, 9954
+// include/stringexpand.php, row 9941, 9970
 "Bad or expired key." => "Hib\xE1s vagy lej\xE1rt kulcs.", // ai 2026-06
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 9946
 "Fill in the new password" => "Adja meg az \xFAj jelsz\xF3t", // ai 2026-06
 
-// include/stringexpand.php, row 9932
+// include/stringexpand.php, row 9948
 "New password" => "\xDAj jelsz\xF3", // ai 2026-06
 
-// include/stringexpand.php, row 9933
+// include/stringexpand.php, row 9949
 "Retype New Password" => "\xDAj jelsz\xF3 m\xE9g egyszer", // ai 2026-06
 
-// include/stringexpand.php, row 9957
+// include/stringexpand.php, row 9973
 "Passwords do not match - please try again." => "A jelszavak nem egyeznek - pr\xF3b\xE1lja \xFAjra.", // ai 2026-06
 
-// include/stringexpand.php, row 9960
+// include/stringexpand.php, row 9976
 "The password must be at least 6 characters long." => "A jelsz\xF3nak legal\xE1bb 6 karakter hossz\xFAnak kell lennie.", // ai 2026-06
 
-// include/stringexpand.php, row 9966
+// include/stringexpand.php, row 9982
 "Password changed." => "A jelsz\xF3 megv\xE1ltozott.", // ai 2026-06
 
-// include/stringexpand.php, row 9968
+// include/stringexpand.php, row 9984
 "An error occurred during password change - please contact: %1." => "Hiba t\xF6rt\xE9nt a jelsz\xF3v\xE1ltoztat\xE1s sor\xE1n - k\xE9rj\xFCk, forduljon a k\xF6vetkez\xF5h\xF6z: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10847, 10870
+// include/stringexpand.php, row 10863, 10886
 "Are you sure you want to permanently DELETE this record?" => "Biztosan V\xC9GLEGESEN t\xF6rli ezt a rekordot?", // ai 2026-06
 
-// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// include/stringexpand.php, row 10869, 10872, 10892, 10895
 // src/Widget/RimWidget.php, row 270
 "edit" => "szerkeszt\xE9s", // ai 2026-06
 
-// include/stringexpand.php, row 10859, 10882
+// include/stringexpand.php, row 10875, 10898
 "back" => "vissza", // ai 2026-06
 
-// include/stringexpand.php, row 10862, 10885
+// include/stringexpand.php, row 10878, 10901
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "h\xFAzza ide a f\xE1jlokat, vagy kattintson a felt\xF6lt\xE9shez", // ai 2026-06
 
@@ -7390,68 +7408,83 @@ return [
 // src/Manager.php, row 881
 "No item found" => "Nem tal\xE1lhat\xF3 cikk", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 61, 127
+// src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "Feladat", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Ha meg van adva, a feladat csak akkor fut le, ha a Felt\xE9tel \xE9rt\xE9ke null\xE1t\xF3l \xE9s az \xFCres \xE9rt\xE9kt\xF5l elt\xE9r\xF5", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 73
 "Event to run" => "Ind\xEDt\xF3 esem\xE9ny", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "New Item" => "\xDAj cikk", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "Item Updated" => "Cikk friss\xEDtve", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 66
+// src/AA_Plannedtask.php, row 76
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "Esem\xE9ny, amelynek bek\xF6vetkeztekor a feladat lefut. F\xFCggetlen az al\xE1bbi Id\xF5 be\xE1ll\xEDt\xE1st\xF3l (\xEDgy a feladat futhat az esem\xE9ny bek\xF6vetkeztekor \xE9s adott id\xF5pontban is). Ha nem adja meg a \"+ m\xE1sodperc\" param\xE9tert, vagy 0-ra \xE1ll\xEDtja, a feladat azonnal lefut. Ha a \"+ m\xE1sodperc\" eltol\xE1s be van \xE1ll\xEDtva, a feladat egyszeri futtat\xE1sra lesz \xFCtemezve x m\xE1sodperc m\xFAlva.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Time to run" => "Futtat\xE1s ideje", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "Adja meg az id\xF5pontot, amikor a feladatnak le kell futnia. Ezut\xE1n rendszeresen ebben az id\xF5pontban fut majd le. Az id\xF5pontot \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">relat\xEDv form\xE1tumban</a>\" kell megadni, p\xE9ld\xE1ul:<br>\"midnight\" - minden \xE9jf\xE9lkor fut<br>\"+1 hour\" - \xF3r\xE1nk\xE9nt fut,<br>\"+30 min\" - 30 percenk\xE9nt fut,<br>\"16:00\" - minden nap 16:00-kor fut<br>\"Monday 10:00\" - minden h\xE9tf\xF5n 10:00-kor fut<br>\"first day of this month 10:00\"<br>Az id\xF5pontok nem pontosak: a feladatokat egym\xE1s ut\xE1n hajtja v\xE9gre a script, amely kb. 5 percenk\xE9nt fut.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68, 127
+// src/AA_Plannedtask.php, row 78, 182
 "+ seconds" => "+ m\xE1sodperc", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68
+// src/AA_Plannedtask.php, row 78
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "Opcion\xE1lisan megadhat\xF3 az el\xF5z\xF5 id\xF5ponthoz hozz\xE1adott extra eltol\xE1s (m\xE1sodpercben).<br>Az el\xF5z\xF5 sorban neh\xE9z lenne megadni a \"h\xF3nap 15-\xE9t\", ez\xE9rt a kett\xF5 kombin\xE1lhat\xF3:<br> - \"id\xF5\" = \"first day of this month 10:00\"<br> - \"+ m\xE1sodperc\" = \"1209600\"<br> (60 m\xE1sodperc * 60 perc * 24 \xF3ra * 14 nap) - figyelje meg a 14-et (1. + 14 = 15.)", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Opcion\xE1lisan megadhat\xF3 a kontextus - a hossz\xFA cikkazonos\xEDt\xF3 (Item Id), amelyre a feladat lefut. A feladatban ezut\xE1n haszn\xE1lhat\xF3 az {id..............} \xE9s a cikk t\xF6bbi aliasa. A cikk azonos\xEDt\xF3ja a {var:aa_event_for} v\xE1ltoz\xF3b\xF3l is kinyerhet\xF5. \"Esem\xE9ny\" t\xEDpus\xFA feladatokn\xE1l (Cikk friss\xEDtve/\xFAj) mindig a m\xF3dos\xEDtott cikk azonos\xEDt\xF3j\xE1val van kit\xF6ltve.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 70
+// src/AA_Plannedtask.php, row 80
 "Saved by" => "",
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 83
+"Result of the last run" => "",
+
+// src/AA_Plannedtask.php, row 157
 "Planned tasks" => "\xDCtemezett feladatok", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 122
+// src/AA_Plannedtask.php, row 177
 "Current time on server" => "Aktu\xE1lis id\xF5 a szerveren", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Event" => "Esem\xE9ny", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Computed time" => "Sz\xE1m\xEDtott id\xF5", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Scheduled to" => "\xDCtemezve", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 315
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+// src/AA_Plannedtask.php, row 266
+"done" => "",
 
-// src/AA_Plannedtask.php, row 318
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+// src/AA_Plannedtask.php, row 267
+"done, no output" => "",
 
-// src/AA_Plannedtask.php, row 382
-"not scheduled, yet" => "m\xE9g nincs \xFCtemezve", // ai 2026-06
+// src/AA_Plannedtask.php, row 268
+"condition not met" => "",
+
+// src/AA_Plannedtask.php, row 269
+"failed" => "",
 
 // src/AA_Plannedtask.php, row 386
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+
+// src/AA_Plannedtask.php, row 389
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+
+// src/AA_Plannedtask.php, row 453
+"not scheduled, yet" => "m\xE9g nincs \xFCtemezve", // ai 2026-06
+
+// src/AA_Plannedtask.php, row 457
 "next run" => "k\xF6vetkez\xF5 fut\xE1s", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 51, 72
@@ -8945,7 +8978,7 @@ return [
 // src/Import/DetailPage.php, row 329, 666
 "Updated" => "",
 
-// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailCatalog.php, row 171
 "Catalog of the source" => "",
 
 // src/Import/DetailConfig.php, row 136
@@ -9532,82 +9565,88 @@ return [
 // src/Import/DetailPage.php, row 1147
 "Look the failure up in the log of import failures, then Continue or End the run." => "",
 
-// src/Import/DetailPage.php, row 1156
+// src/Import/DetailPage.php, row 1161
 "full run" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Baseline only" => "",
+// src/Import/DetailPage.php, row 1162
+"one stream (%1)" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Nothing imported yet. Run changed only takes what changes after this." => "",
-
-// src/Import/DetailPage.php, row 1198, 1199
-"Imported with item errors" => "",
-
-// src/Import/DetailPage.php, row 1198
-"1 item error in the run that imported it - see Runs." => "",
+// src/Import/DetailPage.php, row 1163
+"%1 streams" => "",
 
 // src/Import/DetailPage.php, row 1199
+"Baseline only" => "",
+
+// src/Import/DetailPage.php, row 1199
+"Nothing imported yet. Run changed only takes what changes after this." => "",
+
+// src/Import/DetailPage.php, row 1207, 1208
+"Imported with item errors" => "",
+
+// src/Import/DetailPage.php, row 1207
+"1 item error in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1208
 "%1 item errors in the run that imported it - see Runs." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "Imported" => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source was asked again after the import." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source has not been asked since." => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Checked, not imported yet" => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Run imports it; Run changed only too, as it has no version to compare." => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "Not seen yet" => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "No run has imported or checked it." => "",
 
-// src/Import/DetailPage.php, row 1219
+// src/Import/DetailPage.php, row 1228
 "%1 read" => "",
 
-// src/Import/DetailPage.php, row 1220
+// src/Import/DetailPage.php, row 1229
 "%1 new, %2 updated, %3 skipped" => "",
 
-// src/Import/DetailPage.php, row 1221
+// src/Import/DetailPage.php, row 1230
 "%1 filtered out" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "dry run - nothing stored" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "all streams of the run together" => "",
 
-// src/Import/DetailPage.php, row 1241
+// src/Import/DetailPage.php, row 1250
 "None yet - an import records it" => "",
 
-// src/Import/DetailPage.php, row 1242
+// src/Import/DetailPage.php, row 1251
 "None - the source gives no version" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1, working %2" => "",
 
-// src/Import/DetailPage.php, row 1301
+// src/Import/DetailPage.php, row 1310
 "%1 s" => "",
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1313
 "%1 min %2 s" => "",
 
-// src/Import/DetailPage.php, row 1304, 1306
+// src/Import/DetailPage.php, row 1313, 1315
 "%1 min" => "",
 
-// src/Import/DetailPage.php, row 1306
+// src/Import/DetailPage.php, row 1315
 "%1 h" => "",
 
 // src/Import/Mapping.php, row 219
@@ -9884,13 +9923,13 @@ return [
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "%1 k\xF6teg be\xFCtemezve %2 cikkel", // ai 2026-06
 
-// src/Later/Toexecute.php, row 364
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "",
 
-// src/Later/Toexecute.php, row 368
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "",
 
-// src/Later/Toexecute.php, row 459
+// src/Later/Toexecute.php, row 462
 "the task failed with %1" => "",
 
 // src/Manager.php, row 430
@@ -10418,16 +10457,16 @@ return [
 // src/Optimize/CategorySort2groupBy.php, row 37
 "All slices are already converted" => "M\xE1r minden rovat \xE1t van alak\xEDtva", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 20
+// src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "Az f_h alias optimaliz\xE1l\xE1sa f_1-re", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 28
+// src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "A nem t\xF6bb\xE9rt\xE9k\xFB \xE9s html-k\xE9nt megjel\xF6lt mez\xF5k f_h alias\xE1t a gyorsabb, k\xF6zvetlen tartalomki\xEDr\xE1st v\xE9gz\xF5 f_1 f\xFCggv\xE9nyre cser\xE9li", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 18
+// src/Optimize/ChangeF_t2F_1.php, row 15
 "Optimize f_t alias to f_1" => "Az f_t alias optimaliz\xE1l\xE1sa f_1-re", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 26
+// src/Optimize/ChangeF_t2F_1.php, row 23
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "A nem t\xF6bb\xE9rt\xE9k\xFB \xE9s html-k\xE9nt megjel\xF6lt mez\xF5k f_t alias\xE1t a gyorsabb, k\xF6zvetlen tartalomki\xEDr\xE1st v\xE9gz\xF5 f_1 f\xFCggv\xE9nyre cser\xE9li", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -10452,8 +10491,32 @@ return [
 "Changing ID for table %1 (%2)" => "Azonos\xEDt\xF3 m\xF3dos\xEDt\xE1sa a(z) %1 t\xE1bl\xE1ban (%2)", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 68
+// src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "%1 t\xE1bla \xE1talak\xEDtva", // ai 2026-06
+
+// src/Optimize/ChangeQte2Trm.php, row 24
+"Trim text fields" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 29
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields switched to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields to switch to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 139
+"Field templates" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"switched to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"to switch to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 145
+"%1 keeps \"Text = don't modify\": %2" => "",
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
 "Unsigned {ajax} widget settings" => "",
@@ -10475,7 +10538,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 102
-// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 99
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -10489,7 +10552,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
-// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 100
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckUploadRefusals.php, row 89
@@ -11052,22 +11115,22 @@ return [
 // src/Optimize/CheckQueue.php, row 181
 "Longest [s]" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 22
+// src/Optimize/CheckQueuedClassMissing.php, row 23
 "Queued tasks of a missing class" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 27
+// src/Optimize/CheckQueuedClassMissing.php, row 28
 "Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 61
+// src/Optimize/CheckQueuedClassMissing.php, row 62
 "Queued tasks of class %1 cannot run - the class is missing" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 66
+// src/Optimize/CheckQueuedClassMissing.php, row 67
 "Selector" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 70
-"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "",
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 76
+// src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "",
 
 // src/Optimize/CheckRequiredSettings.php, row 17
@@ -11384,7 +11447,13 @@ return [
 // src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "%1 \xE1talak\xEDtand\xF3 t\xE1bl\xE1t tal\xE1ltunk", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 64
+// src/Optimize/Convert2innodb.php, row 71
+"Unique numbers (seq) may repeat" => "",
+
+// src/Optimize/Convert2innodb.php, row 71
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+
+// src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "A(z) %1 t\xE1bla (%2) \xE1talak\xEDt\xE1sa InnoDB-re", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 23
@@ -12262,6 +12331,30 @@ return [
 
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "az expiry_date..... mez\xF5 alap\xE9rtelmezett \xE9rt\xE9ke m\xF3dos\xEDtva %1 /%2 rovatban: %3)", // ai 2026-06
+
+// src/Optimize/TrimFieldValues.php, row 39
+"Trim stored values" => "",
+
+// src/Optimize/TrimFieldValues.php, row 44
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+
+// src/Optimize/TrimFieldValues.php, row 63
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+
+// src/Optimize/TrimFieldValues.php, row 68
+"%1 items to trim" => "",
+
+// src/Optimize/TrimFieldValues.php, row 80
+"Trimming of %1 slices planned in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 91
+"%1 items planned to be trimmed in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 129
+"%1 items with a unique value to trim by hand, e.g. %2" => "",
+
+// src/Optimize/TrimFieldValues.php, row 139
+"%1 items to trim, e.g. %2" => "",
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Adatb\xE1zis-szerkezet friss\xEDt\xE9se", // ai 2026-06

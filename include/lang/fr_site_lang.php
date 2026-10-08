@@ -20,7 +20,7 @@ return [
 "Manage %1" => "G\xE9rer %1", // ai 2026-06
 
 // modules/site/index.php, row 64
-"You do not have permission to edit items in this slice" => "Vous n'avez pas la permission de mettre \xEF\xBF\xBD jour les items dans cette section",
+"You do not have permission to edit items in this slice" => "Vous n'avez pas la permission de mettre \xE0 jour les items dans cette section", // ai 2026-10
 
 // modules/site/index.php, row 68
 "Starting spot not found" => "Spot de d\xE9part introuvable", // ai 2026-06
@@ -85,7 +85,7 @@ return [
 "Module not found." => "Module introuvable.", // ai 2026-06
 
 // modules/site/moddelete.php, row 69
-"Slice successfully deleted, tables are optimized" => "Section supprim\xEF\xBF\xBDe.  tables optimis\xEF\xBF\xBDes",
+"Slice successfully deleted, tables are optimized" => "Section supprim\xE9e.  tables optimis\xE9es", // ai 2026-10
 
 // modules/site/modedit.php, row 116
 "You do not have permissions to add slice" => "Vous n'avez pas la permission d'ajouter des sections",
@@ -121,7 +121,7 @@ return [
 "Edit Site" => "Modifier le site", // ai 2026-06
 
 // modules/site/modedit.php, row 325
-"Used Language File" => "Fichier de langue utilis\xEF\xBF\xBD",
+"Used Language File" => "Fichier de langue utilis\xE9", // ai 2026-10
 
 // modules/site/modedit.php, row 326
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Utilisez AA_Router_Seo. Sinon, vous utiliserez l'ancienne approche du module site avec un \xAB fichier de contr\xF4le \xBB, ce que nous ne recommandons pas.", // ai 2026-06

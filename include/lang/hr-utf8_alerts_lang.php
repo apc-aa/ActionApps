@@ -206,7 +206,7 @@ return [
 "You do not have permission to manage Emails" => "Nemate dozvolu za upravljanje e-poštom", // ai 2026-06
 
 // modules/alerts/emails.php, row 62
-"Owner" => "Vlasnik - ica",
+"Owner" => "Vlasnik", // ai 2026-10
 
 // modules/alerts/emails.php, row 66
 // modules/alerts/menu.php, row 86

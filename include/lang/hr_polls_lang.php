@@ -142,7 +142,7 @@ return [
 "Polls" => "Glasanja",
 
 // modules/polls/menu.php, row 119
-"Designs" => "Izgledi", // ai 2026-06
+"Designs" => "Dizajni", // ai 2026-10
 
 // modules/polls/modedit.php, row 102
 "You do not have permissions to add polls" => "Nemate dozvolu za dodavanje anketa", // ai 2026-06

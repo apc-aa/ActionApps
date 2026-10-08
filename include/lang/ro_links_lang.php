@@ -282,7 +282,7 @@ return [
 "Insert date" => "Data ad\xE3ug\xE3rii", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "",
+"Edited by" => "Editat de", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Data ultimei edit\xE3ri", // ai 2026-06

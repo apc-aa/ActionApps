@@ -70,7 +70,7 @@ return [
 
 // modules/site/menu.php, row 55
 // modules/site/modedit.php, row 318
-"Site" => "Sit", // ai 2026-06
+"Site" => "Site",
 
 // modules/site/menu.php, row 80
 "Module Settings" => "Setări modul", // ai 2026-06

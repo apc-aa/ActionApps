@@ -170,7 +170,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Konstans szintje (hierarchikus konstansokn\xE1l haszn\xE1latos)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Hiba: hib\xE1s %1 aliasf\xFCggv\xE9ny ehhez: %2", // ai 2026-06
 
 // include/itemview.php, row 120
@@ -195,7 +195,7 @@ return [
 "All" => "\xD6sszes", // ai 2026-06
 
 // include/scroller.php, row 296
-"found" => "tal\xE1lat", // ai 2026-06
+"found" => "\xF6sszesen", // ai 2026-10
 
 // include/scroller.php, row 452
 "&raquo;" => "",

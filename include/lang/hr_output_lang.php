@@ -179,7 +179,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Razina konstante (koristi se za hijerarhijske konstante)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Gre\x9Aka: pogre\x9Ana funkcija sinonima %1 za %2", // ai 2026-06
 
 // include/itemview.php, row 120

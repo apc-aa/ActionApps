@@ -686,7 +686,7 @@ return [
 "a parameter passed to the function" => "một tham số được truyền cho hàm", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "xem", // ai 2026-06
+"view" => "khung hiển thị", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "cho phép bạn thao tác với các khung hiển thị. Đây là một hàm phức tạp và mạnh mẽ, được mô tả trong <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, cho phép hiển thị bất kỳ khung hiển thị nào tại vị trí của bí danh. Có thể dùng cho bảng 'bài viết liên quan' hoặc để hiển thị nội dung của chuyên mục liên quan.", // ai 2026-06

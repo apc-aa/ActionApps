@@ -10,6 +10,7 @@ $mgettext_lang = "hu";
 
 return [
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Editor" => "Utolj\xE1ra szerkesztette", // ai 2026-06
 // "Are you sure you want to empty trash?" => "Biztosan ki szeretn\xE9 \xFCr\xEDteni a lomt\xE1rat?", // ai 2026-06
 // End of unused messages
 
@@ -285,7 +286,7 @@ return [
 "Insert date" => "Hozz\xE1ad\xE1s d\xE1tuma", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "Utolj\xE1ra szerkesztette", // ai 2026-06
+"Edited by" => "Szerkesztette", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Utols\xF3 szerkeszt\xE9s d\xE1tuma", // ai 2026-06
@@ -640,7 +641,7 @@ return [
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "Ebben az \xFBrlapban \xFAj hivatkoz\xE1st vehet fel a katal\xF3gusba; nem k\xF6telez\xF5\\nminden mez\xF5t kit\xF6lteni. A hivatkoz\xE1s k\xF6nny\xFB besorol\xE1s\xE1hoz azonban k\xE9rj\xFCk,\\nt\xF6ltse ki legal\xE1bb a hivatkoz\xE1s <b>URL</b>-j\xE9t, <b>NEV\xC9T</b>, \xE9s\\nsorolja be a hivatkoz\xE1st valamelyik <b>KATEG\xD3RI\xC1BA</b>. Ha van tapasztalata a weboldalakkal,\\nkit\xF6ltheti a hivatkoz\xE1s le\xEDr\xE1s\xE1t is.<br>\\n<b>K\xE9rj\xFCk, ne vegyen fel \"kereskedelmi\" hivatkoz\xE1sokat a katal\xF3gusba.</b> Ezek a hivatkoz\xE1sok nem jelennek meg a katal\xF3gusban.<br>\\n K\xF6sz\xF6nj\xFCk.", // ai 2026-06
+"<!--NewPublicLinkText-->" => "Ebben az \xFBrlapban \xFAj hivatkoz\xE1st vehet fel a katal\xF3gusba; nem k\xF6telez\xF5 minden mez\xF5t kit\xF6lteni. A hivatkoz\xE1s k\xF6nny\xFB besorol\xE1s\xE1hoz azonban k\xE9rj\xFCk, t\xF6ltse ki legal\xE1bb a hivatkoz\xE1s <b>URL</b>-j\xE9t, <b>NEV\xC9T</b>, \xE9s sorolja be a hivatkoz\xE1st valamelyik <b>KATEG\xD3RI\xC1BA</b>. Ha van tapasztalata a weboldalakkal, kit\xF6ltheti a hivatkoz\xE1s le\xEDr\xE1s\xE1t is.<br> <b>K\xE9rj\xFCk, ne vegyen fel \"kereskedelmi\" hivatkoz\xE1sokat a katal\xF3gusba.</b> Ezek a hivatkoz\xE1sok nem jelennek meg a katal\xF3gusban.<br> K\xF6sz\xF6nj\xFCk.", // ai 2026-10
 
 // modules/links/linkedit.php, row 425
 "Link" => "Hivatkoz\xE1s", // ai 2026-06

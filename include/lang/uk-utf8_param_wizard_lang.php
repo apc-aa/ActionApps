@@ -655,7 +655,14 @@ return [
    ."                   &nbsp; - <i>striptags</i>  - strip HTML and PHP tags from the string<br>\n"
    ."                   &nbsp; - <i>asis</i>  - prints field content 'as is' - it do not add &lt;br&gt; at line ends even if field is marked as 'Plain text'. 'asis' parameter is good for Item Manager's 'Modify content...' feature, for example<br>\n"
    ."                   "
- => "Ви можете застосувати деякі зміни виводу:<br>\\n                   &nbsp; - [<i>empty</i>] - без змін<br>\\n                   &nbsp; - <i>csv</i>  - виводить поле для експорту у файл CSV (Comma Separated Values)<br>\\n                   &nbsp; - <i>urlencode</i> - кодує рядок для URL (див. PHP функцію <a href=\"https://www.php.net/urlencode\">urlencode<a>)<br>\\n                   &nbsp; - <i>safe</i> - перетворює спеціальні символи на HTML entity (див. PHP функцію <a href=\"https://www.php.net/htmlspecialchars\">htmlspecialchars<a>)<br>\\n                   &nbsp; - <i>javascript</i> - екранує ' (замінює ' на \\')<br>\\n                   &nbsp; - <i>striptags</i>  - видаляє з рядка HTML і PHP теги<br>\\n                   &nbsp; - <i>asis</i>  - виводить вміст поля 'як є' - не додає &lt;br&gt; на кінці рядків, навіть якщо поле позначено як 'Plain text'. Параметр 'asis' зручний, наприклад, для функції 'Modify content...' у Менеджері статей<br>", // ai 2026-06
+ => "Ви можете застосувати деякі зміни виводу:<br>\n"
+   ."                   &nbsp; - [<i>empty</i>] - без змін<br>\n"
+   ."                   &nbsp; - <i>csv</i>  - виводить поле для експорту у файл CSV (Comma Separated Values)<br>\n"
+   ."                   &nbsp; - <i>urlencode</i> - кодує рядок для URL (див. PHP функцію <a href=\"https://www.php.net/urlencode\">urlencode<a>)<br>\n"
+   ."                   &nbsp; - <i>safe</i> - перетворює спеціальні символи на HTML entity (див. PHP функцію <a href=\"https://www.php.net/htmlspecialchars\">htmlspecialchars<a>)<br>\n"
+   ."                   &nbsp; - <i>javascript</i> - екранує ' (замінює ' на \\')<br>\n"
+   ."                   &nbsp; - <i>striptags</i>  - видаляє з рядка HTML і PHP теги<br>\n"
+   ."                   &nbsp; - <i>asis</i>  - виводить вміст поля 'як є' - не додає &lt;br&gt; на кінці рядків, навіть якщо поле позначено як 'Plain text'. Параметр 'asis' зручний, наприклад, для функції 'Modify content...' у Менеджері статей<br>", // ai 2026-10
 
 // include/constants_param_wizard.php, row 647
 "user function" => "користувацька функція", // ai 2026-06
@@ -679,7 +686,7 @@ return [
 "a parameter passed to the function" => "параметр, переданий функції", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "перегляд", // ai 2026-06
+"view" => "вигляд", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "дозволяє маніпулювати виглядами (views). Це складна й потужна функція, описана в <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, яка дозволяє відобразити на місці аліаса будь-який вигляд. Її можна використати для таблиці 'пов'язаних статей' або для відображення вмісту пов'язаної рубрики.", // ai 2026-06

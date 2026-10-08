@@ -282,7 +282,7 @@ return [
 "Insert date" => "",
 
 // modules/links/constants.php, row 68
-"Editor" => "",
+"Edited by" => "",
 
 // modules/links/constants.php, row 69
 "Last edit date" => "",

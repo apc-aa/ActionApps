@@ -285,7 +285,7 @@ return [
 "Insert date" => "Ngày thêm", // ai 2026-06
 
 // modules/links/constants.php, row 68
-"Editor" => "Biên tập viên", // ai 2026-06
+"Edited by" => "Người sửa", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Ngày sửa gần nhất", // ai 2026-06
@@ -640,7 +640,7 @@ return [
 "ActionApps" => "",
 
 // modules/links/linkedit.php, row 407
-"<!--NewPublicLinkText-->" => "Trong biểu mẫu thêm liên kết mới vào danh mục này, bạn có thể nhưng không bắt buộc\\nphải điền tất cả các trường. Tuy nhiên, để dễ dàng phân loại liên kết\\ntrong danh mục, vui lòng điền đặc biệt là <b>URL</b> của liên kết, <b>TÊN</b> và\\nphân loại liên kết vào một <b>DANH MỤC</b> nào đó. Nếu bạn có kinh nghiệm với các trang web,\\nbạn cũng có thể điền mô tả cho liên kết.<br>\\n<b>Vui lòng không thêm các liên kết \"thương mại\" vào danh mục.</b> Những liên kết này sẽ không được hiển thị trong danh mục.<br>\\n Xin cảm ơn.", // ai 2026-06
+"<!--NewPublicLinkText-->" => "Trong biểu mẫu thêm liên kết mới vào danh mục này, bạn có thể nhưng không bắt buộc phải điền tất cả các trường. Tuy nhiên, để dễ dàng phân loại liên kết trong danh mục, vui lòng điền đặc biệt là <b>URL</b> của liên kết, <b>TÊN</b> và phân loại liên kết vào một <b>DANH MỤC</b> nào đó. Nếu bạn có kinh nghiệm với các trang web, bạn cũng có thể điền mô tả cho liên kết.<br> <b>Vui lòng không thêm các liên kết \"thương mại\" vào danh mục.</b> Những liên kết này sẽ không được hiển thị trong danh mục.<br> Xin cảm ơn.", // ai 2026-10
 
 // modules/links/linkedit.php, row 425
 "Link" => "Liên kết", // ai 2026-06

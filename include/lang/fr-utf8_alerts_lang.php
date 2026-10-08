@@ -87,7 +87,7 @@ return [
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Formulaire URL Anonyme (choisi dans administration des alertes - configurations)",
 
 // modules/alerts/alerts_sending.php, row 536
-"Unsubscribe Form URL" => "URL du formulaire de dï¿½sabonnment",
+"Unsubscribe Form URL" => "URL du formulaire de désabonnment", // ai 2026-10
 
 // modules/alerts/alerts_sending.php, row 541
 "Aliases for Alerts Welcome" => "Alias pour alerte de bienvenue",
@@ -96,10 +96,10 @@ return [
 "Collection Form URL (set in Alerts Admin - Settings)" => "Formulaire URL de collection (choisi dans administration des alertes - configurations)",
 
 // modules/alerts/alerts_sending.php, row 545
-"email confirmed" => "Courriel confirmï¿½",
+"email confirmed" => "Courriel confirmé", // ai 2026-10
 
 // modules/alerts/alerts_sending.php, row 551
-"Aliases for Slice Wizard Welcome" => "Alias pour l'assistant de bienvenue ï¿½ la section",
+"Aliases for Slice Wizard Welcome" => "Alias pour l'assistant de bienvenue à la section", // ai 2026-10
 
 // modules/alerts/alerts_sending.php, row 553, 565
 "Slice name" => "Nom de la section",
@@ -111,7 +111,7 @@ return [
 "New user login name" => "Nouveau nom d'usager",
 
 // modules/alerts/alerts_sending.php, row 556
-"New user role (editor / admin)" => "Nouveau rï¿½le pour l'usager (ï¿½diteur / administrateur)",
+"New user role (editor / admin)" => "Nouveau rôle pour l'usager (éditeur / administrateur)", // ai 2026-10
 
 // modules/alerts/alerts_sending.php, row 557
 "My name" => "Mon nom",
@@ -142,7 +142,7 @@ return [
 "Password" => "Mot de passe",
 
 // modules/alerts/cf_common.php, row 59
-"First name" => "Prï¿½nom",
+"First name" => "Prénom", // ai 2026-10
 
 // modules/alerts/cf_common.php, row 64
 "Last name" => "Nom",
@@ -158,14 +158,14 @@ return [
 "Retype new password" => "Retapez le nouveau mot de passe", // ai 2026-06
 
 // modules/alerts/emails.php, row 45
-"You do not have permission to manage Emails" => "Vous n'avez pas la permission de gérer les e-mails", // ai 2026-06
+"You do not have permission to manage Emails" => "Vous n'avez pas la permission de gérer les courriels", // ai 2026-10
 
 // modules/alerts/emails.php, row 62
-"Owner" => "Maï¿½tre",
+"Owner" => "Propriétaire", // ai 2026-10
 
 // modules/alerts/emails.php, row 66
 // modules/alerts/menu.php, row 86
-"Email templates" => "Modï¿½les de courriel",
+"Email templates" => "Modèles de courriel", // ai 2026-10
 
 // modules/alerts/menu.php, row 50, 51
 // modules/alerts/modedit.php, row 165, 168
@@ -334,7 +334,7 @@ return [
 "%1 field(s) and %2 constant group(s) deleted" => "%1 champ(s) et %2 groupe(s) de constantes supprimés", // ai 2026-06
 
 // modules/alerts/synchro2.php, row 229
-"not set" => "non-dï¿½signï¿½",
+"not set" => "non-désigné", // ai 2026-10
 
 // modules/alerts/util.php, row 54
 "-- none --" => "",
@@ -367,5 +367,5 @@ return [
 "Holding bin" => "Casier de stockage",
 
 // modules/alerts/util.php, row 101
-"Trash bin" => "casier dï¿½tritus",
+"Trash bin" => "casier détritus", // ai 2026-10
 ];

@@ -15,6 +15,7 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Unique number in sequence 1,2,3,..." => "\xD3\xED\xE8\xEA\xE0\xEB\xE5\xED \xED\xEE\xEC\xE5\xF0 \xE2 \xEF\xEE\xF1\xEB\xE5\xE4\xEE\xE2\xE0\xF2\xE5\xEB\xED\xEE\xF1\xF2 1,2,3,...", // ai 2026-06
 // "Data source" => "\xC8\xE7\xF2\xEE\xF7\xED\xE8\xEA \xED\xE0 \xE4\xE0\xED\xED\xE8", // ai 2026-06
 // "Upload periodically" => "\xCF\xE5\xF0\xE8\xEE\xE4\xE8\xF7\xED\xEE \xEA\xE0\xF7\xE2\xE0\xED\xE5", // ai 2026-06
 // "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - \xCA\xEE\xEF\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0 (1/2) - \xC8\xE7\xE1\xEE\xF0 \xED\xE0 \xE8\xE7\xF5\xEE\xE4\xED\xE8 ActionApps", // ai 2026-06
@@ -116,6 +117,7 @@ return [
 "You do not have permission to manage Cron" => "\xCD\xFF\xEC\xE0\xF2\xE5 \xEF\xF0\xE0\xE2\xEE \xE4\xE0 \xF3\xEF\xF0\xE0\xE2\xEB\xFF\xE2\xE0\xF2\xE5 Cron", // ai 2026-06
 
 // admin/aa_cron.php, row 47
+// src/AA_Plannedtask.php, row 82, 182
 // src/Import/Definition.php, row 135, 163
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "\xCF\xEE\xF1\xEB\xE5\xE4\xED\xEE \xE8\xE7\xEF\xFA\xEB\xED\xE5\xED\xE8\xE5", // ai 2026-06
@@ -124,7 +126,7 @@ return [
 "never" => "\xED\xE8\xEA\xEE\xE3\xE0", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 656
+// include/field.class.php, row 714
 // src/Util/Adminlink.php, row 31
 "disabled" => "\xE8\xE7\xEA\xEB\xFE\xF7\xE5\xED\xEE", // ai 2026-06
 
@@ -252,7 +254,7 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 98
@@ -437,7 +439,7 @@ return [
 
 // admin/aa_statecheck.php, row 271
 // src/Optimize/CheckEnvironment.php, row 18
-"Environment" => "\xCE\xEA\xEE\xEB\xED\xE0 \xF1\xF0\xE5\xE4\xE0", // ai 2026-06
+"Environment" => "\xD1\xE8\xF1\xF2\xE5\xEC\xED\xE0 \xF1\xF0\xE5\xE4\xE0", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
 // admin/se_statistics.php, row 53
@@ -637,7 +639,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1701
 "Manage %1" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -693,11 +695,12 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/Convert2innodb.php, row 69
 "Slice" => "\xD0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "\xCC\xEE\xE4\xF3\xEB", // ai 2026-06
@@ -710,7 +713,7 @@ return [
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
 // include/logs.php, row 293
-// src/AA_Plannedtask.php, row 149
+// src/AA_Plannedtask.php, row 204
 "Log" => "\xC4\xED\xE5\xE2\xED\xE8\xEA", // ai 2026-06
 
 // admin/aafinder.php, row 172
@@ -846,8 +849,8 @@ return [
 
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 260
-// include/menu_util.php, row 618
-// include/stringexpand.php, row 9858, 9937
+// include/menu_util.php, row 629
+// include/stringexpand.php, row 9874, 9953
 "Send" => "\xC8\xE7\xEF\xF0\xE0\xF2\xE8", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -900,7 +903,7 @@ return [
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1253, 1257
+// include/field.class.php, row 1332, 1336
 // include/form.class.php, row 211
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
@@ -1012,10 +1015,10 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 638
+// include/field.class.php, row 696
 // include/filedit.php, row 115
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1642
+// include/metabase.class.php, row 1643
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
@@ -1036,7 +1039,7 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 642
+// include/field.class.php, row 700
 // include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
 // include/profile.php, row 69
@@ -1188,7 +1191,7 @@ return [
 
 // admin/itemedit.php, row 305
 // include/date.php, row 189
-// include/field.class.php, row 1253
+// include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "\xC3\xF0\xE5\xF8\xEA\xE0 \xE2", // ai 2026-06
 
@@ -1477,7 +1480,7 @@ return [
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 171
 // src/Optimize/CheckRequiredSettings.php, row 69
@@ -1508,7 +1511,7 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1257
+// include/field.class.php, row 1336
 // src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "\xCF\xF0\xE8\xEE\xF0\xE8\xF2\xE5\xF2", // ai 2026-06
 
@@ -1708,9 +1711,9 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
+// include/metabase.class.php, row 1668
 // include/statestore.php, row 1077, 1414
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
 "Action" => "\xC4\xE5\xE9\xF1\xF2\xE2\xE8\xE5", // ai 2026-06
@@ -2104,7 +2107,7 @@ return [
 "User" => "\xCF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB", // ai 2026-06
 
 // admin/se_history.php, row 144
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckImports.php, row 287
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "\xC2\xF0\xE5\xEC\xE5", // ai 2026-06
@@ -2117,7 +2120,7 @@ return [
 
 // admin/se_history.php, row 167
 // include/itemfunc.php, row 201
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Item ID" => "ID \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0", // ai 2026-06
 
 // admin/se_history.php, row 216, 217
@@ -2823,7 +2826,7 @@ return [
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 485, 542
 // include/statestore.php, row 1077
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 170
 "ID" => "",
 
@@ -3086,7 +3089,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 111
 // admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1194
+// include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "\xCF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xF1\xEA\xEE \xE8\xEC\xE5", // ai 2026-06
 
@@ -3264,7 +3267,7 @@ return [
 "Admin - Slice settings" => "\xC0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF6\xE8\xFF - \xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 624
+// include/menu_util.php, row 635
 "Language" => "\xC5\xE7\xE8\xEA", // ai 2026-06
 
 // admin/slicedit.php, row 260
@@ -3830,7 +3833,7 @@ return [
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
-// include/menu_util.php, row 437, 747
+// include/menu_util.php, row 448, 758
 // include/slice.class.php, row 1394
 // src/Central/FindingText.php, row 496
 "Alerts" => "\xC8\xE7\xE2\xE5\xF1\xF2\xE8\xFF", // ai 2026-06
@@ -4579,7 +4582,7 @@ return [
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 "Task Manager" => "\xCC\xE5\xED\xE8\xE4\xE6\xFA\xF0 \xED\xE0 \xE7\xE0\xE4\xE0\xF7\xE8", // ai 2026-06
 
 // central/synchronize3.php, row 114
@@ -4649,7 +4652,7 @@ return [
 
 // include/constants.php, row 456
 // include/logs.php, row 781, 813
-// src/Optimize/CheckQueuedClassMissing.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "\xCA\xEB\xE0\xF1", // ai 2026-06
 
 // include/constants.php, row 460
@@ -5074,66 +5077,81 @@ return [
 // include/feeding.php, row 539
 "Remote node" => "\xCE\xF2\xE4\xE0\xEB\xE5\xF7\xE5\xED \xE2\xFA\xE7\xE5\xEB", // ai 2026-06
 
-// include/field.class.php, row 651
+// include/field.class.php, row 162
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+
+// include/field.class.php, row 167
+"code - its indentation and the last new line are kept on purpose" => "",
+
+// include/field.class.php, row 174
+"stores the text of the selected items" => "",
+
+// include/field.class.php, row 180
+"constants of a group" => "",
+
+// include/field.class.php, row 187
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+
+// include/field.class.php, row 709
 "Move to another field" => "\xCF\xF0\xE5\xEC\xE5\xF1\xF2\xE2\xE0\xED\xE5 \xE2 \xE4\xF0\xF3\xE3\xEE \xEF\xEE\xEB\xE5", // ai 2026-06
 
-// include/field.class.php, row 1005
+// include/field.class.php, row 1084
 // include/itemview.php, row 127
 "number of found items" => "\xE1\xF0\xEE\xE9 \xED\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// include/field.class.php, row 1006
+// include/field.class.php, row 1085
 "index of item within whole listing (begins with 0)" => "\xEF\xEE\xF0\xE5\xE4\xE5\xED \xED\xEE\xEC\xE5\xF0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 \xF6\xE5\xEB\xE8\xFF \xF1\xEF\xE8\xF1\xFA\xEA (\xE7\xE0\xEF\xEE\xF7\xE2\xE0 \xEE\xF2 0)", // ai 2026-06
 
-// include/field.class.php, row 1007
+// include/field.class.php, row 1086
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "\xEF\xEE\xF0\xE5\xE4\xE5\xED \xED\xEE\xEC\xE5\xF0 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0\xF2\xE0 (\xE7\xE0\xEF\xEE\xF7\xE2\xE0 \xEE\xF2 0 \xED\xE0 \xE2\xF1\xFF\xEA\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0, \xEF\xEE\xEA\xE0\xE7\xE0\xED\xE0 \xEE\xF2 pagescroller)", // ai 2026-06
 
-// include/field.class.php, row 1008
+// include/field.class.php, row 1087
 "index of a group on page (it begins from 0 on each page)" => "\xE8\xED\xE4\xE5\xEA\xF1 \xED\xE0 \xE3\xF0\xF3\xEF\xE0\xF2\xE0 \xE2 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0\xF2\xE0 (\xE7\xE0\xEF\xEE\xF7\xE2\xE0 \xEE\xF2 0 \xED\xE0 \xE2\xF1\xFF\xEA\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0)", // ai 2026-06
 
-// include/field.class.php, row 1009
+// include/field.class.php, row 1088
 "index of item within a group on page (it begins from 0 on each group)" => "\xE8\xED\xE4\xE5\xEA\xF1 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 \xE3\xF0\xF3\xEF\xE0\xF2\xE0 \xED\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0\xF2\xE0 (\xE7\xE0\xEF\xEE\xF7\xE2\xE0 \xEE\xF2 0 \xE2\xFA\xE2 \xE2\xF1\xFF\xEA\xE0 \xE3\xF0\xF3\xEF\xE0)", // ai 2026-06
 
-// include/field.class.php, row 1010
+// include/field.class.php, row 1089
 "alias for Item ID" => "\xE0\xEB\xE8\xE0\xF1 \xE7\xE0 ID \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0", // ai 2026-06
 
-// include/field.class.php, row 1011
+// include/field.class.php, row 1090
 "alias for Short Item ID" => "\xE0\xEB\xE8\xE0\xF1 \xE7\xE0 \xEA\xF0\xE0\xF2\xEA\xEE\xF2\xEE ID \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0", // ai 2026-06
 
-// include/field.class.php, row 1019, 1020
+// include/field.class.php, row 1098, 1099
 "alias used on admin page index.php for itemedit url" => "\xE0\xEB\xE8\xE0\xF1, \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xED \xE2 \xE0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF2\xE8\xE2\xED\xE0\xF2\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0 index.php \xE7\xE0 URL \xED\xE0 itemedit.php", // ai 2026-06
 
-// include/field.class.php, row 1021
+// include/field.class.php, row 1100
 "Alias used on admin page index.php for edit discussion url" => "\xC0\xEB\xE8\xE0\xF1, \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xED \xE2 \xE0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF2\xE8\xE2\xED\xE0\xF2\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0 index.php \xE7\xE0 URL \xED\xE0 discedit.php", // ai 2026-06
 
-// include/field.class.php, row 1022
+// include/field.class.php, row 1101
 "Title of Slice for RSS" => "\xC7\xE0\xE3\xEB\xE0\xE2\xE8\xE5 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xE7\xE0 RSS", // ai 2026-06
 
-// include/field.class.php, row 1023
+// include/field.class.php, row 1102
 "Link to the Slice for RSS" => "\xC2\xF0\xFA\xE7\xEA\xE0 \xEA\xFA\xEC \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xE7\xE0 RSS", // ai 2026-06
 
-// include/field.class.php, row 1024
+// include/field.class.php, row 1103
 "Short description (owner and name) of slice for RSS" => "\xCA\xF0\xE0\xF2\xEA\xEE \xEE\xEF\xE8\xF1\xE0\xED\xE8\xE5 (\xF1\xEE\xE1\xF1\xF2\xE2\xE5\xED\xE8\xEA \xE8 \xE8\xEC\xE5) \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xE7\xE0 RSS", // ai 2026-06
 
-// include/field.class.php, row 1025
+// include/field.class.php, row 1104
 "Date RSS information is generated, in RSS date format" => "\xC4\xE0\xF2\xE0 \xED\xE0 \xE3\xE5\xED\xE5\xF0\xE8\xF0\xE0\xED\xE5 \xED\xE0 RSS \xE8\xED\xF4\xEE\xF0\xEC\xE0\xF6\xE8\xFF\xF2\xE0, \xE2 RSS \xF4\xEE\xF0\xEC\xE0\xF2 \xE7\xE0 \xE4\xE0\xF2\xE0", // ai 2026-06
 
-// include/field.class.php, row 1026
+// include/field.class.php, row 1105
 "Slice name" => "\xC8\xEC\xE5 \xED\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0", // ai 2026-06
 
-// include/field.class.php, row 1028
+// include/field.class.php, row 1107
 "Current MLX language" => "\xD2\xE5\xEA\xF3\xF9 MLX \xE5\xE7\xE8\xEA", // ai 2026-06
 
-// include/field.class.php, row 1029
+// include/field.class.php, row 1108
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML \xF2\xE0\xE3 \xE7\xE0 \xEF\xEE\xF1\xEE\xEA\xE0 \xED\xE0 \xF2\xE5\xEA\xF1\xF2\xE0 (\xED\xE0\xEF\xF0. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1112, 1393
+// include/field.class.php, row 1191, 1472
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- \xEF\xF0\xEE\xE8\xE7\xE2\xEE\xEB\xED\xEE \xF2\xE5\xEA\xF1\xF2\xEE\xE2\xEE \xEF\xEE\xEB\xE5 --", // ai 2026-06
 
-// include/field.class.php, row 1221
+// include/field.class.php, row 1300
 " (this)" => " (\xF2\xE0\xE7\xE8)", // ai 2026-06
 
-// include/field.class.php, row 1275, 1288, 1301
+// include/field.class.php, row 1354, 1367, 1380
 "Can't copy field" => "",
 
 // include/filedit.php, row 82
@@ -5370,7 +5388,7 @@ return [
 "Offer" => "\xCD\xE0\xEB\xE8\xF7\xED\xE8", // ai 2026-06
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10850, 10873
+// include/stringexpand.php, row 10866, 10889
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5557,7 +5575,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "\xCD\xE8\xE2\xEE \xED\xE0 \xEA\xEE\xED\xF1\xF2\xE0\xED\xF2\xE0\xF2\xE0 (\xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 \xF1\xE5 \xE7\xE0 \xE9\xE5\xF0\xE0\xF0\xF5\xE8\xF7\xED\xE8 \xEA\xEE\xED\xF1\xF2\xE0\xED\xF2\xE8)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "\xC3\xF0\xE5\xF8\xEA\xE0: \xE3\xF0\xE5\xF8\xED\xE0 \xF4\xF3\xED\xEA\xF6\xE8\xFF \xE7\xE0 \xE0\xEB\xE8\xE0\xF1 %1 \xE7\xE0 %2", // ai 2026-06
 
 // include/item_content.php, row 1126, 1184
@@ -5769,151 +5787,151 @@ return [
 // include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "\xCF\xF0\xE5\xEC\xE0\xF5\xE2\xE0 \xE8\xED\xF2\xE5\xF0\xE2\xE0\xEB\xE8\xF2\xE5 \xE2 \xED\xE0\xF7\xE0\xEB\xEE\xF2\xEE \xE8 \xEA\xF0\xE0\xFF \xE8 \xF1\xFA\xF9\xEE \xED\xEE\xF0\xEC\xE0\xEB\xE8\xE7\xE8\xF0\xE0 UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1105
 "Item IDs" => "ID \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 1132
+// include/itemfunc.php, row 1140
 "The tag '%1' could not be stored: %2" => "",
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "ID \xED\xE0 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB = \xE2\xE8\xED\xE0\xE3\xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 ID \xED\xE0 \xF2\xE5\xEA\xF3\xF9\xE8\xFF \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB", // ai 2026-06
 
-// include/itemfunc.php, row 1170
+// include/itemfunc.php, row 1178
 "Inserts the identity of the current user, no matter what the user sets." => "\xC2\xEC\xFA\xEA\xE2\xE0 \xF1\xE0\xEC\xEE\xEB\xE8\xF7\xED\xEE\xF1\xF2\xF2\xE0 \xED\xE0 \xF2\xE5\xEA\xF3\xF9\xE8\xFF \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB, \xED\xE5\xE7\xE0\xE2\xE8\xF1\xE8\xEC\xEE \xEA\xE0\xEA\xE2\xEE \xE5 \xE7\xE0\xE4\xE0\xEB \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF\xF2.", // ai 2026-06
 
-// include/itemfunc.php, row 1222
+// include/itemfunc.php, row 1230
 "Now = always store current time" => "\xD1\xE5\xE3\xE0 = \xE2\xE8\xED\xE0\xE3\xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE \xE2\xF0\xE5\xEC\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1226
+// include/itemfunc.php, row 1234
 "Inserts the current time, no matter what the user sets." => "\xC2\xEC\xFA\xEA\xE2\xE0 \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE \xE2\xF0\xE5\xEC\xE5, \xED\xE5\xE7\xE0\xE2\xE8\xF1\xE8\xEC\xEE \xEA\xE0\xEA\xE2\xEE \xE7\xE0\xE4\xE0\xE4\xE5 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF\xF2.", // ai 2026-06
 
-// include/itemfunc.php, row 1260
+// include/itemfunc.php, row 1268
 "Computed field for INSERT/UPDATE" => "\xC8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xEE \xEF\xEE\xEB\xE5 \xE7\xE0 INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1264
+// include/itemfunc.php, row 1272
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "\xCF\xEE\xEB\xE5\xF2\xEE \xE5 \xF0\xE5\xE7\xF3\xEB\xF2\xE0\xF2 \xEE\xF2 \xE8\xE7\xF0\xE0\xE7\xE0, \xE7\xE0\xEF\xE8\xF1\xE0\xED \xE2 \"\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8\". \xD2\xEE\xE2\xE0 \xE5 \xE4\xEE\xE1\xF0\xEE \xF0\xE5\xF8\xE5\xED\xE8\xE5 \xE7\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8, \xEA\xEE\xE8\xF2\xEE \xEC\xEE\xE3\xE0\xF2 \xE4\xE0 \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xF2 \xEF\xF0\xE5\xE4\xE2\xE0\xF0\xE8\xF2\xE5\xEB\xED\xEE, \xF2\xFA\xE9 \xEA\xE0\xF2\xEE \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0\xED\xE5\xF2\xEE \xE8\xEC \xEF\xF0\xE8 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE1\xE8 \xE1\xE8\xEB\xEE \xE1\xE0\xE2\xED\xEE. \xC4\xE0, \xF2\xF3\xEA \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1273
+// include/itemfunc.php, row 1281
 "Code for unaliasing (INSERT)" => "\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8 (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1273, 1309
+// include/itemfunc.php, row 1281, 1317
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "\xD2\xF3\xEA \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xED\xE0\xEF\xE8\xF8\xE5\xF2\xE5 \xEF\xF0\xEE\xE8\xE7\xE2\xEE\xEB\xE5\xED \xED\xE8\xE7. \xCD\xE8\xE7\xFA\xF2 \xF9\xE5 \xE1\xFA\xE4\xE5 \xF0\xE0\xE7\xE3\xFA\xF0\xED\xE0\xF2 \xEF\xF0\xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0, \xF2\xE0\xEA\xE0 \xF7\xE5 \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 \xE2\xF1\xFF\xEA\xE0\xEA\xE2\xE8 \xEA\xEE\xED\xF1\xF2\xF0\xF3\xEA\xF6\xE8\xE8 {...}, \xEA\xE0\xEA\xF2\xEE \xE8 \xE0\xEB\xE8\xE0\xF1\xE8 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "Code for unaliasing (UPDATE)" => "\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8 (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "\xD1\xFA\xF9\xEE\xF2\xEE \xEA\xE0\xF2\xEE \xEF\xEE-\xE3\xEE\xF0\xE5, \xED\xEE \xF1\xE0\xEC\xEE \xE7\xE0 \xEE\xEF\xE5\xF0\xE0\xF6\xE8\xFF\xF2\xE0 UPDATE. \xC0\xEA\xEE \xED\xE5 \xE5 \xEF\xEE\xEF\xFA\xEB\xED\xE5\xED\xEE, \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xEE \xEE\xF1\xF2\xE0\xE2\xE0 \xED\xE5\xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Multivalue delimiter" => "\xD0\xE0\xE7\xE4\xE5\xEB\xE8\xF2\xE5\xEB \xED\xE0 \xEC\xED\xEE\xE6\xE5\xF1\xF2\xE2\xE5\xED\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Character or string, which will split the computed string into multiple values (the same field)" => "\xC7\xED\xE0\xEA \xE8\xEB\xE8 \xED\xE8\xE7, \xEA\xEE\xE9\xF2\xEE \xF0\xE0\xE7\xE4\xE5\xEB\xFF \xE8\xE7\xF7\xE8\xF1\xEB\xE5\xED\xE8\xFF \xED\xE8\xE7 \xED\xE0 \xED\xFF\xEA\xEE\xEB\xEA\xEE \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8 (\xED\xE0 \xF1\xFA\xF9\xEE\xF2\xEE \xEF\xEE\xEB\xE5)", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "Recompute every" => "\xC8\xED\xF2\xE5\xF0\xE2\xE0\xEB \xED\xE0 \xEF\xF0\xE5\xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "\xCF\xEE\xEB\xE5\xF2\xEE \xF9\xE5 \xF1\xE5 \xEF\xF0\xE5\xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0 \xE2\xF1\xFF\xEA\xE0 \xEC\xE8\xED\xF3\xF2\xE0, \xF7\xE0\xF1, ... (\xF7\xF0\xE5\xE7 UPDATE \xEA\xEE\xE4\xE0 \xEF\xEE-\xE3\xEE\xF0\xE5). \xC2\xF0\xE5\xEC\xE5\xED\xE0\xF2\xE0 \xED\xE5 \xF1\xE0 \xF2\xEE\xF7\xED\xE8 - \xEC\xE8\xED\xF3\xF2\xE0 \xEE\xE7\xED\xE0\xF7\xE0\xE2\xE0 \xEF\xF0\xE8\xE1\xEB\xE8\xE7\xE8\xF2\xE5\xEB\xED\xEE 1-10 \xEC\xE8\xED\xF3\xF2\xE8. \xC0\xEA\xEE \xED\xE5 \xE5 \xEF\xEE\xEF\xFA\xEB\xED\xE5\xED\xEE, \xEF\xEE\xEB\xE5\xF2\xEE \xF1\xE5 \xEF\xF0\xE5\xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0 \xF1\xE0\xEC\xEE \xEF\xF0\xE8 \xE2\xEC\xFA\xEA\xE2\xE0\xED\xE5/\xEE\xE1\xED\xEE\xE2\xFF\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 1296
+// include/itemfunc.php, row 1304
 "Computed field" => "\xC8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xEE \xEF\xEE\xEB\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1300
+// include/itemfunc.php, row 1308
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "\xCF\xEE\xEB\xE5\xF2\xEE \xE5 \xF0\xE5\xE7\xF3\xEB\xF2\xE0\xF2 \xEE\xF2 \xE8\xE7\xF0\xE0\xE7\xE0, \xE7\xE0\xEF\xE8\xF1\xE0\xED \xE2 \\\"\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8\\\". \xD2\xEE\xE2\xE0 \xE5 \xE4\xEE\xE1\xF0\xEE \xF0\xE5\xF8\xE5\xED\xE8\xE5 \xE7\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xE8, \xEA\xEE\xE8\xF2\xEE \xEC\xEE\xE3\xE0\xF2 \xE4\xE0 \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xF2 \xEF\xF0\xE5\xE4\xE2\xE0\xF0\xE8\xF2\xE5\xEB\xED\xEE, \xF2\xFA\xE9 \xEA\xE0\xF2\xEE \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0\xED\xE5\xF2\xEE \xE8\xEC \xEF\xF0\xE8 \xEF\xEE\xEA\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE1\xE8 \xE1\xE8\xEB\xEE \xE1\xE0\xE2\xED\xEE. \xC4\xE0, \xF2\xF3\xEA \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1309
+// include/itemfunc.php, row 1317
 "Code for unaliasing (INSERT+UPDATE)" => "\xCA\xEE\xE4 \xE7\xE0 \xF0\xE0\xE7\xE3\xF0\xFA\xF9\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE8 (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1331
+// include/itemfunc.php, row 1339
 "SEO Name" => "SEO \xE8\xEC\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1335
+// include/itemfunc.php, row 1343
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "\xC0\xEA\xEE \xEF\xEE\xEB\xE5\xF2\xEE \xED\xE5 \xE5 \xEF\xEE\xEF\xFA\xEB\xED\xE5\xED\xEE, seoname \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0 \xEE\xF2 \xE0\xEB\xE8\xE0\xF1\xE0 _#HEADLINE (\xE8\xEB\xE8 \xE4\xF0\xF3\xE3, \xE0\xEA\xEE \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED), \xF3\xED\xE8\xEA\xE0\xEB\xED\xEE \xE7\xE0 \xE2\xF1\xE8\xF7\xEA\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE8 \xE2 site \xEC\xEE\xE4\xF3\xEB\xE8\xF2\xE5, \xE2 \xEA\xEE\xE8\xF2\xEE \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xE5 \xEF\xEE\xF1\xEE\xF7\xE5\xED\xE0 \xE2 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0\xF2\xE0 \"Uses slices\". \xCF\xEE \xF1\xFA\xF9\xE5\xF1\xF2\xE2\xEE \xE0\xEB\xE8\xE0\xF1\xFA\xF2 SEO \xE8\xEC\xE5 \xE5 \xF1\xFA\xEA\xF0\xE0\xF9\xE5\xED\xE8\xE5 \xE7\xE0 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE5\xEC\xEE \xEF\xEE\xEB\xE5 \xF1 {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "Alias to compute from" => "\xC0\xEB\xE8\xE0\xF1, \xEE\xF2 \xEA\xEE\xE9\xF2\xEE \xF1\xE5 \xE8\xE7\xF7\xE8\xF1\xEB\xFF\xE2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "if not specified, the _#HEADLINE is used" => "\xE0\xEA\xEE \xED\xE5 \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED, \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1372
 "Unique number for this field (from 1,..)" => "\xD3\xED\xE8\xEA\xE0\xEB\xE5\xED \xED\xEE\xEC\xE5\xF0 \xE7\xE0 \xF2\xEE\xE2\xE0 \xEF\xEE\xEB\xE5 (\xEE\xF2 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1366
-"Unique number in sequence 1,2,3,..." => "\xD3\xED\xE8\xEA\xE0\xEB\xE5\xED \xED\xEE\xEC\xE5\xF0 \xE2 \xEF\xEE\xF1\xEB\xE5\xE4\xEE\xE2\xE0\xF2\xE5\xEB\xED\xEE\xF1\xF2 1,2,3,...", // ai 2026-06
+// include/itemfunc.php, row 1376
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
 
-// include/itemfunc.php, row 1391
+// include/itemfunc.php, row 1499
 "File = uploaded file" => "\xD4\xE0\xE9\xEB = \xEA\xE0\xF7\xE5\xED \xF4\xE0\xE9\xEB", // ai 2026-06
 
-// include/itemfunc.php, row 1395
+// include/itemfunc.php, row 1503
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "\xC7\xE0\xEF\xE8\xF1\xE2\xE0 \xEA\xE0\xF7\xE5\xED\xE8\xFF \xF4\xE0\xE9\xEB \xE8 \xE2\xF0\xFA\xE7\xEA\xE0 \xEA\xFA\xEC \xED\xE5\xE3\xEE; \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xF0\xE8\xF2\xE5 \xE2\xE0\xE6\xE0\xF2 \xF1\xE0\xEC\xEE \xE0\xEA\xEE \xF2\xE8\xEF\xFA\xF2 \xE5 image/something.", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Mime types accepted" => "\xC4\xEE\xEF\xF3\xF1\xF2\xE8\xEC\xE8 MIME \xF2\xE8\xEF\xEE\xE2\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Only files of matching mime types will be accepted" => "\xD9\xE5 \xE1\xFA\xE4\xE0\xF2 \xEF\xF0\xE8\xE5\xF2\xE8 \xF1\xE0\xEC\xEE \xF4\xE0\xE9\xEB\xEE\xE2\xE5 \xF1\xFA\xF1 \xF1\xFA\xEE\xF2\xE2\xE5\xF2\xF1\xF2\xE2\xE0\xF9\xE8 MIME \xF2\xE8\xEF\xEE\xE2\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1405
+// include/itemfunc.php, row 1513
 "Maximum image width" => "\xCC\xE0\xEA\xF1\xE8\xEC\xE0\xEB\xED\xE0 \xF8\xE8\xF0\xE8\xED\xE0 \xED\xE0 \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "Maximum image height" => "\xCC\xE0\xEA\xF1\xE8\xEC\xE0\xEB\xED\xE0 \xE2\xE8\xF1\xEE\xF7\xE8\xED\xE0 \xED\xE0 \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "\xC8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE \xF9\xE5 \xE1\xFA\xE4\xE5 \xEF\xF0\xE5\xEE\xF0\xE0\xE7\xEC\xE5\xF0\xE5\xED\xEE \xE2 \xF0\xE0\xEC\xEA\xE8\xF2\xE5 \xED\xE0 \xF2\xE5\xE7\xE8 \xE3\xF0\xE0\xED\xE8\xF6\xE8, \xEF\xF0\xE8 \xE7\xE0\xEF\xE0\xE7\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xFA\xEE\xF2\xED\xEE\xF8\xE5\xED\xE8\xE5\xF2\xEE \xED\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF2\xE5.", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "Other fields" => "\xC4\xF0\xF3\xE3\xE8 \xEF\xEE\xEB\xE5\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "\xD1\xEF\xE8\xF1\xFA\xEA \xF1 \xE4\xF0\xF3\xE3\xE8 \xEF\xEE\xEB\xE5\xF2\xE0, \xEA\xEE\xE8\xF2\xEE \xE4\xE0 \xEF\xEE\xEB\xF3\xF7\xE0\xF2 \xF2\xEE\xE2\xE0 \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5, \xF0\xE0\xE7\xE4\xE5\xEB\xE5\xED\xE8 \xF1 ##. \xCD\xE5 \xF0\xE0\xE1\xEE\xF2\xE8 \xE4\xEE\xE1\xF0\xE5 \xEF\xF0\xE8 \xEC\xED\xEE\xE6\xE5\xF1\xF2\xE2\xE5\xED\xEE \xEA\xE0\xF7\xE2\xE0\xED\xE5.", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "Upload policy" => "\xCF\xEE\xE2\xE5\xE4\xE5\xED\xE8\xE5 \xEF\xF0\xE8 \xEA\xE0\xF7\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>\xD2\xEE\xE7\xE8 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0 \xEE\xEF\xF0\xE5\xE4\xE5\xEB\xFF \xEA\xE0\xEA\xE2\xEE \xE4\xE0 \xF1\xE5 \xED\xE0\xEF\xF0\xE0\xE2\xE8, \xE0\xEA\xEE \xEA\xE0\xF7\xE5\xED\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xE2\xE5\xF7\xE5 \xF1\xFA\xF9\xE5\xF1\xF2\xE2\xF3\xE2\xE0:<br>new - AA \xF1\xFA\xE7\xE4\xE0\xE2\xE0 \xED\xEE\xE2\xEE \xE8\xEC\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0 (\xEA\xE0\xF2\xEE \xE4\xEE\xE1\xE0\xE2\xFF \xED\xE0\xF1\xF2\xE0\xE2\xEA\xE0 _x) \xE8 \xE3\xEE \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF1 \xF2\xEE\xE2\xE0 \xED\xEE\xE2\xEE \xE8\xEC\xE5 (\xEF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5)<br>overwrite - \xF1\xF2\xE0\xF0\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xF1\xFA\xF1 \xF1\xFA\xF9\xEE\xF2\xEE \xE8\xEC\xE5 \xF1\xE5 \xEF\xF0\xE5\xE7\xE0\xEF\xE8\xF1\xE2\xE0<br>backup - \xF1\xF2\xE0\xF0\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xF1\xE5 \xEA\xEE\xEF\xE8\xF0\xE0 \xE2 \xED\xEE\xE2 (\xED\xE5\xF1\xFA\xF9\xE5\xF1\xF2\xE2\xF3\xE2\xE0\xF9) \xF4\xE0\xE9\xEB, \xE0 \xF2\xE5\xEA\xF3\xF9\xE8\xFF\xF2 \xF4\xE0\xE9\xEB \xF1\xE5 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF1 \xF2\xE5\xEA\xF3\xF9\xEE\xF2\xEE \xE8\xEC\xE5.<br>\xC2\xFA\xE2 \xE2\xF1\xE8\xF7\xEA\xE8 \xF1\xEB\xF3\xF7\xE0\xE8 \xE8\xEC\xE5\xF2\xEE \xED\xE0 \xF4\xE0\xE9\xEB\xE0 \xF1\xE5 \xEE\xE1\xF0\xE0\xE1\xEE\xF2\xE2\xE0, \xF2\xE0\xEA\xE0 \xF7\xE5 \xE2\xF1\xE8\xF7\xEA\xE8 \xED\xE5\xE1\xF3\xEA\xE2\xE5\xED\xEE-\xF6\xE8\xF4\xF0\xEE\xE2\xE8 \xE7\xED\xE0\xF6\xE8 \xF9\xE5 \xE1\xFA\xE4\xE0\xF2 \xE7\xE0\xEC\xE5\xED\xE5\xED\xE8 \xF1 \xE4\xEE\xEB\xED\xE0 \xF7\xE5\xF0\xF2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "Exact dimensions" => "\xD2\xEE\xF7\xED\xE8 \xF0\xE0\xE7\xEC\xE5\xF0\xE8", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "\xC0\xEA\xEE \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xEE 1, \xE8\xE7\xEE\xE1\xF0\xE0\xE6\xE5\xED\xE8\xE5\xF2\xEE \xF9\xE5 \xE1\xFA\xE4\xE5 \xED\xE0\xEC\xE0\xEB\xE5\xED\xEE \xF2\xEE\xF7\xED\xEE \xE4\xEE \xE7\xE0\xE4\xE0\xE4\xE5\xED\xE8\xF2\xE5 \xF0\xE0\xE7\xEC\xE5\xF0\xE8 (\xE8 \xE8\xE7\xF0\xFF\xE7\xE0\xED\xEE \xEF\xF0\xE8 \xED\xF3\xE6\xE4\xE0). \xCF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5 \xE5 0 \xE8\xEB\xE8 \xEF\xF0\xE0\xE7\xED\xEE: \xEF\xF0\xE8 \xEF\xF0\xE5\xEE\xF0\xE0\xE7\xEC\xE5\xF0\xFF\xE2\xE0\xED\xE5 \xF1\xE5 \xE7\xE0\xEF\xE0\xE7\xE2\xE0 \xF1\xFA\xEE\xF2\xED\xEE\xF8\xE5\xED\xE8\xE5\xF2\xEE \xED\xE0 \xF1\xF2\xF0\xE0\xED\xE8\xF2\xE5.", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Filename template" => "\xD8\xE0\xE1\xEB\xEE\xED \xE7\xE0 \xE8\xEC\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "\xCF\xF0\xE5\xE8\xEC\xE5\xED\xF3\xE2\xE0 \xF4\xE0\xE9\xEB\xE0 \xF1\xEF\xEE\xF0\xE5\xE4 \xF8\xE0\xE1\xEB\xEE\xED\xE0. \xCC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 AA \xE8\xE7\xF0\xE0\xE7\xE8, \xEA\xE0\xEA\xF2\xEE \xE8 \xF1\xEF\xE5\xF6\xE8\xE0\xEB\xED\xE8\xF2\xE5 \xE0\xEB\xE8\xE0\xF1\xE8 _#name \xE8 _#ext \xE8\xEB\xE8 _#full (\xE8\xEC\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0, \xF0\xE0\xE7\xF8\xE8\xF0\xE5\xED\xE8\xE5 \xE8 \xEF\xFA\xEB\xED\xEE \xE8\xEC\xE5). \xC0\xEB\xE8\xE0\xF1\xE8\xF2\xE5 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xE2 AA \xE8\xE7\xF0\xE0\xE7\xE8\xF2\xE5 \xED\xE5 \xF0\xE0\xE1\xEE\xF2\xFF\xF2 \xEF\xF0\xE8 INSERT (\xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xED\xE5 \xF1\xFA\xF9\xE5\xF1\xF2\xE2\xF3\xE2\xE0 \xE2 \xEC\xEE\xEC\xE5\xED\xF2\xE0 \xED\xE0 \xE7\xE0\xEF\xE8\xF1\xE2\xE0\xED\xE5 \xED\xE0 \xF4\xE0\xE9\xEB\xE0). \xCF\xF0\xE8 UPDATE \xF9\xE5 \xF0\xE0\xE1\xEE\xF2\xFF\xF2.", // ai 2026-06
 
-// include/itemfunc.php, row 1566
+// include/itemfunc.php, row 1674
 "Password and Change Password" => "\xCF\xE0\xF0\xEE\xEB\xE0 \xE8 \xD1\xEC\xFF\xED\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1570
+// include/itemfunc.php, row 1678
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "\xC7\xE0\xEF\xE8\xF1\xE2\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2 \xEE\xF2 \xEF\xEE\xEB\xE5 \xF2\xE8\xEF \"\xCF\xE0\xF0\xEE\xEB\xE0 \xE8 \xD1\xEC\xFF\xED\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\". \xCF\xFA\xF0\xE2\xEE \xEF\xF0\xEE\xE2\xE5\xF0\xFF\xE2\xE0 \xE4\xE0\xEB\xE8 \xED\xEE\xE2\xE0\xF2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xF1\xFA\xE2\xEF\xE0\xE4\xE0 \xF1 \xEF\xEE\xE2\xF2\xEE\xF0\xED\xEE \xE2\xFA\xE2\xE5\xE4\xE5\xED\xE0\xF2\xE0 \xED\xEE\xE2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xE8 \xE0\xEA\xEE \xE4\xE0, \xF8\xE8\xF4\xF0\xEE\xE2\xE0 \xED\xEE\xE2\xE0\xF2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0 \xE8 \xFF \xE7\xE0\xEF\xE8\xF1\xE2\xE0.", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Copy of password" => "\xCA\xEE\xEF\xE8\xE5 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id, \xE2 \xEA\xEE\xE5\xF2\xEE \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xE7\xE0\xEF\xE8\xF8\xE5\xF2\xE5 \xEA\xEE\xEF\xE8\xE5 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0. \xCF\xEE\xED\xFF\xEA\xEE\xE3\xE0 \xE5 \xEF\xEE\xEB\xE5\xE7\xED\xEE, \xE0\xEA\xEE \xE8\xF1\xEA\xE0\xF2\xE5 \xE4\xE0 \xEF\xEE\xE7\xE2\xEE\xEB\xE8\xF2\xE5 \xED\xE0 \xF5\xEE\xF0\xE0\xF2\xE0 \xE4\xE0 \xEF\xEE\xEB\xF3\xF7\xE0\xF2 \xF1\xF2\xE0\xF0\xE0\xF2\xE0 \xF1\xE8 \xEF\xE0\xF0\xEE\xEB\xE0. \xD1\xE8\xEB\xED\xEE \xEF\xF0\xE5\xEF\xEE\xF0\xFA\xF7\xE2\xE0\xEC\xE5 \xE4\xE0 \xED\xE5 \xFF \xF1\xFA\xF5\xF0\xE0\xED\xFF\xE2\xE0\xF2\xE5 \xEA\xE0\xF2\xEE \xEE\xE1\xE8\xEA\xED\xEE\xE2\xE5\xED \xF2\xE5\xEA\xF1\xF2, \xE0 \xE4\xE0 \xFF \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xF2\xE5. \xC2\xE8\xE6\xF2\xE5 \xE2\xF2\xEE\xF0\xE8\xFF \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0.", // ai 2026-06
 
-// include/itemfunc.php, row 1580, 1626
+// include/itemfunc.php, row 1688, 1734
 "Encrypt phrase" => "\xD4\xF0\xE0\xE7\xE0 \xE7\xE0 \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xED\xE5", // ai 2026-06
 
-// include/itemfunc.php, row 1580
+// include/itemfunc.php, row 1688
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "\xC0\xEA\xEE \xE7\xE0\xE4\xE0\xE4\xE5\xF2\xE5 \xEF\xEE\xEB\xE5\xF2\xEE \"\xCA\xEE\xEF\xE8\xE5 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0\", \xEF\xF0\xE5\xEF\xEE\xF0\xFA\xF7\xE8\xF2\xE5\xEB\xED\xEE \xE5 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xE4\xE0 \xF1\xE5 \xF8\xE8\xF4\xF0\xEE\xE2\xE0 \xE2 \xE1\xE0\xE7\xE0\xF2\xE0 \xE4\xE0\xED\xED\xE8. \xC2\xFA\xE2\xE5\xE4\xE5\xF2\xE5 \xEF\xF0\xEE\xE8\xE7\xE2\xEE\xEB\xE5\xED \xED\xE8\xE7. \xC0\xEA\xEE \xEF\xEE\xF1\xEB\xE5 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xE2\xE8 \xEF\xEE\xF2\xF0\xFF\xE1\xE2\xE0, \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xFF \xE4\xE5\xF8\xE8\xF4\xF0\xE8\xF0\xE0\xF2\xE5 \xEE\xF2 \xEF\xEE\xEB\xE5\xF2\xEE \xF1\xFA\xF1 \xF1\xFA\xF9\xE0\xF2\xE0 \xF4\xF0\xE0\xE7\xE0 - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1613
+// include/itemfunc.php, row 1721
 "2FA Secret" => "\xD2\xE0\xE5\xED \xEA\xEB\xFE\xF7 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1617
+// include/itemfunc.php, row 1725
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "\xC3\xE5\xED\xE5\xF0\xE8\xF0\xE0 \xE8 \xE7\xE0\xEF\xE8\xF1\xE2\xE0 \xF2\xE0\xE5\xED \xEA\xEB\xFE\xF7 \xE7\xE0 \xE4\xE2\xF3\xF4\xE0\xEA\xF2\xEE\xF0\xED\xEE \xF3\xE4\xEE\xF1\xF2\xEE\xE2\xE5\xF0\xFF\xE2\xE0\xED\xE5, \xE5\xE2\xE5\xED\xF2\xF3\xE0\xEB\xED\xEE \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xED \xF1 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/itemfunc.php, row 1626
+// include/itemfunc.php, row 1734
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "\xCF\xE0\xF0\xEE\xEB\xE0, \xEA\xEE\xFF\xF2\xEE \xF9\xE5 \xF1\xE5 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0 \xE7\xE0 \xF8\xE8\xF4\xF0\xEE\xE2\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 \xED\xE0 \xF2\xEE\xE2\xE0 \xEF\xEE\xEB\xE5. \xCC\xEE\xE6\xE5 \xE4\xE0 \xF1\xFA\xE4\xFA\xF0\xE6\xE0 AA \xE8\xE7\xF0\xE0\xE7\xE8 \xE8\xEB\xE8 \xE0\xEB\xE8\xE0\xF1\xE8 (\xE7\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xED\xE0 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF \xE2 \xF0\xF3\xE1\xF0\xE8\xEA\xE0\xF2\xE0 \xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF7\xE8\xF2\xE0\xF2\xE5\xEB\xE8)", // ai 2026-06
 
 // include/itemview.php, row 120
@@ -6339,75 +6357,75 @@ return [
 // include/menu_util.php, row 131
 "Import conf from CSV..." => "\xC8\xEC\xEF\xEE\xF0\xF2 \xED\xE0 \xEA\xEE\xED\xF4\xE8\xE3\xF3\xF0\xE0\xF6\xE8\xFF \xEE\xF2 CSV...", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 426
 "Part of %s" => "\xD7\xE0\xF1\xF2 \xEE\xF2 %s", // ai 2026-06
 
-// include/menu_util.php, row 432
+// include/menu_util.php, row 443
 "Other slices" => "\xC4\xF0\xF3\xE3\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE8", // ai 2026-06
 
-// include/menu_util.php, row 436
+// include/menu_util.php, row 447
 "Reader Management Slice" => "\xD0\xF3\xE1\xF0\xE8\xEA\xE0 \xE7\xE0 \xF3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF7\xE8\xF2\xE0\xF2\xE5\xEB\xE8", // ai 2026-06
 
-// include/menu_util.php, row 438
+// include/menu_util.php, row 449
 "Jump inside control panel" => "\xCF\xF0\xE5\xF5\xEE\xE4 \xE2 \xEA\xEE\xED\xF2\xF0\xEE\xEB\xED\xE8\xFF \xEF\xE0\xED\xE5\xEB", // ai 2026-06
 
-// include/menu_util.php, row 439
+// include/menu_util.php, row 450
 // include/slice.class.php, row 1429
 // src/Central/FindingText.php, row 311
 "Links" => "\xC2\xF0\xFA\xE7\xEA\xE8", // ai 2026-06
 
-// include/menu_util.php, row 440
+// include/menu_util.php, row 451
 "MySQL Auth (old version)" => "MySQL \xE0\xE2\xF2\xE5\xED\xF2\xE8\xEA\xE0\xF6\xE8\xFF (\xF1\xF2\xE0\xF0\xE0 \xE2\xE5\xF0\xF1\xE8\xFF)", // ai 2026-06
 
-// include/menu_util.php, row 441
+// include/menu_util.php, row 452
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "\xC0\xED\xEA\xE5\xF2\xE8", // ai 2026-06
 
-// include/menu_util.php, row 462
+// include/menu_util.php, row 473
 "New slice" => "\xCD\xEE\xE2\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// include/menu_util.php, row 466
+// include/menu_util.php, row 477
 "Switch module" => "\xD1\xEC\xFF\xED\xE0 \xED\xE0 \xEC\xEE\xE4\xF3\xEB", // ai 2026-06
 
-// include/menu_util.php, row 600, 611
+// include/menu_util.php, row 611, 622
 "Apply" => "\xCF\xF0\xE8\xEB\xEE\xE6\xE8", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 615
 "-- Default for module --" => "-- \xCF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5 \xE7\xE0 \xEC\xEE\xE4\xF3\xEB\xE0 --", // ai 2026-06
 
-// include/menu_util.php, row 612
+// include/menu_util.php, row 623
 "Switches the admin interface language; the page reloads." => "\xD1\xEC\xE5\xED\xFF \xE5\xE7\xE8\xEA\xE0 \xED\xE0 \xE0\xE4\xEC\xE8\xED\xE8\xF1\xF2\xF0\xE0\xF2\xE8\xE2\xED\xE8\xFF \xE8\xED\xF2\xE5\xF0\xF4\xE5\xE9\xF1; \xF1\xF2\xF0\xE0\xED\xE8\xF6\xE0\xF2\xE0 \xF1\xE5 \xEF\xF0\xE5\xE7\xE0\xF0\xE5\xE6\xE4\xE0.", // ai 2026-06
 
-// include/menu_util.php, row 617
+// include/menu_util.php, row 628
 "What's working, what isn't \xE2\x80\x94 tell the AA team." => "\xCA\xE0\xEA\xE2\xEE \xF0\xE0\xE1\xEE\xF2\xE8 \xE8 \xEA\xE0\xEA\xE2\xEE \xED\xE5 \x97 \xEA\xE0\xE6\xE5\xF2\xE5 \xED\xE0 \xE5\xEA\xE8\xEF\xE0 \xED\xE0 AA.", // ai 2026-06
 
-// include/menu_util.php, row 620
+// include/menu_util.php, row 631
 // src/Import/Definition.php, row 86
 "Settings" => "\xCD\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE8", // ai 2026-06
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 634
 "Theme" => "\xD2\xE5\xEC\xE0", // ai 2026-06
 
-// include/menu_util.php, row 625
+// include/menu_util.php, row 636
 "Feedback" => "\xCE\xE1\xF0\xE0\xF2\xED\xE0 \xE2\xF0\xFA\xE7\xEA\xE0", // ai 2026-06
 
-// include/menu_util.php, row 751
+// include/menu_util.php, row 762
 // include/slice.class.php, row 679
 "Reader management" => "\xD3\xEF\xF0\xE0\xE2\xEB\xE5\xED\xE8\xE5 \xED\xE0 \xF7\xE8\xF2\xE0\xF2\xE5\xEB\xE8", // ai 2026-06
 
-// include/menu_util.php, row 763
+// include/menu_util.php, row 774
 "logout" => "\xE8\xE7\xF5\xEE\xE4", // ai 2026-06
 
-// include/menu_util.php, row 771
+// include/menu_util.php, row 782
 "Search.." => "\xD2\xFA\xF0\xF1\xE5\xED\xE5..", // ai 2026-06
 
-// include/menu_util.php, row 850
+// include/menu_util.php, row 861
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">\xC0\xF1\xEE\xF6\xE8\xE0\xF6\xE8\xFF \xE7\xE0 \xEF\xF0\xEE\xE3\xF0\xE5\xF1\xE8\xE2\xED\xE8 \xEA\xEE\xEC\xF3\xED\xE8\xEA\xE0\xF6\xE8\xE8 (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 860
+// include/menu_util.php, row 871
 "Collapse / expand menu" => "\xD1\xE2\xE8\xE2\xE0\xED\xE5 / \xF0\xE0\xE7\xE3\xFA\xE2\xE0\xED\xE5 \xED\xE0 \xEC\xE5\xED\xFE\xF2\xEE", // ai 2026-06
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1663
 "More" => "\xCE\xF9\xE5", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6492,7 +6510,7 @@ return [
 "More users found. Refine your search." => "\xCD\xE0\xEC\xE5\xF0\xE5\xED\xE8 \xF1\xE0 \xEF\xEE\xE2\xE5\xF7\xE5 \xEF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xE8. \xCF\xF0\xE5\xF6\xE8\xE7\xE8\xF0\xE0\xE9\xF2\xE5 \xF2\xFA\xF0\xF1\xE5\xED\xE5\xF2\xEE.", // ai 2026-06
 
 // include/searchbar.class.php, row 54
-// src/AA_Plannedtask.php, row 62, 127
+// src/AA_Plannedtask.php, row 72, 182
 "Condition" => "\xD3\xF1\xEB\xEE\xE2\xE8\xE5", // ai 2026-06
 
 // include/searchbar.class.php, row 55
@@ -6893,84 +6911,84 @@ return [
 // include/stringexpand.php, row 6161
 "No module for dictionary slice" => "\xCD\xFF\xEC\xE0 \xEC\xEE\xE4\xF3\xEB \xE7\xE0 \xF0\xE5\xF7\xED\xE8\xEA\xEE\xE2\xE0\xF2\xE0 \xF0\xF3\xE1\xF0\xE8\xEA\xE0", // ai 2026-06
 
-// include/stringexpand.php, row 7789
+// include/stringexpand.php, row 7799
 "version" => "\xE2\xE5\xF0\xF1\xE8\xFF", // ai 2026-06
 
-// include/stringexpand.php, row 7973
+// include/stringexpand.php, row 7983
 "show" => "\xEF\xEE\xEA\xE0\xE6\xE8", // ai 2026-06
 
-// include/stringexpand.php, row 7974
+// include/stringexpand.php, row 7984
 "hide" => "\xF1\xEA\xF0\xE8\xE9", // ai 2026-06
 
-// include/stringexpand.php, row 7975
+// include/stringexpand.php, row 7985
 "loading" => "\xE7\xE0\xF0\xE5\xE6\xE4\xE0\xED\xE5", // ai 2026-06
 
-// include/stringexpand.php, row 9100
+// include/stringexpand.php, row 9116
 "E-mail confirmed." => "\xC8\xEC\xE5\xE9\xEB\xFA\xF2 \xE5 \xEF\xEE\xF2\xE2\xFA\xF0\xE4\xE5\xED.", // ai 2026-06
 
-// include/stringexpand.php, row 9104
+// include/stringexpand.php, row 9120
 "E-mail unsubscribed" => "\xC8\xEC\xE5\xE9\xEB\xFA\xF2 \xE5 \xEE\xF2\xEF\xE8\xF1\xE0\xED", // ai 2026-06
 
-// include/stringexpand.php, row 9853
+// include/stringexpand.php, row 9869
 "Forgot your password? Fill in your email." => "\xC7\xE0\xE1\xF0\xE0\xE2\xE8\xEB\xE8 \xF1\xF2\xE5 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xF1\xE8? \xC2\xFA\xE2\xE5\xE4\xE5\xF2\xE5 \xF1\xE2\xEE\xFF \xE8\xEC\xE5\xE9\xEB.", // ai 2026-06
 
-// include/stringexpand.php, row 9855
+// include/stringexpand.php, row 9871
 // src/Central/FindingText.php, row 457
 "e-mail" => "\xE8\xEC\xE5\xE9\xEB", // ai 2026-06
 
-// include/stringexpand.php, row 9873, 9877
+// include/stringexpand.php, row 9889, 9893
 "Unable to find user - please check if it has been misspelled." => "\xCF\xEE\xF2\xF0\xE5\xE1\xE8\xF2\xE5\xEB\xFF\xF2 \xED\xE5 \xEC\xEE\xE6\xE5 \xE4\xE0 \xE1\xFA\xE4\xE5 \xED\xE0\xEC\xE5\xF0\xE5\xED - \xEC\xEE\xEB\xFF, \xEF\xF0\xEE\xE2\xE5\xF0\xE5\xF2\xE5 \xE7\xE0 \xEF\xF0\xE0\xE2\xEE\xEF\xE8\xF1\xED\xE8 \xE3\xF0\xE5\xF8\xEA\xE8.", // ai 2026-06
 
-// include/stringexpand.php, row 9891
+// include/stringexpand.php, row 9907
 "Password link" => "\xC2\xF0\xFA\xE7\xEA\xE0 \xE7\xE0 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/stringexpand.php, row 9892
+// include/stringexpand.php, row 9908
 "Password change url parameter" => "URL \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0 \xE7\xE0 \xF1\xEC\xFF\xED\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0", // ai 2026-06
 
-// include/stringexpand.php, row 9904
+// include/stringexpand.php, row 9920
 "Password change" => "\xD1\xEC\xFF\xED\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/stringexpand.php, row 9905
+// include/stringexpand.php, row 9921
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "\xC7\xE0 \xE4\xE0 \xF1\xEC\xE5\xED\xE8\xF2\xE5 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0, \xEC\xEE\xEB\xFF \xEF\xEE\xF1\xE5\xF2\xE5\xF2\xE5 \xF1\xEB\xE5\xE4\xED\xE8\xFF \xE0\xE4\xF0\xE5\xF1:<br>%1<br>\xD1\xEC\xFF\xED\xE0\xF2\xE0 \xF9\xE5 \xE1\xFA\xE4\xE5 \xE2\xFA\xE7\xEC\xEE\xE6\xED\xE0 \xE2 \xEF\xF0\xEE\xE4\xFA\xEB\xE6\xE5\xED\xE8\xE5 \xED\xE0 \xE4\xE2\xE0 \xF7\xE0\xF1\xE0 - \xF1\xEB\xE5\xE4 \xF2\xEE\xE2\xE0 \xEA\xEB\xFE\xF7\xFA\xF2 \xF9\xE5 \xE8\xE7\xF2\xE5\xF7\xE5 \xE8 \xF9\xE5 \xF2\xF0\xFF\xE1\xE2\xE0 \xE4\xE0 \xEF\xEE\xE8\xF1\xEA\xE0\xF2\xE5 \xED\xEE\xE2.", // ai 2026-06
 
-// include/stringexpand.php, row 9914
+// include/stringexpand.php, row 9930
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "\xC8\xEC\xE5\xE9\xEB \xF1 \xEA\xEB\xFE\xF7 \xE7\xE0 \xF1\xEC\xFF\xED\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xF2\xEE\xEA\xF3-\xF9\xEE \xE1\xE5\xF8\xE5 \xE8\xE7\xEF\xF0\xE0\xF2\xE5\xED \xED\xE0 \xE0\xE4\xF0\xE5\xF1: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9925, 9954
+// include/stringexpand.php, row 9941, 9970
 "Bad or expired key." => "\xC3\xF0\xE5\xF8\xE5\xED \xE8\xEB\xE8 \xE8\xE7\xF2\xE5\xEA\xFA\xEB \xEA\xEB\xFE\xF7.", // ai 2026-06
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 9946
 "Fill in the new password" => "\xC2\xFA\xE2\xE5\xE4\xE5\xF2\xE5 \xED\xEE\xE2\xE0\xF2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/stringexpand.php, row 9932
+// include/stringexpand.php, row 9948
 "New password" => "\xCD\xEE\xE2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/stringexpand.php, row 9933
+// include/stringexpand.php, row 9949
 "Retype New Password" => "\xCF\xEE\xE2\xF2\xEE\xF0\xE5\xF2\xE5 \xED\xEE\xE2\xE0\xF2\xE0 \xEF\xE0\xF0\xEE\xEB\xE0", // ai 2026-06
 
-// include/stringexpand.php, row 9957
+// include/stringexpand.php, row 9973
 "Passwords do not match - please try again." => "\xCF\xE0\xF0\xEE\xEB\xE8\xF2\xE5 \xED\xE5 \xF1\xFA\xE2\xEF\xE0\xE4\xE0\xF2 - \xEC\xEE\xEB\xFF, \xEE\xEF\xE8\xF2\xE0\xE9\xF2\xE5 \xEE\xF2\xED\xEE\xE2\xEE.", // ai 2026-06
 
-// include/stringexpand.php, row 9960
+// include/stringexpand.php, row 9976
 "The password must be at least 6 characters long." => "\xCF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xF2\xF0\xFF\xE1\xE2\xE0 \xE4\xE0 \xE5 \xE4\xFA\xEB\xE3\xE0 \xEF\xEE\xED\xE5 6 \xE7\xED\xE0\xEA\xE0.", // ai 2026-06
 
-// include/stringexpand.php, row 9966
+// include/stringexpand.php, row 9982
 "Password changed." => "\xCF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 \xE5 \xF1\xEC\xE5\xED\xE5\xED\xE0.", // ai 2026-06
 
-// include/stringexpand.php, row 9968
+// include/stringexpand.php, row 9984
 "An error occurred during password change - please contact: %1." => "\xC2\xFA\xE7\xED\xE8\xEA\xED\xE0 \xE3\xF0\xE5\xF8\xEA\xE0 \xEF\xF0\xE8 \xF1\xEC\xFF\xED\xE0\xF2\xE0 \xED\xE0 \xEF\xE0\xF0\xEE\xEB\xE0\xF2\xE0 - \xEC\xEE\xEB\xFF, \xF1\xE2\xFA\xF0\xE6\xE5\xF2\xE5 \xF1\xE5 \xF1: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10847, 10870
+// include/stringexpand.php, row 10863, 10886
 "Are you sure you want to permanently DELETE this record?" => "\xCD\xE0\xE8\xF1\xF2\xE8\xED\xE0 \xEB\xE8 \xE8\xF1\xEA\xE0\xF2\xE5 \xEE\xEA\xEE\xED\xF7\xE0\xF2\xE5\xEB\xED\xEE \xE4\xE0 \xC8\xC7\xD2\xD0\xC8\xC5\xD2\xC5 \xF2\xEE\xE7\xE8 \xE7\xE0\xEF\xE8\xF1?", // ai 2026-06
 
-// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// include/stringexpand.php, row 10869, 10872, 10892, 10895
 // src/Widget/RimWidget.php, row 270
 "edit" => "\xF0\xE5\xE4\xE0\xEA\xF2\xE8\xF0\xE0\xE9", // ai 2026-06
 
-// include/stringexpand.php, row 10859, 10882
+// include/stringexpand.php, row 10875, 10898
 "back" => "\xED\xE0\xE7\xE0\xE4", // ai 2026-06
 
-// include/stringexpand.php, row 10862, 10885
+// include/stringexpand.php, row 10878, 10901
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "\xEF\xF3\xF1\xED\xE5\xF2\xE5 \xF4\xE0\xE9\xEB\xEE\xE2\xE5\xF2\xE5 \xF2\xF3\xEA \xE8\xEB\xE8 \xEA\xEB\xE8\xEA\xED\xE5\xF2\xE5 \xE7\xE0 \xEA\xE0\xF7\xE2\xE0\xED\xE5", // ai 2026-06
 
@@ -7390,68 +7408,83 @@ return [
 // src/Manager.php, row 881
 "No item found" => "\xCD\xE5 \xE5 \xED\xE0\xEC\xE5\xF0\xE5\xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 61, 127
+// src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "\xC7\xE0\xE4\xE0\xF7\xE0", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "\xC0\xEA\xEE \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xEE, \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0 \xF1\xE5 \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xF1\xE0\xEC\xEE \xE0\xEA\xEE \xD3\xF1\xEB\xEE\xE2\xE8\xE5\xF2\xEE \xF1\xE5 \xEE\xF6\xE5\xED\xE8 \xED\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2, \xF0\xE0\xE7\xEB\xE8\xF7\xED\xE0 \xEE\xF2 \xED\xF3\xEB\xE0 \xE8\xEB\xE8 \xEF\xF0\xE0\xE7\xED\xE0 \xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 73
 "Event to run" => "\xD1\xF2\xE0\xF0\xF2\xE8\xF0\xE0\xF9\xEE \xF1\xFA\xE1\xE8\xF2\xE8\xE5", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "New Item" => "\xCD\xEE\xE2\xE0 \xF1\xF2\xE0\xF2\xE8\xFF", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "Item Updated" => "\xCF\xF0\xEE\xEC\xE5\xED\xE5\xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 66
+// src/AA_Plannedtask.php, row 76
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "\xD1\xFA\xE1\xE8\xF2\xE8\xE5, \xEF\xF0\xE8 \xEA\xEE\xE5\xF2\xEE \xE4\xE0 \xF1\xE5 \xE8\xE7\xEF\xFA\xEB\xED\xE8 \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0. \xD2\xEE \xE5 \xED\xE5\xE7\xE0\xE2\xE8\xF1\xE8\xEC\xEE \xEE\xF2 \xED\xE0\xF1\xF2\xF0\xEE\xE9\xEA\xE0\xF2\xE0 \xE7\xE0 \xD7\xE0\xF1 \xEF\xEE-\xE4\xEE\xEB\xF3 (\xF2\xE0\xEA\xE0 \xF7\xE5 \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xF1\xF2\xE0\xF0\xF2\xE8\xF0\xE0\xF2\xE5 \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0 \xEF\xF0\xE8 \xD1\xFA\xE1\xE8\xF2\xE8\xE5 \xE8 \xF1\xFA\xF9\xEE \xE2 \xEE\xEF\xF0\xE5\xE4\xE5\xEB\xE5\xED \xF7\xE0\xF1). \xC0\xEA\xEE \xED\xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xF2\xE5 \xEF\xE0\xF0\xE0\xEC\xE5\xF2\xFA\xF0\xE0 \"+ \xF1\xE5\xEA\xF3\xED\xE4\xE8\" \xE8\xEB\xE8 \xE3\xEE \xED\xE0\xF1\xF2\xF0\xEE\xE8\xF2\xE5 \xED\xE0 0, \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0 \xF1\xE5 \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xE2\xE5\xE4\xED\xE0\xE3\xE0. \xC0\xEA\xEE \xEE\xF2\xEC\xE5\xF1\xF2\xE2\xE0\xED\xE5\xF2\xEE \"+ \xF1\xE5\xEA\xF3\xED\xE4\xE8\" \xE5 \xE7\xE0\xE4\xE0\xE4\xE5\xED\xEE, \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0 \xF1\xE5 \xEF\xEB\xE0\xED\xE8\xF0\xE0 \xE7\xE0 \xE5\xE4\xED\xEE\xEA\xF0\xE0\xF2\xED\xEE \xE8\xE7\xEF\xFA\xEB\xED\xE5\xED\xE8\xE5 \xF1\xEB\xE5\xE4 x \xF1\xE5\xEA\xF3\xED\xE4\xE8.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Time to run" => "\xD7\xE0\xF1 \xED\xE0 \xE8\xE7\xEF\xFA\xEB\xED\xE5\xED\xE8\xE5", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "\xC7\xE0\xE4\xE0\xE9\xF2\xE5 \xF7\xE0\xF1\xE0, \xE2 \xEA\xEE\xE9\xF2\xEE \xE4\xE0 \xF1\xE5 \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0. \xD2\xFF \xF9\xE5 \xF1\xE5 \xEE\xE1\xF0\xE0\xE1\xEE\xF2\xE2\xE0 \xEF\xE5\xF0\xE8\xEE\xE4\xE8\xF7\xED\xEE \xE2 \xF2\xEE\xE7\xE8 \xF7\xE0\xF1. \xD7\xE0\xF1\xFA\xF2 \xF1\xE5 \xE7\xE0\xE4\xE0\xE2\xE0 \xE2 \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">\xEE\xF2\xED\xEE\xF1\xE8\xF2\xE5\xEB\xE5\xED \xF4\xEE\xF0\xEC\xE0\xF2</a>\", \xED\xE0\xEF\xF0\xE8\xEC\xE5\xF0:<br>\"midnight\" - \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xF1\xE5 \xE2\xF1\xFF\xEA\xE0 \xEF\xEE\xEB\xF3\xED\xEE\xF9 <br>\"+1 hour\" - \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xF1\xE5 \xE2\xF1\xE5\xEA\xE8 \xF7\xE0\xF1, <br>\"+30 min\" - \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xF1\xE5 \xED\xE0 \xE2\xF1\xE5\xEA\xE8 30 \xEC\xE8\xED\xF3\xF2\xE8, <br>\"16:00\" - \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xF1\xE5 \xE2\xF1\xE5\xEA\xE8 \xE4\xE5\xED \xE2 16:00<br>\"Monday 10:00\" - \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0 \xF1\xE5 \xE2\xF1\xE5\xEA\xE8 \xEF\xEE\xED\xE5\xE4\xE5\xEB\xED\xE8\xEA \xE2 16:00<br>\"first day of this month 10:00\"<br>\xD7\xE0\xF1\xEE\xE2\xE5\xF2\xE5 \xED\xE5 \xF1\xE0 \xF2\xEE\xF7\xED\xE8 - \xE7\xE0\xE4\xE0\xF7\xE8\xF2\xE5 \xF1\xE5 \xE8\xE7\xEF\xFA\xEB\xED\xFF\xE2\xE0\xF2 \xE5\xE4\xED\xE0 \xF1\xEB\xE5\xE4 \xE4\xF0\xF3\xE3\xE0 \xEE\xF2 \xF1\xEA\xF0\xE8\xEF\xF2, \xEA\xEE\xE9\xF2\xEE \xF1\xE5 \xF1\xF2\xE0\xF0\xF2\xE8\xF0\xE0 \xEF\xF0\xE8\xE1\xEB\xE8\xE7\xE8\xF2\xE5\xEB\xED\xEE \xED\xE0 \xE2\xF1\xE5\xEA\xE8 5 \xEC\xE8\xED\xF3\xF2\xE8.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68, 127
+// src/AA_Plannedtask.php, row 78, 182
 "+ seconds" => "+ \xF1\xE5\xEA\xF3\xED\xE4\xE8", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68
+// src/AA_Plannedtask.php, row 78
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "\xCF\xEE \xE6\xE5\xEB\xE0\xED\xE8\xE5 \xE7\xE0\xE4\xE0\xE9\xF2\xE5 \xE4\xEE\xEF\xFA\xEB\xED\xE8\xF2\xE5\xEB\xED\xEE \xE2\xF0\xE5\xEC\xE5\xE2\xEE \xEE\xF2\xEC\xE5\xF1\xF2\xE2\xE0\xED\xE5, \xE4\xEE\xE1\xE0\xE2\xE5\xED\xEE \xEA\xFA\xEC \xEF\xF0\xE5\xE4\xE8\xF8\xED\xE8\xFF \xF7\xE0\xF1 (\xE2 \xF1\xE5\xEA\xF3\xED\xE4\xE8).<br>\xD1 \xEF\xF0\xE5\xE4\xE8\xF8\xED\xE8\xFF \xF0\xE5\xE4 \xF2\xF0\xF3\xE4\xED\xEE \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xE7\xE0\xE4\xE0\xE4\xE5 \"15-\xEE \xF7\xE8\xF1\xEB\xEE \xED\xE0 \xEC\xE5\xF1\xE5\xF6\xE0\", \xE7\xE0\xF2\xEE\xE2\xE0 \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xEA\xEE\xEC\xE1\xE8\xED\xE8\xF0\xE0\xF2\xE5 \xE4\xE2\xE5\xF2\xE5:<br> - \"\xF7\xE0\xF1\" = \"first day of this month 10:00\"<br> - \"+ \xF1\xE5\xEA\xF3\xED\xE4\xE8\" = \"1209600\"<br> (60 \xF1\xE5\xEA\xF3\xED\xE4\xE8 * 60 \xEC\xE8\xED\xF3\xF2\xE8 * 24 \xF7\xE0\xF1\xE0 * 14 \xE4\xED\xE8) - \xEE\xE1\xFA\xF0\xED\xE5\xF2\xE5 \xE2\xED\xE8\xEC\xE0\xED\xE8\xE5 \xED\xE0 14 (1-\xE2\xEE + 14 = 15-\xEE)", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "\xCF\xEE \xE6\xE5\xEB\xE0\xED\xE8\xE5 \xE7\xE0\xE4\xE0\xE9\xF2\xE5 \xEA\xEE\xED\xF2\xE5\xEA\xF1\xF2\xE0 - \xE4\xFA\xEB\xE3\xEE\xF2\xEE ID \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0, \xE7\xE0 \xEA\xEE\xFF\xF2\xEE \xF9\xE5 \xF1\xE5 \xE8\xE7\xEF\xFA\xEB\xED\xE8 \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0. \xD1\xEB\xE5\xE4 \xF2\xEE\xE2\xE0 \xE2 \xE7\xE0\xE4\xE0\xF7\xE0\xF2\xE0 \xEC\xEE\xE6\xE5\xF2\xE5 \xE4\xE0 \xE8\xE7\xEF\xEE\xEB\xE7\xE2\xE0\xF2\xE5 {id..............} \xE8 \xE4\xF0\xF3\xE3\xE8 \xE0\xEB\xE8\xE0\xF1\xE8 \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0. ID-\xF2\xEE \xED\xE0 \xF1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xEC\xEE\xE6\xE5 \xE4\xE0 \xF1\xE5 \xEF\xEE\xEB\xF3\xF7\xE8 \xE8 \xE2 \xEF\xF0\xEE\xEC\xE5\xED\xEB\xE8\xE2\xE0\xF2\xE0 {var:aa_event_for}. \xCF\xF0\xE8 \"\xF1\xFA\xE1\xE8\xF2\xE8\xE9\xED\xE8\xF2\xE5\" \xE7\xE0\xE4\xE0\xF7\xE8 (\xD1\xF2\xE0\xF2\xE8\xFF\xF2\xE0 \xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xE0/\xED\xEE\xE2\xE0) \xF2\xEE \xE2\xE8\xED\xE0\xE3\xE8 \xF1\xE5 \xEF\xEE\xEF\xFA\xEB\xE2\xE0 \xF1 ID-\xF2\xEE \xED\xE0 \xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xE0\xF2\xE0 \xF1\xF2\xE0\xF2\xE8\xFF.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 70
+// src/AA_Plannedtask.php, row 80
 "Saved by" => "",
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 83
+"Result of the last run" => "",
+
+// src/AA_Plannedtask.php, row 157
 "Planned tasks" => "\xCF\xEB\xE0\xED\xE8\xF0\xE0\xED\xE8 \xE7\xE0\xE4\xE0\xF7\xE8", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 122
+// src/AA_Plannedtask.php, row 177
 "Current time on server" => "\xD2\xE5\xEA\xF3\xF9 \xF7\xE0\xF1 \xED\xE0 \xF1\xFA\xF0\xE2\xFA\xF0\xE0", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Event" => "\xD1\xFA\xE1\xE8\xF2\xE8\xE5", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Computed time" => "\xC8\xE7\xF7\xE8\xF1\xEB\xE5\xED \xF7\xE0\xF1", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Scheduled to" => "\xCF\xEB\xE0\xED\xE8\xF0\xE0\xED\xEE \xE7\xE0", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 315
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+// src/AA_Plannedtask.php, row 266
+"done" => "",
 
-// src/AA_Plannedtask.php, row 318
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+// src/AA_Plannedtask.php, row 267
+"done, no output" => "",
 
-// src/AA_Plannedtask.php, row 382
-"not scheduled, yet" => "\xEE\xF9\xE5 \xED\xE5 \xE5 \xEF\xEB\xE0\xED\xE8\xF0\xE0\xED\xEE", // ai 2026-06
+// src/AA_Plannedtask.php, row 268
+"condition not met" => "",
+
+// src/AA_Plannedtask.php, row 269
+"failed" => "",
 
 // src/AA_Plannedtask.php, row 386
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+
+// src/AA_Plannedtask.php, row 389
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+
+// src/AA_Plannedtask.php, row 453
+"not scheduled, yet" => "\xEE\xF9\xE5 \xED\xE5 \xE5 \xEF\xEB\xE0\xED\xE8\xF0\xE0\xED\xEE", // ai 2026-06
+
+// src/AA_Plannedtask.php, row 457
 "next run" => "\xF1\xEB\xE5\xE4\xE2\xE0\xF9\xEE \xF1\xF2\xE0\xF0\xF2\xE8\xF0\xE0\xED\xE5", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 51, 72
@@ -8945,7 +8978,7 @@ return [
 // src/Import/DetailPage.php, row 329, 666
 "Updated" => "",
 
-// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailCatalog.php, row 171
 "Catalog of the source" => "",
 
 // src/Import/DetailConfig.php, row 136
@@ -9532,82 +9565,88 @@ return [
 // src/Import/DetailPage.php, row 1147
 "Look the failure up in the log of import failures, then Continue or End the run." => "",
 
-// src/Import/DetailPage.php, row 1156
+// src/Import/DetailPage.php, row 1161
 "full run" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Baseline only" => "",
+// src/Import/DetailPage.php, row 1162
+"one stream (%1)" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Nothing imported yet. Run changed only takes what changes after this." => "",
-
-// src/Import/DetailPage.php, row 1198, 1199
-"Imported with item errors" => "",
-
-// src/Import/DetailPage.php, row 1198
-"1 item error in the run that imported it - see Runs." => "",
+// src/Import/DetailPage.php, row 1163
+"%1 streams" => "",
 
 // src/Import/DetailPage.php, row 1199
+"Baseline only" => "",
+
+// src/Import/DetailPage.php, row 1199
+"Nothing imported yet. Run changed only takes what changes after this." => "",
+
+// src/Import/DetailPage.php, row 1207, 1208
+"Imported with item errors" => "",
+
+// src/Import/DetailPage.php, row 1207
+"1 item error in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1208
 "%1 item errors in the run that imported it - see Runs." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "Imported" => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source was asked again after the import." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source has not been asked since." => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Checked, not imported yet" => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Run imports it; Run changed only too, as it has no version to compare." => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "Not seen yet" => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "No run has imported or checked it." => "",
 
-// src/Import/DetailPage.php, row 1219
+// src/Import/DetailPage.php, row 1228
 "%1 read" => "",
 
-// src/Import/DetailPage.php, row 1220
+// src/Import/DetailPage.php, row 1229
 "%1 new, %2 updated, %3 skipped" => "",
 
-// src/Import/DetailPage.php, row 1221
+// src/Import/DetailPage.php, row 1230
 "%1 filtered out" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "dry run - nothing stored" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "all streams of the run together" => "",
 
-// src/Import/DetailPage.php, row 1241
+// src/Import/DetailPage.php, row 1250
 "None yet - an import records it" => "",
 
-// src/Import/DetailPage.php, row 1242
+// src/Import/DetailPage.php, row 1251
 "None - the source gives no version" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1, working %2" => "",
 
-// src/Import/DetailPage.php, row 1301
+// src/Import/DetailPage.php, row 1310
 "%1 s" => "",
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1313
 "%1 min %2 s" => "",
 
-// src/Import/DetailPage.php, row 1304, 1306
+// src/Import/DetailPage.php, row 1313, 1315
 "%1 min" => "",
 
-// src/Import/DetailPage.php, row 1306
+// src/Import/DetailPage.php, row 1315
 "%1 h" => "",
 
 // src/Import/Mapping.php, row 219
@@ -9884,13 +9923,13 @@ return [
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "\xCF\xEB\xE0\xED\xE8\xF0\xE0\xED\xE8 \xF1\xE0 %1 \xEF\xE0\xF0\xF2\xE8\xE4\xE8 \xF1 %2 \xF1\xF2\xE0\xF2\xE8\xE8", // ai 2026-06
 
-// src/Later/Toexecute.php, row 364
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "",
 
-// src/Later/Toexecute.php, row 368
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "",
 
-// src/Later/Toexecute.php, row 459
+// src/Later/Toexecute.php, row 462
 "the task failed with %1" => "",
 
 // src/Manager.php, row 430
@@ -10418,16 +10457,16 @@ return [
 // src/Optimize/CategorySort2groupBy.php, row 37
 "All slices are already converted" => "\xC2\xF1\xE8\xF7\xEA\xE8 \xF0\xF3\xE1\xF0\xE8\xEA\xE8 \xE2\xE5\xF7\xE5 \xF1\xE0 \xEF\xF0\xE5\xEE\xE1\xF0\xE0\xE7\xF3\xE2\xE0\xED\xE8", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 20
+// src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "\xCE\xEF\xF2\xE8\xEC\xE8\xE7\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE0 f_h \xE2 f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 28
+// src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "\xC7\xE0\xEC\xE5\xED\xFF \xE0\xEB\xE8\xE0\xF1\xE0 f_h \xE7\xE0 \xEF\xEE\xEB\xE5, \xEE\xF2\xE1\xE5\xEB\xFF\xE7\xE0\xED\xEE \xEA\xE0\xF2\xEE \xED\xE5\xEC\xED\xEE\xE3\xEE\xE7\xED\xE0\xF7\xED\xEE \xE8 html, \xF1 \xEF\xEE-\xE1\xFA\xF0\xE7\xE0\xF2\xE0 \xF4\xF3\xED\xEA\xF6\xE8\xFF f_1 \xE7\xE0 \xE4\xE8\xF0\xE5\xEA\xF2\xE5\xED \xE8\xE7\xF5\xEE\xE4 \xED\xE0 \xF1\xFA\xE4\xFA\xF0\xE6\xE0\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 18
+// src/Optimize/ChangeF_t2F_1.php, row 15
 "Optimize f_t alias to f_1" => "\xCE\xEF\xF2\xE8\xEC\xE8\xE7\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xE0\xEB\xE8\xE0\xF1\xE0 f_t \xE2 f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 26
+// src/Optimize/ChangeF_t2F_1.php, row 23
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "\xC7\xE0\xEC\xE5\xED\xFF \xE0\xEB\xE8\xE0\xF1\xE0 f_t \xE7\xE0 \xEF\xEE\xEB\xE5, \xEE\xF2\xE1\xE5\xEB\xFF\xE7\xE0\xED\xEE \xEA\xE0\xF2\xEE \xED\xE5\xEC\xED\xEE\xE3\xEE\xE7\xED\xE0\xF7\xED\xEE \xE8 html, \xF1 \xEF\xEE-\xE1\xFA\xF0\xE7\xE0\xF2\xE0 \xF4\xF3\xED\xEA\xF6\xE8\xFF f_1 \xE7\xE0 \xE4\xE8\xF0\xE5\xEA\xF2\xE5\xED \xE8\xE7\xF5\xEE\xE4 \xED\xE0 \xF1\xFA\xE4\xFA\xF0\xE6\xE0\xED\xE8\xE5\xF2\xEE", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -10452,8 +10491,32 @@ return [
 "Changing ID for table %1 (%2)" => "\xCF\xF0\xEE\xEC\xFF\xED\xE0 \xED\xE0 ID \xE7\xE0 \xF2\xE0\xE1\xEB\xE8\xF6\xE0 %1 (%2)", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 68
+// src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "\xCF\xF0\xE5\xEE\xE1\xF0\xE0\xE7\xF3\xE2\xE0\xED\xE8 \xF1\xE0 %1 \xF2\xE0\xE1\xEB\xE8\xF6\xE8", // ai 2026-06
+
+// src/Optimize/ChangeQte2Trm.php, row 24
+"Trim text fields" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 29
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields switched to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields to switch to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 139
+"Field templates" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"switched to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"to switch to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 145
+"%1 keeps \"Text = don't modify\": %2" => "",
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
 "Unsigned {ajax} widget settings" => "",
@@ -10475,7 +10538,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 102
-// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 99
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -10489,7 +10552,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
-// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 100
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckUploadRefusals.php, row 89
@@ -11052,22 +11115,22 @@ return [
 // src/Optimize/CheckQueue.php, row 181
 "Longest [s]" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 22
+// src/Optimize/CheckQueuedClassMissing.php, row 23
 "Queued tasks of a missing class" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 27
+// src/Optimize/CheckQueuedClassMissing.php, row 28
 "Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 61
+// src/Optimize/CheckQueuedClassMissing.php, row 62
 "Queued tasks of class %1 cannot run - the class is missing" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 66
+// src/Optimize/CheckQueuedClassMissing.php, row 67
 "Selector" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 70
-"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "",
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 76
+// src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "",
 
 // src/Optimize/CheckRequiredSettings.php, row 17
@@ -11384,7 +11447,13 @@ return [
 // src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "\xCD\xE0\xEC\xE5\xF0\xE8\xF5\xEC\xE5 %1 \xF2\xE0\xE1\xEB\xE8\xF6\xE8, \xEA\xEE\xE8\xF2\xEE \xF2\xF0\xFF\xE1\xE2\xE0 \xE4\xE0 \xE1\xFA\xE4\xE0\xF2 \xEF\xF0\xE5\xEE\xE1\xF0\xE0\xE7\xF3\xE2\xE0\xED\xE8", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 64
+// src/Optimize/Convert2innodb.php, row 71
+"Unique numbers (seq) may repeat" => "",
+
+// src/Optimize/Convert2innodb.php, row 71
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+
+// src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "\xCF\xF0\xE5\xEE\xE1\xF0\xE0\xE7\xF3\xE2\xE0\xED\xE5 \xED\xE0 \xF2\xE0\xE1\xEB\xE8\xF6\xE0 %1 (%2) \xE2 InnoDB", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 23
@@ -12262,6 +12331,30 @@ return [
 
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "\xF1\xF2\xEE\xE9\xED\xEE\xF1\xF2\xF2\xE0 \xEF\xEE \xEF\xEE\xE4\xF0\xE0\xE7\xE1\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xEF\xEE\xEB\xE5\xF2\xEE expiry_date..... \xE5 \xEF\xF0\xEE\xEC\xE5\xED\xE5\xED\xE0 \xE2 %1 /%2 \xF0\xF3\xE1\xF0\xE8\xEA\xE8: %3)", // ai 2026-06
+
+// src/Optimize/TrimFieldValues.php, row 39
+"Trim stored values" => "",
+
+// src/Optimize/TrimFieldValues.php, row 44
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+
+// src/Optimize/TrimFieldValues.php, row 63
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+
+// src/Optimize/TrimFieldValues.php, row 68
+"%1 items to trim" => "",
+
+// src/Optimize/TrimFieldValues.php, row 80
+"Trimming of %1 slices planned in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 91
+"%1 items planned to be trimmed in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 129
+"%1 items with a unique value to trim by hand, e.g. %2" => "",
+
+// src/Optimize/TrimFieldValues.php, row 139
+"%1 items to trim, e.g. %2" => "",
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "\xC0\xEA\xF2\xF3\xE0\xEB\xE8\xE7\xE8\xF0\xE0\xED\xE5 \xED\xE0 \xF1\xF2\xF0\xF3\xEA\xF2\xF3\xF0\xE0\xF2\xE0 \xED\xE0 \xE1\xE0\xE7\xE0\xF2\xE0 \xE4\xE0\xED\xED\xE8", // ai 2026-06

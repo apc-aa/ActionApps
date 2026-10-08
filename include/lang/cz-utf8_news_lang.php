@@ -26,6 +26,8 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Unique number in sequence 1,2,3,..." => "Unikátní číslo v řadě 1,2,3,...",
+// "If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "Pokud třída chybí jen po nasazení (nezkopírovaly se všechny soubory, starý composer classmap), obnovte ji a úlohy poběží znovu. Pokud byla funkce odstraněna, smažte úlohy ve Správci úloh; jinak zůstanou ve frontě, vyřazené.", // ai 2026-10
 // "Data source" => "Zdroj dat",
 // "Upload periodically" => "Nahrávat pravidelně",
 // "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - Kopírování webíku (1/2) - Výběr zdrojových ActionApps",
@@ -368,6 +370,7 @@ return [
 "You do not have permission to manage Cron" => "Nemáte oprávnění spravovat Cron",
 
 // admin/aa_cron.php, row 47
+// src/AA_Plannedtask.php, row 82, 182
 // src/Import/Definition.php, row 135, 163
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Poslední spuštění",
@@ -376,7 +379,7 @@ return [
 "never" => "nikdy",
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 656
+// include/field.class.php, row 714
 // src/Util/Adminlink.php, row 31
 "disabled" => "vypnuto",
 
@@ -447,7 +450,7 @@ return [
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
-"The form has expired; reload the page and try again." => "Platnost formuláře vypršela; načtěte stránku znovu a zkuste to znovu.", // ai 2026-10
+"The form has expired; reload the page and try again." => "Platnost formuláře vypršela; obnovte stránku a zkuste to znovu.", // ai 2026-10
 
 // admin/aa_optimize.php, row 50
 // include/feeding.php, row 465, 501
@@ -504,7 +507,7 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 98
@@ -637,7 +640,7 @@ return [
 "Slow checks ran now in %1 s." => "Pomalé kontroly proběhly nyní za %1 s.", // ai 2026-10
 
 // admin/aa_statecheck.php, row 231
-"The daily snapshot last ran %1." => "Denní snímek proběhl naposledy %1.", // ai 2026-10
+"The daily snapshot last ran %1." => "Denní snímek byl naposledy pořízen %1.", // ai 2026-10
 
 // admin/aa_statecheck.php, row 231
 "No daily snapshot yet." => "Zatím žádný denní snímek.", // ai 2026-10
@@ -689,7 +692,7 @@ return [
 
 // admin/aa_statecheck.php, row 271
 // src/Optimize/CheckEnvironment.php, row 18
-"Environment" => "Ekologie", // ai 2026-06
+"Environment" => "Prostředí", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
 // admin/se_statistics.php, row 53
@@ -889,7 +892,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1701
 "Manage %1" => "Správa %1",
 
 // admin/aa_tasks.php, row 46
@@ -945,11 +948,12 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Webík",
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "Modul",
@@ -962,7 +966,7 @@ return [
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
 // include/logs.php, row 293
-// src/AA_Plannedtask.php, row 149
+// src/AA_Plannedtask.php, row 204
 "Log" => "",
 
 // admin/aafinder.php, row 172
@@ -1098,8 +1102,8 @@ return [
 
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 260
-// include/menu_util.php, row 618
-// include/stringexpand.php, row 9858, 9937
+// include/menu_util.php, row 629
+// include/stringexpand.php, row 9874, 9953
 "Send" => "Pošli",
 
 // admin/anonym_wizard.php, row 151
@@ -1152,7 +1156,7 @@ return [
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1253, 1257
+// include/field.class.php, row 1332, 1336
 // include/form.class.php, row 211
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
@@ -1265,10 +1269,10 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 638
+// include/field.class.php, row 696
 // include/filedit.php, row 115
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1642
+// include/metabase.class.php, row 1643
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
@@ -1289,7 +1293,7 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 642
+// include/field.class.php, row 700
 // include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
 // include/profile.php, row 69
@@ -1441,7 +1445,7 @@ return [
 
 // admin/itemedit.php, row 305
 // include/date.php, row 189
-// include/field.class.php, row 1253
+// include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Chyba v",
 
@@ -1730,7 +1734,7 @@ return [
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 171
 // src/Optimize/CheckRequiredSettings.php, row 69
@@ -1761,7 +1765,7 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1257
+// include/field.class.php, row 1336
 // src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "Řazení",
 
@@ -1961,9 +1965,9 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
+// include/metabase.class.php, row 1668
 // include/statestore.php, row 1077, 1414
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
 "Action" => "Akce",
@@ -2055,7 +2059,7 @@ return [
 "Imports" => "Importy", // ai 2026-10
 
 // admin/se_dataimports.php, row 41
-"An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "Import naplní webík daty z jiného zdroje, hned nebo naplánovanou úlohou. Spustit ho zahájí; import pak běží na pozadí a v jeho detailu vidíte průběh.", // ai 2026-10
+"An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "Import naplní webík daty z jiného zdroje, hned nebo naplánovanou úlohou. Tlačítko „Spustit“ ho zahájí; import pak běží na pozadí a v jeho detailu vidíte průběh.", // ai 2026-10
 
 // admin/se_export.php, row 74
 "You do not have permissions to export" => "Nemáte oprávnění exportovat",
@@ -2360,7 +2364,7 @@ return [
 "User" => "Uživatel",
 
 // admin/se_history.php, row 144
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckImports.php, row 287
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "Čas",
@@ -2373,7 +2377,7 @@ return [
 
 // admin/se_history.php, row 167
 // include/itemfunc.php, row 201
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Item ID" => "ID článku",
 
 // admin/se_history.php, row 216, 217
@@ -2916,7 +2920,7 @@ return [
 "Top menu (admin header)" => "Horní menu (hlavička administrace)", // ai 2026-06
 
 // admin/se_profile.php, row 156
-"Left menu (item context)" => "Levé menu (kontext položky)", // ai 2026-06
+"Left menu (item context)" => "Levé menu (kontext článku)", // ai 2026-10
 
 // admin/se_profile.php, row 160
 "Title (add form)" => "Titulek (formulář přidání)",
@@ -3079,7 +3083,7 @@ return [
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 485, 542
 // include/statestore.php, row 1077
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 170
 "ID" => "",
 
@@ -3149,7 +3153,7 @@ return [
 // admin/se_users.php, row 126, 185
 // admin/slicewiz.php, row 82
 // include/se_users.php, row 109, 180
-"Editor" => "Upravil", // ai 2026-10
+"Editor" => "Editor",
 
 // admin/se_users.php, row 127, 185
 // include/se_users.php, row 110, 180
@@ -3342,7 +3346,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 111
 // admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1194
+// include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "Uživatelské jméno",
 
@@ -3520,7 +3524,7 @@ return [
 "Admin - Slice settings" => "Správa webíku - Úprava webíku",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 624
+// include/menu_util.php, row 635
 "Language" => "Jazyk",
 
 // admin/slicedit.php, row 260
@@ -4067,7 +4071,7 @@ return [
 
 // central/appstore.php, row 130
 // central/installapp.php, row 387
-"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Tabulka tohoto AA nepodporuje transakce (není InnoDB) – převeďte ji v AA > Optimalizace: %1", // ai 2026-10
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Tabulka tohoto AA nepodporuje transakce (není InnoDB) – převeďte ji v AA > Optimalizovat: %1", // ai 2026-10
 
 // central/appstore.php, row 142
 // central/installapp.php, row 723, 1214
@@ -4086,7 +4090,7 @@ return [
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
-// include/menu_util.php, row 437, 747
+// include/menu_util.php, row 448, 758
 // include/slice.class.php, row 1394
 // src/Central/FindingText.php, row 496
 "Alerts" => "Zasílání",
@@ -4099,7 +4103,7 @@ return [
 "Install" => "Instalovat", // ai 2026-10
 
 // central/appstore.php, row 173
-"Install shows a preview first; nothing is written before you confirm it." => "Instalovat nejprve zobrazí náhled; nic se nezapíše, dokud to nepotvrdíte.", // ai 2026-10
+"Install shows a preview first; nothing is written before you confirm it." => "Tlačítko „Instalovat“ nejprve zobrazí náhled; nic se nezapíše, dokud to nepotvrdíte.", // ai 2026-10
 
 // central/import_csv.php, row 33
 "You don't have permissions to import sites from CSV." => "Nemáte práva importovat weby z CSV.",
@@ -4237,10 +4241,10 @@ return [
 "Another AA asks for the login of its superadmin." => "Jiné AA vyžaduje přihlášení svého superadmina.", // ai 2026-10
 
 // central/installapp.php, row 454
-"Choose the source" => "Zvolte zdroj", // ai 2026-10
+"Choose the source" => "Zvolit zdroj", // ai 2026-10
 
 // central/installapp.php, row 467
-"Install an app from %1" => "Instalovat aplikaci z %1", // ai 2026-10
+"Install an app from %1" => "Instalace aplikace z %1", // ai 2026-10
 
 // central/installapp.php, row 471
 "Log in and choose the app" => "Přihlásit se a vybrat aplikaci", // ai 2026-10
@@ -4277,16 +4281,16 @@ return [
 "Transfer - a copy with the items and readers" => "Přenos – kopie s články a čtenáři", // ai 2026-10
 
 // central/installapp.php, row 508
-"Items of" => "Články z", // ai 2026-10
+"Items of" => "Články", // ai 2026-10
 
 // central/installapp.php, row 509
-"the active bin" => "schránky Aktuální", // ai 2026-10
+"the active bin" => "ze schránky Aktuální", // ai 2026-10
 
 // central/installapp.php, row 510
-"all bins" => "všech schránek", // ai 2026-10
+"all bins" => "ze všech schránek", // ai 2026-10
 
 // central/installapp.php, row 540
-"Choose the app from the list of its apps" => "Vyberte aplikaci ze seznamu jeho aplikací", // ai 2026-10
+"Choose the app from the list of its apps" => "Vybrat aplikaci ze seznamu jeho aplikací", // ai 2026-10
 
 // central/installapp.php, row 555, 829
 "What to install" => "Co instalovat", // ai 2026-10
@@ -4343,7 +4347,7 @@ return [
 "chosen by its role: %1" => "vybráno podle role: %1", // ai 2026-10
 
 // central/installapp.php, row 803
-"the views and fields of the app will work on its live reader data" => "pohledy a políčka aplikace budou pracovat s jejími živými daty čtenářů", // ai 2026-10
+"the views and fields of the app will work on its live reader data" => "pohledy a políčka aplikace budou pracovat s živými daty čtenářů tohoto webíku", // ai 2026-10
 
 // central/installapp.php, row 831, 842
 "Into" => "Kam", // ai 2026-10
@@ -4388,7 +4392,7 @@ return [
 "keep the id - leads nowhere" => "ponechat id – nikam nevede", // ai 2026-10
 
 // central/installapp.php, row 896
-"as an earlier install from the same source" => "jako dřívější instalace ze stejného zdroje", // ai 2026-10
+"as an earlier install from the same source" => "jako při dřívější instalaci ze stejného zdroje", // ai 2026-10
 
 // central/installapp.php, row 906, 908, 909, 910
 "of %1 items" => "z %1 článků", // ai 2026-10
@@ -4400,7 +4404,7 @@ return [
 "Transfer only some items" => "Přenést jen některé články", // ai 2026-10
 
 // central/installapp.php, row 925
-"Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above." => "Prázdné převezme všechny články. Podmínka: %1, například %2. Zkontrolovat změny pak v tabulce výše spočítá vyhovující články.", // ai 2026-10
+"Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above." => "Prázdné políčko převezme všechny články. Podmínka: %1, například %2. Tlačítko „Zkontrolovat změny“ pak v tabulce výše spočítá vyhovující články.", // ai 2026-10
 
 // central/installapp.php, row 943
 "all items" => "všechny články", // ai 2026-10
@@ -4412,13 +4416,13 @@ return [
 "Takes every item." => "Převezme všechny články.", // ai 2026-10
 
 // central/installapp.php, row 968
-"It narrows nothing; empty the field if all the items should go." => "Nic nezužuje; pokud mají jít všechny články, políčko vyprázdněte.", // ai 2026-10
+"It narrows nothing; empty the field if all the items should go." => "Nic nezužuje; pokud se mají přenést všechny články, políčko vyprázdněte.", // ai 2026-10
 
 // central/installapp.php, row 991
 "The slice has %1 \"%2\"." => "Webík má %1 „%2“.", // ai 2026-10
 
 // central/installapp.php, row 1003
-"Links will point nowhere." => "Odkazy povedou nikam.", // ai 2026-10
+"Links will point nowhere." => "Odkazy nebudou nikam vést.", // ai 2026-10
 
 // central/installapp.php, row 1005
 "%1 values link to items a condition leaves behind." => "%1 hodnot odkazuje na články, které podmínka vynechá.", // ai 2026-10
@@ -4475,7 +4479,7 @@ return [
 "is before or after a date (any form PHP strtotime reads)" => "je před datem nebo po něm (v libovolném tvaru, který přečte PHP strtotime)", // ai 2026-10
 
 // central/installapp.php, row 1081
-"is before or after a date written dd.mm.yyyy" => "je před datem nebo po něm, zapsaným dd.mm.yyyy", // ai 2026-10
+"is before or after a date written dd.mm.yyyy" => "je před datem nebo po něm (ve tvaru dd.mm.yyyy)", // ai 2026-10
 
 // central/installapp.php, row 1082
 "How to write a condition, with field ids" => "Jak zapsat podmínku, s id políček", // ai 2026-10
@@ -4684,7 +4688,7 @@ return [
 "The source failed (%1 of %2 tries) - the next try at %3" => "Zdroj selhal (%1 z %2 pokusů) – další pokus v %3", // ai 2026-10
 
 // central/installapp.php, row 1409
-"No batch has come for a long time - is the task queue of this AA running? Continue tries at once." => "Dlouho nepřišla žádná dávka – běží fronta úloh tohoto AA? Pokračovat to zkusí hned.", // ai 2026-10
+"No batch has come for a long time - is the task queue of this AA running? Continue tries at once." => "Dlouho nepřišla žádná dávka – běží fronta úloh tohoto AA? Tlačítko „Pokračovat“ to zkusí hned.", // ai 2026-10
 
 // central/installapp.php, row 1410
 "Written %1 of %2 items (%3 %)" => "Zapsáno %1 z %2 článků (%3 %)", // ai 2026-10
@@ -4711,7 +4715,7 @@ return [
 "End the transfer? The items written so far stay." => "Ukončit přenos? Dosud zapsané články zůstanou.", // ai 2026-10
 
 // central/installapp.php, row 1418
-"The session has expired - log in again and reload this page." => "Přihlášení vypršelo – přihlaste se znovu a načtěte tuto stránku znovu.", // ai 2026-10
+"The session has expired - log in again and reload this page." => "Přihlášení vypršelo – přihlaste se znovu a obnovte tuto stránku.", // ai 2026-10
 
 // central/installapp.php, row 1422
 "The app is installed and works - only the finish of its run waits for the task queue of this AA." => "Aplikace je nainstalována a funguje – jen dokončení jejího běhu čeká na frontu úloh tohoto AA.", // ai 2026-10
@@ -4835,7 +4839,7 @@ return [
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 "Task Manager" => "Správce úloh",
 
 // central/synchronize3.php, row 114
@@ -4905,7 +4909,7 @@ return [
 
 // include/constants.php, row 456
 // include/logs.php, row 781, 813
-// src/Optimize/CheckQueuedClassMissing.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Třída",
 
 // include/constants.php, row 460
@@ -5329,66 +5333,81 @@ return [
 // include/feeding.php, row 539
 "Remote node" => "Vzdálený uzel",
 
-// include/field.class.php, row 651
+// include/field.class.php, row 162
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+
+// include/field.class.php, row 167
+"code - its indentation and the last new line are kept on purpose" => "",
+
+// include/field.class.php, row 174
+"stores the text of the selected items" => "",
+
+// include/field.class.php, row 180
+"constants of a group" => "",
+
+// include/field.class.php, row 187
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+
+// include/field.class.php, row 709
 "Move to another field" => "Přesunout do jiného políčka",
 
-// include/field.class.php, row 1005
+// include/field.class.php, row 1084
 // include/itemview.php, row 127
 "number of found items" => "počet nalezených článků",
 
-// include/field.class.php, row 1006
+// include/field.class.php, row 1085
 "index of item within whole listing (begins with 0)" => "pořadí článku v celém výpisu (číslováno od 0)",
 
-// include/field.class.php, row 1007
+// include/field.class.php, row 1086
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "pořadí článku v na stránce (číslováno od 0 pro každou stránku)",
 
-// include/field.class.php, row 1008
+// include/field.class.php, row 1087
 "index of a group on page (it begins from 0 on each page)" => "index skupiny na stránce (na každé stránce začíná od 0)",
 
-// include/field.class.php, row 1009
+// include/field.class.php, row 1088
 "index of item within a group on page (it begins from 0 on each group)" => "index článku ve skupině na stránce (v každé skupině začíná od 0)",
 
-// include/field.class.php, row 1010
+// include/field.class.php, row 1089
 "alias for Item ID" => "alias pro číslo článku",
 
-// include/field.class.php, row 1011
+// include/field.class.php, row 1090
 "alias for Short Item ID" => "alias pro zkrácené číslo článku",
 
-// include/field.class.php, row 1019, 1020
+// include/field.class.php, row 1098, 1099
 "alias used on admin page index.php for itemedit url" => "alias používaný v administrativních stránkách index.php pro URL itemedit.php",
 
-// include/field.class.php, row 1021
+// include/field.class.php, row 1100
 "Alias used on admin page index.php for edit discussion url" => "Alias používaný v administrativních stránkách index.php pro URL discedit.php",
 
-// include/field.class.php, row 1022
+// include/field.class.php, row 1101
 "Title of Slice for RSS" => "Jméno webíku pro RSS",
 
-// include/field.class.php, row 1023
+// include/field.class.php, row 1102
 "Link to the Slice for RSS" => "Odkaz na webík pro RSS",
 
-// include/field.class.php, row 1024
+// include/field.class.php, row 1103
 "Short description (owner and name) of slice for RSS" => "Krátký popisek (vlastník a jméno) webíku pro RSS",
 
-// include/field.class.php, row 1025
+// include/field.class.php, row 1104
 "Date RSS information is generated, in RSS date format" => "Datum v RSS přehledu je generováno v datovém formátu RSS",
 
-// include/field.class.php, row 1026
+// include/field.class.php, row 1105
 "Slice name" => "Název webíku",
 
-// include/field.class.php, row 1028
+// include/field.class.php, row 1107
 "Current MLX language" => "Současný jazyk MLX",
 
-// include/field.class.php, row 1029
+// include/field.class.php, row 1108
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML značka směru textu (např. DIR=RTL)",
 
-// include/field.class.php, row 1112, 1393
+// include/field.class.php, row 1191, 1472
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- libovolné textové políčko --",
 
-// include/field.class.php, row 1221
+// include/field.class.php, row 1300
 " (this)" => " (toto)",
 
-// include/field.class.php, row 1275, 1288, 1301
+// include/field.class.php, row 1354, 1367, 1380
 "Can't copy field" => "Políčko nelze zkopírovat", // ai 2026-10
 
 // include/filedit.php, row 82
@@ -5625,7 +5644,7 @@ return [
 "Offer" => "Nabídnout",
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10850, 10873
+// include/stringexpand.php, row 10866, 10889
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5812,7 +5831,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "Úroveň konstanty (použito v hierarchických)",
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: špatná funkce aliasu %1 pro %2",
 
 // include/item_content.php, row 1126, 1184
@@ -6024,151 +6043,151 @@ return [
 // include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Odstraní mezery ze začátku a konce a také normalizuje UTF (NFC)",
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1105
 "Item IDs" => "ID článků",
 
-// include/itemfunc.php, row 1132
+// include/itemfunc.php, row 1140
 "The tag '%1' could not be stored: %2" => "Štítek '%1' nelze uložit: %2", // ai 2026-10
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "ID uživatele = vždy uloží ID aktuálního uživatele",
 
-// include/itemfunc.php, row 1170
+// include/itemfunc.php, row 1178
 "Inserts the identity of the current user, no matter what the user sets." => "Vloží identitu aktuálního uživatele bez ohledu na to, co uživatel zadá.",
 
-// include/itemfunc.php, row 1222
+// include/itemfunc.php, row 1230
 "Now = always store current time" => "Nyní = vždy uloží aktuální čas",
 
-// include/itemfunc.php, row 1226
+// include/itemfunc.php, row 1234
 "Inserts the current time, no matter what the user sets." => "Vloží aktuální čas bez ohledu na to, co uživatel zadá.",
 
-// include/itemfunc.php, row 1260
+// include/itemfunc.php, row 1268
 "Computed field for INSERT/UPDATE" => "Počítané políčko pro INSERT/UPDATE",
 
-// include/itemfunc.php, row 1264
+// include/itemfunc.php, row 1272
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Hodnota políčka je výsledkem výrazu zapsaného v \"Kódu pro unaliasing\". Je to dobré řešení pro všechny hodnoty, které lze předpočítat, protože jejich výpočet při zobrazení článku by byl pomalý. Ano, můžete zde použít {view...}, {include...}, {switch...}",
 
-// include/itemfunc.php, row 1273
+// include/itemfunc.php, row 1281
 "Code for unaliasing (INSERT)" => "Kód pro unaliasing (INSERT)",
 
-// include/itemfunc.php, row 1273, 1309
+// include/itemfunc.php, row 1281, 1317
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Sem můžete napsat libovolný řetězec. Řetězec bude při ukládání článku unaliasován, takže zde můžete použít libovolnou konstrukci {...} i aliasy políček",
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "Code for unaliasing (UPDATE)" => "Kód pro unaliasing (UPDATE)",
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Stejné jako výše, ale pouze pro operaci UPDATE. Není-li vyplněno, hodnota políčka zůstane nezměněna",
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Multivalue delimiter" => "Oddělovač vícenásobných hodnot",
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Character or string, which will split the computed string into multiple values (the same field)" => "Znak nebo řetězec, kterým se vypočtený řetězec rozdělí na více hodnot (téhož políčka)",
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "Recompute every" => "Interval přepočtu",
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Políčko bude přepočítáváno každou minutu, hodinu, ... (pomocí UPDATE kódu výše). Časy nejsou přesné - minuta znamená přibližně 1-10 minut. Není-li vyplněno, políčko se přepočítá pouze při vložení/aktualizaci článku.",
 
-// include/itemfunc.php, row 1296
+// include/itemfunc.php, row 1304
 "Computed field" => "Počítané políčko",
 
-// include/itemfunc.php, row 1300
+// include/itemfunc.php, row 1308
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Hodnota políčka je výsledkem výrazu zapsaného v \\\"Kódu pro unaliasing\\\". Je to dobré řešení pro všechny hodnoty, které lze předpočítat, protože jejich výpočet při zobrazení článku by byl pomalý. Ano, můžete zde použít {view...}, {include...}, {switch...}",
 
-// include/itemfunc.php, row 1309
+// include/itemfunc.php, row 1317
 "Code for unaliasing (INSERT+UPDATE)" => "Kód pro unaliasing (INSERT+UPDATE)",
 
-// include/itemfunc.php, row 1331
+// include/itemfunc.php, row 1339
 "SEO Name" => "SEO název",
 
-// include/itemfunc.php, row 1335
+// include/itemfunc.php, row 1343
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Není-li políčko vyplněno, vypočte se seoname z aliasu _#HEADLINE (nebo jiného, je-li zadán), unikátní napříč všemi webíky v sitemodulech, kde je webík uveden v nastavení \"Uses slices\". SEO název je v podstatě zkratka pro počítané políčko s {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}",
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "Alias to compute from" => "Alias, ze kterého se počítá",
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "if not specified, the _#HEADLINE is used" => "není-li zadán, použije se _#HEADLINE",
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1372
 "Unique number for this field (from 1,..)" => "Unikátní číslo pro toto políčko (od 1,..)",
 
-// include/itemfunc.php, row 1366
-"Unique number in sequence 1,2,3,..." => "Unikátní číslo v řadě 1,2,3,...",
+// include/itemfunc.php, row 1376
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
 
-// include/itemfunc.php, row 1391
+// include/itemfunc.php, row 1499
 "File = uploaded file" => "Soubor = nahraný soubor",
 
-// include/itemfunc.php, row 1395
+// include/itemfunc.php, row 1503
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Uloží nahraný soubor a odkaz na něj; parametry se uplatní, jen pokud je typ image/something.",
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Mime types accepted" => "Povolené mime typy",
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Only files of matching mime types will be accepted" => "Přijaty budou pouze soubory odpovídajících mime typů",
 
-// include/itemfunc.php, row 1405
+// include/itemfunc.php, row 1513
 "Maximum image width" => "Maximální šířka obrázku",
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "Maximum image height" => "Maximální výška obrázku",
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Obrázek bude převzorkován tak, aby se vešel do těchto limitů, při zachování poměru stran.",
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "Other fields" => "Další políčka",
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Seznam dalších políček, do kterých se obrázek uloží, oddělený ##. Nefunguje dobře pro vícenásobné nahrávání.",
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "Upload policy" => "Chování při nahrávání",
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Tento parametr určuje, co se stane, pokud nahrávaný soubor již existuje:<br>new - AA vytvoří nový název souboru (přidáním přípony _x) a uloží jej pod tímto novým názvem (výchozí)<br>overwrite - starý soubor stejného jména je přepsán<br>backup - starý soubor je zkopírován do nového (neexistujícího) souboru a aktuální soubor je uložen pod původním názvem.<br>Ve všech případech je název souboru escapován, takže všechny ne-slovní znaky budou nahrazeny podtržítkem.",
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "Exact dimensions" => "Přesné rozměry",
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Při nastavení na 1 bude obrázek zmenšen přesně na zadané rozměry (a v případě potřeby oříznut). Výchozí je 0 nebo prázdné: při zmenšování obrázku se zachová poměr stran.",
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Filename template" => "Šablona názvu souboru",
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Přejmenuje soubor podle šablony. Můžete použít AA výrazy i speciální aliasy _#name a _#ext nebo _#full (název souboru, přípona a celé jméno). Aliasy článku v AA výrazech nefungují při INSERT (článek v okamžiku zápisu souboru neexistuje). Při UPDATE fungovat budou.",
 
-// include/itemfunc.php, row 1566
+// include/itemfunc.php, row 1674
 "Password and Change Password" => "Heslo a Změna hesla",
 
-// include/itemfunc.php, row 1570
+// include/itemfunc.php, row 1678
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Uloží hodnotu z políčka typu \"Heslo a Změna hesla\". Nejprve ověří, že se nové heslo shoduje se znovu zadaným novým heslem, a pokud ano, nové heslo zašifruje a uloží.",
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Copy of password" => "Kopie hesla",
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id, kam chcete uložit kopii hesla. Někdy se hodí, pokud chcete lidem umožnit získat jejich staré heslo. Důrazně doporučujeme neukládat je v čitelné podobě, ale zašifrovat. Viz druhý parametr.",
 
-// include/itemfunc.php, row 1580, 1626
+// include/itemfunc.php, row 1688, 1734
 "Encrypt phrase" => "Šifrovací fráze",
 
-// include/itemfunc.php, row 1580
+// include/itemfunc.php, row 1688
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Pokud zadáte políčko \"Kopie hesla\", doporučujeme heslo v databázi zašifrovat. Vyplňte libovolný řetězec. Budete-li pak heslo potřebovat, můžete je z políčka dešifrovat pomocí stejné fráze - {decrypt:{password.......1}:Some Phrase}",
 
-// include/itemfunc.php, row 1613
+// include/itemfunc.php, row 1721
 "2FA Secret" => "Tajný klíč 2FA",
 
-// include/itemfunc.php, row 1617
+// include/itemfunc.php, row 1725
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Vygeneruje a uloží tajný klíč pro dvoufaktorové ověření, případně zašifrovaný heslem",
 
-// include/itemfunc.php, row 1626
+// include/itemfunc.php, row 1734
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Heslo použité pro zašifrování hodnoty tohoto políčka. Může obsahovat AA výrazy nebo aliasy (pro článek uživatele ve webíku Správa čtenářů)",
 
 // include/itemview.php, row 120
@@ -6219,7 +6238,7 @@ return [
 "Duration [s]" => "Doba trvání [s]", // ai 2026-06
 
 // include/logs.php, row 586
-"Allowed [s]" => "Povoleno [s]", // ai 2026-06
+"Allowed [s]" => "Časový limit [s]", // ai 2026-10
 
 // include/logs.php, row 606
 "Cached" => "Z cache",
@@ -6301,13 +6320,13 @@ return [
 "Server response" => "Odpověď serveru", // ai 2026-10
 
 // include/logs.php, row 902
-"Items selected" => "Vybrané položky", // ai 2026-06
+"Items selected" => "Vybrané články", // ai 2026-10
 
 // include/logs.php, row 903
-"Items updated" => "Aktualizované položky", // ai 2026-06
+"Items updated" => "Aktualizované články", // ai 2026-10
 
 // include/logs.php, row 904
-"Items planned" => "Plánované položky", // ai 2026-06
+"Items planned" => "Naplánované články", // ai 2026-10
 
 // include/logs.php, row 915
 // src/Import/DetailPage.php, row 1025
@@ -6360,7 +6379,7 @@ return [
 "Context" => "Kontext", // ai 2026-06
 
 // include/logs.php, row 1093
-"Feed counterpart" => "Protějšek odběru", // ai 2026-06
+"Feed counterpart" => "Protějšek ve výměně zpráv", // ai 2026-10
 
 // include/logs.php, row 1108
 "Field ID" => "ID Políčka",
@@ -6594,75 +6613,75 @@ return [
 // include/menu_util.php, row 131
 "Import conf from CSV..." => "Import konfigurace z CSV...",
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 426
 "Part of %s" => "Součást %s",
 
-// include/menu_util.php, row 432
+// include/menu_util.php, row 443
 "Other slices" => "Ostatní webíky",
 
-// include/menu_util.php, row 436
+// include/menu_util.php, row 447
 "Reader Management Slice" => "Webík Správa Čtenářů",
 
-// include/menu_util.php, row 438
+// include/menu_util.php, row 449
 "Jump inside control panel" => "Skok uvnitř administrace",
 
-// include/menu_util.php, row 439
+// include/menu_util.php, row 450
 // include/slice.class.php, row 1429
 // src/Central/FindingText.php, row 311
 "Links" => "Správa odkazů",
 
-// include/menu_util.php, row 440
+// include/menu_util.php, row 451
 "MySQL Auth (old version)" => "MySQL autentizace (stará verze)",
 
-// include/menu_util.php, row 441
+// include/menu_util.php, row 452
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Ankety",
 
-// include/menu_util.php, row 462
+// include/menu_util.php, row 473
 "New slice" => "Nový webík",
 
-// include/menu_util.php, row 466
+// include/menu_util.php, row 477
 "Switch module" => "Přepnout modul",
 
-// include/menu_util.php, row 600, 611
+// include/menu_util.php, row 611, 622
 "Apply" => "Použít", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 615
 "-- Default for module --" => "-- Výchozí pro modul --", // ai 2026-06
 
-// include/menu_util.php, row 612
+// include/menu_util.php, row 623
 "Switches the admin interface language; the page reloads." => "Přepne jazyk administračního rozhraní; stránka se znovu načte.", // ai 2026-06
 
-// include/menu_util.php, row 617
+// include/menu_util.php, row 628
 "What's working, what isn't — tell the AA team." => "Co funguje a co ne — dejte vědět týmu AA.", // ai 2026-06
 
-// include/menu_util.php, row 620
+// include/menu_util.php, row 631
 // src/Import/Definition.php, row 86
 "Settings" => "Nastavení",
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 634
 "Theme" => "Vzhled", // ai 2026-06
 
-// include/menu_util.php, row 625
+// include/menu_util.php, row 636
 "Feedback" => "Zpětná vazba", // ai 2026-06
 
-// include/menu_util.php, row 751
+// include/menu_util.php, row 762
 // include/slice.class.php, row 679
 "Reader management" => "Správa čtenářů",
 
-// include/menu_util.php, row 763
+// include/menu_util.php, row 774
 "logout" => "odhlásit",
 
-// include/menu_util.php, row 771
+// include/menu_util.php, row 782
 "Search.." => "Hledat..",
 
-// include/menu_util.php, row 850
+// include/menu_util.php, row 861
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>",
 
-// include/menu_util.php, row 860
+// include/menu_util.php, row 871
 "Collapse / expand menu" => "Sbalit / rozbalit menu",
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1663
 "More" => "Více",
 
 // include/mlx.php, row 387
@@ -6747,7 +6766,7 @@ return [
 "More users found. Refine your search." => "Nalezeno více uživatelů. Upřesněte hledání.",
 
 // include/searchbar.class.php, row 54
-// src/AA_Plannedtask.php, row 62, 127
+// src/AA_Plannedtask.php, row 72, 182
 "Condition" => "Podmínka",
 
 // include/searchbar.class.php, row 55
@@ -7145,84 +7164,84 @@ return [
 // include/stringexpand.php, row 6161
 "No module for dictionary slice" => "Chybí modul pro slovníkový webík",
 
-// include/stringexpand.php, row 7789
+// include/stringexpand.php, row 7799
 "version" => "verze",
 
-// include/stringexpand.php, row 7973
+// include/stringexpand.php, row 7983
 "show" => "zobrazit",
 
-// include/stringexpand.php, row 7974
+// include/stringexpand.php, row 7984
 "hide" => "skrýt",
 
-// include/stringexpand.php, row 7975
+// include/stringexpand.php, row 7985
 "loading" => "načítám",
 
-// include/stringexpand.php, row 9100
+// include/stringexpand.php, row 9116
 "E-mail confirmed." => "E-mail potvrzen.",
 
-// include/stringexpand.php, row 9104
+// include/stringexpand.php, row 9120
 "E-mail unsubscribed" => "E-mail odhlášen",
 
-// include/stringexpand.php, row 9853
+// include/stringexpand.php, row 9869
 "Forgot your password? Fill in your email." => "Zapomněli jste heslo? Vyplňte svůj e-mail.",
 
-// include/stringexpand.php, row 9855
+// include/stringexpand.php, row 9871
 // src/Central/FindingText.php, row 457
 "e-mail" => "",
 
-// include/stringexpand.php, row 9873, 9877
+// include/stringexpand.php, row 9889, 9893
 "Unable to find user - please check if it has been misspelled." => "Uživatele se nepodařilo najít - zkontrolujte prosím překlepy.",
 
-// include/stringexpand.php, row 9891
+// include/stringexpand.php, row 9907
 "Password link" => "Odkaz pro heslo",
 
-// include/stringexpand.php, row 9892
+// include/stringexpand.php, row 9908
 "Password change url parameter" => "URL parametr pro změnu hesla",
 
-// include/stringexpand.php, row 9904
+// include/stringexpand.php, row 9920
 "Password change" => "Změna hesla",
 
-// include/stringexpand.php, row 9905
+// include/stringexpand.php, row 9921
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pro změnu hesla navštivte prosím následující adresu:<br>%1<br>Změna bude možná po dobu dvou hodin - poté platnost klíče vyprší a budete muset požádat o nový.",
 
-// include/stringexpand.php, row 9914
+// include/stringexpand.php, row 9930
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s klíčem pro změnu hesla byl právě odeslán na e-mailovou adresu: %1",
 
-// include/stringexpand.php, row 9925, 9954
+// include/stringexpand.php, row 9941, 9970
 "Bad or expired key." => "Chybný nebo expirovaný klíč.",
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 9946
 "Fill in the new password" => "Vyplňte nové heslo",
 
-// include/stringexpand.php, row 9932
+// include/stringexpand.php, row 9948
 "New password" => "Nové heslo",
 
-// include/stringexpand.php, row 9933
+// include/stringexpand.php, row 9949
 "Retype New Password" => "Zopakujte Nové Heslo",
 
-// include/stringexpand.php, row 9957
+// include/stringexpand.php, row 9973
 "Passwords do not match - please try again." => "Hesla se neshodují - zkuste to prosím znovu.",
 
-// include/stringexpand.php, row 9960
+// include/stringexpand.php, row 9976
 "The password must be at least 6 characters long." => "Heslo musí mít alespoň 6 znaků.",
 
-// include/stringexpand.php, row 9966
+// include/stringexpand.php, row 9982
 "Password changed." => "Heslo změněno.",
 
-// include/stringexpand.php, row 9968
+// include/stringexpand.php, row 9984
 "An error occurred during password change - please contact: %1." => "Při změně hesla došlo k chybě - kontaktujte prosím: %1.",
 
-// include/stringexpand.php, row 10847, 10870
+// include/stringexpand.php, row 10863, 10886
 "Are you sure you want to permanently DELETE this record?" => "Chcete opravdu trvale SMAZAT tento záznam?",
 
-// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// include/stringexpand.php, row 10869, 10872, 10892, 10895
 // src/Widget/RimWidget.php, row 270
 "edit" => "upravit",
 
-// include/stringexpand.php, row 10859, 10882
+// include/stringexpand.php, row 10875, 10898
 "back" => "zpět",
 
-// include/stringexpand.php, row 10862, 10885
+// include/stringexpand.php, row 10878, 10901
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "přetáhněte soubory sem nebo klikněte pro nahrání",
 
@@ -7314,7 +7333,7 @@ return [
 "Search the content of text and replaces it with another text using regular expressions. The aliases are unaliased in resulting string.<br>Example:<br> - Search: ^.*x=([0-9]*)\$<br> - Replace: {item:\$1:_#SEO_URL_}<br> - Unalias: Yes<br>Result: replaces all old-form links in the URL field from the new ones <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)" => "Vyhledá text v obsahu a nahradí ho jiným textem pomocí regulárních výrazů. Ve výsledném řetězci se vyhodnotí aliasy (unalias).<br>Příklad:<br> - Najít: ^.*x=([0-9]*)\$<br> - Nahradit: {item:\$1:_#SEO_URL_}<br> - Unalias: Ano<br>Výsledek: nahradí všechny odkazy ve starém tvaru v políčku URL novými <br>(https://biom.cz/item.shtml?x=2344 --&gt; https://biom.cz/cz/about-biom)",
 
 // include/transformation.class.php, row 912
-"Unalias" => "Zrušit alias", // ai 2026-06
+"Unalias" => "Unalias",
 
 // include/transformation.class.php, row 912
 "perform unaliasing on result strings" => "provést vyhodnocení aliasů (unalias) na výsledných řetězcích",
@@ -7471,7 +7490,7 @@ return [
 "type" => "typ", // ai 2026-06
 
 // include/widget.class.php, row 182
-"multi" => "více", // ai 2026-06
+"multi" => "vícehodnotové", // ai 2026-10
 
 // include/widget.class.php, row 183
 "persistent" => "",
@@ -7642,68 +7661,83 @@ return [
 // src/Manager.php, row 881
 "No item found" => "Žádná zpráva",
 
-// src/AA_Plannedtask.php, row 61, 127
+// src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "Úloha",
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Pokud je zadáno, úloha se provede, jen pokud se Podmínka vyhodnotí na hodnotu různou od nuly nebo prázdné hodnoty",
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 73
 "Event to run" => "Spouštěcí událost",
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "New Item" => "Nový článek",
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "Item Updated" => "Článek změněn",
 
-// src/AA_Plannedtask.php, row 66
+// src/AA_Plannedtask.php, row 76
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "Událost, při které se má úloha spustit. Je nezávislá na nastavení Času níže (úlohu tedy můžete spouštět při události i v určený čas). Pokud nezadáte parametr \"+ sekundy\" nebo ho nastavíte na 0, úloha se provede ihned. Pokud je posun \"+ sekundy\" nastaven, úloha se naplánuje k jednorázovému spuštění za x sekund.",
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Time to run" => "Čas spuštění",
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "Zadejte čas, kdy se má úloha spustit. Bude se pak v tento čas provádět periodicky. Čas zadejte v \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">relativním formátu</a>\", tedy například:<br>\"midnight\" - spustí se každou půlnoc <br>\"+1 hour\" - spustí se každou hodinu, <br>\"+30 min\" - spustí se každých 30 minut, <br>\"16:00\" - spustí se každý den v 16:00<br>\"Monday 10:00\" - spustí se každé pondělí v 16:00<br>\"first day of this month 10:00\"<br>Časy nejsou přesné - úlohy zpracovává jedna po druhé skript, který běží zhruba každých 5 minut.",
 
-// src/AA_Plannedtask.php, row 68, 127
+// src/AA_Plannedtask.php, row 78, 182
 "+ seconds" => "+ sekundy",
 
-// src/AA_Plannedtask.php, row 68
+// src/AA_Plannedtask.php, row 78
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "Volitelně zadejte dodatečný časový posun přičtený k předchozímu času (v sekundách).<br>Předchozím řádkem lze těžko zadat \"15. den v měsíci\", můžete proto obojí zkombinovat:<br> - \"čas\" = \"first day of this month 10:00\"<br> - \"+ sekundy\" = \"1209600\"<br> (60 sekund * 60 minut * 24 hodin * 14 dní) - všimněte si 14 (1. + 14 = 15.)",
 
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Volitelně zadejte kontext - dlouhé ID článku, pro který se úloha provede. V úloze pak můžete použít {id..............} a další aliasy článku. ID článku je k dispozici i v proměnné {var:aa_event_for}. U \"událostních\" úloh (Článek změněn/nový) je vždy naplněno ID změněného článku.",
 
-// src/AA_Plannedtask.php, row 70
+// src/AA_Plannedtask.php, row 80
 "Saved by" => "Uložil/a", // ai 2026-10
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 83
+"Result of the last run" => "",
+
+// src/AA_Plannedtask.php, row 157
 "Planned tasks" => "Naplánované úlohy",
 
-// src/AA_Plannedtask.php, row 122
+// src/AA_Plannedtask.php, row 177
 "Current time on server" => "Aktuální čas na serveru",
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Event" => "Událost",
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Computed time" => "Vypočtený čas",
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Scheduled to" => "Naplánováno na",
 
-// src/AA_Plannedtask.php, row 315
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "Úloha nebyla uložena – úloha spouštěná událostí nesmí volat {import}: články, které importuje, by úlohu spustily znovu.", // ai 2026-10
+// src/AA_Plannedtask.php, row 266
+"done" => "",
 
-// src/AA_Plannedtask.php, row 318
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "Úloha nebyla uložena – úlohu s {import} smí uložit jen uživatel, který spravuje výměnu zpráv webíku.", // ai 2026-10
+// src/AA_Plannedtask.php, row 267
+"done, no output" => "",
 
-// src/AA_Plannedtask.php, row 382
-"not scheduled, yet" => "zatím nenaplánováno",
+// src/AA_Plannedtask.php, row 268
+"condition not met" => "",
+
+// src/AA_Plannedtask.php, row 269
+"failed" => "",
 
 // src/AA_Plannedtask.php, row 386
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "Úloha nebyla uložena – úloha spouštěná událostí nesmí volat {import}: články, které importuje, by úlohu spustily znovu.", // ai 2026-10
+
+// src/AA_Plannedtask.php, row 389
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "Úloha nebyla uložena – úlohu s {import} smí uložit jen uživatel, který spravuje výměnu zpráv webíku.", // ai 2026-10
+
+// src/AA_Plannedtask.php, row 453
+"not scheduled, yet" => "zatím nenaplánováno",
+
+// src/AA_Plannedtask.php, row 457
 "next run" => "příští spuštění",
 
 // src/Api/Controller/FilesController.php, row 51, 72
@@ -7764,7 +7798,7 @@ return [
 "Can't get org_name - " => "Nelze získat org_name -",
 
 // src/Central/Actionapps.php, row 337
-"the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualizace na vzdáleném AA možná ještě běží – počkejte a před dalším pokusem spusťte Otestovat", // ai 2026-10
+"the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualizace na vzdáleném AA možná ještě běží – počkejte a před dalším pokusem spusťte test", // ai 2026-10
 
 // src/Central/Actionapps.php, row 348
 "Unexpected response from remote AA" => "Neočekávaná odpověď vzdáleného AA", // ai 2026-10
@@ -7941,7 +7975,7 @@ return [
 "Some tables of this AA are not InnoDB. An install that failed in the middle could not be taken back and would leave half an app." => "Některé tabulky tohoto AA nejsou InnoDB. Instalaci, která selže uprostřed, by nešlo vrátit a zůstala by polovina aplikace.", // ai 2026-10
 
 // src/Central/FindingText.php, row 89
-"Run the optimization named in the value (AA > Optimize) and preview the app again." => "Spusťte optimalizaci uvedenou v hodnotě (AA > Optimalizace) a zobrazte náhled aplikace znovu.", // ai 2026-10
+"Run the optimization named in the value (AA > Optimize) and preview the app again." => "Spusťte optimalizaci uvedenou v hodnotě (AA > Optimalizovat) a zobrazte náhled aplikace znovu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 90
 "Tables" => "Tabulky", // ai 2026-10
@@ -7977,7 +8011,7 @@ return [
 "Insert function" => "Funkce vložení", // ai 2026-10
 
 // src/Central/FindingText.php, row 103
-"The new owner is not complete" => "Nový vlastník není úplný", // ai 2026-10
+"The new owner is not complete" => "Údaje nového vlastníka nejsou úplné", // ai 2026-10
 
 // src/Central/FindingText.php, row 104
 "A new owner needs a name and a valid e-mail, each at most 80 bytes (a letter with an accent may take two) and in characters the new modules can store." => "Nový vlastník potřebuje jméno a platný e-mail, každé nejvýše 80 bajtů (písmeno s diakritikou může zabrat dva) a ve znacích, které nové moduly dokážou uložit.", // ai 2026-10
@@ -8103,7 +8137,7 @@ return [
 "Remove the file from the site settings in the AA the app comes from and export again." => "Odstraňte soubor z nastavení webu v AA, ze kterého aplikace pochází, a exportujte znovu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 143
-"Nothing to do, unless the site needs such a file here - then set it in Module Settings of the site." => "Není třeba nic dělat, pokud web takový soubor zde nepotřebuje – pak ho nastavte v Nastavení modulu webu.", // ai 2026-10
+"Nothing to do, unless the site needs such a file here - then set it in Module Settings of the site." => "Není třeba nic dělat. Pokud ale web takový soubor zde potřebuje, nastavte ho v Nastavení modulu webu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 144
 "Values of a slice outside the published app" => "Hodnoty webíku mimo zveřejněnou aplikaci", // ai 2026-10
@@ -8376,7 +8410,7 @@ return [
 "A field of the chosen slice stores its values otherwise (text or number, a password) - the items would be broken." => "Políčko vybraného webíku ukládá hodnoty jinak (text nebo číslo, heslo) – články by byly poškozené.", // ai 2026-10
 
 // src/Central/FindingText.php, row 260
-"The slice chosen in \"Into\" does not exist, you may not edit it, or it is chosen twice - the value says which." => "Webík vybraný v „Kam“ neexistuje, nesmíte ho upravovat, nebo je vybrán dvakrát – hodnota uvádí, který.", // ai 2026-10
+"The slice chosen in \"Into\" does not exist, you may not edit it, or it is chosen twice - the value says which." => "Webík vybraný v „Kam“ neexistuje, nesmíte ho upravovat, nebo je vybrán dvakrát – hodnota uvádí, co z toho platí.", // ai 2026-10
 
 // src/Central/FindingText.php, row 262
 "Choose another slice, or \"a new slice\", in the table above and preview again." => "Vyberte v tabulce výše jiný webík, nebo „nový webík“, a zobrazte náhled znovu.", // ai 2026-10
@@ -8490,7 +8524,7 @@ return [
 // src/Central/FindingText.php, row 303
 // src/Optimize/CheckImports.php, row 176, 178
 // src/Optimize/ImgMeasuring.php, row 55
-"Why" => "Proč", // ai 2026-10
+"Why" => "Důvod", // ai 2026-10
 
 // src/Central/FindingText.php, row 304
 "A condition that takes every item" => "Podmínka, která převezme všechny články", // ai 2026-10
@@ -8508,7 +8542,7 @@ return [
 "Links to items a condition leaves behind" => "Odkazy na články, které podmínka vynechá", // ai 2026-10
 
 // src/Central/FindingText.php, row 309
-"Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere." => "Přenášené články odkazují na články jiného webíku a podmínka toho webíku některé z nich vynechá. Po přenosu budou tyto odkazy vést na články, které toto AA nemá. Počet je minimální; kontrola po přenosu spočítá každý odkaz, který vede nikam.", // ai 2026-10
+"Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere." => "Přenášené články odkazují na články jiného webíku a podmínka toho webíku některé z nich vynechá. Po přenosu budou tyto odkazy vést na články, které toto AA nemá. Skutečný počet může být vyšší; kontrola po přenosu spočítá každý odkaz, který vede nikam.", // ai 2026-10
 
 // src/Central/FindingText.php, row 310
 "Widen or empty the condition of the slice that leaves items behind; or give the slice with the links a condition that follows the link (printed under its field when there is one); or accept the links and clean them up after the transfer." => "Rozšiřte nebo vyprázdněte podmínku webíku, který články vynechává; nebo dejte webíku s odkazy podmínku, která odkaz sleduje (je-li k dispozici, je vypsána pod jeho políčkem); nebo odkazy přijměte a po přenosu je vyčistěte.", // ai 2026-10
@@ -8541,7 +8575,7 @@ return [
 "The site answers to this domain in its AA, but here it belongs to another site or to this AA itself." => "Web na tuto doménu odpovídá ve svém AA, ale zde patří jinému webu nebo samotnému tomuto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 322
-"Nothing to do, unless the domain should move here - then set it in the site settings." => "Není třeba nic dělat, pokud se doména nemá přesunout sem – pak ji nastavte v nastavení webu.", // ai 2026-10
+"Nothing to do, unless the domain should move here - then set it in the site settings." => "Není třeba nic dělat. Pokud se ale doména má přesunout sem, nastavte ji v nastavení webu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 332
 "Reads a file or a web address" => "Čte soubor nebo webovou adresu", // ai 2026-10
@@ -8622,7 +8656,7 @@ return [
 "The text expands a text as a template again. When that text comes from visitors (an item of a public form, a URL parameter), they can put AA commands into it and run them with the rights of this AA." => "Text znovu rozvine text jako šablonu. Pokud ten text pochází od návštěvníků (článek z veřejného formuláře, parametr URL), mohou do něj vložit příkazy AA a spustit je s právy tohoto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 358
-"Fine over the texts of the app itself; do not install it when it expands item content filled by anonymous posting or parameters of the URL." => "V pořádku nad texty samotné aplikace; neinstalujte ji, pokud rozvíjí obsah článků vyplněný anonymním vkládáním nebo parametry URL.", // ai 2026-10
+"Fine over the texts of the app itself; do not install it when it expands item content filled by anonymous posting or parameters of the URL." => "U textů samotné aplikace je to v pořádku; neinstalujte ji, pokud rozvíjí obsah článků vyplněný anonymním vkládáním nebo parametry URL.", // ai 2026-10
 
 // src/Central/FindingText.php, row 359
 "Calls a PHP function" => "Volá PHP funkci", // ai 2026-10
@@ -8664,7 +8698,7 @@ return [
 "The domain moves with the site" => "Doména se přesune s webem", // ai 2026-10
 
 // src/Central/FindingText.php, row 372
-"The site answers to this domain in its AA; the transfer gives the domain to the new site here." => "Web na tuto doménu odpovídá ve svém AA; přenos doménu přidělí novému webu zde.", // ai 2026-10
+"The site answers to this domain in its AA; the transfer gives the domain to the new site here." => "Web ve svém AA běží na této doméně; přenos doménu přidělí novému webu zde.", // ai 2026-10
 
 // src/Central/FindingText.php, row 373
 "Confirm it when the site moves here. When the site in the other AA stays in use, remove the domain from the settings of the new site after the transfer." => "Potvrďte to, pokud se web stěhuje sem. Pokud web v druhém AA zůstane v provozu, odstraňte po přenosu doménu z nastavení nového webu.", // ai 2026-10
@@ -8832,7 +8866,7 @@ return [
 "A slice the transfer writes into was deleted meanwhile" => "Webík, do kterého přenos zapisuje, byl mezitím smazán", // ai 2026-10
 
 // src/Central/TransferText.php, row 147
-"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize" => "Tabulka tohoto AA nepodporuje transakce (není InnoDB) – převeďte ji v AA > Optimalizace", // ai 2026-10
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize" => "Tabulka tohoto AA nepodporuje transakce (není InnoDB) – převeďte ji v AA > Optimalizovat", // ai 2026-10
 
 // src/Central/TransferText.php, row 166
 "item %1" => "článek %1", // ai 2026-10
@@ -9050,7 +9084,7 @@ return [
 
 // src/Import/Definition.php, row 93
 // src/Import/DetailPage.php, row 604
-"Enabled" => "Zapnuto", // ai 2026-10
+"Enabled" => "Povoleno", // ai 2026-10
 
 // src/Import/Definition.php, row 113
 "The source is changed in the import detail." => "Zdroj se mění v detailu importu.", // ai 2026-10
@@ -9129,22 +9163,22 @@ return [
 "The import source refused these settings." => "Zdroj importu tato nastavení odmítl.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 31
-"No catalog yet. Check source lists what the source offers." => "Zatím žádný katalog. Zkontrolovat zdroj vypíše, co zdroj nabízí.", // ai 2026-10
+"No catalog yet. Check source lists what the source offers." => "Zatím žádný katalog. Co zdroj nabízí, vypíše tlačítko „Zkontrolovat zdroj“.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 37
 "The stored catalog cannot be read. The next check of the source lists it again." => "Uložený katalog nelze přečíst. Příští kontrola zdroje ho vypíše znovu.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 41
-"The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Katalog je neúplný: poslední kontrola ho nevypsala celý (zatím %1 položek). Dokud ho kontrola nevypíše celý, nic se u zdroje nehlásí jako chybějící.", // ai 2026-10
+"The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Katalog je neúplný: poslední kontrola ho nevypsala celý (zatím položek: %1). Dokud ho kontrola nevypíše celý, nic se u zdroje nehlásí jako chybějící.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 42
-"Listed by the check of %1: %2 entries." => "Vypsáno kontrolou z %1: %2 položek.", // ai 2026-10
+"Listed by the check of %1: %2 entries." => "Kontrola z %1 vypsala položek: %2.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 47
 "Pages of the catalog" => "Stránky katalogu", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 74
-"The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Proud se přidá nebo aktualizuje z katalogu. Proudy importu ho ukážou po příští kontrole zdroje.", // ai 2026-10
+"The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Proud byl z katalogu přidán nebo aktualizován. V části Proudy se objeví po příští kontrole zdroje.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 75
 "The catalog has no such entry. Check the source to list its catalog again." => "Katalog takovou položku nemá. Zkontrolujte zdroj, aby se katalog vypsal znovu.", // ai 2026-10
@@ -9197,11 +9231,11 @@ return [
 // src/Import/DetailPage.php, row 329, 666
 "Updated" => "Aktualizováno", // ai 2026-10
 
-// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailCatalog.php, row 171
 "Catalog of the source" => "Katalog zdroje", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 136
-"The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Mapování se znovu nastaví ze zdroje. Co import o proudech věděl – verze, časy importu a poslední kontrola zdroje – se zahodí, takže příští běh je načte všechny znovu.", // ai 2026-10
+"The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Mapování bylo znovu nastaveno ze zdroje. Zahodilo se, co import o proudech věděl (verze, časy importu a poslední kontrola zdroje), takže příští běh je načte všechny znovu.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 137
 "The mapping is the same as the source gives - nothing changed." => "Mapování je stejné, jaké dává zdroj – nic se nezměnilo.", // ai 2026-10
@@ -9210,7 +9244,7 @@ return [
 "The mapping was not reset:" => "Mapování nebylo obnoveno:", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 140
-"The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Nastavení jsou uložena a mapování se znovu nastaví ze zdroje. Pokud byl běh otevřený, ukončí se a co import o proudech věděl, se zahodí.", // ai 2026-10
+"The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Nastavení byla uložena a mapování bylo znovu nastaveno ze zdroje. Pokud byl otevřený běh, byl ukončen a zahodilo se, co import o proudech věděl.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 141
 "The settings are the same as stored - nothing changed." => "Nastavení jsou stejná jako uložená – nic se nezměnilo.", // ai 2026-10
@@ -9310,7 +9344,7 @@ return [
 "Reset mapping from the source" => "Obnovit mapování ze zdroje", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 358
-"Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Znovu nastaví mapování, klíčová políčka, způsob uložení, validaci, výraz po skončení proudu a filtr tak, jak je zdroj dává pro uložená nastavení. Nové mapování zahodí, co import o proudech věděl, takže příští běh je načte všechny znovu. Nelze, dokud je běh otevřený, zastavený chybou nebo se ještě dokončuje.", // ai 2026-10
+"Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Znovu nastaví mapování, klíčová políčka, způsob uložení, validaci, výraz po skončení proudu a filtr tak, jak je zdroj dává pro uložená nastavení. Nové mapování zahodí, co import o proudech věděl, takže příští běh je načte všechny znovu. Nelze to provést, dokud je běh otevřený, zastavený chybou nebo se ještě dokončuje.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 366
 "The mapping has no rows." => "Mapování nemá žádné řádky.", // ai 2026-10
@@ -9322,7 +9356,7 @@ return [
 "Transformation" => "Transformace", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 379
-"the field the job parameter names" => "políčko, které určuje parametr úlohy", // ai 2026-10
+"the field the job parameter names" => "políčko určené parametrem úlohy", // ai 2026-10
 
 // src/Import/DetailPage.php, row 269
 "This page is out of date – reload it." => "Tato stránka je zastaralá – načtěte ji znovu.", // ai 2026-10
@@ -9331,7 +9365,7 @@ return [
 "Last import" => "Poslední import", // ai 2026-10
 
 // src/Import/DetailPage.php, row 283
-"Next start" => "Příští start", // ai 2026-10
+"Next start" => "Příští spuštění", // ai 2026-10
 
 // src/Import/DetailPage.php, row 284
 "Last check of the source" => "Poslední kontrola zdroje", // ai 2026-10
@@ -9397,7 +9431,7 @@ return [
 "The stored state of the streams cannot be read." => "Uložený stav proudů nelze přečíst.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 367
-"No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Zatím nebyl importován ani zkontrolován žádný proud. Tento seznam naplní %1 nebo %2 (Akce výše).", // ai 2026-10
+"No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Zatím nebyl importován ani zkontrolován žádný proud. Seznam naplní tlačítko %1 nebo %2 v části Akce výše.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 368, 396
 "Streams" => "Proudy", // ai 2026-10
@@ -9409,13 +9443,13 @@ return [
 "Last recorded" => "Poslední zápis", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Source checked" => "Zdroj ověřen", // ai 2026-10
+"Source checked" => "Kontrola zdroje", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
 "Data version" => "Verze dat", // ai 2026-10
 
 // src/Import/DetailPage.php, row 390
-"by the run started %1" => "během zahájeným %1", // ai 2026-10
+"by the run started %1" => "v běhu zahájeném %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 395
 "Pages of the streams" => "Stránky proudů", // ai 2026-10
@@ -9548,7 +9582,7 @@ return [
 "Outcomes of the latest runs, newest first" => "Výsledky posledních běhů, nejnovější první", // ai 2026-10
 
 // src/Import/DetailPage.php, row 654
-"Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Nejnovější první. Čárkovaný kruh je běh, který nic neuložil: ověření, zkušební běh nebo zaznamenání stavu. Plný čtverec %1 je běh ukončený před dokončením.", // ai 2026-10
+"Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Nejnovější první. Čárkovaný kruh je běh, který nic neuložil: kontrola zdroje, zkušební běh nebo zaznamenání stavu. Plný čtverec %1 je běh ukončený před dokončením.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 679
 "The open run" => "Otevřený běh", // ai 2026-10
@@ -9566,10 +9600,10 @@ return [
 "Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Nic dalšího se neimportuje, dokud nezasáhnete nebo dokud import znovu nespustí naplánovaná úloha (tím se tento běh ukončí).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 690
-"Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "Pokračovat naváže tam, kde běh skončil, jakmile odstraníte příčinu; Ukončit ho definitivně zastaví a ponechá, co bylo naimportováno.", // ai 2026-10
+"Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "„Pokračovat“ naváže tam, kde se běh zastavil, jakmile odstraníte příčinu; „Ukončit“ ho definitivně zastaví a ponechá, co bylo naimportováno.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 691
-"No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Už dlouho na něm nepracoval žádný krok - ověřte, že cron spouští frontu úloh a že její kola jsou na krok dost dlouhá (TOEXECUTE_ALLOWED_TIME v config.php). Pokračovat to teď zkusí znovu; Ukončit ho definitivně zastaví a ponechá, co bylo naimportováno. Plánované spuštění importu ho ukončí a zahájí nový běh.", // ai 2026-10
+"No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Už dlouho na něm nepracoval žádný krok - ověřte, že cron spouští frontu úloh a že její kola jsou na krok dost dlouhá (TOEXECUTE_ALLOWED_TIME v config.php). „Pokračovat“ to teď zkusí znovu; „Ukončit“ ho definitivně zastaví a ponechá, co bylo naimportováno. Plánované spuštění importu ho ukončí a zahájí nový běh.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 692
 "A step is working now." => "Právě pracuje krok.", // ai 2026-10
@@ -9587,7 +9621,7 @@ return [
 "Its last step may still be working." => "Jeho poslední krok možná ještě běží.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 699
-"Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Jeho poslední krok se zastavil nedokončený. Fronta úloh ho zkusí znovu do %1 minut; Zkusit hned to udělá okamžitě.", // ai 2026-10
+"Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Jeho poslední krok se zastavil před dokončením. Fronta úloh ho zkusí znovu do %1 minut; „Zkusit hned“ to udělá okamžitě.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 708
 "Its next step waits in the task queue until %1." => "Jeho další krok čeká ve frontě úloh do %1.", // ai 2026-10
@@ -9617,16 +9651,16 @@ return [
 "Planned tasks: %1" => "Naplánované úlohy: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 761
-"Planned tasks: %1, next %2" => "Naplánované úlohy: %1, další %2", // ai 2026-10
+"Planned tasks: %1, next %2" => "Naplánované úlohy: %1, příště %2", // ai 2026-10
 
 // src/Import/DetailPage.php, row 763, 778
-"Schedule" => "Plán", // ai 2026-10
+"Schedule" => "Naplánovat", // ai 2026-10
 
 // src/Import/DetailPage.php, row 766
 "(import off)" => "(import vypnut)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 773
-"next %1" => "další %1", // ai 2026-10
+"next %1" => "příště %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 773
 "no time set" => "bez nastaveného času", // ai 2026-10
@@ -9656,13 +9690,13 @@ return [
 "Failed" => "Selhalo", // ai 2026-10
 
 // src/Import/DetailPage.php, row 828
-"Taken from the run list: the stream state holds no newer check result." => "Převzato ze seznamu běhů: stav proudů neobsahuje novější výsledek ověření.", // ai 2026-10
+"Taken from the run list: the stream state holds no newer check result." => "Převzato ze seznamu běhů: stav proudů neobsahuje novější výsledek kontroly.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 831
 "The stored result cannot be read." => "Uložený výsledek nelze přečíst.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 831
-"Never checked" => "Nikdy neověřeno", // ai 2026-10
+"Never checked" => "Nikdy nezkontrolováno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 849
 "The mapping of the import cannot be read; no run starts until it is set again." => "Mapování importu nelze přečíst; dokud ho znovu nenastavíte, žádný běh se nespustí.", // ai 2026-10
@@ -9689,7 +9723,7 @@ return [
 "Record the current state of the source" => "Zaznamenat aktuální stav zdroje", // ai 2026-10
 
 // src/Import/DetailPage.php, row 921
-"Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Uloží verzi, kterou má každý proud teď, aniž by cokoli importoval, takže Spustit jen změněné pak vezme jen to, co se změní později. Použijte to, jen když data zdroje už ve webíku jsou.", // ai 2026-10
+"Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Uloží verzi, kterou má každý proud teď, aniž by cokoli importoval, takže „Spustit jen změněné“ pak vezme jen to, co se změní později. Použijte to, jen když data zdroje už ve webíku jsou.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 937
 "No run is open." => "Žádný běh není otevřený.", // ai 2026-10
@@ -9743,7 +9777,7 @@ return [
 "The dry run found no item to store." => "Zkušební běh nenašel žádný článek k uložení.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1101
-"What the dry run would store - the first %1 items" => "Co by zkušební běh uložil - prvních %1 článků", // ai 2026-10
+"What the dry run would store - the first %1 items" => "Co by zkušební běh uložil - první články (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1123
 "Last try failed:" => "Poslední pokus selhal:", // ai 2026-10
@@ -9752,7 +9786,7 @@ return [
 "Error:" => "Chyba:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1124
-"At: %1" => "Kdy: %1", // ai 2026-10
+"At: %1" => "Kde: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1126
 "What to do:" => "Co dělat:", // ai 2026-10
@@ -9784,82 +9818,88 @@ return [
 // src/Import/DetailPage.php, row 1147
 "Look the failure up in the log of import failures, then Continue or End the run." => "Vyhledejte chybu v logu chyb importu a pak u běhu zvolte Pokračovat, nebo Ukončit.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1156
+// src/Import/DetailPage.php, row 1161
 "full run" => "úplný běh", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1190
-"Baseline only" => "Jen zaznamenaný stav", // ai 2026-10
+// src/Import/DetailPage.php, row 1162
+"one stream (%1)" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Nothing imported yet. Run changed only takes what changes after this." => "Zatím nic nenaimportováno. Spustit jen změněné vezme jen to, co se změní potom.", // ai 2026-10
-
-// src/Import/DetailPage.php, row 1198, 1199
-"Imported with item errors" => "Naimportováno s chybami článků", // ai 2026-10
-
-// src/Import/DetailPage.php, row 1198
-"1 item error in the run that imported it - see Runs." => "1 chyba článku v běhu, který ho naimportoval - viz Běhy.", // ai 2026-10
+// src/Import/DetailPage.php, row 1163
+"%1 streams" => "",
 
 // src/Import/DetailPage.php, row 1199
+"Baseline only" => "Jen zaznamenaný stav", // ai 2026-10
+
+// src/Import/DetailPage.php, row 1199
+"Nothing imported yet. Run changed only takes what changes after this." => "Zatím nic nenaimportováno. Spustit jen změněné vezme jen to, co se změní potom.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 1207, 1208
+"Imported with item errors" => "Naimportováno s chybami článků", // ai 2026-10
+
+// src/Import/DetailPage.php, row 1207
+"1 item error in the run that imported it - see Runs." => "1 chyba článku v běhu, který ho naimportoval - viz Běhy.", // ai 2026-10
+
+// src/Import/DetailPage.php, row 1208
 "%1 item errors in the run that imported it - see Runs." => "Chyby článků (%1) v běhu, který ho naimportoval - viz Běhy.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "Imported" => "Naimportováno", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source was asked again after the import." => "Zdroj byl po importu znovu dotázán.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source has not been asked since." => "Zdroj od té doby dotázán nebyl.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1205
-"Checked, not imported yet" => "Ověřeno, zatím nenaimportováno", // ai 2026-10
+// src/Import/DetailPage.php, row 1214
+"Checked, not imported yet" => "Zkontrolováno, zatím nenaimportováno", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Run imports it; Run changed only too, as it has no version to compare." => "Spustit ho naimportuje; Spustit jen změněné také, protože nemá verzi k porovnání.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "Not seen yet" => "Zatím nezjištěno", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1206
-"No run has imported or checked it." => "Žádný běh ho nenaimportoval ani neověřil.", // ai 2026-10
+// src/Import/DetailPage.php, row 1215
+"No run has imported or checked it." => "Žádný běh ho nenaimportoval ani nezkontroloval.", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1219
+// src/Import/DetailPage.php, row 1228
 "%1 read" => "načteno %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1220
+// src/Import/DetailPage.php, row 1229
 "%1 new, %2 updated, %3 skipped" => "nových %1, aktualizovaných %2, přeskočených %3", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1221
+// src/Import/DetailPage.php, row 1230
 "%1 filtered out" => "odfiltrováno %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "dry run - nothing stored" => "zkušební běh - nic neuloženo", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "all streams of the run together" => "všechny proudy běhu dohromady", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1241
+// src/Import/DetailPage.php, row 1250
 "None yet - an import records it" => "Zatím žádná - zaznamená ji import", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1242
+// src/Import/DetailPage.php, row 1251
 "None - the source gives no version" => "Žádná - zdroj verzi neuvádí", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1" => "trvalo %1", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1, working %2" => "trvalo %1, z toho práce %2", // ai 2026-10
 
-// src/Import/DetailPage.php, row 1301
+// src/Import/DetailPage.php, row 1310
 "%1 s" => "",
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1313
 "%1 min %2 s" => "",
 
-// src/Import/DetailPage.php, row 1304, 1306
+// src/Import/DetailPage.php, row 1313, 1315
 "%1 min" => "",
 
-// src/Import/DetailPage.php, row 1306
+// src/Import/DetailPage.php, row 1315
 "%1 h" => "",
 
 // src/Import/Mapping.php, row 219
@@ -9914,7 +9954,7 @@ return [
 "Ended by hand" => "Ukončeno ručně", // ai 2026-10
 
 // src/Import/RunView.php, row 74
-"Stuck — see State Check" => "Zaseknuto — viz State Check", // ai 2026-10
+"Stuck — see State Check" => "Zaseknuto — viz Kontrola stavu", // ai 2026-10
 
 // src/Import/RunView.php, row 75, 171
 "Running" => "Běží", // ai 2026-10
@@ -9932,7 +9972,7 @@ return [
 "Stopped before reading anything" => "Zastaveno dřív, než se cokoli načetlo", // ai 2026-10
 
 // src/Import/RunView.php, row 106
-"The source answered %1." => "Zdroj odpověděl %1.", // ai 2026-10
+"The source answered %1." => "Zdroj odpověděl kódem %1.", // ai 2026-10
 
 // src/Import/RunView.php, row 109
 "The address of the source could not be resolved (DNS)." => "Adresu zdroje nelze přeložit (DNS).", // ai 2026-10
@@ -9947,7 +9987,7 @@ return [
 "The source refused the connection." => "Zdroj odmítl spojení.", // ai 2026-10
 
 // src/Import/RunView.php, row 113
-"The address of the source is not allowed or not valid." => "Adresa zdroje není povolená nebo platná.", // ai 2026-10
+"The address of the source is not allowed or not valid." => "Adresa zdroje není povolená nebo není platná.", // ai 2026-10
 
 // src/Import/RunView.php, row 114
 "The answer of the source is too large." => "Odpověď zdroje je příliš velká.", // ai 2026-10
@@ -9998,10 +10038,10 @@ return [
 "No run yet. Run starts the first import." => "Zatím žádný běh. Spustit zahájí první import.", // ai 2026-10
 
 // src/Import/RunView.php, row 177
-"Only source checks or dry runs so far - nothing was imported." => "Zatím jen ověření zdroje nebo zkušební běhy - nic nebylo naimportováno.", // ai 2026-10
+"Only source checks or dry runs so far - nothing was imported." => "Zatím jen kontroly zdroje nebo zkušební běhy - nic nebylo naimportováno.", // ai 2026-10
 
 // src/Import/RunView.php, row 179
-"The last import stopped by an error and was then ended, so the data may be incomplete." => "Poslední import skončil chybou a pak byl ukončen, takže data mohou být neúplná.", // ai 2026-10
+"The last import stopped by an error and was then ended, so the data may be incomplete." => "Poslední import se zastavil na chybě a pak byl ukončen, takže data mohou být neúplná.", // ai 2026-10
 
 // src/Import/RunView.php, row 180
 "The last import was ended before it finished, so the data may be incomplete." => "Poslední import byl ukončen před dokončením, takže data mohou být neúplná.", // ai 2026-10
@@ -10028,22 +10068,22 @@ return [
 "Runs only by hand." => "Spouští se jen ručně.", // ai 2026-10
 
 // src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "Poslední zkušební běh skončil chybou. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Poslední zkušební běh se zastavil na chybě. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "Poslední ověření zdroje skončilo chybou. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
+"The last source check stopped by an error. Nothing more is imported until you act." => "Poslední kontrola zdroje se zastavila na chybě. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Zaznamenání stavu zdroje skončilo chybou. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Zaznamenání stavu zdroje se zastavilo na chybě. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "Poslední import skončil chybou. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
+"The last import stopped by an error. Nothing more is imported until you act." => "Poslední import se zastavil na chybě. Dokud nezasáhnete, nic dalšího se neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "Ověření zdroje selhalo - nic nenaimportováno", // ai 2026-10
+"Source check failed - nothing imported" => "Kontrola zdroje selhala - nic nenaimportováno", // ai 2026-10
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "Probíhá ověření zdroje", // ai 2026-10
+"Source check under way" => "Probíhá kontrola zdroje", // ai 2026-10
 
 // src/Import/RunView.php, row 215
 "Source reachable - nothing imported" => "Zdroj je dostupný - nic nenaimportováno", // ai 2026-10
@@ -10073,7 +10113,7 @@ return [
 "changed only" => "jen změněné", // ai 2026-10
 
 // src/Import/RunView.php, row 238
-"check" => "ověření", // ai 2026-10
+"check" => "kontrola", // ai 2026-10
 
 // src/Import/RunView.php, row 239
 "recording the state of the source" => "zaznamenání stavu zdroje", // ai 2026-10
@@ -10136,14 +10176,14 @@ return [
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "Naplánováno %1 dávek s %2 články",
 
-// src/Later/Toexecute.php, row 364
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "úloha už ve frontě není", // ai 2026-10
 
-// src/Later/Toexecute.php, row 368
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "přeskočeno - úloha se mezitím změnila (obnovte seznam)", // ai 2026-10
 
-// src/Later/Toexecute.php, row 459
-"the task failed with %1" => "úloha selhala s %1", // ai 2026-10
+// src/Later/Toexecute.php, row 462
+"the task failed with %1" => "úloha selhala s výjimkou %1", // ai 2026-10
 
 // src/Manager.php, row 430
 "You can not save this object here." => "Tento objekt zde nelze uložit.", // ai 2026-10
@@ -10301,7 +10341,7 @@ return [
 "Imports not started - their last run is still running: %1." => "Importy nespuštěny - jejich poslední běh ještě běží: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 95
-"Imports not started - their last run stopped by an error; continue or end it in the import detail: %1." => "Importy nespuštěny - jejich poslední běh skončil chybou; v detailu importu u něj zvolte Pokračovat, nebo Ukončit: %1.", // ai 2026-10
+"Imports not started - their last run stopped by an error; continue or end it in the import detail: %1." => "Importy nespuštěny - jejich poslední běh se zastavil na chybě; v detailu importu u něj zvolte Pokračovat, nebo Ukončit: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 98
 "Imports not started - the last step of their previous run is still finishing; try again in a few minutes: %1." => "Importy nespuštěny - poslední krok jejich předchozího běhu se ještě dokončuje; zkuste to znovu za několik minut: %1.", // ai 2026-10
@@ -10670,16 +10710,16 @@ return [
 // src/Optimize/CategorySort2groupBy.php, row 37
 "All slices are already converted" => "Všechny webíky jsou už převedeny",
 
-// src/Optimize/ChangeF_h2F_1.php, row 20
+// src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "Optimalizovat alias f_h na f_1",
 
-// src/Optimize/ChangeF_h2F_1.php, row 28
+// src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Nahradí alias f_h u políčka označeného jako nevícehodnotové a html rychlejší funkcí f_1 pro přímý výpis obsahu",
 
-// src/Optimize/ChangeF_t2F_1.php, row 18
+// src/Optimize/ChangeF_t2F_1.php, row 15
 "Optimize f_t alias to f_1" => "Optimalizovat alias f_t na f_1",
 
-// src/Optimize/ChangeF_t2F_1.php, row 26
+// src/Optimize/ChangeF_t2F_1.php, row 23
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Nahradí alias f_t u políčka označeného jako nevícehodnotové a html rychlejší funkcí f_1 pro přímý výpis obsahu",
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -10704,8 +10744,32 @@ return [
 "Changing ID for table %1 (%2)" => "Změna ID pro tabulku %1 (%2)",
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 68
+// src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Převedeno %1 tabulek",
+
+// src/Optimize/ChangeQte2Trm.php, row 24
+"Trim text fields" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 29
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields switched to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields to switch to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 139
+"Field templates" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"switched to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"to switch to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 145
+"%1 keeps \"Text = don't modify\": %2" => "",
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
 "Unsigned {ajax} widget settings" => "Nepodepsaná nastavení widgetů {ajax}", // ai 2026-10
@@ -10727,7 +10791,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 102
-// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 99
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -10741,7 +10805,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
-// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 100
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckUploadRefusals.php, row 89
@@ -10755,10 +10819,10 @@ return [
 "No unsigned {ajax} widget settings in the last 30 days" => "Za posledních 30 dní žádná nepodepsaná nastavení widgetů {ajax}", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 28
-"Refused alert sends" => "Odmítnutá odeslání zpráv (Alerts)", // ai 2026-10
+"Refused alert sends" => "Odmítnutá odeslání přes Zasílání", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 33
-"Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Vypíše odeslání článků přes Alerts odmítnutá za posledních 30 dní, protože kolekce nesouvisí s webíkem článku (nemá filtr na webík, není to jeho webík čtenářů, nemají společný web).", // ai 2026-10
+"Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Vypíše odeslání článků přes Zasílání odmítnutá za posledních 30 dní, protože kolekce nesouvisí s webíkem článku (nemá na něj filtr, webík není jejím webíkem čtenářů, nemají společný web).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 83
 "Alert send of an item of slice %1 through collection %2 was refused" => "Odeslání článku z webíku %1 přes kolekci %2 bylo odmítnuto", // ai 2026-10
@@ -10767,10 +10831,10 @@ return [
 "An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection's reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection." => "Editor webíku odeslal článek přes kolekci, která nemá filtr na tento webík, jejíž webík čtenářů není tento webík a která s ním nesdílí žádný web. Je-li odeslání záměrné, přidejte do kolekce filtr na webík (skutečné rozeslání čtenářům ho stejně potřebuje), nebo dejte webík a webík čtenářů kolekce do jednoho webu. Jinak opravte tlačítko odeslání v šablonách webíku, nebo zjistěte, kdo se pokusil poslat e-mail čtenářům jiné kolekce.", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 100
-"No alert send was refused in the last 30 days" => "Za posledních 30 dní nebylo odmítnuto žádné odeslání Alerts", // ai 2026-10
+"No alert send was refused in the last 30 days" => "Za posledních 30 dní nebylo odmítnuto žádné odeslání přes Zasílání", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 23
-"Alerts sending" => "Zasílání zpráv (Alerts)", // ai 2026-10
+"Alerts sending" => "Rozesílání modulu Zasílání", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 28
 "Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "Ověří, že se každá frekvence, kterou si čtenáři mohou objednat, skutečně rozesílá a že žádná kolekce není tak pozadu, že by další rozeslání články přeskočilo místo jejich odeslání.", // ai 2026-10
@@ -10788,7 +10852,7 @@ return [
 "up to %1 days" => "až %1 dní", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 83
-"%1 alert collections are so far behind that the next sweep will skip items" => "Kolekce Alerts (%1) jsou tak pozadu, že další rozeslání přeskočí články", // ai 2026-10
+"%1 alert collections are so far behind that the next sweep will skip items" => "Kolekce Zasílání (%1) jsou tak pozadu, že další rozeslání přeskočí články", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 86
 "A sweep never reaches back more than two of its periods, so everything older is dropped, not mailed. Check that the task queue plans this frequency and decide whether to let the gap go or to send it by hand from the module." => "Rozeslání nikdy nesahá dál než dvě své periody zpět, takže vše starší se zahodí, ne odešle. Ověřte, že fronta úloh tuto frekvenci plánuje, a rozhodněte, zda mezeru oželíte, nebo ji odešlete ručně z modulu.", // ai 2026-10
@@ -10803,7 +10867,7 @@ return [
 "Forms without login changing accounts or authors" => "Formuláře bez přihlášení měnící účty nebo autory", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 31
-"Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "Vypíše políčka existujících článků, která se za posledních 30 dní pokusil změnit formulář bez přihlášeného uživatele, ačkoli obsahují příznaky nebo autora článku, heslo, 2FA tajemství nebo login čtenáře, případně webík článku. Políčka zůstala, jak byla uložena.", // ai 2026-10
+"Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "Vypíše políčka existujících článků, která se za posledních 30 dní pokusil změnit formulář bez přihlášeného uživatele, ačkoli obsahují příznaky nebo autora článku, heslo, tajný klíč 2FA nebo login čtenáře, případně webík článku. Políčka zůstala, jak byla uložena.", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 70
 "replace" => "nahradit", // ai 2026-10
@@ -10876,7 +10940,7 @@ return [
 "Lists the pages that loaded the old CKEditor 4 by {require:ckeditor} in the last 30 days. AA edits text with TinyMCE now; CKEditor 4 will be removed once no template asks for it." => "Vypíše stránky, které za posledních 30 dní načetly starý CKEditor 4 přes {require:ckeditor}. AA nyní upravuje text pomocí TinyMCE; CKEditor 4 bude odstraněn, jakmile ho žádná šablona nebude vyžadovat.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 92
-"CKEditor 4 loaded on %1" => "CKEditor 4 načten na %1", // ai 2026-10
+"CKEditor 4 loaded on %1" => "CKEditor 4 načten: %1", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 101
 "A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Šablona stránky obsahuje {require:ckeditor} (a CKEDITOR.replace()). Místo toho obalte textarea do <aa-richtext mode=\"rich\"> s {require:aa-richtext@1} - textarea si ponechá jméno i hodnotu, takže formulář i skripty čtoucí textarea.value fungují beze změny; z CKEDITOR.instances[...].getData() se stane hodnota textarea.", // ai 2026-10
@@ -10945,7 +11009,7 @@ return [
 "Outgoing HTTP" => "Odchozí HTTP", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 34
-"Fetches this installation's own address to check that PHP can make HTTP requests at all - {include} of local pages, Central and the link checker all need it." => "Stáhne vlastní adresu této instalace, aby ověřil, že PHP vůbec umí posílat HTTP požadavky - potřebuje to {include} lokálních stránek, Central i kontrola odkazů.", // ai 2026-10
+"Fetches this installation's own address to check that PHP can make HTTP requests at all - {include} of local pages, Central and the link checker all need it." => "Stáhne vlastní adresu této instalace a ověří tak, že PHP vůbec umí posílat HTTP požadavky - potřebuje to {include} lokálních stránek, Central i kontrola odkazů.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 61
 "PHP cannot fetch %1" => "PHP nemůže stáhnout %1", // ai 2026-10
@@ -10960,13 +11024,13 @@ return [
 "Configured" => "Nastaveno", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 72
-"Answered" => "Odpovědělo", // ai 2026-10
+"Answered" => "Odpověď", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 73
 "Set AA_INSTAL_URL in config.php to the address the server actually serves. Every extra hop is paid on each local request, and a redirect that drops the session cookie breaks included pages." => "Nastavte AA_INSTAL_URL v config.php na adresu, kterou server skutečně obsluhuje. Každý přeskok navíc se platí při každém lokálním požadavku a přesměrování, které ztratí session cookie, rozbije vkládané stránky.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 81
-"This installation's own address answers HTTP %1" => "Vlastní adresa této instalace odpovídá HTTP %1", // ai 2026-10
+"This installation's own address answers HTTP %1" => "Vlastní adresa této instalace vrací HTTP %1", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 82, 91
 // src/Optimize/CheckSessionidUse.php, row 99
@@ -11056,7 +11120,7 @@ return [
 "%1 imports have a source that is not available" => "Importy se zdrojem, který není dostupný: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 180
-"A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "Běh takového importu okamžitě skončí chybou. Opravte nebo vraťte soubor zdroje, nebo import smažte.", // ai 2026-10
+"A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "Běh takového importu se okamžitě zastaví na chybě. Opravte nebo vraťte soubor zdroje, nebo import smažte.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 197
 "Another record holds the place of the stream state or catalog of an import" => "Místo stavu proudů nebo katalogu importu zabírá jiný záznam", // ai 2026-10
@@ -11092,22 +11156,22 @@ return [
 "{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "{import} je nedokáže rozlišit a jméno odmítne, takže naplánovaná úloha s ním selže. Přejmenujte všechny kromě jednoho.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 233
-"The last check of an import source cannot be read" => "Poslední ověření zdroje importu nelze přečíst", // ai 2026-10
+"The last check of an import source cannot be read" => "Poslední kontrolu zdroje importu nelze přečíst", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 233
-"Its stored result is damaged. The next check of the source stores it again." => "Jeho uložený výsledek je poškozený. Další ověření zdroje ho uloží znovu.", // ai 2026-10
+"Its stored result is damaged. The next check of the source stores it again." => "Uložený výsledek kontroly je poškozený. Příští kontrola zdroje ho uloží znovu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236
-"The last check of an import source failed" => "Poslední ověření zdroje importu selhalo", // ai 2026-10
+"The last check of an import source failed" => "Poslední kontrola zdroje importu selhala", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236, 238
-"Checked" => "Ověřeno", // ai 2026-10
+"Checked" => "Zkontrolováno", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236
-"A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "Ostrý běh skončí chybou, když zdroj neprojde ověřením. Detail importu ukazuje, co zdroj řekl; opravte klíč nebo nastavení a zdroj ověřte znovu.", // ai 2026-10
+"A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "Ostrý běh se zastaví na chybě, když zdroj neprojde kontrolou. Detail importu ukazuje, co zdroj řekl; opravte klíč nebo nastavení a zdroj znovu zkontrolujte.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 238
-"The last check of an import source passed with a remark" => "Poslední ověření zdroje importu prošlo s poznámkou", // ai 2026-10
+"The last check of an import source passed with a remark" => "Poslední kontrola zdroje importu prošla s poznámkou", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 238
 "The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "Import běží, ale zdroj upozorňuje na něco k opravě - například definice, které vynechává. Detail importu ukazuje, co zdroj řekl.", // ai 2026-10
@@ -11116,7 +11180,7 @@ return [
 "The catalog of an import source is incomplete" => "Katalog zdroje importu je neúplný", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 244
-"The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "Poslední ověření nedokončilo výpis zdroje, takže detail importu nemůže určit, které proudy už zdroj nemá. Zkontrolujte zdroj znovu.", // ai 2026-10
+"The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "Poslední kontrola nedokončila výpis zdroje, takže detail importu nemůže určit, které proudy už zdroj nemá. Zkontrolujte zdroj znovu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 260
 "%1 records of deleted imports are left: runs, stream states, catalogs" => "Zbývají záznamy smazaných importů (%1): běhy, stavy proudů, katalogy", // ai 2026-10
@@ -11134,7 +11198,7 @@ return [
 "The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Klíč obsahuje zalomení řádku nebo NUL, takže ho žádný zdroj importu nesmí použít. Opravte konstantu v config.php.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 291
-"Imports logged %1 failures in the last 7 days" => "Chyby zalogované importy za posledních 7 dní: %1", // ai 2026-10
+"Imports logged %1 failures in the last 7 days" => "Importy za posledních 7 dní zalogovaly chyby: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 295
 "A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "Neúspěšný krok fronty zastaví svůj import chybou; ostatní řádky jsou chyby mimo krok, například obnova stránek v cache po smazání importu. Loguje se jen třída a místo chyby nebo kód odmítnutí - zpráva může obsahovat klíč.", // ai 2026-10
@@ -11152,7 +11216,7 @@ return [
 "App transfers" => "Přenosy aplikací", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 21
-"Warns about app transfers that hang and lists those stopped by an error." => "Upozorní na přenosy aplikací, které se zasekly, a vypíše ty, které skončily chybou.", // ai 2026-10
+"Warns about app transfers that hang and lists those stopped by an error." => "Upozorní na přenosy aplikací, které se zasekly, a vypíše ty, které se zastavily na chybě.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 55
 "Last progress" => "Poslední pokrok", // ai 2026-10
@@ -11173,7 +11237,7 @@ return [
 "The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written." => "Nové moduly obsahují jen část článků. Ověřte, že fronta úloh tohoto AA běží; uživatel, který přenos spustil, otevře jeho stránku průběhu a zvolí Pokračovat - nebo Ukončit (kterýkoli superadmin), což ponechá, co je zapsáno.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 75
-"The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it." => "Aplikace je nainstalovaná a funguje - jen dokončení jejího běhu čeká na frontu úloh. Ověřte, že fronta tohoto AA běží; na stránce průběhu Pokračovat běh hned dokončí, Ukončit ho uzavře.", // ai 2026-10
+"The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it." => "Aplikace je nainstalovaná a funguje - jen dokončení jejího běhu čeká na frontu úloh. Ověřte, že fronta tohoto AA běží; na stránce průběhu tlačítko Pokračovat dokončí běh hned, tlačítko Ukončit ho uzavře.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 76
 "Progress page" => "Stránka průběhu", // ai 2026-10
@@ -11248,13 +11312,13 @@ return [
 "The task queue has never run" => "Fronta úloh nikdy neběžela", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 66
-"Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback." => "E-maily, Alerts a výměna zpráv čekají ve frontě, dokud cron OS nezavolá cron.php nebo návštěva nespustí záložní spouštění po odeslání odpovědi.", // ai 2026-10
+"Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback." => "E-maily, Zasílání a výměna zpráv čekají ve frontě, dokud cron OS nezavolá cron.php nebo návštěva nespustí záložní spouštění po odeslání odpovědi.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 68
 "The task queue has not run since %1" => "Fronta úloh neběžela od %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 68
-"Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php)." => "E-maily, Alerts a výměna zpráv čekají. Zkontrolujte systémový crontab (cron.php každou minutu) a záložní spouštění po odeslání odpovědi (DISABLE_CRON_FALLBACK v config.php).", // ai 2026-10
+"Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php)." => "E-maily, Zasílání a výměna zpráv čekají. Zkontrolujte systémový crontab (cron.php každou minutu) a záložní spouštění po odeslání odpovědi (DISABLE_CRON_FALLBACK v config.php).", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 75
 "OS cron has not called cron.php since %1; the post-response fallback keeps the queue alive" => "Cron OS nevolal cron.php od %1; frontu udržuje v chodu záložní spouštění po odeslání odpovědi", // ai 2026-10
@@ -11263,7 +11327,7 @@ return [
 "OS cron has never called cron.php; the post-response fallback keeps the queue alive" => "Cron OS nikdy nevolal cron.php; frontu udržuje v chodu záložní spouštění po odeslání odpovědi", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 77
-"The fallback only runs after a visit, so mails, alerts and feeds arrive late on a quiet site. Let the system crontab call cron.php every minute." => "Záložní spouštění běží jen po návštěvě, takže na málo navštěvovaném webu chodí e-maily, Alerts a výměna zpráv pozdě. Nechte systémový crontab volat cron.php každou minutu.", // ai 2026-10
+"The fallback only runs after a visit, so mails, alerts and feeds arrive late on a quiet site. Let the system crontab call cron.php every minute." => "Záložní spouštění běží jen po návštěvě, takže na málo navštěvovaném webu se e-maily, Zasílání i výměna zpráv zpožďují. Nechte systémový crontab volat cron.php každou minutu.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 89
 "The post-response cron fallback failed %1 times in the last 7 days" => "Záložní spouštění cronu po odeslání odpovědi za posledních 7 dní selhalo %1krát", // ai 2026-10
@@ -11272,7 +11336,7 @@ return [
 "Queued tasks failed %1 times in the last 7 days" => "Úlohy ve frontě za posledních 7 dní selhaly %1krát", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 99
-"A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords." => "Neúspěšná úloha se spustí znovu po %1 minutách s nižší prioritou a po opakovaných chybách se vzdá. Úloha z uživatelské fronty ve Správci úloh se znovu nezkouší - čeká tam, dokud ji někdo znovu nespustí. Loguje se jen třída chyby a místo, kde vznikla - zpráva může obsahovat hesla.", // ai 2026-10
+"A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords." => "Neúspěšná úloha se spustí znovu po %1 minutách s nižší prioritou a po opakovaných chybách ji fronta vzdá. Úloha z uživatelské fronty ve Správci úloh se znovu nezkouší - čeká tam, dokud ji někdo znovu nespustí. Loguje se jen třída chyby a místo, kde vznikla - zpráva může obsahovat hesla.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 106
 "%1 of %2 queue runs in the last 7 days exceeded the allowed %3 s (longest %4 s); %5 runs left tasks waiting" => "%1 z %2 běhů fronty za posledních 7 dní překročilo povolených %3 s (nejdelší %4 s); běhů, po kterých zůstaly čekající úlohy: %5", // ai 2026-10
@@ -11304,22 +11368,22 @@ return [
 // src/Optimize/CheckQueue.php, row 181
 "Longest [s]" => "Nejdelší [s]", // ai 2026-10
 
-// src/Optimize/CheckQueuedClassMissing.php, row 22
+// src/Optimize/CheckQueuedClassMissing.php, row 23
 "Queued tasks of a missing class" => "Úlohy ve frontě s chybějící třídou", // ai 2026-10
 
-// src/Optimize/CheckQueuedClassMissing.php, row 27
+// src/Optimize/CheckQueuedClassMissing.php, row 28
 "Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "Vypíše třídy úloh ve frontě, které za posledních 30 dní nemohly běžet, protože toto AA danou třídu nemá.", // ai 2026-10
 
-// src/Optimize/CheckQueuedClassMissing.php, row 61
+// src/Optimize/CheckQueuedClassMissing.php, row 62
 "Queued tasks of class %1 cannot run - the class is missing" => "Úlohy ve frontě třídy %1 nemohou běžet - třída chybí", // ai 2026-10
 
-// src/Optimize/CheckQueuedClassMissing.php, row 66
+// src/Optimize/CheckQueuedClassMissing.php, row 67
 "Selector" => "Selektor", // ai 2026-10
 
-// src/Optimize/CheckQueuedClassMissing.php, row 70
-"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "Pokud třída chybí jen po nasazení (nezkopírovaly se všechny soubory, starý composer classmap), obnovte ji a úlohy poběží znovu. Pokud byla funkce odstraněna, smažte úlohy ve Správci úloh; jinak zůstanou ve frontě, vyřazené.", // ai 2026-10
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 76
+// src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "Za posledních 30 dní žádná úloha ve frontě s chybějící třídou", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 17
@@ -11350,7 +11414,7 @@ return [
 "Server secret" => "Tajný klíč serveru", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 24
-"Checks that AA_SECRET is set in config.php - the key for login tokens, mail forms and password reset links." => "Ověří, že je v config.php nastaveno AA_SECRET - klíč pro přihlašovací tokeny, poštovní formuláře a odkazy pro obnovu hesla.", // ai 2026-10
+"Checks that AA_SECRET is set in config.php - the key for login tokens, mail forms and password reset links." => "Ověří, že je v config.php nastaveno AA_SECRET - klíč pro přihlašovací tokeny, e-mailové formuláře a odkazy pro obnovu hesla.", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 50
 "AA_SECRET is set" => "AA_SECRET je nastaveno", // ai 2026-10
@@ -11362,7 +11426,7 @@ return [
 "AA_SECRET is shorter than %1 bytes, so it is ignored" => "AA_SECRET je kratší než %1 bajtů, proto se ignoruje", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 57
-"AA_SECRET is not set and the database password is short, so login tokens, mail forms and password reset links could be guessed offline" => "AA_SECRET není nastaveno a heslo databáze je krátké, takže přihlašovací tokeny, poštovní formuláře a odkazy pro obnovu hesla by šlo uhodnout offline", // ai 2026-10
+"AA_SECRET is not set and the database password is short, so login tokens, mail forms and password reset links could be guessed offline" => "AA_SECRET není nastaveno a heslo databáze je krátké, takže přihlašovací tokeny, e-mailové formuláře a odkazy pro obnovu hesla by šlo uhodnout offline", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 59
 "AA_SECRET is not set - the keys are derived from the database password" => "AA_SECRET není nastaveno - klíče se odvozují z hesla databáze", // ai 2026-10
@@ -11426,7 +11490,7 @@ return [
 "An external site resumes its reader sessions by AA_ClientAuth (the AA_Sess cookie, checked on each page view)." => "Externí web obnovuje relace svých čtenářů přes AA_ClientAuth (cookie AA_Sess, ověřovaná při každém zobrazení stránky).", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 95
-"Get_Sessionid called from %1 (%2 login)" => "Get_Sessionid voláno z %1 (přihlášení %2)", // ai 2026-10
+"Get_Sessionid called from %1 (%2 login)" => "Get_Sessionid voláno z %1 (přihlášení typu %2)", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 110
 "Nobody called Get_Sessionid in the last 30 days" => "Za posledních 30 dní nikdo nevolal Get_Sessionid", // ai 2026-10
@@ -11475,13 +11539,13 @@ return [
 "%1 still uses the old Google Analytics (UA-...) - no visits are measured" => "%1 stále používá starý Google Analytics (UA-...) - neměří se žádné návštěvy", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 124
-"Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "Google přestal sbírat data Universal Analytics 1. července 2023. 1. V Google Analytics otevřete Správce > službu GA4 daného webu > Datové streamy > webový stream a zkopírujte jeho ID měření (G-...); pokud web službu GA4 nemá, vytvořte ji. 2. Na uvedených místech: v kódu gtag napište místo id UA-... id G-... (v gtag/js?id= i v gtag('config', ...)) a ponechte nastavení souhlasu; smažte bloky _gaq, ga.js, analytics.js a _gat; kde nezůstal žádný kód gtag, vložte standardní fragment GA4. Id UA-... v nastavení webu (Google Analytics tracking id) nahraďte id G-.... 3. Další den ověřte v GA4 > Přehledy > V reálném čase, že návštěvy přicházejí.", // ai 2026-10
+"Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "Google přestal sbírat data Universal Analytics 1. července 2023. 1. V Google Analytics otevřete Administrátor > službu GA4 daného webu > Datové streamy > webový stream a zkopírujte jeho ID měření (G-...); pokud web službu GA4 nemá, vytvořte ji. 2. Na uvedených místech: v kódu gtag napište id G-... místo id UA-... (v gtag/js?id= i v gtag('config', ...)) a ponechte nastavení souhlasu; smažte bloky _gaq, ga.js, analytics.js a _gat; kde nezůstal žádný kód gtag, vložte standardní fragment GA4. Id UA-... v nastavení webu (Měřicí ID Google Analytics) nahraďte id G-.... 3. Další den ověřte v GA4 > Přehledy > V reálném čase, že návštěvy přicházejí.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 129
 "%1 still has the old Google Analytics code (UA-...) next to the new one - it can be removed" => "%1 má vedle nového kódu stále starý kód Google Analytics (UA-...) - lze ho odstranit", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 132
-"The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "Nový kód (%1) už tam je; řádky UA-... jen načítají skript, který nic neměří. Smažte bloky _gaq, ga.js, analytics.js a _gat a gtag('config', 'UA-...'); kde adresa gtag/js?id= nese id UA-..., napište tam místo smazání řádku id G-.... Id UA-... v nastavení webu (Google Analytics tracking id) vymažte nebo nahraďte id G-.... Kontejner GTM-... měří, jen když obsahuje značku GA4 - ověřte to v Tag Manageru. Pak ověřte v GA4 > Přehledy > V reálném čase, že návštěvy stále přicházejí.", // ai 2026-10
+"The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "Nový kód (%1) už tam je; řádky UA-... jen načítají skript, který nic neměří. Smažte bloky _gaq, ga.js, analytics.js a _gat a gtag('config', 'UA-...'); kde adresa gtag/js?id= nese id UA-..., řádek nemažte a napište do adresy id G-.... Id UA-... v nastavení webu (Měřicí ID Google Analytics) vymažte nebo nahraďte id G-.... Kontejner GTM-... měří, jen když obsahuje značku GA4 - ověřte to v Tag Manageru. Pak ověřte v GA4 > Přehledy > V reálném čase, že návštěvy stále přicházejí.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 136
 "No template uses the old Google Analytics (Universal Analytics)" => "Žádná šablona nepoužívá starý Google Analytics (Universal Analytics)", // ai 2026-10
@@ -11559,7 +11623,7 @@ return [
 "f_u without a function name" => "f_u bez jména funkce", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 133
-"f_u names %1, which is not defined" => "f_u uvádí %1, která není definovaná", // ai 2026-10
+"f_u names %1, which is not defined" => "f_u uvádí funkci %1, která není definovaná", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 134
 "f_u names %1, a PHP function - not called" => "f_u uvádí %1, funkci PHP - nevolá se", // ai 2026-10
@@ -11568,7 +11632,7 @@ return [
 "f_u names %1, a function of AA itself (%2) - not called" => "f_u uvádí %1, funkci samotného AA (%2) - nevolá se", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 136
-"f_u names %1, defined outside AA in %2 - not called" => "f_u uvádí %1, definovanou mimo AA v %2 - nevolá se", // ai 2026-10
+"f_u names %1, defined outside AA in %2 - not called" => "f_u uvádí funkci %1, definovanou mimo AA v %2 - nevolá se", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 137
 "f_u call of %1 failed" => "Volání %1 přes f_u selhalo", // ai 2026-10
@@ -11636,7 +11700,13 @@ return [
 // src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "Nalezeno %1 tabulek, které je třeba převést",
 
-// src/Optimize/Convert2innodb.php, row 64
+// src/Optimize/Convert2innodb.php, row 71
+"Unique numbers (seq) may repeat" => "",
+
+// src/Optimize/Convert2innodb.php, row 71
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+
+// src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "Převést tabulku %1 (%2) na InnoDB",
 
 // src/Optimize/Convert2utf8mb4.php, row 23
@@ -11721,10 +11791,10 @@ return [
 "App store account" => "Účet katalogu aplikací", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 19
-"Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Vytvoří veřejný účet, kterým ostatní AA čtou publikované aplikace tohoto AA (uživatel %1, bez práv). Jeho heslo je veřejné; účet se nemůže přihlásit do administrace.", // ai 2026-10
+"Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Vytvoří veřejný účet, kterým ostatní AA čtou zveřejněné aplikace tohoto AA (uživatel %1, bez práv). Jeho heslo je veřejné; účet se nemůže přihlásit do administrace.", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 34
-"No app store account - this AA publishes no apps" => "Žádný účet katalogu aplikací - toto AA nepublikuje žádné aplikace", // ai 2026-10
+"No app store account - this AA publishes no apps" => "Žádný účet katalogu aplikací - toto AA nezveřejňuje žádné aplikace", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 39
 "The user %1 exists, but not with the public password of the app store - rename it, then repair" => "Uživatel %1 existuje, ale nemá veřejné heslo katalogu aplikací - přejmenujte ho a pak opravte", // ai 2026-10
@@ -11745,7 +11815,7 @@ return [
 "The app store account %1 is created" => "Účet katalogu aplikací %1 je vytvořen", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 77
-"The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "Účet katalogu aplikací potřebuje uživatele samotného AA (PERM_LIB sql); toto AA používá %1 - může z katalogu instalovat, ale nemůže sám být katalogem", // ai 2026-10
+"The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "Účet katalogu aplikací potřebuje uživatele samotného AA (PERM_LIB sql); toto AA používá %1 - může z katalogu instalovat, ale samo katalogem být nemůže", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
 "Create upload directory for current slice" => "Vytvořit upload adresář pro aktuální webík",
@@ -11973,7 +12043,7 @@ return [
 "The images show, but each one which is not in the cache yet is generated again on every request - the load and delay of a site without the cache. Let the PHP user write into the directory, or into the upload directory, where AA creates it." => "Obrázky se zobrazují, ale každý, který ještě není v cache, se při každém požadavku generuje znovu - zátěž a zpoždění webu bez cache. Povolte uživateli PHP zápis do adresáře, nebo do adresáře pro nahrávání, kde ho AA vytvoří.", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 22
-"{img} which measures the image on every page view" => "{img}, které měří obrázek při každém zobrazení stránky", // ai 2026-10
+"{img} which measures the image on every page view" => "{img}, který měří obrázek při každém zobrazení stránky", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 27
 "Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "Vypíše výrazy {img} v pohledech, políčkách, místech na webu a jiném kódu, které vypisují rozměry obrázku, ale jejich parametry je neurčují - takže se zmenšený obrázek při každé expanzi načítá přes HTTP.", // ai 2026-10
@@ -12102,7 +12172,7 @@ return [
 "Image cache routing" => "Směrování cache obrázků", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 42
-"Resized images are served as static files; a request for one which is not generated yet has to reach AA. Repair writes the .htaccess which routes it there, the extended State Check asks the web server whether such a request really gets through." => "Zmenšené obrázky se servírují jako statické soubory; požadavek na ještě nevygenerovaný obrázek musí dojít do AA. Opravit zapíše .htaccess, který ho tam nasměruje, rozšířený State Check se webového serveru zeptá, zda takový požadavek opravdu projde.", // ai 2026-10
+"Resized images are served as static files; a request for one which is not generated yet has to reach AA. Repair writes the .htaccess which routes it there, the extended State Check asks the web server whether such a request really gets through." => "Zmenšené obrázky se servírují jako statické soubory; požadavek na ještě nevygenerovaný obrázek musí dojít do AA. Opravit zapíše .htaccess, který ho tam nasměruje; rozšířená Kontrola stavu se webového serveru zeptá, zda takový požadavek opravdu projde.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 62
 "%1 is missing" => "%1 chybí", // ai 2026-10
@@ -12148,16 +12218,16 @@ return [
 "The server cannot load its own image url" => "Server nemůže načíst vlastní url obrázku", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 106
-"Check that the server resolves and reaches the host of IMG_UPLOAD_URL." => "Ověřte, že server přeloží hostitele z IMG_UPLOAD_URL a dosáhne na něj.", // ai 2026-10
+"Check that the server resolves and reaches the host of IMG_UPLOAD_URL." => "Ověřte, že server přeloží jméno hostitele z IMG_UPLOAD_URL a spojí se s ním.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 107
-"The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration." => "Soubor .htaccess v adresáři cache nemá účinek: AllowOverride ho nepovoluje, server běží na nginx, nebo směruje do stromu AA, který na tomto hostiteli neodpovídá - Opravit ho pak nasměruje na tento. Jinak přidejte pravidlo z config.php.default do konfigurace serveru.", // ai 2026-10
+"The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration." => "Soubor .htaccess v adresáři cache nemá účinek: AllowOverride ho nepovoluje, server běží na nginx, nebo .htaccess směruje do stromu AA, který na tomto hostiteli neodpovídá - Opravit ho pak nasměruje na tento. Jinak přidejte pravidlo z config.php.default do konfigurace serveru.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 128
 "img.php does not answer the server itself" => "img.php neodpovídá samotnému serveru", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 130
-"Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects." => "Obrázky, které ještě nejsou v cache, nelze vygenerovat. Žádná odpověď: ověřte, že server přeloží hostitele z AA_INSTAL_URL a dosáhne na něj. Přesměrování: nastavte AA_INSTAL_URL na adresu, kam přesměrovává (https, www) - generátor přesměrování nenásleduje.", // ai 2026-10
+"Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects." => "Obrázky, které ještě nejsou v cache, nelze vygenerovat. Žádná odpověď: ověřte, že server přeloží jméno hostitele z AA_INSTAL_URL a spojí se s ním. Přesměrování: nastavte AA_INSTAL_URL na adresu, kam přesměrovává (https, www) - generátor přesměrování nenásleduje.", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 35
 "Multivalue Duplicates" => "Duplicity ve vícehodnotových políčkách",
@@ -12414,7 +12484,7 @@ return [
 "Removes the AA jobs from the cron table" => "Odstraní úlohy AA z tabulky cronu", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 27
-"Alerts sending, feeding, link checking, table optimization and the queue run itself are queue tasks since 2026-09 (cron.php runs the queue directly). A cron table row still calling one of those scripts runs the job twice, so it is deleted; your own rows stay." => "Rozesílání Alerts, výměna zpráv, kontrola odkazů, optimalizace tabulek i samotný běh fronty jsou od 2026-09 úlohy fronty (cron.php spouští frontu přímo). Řádek tabulky cronu, který stále volá některý z těch skriptů, spouští úlohu dvakrát, proto se smaže; vaše vlastní řádky zůstanou.", // ai 2026-10
+"Alerts sending, feeding, link checking, table optimization and the queue run itself are queue tasks since 2026-09 (cron.php runs the queue directly). A cron table row still calling one of those scripts runs the job twice, so it is deleted; your own rows stay." => "Zasílání, výměna zpráv, kontrola odkazů, optimalizace tabulek i samotný běh fronty jsou od 2026-09 úlohy fronty (cron.php spouští frontu přímo). Řádek tabulky cronu, který stále volá některý z těch skriptů, spouští úlohu dvakrát, proto se smaže; vaše vlastní řádky zůstanou.", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 49
 "AA job still in the cron table: %1 %2" => "Úloha AA je stále v tabulce cronu: %1 %2", // ai 2026-10
@@ -12480,7 +12550,7 @@ return [
 "SEO name duplicates" => "Duplicitní SEO jména",
 
 // src/Optimize/SeoDuplicates.php, row 49
-"Lists items which share one SEO name inside a site module - such items compete for the same URL. Active, pending and expired items are compared; items waiting in the holding bin and in the trash own no URL, so they are not. Which item to rename is the editor's call, so there is no repair." => "Vypíše články, které uvnitř modulu Site sdílejí jedno SEO jméno - takové články soupeří o stejné URL. Porovnávají se aktuální, připravené a expirované články; články v zásobníku a v koši žádné URL nevlastní, takže se neporovnávají. Který článek přejmenovat, rozhoduje editor, proto oprava neexistuje.", // ai 2026-10
+"Lists items which share one SEO name inside a site module - such items compete for the same URL. Active, pending and expired items are compared; items waiting in the holding bin and in the trash own no URL, so they are not. Which item to rename is the editor's call, so there is no repair." => "Vypíše články, které uvnitř modulu Site sdílejí jedno SEO jméno - takové články soupeří o stejné URL. Porovnávají se aktuální, připravené a vypršené články; články v zásobníku a v koši žádné URL nevlastní, takže se neporovnávají. Který článek přejmenovat, rozhoduje editor, proto oprava neexistuje.", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 73
 "OK - no duplicate SEO names in any site module" => "OK - v žádném modulu Site nejsou duplicitní SEO jména", // ai 2026-10
@@ -12514,6 +12584,30 @@ return [
 
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "výchozí hodnota políčka expiry_date..... změněna v %1 /%2 webících: %3)",
+
+// src/Optimize/TrimFieldValues.php, row 39
+"Trim stored values" => "",
+
+// src/Optimize/TrimFieldValues.php, row 44
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+
+// src/Optimize/TrimFieldValues.php, row 63
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+
+// src/Optimize/TrimFieldValues.php, row 68
+"%1 items to trim" => "",
+
+// src/Optimize/TrimFieldValues.php, row 80
+"Trimming of %1 slices planned in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 91
+"%1 items planned to be trimmed in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 129
+"%1 items with a unique value to trim by hand, e.g. %2" => "",
+
+// src/Optimize/TrimFieldValues.php, row 139
+"%1 items to trim, e.g. %2" => "",
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Aktualizovat strukturu databáze",
@@ -12627,7 +12721,7 @@ return [
 "Note" => "Poznámka",
 
 // src/Util/Note.php, row 52
-"A note on an admin page, a view or a State Check finding" => "Poznámka na stránce administrace, v pohledu nebo u nálezu State Check", // ai 2026-10
+"A note on an admin page, a view or a State Check finding" => "Poznámka na stránce administrace, v pohledu nebo u zjištění Kontroly stavu", // ai 2026-10
 
 // src/Util/Note.php, row 59
 "Resource" => "Umístění", // ai 2026-10
@@ -12649,7 +12743,7 @@ return [
 "resolved" => "vyřešená", // ai 2026-10
 
 // src/Util/Note.php, row 64
-"deleted" => "vymazán",
+"deleted" => "smazaná", // ai 2026-10
 
 // src/Util/Note.php, row 65
 "Until" => "Do", // ai 2026-10
@@ -12682,19 +12776,19 @@ return [
 "Unresolve" => "Znovu otevřít", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"today" => "dnes", // ai 2026-10
+"today" => "na dnešek", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"a week" => "týden", // ai 2026-10
+"a week" => "na týden", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"a month" => "měsíc", // ai 2026-10
+"a month" => "na měsíc", // ai 2026-10
 
 // src/Util/Notes.php, row 116, 125
-"a date" => "datum", // ai 2026-10
+"a date" => "do data", // ai 2026-10
 
 // src/Util/Notes.php, row 123
-"Hide for" => "Skrýt na", // ai 2026-10
+"Hide for" => "Skrýt", // ai 2026-10
 
 // src/Util/Notes.php, row 126
 "Why (optional)" => "Proč (nepovinné)", // ai 2026-10

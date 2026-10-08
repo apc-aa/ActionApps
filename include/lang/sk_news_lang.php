@@ -15,6 +15,7 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "Unique number in sequence 1,2,3,..." => "Unik\xE1tne \xE8\xEDslo v porad\xED 1,2,3,...", // ai 2026-06
 // "Data source" => "Zdroj d\xE1t", // ai 2026-06
 // "Upload periodically" => "Nahr\xE1va\x9D pravidelne", // ai 2026-06
 // "Central - Copy Slice (1/2) - Select Source ActionApps" => "Central - Kop\xEDrovanie modulu (1/2) - V\xFDber zdrojov\xFDch ActionApps", // ai 2026-06
@@ -202,6 +203,7 @@ return [
 "You do not have permission to manage Cron" => "Nem\xE1te pr\xE1vo spravova\x9D Cron", // ai 2026-06
 
 // admin/aa_cron.php, row 47
+// src/AA_Plannedtask.php, row 82, 182
 // src/Import/Definition.php, row 135, 163
 // src/Optimize/CheckCron.php, row 69
 "Last run" => "Posledn\xE9 spustenie", // ai 2026-06
@@ -210,7 +212,7 @@ return [
 "never" => "nikdy", // ai 2026-06
 
 // admin/aa_cron.php, row 100
-// include/field.class.php, row 656
+// include/field.class.php, row 714
 // src/Util/Adminlink.php, row 31
 "disabled" => "vypnut\xE9", // ai 2026-06
 
@@ -338,7 +340,7 @@ return [
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 // src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 98
@@ -523,7 +525,7 @@ return [
 
 // admin/aa_statecheck.php, row 271
 // src/Optimize/CheckEnvironment.php, row 18
-"Environment" => "Ekol\xF3gia", // ai 2026-06
+"Environment" => "Prostredie", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
 // admin/se_statistics.php, row 53
@@ -723,7 +725,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1700
+// include/metabase.class.php, row 1701
 "Manage %1" => "Spr\xE1va %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -779,11 +781,12 @@ return [
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
+// src/Optimize/Convert2innodb.php, row 69
 "Slice" => "Modul",
 
 // admin/aafinder.php, row 139
 // central/installapp.php, row 1271
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckCkeditorUse.php, row 97
 // src/Optimize/CheckObjectFormRefusals.php, row 96
 "Module" => "Modul", // ai 2026-06
@@ -796,7 +799,7 @@ return [
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
 // include/logs.php, row 293
-// src/AA_Plannedtask.php, row 149
+// src/AA_Plannedtask.php, row 204
 "Log" => "",
 
 // admin/aafinder.php, row 172
@@ -932,8 +935,8 @@ return [
 
 // admin/anonym_wizard.php, row 129
 // admin/write_mail.php, row 260
-// include/menu_util.php, row 618
-// include/stringexpand.php, row 9858, 9937
+// include/menu_util.php, row 629
+// include/stringexpand.php, row 9874, 9953
 "Send" => "Odosla\x9D", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
@@ -986,7 +989,7 @@ return [
 // admin/se_profile.php, row 207
 // admin/search_replace.php, row 176
 // admin/sliceexp_text.php, row 365
-// include/field.class.php, row 1253, 1257
+// include/field.class.php, row 1332, 1336
 // include/form.class.php, row 211
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
@@ -1098,10 +1101,10 @@ return [
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
-// include/field.class.php, row 638
+// include/field.class.php, row 696
 // include/filedit.php, row 115
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1642
+// include/metabase.class.php, row 1643
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
@@ -1122,7 +1125,7 @@ return [
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
-// include/field.class.php, row 642
+// include/field.class.php, row 700
 // include/formutil.php, row 1784, 1921
 // include/menu_util.php, row 61
 // include/profile.php, row 69
@@ -1274,7 +1277,7 @@ return [
 
 // admin/itemedit.php, row 305
 // include/date.php, row 189
-// include/field.class.php, row 1253
+// include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Chyba v",
 
@@ -1562,7 +1565,7 @@ return [
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
 // src/Optimize/AbstractOptimize.php, row 171
 // src/Optimize/CheckRequiredSettings.php, row 69
@@ -1593,7 +1596,7 @@ return [
 // admin/se_fields.php, row 301
 // include/constants.php, row 454
 // include/constedit.php, row 82
-// include/field.class.php, row 1257
+// include/field.class.php, row 1336
 // src/Optimize/AbstractOptimize.php, row 175
 "Priority" => "Priorita",
 
@@ -1793,9 +1796,9 @@ return [
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1667
+// include/metabase.class.php, row 1668
 // include/statestore.php, row 1077, 1414
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
 // src/Import/DetailCatalog.php, row 145
 "Action" => "Akcia", // ai 2026-06
@@ -2189,7 +2192,7 @@ return [
 "User" => "U\x9E\xEDvate\xBE", // ai 2026-06
 
 // admin/se_history.php, row 144
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/CheckImports.php, row 287
 // src/Optimize/CheckQueue.php, row 88, 98
 "Time" => "\xC8as", // ai 2026-06
@@ -2202,7 +2205,7 @@ return [
 
 // admin/se_history.php, row 167
 // include/itemfunc.php, row 201
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Item ID" => "ID spr\xE1vy", // ai 2026-06
 
 // admin/se_history.php, row 216, 217
@@ -2908,7 +2911,7 @@ return [
 // admin/sliceexp_text.php, row 365
 // include/feeding.php, row 485, 542
 // include/statestore.php, row 1077
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 // src/Optimize/AbstractOptimize.php, row 170
 "ID" => "",
 
@@ -3171,7 +3174,7 @@ return [
 // admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 111
 // admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1194
+// include/itemfunc.php, row 613, 1202
 // include/um_util.php, row 296
 "Login name" => "U\x9Eivate\xBEsk\xE9 meno",
 
@@ -3349,7 +3352,7 @@ return [
 "Admin - Slice settings" => "Spr\xE1va modulu - \xDAprava modulu",
 
 // admin/slicedit.php, row 258
-// include/menu_util.php, row 624
+// include/menu_util.php, row 635
 "Language" => "Jazyk", // ai 2026-06
 
 // admin/slicedit.php, row 260
@@ -3915,7 +3918,7 @@ return [
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
-// include/menu_util.php, row 437, 747
+// include/menu_util.php, row 448, 758
 // include/slice.class.php, row 1394
 // src/Central/FindingText.php, row 496
 "Alerts" => "Zasielanie", // ai 2026-06
@@ -4664,7 +4667,7 @@ return [
 // include/menu_util.php, row 74
 // src/Optimize/CheckAlerts.php, row 50
 // src/Optimize/CheckQueue.php, row 58
-// src/Optimize/CheckQueuedClassMissing.php, row 71
+// src/Optimize/CheckQueuedClassMissing.php, row 72
 "Task Manager" => "Spr\xE1vca \xFAloh", // ai 2026-06
 
 // central/synchronize3.php, row 114
@@ -4734,7 +4737,7 @@ return [
 
 // include/constants.php, row 456
 // include/logs.php, row 781, 813
-// src/Optimize/CheckQueuedClassMissing.php, row 65
+// src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Trieda", // ai 2026-06
 
 // include/constants.php, row 460
@@ -5159,66 +5162,81 @@ return [
 // include/feeding.php, row 539
 "Remote node" => "Vzdialen\xFD uzol", // ai 2026-06
 
-// include/field.class.php, row 651
+// include/field.class.php, row 162
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+
+// include/field.class.php, row 167
+"code - its indentation and the last new line are kept on purpose" => "",
+
+// include/field.class.php, row 174
+"stores the text of the selected items" => "",
+
+// include/field.class.php, row 180
+"constants of a group" => "",
+
+// include/field.class.php, row 187
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+
+// include/field.class.php, row 709
 "Move to another field" => "Presun\xFA\x9D do inej polo\x9Eky", // ai 2026-06
 
-// include/field.class.php, row 1005
+// include/field.class.php, row 1084
 // include/itemview.php, row 127
 "number of found items" => "po\xE8et nalezen\xFDch \xE8l\xE1nk\xF9",
 
-// include/field.class.php, row 1006
+// include/field.class.php, row 1085
 "index of item within whole listing (begins with 0)" => "index spr\xE1vy v celom v\xFDpise (za\xE8\xEDna od 0)", // ai 2026-06
 
-// include/field.class.php, row 1007
+// include/field.class.php, row 1086
 "index of item within a page (it begins from 0 on each page listed by pagescroller)" => "index spr\xE1vy na str\xE1nke (na ka\x9Edej str\xE1nke vyp\xEDsanej pagescrollerom za\xE8\xEDna od 0)", // ai 2026-06
 
-// include/field.class.php, row 1008
+// include/field.class.php, row 1087
 "index of a group on page (it begins from 0 on each page)" => "index skupiny na str\xE1nke (na ka\x9Edej str\xE1nke za\xE8\xEDna od 0)", // ai 2026-06
 
-// include/field.class.php, row 1009
+// include/field.class.php, row 1088
 "index of item within a group on page (it begins from 0 on each group)" => "index spr\xE1vy v skupine na str\xE1nke (v ka\x9Edej skupine za\xE8\xEDna od 0)", // ai 2026-06
 
-// include/field.class.php, row 1010
+// include/field.class.php, row 1089
 "alias for Item ID" => "alias pre \xE8\xEDslo \xE8l\xE1nku",
 
-// include/field.class.php, row 1011
+// include/field.class.php, row 1090
 "alias for Short Item ID" => "alias pre skr\xE1ten\xE9 c\xEDslo cl\xE1nku",
 
-// include/field.class.php, row 1019, 1020
+// include/field.class.php, row 1098, 1099
 "alias used on admin page index.php for itemedit url" => "alias pou\x9E\xEDvan\xFD v administrat\xEDvnych str\xE1nk\xE1ch index.php pre URL itemedit.php",
 
-// include/field.class.php, row 1021
+// include/field.class.php, row 1100
 "Alias used on admin page index.php for edit discussion url" => "Alias pou\x9E\xEDvan\xFD v administrat\xEDvnych str\xE1nk\xE1ch index.php pre URL discedit.php",
 
-// include/field.class.php, row 1022
+// include/field.class.php, row 1101
 "Title of Slice for RSS" => "Meno modulu pre RSS",
 
-// include/field.class.php, row 1023
+// include/field.class.php, row 1102
 "Link to the Slice for RSS" => "Odkaz na modul pre RSS",
 
-// include/field.class.php, row 1024
+// include/field.class.php, row 1103
 "Short description (owner and name) of slice for RSS" => "Kr\xE1tk\xFD popis (vlastn\xEDk a meno) modulu pre RSS",
 
-// include/field.class.php, row 1025
+// include/field.class.php, row 1104
 "Date RSS information is generated, in RSS date format" => "D\xE1tum v RSS prehlade je generovan\xFD vo form\xE1te RSS",
 
-// include/field.class.php, row 1026
+// include/field.class.php, row 1105
 "Slice name" => "N\xE1zov modulu", // ai 2026-06
 
-// include/field.class.php, row 1028
+// include/field.class.php, row 1107
 "Current MLX language" => "Aktu\xE1lny jazyk MLX", // ai 2026-06
 
-// include/field.class.php, row 1029
+// include/field.class.php, row 1108
 "HTML markup direction tag (e.g. DIR=RTL)" => "HTML zna\xE8ka smeru textu (napr. DIR=RTL)", // ai 2026-06
 
-// include/field.class.php, row 1112, 1393
+// include/field.class.php, row 1191, 1472
 // src/Util/Searchfields.php, row 179
 "-- any text field --" => "-- \xBEubovo\xBEn\xE1 textov\xE1 polo\x9Eka --", // ai 2026-06
 
-// include/field.class.php, row 1221
+// include/field.class.php, row 1300
 " (this)" => " (tento)", // ai 2026-06
 
-// include/field.class.php, row 1275, 1288, 1301
+// include/field.class.php, row 1354, 1367, 1380
 "Can't copy field" => "",
 
 // include/filedit.php, row 82
@@ -5455,7 +5473,7 @@ return [
 "Offer" => "Ponuka", // ai 2026-06
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10850, 10873
+// include/stringexpand.php, row 10866, 10889
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5642,7 +5660,7 @@ return [
 // include/item.php, row 436
 "Constant level (used for hierarchical constants)" => "\xDArove\xF2 kon\x9Atanty (pou\x9E\xEDva sa pre hierarchick\xE9 kon\x9Atanty)", // ai 2026-06
 
-// include/item.php, row 827
+// include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: nespr\xE1vna funkcia aliasu %1 pre %2", // ai 2026-06
 
 // include/item_content.php, row 1126, 1184
@@ -5854,151 +5872,151 @@ return [
 // include/itemfunc.php, row 1082
 "Remove whitespaces from beginning and end and also normalize UTF (NFC)" => "Odstr\xE1ni medzery zo za\xE8iatku a konca a tie\x9E normalizuje UTF (NFC)", // ai 2026-06
 
-// include/itemfunc.php, row 1097
+// include/itemfunc.php, row 1105
 "Item IDs" => "ID \xE8l\xE1nku",
 
-// include/itemfunc.php, row 1132
+// include/itemfunc.php, row 1140
 "The tag '%1' could not be stored: %2" => "",
 
-// include/itemfunc.php, row 1166
+// include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "ID u\x9E\xEDvate\xBEa = v\x9Edy ulo\x9E\xED ID aktu\xE1lneho u\x9E\xEDvate\xBEa", // ai 2026-06
 
-// include/itemfunc.php, row 1170
+// include/itemfunc.php, row 1178
 "Inserts the identity of the current user, no matter what the user sets." => "Vlo\x9E\xED identitu aktu\xE1lneho u\x9E\xEDvate\xBEa bez oh\xBEadu na to, \xE8o u\x9E\xEDvate\xBE zad\xE1.", // ai 2026-06
 
-// include/itemfunc.php, row 1222
+// include/itemfunc.php, row 1230
 "Now = always store current time" => "Teraz = v\x9Edy ulo\x9E\xED aktu\xE1lny \xE8as", // ai 2026-06
 
-// include/itemfunc.php, row 1226
+// include/itemfunc.php, row 1234
 "Inserts the current time, no matter what the user sets." => "Vlo\x9E\xED aktu\xE1lny \xE8as bez oh\xBEadu na to, \xE8o u\x9E\xEDvate\xBE zad\xE1.", // ai 2026-06
 
-// include/itemfunc.php, row 1260
+// include/itemfunc.php, row 1268
 "Computed field for INSERT/UPDATE" => "Po\xE8\xEDtan\xE1 polo\x9Eka pre INSERT/UPDATE", // ai 2026-06
 
-// include/itemfunc.php, row 1264
+// include/itemfunc.php, row 1272
 "The field is the result of expression written in \"Code for unaliasing\". It is a good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polo\x9Eka je v\xFDsledkom v\xFDrazu zap\xEDsan\xE9ho v \"K\xF3d pre odaliasovanie\". Je to dobr\xE9 rie\x9Aenie pre v\x9Aetky hodnoty, ktor\xE9 mo\x9Eno predpo\xE8\xEDta\x9D, preto\x9Ee ich v\xFDpo\xE8et v \xE8ase zobrazenia spr\xE1vy by bol pomal\xFD. \xC1no, m\xF4\x9Eete tu pou\x9Ei\x9D {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1273
+// include/itemfunc.php, row 1281
 "Code for unaliasing (INSERT)" => "K\xF3d pre odaliasovanie (INSERT)", // ai 2026-06
 
-// include/itemfunc.php, row 1273, 1309
+// include/itemfunc.php, row 1281, 1317
 "There you can write any string. The string will be unaliased on item store, so you can use any {...} construct as well as field aliases here" => "Sem m\xF4\x9Eete nap\xEDsa\x9D \xBEubovo\xBEn\xFD re\x9Dazec. Re\x9Dazec sa odaliasuje pri ulo\x9Een\xED spr\xE1vy, tak\x9Ee tu m\xF4\x9Eete pou\x9Ei\x9D ak\xFDko\xBEvek {...} kon\x9Atrukt aj aliasy polo\x9Eiek", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "Code for unaliasing (UPDATE)" => "K\xF3d pre odaliasovanie (UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1274
+// include/itemfunc.php, row 1282
 "The same as above, but just for UPDATE operation. If unfilled, the value of the field stays unchanged" => "Rovnak\xE9 ako vy\x9A\x9Aie, ale len pre oper\xE1ciu UPDATE. Ak nie je vyplnen\xE9, hodnota polo\x9Eky zost\xE1va nezmenen\xE1", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Multivalue delimiter" => "Odde\xBEova\xE8 viacn\xE1sobn\xFDch hodn\xF4t", // ai 2026-06
 
-// include/itemfunc.php, row 1275
+// include/itemfunc.php, row 1283
 "Character or string, which will split the computed string into multiple values (the same field)" => "Znak alebo re\x9Dazec, ktor\xFD rozdel\xED vypo\xE8\xEDtan\xFD re\x9Dazec na viac hodn\xF4t (tej istej polo\x9Eky)", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "Recompute every" => "Interval prepo\xE8tu", // ai 2026-06
 
-// include/itemfunc.php, row 1276
+// include/itemfunc.php, row 1284
 "The field will be recomputed every minute, hour, ... (using UPDATE code above). The times are not exact - the minute means something 1-10 minutes. If not filled, the field will be recomputed only on insert/update of the item." => "Polo\x9Eka sa prepo\xE8\xEDta ka\x9Ed\xFA min\xFAtu, hodinu, ... (pomocou UPDATE k\xF3du vy\x9A\x9Aie). \xC8asy nie s\xFA presn\xE9 - min\xFAta znamen\xE1 pribli\x9Ene 1-10 min\xFAt. Ak nie je vyplnen\xE9, polo\x9Eka sa prepo\xE8\xEDta len pri vlo\x9Een\xED/zmene spr\xE1vy.", // ai 2026-06
 
-// include/itemfunc.php, row 1296
+// include/itemfunc.php, row 1304
 "Computed field" => "Po\xE8\xEDtan\xE1 polo\x9Eka", // ai 2026-06
 
-// include/itemfunc.php, row 1300
+// include/itemfunc.php, row 1308
 "The field is the result of expression written in \\\"Code for unaliasing\\\". It is good solution for all values, which could be precomputed, since its computation on item-show-time would be slow. Yes, you can use {view...}, {include...}, {switch...} here" => "Polo\x9Eka je v\xFDsledkom v\xFDrazu zap\xEDsan\xE9ho v \\\"K\xF3d pre odaliasovanie\\\". Je to dobr\xE9 rie\x9Aenie pre v\x9Aetky hodnoty, ktor\xE9 mo\x9Eno predpo\xE8\xEDta\x9D, preto\x9Ee ich v\xFDpo\xE8et v \xE8ase zobrazenia spr\xE1vy by bol pomal\xFD. \xC1no, m\xF4\x9Eete tu pou\x9Ei\x9D {view...}, {include...}, {switch...}", // ai 2026-06
 
-// include/itemfunc.php, row 1309
+// include/itemfunc.php, row 1317
 "Code for unaliasing (INSERT+UPDATE)" => "K\xF3d pre odaliasovanie (INSERT+UPDATE)", // ai 2026-06
 
-// include/itemfunc.php, row 1331
+// include/itemfunc.php, row 1339
 "SEO Name" => "SEO n\xE1zov", // ai 2026-06
 
-// include/itemfunc.php, row 1335
+// include/itemfunc.php, row 1343
 "If the field is not filled, compute seoname from _#HEADLINE alias (or another if specified) unique to all slices in sitemodules, where the slice is mentioned in \"Uses slices\" settings. Basically the SEO Name alias is shortcut for computed field with {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}" => "Ak polo\x9Eka nie je vyplnen\xE1, vypo\xE8\xEDta sa seoname z aliasu _#HEADLINE (alebo in\xE9ho, ak je zadan\xFD), unik\xE1tne pre v\x9Aetky moduly v site moduloch, kde je modul uveden\xFD v nastaven\xED \"Uses slices\". V podstate je alias SEO n\xE1zvu skratkou pre po\xE8\xEDtan\xFA polo\x9Eku s {ifset:{seo.............}:_#1:{seoname:{_#HEADLINE}:all:CHARSET}}", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "Alias to compute from" => "Alias, z ktor\xE9ho sa po\xE8\xEDta", // ai 2026-06
 
-// include/itemfunc.php, row 1344
+// include/itemfunc.php, row 1352
 "if not specified, the _#HEADLINE is used" => "ak nie je zadan\xFD, pou\x9Eije sa _#HEADLINE", // ai 2026-06
 
-// include/itemfunc.php, row 1362
+// include/itemfunc.php, row 1372
 "Unique number for this field (from 1,..)" => "Unik\xE1tne \xE8\xEDslo pre t\xFAto polo\x9Eku (od 1,..)", // ai 2026-06
 
-// include/itemfunc.php, row 1366
-"Unique number in sequence 1,2,3,..." => "Unik\xE1tne \xE8\xEDslo v porad\xED 1,2,3,...", // ai 2026-06
+// include/itemfunc.php, row 1376
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
 
-// include/itemfunc.php, row 1391
+// include/itemfunc.php, row 1499
 "File = uploaded file" => "S\xFAbor = nahran\xFD s\xFAbor", // ai 2026-06
 
-// include/itemfunc.php, row 1395
+// include/itemfunc.php, row 1503
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Ulo\x9E\xED nahran\xFD s\xFAbor a odkaz na\xF2, parametre sa pou\x9Eij\xFA, len ak je typ image/something.", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Mime types accepted" => "Akceptovan\xE9 MIME typy", // ai 2026-06
 
-// include/itemfunc.php, row 1404
+// include/itemfunc.php, row 1512
 "Only files of matching mime types will be accepted" => "Akceptovan\xE9 bud\xFA len s\xFAbory zodpovedaj\xFAcich mime typov", // ai 2026-06
 
-// include/itemfunc.php, row 1405
+// include/itemfunc.php, row 1513
 "Maximum image width" => "Maxim\xE1lna \x9A\xEDrka obr\xE1zka", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "Maximum image height" => "Maxim\xE1lna v\xFD\x9Aka obr\xE1zka", // ai 2026-06
 
-// include/itemfunc.php, row 1406
+// include/itemfunc.php, row 1514
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Obr\xE1zok bude prevzorkovan\xFD tak, aby sa zmestil do t\xFDchto limitov, pri zachovan\xED pomeru str\xE1n.", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "Other fields" => "\xCFal\x9Aie polo\x9Eky", // ai 2026-06
 
-// include/itemfunc.php, row 1407
+// include/itemfunc.php, row 1515
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Zoznam \xEFal\x9A\xEDch polo\x9Eiek, do ktor\xFDch sa m\xE1 ulo\x9Ei\x9D tento obr\xE1zok, oddelen\xFD ##. Nefunguje dobre pri viacn\xE1sobnom nahr\xE1van\xED s\xFAborov.", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "Upload policy" => "Sp\xF4sob nahr\xE1vania", // ai 2026-06
 
-// include/itemfunc.php, row 1408
+// include/itemfunc.php, row 1516
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Tento parameter ur\xE8uje, \xE8o sa stane, ak nahr\xE1van\xFD s\xFAbor u\x9E existuje:<br>new - AA vytvor\xED nov\xFD n\xE1zov s\xFAboru (pridan\xEDm _x na koniec) a ulo\x9E\xED ho pod t\xFDmto nov\xFDm n\xE1zvom (predvolen\xE9)<br>overwrite - star\xFD s\xFAbor s rovnak\xFDm n\xE1zvom sa prep\xED\x9Ae<br>backup - star\xFD s\xFAbor sa skop\xEDruje do nov\xE9ho (neexistuj\xFAceho) s\xFAboru a aktu\xE1lny s\xFAbor sa ulo\x9E\xED pod p\xF4vodn\xFDm n\xE1zvom.<br>Vo v\x9Aetk\xFDch pr\xEDpadoch sa n\xE1zov s\xFAboru o\x9Aetr\xED, tak\x9Ee v\x9Aetky neslovn\xE9 znaky bud\xFA nahraden\xE9 pod\xE8iarkovn\xEDkom.", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "Exact dimensions" => "Presn\xE9 rozmery", // ai 2026-06
 
-// include/itemfunc.php, row 1409
+// include/itemfunc.php, row 1517
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ak je nastaven\xE9 na 1, obr\xE1zok sa zmen\x9A\xED presne na zadan\xE9 rozmery (a v pr\xEDpade potreby sa ore\x9Ee). Predvolen\xE9 je 0 alebo pr\xE1zdne: pri zmene ve\xBEkosti obr\xE1zka sa zachov\xE1 pomer str\xE1n.", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Filename template" => "\x8Aabl\xF3na n\xE1zvu s\xFAboru", // ai 2026-06
 
-// include/itemfunc.php, row 1410
+// include/itemfunc.php, row 1518
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Premenuje s\xFAbor pod\xBEa \x9Aabl\xF3ny. M\xF4\x9Eete pou\x9Ei\x9D AA v\xFDrazy aj \x9Apeci\xE1lne aliasy _#name a _#ext alebo _#full (n\xE1zov s\xFAboru, pr\xEDpona a cel\xFD n\xE1zov). Aliasy spr\xE1vy v AA v\xFDrazoch nefunguj\xFA pri INSERT (spr\xE1va v \xE8ase z\xE1pisu s\xFAboru e\x9Ate neexistuje). Pri UPDATE fungova\x9D bud\xFA.", // ai 2026-06
 
-// include/itemfunc.php, row 1566
+// include/itemfunc.php, row 1674
 "Password and Change Password" => "Heslo a Zmena hesla", // ai 2026-06
 
-// include/itemfunc.php, row 1570
+// include/itemfunc.php, row 1678
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Ulo\x9E\xED hodnotu z typu polo\x9Eky \"Heslo a zmena hesla\". Najprv over\xED, \xE8i sa nov\xE9 heslo zhoduje so znovu zadan\xFDm nov\xFDm heslom, a ak \xE1no, nov\xE9 heslo za\x9Aifruje a ulo\x9E\xED.", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Copy of password" => "K\xF3pia hesla", // ai 2026-06
 
-// include/itemfunc.php, row 1579
+// include/itemfunc.php, row 1687
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id (id polo\x9Eky), do ktorej chcete ulo\x9Ei\x9D k\xF3piu hesla. Niekedy u\x9Eito\xE8n\xE9, ak chcete umo\x9Eni\x9D \xBEu\xEFom z\xEDska\x9D ich star\xE9 heslo. D\xF4razne odpor\xFA\xE8ame neuklada\x9D ho ako \xE8ist\xFD text, ale za\x9Aifrova\x9D ho. Pozrite druh\xFD parameter.", // ai 2026-06
 
-// include/itemfunc.php, row 1580, 1626
+// include/itemfunc.php, row 1688, 1734
 "Encrypt phrase" => "\x8Aifrovacia fr\xE1za", // ai 2026-06
 
-// include/itemfunc.php, row 1580
+// include/itemfunc.php, row 1688
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ak zad\xE1te polo\x9Eku \"K\xF3pia hesla\", odpor\xFA\xE8ame heslo v datab\xE1ze za\x9Aifrova\x9D. Vypl\xF2te sem \xBEubovo\xBEn\xFD re\x9Dazec. Ak potom heslo potrebujete, m\xF4\x9Eete ho z polo\x9Eky de\x9Aifrova\x9D pomocou rovnakej fr\xE1zy - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1613
+// include/itemfunc.php, row 1721
 "2FA Secret" => "Tajn\xFD k\xBE\xFA\xE8 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1617
+// include/itemfunc.php, row 1725
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Vygeneruje a ulo\x9E\xED tajn\xFD k\xBE\xFA\xE8 pre dvojfaktorov\xFA autentifik\xE1ciu, pr\xEDpadne za\x9Aifrovan\xFD heslom", // ai 2026-06
 
-// include/itemfunc.php, row 1626
+// include/itemfunc.php, row 1734
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Heslo, ktor\xE9 sa pou\x9Eije na za\x9Aifrovanie hodnoty tejto polo\x9Eky. M\xF4\x9Ee obsahova\x9D AA v\xFDrazy alebo aliasy (pre spr\xE1vu u\x9E\xEDvate\xBEa v module Spr\xE1va \xE8itate\xBEov)", // ai 2026-06
 
 // include/itemview.php, row 120
@@ -6424,75 +6442,75 @@ return [
 // include/menu_util.php, row 131
 "Import conf from CSV..." => "Import konfigur\xE1cie z CSV...", // ai 2026-06
 
-// include/menu_util.php, row 415
+// include/menu_util.php, row 426
 "Part of %s" => "S\xFA\xE8as\x9D %s", // ai 2026-06
 
-// include/menu_util.php, row 432
+// include/menu_util.php, row 443
 "Other slices" => "Ostatn\xE9 moduly", // ai 2026-06
 
-// include/menu_util.php, row 436
+// include/menu_util.php, row 447
 "Reader Management Slice" => "Modul spr\xE1vy \xE8itate\xBEov", // ai 2026-06
 
-// include/menu_util.php, row 438
+// include/menu_util.php, row 449
 "Jump inside control panel" => "Skok v r\xE1mci administr\xE1cie", // ai 2026-06
 
-// include/menu_util.php, row 439
+// include/menu_util.php, row 450
 // include/slice.class.php, row 1429
 // src/Central/FindingText.php, row 311
 "Links" => "Odkazy", // ai 2026-06
 
-// include/menu_util.php, row 440
+// include/menu_util.php, row 451
 "MySQL Auth (old version)" => "MySQL autentifik\xE1cia (star\xE1 verzia)", // ai 2026-06
 
-// include/menu_util.php, row 441
+// include/menu_util.php, row 452
 // src/Module/Poll/Menu.php, row 83
 "Polls" => "Ankety", // ai 2026-06
 
-// include/menu_util.php, row 462
+// include/menu_util.php, row 473
 "New slice" => "Nov\xFD modul",
 
-// include/menu_util.php, row 466
+// include/menu_util.php, row 477
 "Switch module" => "Prepn\xFA\x9D modul", // ai 2026-06
 
-// include/menu_util.php, row 600, 611
+// include/menu_util.php, row 611, 622
 "Apply" => "Pou\x9Ei\x9D", // ai 2026-06
 
-// include/menu_util.php, row 604
+// include/menu_util.php, row 615
 "-- Default for module --" => "-- Predvolen\xE9 pre modul --", // ai 2026-06
 
-// include/menu_util.php, row 612
+// include/menu_util.php, row 623
 "Switches the admin interface language; the page reloads." => "Prepne jazyk administra\xE8n\xE9ho rozhrania; str\xE1nka sa znovu na\xE8\xEDta.", // ai 2026-06
 
-// include/menu_util.php, row 617
+// include/menu_util.php, row 628
 "What's working, what isn't \xE2\x80\x94 tell the AA team." => "\xC8o funguje a \xE8o nie \x97 nap\xED\x9Ate t\xEDmu AA.", // ai 2026-06
 
-// include/menu_util.php, row 620
+// include/menu_util.php, row 631
 // src/Import/Definition.php, row 86
 "Settings" => "Nastavenia", // ai 2026-06
 
-// include/menu_util.php, row 623
+// include/menu_util.php, row 634
 "Theme" => "T\xE9ma", // ai 2026-06
 
-// include/menu_util.php, row 625
+// include/menu_util.php, row 636
 "Feedback" => "Sp\xE4tn\xE1 v\xE4zba", // ai 2026-06
 
-// include/menu_util.php, row 751
+// include/menu_util.php, row 762
 // include/slice.class.php, row 679
 "Reader management" => "Spr\xE1va \xE8itate\xBEov", // ai 2026-06
 
-// include/menu_util.php, row 763
+// include/menu_util.php, row 774
 "logout" => "odhl\xE1si\x9D", // ai 2026-06
 
-// include/menu_util.php, row 771
+// include/menu_util.php, row 782
 "Search.." => "H\xBEada\x9D..", // ai 2026-06
 
-// include/menu_util.php, row 850
+// include/menu_util.php, row 861
 "Copyright (C) 2001 the <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>" => "Copyright (C) 2001 <a href=\"https://www.apc.org\">Association for Progressive Communications (APC)</a>", // ai 2026-06
 
-// include/menu_util.php, row 860
+// include/menu_util.php, row 871
 "Collapse / expand menu" => "Zbali\x9D / rozbali\x9D menu", // ai 2026-06
 
-// include/metabase.class.php, row 1662
+// include/metabase.class.php, row 1663
 "More" => "Viac", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6577,7 +6595,7 @@ return [
 "More users found. Refine your search." => "N\xE1jden\xFDch viac u\x9E\xEDvate\xBEov. Upresnite h\xBEadanie.", // ai 2026-06
 
 // include/searchbar.class.php, row 54
-// src/AA_Plannedtask.php, row 62, 127
+// src/AA_Plannedtask.php, row 72, 182
 "Condition" => "Podmienka", // ai 2026-06
 
 // include/searchbar.class.php, row 55
@@ -6603,7 +6621,7 @@ return [
 "Store search" => "Ulo\x9Ei\x9D", // ai 2026-06
 
 // include/searchbar.class.php, row 633
-"Order" => "Zoradit",
+"Order" => "Zoradi\x9D", // ai 2026-10
 
 // include/searchbar.class.php, row 706
 "Advanced search" => "Roz\x9A\xEDren\xE9 vyh\xBEad\xE1vanie", // ai 2026-06
@@ -6975,84 +6993,84 @@ return [
 // include/stringexpand.php, row 6161
 "No module for dictionary slice" => "Nen\xE1jden\xFD slovn\xEDkov\xFD modul", // ai 2026-06
 
-// include/stringexpand.php, row 7789
+// include/stringexpand.php, row 7799
 "version" => "verzia", // ai 2026-06
 
-// include/stringexpand.php, row 7973
+// include/stringexpand.php, row 7983
 "show" => "zobrazi\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 7974
+// include/stringexpand.php, row 7984
 "hide" => "skry\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 7975
+// include/stringexpand.php, row 7985
 "loading" => "na\xE8\xEDtavam", // ai 2026-06
 
-// include/stringexpand.php, row 9100
+// include/stringexpand.php, row 9116
 "E-mail confirmed." => "E-mail potvrden\xFD.", // ai 2026-06
 
-// include/stringexpand.php, row 9104
+// include/stringexpand.php, row 9120
 "E-mail unsubscribed" => "E-mail odhl\xE1sen\xFD", // ai 2026-06
 
-// include/stringexpand.php, row 9853
+// include/stringexpand.php, row 9869
 "Forgot your password? Fill in your email." => "Zabudli ste heslo? Vypl\xF2te svoj e-mail.", // ai 2026-06
 
-// include/stringexpand.php, row 9855
+// include/stringexpand.php, row 9871
 // src/Central/FindingText.php, row 457
 "e-mail" => "",
 
-// include/stringexpand.php, row 9873, 9877
+// include/stringexpand.php, row 9889, 9893
 "Unable to find user - please check if it has been misspelled." => "U\x9E\xEDvate\xBEa sa nepodarilo n\xE1js\x9D - skontrolujte pros\xEDm, \xE8i nie je meno nap\xEDsan\xE9 chybne.", // ai 2026-06
 
-// include/stringexpand.php, row 9891
+// include/stringexpand.php, row 9907
 "Password link" => "Odkaz pre heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9892
+// include/stringexpand.php, row 9908
 "Password change url parameter" => "URL parameter pre zmenu hesla", // ai 2026-06
 
-// include/stringexpand.php, row 9904
+// include/stringexpand.php, row 9920
 "Password change" => "Zmena hesla", // ai 2026-06
 
-// include/stringexpand.php, row 9905
+// include/stringexpand.php, row 9921
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pre zmenu hesla nav\x9At\xEDvte pros\xEDm nasleduj\xFAcu adresu:<br>%1<br>Zmena bude mo\x9En\xE1 po\xE8as dvoch hod\xEDn - potom platnos\x9D k\xBE\xFA\xE8a vypr\x9A\xED a budete musie\x9D po\x9Eiada\x9D o nov\xFD.", // ai 2026-06
 
-// include/stringexpand.php, row 9914
+// include/stringexpand.php, row 9930
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s k\xBE\xFA\xE8om pre zmenu hesla bol pr\xE1ve odoslan\xFD na e-mailov\xFA adresu: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9925, 9954
+// include/stringexpand.php, row 9941, 9970
 "Bad or expired key." => "Chybn\xFD alebo expirovan\xFD k\xBE\xFA\xE8.", // ai 2026-06
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 9946
 "Fill in the new password" => "Zadajte nov\xE9 heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9932
+// include/stringexpand.php, row 9948
 "New password" => "Nov\xE9 heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9933
+// include/stringexpand.php, row 9949
 "Retype New Password" => "Zopakujte nov\xE9 heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9957
+// include/stringexpand.php, row 9973
 "Passwords do not match - please try again." => "Hesl\xE1 sa nezhoduj\xFA - sk\xFAste to pros\xEDm znova.", // ai 2026-06
 
-// include/stringexpand.php, row 9960
+// include/stringexpand.php, row 9976
 "The password must be at least 6 characters long." => "Heslo mus\xED ma\x9D aspo\xF2 6 znakov.", // ai 2026-06
 
-// include/stringexpand.php, row 9966
+// include/stringexpand.php, row 9982
 "Password changed." => "Heslo bolo zmenen\xE9.", // ai 2026-06
 
-// include/stringexpand.php, row 9968
+// include/stringexpand.php, row 9984
 "An error occurred during password change - please contact: %1." => "Pri zmene hesla do\x9Alo k chybe - kontaktujte pros\xEDm: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10847, 10870
+// include/stringexpand.php, row 10863, 10886
 "Are you sure you want to permanently DELETE this record?" => "Naozaj chcete natrvalo VYMAZA\x8D tento z\xE1znam?", // ai 2026-06
 
-// include/stringexpand.php, row 10853, 10856, 10876, 10879
+// include/stringexpand.php, row 10869, 10872, 10892, 10895
 // src/Widget/RimWidget.php, row 270
 "edit" => "upravi\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 10859, 10882
+// include/stringexpand.php, row 10875, 10898
 "back" => "sp\xE4\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 10862, 10885
+// include/stringexpand.php, row 10878, 10901
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "pretiahnite s\xFAbory sem alebo kliknite pre nahranie", // ai 2026-06
 
@@ -7472,68 +7490,83 @@ return [
 // src/Manager.php, row 881
 "No item found" => "Nenalezena \x9E\xE1dn\xE1 zpr\xE1va",
 
-// src/AA_Plannedtask.php, row 61, 127
+// src/AA_Plannedtask.php, row 71, 182
 // src/Optimize/CheckQueue.php, row 98, 178
 "Task" => "\xDAloha", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 62
+// src/AA_Plannedtask.php, row 72
 "If specified, the task is performed only if Condition is evaluated to value different from zero or empty value" => "Ak je zadan\xE1, \xFAloha sa vykon\xE1, len ak sa Podmienka vyhodnot\xED na hodnotu r\xF4znu od nuly alebo pr\xE1zdnej hodnoty", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 63
+// src/AA_Plannedtask.php, row 73
 "Event to run" => "Sp\xFA\x9A\x9Dacia udalos\x9D", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "New Item" => "Nov\xE1 spr\xE1va", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 65
+// src/AA_Plannedtask.php, row 75
 "Item Updated" => "Spr\xE1va zmenen\xE1", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 66
+// src/AA_Plannedtask.php, row 76
 "Event, when the task should be executed. It is independent on Time setting below (so you can run the task when Event occures and also on specific time). If you do not specify \"+ seconds\" parameter or set it to 0, then the task is executed directly. If the \"+ seconds\" offset is set, then the task is planed to execute once after x seconds." => "Udalos\x9D, pri ktorej sa m\xE1 \xFAloha vykona\x9D. Je nez\xE1visl\xE1 od nastavenia \xC8asu ni\x9E\x9Aie (\xFAlohu teda m\xF4\x9Eete spusti\x9D pri Udalosti a z\xE1rove\xF2 v ur\xE8enom \xE8ase). Ak nezad\xE1te parameter \"+ sekundy\" alebo ho nastav\xEDte na 0, \xFAloha sa vykon\xE1 priamo. Ak je posun \"+ sekundy\" nastaven\xFD, \xFAloha sa napl\xE1nuje na jedno vykonanie po x sekund\xE1ch.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Time to run" => "\xC8as spustenia", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 67
+// src/AA_Plannedtask.php, row 77
 "Specify the time, when the task should be executed. It will be then processed periodically at this time. The specification of the time should be in \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">Relative Format</a>\", so the time like:<br>\"midnight\" - runs every midnight <br>\"+1 hour\" - runs every hour, <br>\"+30 min\" - runs every 30 minutes, <br>\"16:00\" - runs every day at 16:00<br>\"Monday 10:00\" - runs every Monday at 16:00<br>\"first day of this month 10:00\"<br>The times are not exact, the tasks are performed one after another by the script, which runs every 5 minutes, or so." => "Zadajte \xE8as, kedy sa m\xE1 \xFAloha vykona\x9D. Bude potom spracov\xE1van\xE1 pravidelne v tomto \xE8ase. \xC8as zadajte v \"<a href=\"https://www.php.net/manual/en/datetime.formats.relative.php\">relat\xEDvnom form\xE1te</a>\", teda napr\xEDklad:<br>\"midnight\" - spust\xED sa ka\x9Ed\xFA polnoc <br>\"+1 hour\" - spust\xED sa ka\x9Ed\xFA hodinu, <br>\"+30 min\" - spust\xED sa ka\x9Ed\xFDch 30 min\xFAt, <br>\"16:00\" - spust\xED sa ka\x9Ed\xFD de\xF2 o 16:00<br>\"Monday 10:00\" - spust\xED sa ka\x9Ed\xFD pondelok o 16:00<br>\"first day of this month 10:00\"<br>\xC8asy nie s\xFA presn\xE9, \xFAlohy vykon\xE1va jednu po druhej skript, ktor\xFD sa sp\xFA\x9A\x9Da pribli\x9Ene ka\x9Ed\xFDch 5 min\xFAt.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68, 127
+// src/AA_Plannedtask.php, row 78, 182
 "+ seconds" => "+ sekundy", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 68
+// src/AA_Plannedtask.php, row 78
 "Optionally specify the extra time offset added to previous time (in seconds).<br>It is hard to specify the \"15-th in the month\" by previous row, so you can combine both:<br> - \"time\" = \"first day of this month 10:00\"<br> - \"+ seconds\" = \"1209600\"<br> (60 seconds * 60 minutes * 24 hours * 14 days) - mention the 14 (1st + 14 = 15th)" => "Volite\xBEne zadajte dodato\xE8n\xFD \xE8asov\xFD posun pripo\xE8\xEDtan\xFD k predch\xE1dzaj\xFAcemu \xE8asu (v sekund\xE1ch).<br>Pomocou predch\xE1dzaj\xFAceho riadku je \x9Da\x9Ek\xE9 zada\x9D \"15. de\xF2 v mesiaci\", tak\x9Ee m\xF4\x9Eete skombinova\x9D oboje:<br> - \"\xE8as\" = \"first day of this month 10:00\"<br> - \"+ sekundy\" = \"1209600\"<br> (60 sek\xFAnd * 60 min\xFAt * 24 hod\xEDn * 14 dn\xED) - v\x9Aimnite si t\xFDch 14 (1. + 14 = 15.)", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 69
+// src/AA_Plannedtask.php, row 79
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Volite\xBEne zadajte kontext - dlh\xE9 Id spr\xE1vy, pre ktor\xFA sa \xFAloha vykon\xE1. V \xFAlohe potom m\xF4\x9Eete pou\x9Ei\x9D {id..............} a \xEFal\x9Aie aliasy spr\xE1vy. Id spr\xE1vy je mo\x9En\xE9 z\xEDska\x9D aj v premennej {var:aa_event_for}. Pri \"udalostn\xFDch\" \xFAloh\xE1ch (Spr\xE1va zmenen\xE1/nov\xE1) je v\x9Edy vyplnen\xE9 id zmenenej spr\xE1vy.", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 70
+// src/AA_Plannedtask.php, row 80
 "Saved by" => "",
 
-// src/AA_Plannedtask.php, row 102
+// src/AA_Plannedtask.php, row 83
+"Result of the last run" => "",
+
+// src/AA_Plannedtask.php, row 157
 "Planned tasks" => "Napl\xE1novan\xE9 \xFAlohy", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 122
+// src/AA_Plannedtask.php, row 177
 "Current time on server" => "Aktu\xE1lny \xE8as na serveri", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Event" => "Udalos\x9D", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Computed time" => "Vypo\xE8\xEDtan\xFD \xE8as", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 127
+// src/AA_Plannedtask.php, row 182
 "Scheduled to" => "Napl\xE1novan\xE9 na", // ai 2026-06
 
-// src/AA_Plannedtask.php, row 315
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+// src/AA_Plannedtask.php, row 266
+"done" => "",
 
-// src/AA_Plannedtask.php, row 318
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+// src/AA_Plannedtask.php, row 267
+"done, no output" => "",
 
-// src/AA_Plannedtask.php, row 382
-"not scheduled, yet" => "zatia\xBE nenapl\xE1novan\xE9", // ai 2026-06
+// src/AA_Plannedtask.php, row 268
+"condition not met" => "",
+
+// src/AA_Plannedtask.php, row 269
+"failed" => "",
 
 // src/AA_Plannedtask.php, row 386
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+
+// src/AA_Plannedtask.php, row 389
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+
+// src/AA_Plannedtask.php, row 453
+"not scheduled, yet" => "zatia\xBE nenapl\xE1novan\xE9", // ai 2026-06
+
+// src/AA_Plannedtask.php, row 457
 "next run" => "najbli\x9E\x9Aie spustenie", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 51, 72
@@ -9027,7 +9060,7 @@ return [
 // src/Import/DetailPage.php, row 329, 666
 "Updated" => "",
 
-// src/Import/DetailCatalog.php, row 169
+// src/Import/DetailCatalog.php, row 171
 "Catalog of the source" => "",
 
 // src/Import/DetailConfig.php, row 136
@@ -9614,82 +9647,88 @@ return [
 // src/Import/DetailPage.php, row 1147
 "Look the failure up in the log of import failures, then Continue or End the run." => "",
 
-// src/Import/DetailPage.php, row 1156
+// src/Import/DetailPage.php, row 1161
 "full run" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Baseline only" => "",
+// src/Import/DetailPage.php, row 1162
+"one stream (%1)" => "",
 
-// src/Import/DetailPage.php, row 1190
-"Nothing imported yet. Run changed only takes what changes after this." => "",
-
-// src/Import/DetailPage.php, row 1198, 1199
-"Imported with item errors" => "",
-
-// src/Import/DetailPage.php, row 1198
-"1 item error in the run that imported it - see Runs." => "",
+// src/Import/DetailPage.php, row 1163
+"%1 streams" => "",
 
 // src/Import/DetailPage.php, row 1199
+"Baseline only" => "",
+
+// src/Import/DetailPage.php, row 1199
+"Nothing imported yet. Run changed only takes what changes after this." => "",
+
+// src/Import/DetailPage.php, row 1207, 1208
+"Imported with item errors" => "",
+
+// src/Import/DetailPage.php, row 1207
+"1 item error in the run that imported it - see Runs." => "",
+
+// src/Import/DetailPage.php, row 1208
 "%1 item errors in the run that imported it - see Runs." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "Imported" => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source was asked again after the import." => "",
 
-// src/Import/DetailPage.php, row 1201
+// src/Import/DetailPage.php, row 1210
 "The source has not been asked since." => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Checked, not imported yet" => "",
 
-// src/Import/DetailPage.php, row 1205
+// src/Import/DetailPage.php, row 1214
 "Run imports it; Run changed only too, as it has no version to compare." => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "Not seen yet" => "",
 
-// src/Import/DetailPage.php, row 1206
+// src/Import/DetailPage.php, row 1215
 "No run has imported or checked it." => "",
 
-// src/Import/DetailPage.php, row 1219
+// src/Import/DetailPage.php, row 1228
 "%1 read" => "",
 
-// src/Import/DetailPage.php, row 1220
+// src/Import/DetailPage.php, row 1229
 "%1 new, %2 updated, %3 skipped" => "",
 
-// src/Import/DetailPage.php, row 1221
+// src/Import/DetailPage.php, row 1230
 "%1 filtered out" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "dry run - nothing stored" => "",
 
-// src/Import/DetailPage.php, row 1222
+// src/Import/DetailPage.php, row 1231
 "all streams of the run together" => "",
 
-// src/Import/DetailPage.php, row 1241
+// src/Import/DetailPage.php, row 1250
 "None yet - an import records it" => "",
 
-// src/Import/DetailPage.php, row 1242
+// src/Import/DetailPage.php, row 1251
 "None - the source gives no version" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1" => "",
 
-// src/Import/DetailPage.php, row 1295
+// src/Import/DetailPage.php, row 1304
 "took %1, working %2" => "",
 
-// src/Import/DetailPage.php, row 1301
+// src/Import/DetailPage.php, row 1310
 "%1 s" => "",
 
-// src/Import/DetailPage.php, row 1304
+// src/Import/DetailPage.php, row 1313
 "%1 min %2 s" => "",
 
-// src/Import/DetailPage.php, row 1304, 1306
+// src/Import/DetailPage.php, row 1313, 1315
 "%1 min" => "",
 
-// src/Import/DetailPage.php, row 1306
+// src/Import/DetailPage.php, row 1315
 "%1 h" => "",
 
 // src/Import/Mapping.php, row 219
@@ -9966,13 +10005,13 @@ return [
 // src/Later/ComputedfieldsUpdater.php, row 83
 "Planned %1 chunks with %2 items" => "Napl\xE1novan\xFDch %1 d\xE1vok s %2 spr\xE1vami", // ai 2026-06
 
-// src/Later/Toexecute.php, row 364
+// src/Later/Toexecute.php, row 362
 "task is no longer in the queue" => "",
 
-// src/Later/Toexecute.php, row 368
+// src/Later/Toexecute.php, row 366
 "skipped - the task changed meanwhile (reload the list)" => "",
 
-// src/Later/Toexecute.php, row 459
+// src/Later/Toexecute.php, row 462
 "the task failed with %1" => "",
 
 // src/Manager.php, row 430
@@ -10500,16 +10539,16 @@ return [
 // src/Optimize/CategorySort2groupBy.php, row 37
 "All slices are already converted" => "V\x9Aetky moduly s\xFA u\x9E skonvertovan\xE9", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 20
+// src/Optimize/ChangeF_h2F_1.php, row 19
 "Optimize f_h alias to f_1" => "Optimalizova\x9D alias f_h na f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_h2F_1.php, row 28
+// src/Optimize/ChangeF_h2F_1.php, row 27
 "Replaces f_h alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Nahrad\xED alias f_h pri polo\x9Ek\xE1ch, ktor\xE9 nie s\xFA multihodnotov\xE9 a s\xFA html, r\xFDchlej\x9Aou funkciou f_1 na priamy v\xFDpis obsahu", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 18
+// src/Optimize/ChangeF_t2F_1.php, row 15
 "Optimize f_t alias to f_1" => "Optimalizova\x9D alias f_t na f_1", // ai 2026-06
 
-// src/Optimize/ChangeF_t2F_1.php, row 26
+// src/Optimize/ChangeF_t2F_1.php, row 23
 "Replaces f_t alias for field marked as non multiple and html by quicker f_1 function for direct content print" => "Nahrad\xED alias f_t pri polo\x9Ek\xE1ch, ktor\xE9 nie s\xFA multihodnotov\xE9 a s\xFA html, r\xFDchlej\x9Aou funkciou f_1 na priamy v\xFDpis obsahu", // ai 2026-06
 
 // src/Optimize/ChangeF_t2F__.php, row 19
@@ -10534,8 +10573,32 @@ return [
 "Changing ID for table %1 (%2)" => "Zmena ID pre tabu\xBEku %1 (%2)", // ai 2026-06
 
 // src/Optimize/ChangeModuleId.php, row 84
-// src/Optimize/Convert2innodb.php, row 68
+// src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Skonvertovan\xFDch tabuliek: %1", // ai 2026-06
+
+// src/Optimize/ChangeQte2Trm.php, row 24
+"Trim text fields" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 29
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields switched to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 77
+"%1 text fields to switch to Trim" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 139
+"Field templates" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"switched to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 142
+"to switch to Trim: %1" => "",
+
+// src/Optimize/ChangeQte2Trm.php, row 145
+"%1 keeps \"Text = don't modify\": %2" => "",
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
 "Unsigned {ajax} widget settings" => "",
@@ -10557,7 +10620,7 @@ return [
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
 // src/Optimize/CheckObjectFormRefusals.php, row 102
-// src/Optimize/CheckQueuedClassMissing.php, row 67
+// src/Optimize/CheckQueuedClassMissing.php, row 68
 // src/Optimize/CheckSecurityProtections.php, row 99
 // src/Optimize/CheckSessionidUse.php, row 101
 // src/Optimize/CheckUploadRefusals.php, row 88
@@ -10571,7 +10634,7 @@ return [
 // src/Optimize/CheckCkeditorUse.php, row 99
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
-// src/Optimize/CheckQueuedClassMissing.php, row 68
+// src/Optimize/CheckQueuedClassMissing.php, row 69
 // src/Optimize/CheckSecurityProtections.php, row 100
 // src/Optimize/CheckSessionidUse.php, row 102
 // src/Optimize/CheckUploadRefusals.php, row 89
@@ -11134,22 +11197,22 @@ return [
 // src/Optimize/CheckQueue.php, row 181
 "Longest [s]" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 22
+// src/Optimize/CheckQueuedClassMissing.php, row 23
 "Queued tasks of a missing class" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 27
+// src/Optimize/CheckQueuedClassMissing.php, row 28
 "Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 61
+// src/Optimize/CheckQueuedClassMissing.php, row 62
 "Queued tasks of class %1 cannot run - the class is missing" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 66
+// src/Optimize/CheckQueuedClassMissing.php, row 67
 "Selector" => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 70
-"If the class is only missing after a deploy (files not all copied, an old composer classmap), restore it and the tasks run again. If the feature was removed, delete the tasks in the Task Manager; otherwise they stay in the queue, retired." => "",
+// src/Optimize/CheckQueuedClassMissing.php, row 71
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
 
-// src/Optimize/CheckQueuedClassMissing.php, row 76
+// src/Optimize/CheckQueuedClassMissing.php, row 77
 "No queued task with a missing class in the last 30 days" => "",
 
 // src/Optimize/CheckRequiredSettings.php, row 17
@@ -11466,7 +11529,13 @@ return [
 // src/Optimize/Convert2utf8mb4.php, row 43, 57
 "We found %1 tables which need to be converted" => "Na\x9Ali sme %1 tabuliek, ktor\xE9 je potrebn\xE9 konvertova\x9D", // ai 2026-06
 
-// src/Optimize/Convert2innodb.php, row 64
+// src/Optimize/Convert2innodb.php, row 71
+"Unique numbers (seq) may repeat" => "",
+
+// src/Optimize/Convert2innodb.php, row 71
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+
+// src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "Konvertova\x9D tabu\xBEku %1 (%2) na InnoDB", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 23
@@ -12344,6 +12413,30 @@ return [
 
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "predvolen\xE1 hodnota polo\x9Eky expiry_date..... zmenen\xE1 v %1 /%2 moduloch: %3)", // ai 2026-06
+
+// src/Optimize/TrimFieldValues.php, row 39
+"Trim stored values" => "",
+
+// src/Optimize/TrimFieldValues.php, row 44
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+
+// src/Optimize/TrimFieldValues.php, row 63
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+
+// src/Optimize/TrimFieldValues.php, row 68
+"%1 items to trim" => "",
+
+// src/Optimize/TrimFieldValues.php, row 80
+"Trimming of %1 slices planned in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 91
+"%1 items planned to be trimmed in the queue" => "",
+
+// src/Optimize/TrimFieldValues.php, row 129
+"%1 items with a unique value to trim by hand, e.g. %2" => "",
+
+// src/Optimize/TrimFieldValues.php, row 139
+"%1 items to trim, e.g. %2" => "",
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Aktualizova\x9D \x9Atrukt\xFAru datab\xE1zy", // ai 2026-06

@@ -65,7 +65,7 @@ function GetLinkFields(): Searchfields
     $searchfields->add('votes', _m('Votes'), 'links_links.votes', 'numeric', false, 3042, 3042);
     $searchfields->add('created_by', _m('Author'), 'links_links.created_by', 'text', false, 1020, 1020);
     $searchfields->add('created', _m('Insert date'), 'links_links.created', 'date', false, 1014, 1014);
-    $searchfields->add('edited_by', _m('Editor'), 'links_links.edited_by', 'text', false, 1024, 1024);
+    $searchfields->add('edited_by', _m('Edited by'), 'links_links.edited_by', 'text', false, 1024, 1024);
     $searchfields->add('last_edit', _m('Last edit date'), 'links_links.last_edit', 'date', false, 1016, 1016);
     $searchfields->add('checked_by', _m('Revised by'), 'links_links.checked_by', 'text', false, 1026, 1026);
     $searchfields->add('checked', _m('Revision date'), 'links_links.checked', 'date', false, 1018, 1018);

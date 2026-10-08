@@ -53,10 +53,10 @@ return [
 "OK" => "Confirmer",
 
 // include/constants_param_wizard.php, row 68
-"Parameters" => "Paramï¿½tres",
+"Parameters" => "Paramètres", // ai 2026-10
 
 // include/constants_param_wizard.php, row 70
-"Help: Parameter Wizard" => "Assistance: Paramï¿½tre assistant",
+"Help: Parameter Wizard" => "Assistance: Paramètre assistant", // ai 2026-10
 
 // include/constants_param_wizard.php, row 77
 "Input Validate Type" => "Type de validation de saisie", // ai 2026-06
@@ -86,7 +86,7 @@ return [
 "Allowed maximum value" => "Valeur maximale autorisée", // ai 2026-06
 
 // include/constants_param_wizard.php, row 103, 125
-"Step" => "ï¿½tape",
+"Step" => "Étape", // ai 2026-10
 
 // include/constants_param_wizard.php, row 110
 "Number = (signed) integer number" => "Number = nombre entier (signé)", // ai 2026-06
@@ -686,7 +686,7 @@ return [
 "a parameter passed to the function" => "paramètre passé à la fonction", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "voir", // ai 2026-06
+"view" => "vue", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "permet de manipuler les vues. C'est une fonction complexe et puissante, décrite dans la <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, qui permet d'afficher n'importe quelle vue à la place de l'alias. Elle peut servir pour un tableau d'« articles liés » ou pour afficher le contenu d'une section liée.", // ai 2026-06

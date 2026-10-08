@@ -13,6 +13,7 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "Editor" => "Urednik/ica",
 // "The same url as " => "Ista web adresa kao",
 // "Page is already in database" => "Stranica već postoji u bazi",
 // "Page is already in database, but it is not displayed in any category, now" => "Stranica je već u bazi, ali za sada nije prikazana ni u jednoj kategoriji",
@@ -313,7 +314,7 @@ return [
 "Insert date" => "Umetnite datum",
 
 // modules/links/constants.php, row 68
-"Editor" => "Urednik/ica",
+"Edited by" => "Uredio", // ai 2026-10
 
 // modules/links/constants.php, row 69
 "Last edit date" => "Datum zadnjeg uređivanja",

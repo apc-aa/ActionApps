@@ -115,7 +115,8 @@ return [
 // include/constants_param_wizard.php, row 151
 "Validates only if the value is not yet used. Useful e.g.\n"
    ."        for emails or user names."
- => "Sprawdza, czy wartość nie jest jeszcze używana. Przydatne np.\\n        dla e-maili lub nazw użytkowników.", // ai 2026-06
+ => "Sprawdza, czy wartość nie jest jeszcze używana. Przydatne np.\n"
+   ."        dla e-maili lub nazw użytkowników.", // ai 2026-10
 
 // include/constants_param_wizard.php, row 155, 197
 "Field ID" => "ID pola", // ai 2026-06
@@ -131,7 +132,10 @@ return [
    ."                <b>2</b> = All slices.<br>\n"
    ."                <b>0</b> = (default) Username, special: Checks uniqueness in reader management\n"
    ."                slices and in the permission system. Always uses field ID %1"
- => "<b>1</b> = Tylko ta rubryka.\\n                <b>2</b> = Wszystkie rubryki.<br>\\n                <b>0</b> = (domyślnie) Nazwa użytkownika, specjalne: sprawdza unikalność w rubrykach\\n                zarządzania czytelnikami oraz w systemie uprawnień. Zawsze używa pola o ID %1", // ai 2026-06
+ => "<b>1</b> = Tylko ta rubryka.\n"
+   ."                <b>2</b> = Wszystkie rubryki.<br>\n"
+   ."                <b>0</b> = (domyślnie) Nazwa użytkownika, specjalne: sprawdza unikalność w rubrykach\n"
+   ."                zarządzania czytelnikami oraz w systemie uprawnień. Zawsze używa pola o ID %1", // ai 2026-10
 
 // include/constants_param_wizard.php, row 175
 "Regular Expression" => "Wyrażenie regularne", // ai 2026-06
@@ -166,7 +170,8 @@ return [
 // include/constants_param_wizard.php, row 204
 "Do you want to check for uniqueness this slice only\n"
    ."                  or all slices?"
- => "Czy chcesz sprawdzać unikalność tylko w tej rubryce,\\n                  czy we wszystkich rubrykach?", // ai 2026-06
+ => "Czy chcesz sprawdzać unikalność tylko w tej rubryce,\n"
+   ."                  czy we wszystkich rubrykach?", // ai 2026-10
 
 // include/constants_param_wizard.php, row 212
 "Password and Change Password" => "Hasło i zmiana hasła", // ai 2026-06
@@ -176,7 +181,10 @@ return [
    ."        <i>The validation is provided only by JavaScript and not by ValidateInput()\n"
    ."        because the insert\n"
    ."        function does the validation again before inserting the new password.</i>"
- => "Sprawdza, czy hasła nie różnią się przy zmianie hasła.\\n        <i>Walidacja zapewniana jest wyłącznie przez JavaScript, a nie przez ValidateInput(),\\n        ponieważ funkcja\\n        wstawiająca wykonuje walidację ponownie przed wstawieniem nowego hasła.</i>", // ai 2026-06
+ => "Sprawdza, czy hasła nie różnią się przy zmianie hasła.\n"
+   ."        <i>Walidacja zapewniana jest wyłącznie przez JavaScript, a nie przez ValidateInput(),\n"
+   ."        ponieważ funkcja\n"
+   ."        wstawiająca wykonuje walidację ponownie przed wstawieniem nowego hasła.</i>", // ai 2026-10
 
 // include/constants_param_wizard.php, row 228
 "Function" => "Funkcja", // ai 2026-06
@@ -678,7 +686,7 @@ return [
 "a parameter passed to the function" => "parametr przekazany funkcji", // ai 2026-06
 
 // include/constants_param_wizard.php, row 665
-"view" => "podgląd", // ai 2026-06
+"view" => "widok", // ai 2026-10
 
 // include/constants_param_wizard.php, row 666
 "allows you to manipulate the views. This is a complicated and powerful function, described in <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, which allows you to display any view in place of the alias. It can be used for 'related stories' table or for displaying content of related slice." => "umożliwia manipulowanie widokami. Jest to złożona i potężna funkcja, opisana w <a href=\"../doc/FAQ.html#viewparam\" target=_blank>FAQ</a>, która pozwala wyświetlić w miejscu aliasu dowolny widok. Można jej użyć do tabeli 'powiązanych artykułów' lub do wyświetlenia zawartości powiązanej rubryki.", // ai 2026-06
