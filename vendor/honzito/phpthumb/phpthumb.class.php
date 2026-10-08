@@ -1699,9 +1699,98 @@ class phpthumb {
 	}
 
 
-	public function ImageMagickThumbnailToGD() {
+	/**
+	 * ImageMagick options for the thumbnail's colour profile and metadata.
+	 * Untagged images show as sRGB and GD drops profiles, so other colour spaces become sRGB;
+	 * a small RGB profile (phone Display P3, ~0.5 kB) stays in raw ImageMagick output for its gamut.
+	 *
+	 * @param int   $imagetype          IMAGETYPE_* of the source
+	 * @param array $getimagesize_info  segments of a JPEG source from getimagesize()
+	 * @param bool  $keep_small_profile false when GD makes the output, as it drops any profile
+	 */
+	private function ImageMagickColorOptions($imagetype, $getimagesize_info, $keep_small_profile) {
+		$keep_profile = ' +profile '.phpthumb_functions::escapeshellarg_replacement('!icc,*').' +set comment';
+		$srgb = __DIR__.'/profiles/sRGB-v4.icc';
+		if (!is_file($srgb)) {
+			return $keep_profile; // no conversion target: keep the profile as phpThumb always did
+		}
+		if ($imagetype == IMAGETYPE_JPEG) {
+			$app2 = isset($getimagesize_info['APP2']) ? $getimagesize_info['APP2'] : '';
+			if ($app2 === '') {
+				return ' -strip'; // an untagged JPEG is sRGB
+			}
+			// getimagesize() returns the first APP2 only: an RGB profile in a single segment
+			if ((strncmp($app2, "ICC_PROFILE\0\1\1", 14) === 0) && (substr($app2, 30, 4) === 'RGB ')) {
+				$icc = substr($app2, 14);
+				if ($this->IccIsSrgb($icc)) {
+					return ' -strip';
+				}
+				if ($keep_small_profile && (strlen($icc) <= 1024)) {
+					return $keep_profile;
+				}
+			}
+		}
+		// converts from an embedded profile; without one it only assigns sRGB, which -strip removes
+		return ' -profile '.phpthumb_functions::escapeshellarg_replacement($srgb).' -strip';
+	}
+
+	/**
+	 * Whether an ICC profile is named sRGB in its 'desc' tag (v2 'desc' ASCII or v4 'mluc' UTF-16).
+	 * Converting sRGB to sRGB would only cost time (~0.1 s); a linear or "esRGB" one is converted.
+	 */
+	private function IccIsSrgb($icc) {
+		if (strlen($icc) < 132) {
+			return false;
+		}
+		$count = unpack('N', substr($icc, 128, 4))[1];
+		for ($i = 0; ($i < $count) && (132 + 12 * ($i + 1) <= strlen($icc)); $i++) {
+			$tag = unpack('a4sig/Noffset/Nsize', substr($icc, 132 + 12 * $i, 12));
+			if ($tag['sig'] === 'desc') {
+				$desc = substr($icc, $tag['offset'], $tag['size']);
+				if (substr($desc, 0, 4) === 'mluc') {
+					$record = unpack('Nlength/Noffset', str_pad(substr($desc, 20, 8), 8, "\0"));
+					$name = str_replace("\0", '', substr($desc, $record['offset'], $record['length']));
+				} else {
+					$name = strstr(substr($desc, 12)."\0", "\0", true);
+				}
+				return ($name === 'sRGB') || (strncmp($name, 'sRGB IEC61966-2', 15) === 0);
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Whether AVIF data has the mandatory 'pixi' item property (meta > iprp > ipco > pixi).
+	 * libheif < 1.12 leaves it out and Firefox refused such files ("Image corrupt or truncated").
+	 */
+	private function AvifHasPixi($data) {
+		$iprp = $this->IsoBmffBox(substr($this->IsoBmffBox($data, 'meta'), 4), 'iprp'); // 'meta' starts with version and flags
+		return $this->IsoBmffBox($this->IsoBmffBox($iprp, 'ipco'), 'pixi') !== '';
+	}
+
+	/**
+	 * Content of the first ISO-BMFF box of the given type in $data, '' when there is none.
+	 */
+	private function IsoBmffBox($data, $type) {
+		for ($pos = 0; $pos + 8 <= strlen($data); $pos += $size) {
+			$size = unpack('N', substr($data, $pos, 4))[1];
+			if ($size < 8) {
+				break; // 0 (to the end) and 1 (64-bit size) are not used for these boxes
+			}
+			if (substr($data, $pos + 4, 4) === $type) {
+				return substr($data, $pos + 8, $size - 8);
+			}
+		}
+		return '';
+	}
+
+	/**
+	 * @param bool $avif_through_png AVIF via a lossless PNG and GD, for an ImageMagick whose AVIF lacks 'pixi'
+	 */
+	public function ImageMagickThumbnailToGD($avif_through_png = false) {
 		// http://www.imagemagick.org/script/command-line-options.php
 
+		$ra = $this->ra; // ImageMagick zeroes it once it has rotated, but a redo needs it
 		$this->useRawIMoutput = true;
 		if (phpthumb_functions::gd_version()) {
 			// if GD is not available, must use whatever ImageMagick can output
@@ -1751,22 +1840,14 @@ class phpthumb {
 						$this->is_alpha = true;
 						break;
 					case 'avif':
-						// ImageMagick writes AVIF through libheif, and libheif < 1.12.0 omits the
-						// mandatory 'pixi' property. Firefox parses AVIF strictly and rejects such a
-						// file with "Image corrupt or truncated", while Chrome/Edge accept it. GD
-						// (libavif) always writes 'pixi', so hand the ImageMagick-resized image over
-						// to GD through a lossless PNG intermediate instead of using raw IM output.
-						if (function_exists('imagetypes') && (imagetypes() & IMG_AVIF)) {
-							$this->DebugMessage('Not using raw ImageMagick output for AVIF (libheif may omit the mandatory "pixi" property); re-encoding via GD', __FILE__, __LINE__);
+						if ($avif_through_png && (imagetypes() & IMG_AVIF)) {
 							$outputFormat = 'png';
 							$ImageCreateFunction = 'imagecreatefrompng';
-							$this->is_alpha = true;
 							$this->useRawIMoutput = false;
 						} else {
-							// GD cannot output AVIF - fall back to raw ImageMagick output
 							$ImageCreateFunction = 'imagecreatefromavif';
-							$this->is_alpha = true;
 						}
+						$this->is_alpha = true;
 						break;
 					default:
 						$this->DebugMessage('Forcing output to PNG because $this->thumbnailFormat ('.$this->thumbnailFormat.' is not a GD-supported format)', __FILE__, __LINE__);
@@ -1837,7 +1918,8 @@ class phpthumb {
 
 
 				ob_start();
-				$getimagesize = getimagesize($this->sourceFilename);
+				$getimagesize_info = array();
+				$getimagesize = getimagesize($this->sourceFilename, $getimagesize_info);
 				$GetImageSizeError = ob_get_contents();
 				ob_end_clean();
 				if (is_array($getimagesize)) {
@@ -1944,11 +2026,6 @@ class phpthumb {
 								$commandline .= ' +repage';
 							} else {
 								$this->DebugMessage('Skipping "+repage" because ImageMagick (v'.$this->ImageMagickVersion().') does not support it', __FILE__, __LINE__);
-							}
-							if ($getimagesize[2] == IMAGETYPE_AVIF) {
-								// fix for Firefox - some specially created AVIF sources render corrupted in FF 146
-								// e.g. img.php?src=/upload/b5b02e9b10a63182fd33966655afbe4e/xx-1768470045-rada-jpg-honzam-1195-grada.jpg&w=700&h=700&zc=1&f=avif
-								$commandline .= ' -define heic:chroma=420';
 							}
 
 						} elseif ($this->sw || $this->sh || $this->sx || $this->sy) {
@@ -2415,7 +2492,15 @@ if (false) {
 				$this->DebugMessage('Remaining $this->fltr after ImageMagick: ('.$this->phpThumbDebugVarDump($this->fltr).')', __FILE__, __LINE__);
 				if (count($this->fltr) > 0) {
 					$this->useRawIMoutput = false;
+					if ($outputFormat == 'avif') {
+						// GD finishes the thumbnail, so hand it over losslessly
+						$outputFormat = 'png';
+						$ImageCreateFunction = 'imagecreatefrompng';
+					}
 				}
+				// PNG gets no profile: without -strip ImageMagick writes EXIF fields into PNG text chunks
+				$keep_profile = $this->useRawIMoutput && in_array($outputFormat, array('jpeg', 'webp', 'avif'));
+				$commandline .= $this->ImageMagickColorOptions(is_array($getimagesize) ? $getimagesize[2] : 0, $getimagesize_info, $keep_profile);
 
 				if (preg_match('#jpe?g#i', $outputFormat) && $this->q) {
 					if ($this->ImageMagickSwitchAvailable(array('quality', 'interlace'))) {
@@ -2427,9 +2512,15 @@ if (false) {
 					}
 				}
                 // ImageMagic also support quality for webp - but only for version 7.0.8-68 and above
-                if (($outputFormat=='webp') && $this->q && $this->ImageMagickSwitchAvailable(['quality'])) {
+                // AVIF (libheif) takes the same quality scale as GD's imageavif() (libavif) - measured
+                if (in_array($outputFormat, ['webp', 'avif']) && ($this->thumbnailQuality > 0) && $this->ImageMagickSwitchAvailable(['quality'])) {
                     $commandline .= ' -quality '.phpthumb_functions::escapeshellarg_replacement($this->thumbnailQuality);
                 }
+				if ($outputFormat == 'avif') {
+					// libheif >= 1.14 would turn EXIF orientation into AVIF rotation (thumbnails rotate only with 'ar');
+					// some ImageMagick builds write 4:4:4, which Firefox 146 failed to show for some files
+					$commandline .= ' -orient TopLeft -define heic:chroma=420';
+				}
 				$commandline .= ' '.$outputFormat.':'.phpthumb_functions::escapeshellarg_replacement($IMtempfilename);
 				if (!$this->iswindows) {
 					$commandline .= ' 2>&1';
@@ -2446,6 +2537,12 @@ if (false) {
 
 				} else {
 
+					if (($outputFormat == 'avif') && !$avif_through_png && !$this->AvifHasPixi(file_get_contents($IMtempfilename))) {
+						$this->DebugMessage('ImageMagick wrote AVIF without the mandatory "pixi" property (libheif < 1.12), redoing it through PNG and GD', __FILE__, __LINE__);
+						@unlink($IMtempfilename);
+						$this->ra = $ra;
+						return $this->ImageMagickThumbnailToGD(true);
+					}
 					foreach ($successfullyProcessedFilters as $dummy => $filterkey) {
 						unset($this->fltr[$filterkey]);
 					}

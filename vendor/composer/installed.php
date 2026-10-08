@@ -77,7 +77,7 @@
         'honzito/phpthumb' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '8520c2a738fe4b42024114c0b9a622250bd2673e',
+            'reference' => '8ed9a8c940210fd92c172bfb487c68412f890676',
             'type' => 'library',
             'install_path' => __DIR__ . '/../honzito/phpthumb',
             'aliases' => array(
