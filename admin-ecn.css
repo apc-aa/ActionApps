@@ -105,11 +105,6 @@
     display: flex !important;
     flex-direction: column;
 }
-.always-flex {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-}
 .f-baseline {
     align-items: baseline !important;
 }
@@ -566,7 +561,7 @@ input[type="submit"].btn-l, input[type="button"].btn-l, button.btn-l, .button.bt
 input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-primary, .button.btn-primary, .btn.btn-primary, .btn-primary  {
     background-color: var(--clr-green);
 }
-.btn.btn-s, button.btn-s, input[type="submit"].btn-s, .aa-table input[type="button"].btn-s, input[type="button"].btn-s, .aa-table input[type="button"].btn-s {
+.btn.btn-s, button.btn-s, input[type="submit"].btn-s, .aa-table input[type="button"].btn-s, input[type="button"].btn-s {
     padding: 3px 7px; /*zatim jen u editace policka*/
 }
 /* aa- buttons */
@@ -574,7 +569,7 @@ input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-p
     padding: 4px 8px;
     line-height: 16px;
 }
-[class^="aa-button"], [class^="aa-button"] {
+[class^="aa-button"] {
     border: solid 1px rgb(26 4 4 / 30%);
     color: #61454A;
     text-decoration: none;
@@ -875,15 +870,10 @@ table.aa-history-fields thead th {
     background: #ffffff;
 }
 .nblogo {
-    text-align: center;
     flex: 0 0 245px;
-    max-width: 245px;
-    padding-top: 14px;
 }
 .nblogo a {
     display: block;
-    margin: 0 auto 0 25px;
-    max-width: 112px;
     padding-right: 10px;
 }
 .aa-ui-nav {
@@ -958,7 +948,6 @@ table.aa-history-fields thead th {
 }
 .aa-ui-nav .navbar a  {
     font-weight: 600;
-    text-transform: uppercase;
     color: #633840;
     display: inline-block;
     font-family: 'Open Sans', sans-serif;
@@ -1035,10 +1024,8 @@ input[type="submit"].aa-off {
 .aa-ui-nav select {
     padding: 2px 5px;
     height: 30px;
-    border-color: transparent;
     margin: 0 10px 0 5px;
     font-size: 13px;
-    max-width: 260px;
 }
 .aa-ui-modules a.aa-ui-moduleview {
     background: url(images/ico-oko.svg) no-repeat right 9px;
@@ -1084,10 +1071,6 @@ input[type="submit"].aa-off {
     position: relative;
 }
 li.aa-leftmenu-header {
-    padding-top: 20px;
-    padding-left: 25px;
-    font-size: var(--sz-xs);
-    text-transform: uppercase;
     letter-spacing: 0.03em;
 }
 .leftmenu li img {
@@ -1097,7 +1080,6 @@ li.aa-leftmenu-header {
 .aa-bin-cnt, .aa-morehelp, .leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
     display: inline-block;
     color: rgb(127 67 81 / 91%);
-    padding: 2px 5px;
     border-radius: 8px;
     letter-spacing: 0.02em;
     font-size: 10px;
@@ -1491,24 +1473,11 @@ div[data-aa-required] label:after {
 .aa-items-manager thead td:first-child, .aa-items-manager thead th:first-child, .aa-items-manager .aa-tbl-header td:first-child, .aa-items-manager .aa-tbl-header th:first-child {
     border-left: 0;
 }
-.aa-items-manager thead td:first-child, .aa-items-manager thead th:first-child, .aa-items-manager .aa-tbl-header td:first-child, .aa-items-manager .aa-tbl-header th:first-child {
-    border-left: 0;
-}
 .aa-items-manager tr:nth-of-type(odd), .aa-table tr:nth-of-type(odd) {
     background-color: rgb(255 255 255 / 40%);
 }
 .aa-items-manager tr:nth-of-type(even), .aa-table tr:nth-of-type(even) {
     background-color: var(--clr-opacity-dark);
-}
-#inputtab .aa-table tr:nth-of-type(even), #inputtab .aa-table tr:nth-of-type(odd) {
-    background-color: transparent;
-}
-.aa-table table table tr:nth-of-type(even), table.aa-table table tr:nth-of-type(even),
-.aa-table table table tr:nth-of-type(odd), table.aa-table table tr:nth-of-type(odd){
-    background-color: transparent;
-}
-.aa-table.aa-table-simple tr:nth-of-type(odd), .aa-table.aa-table-simple tr:nth-of-type(even) {
-    background-color: var(--clr-opacity-light);
 }
 .aa-items-manager td {
     padding: 5px 5px;
@@ -1525,7 +1494,6 @@ div[data-aa-required] label:after {
     vertical-align: bottom;
     background-color: var(--clr-basic-dark);
     padding: 8px 10px 4px 5px;
-    font-weight: 600;
     color: rgb(0 0 0 / 80%);
     border: 0;
     border-left: solid 1px rgb(243 243 241 / 52%);
@@ -1557,7 +1525,6 @@ div[data-aa-required] label:after {
     background-color: var(--clr-footer);
     padding: 4px 11px;
     letter-spacing: normal;
-    margin: 0 2px;
     color: #000000;
     text-decoration: none;
     font-size: var(--sz-s);
@@ -1596,7 +1563,6 @@ div[data-aa-class="clasic"] {
 .aa-table thead td, .aa-table thead th, .aa-table .aa-tbl-header td, .aa-table .aa-tbl-header th, .tabtit {
     background-color: var(--clr-basic-dark);
     padding: 11px 10px 4px 12px;
-    font-weight: normal;
     color: rgb(0 0 0 / 80%);
     border-left: solid 1px rgb(255 255 255 / 45%);
     border-top: solid 1px rgb(255 255 255 / 45%);
@@ -1693,7 +1659,6 @@ table.aa-table table td {
     flex-wrap: wrap;
     padding: 12px 0;
     margin-bottom: -1px;
-    justify-content: center;
     max-width: 100%;
     background-color: var(--clr-body);
 }
@@ -1776,10 +1741,8 @@ form[name="inputform"] {
     margin: 0 -20px 0 -10px;
 }
 h1:has(+form[name="inputform"]) {
-    text-align: center;
     margin: 0 0 0 -10px;
     padding: 20px 17px 10px 0;
-    background: var(--clr-basic);
     font-size: 1.1em;
 }
 #inputtab {
@@ -1986,9 +1949,6 @@ input[type="checkbox"]:checked:before {
 }
 .btn-action {
     border-radius: 13px;
-}
-select[name="srchbr_bookmark"] {
-    width: 150px;
 }
 .aa-sb-btns {
     margin: 7px 0 10px 66px;
@@ -2902,9 +2862,6 @@ h1:has(+form[name="inputform"]) {
         z-index: 50; /* < 100: #aa-message-box and suggesters must overlay the bar */
     }
     .nblogo {
-        text-align: center;
-        flex: 0 0 245px;
-        max-width: 245px;
         padding-top: 16px;
     }
     .aa-ui-leftmenu {
@@ -2973,12 +2930,6 @@ h1:has(+form[name="inputform"]) {
         background: var(--clr-green);
         color: white !important;
         margin-right: calc(100% - 133px);
-    }
-    .mainmenu a {
-        display: inline-block;
-        margin: 0 0 7px 6px;
-        padding: 7px 10px;
-        background: var(--clr-basic);
     }
     .mainmenu a.active {
         background: var(--clr-dark);
@@ -3080,8 +3031,6 @@ h1:has(+form[name="inputform"]) {
     .mobilmenu.white-menu.active {
         background-color: #fff;
     }
-    .mobilmenu.white-menu li, .mobilmenu.white-menu.active nav li.inpath > ul  {
-    }
     .mobilmenu.white-menu a {
         color: black;
     }
@@ -3149,9 +3098,6 @@ h1:has(+form[name="inputform"]) {
         border: solid 1px var(--clr-basic);
         width: 35px;
     }
-    #aa_top input[type=search]:before {
-        /* content: "tlkt"; */
-    }
     .aa-ui-main {
         max-width: 100vw;
         /* overflow-x: hidden; */
@@ -3197,17 +3143,10 @@ h1:has(+form[name="inputform"]) {
     .mgr_table th,
     .mgr_table td,*/
     #inputtab .aa-table,
-    #inputtab .aa-table,
     #inputtab .aa-table th,
     #inputtab .aa-table td {
         display: block;
-        max-width: 100%;
         margin: auto;
-    }
-    #inputtab .aa-table,
-    #inputtab .aa-table,
-    #inputtab .aa-table th,
-    #inputtab .aa-table td {
         max-width: calc(100vw - 60px);
         overflow: visible;
     }
