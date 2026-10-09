@@ -198,12 +198,9 @@ li.aa-leftmenu-header {
         background: var(--clr-dark);
     }
     .aa-ui-nav {
-        background: var(--clr-dark);
+        background: var(--clr-basic-dark);
     }
     .mobilmenu.white-menu .ico-menu {
         color: white;
-    }
-    .aa-ui-modules a.aa-ui-moduleview {
-        background-image: url(images/ico-oko-white.svg);
     }
 }

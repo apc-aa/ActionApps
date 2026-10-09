@@ -12,6 +12,7 @@
     /* Text + lines */
     --clr-dark: #1f1f1f;                  /* TODO: rename → --clr-text */
     --clr-border: rgb(220 213 194);
+    --clr-btn-border: rgb(26 4 4 / 30%);
     --clr-gold: #c9b57f;                  /* TODO: rename → --clr-border-strong / --clr-accent */
     --clr-green: #1eb585;                 /* TODO: rename → --clr-success */
 
@@ -385,7 +386,7 @@ details summary  {
     margin-bottom: 1em;
     display: inline-block;
     background-color: rgb(255 255 255 / 20%);
-    border: solid 1px rgb(26 4 4 / 30%);
+    border: solid 1px var(--clr-btn-border);
     color: #000000;
     border-radius: 13px;
     transition: all 0.3s;
@@ -837,8 +838,8 @@ table.aa-history-fields thead th {
 /* Per-event view toggle (Diff / Version A / Version B) + raw-value code blocks for copy-paste. */
 .aa-h-viewtoggle { display: inline-flex; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
 .aa-h-vbtn {
-    font: inherit; font-size: var(--sz-s); line-height: 1.5; padding: 1px 12px; cursor: pointer;
-    background: transparent; color: var(--clr-text-accent); border: 0; border-inline-start: 1px solid var(--clr-border);
+    font: inherit; line-height: 1.5; padding: 3px 14px; cursor: pointer;
+    background: transparent; color: var(--clr-text-accent); letter-spacing: 1px;
 }
 .aa-h-vbtn:first-child { border-inline-start: 0; }
 /* explicit colour - the global `button:hover` sets gold bg + near-white text, unreadable here */
@@ -1662,6 +1663,10 @@ table.aa-table table td {
     vertical-align: top;
     line-height: 1.2;
 }
+.aa-table tr > td.aa-tab-title:first-child {
+    padding: 13px 10px 7px 25px;
+    background-color: var(--clr-basic-dark);
+}
 .aa-table tr > th:first-child {
     padding-top: 11px;
     padding-bottom: 10px;
@@ -1929,6 +1934,9 @@ input[type="checkbox"] {
     background-color: white;
     vertical-align: middle;
 }
+.formrow0 > td > input[type="checkbox"] {/*snaha zarovnat checkboxy v radku formulare, vnorene jiz ne*/
+    margin-top: 6px;
+}
 input[type="checkbox"]:checked:before {
     display: block;
     width: 20px;
@@ -1939,14 +1947,6 @@ input[type="checkbox"]:checked:before {
     content: "";
     margin-top: -1px;
     margin-left: -1px;
-}
-@media print {
-    .noprint {
-        display: none;
-    }
-    body, #hlavnitbl {
-        background-color: #FFFFFF;
-    }
 }
 /*screen*/
 @media (min-width: 768px) {
@@ -2161,21 +2161,22 @@ input[type="checkbox"]:checked:before {
         flex:0
     }
     .aa-ui-modules {
-        flex-wrap: wrap;
-        justify-content: space-between;
-        padding: 10px 12px 15px 20px;
-        flex-direction: row-reverse;
+        justify-content: left;
+        padding: 10px 0 15px 12px;
     }
     .aa-ui-custom-nav {
         white-space: wrap;
-        flex: 0 0 100%;
+        flex: 0 0 61px;
+    }
+    .aa-ui-custom-nav .aa-prefs-trigger {
+        border: 0;
     }
     .aa-ui-nav select {
         max-width: 81vw;
-        width: 81vw;
+        width: 76vw;
         margin: 0;
     }
-    .aa-ui-modules a.aa-ui-moduleview {width: 20px;}
+    .aa-ui-modules a.aa-ui-moduleview {width: 21px;}
     .navbar form {
         position: absolute;
         top: 94px;
@@ -2987,14 +2988,6 @@ h1:has(+form[name="inputform"]) {
 .pager a, .pager [aria-current] {
     margin: 0;
 }
-@media (min-width: 768px) {
-    .nblogo {
-        text-align: center;
-        flex: 0 0 245px;
-        max-width: 245px;
-        padding-top: 16px;
-    }
-}
 
 
 /* ============================================================
@@ -3108,48 +3101,6 @@ h1:has(+form[name="inputform"]) {
 .aa-overflow-item:empty {
     display: none;
 }
-
-/* ============================================================
-   Sticky admin chrome (desktop only — the mobile header is tall,
-   wraps, and is not worth pinning; the rail is hidden there).
-   --aa-topbar-h is measured by an inline script next to #aa_top
-   (menu_util.php): the bar can wrap to >50px at 768–1100px, and
-   some pages render the rail WITHOUT the top bar (discedit2,
-   popups) — hence every fallback is 0px, never 50px.
-   ============================================================ */
-@media screen and (min-width: 768px) {
-    /* anchor jumps / error-field focus must land below the pinned bar */
-    html {
-        scroll-padding-top: calc(var(--aa-topbar-h, 0px) + 8px);
-    }
-    #aa_top {
-        position: sticky;
-        top: 0;
-        z-index: 50; /* < 100: #aa-message-box and suggesters must overlay the bar */
-    }
-    .aa-ui-leftmenu {
-        position: sticky;
-        top: var(--aa-topbar-h, 0px);
-        align-self: flex-start; /* default stretch leaves sticky no travel room */
-        height: calc(100vh - var(--aa-topbar-h, 0px)); /* full height keeps the copyright at the visible bottom (space-between) */
-        min-height: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    #sitetree {
-        position: sticky;
-        top: calc(var(--aa-topbar-h, 0px) + 10px); /* small gap so Add spot isn't glued to the pinned bar */
-        align-self: flex-start;
-        max-height: calc(100vh - var(--aa-topbar-h, 0px) - 10px);
-        overflow-y: auto;
-    }
-    /* On item pages "+ Add Item" is pointless — hide it but keep its
-       flex space so the neighboring menu entries don't shift. */
-    .aa-ui-nav a.aa-ui-btn-additem.aa-ui-ghost {
-        visibility: hidden;
-        pointer-events: none;
-    }
-}
 .mobilmenu .aa-ui-ghost {
     display: none !important; /* .mainmenu a sets display !important on mobile */
 }
@@ -3164,22 +3115,22 @@ h1:has(+form[name="inputform"]) {
 .aa-prefs-row { padding: 8px 0; }
 .aa-prefs-row + .aa-prefs-row { border-top: 1px solid var(--clr-border); }
 .aa-prefs-label { font-weight: 600; font-size: var(--sz-s); margin-bottom: 5px; }
-.aa-prefs-help { margin-top: 5px; }
+.aa-prefs-help {margin-top: 5px;white-space: normal;}
 /* segmented theme control: visually-hidden radios, label carries the look */
 .aa-prefs-seg { vertical-align: middle; }
 .aa-prefs-seg input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .aa-prefs-seg label.aa-h-vbtn { cursor: pointer; }
-.aa-prefs-seg input:checked + label.aa-h-vbtn {
-    background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); font-weight: 600;
-}
+.aa-prefs-seg label.aa-h-vbtn:before {content: " ";display: inline-block;background: #ebdcc3;border: solid 1px rgb(0 0 0 / 21%);width: 10px;height: 10px;border-radius: 50%;margin-right: 5px; margin-bottom: -1px;}
+.aa-prefs-seg label.aa-h-vbtn:last-child:before {background: #e9ce84;}
+.aa-prefs-seg input:checked + label.aa-h-vbtn {background: var(--clr-basic-light, rgba(0, 0, 0, 0.09));color: #000000;}
 .aa-prefs-seg input:focus-visible + label.aa-h-vbtn { outline: 2px solid #0050c8; outline-offset: 1px; }
 .aa-prefs-apply { margin-inline-start: 8px; }
-.aa-prefs-lang select { max-width: 100%; }
+.aa-ui-nav  select {max-width: 100%;border: solid 1px var(--clr-border);}
 /* stack textarea above the Send button (flex-column keeps the button from
    sitting beside the textarea and overflowing the popover) */
 .aa-prefs-feedback { display: flex; flex-direction: column; align-items: flex-start; }
 .aa-prefs-feedback textarea { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; }
-.aa-prefs-feedback .aa-prefs-send { margin-top: 6px; }
+.aa-prefs-feedback .aa-prefs-send {margin-top: 6px;background-color: var(--clr-dark);}
 
 /* ============================================================
    Notes (AA\Util\Notes) — the note corner every admin page carries and
@@ -3252,6 +3203,62 @@ h1:has(+form[name="inputform"]) {
 @supports not selector(:popover-open) {
     .aa-notes, .aa-notes-resolve { display: none; }
 }
+/* ============================================================
+   Sticky admin chrome (desktop only — the mobile header is tall,
+   wraps, and is not worth pinning; the rail is hidden there).
+   --aa-topbar-h is measured by an inline script next to #aa_top
+   (menu_util.php): the bar can wrap to >50px at 768–1100px, and
+   some pages render the rail WITHOUT the top bar (discedit2,
+   popups) — hence every fallback is 0px, never 50px.
+   ============================================================ */
+@media screen and (min-width: 768px) {
+    /* anchor jumps / error-field focus must land below the pinned bar */
+    html {
+        scroll-padding-top: calc(var(--aa-topbar-h, 0px) + 8px);
+    }
+    #aa_top {
+        position: sticky;
+        top: 0;
+        z-index: 50; /* < 100: #aa-message-box and suggesters must overlay the bar */
+    }
+    .nblogo {
+        text-align: center;
+        flex: 0 0 245px;
+        max-width: 245px;
+        padding-top: 16px;
+    }
+    .aa-ui-leftmenu {
+        position: sticky;
+        top: var(--aa-topbar-h, 0px);
+        align-self: flex-start; /* default stretch leaves sticky no travel room */
+        height: calc(100vh - var(--aa-topbar-h, 0px)); /* full height keeps the copyright at the visible bottom (space-between) */
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    #sitetree {
+        position: sticky;
+        top: calc(var(--aa-topbar-h, 0px) + 10px); /* small gap so Add spot isn't glued to the pinned bar */
+        align-self: flex-start;
+        max-height: calc(100vh - var(--aa-topbar-h, 0px) - 10px);
+        overflow-y: auto;
+    }
+    /* On item pages "+ Add Item" is pointless — hide it but keep its
+       flex space so the neighboring menu entries don't shift. */
+    .aa-ui-nav a.aa-ui-btn-additem.aa-ui-ghost {
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+
 @media screen and (max-width: 767px) {
     .aa-notes { float: none; max-width: 100%; margin: 0 0 6px; }
+}
+@media print {
+    .noprint {
+        display: none;
+    }
+    body, #hlavnitbl {
+        background-color: #FFFFFF;
+    }
 }
