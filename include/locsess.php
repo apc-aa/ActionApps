@@ -703,6 +703,7 @@ class AA_Session extends Session
      */
     public static function tokenStoreSet(string $token): void
     {
+        self::ensureStarted();
         self::tokenStoreClean();
         $_SESSION['r_tokens'][$token] = time();
     }
@@ -721,6 +722,17 @@ class AA_Session extends Session
     private static function tokenStoreClean(): void
     {
         $_SESSION['r_tokens'] = !is_array($_SESSION['r_tokens']) ? [] : array_filter($_SESSION['r_tokens'], static fn($t) => $t > time() - self::AA_FORM_TOKEN_LIFETIME);   // AA_FORM_TOKEN_LIFETIME
+    }
+
+    /** Opens the session on the first write - the site module does not open it for anonymous visitors.
+     *  Must run before the body is sent (the site module renders the page into a string first).
+     */
+    public static function ensureStarted(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            pageOpen('nobody');   // with the cookie of a logged-in user the login is checked, as on any page
+            AA::Pagecache()->switchCacheNostore();   // the page now belongs to this visitor's session
+        }
     }
 }
 

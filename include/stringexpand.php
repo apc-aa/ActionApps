@@ -4952,11 +4952,11 @@ class AA_Stringexpand_Sessurl extends AA_Stringexpand_Nevercache {
     {
         global $sess;
 
-        if (!isset($sess)) {
-            return '';
-        }
         if (!in_array($url, ['', 'hidden', 'param'], true)) {
             return StateUrl($url);
+        }
+        if (!isset($sess)) {
+            return '';
         }
         AA::Pagecache()->switchCacheNostore();   // a session id must not get into a page cached for others
         return match ($url) {

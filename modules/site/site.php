@@ -224,8 +224,14 @@ if ($ga_id = (string) $module->getProperty('ga_id')) {
 
 if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
-    if (!is_object($sess)) {  // could be already opened above
+    // No session file and cookie for every anonymous visitor: a visitor with the cookie has it opened above,
+    // a login opens it here, a form token in AA_Session::ensureStarted().
+    if (isset($_REQUEST['username'])) {
         pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
+    } elseif (!is_object($auth)) {
+        // the same "nobody" as with the cookie - the user id is in the view cache keys ({xuid}) and in {user:id}
+        $auth = new AA_Auth();
+        $auth->unauth(true);
     }
 
     $router = $module->getRouter();

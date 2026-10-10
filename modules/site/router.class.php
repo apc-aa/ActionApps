@@ -215,7 +215,7 @@ class AA_Router_Seo extends AA_Router
         $this->apc['xuser'] = AuthGetUname();
         $this->apc['xuid']  = AuthGetUid();
 
-        if (isset($_GET['logout'])) {
+        if (isset($_GET['logout']) && is_object($GLOBALS['sess'] ?? null)) {   // without the cookie there is no session to log out of
             $auth->logout();
             $GLOBALS['sess']->delete();
             $this->apc['xuser'] = '';
