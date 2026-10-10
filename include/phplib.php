@@ -395,11 +395,13 @@ class Session
 
         if ($start_array) {  // defined for PHP >= 7.0
             $ok = session_start($start_array);
-            // this way we renew lifetime of the cookie on each reload
-            $cookie_setup = $this->cookie_setup();
-            $cookie_setup['expires'] = time() + $this->get_sec_lifetime();
-            $cookie_setup['path']    = '/';
-            setcookie(session_name(), session_id(), $cookie_setup);
+            // this way we renew lifetime of the cookie on each reload; a new session got its cookie from session_start()
+            if ($ok && (($_COOKIE[session_name()] ?? '') === session_id())) {
+                $cookie_setup = $this->cookie_setup();
+                $cookie_setup['expires'] = time() + $this->get_sec_lifetime();
+                $cookie_setup['path']    = '/';
+                setcookie(session_name(), session_id(), $cookie_setup);
+            }
         } else {
             $ok = session_start();
         }
