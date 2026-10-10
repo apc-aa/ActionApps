@@ -50,7 +50,8 @@ if (ImgCache::configured() && str_starts_with($_SERVER['REQUEST_URI'], '/' . Img
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
     pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
-    $auth4cache = AuthGetUid();
+    // not logged in = the same page as for a visitor without the cookie, so the same cache entry
+    $auth4cache = (AuthGetUid() === 'nobody') ? '' : AuthGetUid();
 }
 
 // -- CACHE -------------------------------------------------------------------
