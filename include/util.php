@@ -1272,11 +1272,11 @@ function HtmlPageBegin(bool $js_lib = false, string $lang = '', bool $inc_by_req
 {
     AA::sendAdminHeaders($lang);
     $inc_css = '';
-    /* Skinning model: admin-ecn.css holds the structural baseline (and the
-     * legacy :root palette). Other admin-*.css files are skin overlays that
-     * redefine :root and override individual selectors -- they are loaded
-     * AFTER the baseline so their cascade wins. When ADMIN_CSS already is
-     * the baseline, no overlay is appended. */
+    /* Same order in both branches, each layer overrides the previous one:
+     * css/aa-system.css (widgets, also on public sites) -> admin-ecn.css
+     * (admin baseline + default :root palette) -> skin overlay (redefines
+     * :root, overrides selectors). When ADMIN_CSS already is the baseline,
+     * no overlay is appended. */
     // Per-user theme overlay (cookie/profile) wins over the server-wide ADMIN_CSS default;
     // '' = baseline only. The cookie is read server-side so the right skin ships in the
     // first paint (no flash), and it works on the login page before the user is known.
@@ -1288,8 +1288,8 @@ function HtmlPageBegin(bool $js_lib = false, string $lang = '', bool $inc_by_req
             AA::Stringexpander()->addRequire(AA_INSTAL_PATH . $overlay . '?v=' . AA_JS_VERSION);
         }
     } else {
-        $inc_css = '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'admin-ecn.css?v=' . AA_JS_VERSION . '">'
-                 . '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'css/aa-system.css?v=' . AA_JS_VERSION . '">';
+        $inc_css = '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'css/aa-system.css?v=' . AA_JS_VERSION . '">'
+                 . '<link rel="stylesheet" href="' . AA_INSTAL_PATH . 'admin-ecn.css?v=' . AA_JS_VERSION . '">';
         if ($overlay) {
             $inc_css .= '<link rel="stylesheet" href="' . safe(AA_INSTAL_PATH . $overlay) . '?v=' . AA_JS_VERSION . '">';
         }

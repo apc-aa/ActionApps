@@ -1685,10 +1685,7 @@ table.aa-table table td {
 }
 /* message-boxes css */
 #aa-message-box {
-    width: 100%;
-    text-align: center;
     position: absolute;
-    z-index: 100;
 }
 #aa-message-box span {
     display: inline-block;
@@ -2541,9 +2538,6 @@ select[name="sel_module"] option.aa-section-header {
 .btn.aa-arealink, .btn.aa-convertor, .btn.aa-langtrans-tbtn {
     border: solid 1px var(--clr-border);
     background-color: var(--clr-basic-light);
-}
-.cke_chrome {
-    box-shadow: none;
 }
 #inputtab .aa-formatters label:hover, .aa-fld-toolbar .btn:hover, .btn.aa-arealink:hover, .btn.aa-langtrans-tbtn:hover {
     box-shadow: none;

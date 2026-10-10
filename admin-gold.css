@@ -1,7 +1,7 @@
 /* AA admin skin — "gold" (2026 redesign)
  *
- * Skin overlay loaded by the admin page builder AFTER admin-ecn.css and
- * aa-system.css (see include/util.php::HtmlPageBegin and
+ * Skin overlay loaded by the admin page builder AFTER aa-system.css and
+ * admin-ecn.css (see include/util.php::HtmlPageBegin and
  * include/adminpage.class.php). Selectable via:
  *
  *     define("ADMIN_CSS", "admin-gold.css");   // in config.php
