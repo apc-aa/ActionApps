@@ -1,6 +1,7 @@
 3864e6b7a4adfabd7e725dcbd865f1c88135d7f349f1241827a221721ac09d50  gh/honzito/plain.sortable@1.3.1/sortable.css
 0c6f5b59e05abfae3575a768b687f75760e08655eb6af9754f367fa117f934bb  gh/honzito/plain.sortable@1.3.1/sortable.min.js
 e9eb992e8833438c6482bf90aef2292e0586335b5604a56c0cd59a1e9f30d0cd  gh/honzito/smart-eu-cookies@0.9.2/src/smart-eu-cookies.min.js
+c212f4b505a86352aed62b24a8f16f999f821ecbe6456c7f3c8a04bc87968782  npm/@popperjs/core@2.11.8/dist/umd/popper.min.js
 799aeb25cc0373fdee0e1b1db7ad6c2f6a0e058dfadaa3379689f583213190bd  npm/font-awesome@4.7.0/css/font-awesome.min.css
 ba0c59deb5450f5cb41b3f93609ee2d0d995415877ddfa223e8a8a7533474f07  npm/font-awesome@4.7.0/fonts/fontawesome-webfont.woff
 2adefcbc041e7d18fcf2d417879dc5a09997aa64d675b7a3c4b6ce33da13f3fe  npm/font-awesome@4.7.0/fonts/fontawesome-webfont.woff2
@@ -11,3 +12,4 @@ fefc5c0d765c26cc5a1779fe4aaab9e0dabb0c14eef068aaf1ad8804592099a1  npm/lightgalle
 6ca44e8cb5996c4439ec9845304cbdc9a04e2d3c4b4af0672997d8cd3d7ee1f3  npm/lightgallery@2.9.0/lightgallery.min.js
 90ba5a3f8c982366e34467af25ce59d1757539391397cc535bd95908831bea05  npm/normalize.css@7.0.0/normalize.min.css
 f0a95a55ad9285f44bd09655f6906b3613b54ce422b1135411ae905afc4f54b8  npm/normalize.css@8.0.1/normalize.min.css
+3f0fe70eb26ccf28f6887a192e29d38dd7ef7c2f079a73304ad42ddc7bed37de  npm/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js

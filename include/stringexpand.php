@@ -7812,9 +7812,9 @@ class AA_Requires {
             //'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/lightgallery.js@1.2.0/lib/js/lightgallery.js', 'sha256-LwSUsCCIlbq0+vHbSFFbyO+BeMLnJ8gQecxLfgieuKM=', array('_css-lightgallery@1')),
             'lightgallery@2'              => new AA_Req_Footlib(self::mirror('npm/lightgallery@2.9.0/lightgallery.min.js'), '', ['_css-lightgallery@2']),  // async do not work for foot lib - it is used before it is loaded
             'lightgallery@1'              => new AA_Req_Footlib('https://cdn.jsdelivr.net/lightgallery.js/1.0.1/js/lightgallery.min.js', 'sha384-HZ/iOnkYJdO5/U2ug7IPTgNZq61Jr+SMoJGCWsjVjNqwY/77YVNA/mZQ1tdfo2Xm', ['_css-lightgallery@1']), // v 1.1.1 do not work
-            'tippy@6'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js', 'sha256-Pw/nDrJszyj2iHoZLinTjdfvfC8HmnMwStQt3HvtN94=', ['popper@2']),
+            'tippy@6'                     => new AA_Req_Footlib(self::mirror('npm/tippy.js@6.3.7/dist/tippy-bundle.umd.min.js'), '', ['popper@2']),
             'tippy@2'                     => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/tippy.js@2.6.0/dist/tippy.all.min.js', 'sha256-H8z9OcYtNQgDyDRKu2H1XY/nq06+bY3cMyB3fSFEytk='),
-            'popper@2'                    => new AA_Req_Footlib('https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js', 'sha256-2neWyvk1kBWvTs34xsy9U3BupGE5Mqm2+B5ELknV9iY='),
+            'popper@2'                    => new AA_Req_Footlib(self::mirror('npm/@popperjs/core@2.11.8/dist/umd/popper.min.js')),
             'aa-tools@1'                  => new AA_Req_Lib('', '', ['css-aa-system@1','aa-jslib@3|aa-jslib@1','htm-aa-system@1']),
             'ckeditor@4'                  => new AA_Req_Footlib(get_aa_url('misc/htmleditor/ckeditor.js', '', false),'', ['css-aa-system@1','aa-jslib@3|aa-jslib@2|aa-jslib@1']),
             'aa-fillform@1'               => new AA_Req_Lib(get_aa_url('javascript/fillform.min.js', ['v'=>AA_JS_VERSION],false)),
