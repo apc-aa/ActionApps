@@ -65,6 +65,9 @@ class Files
      */
     public const MAX_FILENAME_LENGTH = 140;
 
+    /** what Apache runs instead of serving: PHP, server side includes, CGI, files that send their own headers */
+    public const EXECUTABLE_EXTENSIONS = ['php', 'php3', 'php4', 'php5', 'php7', 'php8', 'phtml', 'pht', 'phar', 'shtml', 'shtm', 'stm', 'cgi', 'fcgi', 'asis'];
+
     /** Delimiter wrapped around the digest that replaces the elided middle in
      *  {@see shortenFilename()}. "__" and not "--" because
      *  ConvertCharset::escape() collapses "--" to "-" but leaves "_" alone, so
@@ -193,10 +196,12 @@ class Files
      *                                          (unused) filename
      * @param $filename                         - the name of file as you want to store it (if you
      *                        do not want to use original name)
+     * @param bool $executable                  - a name the server runs (isExecutableName()) is allowed;
+     *                        only for the file manager, whose users edit the site's scripts anyway
      *
      * @return false|string
      */
-    public static function uploadFile($filevarname, $dest_dir, $type = '', $replacemethod = 'new', $filename = null): false|string
+    public static function uploadFile($filevarname, $dest_dir, $type = '', $replacemethod = 'new', $filename = null, bool $executable = false): false|string
     {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
@@ -205,6 +210,10 @@ class Files
             return false;
         }
         $dest_file = self::makeFile($dest_dir, self::escape($filename ?: basename($up_file['name'])));
+        if (!$executable && self::isExecutableName($dest_file)) {
+            self::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));
+            return false;
+        }
 
         // look if the uploaded file exists
         if (!is_uploaded_file($up_file['tmp_name'])) {
@@ -431,6 +440,15 @@ class Files
             '_#ext'  => self::escape(pathinfo($file_name, PATHINFO_EXTENSION)),
             '_#full' => self::escape(pathinfo($file_name, PATHINFO_BASENAME)),
         ];
+    }
+
+    /** the server would run the file: an extension of its name - not only the last one, Apache's
+     *  mod_mime runs "x.php.jpg" as PHP wherever .php has a handler - is in EXECUTABLE_EXTENSIONS
+     */
+    public static function isExecutableName(string $filename): bool
+    {
+        $extensions = array_slice(explode('.', strtolower(basename($filename))), 1);
+        return (bool) array_intersect($extensions, self::EXECUTABLE_EXTENSIONS);
     }
 
     /** escape function

@@ -389,7 +389,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         }
 
         // $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, FILEMAN_MODE_FILE);
-        $dest_file = Files::uploadFile('uploadarg', $basedir . $directory);
+        $dest_file = Files::uploadFile('uploadarg', $basedir . $directory, executable: true);
         if ($dest_file === false) {   // error
             $err[] = Files::lastErrMsg();
         }
