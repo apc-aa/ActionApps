@@ -26,6 +26,8 @@
 */
 // expected $del - unpacked id of slice to delete
 
+use AA\Central\ResponderPolicy;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -35,7 +37,7 @@ require_once __DIR__ . "/../include/modutils.php";
 
 try {
     // array ( '1f5e8011cce…' => 1, )
-    $del = InputVars::idGET('del');
+    $del = InputVars::idPOST('del');
     // array ( 'Vymazat vyb…' => 1, )
     $delete = InputVars::boolPOST('delete');
     // array ( )
@@ -43,6 +45,7 @@ try {
     // array ( 'todelete' => 1, )
     $slices2show = InputVars::stringPOST('slices2show'); // alpha
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -61,6 +64,10 @@ if (!count($deletearr)) {
 if (!IsSuperadmin()) {
     MsgPage(_m("You don't have permissions to delete slice."));
     exit;
+}
+// a deletion is for good: only from the form of slicedel.php, never from a link or a page elsewhere
+if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(MODULE_DELETE_TOKEN, $token, $_SERVER)) {
+    MsgPage(_m('The form has expired; reload the page and try again.'), get_admin_url('slicedel.php'));
 }
 
 $err = [];      // error array (Init - just for initializing variable
