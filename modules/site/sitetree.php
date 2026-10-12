@@ -957,7 +957,7 @@ class sitetree
 
         // variables defined? - print it
         if (!$this->isFlag($spot_id, AA_Module_Site::FLAG_COLLAPSE) && ($vars = $this->get('variables', $spot_id))) {
-            echo "\n  <div class=\"variables\">(" . implode(',', $vars) . ')</div>';
+            echo "\n  <div class=\"variables\">(" . safe(implode(',', $vars)) . ')</div>';
         }
     }
 
@@ -984,7 +984,7 @@ class sitetree
             $delim = ' ';
             foreach ($conds as $k => $v) {
                 $match = AA_Site_Spot_Match::factoryByString($v, $k);
-                $conditions .= "$delim$k: <strong>$match->val</strong> <small>($match->op)</small>";
+                $conditions .= $delim . safe($k) . ': <strong>' . safe($match->val) . '</strong> <small>(' . safe($match->op) . ')</small>';
                 $delim = ', ';
             }
         }
@@ -1008,7 +1008,7 @@ class sitetree
                 echo safe($v) . "<span>" . a_href(self::siteAdminPageUrl($spot_id, ["delvar" => $k]), _m("Delete"), ['class' => "aa-button-delete"]) . "</span><br>";
             }
         }
-        echo "<form name=fvar action=\"" . $_SERVER['PHP_SELF'] . "\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button-new\">" . _m("Add") . "</a></span>";
+        echo "<form name=fvar action=\"" . safe($_SERVER['PHP_SELF']) . "\"><input type='text' name='addvar' value='' size='50'><span><a href='javascript:document.fvar.submit()' class=\"aa-button-new\">" . _m("Add") . "</a></span>";
         echo $this->getCurrentSpotId();
         echo StateHidden();
         echo "</form></td></tr>";
@@ -1026,9 +1026,9 @@ class sitetree
                 if ($conds[$v]) {
                     $match = AA_Site_Spot_Match::factoryByString($conds[$v], $v);
                     $warning = (trim($match->val) == $match->val) ? '' : '<div style="color:red;"><small>' . _m('Warning: the condition starts or ends with whitespace character. Please check, if it is OK in your expression.') . '</small></div>';
-                    echo "$safe_v ($match->op) <strong>" . safe($match->val) . "</strong> <span>" . a_href(self::siteAdminPageUrl($spot_id, ['delcond' => $v]), _m("Delete"), ['class' => "aa-button-delete"]) . "</span>$warning<br>";
+                    echo "$safe_v (" . safe($match->op) . ") <strong>" . safe($match->val) . "</strong> <span>" . a_href(self::siteAdminPageUrl($spot_id, ['delcond' => $v]), _m("Delete"), ['class' => "aa-button-delete"]) . "</span>$warning<br>";
                 } else {
-                    echo "<form name=fcond$i action=\"" . $_SERVER['PHP_SELF'] . "\">
+                    echo "<form name=fcond$i action=\"" . safe($_SERVER['PHP_SELF']) . "\">
                          $safe_k
                          <select name=addcondop>
                            <option>=</option>
@@ -1059,7 +1059,7 @@ class sitetree
             : a_href(self::siteAdminPageUrl($spot_id, ['akce' => 'h']), GetModuleImage('site', 'enabled.gif', '', 16, 16), ['class' => 'eye']);
 
         // print the spot <div>
-        echo "<div$class title=\"spot ID: $spot_id\">{$action}" . a_href(self::siteAdminPageUrl($spot_id, ["go_sid" => $spot_id]), $spot_name ?: '&nbsp;', ['class' => "spot"]) . "</div>";
+        echo "<div$class title=\"spot ID: $spot_id\">{$action}" . a_href(self::siteAdminPageUrl($spot_id, ["go_sid" => $spot_id]), strlen((string) $spot_name) ? safe($spot_name) : '&nbsp;', ['class' => "spot"]) . "</div>";
     }
 
     public function getCurrentSpotId(): string
