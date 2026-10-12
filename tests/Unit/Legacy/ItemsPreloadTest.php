@@ -278,6 +278,48 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], $tree->slicesWithRelationField([$without]));
         }
 
+        // ---------------------------------------------------------------- AA_Items::preload()
+
+        public function test_preload_asks_once_for_the_uncached_ids_and_caches_the_known_ones(): void
+        {
+            AA_Items::getItem(self::A);
+            RecordingDb::reset();
+            RecordingDb::$answer = fn(string $sql) => $this->answer($sql);
+
+            AA_Items::preload(new \zids([self::A, self::B, self::MISSING, self::D, self::C], 'l'));
+
+            $this->assertItemLoads(1, 1);
+            $item_select = implode("\n", array_filter(RecordingDb::$log, static fn($s) => str_starts_with($s, 'SELECT * FROM item')));
+            preg_match_all('/0x([0-9a-f]{32})/i', $item_select, $asked);
+            $this->assertSame([self::B, self::MISSING, self::D, self::C], array_map('strtolower', $asked[1]));
+
+            RecordingDb::reset();
+            foreach ([self::A => 'TA', self::B => 'TB', self::C => 'TC', self::D => 'TD'] as $id => $headline) {
+                $this->assertSame($headline, AA_Items::getItem($id)?->f_1('headline........'));
+            }
+            $this->assertItemLoads(0, 0);
+        }
+
+        public function test_preload_of_short_ids(): void
+        {
+            AA_Items::preload(new \zids(['2', '4'], 's'));
+            RecordingDb::reset();
+
+            $this->assertSame('TB', AA_Items::getItem(new \zids('2', 's'))?->f_1('headline........'));
+            $this->assertSame('TD', AA_Items::getItem(new \zids('4', 's'))?->f_1('headline........'));
+            $this->assertItemLoads(0, 0);
+        }
+
+        public function test_preload_of_cached_ids_asks_nothing(): void
+        {
+            AA_Items::preload(new \zids([self::A, self::B], 'l'));
+            RecordingDb::reset();
+
+            AA_Items::preload(new \zids([self::B, self::A], 'l'));
+
+            $this->assertItemLoads(0, 0);
+        }
+
         // ---------------------------------------------------------------- {fulltext:}
 
         public function test_fulltext_renders_active_items_in_order_and_skips_inactive(): void

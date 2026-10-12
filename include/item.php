@@ -2029,13 +2029,14 @@ class AA_Items
         $items = self::singleton();
 
         // check for already cached items
-        $zids2get = new zids(null, $zids->onetype());
-
+        $ids2get = [];
         for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
             if (!$items->_getFromCache($zids->zid($i))) {  // just check
-                $zids2get->add($zids->id($i));
+                $ids2get[] = $zids->id($i);
             }
         }
+        // added at once - add() of a single id re-checks the whole list (2 000 ids took 0.2 s); it skipped an empty id
+        $zids2get = (new zids(null, $zids->onetype()))->add(array_filter($ids2get));
 
         // do we need some not cached items?
         if ($zids2get->count()) {
