@@ -2192,8 +2192,10 @@ function aa_trim(string $string = '', string $chars = ''): string
     if ($chars !== '') {
         return trim($string, $chars);
     }
-    // text that is not valid UTF-8 makes preg_replace() fail (null) - it is trimmed byte-wise then
-    return (Langs::isUTF() ? preg_replace("/^\s+|\s+$/u", "", $string) : null) ?? trim($string);
+    // `(.*\S)` finds the last non-space in one pass - an unanchored `\s+$` is retried from every position of a space
+    // run inside the text (40 000 spaces = 9 s without PCRE JIT).
+    // Text that is not valid UTF-8, or a whitespace tail past the backtrack limit, makes preg_replace() fail (null) - trimmed byte-wise then
+    return (Langs::isUTF() ? preg_replace('/^\s*+(.*\S)?\s*+$/su', '$1', $string) : null) ?? trim($string);
     // trim($string, " \t\n\r\0\x0B\xA0");  // standard + chr(160) - hard space   // does not work for UTF characters - the hardspace \xA0 can break some UTF chars - "MŠ" for example
 }
 

@@ -451,10 +451,8 @@ class AA_Router_Seo extends AA_Router
             $apc_state['xseo']   = $apc_state['xseo' . ($x_max - 1)];
         }
 
-        // workaround for the static::get_class()
-        // returns real class name, not the AA_Router_Seo (if called statically)
-        $backtrace           = debug_backtrace();
-        $apc_state['router'] = $backtrace[0]['class'];
+        // AA_Router_Seo also when a subclass calls it - static::class would switch the router {xid} and {go} use
+        $apc_state['router'] = self::class;
 
         return $apc_state;
     }

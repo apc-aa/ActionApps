@@ -68,17 +68,17 @@ class AA_Supertree
             foreach ($content4ids as $item_id => $columns) {
                 $sid = $columns['u_slice_id......'][0]['value'];
                 if (count($this->_restrict_slices) && !in_array($sid, $this->_restrict_slices)) {
-                    $invalid = array_merge($invalid, [$item_id]);
+                    $invalid[] = $item_id;
                     continue;
                 }
                 // mark module_id
                 $this->_modules[$sid] = true;
                 $next  = $this->_compactValue($columns[$this->_relation_field]);
-                $new   = array_merge($new, $next);
+                $new[] = $next;                  // merged once below - array_merge() in the loop is O(n^2) on a big level
                 $this->_i[$item_id] = $next;
             }
 
-            $new_subitems = array_diff($new, array_keys($this->_i));
+            $new_subitems = array_diff(array_merge(...$new), array_keys($this->_i));
             if (count($new_subitems) < 1) {
                 break;
             }
@@ -114,11 +114,11 @@ class AA_Supertree
             // @todo throw error
             return [];
         }
-        $sub = [$id];
+        $parts = [];
         foreach ($this->_i[$id] as $down_id) {
-            $sub = array_merge($sub, $this->_subIds($down_id, $level + 1));
+            $parts[] = $this->_subIds($down_id, $level + 1);
         }
-        return $sub;
+        return $parts ? array_merge([$id], ...$parts) : [$id];   // merged once - a node with 2 000 children took 4 ms
     }
 
     public function getMenu($ids, $current_ids, $code, $inner = false, $expanded = false, $exp_button = false): string
