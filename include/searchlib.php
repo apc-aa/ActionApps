@@ -1051,6 +1051,7 @@ class AA_Dbcondition
     private string $condition = '';
     private string $jointype = '';
     private string $joincond = '';
+    private bool $matches_missing = false;
 
     public function __construct(string $table, $field, $operator, $querystring, string $type = 'text', bool $joined = false)
     {
@@ -1072,6 +1073,7 @@ class AA_Dbcondition
         $arr             = $this->_calculate();
         $this->jointype  = $arr[0];
         $this->joincond  = $arr[1];
+        $this->matches_missing = $arr[3] ?? false;
 
         //  could be id or expression like 49d94e8e3379dc951eac78c2cd0f9f65 OR 78d89ac8dd0de0967a6f50ee5408ccdd OR ae076560dd8674b169e7d493d23ca8f2
         //  an escaped apostrophe inside a literal never starts one
@@ -1092,6 +1094,12 @@ class AA_Dbcondition
     public function getJoinCond(): string
     {
         return $this->joincond;
+    }
+
+    /** true when the condition holds also for an item without the value (the NULL row of a LEFT JOIN) */
+    public function matchesMissing(): bool
+    {
+        return $this->matches_missing;
     }
 
     /**
@@ -1227,7 +1235,7 @@ class AA_Dbcondition
                 }
                 return ['INNER', '', "(($qfield >= $arr[0]) AND ($qfield <= $arr[1]))"];
             case 'ISNULL':
-                return ['LEFT', '', "(($qfield IS NULL) OR ($qfield=''))"];
+                return ['LEFT', '', "(($qfield IS NULL) OR ($qfield=''))", true];
             case 'NOTNULL':
                 return ['INNER', '', "(($qfield IS NOT NULL) AND ($qfield<>''))"];
             case 'ISMAIL':
@@ -1244,7 +1252,7 @@ class AA_Dbcondition
 
             case '<>':       // for work with multivalues we look for non existatnt join by value
             case '!=':
-                return $this->joined ? ['LEFT', "($qfield = '$cleanstr')", "($qfield IS NULL)"] : ['LEFT', "", "($qfield <> '$cleanstr')"];
+                return $this->joined ? ['LEFT', "($qfield = '$cleanstr')", "($qfield IS NULL)", true] : ['LEFT', "", "($qfield <> '$cleanstr')"];
 
             case '<=':
             case '<':
@@ -1723,6 +1731,8 @@ class QueryZidsHelper
     private string $select_distinct = '';
     private string $select_order = '';
     private array  $select_limit_field = [];
+    /** @var array<string, array{0: string, 1: bool}> content alias => [join condition, condition holds for an item without the value] - its select_tabs and select_conds have the alias as the key */
+    private array  $semijoins = [];
 
     private string $delim = '';
 
@@ -1968,22 +1978,50 @@ class QueryZidsHelper
             $langcond = !$languages ? '' : ' ' . Langs::getSql4Langs($languages, $tbl);
 
             // fill arrays to be able to construct select command
-            $this->select_conds[] = $dbcond->getWhereExp();
+            $this->select_conds[$tbl] = $dbcond->getWhereExp();
 
             if ($addjoincond = $dbcond->getJoinCond()) {
                 $addjoincond = " AND $addjoincond";
             }
 
             if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
-                $this->select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id $addjoincond$langcond)";
+                $on = "$tbl.item_id=item.id $addjoincond$langcond";
             } elseif (str_contains($cond_flds, ',')) {     // $field_count > 1
-                $this->select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd$langcond)$addjoincond)";
+                $on = "$tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd$langcond)$addjoincond";
             } else {
-                $this->select_tabs[] = "$selprefix JOIN content as $tbl ON ($tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd$langcond)$addjoincond)";
+                $on = "$tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd$langcond)$addjoincond";
                 // mark this field as sortable (store without apostrofs)
                 $this->sortable[str_replace("'", "", $cond_flds)] = $tbl;
             }
+            $this->select_tabs[$tbl] = "$selprefix JOIN content as $tbl ON ($on)";
+            $this->semijoins[$tbl]   = [$on, $dbcjointype === 'LEFT' && $dbcond->matchesMissing()];
         }
+    }
+
+    /** select_tabs, select_conds and DISTINCT; with a LIMIT, content joined only for a condition
+     *  is an EXISTS subquery instead
+     *  A joined multi-value field repeats the item, so the query needs DISTINCT, and DISTINCT makes
+     *  MySQL build the whole result before it applies LIMIT - 0.1-0.7 s on a slice of 100 000 items
+     *  (ekolist.cz). EXISTS cannot repeat the item, so MySQL reads the items in the order and stops
+     *  at the LIMIT (10-20 ms). The rows stay the same; items tied in the ORDER BY may come in
+     *  another order, as SQL leaves it undefined.
+     * @return array{0: string[], 1: string[], 2: string}
+     */
+    private function semijoined(int $limit): array
+    {
+        $tabs  = $this->select_tabs;
+        $conds = $this->select_conds;
+        if ($limit <= 0) {     // without LIMIT EXISTS is not faster (measured on 48 000 items)
+            return [$tabs, $conds, 'DISTINCT '];
+        }
+        foreach ($this->semijoins as $tbl => [$on, $matches_missing]) {
+            $rows        = "SELECT 1 FROM content AS $tbl WHERE $on";
+            $conds[$tbl] = $matches_missing
+                ? "(EXISTS ($rows AND $conds[$tbl]) OR NOT EXISTS ($rows))"
+                : "EXISTS ($rows AND $conds[$tbl])";
+            unset($tabs[$tbl]);
+        }
+        return [$tabs, $conds, $tabs ? 'DISTINCT ' : ''];
     }
 
 
@@ -2040,7 +2078,7 @@ class QueryZidsHelper
                         $this->select_order .= ' DESC';
                     }
                 } else {
-                    if (!$this->sortable[$fid]) {           // this field is not joined, yet
+                    if (empty($this->sortable[$fid])) {     // this field is not joined, yet
                         $tbl = 'c' . $this->tbl_count++;
                         // fill arrays to be able to construct select command
                         $this->select_tabs[] = "LEFT JOIN content as $tbl
@@ -2049,6 +2087,8 @@ class QueryZidsHelper
                         // mark this field as sortable (store without apostrofs)
                         $this->sortable[$fid] = $tbl;
                     }
+                    // the order needs the joined value, so a condition join must stay a join
+                    unset($this->semijoins[$this->sortable[$fid]]);
 
                     // join constant table if we want to sort by priority
                     $direction = current($srt);
@@ -2110,12 +2150,14 @@ class QueryZidsHelper
 
     public function constructSQL(?zids $restrict_zids, $type, $limit, $slices, $slice): string
     {
-        AA::$debug & 2 && AA::$dbg->log("QueryZids:slice_id=", implode('-', $slices), "  select_tabs=", $this->select_tabs, "  select_conds=", $this->select_conds, "  select_order=", $this->select_order);
+        [$select_tabs, $select_conds, $distinct] = $this->semijoined($limit);
+
+        AA::$debug & 2 && AA::$dbg->log("QueryZids:slice_id=", implode('-', $slices), "  select_tabs=", $select_tabs, "  select_conds=", $select_conds, "  select_order=", $this->select_order);
 
         // construct query --------------------------
-        $SQL = "SELECT DISTINCT item.id as itemid $this->select_distinct FROM item ";
-        if (isset($this->select_tabs) && is_array($this->select_tabs)) {
-            $SQL .= ' ' . implode(' ', $this->select_tabs);
+        $SQL = "SELECT {$distinct}item.id as itemid $this->select_distinct FROM item ";
+        if ($select_tabs) {
+            $SQL .= ' ' . implode(' ', $select_tabs);
         }
 
         $SQL .= ' WHERE ';                                         // slice ----------
@@ -2147,8 +2189,8 @@ class QueryZidsHelper
 
         $SQL .= CreateBinCondition($type, 'item', $this->ignore_expiry_date, $ignore_publish_date);
 
-        if ($this->select_conds) {     // conditions -----
-            $SQL .= " AND (" . implode(") AND (", $this->select_conds) . ") ";
+        if ($select_conds) {     // conditions -----
+            $SQL .= " AND (" . implode(") AND (", $select_conds) . ") ";
         }
 
         if ($this->select_order) {                                // order ----------
