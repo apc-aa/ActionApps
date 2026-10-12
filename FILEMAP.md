@@ -123,7 +123,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 
 | File | Purpose | Key API | Size |
 |------|---------|---------|------|
-| Cache/Cacheentry.php | Input form class for item add/edit form utility | Cacheentry | S |
+| Cache/Cacheentry.php | One page of the page cache: content + headers; sends them with Last-Modified/ETag (304), counts the hit | Cacheentry | S |
 | Cache/CacheStr2find.php | Search strings for cache input form | CacheStr2find | S |
 | Cache/ImgCache.php | The MissCache of resized images (IMG_UPLOAD_PATH/mC/): one setup for the {img} render, the miss dispatcher, the purge and State Check | ImgCache::get(), enabled(), configured(), uploadUrl(), srcBase(), root(), dirMode() | S |
 | Cache/PageCache.php | Caching for item add/edit and form utilities | PageCache | M |
@@ -367,6 +367,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Util/NamedInterface.php | Named object interface | NamedInterface | S |
 | Util/Paramwizard.php | Parameter wizard utility | Paramwizard | S |
 | Util/PhpThumbParams.php | What a phpThumb parameter string says about the image: size known without measuring, aoe for zc, output format | PhpThumbParams::knownSize(), pinnedSize(), parse(), setFormat() | S |
+| Util/Preconnect.php | `Link: rel=preconnect` header for a page linking the upload host or Google Fonts (Cacheentry) | Preconnect::header() | S |
 | Util/ReportTrait.php | Reporting trait | ReportTrait | S |
 | Util/Searchfields.php | Search field management | Searchfields | M |
 | Util/SerializerTrait.php | __unserialize helper stripping legacy property prefixes | SerializerTrait | S |

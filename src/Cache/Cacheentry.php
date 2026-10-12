@@ -34,6 +34,7 @@ namespace AA\Cache;
 
 use AA;
 use AA\Util\Hitcounter;
+use AA\Util\Preconnect;
 use zids;
 
 class Cacheentry
@@ -48,6 +49,9 @@ class Cacheentry
     {
         $this->c = $content;
         $this->h = $headers;
+        if (($preconnect = Preconnect::header($headers, (string) $content)) !== '') {
+            $this->h['preconnect'] = $preconnect;
+        }
         $this->i = $item_id;
         $this->p = $cacheability;
         $this->t = time();
