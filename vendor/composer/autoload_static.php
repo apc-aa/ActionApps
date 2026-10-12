@@ -415,6 +415,7 @@ class ComposerStaticInit17cbdb6b6f147d0a4bf02d28862f205a
         'AA\\Optimize\\AddCodeFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddCodeFieldTemplate.php',
         'AA\\Optimize\\AddComputedNumFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddComputedNumFieldTemplate.php',
         'AA\\Optimize\\AddComputedTxtFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddComputedTxtFieldTemplate.php',
+        'AA\\Optimize\\AddContentFieldIndex' => __DIR__ . '/../..' . '/src/Optimize/AddContentFieldIndex.php',
         'AA\\Optimize\\AddCountryFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddCountryFieldTemplate.php',
         'AA\\Optimize\\AddDateFieldTemplate' => __DIR__ . '/../..' . '/src/Optimize/AddDateFieldTemplate.php',
         'AA\\Optimize\\AddDurationLog' => __DIR__ . '/../..' . '/src/Optimize/AddDurationLog.php',

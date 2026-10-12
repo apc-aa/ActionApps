@@ -6089,9 +6089,9 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 
         $delimiters = self::defineDelimiters();
         // get pairs (like APC - <a href="https://apc.org">APC</a>' from dict. slice
-        // (we call it through the pagecache in order it is called only once for
-        // the same parameters)
-        $replace_pairs = AA::Pagecache()->cacheMemDb(['AA_Stringexpand_Dictionary','getDictReplacePairs'], [$dict_arr, $format, $delimiters, $conds], new CacheStr2find($dict_arr));
+        // indexed for replaceInText() (we call it through the pagecache in order
+        // it is called only once for the same parameters)
+        $dict = AA::Pagecache()->cacheMemDb(['AA_Stringexpand_Dictionary','getDictReplaceIndex'], [$dict_arr, $format, $delimiters, $conds], new CacheStr2find($dict_arr));
 
         // we do not want to replace text in the html tags, so we substitute all
         // html with "shortcut" (like _AA_1_ShCuT) and the content is stored in the
@@ -6120,24 +6120,71 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
             },
             $text);
 
-        // Insert special string before the beginning and after the end of the text
-        // Replacing all delimiters with special strings!!!
-        $text = 'AA#@'.strtr($text, $delimiters).'AA#@';
-
-        // add shortcuts also to the replace_pairs, so all is done in one step
-        $replace_pairs = array_merge($replace_pairs, $html_subst_arr);
-        // do both: process dictionary words and put back the shortcuted text
-
-        $text = strtr($text, $replace_pairs);
-
-        // finally - removing additional vaste text 'AA#@' - recovering original word delimiters
-        return str_replace('AA#@', '', $text);
+        return self::replaceInText($text, $dict, $html_subst_arr, $delimiters);
     }
 
-    /** getDictReplacePairs function
-     *  Return array of substitution pairs for dictionary, based on given dictionary
+    /** Replaces the dictionary words in the text, whose html is already replaced by shortcuts
+     *  Gives what strtr() with all the pairs gave, but strtr() tries every key length at every
+     *  word start - 20 000 keys up to 120 bytes long cost 35 ms per 25 kB of text. A key can
+     *  only match whole pieces between the 'AA#@' marks, so the pieces are looked up instead.
+     * @param string $text
+     * @param array  $dict           from indexPairs()
+     * @param array  $html_subst_arr shortcut => html
+     * @param array  $delimiters     from defineDelimiters()
+     * @return string
+     */
+    static function replaceInText(string $text, array $dict, array $html_subst_arr, array $delimiters): string
+    {
+        [$pairs, $multi] = $dict;
+        // the delimiters get 'AA#@' marks around, so a keyword is a run of whole pieces
+        $pieces = explode('AA#@', 'AA#@' . strtr($text, $delimiters) . 'AA#@');
+        $last   = count($pieces) - 1;
+        $text   = '';
+        for ($i = 1; $i <= $last; $i++) {
+            // the longest key starting with this piece wins
+            foreach ([...($multi[$pieces[$i]] ?? []), 1] as $n) {
+                $key = ($n === 1) ? $pieces[$i] : implode('AA#@', array_slice($pieces, $i, $n));
+                if ($i + $n <= $last && isset($pairs[$key])) {
+                    // the key took the mark after it, so the next piece cannot start a key
+                    $text .= $pairs[$key] . $pieces[$i + $n];
+                    $i    += $n;
+                    continue 2;
+                }
+            }
+            $text .= $pieces[$i];
+        }
+
+        // put back the shortcuted text; 'AA#@' in the links or html is removed, as it always was
+        return str_replace('AA#@', '', strtr($text, $html_subst_arr));
+    }
+
+    /** [[key => link], [first piece => piece counts of its longer keys, the most first]], where a key
+     *  is the search_kw without its outer 'AA#@' marks
+     *  Flat, because the pagecache unserializes it on every miss - 20 000 small arrays (a group per
+     *  first word) took twice as long (7.5 ms) as this.
+     * @param array $replace_pairs search_kw => link
+     * @return array
+     */
+    static function indexPairs(array $replace_pairs): array
+    {
+        $pairs = $multi = [];
+        foreach ($replace_pairs as $search_kw => $link) {
+            $key         = substr($search_kw, 4, -4);
+            $pairs[$key] = $link;
+            if (($n = substr_count($key, 'AA#@') + 1) > 1) {
+                $multi[explode('AA#@', $key, 2)[0]][$n] = $n;
+            }
+        }
+        foreach ($multi as &$counts) {
+            rsort($counts);
+        }
+        unset($counts);
+        return [$pairs, $multi];
+    }
+
+    /** getDictReplaceIndex function
+     *  Return the substitution pairs for dictionary indexed by indexPairs(), based on given dictionary
      *  slice, format string which defines the format and possible slice codnitions.
-     *   [biom] => <a href="http://biom.cz">_#KEYWORD_</a>, ...
      *
      * @param array  $dictionaries
      * @param        $format
@@ -6146,9 +6193,9 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
      *
      * @return array
      */
-    static function getDictReplacePairs(array $dictionaries, $format, $delimiters, $conds = ''): array
+    static function getDictReplaceIndex(array $dictionaries, $format, $delimiters, $conds = ''): array
     {
-        // return array of pairs: [biom] => <a href="http://biom.cz">_#KEYWORD_</a>
+        // pairs: [AA#@biomAA#@] => <a href="http://biom.cz">biom</a>, indexed at the end
         $replace_pairs = [];
 
         // conds string could contain also sort[] - if so, use conds also as $sort
@@ -6162,7 +6209,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
 
         if (!($module = AA_Slice::getModule($dictionaries[0]))) {
             warn(_m('No module for dictionary slice'));
-            return $replace_pairs;
+            return self::indexPairs($replace_pairs);
         }
 
         $format = $module->getField($format) ? '{substr:{index:' . $format . '}:0:50}' : $format;
@@ -6201,7 +6248,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
             }
         }
 
-        return $replace_pairs;
+        return self::indexPairs($replace_pairs);
     }
 
     /** defineDelimiters function

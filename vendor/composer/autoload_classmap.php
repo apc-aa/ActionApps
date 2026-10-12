@@ -272,6 +272,7 @@ return array(
     'AA\\Optimize\\AddCodeFieldTemplate' => $baseDir . '/src/Optimize/AddCodeFieldTemplate.php',
     'AA\\Optimize\\AddComputedNumFieldTemplate' => $baseDir . '/src/Optimize/AddComputedNumFieldTemplate.php',
     'AA\\Optimize\\AddComputedTxtFieldTemplate' => $baseDir . '/src/Optimize/AddComputedTxtFieldTemplate.php',
+    'AA\\Optimize\\AddContentFieldIndex' => $baseDir . '/src/Optimize/AddContentFieldIndex.php',
     'AA\\Optimize\\AddCountryFieldTemplate' => $baseDir . '/src/Optimize/AddCountryFieldTemplate.php',
     'AA\\Optimize\\AddDateFieldTemplate' => $baseDir . '/src/Optimize/AddDateFieldTemplate.php',
     'AA\\Optimize\\AddDurationLog' => $baseDir . '/src/Optimize/AddDurationLog.php',
