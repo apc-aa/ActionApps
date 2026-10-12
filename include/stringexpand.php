@@ -978,9 +978,10 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
             return $text;
         }
         $ahrefid = 'aapm'.gensalt(10);
-        $linkpart    = explode('@', $email);
-        $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
-        $linktext    = ($text=='') ? $mailprotect : "'".escape4js($text)."'";
+        // the address comes from item content, so it is a JS string for the href and also HTML-escaped for the link text
+        [$user, $domain] = array_pad(explode('@', $email, 2), 2, '');
+        $mailprotect = "'".escape4js($user)."'+'@'+'".escape4js($domain)."'";
+        $linktext    = ($text=='') ? "'".escape4js(safe($user))."'+'@'+'".escape4js(safe($domain))."'" : "'".escape4js($text)."'";
         $ret = "<a href=\"\" id=\"$ahrefid\"></a><!--AA script generated, AA script removed-->";
         // we delete the script because when the content is redisplayed again (by {htmlajaxtoggle} for example, the script is executed again, which leads to wrong content)
         $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);document.currentScript?.parentNode?.removeChild(document.currentScript);</script>";
