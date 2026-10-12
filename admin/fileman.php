@@ -113,7 +113,7 @@ if (in_array($cmd, FILEMAN_WRITE_COMMANDS, true) && (ResponderPolicy::isForeignB
 fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset);
 
 // One file page
-if ($cmd === 'edit' || $cmd === 'createfile') {
+if (($cmd === 'edit' || $cmd === 'createfile') && isset($fe_filename)) {
     $fe_path = $basedir;
     $fe_script = StateUrl("fileman.php");
     $fe_wwwpath = FILEMAN_BASE_URL;

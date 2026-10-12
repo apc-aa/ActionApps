@@ -46,7 +46,7 @@ function filesuffix($filename): string
     if (!str_contains($filename, ".")) {
         return "";
     }
-    $i = strlen($filename);
+    $i = strlen($filename) - 1;
     while ($filename[$i] !== ".") {
         $i--;
     }
@@ -61,6 +61,19 @@ const FILEMAN_WRITE_COMMANDS = ['createfile', 'createdir', 'delete', 'upload', '
 function fileman_text(string $name): string
 {
     return strtr(safe($name), ['{' => '&#123;', '}' => '&#125;']);
+}
+
+/** the File Manager keeps images, styles and pages; a name the server would run or read as its
+ *  settings (.php, .htaccess, .user.ini) is refused, so it only ever serves files
+ */
+function fileman_refused(string $name): bool
+{
+    global $err;
+    if (str_starts_with(basename($name), '.') || Files::isExecutableName($name)) {
+        $err[] = _m('Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager.');
+        return true;
+    }
+    return false;
 }
 
 /** make_secure function
@@ -338,18 +351,23 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         set_directory($arg);
     } elseif ($cmd === 'edit') {
         make_secure($arg);
-        $fe_filename = $arg;
+        if (!fileman_refused($arg)) {
+            $fe_filename = $arg;
+        }
     }
     // Action taken in caller, which outputs HTML
 
     // Create file
     elseif ($cmd === 'createfile') {
-        if (!preg_match("/^[0-9a-zA-Z_.]*$/", $arg)) {
+        if (!preg_match("/^[0-9a-zA-Z_.]*$/D", $arg)) {
             $err[] = _m("Wrong file name.");
             return;
         }
         if (filesuffix($arg) == "") {
             $arg .= ".html";
+        }
+        if (fileman_refused($arg)) {
+            return;
         }
         $newfile = $basedir . $directory . $arg;
         if (file_exists($newfile)) {
@@ -401,7 +419,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         }
 
         // $uploaderr = aa_move_uploaded_file("uploadarg", $basedir.$directory, FILEMAN_MODE_FILE);
-        $dest_file = Files::uploadFile('uploadarg', $basedir . $directory, executable: true);
+        $dest_file = Files::uploadFile('uploadarg', $basedir . $directory);
         if ($dest_file === false) {   // error
             $err[] = Files::lastErrMsg();
         }
@@ -419,6 +437,9 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
         // Save changes
         if ($cmd === 'savefile') {
+            if (fileman_refused($filename)) {
+                return;
+            }
             $f       = $basedir . $filename;
             $filedes = fopen($f, 'wb');
             if (!$filedes) {
@@ -434,6 +455,9 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
         } elseif ($cmd === 'rename') { // Rename
             $arg     = basename((string) $arg);
             $newname = dirname($basedir . $filename) . "/" . $arg;
+            if (fileman_refused($arg)) {
+                return;
+            }
             if (file_exists($newname)) {
                 $err[] = _m("File with this name already exists") . " ($arg).";
             } elseif (!rename($basedir . $filename, $newname)) {

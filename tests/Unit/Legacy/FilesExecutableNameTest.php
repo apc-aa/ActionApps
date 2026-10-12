@@ -41,6 +41,8 @@ final class FilesExecutableNameTest extends TestCase
             'inner php'       => ['photo.php.jpg'],
             'inner ssi'       => ['a.shtml.pdf'],
             'in a path'       => ['/var/www/img_upload/abc/x.php'],
+            'trailing space'  => ['x.php '],
+            'trailing line'   => ["x.php\n"],
         ];
     }
 

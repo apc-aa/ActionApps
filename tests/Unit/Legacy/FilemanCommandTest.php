@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Legacy;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * File Manager commands stay inside the File Manager's directory: a name with ../ from the request
- * (the file to edit, save, delete or rename) never reaches a file outside it.
+ * (the file to edit, save, delete or rename) never reaches a file outside it. It keeps only files
+ * the server serves: no script or server setting is created, written, edited or renamed into.
  */
 final class FilemanCommandTest extends TestCase
 {
@@ -17,7 +19,11 @@ final class FilemanCommandTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        if (!\defined('DEFAULT_LANG_INCLUDE')) {
+            \define('DEFAULT_LANG_INCLUDE', 'en_utf8.php3');
+        }
         require_once __DIR__ . '/../fixtures/util_shims.php';   // _m()
+        require_once __DIR__ . '/../../../include/files.class.php';
         require_once __DIR__ . '/../../../include/fileman.php';
     }
 
@@ -63,5 +69,64 @@ final class FilemanCommandTest extends TestCase
     {
         fileman_execute_command($this->base, '', 'edit', ['edit' => '../outside.txt'], [], []);
         self::assertStringNotContainsString('..', $GLOBALS['fe_filename']);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function refusedNames(): array
+    {
+        return [
+            'php'           => ['x.php'],
+            'upper case'    => ['X.PHP'],
+            'inner'         => ['x.php.html'],
+            'server config' => ['.htaccess'],
+            'php settings'  => ['.user.ini'],
+            'trailing line' => ["x.php\n"],
+        ];
+    }
+
+    #[DataProvider('refusedNames')]
+    public function test_createfile_refusesAScriptOrSetting(string $name): void
+    {
+        fileman_execute_command($this->base, 'site/', 'createfile', ['createfile' => $name], [], []);
+        self::assertFileDoesNotExist($this->base . 'site/' . $name);
+        self::assertNotEmpty($GLOBALS['err']);
+    }
+
+    #[DataProvider('refusedNames')]
+    public function test_rename_refusesAScriptOrSetting(string $name): void
+    {
+        fileman_execute_command($this->base, 'site/', 'rename', ['rename' => $name], [], ['filename' => 'site/a.txt']);
+        self::assertFileExists($this->base . 'site/a.txt');
+        self::assertFileDoesNotExist($this->base . 'site/' . $name);
+    }
+
+    public function test_rename_letsAnOldScriptBeRenamedAway(): void
+    {
+        file_put_contents($this->base . 'site/old.php', 'x');
+        fileman_execute_command($this->base, 'site/', 'rename', ['rename' => 'old.txt'], [], ['filename' => 'site/old.php']);
+        self::assertFileExists($this->base . 'site/old.txt');
+    }
+
+    public function test_savefile_doesNotWriteAScript(): void
+    {
+        file_put_contents($this->base . 'site/old.php', 'x');
+        fileman_execute_command($this->base, 'site/', 'savefile', ['savefile' => 'changed'], [], ['filename' => 'site/old.php']);
+        self::assertSame('x', file_get_contents($this->base . 'site/old.php'));
+    }
+
+    public function test_edit_doesNotOpenAScript(): void
+    {
+        $GLOBALS['fe_filename'] = null;
+        fileman_execute_command($this->base, 'site/', 'edit', ['edit' => 'site/old.php'], [], []);
+        self::assertNull($GLOBALS['fe_filename']);
+    }
+
+    public function test_createfile_makesAPage(): void
+    {
+        if (!\defined('FILEMAN_MODE_FILE')) {
+            \define('FILEMAN_MODE_FILE', 0o664);
+        }
+        fileman_execute_command($this->base, 'site/', 'createfile', ['createfile' => 'page'], [], []);
+        self::assertFileExists($this->base . 'site/page.html');
     }
 }

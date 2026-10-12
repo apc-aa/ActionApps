@@ -196,12 +196,10 @@ class Files
      *                                          (unused) filename
      * @param $filename                         - the name of file as you want to store it (if you
      *                        do not want to use original name)
-     * @param bool $executable                  - a name the server runs (isExecutableName()) is allowed;
-     *                        only for the file manager, whose users edit the site's scripts anyway
      *
      * @return false|string
      */
-    public static function uploadFile($filevarname, $dest_dir, $type = '', $replacemethod = 'new', $filename = null, bool $executable = false): false|string
+    public static function uploadFile($filevarname, $dest_dir, $type = '', $replacemethod = 'new', $filename = null): false|string
     {
         $up_file = is_array($filevarname) ? $filevarname : $_FILES[$filevarname];
 
@@ -210,7 +208,7 @@ class Files
             return false;
         }
         $dest_file = self::makeFile($dest_dir, self::escape($filename ?: basename($up_file['name'])));
-        if (!$executable && self::isExecutableName($dest_file)) {
+        if (self::isExecutableName($dest_file)) {
             self::lastErr(FILE_ERROR_TYPE_NOT_ALLOWED, _m('type of uploaded file not allowed'));
             return false;
         }
@@ -447,7 +445,8 @@ class Files
      */
     public static function isExecutableName(string $filename): bool
     {
-        $extensions = array_slice(explode('.', strtolower(basename($filename))), 1);
+        // an old Apache matched "x.php\n" as .php; a name typed into the File Manager is not escaped
+        $extensions = array_map('trim', array_slice(explode('.', strtolower(basename($filename))), 1));
         return (bool) array_intersect($extensions, self::EXECUTABLE_EXTENSIONS);
     }
 
