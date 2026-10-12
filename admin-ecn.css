@@ -12,6 +12,7 @@
     /* Text + lines */
     --clr-dark: #1f1f1f;                  /* TODO: rename → --clr-text */
     --clr-border: rgb(220 213 194);
+    --clr-btn-border: rgb(26 4 4 / 30%);
     --clr-gold: #c9b57f;                  /* TODO: rename → --clr-border-strong / --clr-accent */
     --clr-green: #1eb585;                 /* TODO: rename → --clr-success */
 
@@ -103,11 +104,6 @@
 .flex {
     display: flex !important;
     flex-direction: column;
-}
-.always-flex {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
 }
 .f-baseline {
     align-items: baseline !important;
@@ -385,7 +381,7 @@ details summary  {
     margin-bottom: 1em;
     display: inline-block;
     background-color: rgb(255 255 255 / 20%);
-    border: solid 1px rgb(26 4 4 / 30%);
+    border: solid 1px var(--clr-btn-border);
     color: #000000;
     border-radius: 13px;
     transition: all 0.3s;
@@ -565,7 +561,7 @@ input[type="submit"].btn-l, input[type="button"].btn-l, button.btn-l, .button.bt
 input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-primary, .button.btn-primary, .btn.btn-primary, .btn-primary  {
     background-color: var(--clr-green);
 }
-.btn.btn-s, button.btn-s, input[type="submit"].btn-s, .aa-table input[type="button"].btn-s, input[type="button"].btn-s, .aa-table input[type="button"].btn-s {
+.btn.btn-s, button.btn-s, input[type="submit"].btn-s, .aa-table input[type="button"].btn-s, input[type="button"].btn-s {
     padding: 3px 7px; /*zatim jen u editace policka*/
 }
 /* aa- buttons */
@@ -573,7 +569,7 @@ input[type="submit"].btn-primary, input[type="button"].btn-primary, button.btn-p
     padding: 4px 8px;
     line-height: 16px;
 }
-[class^="aa-button"], [class^="aa-button"] {
+[class^="aa-button"] {
     border: solid 1px rgb(26 4 4 / 30%);
     color: #61454A;
     text-decoration: none;
@@ -837,8 +833,8 @@ table.aa-history-fields thead th {
 /* Per-event view toggle (Diff / Version A / Version B) + raw-value code blocks for copy-paste. */
 .aa-h-viewtoggle { display: inline-flex; border: 1px solid var(--clr-border); border-radius: 6px; overflow: hidden; }
 .aa-h-vbtn {
-    font: inherit; font-size: var(--sz-s); line-height: 1.5; padding: 1px 12px; cursor: pointer;
-    background: transparent; color: var(--clr-text-accent); border: 0; border-inline-start: 1px solid var(--clr-border);
+    font: inherit; line-height: 1.5; padding: 3px 14px; cursor: pointer;
+    background: transparent; color: var(--clr-text-accent); letter-spacing: 1px;
 }
 .aa-h-vbtn:first-child { border-inline-start: 0; }
 /* explicit colour - the global `button:hover` sets gold bg + near-white text, unreadable here */
@@ -874,15 +870,10 @@ table.aa-history-fields thead th {
     background: #ffffff;
 }
 .nblogo {
-    text-align: center;
     flex: 0 0 245px;
-    max-width: 245px;
-    padding-top: 14px;
 }
 .nblogo a {
     display: block;
-    margin: 0 auto 0 25px;
-    max-width: 112px;
     padding-right: 10px;
 }
 .aa-ui-nav {
@@ -957,7 +948,6 @@ table.aa-history-fields thead th {
 }
 .aa-ui-nav .navbar a  {
     font-weight: 600;
-    text-transform: uppercase;
     color: #633840;
     display: inline-block;
     font-family: 'Open Sans', sans-serif;
@@ -1034,10 +1024,8 @@ input[type="submit"].aa-off {
 .aa-ui-nav select {
     padding: 2px 5px;
     height: 30px;
-    border-color: transparent;
     margin: 0 10px 0 5px;
     font-size: 13px;
-    max-width: 260px;
 }
 .aa-ui-modules a.aa-ui-moduleview {
     background: url(images/ico-oko.svg) no-repeat right 9px;
@@ -1075,7 +1063,6 @@ input[type="submit"].aa-off {
 .leftmenu a, li.aa-leftmenu-header {
     text-decoration: none;
     display: block;
-    padding: 7px 10px 7px 43px;
     border-bottom: solid 1px rgb(0 0 0 / 10%);
     margin: 0 20px 0 20px;
     color: rgb(0 0 0 / 85%);
@@ -1083,10 +1070,6 @@ input[type="submit"].aa-off {
     position: relative;
 }
 li.aa-leftmenu-header {
-    padding-top: 20px;
-    padding-left: 25px;
-    font-size: var(--sz-xs);
-    text-transform: uppercase;
     letter-spacing: 0.03em;
 }
 .leftmenu li img {
@@ -1096,7 +1079,6 @@ li.aa-leftmenu-header {
 .aa-bin-cnt, .aa-morehelp, .leftmenu .aa-bin-cnt, .leftmenu .aa-morehelp {
     display: inline-block;
     color: rgb(127 67 81 / 91%);
-    padding: 2px 5px;
     border-radius: 8px;
     letter-spacing: 0.02em;
     font-size: 10px;
@@ -1490,24 +1472,11 @@ div[data-aa-required] label:after {
 .aa-items-manager thead td:first-child, .aa-items-manager thead th:first-child, .aa-items-manager .aa-tbl-header td:first-child, .aa-items-manager .aa-tbl-header th:first-child {
     border-left: 0;
 }
-.aa-items-manager thead td:first-child, .aa-items-manager thead th:first-child, .aa-items-manager .aa-tbl-header td:first-child, .aa-items-manager .aa-tbl-header th:first-child {
-    border-left: 0;
-}
 .aa-items-manager tr:nth-of-type(odd), .aa-table tr:nth-of-type(odd) {
     background-color: rgb(255 255 255 / 40%);
 }
 .aa-items-manager tr:nth-of-type(even), .aa-table tr:nth-of-type(even) {
     background-color: var(--clr-opacity-dark);
-}
-#inputtab .aa-table tr:nth-of-type(even), #inputtab .aa-table tr:nth-of-type(odd) {
-    background-color: transparent;
-}
-.aa-table table table tr:nth-of-type(even), table.aa-table table tr:nth-of-type(even),
-.aa-table table table tr:nth-of-type(odd), table.aa-table table tr:nth-of-type(odd){
-    background-color: transparent;
-}
-.aa-table.aa-table-simple tr:nth-of-type(odd), .aa-table.aa-table-simple tr:nth-of-type(even) {
-    background-color: var(--clr-opacity-light);
 }
 .aa-items-manager td {
     padding: 5px 5px;
@@ -1524,7 +1493,6 @@ div[data-aa-required] label:after {
     vertical-align: bottom;
     background-color: var(--clr-basic-dark);
     padding: 8px 10px 4px 5px;
-    font-weight: 600;
     color: rgb(0 0 0 / 80%);
     border: 0;
     border-left: solid 1px rgb(243 243 241 / 52%);
@@ -1556,7 +1524,6 @@ div[data-aa-required] label:after {
     background-color: var(--clr-footer);
     padding: 4px 11px;
     letter-spacing: normal;
-    margin: 0 2px;
     color: #000000;
     text-decoration: none;
     font-size: var(--sz-s);
@@ -1595,7 +1562,6 @@ div[data-aa-class="clasic"] {
 .aa-table thead td, .aa-table thead th, .aa-table .aa-tbl-header td, .aa-table .aa-tbl-header th, .tabtit {
     background-color: var(--clr-basic-dark);
     padding: 11px 10px 4px 12px;
-    font-weight: normal;
     color: rgb(0 0 0 / 80%);
     border-left: solid 1px rgb(255 255 255 / 45%);
     border-top: solid 1px rgb(255 255 255 / 45%);
@@ -1662,6 +1628,10 @@ table.aa-table table td {
     vertical-align: top;
     line-height: 1.2;
 }
+.aa-table tr > td.aa-tab-title:first-child {
+    padding: 13px 10px 7px 25px;
+    background-color: var(--clr-basic-dark);
+}
 .aa-table tr > th:first-child {
     padding-top: 11px;
     padding-bottom: 10px;
@@ -1688,7 +1658,6 @@ table.aa-table table td {
     flex-wrap: wrap;
     padding: 12px 0;
     margin-bottom: -1px;
-    justify-content: center;
     max-width: 100%;
     background-color: var(--clr-body);
 }
@@ -1715,10 +1684,7 @@ table.aa-table table td {
 }
 /* message-boxes css */
 #aa-message-box {
-    width: 100%;
-    text-align: center;
     position: absolute;
-    z-index: 100;
 }
 #aa-message-box span {
     display: inline-block;
@@ -1771,10 +1737,8 @@ form[name="inputform"] {
     margin: 0 -20px 0 -10px;
 }
 h1:has(+form[name="inputform"]) {
-    text-align: center;
     margin: 0 0 0 -10px;
     padding: 20px 17px 10px 0;
-    background: var(--clr-basic);
     font-size: 1.1em;
 }
 #inputtab {
@@ -1929,6 +1893,9 @@ input[type="checkbox"] {
     background-color: white;
     vertical-align: middle;
 }
+.formrow0 > td > input[type="checkbox"] {/*snaha zarovnat checkboxy v radku formulare, vnorene jiz ne*/
+    margin-top: 6px;
+}
 input[type="checkbox"]:checked:before {
     display: block;
     width: 20px;
@@ -1939,345 +1906,6 @@ input[type="checkbox"]:checked:before {
     content: "";
     margin-top: -1px;
     margin-left: -1px;
-}
-@media print {
-    .noprint {
-        display: none;
-    }
-    body, #hlavnitbl {
-        background-color: #FFFFFF;
-    }
-}
-/*screen*/
-@media (min-width: 768px) {
-    .flex {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    .aa-group-row .aa-field {
-        display: flex;
-    }
-    .no-screen {
-        display: none !important;
-    }
-    .aa-formgroup-inline {
-        align-items: center;
-        display: flex;
-    }
-    .aa-sb-btns {
-        margin: 7px 0 10px 55px;
-    }
-    table.aa-table, .mgr_table {
-        border: solid 1px var(--clr-border);
-    }
-}
-@media (max-width: 1200px) {
-    .slicehead {
-        padding-left: 37px;
-    }
-}
-/* mobil */
-@media (max-width: 767px)  {
-    body {
-        background: white;
-    }
-    .ico-menu {
-        display: inline-block;
-        color: white;
-        background: black;
-        text-align: center;
-        font-size: 20px;
-        width: 33px;
-        height: 33px;
-        line-height: 30px;
-        font-style: normal;
-    }
-    .ico-menu:after {
-        content: "\2630";
-    }
-    .mobilmenu.active .ico-menu:after {
-        content: "\2715";
-        position: relative;
-        top: 2px;
-    }
-    .mainmenu  {
-        margin-left: 2em;
-        margin-right: 1.5em;
-    }
-    .mainmenu a {
-        display: inline-block !important;
-        margin: 0 0 7px 6px;
-        padding: 7px 10px;
-        background: var(--clr-basic);
-    }
-    .mainmenu a.aa-ui-btn-additem {
-        background: var(--clr-green);
-        color: white !important;
-        margin-right: calc(100% - 133px);
-    }
-    .mainmenu a {
-        display: inline-block;
-        margin: 0 0 7px 6px;
-        padding: 7px 10px;
-        background: var(--clr-basic);
-    }
-    .mainmenu a.active {
-        background: var(--clr-dark);
-        color: white;
-    }
-    .no-mobile {
-        display: none !important;
-    }
-    .center-mo {
-        text-align: center !important;
-    }
-    .mobile-page-padding {
-        padding-left: 35px;
-        padding-right: 35px;
-    }
-    .flex-tbl, .flex-tbl tr, .flex-tbl th, .flex-tbl td, .flex-tbl tbody {
-        display: block;
-        width: 100%;
-    }
-    .mobilmenu {
-        text-align: right;
-        position: absolute;
-        right: 0;
-        top: 0;
-        z-index: 1100;
-        padding: 10px 10px 0 0;
-        box-sizing: border-box;
-    }
-    .mobilmenu a {
-        display: block;
-        color: white;
-        text-decoration: none;
-    }
-    .leftmenua {
-        border-left-color: var(--clr-green) !important;
-    }
-    .mobilmenu nav {
-        display: none;
-        text-align: left;
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    .mobilmenu nav ul {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-    .mobilmenu li {
-        position: relative;
-        margin: 0 3em 0 3em;
-        padding-left: 0;
-    }
-    .mobilmenu nav ul ul {
-        padding: 9px 0;
-    }
-    .mobilmenu nav ul ul li {
-        margin: 0 0 0 1em;
-        border: 0;
-        padding: 4px 0;
-    }
-    .mobilmenu.active {
-        width: 100vw;
-        min-height: 100vh;
-        background-color: #000;
-    }
-    .mobilmenu.active nav {
-        display: block;
-    }
-    .mobilmenu.active nav ul ul {
-        display: none;
-    }
-    .mobilmenu.active nav li.inpath > ul {
-        display: block;
-        border-top: solid 1px rgb(255 255 255 / 20%);
-        margin-top: 6px;
-    }
-    .aa-ui-leftmenu {
-        display: none;
-    }
-    i.aa-ico-expand {
-        display: block;
-        width: 23px;
-        height: 12px;
-        background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODQuMjUgOTcuMDgiPg0KICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI3IiBkPSJNMTgxLjc4IDIuNDggOTIuMTMgOTIuMTMgMi40OCAyLjQ3Ii8+DQo8L3N2Zz4=) no-repeat top;
-        position: absolute;
-        right: 0;
-        top: 12px;
-        font-size: 47px;
-        line-height: 41px;
-    }
-    .mobilmenu.active nav li.inpath > i.aa-ico-expand {
-        transform: rotate(180deg);
-    }
-    /* white-menu */
-    .mobilmenu.white-menu.active {
-        background-color: #fff;
-    }
-    .mobilmenu.white-menu li, .mobilmenu.white-menu.active nav li.inpath > ul  {
-    }
-    .mobilmenu.white-menu a {
-        color: black;
-    }
-    .mobilmenu.white-menu .ico-menu {
-        background: transparent;
-        color: black;
-    }
-    .mobilmenu.white-menu i.aa-ico-expand {
-        background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODQuMjUgOTcuMDgiPg0KICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI3IiBkPSJNMTgxLjc4IDIuNDggOTIuMTMgOTIuMTMgMi40OCAyLjQ3Ii8+DQo8L3N2Zz4=);
-    }
-    .leftmenu .aa-bin-cnt {
-        top: 8px;
-    }
-    .aa-ui-copyright {
-        display: none;
-    }
-    #aa_top {
-        flex-wrap: wrap;
-        background: var(--clr-basic);
-        margin-bottom: 20px;
-    }
-    .nblogo {
-        flex: 0 0 100%;
-        margin-left: -15px;
-        margin-bottom: 14px;
-    }
-    .aa-ui-nav {
-        padding: 0;
-    }
-    .aa-ui-nav a.aa-ui-btn-additem  {
-        position: absolute;
-        top: 0;
-        right: 50px;
-    }
-    .aa-ui-nav .navbar a:not(.aa-ui-btn-addite) {
-        display: none;
-    }
-    .aa-ui-nav .navbar{
-        flex:0
-    }
-    .aa-ui-modules {
-        flex-wrap: wrap;
-        justify-content: space-between;
-        padding: 10px 12px 15px 20px;
-        flex-direction: row-reverse;
-    }
-    .aa-ui-custom-nav {
-        white-space: wrap;
-        flex: 0 0 100%;
-    }
-    .aa-ui-nav select {
-        max-width: 81vw;
-        width: 81vw;
-        margin: 0;
-    }
-    .aa-ui-modules a.aa-ui-moduleview {width: 20px;}
-    .navbar form {
-        position: absolute;
-        top: 94px;
-        left: 20px;
-    }
-    #aa_top input[type=search] {
-
-        background-color: white;
-        border: solid 1px var(--clr-basic);
-        width: 35px;
-    }
-    #aa_top input[type=search]:before {
-        /* content: "tlkt"; */
-    }
-    .aa-ui-main {
-        max-width: 100vw;
-        /* overflow-x: hidden; */
-        margin: 0;
-    }
-    .aa-ui-content {
-        width: calc(100vw - 20px);
-        margin: 0 20px;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    .aa-ui-content > .aa-ui-filterform {
-        margin: 0 0 50px;
-    }
-    .expanded .aa-formgroup-inline .aa-sbrow-and, .aa-orderrow-label, .aa-form-label {
-        width: 100%;
-        max-width: 100%;
-    }
-    .aa-save-filters .aa-formgroup-inline {justify-content: flex-start;}
-    .aa-sb-btns {
-        margin: 7px 0 20px;
-    }
-    .aa-ui-searches {
-        margin-top: 15px;
-    }
-    .mobilmenu a.aa-ui-userinfo {
-        display: inline-block;
-    }
-    input[type="submit"].aa-off {
-        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAQtQTFRFAAAAYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKcZdsBQAAAFl0Uk5TAAvi3wc4/1RxAjAvclJ8LDN1S8UDykME3NEMD9bTAU4nQqbUmc6NmNuAIv78HITYxKE2pb+L5QXugy1seSao9zJB/ZwUbXr6DiXmlJv0GyGxFjuOy/HGhi4kebZQAAAA+UlEQVR4nGNkgABGIPgDZUKFWBkZ/v9GCLEzMn7n+sPA+pWTmfEzWIjvBwPnR7CQwDcG7vdAIaEvDLzfIKpEGD8yCLxiFGd8J8z4jAEsxCDN+EqckVH+OYPUAwaoEAP3b6Cw0hPetwxwIQblx3KMqg8VbiEJqd/nZdS4p3wdyNQCOvUykNa7oclocE37PMiBRgznQJTxZT1G04sG994wwIA54zljRqszDKZH4UI2p4CiDHYnLBkPQEUcGY/Y7mVkcNnPbMm2HxQKUjqM+8V0dgD96Mm4h8FI+B6DMuNOBiW1TeCQ8H94DarRi3E9LLyCgK4COptxBYgDALlISmKAVjlfAAAAAElFTkSuQmCC);
-    }
-    #inputtab tr > th, #inputtab tr > th:first-child {
-        padding: 18px 3px 4px;
-        min-width: 100%;
-        text-align: left;
-    }
-    #inputtab > table td, #inputtab tr:first-child td, #inputtab tr td:last-child {
-        padding: 0;
-    }
-    .aa-items-manager, .aa-table {
-        overflow-x: auto;
-    }
-    /*.mgr_table,
-    .mgr_table thead,
-    .mgr_table tbody,
-    .mgr_table tr,
-    .mgr_table th,
-    .mgr_table td,*/
-    #inputtab .aa-table,
-    #inputtab .aa-table,
-    #inputtab .aa-table th,
-    #inputtab .aa-table td {
-        display: block;
-        max-width: 100%;
-        margin: auto;
-    }
-    #inputtab .aa-table,
-    #inputtab .aa-table,
-    #inputtab .aa-table th,
-    #inputtab .aa-table td {
-        max-width: calc(100vw - 60px);
-        overflow: visible;
-    }
-    /* flex-table items
-      .mgr_table td:nth-child(1) {
-      display: inline-block;
-      width: 32px;
-      vertical-align: top;
-      padding-left: 0;
-      padding-right: 0;
-      background-color: var(--clr-basic);
-    }
-    .mgr_table td:nth-child(2) {
-      display: inline-block;
-      width: calc(100% - 36px);
-    }
-    .mgr_table td:nth-child(n+3) {
-      display: block;
-      width: 100%;
-      padding-left: 39px;
-    }
-    .aa-items-manager tr:first-child th, .aa-items-manager .tablename td, .aa-items-manager .aa-tbl-header td {
-      padding-top: 0;
-      padding-bottom: 0;
-      min-height: 18px;
-      background-color: var(--clr-basic-dark);
-      border: 0;
-    }*/
 }
 /* FILTERFORM for new single input */
 .aa-ui-content > .aa-ui-filterform {
@@ -2317,9 +1945,6 @@ input[type="checkbox"]:checked:before {
 }
 .btn-action {
     border-radius: 13px;
-}
-select[name="srchbr_bookmark"] {
-    width: 150px;
 }
 .aa-sb-btns {
     margin: 7px 0 10px 66px;
@@ -2409,12 +2034,6 @@ summary.aa-ad-filter {
 }
 .aa-filter.expanded {
     flex: 1 1 auto;
-}
-/* the row is a column on phones - 550px would be the height */
-@media (max-width: 767px) {
-    .aa-filter {
-        flex-basis: auto;
-    }
 }
 .aa-sb-searchline {
     display: flex;
@@ -2919,9 +2538,6 @@ select[name="sel_module"] option.aa-section-header {
     border: solid 1px var(--clr-border);
     background-color: var(--clr-basic-light);
 }
-.cke_chrome {
-    box-shadow: none;
-}
 #inputtab .aa-formatters label:hover, .aa-fld-toolbar .btn:hover, .btn.aa-arealink:hover, .btn.aa-langtrans-tbtn:hover {
     box-shadow: none;
     border-color: var(--clr-border);
@@ -2986,14 +2602,6 @@ h1:has(+form[name="inputform"]) {
 }
 .pager a, .pager [aria-current] {
     margin: 0;
-}
-@media (min-width: 768px) {
-    .nblogo {
-        text-align: center;
-        flex: 0 0 245px;
-        max-width: 245px;
-        padding-top: 16px;
-    }
 }
 
 
@@ -3108,48 +2716,6 @@ h1:has(+form[name="inputform"]) {
 .aa-overflow-item:empty {
     display: none;
 }
-
-/* ============================================================
-   Sticky admin chrome (desktop only — the mobile header is tall,
-   wraps, and is not worth pinning; the rail is hidden there).
-   --aa-topbar-h is measured by an inline script next to #aa_top
-   (menu_util.php): the bar can wrap to >50px at 768–1100px, and
-   some pages render the rail WITHOUT the top bar (discedit2,
-   popups) — hence every fallback is 0px, never 50px.
-   ============================================================ */
-@media screen and (min-width: 768px) {
-    /* anchor jumps / error-field focus must land below the pinned bar */
-    html {
-        scroll-padding-top: calc(var(--aa-topbar-h, 0px) + 8px);
-    }
-    #aa_top {
-        position: sticky;
-        top: 0;
-        z-index: 50; /* < 100: #aa-message-box and suggesters must overlay the bar */
-    }
-    .aa-ui-leftmenu {
-        position: sticky;
-        top: var(--aa-topbar-h, 0px);
-        align-self: flex-start; /* default stretch leaves sticky no travel room */
-        height: calc(100vh - var(--aa-topbar-h, 0px)); /* full height keeps the copyright at the visible bottom (space-between) */
-        min-height: 0;
-        overflow-y: auto;
-        overflow-x: hidden;
-    }
-    #sitetree {
-        position: sticky;
-        top: calc(var(--aa-topbar-h, 0px) + 10px); /* small gap so Add spot isn't glued to the pinned bar */
-        align-self: flex-start;
-        max-height: calc(100vh - var(--aa-topbar-h, 0px) - 10px);
-        overflow-y: auto;
-    }
-    /* On item pages "+ Add Item" is pointless — hide it but keep its
-       flex space so the neighboring menu entries don't shift. */
-    .aa-ui-nav a.aa-ui-btn-additem.aa-ui-ghost {
-        visibility: hidden;
-        pointer-events: none;
-    }
-}
 .mobilmenu .aa-ui-ghost {
     display: none !important; /* .mainmenu a sets display !important on mobile */
 }
@@ -3164,22 +2730,22 @@ h1:has(+form[name="inputform"]) {
 .aa-prefs-row { padding: 8px 0; }
 .aa-prefs-row + .aa-prefs-row { border-top: 1px solid var(--clr-border); }
 .aa-prefs-label { font-weight: 600; font-size: var(--sz-s); margin-bottom: 5px; }
-.aa-prefs-help { margin-top: 5px; }
+.aa-prefs-help {margin-top: 5px;white-space: normal;}
 /* segmented theme control: visually-hidden radios, label carries the look */
 .aa-prefs-seg { vertical-align: middle; }
 .aa-prefs-seg input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .aa-prefs-seg label.aa-h-vbtn { cursor: pointer; }
-.aa-prefs-seg input:checked + label.aa-h-vbtn {
-    background: var(--clr-surface-selected, rgba(0, 0, 0, 0.09)); color: var(--clr-dark, #1f1f1f); font-weight: 600;
-}
+.aa-prefs-seg label.aa-h-vbtn:before {content: " ";display: inline-block;background: #ebdcc3;border: solid 1px rgb(0 0 0 / 21%);width: 10px;height: 10px;border-radius: 50%;margin-right: 5px; margin-bottom: -1px;}
+.aa-prefs-seg label.aa-h-vbtn:last-child:before {background: #e9ce84;}
+.aa-prefs-seg input:checked + label.aa-h-vbtn {background: var(--clr-basic-light, rgba(0, 0, 0, 0.09));color: #000000;}
 .aa-prefs-seg input:focus-visible + label.aa-h-vbtn { outline: 2px solid #0050c8; outline-offset: 1px; }
 .aa-prefs-apply { margin-inline-start: 8px; }
-.aa-prefs-lang select { max-width: 100%; }
+.aa-ui-nav  select {max-width: 100%;border: solid 1px var(--clr-border);}
 /* stack textarea above the Send button (flex-column keeps the button from
    sitting beside the textarea and overflowing the popover) */
 .aa-prefs-feedback { display: flex; flex-direction: column; align-items: flex-start; }
 .aa-prefs-feedback textarea { width: 100%; box-sizing: border-box; resize: vertical; font: inherit; }
-.aa-prefs-feedback .aa-prefs-send { margin-top: 6px; }
+.aa-prefs-feedback .aa-prefs-send {margin-top: 6px;background-color: var(--clr-dark);}
 
 /* ============================================================
    Notes (AA\Util\Notes) — the note corner every admin page carries and
@@ -3252,6 +2818,369 @@ h1:has(+form[name="inputform"]) {
 @supports not selector(:popover-open) {
     .aa-notes, .aa-notes-resolve { display: none; }
 }
+/* Media queries stay last so they override the base rules:
+   desktop 768px+, tablet up to 1200px, phone up to 767px, print */
+/*screen*/
+@media (min-width: 768px) {
+    .flex {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .aa-group-row .aa-field {
+        display: flex;
+    }
+    .no-screen {
+        display: none !important;
+    }
+    table.aa-table, .mgr_table {
+        border: solid 1px var(--clr-border);
+    }
+}
+/* ============================================================
+   Sticky admin chrome (desktop only — the mobile header is tall,
+   wraps, and is not worth pinning; the rail is hidden there).
+   --aa-topbar-h is measured by an inline script next to #aa_top
+   (menu_util.php): the bar can wrap to >50px at 768–1100px, and
+   some pages render the rail WITHOUT the top bar (discedit2,
+   popups) — hence every fallback is 0px, never 50px.
+   ============================================================ */
+@media screen and (min-width: 768px) {
+    /* anchor jumps / error-field focus must land below the pinned bar */
+    html {
+        scroll-padding-top: calc(var(--aa-topbar-h, 0px) + 8px);
+    }
+    #aa_top {
+        position: sticky;
+        top: 0;
+        z-index: 50; /* < 100: #aa-message-box and suggesters must overlay the bar */
+    }
+    .nblogo {
+        padding-top: 16px;
+    }
+    .aa-ui-leftmenu {
+        position: sticky;
+        top: var(--aa-topbar-h, 0px);
+        align-self: flex-start; /* default stretch leaves sticky no travel room */
+        height: calc(100vh - var(--aa-topbar-h, 0px)); /* full height keeps the copyright at the visible bottom (space-between) */
+        min-height: 0;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+    #sitetree {
+        position: sticky;
+        top: calc(var(--aa-topbar-h, 0px) + 10px); /* small gap so Add spot isn't glued to the pinned bar */
+        align-self: flex-start;
+        max-height: calc(100vh - var(--aa-topbar-h, 0px) - 10px);
+        overflow-y: auto;
+    }
+    /* On item pages "+ Add Item" is pointless — hide it but keep its
+       flex space so the neighboring menu entries don't shift. */
+    .aa-ui-nav a.aa-ui-btn-additem.aa-ui-ghost {
+        visibility: hidden;
+        pointer-events: none;
+    }
+}
+@media (max-width: 1200px) {
+    .slicehead {
+        padding-left: 37px;
+    }
+}
+/* mobil */
+@media (max-width: 767px)  {
+    body {
+        background: white;
+    }
+    .ico-menu {
+        display: inline-block;
+        color: white;
+        background: black;
+        text-align: center;
+        font-size: 20px;
+        width: 33px;
+        height: 33px;
+        line-height: 30px;
+        font-style: normal;
+    }
+    .ico-menu:after {
+        content: "\2630";
+    }
+    .mobilmenu.active .ico-menu:after {
+        content: "\2715";
+        position: relative;
+        top: 2px;
+    }
+    .mainmenu  {
+        margin-left: 2em;
+        margin-right: 1.5em;
+    }
+    .mainmenu a {
+        display: inline-block !important;
+        margin: 0 0 7px 6px;
+        padding: 7px 10px;
+        background: var(--clr-basic);
+    }
+    .mainmenu a.aa-ui-btn-additem {
+        background: var(--clr-green);
+        color: white !important;
+        margin-right: calc(100% - 133px);
+    }
+    .mainmenu a.active {
+        background: var(--clr-dark);
+        color: white;
+    }
+    .no-mobile {
+        display: none !important;
+    }
+    .center-mo {
+        text-align: center !important;
+    }
+    .mobile-page-padding {
+        padding-left: 35px;
+        padding-right: 35px;
+    }
+    .flex-tbl, .flex-tbl tr, .flex-tbl th, .flex-tbl td, .flex-tbl tbody {
+        display: block;
+        width: 100%;
+    }
+    .mobilmenu {
+        text-align: right;
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 1100;
+        padding: 10px 10px 0 0;
+        box-sizing: border-box;
+    }
+    .mobilmenu a {
+        display: block;
+        color: white;
+        text-decoration: none;
+    }
+    .leftmenua {
+        border-left-color: var(--clr-green) !important;
+    }
+    .mobilmenu nav {
+        display: none;
+        text-align: left;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .mobilmenu nav ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .mobilmenu li {
+        position: relative;
+        margin: 0 3em 0 3em;
+        padding-left: 0;
+    }
+    .mobilmenu li.aa-leftmenu-header {
+        padding-left: 18px;
+    }
+    .mobilmenu nav ul ul {
+        padding: 9px 0;
+    }
+    .mobilmenu nav ul ul li {
+        margin: 0 0 0 1em;
+        border: 0;
+        padding: 4px 0;
+    }
+    .mobilmenu.active {
+        width: 100vw;
+        min-height: 100vh;
+        background-color: #000;
+    }
+    .mobilmenu.active nav {
+        display: block;
+    }
+    .mobilmenu.active nav ul ul {
+        display: none;
+    }
+    .mobilmenu.active nav li.inpath > ul {
+        display: block;
+        border-top: solid 1px rgb(255 255 255 / 20%);
+        margin-top: 6px;
+    }
+    .aa-ui-leftmenu {
+        display: none;
+    }
+    i.aa-ico-expand {
+        display: block;
+        width: 23px;
+        height: 12px;
+        background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODQuMjUgOTcuMDgiPg0KICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiNmZmYiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI3IiBkPSJNMTgxLjc4IDIuNDggOTIuMTMgOTIuMTMgMi40OCAyLjQ3Ii8+DQo8L3N2Zz4=) no-repeat top;
+        position: absolute;
+        right: 0;
+        top: 12px;
+        font-size: 47px;
+        line-height: 41px;
+    }
+    .mobilmenu.active nav li.inpath > i.aa-ico-expand {
+        transform: rotate(180deg);
+    }
+    /* white-menu */
+    .mobilmenu.white-menu.active {
+        background-color: #fff;
+    }
+    .mobilmenu.white-menu a {
+        color: black;
+    }
+    .mobilmenu.white-menu .ico-menu {
+        background: transparent;
+        color: black;
+    }
+    .mobilmenu.white-menu i.aa-ico-expand {
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxODQuMjUgOTcuMDgiPg0KICA8cGF0aCBmaWxsPSJub25lIiBzdHJva2U9IiMwMDAiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSI3IiBkPSJNMTgxLjc4IDIuNDggOTIuMTMgOTIuMTMgMi40OCAyLjQ3Ii8+DQo8L3N2Zz4=);
+    }
+    .leftmenu .aa-bin-cnt {
+        top: 8px;
+    }
+    .aa-ui-copyright {
+        display: none;
+    }
+    #aa_top {
+        flex-wrap: wrap;
+        background: var(--clr-basic);
+        margin-bottom: 20px;
+    }
+    .nblogo {
+        flex: 0 0 100%;
+        margin-left: -15px;
+        margin-bottom: 14px;
+    }
+    .aa-ui-nav {
+        padding: 0;
+    }
+    .aa-ui-nav a.aa-ui-btn-additem  {
+        position: absolute;
+        top: 0;
+        right: 50px;
+    }
+    .aa-ui-nav .navbar a:not(.aa-ui-btn-addite) {
+        display: none;
+    }
+    .aa-ui-nav .navbar{
+        flex:0
+    }
+    .aa-ui-modules {
+        justify-content: left;
+        padding: 10px 0 15px 12px;
+    }
+    .aa-ui-custom-nav {
+        white-space: wrap;
+        flex: 0 0 61px;
+    }
+    .aa-ui-custom-nav .aa-prefs-trigger {
+        border: 0;
+    }
+    .aa-ui-nav select {
+        width: 76vw;
+        margin: 0;
+    }
+    .aa-ui-modules a.aa-ui-moduleview {width: 21px;}
+    .navbar form {
+        position: absolute;
+        top: 94px;
+        left: 20px;
+    }
+    #aa_top input[type=search] {
+
+        background-color: white;
+        border: solid 1px var(--clr-basic);
+        width: 35px;
+    }
+    .aa-ui-main {
+        max-width: 100vw;
+        /* overflow-x: hidden; */
+        margin: 0;
+    }
+    .aa-ui-content {
+        width: calc(100vw - 20px);
+        margin: 0 20px;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    .expanded .aa-formgroup-inline .aa-sbrow-and, .aa-orderrow-label, .aa-form-label {
+        width: 100%;
+    }
+    .aa-orderrow-label, .aa-form-label {
+        max-width: 100%;
+    }
+    .aa-save-filters .aa-formgroup-inline {justify-content: flex-start;}
+    .aa-ui-searches {
+        margin-top: 15px;
+    }
+    .mobilmenu a.aa-ui-userinfo {
+        display: inline-block;
+    }
+    input[type="submit"].aa-off {
+        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAMAAABhEH5lAAAAAXNSR0IB2cksfwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAQtQTFRFAAAAYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKYUVKcZdsBQAAAFl0Uk5TAAvi3wc4/1RxAjAvclJ8LDN1S8UDykME3NEMD9bTAU4nQqbUmc6NmNuAIv78HITYxKE2pb+L5QXugy1seSao9zJB/ZwUbXr6DiXmlJv0GyGxFjuOy/HGhi4kebZQAAAA+UlEQVR4nGNkgABGIPgDZUKFWBkZ/v9GCLEzMn7n+sPA+pWTmfEzWIjvBwPnR7CQwDcG7vdAIaEvDLzfIKpEGD8yCLxiFGd8J8z4jAEsxCDN+EqckVH+OYPUAwaoEAP3b6Cw0hPetwxwIQblx3KMqg8VbiEJqd/nZdS4p3wdyNQCOvUykNa7oclocE37PMiBRgznQJTxZT1G04sG994wwIA54zljRqszDKZH4UI2p4CiDHYnLBkPQEUcGY/Y7mVkcNnPbMm2HxQKUjqM+8V0dgD96Mm4h8FI+B6DMuNOBiW1TeCQ8H94DarRi3E9LLyCgK4COptxBYgDALlISmKAVjlfAAAAAElFTkSuQmCC);
+    }
+    #inputtab tr > th, #inputtab tr > th:first-child {
+        padding: 18px 3px 4px;
+        min-width: 100%;
+        text-align: left;
+    }
+    #inputtab > table td, #inputtab tr:first-child td, #inputtab tr td:last-child {
+        padding: 0;
+    }
+    .aa-items-manager, .aa-table {
+        overflow-x: auto;
+    }
+    /*.mgr_table,
+    .mgr_table thead,
+    .mgr_table tbody,
+    .mgr_table tr,
+    .mgr_table th,
+    .mgr_table td,*/
+    #inputtab .aa-table,
+    #inputtab .aa-table th,
+    #inputtab .aa-table td {
+        display: block;
+        margin: auto;
+        max-width: calc(100vw - 60px);
+        overflow: visible;
+    }
+    /* flex-table items
+      .mgr_table td:nth-child(1) {
+      display: inline-block;
+      width: 32px;
+      vertical-align: top;
+      padding-left: 0;
+      padding-right: 0;
+      background-color: var(--clr-basic);
+    }
+    .mgr_table td:nth-child(2) {
+      display: inline-block;
+      width: calc(100% - 36px);
+    }
+    .mgr_table td:nth-child(n+3) {
+      display: block;
+      width: 100%;
+      padding-left: 39px;
+    }
+    .aa-items-manager tr:first-child th, .aa-items-manager .tablename td, .aa-items-manager .aa-tbl-header td {
+      padding-top: 0;
+      padding-bottom: 0;
+      min-height: 18px;
+      background-color: var(--clr-basic-dark);
+      border: 0;
+    }*/
+    /* the row is a column on phones - 550px would be the height */
+    .aa-filter {
+        flex-basis: auto;
+    }
+}
 @media screen and (max-width: 767px) {
     .aa-notes { float: none; max-width: 100%; margin: 0 0 6px; }
+}
+@media print {
+    .noprint {
+        display: none;
+    }
+    body, #hlavnitbl {
+        background-color: #FFFFFF;
+    }
 }

@@ -12,6 +12,7 @@ namespace AA\Widget;
 use AA\FormArray;
 use AA_Content;
 use AA_Property;
+use AA_Session;
 use AA_Value;
 use Exception;
 use ItemContent;
@@ -74,6 +75,7 @@ class MngWidget extends Widget
 
         // we store the connector id to cookie in order we have it during AJAX call - Parts renewal
         $sess_var = get_short_hash($base_id);
+        AA_Session::ensureStarted();
 
         // We are using artificial ID - say connector - and not real item ID of current item
         // This allows us to use manager even for nonstored items and maybe other features (shared constants) in future

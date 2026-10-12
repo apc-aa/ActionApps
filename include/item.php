@@ -1475,6 +1475,10 @@ class AA_Item
         $p = ParamExplode($param);  // 0 = disc|itemcount|safe|slice_info  //2 = return_url
         switch ($p[0]) {
             case "session":
+                if (!is_object($sess)) {
+                    return '';
+                }
+                AA::Pagecache()->switchCacheNostore();   // a session id must not get into a page cached for others
                 return $sess->id();
             case "disc":
                 // _#DISCEDIT used on admin page index.php for edit discussion comments

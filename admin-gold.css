@@ -1,7 +1,7 @@
 /* AA admin skin — "gold" (2026 redesign)
  *
- * Skin overlay loaded by the admin page builder AFTER admin-ecn.css and
- * aa-system.css (see include/util.php::HtmlPageBegin and
+ * Skin overlay loaded by the admin page builder AFTER aa-system.css and
+ * admin-ecn.css (see include/util.php::HtmlPageBegin and
  * include/adminpage.class.php). Selectable via:
  *
  *     define("ADMIN_CSS", "admin-gold.css");   // in config.php
@@ -68,11 +68,11 @@
     color: #000000;
 }
 input[type="submit"].btn-secondary, input[type="button"].btn-secondary, button.btn-secondary, .button.btn-secondary, .btn.btn-secondary, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs,
-[class^="aa-button"], [class^="aa-button"]{
+[class^="aa-button"] {
     border-color: var(--clr-btn-border);
 }
 input[type="submit"].btn-secondary:hover, input[type="button"].btn-secondary:hover, button.btn-secondary:hover, .button.btn-secondary:hover, .btn.btn-secondary:hover, .btn-secondary .aa-sb-bkmrks-btns .btn.btn-xs:hover,
-[class^=aa-button]:hover, [class^="aa-button"]:hover, .btn.aa-langtrans-tbtn:hover, .btn.aa-convertor:hover {
+[class^="aa-button"]:hover, .btn.aa-langtrans-tbtn:hover, .btn.aa-convertor:hover {
     background-color: var(--clr-hover-light);
     border-color: var(--clr-btn-border);
 }
@@ -198,12 +198,9 @@ li.aa-leftmenu-header {
         background: var(--clr-dark);
     }
     .aa-ui-nav {
-        background: var(--clr-dark);
+        background: var(--clr-basic-dark);
     }
     .mobilmenu.white-menu .ico-menu {
         color: white;
-    }
-    .aa-ui-modules a.aa-ui-moduleview {
-        background-image: url(images/ico-oko-white.svg);
     }
 }
