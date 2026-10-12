@@ -53,6 +53,16 @@ function filesuffix($filename): string
     return substr($filename, $i + 1);
 }
 
+const FILEMAN_TOKEN = 'aa-fileman';
+/** the commands that change files; they need a POST of the File Manager's form */
+const FILEMAN_WRITE_COMMANDS = ['createfile', 'createdir', 'delete', 'upload', 'copytmp', 'savefile', 'rename'];
+
+/** a file or directory name for the page title, which the admin page also runs as an AA expression */
+function fileman_text(string $name): string
+{
+    return strtr(safe($name), ['{' => '&#123;', '}' => '&#125;']);
+}
+
 /** make_secure function
  * @param $filename
  */
@@ -264,11 +274,11 @@ function file_table($path, $dirname): string
     if (is_array($files)) {
         // create the HTML code
         foreach ($files as $file) {
-            $href = StateUrl("fileman.php?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . $file['path'] . "&fmset[directory]=$directory");
+            $href = safe(StateUrl("fileman.php?cmd=" . ($file["dir"] ? "chdir&arg[chdir]=" : "edit&arg[edit]=") . urlencode($file['path']) . "&fmset[directory]=" . urlencode($directory)));
             $retval .= "<tr>
-            <td>" . ($file['name'] !== ".." ? "<input type=\"checkbox\" name=\"chb[" . $file['path'] . "]\">" : "&nbsp;") . "</td>
+            <td>" . ($file['name'] !== ".." ? "<input type=\"checkbox\" name=\"chb[" . safe($file['path']) . "]\">" : "&nbsp;") . "</td>
             <td><a href=\"$href\"><img src=\"../images/$file[img].gif\" alt=\"" . $file['type'] . "\"></a></td>
-            <td><a href=\"$href\">" . $file['name'] . "</a></td>
+            <td><a href=\"$href\">" . safe($file['name']) . "</a></td>
             <td>" . ($file["dir"] ? "&nbsp;" : format_file_size($file["size"])) . "</td>
             <td>" . $file['type'] . "</td>
             <td>" . $file['lastm'] . "</td>
@@ -327,6 +337,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     if ($cmd === 'chdir') {
         set_directory($arg);
     } elseif ($cmd === 'edit') {
+        make_secure($arg);
         $fe_filename = $arg;
     }
     // Action taken in caller, which outputs HTML
@@ -370,6 +381,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
     // Delete
     elseif ($cmd === 'delete' && is_array($chb)) {
         foreach (array_keys($chb) as $arg) {
+            make_secure($arg);
             $f = $basedir . $arg;
             if (is_dir($f)) {
                 if (!is_dir_empty($f)) {
@@ -394,6 +406,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
             $err[] = Files::lastErrMsg();
         }
     } elseif ($cmd === 'copytmp') {
+        make_secure($arg);
         $tmperr = fileman_copy_template(FILEMAN_BASE_DIR . "templates/" . $arg, FILEMAN_BASE_DIR . $fileman_dir);
         if ($tmperr) {
             $err[] = _m("Error: ") . ": $tmperr";
@@ -402,6 +415,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
 
     // Single file actions:
     elseif ($filename = $fmset['filename']) {
+        make_secure($filename);
 
         // Save changes
         if ($cmd === 'savefile') {
@@ -418,7 +432,7 @@ function fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset)
             }
 
         } elseif ($cmd === 'rename') { // Rename
-            make_secure($renamearg);
+            $arg     = basename((string) $arg);
             $newname = dirname($basedir . $filename) . "/" . $arg;
             if (file_exists($newname)) {
                 $err[] = _m("File with this name already exists") . " ($arg).";
@@ -529,13 +543,14 @@ $fileman_js = "
                     elem[i].checked = state;
         }
 
+        const formname = 'fileman';
+
         function submitCommand (name) {
             document.forms[formname]['cmd'].value = name;
             document.forms[formname].submit();
         }
 
         function command (name) {
-            const formname = 'fileman';
             switch (name) {
             case 'checkall':
                 SelectVis (formname,'chb',1); break;

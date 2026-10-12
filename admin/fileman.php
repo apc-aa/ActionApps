@@ -44,6 +44,8 @@
  *   AA admins may go to the upper level.
 */
 
+use AA\Central\ResponderPolicy;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -66,10 +68,14 @@ try {
     // array ( 'd' => 1, 'a' => 3, )-array ( 'a' => 14, )
     $sort_order = InputVars::stringGETPOST('sort_order'); // alpha-alpha
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
+}
+if (!in_array($sort_order, ['a', 'd'], true)) {
+    $sort_order = '';
 }
 
 
@@ -83,7 +89,8 @@ if (!is_dir(FILEMAN_BASE_DIR)) {
     AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to run File Manager") . " '" . FILEMAN_BASE_DIR . "' " . _m("doesn't exist"), "admin", "fileman");
 }
 
-$basedir = FILEMAN_BASE_DIR . $fileman_dir;
+// the slash keeps "news" from reaching the sibling directory "newsletter"
+$basedir = FILEMAN_BASE_DIR . $fileman_dir . '/';
 
 if (!is_dir($basedir) && !file_exists($basedir) && !mkdir($basedir, FILEMAN_MODE_DIR)) {
     AA_Adminpageutil::MsgPageMenu("index.php", _m("Unable to mkdir") . " '" . $basedir . "'", "admin", "fileman");
@@ -97,6 +104,11 @@ if (IsSuperadmin()) {
 }
 
 set_directory($fmset['directory']);
+// a link or a form of another site would write files (a .php as well) as the logged-in user
+if (in_array($cmd, FILEMAN_WRITE_COMMANDS, true) && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(FILEMAN_TOKEN, $token, $_SERVER))) {
+    $err[] = _m('The form has expired; reload the page and try again.');
+    $cmd   = '';
+}
 //echo "<p><font color=purple>fileman_execute_command:basedir=$basedir;directory=$directory,cmd=$cmd,arg=$arg,chb=$chb,fmset=$fmset;</font></p>";
 fileman_execute_command($basedir, $directory, $cmd, $arg, $chb, $fmset);
 
@@ -115,7 +127,7 @@ if ($cmd === 'edit' || $cmd === 'createfile') {
 $apage = new AA_Adminpageutil('sliceadmin', 'fileman');
 $apage->setTitle(_m("File Manager"));
 if ($directory) {
-    $apage->setSubtitle(_m("Directory") . " " . $directory);
+    $apage->setSubtitle(_m("Directory") . " " . fileman_text($directory));
 }
 $apage->setForm(['name' => 'fileman','enctype' => "multipart/form-data"]);
 $apage->printHead($err, $Msg);
@@ -126,8 +138,8 @@ $apage->printHead($err, $Msg);
 echo $fileman_js;
 
 echo "
-<input type=\"hidden\" name=\"cmd\">
-<input type=\"hidden\" name=\"fmset[directory]\" value=\"$directory\">";
+<input type=\"hidden\" name=\"cmd\">" . FormToken::field(FILEMAN_TOKEN) . "
+<input type=\"hidden\" name=\"fmset[directory]\" value=\"" . safe($directory) . "\">";
 
 echo '<table>';
 
@@ -198,7 +210,7 @@ foreach ($sortable_columns as $sortk => $col) {
         $img = "";
     }
 
-    echo "<td><a href=\"" . StateUrl("fileman.php?sort_key=$sortk$so&fmset[directory]=$directory") . "\">" . formatAction($col['label'] . $img) . "</a></td>";
+    echo "<td><a href=\"" . safe(StateUrl("fileman.php?sort_key=$sortk$so&fmset[directory]=" . urlencode($directory))) . "\">" . formatAction($col['label'] . $img) . "</a></td>";
 }
 if (!$sort_order) {
     $sort_order = $sortable_columns[$sort_key]["sort"];

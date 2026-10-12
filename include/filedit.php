@@ -64,7 +64,7 @@ $filedit_js = "
 
 
 $apage = new AA_Adminpageutil('sliceadmin', 'fileman');
-$apage->setTitle(_m("File Manager") . " - " . _m("File") . " " . $fe_filename);
+$apage->setTitle(_m("File Manager") . " - " . _m("File") . " " . fileman_text($fe_filename));
 $apage->addRequire('aa-jslib@1');
 $apage->setForm();
 $apage->printHead($err, $Msg);
@@ -76,12 +76,12 @@ echo "<tr><td colspan=\"2\">";
 echo $GLOBALS['filedit_js'];
 echo "
 <form name='fileman' method=\"post\" action='$fe_script'>
-<input type=\"hidden\" name='cmd'>
-<input type=\"hidden\" name='fmset[filename]' value='$fe_filename'>
-<input type=\"hidden\" name='fmset[directory]' value='" . dirname($fe_filename) . "'>"
+<input type=\"hidden\" name='cmd'>" . \AA\Util\FormToken::field(FILEMAN_TOKEN) . "
+<input type=\"hidden\" name='fmset[filename]' value='" . safe($fe_filename) . "'>
+<input type=\"hidden\" name='fmset[directory]' value='" . safe(dirname($fe_filename)) . "'>"
 . fileAction("cancel", _m("Back to file list"))
-. formatAction("<a href='$fe_wwwpath$fe_filename'>" . _m("Download (right-click)") . "</a>&nbsp;&nbsp;")
-. fileAction("rename", _m("Rename to")) . "<input type=\"text\" name='arg[rename]' value='" . basename($fe_filename) . "'>";
+. formatAction("<a href='" . safe($fe_wwwpath . $fe_filename) . "'>" . _m("Download (right-click)") . "</a>&nbsp;&nbsp;")
+. fileAction("rename", _m("Rename to")) . "<input type=\"text\" name='arg[rename]' value='" . safe(basename($fe_filename)) . "'>";
 
 echo "<hr>";
 
@@ -89,9 +89,7 @@ $filetype = get_filetype($fe_filename);
 if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == _m("HTML file")) {
 
     // don't edit the file if you won't be able to save it - only show it's contents
-    $filedes = @fopen($fe_path . $fe_filename, 'ab');
-    if ($filedes) {
-        fclose($filedes);
+    if (is_file($fe_path . $fe_filename) && is_writable($fe_path . $fe_filename)) {
         $filedes = fopen($fe_path . $fe_filename, 'rb');
         $value = "";
         while (!feof($filedes)) {
@@ -115,10 +113,9 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
         echo formatAction(_m("Edit") . ":") . "<br>";
         echo "<textarea name='arg[savefile]' cols=\"80\" rows=\"30\">
             </textarea><br>";
-        $value = str_replace(["'", "\n", "\r"], ["\\'", "\\n", "\\r"], $value);
         echo "<script>
                 var edt = 0;
-                var filetext = '$value';
+                var filetext = " . json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE) . ";
                 document.forms['fileman']['arg[savefile]'].value = filetext;
             </script>";
         echo fileAction("savefile", _m("Save changes"))
@@ -136,7 +133,7 @@ if ($filetype == _m("Text file") || $filetype == _m("Web file") || $filetype == 
         }
     }
 } elseif ($filetype == _m("Image file")) {
-    echo "<img src='$fe_wwwpath$fe_filename'>";
+    echo "<img src='" . safe($fe_wwwpath . $fe_filename) . "'>";
 } else {
     echo _m("This is a file of type") . " $filetype. " . _m("I can't view it. If you want to view or edit it, change its extension.");
 }
