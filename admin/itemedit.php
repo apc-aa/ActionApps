@@ -85,6 +85,10 @@ try {
     $mlxl = InputVars::stringPOST('mlxl'); // empty
     // array ( 'aa[n1_4085d…' => 2, 'aa[ua723bc0…' => 2, )-array ( '' => 150, 'aa[n1_4085d…' => 1, 'aa[ua723bc0…' => 2, )
     $openervar = InputVars::stringGETPOST('openervar'); // -
+    // a form field name or /rim/<sid>/<fid>/<base_id>; it goes into a script and an AA expression in CloseDialog()
+    if (!preg_match('~^[A-Za-z0-9_.\[\]/-]*$~', $openervar)) {
+        $openervar = '';
+    }
     // array ( 'close_dialog' => 9, )
     $return_url = InputVars::stringGETPOST('return_url');
     // array ( 20 => 1, 1 => 8, 6 => 2, 27 => 17, 8 => 2, 31 => 12, )
