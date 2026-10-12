@@ -207,6 +207,9 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
             //
             ValidateInput("fileman_access", _m("File Manager Access"), $fileman_access, $err, false, "text");
             ValidateInput("fileman_dir", _m("File Manager Directory"), $fileman_dir, $err, false, "filename");
+            if ($fileman_dir && !preg_match('/^\w+$/D', $fileman_dir)) {
+                $err[] = _m("Wrong directory name.");
+            }
 
             if ($fileman_dir && DB_AA::test('slice', [['fileman_dir', $fileman_dir], ['id', $slice_id, 'l<>']])) {
                 $err[] = _m("This File Manager Directory is already used by another slice.");
@@ -248,8 +251,11 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                 $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
                 $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
                 $varset->add("permit_offline_fill", "number", $permit_offline_fill);
-                $varset->add("fileman_access", "text", $fileman_access);
-                $varset->add("fileman_dir", "text", $fileman_dir);
+                // only a superadmin sees these fields, so only their form may change them
+                if ($superadmin) {
+                    $varset->add("fileman_access", "text", $fileman_access);
+                    $varset->add("fileman_dir", "text", $fileman_dir);
+                }
                 $varset->add("auth_field_group", "text", $auth_field_group);
                 $varset->add("mailman_field_lists", "text", $mailman_field_lists);
                 $varset->add("reading_password", "text", $reading_password);
@@ -314,8 +320,8 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                 $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
                 $varset->set("permit_anonymous_edit", $permit_anonymous_edit, "number");
                 $varset->set("permit_offline_fill", $permit_offline_fill, "number");
-                $varset->set("fileman_access", $fileman_access, "text");
-                $varset->set("fileman_dir", $fileman_dir, "text");
+                $varset->set("fileman_access", $superadmin ? $fileman_access : '', "text");
+                $varset->set("fileman_dir", $superadmin ? $fileman_dir : '', "text");
                 $varset->add("auth_field_group", "text", $auth_field_group);
                 $varset->add("mailman_field_lists", "text", $mailman_field_lists);
                 $varset->add("reading_password", "text", $reading_password);

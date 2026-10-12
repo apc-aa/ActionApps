@@ -331,7 +331,8 @@ function FilemanPerms($slice_id): bool
                 $perms_ok = true;
             } else {
                 $perms_ok = false;
-                if ($fileman_dir) {
+                // a dot would let the directory reach above FILEMAN_BASE_DIR
+                if ($fileman_dir && preg_match('/^\w+$/D', $fileman_dir)) {
                     if ($db->f("fileman_access") === "EDITOR" && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
                         $perms_ok = true;
                     } elseif ($db->f("fileman_access") === "ADMINISTRATOR" && IfSlPerm(PS_FULLTEXT)) {
