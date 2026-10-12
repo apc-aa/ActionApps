@@ -93,7 +93,8 @@ $cache_key = get_hash(
 // temporary solution - should be solved on view level (not global nocache) - TODO
 $site_nocache = (((int) $_REQUEST['nocache'] & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || $_REQUEST['logout']);
 
-AA::$debug & 2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:" . var_export($_REQUEST, true) . ", GET:" . var_export($_GET, true) . ", POST:" . var_export($_POST, true) . ", COOKIE:" . var_export($_COOKIE, true));
+// cookie names only: anyone can add ?debug=2, and the page would show the HttpOnly session id to its scripts
+AA::$debug & 2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:" . var_export(array_diff_key($_REQUEST, $_COOKIE), true) . ", GET:" . var_export($_GET, true) . ", POST:" . var_export($_POST, true) . ", COOKIE:" . implode(', ', array_keys($_COOKIE)));
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string) $site_nocache)) {
     $cacheentry->processPage(true);

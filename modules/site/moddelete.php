@@ -22,6 +22,8 @@ https://www.apc.org/
 // expected $del - unpacked id of module to delete
 
 use AA\IO\DB\DB_AA;
+use AA\Central\ResponderPolicy;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";
@@ -29,8 +31,9 @@ require_once __DIR__ . "/../../include/modutils.php";
 
 try {
     // array ( 'e294141961f…' => 1, )
-    $del = InputVars::idGET('del', true);
+    $del = InputVars::idPOST('del', true);
     $cancel = InputVars::boolPOST('cancel');
+    $token  = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -44,6 +47,10 @@ if ($del) {
     if (!IsSuperadmin()) {
         MsgPage(_m("You don't have permissions to delete a site."));
         exit;
+    }
+    // a deletion is for good: only from the form of slicedel.php, never from a link or a page elsewhere
+    if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(MODULE_DELETE_TOKEN, $token, $_SERVER)) {
+        MsgPage(_m('The form has expired; reload the page and try again.'), get_admin_url('slicedel.php'));
     }
 } else {
     MsgPage(_m("Module not found."));

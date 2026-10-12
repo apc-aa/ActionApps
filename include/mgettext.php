@@ -70,7 +70,7 @@ function bind_mgettext_domain($filename, $cache = false, $lang = ""): void
     }
 
     if (!is_file($filename)) {
-        echo "<h1>WRONG MGETTEXT DOMAIN $filename</h1>";
+        echo '<h1>WRONG MGETTEXT DOMAIN ' . htmlspecialchars(basename($filename), ENT_QUOTES | ENT_HTML5, 'ISO-8859-1') . '</h1>';   // the language may come from the request
     } else {
         if ($lang != Langs::currentLang()) {
             $_m = [];

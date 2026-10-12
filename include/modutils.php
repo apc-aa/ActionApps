@@ -30,6 +30,9 @@
 // Misc functions used with modules
 use AA\IO\DB\DB_AA;
 
+/** FormToken purpose of the delete forms on admin/slicedel.php, checked by slicedel2.php and moddelete.php */
+const MODULE_DELETE_TOKEN = 'aa-module-delete';
+
 /** CreateNewOwner function
  *  Adds new owner to database
  * @param $new_owner

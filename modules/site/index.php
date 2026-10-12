@@ -186,7 +186,7 @@ echo '<div class="aa-site-codemanager">
           <td>' . sitetree::siteActionLink($current_spot_id, 'a', _m("Move&nbsp;right"), 'right.gif') . '</td>
         </tr>
         <tr>
-          <td>' . sitetree::siteActionLink($current_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\'' . sitetree::siteAdminPageUrl($current_spot_id, ['akce' => 'r']) . '\', \'' . _m("Are you sure you want to delete the spot?") . '\')') . '</td>
+          <td>' . sitetree::siteActionLink($current_spot_id, 'r', _m("Delete"), 'delete.gif', 'javascript:GoIfConfirmed(\'' . escape4js(sitetree::siteAdminPageUrl($current_spot_id, ['akce' => 'r'])) . '\', \'' . escape4js(_m("Are you sure you want to delete the spot?")) . '\')') . '</td>
           <td>'
           . (($tree->get('flag', $current_spot_id) & AA_Module_Site::FLAG_DISABLE)
               ? sitetree::siteActionLink($current_spot_id, 'e', _m("Enable"), 'enabled.gif')

@@ -333,9 +333,6 @@ if (!is_array($slices)) {
     array_add($add_aliases, $aliases);
 } else {
     $aa_add_aliases = new AA_Aliases();
-    if (is_array($als)) {
-        $aa_add_aliases->addFromArray($als);
-    }
     if (is_array($add_aliases)) {
         $aa_add_aliases->addFromArray($add_aliases);
     }

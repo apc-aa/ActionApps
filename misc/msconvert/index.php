@@ -1,18 +1,31 @@
 <?php
 
-function AddslashesDeep($value): array|string { return is_array($value) ? array_map('AddslashesDeep',   $value) : addslashes($value);   }
-require_once __DIR__ . '/../../src/Util/InputVars.php';   // the autoloader comes later
-foreach ($_REQUEST as $k => $v) {
-    if (!\AA\Util\InputVars::isProtectedGlobal((string) $k)) {   // the session and permission globals
-        $$k = AddslashesDeep($v);
-    }
-}
+use AA\Util\InputVars;
 
 require_once __DIR__."/./../../include/config.php";
+require_once __DIR__ . "/../../include/locsess.php";
 require_once __DIR__ . "/../../include/util.php";
 
-if (!$view)     { $view = false; }
-if (!$encoding) { $encoding = defined('CONV_DEFAULTENCODING') ?: 'utf-8'; }
+// offered only by the import link of the item editor, and it stores the upload on the server
+pageOpen();
+if (!GetUserSlices(PS_EDIT_SELF_ITEMS)) {   // a reader account logs in, but edits no slice
+    http_response_code(403);
+    exit;
+}
+
+try {
+    $inputid  = InputVars::stringGET('inputid');
+    $encoding = InputVars::stringGETPOST('encoding');
+    $submit   = InputVars::stringPOST('submit');
+} catch (Exception) {
+    $inputid = $encoding = $submit = '';
+}
+// both go into the page and its script
+if (!preg_match('/^[A-Za-z0-9_-]+$/', $inputid)) { $inputid = ''; }
+if (!preg_match('/^[A-Za-z0-9_-]+$/', $encoding)) { $encoding = defined('CONV_DEFAULTENCODING') ? CONV_DEFAULTENCODING : 'utf-8'; }
+$out    = [];
+$output = [];
+$error  = '';
 
 $uploadpath = IMG_UPLOAD_PATH;
 
@@ -60,7 +73,7 @@ if (!array_key_exists('userfile', $_FILES)) {
     }
 
     if ($error) {
-        die($GLOBALS["IMG_UPLOAD_PATH"]);
+        die(safe($error));
     }
     if (preg_match("/.doc$/i",$realname)) {
         $safe_file_name=escapeshellcmd($file_name);
@@ -171,6 +184,9 @@ if (!array_key_exists('userfile', $_FILES)) {
                 $output[]=$line;
             }
         }
+    }
+    if (is_string($dest_file) && is_file($dest_file)) {   // a type with no convertor leaves it in the public upload dir
+        unlink($dest_file);
     }
     if ($view && count($output) ) {
         echo implode("\n",$output)."\n";

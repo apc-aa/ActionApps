@@ -25,11 +25,13 @@
  *
 */
 
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
 require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
+require_once __DIR__ . "/../include/modutils.php";
 
 try {
     $slices2show = InputVars::stringGET('slices2show'); // it means modules2show
@@ -76,8 +78,18 @@ $headcode = '
      if ( !confirm("' . _m("Do you really want to delete this module and all its fields and all its items?") . '")) {
          return;
      }
-     var url=url2go+"' . StateUrl("?") . '"
-     window.location=url+"&del="+id;
+     const form = document.createElement("form");
+     form.method = "post";
+     form.action = url2go+"' . StateUrl("?") . '";
+     for (const [name, value] of [["del", id], ["token", "' . FormToken::get(MODULE_DELETE_TOKEN) . '"]]) {
+         const input = document.createElement("input");
+         input.type  = "hidden";
+         input.name  = name;
+         input.value = value;
+         form.append(input);
+     }
+     document.body.append(form);
+     form.submit();
    }
  </script>
 ';
@@ -128,6 +140,7 @@ if (!$slice_to_delete) {
     echo "<tr><td>" . _m("No module marked for deletion") . "</td></tr>";
 }
 
+echo FormToken::field(MODULE_DELETE_TOKEN);
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

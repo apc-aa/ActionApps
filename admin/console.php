@@ -25,6 +25,8 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\Central\ResponderPolicy;
+use AA\Util\FormToken;
 use AA\Util\InputVars;
 
 $require_default_lang = true;      // do not use module specific language file
@@ -33,9 +35,12 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 require_once __DIR__ . "/../include/mgettext.php";
 // ----------------------------------------------------------------------------------------
+const CONSOLE_TOKEN = 'aa-console';
+
 try {
-    $code = InputVars::stringPOST('code');
-    $html = InputVars::boolPOST('html');
+    $code  = InputVars::stringPOST('code');
+    $html  = InputVars::boolPOST('html');
+    $token = InputVars::stringPOST('token');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -43,6 +48,14 @@ try {
 if (!IsSuperadmin()) {
     MsgPage(_m("You do not have permissions to access Console"));
     exit;
+}
+
+// the session cookie rides a POST from a sibling subdomain, and an expression can change data;
+// a refused code is not offered again either, one click on Show would run it
+$refused = strlen($code) && (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(CONSOLE_TOKEN, $token, $_SERVER));
+if ($refused) {
+    $code = '';
+    $html = false;
 }
 
 $script2run = ' 
@@ -61,9 +74,12 @@ $form_buttons = ["show" => ["type" => "submit", "value" => _m("Show")]];
 FrmTabCaption(_m('Console'), $form_buttons);
 FrmTextarea('code', _m('Code'), $code);
 FrmInputChBox('html', _m('HTML output'), $html);
-if (strlen($code)) {
+if ($refused) {
+    FrmStaticText(_m('Result'), _m('The form has expired; reload the page and try again.'));
+} elseif (strlen($code)) {
     FrmStaticText(_m('Result'), $html ? AA::Un($code) : '<pre><code>' . safe(AA::Un($code)) . '</code></pre>', '', '', false);
 }
+echo FormToken::field(CONSOLE_TOKEN);
 FrmTabEnd($form_buttons);
 
 $apage->printFoot();

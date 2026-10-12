@@ -32,6 +32,9 @@ require_once __DIR__ . "/../include/view.php";
 require_once __DIR__ . "/../include/locsess.php";
 require_once __DIR__ . "/../include/itemfunc.php";
 
+// every branch changes items or their change proposals - an anonymous request gets the login form
+pageOpen();
+
 
 /** not quoted, G() will also return paramaters from SSI, it should do also input checks in future */
 class AA_V
@@ -54,9 +57,26 @@ class AA_V
     }
 }
 
+/** Writes go past storeItem() and its permission check, so only someone who may edit all items of the slice. */
+function ProposeCheckPerm(string $slice_id): void
+{
+    if (($slice_id === '') || !IfSlPerm(PS_EDIT_ALL_ITEMS, $slice_id)) {
+        http_response_code(403);
+        exit;
+    }
+}
+
+/** the slice of a long item id, '' for none */
+function ProposeSliceOf($item_id): string
+{
+    $item = (is_string($item_id) && is_long_id($item_id)) ? AA_Item::getItem(new zids($item_id, 'l')) : null;
+    return $item ? (string) $item->getSliceID() : '';
+}
+
 /** field_content is AA_Value object */
 function UpdateFieldContent($item_id, $field_id, $field_content, $flags = []): void
 {
+    ProposeCheckPerm(ProposeSliceOf($item_id));
     $changes       = new ChangesMonitor();
     $changes->addHistory([new ChangeProposal($item_id, $field_id, [GetRepreValue($item_id, $field_id)])]);
 
@@ -150,6 +170,12 @@ class GrabberAssignmentform extends AA\IO\Grabber\AbstractGrabber
 // BSC assignment - snerovadlo 1
 if (AA_V::P('bsc') == 1) {
     $updated = 0;
+    // all items checked first, so a refusal never leaves the form half stored
+    foreach (AA_V::Parr() as $varname => $varvalue) {
+        if (strlen($varname) > 20 && str_starts_with($varname, 'bsc')) {
+            ProposeCheckPerm(ProposeSliceOf(substr($varname, 3)));
+        }
+    }
     foreach (AA_V::Parr() as $varname => $varvalue) {
         if (strlen($varname) > 20 && str_starts_with($varname, 'bsc')) {
             $item_id = substr($varname, 3);
@@ -171,6 +197,7 @@ if (AA_V::P('bsc') == 1) {
 // Snerovadlo assignment
 elseif (AA_V::P('assignment') == 1) {
     $updated = 0;
+    ProposeCheckPerm('de6a767322ed6040d4b745f5c16a7683');
     if (AA_V::P('assourceplan') && AA_V::P('asdestplan')) {
 
         $set = new AA_Set('de6a767322ed6040d4b745f5c16a7683');
@@ -226,6 +253,7 @@ elseif (AA_V::P('assignment') == 1) {
     echo $encoder->Convert($repre_value, $charset, 'utf-8');
 }
 */ elseif (AA_V::P('cancel_changes') && AA_V::P('item_id') && AA_V::P('field_id')) {
+    ProposeCheckPerm(ProposeSliceOf(AA_V::P('item_id')));
     $changes = new ChangesMonitor();
     $changes->deleteProposalForSelector(AA_V::P('item_id'), AA_V::P('field_id'));
     $encoder = new ConvertCharset();
@@ -241,6 +269,7 @@ elseif (AA_V::P('assignment') == 1) {
     $repre_value = GetRepreValue(AA_V::P('item_id'), AA_V::P('field_id'), AA_V::P('alias_name'));
     echo $encoder->Convert($repre_value, 'windows-1250', 'utf-8');
 } elseif (AA_V::P('item_id') && AA_V::P('field_id')) {
+    ProposeCheckPerm(ProposeSliceOf(AA_V::P('item_id')));
     $encoder = new ConvertCharset();
     $text = $encoder->Convert(AA_V::P('content'), 'utf-8', 'windows-1250');
 
@@ -252,6 +281,9 @@ elseif (AA_V::P('assignment') == 1) {
 
     // changes_arr[item_id] = [[field_id] => [0 => value1, 1 => value2, ...]]
     $changes_arr = $changes->getProposalByID(AA_V::P('change_id'));
+    foreach (array_filter(array_keys($changes_arr)) as $item_id) {
+        ProposeCheckPerm(ProposeSliceOf($item_id));
+    }
     foreach ($changes_arr as $item_id => $fids) {
         if ($item_id) {
             foreach ($fids as $fid => $values) {

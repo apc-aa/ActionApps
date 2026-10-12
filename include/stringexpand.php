@@ -978,9 +978,10 @@ class AA_Stringexpand_Protectmail extends AA_Stringexpand_Nevercache {
             return $text;
         }
         $ahrefid = 'aapm'.gensalt(10);
-        $linkpart    = explode('@', $email);
-        $mailprotect = "'".$linkpart[0]."'+'@'+'".$linkpart[1]."'";
-        $linktext    = ($text=='') ? $mailprotect : "'".escape4js($text)."'";
+        // the address comes from item content, so it is a JS string for the href and also HTML-escaped for the link text
+        [$user, $domain] = array_pad(explode('@', $email, 2), 2, '');
+        $mailprotect = "'".escape4js($user)."'+'@'+'".escape4js($domain)."'";
+        $linktext    = ($text=='') ? "'".escape4js(safe($user))."'+'@'+'".escape4js(safe($domain))."'" : "'".escape4js($text)."'";
         $ret = "<a href=\"\" id=\"$ahrefid\"></a><!--AA script generated, AA script removed-->";
         // we delete the script because when the content is redisplayed again (by {htmlajaxtoggle} for example, the script is executed again, which leads to wrong content)
         $ret .= "<script>var el=document.getElementById('$ahrefid');el.setAttribute('href','mai'+'lto:'+$mailprotect);el.insertAdjacentHTML('afterbegin',$linktext);document.currentScript?.parentNode?.removeChild(document.currentScript);</script>";
@@ -6517,6 +6518,15 @@ class AA_Unalias_Callback {
         return $ret;
     }
 
+    /** a value from the URL (als[NAME], site state): its _#ALIASES run, a {...} in it only while
+     *  the protection allows, otherwise it is shown as text */
+    private function expandUrlValue(string $param, $value): string
+    {
+        $value      = is_array($value) ? '' : (string) $value;
+        $expression = \AA\Security\UrlValue::expression($param, $value);
+        return QuoteColons(is_null($expression) ? \AA\Security\UrlValue::asText($value) : AA::Un($expression, '', $this->item, false, $this->itemview));
+    }
+
     /** expand_bracketed function
      *  Expand a single, syntax element
      *
@@ -6582,7 +6592,7 @@ class AA_Unalias_Callback {
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                 if ($out[1] === "#") {
                     if (isset($als[aa_substr($out,2)])) {
-                        return QuoteColons(AA::Un($als[aa_substr($out,2)], '', $this->item, false, $this->itemview));
+                        return $this->expandUrlValue('als[' . aa_substr($out,2) . ']', $als[aa_substr($out,2)]);
                     }
 
                     if (isset($this->item)) {
@@ -6750,11 +6760,11 @@ class AA_Unalias_Callback {
         // anything inside the value, and then makes sure any remaining quotes
         // don't interfere with caller
         if (isset($GLOBALS['apc_state'][$out])) {
-            return QuoteColons(AA::Un($GLOBALS['apc_state'][$out], '', $this->item, false, $this->itemview));
+            return $this->expandUrlValue('{' . $out . '}', $GLOBALS['apc_state'][$out]);
         }
 
         if (isset($als[$out])) {
-            return QuoteColons(AA::Un($als[$out], '', $this->item, false, $this->itemview));
+            return $this->expandUrlValue('als[' . $out . ']', $als[$out]);
         }
 
         if (str_starts_with($out, 'mlx_view')) {
