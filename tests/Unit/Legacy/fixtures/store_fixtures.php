@@ -362,6 +362,12 @@ final class FakeSlice extends AA_Slice
         return $this->fake_fields;
     }
 
+    /** where the file inserter stores uploads - the real one reads settings and config constants */
+    public function getUploadBase(): array
+    {
+        return ['path' => sys_get_temp_dir() . '/aa-upload-' . $this->module_id, 'url' => 'https://example.org/upload/' . $this->module_id, 'perms' => 0o775];
+    }
+
     /** slice settings storeItem() reads - history logging off, the type, nothing else set */
     public function getProperty($prop)
     {

@@ -1494,6 +1494,9 @@ class AA_Inserter_Fil extends AA_Inserter
     protected $exact;                  // see getClassProperties
     protected $nametemplate;           // see getClassProperties
 
+    /** @var string[] files uploaded in this request - the only ones a thumbnail (AA_UPTHUMB:) may be made from */
+    private static array $uploaded = [];
+
     public static function name(): string
     {
         return _m("File = uploaded file");
@@ -1536,7 +1539,11 @@ class AA_Inserter_Fil extends AA_Inserter
             }
             $mode = 'upload';
         } elseif (str_starts_with($value, 'AA_UPTHUMB:')) {
-            // thumb - the value is prefixed with "AA_UPTHUMB:" constant - nothing to do right now
+            // the upload of another field passes its file to this one; a form could send the
+            // marker too, with any path, so only a file this request uploaded is taken
+            if (!in_array(ParamExplode($value)[1] ?? '', self::$uploaded, true)) {
+                return;
+            }
             $mode = 'thumb';
         } else {
             // old version of input form
@@ -1559,6 +1566,7 @@ class AA_Inserter_Fil extends AA_Inserter
                 $err[$fid] = Files::lastErrMsg();
                 return;
             }
+            self::$uploaded[] = $dest_file;
 
             $resampled_name = $dest_file;
         } else { // thumb

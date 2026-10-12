@@ -559,6 +559,54 @@ namespace Tests\Unit\Legacy {
             $this->assertContentTable([$this->row(self::ITEM, 'password........', 0, '$2y$10$hash', 64)]);
         }
 
+        // ------------------------------------------------------------ file thumbnails
+
+        /** an image of the upload directory, uploaded earlier in this request when $uploaded */
+        private function uploadedImage(bool $uploaded): string
+        {
+            $dir = self::$slice->getUploadBase()['path'];
+            if (!is_dir($dir)) {
+                mkdir($dir, 0o775, true);
+            }
+            file_put_contents($file = $dir . '/pic.txt', 'image');
+            (new \ReflectionProperty(\AA_Inserter_Fil::class, 'uploaded'))->setValue(null, $uploaded ? [$file] : []);
+            return $file;
+        }
+
+        private function removeUploads(): void
+        {
+            $dir = self::$slice->getUploadBase()['path'];
+            array_map('unlink', glob($dir . '/*') ?: []);
+            rmdir($dir);
+            (new \ReflectionProperty(\AA_Inserter_Fil::class, 'uploaded'))->setValue(null, []);
+        }
+
+        /** the marker passes an upload on to the thumbnail fields; it makes a copy and stores its url */
+        public function test_thumbnail_of_a_file_uploaded_in_this_request_is_copied_and_linked(): void
+        {
+            $file = $this->uploadedImage(true);
+            try {
+                $this->store([$this->field('image..........2', ['input_insert_func' => 'fil'])], ['image..........2' => \ParamImplode(['AA_UPTHUMB', $file])]);
+                $this->assertFileExists(dirname($file) . '/pic_1.txt');
+                $this->assertContentTable([$this->row(self::ITEM, 'image..........2', 0, 'https://example.org/upload/' . self::SLICE . '/pic_1.txt', 64)]);
+            } finally {
+                $this->removeUploads();
+            }
+        }
+
+        /** a form that sends the marker itself names no upload: nothing is copied, nothing stored */
+        public function test_thumbnail_marker_from_the_form_is_ignored(): void
+        {
+            $file = $this->uploadedImage(false);
+            try {
+                $this->store([$this->field('image..........2', ['input_insert_func' => 'fil'])], ['image..........2' => \ParamImplode(['AA_UPTHUMB', $file])]);
+                $this->assertFileDoesNotExist(dirname($file) . '/pic_1.txt');
+                $this->assertContentTable([]);
+            } finally {
+                $this->removeUploads();
+            }
+        }
+
         // ------------------------------------------------------------ 2FA secret
 
         private function loginAs(string $uid): void
