@@ -6,13 +6,13 @@ namespace AA\Optimize;
 
 use AA\Security\Protection;
 use AA\Security\Settings;
-use AA\Security\SignedExpression;
+use AA\Security\ProtectionLog;
 use AA\Util\LogOnce;
 use AA;
 use AA_Log;
 
-/** Protections switched off on admin/aa_security.php, and the unsigned expressions that forms sent
- *  lately (refused, or run while the protection was off). Index-only. */
+/** Protections switched off on admin/aa_security.php, and what the measured ones met lately
+ *  (refused, or run while the protection was off). Index-only. */
 class CheckSecurityProtections extends AbstractOptimize
 {
     /** how far back State Check and admin/aa_security.php look into the log */
@@ -26,7 +26,7 @@ class CheckSecurityProtections extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Lists the security protections switched off on this install and the unsigned expressions forms sent in the last %1 days.', [self::WINDOW_DAYS]);
+        return _m('Lists the security protections switched off on this install and what they refused in the last %1 days.', [self::WINDOW_DAYS]);
     }
 
     public static function types(): array
@@ -46,8 +46,12 @@ class CheckSecurityProtections extends AbstractOptimize
 
     public function findings(): array
     {
-        $off = [];
+        $off    = [];
+        $logged = [];
         foreach (Protection::cases() as $protection) {
+            foreach (is_null($event = $protection->event()) ? [] : LogOnce::recent($event, now() - self::WINDOW_DAYS * 86400, self::GROUPS) as $row) {
+                $logged[] = [$protection, $row];
+            }
             if (!Settings::isOn($protection)) {
                 $switch = Settings::lastSwitch($protection);
                 if (isset($switch['user'])) {
@@ -56,15 +60,15 @@ class CheckSecurityProtections extends AbstractOptimize
                 $off[] = [$protection, $switch];
             }
         }
-        return self::findingsFor($off, LogOnce::recent(SignedExpression::EVENT, now() - self::WINDOW_DAYS * 86400, self::GROUPS));
+        return self::findingsFor($off, $logged);
     }
 
     /**
      * @param list<array{Protection, array<string, mixed>}> $off  switched-off protections with their last switch (Settings::lastSwitch(), user as a name)
-     * @param list<array<string, ?string>>                  $rows LogOnce::recent() rows of SignedExpression::EVENT
+     * @param list<array{Protection, array<string, ?string>}> $logged LogOnce::recent() rows of each protection's event
      * @return Finding[]
      */
-    public static function findingsFor(array $off, array $rows): array
+    public static function findingsFor(array $off, array $logged): array
     {
         $page     = [_m('Security') => AA_INSTAL_PATH . 'admin/aa_security.php'];
         $findings = [];
@@ -83,14 +87,12 @@ class CheckSecurityProtections extends AbstractOptimize
                 key: 'off:' . $protection->value,
             );
         }
-        foreach ($rows as $row) {
+        foreach ($logged as [$protection, $row]) {
             $selector = (string) $row['selector'];
-            [$refused, $param, $source] = SignedExpression::logged($selector);
+            [$refused, $param, $source] = ProtectionLog::parse($selector);
             $findings[] = new Finding(
                 Finding::WARNING,
-                $refused
-                    ? _m('A form on %1 sent an unsigned expression in %2; it was refused', [$source ?: _m('an unknown page'), $param])
-                    : _m('A form on %1 sent an unsigned expression in %2; it ran because the protection was off', [$source ?: _m('an unknown page'), $param]),
+                $protection->loggedTitle($refused, $source, $param),
                 count: (int) $row['days'],
                 since: (int) $row['first'],
                 evidence: [[
@@ -99,12 +101,12 @@ class CheckSecurityProtections extends AbstractOptimize
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: Protection::SignedExpressions->migration() . ' ' . _m('If you do not know the page, the request did not come from your forms and nothing needs to change.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(SignedExpression::EVENT, $selector)] + $page,
+                advice: $protection->migration() . ' ' . _m('If you do not know the page, the request did not come from your pages and nothing needs to change.'),
+                links: [_m('Log rows') => AA_Log::getAdminUrl((string) $protection->event(), $selector)] + $page,
                 key: $selector,
                 last: (int) $row['last'],
             );
         }
-        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('All protections are on and no form sent an unsigned expression in the last %1 days', [self::WINDOW_DAYS]))];
+        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('All protections are on and none of them refused anything in the last %1 days', [self::WINDOW_DAYS]))];
     }
 }

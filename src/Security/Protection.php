@@ -12,11 +12,13 @@ namespace AA\Security;
 enum Protection: string
 {
     case SignedExpressions = 'signed_expressions';
+    case UrlValuesAsText = 'url_values_as_text';
 
     public function label(): string
     {
         return match ($this) {
             self::SignedExpressions => _m('Forms run only expressions signed by AA'),
+            self::UrlValuesAsText   => _m('Values from the URL are text'),
         };
     }
 
@@ -25,6 +27,15 @@ enum Protection: string
     {
         return match ($this) {
             self::SignedExpressions => _m('ret_code and ok_url sent to filler.php'),
+            self::UrlValuesAsText   => _m('als[] and the state of site pages, taken from the URL'),
+        };
+    }
+
+    public function migrationTitle(): string
+    {
+        return match ($this) {
+            self::SignedExpressions => _m('How to convert older forms'),
+            self::UrlValuesAsText   => _m('How to convert older links'),
         };
     }
 
@@ -37,6 +48,21 @@ enum Protection: string
     {
         return match ($this) {
             self::SignedExpressions => _m('Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases.'),
+            self::UrlValuesAsText   => _m('Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it.'),
+        };
+    }
+
+    /** the State Check title of a ProtectionLog row */
+    public function loggedTitle(bool $refused, string $page, string $param): string
+    {
+        $page = ($page === '') ? _m('an unknown page') : $page;
+        return match ($this) {
+            self::SignedExpressions => $refused
+                ? _m('A form on %1 sent an unsigned expression in %2; it was refused', [$page, $param])
+                : _m('A form on %1 sent an unsigned expression in %2; it ran because the protection was off', [$page, $param]),
+            self::UrlValuesAsText   => $refused
+                ? _m('A link to %1 sent an expression in %2; it was shown as text', [$page, $param])
+                : _m('A link to %1 sent an expression in %2; it ran because the protection was off', [$page, $param]),
         };
     }
 
@@ -51,6 +77,7 @@ enum Protection: string
     {
         return [
             'signed_expressions' => SignedExpression::EVENT,
+            'url_values_as_text' => UrlValue::EVENT,
         ];
     }
 }

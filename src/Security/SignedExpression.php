@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Security;
 
-use AA\Util\LogOnce;
 use AA\Util\Secret;
 use AA_Item;
 use AA_Slice;
@@ -88,8 +87,7 @@ final class SignedExpression
         // a new key (AA_SECRET added, DB password changed) breaks the signatures in cached pages; switching the protection off gets them through
         $expression = self::isSigned($value) ? self::payload($value) : $value;
         $allowed    = !is_null($expression) && !Settings::isOn(Protection::SignedExpressions);
-        // the outcome is part of the selector: a refusal after the protection is switched on again is a new row the same day
-        LogOnce::daily(self::EVENT, ParamImplode([$allowed ? 'allowed' : 'refused', $param, self::page()]));
+        ProtectionLog::write(Protection::SignedExpressions, $allowed, $param, ProtectionLog::referer());
         return $allowed ? $expression : null;
     }
 
@@ -100,22 +98,6 @@ final class SignedExpression
     {
         $slice = $item ? AA_Slice::getModule($item->getSliceID()) : null;
         return static fn(string $field_id): bool => !is_null($slice?->getField($field_id));
-    }
-
-    /** a log row's selector as [refused, parameter, page]
-     *  @return array{bool, string, string}
-     */
-    public static function logged(string $selector): array
-    {
-        [$outcome, $param, $page] = array_pad(ParamExplode($selector), 3, '');
-        return [$outcome !== 'allowed', (string) $param, (string) $page];
-    }
-
-    /** the page the form was on (Referer without its query), so the template can be found */
-    private static function page(): string
-    {
-        $referer = parse_url((string) ($_SERVER['HTTP_REFERER'] ?? ''));
-        return is_array($referer) ? ($referer['host'] ?? '') . ($referer['path'] ?? '') : '';
     }
 
     /** the expression in a signed value, whether the signature matches or not */

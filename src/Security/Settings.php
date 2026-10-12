@@ -66,10 +66,15 @@ final class Settings extends AA_Object
         return AA_Log::getLastLogEvents(self::EVENT, $protection->value);
     }
 
+    /** loaded once a request: a template may ask for every value from the URL it prints */
     private static function current(): self
     {
-        $settings = AA_Object::load(self::id(), self::class);
-        return ($settings instanceof self) ? $settings : new self();
+        static $current = null;
+        if (is_null($current)) {
+            $settings = AA_Object::load(self::id(), self::class);
+            $current  = ($settings instanceof self) ? $settings : new self();
+        }
+        return $current;
     }
 
     /** one object per install; derived from AA_ID so it cannot meet a random object id */

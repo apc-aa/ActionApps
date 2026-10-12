@@ -6518,6 +6518,15 @@ class AA_Unalias_Callback {
         return $ret;
     }
 
+    /** a value from the URL (als[NAME], site state): its _#ALIASES run, a {...} in it only while
+     *  the protection allows, otherwise it is shown as text */
+    private function expandUrlValue(string $param, $value): string
+    {
+        $value      = is_array($value) ? '' : (string) $value;
+        $expression = \AA\Security\UrlValue::expression($param, $value);
+        return QuoteColons(is_null($expression) ? \AA\Security\UrlValue::asText($value) : AA::Un($expression, '', $this->item, false, $this->itemview));
+    }
+
     /** expand_bracketed function
      *  Expand a single, syntax element
      *
@@ -6583,7 +6592,7 @@ class AA_Unalias_Callback {
             case '_':         // Look for {_#.........} and expand now, rather than wait till top
                 if ($out[1] === "#") {
                     if (isset($als[aa_substr($out,2)])) {
-                        return QuoteColons(AA::Un($als[aa_substr($out,2)], '', $this->item, false, $this->itemview));
+                        return $this->expandUrlValue('als[' . aa_substr($out,2) . ']', $als[aa_substr($out,2)]);
                     }
 
                     if (isset($this->item)) {
@@ -6751,11 +6760,11 @@ class AA_Unalias_Callback {
         // anything inside the value, and then makes sure any remaining quotes
         // don't interfere with caller
         if (isset($GLOBALS['apc_state'][$out])) {
-            return QuoteColons(AA::Un($GLOBALS['apc_state'][$out], '', $this->item, false, $this->itemview));
+            return $this->expandUrlValue('{' . $out . '}', $GLOBALS['apc_state'][$out]);
         }
 
         if (isset($als[$out])) {
-            return QuoteColons(AA::Un($als[$out], '', $this->item, false, $this->itemview));
+            return $this->expandUrlValue('als[' . $out . ']', $als[$out]);
         }
 
         if (str_starts_with($out, 'mlx_view')) {

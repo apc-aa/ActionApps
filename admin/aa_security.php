@@ -29,8 +29,8 @@
 use AA\Central\ResponderPolicy;
 use AA\Optimize\CheckSecurityProtections;
 use AA\Security\Protection;
+use AA\Security\ProtectionLog;
 use AA\Security\Settings;
-use AA\Security\SignedExpression;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 use AA\Util\LogOnce;
@@ -71,9 +71,9 @@ function security_evidence(Protection $protection): string
     }
     $days    = CheckSecurityProtections::WINDOW_DAYS;
     $refused = $run = 0;
-    // the page comes from the Referer, so a prober makes a group per made-up page; count them all
+    // the page comes from the request, so a prober makes a group per made-up page; count them all
     foreach (LogOnce::recent($event, now() - $days * 86400, 10000) as $row) {
-        if (SignedExpression::logged((string) $row['selector'])[0]) {
+        if (ProtectionLog::parse((string) $row['selector'])[0]) {
             $refused += (int) $row['days'];
         } else {
             $run += (int) $row['days'];
@@ -81,7 +81,7 @@ function security_evidence(Protection $protection): string
     }
     // the log keeps one row per page and day, so that is what the numbers count
     $text = ($refused + $run === 0)
-        ? _m('No form sent an unsigned expression in the last %1 days.', [$days])
+        ? _m('Nothing refused or run in the last %1 days.', [$days])
         : _m('Last %1 days: %2 refused, %3 run (counted once per page and day).', [$days, $refused, $run]);
     $link = ($refused + $run === 0) ? '' : ' <a href="' . safe(AA_Log::getAdminUrl($event, '', 'RLIKE')) . '">' . _m('Log rows') . '</a>';
     return '<p class="aa-security-evidence">' . $text . $link . '</p>';
@@ -129,7 +129,7 @@ if ($saved > 0) {
 }
 $apage->printHead();
 
-echo '<p>' . _m('Each protection is on unless you switch it off here. Switch one off only for an old site whose forms still use the older way, and only until they are converted.') . '</p>';
+echo '<p>' . _m('Each protection is on unless you switch it off here. Switch one off only for an old site whose forms or links still use the older way, and only until they are converted.') . '</p>';
 
 echo '<form method="post" action="' . safe(get_admin_url('aa_security.php')) . '">' . FormToken::field(SECURITY_TOKEN);
 echo '<ul class="aa-security">';
@@ -144,7 +144,7 @@ foreach (Protection::cases() as $protection) {
         . '<p class="aa-security-note" role="note">' . _m('State Check reminds you until it is on again.') . '</p>'
         . '</div>';
     echo security_evidence($protection);
-    echo '<details><summary>' . _m('How to convert older forms') . '</summary>'
+    echo '<details><summary>' . safe($protection->migrationTitle()) . '</summary>'
         . '<p>' . safe($protection->migration()) . '</p></details>';
     echo '</li>';
 }

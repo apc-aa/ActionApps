@@ -35,11 +35,21 @@ final class CheckSecurityProtectionsTest extends TestCase
     public function test_anUnsignedExpression_namesTheParameterAndThePage(): void
     {
         $row = ['selector' => ParamImplode(['refused', 'ret_code', 'example.org/darujte']), 'days' => '2', 'first' => '1790000000', 'last' => '1790086400', 'params' => ''];
-        [$finding] = CheckSecurityProtections::findingsFor([], [$row]);
+        [$finding] = CheckSecurityProtections::findingsFor([], [[Protection::SignedExpressions, $row]]);
         $this->assertSame(Finding::WARNING, $finding->severity);
         $this->assertStringContainsString('ret_code', $finding->title);
         $this->assertStringContainsString('example.org/darujte', $finding->title);
         $this->assertStringContainsString('refused', $finding->title);
         $this->assertSame(2, $finding->count);
+    }
+
+    public function test_anExpressionInAUrlAlias_namesTheAliasAndThePage(): void
+    {
+        $row = ['selector' => ParamImplode(['refused', 'als[ROK]', 'example.org/cz/rocnik']), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
+        [$finding] = CheckSecurityProtections::findingsFor([], [[Protection::UrlValuesAsText, $row]]);
+        $this->assertSame(Finding::WARNING, $finding->severity);
+        $this->assertStringContainsString('als[ROK]', $finding->title);
+        $this->assertStringContainsString('example.org/cz/rocnik', $finding->title);
+        $this->assertStringContainsString('shown as text', $finding->title);
     }
 }
