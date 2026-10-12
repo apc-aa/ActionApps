@@ -220,7 +220,8 @@ $catVS->add("body", "text", $d_body);
 $catVS->add("state", "text", $d_state);
 $catVS->add("flag", "text", $d_flag);
 $catVS->add("free1", "text", $d_free1);
-$catVS->add("free2", "text", $d_free2 ?? var_export($_COOKIE, true));
+// the poster's cookies, but no session id - free2 is shown to the discussion's admins and templates
+$catVS->add("free2", "text", $d_free2 ?? var_export(array_filter($_COOKIE, static fn($name) => stripos((string) $name, 'sess') === false, ARRAY_FILTER_USE_KEY), true));
 $catVS->add("url_address", "text", $d_url_address);
 $catVS->add("url_description", "text", $d_url_description);
 $catVS->add("date", "quoted", time());
