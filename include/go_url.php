@@ -157,6 +157,20 @@ function get_help_url($href, $anchor): string
 }
 
 
+/** The script by which go_url() moves to $url once the headers are sent. The URL may come from the
+ *  request (return_url), so it is a JS string, and a URL of another scheme than http(s) moves nowhere:
+ *  window.location would run javascript: or data:, which a Location header never does.
+ */
+function GoUrlScript(string $url): string
+{
+    // the browser drops tabs, newlines and leading controls before it reads the scheme
+    $scheme = preg_match('/^([a-z][a-z0-9+.-]*):/i', (string) preg_replace('/[\x00-\x20]+/', '', $url), $m) ? strtolower($m[1]) : '';
+    if (($scheme !== '') && !in_array($scheme, ['http', 'https'], true)) {
+        return '';
+    }
+    return "<script>window.location = '" . escape4js($url) . "';</script>";
+}
+
 /** Move to another page (must be before any output from script)
  * @param $url
  * @param $add_param array|string
@@ -173,7 +187,7 @@ function go_url($url, $add_param = "", $usejs = false, $code = 302): never
     }
 
     if ($usejs || headers_sent() || $_SERVER['SERVER_PROTOCOL'] === 'INCLUDED') { // SSI included  // INCLUDED does not work 2024 HM
-        echo '<script>window.location = "' . $url . '";</script>';
+        echo GoUrlScript((string) $url);
     } else {
         header("Location: $url", true, $code);
     }
