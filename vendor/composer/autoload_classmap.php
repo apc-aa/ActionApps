@@ -435,6 +435,7 @@ return array(
     'AA\\Util\\Notes' => $baseDir . '/src/Util/Notes.php',
     'AA\\Util\\Paramwizard' => $baseDir . '/src/Util/Paramwizard.php',
     'AA\\Util\\PhpThumbParams' => $baseDir . '/src/Util/PhpThumbParams.php',
+    'AA\\Util\\Preconnect' => $baseDir . '/src/Util/Preconnect.php',
     'AA\\Util\\ProgressPanel' => $baseDir . '/src/Util/ProgressPanel.php',
     'AA\\Util\\ReportTrait' => $baseDir . '/src/Util/ReportTrait.php',
     'AA\\Util\\ScriptTag' => $baseDir . '/src/Util/ScriptTag.php',

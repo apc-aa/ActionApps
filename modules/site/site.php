@@ -36,8 +36,9 @@ require_once __DIR__ . "/../../include/locauth.php";
 
 // MissCache forge-on-miss: requests for a missing cached file under IMG_UPLOAD/mC/
 // are routed here by the web server (try_files / RewriteCond !-f — see
-// misc/missCache/README). Generate the artifact once and serve it; every later
-// request is served statically by the web server, never reaching PHP.
+// misc/missCache/README). Generate the artifact once and serve it; later requests are
+// served statically by the web server - where it does not serve the directory, they come
+// here again and MissCache reads the stored file.
 // srcBase() is the upload path trimmed of its slashes plus one ("img_upload/"), as MissCache
 // trims the base of the urls it renders - an IMG_UPLOAD_URL without the trailing slash must
 // not build "/img_uploadmC/", which would silently never match. configured() first: an

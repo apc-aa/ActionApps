@@ -578,6 +578,7 @@ class ComposerStaticInit17cbdb6b6f147d0a4bf02d28862f205a
         'AA\\Util\\Notes' => __DIR__ . '/../..' . '/src/Util/Notes.php',
         'AA\\Util\\Paramwizard' => __DIR__ . '/../..' . '/src/Util/Paramwizard.php',
         'AA\\Util\\PhpThumbParams' => __DIR__ . '/../..' . '/src/Util/PhpThumbParams.php',
+        'AA\\Util\\Preconnect' => __DIR__ . '/../..' . '/src/Util/Preconnect.php',
         'AA\\Util\\ProgressPanel' => __DIR__ . '/../..' . '/src/Util/ProgressPanel.php',
         'AA\\Util\\ReportTrait' => __DIR__ . '/../..' . '/src/Util/ReportTrait.php',
         'AA\\Util\\ScriptTag' => __DIR__ . '/../..' . '/src/Util/ScriptTag.php',

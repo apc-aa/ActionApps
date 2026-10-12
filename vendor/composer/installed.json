@@ -254,12 +254,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/honzito/MissCache.git",
-                "reference": "847ec91b0c951992e07bc185acf4941e29cdc775"
+                "reference": "b4c950b8a904730f8714e5d7d6219dd885ee3f78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/honzito/MissCache/zipball/847ec91b0c951992e07bc185acf4941e29cdc775",
-                "reference": "847ec91b0c951992e07bc185acf4941e29cdc775",
+                "url": "https://api.github.com/repos/honzito/MissCache/zipball/b4c950b8a904730f8714e5d7d6219dd885ee3f78",
+                "reference": "b4c950b8a904730f8714e5d7d6219dd885ee3f78",
                 "shasum": ""
             },
             "require": {
@@ -272,7 +272,7 @@
             "suggest": {
                 "ext-curl": "Faster, more robust HTTP subrequests in PhpThumbPlugin (falls back to allow_url_fopen)"
             },
-            "time": "2026-10-12T15:49:20+00:00",
+            "time": "2026-10-12T16:07:32+00:00",
             "default-branch": true,
             "type": "library",
             "installation-source": "dist",
