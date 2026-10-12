@@ -307,6 +307,12 @@ final class DB_AA
         return self::count('information_schema.columns', [['table_schema', DB_NAME], ['table_name', $table], ['column_name', $col]]) > 0;
     }
 
+    /** check if Table index exists */
+    public static function exists_index(string $table, string $index): bool
+    {
+        return self::count('information_schema.statistics', [['table_schema', constant('DB_NAME')], ['table_name', $table], ['index_name', $index]]) > 0;
+    }
+
     /** creates cols string for INSERT or UPDATE
      * @param string[] $varlist
      * @return string

@@ -220,6 +220,7 @@ return [
             'text' => ['t' => 'content', 'n' => 'text', 's' => 'I', 'c' => [1 => ['text', '12']]],
             'item_id' => ['t' => 'content', 'n' => 'item_id', 's' => 'I', 'c' => [1 => 'item_id', 2 => 'field_id', 3 => ['text', '16']]],
             'number' => ['t' => 'content', 'n' => 'number', 's' => 'I', 'c' => [1 => 'item_id', 2 => 'number']],
+            'field_text' => ['t' => 'content', 'n' => 'field_text', 's' => 'I', 'c' => [1 => 'field_id', 2 => ['text', '12']]],
         ],
         'c' => [
             'item_id' => ['item_id', 'varbinary(16)', false, 'MUL', '                ', '', ''],
