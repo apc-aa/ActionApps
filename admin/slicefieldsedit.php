@@ -76,6 +76,11 @@ AA::setEncoding(Langs::getCharset());
 
 $id = AA::$module_id;
 
+// these fields hold settings and templates of the whole slice - the right the menu link asks for
+if (!IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+    MsgPage(_m("You don't have permissions to edit all items."));
+}
+
 if ($cancel) {
     go_return_or_url(self_base() . "index.php", true, true);
 }
