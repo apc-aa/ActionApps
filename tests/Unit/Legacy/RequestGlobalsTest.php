@@ -239,7 +239,6 @@ namespace Tests\Unit\Legacy {
                 'discussion.php' => ['discussion.php'],
                 'filler.php'     => ['filler.php'],
                 'getxml.php'     => ['admin/getxml.php'],
-                'msconvert'      => ['misc/msconvert/index.php'],
             ];
         }
 
