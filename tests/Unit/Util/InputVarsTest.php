@@ -18,14 +18,18 @@ final class InputVarsTest extends TestCase
 {
     protected function setUp(): void
     {
-        $_POST = [];
-        $_GET  = [];
+        $_POST    = [];
+        $_GET     = [];
+        $_COOKIE  = [];
+        $_REQUEST = [];
     }
 
     protected function tearDown(): void
     {
-        $_POST = [];
-        $_GET  = [];
+        $_POST    = [];
+        $_GET     = [];
+        $_COOKIE  = [];
+        $_REQUEST = [];
     }
 
     // --- int ---
@@ -130,6 +134,34 @@ final class InputVarsTest extends TestCase
     {
         $_POST['n'] = '9';
         $this->assertSame(9, InputVars::intGETPOST('n', true));
+    }
+
+    // --- request (what {qs:} prints) ---
+
+    public function test_request_never_returns_a_cookie(): void
+    {
+        // request_order GPC (the ECN servers): the cookie beats the URL parameter in $_REQUEST
+        $_GET     = ['x' => 'url'];
+        $_COOKIE  = ['x' => 'cookie', 'AA_Session' => 's1'];
+        $_REQUEST = ['x' => 'cookie', 'AA_Session' => 's1'];
+        $this->assertSame('url', InputVars::request('x'));
+        $this->assertNull(InputVars::request('AA_Session'));
+    }
+
+    public function test_request_post_wins_over_get_as_in_php(): void
+    {
+        $_GET     = ['x' => 'get'];
+        $_POST    = ['x' => 'post'];
+        $_COOKIE  = ['x' => 'cookie'];
+        $this->assertSame('post', InputVars::request('x'));
+    }
+
+    public function test_request_keeps_what_aa_code_stored_there(): void
+    {
+        $_REQUEST = ['nocache' => '1', 'a' => ['b' => '2']];
+        $this->assertSame('1', InputVars::request('nocache'));
+        $this->assertSame(['b' => '2'], InputVars::request('a'));
+        $this->assertNull(InputVars::request('missing'));
     }
 
     // --- exception message shape ---

@@ -41,6 +41,7 @@ use AA\Later\LaterInterface;
 use AA\Optimize\AddDurationLog;
 use AA\Optimize\CheckCkeditorUse;
 use AA\Util\ChangesMonitor;
+use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
@@ -9234,8 +9235,8 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
                     }
                 }
             }
-        } elseif (isset($_REQUEST[$variable_name])) {
-            $ret = $_REQUEST[$variable_name];
+        } elseif (($value = InputVars::request($variable_name)) !== null) {
+            $ret = $value;
         } elseif ( $_SERVER['CONTENT_TYPE'] === 'application/json' ) {
             $req_body = json_decode(file_get_contents('php://input'), true);
             $ret      = $req_body[$variable_name];
