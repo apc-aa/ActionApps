@@ -3,10 +3,11 @@
 declare(strict_types=1);
 
 /**
- * QueryZids() with a LIMIT checks the content conditions by EXISTS instead of a JOIN.
+ * QueryZids() with a LIMIT checks the content conditions by subqueries instead of a JOIN.
  *
  * Pins: no LIMIT - the SQL is as it was; a join the ORDER BY uses stays a join (and DISTINCT
- * stays); LEFT JOIN conditions keep matching items without the value.
+ * stays); LEFT JOIN conditions keep matching items without the value - by one scalar subquery,
+ * not EXISTS ... OR NOT EXISTS, which MariaDB turns into materialized IN subqueries.
  */
 
 namespace {
@@ -30,6 +31,7 @@ namespace {
 namespace Tests\Unit\Legacy {
 
     use AA_Field;
+    use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Legacy\Fixtures\FakeFields;
     use Tests\Unit\Legacy\Fixtures\FakeSlice;
@@ -73,6 +75,7 @@ namespace Tests\Unit\Legacy {
         /** the SQL QueryZids() sends, without the debug comment and quoted as by MySQL (the test db is SQLite) */
         private static function sql(array $conds, array $sort, int $limit): string
         {
+            RecordingDb::$log = [];
             QueryZids([self::SLICE], $conds, $sort, 'ACTIVE', 0, null, 'LIKE', $limit);
             $selects = array_values(array_filter(RecordingDb::$log, static fn($s) => str_contains($s, 'as itemid')));
             self::assertCount(1, $selects);
@@ -91,16 +94,48 @@ namespace Tests\Unit\Legacy {
             );
         }
 
-        public function test_limit_conditionsByExists_noDistinct(): void
+        public function test_limit_conditionsBySubquery_noDistinct(): void
         {
             self::assertSame(
                 "SELECT item.id as itemid FROM item WHERE item.slice_id = 0x" . self::SLICE . " AND item.status_code=1 AND item.publish_date <= '%NOW%' AND item.expiry_date > '%NOW%'"
                 . " AND (EXISTS (SELECT 1 FROM content AS c0 WHERE c0.item_id=item.id AND (c0.field_id='category.......1' ) AND ((`c0`.`text` IS NOT NULL) AND (`c0`.`text`<>''))))"
-                . " AND ((EXISTS (SELECT 1 FROM content AS c1 WHERE c1.item_id=item.id AND (c1.field_id='category.......7' OR c1.field_id is NULL) AND ((`c1`.`text` IS NULL) OR (`c1`.`text`='')))"
-                . " OR NOT EXISTS (SELECT 1 FROM content AS c1 WHERE c1.item_id=item.id AND (c1.field_id='category.......7' OR c1.field_id is NULL))))"
+                . " AND ((COALESCE((SELECT MAX((((`c1`.`text` IS NULL) OR (`c1`.`text`=''))) IS TRUE) FROM content AS c1 WHERE c1.item_id=item.id AND (c1.field_id='category.......7' OR c1.field_id is NULL)), 1) = 1))"
                 . " ORDER BY item.publish_date DESC LIMIT 3",
                 self::now(self::sql([self::FILLED, self::EMPTY], [], 3)),
             );
+        }
+
+        /** run on SQLite over the values that trip "no value, or one that matches": none, '', NULL,
+         *  the value, another one, both, another one and '', only another field */
+        #[DataProvider('missingMatches')]
+        public function test_limit_selectsTheItemsTheJoinDoes(array $cond, array $expected): void
+        {
+            $db    = new \PDO('sqlite::memory:');
+            $field = (string) array_key_first($cond);
+            $db->exec('CREATE TABLE item (id INTEGER PRIMARY KEY)');
+            $db->exec('CREATE TABLE content (item_id INTEGER, field_id TEXT, number INTEGER, text TEXT)');
+            $db->exec('INSERT INTO item (id) VALUES (1), (2), (3), (4), (5), (6), (7), (8)');
+            $insert = $db->prepare('INSERT INTO content (item_id, field_id, text) VALUES (?, ?, ?)');
+            foreach ([[2, ''], [3, null], [4, 'x'], [5, 'y'], [6, 'x'], [6, 'y'], [7, 'y'], [7, '']] as [$item, $text]) {
+                $insert->execute([$item, $field, $text]);
+            }
+            $insert->execute([8, 'headline........', 'x']);
+
+            // the content part only: the joins and the conditions after the bin's dates
+            $items = static function (string $sql) use ($db): array {
+                preg_match("/ FROM item (.*?) ?WHERE .* item\\.expiry_date > '\\d+' (.*) ORDER BY /", $sql, $m);
+                return $db->query("SELECT DISTINCT item.id FROM item $m[1] WHERE 1=1 $m[2] ORDER BY item.id")->fetchAll(\PDO::FETCH_COLUMN);
+            };
+            self::assertSame($expected, $items(self::sql([$cond], [], 0)), 'JOIN');
+            self::assertSame($expected, $items(self::sql([$cond], [], 3)), 'subquery');
+        }
+
+        public static function missingMatches(): array
+        {
+            return [
+                'empty'     => [self::EMPTY, [1, 2, 3, 7, 8]],
+                'not equal' => [['category.......1' => 1, 'operator' => '<>', 'value' => 'x'], [1, 2, 3, 5, 7, 8]],
+            ];
         }
 
         public function test_limit_sortedByConditionField_keepsThatJoinAndDistinct(): void
@@ -111,7 +146,7 @@ namespace Tests\Unit\Legacy {
             self::assertStringContainsString("INNER JOIN content as c0 ON (c0.item_id=item.id AND (c0.field_id='category.......1' ))", $sql);
             self::assertStringContainsString('ORDER BY c0.text LIMIT 3', $sql);
             self::assertStringNotContainsString('JOIN content as c1', $sql);
-            self::assertStringContainsString('EXISTS (SELECT 1 FROM content AS c1 ', $sql);
+            self::assertStringContainsString('(SELECT MAX((((`c1`.`text` IS NULL) OR (`c1`.`text`=\'\'))) IS TRUE) FROM content AS c1 ', $sql);
         }
 
         public function test_limit_sortedByOtherField_sortJoinStaysWithDistinct(): void
@@ -144,7 +179,8 @@ namespace Tests\Unit\Legacy {
         {
             $sql = self::sql([['category.......1' => 1, 'operator' => '<>', 'value' => 'x']], [], 1);
 
-            self::assertStringContainsString("OR NOT EXISTS (SELECT 1 FROM content AS c0 WHERE c0.item_id=item.id AND (c0.field_id='category.......1' OR c0.field_id is NULL) AND (`c0`.`text` = 'x')))", $sql);
+            self::assertStringContainsString("AND ((COALESCE((SELECT MAX(((`c0`.`text` IS NULL)) IS TRUE) FROM content AS c0 WHERE c0.item_id=item.id AND (c0.field_id='category.......1' OR c0.field_id is NULL) AND (`c0`.`text` = 'x')), 1) = 1))", $sql);
+            self::assertStringNotContainsString('EXISTS', $sql);
         }
 
         public function test_limit_numberCondition_onNumberColumn(): void
