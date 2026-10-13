@@ -8,6 +8,7 @@ namespace Tests\Unit\Legacy {
 
     use AA\IO\Grabber\Form;
     use AA\Optimize\CheckAnonymousEditRefusals;
+    use AA\Optimize\CheckItemEditsWithoutPermission;
     use AA\Optimize\Finding;
     use AA\Util\LogOnce;
     use AA_Content;
@@ -111,7 +112,7 @@ namespace Tests\Unit\Legacy {
             LogOnce::reset();
             $_POST = [];
             $_SERVER['SCRIPT_NAME'] = self::$script_name;
-            unset($GLOBALS['auth']);
+            unset($GLOBALS['auth'], $GLOBALS['permission_uid'], $GLOBALS['permission_to']);
         }
 
         // ------------------------------------------------------------ helpers
@@ -293,7 +294,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_a_logged_in_user_moves_the_item_as_before(): void
         {
-            $GLOBALS['auth'] = new FakeAuth(self::USER);
+            self::login(self::USER, '');
 
             $item = self::grabOne(['u' . self::ITEM => ['slice_id________' => ['x'], 'slice_id..______' => [pack_id(self::OTHER)]]]);
 
@@ -312,7 +313,7 @@ namespace Tests\Unit\Legacy {
         #[DataProvider('loggedInUsers')]
         public function test_a_logged_in_user_may_change_the_fields(string $uid): void
         {
-            $GLOBALS['auth'] = new FakeAuth($uid);
+            self::login($uid, '');
             $posted = array_fill_keys(array_values(self::PROTECTED), ['v']);
 
             foreach (['u', 'i'] as $mode) {
@@ -322,6 +323,82 @@ namespace Tests\Unit\Legacy {
                 }
             }
             $this->assertSame([], self::logged());
+        }
+
+        // ------------------------------------------------------------ edits without the edit permission
+
+        /** logs in $uid with the slice permission letters $perms (CheckPerms() reads the cached ones) */
+        private static function login(string $uid, string $perms): void
+        {
+            $GLOBALS['auth']           = new FakeAuth($uid);
+            $GLOBALS['permission_uid'] = $uid;
+            $GLOBALS['permission_to']  = ['slice' => [self::SLICE => $perms], 'aa' => [AA_ID => '']];
+        }
+
+        /** @return list<array<string, mixed>> the rows of the edits without permission */
+        private static function noPermLogged(): array
+        {
+            return array_values(array_filter(RecordingDb::inserts('log'), static fn(array $row) => ($row['type'] ?? '') === CheckItemEditsWithoutPermission::EVENT));
+        }
+
+        /** @return array<string, array{0: ?string, 1: string, 2: string}> uid (null: no login), slice perms (a PS_EDIT_SELF_ITEMS, k PS_EDIT_ALL_ITEMS - the constants come with the boot), logged editor ('' none) */
+        public static function editors(): array
+        {
+            return [
+                'anonymous'                   => [null, '', 'anonymous'],
+                'nobody'                      => ['nobody', '', 'anonymous'],
+                'user without permission'     => [self::USER, '', 'user'],
+                'author without permission'   => [self::READER, '', 'own'],    // posted_by of the stored item
+                'the reader of the record'    => [self::ITEM, '', 'own'],
+                'author with self-edit'       => [self::READER, 'a', ''],
+                'other user with self-edit'   => [self::USER, 'a', 'user'],
+                'editor'                      => [self::USER, 'ak', ''],
+            ];
+        }
+
+        #[DataProvider('editors')]
+        public function test_an_edit_without_the_edit_permission_is_logged_and_stored(?string $uid, string $perms, string $editor): void
+        {
+            if ($uid !== null) {
+                self::login($uid, $perms);
+            }
+
+            $item = self::grabOne(['u' . self::ITEM => ['full_text_______' => ['new'], 'headline________' => ['x']]]);
+
+            $this->assertSame(['new'], $item->getAaValue(self::BODY)->getValues(), 'nothing is refused yet');
+            $rows = self::noPermLogged();
+            if ($editor === '') {
+                $this->assertSame([], $rows);
+                return;
+            }
+            // headline........ of the reader slice is refused for anonymous visitors - not part of the edit
+            $fields = ($editor === 'anonymous') ? [self::BODY] : [self::BODY, self::HEAD];
+            $this->assertSame(array_map(static fn($f) => ParamImplode([self::SLICE, $editor, $f]), $fields), array_column($rows, 'selector'));
+            $this->assertSame(ParamImplode(['u', 'filler.php']), $rows[0]['params']);
+            $this->assertStringNotContainsString('new', $rows[0]['selector'] . $rows[0]['params']);
+        }
+
+        public function test_new_items_are_not_logged_as_edits(): void
+        {
+            self::grab(['n1_' . self::SLICE => ['full_text_______' => ['new']]]);
+
+            $this->assertSame([], self::noPermLogged());
+        }
+
+        public function test_the_state_check_lists_an_edit_without_permission(): void
+        {
+            self::grab(['u' . self::ITEM => ['full_text_______' => ['new']]]);
+            [$row] = self::noPermLogged();
+
+            [$finding] = CheckItemEditsWithoutPermission::findingsFor(
+                [['selector' => $row['selector'], 'days' => '2', 'first' => (string) $row['time'], 'last' => (string) $row['time'], 'params' => $row['params']]],
+                [self::SLICE => 'Readers'],
+            );
+
+            $this->assertSame(Finding::INFO, $finding->severity);
+            $this->assertStringContainsString('Readers', $finding->title);
+            $this->assertSame(self::BODY, $finding->evidence[0]['Field']);
+            $this->assertSame(2, $finding->count);
         }
 
         // ------------------------------------------------------------ log
