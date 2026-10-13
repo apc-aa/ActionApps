@@ -1987,9 +1987,9 @@ class QueryZidsHelper
             if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
                 $on = "$tbl.item_id=item.id $addjoincond$langcond";
             } elseif (str_contains($cond_flds, ',')) {     // $field_count > 1
-                $on = "$tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd$langcond)$addjoincond";
+                $on = "$tbl.item_id=item.id$langcond AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond";
             } else {
-                $on = "$tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd$langcond)$addjoincond";
+                $on = "$tbl.item_id=item.id$langcond AND ($tbl.field_id=$cond_flds $selcondadd)$addjoincond";
                 // mark this field as sortable (store without apostrofs)
                 $this->sortable[str_replace("'", "", $cond_flds)] = $tbl;
             }

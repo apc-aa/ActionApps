@@ -30,6 +30,7 @@ namespace {
 
 namespace Tests\Unit\Legacy {
 
+    use AA\Util\Langs;
     use AA_Field;
     use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
@@ -110,24 +111,46 @@ namespace Tests\Unit\Legacy {
         #[DataProvider('missingMatches')]
         public function test_limit_selectsTheItemsTheJoinDoes(array $cond, array $expected): void
         {
-            $db    = new \PDO('sqlite::memory:');
             $field = (string) array_key_first($cond);
+            $rows  = [[2, ''], [3, null], [4, 'x'], [5, 'y'], [6, 'x'], [6, 'y'], [7, 'y'], [7, '']];
+            $db    = self::sqlite([...array_map(static fn($r) => [$r[0], $field, null, $r[1]], $rows), [8, 'headline........', null, 'x']]);
+
+            self::assertSame($expected, self::selected($db, self::sql([$cond], [], 0)), 'JOIN');
+            self::assertSame($expected, self::selected($db, self::sql([$cond], [], 3)), 'subquery');
+        }
+
+        /** a translation is a value with the language's number range; the other languages do not count */
+        public function test_language_onlyItsValuesAreChecked(): void
+        {
+            [$cz, $en] = [Langs::getLangName2Num('cz'), Langs::getLangName2Num('en')];
+            $field     = 'category.......7';
+            // 1 only English, 2 Czech, 3 Czech empty, 5 Czech beside an empty English one; 4, 6-8 nothing
+            $db   = self::sqlite([[1, $field, $en, 'x'], [2, $field, $cz, 'x'], [3, $field, $cz, ''], [5, $field, $cz, 'x'], [5, $field, $en, '']]);
+            $cond = ["$field|cz" => 1, 'operator' => 'ISNULL', 'value' => '1'];
+
+            self::assertSame([1, 3, 4, 6, 7, 8], self::selected($db, self::sql([$cond], [], 0)), 'JOIN');
+            self::assertSame([1, 3, 4, 6, 7, 8], self::selected($db, self::sql([$cond], [], 3)), 'subquery');
+        }
+
+        /** SQLite with items 1-8 and these content rows [item, field, number, text] */
+        private static function sqlite(array $rows): \PDO
+        {
+            $db = new \PDO('sqlite::memory:');
             $db->exec('CREATE TABLE item (id INTEGER PRIMARY KEY)');
             $db->exec('CREATE TABLE content (item_id INTEGER, field_id TEXT, number INTEGER, text TEXT)');
             $db->exec('INSERT INTO item (id) VALUES (1), (2), (3), (4), (5), (6), (7), (8)');
-            $insert = $db->prepare('INSERT INTO content (item_id, field_id, text) VALUES (?, ?, ?)');
-            foreach ([[2, ''], [3, null], [4, 'x'], [5, 'y'], [6, 'x'], [6, 'y'], [7, 'y'], [7, '']] as [$item, $text]) {
-                $insert->execute([$item, $field, $text]);
+            $insert = $db->prepare('INSERT INTO content (item_id, field_id, number, text) VALUES (?, ?, ?, ?)');
+            foreach ($rows as $row) {
+                $insert->execute($row);
             }
-            $insert->execute([8, 'headline........', 'x']);
+            return $db;
+        }
 
-            // the content part only: the joins and the conditions after the bin's dates
-            $items = static function (string $sql) use ($db): array {
-                preg_match("/ FROM item (.*?) ?WHERE .* item\\.expiry_date > '\\d+' (.*) ORDER BY /", $sql, $m);
-                return $db->query("SELECT DISTINCT item.id FROM item $m[1] WHERE 1=1 $m[2] ORDER BY item.id")->fetchAll(\PDO::FETCH_COLUMN);
-            };
-            self::assertSame($expected, $items(self::sql([$cond], [], 0)), 'JOIN');
-            self::assertSame($expected, $items(self::sql([$cond], [], 3)), 'subquery');
+        /** items the query selects - only its content part runs: the joins and the conditions after the bin's dates */
+        private static function selected(\PDO $db, string $sql): array
+        {
+            preg_match("/ FROM item (.*?) ?WHERE .* item\\.expiry_date > '\\d+' (.*) ORDER BY /", $sql, $m);
+            return $db->query("SELECT DISTINCT item.id FROM item $m[1] WHERE 1=1 $m[2] ORDER BY item.id")->fetchAll(\PDO::FETCH_COLUMN);
         }
 
         public static function missingMatches(): array
