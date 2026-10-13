@@ -68,8 +68,9 @@ class ScheduleAaTasks implements LaterInterface
 
         $toexecute->laterOnce(new Post2shtmlCleanup(now() - (60 * 60 * 24 * 40)), [], "Post2shtmlCleanup", 10, now() + (60 * 60 * 24));
 
-        // OPTIMIZE TABLE over the AA tables once a week - was the misc/optimize.php cron entry until 2026-09
-        $toexecute->laterOnce(new OptimizeTables(), [], 'OptimizeTables', 10, now() + (60 * 60 * 24 * 7));
+        // OPTIMIZE TABLE over the AA tables in the Sunday night
+        $optimize_at = OptimizeTables::weeklyAt(now(), constant('DB_NAME'));
+        $toexecute->laterOnce(new OptimizeTables([], OptimizeTables::everyTable($optimize_at)), [], 'OptimizeTables', 10, $optimize_at);
 
         $toexecute->laterOnce(new ToexecuteCleanup(), [], "ToexecuteCleanup", 10, now() + (60 * 60 * 24));
 
