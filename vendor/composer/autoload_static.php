@@ -469,6 +469,7 @@ class ComposerStaticInit17cbdb6b6f147d0a4bf02d28862f205a
         'AA\\Optimize\\CheckImportStores' => __DIR__ . '/../..' . '/src/Optimize/CheckImportStores.php',
         'AA\\Optimize\\CheckImports' => __DIR__ . '/../..' . '/src/Optimize/CheckImports.php',
         'AA\\Optimize\\CheckInstallRuns' => __DIR__ . '/../..' . '/src/Optimize/CheckInstallRuns.php',
+        'AA\\Optimize\\CheckItemEditsWithoutPermission' => __DIR__ . '/../..' . '/src/Optimize/CheckItemEditsWithoutPermission.php',
         'AA\\Optimize\\CheckObjectFormRefusals' => __DIR__ . '/../..' . '/src/Optimize/CheckObjectFormRefusals.php',
         'AA\\Optimize\\CheckPhpFatals' => __DIR__ . '/../..' . '/src/Optimize/CheckPhpFatals.php',
         'AA\\Optimize\\CheckQueue' => __DIR__ . '/../..' . '/src/Optimize/CheckQueue.php',

@@ -11,6 +11,7 @@ namespace AA\IO\Grabber;
 
 use AA\FormArray;
 use AA\Optimize\CheckAnonymousEditRefusals;
+use AA\Optimize\CheckItemEditsWithoutPermission;
 use AA\Util\LogOnce;
 use AA\Widget\PwdWidget;
 use AA\Widget\TfaWidget;
@@ -301,6 +302,7 @@ class Form extends AbstractGrabber
                 continue;
             }
             $anonymous_edit = $anonymous && $oldcontent4id;
+            $set_fields     = [];
 
             foreach ($item_fields as $dirty_field_id => $val_array) {
                 // create full_text......1 from full_text______1
@@ -332,12 +334,16 @@ class Form extends AbstractGrabber
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
                 }
                 $item->setAaValue($field_id, $aa_value);
+                $set_fields[] = $field_id;
             }
             // in another slice its fields would be checked by that slice - the item stays where it is
             $moved_to = (string) $item->getValue('slice_id........');
             if ($anonymous_edit && ($moved_to !== '') && ($moved_to !== pack_id($item_slice_id))) {
                 self::refused($item_slice_id, 'slice_id........', $dirty_item_id[0]);
                 $item->setAaValue('slice_id........', new AA_Value(pack_id($item_slice_id)));
+            }
+            if ($oldcontent4id) {
+                $this->recordEditWithoutPermission($item_slice_id, $oldcontent4id, $set_fields, $dirty_item_id[0]);
             }
             $this->_items[] = [$item, $store_mode];
         }
@@ -351,6 +357,39 @@ class Form extends AbstractGrabber
         $oldcontent4id = new ItemContent();
         $oldcontent4id->setByItemID(new zids($item_id), true);     // ignore password
         return $oldcontent4id;
+    }
+
+    /** Who changes an existing item without the right to edit it in the admin: "anonymous", "own" (a
+     *  reader's own record or an item they wrote) or "user"; '' for an editor. Nothing is refused yet -
+     *  the log shows which sites rely on such edits before the permission is enforced.
+     */
+    protected function editorClass(string $slice_id, ItemContent $stored): string
+    {
+        if (self::anonymous()) {
+            return 'anonymous';
+        }
+        $uid = AuthGetUid();
+        if (IfSlPerm(PS_EDIT_ALL_ITEMS, $slice_id)) {
+            return '';
+        }
+        $own = ($uid === $stored->getItemID()) || ($uid === (string) $stored->getValue('posted_by.......'));
+        if ($own && IfSlPerm(PS_EDIT_SELF_ITEMS, $slice_id)) {
+            return '';
+        }
+        return $own ? 'own' : 'user';
+    }
+
+    /** logged once a day per slice, kind of editor and field - never the values */
+    private function recordEditWithoutPermission(string $slice_id, ItemContent $stored, array $fields, string $mode): void
+    {
+        $fields = array_unique(array_diff($fields, ['slice_id........']));
+        if (!$fields || (($editor = $this->editorClass($slice_id, $stored)) === '')) {
+            return;
+        }
+        // a row per field, not per set of fields - the sets a request can post are not bounded
+        foreach ($fields as $field_id) {
+            LogOnce::daily(CheckItemEditsWithoutPermission::EVENT, ParamImplode([$slice_id, $editor, $field_id]), [$mode, basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''))]);
+        }
     }
 
     /** No user is logged in. filler.php opens the session only when the visitor has its cookie, so

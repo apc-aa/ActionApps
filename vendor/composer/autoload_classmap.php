@@ -326,6 +326,7 @@ return array(
     'AA\\Optimize\\CheckImportStores' => $baseDir . '/src/Optimize/CheckImportStores.php',
     'AA\\Optimize\\CheckImports' => $baseDir . '/src/Optimize/CheckImports.php',
     'AA\\Optimize\\CheckInstallRuns' => $baseDir . '/src/Optimize/CheckInstallRuns.php',
+    'AA\\Optimize\\CheckItemEditsWithoutPermission' => $baseDir . '/src/Optimize/CheckItemEditsWithoutPermission.php',
     'AA\\Optimize\\CheckObjectFormRefusals' => $baseDir . '/src/Optimize/CheckObjectFormRefusals.php',
     'AA\\Optimize\\CheckPhpFatals' => $baseDir . '/src/Optimize/CheckPhpFatals.php',
     'AA\\Optimize\\CheckQueue' => $baseDir . '/src/Optimize/CheckQueue.php',

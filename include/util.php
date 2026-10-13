@@ -694,23 +694,21 @@ function GetConstants($group, $order = 'pri', $column = 'name', $keycolumn = 'va
 
     $const_fields = ['id' => 1,'group_id' => 1,'name' => 1,'value' => 1,'class' => 1,'pri' => 1,'ancestors' => 1,'description' => 1,'short_id' => 1];
 
-    if ($const_fields[$db_order]) {
-        $order_by  = "ORDER BY $db_order";
+    if (!isset($const_fields[$db_order])) {
+        $db_order = '';
     }
-    if (!$const_fields[$db_column]) {
+    if (!isset($const_fields[$db_column])) {
         $db_column    = 'name';
         $column    = 'name';
     }
-    if (!$const_fields[$db_keycolumn]) {
+    if (!isset($const_fields[$db_keycolumn])) {
         $db_keycolumn = 'value';
         $keycolumn = 'value';
     }
     $fields = ($db_column === $db_keycolumn ? $db_column : "$db_keycolumn, $db_column");
 
-    $SQL = "SELECT $fields FROM constant WHERE group_id='$group' $order_by";
-
     // constants are a lookup table - the same read repeats many times per request
-    return AA::Contentcache()->get_result('GetConstantsFromDb', [$SQL, $column, $keycolumn]);
+    return AA::Contentcache()->get_result('GetConstantsFromDb', [(string) $group, $fields, $db_order, $column, $keycolumn]);
 }
 
 /** Call after ANY write to the `constant` table. GetConstants(), GetConstantContent() and
@@ -723,26 +721,26 @@ function ConstantsChanged(): void
     AA::Contentcache()->clear_soft();
 }
 
-/** Reads the rows for GetConstants() - separate function, so the result can be cached */
-function GetConstantsFromDb(string $SQL, string $column, string $keycolumn): array
+/** Reads the rows for GetConstants() - separate function, so the result can be cached.
+ *  $fields and $order are checked column names (GetConstants()); the group comes from templates.
+ */
+function GetConstantsFromDb(string $group, string $fields, string $order, string $column, string $keycolumn): array
 {
-    $db = getDB();
-    $db->query($SQL);
+    $rows = DB_AA::select([], "SELECT $fields FROM constant", [['group_id', $group]], $order ? [$order] : null);
 
     $already_key = [];
     $arr = [];
-    while ($db->next_record()) {
-        $key = GrabConstantColumn($db, $keycolumn);
+    foreach ($rows as $row) {
+        $key = GrabConstantColumn($row, $keycolumn);
         $key = $key['value'];
         // generate unique keys by adding space
-        while ($already_key[$key]) {
+        while (isset($already_key[$key])) {
             $key .= ' ';                   // add space in order we get unique keys
         }
         $already_key[$key] = true;       // mark the $key
-        $val               = GrabConstantColumn($db, $column);
+        $val               = GrabConstantColumn($row, $column);
         $arr[$key]         = $val['value'];
     }
-    freeDB($db);
     return $arr;
 }
 
@@ -1139,19 +1137,19 @@ function GetItemContentMinimal(zids $zids, $fields2get = false): array
 
 /**
  */
-function GrabConstantColumn($db, $column): array
+function GrabConstantColumn(array $row, $column): array
 {
     return match ($column) {
-        "name"        => ["value" => $db->f("name")],
-        "value"       => ["value" => $db->f("value"), "flag" => FLAG_HTML],
-        "pri"         => ["value" => $db->f("pri")],
-        "group"       => ["value" => $db->f("group_id")],
-        "class"       => ["value" => $db->f("class")],
+        "name"        => ["value" => $row["name"]],
+        "value"       => ["value" => $row["value"], "flag" => FLAG_HTML],
+        "pri"         => ["value" => $row["pri"]],
+        "group"       => ["value" => $row["group_id"]],
+        "class"       => ["value" => $row["class"]],
         // "counter"  => ["value" => $i++],
-        "id"          => ["value" => unpack_id($db->f("id"))],
-        "description" => ["value" => $db->f("description"), "flag" => FLAG_HTML],
-        "short_id"    => ["value" => $db->f("short_id")],
-        "level"       => ["value" => strlen((string) $db->f("ancestors")) / 16],
+        "id"          => ["value" => unpack_id($row["id"])],
+        "description" => ["value" => $row["description"], "flag" => FLAG_HTML],
+        "short_id"    => ["value" => $row["short_id"]],
+        "level"       => ["value" => strlen((string) $row["ancestors"]) / 16],
         default       => [],
     };
 }
@@ -1177,24 +1175,21 @@ function GetConstantContent(zids $zids): array
 /** Reads the rows for GetConstantContent() - separate function, so the result can be cached */
 function GetConstantContentFromDb(string $SQL): array
 {
-    $db = getDB();
-    $db->query($SQL);
     $content = [];
     $i = 1;
-    while ($db->next_record()) {
-        $coid = $db->f('short_id');
-        $content[$coid]["const_name"][]        = GrabConstantColumn($db, "name");
-        $content[$coid]["const_value"][]       = GrabConstantColumn($db, "value");
-        $content[$coid]["const_pri"][]         = GrabConstantColumn($db, "pri");
-        $content[$coid]["const_group"][]       = GrabConstantColumn($db, "group");
-        $content[$coid]["const_class"][]       = GrabConstantColumn($db, "class");
+    foreach (DB_AA::select([], $SQL) as $row) {
+        $coid = $row['short_id'];
+        $content[$coid]["const_name"][]        = GrabConstantColumn($row, "name");
+        $content[$coid]["const_value"][]       = GrabConstantColumn($row, "value");
+        $content[$coid]["const_pri"][]         = GrabConstantColumn($row, "pri");
+        $content[$coid]["const_group"][]       = GrabConstantColumn($row, "group");
+        $content[$coid]["const_class"][]       = GrabConstantColumn($row, "class");
         $content[$coid]["const_counter"][]     = $i++;
-        $content[$coid]["const_id"][]          = GrabConstantColumn($db, "id");
-        $content[$coid]["const_description"][] = GrabConstantColumn($db, "description");
-        $content[$coid]["const_short_id"][]    = GrabConstantColumn($db, "short_id");
-        $content[$coid]["const_level"][]       = GrabConstantColumn($db, "level");
+        $content[$coid]["const_id"][]          = GrabConstantColumn($row, "id");
+        $content[$coid]["const_description"][] = GrabConstantColumn($row, "description");
+        $content[$coid]["const_short_id"][]    = GrabConstantColumn($row, "short_id");
+        $content[$coid]["const_level"][]       = GrabConstantColumn($row, "level");
     }
-    freeDB($db);
 
     return $content;
 }

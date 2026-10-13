@@ -130,9 +130,15 @@ class AA_Auth extends Auth
         if ($uid && !defined('AA_TOKEN_ENTRY') && AppStore::isPublic((string) $uid)) {
             $uid = false;
         }
+        $before = $this->auth['uid'] ?? '';
         $this->auth['uname'] = $uid ? $username : '';
         $this->auth['uid']   = $uid ?: '';
         AA_Log::write('LOGIN', AA_Log::context($uid), $username);
+        // a session id known before the login (planted cookie, a shared device) must not become the logged-in one;
+        // the free login of init_page.php repeats on every request - a new id each time would break parallel requests
+        if ($uid && ($uid !== $before) && (session_status() === PHP_SESSION_ACTIVE) && !headers_sent()) {
+            session_regenerate_id(true);
+        }
         return $uid;
     }
 
