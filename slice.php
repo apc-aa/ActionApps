@@ -548,7 +548,8 @@ if ($mlxslice) {
 }
 
 
-if (!is_object($scr)) {
+// a scroller from the session without page size would list nothing - start a new one
+if (!is_object($scr) || ($scr->getListlen() < 1)) {
     $sess->register('scr');
     $scr_url_param = get_url(($scr_url ? StateUrl("$scr_url") : MyUrl($encap, $scr_url)), is_array($als) ? ['als' => $als] : '');
     $scr = new AA_Scroller_Easy('scr', $slice_info['d_listlen'], $zids->count(), $scr_url_param);

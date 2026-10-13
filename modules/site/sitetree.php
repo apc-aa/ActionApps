@@ -322,7 +322,7 @@ class sitetree
     public function __unserialize(array $data): void
     {
         $this->assignUnserializedData($data);
-        $this->current_id  = $data[$this->getSerializedProperty('current_id')]  ??  $this->start_id;
+        $this->current_id ??= $this->start_id;
     }
 
     /** Limits of a tree fromArray() accepts - it is the gate of the aa-app import, the data untrusted */

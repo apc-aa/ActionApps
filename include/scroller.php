@@ -97,9 +97,9 @@ class AA_Scroller extends AA_Storable {
     public function __unserialize(array $data): void
     {
         $this->assignUnserializedData($data);
-        $this->itmcnt  = $data[$this->getSerializedProperty('itmcnt')]  ??  0;
-        $this->listlen = $data[$this->getSerializedProperty('listlen')] ??  0;
-        $this->current = $data[$this->getSerializedProperty('current')] ??  1;
+        $this->itmcnt  ??= 0;
+        $this->listlen ??= 0;
+        $this->current ??= 1;
     }
 
     /** setShowAll function

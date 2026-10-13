@@ -196,6 +196,18 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(['x' => 'x'], $legacy->isOption(2));
         }
 
+        /** the template has no current_id at all - it starts at the start spot */
+        public function test_unserialize_keeps_the_current_spot(): void
+        {
+            $tree = self::site();
+            $tree->setCurrentId(5);
+
+            $stored = unserialize(serialize($tree), ['allowed_classes' => ['sitetree', 'spot']]);
+
+            $this->assertSame(5, $stored->getCurrentId());
+            $this->assertSame(1, self::template()->getCurrentId());
+        }
+
         /** A structure as production sites have it (19 of 54 measured): NULL entries in the tree - get(),
          *  set(), removeSpot(), move() take `& $this->tree[$id]` of ids that no longer exist - ids as "10"
          *  and 5, gaps in the keys of po, choices keyed from 2, the private / protected property names */
