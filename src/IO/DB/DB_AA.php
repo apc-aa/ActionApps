@@ -389,6 +389,7 @@ final class DB_AA
      *     set      - flag is set       fld & val = val  single             ['flag', REL_FLAG_FEED, 'set'] - good for bitfields
      *     unset    - flag is not set   fld & val = 0    single             ['flag', 64, 'unset'] - good for bitfields
      *     j        - JOIN              =                single             ['slice.id', 'module.id', 'j'] - for table join  (SELECT ... FROM `slice`, `module`', '', [['slice.id', 'module.id', 'j'], a..
+     *     j>       - column            >                single             ['publish_date', 'post_date', 'j>'] - compares two columns (a name from code, never input); also j<, j>=, j<=
      *     >        - integer           >                single             ['date', 1478547854, '>']
      *     <        - integer           <                single             ['date', 1478547854, '<']
      *     >=       - integer           >=               single             ['date', 1478547854, '>=']
@@ -421,6 +422,10 @@ final class DB_AA
             if (in_array($type, ['>', '<', '<=', '>=', '<>', 'i<>', '!='])) {
                 $operator = $type === 'i<>' ? '<>' : $type;
                 $type = 'i';
+            } elseif (in_array($type, ['j>', 'j<', 'j>=', 'j<='], true)) {
+                // $value is a column name - anything else matches nothing rather than reach the SQL
+                $where[] = preg_match('/^\w+(\.\w+)?\z/', (string) $value) ? "$name " . substr($type, 1) . " $value" : '2=1';
+                continue;
             } elseif ($type === 'LIKE' || $type === 'NOT LIKE') {
                 $where[] = "$name $type '" . addcslashes($value, "'") . "'";    // see field LIKE '\_%'
                 continue;

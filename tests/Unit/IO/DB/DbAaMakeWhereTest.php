@@ -69,6 +69,13 @@ final class DbAaMakeWhereTest extends TestCase
         $this->assertSame('WHERE age > 18', DB_AA::makeWhere([['age', 18, '>']]));
     }
 
+    public function test_column_comparison_names_the_other_column(): void
+    {
+        $this->assertSame('WHERE publish_date > post_date', DB_AA::makeWhere([['publish_date', 'post_date', 'j>']]));
+        $this->assertSame('WHERE a <= item.b', DB_AA::makeWhere([['a', 'item.b', 'j<=']]));
+        $this->assertSame('WHERE 2=1', DB_AA::makeWhere([['a', '0 OR 1=1', 'j>']]), 'not a column name');
+    }
+
     public function test_array_value_becomes_escaped_in_list(): void
     {
         $this->assertSame(

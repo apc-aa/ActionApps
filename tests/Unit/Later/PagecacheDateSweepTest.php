@@ -71,11 +71,11 @@ final class PagecacheDateSweepTest extends TestCase
     public function test_where_list_selects_active_items_in_the_half_open_window(): void
     {
         $where = PagecacheDateSweep::whereFor('expiry_date', 100, 200);
-        $this->assertSame([['status_code', 1, 'i'], ['expiry_date', 100, '>'], ['expiry_date', 200, '<=']], $where);
         $this->assertSame(
-            'WHERE status_code = 1 AND expiry_date > 100 AND expiry_date <= 200',
+            'WHERE status_code = 1 AND expiry_date > 100 AND expiry_date <= 200 AND expiry_date > post_date',
             DB_AA::makeWhere($where),
-            'E = cutoff is processed now, E = from was fully covered by earlier runs / is no longer served',
+            'E = cutoff is processed now, E = from was fully covered by earlier runs / is no longer served; '
+            . 'a date reached at creation (a comment: publish_date = post_date) was invalidated by storeItem() then',
         );
     }
 
