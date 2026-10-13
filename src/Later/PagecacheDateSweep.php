@@ -55,6 +55,12 @@ use AA_Slice;
  * any more, so nothing is lost between runs, after a cron outage or when two
  * runners overlap.
  *
+ * Only dates after the item's post_date count: a date the item had reached when it
+ * was created needs no sweep, creating it invalidated the slice (storeItem()). A
+ * comment is published the moment it is posted, and sweeping it would delete the
+ * pages rendered since - on a busy discussion every page twice. (post_date, not
+ * last_edit: last_edit is NULL on items inserted without that field.)
+ *
  * The bound is the real date value, whatever the time of day: every render path
  * switches the item at E at the latest (CreateBinCondition() rounds `now` UP to
  * QUERY_DATE_STEP, so it switches even earlier), and a render that started before
@@ -72,6 +78,10 @@ use AA_Slice;
  *  - a fragment cached at DB level for CACHE_TTL ({dictionary:...} pairs) can be
  *    stale when a page is rendered after the transition but before the sweep
  *  - a render taking longer than SETTLE is stored past the bound and survives
+ *  - a render that read the slice before an item was created and is stored after
+ *    the creation invalidated the slice lacks the item - as after any other write
+ *  - post_date is set on insert only; an edit or import moving it past a pending
+ *    publish / expiry date hides that transition from the sweep
  *
  * Scheduled from ScheduleAaTasks every PAGECACHE_DATE_SWEEP_INTERVAL seconds
  * (effective period: interval + up to two cron ticks, measured from completion).
@@ -149,10 +159,11 @@ class PagecacheDateSweep implements LaterInterface
         return [max($cutoff - $ttl, $min_stored - $settle), $cutoff];
     }
 
-    /** DB_AA where-list selecting active items whose $column lies in ($from, $cutoff] */
+    /** DB_AA where-list selecting active items whose $column lies in ($from, $cutoff]
+     *  and after their post_date (see the class comment) */
     public static function whereFor(string $column, int $from, int $cutoff): array
     {
-        return [['status_code', 1, 'i'], [$column, $from, '>'], [$column, $cutoff, '<=']];
+        return [['status_code', 1, 'i'], [$column, $from, '>'], [$column, $cutoff, '<='], [$column, 'post_date', 'j>']];
     }
 
     /** Which transitions change visibility on a slice - mirrors CreateBinCondition():

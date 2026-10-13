@@ -187,6 +187,15 @@ class InputVars
         return (is_string($msg) && trim($msg) !== '') ? \MsgOk(Txt::safe($msg)) : '';
     }
 
+    /** $_REQUEST[$name], but never a cookie - PHP puts cookies there when request_order holds C
+     *  (ECN servers: GPC, so a cookie even beats the URL parameter). Unchecked, arrays too ({qs:}).
+     */
+    public static function request(string $name): mixed
+    {
+        // not just GET/POST: AA code stores into $_REQUEST too (site.php nocache, filler ok_url)
+        return isset($_COOKIE[$name]) ? ($_POST[$name] ?? $_GET[$name] ?? null) : ($_REQUEST[$name] ?? null);
+    }
+
     // --- General function ---
 
     /** function addslashes enhanced by array processing

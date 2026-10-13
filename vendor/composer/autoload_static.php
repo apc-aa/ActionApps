@@ -462,6 +462,7 @@ class ComposerStaticInit17cbdb6b6f147d0a4bf02d28862f205a
         'AA\\Optimize\\CheckBlockedRequests' => __DIR__ . '/../..' . '/src/Optimize/CheckBlockedRequests.php',
         'AA\\Optimize\\CheckCentralCredentials' => __DIR__ . '/../..' . '/src/Optimize/CheckCentralCredentials.php',
         'AA\\Optimize\\CheckCkeditorUse' => __DIR__ . '/../..' . '/src/Optimize/CheckCkeditorUse.php',
+        'AA\\Optimize\\CheckCookieReads' => __DIR__ . '/../..' . '/src/Optimize/CheckCookieReads.php',
         'AA\\Optimize\\CheckCron' => __DIR__ . '/../..' . '/src/Optimize/CheckCron.php',
         'AA\\Optimize\\CheckEnvironment' => __DIR__ . '/../..' . '/src/Optimize/CheckEnvironment.php',
         'AA\\Optimize\\CheckHttp' => __DIR__ . '/../..' . '/src/Optimize/CheckHttp.php',

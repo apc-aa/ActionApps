@@ -459,8 +459,11 @@ class itemview
         $cookie = new CookieManager();
         $js     = '';
         foreach (['d_author', 'd_e_mail', 'd_url_address', 'd_url_description'] as $form_field) {
-            if ($value = $cookie->get($form_field)) {
-                $js .= "setControl('f','$form_field',\"$value\");\n";
+            if (is_string($value = $cookie->get($form_field)) && $value !== '') {
+                // anyone can set these cookies (filldisc.php takes any POST) - a JS string, never raw.
+                // json_encode() wants UTF-8 and writes the rest as \u escapes, right in any page charset.
+                $value = (AA::$encoding && strcasecmp((string) AA::$encoding, 'utf-8')) ? (string) ConvertEncoding($value, AA::$encoding) : $value;
+                $js   .= "setControl('f','$form_field'," . json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_INVALID_UTF8_SUBSTITUTE) . ");\n";
             }
         }
         if ($js) {

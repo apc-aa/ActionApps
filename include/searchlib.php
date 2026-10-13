@@ -1987,9 +1987,9 @@ class QueryZidsHelper
             if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
                 $on = "$tbl.item_id=item.id $addjoincond$langcond";
             } elseif (str_contains($cond_flds, ',')) {     // $field_count > 1
-                $on = "$tbl.item_id=item.id AND ($tbl.field_id IN ($cond_flds) $selcondadd$langcond)$addjoincond";
+                $on = "$tbl.item_id=item.id$langcond AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond";
             } else {
-                $on = "$tbl.item_id=item.id AND ($tbl.field_id=$cond_flds $selcondadd$langcond)$addjoincond";
+                $on = "$tbl.item_id=item.id$langcond AND ($tbl.field_id=$cond_flds $selcondadd)$addjoincond";
                 // mark this field as sortable (store without apostrofs)
                 $this->sortable[str_replace("'", "", $cond_flds)] = $tbl;
             }
@@ -1999,11 +1999,11 @@ class QueryZidsHelper
     }
 
     /** select_tabs, select_conds and DISTINCT; with a LIMIT, content joined only for a condition
-     *  is an EXISTS subquery instead
+     *  is a subquery instead
      *  A joined multi-value field repeats the item, so the query needs DISTINCT, and DISTINCT makes
      *  MySQL build the whole result before it applies LIMIT - 0.1-0.7 s on a slice of 100 000 items
-     *  (ekolist.cz). EXISTS cannot repeat the item, so MySQL reads the items in the order and stops
-     *  at the LIMIT (10-20 ms). The rows stay the same; items tied in the ORDER BY may come in
+     *  (ekolist.cz). A subquery cannot repeat the item, so MySQL reads the items in the order and
+     *  stops at the LIMIT (10-20 ms). The rows stay the same; items tied in the ORDER BY may come in
      *  another order, as SQL leaves it undefined.
      * @return array{0: string[], 1: string[], 2: string}
      */
@@ -2015,10 +2015,15 @@ class QueryZidsHelper
             return [$tabs, $conds, 'DISTINCT '];
         }
         foreach ($this->semijoins as $tbl => [$on, $matches_missing]) {
-            $rows        = "SELECT 1 FROM content AS $tbl WHERE $on";
+            // "no value, or one that matches" is a scalar subquery, looked up by index item by item:
+            // EXISTS ... OR NOT EXISTS ... MariaDB turns into IN subqueries materialized over the whole
+            // field (ekolist.cz: 334 ms against 21 ms). No row gives NULL = no value = a match; IS TRUE
+            // makes a row whose condition is NULL a value that does not match, as EXISTS had it.
+            // A condition on the value stays EXISTS, so the optimizer can start from the few items
+            // with a rare value (10 ms, as a scalar subquery 356 ms).
             $conds[$tbl] = $matches_missing
-                ? "(EXISTS ($rows AND $conds[$tbl]) OR NOT EXISTS ($rows))"
-                : "EXISTS ($rows AND $conds[$tbl])";
+                ? "(COALESCE((SELECT MAX(($conds[$tbl]) IS TRUE) FROM content AS $tbl WHERE $on), 1) = 1)"
+                : "EXISTS (SELECT 1 FROM content AS $tbl WHERE $on AND $conds[$tbl])";
             unset($tabs[$tbl]);
         }
         return [$tabs, $conds, $tabs ? 'DISTINCT ' : ''];

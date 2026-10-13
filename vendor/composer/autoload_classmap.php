@@ -319,6 +319,7 @@ return array(
     'AA\\Optimize\\CheckBlockedRequests' => $baseDir . '/src/Optimize/CheckBlockedRequests.php',
     'AA\\Optimize\\CheckCentralCredentials' => $baseDir . '/src/Optimize/CheckCentralCredentials.php',
     'AA\\Optimize\\CheckCkeditorUse' => $baseDir . '/src/Optimize/CheckCkeditorUse.php',
+    'AA\\Optimize\\CheckCookieReads' => $baseDir . '/src/Optimize/CheckCookieReads.php',
     'AA\\Optimize\\CheckCron' => $baseDir . '/src/Optimize/CheckCron.php',
     'AA\\Optimize\\CheckEnvironment' => $baseDir . '/src/Optimize/CheckEnvironment.php',
     'AA\\Optimize\\CheckHttp' => $baseDir . '/src/Optimize/CheckHttp.php',

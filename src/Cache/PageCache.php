@@ -46,7 +46,7 @@ use Mobile_Detect;
  *      str2find text NOT NULL,    (string used to find record on manual invalidate cache record - could be keystring)
  *      content mediumtext,        (cached information)
  *      stored bigint,             (timestamp of information storing)
- *      flag int,                  (flag - not used for now)
+ *      flag int,                  (FLAG_VARY = the row holds cookie names, see storeVaried())
  *     PRIMARY KEY (id), KEY (stored)
  *   );
  */
@@ -56,6 +56,17 @@ class PageCache
     private int $cacheTime     = 600; // number of seconds to store cached information
 
     private bool $cache_nostore = false; // if true, the cache is not stored (used for {user:xxxx} alias)
+
+    /** Cookies this request's render read: name => value at the first read. One set for the
+     *  whole request - an expansion memoized earlier in it is not read again. */
+    private static array $cookies_read = [];
+
+    /** pagecache.flag: the row holds the cookie names of a varied page, not content */
+    private const FLAG_VARY = 1;
+
+    /** $cookies_read names of whole jars; cookie() refuses names starting with NUL */
+    private const ALL_COOKIES = "\0all";
+    private const FORWARDED   = "\0forwarded";
 
     /**
      * Exact-match tracker/analytics parameter and cookie names that must NOT
@@ -222,8 +233,11 @@ class PageCache
     /** static getKeystring function
      *  Return string to use in keystr for cache if could do a stringexpand
      *  Returns part of keystring
+     *
+     * @param bool $with_cookies false for keys of getVaried()/storeVaried(), which add only
+     *                           the cookies the render read
      */
-    public static function globalKeyArray(): array
+    public static function globalKeyArray(bool $with_cookies = true): array
     {
         // valid just for one domain (there are sites, where content is based also on domain - enviro.example.org, culture.example.org, ... )
         $ks = ['host' => (str_starts_with($host = $_SERVER['HTTP_HOST'], 'www.')) ? substr($host, 4) : $host];
@@ -237,20 +251,9 @@ class PageCache
             $ks['slice_pwd'] = $GLOBALS['slice_pwd'];
         }
 
-        if (isset($_COOKIE)) {
-            // Skip:
-            //   - cookies starting with `_` (Google urchin, GA, FB pixel, HubSpot __h*, …)
-            //   - the AA session cookie (must not segment public cache)
-            //   - tracker cookies without underscore prefix (DoubleClick IDE/NID/1P_JAR/DSID)
-            // Direct const isset() instead of isIgnoredParam(): no cookie name uses
-            // the utm_ prefix family, so we save a function call per cookie.
-            foreach ($_COOKIE as $key => $val) {
-                // Empty-string keys are possible from malformed Cookie headers
-                // ("Cookie: =v"); guard $key[0] from emitting an offset warning.
-                if ($key === '' || $key[0] === '_' || $key === 'AA_Session' || isset(self::IGNORED_PARAMS_EXACT[$key])) {
-                    continue;
-                }
-                $ks["C$key"] = $val;
+        if ($with_cookies) {
+            foreach (self::keyCookies($_COOKIE) as $name => $value) {
+                $ks["C$name"] = $value;
             }
         }
 
@@ -266,6 +269,105 @@ class PageCache
         return $ks;
     }
 
+    /** The cookies that may change a page (name => value) */
+    private static function keyCookies(array $cookies): array
+    {
+        $ks = [];
+        // Skip:
+        //   - cookies starting with `_` (Google urchin, GA, FB pixel, HubSpot __h*, …)
+        //   - the AA session cookie (must not segment public cache)
+        //   - tracker cookies without underscore prefix (DoubleClick IDE/NID/1P_JAR/DSID)
+        // Direct const isset() instead of isIgnoredParam(): no cookie name uses
+        // the utm_ prefix family, so we save a function call per cookie.
+        foreach ($cookies as $key => $val) {
+            // Empty-string keys are possible from malformed Cookie headers
+            // ("Cookie: =v"); guard $key[0] from emitting an offset warning.
+            $key = (string) $key;
+            if ($key === '' || $key[0] === '_' || $key === 'AA_Session' || isset(self::IGNORED_PARAMS_EXACT[$key])) {
+                continue;
+            }
+            $ks[$key] = $val;
+        }
+        return $ks;
+    }
+
+    /** The one way rendering code reads a cookie. Cookies are not part of the site page-cache
+     *  key; each one read here becomes part of it, with the value it had (see storeVaried()).
+     *
+     * @return array|string|null null = the browser did not send it
+     */
+    public static function cookie(string $name): array|string|null
+    {
+        return str_starts_with($name, "\0") ? null : self::read($name);
+    }
+
+    /** All cookies - the page then varies on every one */
+    public static function cookies(): array
+    {
+        return self::read(self::ALL_COOKIES);
+    }
+
+    /** Cookies a local {include} passes on: those that may change a page and the session, whose
+     *  user is in the site key ($auth4cache). Analytics cookies stay home - a page varying on
+     *  them would be cached per visitor. */
+    public static function forwardedCookies(): array
+    {
+        $cookies = self::read(self::FORWARDED);
+        if (isset($_COOKIE['AA_Session'])) {
+            $cookies['AA_Session'] = $_COOKIE['AA_Session'];
+            ksort($cookies, SORT_STRING);
+        }
+        return $cookies;
+    }
+
+    private static function read(string $name): mixed
+    {
+        if (!array_key_exists($name, self::$cookies_read)) {
+            $value = match ($name) {
+                self::ALL_COOKIES => $_COOKIE,
+                self::FORWARDED   => self::keyCookies($_COOKIE),
+                default           => $_COOKIE[$name] ?? null,
+            };
+            if (str_starts_with($name, "\0")) {
+                ksort($value, SORT_STRING);   // any order in the header, one variant
+            }
+            self::$cookies_read[$name] = $value;
+        }
+        return self::$cookies_read[$name];
+    }
+
+    /** $_REQUEST without cookies, for a render cached without them - a value read from there
+     *  would be served to everyone. PHP on the ECN servers puts cookies into $_REQUEST, even
+     *  over a URL parameter of the same name (request_order GPC).
+     *
+     * @param ?string $order sources in the order PHP merges them, request_order when null
+     */
+    public static function requestWithoutCookies(?string $order = null): array
+    {
+        $request = [];
+        foreach (str_split($order ?? self::requestOrder()) as $source) {
+            if ($source === 'G') {
+                $request = array_replace_recursive($request, $_GET);
+            } elseif ($source === 'P') {
+                $request = array_replace_recursive($request, $_POST);
+            }
+        }
+        return $request;
+    }
+
+    /** Sources of $_REQUEST in the order PHP merges them, e.g. "GPC" */
+    private static function requestOrder(): string
+    {
+        return strtoupper((string) (ini_get('request_order') ?: ini_get('variables_order')));
+    }
+
+    /** Row id of the content stored for these cookie values (name => value) */
+    public static function variantKey(string $key, array $values): string
+    {
+        ksort($values, SORT_STRING);
+        return get_hash('vary', $key, $values);
+    }
+
     /** get function
      *  Returns cached information or false
      *
@@ -276,22 +378,66 @@ class PageCache
      */
     public function get($key, string $action = 'get'): false|string
     {
+        $row = $this->getRow($key, $action);
+        return $row ? $row['content'] : false;
+    }
+
+    /** get() returning the whole row - content, stored, flag */
+    protected function getRow($key, string $action = 'get'): ?array
+    {
         AA::$debug & 2 && AA::$dbg->log("Pagecache->get(key):$key", 'Pagecache action:' . $action);
 
         if (ENABLE_PAGE_CACHE) {
             if ($action === 'invalidate') {
                 $this->invalidateById($key);
                 AA::$debug & 2 && AA::$dbg->log("Pagecache: return false - invalidating");
-                return false;
+                return null;
             }
 
             if ($action === '1') {  // nocache=1
                 AA::$debug & 2 && AA::$dbg->log("Pagecache: return false - nocache");
-                return false;
+                return null;
             }
-            return $this->getById($key);
+            return $this->rowById($key);
         }
-        return false;
+        return null;
+    }
+
+    /** Content storeVaried() stored under $key for this request's cookies, or false.
+     *  Its rows never use $key itself: an older AA reading the same database would take the
+     *  names row for a page.
+     */
+    public function getVaried(string $key, string $action = 'get'): false|string
+    {
+        $row = $this->getRow($base = get_hash('vary', $key), $action);
+        if ($row && ((int) $row['flag'] & self::FLAG_VARY)) {
+            $names  = unserialize((string) $row['content'], ['allowed_classes' => false]);
+            $values = [];
+            foreach (is_array($names) ? $names : [] as $name) {
+                $values[$name] = self::read((string) $name);   // the page served or rendered now depends on them
+            }
+            $row = $this->getRow(self::variantKey($key, $values), $action);
+        }
+        return $row ? $row['content'] : false;
+    }
+
+    /** Stores $content rendered under $key. When the render read cookies (cookie()), the
+     *  content goes under a row id extended by their values and the names go to a row of
+     *  their own - visitors differing only in other cookies (consent, ads) share the page.
+     *  The names row is written with every variant: it must not expire or be swept before
+     *  them. Names found at the lookup are among the ones read (getVaried()), so no variant
+     *  stored so far becomes unreachable.
+     */
+    public function storeVaried(string $key, string $content, CacheStr2find $str2find, bool $force = false): bool
+    {
+        $base = get_hash('vary', $key);
+        if (!self::$cookies_read) {
+            return $this->store($base, $content, $str2find, $force);
+        }
+        $names = array_keys(self::$cookies_read);
+        sort($names, SORT_STRING);
+        return $this->store(self::variantKey($key, self::$cookies_read), $content, $str2find, $force)
+            && $this->store($base, serialize($names), $str2find, $force, self::FLAG_VARY);
     }
 
     /** cacheDb function
@@ -357,8 +503,14 @@ class PageCache
      */
     public function getById($keyid): false|string
     {
-        $arr   = DB_AA::select1('', 'SELECT stored, content FROM `pagecache`', [['id', $keyid]]);
-        return ($arr && (time() - $this->cacheTime) < $arr['stored']) ? $arr['content'] : false;
+        $row = $this->rowById($keyid);
+        return $row ? $row['content'] : false;
+    }
+
+    private function rowById($keyid): ?array
+    {
+        $arr = DB_AA::select1('', 'SELECT stored, content, flag FROM `pagecache`', [['id', $keyid]]);
+        return ($arr && (time() - $this->cacheTime) < $arr['stored']) ? $arr : null;
     }
 
     /** set function
@@ -372,10 +524,11 @@ class PageCache
      *                                if ENABLE_PAGE_CACHE is false (we use cache for cached
      *                                javascript in admin interface (modules selectbox
      *                                for example), so we need to use cache here)
+     * @param  int            $flag   - pagecache.flag (FLAG_VARY)
      *
      * @return bool
      */
-    public function store($key, $content, $str2find, $force = false): bool
+    public function store($key, $content, $str2find, $force = false, int $flag = 0): bool
     {
         $ret = false;
 
@@ -383,7 +536,7 @@ class PageCache
 
         if ($force || (ENABLE_PAGE_CACHE && !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
             AA::$debug & 2 && AA::$dbg->log("Pagecache->store(): - storing");
-            $varset = new Cvarset([['content', $content], ['stored', time()]]);
+            $varset = new Cvarset([['content', $content], ['stored', time()], ['flag', $flag, 'i']]);
             $varset->addkey('id', 'text', $key);
 
             // true replace mean it calls REPLACE command and no
@@ -429,7 +582,23 @@ class PageCache
     public function getPage($key, $action = 'get'): ?Cacheentry
     {
         $action = (string) $action;
-        $entry = $this->get($key, $action);
+        return self::toEntry($this->get($key, $action), $action);
+    }
+
+    /** storePage() for a key without cookies - see storeVaried() */
+    public function storeVariedPage(string $key, Cacheentry $entry, CacheStr2find $str2find): bool
+    {
+        return $this->storeVaried($key, serialize($entry), $str2find);
+    }
+
+    /** getPage() for a key without cookies - see getVaried() */
+    public function getVariedPage(string $key, string $action = 'get'): ?Cacheentry
+    {
+        return self::toEntry($this->getVaried($key, $action), $action);
+    }
+
+    private static function toEntry(false|string $entry, string $action): ?Cacheentry
+    {
         AA::$debug & 2 && AA::$dbg->log("Pagecache->getPage(output): " . ($entry ? 'cached text' : 'not found'), 'Pagecache action:' . $action);
         return $entry ? unserialize($entry, ['allowed_classes' => [Cacheentry::class]]) : null;
     }
