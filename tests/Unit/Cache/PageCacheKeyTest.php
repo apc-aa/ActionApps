@@ -256,6 +256,17 @@ final class PageCacheKeyTest extends TestCase
         }
     }
 
+    public function test_globalKeyArray_without_cookies_holds_none(): void
+    {
+        $_SERVER['HTTP_HOST'] = 'example.org';
+        $_COOKIE = ['AA_lang' => 'cs', 'euconsent-v2' => 'visitor'];
+
+        $ks = PageCache::globalKeyArray(false);
+
+        $this->assertSame([], preg_grep('/^C/', array_keys($ks)), 'getVaried() adds the cookies the render read');
+        $this->assertSame('example.org', $ks['host']);
+    }
+
     public function test_globalKeyArray_host_strips_www_prefix(): void
     {
         $_SERVER['HTTP_HOST'] = 'www.example.org';

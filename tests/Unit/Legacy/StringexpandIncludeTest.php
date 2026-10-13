@@ -58,6 +58,7 @@ final class StringexpandIncludeTest extends TestCase
         $rename = [
             // the extracted snippet has no `use` line of its own
             'HttpInclude::'           => '\AA\Expand\HttpInclude::',
+            'PageCache::'             => '\AA\Cache\PageCache::',
             'self_server()'           => 'aa_test_self_server()',
             'shtml_query_string()'    => 'aa_test_shtml_query_string()',
             'class AA_Stringexpand_Include extends AA_Stringexpand' => 'class AA_Test_Stringexpand_Include extends AA_Test_Stringexpand',
@@ -72,6 +73,8 @@ final class StringexpandIncludeTest extends TestCase
 
     protected function setUp(): void
     {
+        // each test is a request of its own - forget the cookies read by the previous one
+        (new \ReflectionProperty(\AA\Cache\PageCache::class, 'cookies_read'))->setValue(null, []);
         $_COOKIE    = [];
         $this->http = new FakeHttp([new Response(200, 'the page')]);
         HttpInclude::useHttp($this->http);
@@ -79,6 +82,7 @@ final class StringexpandIncludeTest extends TestCase
 
     protected function tearDown(): void
     {
+        (new \ReflectionProperty(\AA\Cache\PageCache::class, 'cookies_read'))->setValue(null, []);
         HttpInclude::useHttp(null);
     }
 

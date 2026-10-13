@@ -29,6 +29,7 @@
 // Miscellaneous utility functions
 //
 
+use AA\Cache\PageCache;
 use AA\Http\Client;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
@@ -2040,7 +2041,7 @@ class CookieManager
      */
     public function get($name)
     {
-        return $_COOKIE['AA_' . $name];
+        return PageCache::cookie('AA_' . $name);
     }
 }
 

@@ -48,6 +48,9 @@ if (ImgCache::configured() && str_starts_with($_SERVER['REQUEST_URI'], '/' . Img
     exit;
 }
 
+// cookies are not in the cache key - the render reads them only through PageCache::cookie()
+$_REQUEST = PageCache::requestWithoutCookies();
+
 $auth4cache = '';
 if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authenticate new user - we could restrict reader slices later
     pageOpen('nobody');   // define $sess and $auth; login user, if (s)he tries to; "nobody" allowed
@@ -67,16 +70,18 @@ if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authe
 //  28Apr05  - Honza - added also $all_ids, $add_disc, $disc_type, $sh_itm,
 //                     $parent_id, $ids, $sel_ids, $disc_ids - for discussions
 //                      - it is in fact all global variables used in view.php
-// Tracker params (utm_*, gclid, fbclid, ...) and analytics cookies (IDE,
-// NID, ...) are stripped from every key source so identical content does
-// not get cached under thousands of campaign-tagged URLs. See
-// PageCache::IGNORED_PARAMS_EXACT / IGNORED_PARAMS_PREFIX for the list.
+// Tracker params (utm_*, gclid, fbclid, ...) are stripped from every key source
+// so identical content does not get cached under thousands of campaign-tagged
+// URLs. See PageCache::IGNORED_PARAMS_EXACT / IGNORED_PARAMS_PREFIX for the list.
+// Cookies are left out: getVariedPage()/storeVariedPage() add only those the render read, so
+// consent and ad cookies (unique per visitor) do not give everyone a private copy.
+// AA::$debug stands for the aa_debug cookie.
 // $_GET is kept (in addition to REQUEST_URI) because URL-rewrite variables
 // (site_id) only show up in $_GET; *_STRING_UNESCAPED is for the old
 // sitemodule shtml_query_string() path.
 $cache_key = get_hash(
     'site',
-    PageCache::globalKeyArray(),
+    PageCache::globalKeyArray(false),
     PageCache::normalizeRequestUri($_SERVER['REQUEST_URI'] ?? ''),
     $_SERVER['REQUEST_METHOD'] ?? '',
     $_SERVER['REDIRECT_URL'] ?? '',
@@ -86,6 +91,7 @@ $cache_key = get_hash(
     PageCache::filterIgnoredParams($_POST),
     PageCache::filterIgnoredParams($_GET),
     $auth4cache,
+    AA::$debug,
 );
 
 
@@ -95,9 +101,9 @@ $cache_key = get_hash(
 $site_nocache = (((int) $_REQUEST['nocache'] & 1) || isset($_POST['aa']) || (isset($_REQUEST['username']) && isset($_REQUEST['password'])) || $_REQUEST['logout']);
 
 // cookie names only: anyone can add ?debug=2, and the page would show the HttpOnly session id to its scripts
-AA::$debug & 2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:" . var_export(array_diff_key($_REQUEST, $_COOKIE), true) . ", GET:" . var_export($_GET, true) . ", POST:" . var_export($_POST, true) . ", COOKIE:" . implode(', ', array_keys($_COOKIE)));
+AA::$debug & 2 && AA::$dbg->log("Pagecache site_nocache: $site_nocache, REQUEST:" . var_export($_REQUEST, true) . ", GET:" . var_export($_GET, true) . ", POST:" . var_export($_POST, true) . ", COOKIE:" . implode(', ', array_keys($_COOKIE)));
 
-if ($cacheentry = AA::Pagecache()->getPage($cache_key, (string) $site_nocache)) {
+if ($cacheentry = AA::Pagecache()->getVariedPage($cache_key, (string) $site_nocache)) {
     $cacheentry->processPage(true);
     if (AA::$debug) {
         echo '<br><br>Site cache hit!!!';
@@ -366,7 +372,7 @@ if (empty($slices4cache)) {    // can't be combined empty() and assignment = for
 $cached = "not cached ($site_nocache," . array_key_exists('xuid', $apc_state) . ')';
 if (!$site_nocache and (empty($apc_state['xuid']) or ($apc_state['xuid'] === 'nobody'))) {
     $str2find = new CacheStr2find($slices4cache);
-    $cached = AA::Pagecache()->storePage($cache_key, $cacheentry, $str2find) ? "cached ($cache_key)" : 'not cached in storePage';
+    $cached = AA::Pagecache()->storeVariedPage($cache_key, $cacheentry, $str2find) ? "cached ($cache_key)" : 'not cached in storePage';
 }
 
 if (AA::$debug & 2) {

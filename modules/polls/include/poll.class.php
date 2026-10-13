@@ -26,6 +26,7 @@
  * @link      https://www.apc.org/ APC
 */
 
+use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\Util\SingletonTrait;
 
@@ -208,7 +209,7 @@ class AA_Poll
         // checkig for duplicated votes - Cookies method
         if ($this->getProperty('set_cookies') == 1) {
             $cookie = 'AA_Polls_' . $poll_id;   // $this->getProperty('cookies_prefix') // it is not necessary
-            if ($_COOKIE[$cookie] == "1") {
+            if (PageCache::cookie($cookie) == "1") {
                 $vote_invalid = "Cookie";
             } else {
                 setcookie($cookie, "1");

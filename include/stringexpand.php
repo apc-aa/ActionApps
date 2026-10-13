@@ -34,6 +34,7 @@
 // Code by Mitra based on code in existing other files
 
 use AA\Cache\CacheStr2find;
+use AA\Cache\PageCache;
 use AA\Expand\HttpInclude;
 use AA\FormArray;
 use AA\IO\DB\DB_AA;
@@ -1827,7 +1828,11 @@ class AA_Stringexpand_Cookie extends AA_Stringexpand_Nevercache {
      */
     function expand($name=''): string
     {
-        return $name ? ($_COOKIE[$name] ?? '') : json_encode($_COOKIE);
+        if ($name) {
+            return PageCache::cookie($name) ?? '';
+        }
+        AA::Pagecache()->switchCacheNostore();   // the whole jar - session id included - is no page for others
+        return json_encode(PageCache::cookies());
     }
 }
 
@@ -6449,9 +6454,9 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
     // if no http request - add server name
     if (!str_starts_with($filename, 'http://') && !str_starts_with($filename, 'https://')) {
         $filename = self_server(). (($filename[0] === '/') ? '' : '/'). $filename;
-        if ($_COOKIE && !array_key_exists('Cookie', $headers)) {
+        if (!array_key_exists('Cookie', $headers) && ($cookies = PageCache::forwardedCookies())) {
             // we resend cookies only for local requests (It could be useful for AA_Auth ...)
-            $headers['Cookie'] = http_build_query($_COOKIE, '', '; ');
+            $headers['Cookie'] = http_build_query($cookies, '', '; ');
         }
     }
 
@@ -6473,6 +6478,9 @@ class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
      */
     function expand($variable = ''): string
     {
+        if ($variable === 'HTTP_COOKIE') {
+            AA::Pagecache()->switchCacheNostore();   // the whole jar - session id included - is no page for others
+        }
         return (string)$_SERVER[$variable];
     }
 }
