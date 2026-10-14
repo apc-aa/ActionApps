@@ -388,7 +388,7 @@ final class DB_AA
      *     b        - bytes             =                single or array    ['item_id', $packed_id, 'b'] - any length, as 0x…
      *     set      - flag is set       fld & val = val  single             ['flag', REL_FLAG_FEED, 'set'] - good for bitfields
      *     unset    - flag is not set   fld & val = 0    single             ['flag', 64, 'unset'] - good for bitfields
-     *     j        - JOIN              =                single             ['slice.id', 'module.id', 'j'] - for table join  (SELECT ... FROM `slice`, `module`', '', [['slice.id', 'module.id', 'j'], a..
+     *     j        - JOIN              =                single             ['slice.id', 'module.id', 'j'] - for table join, the value is SQL from code, never input  (SELECT ... FROM `slice`, `module`', '', [['slice.id', 'module.id', 'j'], a..
      *     j>       - column            >                single             ['publish_date', 'post_date', 'j>'] - compares two columns (a name from code, never input); also j<, j>=, j<=
      *     >        - integer           >                single             ['date', 1478547854, '>']
      *     <        - integer           <                single             ['date', 1478547854, '<']
@@ -428,7 +428,7 @@ final class DB_AA
                 $where[] = preg_match('/^\w+(\.\w+)?\z/', (string) $value) ? "$name " . substr($type, 1) . " $value" : '2=1';
                 continue;
             } elseif ($type === 'LIKE' || $type === 'NOT LIKE') {
-                $where[] = "$name $type '" . addcslashes($value, "'") . "'";    // see field LIKE '\_%'
+                $where[] = "$name $type " . qquote($value);   // quote() escapes \ too; MySQL reads '\\_%' as the same pattern as '\_%'
                 continue;
             } elseif ($type === 'RLIKE') {
                 $where[] = "$name LIKE " . qquote($value . '%');
@@ -491,10 +491,10 @@ final class DB_AA
                 $where[] = "$name IS NOT NULL ";
                 continue;
             } elseif ($type === 'OR') {
-                // $value = the alternatives, each a $varlist of AND-ed conditions ($name is unused); none = no match
+                // $value = the alternatives, each a $varlist of AND-ed conditions built in code ($name is unused); none = no match
                 $alternatives = [];
                 foreach ((array) $value as $alternative) {
-                    $sql            = substr(self::makeWhere($alternative), 6) ?: '1=1';
+                    $sql            = substr(self::makeWhere($alternative), strlen('WHERE ')) ?: '1=1';
                     $alternatives[] = count($alternative) > 1 ? "($sql)" : $sql;
                 }
                 $where[] = $alternatives ? '(' . implode(' OR ', $alternatives) . ')' : '2=1';

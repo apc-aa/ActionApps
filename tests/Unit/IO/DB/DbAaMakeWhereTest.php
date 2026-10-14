@@ -144,4 +144,12 @@ final class DbAaMakeWhereTest extends TestCase
         $this->assertSame('WHERE 2=1', DB_AA::makeWhere([[null, [], 'OR']]));
         $this->assertSame("WHERE (1=1 OR b = 'x')", DB_AA::makeWhere([[null, [[], [['b', 'x']]], 'OR']]));
     }
+
+    public function test_like_pattern_keeps_its_wildcards_and_cannot_end_the_literal(): void
+    {
+        // MySQL reads '\\_%' as the same pattern as '\_%' - a literal underscore, then anything
+        $this->assertSame("WHERE id LIKE '\\\\_%'", DB_AA::makeWhere([['id', '\_%', 'LIKE']]));
+        $this->assertSame("WHERE id NOT LIKE '\\\\_%'", DB_AA::makeWhere([['id', '\_%', 'NOT LIKE']]));
+        $this->assertSame("WHERE t LIKE 'a\\\\\\' OR 1=1 -- %'", DB_AA::makeWhere([['t', "a\\' OR 1=1 -- %", 'LIKE']]));
+    }
 }
