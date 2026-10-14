@@ -105,6 +105,7 @@ class CheckSessionidUse extends AbstractOptimize
                 links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],
+                place: $address,
             );
         }
         return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('Nobody called Get_Sessionid in the last 30 days'))];

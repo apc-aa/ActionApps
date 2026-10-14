@@ -106,6 +106,8 @@ class CheckObjectFormRefusals extends AbstractOptimize
                 links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],
+                kind: $export ? _m('Export of an item of another slice refused') : _m('Write to an object of another module refused'),
+                place: (string) ($module_names[$module] ?? ''),     // an unknown module is only an id
             );
         }
         return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No object form was refused in the last 30 days'))];

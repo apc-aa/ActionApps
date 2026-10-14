@@ -70,6 +70,12 @@ final class CheckRunner
                     repairable: $finding->repairable,
                     key: $short,
                     last: $finding->last,
+                    checked: $finding->checked,
+                    recheckable: $finding->recheckable,
+                    verify: $finding->verify,
+                    muted: $finding->muted,
+                    kind: $finding->kind,
+                    place: $finding->place,
                 );
             }
             $finding->check    = $short;
@@ -81,12 +87,13 @@ final class CheckRunner
 
     /** Takes out the findings a superadmin marked resolved (a resolved AA\Util\Note
      *  on finding:{check}:{key} that still holds - Note::hides()).
-     * @param Finding[] $findings
+     * @param Finding[]           $findings
+     * @param ?array<string, Note> $notes  Note::resolved() when the caller already has it
      * @return array{0: Finding[], 1: list<array{0: Finding, 1: Note}>}  visible ones, hidden ones with their note
      */
-    public static function splitResolved(array $findings, int $now): array
+    public static function splitResolved(array $findings, int $now, ?array $notes = null): array
     {
-        $notes    = Note::resolved();
+        $notes  ??= Note::resolved();
         $visible  = [];
         $resolved = [];
         foreach ($findings as $finding) {

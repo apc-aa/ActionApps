@@ -36,10 +36,10 @@ use AA_Logentry_Sc;
 use AA_Logentry_Scs;
 
 /** Daily State Check snapshot: runs the basic and extended checks and keeps
- *  their outcome in the log as STATE_CHK rows - one per check that has
- *  something to say (written only when it changed), plus a summary row that
- *  marks the run. admin/aa_statecheck.php reads the summary for "last full
- *  run"; the history is what a trend and Central will be built on.
+ *  their outcome in the log as STATE_CHK rows - one per check (written only
+ *  when it changed), plus a summary row that marks the run. State Check
+ *  (AA\Optimize\StateCheckModel) compares with it to tell new findings from
+ *  ongoing ones; a trend and Central will be built on the same history.
  */
 class StateCheck implements LaterInterface
 {
@@ -52,14 +52,15 @@ class StateCheck implements LaterInterface
     public function toexecutelater($params = []): string
     {
         \MoreTimeLimit();
-        [$findings] = CheckRunner::splitResolved(CheckRunner::run([AbstractOptimize::CHECK_BASIC, AbstractOptimize::CHECK_EXTENDED]), now());
+        [$findings, $resolved] = CheckRunner::splitResolved(CheckRunner::run([AbstractOptimize::CHECK_BASIC, AbstractOptimize::CHECK_EXTENDED]), now());
 
         $changed = 0;
-        foreach (self::aggregate($findings) as $check => $row) {
-            $changed += (int) AA_Log::writeIfChanged(self::EVENT, $check, AA_Logentry_Sc::make($row['severity'], $row['count'], $row['title']));
+        $rows    = self::rows($findings, $resolved);
+        foreach ($rows as $check => $row) {
+            $changed += (int) AA_Log::writeIfChanged(self::EVENT, $check, self::entry($row));
         }
         $summary = Finding::summary($findings);
-        $checks  = count(self::aggregate($findings, true));
+        $checks  = count($rows);
         AA_Log::write(self::EVENT, self::SUMMARY, new AA_Logentry_Scs([
             'errors'   => (string) $summary[Finding::ERROR],
             'warnings' => (string) $summary[Finding::WARNING],
@@ -67,6 +68,30 @@ class StateCheck implements LaterInterface
             'checks'   => (string) $checks,
         ]));
         return sprintf('%d errors, %d warnings, %d infos in %d checks; %d checks changed since the last snapshot', $summary[Finding::ERROR], $summary[Finding::WARNING], $summary[Finding::INFO], $checks, $changed);
+    }
+
+    /** The snapshot rows: every check that ran. One whose every problem is marked resolved
+     *  passes - without a row of its own its last problem row would still count as current.
+     * @param Finding[]                                 $findings  the visible ones (CheckRunner::splitResolved()[0])
+     * @param list<array{0: Finding, 1: \AA\Util\Note}> $resolved  CheckRunner::splitResolved()[1]
+     * @return array<string, array{severity:string, count:int, title:string}>  keyed by Finding::$check
+     */
+    public static function rows(array $findings, array $resolved): array
+    {
+        $rows = self::aggregate($findings, true);
+        foreach ($resolved as [$finding]) {
+            $rows[$finding->check] ??= ['severity' => Finding::OK, 'count' => 0, 'title' => ''];
+        }
+        return $rows;
+    }
+
+    /** The row of one check. A passing check gets one too (once, when it starts to pass),
+     *  so the history tells a problem that went away and came back from a new one.
+     * @param array{severity:string, count:int, title:string} $row  one of aggregate()
+     */
+    public static function entry(array $row): AA_Logentry_Sc
+    {
+        return ($row['severity'] === Finding::OK) ? AA_Logentry_Sc::make(Finding::OK, 0, '') : AA_Logentry_Sc::make($row['severity'], $row['count'], $row['title']);
     }
 
     /** One row per check: its worst severity, the title of that worst finding

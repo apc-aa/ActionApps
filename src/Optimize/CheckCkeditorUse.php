@@ -102,6 +102,7 @@ class CheckCkeditorUse extends AbstractOptimize
                 links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $module_id)],
                 key: $module_id ?: 'none',
                 last: (int) $row['last'],
+                place: (string) ($names[$module_id] ?? '') ?: $page,
             );
         }
         return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No page loaded CKEditor 4 in the last 30 days'))];

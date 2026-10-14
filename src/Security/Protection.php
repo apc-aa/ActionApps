@@ -52,6 +52,15 @@ enum Protection: string
         };
     }
 
+    /** the kind of a ProtectionLog row in a few words - State Check names a group of such rows by it */
+    public function loggedKind(bool $refused): string
+    {
+        return match ($this) {
+            self::SignedExpressions => $refused ? _m('Unsigned expression refused') : _m('Unsigned expression ran, protection off'),
+            self::UrlValuesAsText   => $refused ? _m('Expression in a link shown as text') : _m('Expression in a link ran, protection off'),
+        };
+    }
+
     /** the State Check title of a ProtectionLog row */
     public function loggedTitle(bool $refused, string $page, string $param): string
     {
