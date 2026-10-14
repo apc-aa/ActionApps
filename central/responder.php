@@ -165,9 +165,11 @@ class AA_Responder_Get_Modules extends AA_Responder
 
     public function run(): AA_Response
     {
-        $type_sql = !count($this->types) ? '' : Cvarset::sqlin('type', $this->types) . ' AND ';
-        $modules  = GetTable2Array("SELECT id, name FROM module WHERE $type_sql deleted=0  ORDER BY type, priority, name", "unpack:id", 'name');
-        return new AA_Response($modules);
+        // an empty type ('', null) matches no module
+        $where   = !count($this->types) ? [] : [['type', array_filter($this->types, static fn($type) => $type != '')]];
+        $where[] = ['deleted', 0, 'i'];
+        $modules = DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(id)) AS unpackid, name FROM module', $where, ['type', 'priority', 'name']);
+        return new AA_Response($modules ?: false);   // no module is false - the Centrals asking (older ones too) expect it
     }
 }
 

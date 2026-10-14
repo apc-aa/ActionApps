@@ -91,6 +91,7 @@ https://www.apc.org/
 // mlx=ALL      turns of language extension
 
 
+use AA\IO\DB\DB_AA;
 use AA\Util\Hitcounter;
 use AA\Util\InputVars;
 
@@ -254,10 +255,6 @@ if (!$slice_id && is_array($slices)) {
 // We will do it during rewrite AA to $_GET[] variable handling (probably)
 $slice_id   = trim($slice_id);
 
-if (!is_object($db)) {
-    $db = getDB();
-}
-
 $slice      = AA_Slice::getModule($slice_id);
 $slice_info = GetModuleInfo($slice_id, 'S');       // get slice info
 
@@ -382,9 +379,8 @@ if ($sh_itm || $x || $o || $seo) {
     $discussion_vid = ($dview ?? $slice_info['vid']);
     // you can set dview=0 to not show discussion
     if ($discussion_vid > 0) {
-        $db->query("SELECT view.*, slice.flag FROM view, slice WHERE slice.id=" . xpack_id($slice_id) . " AND view.id=" . (int) $discussion_vid);
-        if ($db->next_record()) {
-            $view_info = $db->record();
+        if ($row = DB_AA::select1([], 'SELECT view.*, slice.flag FROM view, slice', [['slice.id', $slice_id, 'l'], ['view.id', (int) $discussion_vid, 'i']])) {
+            $view_info = $row;
 
             // create array of parameters
             $disc = [
@@ -434,12 +430,10 @@ $r_state_vars = StoreVariables(["no_scr","scr_go","order","cat_id", "cat_name", 
 
 if ($cat_id && ($flds = $slice->getFields()) && ($cat_field = $flds->firstOfTypeFieldId())) {  // optional parameter cat_id - deprecated - slow ------
     $cat_group = $flds->getCategoryGroup();
-    $SQL = "SELECT value FROM constant WHERE group_id = '$cat_group' AND id=" . xpack_id($cat_id);
-    $db->query($SQL);
-    if ($db->next_record()) {
+    if ($row = DB_AA::select1([], 'SELECT value FROM constant', [['group_id', $cat_group], ['id', $cat_id, 'l']])) {
         $conds[] = [
             $cat_field => 1,
-            'value'    => $db->f('value'),
+            'value'    => $row['value'],
             'operator' => ($exact ? '=' : 'LIKE'),
         ];
     }

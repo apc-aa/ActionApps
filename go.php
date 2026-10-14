@@ -52,33 +52,23 @@ if (!$sh_itm) {
     exit;
 }
 
-if (!is_object($db)) {
-    $db = getDB();
-}
-$p_id = xpack_id($sh_itm);
-
 // get source item id and slice
 
-$SQL = "SELECT source_id, slice_url FROM slice, relation, item
-        WHERE relation.destination_id=$p_id
-        AND relation.source_id=item.id
-        AND slice.id = item.slice_id
-        AND relation.flag = '" . REL_FLAG_FEED . "'";  // feed bit
+$row = DB_AA::select1([], 'SELECT source_id, slice_url FROM slice, relation, item', [
+    ['relation.destination_id', $sh_itm, 'l'],
+    ['relation.source_id', 'item.id', 'j'],
+    ['slice.id', 'item.slice_id', 'j'],
+    ['relation.flag', REL_FLAG_FEED],  // feed bit
+]);
 
-$db->query($SQL);
-
-
-
-
-if ($db->next_record()) {
-    $item = unpack_id($db->f('source_id'));
-    $slice_url = ($db->f('slice_url'));
+if ($row) {
+    $item = unpack_id($row['source_id']);
+    $slice_url = ($row['slice_url']);
 } else { // if this item is not fed - give its own id
-    $SQL = "SELECT slice_url FROM slice, item  WHERE item.slice_id=slice.id  AND item.id = $p_id";
-    $db->query($SQL);
-    if ($db->next_record()) {
+    $row = DB_AA::select1([], 'SELECT slice_url FROM slice, item', [['item.slice_id', 'slice.id', 'j'], ['item.id', $sh_itm, 'l']]);
+    if ($row) {
         $item = $sh_itm;
-        $slice_url = ($db->f('slice_url'));
+        $slice_url = ($row['slice_url']);
     }
 }
 
