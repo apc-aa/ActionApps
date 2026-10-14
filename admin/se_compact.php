@@ -27,6 +27,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -139,30 +140,27 @@ if ( AA::$module_id != "" ) {  // set variables from database - always
 /*  $SQL= " SELECT odd_row_format, even_row_format, even_odd_differ, compact_top,
                  compact_bottom, compact_remove, category_sort, category_format,
                  category_top, category_bottom, noitem_msg */
-  $SQL = " SELECT * FROM slice WHERE id=". xpack_id(AA::$module_id);
-  $db->query($SQL);
-    if ($db->next_record()) {
-        $odd_row_format  = $db->f('odd_row_format');
-        $even_row_format = $db->f('even_row_format');
-        $category_top    = $db->f('category_top');
-        $category_format = $db->f('category_format');
-        $category_bottom = $db->f('category_bottom');
-        $compact_top     = $db->f('compact_top');
-        $compact_bottom  = $db->f('compact_bottom');
-        $compact_remove  = $db->f('compact_remove');
-        $even_odd_differ = $db->f('even_odd_differ');
-        $group_by        = $db->f('group_by');
-        $gb_direction    = $db->f('gb_direction');
-        $gb_header       = $db->f('gb_header');
-        $category_sort   = $db->f('category_sort');
+    if ($row = DB_AA::select1([], 'SELECT * FROM slice', [['id', AA::$module_id, 'l']])) {
+        $odd_row_format  = $row['odd_row_format'];
+        $even_row_format = $row['even_row_format'];
+        $category_top    = $row['category_top'];
+        $category_format = $row['category_format'];
+        $category_bottom = $row['category_bottom'];
+        $compact_top     = $row['compact_top'];
+        $compact_bottom  = $row['compact_bottom'];
+        $compact_remove  = $row['compact_remove'];
+        $even_odd_differ = $row['even_odd_differ'];
+        $group_by        = $row['group_by'];
+        $gb_direction    = $row['gb_direction'];
+        $gb_header       = $row['gb_header'];
+        $category_sort   = $row['category_sort'];
         if ($group_by) {
             $category_sort = 0;
         }
-        $noitem_msg      = $db->f('noitem_msg');
+        $noitem_msg      = $row['noitem_msg'];
         if (!$group_by && $category_sort) {
-            $db->query("SELECT id FROM field WHERE id LIKE 'category.......%' AND slice_id=".xpack_id(AA::$module_id));
-            if ($db->next_record()) {
-                $group_by = $db->f("id");
+            if ($cat_field = DB_AA::select1([], 'SELECT id FROM field', [['id', 'category.......%', 'LIKE'], ['slice_id', AA::$module_id, 'l']])) {
+                $group_by = $cat_field["id"];
                 $gb_direction  = "2";      // number 2 represents 'a' - ascending (because gb_direction in number)
                 $gb_header = 0;
             }

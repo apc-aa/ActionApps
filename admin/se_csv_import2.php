@@ -482,9 +482,10 @@ class AA_Csv_Importer {
 
         FrmTabSeparator(_m("Store settings..."));
 
-        $load_arr = GetTable2Array("SELECT o1.object_id, o2.value FROM object_text as o1 INNER JOIN object_text as o2 ON o1.object_id=o2.object_id
+        // nothing saved -> false, so (array) $load_arr still yields the empty option value="0"
+        $load_arr = DB_AA::select(['object_id' => 'value'], "SELECT o1.object_id, o2.value FROM object_text as o1 INNER JOIN object_text as o2 ON o1.object_id=o2.object_id
                                      WHERE o1.property LIKE 'type' AND o1.value LIKE 'AA_Csv_Importer'
-                                     AND o2.property LIKE 'name'", 'object_id', 'value');
+                                     AND o2.property LIKE 'name'") ?: false;
 
         FrmInputSelect('load_id', _m('Load setting'), (array)$load_arr);
 

@@ -29,6 +29,7 @@
 //             $d_id
 // optionally   $update
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -126,10 +127,8 @@ if ($update) {
 }
 
 // set variables from table discussion
-$SQL = " SELECT * FROM discussion WHERE id=" . xpack_id($d_id);
-$db->query($SQL);
-if ($db->next_record()) {
-    RestoreVariables($db->record());
+if ($row = DB_AA::select1([], 'SELECT * FROM discussion', [['id', $d_id, 'l']])) {
+    RestoreVariables($row);
 }
 
 $apage = new AA_Adminpageutil();

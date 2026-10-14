@@ -40,6 +40,7 @@
 */
 
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -81,12 +82,9 @@ if (! $slice->getProperty("mailman_field_lists")) {
     exit;
 }
 
-$db = getDB();
-$db->query("SELECT field.input_show_func, field.name FROM field WHERE slice_id=" . xpack_id(AA::$module_id) . " AND id='" . $slice->getProperty("mailman_field_lists") . "'");
-$db->next_record();
-$field_name = $db->f("name");
-[,$groupid] = explode(":", $db->f("input_show_func"));
-freeDB($db);
+$row = DB_AA::select1([], 'SELECT field.input_show_func, field.name FROM field', [['slice_id', AA::$module_id, 'l'], ['id', $slice->getProperty("mailman_field_lists")]]);
+$field_name = $row["name"] ?? null;
+[,$groupid] = explode(":", $row["input_show_func"] ?? null);
 
 if ($create_list && $admin_email && $list_name && $admin_password) {
     add_mailman_list($admin_email, $list_name, $admin_password, $groupid);

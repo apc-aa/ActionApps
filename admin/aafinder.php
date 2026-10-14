@@ -272,21 +272,10 @@ if (strlen($findtext)) {
     }
 
     if ($findinspot) {
-        $like_text = addcslashes(quote($findtext), '_%');
-
-        $fields = [
-            'content',
-        ];
-
-        $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
-        foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%$like_text%' OR ";
-        }
-        $SQL .= "0";
-        $db->query($SQL);
-        echo "<b>site spots</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
-        while ($db->next_record()) {
-            echo Adminlink::siteLink($db->f("spot_id"), unpack_id($db->f("site_id"))) . "<br>";
+        $rows = DB_AA::select([], 'SELECT site_id, spot_id FROM site_spot', [['content', $findtext, 'CONTAIN']]);
+        echo "<b>site spots</b> <small>(" . count($rows) . " matching found)</small><br>";
+        foreach ($rows as $row) {
+            echo Adminlink::siteLink($row["spot_id"], unpack_id($row["site_id"])) . "<br>";
         }
         echo '<br><br>';
 
