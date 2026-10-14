@@ -251,7 +251,7 @@ echo "</table>
 echo '</form>
 ';
 
-$set_as_from = GetTable2Array("SELECT DISTINCT uid FROM profile WHERE slice_id='$p_slice_id' AND (uid <>'$uid') AND (uid <>'*')", 'uid', 'uid');
+$set_as_from = DB_AA::select(['uid' => 'uid'], "SELECT DISTINCT uid FROM profile", [['slice_id', pack_id(AA::$module_id), 'b'], ['uid', $uid, 's<>'], ['uid', '*', 's<>']]);
 
 if (is_array($set_as_from) && count($set_as_from)) {
     foreach ($set_as_from as $from_uid) {

@@ -30,6 +30,7 @@
 */
 
 
+use AA\IO\DB\DB_AA;
 use AA\IO\FeedUtil;
 use AA\IO\Grabber\AARSS;
 use AA\Util\InputVars;
@@ -71,20 +72,16 @@ while ($db->next_record()) {
 
 // lookup external fed slices
 $SQL = "SELECT remote_slice_id, remote_slice_name, node_name
-        FROM external_feeds
-        WHERE slice_id='$p_slice_id'";
-$db->query($SQL);
-while ($db->next_record()) {
-    $impslices[unpack_id($db->f('remote_slice_id'))] = $db->f('node_name')." - ".$db->f('remote_slice_name');
-    $remote_slices[unpack_id($db->f('remote_slice_id'))] = 1;       // mark slice as external
+        FROM external_feeds";
+foreach (DB_AA::select([], $SQL, [['slice_id', pack_id(AA::$module_id), 'b']]) as $row) {
+    $impslices[unpack_id($row['remote_slice_id'])] = $row['node_name']." - ".$row['remote_slice_name'];
+    $remote_slices[unpack_id($row['remote_slice_id'])] = 1;       // mark slice as external
 }
 // lookup RSS feeds
-$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds
-       WHERE slice_id='$p_slice_id'";
-$db->query($SQL);
-while ($db->next_record()) {
-    $u_remote_slice_id = FeedUtil::attr2id($db->f('server_url'));         // @todo - remove the mapping dependence on URL
-    $impslices[$u_remote_slice_id] = "RSS - ".$db->f('name');
+$SQL="SELECT feed_id, server_url, name, slice_id FROM rssfeeds";
+foreach (DB_AA::select([], $SQL, [['slice_id', pack_id(AA::$module_id), 'b']]) as $row) {
+    $u_remote_slice_id = FeedUtil::attr2id($row['server_url']);         // @todo - remove the mapping dependence on URL
+    $impslices[$u_remote_slice_id] = "RSS - ".$row['name'];
     $remote_slices[$u_remote_slice_id] = 2;       // mark slice as RSS
 }
 

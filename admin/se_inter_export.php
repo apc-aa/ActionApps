@@ -60,8 +60,7 @@ switch ($mode) {
         $db->query("DELETE FROM ef_permissions WHERE slice_id='$p_slice_id' AND  node='$sel_node' AND  user='$sel_user'");
         break;
     case "insert" :
-        $db->query("SELECT slice_id FROM ef_permissions WHERE slice_id='$p_slice_id' AND  node='$r_nodes' AND  user='$user_name'");
-        if ($db->next_record()) {   // duplicity
+        if (DB_AA::test('ef_permissions', [['slice_id', pack_id(AA::$module_id), 'b'], ['node', stripslashes($r_nodes)], ['user', stripslashes($user_name)]])) {   // duplicity
             $err["DB"].= "Can't add new permission record";
         } else {
             $db->query("INSERT INTO ef_permissions VALUES('$p_slice_id','$r_nodes','$user_name')");

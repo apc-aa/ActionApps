@@ -31,6 +31,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -50,9 +51,8 @@ if (isset($feed_id)) {
     // delete mode
 
     // delete mapping from feedmap table
-    $db->query("SELECT remote_slice_id FROM external_feeds WHERE feed_id='$feed_id' AND slice_id='$p_slice_id'");
-    if ($db->next_record()) {
-        $remote_slice_id = quote($db->f('remote_slice_id'));
+    if ($feed = DB_AA::select1([], 'SELECT remote_slice_id FROM external_feeds', [['feed_id', $feed_id], ['slice_id', pack_id(AA::$module_id), 'b']])) {
+        $remote_slice_id = quote($feed['remote_slice_id']);
         $db->query("DELETE FROM feedmap WHERE from_slice_id='$remote_slice_id' AND to_slice_id='$p_slice_id'");
     }
     $db->query("DELETE FROM ef_categories WHERE feed_id='$feed_id'");      // delete categories
@@ -62,9 +62,8 @@ if (isset($feed_id)) {
 
 /* get ext_feeds array for selecting */
 $SQL       = "SELECT feed_id, name, node_name, remote_slice_id, remote_slice_name, feed_mode
-                FROM external_feeds LEFT JOIN nodes ON external_feeds.node_name = nodes.name
-               WHERE slice_id='$p_slice_id' ORDER BY name";
-$ext_feeds = GetTable2Array($SQL, 'feed_id');
+                FROM external_feeds LEFT JOIN nodes ON external_feeds.node_name = nodes.name";
+$ext_feeds = DB_AA::select(['feed_id' => []], $SQL, [['slice_id', pack_id(AA::$module_id), 'b']], ['name']);
 
 $rows = [];
 if ($ext_feeds && is_array($ext_feeds)) {
@@ -79,7 +78,7 @@ if ($ext_feeds && is_array($ext_feeds)) {
     }
 }
 
-$nodes = GetTable2Array('SELECT name FROM nodes ORDER BY name', 'name', 'name');
+$nodes = DB_AA::select(['name' => 'name'], 'SELECT name FROM nodes', null, ['name']);
 $err = [];          // error array (Init - just for initializing variable
 
 
