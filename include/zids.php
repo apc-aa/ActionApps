@@ -734,12 +734,12 @@ function qquote($str): string
     return "'" . quote($str) . "'";
 }
 
-/** A constant group id (or any string) escaped for the inside of a quoted LIKE pattern -
+/** A constant group id (or any string) escaped for a pattern of DB_AA's LIKE type (which quotes it) -
  *  '_' and '%' match themselves. Here, not in constedit_util.php: the autoloaded
  *  AA_Mysqlauth and AA_Mailman need it too. */
 function constant_group_like(string $group_id): string
 {
-    return addcslashes(quote($group_id), '_%');
+    return addcslashes($group_id, '_%');
 }
 
 

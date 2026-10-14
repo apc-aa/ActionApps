@@ -161,9 +161,9 @@ namespace Tests\Unit\Legacy {
 
         public function test_used_in_slices_query_escapes_the_group_id(): void
         {
-            // a valid id with LIKE wildcards: '_' must match itself only
+            // a valid id with LIKE wildcards: '_' must match itself only - MySQL reads '\\_' as the pattern \_
             constant_group_fields('a_b');
-            $this->assertStringContainsString("(field.input_show_func LIKE '%:a\\_b' OR field.input_show_func LIKE '%:a\\_b:%')", RecordingDb::$log[0]);
+            $this->assertStringContainsString("(field.input_show_func LIKE '%:a\\\\_b' OR field.input_show_func LIKE '%:a\\\\_b:%')", RecordingDb::$log[0]);
 
             // defence in depth - even an id that skipped validation stays inside the string
             RecordingDb::reset();
@@ -291,7 +291,7 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(1, constant_value_replace('a_b', "O'Brien", "x\\', flag=1 WHERE 1 #"));
 
             [$select, $update] = RecordingDb::$log;
-            $this->assertStringContainsString("(field.input_show_func LIKE '___:a\\_b:%' OR field.input_show_func LIKE '___:a\\_b')", $select);
+            $this->assertStringContainsString("(field.input_show_func LIKE '___:a\\\\_b:%' OR field.input_show_func LIKE '___:a\\\\_b')", $select);
             $this->assertStringContainsString("content.text = 'O\\'Brien'", $select);
             $this->assertStringStartsWith("UPDATE content SET text='x\\\\\\', flag=1 WHERE 1 #' WHERE ", $update);
             $this->assertStringContainsString('item_id = 0x33333333333333333333333333333333', $update);
@@ -348,7 +348,7 @@ namespace Tests\Unit\Legacy {
             \AA_Mysqlauth::changeGroups(str_repeat('c', 32), 'old', "x\\' OR 1=1 #");
 
             $select = RecordingDb::$log[1];
-            $this->assertStringContainsString("field.input_show_func LIKE '___:o\\'k\\_1:%'", $select);
+            $this->assertStringContainsString("field.input_show_func LIKE '___:o\\'k\\\\_1:%'", $select);
             $this->assertStringContainsString("content.text = 'x\\\\\\' OR 1=1 #'", $select);
         }
 
@@ -361,7 +361,7 @@ namespace Tests\Unit\Legacy {
             } finally {
                 unset($GLOBALS['MAILMAN_SYNCHRO_DIR']);
             }
-            $this->assertStringContainsString("field.input_show_func LIKE '___:o\\'k\\_1')", RecordingDb::$log[1]);
+            $this->assertStringContainsString("field.input_show_func LIKE '___:o\\'k\\\\_1')", RecordingDb::$log[1]);
         }
 
         public function test_reader_group_rename_touches_only_the_old_group(): void

@@ -109,11 +109,11 @@ class AA_Mailman
         }
         $like = constant_group_like($group_id);
         $slices = [];
-        foreach (DB_AA::select([], "SELECT slice.id FROM slice
-            INNER JOIN field ON field.slice_id = slice.id
-            WHERE slice.type = 'ReaderManagement'
-            AND (field.input_show_func LIKE '___:$like:%'
-            OR  field.input_show_func LIKE '___:$like')") as $row) {
+        foreach (DB_AA::select([], 'SELECT slice.id FROM slice
+            INNER JOIN field ON field.slice_id = slice.id', [
+            ['slice.type', 'ReaderManagement'],
+            [null, [[['field.input_show_func', "___:$like:%", 'LIKE']], [['field.input_show_func', "___:$like", 'LIKE']]], 'OR'],
+        ]) as $row) {
             $slices[] = unpack_id($row["id"]);
         }
         foreach ($slices as $slice_id) {

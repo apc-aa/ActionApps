@@ -294,13 +294,14 @@ class AA_Mysqlauth
             INNER JOIN field ON slice.id=field.slice_id
             INNER JOIN item ON slice.id = item.slice_id
             INNER JOIN content ON item.id=content.item_id AND field.id = content.field_id
-            INNER JOIN content AS username ON username.item_id=item.id
-            WHERE slice.type = 'ReaderManagement'
-            AND slice.auth_field_group = field.id
-            AND (field.input_show_func LIKE '___:$like:%'
-            OR  field.input_show_func LIKE '___:$like')
-            AND content.text = " . qquote($newvalue) . "
-            AND username.field_id='" . FIELDID_USERNAME . "'",
+            INNER JOIN content AS username ON username.item_id=item.id",
+            [
+                ['slice.type', 'ReaderManagement'],
+                ['slice.auth_field_group', 'field.id', 'j'],
+                [null, [[['field.input_show_func', "___:$like:%", 'LIKE']], [['field.input_show_func', "___:$like", 'LIKE']]], 'OR'],
+                ['content.text', (string) $newvalue],
+                ['username.field_id', FIELDID_USERNAME],
+            ],
         );
 
         // just the renamed group - the reader keeps the others

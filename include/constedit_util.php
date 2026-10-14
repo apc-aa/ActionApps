@@ -714,7 +714,10 @@ function constant_group_from_form(string $form_value): ?string
 function constant_group_fields(string $group_id): array
 {
     $like = constant_group_like($group_id);
-    return DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$like' OR field.input_show_func LIKE '%:$like:%')");
+    return DB_AA::select([], 'SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field`', [
+        ['module.id', 'field.slice_id', 'j'],
+        [null, [[['field.input_show_func', "%:$like", 'LIKE']], [['field.input_show_func', "%:$like:%", 'LIKE']]], 'OR'],
+    ]);
 }
 
 /** The slice owning the group: ['owner_id' => unpacked slice id, 'name' => slice name, 'propagate'],
@@ -766,7 +769,13 @@ function constant_value_replace(string $group_id, string $oldvalue, string $newv
     $items2update = [];
 
     // we have to join also item table in order we make sure field is in right slice
-    foreach (DB_AA::select([], "SELECT item_id,field_id FROM content, item, field WHERE content.item_id=item.id AND item.slice_id = field.slice_id AND content.field_id = field.id AND (field.input_show_func LIKE '___:$like:%' OR field.input_show_func LIKE '___:$like') AND content.text = " . qquote($oldvalue)) as $row) {
+    foreach (DB_AA::select([], 'SELECT item_id,field_id FROM content, item, field', [
+        ['content.item_id', 'item.id', 'j'],
+        ['item.slice_id', 'field.slice_id', 'j'],
+        ['content.field_id', 'field.id', 'j'],
+        [null, [[['field.input_show_func', "___:$like:%", 'LIKE']], [['field.input_show_func', "___:$like", 'LIKE']]], 'OR'],
+        ['content.text', $oldvalue],
+    ]) as $row) {
         ++$cnt;
         $items2update[$row['field_id']] ??= new zids(null, 'p');
         $items2update[$row['field_id']]->add($row['item_id']);

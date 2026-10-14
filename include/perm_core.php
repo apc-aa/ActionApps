@@ -1187,18 +1187,16 @@ class AA_Permsystem_Reader extends AA_Permsystem {
     }
 
     public function findGroups($pattern): array {
-        $db = getDB();
-        $db->query("SELECT module.id,module.name FROM slice,module
-                      WHERE slice.type = 'ReaderManagement'
-                        AND slice.id   = module.id
-                        AND module.deleted < '1'
-                        AND module.name LIKE '%". quote($pattern) ."%'");
         $prefix = _m('Reader Slice');
         $groups = [];
-        while ($db->next_record()) {
-            $groups[unpack_id($db->f('id'))] = ['name' => "$prefix: ". $db->f('name')];
+        foreach (DB_AA::select([], 'SELECT module.id,module.name FROM slice,module', [
+            ['slice.type', 'ReaderManagement'],
+            ['slice.id', 'module.id', 'j'],
+            ['module.deleted', 1, '<'],
+            ['module.name', "%$pattern", 'RLIKE'],
+        ]) as $row) {
+            $groups[unpack_id($row['id'])] = ['name' => "$prefix: ". $row['name']];
         }
-        freeDB($db);
 
         // get all ReaderSets
         $prefix = _m('Reader Set');
