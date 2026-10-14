@@ -27,6 +27,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 // array params: column header, default sort order
 $sortable_columns = [
     "name" => ["label" => _m("Name"),"sort" => "a"],
@@ -514,11 +516,7 @@ function fileman_copy_template($srcdir, $dstdir): string
         "_#SLICE_ID" => $slice_id,
     ];
 
-    $db = getDB();
-    $db->query("SELECT name FROM slice WHERE id = " . xpack_id($slice_id));
-    $db->next_record();
-    $aliases["_#SLICNAME"] = $db->f('name');
-    freeDB($db);
+    $aliases["_#SLICNAME"] = DB_AA::select1('name', 'SELECT name FROM slice', [['id', $slice_id, 'l']]);
 
     if (!is_dir($srcdir)) {
         return _m("Wrong directory name") . " ($srcdir)";

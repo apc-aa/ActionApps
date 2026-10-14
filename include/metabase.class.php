@@ -449,8 +449,8 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
 
     public static function factoryFromDb($tablename): AA_MbT
     {
-        $columns = GetTable2Array("SHOW FULL COLUMNS FROM `$tablename`", 'Field');
-        $indexes = GetTable2Array("SHOW INDEX FROM `$tablename`", '');
+        $columns = DB_AA::select(['Field' => []], "SHOW FULL COLUMNS FROM `$tablename`");
+        $indexes = DB_AA::select([], "SHOW INDEX FROM `$tablename`");
         return new AA_MbT($tablename, $columns, $indexes);
     }
 
@@ -1454,10 +1454,7 @@ class AA_Metabase
         $key = $keys[0];
 
 
-        // construct WHERE clausule
-        $sel_in = $zids->sqlin(false, true);  // asis
-        $SQL = "SELECT * FROM $tablename WHERE $key $sel_in";
-        $content = AA_Content::StoreTable2AaContent($SQL, '', $key);
+        $content = AA_Content::StoreTable2AaContent("SELECT * FROM $tablename", '', $key, [$zids->whereIn($key, true)]);
 
         // AA::$debug&2 && AA::$dbg->group('meta');
 
@@ -1552,7 +1549,7 @@ class AA_Metabase
         $where = MakeSQLConditions($fields, $conds, $fields, $join_tables);
         $SQL .= ($where ? "WHERE (1=1) $where" : '');
 
-        return GetTable2Array($SQL, 'aa_first', 'count');
+        return (string) DB_AA::select1('count', $SQL);
     }
 
 

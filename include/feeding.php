@@ -51,24 +51,15 @@ function GetFieldMapping($from_slice_id, $destination_id): array
         return [];
     }
 
-    $p_from_slice_id  = xpack_id($from_slice_id);
-    $p_destination_id = xpack_id($destination_id);
-
-    $db = getDb();
     // fill $m array with mapping set by user on mapping page (and stored to db)
-    $SQL = "SELECT from_field_id, to_field_id, flag, value
-              FROM feedmap
-             WHERE from_slice_id = $p_from_slice_id
-               AND to_slice_id = $p_destination_id";
-    $db->query($SQL);
-    while ($db->next_record()) {
-        switch ($db->f('flag')) {
+    foreach (DB_AA::select([], 'SELECT from_field_id, to_field_id, flag, value FROM feedmap', [['from_slice_id', $from_slice_id, 'l'], ['to_slice_id', $destination_id, 'l']]) as $row) {
+        switch ($row['flag']) {
             case FEEDMAP_FLAG_MAP:
-                $val = $db->f('from_field_id');
+                $val = $row['from_field_id'];
                 break;
             case FEEDMAP_FLAG_VALUE:
             case FEEDMAP_FLAG_JOIN:
-                $val = $db->f('value');
+                $val = $row['value'];
                 break;
             case FEEDMAP_FLAG_RSS:
                 huhe("Warning: RSS field mapping appearing in non RSS feed");
@@ -78,7 +69,7 @@ function GetFieldMapping($from_slice_id, $destination_id): array
                 $val = "";
                 break;
         }
-        $m[$db->f('to_field_id')] = ["feedmap_flag" => $db->f('flag'),"val" => $val];
+        $m[$row['to_field_id']] = ["feedmap_flag" => $row['flag'],"val" => $val];
     }
 
     foreach ($fields_to as $field_id) {
@@ -90,7 +81,6 @@ function GetFieldMapping($from_slice_id, $destination_id): array
         }
     }
 
-    freeDb($db);
     return $map;
 }
 
@@ -103,17 +93,13 @@ function GetFieldMapping($from_slice_id, $destination_id): array
  */
 function GetBaseItem(string $item_id): string
 {
-    $db = getDb();
     $dest_id = $item_id;
 
     while ($item_id) {
         $dest_id = $item_id;
-        $p_dest_id = xpack_id($dest_id);
-        $SQL =  "SELECT source_id FROM relation WHERE  destination_id = $p_dest_id AND ((flag & " . REL_FLAG_FEED . ") != 0)";
-        $db->query($SQL);
-        $item_id = $db->next_record() ? unpack_id($db->f('source_id')) : false;
+        $source_id = DB_AA::select1('source_id', 'SELECT source_id FROM relation', [['destination_id', $dest_id, 'l'], ['flag', REL_FLAG_FEED, 'set']]);
+        $item_id = ($source_id !== false) ? unpack_id($source_id) : false;
     }
-    freeDb($db);
     return $dest_id;
 }
 
@@ -135,8 +121,7 @@ function IsItemFed(string $item_id, string $destination): bool
         return true;
     }
 
-    $SQL     = "SELECT source_id FROM relation, item WHERE relation.destination_id = item.id AND item.slice_id = '$p_destination' AND ((flag & " . REL_FLAG_FEED . ") != 0)";
-    $sources = array_map('unpack_id', DB_AA::select('source_id', $SQL));
+    $sources = array_map('unpack_id', DB_AA::select('source_id', 'SELECT source_id FROM relation, item', [['relation.destination_id', 'item.id', 'j'], ['item.slice_id', pack_id($destination), 'b'], ['flag', REL_FLAG_FEED, 'set']]));
 
     // Test array for containing an item fed from same baseid
     foreach ($sources as $source_id) {

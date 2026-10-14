@@ -273,8 +273,7 @@ class AA_Profile
      */
     public static function copyProfile($slice_id, $from_uid, $to_uid): void
     {
-        $p_slice_id = xpack_id($slice_id);
-        $rules      = GetTable2Array("SELECT * FROM profile WHERE slice_id=$p_slice_id AND (uid='$from_uid')");
+        $rules      = DB_AA::select(['id' => []], 'SELECT * FROM profile', [['slice_id', $slice_id, 'l'], ['uid', $from_uid]]);
         $varset     = new CVarset();
         foreach ($rules as $row) {
             $varset->resetFromRecord($row);
