@@ -70,7 +70,7 @@ class DbInconsistency extends AbstractOptimize
         }
         if (count($err)) {
             foreach ($err as $item_id => $text) {
-                $this->message(_m('Wrong item id in discussion table: %1 -> %2', [$item_id, $text]));
+                $this->message(_m('Wrong item id in discussion table: %1 -> %2', [$item_id, safe($text)]));   // discussion.subject is public input, the report is HTML
             }
             $ret = false;
         }
