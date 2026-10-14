@@ -125,4 +125,23 @@ final class DbAaMakeWhereTest extends TestCase
         $this->assertSame("WHERE t LIKE '%&%'", DB_AA::makeWhere([['t', [3 => '&', 4 => '', 5 => null], 'CONTAIN']]));
         $this->assertSame('WHERE 2=1', DB_AA::makeWhere([['t', [''], 'CONTAIN']]));
     }
+
+    public function test_or_joins_alternatives_and_brackets_the_multi_condition_ones(): void
+    {
+        $this->assertSame(
+            "WHERE s = 5 AND (a = 1 OR (b = 'x\\'y' AND c = 2))",
+            DB_AA::makeWhere([['s', 5, 'i'], [null, [[['a', 1, 'i']], [['b', "x'y"], ['c', 2, 'i']]], 'OR']]),
+        );
+    }
+
+    public function test_or_alternative_with_an_empty_in_list_matches_nothing_alone(): void
+    {
+        $this->assertSame("WHERE (2=1 OR b = 'x')", DB_AA::makeWhere([[null, [[['a', []]], [['b', 'x']]], 'OR']]));
+    }
+
+    public function test_or_without_alternatives_matches_nothing_and_an_empty_alternative_everything(): void
+    {
+        $this->assertSame('WHERE 2=1', DB_AA::makeWhere([[null, [], 'OR']]));
+        $this->assertSame("WHERE (1=1 OR b = 'x')", DB_AA::makeWhere([[null, [[], [['b', 'x']]], 'OR']]));
+    }
 }

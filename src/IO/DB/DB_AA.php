@@ -409,6 +409,7 @@ final class DB_AA
      *     CONTAIN  -                   LIKE             single or array    ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
+     *     OR       - alternatives      OR               list of varlists   [null, [[['a', 1, 'i']], [['b', $x], ['c', 2, 'i']]], 'OR'] // (a = 1 OR (b = 'x' AND c = 2))
      *
      * @return string
      */
@@ -488,6 +489,15 @@ final class DB_AA
                 continue;
             } elseif ($type === 'NOTNULL') {
                 $where[] = "$name IS NOT NULL ";
+                continue;
+            } elseif ($type === 'OR') {
+                // $value = the alternatives, each a $varlist of AND-ed conditions ($name is unused); none = no match
+                $alternatives = [];
+                foreach ((array) $value as $alternative) {
+                    $sql            = substr(self::makeWhere($alternative), 6) ?: '1=1';
+                    $alternatives[] = count($alternative) > 1 ? "($sql)" : $sql;
+                }
+                $where[] = $alternatives ? '(' . implode(' OR ', $alternatives) . ')' : '2=1';
                 continue;
             } else {
                 $operator = '=';
