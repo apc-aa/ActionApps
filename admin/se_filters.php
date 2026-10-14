@@ -60,14 +60,14 @@ $chboxapp = [];
 
 // lookup (slices)
 $SQL= "SELECT name, id FROM feeds, slice
-        LEFT JOIN feedperms ON slice.id=feedperms.from_id
-        WHERE slice.id=feeds.from_id
-          AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
-          AND feeds.to_id='$p_slice_id' ORDER BY name";
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id";
 
-$db->query($SQL);
-while ($db->next_record()) {
-    $impslices[unpack_id($db->f('id'))] = $db->f('name');
+foreach (DB_AA::select([], $SQL, [
+    ['slice.id', 'feeds.from_id', 'j'],
+    [null, [[['feedperms.to_id', pack_id(AA::$module_id), 'b']], [['slice.export_to_all', 1, 'i']]], 'OR'],
+    ['feeds.to_id', pack_id(AA::$module_id), 'b'],
+], ['name']) as $row) {
+    $impslices[unpack_id($row['id'])] = $row['name'];
 }
 
 // lookup external slices

@@ -109,20 +109,20 @@ function Links_CountLinkInBins($cat_path): array
              WHERE (links_link_cat.category_id IS NULL AND (links_links.folder=3))';
     $ret['unasigned3'] = DB_AA::select1('count', $SQL);
 
-    $db = getDB();
+    // the category and its subcategories
+    $in_path = [null, [[['path', $cat_path]], [['path', "$cat_path,", 'RLIKE']]], 'OR'];
+
     // new
     $SQL = "SELECT  count(DISTINCT links_links.id) as count
-              FROM links_link_cat, links_categories, links_links
-             WHERE links_links.id = links_link_cat.what_id
-               AND links_link_cat.category_id = links_categories.id
-               AND ((path = '$cat_path') OR (path LIKE '$cat_path,%'))
-               AND (links_link_cat.proposal = 'y')
-               AND (links_link_cat.base = 'y')
-               AND (links_links.folder < 2)";
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $ret['new'] = $db->f('count');
-    }
+              FROM links_link_cat, links_categories, links_links";
+    $ret['new'] = DB_AA::select1('count', $SQL, [
+        ['links_links.id', 'links_link_cat.what_id', 'j'],
+        ['links_link_cat.category_id', 'links_categories.id', 'j'],
+        $in_path,
+        ['links_link_cat.proposal', 'y'],
+        ['links_link_cat.base', 'y'],
+        ['links_links.folder', 2, '<'],
+    ]);
 
     // app
     $linkcounter = new linkcounter();
@@ -131,39 +131,39 @@ function Links_CountLinkInBins($cat_path): array
     // changed
     $SQL = "SELECT  count(DISTINCT links_links.id) as count
               FROM links_link_cat, links_categories, links_links
-              LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id
-             WHERE links_links.id = links_link_cat.what_id
-               AND links_link_cat.category_id = links_categories.id
-               AND ((path = '$cat_path') OR (path LIKE '$cat_path,%'))
-               AND (   (     ( (links_link_cat.proposal = 'y')
-                            OR (links_link_cat.proposal_delete = 'y'))
-                         AND (links_link_cat.state <> 'hidden')
-                         AND (links_link_cat.base = 'n'))
-                     OR
-                       (     (links_changes.rejected <> 'y')
-                         AND (links_link_cat.base = 'y')
-                         AND (links_link_cat.proposal = 'n')))
-               AND (links_links.folder < 2)";
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $ret['changed'] = $db->f('count');
-    }
+              LEFT JOIN links_changes ON links_links.id = links_changes.changed_link_id";
+    $ret['changed'] = DB_AA::select1('count', $SQL, [
+        ['links_links.id', 'links_link_cat.what_id', 'j'],
+        ['links_link_cat.category_id', 'links_categories.id', 'j'],
+        $in_path,
+        [null, [
+            [
+                [null, [[['links_link_cat.proposal', 'y']], [['links_link_cat.proposal_delete', 'y']]], 'OR'],
+                ['links_link_cat.state', 'hidden', 's<>'],
+                ['links_link_cat.base', 'n'],
+            ],
+            [
+                ['links_changes.rejected', 'y', 's<>'],
+                ['links_link_cat.base', 'y'],
+                ['links_link_cat.proposal', 'n'],
+            ],
+        ], 'OR'],
+        ['links_links.folder', 2, '<'],
+    ]);
 
     // folders
     // prepare
     $ret['folder0'] = $ret['folder1'] = $ret['folder2'] = $ret['folder3'] = 0;
     $SQL = "SELECT count(DISTINCT links_links.id) as count, links_links.folder
-              FROM links_links, links_link_cat, links_categories
-             WHERE links_links.id = links_link_cat.what_id
-               AND links_link_cat.category_id = links_categories.id
-               AND ((path = '$cat_path') OR (path LIKE '$cat_path,%'))
-               AND links_links.folder > 1
-             GROUP BY links_links.folder";
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $ret['folder' . ($db->f('folder'))] = $db->f('count');
+              FROM links_links, links_link_cat, links_categories";
+    foreach (DB_AA::select([], $SQL, [
+        ['links_links.id', 'links_link_cat.what_id', 'j'],
+        ['links_link_cat.category_id', 'links_categories.id', 'j'],
+        $in_path,
+        ['links_links.folder', 1, '>'],
+    ], null, ['links_links.folder']) as $row) {
+        $ret['folder' . ($row['folder'])] = $row['count'];
     }
-    freeDB($db);
     return $ret;
 }
 

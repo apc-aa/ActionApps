@@ -60,16 +60,19 @@ $SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM slice, feedperms";
 $export_to  = DB_AA::select(['unpackid' => 'name'], $SQL, [['slice.id', 'feedperms.to_id', 'j'], ['feedperms.from_id', pack_id(AA::$module_id), 'b']], ['name']) ?: false;   // false when empty - the form below tests is_array()
 
               // lookup importable slice
-$SQL        = "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
-                WHERE (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1) AND slice.id<>'$p_slice_id' ORDER BY name";
-$importable = GetTable2Array($SQL, 'unpack:id', 'name');
+$SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id";
+$importable = DB_AA::select(['unpackid' => 'name'], $SQL, [
+    [null, [[['feedperms.to_id', pack_id(AA::$module_id), 'b']], [['slice.export_to_all', 1, 'i']]], 'OR'],
+    ['slice.id', pack_id(AA::$module_id), 's<>'],
+], ['name']) ?: false;
 
               // lookup imported slices
-$SQL        = "SELECT name, id FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
-                WHERE slice.id=feeds.from_id
-                  AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
-                  AND feeds.to_id='$p_slice_id' ORDER BY name";
-$imported   = GetTable2Array($SQL, 'unpack:id', 'name');
+$SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.from_id";
+$imported   = DB_AA::select(['unpackid' => 'name'], $SQL, [
+    ['slice.id', 'feeds.from_id', 'j'],
+    [null, [[['feedperms.to_id', pack_id(AA::$module_id), 'b']], [['slice.export_to_all', 1, 'i']]], 'OR'],
+    ['feeds.to_id', pack_id(AA::$module_id), 'b'],
+], ['name']) ?: false;
 
               // lookup exported slices
 $SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.to_id";

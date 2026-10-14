@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
  * createFilterText() is heavily DB-coupled (getDB/QueryZids/CVarset) and cannot be
  * invoked without a live DB here, so these tests (1) model the window predicate's
  * boundary semantics over two consecutive sweeps, and (2) anchor to the production
- * SQL string so a revert to the buggy BETWEEN form fails the suite.
+ * query's $where entries so a revert to the buggy BETWEEN form fails the suite.
  */
 final class AlertsSendingWindowTest extends TestCase
 {
@@ -114,9 +114,9 @@ final class AlertsSendingWindowTest extends TestCase
         $this->assertNotFalse($src, 'cannot read ' . self::SOURCE);
 
         $this->assertMatchesRegularExpression(
-            '/moved2active\s*>=\s*\$last\s+AND\s+moved2active\s*<\s*\$now/',
+            '/\[\s*\'moved2active\'\s*,\s*\$last\s*,\s*\'>=\'\s*\]\s*,\s*\[\s*\'moved2active\'\s*,\s*\$now\s*,\s*\'<\'\s*\]/',
             $src,
-            'createFilterText() must use the half-open window: moved2active >= $last AND moved2active < $now',
+            'createFilterText() must use the half-open window: [\'moved2active\', $last, \'>=\'], [\'moved2active\', $now, \'<\']',
         );
         $this->assertStringNotContainsString(
             'moved2active BETWEEN',

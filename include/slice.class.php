@@ -1076,28 +1076,25 @@ class AA_Slice extends AA_Module
                         $p_from_cat_id = pack_id($from_category_id);
                     }
 
-                    $db = getDB();
                     $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
                            feeds.to_approved, feeds.to_category_id
-                     FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
-                    WHERE feeds.from_id = slice.id
-                      AND feeds.from_id=" . xpack_id($sl_id) . "
-                      AND (slice.export_to_all=1
-                       OR  feedperms.to_id = feeds.to_id)";  // check perms to feed, too
-                    $db->query($SQL);
+                     FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id";
 
-                    while ($db->next_record()) {
-                        $to_id = unpack_id($db->f('to_id'));
+                    foreach (DB_AA::select([], $SQL, [
+                        ['feeds.from_id', 'slice.id', 'j'],
+                        ['feeds.from_id', $sl_id, 'l'],
+                        [null, [[['slice.export_to_all', 1, 'i']], [['feedperms.to_id', 'feeds.to_id', 'j']]], 'OR'],  // check perms to feed, too
+                    ]) as $row) {
+                        $to_id = unpack_id($row['to_id']);
                         // condition is necessary for multi feeding to this slice
                         if (isset($slice_queue[$to_id])) {
                             continue;
                         }
-                        $approved = $db->f('to_approved') ? "y" : "n";
-                        if (($p_from_cat_id == $db->f('category_id')) || $db->f('all_categories')) {
-                            $slice_queue[$to_id] = $this->feeding_tree[$sl_id][$to_id] = ['approved' => $approved, 'category' => unpack_id($db->f('to_category_id'))];
+                        $approved = $row['to_approved'] ? "y" : "n";
+                        if (($p_from_cat_id == $row['category_id']) || $row['all_categories']) {
+                            $slice_queue[$to_id] = $this->feeding_tree[$sl_id][$to_id] = ['approved' => $approved, 'category' => unpack_id($row['to_category_id'])];
                         }
                     }
-                    freeDB($db);
                 }
             }
         }
