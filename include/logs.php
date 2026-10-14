@@ -57,6 +57,7 @@ ITEM_DEL        item_id
 M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
 LOGIN           module_id:field_id              msg:url                        // insert form field validation
 STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
+NIGHTLY         run | check:spec | page | url   Nrun:… | Nran:… | Nf:… | Ne:…  // the nightly test's findings as State Check shows them: every push writes the whole current state as one set of rows with one time (AA\Optimize\NightlyLog)
 ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)
 ALERT_DENY      collection:slice_id:user        item_id                        // Alertitem send refused, once a day (AA_Collection::logRefusal(), LogOnce)
 JWT_DENY        client IP                       reason                         // Bearer token refused on central/responder.php, once a day (AA_Auth, LogOnce)
@@ -101,13 +102,6 @@ class AA_Log implements InternalExpandInterface
             return false;
         }
 
-        // CRON_FALLBACK_ERR, PAGE_PARAM_ERR and ITEM_FIELD_FILLED were logged for months
-        // under cut names nobody searched for; make the next such slip visible in the log
-        if (strlen($event) > self::TYPE_MAX) {
-            self::warn(['msg' => "log type '$event' exceeds " . self::TYPE_MAX . ' bytes and is stored cut']);
-            $event = substr($event, 0, self::TYPE_MAX);
-        }
-
         if ($params instanceof AA_Logentry) {
             $params = $params->serializeToString();
         } elseif (is_array($params)) {
@@ -119,18 +113,26 @@ class AA_Log implements InternalExpandInterface
             $selector = $selector->serializeToString(true);
         }
 
-        $rows = [];
-        if (is_array($selector)) {
-            foreach ($selector as $sel) {
-                $rows[] = ['time' => time(), 'user' => AuthGetUid(), 'type' => $event, 'selector' => $sel, 'params' => $params];
-            }
-        } else {
-            $rows[] = ['time' => time(), 'user' => AuthGetUid(), 'type' => $event, 'selector' => $selector, 'params' => $params];
-        }
-
-        AA::Metabase()->doInsertMulti('log', $rows);
+        $entries = array_map(static fn($sel): array => [$sel, $params], is_array($selector) ? $selector : [$selector]);
+        AA::Metabase()->doInsertMulti('log', self::logRows($event, $entries, time()));
 
         return true;
+    }
+
+    /** The rows to insert, all with the same time and user.
+     * @param list<array{0: mixed, 1: mixed}> $entries  selector and serialized params of each row
+     * @return list<array<string, mixed>>
+     */
+    private static function logRows(string $event, array $entries, int $time): array
+    {
+        // CRON_FALLBACK_ERR, PAGE_PARAM_ERR and ITEM_FIELD_FILLED were logged for months
+        // under cut names nobody searched for; make the next such slip visible in the log
+        if (strlen($event) > self::TYPE_MAX) {
+            self::warn(['msg' => "log type '$event' exceeds " . self::TYPE_MAX . ' bytes and is stored cut']);
+            $event = substr($event, 0, self::TYPE_MAX);
+        }
+        $uid = AuthGetUid();
+        return array_map(static fn(array $entry): array => ['time' => $time, 'user' => $uid, 'type' => $event, 'selector' => $entry[0], 'params' => $entry[1]], $entries);
     }
 
     /** The log selector for $object: its own entry when the class knows how to
@@ -146,6 +148,41 @@ class AA_Log implements InternalExpandInterface
             return $object->logSelector();
         }
         return AA_Logentry_Obj::make($object, $id);
+    }
+
+    /** Rows that belong together, in one transaction and all with the same time - a reader
+     *  takes the newest set as the rows at MAX(time) of the event (AA\Optimize\NightlyLog).
+     * @param list<array{0: string, 1: AA_Logentry}> $rows  selector and params of each row
+     * @return bool  false when the event is not logged
+     * @throws RuntimeException when the rows could not be written - none of them is then
+     */
+    public static function writeSet(string $event, array $rows, int $time): bool
+    {
+        if (!$rows || !self::isLogable($event)) {
+            return false;
+        }
+        $data = self::logRows($event, array_map(static fn(array $row): array => [$row[0], $row[1]->serializeToString()], $rows), $time);
+        // doInsertMulti() splits big sets into several INSERTs and reports a failed one only by
+        // its return value - throwing rolls back the chunks before it, a reader never sees half a set
+        return DB_AA::transaction(static function () use ($data): bool {
+            // A failed INSERT would otherwise end the request with the HTML page of Halt_On_Error,
+            // and a caller answering JSON could not report it. The transaction runs every statement
+            // on one handle: switch it to quiet, then hand it back for doInsertMulti() to take again.
+            $db   = getDB();
+            $tx   = $db;
+            $halt = $tx->get_halt();
+            $tx->set_halt('no');
+            freeDB($db);
+            try {
+                $written = AA::Metabase()->doInsertMulti('log', $data);
+            } finally {
+                $tx->set_halt($halt);
+            }
+            if ($written === false) {
+                throw new RuntimeException('log rows not written');
+            }
+            return true;
+        });
     }
 
     public static function writeIfChanged(string $event, string $selector, AA_Logentry $params): bool
@@ -703,6 +740,110 @@ class AA_Logentry_Scs extends AA_Logentry
             'warnings' => new AA_Property('warnings', _m('Warnings'), 'int'),
             'infos'    => new AA_Property('infos', _m('Recommendations'), 'int'),
             'checks'   => new AA_Property('checks', _m('Checks'), 'int'),
+        ];
+    }
+}
+
+/** NIGHTLY row "run" - the newest push of the nightly test and the newest full run
+ *  (full_run '' until one came). Serialized: Nrun:run:mode:started:finished:full_run:full_started
+ */
+class AA_Logentry_Nrun extends AA_Logentry
+{
+    public string $run = '';
+    public string $mode = '';
+    public string $started = '';
+    public string $finished = '';
+    public string $full_run = '';
+    public string $full_started = '';
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'run'          => new AA_Property('run', _m('Run'), 'string'),
+            'mode'         => new AA_Property('mode', _m('Mode'), 'string'),
+            'started'      => new AA_Property('started', _m('Started'), 'int'),
+            'finished'     => new AA_Property('finished', _m('Finished'), 'int'),
+            'full_run'     => new AA_Property('full_run', _m('Last full run'), 'string'),
+            'full_started' => new AA_Property('full_started', _m('Last full run started'), 'int'),
+        ];
+    }
+}
+
+/** NIGHTLY row per check type and spec that ran (selector check:spec): which run ran it
+ *  last and when, and the reason of its known issue. Serialized: Nran:pair:run:ran:reason
+ */
+class AA_Logentry_Nran extends AA_Logentry
+{
+    public string $pair = '';
+    public string $run = '';
+    public string $ran = '';
+    public string $reason = '';
+
+    public static function make(int $pair, string $run, int $ran, string $reason): self
+    {
+        $entry = new self(['pair' => (string) $pair, 'run' => $run, 'ran' => (string) $ran, 'reason' => $reason]);
+        $entry->trimToFit(['reason'], self::PARAMS_MAX);
+        return $entry;
+    }
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'pair'   => new AA_Property('pair', _m('Pair'), 'int'),
+            'run'    => new AA_Property('run', _m('Run'), 'string'),
+            'ran'    => new AA_Property('ran', _m('Ran'), 'int'),
+            'reason' => new AA_Property('reason', _m('Known issue'), 'string'),
+        ];
+    }
+}
+
+/** NIGHTLY row per page with a finding (selector the page): how bad, how many, since when
+ *  and for how many runs in a row. Serialized: Nf:finding:pair:severity:known:count:first:runs
+ */
+class AA_Logentry_Nf extends AA_Logentry
+{
+    public string $finding = '';
+    public string $pair = '';
+    public string $severity = '';
+    public string $known = '';
+    public string $count = '';
+    public string $first = '';
+    public string $runs = '';
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'finding'  => new AA_Property('finding', _m('Finding'), 'int'),
+            'pair'     => new AA_Property('pair', _m('Pair'), 'int'),
+            'severity' => new AA_Property('severity', _m('Severity'), 'string'),
+            'known'    => new AA_Property('known', _m('Known issue'), 'bool'),
+            'count'    => new AA_Property('count', _m('Count'), 'int'),
+            'first'    => new AA_Property('first', _m('First seen'), 'int'),
+            'runs'     => new AA_Property('runs', _m('Runs in a row'), 'int'),
+        ];
+    }
+}
+
+/** NIGHTLY row with the evidence of an Nf row (selector the url of the page, '' when
+ *  none) - page and url do not fit one row together. Serialized: Ne:finding:evidence
+ */
+class AA_Logentry_Ne extends AA_Logentry
+{
+    public string $finding = '';
+    public string $evidence = '';
+
+    public static function make(int $finding, string $evidence): self
+    {
+        $entry = new self(['finding' => (string) $finding, 'evidence' => $evidence]);
+        $entry->trimToFit(['evidence'], self::PARAMS_MAX);
+        return $entry;
+    }
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'finding'  => new AA_Property('finding', _m('Finding'), 'int'),
+            'evidence' => new AA_Property('evidence', _m('Evidence'), 'string'),
         ];
     }
 }

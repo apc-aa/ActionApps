@@ -22,6 +22,11 @@ final class FindingTest extends TestCase
         $this->assertSame(['broken', 'many', 'few', 'hint', 'fine'], array_map(static fn(Finding $f) => $f->title, $sorted));
     }
 
+    public function test_rank_orders_severities_and_puts_anything_else_last(): void
+    {
+        $this->assertSame([0, 1, 2, 3, 4], array_map([Finding::class, 'rank'], [Finding::ERROR, Finding::WARNING, Finding::INFO, Finding::OK, 'fatal']));
+    }
+
     public function test_summary_counts_every_severity_even_when_absent(): void
     {
         $summary = Finding::summary([new Finding(Finding::ERROR, 'a'), new Finding(Finding::ERROR, 'b'), new Finding(Finding::OK, 'c')]);

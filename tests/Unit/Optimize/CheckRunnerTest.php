@@ -27,6 +27,7 @@ namespace Tests\Unit\Optimize {
     use AA\Optimize\AbstractOptimize;
     use AA\Optimize\CheckRunner;
     use AA\Optimize\CodePoints;
+    use AA\Optimize\Finding;
     use PHPUnit\Framework\TestCase;
 
     final class CheckRunnerTest extends TestCase
@@ -41,6 +42,26 @@ namespace Tests\Unit\Optimize {
                 self::assertTrue(is_subclass_of($class, AbstractOptimize::class), $class);
                 self::assertContains('sql_update', $class::types(), $class);
             }
+        }
+
+        /** a finding without a key is rebuilt with the class name as key - every field must survive it */
+        public function test_runClass_keyless_finding_keeps_every_field(): void
+        {
+            $check = new class extends AbstractOptimize {
+                public function findings(): array
+                {
+                    return [new Finding(Finding::WARNING, 'title', count: 3, since: 10, evidence: [['a' => 'b']], advice: 'advice', links: ['page' => 'https://x/'], repairable: true, last: 20, checked: 30, recheckable: false, verify: 'next run', muted: 'known', kind: 'Kind', place: '/page')];
+                }
+            };
+
+            $finding = CheckRunner::runClass('CheckX', $check::class)[0];
+
+            self::assertSame('CheckX', $finding->key);
+            self::assertSame('CheckX', $finding->check);
+            self::assertSame(
+                [Finding::WARNING, 'title', 3, 10, [['a' => 'b']], 'advice', ['page' => 'https://x/'], true, 20, 30, false, 'next run', 'known', 'Kind', '/page'],
+                [$finding->severity, $finding->title, $finding->count, $finding->since, $finding->evidence, $finding->advice, $finding->links, $finding->repairable, $finding->last, $finding->checked, $finding->recheckable, $finding->verify, $finding->muted, $finding->kind, $finding->place],
+            );
         }
     }
 }

@@ -85,6 +85,7 @@ class CheckSecurityProtections extends AbstractOptimize
                 advice: _m('Switch it on again once the older forms are converted.') . ' ' . $protection->migration(),
                 links: $page,
                 key: 'off:' . $protection->value,
+                kind: _m('Protection switched off'),
             );
         }
         foreach ($logged as [$protection, $row]) {
@@ -105,6 +106,8 @@ class CheckSecurityProtections extends AbstractOptimize
                 links: [_m('Log rows') => AA_Log::getAdminUrl((string) $protection->event(), $selector)] + $page,
                 key: $selector,
                 last: (int) $row['last'],
+                kind: $protection->loggedKind($refused),
+                place: $source,
             );
         }
         return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('All protections are on and none of them refused anything in the last %1 days', [self::WINDOW_DAYS]))];
