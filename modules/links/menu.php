@@ -40,6 +40,8 @@ https://www.apc.org/
  *      "headerXXX" - display menu header
  */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__ . "/../../include/menu_util.php";
 require_once __DIR__ . "/../../include/perm_core.php";
 require_once __DIR__ . "/../../include/mgettext.php";
@@ -215,13 +217,8 @@ function CreateMenu4Views($foo): array
     }
 
     $menu = [];
-    $db = getDB();
-
-    $SQL = "SELECT id, name, type FROM view WHERE slice_id=" . xpack_id($slice_id);
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $menu['view' . $db->f('id')] = CreateMenuItem($db->f('name'), 'admin/se_view.php?view_id=' . $db->f('id') . '&view_type=' . $db->f('type'));  // label, href [, cond]
+    foreach (DB_AA::select([], 'SELECT id, name, type FROM view', [['slice_id', $slice_id, 'l']]) as $row) {
+        $menu['view' . $row['id']] = CreateMenuItem($row['name'], 'admin/se_view.php?view_id=' . $row['id'] . '&view_type=' . $row['type']);  // label, href [, cond]
     }
-    freeDB($db);
     return $menu;
 }

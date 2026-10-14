@@ -63,14 +63,12 @@ function Links_AddCategory($name, $parent, $parentpath): int
 // Get specified column for base category of specified link
 function Links_GetBaseCategoryColumn($lid, $col): string
 {
-    $db = getDB();
-    $db->query("SELECT $col as retcol FROM links_categories, links_link_cat
-               WHERE links_categories.id = links_link_cat.category_id
-                 AND what_id='$lid'
-                 AND links_link_cat.base='y'");
-    $ret = ($db->next_record() ? $db->f('retcol') : "");
-    freeDB($db);
-    return $ret;
+    $row = DB_AA::select1([], "SELECT $col as retcol FROM links_categories, links_link_cat", [
+        ['links_categories.id', 'links_link_cat.category_id', 'j'],
+        ['what_id', $lid],
+        ['links_link_cat.base', 'y'],
+    ]);
+    return $row ? $row['retcol'] : "";
 }
 
 
@@ -169,24 +167,20 @@ function Links_GetLinkContent($zids): array
         return [];
     }
 
-    $db = getDB();
     // construct WHERE clausule
     $sel_in = $zids->sqlin(false);
 
     // get not rejected changes
-    $SQL = "SELECT changed_link_id, proposal_link_id FROM links_changes
-             WHERE changed_link_id $sel_in
-               AND rejected='n'";              // get only not rejected changes
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $changes_ids[] = $db->f('proposal_link_id');
-        $changes_map[$db->f('proposal_link_id')] = $db->f('changed_link_id');
+    foreach (DB_AA::select([], 'SELECT changed_link_id, proposal_link_id FROM links_changes', [$zids->whereIn('changed_link_id'), ['rejected', 'n']]) as $row) {
+        $changes_ids[] = $row['proposal_link_id'];
+        $changes_map[$row['proposal_link_id']] = $row['changed_link_id'];
     }
 
     if (isset($changes_ids) && is_array($changes_ids)) {
         $changes_where = ' OR id ' . (count($changes_ids) > 1 ? 'IN (' . implode(",", $changes_ids) . ')' : "='" . $changes_ids[0] . "'");
     }
 
+    $db = getDB();
     // get link data (including data of link changes)
     $SQL = "SELECT * FROM links_links WHERE id $sel_in $changes_where";
     $db->query($SQL);
@@ -206,17 +200,13 @@ function Links_GetLinkContent($zids): array
 
     // get language data for links
     $SQL = "SELECT links_languages.*, links_link_lang.link_id
-              FROM links_link_lang, links_languages
-             WHERE links_languages.id = links_link_lang.lang_id
-               AND links_link_lang.link_id $sel_in";
-    StoreTable2Content($content, $SQL, 'lang_', 'link_id');
+              FROM links_link_lang, links_languages";
+    StoreTable2Content($content, $SQL, 'lang_', 'link_id', [['links_languages.id', 'links_link_lang.lang_id', 'j'], $zids->whereIn('links_link_lang.link_id')]);
 
     // get region data for links
     $SQL = "SELECT links_regions.*, links_link_reg.link_id
-              FROM links_link_reg, links_regions
-             WHERE links_regions.id = links_link_reg.region_id
-               AND links_link_reg.link_id $sel_in";
-    StoreTable2Content($content, $SQL, 'reg_', 'link_id');
+              FROM links_link_reg, links_regions";
+    StoreTable2Content($content, $SQL, 'reg_', 'link_id', [['links_regions.id', 'links_link_reg.region_id', 'j'], $zids->whereIn('links_link_reg.link_id')]);
 
     // get categories data for links
     $SQL = "SELECT * FROM links_link_cat, links_categories

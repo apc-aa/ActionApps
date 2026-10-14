@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 // used in init_page.php script to include config.php from the right directory
 
+use AA\IO\DB\DB_AA;
 use AA\Managed;
 use AA\Manager;
 use AA\Manageraction\Links_Add2Cat;
@@ -96,25 +97,19 @@ function Links_UpdateStateFromFilter(): void
 
 function Links_CountLinkInBins($cat_path): array
 {
-    $db = getDB();
     // unasigned
     $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
              WHERE (links_link_cat.category_id IS NULL AND (links_links.folder<3))';
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $ret['unasigned'] = $db->f('count');
-    }
+    $ret['unasigned'] = DB_AA::select1('count', $SQL);
 
     // unasigned - trashed
     $SQL = 'SELECT count(DISTINCT links_links.id) as count FROM links_links
               LEFT JOIN links_link_cat ON links_links.id = links_link_cat.what_id
              WHERE (links_link_cat.category_id IS NULL AND (links_links.folder=3))';
-    $db->query($SQL);
-    if ($db->next_record()) {
-        $ret['unasigned3'] = $db->f('count');
-    }
+    $ret['unasigned3'] = DB_AA::select1('count', $SQL);
 
+    $db = getDB();
     // new
     $SQL = "SELECT  count(DISTINCT links_links.id) as count
               FROM links_link_cat, links_categories, links_links
