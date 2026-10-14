@@ -555,7 +555,7 @@ final class CentralSynchronizeTest extends TestCase
         $packed   = static fn(array $row): array => ['id' => pack_id($row['id']), 'ancestors' => pack_id($row['ancestors'])] + $row;
         RecordingDb::reset();
         RecordingDb::$answer = static fn(string $sql): array => match (true) {
-            str_contains($sql, "group_id='lt_groupNames'")        => [$packed(['id' => $group_id, 'group_id' => 'lt_groupNames', 'name' => 'yes_no', 'value' => 'yes_no', 'ancestors' => self::ANCESTORS])],
+            str_contains($sql, "group_id = 'lt_groupNames'")      => [$packed(['id' => $group_id, 'group_id' => 'lt_groupNames', 'name' => 'yes_no', 'value' => 'yes_no', 'ancestors' => self::ANCESTORS])],
             str_starts_with($sql, 'SELECT constant.* FROM constant') => [$packed(self::constantRow(57))],
             default                                                => [],
         };

@@ -157,13 +157,13 @@ namespace Tests\Unit\Central\Package {
             RecordingDb::$answer = static fn(string $sql): array => [['unpackid' => self::ITEM]];
 
             $this->assertSame([self::ITEM], (new DbSource())->itemIds(self::SLICE, false, '', 501));
-            $this->assertSame(['SELECT LOWER(HEX("id")) AS unpackid FROM "item" WHERE slice_id = 0x' . self::SLICE . ' AND status_code = 1 ORDER BY "id" LIMIT 501'], RecordingDb::$log);
+            $this->assertSame(['SELECT LOWER(HEX("id")) AS unpackid FROM "item" WHERE slice_id = 0x' . self::SLICE . ' AND status_code = 1 ORDER BY "id" LIMIT 0,501'], RecordingDb::$log);
         }
 
         public function test_itemIds_of_all_bins_after_the_cursor(): void
         {
             (new DbSource())->itemIds(self::SLICE, true, self::ITEM, 3);
-            $this->assertSame(['SELECT LOWER(HEX("id")) AS unpackid FROM "item" WHERE slice_id = 0x' . self::SLICE . ' AND id > 0x' . self::ITEM . ' ORDER BY "id" LIMIT 3'], RecordingDb::$log);
+            $this->assertSame(['SELECT LOWER(HEX("id")) AS unpackid FROM "item" WHERE slice_id = 0x' . self::SLICE . ' AND id > 0x' . self::ITEM . ' ORDER BY "id" LIMIT 0,3'], RecordingDb::$log);
         }
 
         public function test_itemIds_refuse_a_cursor_of_no_id(): void

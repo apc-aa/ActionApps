@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AA\Central;
 
 use AA;
-use Cvarset;
+use AA\IO\DB\DB_AA;
 
 /** Reads module definitions from this AA's database - the logic behind
  *  AA_Definition_Module(_Slice|_Site|_Alerts), which travel between AAs (Get_Module_Defs) and keep
@@ -38,11 +38,10 @@ final class DefinitionStore
                 $constant_groups[$v['group_id']] = true;
             }
 
-            $SQL = "SELECT * FROM constant WHERE group_id='lt_groupNames' AND " . Cvarset::sqlin('value', array_keys($constant_groups));
-
-            $groups = GetTable2Array($SQL, "unpack:id", 'aa_fields');
-            if (!is_array($groups)) {
-                $groups = [];
+            $where  = [['group_id', 'lt_groupNames'], ['value', array_filter(array_keys($constant_groups), static fn($group_id) => $group_id != '')]];
+            $groups = [];
+            foreach (DB_AA::select([], 'SELECT * FROM constant', $where) as $row) {
+                $groups[unpack_id($row['id'])] = $row;
             }
             $metabase->unpackIds('constant', $groups);   // id and ancestors, as getModuleRows() does
             $data['constant'] = array_merge($data['constant'], $groups);

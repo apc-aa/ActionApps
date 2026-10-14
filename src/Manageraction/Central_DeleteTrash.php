@@ -2,6 +2,7 @@
 
 namespace AA\Manageraction;
 
+use AA\IO\DB\DB_AA;
 use AA\Manager;
 use zids;
 
@@ -37,7 +38,7 @@ class Central_DeleteTrash extends AbstractManageraction
             return _m("You do not have permissions to remove items");
         }
 
-        $wherein         = '';
+        $where           = [['status_code', 3, 'i']];
         $items_to_delete = $item_zids->shortids();
 
         // restrict the deletion only to selected items
@@ -45,27 +46,21 @@ class Central_DeleteTrash extends AbstractManageraction
             if (count($items_to_delete) < 1) {
                 return false;
             }
-            $wherein = " AND id IN ('" . join_and_quote("','", $items_to_delete) . "')";
+            $where[] = ['id', $items_to_delete];
         }
-
-        $db = getDB();
 
         // now we ask, which items we have to delete. We are checking the items even
         // it is specified in $item_arr - for security reasons - we can delete only
         // items in current slice and in trash
-        $db->query("SELECT id FROM central_conf WHERE status_code=3 $wherein");
-        $items_to_delete = [];
-        while ($db->next_record()) {
-            $items_to_delete[] = $db->f("id");
-        }
+        $items_to_delete = DB_AA::select('id', 'SELECT id FROM central_conf', $where);
         if (count($items_to_delete) < 1) {
-            freeDB($db);
             return false;     // OK - no errors
         }
 
         // delete content of all fields
         // don't worry about fed fields - content is copied
         $wherein = "IN ('" . join_and_quote("','", $items_to_delete) . "')";
+        $db = getDB();
         $db->query("DELETE FROM central_conf WHERE id " . $wherein);
         freeDB($db);
         return false;     // OK - no errors

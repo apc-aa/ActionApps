@@ -53,10 +53,10 @@ class HitcounterUpdate implements LaterInterface
         $time = time() - 2;
 
         // first look to the short id hit table;
-        $hits_s = DB_AA::select(['id' => 'count'], 'SELECT `id`, count(*) as count FROM hit_short_id ' . DB_AA::makeWhere([['time',$time, '<']]) . " GROUP BY `id`");
+        $hits_s = DB_AA::select(['id' => 'count'], 'SELECT `id`, count(*) as count FROM hit_short_id', [['time', $time, '<']], null, ['`id`']);
 
         // now look for long ids hits
-        $hits_l = DB_AA::select(['short_id' => 'count'], 'SELECT item.short_id, count(*) as count FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id ' . DB_AA::makeWhere([['hit_long_id.time',$time, '<']]) . " GROUP BY item.short_id");
+        $hits_l = DB_AA::select(['short_id' => 'count'], 'SELECT item.short_id, count(*) as count FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id', [['hit_long_id.time', $time, '<']], null, ['item.short_id']);
 
         foreach ($hits_s as $short_id => $count) {
             // add long ids count
@@ -112,9 +112,9 @@ class HitcounterUpdate implements LaterInterface
      */
     public function updateDisplayStatistics(): void
     {
-        $stats2count = GetTable2Array("SELECT id, slice_id FROM field WHERE slice_id <> 'AA_Core_Fields..' AND id LIKE 'hit_%'", '');
+        $stats2count = DB_AA::select([], "SELECT id, slice_id FROM field WHERE slice_id <> 'AA_Core_Fields..' AND id LIKE 'hit_%'");
 
-        if (is_array($stats2count)) {
+        if ($stats2count) {
 
             $toexecute = new Toexecute();
             $timeshift = 0;

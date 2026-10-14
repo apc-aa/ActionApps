@@ -258,9 +258,8 @@ class ChangesMonitor
      */
     public function deleteProposalForSelector($resource_id, $selector): void
     {
-        $changes_ids = GetTable2Array("SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                         WHERE `change`.resource_id = '" . quote($resource_id) . "' AND `change`.type = 'p' AND `change_record`.selector = '" . quote($selector) . "'", '', 'change_id');
-        if (is_array($changes_ids)) {
+        $changes_ids = DB_AA::select('change_id', 'SELECT DISTINCT change_id  FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id', [['`change`.resource_id', (string) $resource_id], ['`change`.type', 'p'], ['`change_record`.selector', (string) $selector]]);
+        if ($changes_ids) {
             foreach ($changes_ids as $change_id) {
                 $this->deleteProposal($change_id);
             }
@@ -298,18 +297,13 @@ class ChangesMonitor
             return [];
         }
 
-        $ids4sql = sqlin("`change`.resource_id", $resource_ids);
-
         $sql = "SELECT `change`.resource_id, `change_record`.*
-                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                WHERE $ids4sql
-                                AND   `change`.type='$type'
-                                ORDER BY `change`.resource_id, `change`.time, `change_record`.change_id, `change_record`.selector, `change_record`.priority";
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id";
 
-        $changes = GetTable2Array($sql, '', 'aa_fields');
+        $changes = DB_AA::select([], $sql, [['`change`.resource_id', $resource_ids], ['`change`.type', $type]], ['`change`.resource_id', '`change`.time', '`change_record`.change_id', '`change_record`.selector', '`change_record`.priority']);
 
         $ret = [];
-        if (is_array($changes)) {
+        if ($changes) {
             $garr = new AA_GeneralizedArray();
             foreach ($changes as $change) {
                 if ($change['type']) {
@@ -638,12 +632,10 @@ class ChangesMonitor
             return [];
         }
         $garr = new AA_GeneralizedArray();
-        $changes = GetTable2Array("SELECT `change_record`.*, `change`.resource_id
-                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id
-                                WHERE `change`.id = '" . quote($change_id) . "'
-                                ORDER BY `change_record`.selector, `change_record`.priority", '', 'aa_fields');
+        $changes = DB_AA::select([], "SELECT `change_record`.*, `change`.resource_id
+                                FROM `change` LEFT JOIN `change_record` ON `change`.id = `change_record`.change_id", [['`change`.id', (string) $change_id]], ['`change_record`.selector', '`change_record`.priority']);
 
-        if (is_array($changes)) {
+        if ($changes) {
             foreach ($changes as $change) {
                 if ($change['type']) {
                     $value = $change['value'];
@@ -689,14 +681,9 @@ class ChangesMonitor
             return [];
         }
 
-        // construct WHERE clausule
-        $sel_in = $zids->sqlin(false, true);
-
         // get history data
-        $SQL = "SELECT * FROM `change` WHERE id $sel_in";
-
         $content = [];
-        StoreTable2Content($content, $SQL, '', 'id');
+        StoreTable2Content($content, 'SELECT * FROM `change`', '', 'id', [$zids->whereIn('id', true)]);
 
         $additional = DB_AA::select([], 'SELECT * FROM `change_record`', [['change_id', $zids->longids()]]);
         foreach ($additional as $chrec) {

@@ -87,8 +87,8 @@ final class CentralDefinitionModuleTest extends TestCase
         "SELECT rssfeeds.* FROM rssfeeds  WHERE rssfeeds.slice_id = '{ID}'",
         "SELECT constant_slice.* FROM constant_slice  WHERE constant_slice.slice_id = '{ID}'",
         "SELECT constant.* FROM constant INNER JOIN constant_slice ON constant.group_id=constant_slice.group_id WHERE constant_slice.slice_id = '{ID}'",
-        // no constants: the group names are still asked for, with a condition that never holds
-        "SELECT * FROM constant WHERE group_id='lt_groupNames' AND 2=1",
+        // no constants: the query still runs, with a condition that never holds
+        "SELECT * FROM constant WHERE 2=1",
     ];
 
     private const SLICE_ITEMS_SQL = [

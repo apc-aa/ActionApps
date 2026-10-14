@@ -32,9 +32,7 @@ class HitcounterStats implements LaterInterface
 
         $days = $this->getDays();
         $time = time() - ($days * 86400);
-        $qp_slice_id = xpack_id($this->slice_id);
-        $hits = GetTable2Array("SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id
-                                        WHERE hit_archive.time > $time AND item.slice_id = $qp_slice_id GROUP BY hit_archive.id", 'id', 'count');
+        $hits = DB_AA::select(['id' => 'count'], 'SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id', [['hit_archive.time', $time, '>'], ['item.slice_id', $this->slice_id, 'l']], null, ['hit_archive.id']);
         $dbgtime[] = microtime(true);
         $item_ids = DB_AA::select('', 'SELECT id FROM item', [['slice_id', $this->slice_id, 'l']]);
         $dbgtime[] = microtime(true);
