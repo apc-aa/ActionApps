@@ -113,16 +113,12 @@ class AA_Mysqlauth
     */
     public static function maintenance(): string
     {
-        $db = getDB();
         $result = [];
 
         // Create the array $oldusers with user names
-        $db->query("SELECT username FROM auth_user");
-        while ($db->next_record()) {
-            $oldusers[$db->f("username")] = 1;
-        }
+        $oldusers = DB_AA::select(['username' => 1], 'SELECT username FROM auth_user');
 
-        $slices = GetTable2Array("SELECT id, auth_field_group FROM slice WHERE type='ReaderManagement' AND auth_field_group > ''");
+        $slices = DB_AA::select(['id' => []], 'SELECT id, auth_field_group FROM slice', [['type', 'ReaderManagement'], ['auth_field_group', '', 'FILLED']]);
 
         // Work slice by slice
         foreach ($slices as $slice_id => $slice) {
@@ -155,6 +151,8 @@ class AA_Mysqlauth
                 }
             }
         }
+
+        $db = getDB();
 
         // Sanity checks:
 

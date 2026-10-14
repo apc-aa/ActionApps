@@ -319,29 +319,26 @@ function FilemanPerms($slice_id): bool
         }
         $perms_ok = false;
     } else {
-        $db = getDB();
-        $db->query("SELECT fileman_access, fileman_dir FROM slice WHERE id=".xpack_id($slice_id));
+        $slice = DB_AA::select1([], 'SELECT fileman_access, fileman_dir FROM slice', [['id', $slice_id, 'l']]);
 
-        if ($db->num_rows() != 1) {
+        if (!$slice) {
             $perms_ok = false;
         } else {
-            $db->next_record();
-            $fileman_dir = $db->f("fileman_dir");
+            $fileman_dir = $slice["fileman_dir"];
             if (IsSuperadmin()) {
                 $perms_ok = true;
             } else {
                 $perms_ok = false;
                 // a dot would let the directory reach above FILEMAN_BASE_DIR
                 if ($fileman_dir && preg_match('/^\w+$/D', $fileman_dir)) {
-                    if ($db->f("fileman_access") === "EDITOR" && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
+                    if ($slice["fileman_access"] === "EDITOR" && IfSlPerm(PS_EDIT_ALL_ITEMS)) {
                         $perms_ok = true;
-                    } elseif ($db->f("fileman_access") === "ADMINISTRATOR" && IfSlPerm(PS_FULLTEXT)) {
+                    } elseif ($slice["fileman_access"] === "ADMINISTRATOR" && IfSlPerm(PS_FULLTEXT)) {
                         $perms_ok = true;
                     }
                 }
             }
         }
-        freeDB($db);
     }
     return $perms_ok;
 }
@@ -357,21 +354,17 @@ function FilemanPerms($slice_id): bool
 function GetUserEmails($type = ""): array
 {
     $slices = GetUserSlices();
-    $where  = "WHERE (1=1)";
+    $where  = [];
     if ($type) {
-        $where .= " AND type='$type'";
+        $where[] = ['type', $type];
     }
     if ($slices === "all") {
     } elseif (!is_array($slices) || !count($slices)) {
         return [];
     } else {
-        $slice_ids = [];
-        foreach (array_keys($slices) as $slice) {
-            $slice_ids[] = q_pack_id($slice);
-        }
-        $where .= " AND owner_module_id IN ('".implode ("','", $slice_ids)."')";
+        $where[] = ['owner_module_id', array_map('pack_id', array_keys($slices)), 'b'];
     }
-    return GetTable2Array("SELECT id, description FROM email $where", 'id', 'description') ?: [];
+    return DB_AA::select(['id' => 'description'], 'SELECT id, description FROM email', $where);
 }
 
 /** Grabs User name from LDAP/SQL/AA
