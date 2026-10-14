@@ -2,6 +2,7 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
 use AA_Permsystem_Reader;
 
 /** There was change in Reader management functionality in AA v2.8.1 */
@@ -58,7 +59,7 @@ class ReadersLogin2id extends AbstractOptimize
     {
         // get posted_by, edit_by, ... array:  posted_by => 1
         $SQL = "SELECT DISTINCT $item_field FROM item";
-        $editors = GetTable2Array($SQL, $item_field, 'aa_mark');
+        $editors = DB_AA::select([$item_field => true], $SQL);
         $ret = [];
         foreach ($readers as $r_id => $reader) {
             if ($reader['name'] && isset($editors[$reader['name']])) {

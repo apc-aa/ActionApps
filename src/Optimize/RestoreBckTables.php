@@ -3,6 +3,7 @@
 namespace AA\Optimize;
 
 use AA;
+use AA\IO\DB\DB_AA;
 
 /** Restore Data from Backup Tables
  *  This script DELETES all the current tables (slice, item, ...) where we have
@@ -34,7 +35,7 @@ class RestoreBckTables extends \AA\Optimize\AbstractOptimize
     {
         $ret = true;
 
-        $bck_exists = GetTable2Array("SHOW TABLES LIKE 'bck_content'", "aa_first");
+        $bck_exists = DB_AA::select([], "SHOW TABLES LIKE 'bck_content'");
         if (!$bck_exists) {
             $this->message(_m('The bck_ tables do not exist (or at least bck_content table)'));
             $ret = false;
@@ -52,7 +53,7 @@ class RestoreBckTables extends \AA\Optimize\AbstractOptimize
 
         foreach ($tablenames as $tablename) {
             // checks if the backup table exist
-            $bck_exists = GetTable2Array("SHOW TABLES LIKE 'bck_$tablename'", "aa_first");
+            $bck_exists = DB_AA::select([], "SHOW TABLES LIKE 'bck_$tablename'");
             if (!$bck_exists) {
                 // we do not have bck table
                 $this->message(_m('There is no bck_%1 table - %1 not restored.', [$tablename]));

@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
+
 /** Add mandtory fields to each slice where missing */
 class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize
 {
@@ -38,7 +40,7 @@ class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize
     {
         $ret = true;
 
-        $row_count = GetTable2Array("SELECT count(*) as count FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='" . $this->_field() . "') WHERE field.id IS NULL AND slice.id <> 'AA_Core_Fields..'", "aa_first", 'count');
+        $row_count = DB_AA::select1('count', "SELECT count(*) as count FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='" . $this->_field() . "') WHERE field.id IS NULL AND slice.id <> 'AA_Core_Fields..'");
         if ($row_count > 0) {
             $this->message(_m('Missing %1 field definition in some slices - need to repair', [$this->_field()]));
             $ret = false;
@@ -51,7 +53,7 @@ class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize
     {
         $this->message(_m('Fixing missing %1 fields in slices', [$this->_field()]));
 
-        $slices_to_fix = GetTable2Array("SELECT slice.id as sid FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='" . $this->_field() . "') WHERE field.id IS NULL", "", 'sid');
+        $slices_to_fix = DB_AA::select('sid', "SELECT slice.id as sid FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='" . $this->_field() . "') WHERE field.id IS NULL");
 
         foreach ($slices_to_fix as $sid) {
             if ($sid === 'AA_Core_Fields..') {

@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
+
 /** Set flag FLAG_TEXT_STORED for all content, where field is marked as text
  *  field, and reset it for numer fields
  */
@@ -40,7 +42,7 @@ class FixContentColumn extends AbstractOptimize
      */
     public function test(): bool
     {
-        $bad_rows = GetTable2Array("SELECT content.item_id, content.field_id, slice.id, slice.name FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0", '');
+        $bad_rows = DB_AA::select([], "SELECT content.item_id, content.field_id, slice.id, slice.name FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0");
         if (empty($bad_rows)) {
             $this->message(_m('No problem found, hurray'));
             return true;
@@ -70,8 +72,8 @@ class FixContentColumn extends AbstractOptimize
      */
     public function repair(): bool
     {
+        $bad_rows = DB_AA::select([], "SELECT content.item_id, content.field_id FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0");
         $db = getDb();
-        $bad_rows = GetTable2Array("SELECT content.item_id, content.field_id FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0", '');
         foreach ($bad_rows as $index => $row) {
             $SQL = "UPDATE content SET flag = flag | 64 WHERE item_id = '" . quote($row['item_id']) . "' AND field_id = '" . quote($row['field_id']) . "'";
             $db->query($SQL);
