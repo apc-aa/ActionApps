@@ -17,18 +17,14 @@ namespace AA\Util;
 final class Url
 {
     /**
-     * Behind a proxy the port and the scheme both lie, so the forwarded header is the last word.
-     *
-     * Careful before you lean on this for anything but display: X-Forwarded-Proto is taken from
-     * whoever sent the request, with no trusted-proxy list, so any visitor can make it say true.
-     * Moved here verbatim from AA_Http; gating it on a configured proxy is in AA_TODO.md.
+     * Behind a proxy TrustedProxy::apply() has already set HTTPS from the proxy's X-Forwarded-Proto;
+     * the header itself is not read here - from anyone but a trusted proxy it means nothing.
      */
     public static function isHttps(): bool
     {
         return match (true) {
             !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off' => true,
             ($_SERVER['SERVER_PORT'] ?? null) == 443 => true,
-            ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https' => true,
             default => false,
         };
     }
