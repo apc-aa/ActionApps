@@ -67,18 +67,15 @@ function alertsAvailableSelections(): array
 {
     $available = [];
     $myslices  = GetUserSlices();
-    $db = getDB();
-    $db->query("SELECT DF.description AS fdesc, DF.id AS filterid, view.slice_id
+    foreach (DB_AA::select([], "SELECT DF.description AS fdesc, DF.id AS filterid, view.slice_id
                   FROM slice
                   INNER JOIN view ON slice.id = view.slice_id
                   INNER JOIN alerts_filter DF ON DF.vid = view.id
-                  ORDER BY DF.description");
-    while ($db->next_record()) {
-        if (IsSuperadmin() || str_contains($myslices[unpack_id($db->f("slice_id"))] ?? '', PS_FULLTEXT)) {
-            $available[$db->f("filterid")] = $db->f("fdesc");
+                  ORDER BY DF.description") as $row) {
+        if (IsSuperadmin() || str_contains($myslices[unpack_id($row["slice_id"])] ?? '', PS_FULLTEXT)) {
+            $available[$row["filterid"]] = $row["fdesc"];
         }
     }
-    freeDB($db);
     return $available;
 }
 

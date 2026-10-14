@@ -30,6 +30,7 @@ https://www.apc.org/
 
 // (c) Econnect, Jakub Adamek, December 2002
 
+use AA\IO\DB\DB_AA;
 
 require_once __DIR__ . "/alerts_sending.php";
 
@@ -109,7 +110,7 @@ function ShowCollectionAddOns(): void
     echo '<br>';
 
     FrmTabCaption(_m("Last time the alerts were sent on:"));
-    $last = GetTable2Array("SELECT howoften, last FROM alerts_collection_howoften WHERE collectionid='" . $collectionid . "'", 'howoften', 'last');
+    $last = DB_AA::select(['howoften' => 'last'], "SELECT howoften, last FROM alerts_collection_howoften", [['collectionid', $collectionid]]);
 
     $ho_options = get_howoften_options();
     foreach ($ho_options as $ho => $msg) {
@@ -126,8 +127,8 @@ function ShowCollectionAddOns(): void
 
 function showSelectionTable(): void
 {
-    $db = getDB();
-    $db->query(
+    $rows = DB_AA::select(
+        [],
         "SELECT view.slice_id, slice.name AS slice_name,
             alerts_filter.vid, view.name AS view_name,
             alerts_filter.id AS fid, view.type AS view_type,
@@ -137,14 +138,13 @@ function showSelectionTable(): void
          ORDER BY slice.name, view.name, alerts_filter.id",
     );
     $myslices = GetUserSlices();
-    while ($db->next_record()) {
-        $a[$db->f("slice_id")]["name"] = $db->f("slice_name");
-        $av = &$a[$db->f("slice_id")]["views"];
-        $av[$db->f("vid")]["name"] = $db->f("view_name");
-        $av[$db->f("vid")]["type"] = $db->f("view_type");
-        $av[$db->f("vid")]["filters"][$db->f("fid")] = $db->f("filter_name");
+    foreach ($rows as $row) {
+        $a[$row["slice_id"]]["name"] = $row["slice_name"];
+        $av = &$a[$row["slice_id"]]["views"];
+        $av[$row["vid"]]["name"] = $row["view_name"];
+        $av[$row["vid"]]["type"] = $row["view_type"];
+        $av[$row["vid"]]["filters"][$row["fid"]] = $row["filter_name"];
     }
-    freeDB($db);
 
     //echo "<BR><B>"._m("Selections ordered by slice and view:")."</B><BR>";
     echo "<br><table>

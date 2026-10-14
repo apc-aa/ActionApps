@@ -183,13 +183,11 @@ function delete_fields_from_slice($collectionid, $slice_id)
     $varset = new CVarset();
     $varset->addkey("slice_id", "unpacked", $slice_id);
 
-    $db = getDB();
     foreach (array_keys($alerts_specific_fields) as $field_id) {
         $varset->addkey("id", "text", $field_id);
 
-        $db->query($varset->makeSELECT("field"));
-        if ($db->next_record()) {
-            [, $group_id] = explode(":", $db->f("input_show_func"));
+        if ($row = DB_AA::select1([], $varset->makeSELECT("field"))) {
+            [, $group_id] = explode(":", $row["input_show_func"]);
             if (delete_constant_group($group_id, $slice_id)) {
                 $ndeleted_groups++;
             }
@@ -197,7 +195,6 @@ function delete_fields_from_slice($collectionid, $slice_id)
             $varset->doDelete("field");
         }
     }
-    freeDB($db);
     return _m("%1 field(s) and %2 constant group(s) deleted", [$ndeleted + 0, $ndeleted_groups + 0]);
 }
 
@@ -210,24 +207,19 @@ function getReaderManagementSlices(): array
     global $slice_id, $collectionprop;
 
     $slices = GetUserSlices();
-    $SQL = "SELECT id, name FROM slice WHERE type='ReaderManagement'
-        AND id <> '" . addslashes($collectionprop["sliceid"]) . "'";
+    $where  = [['type', 'ReaderManagement'], ['id', $collectionprop["sliceid"], 's<>']];
     if (is_array($slices)) {
-        $delim = "";
+        $ids = [];
         foreach (array_keys($slices) as $slice_id) {
-            $where .= $delim . xpack_id($slice_id);
-            $delim = ",";
+            $ids[] = $slice_id;
         }
-        $SQL .= " AND id IN (" . $where . ")";
+        $where[] = ['id', $ids, 'l'];
     }
-    $db = getDB();
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $retval[unpack_id($db->f("id"))] = $db->f("name");
+    foreach (DB_AA::select([], 'SELECT id, name FROM slice', $where) as $row) {
+        $retval[unpack_id($row["id"])] = $row["name"];
     }
     if ($collectionprop["slice_id"]) {
         $retval[""] = _m("not set");
     }
-    freeDB($db);
     return $retval;
 }

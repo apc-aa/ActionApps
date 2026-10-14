@@ -85,8 +85,7 @@ if ($update) {
     $varset->add("destination", "text", $jump_url);
     $varset->add("dest_slice_id", "unpacked", $dest_id);
 
-    $db->query("SELECT * FROM module WHERE id=$q_jump_id");
-    if ($db->next_record()) {
+    if (DB_AA::test('module', [['id', $jump_id, 'l']])) {
         $db->query("UPDATE jump SET " . $varset->makeUPDATE() . " WHERE slice_id=$q_jump_id");
 
         $varset->clear();
@@ -117,13 +116,12 @@ if ($update) {
 if (!$jump_id) {
     $jump_name = $jump_url = $dest_id = "";
 } else {
-    $db->query("SELECT name,destination,dest_slice_id FROM jump INNER JOIN module
-            ON jump.slice_id = module.id
-            WHERE jump.slice_id = " . xpack_id($jump_id));
-    if ($db->next_record()) {
-        $jump_name = $db->f("name");
-        $jump_url = $db->f("destination");
-        $dest_id = unpack_id($db->f("dest_slice_id"));
+    $row = DB_AA::select1([], "SELECT name,destination,dest_slice_id FROM jump INNER JOIN module
+            ON jump.slice_id = module.id", [['jump.slice_id', $jump_id, 'l']]);
+    if ($row) {
+        $jump_name = $row["name"];
+        $jump_url = $row["destination"];
+        $dest_id = unpack_id($row["dest_slice_id"]);
     }
 }
 

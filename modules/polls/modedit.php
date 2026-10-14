@@ -168,12 +168,10 @@ if ($is_add ? $insert : $update) {
         } else { // insert (add)
             $varset->clear();
 
-            $p_template_id = ($template['P'] ? q_pack_id(substr($template['P'], 1)) : 'PollsTemplate...');
+            $p_template_id = ($template['P'] ? pack_id(substr($template['P'], 1)) : 'PollsTemplate...');
 
-            $SQL = "SELECT * FROM polls WHERE (module_id='$p_template_id' AND status_code=0)";
-            $db->query($SQL);
-            if ($db->next_record()) {
-                $varset->resetFromRecord($db->record());
+            if ($row = DB_AA::select1([], 'SELECT * FROM polls', [['module_id', $p_template_id, 'b'], ['status_code', 0, 'i']])) {
+                $varset->resetFromRecord($row);
             } else {
                 warn("Bad template id");
                 $varset->resetFromRecord(AddPolls::POLLS_DEFAULT_VALUES);
@@ -194,10 +192,8 @@ if ($is_add ? $insert : $update) {
             $varset->doInsert('polls');
 
             // copy design themes...
-            $SQL = "SELECT * FROM polls_design WHERE module_id='$p_template_id'";
-            $db->query($SQL);
-            while ($db->next_record()) {
-                $varset->resetFromRecord($db->record());
+            foreach (DB_AA::select([], 'SELECT * FROM polls_design', [['module_id', $p_template_id, 'b']]) as $row) {
+                $varset->resetFromRecord($row);
                 $varset->set("module_id", $module_id, "unpacked");
                 $varset->set('id', new_id(), 'text');
                 $varset->doInsert('polls_design');
