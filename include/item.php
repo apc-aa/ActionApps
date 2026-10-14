@@ -1264,8 +1264,8 @@ class AA_Item
         // can use either the 'headline......' format or "You static text here"
         $stringToMatch   = get_if($this->getval($stringToMatch_Raw), $stringToMatch_Raw);
 
-        $fieldToMatch    = quote($p[2] ?: (defined('BLURB_FIELD_TO_MATCH') ? BLURB_FIELD_TO_MATCH : ''));
-        $fieldToReturn   = quote($p[3] ?: (defined('BLURB_FIELD_TO_RETURN') ? BLURB_FIELD_TO_RETURN : ''));
+        $fieldToMatch    = $p[2] ?: (defined('BLURB_FIELD_TO_MATCH') ? BLURB_FIELD_TO_MATCH : '');
+        $fieldToReturn   = $p[3] ?: (defined('BLURB_FIELD_TO_RETURN') ? BLURB_FIELD_TO_RETURN : '');
         /*
         This SQL effectively narrows down through three sets:
         a) all the items from our blurb slice
@@ -1282,34 +1282,19 @@ class AA_Item
 
         if ($fieldToMatch === "id..............") {
             // Special case id... its not a real field
-            $fqsqlid = xpack_id($stringToMatch);
-            $SQL = "SELECT c2.text AS text
-                    FROM content c2
-                    WHERE c2.field_id    = '$fieldToReturn' AND
-                          c2.item_id     = $fqsqlid";
-
+            $SQL   = "SELECT c2.text AS text FROM content c2";
+            $where = [['c2.field_id', $fieldToReturn], ['c2.item_id', $stringToMatch, 'l']];
         } elseif ($fieldToMatch === "short_id........") {
-            $p_blurbSliceId  = xpack_id($p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''));
-            $SQL = "SELECT c2.text AS text
-                    FROM item LEFT JOIN content c2 ON item.id = c2.item_id
-                    WHERE slice_id  = $p_blurbSliceId AND
-                         item.short_id = '$stringToMatch' AND
-                         c2.field_id    = '$fieldToReturn'";
+            $SQL   = "SELECT c2.text AS text FROM item LEFT JOIN content c2 ON item.id = c2.item_id";
+            $where = [['slice_id', $p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''), 'l'], ['item.short_id', $stringToMatch], ['c2.field_id', $fieldToReturn]];
         } else {
-            $p_blurbSliceId  = xpack_id($p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''));
-            $SQL = "SELECT c2.text AS text
+            $SQL   = "SELECT c2.text AS text
                     FROM item LEFT JOIN content c1 ON item.id = c1.item_id
-                              LEFT JOIN content c2 ON item.id = c2.item_id
-                    WHERE slice_id  = $p_blurbSliceId AND
-                         c1.field_id    = '$fieldToMatch' AND
-                         c2.field_id    = '$fieldToReturn' AND
-                         c1.text        = '" . addslashes($stringToMatch) . "'";
+                              LEFT JOIN content c2 ON item.id = c2.item_id";
+            $where = [['slice_id', $p[1] ?: (defined('BLURB_SLICE_ID') ? BLURB_SLICE_ID : ''), 'l'], ['c1.field_id', $fieldToMatch], ['c2.field_id', $fieldToReturn], ['c1.text', $stringToMatch]];
         }
-        $db = getDB();
-        $db->query($SQL);
-        $res = ($db->next_record() ? $db->f('text') : '');
-        freeDB($db);
-        return $res;
+        $row = DB_AA::select1([], $SQL, $where);
+        return $row ? $row['text'] : '';
     }
 
 
@@ -1340,14 +1325,13 @@ class AA_Item
      */
     public function f_r($col, $param = ""): string
     {
-        static $title, $link, $description, $q_owner;
+        static $title, $link, $description, $owner;
 
         if ($col === 'SLICEdate') {
             return $this->RSS_restrict(gmdate("D, d M Y H:i:s ") . "GMT", 100);
         }
 
         $slice_id   = $this->getSliceID();
-        $p_slice_id = xpack_id($slice_id);
 
         if (! $title) {
             if ($slice_id == "") {
@@ -1356,19 +1340,16 @@ class AA_Item
             }
 
             // RSS chanel (= slice) info
-            $SQL = "SELECT name, slice_url, owner FROM module WHERE id=$p_slice_id";
-
-            $db  = getDB();
-            $db->query($SQL);
-            if (!$db->next_record()) {
+            $module = DB_AA::select1([], 'SELECT name, slice_url, owner FROM module', [['id', $slice_id, 'l']]);
+            if (!$module) {
                 echo "Can't get slice info";
                 exit;
             }
 
-            $title       = $this->RSS_restrict($db->f('name'), 100);
-            $link        = $this->RSS_restrict($db->f('slice_url'), 500);
+            $title       = $this->RSS_restrict($module['name'], 100);
+            $link        = $this->RSS_restrict($module['slice_url'], 500);
             //$name        = $db->f('name');
-            $q_owner     = addslashes($db->f('owner'));
+            $owner       = $module['owner'];
             //$language  = RSS_restrict( strtolower($db->f(lang_file)), 2);
         }
 
@@ -1381,7 +1362,7 @@ class AA_Item
         }
         if ($col === 'SLICEdesc') {
             if (!$description) {
-                $owner_name  = GetTable2Array("SELECT name FROM slice_owner WHERE id='$q_owner'", 'aa_first', 'name');
+                $owner_name  = DB_AA::select1('name', 'SELECT name FROM slice_owner', [['id', $owner, 'b']]);
                 $description = $this->RSS_restrict($owner_name, 400) . ": $title";
             }
             return $description;

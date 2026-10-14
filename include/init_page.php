@@ -40,6 +40,7 @@
  */
 
 use AA\Doit\RequestMonitor;
+use AA\IO\DB\DB_AA;
 use AA\Util\Langs;
 
 // Request inputs used by this bootstrap. Everything else an including page needs it reads
@@ -121,18 +122,13 @@ if (!$no_slice_id && !IsSuperadmin() && !$perm_slices[AA::$module_id] && !$after
     exit;
 }
 
-if (!is_object($db)) {
-    $db = getDB();
-}
-
 // Create g_modules: a global array which holds user editable modules
-$db->query("SELECT id, name, type, deleted FROM module ORDER BY priority, name");
-while ($db->next_record()) {
-    $my_slice_id = unpack_id($db->f('id'));
-    if (IsSuperadmin() || (!$db->f('deleted') && $perm_slices[$my_slice_id])) {
+foreach (DB_AA::select([], 'SELECT id, name, type, deleted FROM module', null, ['priority', 'name']) as $module_row) {
+    $my_slice_id = unpack_id($module_row['id']);
+    if (IsSuperadmin() || (!$module_row['deleted'] && $perm_slices[$my_slice_id])) {
         $g_modules[$my_slice_id] = [
-            'name' => $db->f('name'),
-            'type' => AA_Moduleregistry::singleton()[$db->f('type')] ? $db->f('type') : 'S',   // @todo remove type and use AA_Module::getModuleType() or AA_Module::getModuleInfo() instead
+            'name' => $module_row['name'],
+            'type' => AA_Moduleregistry::singleton()[$module_row['type']] ? $module_row['type'] : 'S',   // @todo remove type and use AA_Module::getModuleType() or AA_Module::getModuleInfo() instead
         ];
     }
 }
@@ -161,13 +157,12 @@ if (!$no_slice_id) {
     $p_slice_id = q_pack_id(AA::$module_id);
     $slice_id   = AA::$module_id;
 
-    $db->query("SELECT * FROM module WHERE id='$p_slice_id'");
-    $db->next_record();
+    $module_row = DB_AA::select1([], 'SELECT * FROM module', [['id', pack_id(AA::$module_id), 'b']]);
 
     // These variables have names of $r_ but are not session stored
     // because this is unnecessary: their evaluation is very fast.
-    $r_lang_file      = $db->f('lang_file');
-    $r_slice_view_url = $db->f('slice_url');
+    $r_lang_file      = $module_row['lang_file'] ?? null;
+    $r_slice_view_url = $module_row['slice_url'] ?? null;
 
     //    $module_type         = $g_modules[AA::$module_id]['type'];
     //
@@ -196,6 +191,10 @@ if (!$no_slice_id) {
     //            exit;
     //        }
     //    }
+}
+
+if (!is_object($db)) {
+    $db = getDB();
 }
 
 // freeDB($db);   we left it open for /admin/ scripts  - otherwise we have to ask getDB() for every admin page (which is OK as well)

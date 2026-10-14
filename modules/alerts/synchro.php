@@ -27,6 +27,7 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../../include/init_page.php";
@@ -86,9 +87,8 @@ if ($change_to_cmd && ($change_to != $collectionprop["slice_id"])) {
     $collectionprop["slice_id"] = $change_to;
 }
 
-$db->query("SELECT name FROM slice WHERE id=" . xpack_id($collectionprop["slice_id"]));
-if ($db->next_record()) {
-    $slice_name = $db->f("name");
+if ($row = DB_AA::select1([], 'SELECT name FROM slice', [['id', $collectionprop["slice_id"], 'l']])) {
+    $slice_name = $row["name"];
     $slice_set  = true;
 } else {
     $slice_set  = false;

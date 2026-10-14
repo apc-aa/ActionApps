@@ -28,6 +28,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -51,40 +52,41 @@ if (!IfSlPerm(PS_FEEDING)) {
 $err = [];          // error array (Init - just for initializing variable
 
               // lookup all slices without this one
-$SQL        = "SELECT id, name FROM slice WHERE id<>'$p_slice_id' ORDER BY name";
-$all_slices = GetTable2Array($SQL, 'unpack:id', 'name');
+$SQL        = "SELECT LOWER(HEX(id)) AS unpackid, name FROM slice";
+$all_slices = DB_AA::select(['unpackid' => 'name'], $SQL, [['id', pack_id(AA::$module_id), 's<>']], ['name']);
 
               // lookup export_to slice
-$SQL        = "SELECT name, id FROM slice, feedperms WHERE slice.id=feedperms.to_id AND feedperms.from_id='$p_slice_id' ORDER BY name";
-$export_to  = GetTable2Array($SQL, 'unpack:id', 'name');
+$SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM slice, feedperms";
+$export_to  = DB_AA::select(['unpackid' => 'name'], $SQL, [['slice.id', 'feedperms.to_id', 'j'], ['feedperms.from_id', pack_id(AA::$module_id), 'b']], ['name']) ?: false;   // false when empty - the form below tests is_array()
 
               // lookup importable slice
-$SQL        = "SELECT name, id FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
-                WHERE (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1) AND slice.id<>'$p_slice_id' ORDER BY name";
-$importable = GetTable2Array($SQL, 'unpack:id', 'name');
+$SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM slice LEFT JOIN feedperms ON slice.id=feedperms.from_id";
+$importable = DB_AA::select(['unpackid' => 'name'], $SQL, [
+    [null, [[['feedperms.to_id', pack_id(AA::$module_id), 'b']], [['slice.export_to_all', 1, 'i']]], 'OR'],
+    ['slice.id', pack_id(AA::$module_id), 's<>'],
+], ['name']) ?: false;
 
               // lookup imported slices
-$SQL        = "SELECT name, id FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.from_id
-                WHERE slice.id=feeds.from_id
-                  AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
-                  AND feeds.to_id='$p_slice_id' ORDER BY name";
-$imported   = GetTable2Array($SQL, 'unpack:id', 'name');
+$SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.from_id";
+$imported   = DB_AA::select(['unpackid' => 'name'], $SQL, [
+    ['slice.id', 'feeds.from_id', 'j'],
+    [null, [[['feedperms.to_id', pack_id(AA::$module_id), 'b']], [['slice.export_to_all', 1, 'i']]], 'OR'],
+    ['feeds.to_id', pack_id(AA::$module_id), 'b'],
+], ['name']) ?: false;
 
               // lookup exported slices
-$SQL        = "SELECT name, id FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.to_id
-                WHERE slice.id=feeds.to_id
-                  AND feeds.from_id='$p_slice_id' ORDER BY name";
-$exported   = GetTable2Array($SQL, 'unpack:id', 'name');
+$SQL        = "SELECT name, LOWER(HEX(id)) AS unpackid FROM feeds, slice LEFT JOIN feedperms ON slice.id=feedperms.to_id";
+$exported   = DB_AA::select(['unpackid' => 'name'], $SQL, [['slice.id', 'feeds.to_id', 'j'], ['feeds.from_id', pack_id(AA::$module_id), 'b']], ['name']) ?: false;
 
               // lookup for inconcistence in the database
               // feeding into nonexistant database
-$SQL        = "SELECT to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id
-                    WHERE feeds.from_id='$p_slice_id' AND slice.id IS NULL";
-$wrong_exp  = GetTable2Array($SQL, 'unpack:to_id', 'unpack:to_id');
+$SQL        = "SELECT to_id FROM feeds LEFT JOIN slice ON feeds.to_id=slice.id";
+$wrong_exp  = array_map('unpack_id', DB_AA::select('to_id', $SQL, [['feeds.from_id', pack_id(AA::$module_id), 'b'], ['slice.id', '', 'ISNULL']]));
+$wrong_exp  = $wrong_exp ? array_combine($wrong_exp, $wrong_exp) : false;
 
               // export_to_all setting
-$SQL        = "SELECT export_to_all FROM slice WHERE slice.id='$p_slice_id'";
-$export_to_all = GetTable2Array($SQL, 'aa_first', 'export_to_all');
+$SQL        = "SELECT export_to_all FROM slice";
+$export_to_all = DB_AA::select1('export_to_all', $SQL, [['slice.id', pack_id(AA::$module_id), 'b']]);
 
 
 

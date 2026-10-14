@@ -26,6 +26,8 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\IO\DB\DB_AA;
+
 require_once __DIR__ . "/../../include/mail.php";
 require_once __DIR__ . "/../../include/mgettext.php";
 require_once __DIR__ . "/../../modules/alerts/util.php";
@@ -36,12 +38,9 @@ require_once __DIR__ . "/../../modules/alerts/alerts_sending.php";
 */
 function AlertsSendWelcome($slice_id, $itemContent): void
 {
-    $mydb = getDB();
-
-    $mydb->query("SELECT alerts_collection.id, slice_url, emailid_welcome
+    $collections = DB_AA::select([], "SELECT alerts_collection.id, slice_url, emailid_welcome
         FROM alerts_collection INNER JOIN module
-        ON alerts_collection.module_id = module.id
-        WHERE alerts_collection.slice_id=" . xpack_id($slice_id));
+        ON alerts_collection.module_id = module.id", [['alerts_collection.slice_id', $slice_id, 'l']]);
 
     $slice   = AA_Slice::getModule($slice_id);
     $aliases = $slice->aliases();
@@ -51,20 +50,19 @@ function AlertsSendWelcome($slice_id, $itemContent): void
     // Don't send mail if already confirmed - for example imported addresses
     if (! $itemContent->getValue(FIELDID_MAIL_CONFIRMED)) {   // switch..........
 
-        while ($mydb->next_record()) {
-            $aliases["_#COLLFORM"] = GetAliasDef("f__:" . get_url($mydb->f("slice_url"), ['aw' => $itemContent->getValue(FIELDID_ACCESS_CODE)]), "id..............");
-            $aliases["_#HOWOFTEN"] = GetAliasDef("f_h", getAlertsField(FIELDID_HOWOFTEN, $mydb->f("id")));
+        foreach ($collections as $row) {
+            $aliases["_#COLLFORM"] = GetAliasDef("f__:" . get_url($row["slice_url"], ['aw' => $itemContent->getValue(FIELDID_ACCESS_CODE)]), "id..............");
+            $aliases["_#HOWOFTEN"] = GetAliasDef("f_h", getAlertsField(FIELDID_HOWOFTEN, $row["id"]));
             $aliases["_#CONFIRM_"] = GetAliasDef("f_h", FIELDID_MAIL_CONFIRMED);
             $item  = new AA_Item($itemContent, $aliases);
 
-            if ($mydb->f("emailid_welcome")) {
-                AA_Mail::sendTemplate($mydb->f("emailid_welcome"), $itemContent->getValue(FIELDID_EMAIL), $item);
+            if ($row["emailid_welcome"]) {
+                AA_Mail::sendTemplate($row["emailid_welcome"], $itemContent->getValue(FIELDID_EMAIL), $item);
             }
             break; // one is enough
             // @todo - send right e-mails (depending on the subscribed alerts, when readers works for more than 1 alerts)
         }
     }
-    freeDB($mydb);
 }
 
 /** Sends instant Alert when a new item appears in any slice which is
@@ -78,25 +76,23 @@ function AlertsSendWelcome($slice_id, $itemContent): void
 */
 function AlertsSendInstantAlert($item_id, $slice_id): void
 {
-    $db = getDB();
-    $db->query("SELECT moved2active, publish_date, expiry_date FROM item  WHERE id=" . xpack_id($item_id));
+    $item = DB_AA::select1([], 'SELECT moved2active, publish_date, expiry_date FROM item', [['id', $item_id, 'l']]);
 
-    if ($db->next_record() && $db->f("moved2active") && time() >= $db->f("publish_date") && time() <= $db->f("expiry_date")) {
-        $db->query("
+    if ($item && $item["moved2active"] && time() >= $item["publish_date"] && time() <= $item["expiry_date"]) {
+        foreach (DB_AA::select([], "
             SELECT DISTINCT ACF.collectionid FROM alerts_collection_filter ACF
             INNER JOIN alerts_filter AF ON ACF.filterid = AF.id
-            INNER JOIN view ON view.id = AF.vid
-            WHERE view.slice_id=" . xpack_id($slice_id));
-        while ($db->next_record()) {
-            $collection_ids[] = $db->f("collectionid");
+            INNER JOIN view ON view.id = AF.vid", [['view.slice_id', $slice_id, 'l']]) as $row) {
+            $collection_ids[] = $row["collectionid"];
         }
         if (is_array($collection_ids)) {
             initialize_last();
             MoreTimeLimit();  // This can take a while
             send_emails("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
+            $db = getDB();
             $db->query("UPDATE item SET moved2active = 0 WHERE id=" . xpack_id($item_id));
+            freeDB($db);
         }
     }
-    freeDB($db);
 }

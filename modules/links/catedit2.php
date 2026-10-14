@@ -55,27 +55,18 @@ function IsCatEmpty($category_id): bool
     //  $hold_zids = Links_QueryZIDs($path, '', '', true, 'folder2');
     //  $cat_zids  = Links_QueryCatZIDs($path, '', '', true, 'app');
 
-    $SQL = " SELECT links_links.id
-                FROM links_link_cat, links_links
-                WHERE links_link_cat.what_id = links_links.id
-                AND links_link_cat.category_id = $category_id
-                AND links_links.folder < 3
-                AND NOT (links_link_cat.state = 'hidden')
-                AND links_link_cat.proposal = 'n'";
-
-    $db = getDB();
-    $db->query($SQL);
-    if ($db->next_record()) {
-        freeDB($db);
+    $where = [
+        ['links_link_cat.what_id', 'links_links.id', 'j'],
+        ['links_link_cat.category_id', $category_id, 'i'],
+        ['links_links.folder', 3, '<'],
+        ['links_link_cat.state', 'hidden', 's<>'],
+        ['links_link_cat.proposal', 'n'],
+    ];
+    if (DB_AA::test(['links_link_cat', 'links_links'], $where)) {
         return false;
     }
 
-    $SQL = "SELECT what_id FROM links_cat_cat WHERE (category_id = $category_id)";
-    $db->query($SQL);
-    $ret = !$db->next_record();
-
-    freeDB($db);
-    return $ret;
+    return !DB_AA::test('links_cat_cat', [['category_id', $category_id, 'i']]);
 }
 
 // Delete one category assignment
@@ -113,19 +104,17 @@ function UnassignBaseCategory($parent, $child): void
 {
     global $r_msg, $r_err;
 
+    // get all categories, where this is subcategory
+    $parents = DB_AA::select([], 'SELECT category_id, base FROM links_cat_cat', [['what_id', $child, 'i']]);
+
     $db = getDB();
 
-    // get all categories, where this is subcategory
-    $SQL = "SELECT category_id, base FROM links_cat_cat WHERE (what_id = $child)";
-
-    $db->query($SQL);
-
-    while ($db->next_record()) {  // this base category is linked to another
-        if ($db->f('category_id') == $parent) { // this we unasign => skip it
+    foreach ($parents as $row) {  // this base category is linked to another
+        if ($row['category_id'] == $parent) { // this we unasign => skip it
             continue;
         }
 
-        $newParent = $db->f('category_id');
+        $newParent = $row['category_id'];
 
         // make first as base
         $SQL = "UPDATE links_cat_cat SET base='y' WHERE what_id = $child AND category_id = $newParent";
@@ -256,26 +245,15 @@ $SQL = "DELETE FROM links_cat_cat
 $db->query($SQL);
 
 // Lookup old base subcategories
-$SQL = "SELECT what_id FROM links_cat_cat
-               WHERE category_id=$cid";  // no necessary to add base='y'
-
-$db->query($SQL);                            //    - 'n' was deleted
-
-while ($db->next_record()) {
-    $oldBaseSubcat[$db->f('what_id')] = $db->f('what_id');
+// no necessary to add base='y' - 'n' was deleted
+foreach (DB_AA::select([], 'SELECT what_id FROM links_cat_cat', [['category_id', $cid, 'i']]) as $row) {
+    $oldBaseSubcat[$row['what_id']] = $row['what_id'];
 }
 
 // Lookup new not base subcategories
 if ($subcatIds) {
-    $SQL = "SELECT what_id FROM links_cat_cat
-                         WHERE (what_id IN ($subcatIds))
-                           AND (base='y')
-                           AND (category_id<>$cid)";
-
-    $db->query($SQL);
-
-    while ($db->next_record()) {
-        $newNotBaseSubcat[$db->f('what_id')] = $db->f('what_id');
+    foreach (DB_AA::select([], 'SELECT what_id FROM links_cat_cat', [['what_id', $ids, 'i'], ['base', 'y'], ['category_id', $cid, '<>']]) as $row) {
+        $newNotBaseSubcat[$row['what_id']] = $row['what_id'];
     }
 }
 

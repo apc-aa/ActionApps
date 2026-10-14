@@ -108,19 +108,16 @@ class AA_Mailman
             return;
         }
         $like = constant_group_like($group_id);
-        $db = getDB();
-        $db->query("SELECT slice.id FROM slice
-            INNER JOIN field ON field.slice_id = slice.id
-            WHERE slice.type = 'ReaderManagement'
-            AND (field.input_show_func LIKE '___:$like:%'
-            OR  field.input_show_func LIKE '___:$like')");
         $slices = [];
-        while ($db->next_record()) {
-            $slices[] = unpack_id($db->f("id"));
+        foreach (DB_AA::select([], 'SELECT slice.id FROM slice
+            INNER JOIN field ON field.slice_id = slice.id', [
+            ['slice.type', 'ReaderManagement'],
+            [null, [[['field.input_show_func', "___:$like:%", 'LIKE']], [['field.input_show_func', "___:$like", 'LIKE']]], 'OR'],
+        ]) as $row) {
+            $slices[] = unpack_id($row["id"]);
         }
         foreach ($slices as $slice_id) {
             self::createSynchroFiles($slice_id);
         }
-        freeDB($db);
     }
 }

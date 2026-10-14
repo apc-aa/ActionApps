@@ -54,8 +54,9 @@ final class DbSource implements Source
             throw new InvalidArgumentException('DbSource: the cursor is no item id');
         }
         $id    = DB_AA::quoteIdentifier('id');
-        $where = DB_AA::makeWhere([['slice_id', $slice_id, 'l'], ...($all_bins ? [] : [['status_code', 1, 'i']]), ...(($after === '') ? [] : [['id', $after, 'l>']])]);
-        return DB_AA::select('unpackid', "SELECT LOWER(HEX($id)) AS unpackid FROM " . DB_AA::quoteIdentifier('item') . " $where ORDER BY $id LIMIT " . max(0, $limit));
+        $where = [['slice_id', $slice_id, 'l'], ...($all_bins ? [] : [['status_code', 1, 'i']]), ...(($after === '') ? [] : [['id', $after, 'l>']])];
+        // LIMIT 0 reads nothing - select() would read 0 rows as no LIMIT at all
+        return ($limit > 0) ? DB_AA::select('unpackid', "SELECT LOWER(HEX($id)) AS unpackid FROM " . DB_AA::quoteIdentifier('item'), $where, [$id], null, $limit) : [];
     }
 
     public function itemCount(string $slice_id, bool $all_bins, int $edited_after = 0): int

@@ -28,6 +28,8 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
+
 /** fillFormFromVars function
  * @param $fillConds
  * @return string
@@ -139,38 +141,28 @@ function fillForm(): string
                 // which is out of the protected folder
             }
 
-            $db         = getDB();
-            $db->query(
+            $item_ids = DB_AA::select(
+                'id',
                 "SELECT item.id FROM content INNER JOIN item
-               ON content.item_id = item.id
-               WHERE item.slice_id=" . xpack_id($slice_id) . "
-               AND content.field_id='" . FIELDID_USERNAME . "'
-               AND content.text='" . addslashes($_SERVER["REMOTE_USER"]) . "'",
+               ON content.item_id = item.id",
+                [['item.slice_id', $slice_id, 'l'], ['content.field_id', FIELDID_USERNAME], ['content.text', $_SERVER["REMOTE_USER"]]],
             );
-            if ($db->num_rows() != 1) {
-                freeDB($db);
+            if (count($item_ids) != 1) {
                 return "<!--HTTP AUTH USER not OK-->";
             }
-            $db->next_record();
-            $my_item_id = unpack_id($db->f("id"));
-            freeDB($db);
+            $my_item_id = unpack_id($item_ids[0]);
         } elseif ($GLOBALS["ac"]) { // access code
-            $db = getDB();
-            $SQL
-                = "SELECT item.id FROM content INNER JOIN item
-                 ON content.item_id = item.id
-                 WHERE item.slice_id=" . xpack_id($slice_id) . "
-                 AND content.field_id='" . FIELDID_ACCESS_CODE . "'
-                 AND content.text='" . $GLOBALS["ac"] . "'";
-            $db->query($SQL);
-            if ($db->num_rows() != 1) {
+            $item_ids = DB_AA::select(
+                'id',
+                "SELECT item.id FROM content INNER JOIN item
+                 ON content.item_id = item.id",
+                [['item.slice_id', $slice_id, 'l'], ['content.field_id', FIELDID_ACCESS_CODE], ['content.text', (string) $GLOBALS["ac"]]],
+            );
+            if (count($item_ids) != 1) {
                 huhe("Warning, invalid access code '", $GLOBALS["ac"], "'");
-                freeDB($db);
                 return "<!--ACCESS CODE (ac or aw) not OK-->";
             }
-            $db->next_record();
-            $my_item_id = unpack_id($db->f("id"));
-            freeDB($db);
+            $my_item_id = unpack_id($item_ids[0]);
         }
     }
 

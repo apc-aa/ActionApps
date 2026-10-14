@@ -191,45 +191,41 @@ if ($r_state['link_id']) {
 
 if ($r_state['link_id']) {                  // not new link
     // link region info
-    $SQL = "SELECT region_id FROM links_link_reg WHERE link_id=" . $r_state['link_id'];
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $region[$db->f('region_id')] = true;
+    foreach (DB_AA::select([], 'SELECT region_id FROM links_link_reg', [['link_id', $r_state['link_id'], 'i']]) as $row) {
+        $region[$row['region_id']] = true;
     }
 
     // link language info
-    $SQL = "SELECT lang_id FROM links_link_lang WHERE link_id=" . $r_state['link_id'];
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $language[$db->f('lang_id')] = true;
+    foreach (DB_AA::select([], 'SELECT lang_id FROM links_link_lang', [['link_id', $r_state['link_id'], 'i']]) as $row) {
+        $language[$row['lang_id']] = true;
     }
 
     // lookup - changes proposal
-    $SQL = "SELECT * FROM links_changes, links_links
-            WHERE links_changes.proposal_link_id=links_links.id
-              AND links_changes.changed_link_id=" . $r_state['link_id'] . "
-              AND links_changes.rejected='n'";
-    $db->query($SQL);
+    $changes = DB_AA::select([], 'SELECT * FROM links_changes, links_links', [
+        ['links_changes.proposal_link_id', 'links_links.id', 'j'],
+        ['links_changes.changed_link_id', $r_state['link_id'], 'i'],
+        ['links_changes.rejected', 'n'],
+    ]);
     $delimiter = "";
     $change_no = 0;          // number of changes
-    while ($db->next_record()) {
-        $aa_name_change[]       = $db->f('name');
-        $original_name_change[] = $db->f('original_name');
-        $description_change[]   = $db->f('description');
-        $type_change[]          = $db->f('type');
-        $url_change[]           = $db->f('url');
-        $initiator_change[]     = $db->f('initiator');
-        $org_city_change[]      = $db->f('org_city');
-        $org_street_change[]    = $db->f('org_street');
-        $org_post_code_change[] = $db->f('org_post_code');
-        $org_phone_change[]     = $db->f('org_phone');
-        $org_fax_change[]       = $db->f('org_fax');
-        $org_email_change[]     = $db->f('org_email');
-        $note_change[]          = $db->f('note');
+    foreach ($changes as $row) {
+        $aa_name_change[]       = $row['name'];
+        $original_name_change[] = $row['original_name'];
+        $description_change[]   = $row['description'];
+        $type_change[]          = $row['type'];
+        $url_change[]           = $row['url'];
+        $initiator_change[]     = $row['initiator'];
+        $org_city_change[]      = $row['org_city'];
+        $org_street_change[]    = $row['org_street'];
+        $org_post_code_change[] = $row['org_post_code'];
+        $org_phone_change[]     = $row['org_phone'];
+        $org_fax_change[]       = $row['org_fax'];
+        $org_email_change[]     = $row['org_email'];
+        $note_change[]          = $row['note'];
 
-        $created_by_change[]    = perm_username($db->f('created_by'));  // used for display of initiator of the change
+        $created_by_change[]    = perm_username($row['created_by']);  // used for display of initiator of the change
 
-        $changeIds .= $delimiter . $db->f('id');   // set of link id's which holds requested changes
+        $changeIds .= $delimiter . $row['id'];   // set of link id's which holds requested changes
         $delimiter = ',';
         $change_no++;
     }
@@ -237,31 +233,25 @@ if ($r_state['link_id']) {                  // not new link
     // lookup - proposal for region and language changes
     if ($changeIds) {
         //region
-        $SQL = "SELECT region_id FROM links_link_reg WHERE link_id IN ($changeIds)";
-        $db->query($SQL);
         $region_changes = [];
-        while ($db->next_record()) {
-            $region_changes[$db->f('region_id')]++;   // count it
+        foreach (DB_AA::select([], 'SELECT region_id FROM links_link_reg', [['link_id', explode(',', $changeIds), 'i']]) as $row) {
+            $region_changes[$row['region_id']]++;   // count it
         }
 
         //language
-        $SQL = "SELECT lang_id FROM links_link_lang WHERE link_id IN ($changeIds)";
-        $db->query($SQL);
         $language_changes = [];
-        while ($db->next_record()) {
-            $language_changes[$db->f('lang_id')]++;
+        foreach (DB_AA::select([], 'SELECT lang_id FROM links_link_lang', [['link_id', explode(',', $changeIds), 'i']]) as $row) {
+            $language_changes[$row['lang_id']]++;
         }   // count it
     }
 }
 
 // lookup - all region names
-$SQL = "SELECT * FROM links_regions ORDER BY id";
-$db->query($SQL);
-while ($db->next_record()) {
-    $fid           = $db->f('id');
+foreach (DB_AA::select([], 'SELECT * FROM links_regions', null, ['id']) as $row) {
+    $fid           = $row['id'];
     $regId[]       = $fid;
-    $regName[]     = (($db->f('level') == 2) ? "&nbsp;&nbsp;&nbsp;" : "")
-                     . safe($db->f('name'));
+    $regName[]     = (($row['level'] == 2) ? "&nbsp;&nbsp;&nbsp;" : "")
+                     . safe($row['name']);
     $reg_changes[] = (($region[$fid]) // was this checkbox checked?
         ? (($region_changes[$fid] == $change_no) ? "" : MarkChanged(_m('Proposal to uncheck'))) // "" means 'Unchanged'
         : (($region_changes[$fid] == 0) ? "" : MarkChanged(_m('Proposal to check'))));    // "" means 'Unchanged'
@@ -275,12 +265,10 @@ while ($db->next_record()) {
 }
 
 // lookup - all language names
-$SQL = "SELECT * FROM links_languages ORDER BY id";
-$db->query($SQL);
-while ($db->next_record()) {
-    $fid            = $db->f('id');
+foreach (DB_AA::select([], 'SELECT * FROM links_languages', null, ['id']) as $row) {
+    $fid            = $row['id'];
     $langId[]       = $fid;
-    $langName[]     = safe($db->f('name'));
+    $langName[]     = safe($row['name']);
     $lang_changes[] = (($language[$fid]) // was this checkbox checked?
         ? (($language_changes[$fid] == $change_no) ? "" : MarkChanged(_m('Proposal to uncheck'))) // "" means 'Unchanged'
         : (($language_changes[$fid] == 0) ? "" : MarkChanged(_m('Proposal to check'))));            // "" means 'Unchanged'
@@ -302,22 +290,18 @@ $link_types = $LINK_TYPE_CONSTANTS ? GetConstants($LINK_TYPE_CONSTANTS) : [];
 $idx = 0;  // start with 1 ($idx=0 is for base category)
 if ($r_state['link_id']) {                  // not new link
     // lookup - this link assignments
-    $SQL = "SELECT id, path, base, proposal, proposal_delete, state
-             FROM links_link_cat, links_categories
-            WHERE links_link_cat.category_id=links_categories.id
-              AND what_id=" . $r_state['link_id'];
-    $db->query($SQL);
-    while ($db->next_record()) {
-        $i = (($db->f('base') === 'y') ? 0 : ++$idx);
-        $selcatValue[$i]             = NamePath($select_depth, $db->f('path'), $tmp_translate);
-        $selcatSelectValue[$i]       = $db->f('id');
-        $getPathFromID[$db->f('id')] = $db->f('path');
-        $selcatState[$i]             = $db->f('state');
-        $selcatPropAdd[$i]           = (($db->f('proposal') === 'y')
+    $where = [['links_link_cat.category_id', 'links_categories.id', 'j'], ['what_id', $r_state['link_id'], 'i']];
+    foreach (DB_AA::select([], 'SELECT id, path, base, proposal, proposal_delete, state FROM links_link_cat, links_categories', $where) as $row) {
+        $i = (($row['base'] === 'y') ? 0 : ++$idx);
+        $selcatValue[$i]             = NamePath($select_depth, $row['path'], $tmp_translate);
+        $selcatSelectValue[$i]       = $row['id'];
+        $getPathFromID[$row['id']]   = $row['path'];
+        $selcatState[$i]             = $row['state'];
+        $selcatPropAdd[$i]           = (($row['proposal'] === 'y')
                                        ? MarkChanged(_m('Proposal to add')) : ""); //_m('No proposal to add'));
-        $selcatPropDel[$i]           = (($db->f('proposal_delete') === 'y')
+        $selcatPropDel[$i]           = (($row['proposal_delete'] === 'y')
                                        ? MarkChanged(_m('Proposal to del')) : ""); //_m('No proposal to del'));
-        $displayed_p[$db->f('id')]   = true;
+        $displayed_p[$row['id']]     = true;
     }
 
     // now proposals from anonymous change link

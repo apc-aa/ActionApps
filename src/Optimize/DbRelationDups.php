@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
+
 /** Testing if relation table contain records, where values in both columns are
  *  identical (which was bug fixed in Jan 2006)
  */
@@ -36,7 +38,7 @@ class DbRelationDups extends AbstractOptimize
     public function test(): bool
     {
         $SQL = 'SELECT count(*) as err_count FROM `relation` WHERE `source_id`=`destination_id`';
-        $err_count = GetTable2Array($SQL, "aa_first", 'err_count');
+        $err_count = DB_AA::select1('err_count', $SQL);
         if ($err_count > 0) {
             $this->message(_m('%1 duplicates found', [$err_count]));
             return false;

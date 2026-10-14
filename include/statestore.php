@@ -657,13 +657,13 @@ class AA_Object extends AA_Storable implements AA_iEditable
         if (empty($owner)) {
             return [];
         }
-        $SQL = "SELECT o1.object_id, o3.value FROM object_text as o1 INNER JOIN object_text as o2 ON o2.object_id=o1.object_id INNER JOIN object_text as o3 ON o3.object_id=o1.object_id
-                 WHERE o1.property = 'aa_type'  AND o1.value = '$obj_type'
-                   AND o2.property = 'aa_owner' AND " . Cvarset::sqlin('o2.value', $owner) . "
-                   AND o3.property = 'aa_name'";
-
-        $ret = GetTable2Array($SQL, 'object_id', 'value');
-        return is_array($ret) ? $ret : [];
+        return DB_AA::select(['object_id' => 'value'], 'SELECT o1.object_id, o3.value FROM object_text as o1 INNER JOIN object_text as o2 ON o2.object_id=o1.object_id INNER JOIN object_text as o3 ON o3.object_id=o1.object_id', [
+            ['o1.property', 'aa_type'],
+            ['o1.value', $obj_type],
+            ['o2.property', 'aa_owner'],
+            ['o2.value', array_filter((array) $owner, static fn($x) => $x != '')],
+            ['o3.property', 'aa_name'],
+        ]);
     }
 
     public static function loadProperty($id, $property)

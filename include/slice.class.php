@@ -607,19 +607,15 @@ class AA_Slice extends AA_Module
         if (!$force && is_object($this->dynamic_setting)) {
             return;
         }
-        $db = getDB();
-        $SQL = "SELECT * FROM content WHERE item_id = " . xpack_id($this->module_id) . " ORDER BY content.number";
-        $db->query($SQL);
         $content4id = [];
-        while ($db->next_record()) {
+        foreach (DB_AA::select([], 'SELECT * FROM content', [['item_id', $this->module_id, 'l']], ['content.number']) as $row) {
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            $db_field = (($db->f("text") != "") || ($db->f("flag") & FLAG_TEXT_STORED)) ? 'text' : 'number';
-            $content4id[$db->f("field_id")][] = [
-                "value" => $db->f($db_field),
-                "flag"  => $db->f("flag"),
+            $db_field = (($row["text"] != "") || ($row["flag"] & FLAG_TEXT_STORED)) ? 'text' : 'number';
+            $content4id[$row["field_id"]][] = [
+                "value" => $row[$db_field],
+                "flag"  => $row["flag"],
             ];
         }
-        freeDB($db);
         $this->dynamic_setting = new ItemContent($content4id);
     }
 
@@ -740,7 +736,7 @@ class AA_Slice extends AA_Module
         $now = now('step');
         $ret = ['folder1' => 0, 'folder2' => 0, 'folder3' => 0, 'expired' => 0, 'pending' => 0];
 
-        $ret = array_merge($ret, DB_AA::select(['fldr' => 'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item " . DB_AA::makeWhere([['slice_id', $this->module_id, 'l']]) . ' GROUP BY status_code'));
+        $ret = array_merge($ret, DB_AA::select(['fldr' => 'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item", [['slice_id', $this->module_id, 'l']], null, ['status_code']));
         $ret['expired'] = $this->noExpiredBin() ? 0 : DB_AA::count('item', [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],
@@ -1080,28 +1076,25 @@ class AA_Slice extends AA_Module
                         $p_from_cat_id = pack_id($from_category_id);
                     }
 
-                    $db = getDB();
                     $SQL = "SELECT feeds.to_id, feeds.category_id, feeds.all_categories,
                            feeds.to_approved, feeds.to_category_id
-                     FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id
-                    WHERE feeds.from_id = slice.id
-                      AND feeds.from_id=" . xpack_id($sl_id) . "
-                      AND (slice.export_to_all=1
-                       OR  feedperms.to_id = feeds.to_id)";  // check perms to feed, too
-                    $db->query($SQL);
+                     FROM slice, feeds LEFT JOIN feedperms ON feedperms.from_id=feeds.from_id";
 
-                    while ($db->next_record()) {
-                        $to_id = unpack_id($db->f('to_id'));
+                    foreach (DB_AA::select([], $SQL, [
+                        ['feeds.from_id', 'slice.id', 'j'],
+                        ['feeds.from_id', $sl_id, 'l'],
+                        [null, [[['slice.export_to_all', 1, 'i']], [['feedperms.to_id', 'feeds.to_id', 'j']]], 'OR'],  // check perms to feed, too
+                    ]) as $row) {
+                        $to_id = unpack_id($row['to_id']);
                         // condition is necessary for multi feeding to this slice
                         if (isset($slice_queue[$to_id])) {
                             continue;
                         }
-                        $approved = $db->f('to_approved') ? "y" : "n";
-                        if (($p_from_cat_id == $db->f('category_id')) || $db->f('all_categories')) {
-                            $slice_queue[$to_id] = $this->feeding_tree[$sl_id][$to_id] = ['approved' => $approved, 'category' => unpack_id($db->f('to_category_id'))];
+                        $approved = $row['to_approved'] ? "y" : "n";
+                        if (($p_from_cat_id == $row['category_id']) || $row['all_categories']) {
+                            $slice_queue[$to_id] = $this->feeding_tree[$sl_id][$to_id] = ['approved' => $approved, 'category' => unpack_id($row['to_category_id'])];
                         }
                     }
-                    freeDB($db);
                 }
             }
         }

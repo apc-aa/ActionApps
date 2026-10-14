@@ -98,10 +98,7 @@ class Item_Move2Slice extends AbstractManageraction
         }
 
         // check if there are no ids from bad slice (attack???)
-        $wherein = " AND " . $item_zids->sqlin('id');
-        $SQL     = "SELECT id FROM item WHERE slice_id = " . xpack_id($this->slice_id) . " $wherein";
-
-        $zids_to_move = new zids(GetTable2Array($SQL, '', 'id'), 'p');
+        $zids_to_move = new zids(DB_AA::select('id', 'SELECT id FROM item', [['slice_id', $this->slice_id, 'l'], $item_zids->whereIn('id')]), 'p');
 
         if ($zids_to_move->count() < 1) {
             return false;     // OK

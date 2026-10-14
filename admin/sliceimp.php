@@ -27,6 +27,7 @@
 
 /** This script is total mess (passing parameters in and out in globals...) - use rather another type of import - Central, ... HM 2022-12 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 $require_default_lang     = true;      // do not use module specific language file
@@ -95,11 +96,9 @@ function prove_ID($slice): bool {
 
     $slice_id = xpack_id($slice["id"]);
     //echo "$slice_id";
-    $SQL = "SELECT `id` FROM `slice` WHERE `id`=$slice_id";
 
     global $db;
-    $db->query($SQL);
-    if ($db->next_record()) {
+    if (DB_AA::test('slice', [['`id`', $slice["id"], 'l']])) {
         // if we want to overwrite, delete old slice definition
         if ($GLOBALS["submit"] == _m("Overwrite")) {
             $SQL = "DELETE FROM slice WHERE id=$slice_id";	$db->query($SQL);
@@ -137,11 +136,10 @@ function prove_data_ID($data_id): bool {
 //	if ((strlen($data_id) != 32)&&(strlen($data_id) != 30)) {
 //		echo "Warning: ". _m("Slice_ID (%1) has wrong length (%2, should be 32)", $slice["id"], strlen($slice["id"]));
 //	}
-    $old_data_id = addslashes(pack_id($data_id));
-    $SQL         = "SELECT * FROM item WHERE id='$old_data_id'";
+    $packed_id   = pack_id($data_id);
+    $old_data_id = addslashes($packed_id);
     global $db;
-    $db->query($SQL);
-    if ($db->next_record()) {
+    if (DB_AA::test('item', [['id', $packed_id, 'b']])) {
         // if we want overwrite existing items, delete it
         if ($GLOBALS["submit"] == _m("Overwrite")) {
             $SQL = "DELETE FROM item WHERE id='$old_data_id'";	$db->query($SQL);

@@ -25,6 +25,7 @@ https://www.apc.org/
     $update=1 .. write changes to database
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 $LINKS_LANGUAGE_FILES = [
@@ -166,15 +167,14 @@ if ($is_add ? ($insert && $superadmin) : $update) {
             $varset->clear();
 
             $p_template_id = ($template['Links']
-            ? q_pack_id(substr($template['Links'], 1)) : 'LinksTemplate...');
+            ? pack_id(substr($template['Links'], 1)) : 'LinksTemplate...');
 
-            $SQL = "SELECT * FROM links WHERE (id='$p_template_id')";
-            $db->query($SQL);
-            if (!$db->next_record()) {
+            $row = DB_AA::select1([], 'SELECT * FROM links', [['id', $p_template_id, 'b']]);
+            if (!$row) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->resetFromRecord($db->record());
+            $varset->resetFromRecord($row);
             $varset->set("id", $module_id, "unpacked");
             $varset->set("start_id", $start_id, "number");
             $varset->set("tree_start", $tree_start, "number");
@@ -206,16 +206,13 @@ if ($is_add ? ($insert && $superadmin) : $update) {
 // And the form -----------------------------------------------------
 
 $source_id   = ($template['Links'] ? substr($template['Links'], 1) : $module_id);
-$p_source_id = xpack_id($source_id);
 
 // load module specific data
-$SQL = " SELECT * FROM links WHERE id=$p_source_id";
-
-$db->query($SQL);
-if ($db->next_record()) {
-    RestoreVariables($db->record());
+$row = DB_AA::select1([], 'SELECT * FROM links', [['id', $source_id, 'l']]);
+if ($row) {
+    RestoreVariables($row);
 }
-$id = unpack_id($db->f("id"));  // correct ids
+$id = unpack_id($row['id'] ?? null);  // correct ids
 
 if ($template['Links']) {           // set new name and owner for NEW module
     $name  = "";

@@ -73,13 +73,7 @@ function QueryDiscussionZIDs($item_id, $ids = "", $order = 'timeorder'): ?zids
     if (!$item_id) {
         return null;
     }
-    $p_item_id = xpack_id($item_id);
-    $SQL = "SELECT id FROM discussion WHERE item_id=$p_item_id ORDER BY date";
-    if ($order === 'reverse timeorder') {
-        $SQL .= " DESC";
-    }
-
-    $d_ids = GetTable2Array($SQL, 'NoCoLuMn', 'id');
+    $d_ids = DB_AA::select('id', 'SELECT id FROM discussion', [['item_id', $item_id, 'l']], [($order === 'reverse timeorder') ? 'date-' : 'date']);
     if (!$ids) {
         return new zids($d_ids, 'p');
     }
@@ -108,28 +102,24 @@ function GetDiscussionContent(?zids $zids, bool $state = true, $html_flag = fals
     if (!$zids) {
         return [];
     }
-    $db = getDB();
-
-    $SQL = 'SELECT * FROM discussion WHERE ' . $zids->sqlin('id');
-    $db->query($SQL);
     $col              = [];
     $d_content        = [];
     $unsorted_content = [];
-    while ($db->next_record()) {
-        $d_id = unpack_id($db->f('id'));
+    foreach (DB_AA::select([], 'SELECT * FROM discussion', [$zids->whereIn('id')]) as $row) {
+        $d_id = unpack_id($row['id']);
         $col["d_id............"][0]['value'] = $d_id;
-        $col["d_parent........"][0]['value'] = $db->f('parent') ? unpack_id($db->f('parent')) : "0";
-        $col["d_item_id......."][0]['value'] = unpack_id($db->f('item_id'));
-        $col["d_subject......."][0]['value'] = $db->f('subject');
-        $col["d_body.........."][0]['value'] = $db->f('body');
-        $col["d_author........"][0]['value'] = $db->f('author');
-        $col["d_e_mail........"][0]['value'] = $db->f('e_mail');
-        $col["d_url_address..."][0]['value'] = $db->f('url_address');
-        $col["d_url_descript.."][0]['value'] = $db->f('url_description');
-        $col["d_date.........."][0]['value'] = $db->f('date');
-        $col["d_remote_addr..."][0]['value'] = $db->f('remote_addr');
-        $col["d_state........."][0]['value'] = $db->f('state');
-        setDiscUrls($col, $clean_url, unpack_id($db->f('item_id')), $d_id);
+        $col["d_parent........"][0]['value'] = $row['parent'] ? unpack_id($row['parent']) : "0";
+        $col["d_item_id......."][0]['value'] = unpack_id($row['item_id']);
+        $col["d_subject......."][0]['value'] = $row['subject'];
+        $col["d_body.........."][0]['value'] = $row['body'];
+        $col["d_author........"][0]['value'] = $row['author'];
+        $col["d_e_mail........"][0]['value'] = $row['e_mail'];
+        $col["d_url_address..."][0]['value'] = $row['url_address'];
+        $col["d_url_descript.."][0]['value'] = $row['url_description'];
+        $col["d_date.........."][0]['value'] = $row['date'];
+        $col["d_remote_addr..."][0]['value'] = $row['remote_addr'];
+        $col["d_state........."][0]['value'] = $row['state'];
+        setDiscUrls($col, $clean_url, unpack_id($row['item_id']), $d_id);
 
         // set html flag
         if ($html_flag) {
@@ -138,7 +128,7 @@ function GetDiscussionContent(?zids $zids, bool $state = true, $html_flag = fals
         $col["d_checkbox......"][0]['flag'] = FLAG_HTML;
         $col["d_treeimages...."][0]['flag'] = FLAG_HTML;
 
-        $col["hide"] = ($db->f('state') == '1' && $state);     //mark hidden comment.
+        $col["hide"] = ($row['state'] == '1' && $state);     //mark hidden comment.
         $unsorted_content[$d_id] = $col;
     }
 
@@ -149,7 +139,6 @@ function GetDiscussionContent(?zids $zids, bool $state = true, $html_flag = fals
             $d_content[$d_id] = $unsorted_content[$d_id];
         }
     }
-    freeDB($db);
     return $d_content;
 }
 /** setDiscUrls function
@@ -340,17 +329,13 @@ function DeleteNode($tree, $d_content, $d_id): void
  */
 function DeleteDiscForItem($item_id, $slice_id, $state = 99999): void
 {
-    $p_item_id = xpack_id($item_id);
-
     // 99999 - just unused number (state is 0-shown or 1-hidden)
     $where = ($state == 99999) ? '' : " AND state = '" . ($state ? 1 : 0) . "'";
 
-    $db = getDB();
     // check perms -  if the item is in the right slice
-    $SQL = "SELECT slice_id FROM item WHERE id=$p_item_id";
-    $db->query($SQL);
-    $db->next_record();
-    if (unpack_id($db->f('slice_id')) == $slice_id) {
+    $item = DB_AA::select1([], 'SELECT slice_id FROM item', [['id', $item_id, 'l']]);
+    $db = getDB();
+    if (unpack_id($item['slice_id'] ?? null) == $slice_id) {
         $db->query("DELETE FROM discussion WHERE item_id=" . xpack_id($item_id) . " $where");
     }
     freeDB($db);
@@ -365,16 +350,14 @@ function updateDiscussionCount($item_id): void
 {
     $all       = $hide = 0;
     $p_item_id = xpack_id($item_id);
-    $db = getDB();
-    $SQL       = "SELECT * FROM discussion WHERE item_id=$p_item_id";
-    $db->query($SQL);
-    while ($db->next_record()) {
+    foreach (DB_AA::select('state', 'SELECT * FROM discussion', [['item_id', $item_id, 'l']]) as $d_state) {
         $all++;
-        if ($db->f('state') == '1') {   // hidden comment
+        if ($d_state == '1') {   // hidden comment
             $hide++;
         }
     }
 
+    $db  = getDB();
     $SQL = "UPDATE item SET disc_count='$all', disc_app='" . ($all - $hide) . "' WHERE id=$p_item_id";
     $db->query($SQL);
     freeDB($db);
@@ -392,14 +375,12 @@ function updateDiscussionCount($item_id): void
  */
 function send2mailList($d_item_id, $new_id): void
 {
-    $db = getDB();
-    $db->query("SELECT content.text FROM
+    $list_field = DB_AA::select1([], "SELECT content.text FROM
                  content INNER JOIN item ON item.id = content.item_id INNER JOIN
                  field ON content.field_id = field.id
-                 AND field.slice_id = item.slice_id
-                 WHERE item.id=" . xpack_id($d_item_id) . " AND field.name = 'DiscussionMailList'");
-    if ($db->next_record()) {
-        $item_params = split_escaped(":", $db->f("text"), "#:");
+                 AND field.slice_id = item.slice_id", [['item.id', $d_item_id, 'l'], ['field.name', 'DiscussionMailList']]);
+    if ($list_field) {
+        $item_params = split_escaped(":", $list_field["text"], "#:");
         [$vid, $maillist] = $item_params;
         // Don't do this if there is a field, but no vid in it
         if ($vid) {
@@ -422,13 +403,9 @@ function send2mailList($d_item_id, $new_id): void
                 $mail_id = substr($vid, 1);
                 $mails   = explode(',', str_replace(' ', '', $maillist));
                 AA_Mail::sendTemplate($mail_id, $mails, $CurItem);
-                freeDB($db);
                 return;
             }
-            $db->query("SELECT * FROM view WHERE id=$vid");
-            if ($db->next_record()) {
-                $view_info = $db->record();
-
+            if ($view_info = DB_AA::select1([], 'SELECT * FROM view', [['id', $vid, 'i']])) {
                 $html = $view_info['flag'] & DISCUS_HTML_FORMAT;
 
                 // older and deprecated version with discussion view
@@ -467,12 +444,10 @@ function send2mailList($d_item_id, $new_id): void
                     $mail->setHeader("Sender", $maildef["sender"]);
                 }
 
-                $db->query("SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id WHERE item.id=" . xpack_id($d_item_id));
-                $db->next_record();
-                $mail->setCharset(Langs::getCharset(substr($db->f("lang_file"), 0, 2)));
+                $slice = DB_AA::select1([], 'SELECT lang_file FROM slice INNER JOIN item ON item.slice_id = slice.id', [['item.id', $d_item_id, 'l']]);
+                $mail->setCharset(Langs::getCharset(substr($slice["lang_file"] ?? null, 0, 2)));
                 $mail->send([$maillist]);
             } //view found
         } // vid present
     } // DiscussionMailList Field present
-    freeDB($db);
 }

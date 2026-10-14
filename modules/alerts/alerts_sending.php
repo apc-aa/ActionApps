@@ -317,14 +317,12 @@ class AA_Collection
         // Values through makeWhere, not into the string: $ho comes from POST on the admin
         // "send now" forms and $this->id from a remote request (central/responder.php).
         $where = [['CH.howoften', $ho, 's'], ['CH.collectionid', $this->id, 's']];
-        $db = getDB();
         if ($item_id) {
-            $db->query("SELECT slice_id FROM item WHERE id=" . xpack_id($item_id));
-            if (!$db->next_record()) {
-                freeDB($db);
+            $item = DB_AA::select1([], 'SELECT slice_id FROM item', [['id', $item_id, 'l']]);
+            if (!$item) {
                 return [];
             }
-            $where[] = ['slice.id', $db->f("slice_id"), 's'];
+            $where[] = ['slice.id', $item["slice_id"], 's'];
         }
 
         // fill alerts_collection_howoften.last in cases the row for this period
@@ -333,23 +331,21 @@ class AA_Collection
         $slices = [];
         $last   = 0;
 
-        $db->query($SQL . DB_AA::makeWhere($where));
-        while ($db->next_record()) {
-            $last                                  = (int) $db->f("last");   // goes into the item query unquoted
-            $sid                                   = unpack_id($db->f("slice_id"));
-            $slices[$sid]["name"]                  = $db->f("slicename");
-            $slices[$sid]["lang"]                  = substr($db->f("lang_file"), 0, 2);
-            $myview                                = &$slices[$sid]["views"][$db->f("vid")];
-            $myview["filters"][$db->f("filterid")] = ["conds" => $db->f("conds")];
+        foreach (DB_AA::select([], $SQL, $where) as $row) {
+            $last                                  = (int) $row["last"];   // goes into the item query unquoted
+            $sid                                   = unpack_id($row["slice_id"]);
+            $slices[$sid]["name"]                  = $row["slicename"];
+            $slices[$sid]["lang"]                  = substr($row["lang_file"], 0, 2);
+            $myview                                = &$slices[$sid]["views"][$row["vid"]];
+            $myview["filters"][$row["filterid"]]   = ["conds" => $row["conds"]];
             // Group by selections?
-            $myview["group"] = $db->f("aditional");
+            $myview["group"] = $row["aditional"];
             if (! $myview["group"]) {
                 // Sort variable for the whole view
-                $myview["sort"] = $db->f("aditional3");
+                $myview["sort"] = $row["aditional3"];
             }
         }
         if (!$slices) {
-            freeDB($db);
             return [];
         }
 
@@ -368,8 +364,6 @@ class AA_Collection
         }
 
         foreach ($slices as $slice_id => $slice) {
-            $p_slice_id   = xpack_id($slice_id);
-
             /*
             this query is carefully made to include only items, which:
              a) 1. were moved to active between $last and $now
@@ -389,22 +383,17 @@ class AA_Collection
             $SQL = "SELECT id FROM item ";
 
             if ($item_id) {
-                $SQL .= "WHERE id = " . xpack_id($item_id);
+                $all_ids = DB_AA::select('id', $SQL, [['id', $item_id, 'l']]);
             } else {
-                $SQL
-                .= "WHERE slice_id = $p_slice_id AND
-                       publish_date <= $now AND expiry_date >= $last "  // a) 2. and b) 2.
-                   . "AND ((moved2active >= $last AND moved2active < $now) "  // a) 1. half-open: defer the current (possibly still-open) second to the next sweep so a boundary item isn't sent twice
-                         . "OR (moved2active < $last "                   // b) 1.
-                             . "AND publish_date > $last) "              // b) 3.
-                       . ")";
-            }
-
-            $db->query($SQL);
-
-            $all_ids = [];
-            while ($db->next_record()) {
-                $all_ids[] = $db->f("id");
+                $all_ids = DB_AA::select('id', $SQL, [
+                    ['slice_id', $slice_id, 'l'],
+                    ['publish_date', $now, '<='],                                     // a) 2. and b) 2.
+                    ['expiry_date', $last, '>='],
+                    [null, [
+                        [['moved2active', $last, '>='], ['moved2active', $now, '<']],   // a) 1. half-open: defer the current (possibly still-open) second to the next sweep so a boundary item isn't sent twice
+                        [['moved2active', $last, '<'], ['publish_date', $last, '>']],   // b) 1. and b) 3.
+                    ], 'OR'],
+                ]);
             }
 
             foreach ($slice["views"] as $vid => $view) {
@@ -433,11 +422,12 @@ class AA_Collection
             $varset->addkey("howoften", "text", $ho);
             $varset->addkey("collectionid", "text", $this->id);
             $varset->add("last", "number", $now);
+            $db = getDB();
             $db->query($varset->makeINSERTorUPDATE("alerts_collection_howoften"));
+            freeDB($db);
         }
 
         //print_r ($retval);
-        freeDB($db);
         return $retval;
     }
 
@@ -613,7 +603,7 @@ function send_emails($ho, $collection_ids, $emails, $update, $item_id, $reader_i
     /* get all (or just some, if $collection_ids specified) collections and put
        the infop into $colls array */
     if (!is_array($collection_ids)) {
-        $collection_ids = GetTable2Array('SELECT alerts_collection.id FROM alerts_collection, module WHERE module.id=alerts_collection.module_id AND module.deleted<1', 'NoCoLuMn', 'id');
+        $collection_ids = DB_AA::select('id', 'SELECT alerts_collection.id FROM alerts_collection, module WHERE module.id=alerts_collection.module_id AND module.deleted<1');
     }
 
     $total_emails = 0;
@@ -647,35 +637,30 @@ function initialize_last(): void
     $init["monthly"]   = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'] - 1);
     $init["irregular"] = 0;
 
-    $db  = getDB();
     $db2 = getDB();
 
     $hos = get_howoften_options();
     foreach ($hos as $ho => $v) {
         // fill alerts_collection_howoften.last in cases the row for this period
         // (= how_often) not exist, yet
-        $db->query("SELECT C.id FROM alerts_collection C LEFT JOIN
+        foreach (DB_AA::select([], "SELECT C.id FROM alerts_collection C LEFT JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id AND howoften='$ho'
-            WHERE last IS NULL");
-        while ($db->next_record()) {
+            WHERE last IS NULL") as $row) {
             $db2->query("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
-                VALUES ('" . $db->f("id") . "', '$ho', " . $init[$ho] . ")");
+                VALUES ('" . $row["id"] . "', '$ho', " . $init[$ho] . ")");
         }
 
         // the same as above, but for rows, which exist but with last=0
-        $db->query("SELECT C.id FROM alerts_collection C INNER JOIN
-            alerts_collection_howoften CH ON CH.collectionid = C.id
-            WHERE last=0 AND howoften='$ho'");
-        while ($db->next_record()) {
+        foreach (DB_AA::select([], "SELECT C.id FROM alerts_collection C INNER JOIN
+            alerts_collection_howoften CH ON CH.collectionid = C.id", [['last', 0, 'i'], ['howoften', $ho]]) as $row) {
             DB_AA::update('alerts_collection_howoften', [['last',$init[$ho],'i']], [
-                ['collectionid', $db->f("id")],
+                ['collectionid', $row["id"]],
                 ['howoften', $ho],
             ]);
             // $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
             //     ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
         }
     }
-    freeDB($db);
     freeDB($db2);
 }
 

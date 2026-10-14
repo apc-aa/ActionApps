@@ -47,6 +47,7 @@
 // I) Standard initialization and sanity checks
 ////////////////////////////////////////////////////////////////////
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -193,26 +194,24 @@ SELECT notify_holding_item_s,      notify_holding_item_b,
        notify_holding_item_edit_s, notify_holding_item_edit_b,
        notify_active_item_s,       notify_active_item_b,
        notify_active_item_edit_s,  notify_active_item_edit_b
- FROM slice WHERE id=" . xpack_id(AA::$module_id);
-$db->query($SQL);
-if ($db->next_record()) {
-    RestoreVariables($db->record());
+ FROM slice";
+if ($row = DB_AA::select1([], $SQL, [['id', AA::$module_id, 'l']])) {
+    RestoreVariables($row);
 }
 
 // grab variables from email_notify
-$SQL                       = "SELECT uid, function FROM email_notify WHERE slice_id=" . xpack_id(AA::$module_id);
+$SQL                       = "SELECT uid, function FROM email_notify";
 $notify_active_item_edit_e = $notify_active_item_e = $notify_holding_item_edit_e = $notify_holding_item_e = '';
 
-$db->query($SQL);
-while ($db->next_record()) {
-    switch ($db->record('function')) {
-        case 1: $notify_holding_item_e      .= $db->record('uid') . "\n";
+foreach (DB_AA::select([], $SQL, [['slice_id', AA::$module_id, 'l']]) as $row) {
+    switch ($row['function']) {
+        case 1: $notify_holding_item_e      .= $row['uid'] . "\n";
             break;
-        case 2: $notify_holding_item_edit_e .= $db->record('uid') . "\n";
+        case 2: $notify_holding_item_edit_e .= $row['uid'] . "\n";
             break;
-        case 3: $notify_active_item_e       .= $db->record('uid') . "\n";
+        case 3: $notify_active_item_e       .= $row['uid'] . "\n";
             break;
-        case 4: $notify_active_item_edit_e  .= $db->record('uid') . "\n";
+        case 4: $notify_active_item_edit_e  .= $row['uid'] . "\n";
             break;
     }
 }

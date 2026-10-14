@@ -553,17 +553,15 @@ if ($ids) {
     $cat_field            = $tmpobj->firstOfTypeFieldId();
     $now   = now();
 
-    $cond  = DB_AA::makeWhere([
+    $ids   = [];
+    $time  = 0;
+    $arr   = DB_AA::select(['unpackid' => 'edittime'], 'SELECT LOWER(HEX(`id`)) AS unpackid, GREATEST(publish_date, last_edit) as edittime FROM item', [
         ['slice_id', $slice_id, 'l'],
         ['status_code', 1],
         ['publish_date', $now, '<='],
         ['expiry_date', $now, '>'],
+        [null, [[['item.last_edit', $start_timestamp, '>']], [['item.publish_date', $start_timestamp, '>']]], 'OR'],
     ]);
-    $cond .= " AND (item.last_edit >'$start_timestamp' OR item.publish_date > '$start_timestamp')";
-
-    $ids   = [];
-    $time  = 0;
-    $arr   = DB_AA::select(['unpackid' => 'edittime'], "SELECT LOWER(HEX(`id`)) AS unpackid, GREATEST(publish_date, last_edit) as edittime FROM item " . $cond);
     if ($arr) {
         $ids = array_keys($arr);
         $time = max($arr);

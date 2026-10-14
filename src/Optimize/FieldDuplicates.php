@@ -2,6 +2,7 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
 use Cvarset;
 
 /** Fix field table duplicate keys */
@@ -85,11 +86,11 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize
     public function _check_table(): array
     {
         // does the table exist at all?
-        $field_exists = GetTable2Array("SHOW TABLES LIKE 'field'", "aa_first");
+        $field_exists = DB_AA::select([], "SHOW TABLES LIKE 'field'");
         if (!$field_exists) {
             return [];
         }
-        $fields = GetTable2Array("SELECT * FROM field ORDER BY slice_id, id", '');
+        $fields = DB_AA::select([], "SELECT * FROM field ORDER BY slice_id, id");
 
         $field_table = [];
         $duplicates = [];

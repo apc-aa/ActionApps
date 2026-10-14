@@ -25,6 +25,7 @@
  *
 */
 
+use AA\IO\DB\DB_AA;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 
@@ -131,9 +132,8 @@ if ($slices2show === 'all') {
     $SQL = "SELECT * FROM module WHERE deleted>0 ORDER BY type, name";
 }
 
-$db->query($SQL);
-while ($db->next_record()) {
-    PrintModule(unpack_id($db->f('id')), $db->f('name'), $db->f('type'));
+foreach (DB_AA::select([], $SQL) as $row) {
+    PrintModule(unpack_id($row['id']), $row['name'], $row['type']);
     $slice_to_delete = true;
 }
 if (!$slice_to_delete) {

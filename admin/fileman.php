@@ -45,6 +45,7 @@
 */
 
 use AA\Central\ResponderPolicy;
+use AA\IO\DB\DB_AA;
 use AA\Util\FormToken;
 use AA\Util\InputVars;
 
@@ -234,11 +235,11 @@ echo uilr(
 );
 echo "<tr><td colspan=\"2\"></td></tr>";
 
-$db->query("SELECT * FROM wizard_template");
-if ($db->num_rows()) {
+$rows = DB_AA::select([], 'SELECT * FROM wizard_template');
+if (count($rows)) {
     $i = "<select name=\"arg[copytmp]\">";
-    while ($db->next_record()) {
-        $i .= "<option value=\"" . $db->f("dir") . "\">" . $db->f("dir") . " (" . $db->f("description") . ")";
+    foreach ($rows as $row) {
+        $i .= "<option value=\"" . $row["dir"] . "\">" . $row["dir"] . " (" . $row["description"] . ")";
     }
     $i .= "</select>";
     echo uilr($i, fileAction("copytmp", _m("Copy template dir")));

@@ -53,29 +53,29 @@ function Links_DeleteLink($lid)
         return _m('No permission to delete link from the category - link set as PROPOSAL to DELETE from given category');
     }
 
-    $db = getDB();
     // get assignment info
-    $SQL = "SELECT * FROM links_link_cat WHERE a_id = $aid";
-    $db->query($SQL);
-    if (!$db->next_record()) {
-        freeDB($db);
+    $assignment = DB_AA::select1([], 'SELECT * FROM links_link_cat', [['a_id', $aid, 'i']]);
+    if (!$assignment) {
         return _m("Can't get association information");
     }
 
-    if ($db->f('base') === 'y') {    // we have to find another base for the link
-        $SQL = "SELECT * FROM links_link_cat WHERE what_id = " . $db->f('what_id') . " AND a_id <> $aid  ORDER BY state DESC";  // visible - highlight - hidden
-        $db->query($SQL);
-        if ($db->next_record()) {
-            if ($db->f('state') === 'hidden') {
-                $SQL = "UPDATE links_link_cat SET state='visible', base='y' WHERE a_id = " . $db->f('a_id');
+    if ($assignment['base'] === 'y') {    // we have to find another base for the link
+        // no LIMIT 1: rows tie on state, and a LIMIT may let MySQL put another of them first
+        $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['a_id', $aid, '<>']], ['state-'])[0] ?? false;  // visible - highlight - hidden
+        if ($new_base) {
+            if ($new_base['state'] === 'hidden') {
+                $SQL = "UPDATE links_link_cat SET state='visible', base='y' WHERE a_id = " . $new_base['a_id'];
             } else {
-                $SQL = "UPDATE links_link_cat SET base='y' WHERE a_id = " . $db->f('a_id');
+                $SQL = "UPDATE links_link_cat SET base='y' WHERE a_id = " . $new_base['a_id'];
             }
+            $db = getDB();
             $db->query($SQL);                                 // new base
+            freeDB($db);
         }
     }
     // else - no other assignment - we create unused link
     $SQL = "DELETE FROM links_link_cat WHERE a_id = $aid";
+    $db = getDB();
     $db->query($SQL);
     freeDB($db);
     return false;                                         // OK - no error
@@ -120,30 +120,27 @@ function Links_RefuseLink($param, $lid, $akce_param)
         return _m('No permission to delete link from the category - link set as PROPOSAL to DELETE from given category');
     }
 
-    $db = getDB();
     // get assignment info
-    $SQL = "SELECT * FROM links_link_cat WHERE a_id = $aid";
-    $db->query($SQL);
-    if (!$db->next_record()) {
-        freeDB($db);
+    $assignment = DB_AA::select1([], 'SELECT * FROM links_link_cat', [['a_id', $aid, 'i']]);
+    if (!$assignment) {
         return _m("Can't get association information");
     }
 
-    if ($db->f('base') === 'y') {            // we have to find new base
-        $SQL = "SELECT * FROM links_link_cat
-                   WHERE what_id = " . $db->f('what_id') . "
-                   AND base = 'n'
-                   ORDER BY proposal, state";  // true links first
-        $db->query($SQL);
-        if ($db->next_record()) {       // link is linked to another category
-            $SQL = (($db->f('state') === 'hidden')
+    if ($assignment['base'] === 'y') {            // we have to find new base
+        // no LIMIT 1: rows tie on proposal and state, and a LIMIT may let MySQL put another of them first
+        $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['base', 'n']], ['proposal', 'state'])[0] ?? false;  // true links first
+        if ($new_base) {       // link is linked to another category
+            $SQL = (($new_base['state'] === 'hidden')
                      ? "UPDATE links_link_cat SET base='y', state='visible'
-                       WHERE a_id=" . $db->f('a_id')
+                       WHERE a_id=" . $new_base['a_id']
                      : "UPDATE links_link_cat SET base='y'
-                       WHERE a_id=" . $db->f('a_id'));
+                       WHERE a_id=" . $new_base['a_id']);
+            $db = getDB();
             $db->query($SQL);
+            freeDB($db);
         }
     }
+    $db = getDB();
     $db->query("DELETE FROM links_link_cat WHERE a_id=$aid");  // delete assig.
     // we have to make all other assignments
 

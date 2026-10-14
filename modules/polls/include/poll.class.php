@@ -84,7 +84,7 @@ class AA_Poll
     public function getVotesSum(): int
     {
         if (is_null($this->_sum)) {
-            $this->_sum = (int) GetTable2Array("SELECT SUM(votes) as sum FROM polls_answer WHERE poll_id = '" . $this->poll_id . "'", 'aa_first', 'sum');
+            $this->_sum = (int) DB_AA::select1('sum', "SELECT SUM(votes) as sum FROM polls_answer", [['poll_id', $this->poll_id]]);
         }
         return $this->_sum;
     }
@@ -113,7 +113,7 @@ class AA_Poll
             $design_id = $this->getProperty('design_id');
         }
 
-        $design = GetTable2Array("SELECT top, answer, bottom FROM polls_design WHERE id = '" . quote($design_id) . "'", 'aa_first');
+        $design = DB_AA::select1([], "SELECT top, answer, bottom FROM polls_design", [['id', (string) $design_id]]);
         // additional string for compact_top and compact_bottom needed
         // for historical reasons (not manager.class verion of item manager)
         return [

@@ -563,18 +563,15 @@ class FeedUtil
      */
     public static function GetExternalCategories($feed_id, $add_other = false): array
     {
-        $db         = getDB();
         $ext_categs = [];
-        $db->query("SELECT category_id, category, category_name, target_category_id, approved FROM ef_categories WHERE feed_id='$feed_id' ORDER BY category_name");
-        while ($db->next_record()) {
-            $ext_categs[unpack_id($db->f('category_id'))] = [
-                "value"              => $db->f('category'),
-                "name"               => $db->f('category_name'),
-                "approved"           => $db->f('approved'),
-                "target_category_id" => unpack_id($db->f('target_category_id')),
+        foreach (DB_AA::select([], 'SELECT category_id, category, category_name, target_category_id, approved FROM ef_categories', [['feed_id', $feed_id]], ['category_name']) as $row) {
+            $ext_categs[unpack_id($row['category_id'])] = [
+                "value"              => $row['category'],
+                "name"               => $row['category_name'],
+                "approved"           => $row['approved'],
+                "target_category_id" => unpack_id($row['target_category_id']),
             ];
         }
-        freeDB($db);
         if ($add_other && count($ext_categs) && !isset($ext_categs[unpack_id('AA_Other_Categor')])) {
             $ext_categs[self::UNPACKED_AA_OTHER_CATEGOR] = [
                 "value"              => 'AA_Other_Categor',
@@ -615,30 +612,27 @@ class FeedUtil
         $map_to   = [];
         $map_from = [];
 
-        $db = getDB();
-        $db->query("SELECT * FROM feedmap WHERE from_slice_id=" . xpack_id($r_slice_id) . " AND to_slice_id=" . xpack_id($l_slice_id) . " ORDER BY from_field_name");
-        while ($db->next_record()) {
-            switch ($f = $db->f('flag')) {
+        foreach (DB_AA::select([], 'SELECT * FROM feedmap', [['from_slice_id', $r_slice_id, 'l'], ['to_slice_id', $l_slice_id, 'l']], ['from_field_name']) as $row) {
+            switch ($f = $row['flag']) {
                 case FEEDMAP_FLAG_EXTMAP:
                 case FEEDMAP_FLAG_MAP:
-                    $v          = $db->f('from_field_id');
-                    $map_to[$v] = $db->f('from_field_name');
+                    $v          = $row['from_field_id'];
+                    $map_to[$v] = $row['from_field_name'];
                     break;
                 case FEEDMAP_FLAG_JOIN:
                 case FEEDMAP_FLAG_RSS:
                 case FEEDMAP_FLAG_VALUE:
-                    $v = $db->f('value');
+                    $v = $row['value'];
                     break;
                 case FEEDMAP_FLAG_EMPTY:
                     $v = "";
                     break;
             }
-            $map_from[$db->f('to_field_id')] = ["feedmap_flag"    => $f,
+            $map_from[$row['to_field_id']] = ["feedmap_flag"    => $f,
                 "value"           => $v,
-                "from_field_name" => $db->f('from_field_name'),
+                "from_field_name" => $row['from_field_name'],
             ];
         }
-        freeDB($db);
         return [$map_to, $map_from];
     }
 
@@ -696,17 +690,13 @@ class FeedUtil
             return [];
         }
 
-        $db  = getDB();
-        $SQL = "SELECT id, name, value, class FROM constant WHERE group_id = '$cat_group' ORDER BY pri";
-        $db->query($SQL);         // get all categories
-        while ($db->next_record()) {
-            $cat_ids[unpack_id($db->f('id'))] = [
-                "name"      => $db->f('name'),
-                "value"     => $db->f('value'),
-                "parent_id" => $db->f('class'),
+        foreach (DB_AA::select([], 'SELECT id, name, value, class FROM constant', [['group_id', $cat_group]], ['pri']) as $row) {   // get all categories
+            $cat_ids[unpack_id($row['id'])] = [
+                "name"      => $row['name'],
+                "value"     => $row['value'],
+                "parent_id" => $row['class'],
             ];
         }
-        freeDB($db);
         return $cat_ids;
     }
 

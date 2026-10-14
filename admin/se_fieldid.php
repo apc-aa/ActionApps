@@ -178,8 +178,8 @@ function ChangeFieldID($old_id, $new_id): void
         if (!$keyfield) {
             $keyfield = $settings['primary_part'];
         }
-        $SQL = "SELECT `$keyfield`, `" . implode("`, `", $settings['fields']) . "` FROM `$table`  WHERE " . $settings['slice_id'] . " = $xslice_id";
-        $rows = GetTable2Array($SQL);
+        $SQL = "SELECT `$keyfield`, `" . implode("`, `", $settings['fields']) . "` FROM `$table`";
+        $rows = DB_AA::select(['id' => []], $SQL, [[$settings['slice_id'], AA::$module_id, 'l']]);
         if (is_array($rows)) {
             foreach ($rows as $row) {
                 $varset->clear();

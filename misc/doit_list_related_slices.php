@@ -7,6 +7,8 @@
   * @copyright (c) 2002-3 Association for Progressive Communications
 */
 
+use AA\IO\DB\DB_AA;
+
 /** APC-AA configuration file */
 require_once __DIR__ . "/../include/config.php";
 /** Main include file for using session management function on a page */
@@ -16,10 +18,10 @@ require_once __DIR__ . "/../include/util.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 
-$slices = GetTable2Array("SELECT id, name FROM slice order by name", 'id', 'name');
+$slices = DB_AA::select(['id' => 'name'], 'SELECT id, name FROM slice', null, ['name']);
 
 foreach ($slices as $psid => $name) {
-    $fields = GetTable2Array("SELECT id, name, input_show_func FROM field WHERE slice_id='" . quote($psid) . "' AND input_show_func LIKE '%#sLiCe-%'", 'NoCoLuMn');
+    $fields = DB_AA::select([], 'SELECT id, name, input_show_func FROM field', [['slice_id', $psid, 'b'], ['input_show_func', '%#sLiCe-%', 'LIKE']]);
 
     echo "<br><br>$name";
     foreach ($fields as $field) {

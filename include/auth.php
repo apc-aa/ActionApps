@@ -113,16 +113,12 @@ class AA_Mysqlauth
     */
     public static function maintenance(): string
     {
-        $db = getDB();
         $result = [];
 
         // Create the array $oldusers with user names
-        $db->query("SELECT username FROM auth_user");
-        while ($db->next_record()) {
-            $oldusers[$db->f("username")] = 1;
-        }
+        $oldusers = DB_AA::select(['username' => 1], 'SELECT username FROM auth_user');
 
-        $slices = GetTable2Array("SELECT id, auth_field_group FROM slice WHERE type='ReaderManagement' AND auth_field_group > ''");
+        $slices = DB_AA::select(['id' => []], 'SELECT id, auth_field_group FROM slice', [['type', 'ReaderManagement'], ['auth_field_group', '', 'FILLED']]);
 
         // Work slice by slice
         foreach ($slices as $slice_id => $slice) {
@@ -155,6 +151,8 @@ class AA_Mysqlauth
                 }
             }
         }
+
+        $db = getDB();
 
         // Sanity checks:
 
@@ -296,13 +294,14 @@ class AA_Mysqlauth
             INNER JOIN field ON slice.id=field.slice_id
             INNER JOIN item ON slice.id = item.slice_id
             INNER JOIN content ON item.id=content.item_id AND field.id = content.field_id
-            INNER JOIN content AS username ON username.item_id=item.id
-            WHERE slice.type = 'ReaderManagement'
-            AND slice.auth_field_group = field.id
-            AND (field.input_show_func LIKE '___:$like:%'
-            OR  field.input_show_func LIKE '___:$like')
-            AND content.text = " . qquote($newvalue) . "
-            AND username.field_id='" . FIELDID_USERNAME . "'",
+            INNER JOIN content AS username ON username.item_id=item.id",
+            [
+                ['slice.type', 'ReaderManagement'],
+                ['slice.auth_field_group', 'field.id', 'j'],
+                [null, [[['field.input_show_func', "___:$like:%", 'LIKE']], [['field.input_show_func', "___:$like", 'LIKE']]], 'OR'],
+                ['content.text', (string) $newvalue],
+                ['username.field_id', FIELDID_USERNAME],
+            ],
         );
 
         // just the renamed group - the reader keeps the others

@@ -2,6 +2,7 @@
 
 namespace AA\Later;
 
+use AA\IO\DB\DB_AA;
 use AA_Set;
 
 class ComputedfieldsUpdater implements LaterInterface
@@ -11,12 +12,12 @@ class ComputedfieldsUpdater implements LaterInterface
     public function plan(): void
     {
 
-        $fields2count = GetTable2Array("SELECT id, slice_id, input_insert_func FROM field WHERE slice_id <> 'AA_Core_Fields..' AND input_insert_func LIKE 'co2:%'", '');
+        $fields2count = DB_AA::select([], "SELECT id, slice_id, input_insert_func FROM field WHERE slice_id <> 'AA_Core_Fields..' AND input_insert_func LIKE 'co2:%'");
 
         $intervals = ['minute' => 5, 'hour' => 4, 'day' => 3, 'week' => 2, 'month' => 1];
         $updaters = [];
 
-        if (is_array($fields2count)) {
+        if ($fields2count) {
             foreach ($fields2count as $to_count) {
                 [$fnc, $expand_insert, $expand_update, $expand_delimiter, $recompute] = ParamExplode($to_count["input_insert_func"]);
                 if (isset($intervals[$recompute])) {

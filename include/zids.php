@@ -491,6 +491,19 @@ class zids implements IteratorAggregate, ArrayAccess, Countable
         return strpos($id_list, ',') ? " $column IN ($id_list) " : " $column = $id_list ";
     }
 
+    /** The same condition as sqlin(), as a DB_AA $where entry: [column, ids, type]
+     *  (getDbWhereArray() picks the item column itself and passes short ids as ints - other literals)
+     * @param string $column
+     * @param bool   $asis - the ids as they are (quoted), not packed even for 'l' type
+     */
+    public function whereIn(string $column = 'short_or_long', bool $asis = false): array
+    {
+        if ($column === 'short_or_long') {
+            $column = ($this->use_short_ids() ? "item.short_id" : "item.id");
+        }
+        return ($asis || in_array($this->type, ['s','w'])) ? [$column, $this->arr] : [$column, $this->longids(), 'l'];
+    }
+
     /** getFirstSlice function
      *  Returns the slice id for the ids
      *  If items are from more than one slice, then it returns the random of them
@@ -501,9 +514,7 @@ class zids implements IteratorAggregate, ArrayAccess, Countable
             return false;
         }
         foreach (array_keys($this->arr) as $i) {
-            $zid = $this->zid($i);
-            $SQL        = "SELECT slice_id FROM item WHERE " . $zid->sqlin();
-            $p_slice_id = GetTable2Array($SQL, 'aa_first', 'slice_id');
+            $p_slice_id = DB_AA::select1('slice_id', 'SELECT slice_id FROM item', [$this->zid($i)->whereIn()]);
             if (!empty($p_slice_id)) {
                 return unpack_id($p_slice_id);
             }
@@ -723,12 +734,12 @@ function qquote($str): string
     return "'" . quote($str) . "'";
 }
 
-/** A constant group id (or any string) escaped for the inside of a quoted LIKE pattern -
+/** A constant group id (or any string) escaped for a pattern of DB_AA's LIKE type (which quotes it) -
  *  '_' and '%' match themselves. Here, not in constedit_util.php: the autoloaded
  *  AA_Mysqlauth and AA_Mailman need it too. */
 function constant_group_like(string $group_id): string
 {
-    return addcslashes(quote($group_id), '_%');
+    return addcslashes($group_id, '_%');
 }
 
 

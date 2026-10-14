@@ -92,15 +92,12 @@ function cron($time = 0): void
         $time = time();
     }
 
-    $db = getDB();
-
     $parts = ["mon" => 12,"wday" => 7,"mday" => 31,"hours" => 24,"minutes" => 60];
     if ($_GET['debug']) {
         echo "<b>" . date("d.m.y H:i", $time) . "</b><br>";
     }
 
-    $db->query("SELECT * FROM cron");
-    while ($db->next_record()) {
+    foreach (DB_AA::select([], 'SELECT * FROM cron') as $row) {
         /*  $nearest is the nearest of times on which an item should have run to now (nearest <= now)
             I don't consider last_run when looking for $nearest, but afterwards I run the script only
             if $nearest > $last_run.
@@ -109,8 +106,8 @@ function cron($time = 0): void
         $nearest_part = 0;
 
         // when last_run is NULL, run item always
-        if ($db->f("last_run")) {
-            $last_run = getdate($db->f("last_run"));
+        if ($row["last_run"]) {
+            $last_run = getdate($row["last_run"]);
 
             // If an hour passed, I want to have minutes as 60+minutes etc.
             $now = getdate($time);
@@ -118,7 +115,7 @@ function cron($time = 0): void
 
             // If the month(s) changed, find how many days it had
             $now_tst = mktime($last_run["hours"], $last_run["minutes"], $last_run["seconds"], $now["mon"], $last_run["mday"], $now["year"]);
-            $days_in_months = ($now_tst - $db->f("last_run")) / (60 * 60 * 24);
+            $days_in_months = ($now_tst - $row["last_run"]) / (60 * 60 * 24);
 
             $now["wday"]    += $days_in_months;
             $now["mday"]    += $days_in_months;
@@ -142,7 +139,7 @@ function cron($time = 0): void
 
                 $now_part = $now[$part];
 
-                $value = $db->f($part);
+                $value = $row[$part];
                 if ($value === "*") {
                     $nearest[$part] = $realnow[$part];
                     continue;
@@ -183,28 +180,28 @@ function cron($time = 0): void
             $nearest_time = mktime($nearest["hours"], $nearest["minutes"], 0, $nearest["mon"], $nearest["mday"], $now["year"]);
             // mktime does not consider week day. We must shift it manually to the desired week day.
             // This will not work correct when combining week day with month or month day settings.
-            if ($db->f("wday") !== "*") {
+            if ($row["wday"] !== "*") {
                 $wday = getdate($nearest_time);
                 $diff = (7 - $nearest["wday"] + $wday["wday"]) % 7;
                 $nearest_time -= $diff * 24 * 60 * 60;
             }
-        } // end of if ($db->f("last_run"))
+        } // end of if ($row["last_run"])
         else {
             $nearest_time = time();
         }
 
-        $url = AA_INSTAL_URL . $db->f("script") . "?" . $db->f("params");
+        $url = AA_INSTAL_URL . $row["script"] . "?" . $row["params"];
 
         if ($_GET['debug']) {
-            if ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
+            if ($nearest_part > -1 && $nearest_time > $row["last_run"]) {
                 echo "<br><b>" . safe($url) . "</b> will be run now<br>";
             } else {
-                echo "<br><small>" . safe($url) . " will not start now - will be run on " . date("d.m.Y H:i", $nearest_time) . " ($nearest_time)</small><br><small>nearest_part: $nearest_part, db->last_run:" . $db->f("last_run") . "</small><br>";
+                echo "<br><small>" . safe($url) . " will not start now - will be run on " . date("d.m.Y H:i", $nearest_time) . " ($nearest_time)</small><br><small>nearest_part: $nearest_part, db->last_run:" . $row["last_run"] . "</small><br>";
             }
             //echo "Nearest time: "; print_r ($nearest);
-            // DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$db->f("id"));
-        } elseif ($nearest_part > -1 && $nearest_time > $db->f("last_run")) {
-            DB_AA::sql("UPDATE cron SET last_run=" . $time . " WHERE id=" . $db->f("id"));
+            // DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$row["id"]);
+        } elseif ($nearest_part > -1 && $nearest_time > $row["last_run"]) {
+            DB_AA::sql("UPDATE cron SET last_run=" . $time . " WHERE id=" . $row["id"]);
             fopen($url, 'rb');
         }
     }

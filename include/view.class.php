@@ -734,16 +734,12 @@ class AA_Views
         $a = [];
         if ($slice_id) {
             $views = self::singleton();
-            $SQL   = "SELECT id FROM view WHERE slice_id=" . xpack_id($slice_id);
-            $v_arr = GetTable2Array($SQL, 'NoCoLuMn', 'id');
-            if (is_array($v_arr)) {
-                foreach ($v_arr as $id) {
-                    // cache it
-                    if (!isset($views->a[$id])) {
-                        $views->a[$id] = new AA_View($id);
-                    }
-                    $a[(string) $id] = &$views->a[$id];
+            foreach (DB_AA::select('id', 'SELECT id FROM view', [['slice_id', $slice_id, 'l']]) as $id) {
+                // cache it
+                if (!isset($views->a[$id])) {
+                    $views->a[$id] = new AA_View($id);
                 }
+                $a[(string) $id] = &$views->a[$id];
             }
         }
         return $a;

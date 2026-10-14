@@ -60,25 +60,23 @@ $chboxapp = [];
 
 // lookup (slices)
 $SQL= "SELECT name, id FROM feeds, slice
-        LEFT JOIN feedperms ON slice.id=feedperms.from_id
-        WHERE slice.id=feeds.from_id
-          AND (feedperms.to_id='$p_slice_id' OR slice.export_to_all=1)
-          AND feeds.to_id='$p_slice_id' ORDER BY name";
+        LEFT JOIN feedperms ON slice.id=feedperms.from_id";
 
-$db->query($SQL);
-while ($db->next_record()) {
-    $impslices[unpack_id($db->f('id'))] = $db->f('name');
+foreach (DB_AA::select([], $SQL, [
+    ['slice.id', 'feeds.from_id', 'j'],
+    [null, [[['feedperms.to_id', pack_id(AA::$module_id), 'b']], [['slice.export_to_all', 1, 'i']]], 'OR'],
+    ['feeds.to_id', pack_id(AA::$module_id), 'b'],
+], ['name']) as $row) {
+    $impslices[unpack_id($row['id'])] = $row['name'];
 }
 
 // lookup external slices
 $SQL = "SELECT remote_slice_id, remote_slice_name, feed_id, node_name
-        FROM external_feeds
-        WHERE slice_id='$p_slice_id' ORDER BY remote_slice_name";
-$db->query($SQL);
+        FROM external_feeds";
 
-while ($db->next_record()) {
-    $impslices[unpack_id($db->f('remote_slice_id'))] = $db->f('node_name')." - ".$db->f('remote_slice_name');
-    $remote_slices[unpack_id($db->f('remote_slice_id'))] = $db->f('feed_id');
+foreach (DB_AA::select([], $SQL, [['slice_id', pack_id(AA::$module_id), 'b']], ['remote_slice_name']) as $row) {
+    $impslices[unpack_id($row['remote_slice_id'])] = $row['node_name']." - ".$row['remote_slice_name'];
+    $remote_slices[unpack_id($row['remote_slice_id'])] = $row['feed_id'];
 }
 
 if ( !isset($impslices) || !is_array($impslices)){
@@ -90,7 +88,6 @@ if ( $import_id == "" ) {
     reset($impslices);
     $import_id = key($impslices);
 }
-$p_import_id = xpack_id($import_id);
 
 $slice = AA_Slice::getModule(AA::$module_id);
 
@@ -98,16 +95,13 @@ $slice = AA_Slice::getModule(AA::$module_id);
 $group =  $slice?->getFields()->getCategoryGroup();
 
 if ( $group ) {
-    $db->query("SELECT id, name FROM constant
-                 WHERE group_id='$group'
-                 ORDER BY pri");
     $first_time = true;               // in order to The Same to be first in array
-    while ($db->next_record()) {
+    foreach (DB_AA::select([], "SELECT id, name FROM constant", [['group_id', $group]], ['pri']) as $row) {
         if ( $first_time ) {
             $to_categories[unpack_id('AA_The_Same_Cate')] = _m("-- The same --");
             $first_time = false;
         }
-        $to_categories[unpack_id($db->f('id'))] = $db->f('name');
+        $to_categories[unpack_id($row['id'])] = $row['name'];
     }
 }
 
@@ -143,17 +137,16 @@ if ($feed_id = $remote_slices[$import_id]) {   // not comparison! - external fee
     $imp_count = ($imp_group==='') ? 0 : DB_AA::count('constant', [['group_id', $imp_group]]);
 
     // preset variables due to feeds database
-    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds WHERE from_id=$p_import_id AND to_id='$p_slice_id'";
-    $db->query($SQL);
-    while ($db->next_record()) {
-        if ( $db->f('all_categories') ) {
+    $SQL= "SELECT category_id, to_category_id, all_categories, to_approved FROM feeds";
+    foreach (DB_AA::select([], $SQL, [['from_id', $import_id, 'l'], ['to_id', pack_id(AA::$module_id), 'b']]) as $row) {
+        if ( $row['all_categories'] ) {
             $all_categories = true;
-            $approved_0     = $db->f('to_approved');
-            $categ_0        = unpack_id($db->f('to_category_id'));  // if 0 => the same category
+            $approved_0     = $row['to_approved'];
+            $categ_0        = unpack_id($row['to_category_id']);  // if 0 => the same category
         } else {
-            $chboxcat[unpack_id($db->f('category_id'))] = true;
-            $selcat[unpack_id($db->f('category_id'))]   = unpack_id($db->f('to_category_id'));
-            $chboxapp[unpack_id($db->f('category_id'))] = $db->f('to_approved');
+            $chboxcat[unpack_id($row['category_id'])] = true;
+            $selcat[unpack_id($row['category_id'])]   = unpack_id($row['to_category_id']);
+            $chboxapp[unpack_id($row['category_id'])] = $row['to_approved'];
         }
     }
 }
@@ -255,12 +248,9 @@ if ($feed_id) {
 }
 else {
     if ( $imp_group ) {
-        $db->query("SELECT id, name, value FROM constant
-                     WHERE group_id='$imp_group'
-                     ORDER BY name");
         $i=1;
-        while ($db->next_record()) {
-            PrintOneRow(unpack_id($db->f('id')),$db->f('name'),$i++);
+        foreach (DB_AA::select([], "SELECT id, name, value FROM constant", [['group_id', $imp_group]], ['name']) as $row) {
+            PrintOneRow(unpack_id($row['id']),$row['name'],$i++);
         }
     }
 }

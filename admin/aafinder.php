@@ -203,15 +203,11 @@ if (strlen($findtext)) {
     if ($findinview) {
         $fields = ['id', 'before', 'even', 'row_delimiter', 'odd', 'after', 'group_title', 'order1', 'order2', 'group_by1', 'group_by2', 'cond1field', 'cond2field', 'cond3field', 'aditional', 'aditional2', 'aditional3', 'aditional4', 'aditional5', 'aditional6', 'group_bottom', 'field1', 'field2', 'field3'];
 
-        $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id` WHERE ";
-        foreach ($fields as $field) {
-            $SQL .= "(`view`.`$field` LIKE '%" . addcslashes(quote($findtext), '_%') . "%') OR ";
-        }
-        $SQL .= "0";
-        $db->query($SQL);
-        echo "<b>views</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
-        while ($db->next_record()) {
-            echo Adminlink::viewLink($db->f("id")) . "<br>\n";
+        $SQL = "SELECT `view`.`id`, `view`.`type`, `view`.`slice_id`, `slice`.`name` FROM `view` INNER JOIN `slice` ON `view`.`slice_id` = `slice`.`id`";
+        $rows = DB_AA::select([], $SQL, [[null, array_map(static fn($field) => [["`view`.`$field`", $findtext, 'CONTAIN']], $fields), 'OR']]);
+        echo "<b>views</b> <small>(" . count($rows) . " matching found)</small><br>";
+        foreach ($rows as $row) {
+            echo Adminlink::viewLink($row["id"]) . "<br>\n";
         }
         echo '<br><br>';
     }
@@ -239,16 +235,12 @@ if (strlen($findtext)) {
             'email_notify.uid',
         ];
 
-        $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id WHERE ';
-        foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
-        }
-        $SQL .= "0";
-        $db->query($SQL);
-        echo "<b>slices</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
-        while ($db->next_record()) {
-            echo safe($db->f("name")) . " "
-                    . "<a href=\"" . StateUrl("se_fulltext.php?change_id=" . unpack_id($db->f("id")))
+        $SQL = 'SELECT slice.name, slice.id FROM slice LEFT JOIN email_notify ON email_notify.slice_id = slice.id';
+        $rows = DB_AA::select([], $SQL, [[null, array_map(static fn($field) => [[$field, $findtext, 'CONTAIN']], $fields), 'OR']]);
+        echo "<b>slices</b> <small>(" . count($rows) . " matching found)</small><br>";
+        foreach ($rows as $row) {
+            echo safe($row["name"]) . " "
+                    . "<a href=\"" . StateUrl("se_fulltext.php?change_id=" . unpack_id($row["id"]))
                     . "\">" . _m("Jump") . "</a><br>";
         }
         echo '<br><br>';
@@ -257,36 +249,21 @@ if (strlen($findtext)) {
     if ($findinfield) {
         $fields = ['id', 'type', 'slice_id', 'name', 'input_pri', 'input_help', 'input_morehlp', 'input_default', 'feed', 'input_show_func', 'alias1', 'alias1_func', 'alias1_help', 'alias2', 'alias2_func', 'alias2_help', 'alias3', 'alias3_func', 'alias3_help', 'input_before', 'aditional', 'content_edit', 'input_validate', 'input_insert_func', 'input_show'];
 
-        $SQL = "SELECT slice_id, id, name FROM field WHERE ";
-        foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%" . addcslashes(quote($findtext), '_%') . "%' OR ";
-        }
-        $SQL .= '0';
-        $db->query($SQL);
-        echo "<b>fields</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
+        $SQL = "SELECT slice_id, id, name FROM field";
+        $rows = DB_AA::select([], $SQL, [[null, array_map(static fn($field) => [[$field, $findtext, 'CONTAIN']], $fields), 'OR']]);
+        echo "<b>fields</b> <small>(" . count($rows) . " matching found)</small><br>";
 
-        while ($db->next_record()) {
-            echo safe($db->f("name")) . " " . Adminlink::fieldLink($db->f("id"), unpack_id($db->f("slice_id"))) . "<br>";
+        foreach ($rows as $row) {
+            echo safe($row["name"]) . " " . Adminlink::fieldLink($row["id"], unpack_id($row["slice_id"])) . "<br>";
         }
         echo '<br><br>';
     }
 
     if ($findinspot) {
-        $like_text = addcslashes(quote($findtext), '_%');
-
-        $fields = [
-            'content',
-        ];
-
-        $SQL = "SELECT site_id, spot_id FROM site_spot WHERE ";
-        foreach ($fields as $field) {
-            $SQL .= "$field LIKE '%$like_text%' OR ";
-        }
-        $SQL .= "0";
-        $db->query($SQL);
-        echo "<b>site spots</b> <small>(" . $db->num_rows() . " matching found)</small><br>";
-        while ($db->next_record()) {
-            echo Adminlink::siteLink($db->f("spot_id"), unpack_id($db->f("site_id"))) . "<br>";
+        $rows = DB_AA::select([], 'SELECT site_id, spot_id FROM site_spot', [['content', $findtext, 'CONTAIN']]);
+        echo "<b>site spots</b> <small>(" . count($rows) . " matching found)</small><br>";
+        foreach ($rows as $row) {
+            echo Adminlink::siteLink($row["spot_id"], unpack_id($row["site_id"])) . "<br>";
         }
         echo '<br><br>';
 

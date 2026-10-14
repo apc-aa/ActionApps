@@ -385,8 +385,11 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     function findUsernames($pattern): array|string
     {
-        $pattern = quote($pattern);
-        return DB_AA::select(['id'=> ['name','mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users` WHERE ( name  LIKE '%$pattern%' OR mail LIKE '%$pattern%' OR uid LIKE '%$pattern%') AND ( type = '".quote(_m("User"))."' OR type = 'User')");
+        $pattern = "%$pattern";   // RLIKE adds the trailing % - the wildcards of the user stay active
+        return DB_AA::select(['id'=> ['name','mail']], "SELECT id, CONCAT(givenname, ' ', sn) AS name, mail FROM `users`", [
+            [null, [[['name', $pattern, 'RLIKE']], [['mail', $pattern, 'RLIKE']], [['uid', $pattern, 'RLIKE']]], 'OR'],
+            ['type', [_m("User"), 'User']],
+        ]);
     }
 
     /** findUserByLogin function
@@ -404,7 +407,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      * @return array - list of groups which corresponds to mask $pattern
      */
     function findGroups($pattern): array {
-        return DB_AA::select(['id'=> ['name']], "SELECT id, name FROM `users` WHERE name LIKE '%".quote($pattern)."%' AND (type = '".quote(_m("Group"))."' OR type = 'Group')");
+        return DB_AA::select(['id'=> ['name']], "SELECT id, name FROM `users`", [['name', "%$pattern", 'RLIKE'], ['type', [_m("Group"), 'Group']]]);
     }
 
     /** getGroup function

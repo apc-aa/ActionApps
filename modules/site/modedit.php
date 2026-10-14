@@ -258,16 +258,14 @@ if ($add || $update) {
 // And the form -----------------------------------------------------
 
 $source_id   = ($template['W'] ? $template_id : $module_id );
-$p_source_id = xpack_id( $source_id );
 
 // load module specific data
-$SQL= " SELECT * FROM site WHERE id=$p_source_id";
-$db->query($SQL);
-if ($db->next_record()) {
-    RestoreVariables($db->record());
+$row = DB_AA::select1([], 'SELECT * FROM site', [['id', $source_id, 'l']]);
+if ($row) {
+    RestoreVariables($row);
 }
-$id     = unpack_id($db->f("id"));  // correct ids
-$router = $db->f("flag");           // router is stored as flag
+$id     = unpack_id($row['id'] ?? null);  // correct ids
+$router = $row['flag'] ?? null;           // router is stored as flag
 
 $module = AA_Module_Site::getModule($source_id);
 

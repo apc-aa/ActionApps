@@ -207,13 +207,11 @@ function createConstsJavaScript($group_id, $admin): string
 function createConstsArray($group_id, $admin): array
 {
     global $get_method;
-    $dbc = getDB();
 
     $data = [];
-    $dbc->query("SELECT * FROM constant WHERE group_id = " . qquote($group_id));
-    while ($dbc->next_record()) {
-        $name  = str_replace(["\r", "\n"], '', (string)$dbc->f("name"));
-        $value = str_replace(["\r", "\n"], '', (string)$dbc->f("value"));
+    foreach (DB_AA::select([], 'SELECT * FROM constant', [['group_id', $group_id]]) as $row) {
+        $name  = str_replace(["\r", "\n"], '', (string)$row["name"]);
+        $value = str_replace(["\r", "\n"], '', (string)$row["value"]);
         // & in from _GET is taken as parameter delimiter, so we replace it
         // with %26. We do not replace it, if it is called from editing form
         if ($get_method) {
@@ -222,17 +220,16 @@ function createConstsArray($group_id, $admin): array
         if ($name == $value) {   // loose, as always: '1.0' == '1'
             $value = '#';
         }
-        $data[$dbc->f("ancestors") . $dbc->f("id")] = [
+        $data[$row["ancestors"] . $row["id"]] = [
             $name,
             $value,
-            (int)$dbc->f("pri"),
-            $admin ? str_replace(["\r", "\n"], '', (string)$dbc->f("description")) : "",
-            (int)$dbc->f("short_id"),
+            (int)$row["pri"],
+            $admin ? str_replace(["\r", "\n"], '', (string)$row["description"]) : "",
+            (int)$row["short_id"],
             false,
         ];
     }
 
-    freeDB($dbc);
     ksort($data);
 
     $levels     = [];   // node lists of the branch being built, top level first - the last node of each list is the parent of the next one
@@ -442,11 +439,11 @@ function hcUpdate(): void
     global $levelCount, $hide_value, $levelsHorizontal, $group_id, $p_slice_id;
 
     $qgroup_id = quote($group_id);
+    $group_setting = DB_AA::select1([], 'SELECT * FROM constant_slice', [['group_id', $group_id]]);
     $db = getDB();
 
-    $db->query("SELECT * FROM constant_slice WHERE group_id = '$qgroup_id'");
     if ($levelCount) {
-        if ($db->next_record()) {
+        if ($group_setting) {
             $db->query(
                 "UPDATE constant_slice SET levelcount=$levelCount,
                 horizontal=" . ($levelsHorizontal ? 1 : 0) . ",
@@ -464,10 +461,10 @@ function hcUpdate(): void
         $hide_value = 0;
         $levelCount = 2;
         $levelsHorizontal = 0;
-        if ($db->next_record()) {
-            $hide_value = $db->f("hidevalue");
-            $levelCount = $db->f("levelcount");
-            $levelsHorizontal = $db->f("horizontal");
+        if ($group_setting) {
+            $hide_value = $group_setting["hidevalue"];
+            $levelCount = $group_setting["levelcount"];
+            $levelsHorizontal = $group_setting["horizontal"];
         }
     }
 
@@ -499,26 +496,22 @@ function hcUpdate(): void
 function CopyConstants($slice_id): bool
 {
     global $err, $debug;
-    $db = getDB();
 
     // max. length of the group_id field
     $max_group_id_len = 16;
     $q_slice_id       = xpack_id($slice_id);
 
-    $db->query("SELECT name FROM constant WHERE group_id='lt_groupNames'");
-    while ($db->next_record()) {
-        $group_list[] = $db->f("name");
-    }
-    $db->query("SELECT id, input_show_func FROM field WHERE slice_id =$q_slice_id");
-    while ($db->next_record()) {
-        $shf = $db->f("input_show_func");
+    $group_list = DB_AA::select('name', 'SELECT name FROM constant', [['group_id', 'lt_groupNames']]);
+    foreach (DB_AA::select([], 'SELECT id, input_show_func FROM field', [['slice_id', $slice_id, 'l']]) as $row) {
+        $shf = $row["input_show_func"];
         if (strlen($shf) > 4) {
             [,$group_id] = explode(":", $shf);
             if (in_array($group_id, $group_list)) {
-                $group_ids[$group_id][$db->f("id")] = $shf;
+                $group_ids[$group_id][$row["id"]] = $shf;
             }
         }
     }
+    $db = getDB();
     if (!is_array($group_ids)) {
         freeDB($db);
         return true;
@@ -588,13 +581,10 @@ function CopyConstants($slice_id): bool
  */
 function get_unique_group_id(string $group_id): string
 {
-    $db = getDB();
-
     $group_id = str_replace(':', '-', $group_id);  // we don't need ':'
 
-    $db->query("SELECT value FROM constant WHERE group_id = 'lt_groupNames' AND value LIKE '" . quote($group_id) . "%'");
-    while ($db->next_record()) {
-        $gnames[$db->f("value")] = 1;
+    foreach (DB_AA::select('value', 'SELECT value FROM constant', [['group_id', 'lt_groupNames'], ['value', $group_id, 'RLIKE']]) as $gname) {
+        $gnames[$gname] = 1;
     }
     $unique_name = $group_id;
     if (is_array($gnames)) {
@@ -603,7 +593,6 @@ function get_unique_group_id(string $group_id): string
             $unique_name = $group_id . " " . ($i++);
         }
     }
-    freeDB($db);
     return $unique_name;
 }
 
@@ -628,10 +617,8 @@ function add_constant_group(string $group_id, $constants2import): true|string
     if (!constant_group_id_valid($group_id)) {
         return _m('Wrong constant group id');
     }
-    $db = getDB();
 
-    $db->query("SELECT * FROM constant WHERE group_id = " . qquote($group_id));
-    if ($db->next_record()) {
+    if (DB_AA::select1([], 'SELECT * FROM constant', [['group_id', $group_id]])) {
         return _m("This constant group already exists");
     }
 
@@ -663,7 +650,6 @@ function add_constant_group(string $group_id, $constants2import): true|string
         $varset->doINSERT("constant");
     }
     ConstantsChanged();
-    freeDB($db);
     return true;
 }
 
@@ -728,7 +714,10 @@ function constant_group_from_form(string $form_value): ?string
 function constant_group_fields(string $group_id): array
 {
     $like = constant_group_like($group_id);
-    return DB_AA::select([], "SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field` WHERE module.id = field.slice_id AND (field.input_show_func LIKE '%:$like' OR field.input_show_func LIKE '%:$like:%')");
+    return DB_AA::select([], 'SELECT LOWER(HEX(module.id)) AS unpackid, module.deleted, module.name as sname, field.id as fid, field.name as fname FROM `module`, `field`', [
+        ['module.id', 'field.slice_id', 'j'],
+        [null, [[['field.input_show_func', "%:$like", 'LIKE']], [['field.input_show_func', "%:$like:%", 'LIKE']]], 'OR'],
+    ]);
 }
 
 /** The slice owning the group: ['owner_id' => unpacked slice id, 'name' => slice name, 'propagate'],
@@ -780,7 +769,13 @@ function constant_value_replace(string $group_id, string $oldvalue, string $newv
     $items2update = [];
 
     // we have to join also item table in order we make sure field is in right slice
-    foreach (DB_AA::select([], "SELECT item_id,field_id FROM content, item, field WHERE content.item_id=item.id AND item.slice_id = field.slice_id AND content.field_id = field.id AND (field.input_show_func LIKE '___:$like:%' OR field.input_show_func LIKE '___:$like') AND content.text = " . qquote($oldvalue)) as $row) {
+    foreach (DB_AA::select([], 'SELECT item_id,field_id FROM content, item, field', [
+        ['content.item_id', 'item.id', 'j'],
+        ['item.slice_id', 'field.slice_id', 'j'],
+        ['content.field_id', 'field.id', 'j'],
+        [null, [[['field.input_show_func', "___:$like:%", 'LIKE']], [['field.input_show_func', "___:$like", 'LIKE']]], 'OR'],
+        ['content.text', $oldvalue],
+    ]) as $row) {
         ++$cnt;
         $items2update[$row['field_id']] ??= new zids(null, 'p');
         $items2update[$row['field_id']]->add($row['item_id']);
@@ -830,13 +825,12 @@ function refresh_constant_group($group_id, $items): bool
     if (!constant_group_id_valid((string) $group_id) || in_array($group_id, AA_CONSTANT_GROUPS_CORE, true)) {
         return false;
     }
-    $db = getDB();
 
     $varset = new CVarset();
 
-    $db->query("SELECT * FROM constant WHERE group_id='lt_groupNames'
-        AND name=" . qquote($group_id));
-    if (!$db->next_record()) {
+    $group_name = DB_AA::select1([], 'SELECT * FROM constant', [['group_id', 'lt_groupNames'], ['name', $group_id]]);
+    $db = getDB();
+    if (!$group_name) {
         $existed = false;
         $varset->add("group_id", "text", "lt_groupNames");
         $varset->add("value", "text", $group_id);

@@ -340,22 +340,18 @@ class assignmentset
         }
         $lid = $this->lid;
 
-        $db = getDB();
-        $SQL = "SELECT * FROM links_link_cat WHERE what_id='$lid' ORDER BY priority";
-        $db->query($SQL);
-        while ($db->next_record()) {
+        foreach (DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $lid]], ['priority']) as $row) {
             $this->assignments[] = new linkassignment(
-                $db->f('category_id'),
-                $db->f('what_id'),
-                $db->f('base'),
-                $db->f('state'),
-                $db->f('proposal'),
-                $db->f('proposal_delete'),
-                $db->f('priority'),
-                $db->f('a_id'),
+                $row['category_id'],
+                $row['what_id'],
+                $row['base'],
+                $row['state'],
+                $row['proposal'],
+                $row['proposal_delete'],
+                $row['priority'],
+                $row['a_id'],
             );
         }
-        freeDB($db);
     }
 
     /** Load category set from Input Form */
@@ -776,8 +772,6 @@ class linkobj
             return;
         }
 
-        $db = getDB();
-
         $lid = $this->lid;
         $this->clear();     // unset all current values (if any)
         $this->lid = $lid;
@@ -791,35 +785,23 @@ class linkobj
         $this->data['aa_name'] = $this->data['name'];
         unset($this->data['name']);
 
+        // none is false, not []: save() and dataChecksum() iterate (array) $this->region, which is then [false]
         // link region info
-        $this->region   = GetTable2Array(
-            "SELECT region_id FROM links_link_reg
-                                           WHERE link_id='$lid'",
-            'region_id',
-            'aa_mark',
-        );
+        $this->region   = DB_AA::select(['region_id' => true], 'SELECT region_id FROM links_link_reg', [['link_id', $lid]]) ?: false;
         // link language info
-        $this->language = GetTable2Array(
-            "SELECT lang_id FROM links_link_lang
-                                           WHERE link_id='$lid'",
-            'lang_id',
-            'aa_mark',
-        );
+        $this->language = DB_AA::select(['lang_id' => true], 'SELECT lang_id FROM links_link_lang', [['link_id', $lid]]) ?: false;
 
         // lookup - changes proposal
-        $SQL = "SELECT proposal_link_id, rejected FROM links_changes WHERE changed_link_id='$lid'";
-        $db->query($SQL);
-        while ($db->next_record()) {
-            debug('changes Record:', $db->record());
-            $ch_link = new linkobj($db->f('proposal_link_id'));
+        foreach (DB_AA::select([], 'SELECT proposal_link_id, rejected FROM links_changes', [['changed_link_id', $lid]]) as $row) {
+            debug('changes Record:', $row);
+            $ch_link = new linkobj($row['proposal_link_id']);
             $ch_link->load();
             $this->changes[] = [
-                'rejected' => $db->f('rejected') === 'y',
+                'rejected' => $row['rejected'] === 'y',
                 'link'    => $ch_link,
             ];
         }
         debug('load: changes result:', $this->changes);
-        freeDB($db);
 
         // clean the link - remove all general categories (general categories
         // are added at the end (on storing to the database))
@@ -1187,12 +1169,8 @@ class linkobj
             return;
         }
 
-        $to_delete = GetTable2Array(
-            "SELECT proposal_link_id from links_changes
-                                      WHERE changed_link_id='$lid'",
-            '',
-            'proposal_link_id',
-        );
+        // false when there is none - the (array) cast below then yields [false]
+        $to_delete = DB_AA::select('proposal_link_id', 'SELECT proposal_link_id from links_changes', [['changed_link_id', $lid]]) ?: false;
         // remove links changes
         $db->query("DELETE FROM links_changes   WHERE changed_link_id='$lid'");
         // remove links changing

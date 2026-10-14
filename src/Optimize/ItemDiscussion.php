@@ -2,6 +2,7 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
 use Cvarset;
 
 /** Delete discussion comments for not existing items
@@ -31,7 +32,10 @@ class ItemDiscussion extends AbstractOptimize
     public function test(): bool
     {
         $SQL = 'SELECT count(*) as disc_count, item_id FROM `discussion` LEFT JOIN item ON discussion.item_id = item.id WHERE item.short_id IS NULL GROUP BY discussion.item_id';
-        $problems = GetTable2Array($SQL, "unpack:item_id", 'disc_count');
+        $problems = [];
+        foreach (DB_AA::select([], $SQL) as $row) {
+            $problems[unpack_id($row['item_id'])] = $row['disc_count'];
+        }
         if (!$problems) {
             $this->message(_m('No problems found'));
             return true;

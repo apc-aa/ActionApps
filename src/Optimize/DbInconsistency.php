@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
+
 /** Testing if feeds table do not contain relations to non-existent slices
  */
 class DbInconsistency extends AbstractOptimize
@@ -39,8 +41,8 @@ class DbInconsistency extends AbstractOptimize
 
         // test wrong destination slices
         $SQL = "SELECT slice_id FROM item LEFT JOIN slice ON item.slice_id=slice.id WHERE slice.id IS NULL";
-        $err = GetTable2Array($SQL, '', "unpack:slice_id");
-        if (is_array($err) && count($err)) {
+        $err = array_map('unpack_id', DB_AA::select('slice_id', $SQL));
+        if (count($err)) {
             foreach ($err as $s_id) {
                 $this->message(_m('Wrong slice id in item table: %1', [$s_id]));
             }
@@ -49,8 +51,11 @@ class DbInconsistency extends AbstractOptimize
 
         // test wrong destination slices
         $SQL = "SELECT item_id, text FROM content LEFT JOIN item ON content.item_id=item.id WHERE item.id IS NULL";
-        $err = GetTable2Array($SQL, "unpack:item_id", 'text');
-        if (is_array($err) && count($err)) {
+        $err = [];
+        foreach (DB_AA::select(['item_id' => 'text'], $SQL) as $packed_id => $text) {
+            $err[unpack_id((string) $packed_id)] = $text;
+        }
+        if (count($err)) {
             foreach ($err as $item_id => $text) {
                 $this->message(_m('Wrong item id in content table: %1 -> %2', [$item_id, safe($text)]));   // content.text is editor input, the report is HTML
             }
@@ -59,10 +64,13 @@ class DbInconsistency extends AbstractOptimize
 
         // test wrong source slices
         $SQL = "SELECT item_id, subject FROM discussion LEFT JOIN item ON discussion.item_id=item.id WHERE item.id IS NULL";
-        $err = GetTable2Array($SQL, "unpack:item_id", 'subject');
-        if (is_array($err) && count($err)) {
+        $err = [];
+        foreach (DB_AA::select(['item_id' => 'subject'], $SQL) as $packed_id => $subject) {
+            $err[unpack_id((string) $packed_id)] = $subject;
+        }
+        if (count($err)) {
             foreach ($err as $item_id => $text) {
-                $this->message(_m('Wrong item id in discussion table: %1 -> %2', [$item_id, $text]));
+                $this->message(_m('Wrong item id in discussion table: %1 -> %2', [$item_id, safe($text)]));   // discussion.subject is public input, the report is HTML
             }
             $ret = false;
         }
@@ -77,12 +85,11 @@ class DbInconsistency extends AbstractOptimize
      */
     public function repair(): bool
     {
-        $db = getDb();
-
         // test wrong content records
         $SQL = "SELECT slice_id FROM item LEFT JOIN slice ON item.slice_id=slice.id WHERE slice.id IS NULL";
-        $err = GetTable2Array($SQL, '', "unpack:slice_id");
-        if (is_array($err) && count($err)) {
+        $err = array_map('unpack_id', DB_AA::select('slice_id', $SQL));
+        $db = getDb();
+        if (count($err)) {
             foreach ($err as $s_id) {
                 $SQL = 'DELETE FROM `item` WHERE `slice_id`=' . xpack_id($s_id);
                 $db->query($SQL);
@@ -92,8 +99,10 @@ class DbInconsistency extends AbstractOptimize
 
         // test wrong content records
         $SQL = "SELECT item_id FROM content LEFT JOIN item ON content.item_id=item.id WHERE item.id IS NULL";
-        $err = GetTable2Array($SQL, "", 'unpack:item_id');
-        if (is_array($err) && count($err)) {
+        freeDb($db);
+        $err = array_map('unpack_id', DB_AA::select('item_id', $SQL));
+        $db = getDb();
+        if (count($err)) {
             foreach ($err as $item_id) {
                 $SQL = 'DELETE FROM `content` WHERE `item_id`=' . xpack_id($item_id);
                 $db->query($SQL);
@@ -103,8 +112,10 @@ class DbInconsistency extends AbstractOptimize
 
         // test wrong source slices
         $SQL = "SELECT item_id FROM discussion LEFT JOIN item ON discussion.item_id=item.id WHERE item.id IS NULL";
-        $err = GetTable2Array($SQL, '', "unpack:item_id");
-        if (is_array($err) && count($err)) {
+        freeDb($db);
+        $err = array_map('unpack_id', DB_AA::select('item_id', $SQL));
+        $db = getDb();
+        if (count($err)) {
             foreach ($err as $item_id) {
                 $SQL = 'DELETE FROM `discussion` WHERE `item_id`=' . xpack_id($item_id);
                 $db->query($SQL);

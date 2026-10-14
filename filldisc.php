@@ -190,8 +190,7 @@ if ($ip_banned_slice_id) {
 
 // do not accept comments for not existing items or the items which
 // are in thrash or holding bin
-$SQL         = 'SELECT status_code FROM item WHERE id = ' . xpack_id($d_item_id);
-$item_status = GetTable2Array($SQL, "aa_first", 'status_code');
+$item_status = DB_AA::select1('status_code', 'SELECT status_code FROM item', [['id', $d_item_id, 'l']]);
 if ($item_status <> 1) {
     echo _m("Not accepted, item is not published or does not exist.");
     exit;
@@ -240,7 +239,7 @@ if ($_REQUEST['send_reactions'] && AA_Validate::doValidate($d_e_mail, 'email')) 
 }
 
 // invalidate cache
-$slice_id = unpack_id(GetTable2Array("SELECT slice_id FROM item WHERE id=" . xpack_id($d_item_id), 'aa_first', 'slice_id'));
+$slice_id = unpack_id(DB_AA::select1('slice_id', 'SELECT slice_id FROM item', [['id', $d_item_id, 'l']]));
 AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
 
 updateDiscussionCount($d_item_id);        // update a count of the comments belong to the item

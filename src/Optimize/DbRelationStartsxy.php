@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
+
 /** Testing if relation between slices are OK (without x or y chars on the begining)
  */
 class DbRelationStartsxy extends AbstractOptimize
@@ -35,7 +37,7 @@ class DbRelationStartsxy extends AbstractOptimize
     public function test(): bool
     {
         $SQL = 'SELECT count(*) as err_count FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
-        $err_count = GetTable2Array($SQL, "aa_first", 'err_count');
+        $err_count = DB_AA::select1('err_count', $SQL);
         if ($err_count > 0) {
             $this->message(_m('%1 bad relation records found', [$err_count]));
             return false;
@@ -49,10 +51,10 @@ class DbRelationStartsxy extends AbstractOptimize
      */
     public function repair(): bool
     {
-        $db = getDb();
         $SQL = 'SELECT `content`.item_id, `content`.`text` FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
-        $err_text = GetTable2Array($SQL, "", 'aa_fields');
-        if (is_array($err_text) && $err_text) {
+        $err_text = DB_AA::select([], $SQL);
+        $db = getDb();
+        if ($err_text) {
             $this->message(_m('%1 bad relation records found', [count($err_text)]));
             foreach ($err_text as $wrong) {
                 $this->message(_m('repair value: %1 with item_id: %2', [substr($wrong['text'], 1), $wrong['item_id'] ]));
