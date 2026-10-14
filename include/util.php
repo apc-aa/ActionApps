@@ -1166,18 +1166,16 @@ function GetConstantContent(zids $zids): array
     if ($zids->isEmpty()) {
         return [];
     }
-    $SQL = 'SELECT * FROM constant WHERE short_id ' . $zids->sqlin(false);
-
     // one constant per rendered item means the same rows are asked for over and over
-    return AA::Contentcache()->get_result('GetConstantContentFromDb', [$SQL]);
+    return AA::Contentcache()->get_result('GetConstantContentFromDb', [$zids->whereIn('short_id')]);
 }
 
 /** Reads the rows for GetConstantContent() - separate function, so the result can be cached */
-function GetConstantContentFromDb(string $SQL): array
+function GetConstantContentFromDb(array $cond): array
 {
     $content = [];
     $i = 1;
-    foreach (DB_AA::select([], $SQL) as $row) {
+    foreach (DB_AA::select([], 'SELECT * FROM constant', [$cond]) as $row) {
         $coid = $row['short_id'];
         $content[$coid]["const_name"][]        = GrabConstantColumn($row, "name");
         $content[$coid]["const_value"][]       = GrabConstantColumn($row, "value");
@@ -1200,17 +1198,15 @@ function GetConstantContentFromDb(string $SQL): array
  * @param $SQL
  * @param $prefix
  * @param $id_field
+ * @param array|null $where - conditions as for DB_AA::select()
  * @deprecated use directly AA_Content::StoreTable2AaContent()
  */
-function StoreTable2Content(&$content, $SQL, $prefix, $id_field): void
+function StoreTable2Content(&$content, $SQL, $prefix, $id_field, ?array $where = null): void
 {
-    $data = GetTable2Array($SQL, 'NoCoLuMn', 'aa_fields');
-    if (is_array($data)) {
-        foreach ($data as $row) {
-            $foo_id = $row[$id_field];
-            foreach ($row as $key => $val) {
-                $content[$foo_id][$prefix . $key][] = ['value' => $val];
-            }
+    foreach (DB_AA::select([], $SQL, $where) as $row) {
+        $foo_id = $row[$id_field];
+        foreach ($row as $key => $val) {
+            $content[$foo_id][$prefix . $key][] = ['value' => $val];
         }
     }
 }
@@ -1504,10 +1500,9 @@ function add_post2shtml_vars($delete = true): void
     if (!is_string($post2shtml_id) || !is_long_id($post2shtml_id)) {   // it comes from the URL and goes to SQL
         return;
     }
-    $db = getDB();
-    $db->query("SELECT * FROM post2shtml WHERE id='$post2shtml_id'");
-    $db->next_record();
-    $vars = unserialize($db->f("vars"), ['allowed_classes' => false]);
+    $row  = DB_AA::select1([], 'SELECT * FROM post2shtml', [['id', $post2shtml_id]]);
+    $vars = unserialize($row["vars"] ?? null, ['allowed_classes' => false]);
+    $db   = getDB();
     if ($delete) {
         $db->query("DELETE FROM post2shtml WHERE id='$post2shtml_id'");
     }

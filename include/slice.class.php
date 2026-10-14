@@ -607,19 +607,15 @@ class AA_Slice extends AA_Module
         if (!$force && is_object($this->dynamic_setting)) {
             return;
         }
-        $db = getDB();
-        $SQL = "SELECT * FROM content WHERE item_id = " . xpack_id($this->module_id) . " ORDER BY content.number";
-        $db->query($SQL);
         $content4id = [];
-        while ($db->next_record()) {
+        foreach (DB_AA::select([], 'SELECT * FROM content', [['item_id', $this->module_id, 'l']], ['content.number']) as $row) {
             // which database field is used (from 05/15/2004 we have FLAG_TEXT_STORED set for text-field-stored values
-            $db_field = (($db->f("text") != "") || ($db->f("flag") & FLAG_TEXT_STORED)) ? 'text' : 'number';
-            $content4id[$db->f("field_id")][] = [
-                "value" => $db->f($db_field),
-                "flag"  => $db->f("flag"),
+            $db_field = (($row["text"] != "") || ($row["flag"] & FLAG_TEXT_STORED)) ? 'text' : 'number';
+            $content4id[$row["field_id"]][] = [
+                "value" => $row[$db_field],
+                "flag"  => $row["flag"],
             ];
         }
-        freeDB($db);
         $this->dynamic_setting = new ItemContent($content4id);
     }
 
@@ -740,7 +736,7 @@ class AA_Slice extends AA_Module
         $now = now('step');
         $ret = ['folder1' => 0, 'folder2' => 0, 'folder3' => 0, 'expired' => 0, 'pending' => 0];
 
-        $ret = array_merge($ret, DB_AA::select(['fldr' => 'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item " . DB_AA::makeWhere([['slice_id', $this->module_id, 'l']]) . ' GROUP BY status_code'));
+        $ret = array_merge($ret, DB_AA::select(['fldr' => 'cnt'], "SELECT concat('folder',status_code) as fldr, count(*) as cnt FROM item", [['slice_id', $this->module_id, 'l']], null, ['status_code']));
         $ret['expired'] = $this->noExpiredBin() ? 0 : DB_AA::count('item', [
             ['slice_id', $this->module_id, 'l'],
             ['status_code', 1],

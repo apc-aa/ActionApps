@@ -33,6 +33,7 @@
 */
 
 
+use AA\IO\DB\DB_AA;
 use AA\Util\SingletonTrait;
 
 require_once __DIR__ . "/mail.php";
@@ -180,23 +181,20 @@ class aaevent
     public function get_handlers_newwwwww($type, $class, $selector): array
     {
         $handlers = [];
-        $db  = getDB();
-        $SQL = "SELECT reaction, params FROM event WHERE type='" . quote($type) . "'";
+        $where    = [['type', $type]];
         if ($class) {
-            $SQL .= " AND class='" . quote($class) . "'";
+            $where[] = ['class', $class];
         }
         if ($selector) {
-            $SQL .= " AND selector='" . quote($selector) . "'";
+            $where[] = ['selector', $selector];
         }
-        $db->query($SQL);
-        while ($db->next_record()) {
-            $reaction_class = $db->f('reaction');
+        foreach (DB_AA::select([], 'SELECT reaction, params FROM event', $where) as $row) {
+            $reaction_class = $row['reaction'];
             // security check - class must end with "Event"
             if (str_ends_with($reaction_class, 'Event')) {
-                $this->handlers[] = new $reaction_class($db->f('params'), $type, $class, $selector);
+                $this->handlers[] = new $reaction_class($row['params'], $type, $class, $selector);
             }
         }
-        freeDB($db);
         return $handlers;
     }
 }
@@ -281,20 +279,14 @@ class NewDiscussionCommentEvent
  */
 function GetNotifications($type, $class, $selector, $reaction = null, $params = null): array
 {
-    $type     = quote($type);
-    $class    = quote($class);
-    $selector = quote($selector);
-
-    $SQL = "SELECT params FROM event WHERE type='$type' AND class='$class' AND selector = '$selector'";
-
+    $where = [['type', $type], ['class', $class], ['selector', $selector]];
     if (isset($reaction)) {
-        $SQL .= ' AND reaction =\'' . quote($reaction) . '\'';
+        $where[] = ['reaction', $reaction];
     }
     if (isset($params)) {
-        $SQL .= ' AND params =\'' . quote($params) . '\'';
+        $where[] = ['params', $params];
     }
-    $notifications = GetTable2Array($SQL, 'NoCoLuMn', 'params');
-    return $notifications ? array_unique((array) $notifications) : [];
+    return array_unique(DB_AA::select('params', 'SELECT params FROM event', $where));
 }
 /** AddNotification function
  * @param $type
@@ -361,7 +353,7 @@ function Event_ItemNewComment($type, $item_id, $slice_type, $disc_id, $foo, $foo
         $mail_id = AA_Views::getViewField($view_id, 'aditional6');
     } else {
         // get id of e-mail template from first discussion view of the slice
-        $mail_id = GetTable2Array("SELECT aditional6 FROM view WHERE slice_id=" . xpack_id($slice_id) . " AND type='discus' ORDER BY id", 'aa_first', 'aditional6');
+        $mail_id = DB_AA::select1('aditional6', 'SELECT aditional6 FROM view', [['slice_id', $slice_id, 'l'], ['type', 'discus']], ['id']);
     }
 
     if ($mail_id < 1) {

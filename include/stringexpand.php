@@ -1050,13 +1050,13 @@ class AA_Stringexpand_Lastdisc extends AA_Stringexpand {
         }
         $zids      = new zids($item_id);
         //return 'SELECT date FROM discussion WHERE `state`=0 AND '. $zids->sqlin('item_id') .' ORDER BY date DESC LIMIT 1';
-        $disc_time = GetTable2Array('SELECT date FROM discussion WHERE `state`=0 AND '. $zids->sqlin('item_id') .' ORDER BY date DESC LIMIT 1', 'aa_first', 'date');
+        $disc_time = DB_AA::select1('date', 'SELECT date FROM discussion', [['`state`', 0, 'i'], $zids->whereIn('item_id')], ['date-']);
         if ($disc_time) {
             return (string)$disc_time;
         }
 
         if ($count_item_itself=='1') {
-            return (string)GetTable2Array('SELECT publish_date FROM item WHERE '. $zids->sqlin('id'), 'aa_first', 'publish_date');
+            return (string)DB_AA::select1('publish_date', 'SELECT publish_date FROM item', [$zids->whereIn('id')]);
         }
 
         return '0';

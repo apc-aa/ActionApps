@@ -643,13 +643,14 @@ class AA_Content implements Iterator, ArrayAccess, Countable
      * @param $SQL
      * @param $prefix
      * @param $id_field
+     * @param array|null $where - conditions as for DB_AA::select()
      * @return AA_Content[]
      */
-    public static function StoreTable2AaContent($SQL, $prefix, $id_field): array
+    public static function StoreTable2AaContent($SQL, $prefix, $id_field, ?array $where = null): array
     {
         $ret = [];
         $content = [];
-        StoreTable2Content($content, $SQL, $prefix, $id_field);
+        StoreTable2Content($content, $SQL, $prefix, $id_field, $where);
         foreach ($content as $id => $arr) {
             $ret[$id] = (new AA_Content())->setFromArray($arr)->setIdField($id_field);
         }

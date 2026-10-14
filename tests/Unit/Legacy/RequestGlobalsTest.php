@@ -212,6 +212,11 @@ namespace Tests\Unit\Legacy {
                 {
                     return $this->vars;
                 }
+
+                public function record(?string $name = null): array|string
+                {
+                    return $name ? $this->vars : ['vars' => $this->vars];
+                }
             };
             $spare = $GLOBALS['spareDBs'] ?? null;
             $uri   = $_SERVER['REQUEST_URI'] ?? null;

@@ -113,5 +113,14 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([2], $content['8']['const_counter']);
             $this->assertSame([['value' => 'colors']], $content['9']['const_group']);
         }
+
+        public function test_constant_content_asks_for_the_short_ids(): void
+        {
+            GetConstantContent(new \zids([7, 8], 's'));
+            GetConstantContent(new \zids(['9'], 's'));
+
+            $sqls = array_map(static fn($sql) => preg_replace('/\s+/', ' ', trim($sql)), RecordingDb::$log);
+            $this->assertSame(["SELECT * FROM constant WHERE short_id IN ('7','8')", "SELECT * FROM constant WHERE short_id = '9'"], $sqls);
+        }
     }
 }
