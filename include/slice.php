@@ -109,16 +109,17 @@ function StoreVariables(array $vars): array
     return $state_vars;
 }
 
-/** PutSearchLog function
- *
+/** One row of the search log - slice.php and discussion.php called with ?searchlog=<label>
+ * @param mixed $label  the searchlog request variable (a global, so still addslashes()ed)
  */
-function PutSearchLog($searchlog, $found_count = 0): void
+function PutSearchLog($label, int $found_count = 0): void
 {
-    $httpquery = $_SERVER['QUERY_STRING_UNESCAPED'] . $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
-    $httpquery = DeBackslash($httpquery);
-    $httpquery = str_replace("'", "\\'", $httpquery);
-    [$usec, $sec] = explode(" ", microtime());
-    $slice_time = 1000 * ((float) $usec + (float) $sec - $GLOBALS['slice_starttime']);
-    $user = $_SERVER['PHP_AUTH_USER'];
-    DB_AA::sql("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (" . time() . ",'$httpquery','$user',$found_count,$slice_time,'$searchlog')");
+    AA::Metabase()->doInsert('searchlog', [
+        'date'        => time(),
+        'query'       => DeBackslash(($_SERVER['QUERY_STRING_UNESCAPED'] ?? '') . ($_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'] ?? '')),
+        'user'        => (string) ($_SERVER['PHP_AUTH_USER'] ?? ''),
+        'found_count' => $found_count,
+        'search_time' => (int) round(1000 * (microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'])),
+        'additional1' => is_string($label) ? stripslashes($label) : '',
+    ]);
 }
