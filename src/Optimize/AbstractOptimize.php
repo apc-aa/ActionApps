@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
+use AA\IO\DB\DB_PDO;
 use AA\Util\NamedInterface;
 use AA\Util\ReportTrait;
 use AA_Content;
@@ -9,6 +11,7 @@ use AA_Property;
 use AA_Value;
 use ReflectionMethod;
 use RuntimeException;
+use Throwable;
 
 abstract class AbstractOptimize implements NamedInterface
 {
@@ -222,15 +225,54 @@ abstract class AbstractOptimize implements NamedInterface
         if ($just_print) {
             return true;
         }
+        if (!($ret = $this->queryDb()->query($SQL))) {
+            throw new RuntimeException('db err');  // @todo - better exception text
+        }
+        return $ret;
+    }
+
+    /** Runs $work as ONE transaction on the handle query() uses: one commit instead of one
+     *  per statement, and a failure in the middle leaves the tables as they were.
+     *  Every write inside must go through $this->query() - DB_AA and Metabase may use another
+     *  connection, so their statements could fall outside the transaction (and wait on its row
+     *  locks); for the same reason DB_AA::transaction() is no use here. No DDL inside (it commits
+     *  implicitly). In the dry run (justPrint()) and inside DB_AA::transaction() $work just runs.
+     * @return mixed whatever $work returned
+     * @throws RuntimeException when the commit fails; whatever $work threw, after the rollback
+     */
+    protected function transaction(callable $work): mixed
+    {
+        // PDO refuses a second BEGIN on a shared (persistent) connection - join the outer transaction instead
+        if (self::justPrint() || DB_AA::inTransaction()) {
+            return $work();
+        }
+        $db = $this->queryDb();
+        if (!$db->beginTransaction()) {
+            return $work();       // no transaction available - the statements autocommit
+        }
+        try {
+            $ret = $work();
+            if (!$db->commit()) {
+                throw new RuntimeException('commit failed, the block was not stored');
+            }
+            return $ret;
+        } catch (Throwable $e) {
+            try {
+                $db->rollback();
+            } catch (Throwable) {
+                // transaction already gone (lost connection) - keep the original error
+            }
+            throw $e;
+        }
+    }
+
+    /** the handle of query() and transaction(), kept by the object; errors are reported, not fatal */
+    private function queryDb(): DB_PDO
+    {
         if (!$this->db) {
             $this->db = getDb();
             $this->db->set_halt('report');
         }
-        $db = $this->db;
-
-        if (!($ret = $db->query($SQL))) {
-            throw new RuntimeException('db err');  // @todo - better exception text
-        }
-        return $ret;
+        return $this->db;
     }
 }
