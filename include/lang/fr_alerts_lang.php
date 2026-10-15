@@ -23,116 +23,116 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Vous n'avez pas la permission d'ajouter des sections",
 
-// modules/alerts/acf.php, row 114
+// modules/alerts/acf.php, row 107
 "Alerts Selections" => "S\xE9lections des alertes", // ai 2026-06
 
-// modules/alerts/acf.php, row 118
+// modules/alerts/acf.php, row 111
 "Choose selections which form the Alert email." => "Choisissez les s\xE9lections qui composent le courriel d'alerte.", // ai 2026-06
 
-// modules/alerts/acf.php, row 122, 149
+// modules/alerts/acf.php, row 115, 142
 "order" => "ordre", // ai 2026-06
 
-// modules/alerts/acf.php, row 122
+// modules/alerts/acf.php, row 115
 "selection" => "s\xE9lection", // ai 2026-06
 
-// modules/alerts/acf.php, row 122
-"remove" => "",
+// modules/alerts/acf.php, row 115
+"remove" => "supprimer", // ai 2026-10
 
-// modules/alerts/acf.php, row 131
-"No selections chosen yet." => "",
+// modules/alerts/acf.php, row 124
+"No selections chosen yet." => "Aucune s\xE9lection pour l'instant.", // ai 2026-10
 
-// modules/alerts/acf.php, row 134
-"Save order" => "",
+// modules/alerts/acf.php, row 127
+"Save order" => "Enregistrer l'ordre", // ai 2026-10
 
-// modules/alerts/acf.php, row 135
-"Remove checked" => "",
+// modules/alerts/acf.php, row 128
+"Remove checked" => "Supprimer la s\xE9lection", // ai 2026-10
 
-// modules/alerts/acf.php, row 150
-"Add selection" => "",
+// modules/alerts/acf.php, row 143
+"Add selection" => "Ajouter une s\xE9lection", // ai 2026-10
 
-// modules/alerts/acf.php, row 152
+// modules/alerts/acf.php, row 145
 "No selections defined. You must define some." => "Aucune s\xE9lection d\xE9finie. Vous devez en d\xE9finir.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 515
+// modules/alerts/alerts_sending.php, row 505
 "alerts alert" => "Alertes Alerte",
 
-// modules/alerts/alerts_sending.php, row 516
+// modules/alerts/alerts_sending.php, row 506
 "alerts welcome" => "Alerte bienvenue",
 
-// modules/alerts/alerts_sending.php, row 517
+// modules/alerts/alerts_sending.php, row 507
 "slice wizard welcome" => "Bienvenue assistant de section",
 
-// modules/alerts/alerts_sending.php, row 518
+// modules/alerts/alerts_sending.php, row 508
 "user template" => "mod\xE8le d'utilisateur", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 519
+// modules/alerts/alerts_sending.php, row 509
 "password change" => "changement de mot de passe", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 520
+// modules/alerts/alerts_sending.php, row 510
 "other" => "autre",
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 521
 "Aliases for Alerts Alert" => "Alias pour Alertes Alerte",
 
-// modules/alerts/alerts_sending.php, row 533
+// modules/alerts/alerts_sending.php, row 523
 "complete filter text" => "Filtre de texte complet",
 
-// modules/alerts/alerts_sending.php, row 534, 543
+// modules/alerts/alerts_sending.php, row 524, 533
 "howoften" => "combien de fois",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 525
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Formulaire URL Anonyme (choisi dans administration des alertes - configurations)",
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 526
 "Unsubscribe Form URL" => "URL du formulaire de d\xE9sabonnment", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Welcome" => "Alias pour alerte de bienvenue",
 
-// modules/alerts/alerts_sending.php, row 544
+// modules/alerts/alerts_sending.php, row 534
 "Collection Form URL (set in Alerts Admin - Settings)" => "Formulaire URL de collection (choisi dans administration des alertes - configurations)",
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 535
 "email confirmed" => "Courriel confirm\xE9", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 551
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Slice Wizard Welcome" => "Alias pour l'assistant de bienvenue \xE0 la section", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 553, 565
+// modules/alerts/alerts_sending.php, row 543, 555
 "Slice name" => "Nom de la section",
 
-// modules/alerts/alerts_sending.php, row 554, 566
+// modules/alerts/alerts_sending.php, row 544, 556
 "New user name" => "Nouveau nom d'usager",
 
-// modules/alerts/alerts_sending.php, row 555
+// modules/alerts/alerts_sending.php, row 545
 "New user login name" => "Nouveau nom d'usager",
 
-// modules/alerts/alerts_sending.php, row 556
+// modules/alerts/alerts_sending.php, row 546
 "New user role (editor / admin)" => "Nouveau r\xF4le pour l'usager (\xE9diteur / administrateur)", // ai 2026-10
 
-// modules/alerts/alerts_sending.php, row 557
+// modules/alerts/alerts_sending.php, row 547
 "My name" => "Mon nom",
 
-// modules/alerts/alerts_sending.php, row 558
+// modules/alerts/alerts_sending.php, row 548
 "My email" => "Mon courriel",
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 553
 "Aliases for User Templates (you can use also all aliases of the user)" => "Alias pour les mod\xE8les d'utilisateur (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 571
+// modules/alerts/alerts_sending.php, row 561
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Alias pour le courriel de changement de mot de passe (vous pouvez aussi utiliser tous les alias de l'utilisateur)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 573
+// modules/alerts/alerts_sending.php, row 563
 "HTML link to the password change page for current user" => "Lien HTML vers la page de changement de mot de passe pour l'utilisateur actuel", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 574
+// modules/alerts/alerts_sending.php, row 564
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Param\xE8tre d'URL utilis\xE9 pour le lien de changement de mot de passe dans _#PWD_LINK (vous pouvez l'utiliser si vous voulez utiliser votre propre URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
 "Language" => "Langue",
 
 // modules/alerts/cf_common.php, row 48
-// modules/alerts/send_emails.php, row 71
+// modules/alerts/send_emails.php, row 72
 "Email" => "Courriel", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 54
@@ -165,7 +165,7 @@ return [
 "Email templates" => "Mod\xE8les de courriel", // ai 2026-10
 
 // modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 165, 168
+// modules/alerts/modedit.php, row 160, 163
 "Alerts Settings" => "Configuration des alertes", // ai 2026-06
 
 // modules/alerts/menu.php, row 62
@@ -186,34 +186,34 @@ return [
 "Reader management" => "gestion des lecteurs",
 
 // modules/alerts/menu.php, row 82
-"Documentation" => "",
+"Documentation" => "Documentation", // ai 2026-10
 
 // modules/alerts/menu.php, row 84
 "Common" => "Commun", // ai 2026-06
 
 // modules/alerts/modedit.php, row 93
-"You do not have permissions to edit this Alerts module" => "",
+"You do not have permissions to edit this Alerts module" => "Vous n'avez pas la permission de modifier ce module Alertes", // ai 2026-10
 
-// modules/alerts/modedit.php, row 165
-"Add Alerts" => "",
+// modules/alerts/modedit.php, row 160
+"Add Alerts" => "Ajouter Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 173
+// modules/alerts/modedit.php, row 168
 "language" => "langue", // ai 2026-06
 
-// modules/alerts/modedit.php, row 177
-"Alert emails" => "",
+// modules/alerts/modedit.php, row 172
+"Alert emails" => "Courriels d'alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 181, 187
-"Edit '%1'" => "",
+// modules/alerts/modedit.php, row 176, 182
+"Edit '%1'" => "Modifier \xAB %1 \xBB", // ai 2026-10
 
-// modules/alerts/modedit.php, row 183
+// modules/alerts/modedit.php, row 178
 "welcome email" => "courriel de bienvenue", // ai 2026-06
 
-// modules/alerts/modedit.php, row 189
+// modules/alerts/modedit.php, row 184
 // modules/alerts/send.php, row 76
 "alert email" => "courriel d'alerte", // ai 2026-06
 
-// modules/alerts/modedit.php, row 192
+// modules/alerts/modedit.php, row 187
 "alerts ID" => "ID des alertes", // ai 2026-06
 
 // modules/alerts/send.php, row 44
@@ -223,39 +223,39 @@ return [
 "Send Emails" => "Envoyer les courriels", // ai 2026-06
 
 // modules/alerts/send.php, row 75
-"Alert email to send" => "",
+"Alert email to send" => "Courriel d'alerte \xE0 envoyer", // ai 2026-10
 
 // modules/alerts/send.php, row 77
-"Set" => "",
+"Set" => "Appliquer", // ai 2026-10
 
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/send_emails.php, row 65
 "Send now an example alert email to email" => "Envoyer maintenant un exemple de courriel d'alerte \xE0 une adresse de courriel", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 72, 91
+// modules/alerts/send_emails.php, row 73, 92
 "as if" => "comme si", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 73, 92, 108
+// modules/alerts/send_emails.php, row 74, 93, 109
 "Go!" => "Allez",
 
-// modules/alerts/send_emails.php, row 83
+// modules/alerts/send_emails.php, row 84
 "Send now an example alert email to Reader" => "Envoyer maintenant un exemple de courriel d'alerte \xE0 un lecteur", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 90
+// modules/alerts/send_emails.php, row 91
 "Reader" => "Lecteur", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 99
+// modules/alerts/send_emails.php, row 100
 "Send alerts" => "Envoyer les alertes", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Send now alerts to all users subscribed to " => "Envoyer maintenant les alertes \xE0 tous les utilisateurs abonn\xE9s \xE0 ", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Warning: This is a real command!" => "Attention : ceci est une commande r\xE9elle !", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 111
+// modules/alerts/send_emails.php, row 112
 "Last time the alerts were sent on:" => "Dernier envoi des alertes le :", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 122
+// modules/alerts/send_emails.php, row 123
 "%1 email(s) sent" => "%1 courriel(s) envoy\xE9(s)", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 151
@@ -270,7 +270,7 @@ return [
  => "D\xE9finissez les s\xE9lections dans les sections depuis lesquelles vous voulez envoyer des alertes,\n"
    ."        dans des vues de type Ensemble de s\xE9lections d'alertes", // ai 2026-06
 
-// modules/alerts/synchro.php, row 65
+// modules/alerts/synchro.php, row 66
 "Synchronization with Reader Management Slice" => "Synchronisation avec la section de gestion des lecteurs", // ai 2026-06
 
 // modules/alerts/synchro.php, row 95
@@ -327,42 +327,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "%1 champ(s) ajout\xE9(s)", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 201
+// modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 champ(s) et %2 groupe(s) de constantes supprim\xE9s", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 229
+// modules/alerts/synchro2.php, row 222
 "not set" => "non-d\xE9sign\xE9", // ai 2026-10
 
-// modules/alerts/util.php, row 54
-"-- none --" => "",
+// modules/alerts/util.php, row 53
+"-- none --" => "-- aucun --", // ai 2026-10
 
-// modules/alerts/util.php, row 60
-"email" => "",
+// modules/alerts/util.php, row 59
+"email" => "courriel", // ai 2026-10
 
-// modules/alerts/util.php, row 87
+// modules/alerts/util.php, row 86
 "instant" => "imm\xE9diat", // ai 2026-06
 
-// modules/alerts/util.php, row 88
+// modules/alerts/util.php, row 87
 "daily" => "quotidien", // ai 2026-06
 
-// modules/alerts/util.php, row 89
+// modules/alerts/util.php, row 88
 "weekly" => "hebdomadaire", // ai 2026-06
 
-// modules/alerts/util.php, row 90
+// modules/alerts/util.php, row 89
 "twoweeks" => "toutes les deux semaines", // ai 2026-06
 
-// modules/alerts/util.php, row 91
+// modules/alerts/util.php, row 90
 "monthly" => "mensuel", // ai 2026-06
 
-// modules/alerts/util.php, row 92
+// modules/alerts/util.php, row 91
 "irregular" => "irr\xE9gulier", // ai 2026-06
 
-// modules/alerts/util.php, row 99
+// modules/alerts/util.php, row 98
 "Active" => "Activer",
 
-// modules/alerts/util.php, row 100
+// modules/alerts/util.php, row 99
 "Holding bin" => "Casier de stockage",
 
-// modules/alerts/util.php, row 101
+// modules/alerts/util.php, row 100
 "Trash bin" => "casier d\xE9tritus", // ai 2026-10
 ];

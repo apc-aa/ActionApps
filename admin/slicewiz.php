@@ -43,6 +43,7 @@ require_once __DIR__ . "/../include/slicedit.php";
 try {
     $add = InputVars::boolPOST('add');   // ??? from where it could come?
     $cancel = InputVars::boolPOST('cancel');
+    $set_template_id = InputVars::boolPOST('template_from_slice') ? InputVars::idPOST('template_id2') : InputVars::idPOST('template_id');
 
     $Msg = InputVars::messageGETPOST();
 } catch (Exception $e) {
@@ -54,8 +55,6 @@ if ($cancel) {
 }
 
 $wizard = 1;
-
-$set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
 
 $err = [];          // error array (Init - just for initializing variable
 

@@ -68,19 +68,19 @@ return [
 "URL" => "",
 
 // include/constants_param_wizard.php, row 85
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = număr întreg pozitiv", // ai 2026-06
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Valoarea minimă permisă", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Valoarea maximă permisă", // ai 2026-06
@@ -277,7 +277,7 @@ return [
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.siteulmeu.ro/stiri.shtml", // ai 2026-06
 
 // include/constants_param_wizard.php, row 294
-"text" => "",
+"text" => "text", // ai 2026-10
 
 // include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Textul care va fi încadrat de legătură. Dacă acest parametru este un id de câmp, se folosește conținutul câmpului, altfel se folosește ca atare", // ai 2026-06
@@ -373,7 +373,7 @@ return [
 "prints date in a user defined format" => "afișează data într-un format definit de utilizator", // ai 2026-06
 
 // include/constants_param_wizard.php, row 380
-"format" => "",
+"format" => "format", // ai 2026-10
 
 // include/constants_param_wizard.php, row 381
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "format de tip PHP - vezi <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>manualul PHP</a>", // ai 2026-06
@@ -505,7 +505,7 @@ return [
 "text before the link" => "text înaintea legăturii", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 515
 "field/text" => "câmp/text", // ai 2026-06
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "afișează un 'blurb' (fragment de text) din altă secțiune, pe baza unei condiții simple.<br>Dacă <i>câmpul</i> (sau câmpul specificat prin <b>stringToMatch</b>) din secțiunea curentă se potrivește cu conținutul <b>fieldToMatch</b> din <b>blurbSliceId</b>, returnează conținutul <b>fieldToReturn</b> din <b>blurbSliceId</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Implicit este <i>câmpul</i>. Poate fi formatat fie ca id-ul unui câmp (headline........), fie ca text static.", // ai 2026-06
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "id-ul neîmpachetat al secțiunii în care este stocat textul blurb", // ai 2026-06
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id-ul câmpului din <b>blurbSliceId</b> în care se caută <b>stringToMatch</b>", // ai 2026-06
@@ -604,7 +604,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id-ul câmpului din <b>blurbSliceId</b> în care este stocat textul blurb (ce se afișează)", // ai 2026-06

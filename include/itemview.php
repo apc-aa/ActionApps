@@ -947,7 +947,7 @@ class itemview
                 $outrow = "";
                 $firstcell = $row * $row_len - $firstday;
                 for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
-                    $events = $calendar[$cell];
+                    $events = $calendar[$cell] ?? [];
                     if ($this->slice_info['even_odd_differ'] && !count($events)) {
                         $header = $this->slice_info['aditional'];
                     } else {
@@ -993,7 +993,7 @@ class itemview
                 }
                 $outrow = "";
                 for ($cell = $firstcell; $cell < $firstcell + $row_len; ++$cell) {
-                    $events = $calendar[$cell];
+                    $events = $calendar[$cell] ?? [];
                     if ($this->slice_info['even_odd_differ'] && !count($events)) {
                         $footer = $this->slice_info['aditional2'];
                     } else {
@@ -1011,7 +1011,7 @@ class itemview
         } else {
             for ($cell = $min_cell; $cell <= $max_cell; ++$cell) {
                 $calendar_aliases["_#CV_NUM_D"] = $cell;
-                $events = $calendar[$cell];
+                $events = $calendar[$cell] ?? [];
                 if ($this->slice_info['even_odd_differ'] && !count($events)) {
                     $header = $this->slice_info['aditional'];
                     $footer = $this->slice_info['aditional2'];

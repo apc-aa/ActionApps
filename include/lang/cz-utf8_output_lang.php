@@ -52,38 +52,38 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Alias používaný v administrativních stránkách index.php3 pro URL discedit.php3",
 // End of unused messages
 
-// ./slice.php, row 236
+// ./slice.php, row 237
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Chybný parametr inc - název vkládaného souboru smí obsahovat pouze alfanumerické znaky",
 
-// ./slice.php, row 240
+// ./slice.php, row 241
 "No such file" => "Soubor nenalezen",
 
-// ./slice.php, row 265
+// ./slice.php, row 262
 "Invalid slice number or slice was deleted" => "Webík s daným číslem nenalezen. Možná že byl vymazán.",
 
-// ./slice.php, row 268
+// ./slice.php, row 265
 "slice.php output forbidden for this slice" => "Výstup přes slice.php je pro tento webík zakázán",
 
-// ./slice.php, row 323
+// ./slice.php, row 320
 "session id" => "ID session",
 
-// ./slice.php, row 581
+// ./slice.php, row 573
 "number of current page (on pagescroller)" => "číslo aktuální stránky (ve stránkování)",
 
-// ./slice.php, row 582
+// ./slice.php, row 574
 "page length (number of items)" => "délka stránky (počet článků)",
 
-// ./slice.php, row 617
-// include/view.php, row 361
+// ./slice.php, row 609
+// include/view.php, row 390
 "No item found" => "Nenalezena žádná zpráva",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 211
 "Show selected" => "Zobraz vybrané",
 
-// include/discussion.php, row 223
+// include/discussion.php, row 212
 "Show all" => "Zobraz vše",
 
-// include/discussion.php, row 224
+// include/discussion.php, row 213
 "Add new" => "Přidej nový",
 
 // include/item.php, row 113
@@ -215,16 +215,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: chybná funkce aliasu %1 pro %2",
 
-// include/itemview.php, row 120
+// include/itemview.php, row 122
 "Selected item" => "Vybraný článek",
 
-// include/itemview.php, row 127
+// include/itemview.php, row 129
 "number of found items" => "počet nalezených článků",
 
-// include/itemview.php, row 375
+// include/itemview.php, row 377
 "No comment was selected" => "Nebyl vybrán žádný příspěvek",
 
-// include/itemview.php, row 707, 715
+// include/itemview.php, row 712, 720
 "exact group name" => "přesný název skupiny",
 
 // include/scroller.php, row 86
@@ -251,24 +251,24 @@ return [
 // include/slice.php, row 71
 "All categories" => "Všechny kategorie",
 
-// include/util.php, row 993
+// include/util.php, row 992
 "Error: Missing Reading Password" => "Chyba: chybí heslo pro čtení",
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "Zpráva s novinkami Toolkitu",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Back" => "Zpět",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "Znovu přihlásit",
 
-// misc/proposefieldchange.php, row 90
+// misc/proposefieldchange.php, row 110
 "Assignment form" => "Formulář pro přiřazení",
 
-// misc/proposefieldchange.php, row 98
+// misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Zpracuje data o vazbách článku odeslaná formulářem (POST)",
 
-// modules/site/site.php, row 289
+// modules/site/site.php, row 304
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Web je chybně nastaven: %1 neexistuje nebo jej nelze číst. Přidejte tento soubor, nebo opravte nastavení „Stavový soubor“ tohoto webu.", // ai 2026-10
 ];

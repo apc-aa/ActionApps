@@ -9,7 +9,7 @@ use AA\Util\LogOnce;
 use AA_Log;
 
 /** Item forms (aa[...] input - filler.php, {editable} and {ajax} on site pages) which tried to change
- *  the flags or the author of an existing item, or the password, 2FA secret or login of a reader, or to
+ *  the flags or the author of an existing item, or the password, 2FA secret, login or e-mail of a reader, or to
  *  move the item to another slice, in the last 30 days with no user logged in (AA\IO\Grabber\Form) -
  *  the field was left as stored. Logged once a day per slice and field. Index-only.
  */

@@ -47,7 +47,7 @@ return [
 "Show example params" => "Zobrazi\x9D pr\xEDklady parametrov", // ai 2026-06
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Parametre",
@@ -65,19 +65,19 @@ return [
 "URL" => "",
 
 // include/constants_param_wizard.php, row 85
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = kladn\xE9 cel\xE9 \xE8\xEDslo", // ai 2026-06
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Minim\xE1lna povolen\xE1 hodnota", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Maxim\xE1lna povolen\xE1 hodnota", // ai 2026-06
@@ -226,7 +226,7 @@ return [
 "max number of characters grabbed from the <b>fulltext</b> field" => "maxim\xE1lny po\xE8et znakov prevzat\xFDch z polo\x9Eky <b>fulltext</b>", // ai 2026-06
 
 // include/constants_param_wizard.php, row 258
-"fulltext" => "",
+"fulltext" => "pln\xFD text", // ai 2026-10
 
 // include/constants_param_wizard.php, row 259
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id polo\x9Eky s fulltextom (napr. full_text.......), z ktorej sa preber\xE1 text. Ak je pr\xE1zdne, text sa preber\xE1 priamo zo samotnej <i>polo\x9Eky</i>.", // ai 2026-06
@@ -271,10 +271,10 @@ return [
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL inej str\xE1nky, ktor\xE1 zobrazuje obsah spr\xE1vy. (Str\xE1nka by mala obsahova\x9D SSI include ../slice.php.). Ak nie je vyplnen\xE9, pre cel\xFD text sa pou\x9Eije rovnak\xE1 str\xE1nka ako pre preh\xBEad spr\xE1v (\xE8o je prirodzen\xE9 spr\xE1vanie).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291, 419
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarne.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
-"text" => "",
+"text" => "text", // ai 2026-10
 
 // include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Text, ktor\xFD bude obklopen\xFD odkazom. Ak je tento parameter id polo\x9Eky, pou\x9Eije sa obsah polo\x9Eky, inak sa pou\x9Eije tak, ako je zadan\xFD.", // ai 2026-06
@@ -502,7 +502,7 @@ return [
 "text before the link" => "text pred odkazom", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 515
 "field/text" => "pole/text", // ai 2026-06
@@ -574,7 +574,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "vyp\xED\x9Ae 'blurb' (k\xFAsok textu) z in\xE9ho modulu na z\xE1klade jednoduchej podmienky.<br>Ak sa <i>polo\x9Eka</i> (alebo polo\x9Eka ur\xE8en\xE1 parametrom <b>stringToMatch</b>) v aktu\xE1lnom module zhoduje s obsahom <b>fieldToMatch</b> v <b>blurbSliceId</b>, vr\xE1ti obsah <b>fieldToReturn</b> v <b>blurbSliceId</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "\x8Atandardne je to <i>polo\x9Eka</i>. M\xF4\x9Ee by\x9D zadan\xFD bu\xEF ako id polo\x9Eky (headline........), ALEBO ako statick\xFD text.", // ai 2026-06
@@ -583,7 +583,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "nezabalen\xE9 (unpacked) id modulu, v ktorom je ulo\x9Een\xFD text blurbu", // ai 2026-06
@@ -592,7 +592,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id polo\x9Eky v <b>blurbSliceId</b>, v ktorej sa m\xE1 h\xBEada\x9D <b>stringToMatch</b>", // ai 2026-06
@@ -601,13 +601,13 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id polo\x9Eky v <b>blurbSliceId</b>, v ktorej je ulo\x9Een\xFD text blurbu (\xE8o sa m\xE1 vyp\xEDsa\x9D)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 605
-"RSS tag" => "",
+"RSS tag" => "RSS tag", // ai 2026-10
 
 // include/constants_param_wizard.php, row 606
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "sl\xFA\x9Ei na intern\xE9 \xFA\xE8ely preddefinovan\xFDch RSS aliasov (napr. _#RSS_TITL). Prid\xE1va tagy pod\xBEa \x9Apecifik\xE1cie RSS 0.91.", // ai 2026-06
@@ -631,7 +631,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "vyp\xED\x9Ae obsah <i>polo\x9Eky</i> (alebo <i>unalias string</i>) v z\xE1vislosti od pr\xEDznaku html (ak pr\xEDznak html nie je nastaven\xFD, prevedie obsah do html. Na rozdiel od funkcie f_h prev\xE1dza do html aj konce riadkov (vo svojom z\xE1kladnom variante)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 625
-"unalias string" => "",
+"unalias string" => "re\x9Dazec s aliasmi", // ai 2026-10
 
 // include/constants_param_wizard.php, row 626
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ak je <i>unalias string</i> definovan\xFD, funkcia ignoruje <i>polo\x9Eku</i> a vyp\xED\x9Ae rad\x9Aej <i>unalias string</i>. V tomto re\x9Dazci m\xF4\x9Eete samozrejme pou\x9Ei\x9D \xBEubovo\xBEn\xE9 aliasy (alebo polo\x9Eky ako {headline.........})", // ai 2026-06
@@ -677,7 +677,7 @@ return [
 "usr_start_end_date_cz" => "",
 
 // include/constants_param_wizard.php, row 657
-"parameter" => "",
+"parameter" => "parameter", // ai 2026-10
 
 // include/constants_param_wizard.php, row 658
 "a parameter passed to the function" => "parameter odovzdan\xFD funkcii", // ai 2026-06

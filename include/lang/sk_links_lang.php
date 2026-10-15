@@ -50,7 +50,7 @@ return [
 "Descending" => "Zostupne",
 
 // include/searchbar.class.php, row 652
-"Filter" => "",
+"Filter" => "Filter", // ai 2026-10
 
 // include/searchbar.class.php, row 706
 "Advanced search" => "Roz\x9A\xEDren\xE9 vyh\xBEad\xE1vanie", // ai 2026-06
@@ -104,36 +104,36 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Spr\xE1va filtrov", // ai 2026-06
 
-// include/util.php, row 993
+// include/util.php, row 992
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo na \xE8\xEDtanie", // ai 2026-06
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 // modules/links/check_url.php, row 52
 "Back" => "Sp\xE4t",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "Znovu sa prihl\xE1si\x9D", // ai 2026-06
 
-// modules/links/actions.php, row 48, 93, 115
+// modules/links/actions.php, row 48, 90, 114
 "Can't find link in given category" => "Nepodarilo sa n\xE1js\x9D odkaz v danej kateg\xF3rii", // ai 2026-06
 
-// modules/links/actions.php, row 53, 120
+// modules/links/actions.php, row 53, 119
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Nem\xE1te pr\xE1vo zru\x9Ai\x9D zaradenie odkazu do kateg\xF3rie - odkaz bol navrhnut\xFD na vymazanie z tejto kateg\xF3rie", // ai 2026-06
 
-// modules/links/actions.php, row 62, 129
+// modules/links/actions.php, row 59, 125
 "Can't get association information" => "Nepodarilo sa z\xEDska\x9D inform\xE1cie o zaraden\xED", // ai 2026-06
 
-// modules/links/actions.php, row 97
+// modules/links/actions.php, row 94
 "No permission to approve link to given category" => "Nem\xE1te pr\xE1vo schv\xE1li\x9D odkaz do danej kateg\xF3rie", // ai 2026-06
 
-// modules/links/actions.php, row 166, 169
+// modules/links/actions.php, row 156, 159
 "No permission to move link" => "Nem\xE1te pr\xE1vo presun\xFA\x9D odkaz", // ai 2026-06
 
 // modules/links/catedit.php, row 51
-// modules/links/catedit2.php, row 210
+// modules/links/catedit2.php, row 192
 "No permission to edit category" => "Nem\xE1te pr\xE1vo upravova\x9D kateg\xF3riu", // ai 2026-06
 
 // modules/links/catedit.php, row 74
@@ -147,19 +147,19 @@ return [
 
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 59, 172
-// modules/links/linkedit.php, row 430
+// modules/links/linkedit.php, row 414
 "Id" => "ID", // ai 2026-06
 
 // modules/links/catedit.php, row 104
 "Links in subtree" => "Po\xE8et odkazov v kateg\xF3rii - vr\xE1tane v\x9Aetk\xFDch podkateg\xF3ri\xED", // ai 2026-06
 
 // modules/links/catedit.php, row 105
-// modules/links/catedit2.php, row 219
+// modules/links/catedit2.php, row 200
 // modules/links/constants.php, row 94, 194
 "Category name" => "N\xE1zov kateg\xF3rie", // ai 2026-06
 
 // modules/links/catedit.php, row 106
-// modules/links/catedit2.php, row 220
+// modules/links/catedit2.php, row 201
 // modules/links/constants.php, row 98, 196
 "Category description" => "Popis kateg\xF3rie", // ai 2026-06
 
@@ -170,17 +170,17 @@ return [
 "Disallow storing of the links to this category?" => "Zak\xE1za\x9D ukladanie odkazov do tejto kateg\xF3rie?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
-// modules/links/catedit2.php, row 224
+// modules/links/catedit2.php, row 205
 // modules/links/constants.php, row 76
-// modules/links/link.class.php, row 728
-// modules/links/linkedit.php, row 498
+// modules/links/link.class.php, row 724
+// modules/links/linkedit.php, row 482
 "Editor's note" => "Pozn\xE1mka editora", // ai 2026-06
 
 // modules/links/catedit.php, row 110
 "Subcategories" => "Podkateg\xF3rie", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-// modules/links/linkedit.php, row 524
+// modules/links/linkedit.php, row 508
 "Category tree" => "Strom kateg\xF3ri\xED", // ai 2026-06
 
 // modules/links/catedit.php, row 113
@@ -208,27 +208,27 @@ return [
 "Change state" => "Zmeni\x9D stav", // ai 2026-06
 
 // modules/links/catedit.php, row 143
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
-// modules/links/catedit2.php, row 154
+// modules/links/catedit2.php, row 138
 "Category reassigned" => "Kateg\xF3ria bola preraden\xE1", // ai 2026-06
 
-// modules/links/catedit2.php, row 166
+// modules/links/catedit2.php, row 148
 "Subcategory deleted" => "Podkateg\xF3ria bola vymazan\xE1", // ai 2026-06
 
-// modules/links/catedit2.php, row 168
+// modules/links/catedit2.php, row 150
 "Can't delete category which contains links" => "Nie je mo\x9En\xE9 vymaza\x9D kateg\xF3riu, ktor\xE1 obsahuje odkazy", // ai 2026-06
 
-// modules/links/catedit2.php, row 223
+// modules/links/catedit2.php, row 204
 "Additional information" => "\xCFal\x9Aie inform\xE1cie", // ai 2026-06
 
-// modules/links/catedit2.php, row 233
+// modules/links/catedit2.php, row 216
 "Category data changed" => "\xDAdaje kateg\xF3rie boli zmenen\xE9", // ai 2026-06
 
-// modules/links/catedit2.php, row 293
+// modules/links/catedit2.php, row 265
 "New category created" => "Nov\xE1 kateg\xF3ria bola vytvoren\xE1", // ai 2026-06
 
-// modules/links/catedit2.php, row 299
+// modules/links/catedit2.php, row 271
 "Foreign category assigned" => "Bola priraden\xE1 kr\xED\x9Eovo odkazovan\xE1 kateg\xF3ria", // ai 2026-06
 
 // modules/links/cattree.php, row 458
@@ -259,13 +259,13 @@ return [
 "Original name" => "P\xF4vodn\xE9 meno", // ai 2026-06
 
 // modules/links/constants.php, row 62, 176
-// modules/links/link.class.php, row 717
-// modules/links/linkedit.php, row 474
+// modules/links/link.class.php, row 713
+// modules/links/linkedit.php, row 458
 "Description" => "Popis",
 
 // modules/links/constants.php, row 63, 124
-// modules/links/link.class.php, row 721
-// modules/links/linkedit.php, row 486
+// modules/links/link.class.php, row 717
+// modules/links/linkedit.php, row 470
 "Link type" => "Typ odkazu", // ai 2026-06
 
 // modules/links/constants.php, row 64
@@ -275,7 +275,7 @@ return [
 "Votes" => "Hlasy", // ai 2026-06
 
 // modules/links/constants.php, row 66
-// modules/links/link.class.php, row 718
+// modules/links/link.class.php, row 714
 "Author" => "Autor",
 
 // modules/links/constants.php, row 67
@@ -294,13 +294,13 @@ return [
 "Revision date" => "D\xE1tum rev\xEDzie", // ai 2026-06
 
 // modules/links/constants.php, row 72
-// modules/links/link.class.php, row 727
-// modules/links/linkedit.php, row 574
-"E-mail" => "",
+// modules/links/link.class.php, row 723
+// modules/links/linkedit.php, row 558
+"E-mail" => "E-mail", // ai 2026-10
 
 // modules/links/constants.php, row 73
-// modules/links/link.class.php, row 719
-// modules/links/linkedit.php, row 435
+// modules/links/link.class.php, row 715
+// modules/links/linkedit.php, row 419
 "Url" => "URL", // ai 2026-06
 
 // modules/links/constants.php, row 74
@@ -328,7 +328,7 @@ return [
 "Organization e-mail" => "Organiz\xE1cia - e-mail", // ai 2026-06
 
 // modules/links/constants.php, row 83
-// modules/links/linkedit.php, row 514
+// modules/links/linkedit.php, row 498
 "Folder" => "Prie\xE8inok", // ai 2026-06
 
 // modules/links/constants.php, row 84
@@ -353,7 +353,7 @@ return [
 "Language id" => "Id jazyka", // ai 2026-06
 
 // modules/links/constants.php, row 91
-// modules/links/linkedit.php, row 582
+// modules/links/linkedit.php, row 566
 "Language" => "Jazyk", // ai 2026-06
 
 // modules/links/constants.php, row 92
@@ -543,65 +543,65 @@ return [
 // modules/links/getcat.php, row 58
 "Select category" => "Vybra\x9D kateg\xF3riu", // ai 2026-06
 
-// modules/links/index.php, row 84
+// modules/links/index.php, row 85
 "No permissions to edit links" => "Nem\xE1te pr\xE1vo upravova\x9D odkazy", // ai 2026-06
 
-// modules/links/index.php, row 183
+// modules/links/index.php, row 178
 "Module not found." => "Modul nebol n\xE1jden\xFD.", // ai 2026-06
 
-// modules/links/index.php, row 215
+// modules/links/index.php, row 210
 "HINT: \"social ecology\" AND environment" => "TIP: \"soci\xE1lna ekol\xF3gia\" AND \x9Eivotn\xE9 prostredie", // ai 2026-06
 
-// modules/links/index.php, row 242
+// modules/links/index.php, row 237
 "Perform action on selected items" => "Vyberte akciu, ktor\xE1 sa vykon\xE1 s vybran\xFDmi odkazmi", // ai 2026-06
 
-// modules/links/index.php, row 265
+// modules/links/index.php, row 260
 "ActionApps - Links Manager" => "ActionApps - Spr\xE1va odkazov", // ai 2026-06
 
-// modules/links/index.php, row 295
+// modules/links/index.php, row 290
 "All my links" => "V\x9Aetky moje odkazy", // ai 2026-06
 
-// modules/links/index.php, row 296
+// modules/links/index.php, row 291
 "Links to check" => "Odkazy na kontrolu", // ai 2026-06
 
-// modules/links/index.php, row 297
+// modules/links/index.php, row 292
 "Last edited" => "Naposledy upraven\xE9", // ai 2026-06
 
-// modules/links/index.php, row 319
+// modules/links/index.php, row 314
 "Show Links" => "Zobrazi\x9D odkazy", // ai 2026-06
 
-// modules/links/index.php, row 322
+// modules/links/index.php, row 317
 "Edit Category" => "Upravi\x9D kateg\xF3riu", // ai 2026-06
 
-// modules/links/index.php, row 326
+// modules/links/index.php, row 321
 "Show subtree links" => "Zobrazi\x9D odkazy podstromu", // ai 2026-06
 
-// modules/links/link.class.php, row 715
-// modules/links/linkedit.php, row 452
+// modules/links/link.class.php, row 711
+// modules/links/linkedit.php, row 436
 "Page name" => "N\xE1zov str\xE1nky", // ai 2026-06
 
-// modules/links/link.class.php, row 716
-// modules/links/linkedit.php, row 463
+// modules/links/link.class.php, row 712
+// modules/links/linkedit.php, row 447
 "Original page name" => "P\xF4vodn\xFD n\xE1zov str\xE1nky", // ai 2026-06
 
-// modules/links/link.class.php, row 722
-// modules/links/linkedit.php, row 564
+// modules/links/link.class.php, row 718
+// modules/links/linkedit.php, row 548
 "City" => "Mesto", // ai 2026-06
 
-// modules/links/link.class.php, row 723
-// modules/links/linkedit.php, row 566
+// modules/links/link.class.php, row 719
+// modules/links/linkedit.php, row 550
 "Street" => "Ulica", // ai 2026-06
 
-// modules/links/link.class.php, row 724
-// modules/links/linkedit.php, row 568
+// modules/links/link.class.php, row 720
+// modules/links/linkedit.php, row 552
 "Post code" => "PS\xC8", // ai 2026-06
 
-// modules/links/link.class.php, row 725
-// modules/links/linkedit.php, row 570
+// modules/links/link.class.php, row 721
+// modules/links/linkedit.php, row 554
 "Phone" => "Telef\xF3n", // ai 2026-06
 
-// modules/links/link.class.php, row 726
-// modules/links/linkedit.php, row 572
+// modules/links/link.class.php, row 722
+// modules/links/linkedit.php, row 556
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
@@ -611,32 +611,32 @@ return [
 "unfilled" => "nevyplnen\xE9", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
-// modules/links/menu.php, row 73, 74
+// modules/links/menu.php, row 75, 76
 "Edit Link" => "Upravi\x9D odkaz", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
-// modules/links/menu.php, row 73
+// modules/links/menu.php, row 75
 "Add Link" => "Prida\x9D odkaz", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
 "Link does not exist or the base category is not set" => "Odkaz neexistuje alebo nie je nastaven\xE1 z\xE1kladn\xE1 kateg\xF3ria", // ai 2026-06
 
-// modules/links/linkedit.php, row 266, 285
+// modules/links/linkedit.php, row 256, 273
 "Proposal to uncheck" => "N\xE1vrh na vyradenie", // ai 2026-06
 
-// modules/links/linkedit.php, row 267, 286
+// modules/links/linkedit.php, row 257, 274
 "Proposal to check" => "N\xE1vrh na zaradenie", // ai 2026-06
 
-// modules/links/linkedit.php, row 317
+// modules/links/linkedit.php, row 301
 "Proposal to add" => "N\xE1vrh na pridanie", // ai 2026-06
 
-// modules/links/linkedit.php, row 319
+// modules/links/linkedit.php, row 303
 "Proposal to del" => "N\xE1vrh na zru\x9Aenie", // ai 2026-06
 
-// modules/links/linkedit.php, row 385
+// modules/links/linkedit.php, row 369
 "ActionApps" => "APC toolkit",
 
-// modules/links/linkedit.php, row 407
+// modules/links/linkedit.php, row 391
 "<!--NewPublicLinkText-->"
  => "V tomto formul\xE1ri na vlo\x9Eenie nov\xE9ho odkazu do katal\xF3gu m\xF4\x9Eete,\n"
    ."ale nemus\xEDte vyplni\x9D v\x9Aetky polia. Pre jednoduch\xE9 zaradenie odkazu\n"
@@ -646,76 +646,76 @@ return [
    ."<b>Nevkladajte, pros\xEDm, do katal\xF3gu \"komer\xE8n\xE9\" odkazy.</b> Tieto odkazy nebud\xFA v katal\xF3gu vystaven\xE9.<br>\n"
    ." \xCFakujeme.", // ai 2026-06
 
-// modules/links/linkedit.php, row 425
+// modules/links/linkedit.php, row 409
 "Link" => "Odkaz", // ai 2026-06
 
-// modules/links/linkedit.php, row 438
+// modules/links/linkedit.php, row 422
 "Check url" => "H\xBEada\x9D URL v katal\xF3gu", // ai 2026-06
 
-// modules/links/linkedit.php, row 439
+// modules/links/linkedit.php, row 423
 "View" => "Zobrazi\x9D", // ai 2026-06
 
-// modules/links/linkedit.php, row 440
+// modules/links/linkedit.php, row 424
 "You can check, if the page is not in database already" => "M\xF4\x9Eete skontrolova\x9D, \xE8i str\xE1nka u\x9E nie je v datab\xE1ze", // ai 2026-06
 
-// modules/links/linkedit.php, row 445
+// modules/links/linkedit.php, row 429
 "Do not fill, please:" => "Nevyp\xE5\xF2ajte, pros\xEDm:", // ai 2026-06
 
-// modules/links/linkedit.php, row 457
+// modules/links/linkedit.php, row 441
 "English name of the page" => "Anglick\xFD n\xE1zov str\xE1nky", // ai 2026-06
 
-// modules/links/linkedit.php, row 468
+// modules/links/linkedit.php, row 452
 "Name of the page in original language" => "N\xE1zov str\xE1nky v p\xF4vodnom jazyku", // ai 2026-06
 
-// modules/links/linkedit.php, row 479
+// modules/links/linkedit.php, row 463
 "Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Nepou\x9E\xEDvajte HTML tagy a nep\xED\x9Ate slov\xE1 ako \"najlep\x9Aia str\xE1nka\", ... Maxim\xE1lna d\xE5\x9Eka popisu by mala by\x9D asi 250 znakov.", // ai 2026-06
 
-// modules/links/linkedit.php, row 486
+// modules/links/linkedit.php, row 470
 "Select the type, if the link belongs to some special category" => "Vyberte typ, ak odkaz patr\xED do nejakej \x9Apeci\xE1lnej kateg\xF3rie", // ai 2026-06
 
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 478
 "Author's e-mail" => "E-mail autora", // ai 2026-06
 
-// modules/links/linkedit.php, row 503
+// modules/links/linkedit.php, row 487
 "You can type any message here - it is never shown on the website" => "Sem m\xF4\x9Eete nap\xEDsa\x9D ak\xFAko\xBEvek pozn\xE1mku - na webovej str\xE1nke sa nikdy nezobraz\xED", // ai 2026-06
 
-// modules/links/linkedit.php, row 509
+// modules/links/linkedit.php, row 493
 "Last checked" => "Naposledy kontrolovan\xE9", // ai 2026-06
 
-// modules/links/linkedit.php, row 509, 510, 511
+// modules/links/linkedit.php, row 493, 494, 495
 "n/j/Y" => "j.n.Y", // ai 2026-06
 
-// modules/links/linkedit.php, row 510
+// modules/links/linkedit.php, row 494
 "Last changed" => "Naposledy zmenen\xE9", // ai 2026-06
 
-// modules/links/linkedit.php, row 511
+// modules/links/linkedit.php, row 495
 "Inserted" => "Vlo\x9Een\xE9", // ai 2026-06
 
-// modules/links/linkedit.php, row 518
+// modules/links/linkedit.php, row 502
 "Show in category" => "Zobrazi\x9D v kateg\xF3rii", // ai 2026-06
 
-// modules/links/linkedit.php, row 524
+// modules/links/linkedit.php, row 508
 "select the category" => "vyberte kateg\xF3riu", // ai 2026-06
 
-// modules/links/linkedit.php, row 527
+// modules/links/linkedit.php, row 511
 "Selected categories" => "Vybran\xE9 kateg\xF3rie", // ai 2026-06
 
-// modules/links/linkedit.php, row 527
+// modules/links/linkedit.php, row 511
 "go to the category you want to select and click on the right arrow button to select" => "prejdite do kateg\xF3rie, ktor\xFA chcete vybra\x9D, a kliknite na tla\xE8idlo so \x9A\xEDpkou vpravo", // ai 2026-06
 
-// modules/links/linkedit.php, row 563
+// modules/links/linkedit.php, row 547
 "Organization" => "Organiz\xE1cia", // ai 2026-06
 
-// modules/links/linkedit.php, row 579
+// modules/links/linkedit.php, row 563
 "Regions and languages" => "Regi\xF3ny a jazyky", // ai 2026-06
 
-// modules/links/linkedit.php, row 581
+// modules/links/linkedit.php, row 565
 "Region" => "Regi\xF3n", // ai 2026-06
 
-// modules/links/linkedit.php, row 581
+// modules/links/linkedit.php, row 565
 "select up to 4 regions" => "vyberte najviac 4 regi\xF3ny", // ai 2026-06
 
-// modules/links/linkedit.php, row 582
+// modules/links/linkedit.php, row 566
 "select page's languages" => "vyberte jazyky str\xE1nky", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
@@ -730,76 +730,76 @@ return [
 // modules/links/linkedit2.php, row 151
 "Continue" => "Pokra\xE8ova\x9D", // ai 2026-06
 
-// modules/links/menu.php, row 65
+// modules/links/menu.php, row 67
 "View site" => "Zobraz modul",
 
-// modules/links/menu.php, row 74
+// modules/links/menu.php, row 76
 "Add new link" => "Prida\x9D nov\xFD odkaz", // ai 2026-06
 
-// modules/links/menu.php, row 81, 82
+// modules/links/menu.php, row 83, 84
 "Link Manager" => "Spr\xE1va odkazov a kateg\xF3ri\xED", // ai 2026-06
 
-// modules/links/menu.php, row 89, 90
+// modules/links/menu.php, row 91, 92
 "Link Admin" => "Nastavenia", // ai 2026-06
 
-// modules/links/menu.php, row 101
+// modules/links/menu.php, row 103
 "Folders" => "Ostatn\xE9 spr\xE1vy",
 
-// modules/links/menu.php, row 101
+// modules/links/menu.php, row 103
 "Folders with links, sorted by their status (active, changed, new, ...)" => "Prie\xE8inky s odkazmi rozdelen\xE9 pod\xBEa ich stavu (akt\xEDvne, zmenen\xE9, nov\xE9, ...)", // ai 2026-06
 
-// modules/links/menu.php, row 104
+// modules/links/menu.php, row 106
 "Active" => "Aktu\xE1lne",
 
-// modules/links/menu.php, row 107
+// modules/links/menu.php, row 109
 "Changed Links" => "Zmenen\xE9 odkazy", // ai 2026-06
 
-// modules/links/menu.php, row 110
+// modules/links/menu.php, row 112
 "New Links" => "Nov\xE9 odkazy", // ai 2026-06
 
-// modules/links/menu.php, row 113
+// modules/links/menu.php, row 115
 "Holding bin" => "Z\xE1sobn\xEDk", // ai 2026-06
 
-// modules/links/menu.php, row 116
+// modules/links/menu.php, row 118
 "Trash" => "K\xF4\x9A", // ai 2026-06
 
-// modules/links/menu.php, row 119
+// modules/links/menu.php, row 121
 "Unassigned" => "Nezaraden\xE9 odkazy", // ai 2026-06
 
-// modules/links/menu.php, row 122
+// modules/links/menu.php, row 124
 "Unassigned - Trash" => "Nezaraden\xE9 - k\xF4\x9A", // ai 2026-06
 
-// modules/links/menu.php, row 123
+// modules/links/menu.php, row 125
 "Misc" => "Pr\xEDkazy",
 
-// modules/links/menu.php, row 127
+// modules/links/menu.php, row 129
 "Empty trash" => "Vysypa\x9D k\xF4\x9A",
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 134
 "Set Debug OFF" => "Vypn\xFA\x9D ladenie (Debug OFF)", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 134
 "Set Debug ON" => "Zapn\xFA\x9D ladenie (Debug ON)", // ai 2026-06
 
-// modules/links/menu.php, row 133
+// modules/links/menu.php, row 135
 "Bookmarks" => "Z\xE1lo\x9Eky", // ai 2026-06
 
-// modules/links/menu.php, row 133
+// modules/links/menu.php, row 135
 "My own links" => "Moje vlastn\xE9 odkazy", // ai 2026-06
 
-// modules/links/menu.php, row 159
+// modules/links/menu.php, row 161
 "Main settings" => "Hlavn\xE9 nastavenia",
 
-// modules/links/menu.php, row 162
+// modules/links/menu.php, row 164
 "Links" => "Odkazy", // ai 2026-06
 
-// modules/links/menu.php, row 163
+// modules/links/menu.php, row 165
 "Design" => "Vzh\xBEad",
 
-// modules/links/menu.php, row 171
+// modules/links/menu.php, row 173
 "New Category View" => "Nov\xFD preh\xBEad kateg\xF3ri\xED", // ai 2026-06
 
-// modules/links/menu.php, row 176
+// modules/links/menu.php, row 178
 "New Link View" => "Nov\xFD preh\xBEad odkazov", // ai 2026-06
 
 // modules/links/modedit.php, row 106
@@ -808,24 +808,24 @@ return [
 // modules/links/modedit.php, row 111
 "No permission to edit module" => "Nem\xE1te pr\xE1vo upravova\x9D modul", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 238, 241
+// modules/links/modedit.php, row 128, 217, 220
 "Start category id" => "Id v\xFDchodiskovej kateg\xF3rie", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 244, 247
+// modules/links/modedit.php, row 129, 223, 226
 "Tree start id" => "Id za\xE8iatku stromu", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 245, 248
+// modules/links/modedit.php, row 130, 224, 227
 "Select start id" => "Vyberte v\xFDchodiskov\xE9 id", // ai 2026-06
 
-// modules/links/modedit.php, row 226
+// modules/links/modedit.php, row 205
 "Add Links module" => "Prida\x9D modul Odkazy", // ai 2026-06
 
-// modules/links/modedit.php, row 226
+// modules/links/modedit.php, row 205
 "Edit Links module" => "Upravi\x9D modul Odkazy", // ai 2026-06
 
-// modules/links/modedit.php, row 229
+// modules/links/modedit.php, row 208
 "Module Links data" => "\xDAdaje modulu Odkazy", // ai 2026-06
 
-// modules/links/modedit.php, row 234
+// modules/links/modedit.php, row 213
 "Used Language File" => "Pou\x9Eit\xFD language s\xFAbor",
 ];

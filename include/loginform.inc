@@ -95,7 +95,7 @@ echo '<title>ActionApps - '.ORG_NAME.'</title>';
     if (AA_Auth::use2FA()) {
         echo '
         <div class="aa-login-row">
-            <label for="password">'. _m("One Time Code") .'</label>
+            <label for="code2fa">'. _m("One Time Code") .'</label>
             <input type="text" name="code2fa" size="32" maxlength="255"  inputmode="numeric"  pattern="[0-9]*" autocomplete="one-time-code">
         </div>';
     }

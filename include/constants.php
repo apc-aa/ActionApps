@@ -1146,6 +1146,9 @@ const DISCUS_ADD_DISABLED         = 2;  // disbles filldisc adding on new commen
 const SLICE_ALLOW_EXPIRED_CONTENT = 4;  // when we reference expired item, the content could be shown on public pages
 const SLICE_ALLOW_PENDING_CONTENT = 8;  // pending items, when referenced, will be visible - this allows you also to see preview of pending item
 
+/** flag in the discussion table */
+const DISCUS_COMMENT_TEXT = 1;  // posted by a visitor - the body is shown as text even where the discussion allows HTML
+
 // used in add slice wizard
 const NOT_EMAIL_WELCOME = -1;
 

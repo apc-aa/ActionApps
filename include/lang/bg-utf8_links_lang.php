@@ -107,36 +107,36 @@ return [
 // include/searchbar.class.php, row 1135
 "Manage filters" => "Управление на филтрите", // ai 2026-06
 
-// include/util.php, row 993
+// include/util.php, row 992
 "Error: Missing Reading Password" => "Грешка: Липсва парола за четене", // ai 2026-06
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "Съобщение от приложението", // ai 2026-06
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 // modules/links/check_url.php, row 52
 "Back" => "Назад", // ai 2026-06
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "Повторно влизане", // ai 2026-06
 
-// modules/links/actions.php, row 48, 93, 115
+// modules/links/actions.php, row 48, 90, 114
 "Can't find link in given category" => "Връзката не може да бъде намерена в зададената категория", // ai 2026-06
 
-// modules/links/actions.php, row 53, 120
+// modules/links/actions.php, row 53, 119
 "No permission to delete link from the category - link set as PROPOSAL to DELETE from given category" => "Нямате право да изтриете връзката от категорията - връзката е зададена като ПРЕДЛОЖЕНИЕ за ИЗТРИВАНЕ от зададената категория", // ai 2026-06
 
-// modules/links/actions.php, row 62, 129
+// modules/links/actions.php, row 59, 125
 "Can't get association information" => "Не могат да бъдат получени данни за асоциацията", // ai 2026-06
 
-// modules/links/actions.php, row 97
+// modules/links/actions.php, row 94
 "No permission to approve link to given category" => "Нямате право да одобрите връзката към зададената категория", // ai 2026-06
 
-// modules/links/actions.php, row 166, 169
+// modules/links/actions.php, row 156, 159
 "No permission to move link" => "Нямате право да преместите връзката", // ai 2026-06
 
 // modules/links/catedit.php, row 51
-// modules/links/catedit2.php, row 210
+// modules/links/catedit2.php, row 192
 "No permission to edit category" => "Нямате право да редактирате категорията", // ai 2026-06
 
 // modules/links/catedit.php, row 74
@@ -150,19 +150,19 @@ return [
 
 // modules/links/catedit.php, row 104
 // modules/links/constants.php, row 59, 172
-// modules/links/linkedit.php, row 430
+// modules/links/linkedit.php, row 414
 "Id" => "ID", // ai 2026-06
 
 // modules/links/catedit.php, row 104
 "Links in subtree" => "Връзки в подкаталога", // ai 2026-06
 
 // modules/links/catedit.php, row 105
-// modules/links/catedit2.php, row 219
+// modules/links/catedit2.php, row 200
 // modules/links/constants.php, row 94, 194
 "Category name" => "Име на категория", // ai 2026-06
 
 // modules/links/catedit.php, row 106
-// modules/links/catedit2.php, row 220
+// modules/links/catedit2.php, row 201
 // modules/links/constants.php, row 98, 196
 "Category description" => "Описание на категория", // ai 2026-06
 
@@ -173,17 +173,17 @@ return [
 "Disallow storing of the links to this category?" => "Да се забрани ли съхраняването на връзки в тази категория?", // ai 2026-06
 
 // modules/links/catedit.php, row 108
-// modules/links/catedit2.php, row 224
+// modules/links/catedit2.php, row 205
 // modules/links/constants.php, row 76
-// modules/links/link.class.php, row 728
-// modules/links/linkedit.php, row 498
+// modules/links/link.class.php, row 724
+// modules/links/linkedit.php, row 482
 "Editor's note" => "Бележка на редактора", // ai 2026-06
 
 // modules/links/catedit.php, row 110
 "Subcategories" => "Подкатегории", // ai 2026-06
 
 // modules/links/catedit.php, row 113
-// modules/links/linkedit.php, row 524
+// modules/links/linkedit.php, row 508
 "Category tree" => "Дърво на категориите", // ai 2026-06
 
 // modules/links/catedit.php, row 113
@@ -211,27 +211,27 @@ return [
 "Change state" => "Промяна на състоянието", // ai 2026-06
 
 // modules/links/catedit.php, row 143
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
-// modules/links/catedit2.php, row 154
+// modules/links/catedit2.php, row 138
 "Category reassigned" => "Категорията е преместена", // ai 2026-06
 
-// modules/links/catedit2.php, row 166
+// modules/links/catedit2.php, row 148
 "Subcategory deleted" => "Подкатегорията е изтрита", // ai 2026-06
 
-// modules/links/catedit2.php, row 168
+// modules/links/catedit2.php, row 150
 "Can't delete category which contains links" => "Не може да се изтрие категория, която съдържа връзки", // ai 2026-06
 
-// modules/links/catedit2.php, row 223
+// modules/links/catedit2.php, row 204
 "Additional information" => "Допълнителна информация", // ai 2026-06
 
-// modules/links/catedit2.php, row 233
+// modules/links/catedit2.php, row 216
 "Category data changed" => "Данните на категорията са променени", // ai 2026-06
 
-// modules/links/catedit2.php, row 293
+// modules/links/catedit2.php, row 265
 "New category created" => "Създадена е нова категория", // ai 2026-06
 
-// modules/links/catedit2.php, row 299
+// modules/links/catedit2.php, row 271
 "Foreign category assigned" => "Присвоена е външна категория", // ai 2026-06
 
 // modules/links/cattree.php, row 458
@@ -262,13 +262,13 @@ return [
 "Original name" => "Оригинално име", // ai 2026-06
 
 // modules/links/constants.php, row 62, 176
-// modules/links/link.class.php, row 717
-// modules/links/linkedit.php, row 474
+// modules/links/link.class.php, row 713
+// modules/links/linkedit.php, row 458
 "Description" => "Описание", // ai 2026-06
 
 // modules/links/constants.php, row 63, 124
-// modules/links/link.class.php, row 721
-// modules/links/linkedit.php, row 486
+// modules/links/link.class.php, row 717
+// modules/links/linkedit.php, row 470
 "Link type" => "Тип връзка", // ai 2026-06
 
 // modules/links/constants.php, row 64
@@ -278,7 +278,7 @@ return [
 "Votes" => "Гласове", // ai 2026-06
 
 // modules/links/constants.php, row 66
-// modules/links/link.class.php, row 718
+// modules/links/link.class.php, row 714
 "Author" => "Автор", // ai 2026-06
 
 // modules/links/constants.php, row 67
@@ -297,13 +297,13 @@ return [
 "Revision date" => "Дата на ревизия", // ai 2026-06
 
 // modules/links/constants.php, row 72
-// modules/links/link.class.php, row 727
-// modules/links/linkedit.php, row 574
+// modules/links/link.class.php, row 723
+// modules/links/linkedit.php, row 558
 "E-mail" => "Имейл", // ai 2026-06
 
 // modules/links/constants.php, row 73
-// modules/links/link.class.php, row 719
-// modules/links/linkedit.php, row 435
+// modules/links/link.class.php, row 715
+// modules/links/linkedit.php, row 419
 "Url" => "URL", // ai 2026-06
 
 // modules/links/constants.php, row 74
@@ -331,7 +331,7 @@ return [
 "Organization e-mail" => "Имейл на организацията", // ai 2026-06
 
 // modules/links/constants.php, row 83
-// modules/links/linkedit.php, row 514
+// modules/links/linkedit.php, row 498
 "Folder" => "Папка", // ai 2026-06
 
 // modules/links/constants.php, row 84
@@ -356,7 +356,7 @@ return [
 "Language id" => "Id на език", // ai 2026-06
 
 // modules/links/constants.php, row 91
-// modules/links/linkedit.php, row 582
+// modules/links/linkedit.php, row 566
 "Language" => "Език", // ai 2026-06
 
 // modules/links/constants.php, row 92
@@ -546,65 +546,65 @@ return [
 // modules/links/getcat.php, row 58
 "Select category" => "Изберете категория", // ai 2026-06
 
-// modules/links/index.php, row 84
+// modules/links/index.php, row 85
 "No permissions to edit links" => "Нямате право да редактирате връзки", // ai 2026-06
 
-// modules/links/index.php, row 183
+// modules/links/index.php, row 178
 "Module not found." => "Модулът не е намерен.", // ai 2026-06
 
-// modules/links/index.php, row 215
+// modules/links/index.php, row 210
 "HINT: \"social ecology\" AND environment" => "СЪВЕТ: \"социална екология\" AND околна среда", // ai 2026-06
 
-// modules/links/index.php, row 242
+// modules/links/index.php, row 237
 "Perform action on selected items" => "Изберете действие, което да се извърши върху избраните статии", // ai 2026-06
 
-// modules/links/index.php, row 265
+// modules/links/index.php, row 260
 "ActionApps - Links Manager" => "ActionApps - Управление на връзки", // ai 2026-06
 
-// modules/links/index.php, row 295
+// modules/links/index.php, row 290
 "All my links" => "Всички мои връзки", // ai 2026-06
 
-// modules/links/index.php, row 296
+// modules/links/index.php, row 291
 "Links to check" => "Връзки за проверка", // ai 2026-06
 
-// modules/links/index.php, row 297
+// modules/links/index.php, row 292
 "Last edited" => "Последна редакция", // ai 2026-06
 
-// modules/links/index.php, row 319
+// modules/links/index.php, row 314
 "Show Links" => "Показване на връзките", // ai 2026-06
 
-// modules/links/index.php, row 322
+// modules/links/index.php, row 317
 "Edit Category" => "Редактиране на категория", // ai 2026-06
 
-// modules/links/index.php, row 326
+// modules/links/index.php, row 321
 "Show subtree links" => "Показване на връзките от поддървото", // ai 2026-06
 
-// modules/links/link.class.php, row 715
-// modules/links/linkedit.php, row 452
+// modules/links/link.class.php, row 711
+// modules/links/linkedit.php, row 436
 "Page name" => "Име на страницата", // ai 2026-06
 
-// modules/links/link.class.php, row 716
-// modules/links/linkedit.php, row 463
+// modules/links/link.class.php, row 712
+// modules/links/linkedit.php, row 447
 "Original page name" => "Оригинално име на страницата", // ai 2026-06
 
-// modules/links/link.class.php, row 722
-// modules/links/linkedit.php, row 564
+// modules/links/link.class.php, row 718
+// modules/links/linkedit.php, row 548
 "City" => "Град", // ai 2026-06
 
-// modules/links/link.class.php, row 723
-// modules/links/linkedit.php, row 566
+// modules/links/link.class.php, row 719
+// modules/links/linkedit.php, row 550
 "Street" => "Улица", // ai 2026-06
 
-// modules/links/link.class.php, row 724
-// modules/links/linkedit.php, row 568
+// modules/links/link.class.php, row 720
+// modules/links/linkedit.php, row 552
 "Post code" => "Пощенски код", // ai 2026-06
 
-// modules/links/link.class.php, row 725
-// modules/links/linkedit.php, row 570
+// modules/links/link.class.php, row 721
+// modules/links/linkedit.php, row 554
 "Phone" => "Телефон", // ai 2026-06
 
-// modules/links/link.class.php, row 726
-// modules/links/linkedit.php, row 572
+// modules/links/link.class.php, row 722
+// modules/links/linkedit.php, row 556
 "Fax" => "",
 
 // modules/links/linkedit.php, row 51
@@ -614,104 +614,104 @@ return [
 "unfilled" => "непопълнено", // ai 2026-06
 
 // modules/links/linkedit.php, row 90
-// modules/links/menu.php, row 73, 74
+// modules/links/menu.php, row 75, 76
 "Edit Link" => "Редактиране на връзка", // ai 2026-06
 
 // modules/links/linkedit.php, row 97
-// modules/links/menu.php, row 73
+// modules/links/menu.php, row 75
 "Add Link" => "Добавяне на връзка", // ai 2026-06
 
 // modules/links/linkedit.php, row 102
 "Link does not exist or the base category is not set" => "Връзката не съществува или не е зададена базовата категория", // ai 2026-06
 
-// modules/links/linkedit.php, row 266, 285
+// modules/links/linkedit.php, row 256, 273
 "Proposal to uncheck" => "Предложение за изключване", // ai 2026-06
 
-// modules/links/linkedit.php, row 267, 286
+// modules/links/linkedit.php, row 257, 274
 "Proposal to check" => "Предложение за включване", // ai 2026-06
 
-// modules/links/linkedit.php, row 317
+// modules/links/linkedit.php, row 301
 "Proposal to add" => "Предложение за добавяне", // ai 2026-06
 
-// modules/links/linkedit.php, row 319
+// modules/links/linkedit.php, row 303
 "Proposal to del" => "Предложение за изтриване", // ai 2026-06
 
-// modules/links/linkedit.php, row 385
-"ActionApps" => "",
+// modules/links/linkedit.php, row 369
+"ActionApps" => "ActionApps", // ai 2026-10
 
-// modules/links/linkedit.php, row 407
+// modules/links/linkedit.php, row 391
 "<!--NewPublicLinkText-->" => "В този формуляр за добавяне на нова връзка в каталога не е задължително да попълните всички полета. За лесно включване на връзката в каталога ви молим да попълните преди всичко <b>URL</b> на връзката, <b>ИМЕТО</b> и включването на връзката в някоя <b>КАТЕГОРИЯ</b>. Ако имате опит със страниците, можете да попълните и описанието на връзката.<br> <b>Моля, не добавяйте в каталога \"комерсиални\" връзки.</b> Тези връзки няма да бъдат показани в каталога.<br> Благодарим ви.", // ai 2026-10
 
-// modules/links/linkedit.php, row 425
+// modules/links/linkedit.php, row 409
 "Link" => "Връзка", // ai 2026-06
 
-// modules/links/linkedit.php, row 438
+// modules/links/linkedit.php, row 422
 "Check url" => "Проверка на url", // ai 2026-06
 
-// modules/links/linkedit.php, row 439
+// modules/links/linkedit.php, row 423
 "View" => "Преглед", // ai 2026-06
 
-// modules/links/linkedit.php, row 440
+// modules/links/linkedit.php, row 424
 "You can check, if the page is not in database already" => "Можете да проверите дали страницата вече не е в базата данни", // ai 2026-06
 
-// modules/links/linkedit.php, row 445
+// modules/links/linkedit.php, row 429
 "Do not fill, please:" => "Моля, не попълвайте:", // ai 2026-06
 
-// modules/links/linkedit.php, row 457
+// modules/links/linkedit.php, row 441
 "English name of the page" => "Английско име на страницата", // ai 2026-06
 
-// modules/links/linkedit.php, row 468
+// modules/links/linkedit.php, row 452
 "Name of the page in original language" => "Име на страницата на оригиналния език", // ai 2026-06
 
-// modules/links/linkedit.php, row 479
+// modules/links/linkedit.php, row 463
 "Do not use HTML tags and do not write words like \"best page\", ... The maximum length of the description should be about 250 characters." => "Не използвайте HTML тагове и не пишете думи като \"най-добра страница\", ... Максималната дължина на описанието трябва да е около 250 знака.", // ai 2026-06
 
-// modules/links/linkedit.php, row 486
+// modules/links/linkedit.php, row 470
 "Select the type, if the link belongs to some special category" => "Изберете типа, ако връзката принадлежи към някоя специална категория", // ai 2026-06
 
-// modules/links/linkedit.php, row 494
+// modules/links/linkedit.php, row 478
 "Author's e-mail" => "Имейл на автора", // ai 2026-06
 
-// modules/links/linkedit.php, row 503
+// modules/links/linkedit.php, row 487
 "You can type any message here - it is never shown on the website" => "Тук можете да напишете каквото и да е съобщение - то никога не се показва на уебсайта", // ai 2026-06
 
-// modules/links/linkedit.php, row 509
+// modules/links/linkedit.php, row 493
 "Last checked" => "Последно проверено", // ai 2026-06
 
-// modules/links/linkedit.php, row 509, 510, 511
+// modules/links/linkedit.php, row 493, 494, 495
 "n/j/Y" => "j.n.Y", // ai 2026-06
 
-// modules/links/linkedit.php, row 510
+// modules/links/linkedit.php, row 494
 "Last changed" => "Последна промяна:", // ai 2026-06
 
-// modules/links/linkedit.php, row 511
+// modules/links/linkedit.php, row 495
 "Inserted" => "Вмъкнато:", // ai 2026-06
 
-// modules/links/linkedit.php, row 518
+// modules/links/linkedit.php, row 502
 "Show in category" => "Показване в категория", // ai 2026-06
 
-// modules/links/linkedit.php, row 524
+// modules/links/linkedit.php, row 508
 "select the category" => "изберете категорията", // ai 2026-06
 
-// modules/links/linkedit.php, row 527
+// modules/links/linkedit.php, row 511
 "Selected categories" => "Избрани категории", // ai 2026-06
 
-// modules/links/linkedit.php, row 527
+// modules/links/linkedit.php, row 511
 "go to the category you want to select and click on the right arrow button to select" => "отидете в категорията, която искате да изберете, и щракнете върху бутона със стрелка надясно", // ai 2026-06
 
-// modules/links/linkedit.php, row 563
+// modules/links/linkedit.php, row 547
 "Organization" => "Организация", // ai 2026-06
 
-// modules/links/linkedit.php, row 579
+// modules/links/linkedit.php, row 563
 "Regions and languages" => "Региони и езици", // ai 2026-06
 
-// modules/links/linkedit.php, row 581
+// modules/links/linkedit.php, row 565
 "Region" => "Регион", // ai 2026-06
 
-// modules/links/linkedit.php, row 581
+// modules/links/linkedit.php, row 565
 "select up to 4 regions" => "изберете най-много 4 региона", // ai 2026-06
 
-// modules/links/linkedit.php, row 582
+// modules/links/linkedit.php, row 566
 "select page's languages" => "изберете езиците на страницата", // ai 2026-06
 
 // modules/links/linkedit2.php, row 112
@@ -726,76 +726,76 @@ return [
 // modules/links/linkedit2.php, row 151
 "Continue" => "Продължи", // ai 2026-06
 
-// modules/links/menu.php, row 65
+// modules/links/menu.php, row 67
 "View site" => "Преглед на сайта", // ai 2026-06
 
-// modules/links/menu.php, row 74
+// modules/links/menu.php, row 76
 "Add new link" => "Добави нова връзка", // ai 2026-06
 
-// modules/links/menu.php, row 81, 82
+// modules/links/menu.php, row 83, 84
 "Link Manager" => "Управление на връзки", // ai 2026-06
 
-// modules/links/menu.php, row 89, 90
+// modules/links/menu.php, row 91, 92
 "Link Admin" => "Настройки", // ai 2026-06
 
-// modules/links/menu.php, row 101
+// modules/links/menu.php, row 103
 "Folders" => "Папки", // ai 2026-06
 
-// modules/links/menu.php, row 101
+// modules/links/menu.php, row 103
 "Folders with links, sorted by their status (active, changed, new, ...)" => "Папки с връзки, подредени по техния статус (активни, променени, нови, ...)", // ai 2026-06
 
-// modules/links/menu.php, row 104
+// modules/links/menu.php, row 106
 "Active" => "Активни", // ai 2026-06
 
-// modules/links/menu.php, row 107
+// modules/links/menu.php, row 109
 "Changed Links" => "Променени връзки", // ai 2026-06
 
-// modules/links/menu.php, row 110
+// modules/links/menu.php, row 112
 "New Links" => "Нови връзки", // ai 2026-06
 
-// modules/links/menu.php, row 113
+// modules/links/menu.php, row 115
 "Holding bin" => "Изчакващи", // ai 2026-06
 
-// modules/links/menu.php, row 116
+// modules/links/menu.php, row 118
 "Trash" => "Кошче", // ai 2026-06
 
-// modules/links/menu.php, row 119
+// modules/links/menu.php, row 121
 "Unassigned" => "Нераспределени", // ai 2026-06
 
-// modules/links/menu.php, row 122
+// modules/links/menu.php, row 124
 "Unassigned - Trash" => "Нераспределени - Кошче", // ai 2026-06
 
-// modules/links/menu.php, row 123
+// modules/links/menu.php, row 125
 "Misc" => "Разни", // ai 2026-06
 
-// modules/links/menu.php, row 127
+// modules/links/menu.php, row 129
 "Empty trash" => "Изпразване на кошчето", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 134
 "Set Debug OFF" => "Изключване на Debug", // ai 2026-06
 
-// modules/links/menu.php, row 132
+// modules/links/menu.php, row 134
 "Set Debug ON" => "Включване на Debug", // ai 2026-06
 
-// modules/links/menu.php, row 133
+// modules/links/menu.php, row 135
 "Bookmarks" => "Отметки", // ai 2026-06
 
-// modules/links/menu.php, row 133
+// modules/links/menu.php, row 135
 "My own links" => "Моите връзки", // ai 2026-06
 
-// modules/links/menu.php, row 159
+// modules/links/menu.php, row 161
 "Main settings" => "Основни настройки", // ai 2026-06
 
-// modules/links/menu.php, row 162
+// modules/links/menu.php, row 164
 "Links" => "Връзки", // ai 2026-06
 
-// modules/links/menu.php, row 163
+// modules/links/menu.php, row 165
 "Design" => "Дизайн", // ai 2026-06
 
-// modules/links/menu.php, row 171
+// modules/links/menu.php, row 173
 "New Category View" => "Нов преглед на категории", // ai 2026-06
 
-// modules/links/menu.php, row 176
+// modules/links/menu.php, row 178
 "New Link View" => "Нов преглед на връзки", // ai 2026-06
 
 // modules/links/modedit.php, row 106
@@ -804,24 +804,24 @@ return [
 // modules/links/modedit.php, row 111
 "No permission to edit module" => "Нямате право да редактирате модул", // ai 2026-06
 
-// modules/links/modedit.php, row 128, 238, 241
+// modules/links/modedit.php, row 128, 217, 220
 "Start category id" => "Id на начална категория", // ai 2026-06
 
-// modules/links/modedit.php, row 129, 244, 247
+// modules/links/modedit.php, row 129, 223, 226
 "Tree start id" => "Id на началото на дървото", // ai 2026-06
 
-// modules/links/modedit.php, row 130, 245, 248
+// modules/links/modedit.php, row 130, 224, 227
 "Select start id" => "Изберете начален id", // ai 2026-06
 
-// modules/links/modedit.php, row 226
+// modules/links/modedit.php, row 205
 "Add Links module" => "Добави модул Връзки", // ai 2026-06
 
-// modules/links/modedit.php, row 226
+// modules/links/modedit.php, row 205
 "Edit Links module" => "Редактирай модул Връзки", // ai 2026-06
 
-// modules/links/modedit.php, row 229
+// modules/links/modedit.php, row 208
 "Module Links data" => "Данни на модул Връзки", // ai 2026-06
 
-// modules/links/modedit.php, row 234
+// modules/links/modedit.php, row 213
 "Used Language File" => "Използван езиков файл", // ai 2026-06
 ];

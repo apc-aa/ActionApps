@@ -85,116 +85,116 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nemáte práva pro přidání webíku",
 
-// modules/alerts/acf.php, row 114
+// modules/alerts/acf.php, row 107
 "Alerts Selections" => "Zasílání - Výběry",
 
-// modules/alerts/acf.php, row 118
+// modules/alerts/acf.php, row 111
 "Choose selections which form the Alert email." => "Zvolte výběry, které tvoří zasílaný email.",
 
-// modules/alerts/acf.php, row 122, 149
+// modules/alerts/acf.php, row 115, 142
 "order" => "pořadí",
 
-// modules/alerts/acf.php, row 122
+// modules/alerts/acf.php, row 115
 "selection" => "výběr",
 
-// modules/alerts/acf.php, row 122
+// modules/alerts/acf.php, row 115
 "remove" => "odstranit", // ai 2026-10
 
-// modules/alerts/acf.php, row 131
+// modules/alerts/acf.php, row 124
 "No selections chosen yet." => "Zatím nejsou zvoleny žádné výběry.", // ai 2026-10
 
-// modules/alerts/acf.php, row 134
+// modules/alerts/acf.php, row 127
 "Save order" => "Uložit pořadí", // ai 2026-10
 
-// modules/alerts/acf.php, row 135
+// modules/alerts/acf.php, row 128
 "Remove checked" => "Odstranit označené", // ai 2026-10
 
-// modules/alerts/acf.php, row 150
+// modules/alerts/acf.php, row 143
 "Add selection" => "Přidat výběr", // ai 2026-10
 
-// modules/alerts/acf.php, row 152
+// modules/alerts/acf.php, row 145
 "No selections defined. You must define some." => "Žádné výběry nejsou definované.",
 
-// modules/alerts/alerts_sending.php, row 515
+// modules/alerts/alerts_sending.php, row 505
 "alerts alert" => "zasílání - zprávy",
 
-// modules/alerts/alerts_sending.php, row 516
+// modules/alerts/alerts_sending.php, row 506
 "alerts welcome" => "zasílání - uvítání",
 
-// modules/alerts/alerts_sending.php, row 517
+// modules/alerts/alerts_sending.php, row 507
 "slice wizard welcome" => "průvodce webíkem - uvítání",
 
-// modules/alerts/alerts_sending.php, row 518
+// modules/alerts/alerts_sending.php, row 508
 "user template" => "šablona uživatele",
 
-// modules/alerts/alerts_sending.php, row 519
+// modules/alerts/alerts_sending.php, row 509
 "password change" => "změna hesla",
 
-// modules/alerts/alerts_sending.php, row 520
+// modules/alerts/alerts_sending.php, row 510
 "other" => "jiné",
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 521
 "Aliases for Alerts Alert" => "Aliasy pro e-mail zasílání - zprávy",
 
-// modules/alerts/alerts_sending.php, row 533
+// modules/alerts/alerts_sending.php, row 523
 "complete filter text" => "úplný text filtru",
 
-// modules/alerts/alerts_sending.php, row 534, 543
+// modules/alerts/alerts_sending.php, row 524, 533
 "howoften" => "jak často",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 525
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL anonymního formuláře (nastavuje se v Administraci zasílání - Nastavení)",
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 526
 "Unsubscribe Form URL" => "URL formuláře pro odhlášení",
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Welcome" => "Aliasy pro e-mail zasílání - uvítání",
 
-// modules/alerts/alerts_sending.php, row 544
+// modules/alerts/alerts_sending.php, row 534
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formuláře kolekce (nastavuje se v Administraci zasílání - Nastavení)",
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 535
 "email confirmed" => "e-mail potvrzen",
 
-// modules/alerts/alerts_sending.php, row 551
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Slice Wizard Welcome" => "Aliasy pro uvítání průvodce webíkem",
 
-// modules/alerts/alerts_sending.php, row 553, 565
+// modules/alerts/alerts_sending.php, row 543, 555
 "Slice name" => "Název webíku",
 
-// modules/alerts/alerts_sending.php, row 554, 566
+// modules/alerts/alerts_sending.php, row 544, 556
 "New user name" => "Jméno nového uživatele",
 
-// modules/alerts/alerts_sending.php, row 555
+// modules/alerts/alerts_sending.php, row 545
 "New user login name" => "Přihlašovací jméno nového uživatele",
 
-// modules/alerts/alerts_sending.php, row 556
+// modules/alerts/alerts_sending.php, row 546
 "New user role (editor / admin)" => "Role nového uživatele (editor / admin)",
 
-// modules/alerts/alerts_sending.php, row 557
+// modules/alerts/alerts_sending.php, row 547
 "My name" => "Mé jméno",
 
-// modules/alerts/alerts_sending.php, row 558
+// modules/alerts/alerts_sending.php, row 548
 "My email" => "Můj e-mail",
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 553
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasy pro šablony uživatele (můžete použít také všechny aliasy uživatele)",
 
-// modules/alerts/alerts_sending.php, row 571
+// modules/alerts/alerts_sending.php, row 561
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasy pro e-mail změny hesla (můžete použít také všechny aliasy uživatele)",
 
-// modules/alerts/alerts_sending.php, row 573
+// modules/alerts/alerts_sending.php, row 563
 "HTML link to the password change page for current user" => "HTML odkaz na stránku změny hesla pro aktuálního uživatele",
 
-// modules/alerts/alerts_sending.php, row 574
+// modules/alerts/alerts_sending.php, row 564
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parametr URL používaný v odkazu na změnu hesla v _#PWD_LINK (můžete jej využít, pokud pro něj chcete použít vlastní URL)",
 
 // modules/alerts/cf_common.php, row 42
 "Language" => "Jazyk",
 
 // modules/alerts/cf_common.php, row 48
-// modules/alerts/send_emails.php, row 71
+// modules/alerts/send_emails.php, row 72
 "Email" => "E-mail",
 
 // modules/alerts/cf_common.php, row 54
@@ -227,7 +227,7 @@ return [
 "Email templates" => "Šablony emailů",
 
 // modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 165, 168
+// modules/alerts/modedit.php, row 160, 163
 "Alerts Settings" => "Nastavení Zasílání",
 
 // modules/alerts/menu.php, row 62
@@ -256,26 +256,26 @@ return [
 // modules/alerts/modedit.php, row 93
 "You do not have permissions to edit this Alerts module" => "Nemáte oprávnění upravovat tento modul Zasílání", // ai 2026-10
 
-// modules/alerts/modedit.php, row 165
+// modules/alerts/modedit.php, row 160
 "Add Alerts" => "Přidat Zasílání", // ai 2026-10
 
-// modules/alerts/modedit.php, row 173
+// modules/alerts/modedit.php, row 168
 "language" => "jazyk",
 
-// modules/alerts/modedit.php, row 177
+// modules/alerts/modedit.php, row 172
 "Alert emails" => "E-maily Zasílání", // ai 2026-10
 
-// modules/alerts/modedit.php, row 181, 187
+// modules/alerts/modedit.php, row 176, 182
 "Edit '%1'" => "Upravit '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 183
+// modules/alerts/modedit.php, row 178
 "welcome email" => "uvítací email",
 
-// modules/alerts/modedit.php, row 189
+// modules/alerts/modedit.php, row 184
 // modules/alerts/send.php, row 76
 "alert email" => "email s novinkami",
 
-// modules/alerts/modedit.php, row 192
+// modules/alerts/modedit.php, row 187
 "alerts ID" => "ID zasílání",
 
 // modules/alerts/send.php, row 44
@@ -290,34 +290,34 @@ return [
 // modules/alerts/send.php, row 77
 "Set" => "Nastavit", // ai 2026-10
 
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/send_emails.php, row 65
 "Send now an example alert email to email" => "Poslat nyní ukázkový e-mail se zprávami na e-mail",
 
-// modules/alerts/send_emails.php, row 72, 91
+// modules/alerts/send_emails.php, row 73, 92
 "as if" => "jako kdyby",
 
-// modules/alerts/send_emails.php, row 73, 92, 108
+// modules/alerts/send_emails.php, row 74, 93, 109
 "Go!" => "Proveď!",
 
-// modules/alerts/send_emails.php, row 83
+// modules/alerts/send_emails.php, row 84
 "Send now an example alert email to Reader" => "Poslat nyní ukázkový e-mail se zprávami čtenáři",
 
-// modules/alerts/send_emails.php, row 90
+// modules/alerts/send_emails.php, row 91
 "Reader" => "Čtenář",
 
-// modules/alerts/send_emails.php, row 99
+// modules/alerts/send_emails.php, row 100
 "Send alerts" => "Poslat novinky",
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Send now alerts to all users subscribed to " => "Poslat novinky uživatelům zapsaným pro ",
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Warning: This is a real command!" => "Pozor: Toto je skutečný příkaz!",
 
-// modules/alerts/send_emails.php, row 111
+// modules/alerts/send_emails.php, row 112
 "Last time the alerts were sent on:" => "Naposled byly novinky poslány:",
 
-// modules/alerts/send_emails.php, row 122
+// modules/alerts/send_emails.php, row 123
 "%1 email(s) sent" => "%1 emailů posláno",
 
 // modules/alerts/send_emails.php, row 151
@@ -332,7 +332,7 @@ return [
  => "Definujte výběry ve webících, ze kterých chcete zasílat zprávy,\n"
    ."        v pohledech typu Alerts Selection Set",
 
-// modules/alerts/synchro.php, row 65
+// modules/alerts/synchro.php, row 66
 "Synchronization with Reader Management Slice" => "Synchronizace s webíkem spravujícím čtenáře",
 
 // modules/alerts/synchro.php, row 95
@@ -389,42 +389,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "%1 políček přidáno",
 
-// modules/alerts/synchro2.php, row 201
+// modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 políček a %2 skupin hodnot smazáno",
 
-// modules/alerts/synchro2.php, row 229
+// modules/alerts/synchro2.php, row 222
 "not set" => "nenastaveno",
 
-// modules/alerts/util.php, row 54
+// modules/alerts/util.php, row 53
 "-- none --" => "-- žádný --", // ai 2026-10
 
-// modules/alerts/util.php, row 60
+// modules/alerts/util.php, row 59
 "email" => "e-mail", // ai 2026-10
 
-// modules/alerts/util.php, row 87
+// modules/alerts/util.php, row 86
 "instant" => "okamžitě",
 
-// modules/alerts/util.php, row 88
+// modules/alerts/util.php, row 87
 "daily" => "denně",
 
-// modules/alerts/util.php, row 89
+// modules/alerts/util.php, row 88
 "weekly" => "týdně",
 
-// modules/alerts/util.php, row 90
+// modules/alerts/util.php, row 89
 "twoweeks" => "jednou za dva týdny",
 
-// modules/alerts/util.php, row 91
+// modules/alerts/util.php, row 90
 "monthly" => "měsíčně",
 
-// modules/alerts/util.php, row 92
+// modules/alerts/util.php, row 91
 "irregular" => "nepravidelně",
 
-// modules/alerts/util.php, row 99
+// modules/alerts/util.php, row 98
 "Active" => "Aktivní",
 
-// modules/alerts/util.php, row 100
+// modules/alerts/util.php, row 99
 "Holding bin" => "Zásobník",
 
-// modules/alerts/util.php, row 101
+// modules/alerts/util.php, row 100
 "Trash bin" => "Koš",
 ];

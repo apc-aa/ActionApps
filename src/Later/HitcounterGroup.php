@@ -143,7 +143,10 @@ class HitcounterGroup implements LaterInterface
      */
     public function plan(int $max_task = 0): void
     {
-        $oldest = GetTable2Array("SELECT min( time ) as oldest FROM `hit_archive`", 'aa_first', 'oldest');
+        $oldest = DB_AA::select1('oldest', 'SELECT MIN(time) AS oldest FROM `hit_archive`');
+        if (!$oldest) {   // an empty hit_archive - nothing to group
+            return;
+        }
         // the day just before exactSince(); mktime(), not "- 86400", which misses midnight on a DST switch
         $grouping_start = mktime(0, 0, 0, date("m"), date("d") - self::EXACT_DAYS - 1, date("Y"));
         $step = 60 * 60 * 24;                        // day

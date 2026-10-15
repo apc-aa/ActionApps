@@ -59,6 +59,9 @@ $sess->register('r_state'); // make sure it is _SESSION variable
 if (isset($_GET['sid'])) {
     $sid         = InputVars::idGET('sid');
     $var_id      = InputVars::stringGET('var_id');
+    if (!preg_match('~^[A-Za-z0-9_.\[\]/-]*$~D', $var_id)) {   // a form variable name, written into a javascript: link
+        $var_id = '';
+    }
     $mode        = InputVars::stringGET('mode');
     $design      = InputVars::boolGET('design');
     $frombins    = InputVars::stringGET('frombins');

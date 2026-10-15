@@ -94,8 +94,10 @@ function GetFieldMapping($from_slice_id, $destination_id): array
 function GetBaseItem(string $item_id): string
 {
     $dest_id = $item_id;
+    $seen    = [];   // a broken relation - an item fed to itself, a loop - would be traced forever
 
-    while ($item_id) {
+    while ($item_id && !isset($seen[$item_id])) {
+        $seen[$item_id] = true;
         $dest_id = $item_id;
         $source_id = DB_AA::select1('source_id', 'SELECT source_id FROM relation', [['destination_id', $dest_id, 'l'], ['flag', REL_FLAG_FEED, 'set']]);
         $item_id = ($source_id !== false) ? unpack_id($source_id) : false;
@@ -113,11 +115,10 @@ function GetBaseItem(string $item_id): string
  */
 function IsItemFed(string $item_id, string $destination): bool
 {
-    $p_destination = q_pack_id($destination);
-    $base_id       = GetBaseItem($item_id);  // Trace back to the original id
+    $base_id = GetBaseItem($item_id);  // Trace back to the original id
 
     // if item comes from $destination slice (i.e. $destination slice contains base record)
-    if ($p_destination == DB_AA::select1('slice_id', 'SELECT slice_id FROM `item`', [['id', $base_id, 'l']])) {
+    if (pack_id($destination) === DB_AA::select1('slice_id', 'SELECT slice_id FROM `item`', [['id', $base_id, 'l']])) {
         return true;
     }
 

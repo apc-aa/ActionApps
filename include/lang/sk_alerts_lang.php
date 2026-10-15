@@ -23,116 +23,116 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nem\xE1te pr\xE1vo prid\xE1va\x9D modul",
 
-// modules/alerts/acf.php, row 114
+// modules/alerts/acf.php, row 107
 "Alerts Selections" => "Zasielanie - V\xFDbery", // ai 2026-06
 
-// modules/alerts/acf.php, row 118
+// modules/alerts/acf.php, row 111
 "Choose selections which form the Alert email." => "Zvo\xBEte v\xFDbery, ktor\xE9 tvoria zasielan\xFD e-mail.", // ai 2026-06
 
-// modules/alerts/acf.php, row 122, 149
+// modules/alerts/acf.php, row 115, 142
 "order" => "poradie", // ai 2026-06
 
-// modules/alerts/acf.php, row 122
+// modules/alerts/acf.php, row 115
 "selection" => "v\xFDber", // ai 2026-06
 
-// modules/alerts/acf.php, row 122
-"remove" => "",
+// modules/alerts/acf.php, row 115
+"remove" => "odstr\xE1ni\x9D", // ai 2026-10
 
-// modules/alerts/acf.php, row 131
-"No selections chosen yet." => "",
+// modules/alerts/acf.php, row 124
+"No selections chosen yet." => "Zatia\xBE nie s\xFA zvolen\xE9 \x9Eiadne v\xFDbery.", // ai 2026-10
 
-// modules/alerts/acf.php, row 134
-"Save order" => "",
+// modules/alerts/acf.php, row 127
+"Save order" => "Ulo\x9Ei\x9D poradie", // ai 2026-10
 
-// modules/alerts/acf.php, row 135
-"Remove checked" => "",
+// modules/alerts/acf.php, row 128
+"Remove checked" => "Odstr\xE1ni\x9D ozna\xE8en\xE9", // ai 2026-10
 
-// modules/alerts/acf.php, row 150
-"Add selection" => "",
+// modules/alerts/acf.php, row 143
+"Add selection" => "Prida\x9D v\xFDber", // ai 2026-10
 
-// modules/alerts/acf.php, row 152
+// modules/alerts/acf.php, row 145
 "No selections defined. You must define some." => "Nie s\xFA definovan\xE9 \x9Eiadne v\xFDbery. Mus\xEDte nejak\xE9 definova\x9D.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 515
+// modules/alerts/alerts_sending.php, row 505
 "alerts alert" => "zasielanie - spr\xE1vy", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 516
+// modules/alerts/alerts_sending.php, row 506
 "alerts welcome" => "zasielanie - uv\xEDtanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 517
+// modules/alerts/alerts_sending.php, row 507
 "slice wizard welcome" => "sprievodca modulom - uv\xEDtanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 518
+// modules/alerts/alerts_sending.php, row 508
 "user template" => "\x9Aabl\xF3na u\x9E\xEDvate\xBEa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 519
+// modules/alerts/alerts_sending.php, row 509
 "password change" => "zmena hesla", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 520
+// modules/alerts/alerts_sending.php, row 510
 "other" => "in\xE9", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 521
 "Aliases for Alerts Alert" => "Aliasy pre e-mail zasielanie - spr\xE1vy", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 533
+// modules/alerts/alerts_sending.php, row 523
 "complete filter text" => "\xFApln\xFD text filtra", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 534, 543
+// modules/alerts/alerts_sending.php, row 524, 533
 "howoften" => "ako \xE8asto", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 525
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL anonymn\xE9ho formul\xE1ra (nastavuje sa v Administr\xE1cii zasielania - Nastavenia)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 526
 "Unsubscribe Form URL" => "URL formul\xE1ra pre odhl\xE1senie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Welcome" => "Aliasy pre e-mail zasielanie - uv\xEDtanie", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544
+// modules/alerts/alerts_sending.php, row 534
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formul\xE1ra kolekcie (nastavuje sa v Administr\xE1cii zasielania - Nastavenia)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 535
 "email confirmed" => "e-mail potvrden\xFD", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 551
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Slice Wizard Welcome" => "Aliasy pre uv\xEDtanie sprievodcu modulom", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 553, 565
+// modules/alerts/alerts_sending.php, row 543, 555
 "Slice name" => "N\xE1zov modulu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 554, 566
+// modules/alerts/alerts_sending.php, row 544, 556
 "New user name" => "Meno nov\xE9ho u\x9E\xEDvate\xBEa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 555
+// modules/alerts/alerts_sending.php, row 545
 "New user login name" => "Prihlasovacie meno nov\xE9ho u\x9E\xEDvate\xBEa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 556
+// modules/alerts/alerts_sending.php, row 546
 "New user role (editor / admin)" => "Rola nov\xE9ho u\x9E\xEDvate\xBEa (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 557
+// modules/alerts/alerts_sending.php, row 547
 "My name" => "Moje meno", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 558
+// modules/alerts/alerts_sending.php, row 548
 "My email" => "M\xF4j e-mail", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 553
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasy pre \x9Aabl\xF3ny u\x9E\xEDvate\xBEa (m\xF4\x9Eete pou\x9Ei\x9D aj v\x9Aetky aliasy u\x9E\xEDvate\xBEa)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 571
+// modules/alerts/alerts_sending.php, row 561
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasy pre e-mail o zmene hesla (m\xF4\x9Eete pou\x9Ei\x9D aj v\x9Aetky aliasy u\x9E\xEDvate\xBEa)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 573
+// modules/alerts/alerts_sending.php, row 563
 "HTML link to the password change page for current user" => "HTML odkaz na str\xE1nku zmeny hesla pre aktu\xE1lneho u\x9E\xEDvate\xBEa", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 574
+// modules/alerts/alerts_sending.php, row 564
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parameter URL pou\x9E\xEDvan\xFD v odkaze na zmenu hesla v _#PWD_LINK (m\xF4\x9Eete ho vyu\x9Ei\x9D, ak pre\xF2 chcete pou\x9Ei\x9D vlastn\xFA URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
 "Language" => "Jazyk", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 48
-// modules/alerts/send_emails.php, row 71
+// modules/alerts/send_emails.php, row 72
 "Email" => "E-mail", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 54
@@ -165,7 +165,7 @@ return [
 "Email templates" => "\x8Aabl\xF3ny e-mailov", // ai 2026-06
 
 // modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 165, 168
+// modules/alerts/modedit.php, row 160, 163
 "Alerts Settings" => "Nastavenia Zasielania", // ai 2026-06
 
 // modules/alerts/menu.php, row 62
@@ -192,28 +192,28 @@ return [
 "Common" => "Spolo\xE8n\xE9", // ai 2026-06
 
 // modules/alerts/modedit.php, row 93
-"You do not have permissions to edit this Alerts module" => "",
+"You do not have permissions to edit this Alerts module" => "Nem\xE1te pr\xE1vo upravova\x9D tento modul Zasielanie", // ai 2026-10
 
-// modules/alerts/modedit.php, row 165
-"Add Alerts" => "",
+// modules/alerts/modedit.php, row 160
+"Add Alerts" => "Prida\x9D Zasielanie", // ai 2026-10
 
-// modules/alerts/modedit.php, row 173
+// modules/alerts/modedit.php, row 168
 "language" => "jazyk", // ai 2026-06
 
-// modules/alerts/modedit.php, row 177
-"Alert emails" => "",
+// modules/alerts/modedit.php, row 172
+"Alert emails" => "E-maily Zasielania", // ai 2026-10
 
-// modules/alerts/modedit.php, row 181, 187
-"Edit '%1'" => "",
+// modules/alerts/modedit.php, row 176, 182
+"Edit '%1'" => "Upravi\x9D '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 183
+// modules/alerts/modedit.php, row 178
 "welcome email" => "uv\xEDtac\xED email", // ai 2026-06
 
-// modules/alerts/modedit.php, row 189
+// modules/alerts/modedit.php, row 184
 // modules/alerts/send.php, row 76
 "alert email" => "email s novinkami", // ai 2026-06
 
-// modules/alerts/modedit.php, row 192
+// modules/alerts/modedit.php, row 187
 "alerts ID" => "ID zasielania", // ai 2026-06
 
 // modules/alerts/send.php, row 44
@@ -223,39 +223,39 @@ return [
 "Send Emails" => "Odosla\x9D emaily", // ai 2026-06
 
 // modules/alerts/send.php, row 75
-"Alert email to send" => "",
+"Alert email to send" => "E-mail na odoslanie", // ai 2026-10
 
 // modules/alerts/send.php, row 77
-"Set" => "",
+"Set" => "Nastavi\x9D", // ai 2026-10
 
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/send_emails.php, row 65
 "Send now an example alert email to email" => "Posla\x9D teraz uk\xE1\x9Ekov\xFD e-mail so spr\xE1vami na e-mail", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 72, 91
+// modules/alerts/send_emails.php, row 73, 92
 "as if" => "ako keby", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 73, 92, 108
+// modules/alerts/send_emails.php, row 74, 93, 109
 "Go!" => "Vykona\x9D!", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 83
+// modules/alerts/send_emails.php, row 84
 "Send now an example alert email to Reader" => "Posla\x9D teraz uk\xE1\x9Ekov\xFD e-mail so spr\xE1vami \xE8itate\xBEovi", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 90
+// modules/alerts/send_emails.php, row 91
 "Reader" => "\xC8itate\xBE", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 99
+// modules/alerts/send_emails.php, row 100
 "Send alerts" => "Posla\x9D novinky", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Send now alerts to all users subscribed to " => "Posla\x9D teraz novinky v\x9Aetk\xFDm u\x9E\xEDvate\xBEom prihl\xE1sen\xFDm pre ", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Warning: This is a real command!" => "Pozor: Toto je skuto\xE8n\xFD pr\xEDkaz!", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 111
+// modules/alerts/send_emails.php, row 112
 "Last time the alerts were sent on:" => "Novinky boli naposledy odoslan\xE9:", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 122
+// modules/alerts/send_emails.php, row 123
 "%1 email(s) sent" => "Odoslan\xFDch e-mailov: %1", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 151
@@ -270,7 +270,7 @@ return [
  => "Definujte v\xFDbery v moduloch, z ktor\xFDch chcete zasiela\x9D spr\xE1vy,\n"
    ."        v poh\xBEadoch typu Alerts Selection Set", // ai 2026-06
 
-// modules/alerts/synchro.php, row 65
+// modules/alerts/synchro.php, row 66
 "Synchronization with Reader Management Slice" => "Synchroniz\xE1cia s modulom spravuj\xFAcim \xE8itate\xBEov", // ai 2026-06
 
 // modules/alerts/synchro.php, row 95
@@ -327,42 +327,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "Pridan\xFDch polo\x9Eiek: %1", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 201
+// modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "Vymazan\xFDch polo\x9Eiek: %1, skup\xEDn hodn\xF4t: %2", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 229
+// modules/alerts/synchro2.php, row 222
 "not set" => "nenastaven\xE9", // ai 2026-06
 
-// modules/alerts/util.php, row 54
-"-- none --" => "",
+// modules/alerts/util.php, row 53
+"-- none --" => "-- \x9Eiadny --", // ai 2026-10
 
-// modules/alerts/util.php, row 60
-"email" => "",
+// modules/alerts/util.php, row 59
+"email" => "e-mail", // ai 2026-10
 
-// modules/alerts/util.php, row 87
+// modules/alerts/util.php, row 86
 "instant" => "okam\x9Eite", // ai 2026-06
 
-// modules/alerts/util.php, row 88
+// modules/alerts/util.php, row 87
 "daily" => "denne", // ai 2026-06
 
-// modules/alerts/util.php, row 89
+// modules/alerts/util.php, row 88
 "weekly" => "t\xFD\x9Edenne", // ai 2026-06
 
-// modules/alerts/util.php, row 90
+// modules/alerts/util.php, row 89
 "twoweeks" => "raz za dva t\xFD\x9Edne", // ai 2026-06
 
-// modules/alerts/util.php, row 91
+// modules/alerts/util.php, row 90
 "monthly" => "mesa\xE8ne", // ai 2026-06
 
-// modules/alerts/util.php, row 92
+// modules/alerts/util.php, row 91
 "irregular" => "nepravidelne", // ai 2026-06
 
-// modules/alerts/util.php, row 99
+// modules/alerts/util.php, row 98
 "Active" => "Aktu\xE1lne",
 
-// modules/alerts/util.php, row 100
+// modules/alerts/util.php, row 99
 "Holding bin" => "Z\xE1sobn\xEDk", // ai 2026-06
 
-// modules/alerts/util.php, row 101
+// modules/alerts/util.php, row 100
 "Trash bin" => "K\xF4\x9A",
 ];

@@ -217,7 +217,7 @@ function createConstsArray($group_id, $admin): array
         if ($get_method) {
             $value = str_replace("&", "%26", $value);
         }
-        if ($name == $value) {   // loose, as always: '1.0' == '1'
+        if ($name === $value) {   // '#' = "same as the name"; saving writes the name as the value
             $value = '#';
         }
         $data[$row["ancestors"] . $row["id"]] = [
@@ -346,7 +346,7 @@ function printConstsArray(&$arr, $admin): string
 {
     global $hcCol;
     $value = $arr[$hcCol["Value"]];
-    if ($arr[$hcCol["Name"]] == $value) {
+    if ($arr[$hcCol["Name"]] === $value) {
         $value = '#';
     }
     $retval = "new Array("
@@ -546,7 +546,7 @@ function CopyConstants($slice_id): bool
 
         // update fields
         foreach ($fields as $field_id => $shf) {
-            if (DB_AA::update('field', [['input_show_func', str_replace($old_id, $new_id, $shf), 's']], [['id', $field_id], ['slice_id', $slice_id, 'l']]) === false) {
+            if (!AA::Metabase()->doUpdate('field', ['id' => $field_id, 'slice_id' => $slice_id, 'input_show_func' => str_replace($old_id, $new_id, $shf)])) {
                 $err[] = "Could not update fields.";
                 return false;
             }

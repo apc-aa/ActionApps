@@ -322,7 +322,7 @@ class RimWidget extends Widget
     /** get HTML for one or more related items from another slice based on this widget configuration  */
     public function getRelatedItemsHtml(zids $zids, string $base_id, string $def_field_id, string $def_slice_id): string
     {
-        $input_name = FormArray::formId2Name($base_id) . "[rim][]";
+        $input_name = safe(FormArray::formId2Name($base_id) . "[rim][]");
 
         if ($item_width = $this->getProperty('item_width')) {
             $item_width = ctype_digit((string) $item_width) ? " style=\"width:{$item_width}px\"" : " style=\"width:$item_width\"";

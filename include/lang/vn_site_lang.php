@@ -28,48 +28,48 @@ return [
 // modules/site/index.php, row 68
 "Starting spot not found" => "Không tìm thấy spot khởi đầu", // ai 2026-06
 
-// modules/site/index.php, row 157
+// modules/site/index.php, row 151
 "Editor window - site code manager" => "Cửa sổ soạn thảo - trình quản lý mã website", // ai 2026-06
 
-// modules/site/index.php, row 177
+// modules/site/index.php, row 171
 "Add&nbsp;spot" => "Thêm&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 172
 "Add&nbsp;choice" => "Thêm&nbsp;lựa chọn", // ai 2026-06
 
-// modules/site/index.php, row 181
+// modules/site/index.php, row 175
 "Move&nbsp;up" => "Di chuyển&nbsp;lên", // ai 2026-06
 
-// modules/site/index.php, row 182
+// modules/site/index.php, row 176
 "Move&nbsp;down" => "Di chuyển&nbsp;xuống", // ai 2026-06
 
-// modules/site/index.php, row 185
+// modules/site/index.php, row 179
 "Move&nbsp;left" => "Di chuyển&nbsp;sang trái", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 180
 "Move&nbsp;right" => "Di chuyển&nbsp;sang phải", // ai 2026-06
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Xóa", // ai 2026-06
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 "Are you sure you want to delete the spot?" => "Bạn có chắc muốn xóa spot này không?", // ai 2026-06
 
-// modules/site/index.php, row 192
+// modules/site/index.php, row 186
 "Enable" => "Bật", // ai 2026-06
 
-// modules/site/index.php, row 193
+// modules/site/index.php, row 187
 "Disable" => "Tắt", // ai 2026-06
 
-// modules/site/index.php, row 214
+// modules/site/index.php, row 208
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Các system require khả dụng - &lcub;require:...&rcub; hoặc &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47
 "View site" => "Xem trang", // ai 2026-06
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 318
+// modules/site/modedit.php, row 298
 "Site" => "Trang web", // ai 2026-06
 
 // modules/site/menu.php, row 80
@@ -81,95 +81,96 @@ return [
 // modules/site/menu.php, row 82
 "Aliases" => "Bí danh", // ai 2026-06
 
-// modules/site/moddelete.php, row 45
+// modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Bạn không có quyền xóa website.", // ai 2026-06
 
-// modules/site/moddelete.php, row 49
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 212
+"The form has expired; reload the page and try again." => "Biểu mẫu đã hết hạn; hãy tải lại trang và thử lại.", // ai 2026-10
+
+// modules/site/moddelete.php, row 56
 "Module not found." => "Không tìm thấy mô-đun.", // ai 2026-06
 
-// modules/site/moddelete.php, row 69
+// modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Chuyên mục đã được xóa thành công, các bảng đã được tối ưu hóa", // ai 2026-06
 
-// modules/site/modedit.php, row 116
+// modules/site/modedit.php, row 112
 "You do not have permissions to add slice" => "Bạn không có quyền thêm chuyên mục", // ai 2026-06
 
-// modules/site/modedit.php, row 121
+// modules/site/modedit.php, row 117
 "You do not have permissions to edit this slice" => "Bạn không có quyền chỉnh sửa chuyên mục này", // ai 2026-06
 
-// modules/site/modedit.php, row 129
-"The settings and the other fields of this page were not saved." => "",
+// modules/site/modedit.php, row 125
+"The settings and the other fields of this page were not saved." => "Các thiết lập và các trường khác của trang này chưa được lưu.", // ai 2026-10
 
-// modules/site/modedit.php, row 144
+// modules/site/modedit.php, row 140
 "State file" => "Tệp trạng thái", // ai 2026-06
 
-// modules/site/modedit.php, row 145, 326
+// modules/site/modedit.php, row 141, 306
 "Router" => "Bộ định tuyến", // ai 2026-06
 
-// modules/site/modedit.php, row 146, 340
+// modules/site/modedit.php, row 142, 320
 "Uses modules" => "Mô-đun được sử dụng", // ai 2026-06
 
-// modules/site/modedit.php, row 156
-"You can not use these modules in the site - you have no permission to them: %1" => "",
+// modules/site/modedit.php, row 152
+"You can not use these modules in the site - you have no permission to them: %1" => "Bạn không thể dùng các mô-đun này trong trang web - bạn không có quyền với chúng: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 230
-"The form has expired; reload the page and try again." => "",
+// modules/site/modedit.php, row 223
+"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Thiết lập kho ứng dụng chưa được lưu - kho sẽ không cung cấp trang web cho đến khi các lỗi sau được sửa:", // ai 2026-10
 
-// modules/site/modedit.php, row 241
-"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "",
-
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Add Site" => "Thêm website", // ai 2026-06
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Edit Site" => "Sửa website", // ai 2026-06
 
-// modules/site/modedit.php, row 325
+// modules/site/modedit.php, row 305
 "Used Language File" => "Tệp ngôn ngữ được dùng", // ai 2026-06
 
-// modules/site/modedit.php, row 326
+// modules/site/modedit.php, row 306
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Hãy dùng AA_Router_Seo. Nếu không, bạn sẽ dùng cách tiếp cận cũ của mô-đun site với 'tệp điều khiển', điều mà chúng tôi không khuyến nghị.", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "Home or State file" => "Trang chủ hoặc tệp trạng thái", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Đối với AA_Router_Seo, hãy điền <b>url mặc định</b> (trang chủ) - như <em>/en/home</em> hoặc để trống<br><br>Đối với các website cũ không dùng AA_Router_Seo, hãy điền tên <b>Tệp điều khiển website</b> - sẽ được đặt trong thư mục /modules/site/sites/. Tên bạn chỉ định sẽ được thêm tiền tố 'site_', vì vậy nếu bạn đặt tên tệp là 'apc.php', tệp điều khiển website sẽ là /modules/site/sites/site_apc.php.", // ai 2026-06
 
-// modules/site/modedit.php, row 342
+// modules/site/modedit.php, row 322
 "Additional setting" => "Cài đặt bổ sung", // ai 2026-06
 
-// modules/site/modedit.php, row 347
-"App store" => "",
+// modules/site/modedit.php, row 327
+"App store" => "Kho ứng dụng", // ai 2026-10
 
-// modules/site/modedit.php, row 349
-"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "",
+// modules/site/modedit.php, row 329
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Bất kỳ AA nào cũng có thể cài đặt trang web đã xuất bản từ AA này - cùng với các chuyên mục và Cảnh báo mà trang dùng: mẫu, trường, khung hiển thị và hằng số của chúng, không bao giờ kèm bài viết. Chỉ quản trị viên cấp cao mới đặt được thiết lập này.", // ai 2026-10
 
-// modules/site/modedit.php, row 353
-"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "",
+// modules/site/modedit.php, row 333
+"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Các mô-đun của trang web đã thay đổi kể từ khi xuất bản: %1 - kho ứng dụng sẽ không cung cấp trang web cho đến khi quản trị viên cấp cao phê duyệt chúng.", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Approve the changed modules: %1" => "",
+// modules/site/modedit.php, row 334
+"Approve the changed modules: %1" => "Phê duyệt các mô-đun đã thay đổi: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Their templates, fields, views and constants then go to the app store with the site." => "",
+// modules/site/modedit.php, row 334
+"Their templates, fields, views and constants then go to the app store with the site." => "Khi đó mẫu, trường, khung hiển thị và hằng số của chúng sẽ được đưa vào kho ứng dụng cùng với trang web.", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"Publish in the app store" => "",
+// modules/site/modedit.php, row 336
+"Publish in the app store" => "Xuất bản trong kho ứng dụng", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "",
+// modules/site/modedit.php, row 336
+"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Ứng dụng đã xuất bản không có cảnh báo: mọi cảnh báo khi xuất của nó đều là lỗi. Một nhóm hằng số thuộc về chuyên mục nằm ngoài mọi trang web đã xuất bản cũng chặn việc xuất bản.", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"App description" => "",
+// modules/site/modedit.php, row 337
+"App description" => "Mô tả ứng dụng", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"What the app does, for the list of the app store." => "",
+// modules/site/modedit.php, row 337
+"What the app does, for the list of the app store." => "Ứng dụng làm gì, dùng cho danh sách trong kho ứng dụng.", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"App version" => "",
+// modules/site/modedit.php, row 338
+"App version" => "Phiên bản ứng dụng", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"Like 1.2.0." => "",
+// modules/site/modedit.php, row 338
+"Like 1.2.0." => "Ví dụ: 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005
 "Spot&nbsp;variables" => "Biến&nbsp;của spot", // ai 2026-06

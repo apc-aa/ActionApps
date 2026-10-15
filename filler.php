@@ -369,7 +369,14 @@ if (!is_object($slice) || !$slice->isValid()) {
 
 // huhl($_REQUEST['aa_token'], $slice->useFormTokens(), $_SESSION);
 
-if ( $_REQUEST['aa_token'] || $slice->useFormTokens() ) {
+// A logged-in reader or editor may change account fields, as in the aa[] branch. Only a POST counts: a link
+// from another site brings the session cookie on GET, and could change the account of whoever clicks it.
+// The form token is kept in the session, so it needs the session as well.
+$check_token = $_REQUEST['aa_token'] || $slice->useFormTokens();
+if (($_COOKIE['AA_Session'] ?? '') && ($check_token || (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST')) && (session_status() !== PHP_SESSION_ACTIVE)) {
+    pageOpen('nobody');
+}
+if ($check_token) {
     if (!AA_Session::tokenStoreCheck($_REQUEST['aa_token'] ?? '')) {
         SendErrorPage(["fatal" => _m("Bad Token. Not allowed to post comments")]);
     }
@@ -382,9 +389,12 @@ if (!$my_item_id) {
     $my_item_id = new_id();
     $insert     = true;
 } else {
-    // $db->query("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
-    // $insert = ! $db->next_record();
-    $insert = ! DB_AA::test('item', [['id', $my_item_id, 'l']]);
+    $item_slice = DB_AA::select1('usid', 'SELECT LOWER(HEX(`slice_id`)) AS usid FROM item', [['id', $my_item_id, 'l']]);
+    $insert     = !$item_slice;
+    // the form's slice decides who may edit - an item of another slice would be rewritten (and moved) by it
+    if (!$insert && ($item_slice !== strtolower($slice->getId()))) {
+        SendErrorPage(["permissions" => _m("You are not allowed to update this item.")]);
+    }
 }
 
 $oldcontent4id = ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
@@ -474,6 +484,8 @@ if ($insert) {
     if (!$permok) {
         $result["permissions"] = _m("You are not allowed to update this item.");
     }
+    // as in the aa[] forms, in the password mode too: its check above passes only for an item without a password
+    $content4id = AA\IO\Grabber\Form::withoutAccountFields($slice, $content4id, $oldcontent4id);
 }
 
 // See doc/anonym.html for structure of $result, which is intended

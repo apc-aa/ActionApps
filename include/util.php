@@ -1395,16 +1395,10 @@ function StoreToContent($item_id, $field_id, $text_stored, $value, int $order, i
  */
 function gensalt($saltlen): string
 {
-    $salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456589";
-    $more_sec = '';
+    $salt_chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     $salt = '';
-
-    do {
-        $more_sec .= hash('md5', microtime() . 'xy');
-    } while ($saltlen > strlen($more_sec));
-
     for ($i = 0; $i < $saltlen; $i++) {
-        $salt .= $salt_chars[(mt_rand(0, 61) + ord($more_sec[$i])) % 62];  // mt_rand is faster than random_int (10x) so we use it here, but it is questionable @todo
+        $salt .= $salt_chars[random_int(0, 61)];   // the access codes of readers - mt_rand() can be predicted from its output
     }
     return $salt;
 }

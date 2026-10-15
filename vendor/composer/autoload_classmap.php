@@ -320,6 +320,7 @@ return array(
     'AA\\Optimize\\CheckCkeditorUse' => $baseDir . '/src/Optimize/CheckCkeditorUse.php',
     'AA\\Optimize\\CheckCookieReads' => $baseDir . '/src/Optimize/CheckCookieReads.php',
     'AA\\Optimize\\CheckCron' => $baseDir . '/src/Optimize/CheckCron.php',
+    'AA\\Optimize\\CheckDiscussionRefusals' => $baseDir . '/src/Optimize/CheckDiscussionRefusals.php',
     'AA\\Optimize\\CheckEnvironment' => $baseDir . '/src/Optimize/CheckEnvironment.php',
     'AA\\Optimize\\CheckHttp' => $baseDir . '/src/Optimize/CheckHttp.php',
     'AA\\Optimize\\CheckImportStores' => $baseDir . '/src/Optimize/CheckImportStores.php',

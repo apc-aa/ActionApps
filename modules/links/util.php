@@ -249,7 +249,8 @@ function Links_GetCategoryContent($zids): array
  */
 function Links_IsPublic(): bool
 {
-    return AA_Perm::ROLES['AUTHOR']['perm'] == $GLOBALS['permission_to']["slice"][$GLOBALS['slice_id']];
+    // the permission cache may not be built yet in this request (a session that dropped it)
+    return AA_Perm::ROLES['AUTHOR']['perm'] == ($GLOBALS['permission_to']['slice'][$GLOBALS['slice_id'] ?? ''] ?? null);
 }
 
 /**

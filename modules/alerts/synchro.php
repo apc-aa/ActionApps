@@ -80,7 +80,7 @@ if ($change_to_cmd && ($change_to != $collectionprop["slice_id"])) {
         echo "<b>" . delete_fields_from_slice($collectionid, $collectionprop["slice_id"]) . "</b><br><br>";
     }
     if ($change_to) {
-        DB_AA::update('alerts_collection', [['slice_id', $change_to, 'l']], [['id', $collectionid]]);
+        AA::Metabase()->doUpdate('alerts_collection', ['id' => $collectionid, 'slice_id' => $change_to]);
     } else {
         DB_AA::sql("UPDATE alerts_collection SET slice_id = NULL", [['id', $collectionid]]);
     }

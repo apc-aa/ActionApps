@@ -48,11 +48,11 @@ return [
 "Prints poll question" => "Ispisuje pitanje ankete", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-// modules/polls/polledit.php, row 235, 242
+// modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Datum objave", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-// modules/polls/polledit.php, row 236, 243
+// modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Datum isteka", // ai 2026-06
 
 // modules/polls/include/util.php, row 51
@@ -95,11 +95,11 @@ return [
 "View poll" => "Pogledajte anketu", // ai 2026-06
 
 // modules/polls/menu.php, row 67, 68
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Edit poll" => "Uredite anketu", // ai 2026-06
 
 // modules/polls/menu.php, row 67
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Add poll" => "Dodajte anketu", // ai 2026-06
 
 // modules/polls/menu.php, row 68
@@ -144,94 +144,94 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Dizajni", // ai 2026-10
 
-// modules/polls/modedit.php, row 102
+// modules/polls/modedit.php, row 100
 "You do not have permissions to add polls" => "Nemate dozvolu za dodavanje anketa", // ai 2026-06
 
-// modules/polls/modedit.php, row 107
+// modules/polls/modedit.php, row 105
 "You do not have permissions to edit this poll" => "Nemate dozvolu za ure\xF0ivanje ove ankete", // ai 2026-06
 
-// modules/polls/modedit.php, row 124, 249
-// modules/polls/polledit.php, row 251
+// modules/polls/modedit.php, row 122, 243
+// modules/polls/polledit.php, row 246
 "IP Locking timeout" => "Trajanje IP blokade", // ai 2026-06
 
-// modules/polls/modedit.php, row 125, 251
+// modules/polls/modedit.php, row 123, 245
 "Cookies prefix" => "Prefiks kola\xE8i\xE6a", // ai 2026-06
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Add Polls" => "Dodavanje anketa", // ai 2026-06
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Edit Polls" => "Ure\xF0ivanje anketa", // ai 2026-06
 
-// modules/polls/modedit.php, row 237
+// modules/polls/modedit.php, row 231
 "Polls Module general data" => "Op\xE6i podaci modula anketa", // ai 2026-06
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 236
 "Used Language File" => "Kori\x9Atena jezi\xE8na datoteka",
 
-// modules/polls/modedit.php, row 246
+// modules/polls/modedit.php, row 240
 "Defaults for polls in this module" => "Zadane postavke za ankete u ovom modulu", // ai 2026-06
 
-// modules/polls/modedit.php, row 247
-// modules/polls/polledit.php, row 249
+// modules/polls/modedit.php, row 241
+// modules/polls/polledit.php, row 244
 "Use logging" => "Bilje\x9Ei svaki glas u log", // ai 2026-06
 
-// modules/polls/modedit.php, row 248
-// modules/polls/polledit.php, row 250
+// modules/polls/modedit.php, row 242
+// modules/polls/polledit.php, row 245
 "Use IP locking" => "Koristi IP blokiranje", // ai 2026-06
 
-// modules/polls/modedit.php, row 250
-// modules/polls/polledit.php, row 252
+// modules/polls/modedit.php, row 244
+// modules/polls/polledit.php, row 247
 "Use cookies" => "Koristi kola\xE8i\xE6e", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
 "No permission to add/edit poll." => "Nemate dozvolu za dodavanje/ure\xF0ivanje ankete.", // ai 2026-06
 
 // modules/polls/polledit.php, row 80
-"Poll not found." => "",
+"Poll not found." => "Anketa nije prona\xF0ena.", // ai 2026-10
 
 // modules/polls/polledit.php, row 80
-"The poll belongs to another module." => "",
+"The poll belongs to another module." => "Anketa pripada drugom modulu.", // ai 2026-10
 
-// modules/polls/polledit.php, row 119
+// modules/polls/polledit.php, row 117
 "Can't insert new poll" => "Nije mogu\xE6e dodati novu anketu", // ai 2026-06
 
-// modules/polls/polledit.php, row 125
+// modules/polls/polledit.php, row 123
 "Can't update poll with id %1" => "Nije mogu\xE6e a\x9Eurirati anketu s ID-om %1", // ai 2026-06
 
-// modules/polls/polledit.php, row 214
+// modules/polls/polledit.php, row 209
 "Insert question and answers" => "Unesite pitanje i odgovore", // ai 2026-06
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Headline" => "Naslov", // ai 2026-06
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Question" => "Pitanje", // ai 2026-06
 
-// modules/polls/polledit.php, row 234, 241
+// modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Unesite nove odgovore i odaberite njihov redoslijed", // ai 2026-06
 
-// modules/polls/polledit.php, row 246
+// modules/polls/polledit.php, row 241
 "Polls settings" => "Postavke anketa", // ai 2026-06
 
-// modules/polls/polledit.php, row 248
+// modules/polls/polledit.php, row 243
 "Poll is locked" => "Anketa je zaklju\xE8ana", // ai 2026-06
 
-// modules/polls/polledit.php, row 251
+// modules/polls/polledit.php, row 246
 "time in seconds" => "vrijeme u sekundama", // ai 2026-06
 
-// modules/polls/polledit.php, row 254
+// modules/polls/polledit.php, row 249
 "Parameters" => "Postavke",
 
-// modules/polls/polledit.php, row 256
+// modules/polls/polledit.php, row 251
 "Polls design templates" => "Predlo\x9Aci dizajna anketa", // ai 2026-06
 
-// modules/polls/polledit.php, row 261
+// modules/polls/polledit.php, row 256
 "Select design type - before vote" => "Odaberite vrstu dizajna - prije glasovanja", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "Select design type - after vote" => "Odaberite vrstu dizajna - nakon glasovanja", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "If the design after vote should look differently, then specify it here." => "Ako dizajn nakon glasovanja treba izgledati druga\xE8ije, navedite ga ovdje.", // ai 2026-06
 ];

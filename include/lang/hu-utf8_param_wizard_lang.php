@@ -50,7 +50,7 @@ return [
 "Show example params" => "Példaparaméterek megjelenítése", // ai 2026-06
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Paraméterek", // ai 2026-06
@@ -68,19 +68,19 @@ return [
 "URL" => "",
 
 // include/constants_param_wizard.php, row 85
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = pozitív egész szám", // ai 2026-06
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Megengedett legkisebb érték", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Megengedett legnagyobb érték", // ai 2026-06
@@ -505,7 +505,7 @@ return [
 "text before the link" => "szöveg a hivatkozás előtt", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 515
 "field/text" => "mező/szöveg", // ai 2026-06
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "kiírja a 'blurb'-öt (szövegrészletet) egy másik rovatból egy egyszerű feltétel alapján.<br>Ha a <i>mező</i> (vagy a <b>stringToMatch</b> paraméterben megadott mező) az aktuális rovatban megegyezik a <b>fieldToMatch</b> tartalmával a <b>blurbSliceId</b> rovatban, akkor a <b>blurbSliceId</b> rovat <b>fieldToReturn</b> mezőjének tartalmát adja vissza.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Alapértelmezés szerint a <i>mező</i>.  Megadható mező id-ként (headline........) VAGY statikus szövegként.", // ai 2026-06
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "annak a rovatnak a kicsomagolt (unpacked) id-ja, amelyben a blurb szöveg tárolva van", // ai 2026-06
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "annak a mezőnek az id-ja a <b>blurbSliceId</b> rovatban, amelyben a <b>stringToMatch</b> keresendő", // ai 2026-06
@@ -604,7 +604,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "annak a mezőnek az id-ja a <b>blurbSliceId</b> rovatban, amelyben a blurb szöveg tárolva van (ami kiírandó)", // ai 2026-06

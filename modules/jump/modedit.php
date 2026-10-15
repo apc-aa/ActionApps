@@ -58,6 +58,17 @@ try {
     AA_Adminpageutil::pageParameterError($e);
 }
 
+// the menu offers the page only to those who may add modules; a Jump module has no permissions of its own
+if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
+    MsgPage(_m("You do not have permissions to access this page"));
+    exit;
+}
+// an existing id must be a Jump - the form would rename (and redirect) any other module
+if ($jump_id && !DB_AA::test('module', [['id', $jump_id, 'l'], ['type', 'J']])) {
+    MsgPage(_m("You do not have permissions to access this page"));
+    exit;
+}
+
 // create the $jumps array:
 $jumps = AA_Module::getModules('J');
 
@@ -143,9 +154,9 @@ if ($edit) {
 FrmTabCaption(_m("Edit module"));
 echo '
      <tr><th>' . _m("Module name") . ':</th>
-        <td><input type=text name="jump_name" size=20 value="' . $jump_name . '"></td></tr>
+        <td><input type=text name="jump_name" size=20 value="' . safe($jump_name) . '"></td></tr>
      <tr><th>' . _m("Jump to") . ' (URL):</th>
-        <td><input type=text name="jump_url" size=60 value="' . $jump_url . '"></td></tr>
+        <td><input type=text name="jump_url" size=60 value="' . safe($jump_url) . '"></td></tr>
      <tr><td colspan=2>' . _m("Type in an AA-relative path, e.g.") . ' <code>admin/se_constant.php?group_id=something</code></td></tr>
      <tr><th>' . _m("Jump to slice") . ":</th>
         <td><select name=dest_id>";

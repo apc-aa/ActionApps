@@ -50,7 +50,7 @@ return [
 "Show example params" => "Hiển thị tham số mẫu", // ai 2026-06
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Tham số", // ai 2026-06
@@ -74,13 +74,13 @@ return [
 "Number = positive integer number" => "Number = số nguyên dương", // ai 2026-06
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Tối thiểu", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Giá trị tối thiểu cho phép", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Tối đa", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Giá trị tối đa cho phép", // ai 2026-06
@@ -259,7 +259,7 @@ return [
 "link_only......." => "",
 
 // include/constants_param_wizard.php, row 282
-"url_field" => "",
+"url_field" => "url_field", // ai 2026-10
 
 // include/constants_param_wizard.php, row 283
 "field id if field, where external URL is stored (like hl_href.........)" => "id trường, nơi lưu URL bên ngoài (như hl_href.........)", // ai 2026-06
@@ -274,10 +274,10 @@ return [
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL của trang khác hiển thị nội dung bài viết. (Trang đó nên chứa SSI include ../slice.php.). Nếu không điền, fulltext dùng cùng trang như trang danh sách bài viết (đây là hành vi hiển nhiên).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291, 419
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/articles/solar.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
-"text" => "",
+"text" => "text", // ai 2026-10
 
 // include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Văn bản sẽ được bao bởi liên kết. Nếu tham số này là id trường, nội dung của trường được dùng, nếu không thì dùng nguyên văn", // ai 2026-06
@@ -505,7 +505,7 @@ return [
 "text before the link" => "văn bản trước liên kết", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 515
 "field/text" => "trường/văn bản", // ai 2026-06
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "in ra 'blurb' (đoạn văn bản) từ chuyên mục khác, dựa trên một điều kiện đơn giản.<br>Nếu <i>trường</i> (hoặc trường được chỉ định bởi <b>stringToMatch</b>) trong chuyên mục hiện tại khớp với nội dung của <b>fieldToMatch</b> trong <b>blurbSliceId</b>, nó trả về nội dung của <b>fieldToReturn</b> trong <b>blurbSliceId</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Mặc định là <i>trường</i>. Có thể được định dạng dưới dạng id của một trường (headline........) HOẶC dưới dạng văn bản tĩnh.", // ai 2026-06
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "id chuyên mục dạng không đóng gói (unpacked) của chuyên mục nơi lưu văn bản blurb", // ai 2026-06
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id trường của trường trong <b>blurbSliceId</b> nơi tìm kiếm <b>stringToMatch</b>", // ai 2026-06
@@ -604,7 +604,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id trường của trường trong <b>blurbSliceId</b> nơi lưu văn bản blurb (nội dung cần in)", // ai 2026-06

@@ -321,7 +321,7 @@ FrmTabCaption(_m("Import exported data"));
 echo "<tr><td>";
 
 if ($cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list || $data_import_failure) {
-    echo "<b>" . sprintf(_m("Count of imported slices: %d."), count($imported_list) + count($overwritten_list)) . "</p>";
+    echo "<b>" . sprintf(_m("Count of imported slices: %d."), count($imported_list ?? []) + count($overwritten_list ?? [])) . "</p>";
     if (is_array($imported_list)) {
         echo "</p>" . _m("Added were:") . "</p>";
         foreach ($imported_list as $desc) {
@@ -335,7 +335,7 @@ if ($cancel || $conflicts_list || $view_conflicts_list || $data_conflicts_list |
         }
     }
 
-    echo "<br><br><b>" . sprintf(_m("Count of imported stories: %d."), count($data_imported_list) + count($data_overwritten_list)) . "</p>";
+    echo "<br><br><b>" . sprintf(_m("Count of imported stories: %d."), count($data_imported_list ?? []) + count($data_overwritten_list ?? [])) . "</p>";
     echo $data_showme;
     if (is_array($data_imported_list)) {
         echo "</p>" . _m("Added were:") . "</p>";

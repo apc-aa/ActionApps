@@ -30,38 +30,38 @@ return [
 // "Alias used on admin page index.php3 for edit discussion url" => "Alias pou\x9E\xEDvan\xFD v administrat\xEDvnych str\xE1nk\xE1ch index.php3 pre URL discedit.php3",
 // End of unused messages
 
-// ./slice.php, row 236
+// ./slice.php, row 237
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Chybn\xFD parameter inc - vkladan\xFD s\xFAbor mus\xED obsahova\x9D iba alfanumerick\xE9 znaky", // ai 2026-06
 
-// ./slice.php, row 240
+// ./slice.php, row 241
 "No such file" => "S\xFAbor neexistuje", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 262
 "Invalid slice number or slice was deleted" => "Neplatn\xE9 \xE8\xEDslo modulu alebo bol modul vymazan\xFD", // ai 2026-06
 
-// ./slice.php, row 268
+// ./slice.php, row 265
 "slice.php output forbidden for this slice" => "v\xFDstup slice.php je pre tento modul zak\xE1zan\xFD", // ai 2026-06
 
-// ./slice.php, row 323
+// ./slice.php, row 320
 "session id" => "ID session", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 573
 "number of current page (on pagescroller)" => "\xE8\xEDslo aktu\xE1lnej str\xE1nky (v str\xE1nkovan\xED)", // ai 2026-06
 
-// ./slice.php, row 582
+// ./slice.php, row 574
 "page length (number of items)" => "d\xE5\x9Eka str\xE1nky (po\xE8et spr\xE1v)", // ai 2026-06
 
-// ./slice.php, row 617
-// include/view.php, row 361
+// ./slice.php, row 609
+// include/view.php, row 390
 "No item found" => "Nenalezena \x9E\xE1dn\xE1 zpr\xE1va",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 211
 "Show selected" => "Zobraz vybran\xE9",
 
-// include/discussion.php, row 223
+// include/discussion.php, row 212
 "Show all" => "Zobraz v\x9Aetko",
 
-// include/discussion.php, row 224
+// include/discussion.php, row 213
 "Add new" => "Pridaj nov\xFD",
 
 // include/item.php, row 113
@@ -193,16 +193,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: nespr\xE1vna funkcia aliasu %1 pre %2", // ai 2026-06
 
-// include/itemview.php, row 120
+// include/itemview.php, row 122
 "Selected item" => "Vybran\xE1 spr\xE1va", // ai 2026-06
 
-// include/itemview.php, row 127
+// include/itemview.php, row 129
 "number of found items" => "po\xE8et nalezen\xFDch \xE8l\xE1nk\xF9",
 
-// include/itemview.php, row 375
+// include/itemview.php, row 377
 "No comment was selected" => "Nebol vybran\xFD \x9Eiaden pr\xEDspevok",
 
-// include/itemview.php, row 707, 715
+// include/itemview.php, row 712, 720
 "exact group name" => "presn\xFD n\xE1zov skupiny", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -229,24 +229,24 @@ return [
 // include/slice.php, row 71
 "All categories" => "V\x9Aetky kateg\xF3rie", // ai 2026-06
 
-// include/util.php, row 993
+// include/util.php, row 992
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo pre \xE8\xEDtanie", // ai 2026-06
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Back" => "Sp\xE4t",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "Znovu prihl\xE1si\x9D", // ai 2026-06
 
-// misc/proposefieldchange.php, row 90
+// misc/proposefieldchange.php, row 110
 "Assignment form" => "Formul\xE1r pre priradenie", // ai 2026-06
 
-// misc/proposefieldchange.php, row 98
+// misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Spracuje \xFAdaje o v\xE4zb\xE1ch spr\xE1vy odoslan\xE9 formul\xE1rom (POST)", // ai 2026-06
 
-// modules/site/site.php, row 289
-"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
+// modules/site/site.php, row 304
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Web je chybne nastaven\xFD: %1 neexistuje alebo ho nemo\x9Eno \xE8\xEDta\x9D. Pridajte tento s\xFAbor, alebo opravte nastavenie \x84Stavov\xFD s\xFAbor\x93 tohto webu.", // ai 2026-10
 ];

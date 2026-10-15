@@ -13,38 +13,38 @@ setlocale(LC_NUMERIC, 'en_US');            // keep float format with dot (see AA
 
 return [
 
-// ./slice.php, row 236
+// ./slice.php, row 237
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Ungültiger inc-Parameter – die eingebundene Datei darf nur alphanumerische Zeichen enthalten", // ai 2026-06
 
-// ./slice.php, row 240
+// ./slice.php, row 241
 "No such file" => "Datei nicht gefunden", // ai 2026-06
 
-// ./slice.php, row 265
+// ./slice.php, row 262
 "Invalid slice number or slice was deleted" => "Ungültige Rubrik-Nummer oder Rubrik wurde gelöscht", // ai 2026-06
 
-// ./slice.php, row 268
+// ./slice.php, row 265
 "slice.php output forbidden for this slice" => "slice.php-Ausgabe ist für diese Rubrik nicht erlaubt", // ai 2026-06
 
-// ./slice.php, row 323
+// ./slice.php, row 320
 "session id" => "Session-ID", // ai 2026-06
 
-// ./slice.php, row 581
+// ./slice.php, row 573
 "number of current page (on pagescroller)" => "Nummer der aktuellen Seite (im Pagescroller)", // ai 2026-06
 
-// ./slice.php, row 582
+// ./slice.php, row 574
 "page length (number of items)" => "Seitenlänge (Anzahl der Artikel)", // ai 2026-06
 
-// ./slice.php, row 617
-// include/view.php, row 361
+// ./slice.php, row 609
+// include/view.php, row 390
 "No item found" => "Kein Artikel gefunden", // ai 2026-06
 
-// include/discussion.php, row 222
+// include/discussion.php, row 211
 "Show selected" => "Zeige ausgewählte",
 
-// include/discussion.php, row 223
+// include/discussion.php, row 212
 "Show all" => "Zeige alle",
 
-// include/discussion.php, row 224
+// include/discussion.php, row 213
 "Add new" => "Hinzufügen",
 
 // include/item.php, row 113
@@ -176,16 +176,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Fehler: falsche Alias-Funktion %1 für %2", // ai 2026-06
 
-// include/itemview.php, row 120
+// include/itemview.php, row 122
 "Selected item" => "Ausgewählter Artikel", // ai 2026-06
 
-// include/itemview.php, row 127
+// include/itemview.php, row 129
 "number of found items" => "Anzahl der gefundenen Artikel", // ai 2026-06
 
-// include/itemview.php, row 375
+// include/itemview.php, row 377
 "No comment was selected" => "Es wurde kein Kommentar ausgewählt", // ai 2026-06
 
-// include/itemview.php, row 707, 715
+// include/itemview.php, row 712, 720
 "exact group name" => "exakter Gruppenname", // ai 2026-06
 
 // include/scroller.php, row 86
@@ -212,24 +212,24 @@ return [
 // include/slice.php, row 71
 "All categories" => "Alle Kategorien", // ai 2026-06
 
-// include/util.php, row 993
+// include/util.php, row 992
 "Error: Missing Reading Password" => "Fehler: Lesepasswort fehlt", // ai 2026-06
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "Meldung der Anwendung", // ai 2026-06
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Back" => "Zurück",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "Erneut anmelden", // ai 2026-06
 
-// misc/proposefieldchange.php, row 90
+// misc/proposefieldchange.php, row 110
 "Assignment form" => "Zuordnungsformular", // ai 2026-06
 
-// misc/proposefieldchange.php, row 98
+// misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "Verarbeitet die vom Formular gesendeten Daten zu Artikel-Verknüpfungen (POST)", // ai 2026-06
 
-// modules/site/site.php, row 289
-"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
+// modules/site/site.php, row 304
+"Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "Die Website ist falsch konfiguriert: %1 existiert nicht oder ist nicht lesbar. Legen Sie diese Datei an oder korrigieren Sie die Einstellung „Statusdatei“ dieses Site-Moduls.", // ai 2026-10
 ];

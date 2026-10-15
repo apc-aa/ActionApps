@@ -1692,9 +1692,10 @@ function parseLoop($out, $item): string
  * @param $what
  * @param $field_name
  *
- * @return false|mixed|string $what (name, value, short_id,...) of constants with group $group and name $field_name)
+ * @return string $what (name, value, short_id,...) of constants with group $group and name $field_name);
+ *                '' for a value which is not in the group (deleted constant, free text in the field)
  */
-function getConstantValue($group, $what, $field_name) {
+function getConstantValue($group, $what, $field_name): string {
     switch ($what) { // this switch is for future changes in this code
         case "name" :
         case "value" :
@@ -1706,17 +1707,17 @@ function getConstantValue($group, $what, $field_name) {
         case "id" :
         case "level" :
             $val = GetConstants($group, 'pri', $what);   // GetConstants() caches per request itself
-            return $val[$field_name];
+            return (string) ($val[$field_name] ?? '');
         default :
             if (strlen($what)) {
                 $val = GetConstants($group, 'pri', 'short_id');
-                $cid = $val[$field_name];
+                $cid = $val[$field_name] ?? '';
                 if ($cid) {
                     $content = GetConstantContent(new zids($cid, 's'));
-                    return (new AA_Item($content[$cid], new AA_Aliases(new AA_Aliasgenerator_Constant())))->subst_alias($what);
+                    return (string) (new AA_Item($content[$cid], new AA_Aliases(new AA_Aliasgenerator_Constant())))->subst_alias($what);
                 }
             }
-            return false;
+            return '';
     }
 }
 

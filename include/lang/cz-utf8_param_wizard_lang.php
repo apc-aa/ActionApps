@@ -50,7 +50,7 @@ return [
 "Show example params" => "Zobrazit ukázkové parametry",
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Parametry",
@@ -68,19 +68,19 @@ return [
 "URL" => "",
 
 // include/constants_param_wizard.php, row 85
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = kladné celé číslo",
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Nejmenší povolená hodnota",
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Největší povolená hodnota",
@@ -229,7 +229,7 @@ return [
 "max number of characters grabbed from the <b>fulltext</b> field" => "maximální počet znaků převzatých z políčka <b>fulltext</b>",
 
 // include/constants_param_wizard.php, row 258
-"fulltext" => "",
+"fulltext" => "fulltext", // ai 2026-10
 
 // include/constants_param_wizard.php, row 259
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id políčka s celým textem (např. full_text.......), ze kterého se text přebírá. Pokud je prázdné, text se přebírá přímo z <i>políčka</i>.",
@@ -277,7 +277,7 @@ return [
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarni.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
-"text" => "",
+"text" => "text", // ai 2026-10
 
 // include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Text, který bude obklopen odkazem. Pokud je tento parametr id políčka, použije se obsah políčka, jinak se použije tak, jak je",
@@ -505,7 +505,7 @@ return [
 "text before the link" => "text před odkazem",
 
 // include/constants_param_wizard.php, row 512
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 515
 "field/text" => "field/text",
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "vypíše 'blurb' (kousek textu) z jiného webíku na základě jednoduché podmínky.<br>Pokud se <i>políčko</i> (nebo políčko zadané v <b>stringToMatch</b>) v aktuálním webíku shoduje s obsahem <b>fieldToMatch</b> ve webíku <b>blurbSliceId</b>, vrátí obsah <b>fieldToReturn</b> z webíku <b>blurbSliceId</b>.",
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Výchozí je <i>políčko</i>.  Lze zadat buď jako id políčka (headline........), NEBO jako statický text.",
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "dlouhé (unpacked) id webíku, ve kterém je text blurbu uložen",
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id políčka ve webíku <b>blurbSliceId</b>, ve kterém se hledá <b>stringToMatch</b>",
@@ -604,7 +604,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id políčka ve webíku <b>blurbSliceId</b>, ve kterém je uložen text blurbu (co se má vypsat)",

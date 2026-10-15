@@ -51,11 +51,11 @@ return [
 "Prints poll question" => "Kiírja a szavazás kérdését", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-// modules/polls/polledit.php, row 235, 242
+// modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Közzététel dátuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-// modules/polls/polledit.php, row 236, 243
+// modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Lejárat dátuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 51
@@ -98,11 +98,11 @@ return [
 "View poll" => "Szavazás megtekintése", // ai 2026-06
 
 // modules/polls/menu.php, row 67, 68
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Edit poll" => "Szavazás szerkesztése", // ai 2026-06
 
 // modules/polls/menu.php, row 67
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Add poll" => "Szavazás hozzáadása", // ai 2026-06
 
 // modules/polls/menu.php, row 68
@@ -147,94 +147,94 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Megjelenések", // ai 2026-06
 
-// modules/polls/modedit.php, row 102
+// modules/polls/modedit.php, row 100
 "You do not have permissions to add polls" => "Nincs jogosultsága szavazások hozzáadásához", // ai 2026-06
 
-// modules/polls/modedit.php, row 107
+// modules/polls/modedit.php, row 105
 "You do not have permissions to edit this poll" => "Nincs jogosultsága a szavazás szerkesztéséhez", // ai 2026-06
 
-// modules/polls/modedit.php, row 124, 249
-// modules/polls/polledit.php, row 251
+// modules/polls/modedit.php, row 122, 243
+// modules/polls/polledit.php, row 246
 "IP Locking timeout" => "IP-zárolás időkorlátja", // ai 2026-06
 
-// modules/polls/modedit.php, row 125, 251
+// modules/polls/modedit.php, row 123, 245
 "Cookies prefix" => "Cookie-előtag", // ai 2026-06
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Add Polls" => "Szavazások hozzáadása", // ai 2026-06
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Edit Polls" => "Szavazások szerkesztése", // ai 2026-06
 
-// modules/polls/modedit.php, row 237
+// modules/polls/modedit.php, row 231
 "Polls Module general data" => "Szavazások modul – általános adatok", // ai 2026-06
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 236
 "Used Language File" => "Használt nyelvi fájl", // ai 2026-06
 
-// modules/polls/modedit.php, row 246
+// modules/polls/modedit.php, row 240
 "Defaults for polls in this module" => "Alapértelmezések a modul szavazásaihoz", // ai 2026-06
 
-// modules/polls/modedit.php, row 247
-// modules/polls/polledit.php, row 249
+// modules/polls/modedit.php, row 241
+// modules/polls/polledit.php, row 244
 "Use logging" => "Naplózás használata", // ai 2026-06
 
-// modules/polls/modedit.php, row 248
-// modules/polls/polledit.php, row 250
+// modules/polls/modedit.php, row 242
+// modules/polls/polledit.php, row 245
 "Use IP locking" => "IP-zárolás használata", // ai 2026-06
 
-// modules/polls/modedit.php, row 250
-// modules/polls/polledit.php, row 252
+// modules/polls/modedit.php, row 244
+// modules/polls/polledit.php, row 247
 "Use cookies" => "Cookie-k használata", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
 "No permission to add/edit poll." => "Nincs jogosultsága szavazás hozzáadásához/szerkesztéséhez.", // ai 2026-06
 
 // modules/polls/polledit.php, row 80
-"Poll not found." => "",
+"Poll not found." => "A szavazás nem található.", // ai 2026-10
 
 // modules/polls/polledit.php, row 80
-"The poll belongs to another module." => "",
+"The poll belongs to another module." => "A szavazás egy másik modulhoz tartozik.", // ai 2026-10
 
-// modules/polls/polledit.php, row 119
+// modules/polls/polledit.php, row 117
 "Can't insert new poll" => "Nem sikerült beszúrni az új szavazást", // ai 2026-06
 
-// modules/polls/polledit.php, row 125
+// modules/polls/polledit.php, row 123
 "Can't update poll with id %1" => "Nem sikerült frissíteni a(z) %1 azonosítójú szavazást", // ai 2026-06
 
-// modules/polls/polledit.php, row 214
+// modules/polls/polledit.php, row 209
 "Insert question and answers" => "Adja meg a kérdést és a válaszokat", // ai 2026-06
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Headline" => "Cím", // ai 2026-06
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Question" => "Kérdés", // ai 2026-06
 
-// modules/polls/polledit.php, row 234, 241
+// modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Adja meg az új válaszokat, és válassza ki sorrendjüket", // ai 2026-06
 
-// modules/polls/polledit.php, row 246
+// modules/polls/polledit.php, row 241
 "Polls settings" => "Szavazások beállításai", // ai 2026-06
 
-// modules/polls/polledit.php, row 248
+// modules/polls/polledit.php, row 243
 "Poll is locked" => "A szavazás zárolva van", // ai 2026-06
 
-// modules/polls/polledit.php, row 251
+// modules/polls/polledit.php, row 246
 "time in seconds" => "idő másodpercben", // ai 2026-06
 
-// modules/polls/polledit.php, row 254
+// modules/polls/polledit.php, row 249
 "Parameters" => "Paraméterek", // ai 2026-06
 
-// modules/polls/polledit.php, row 256
+// modules/polls/polledit.php, row 251
 "Polls design templates" => "Szavazások megjelenési sablonjai", // ai 2026-06
 
-// modules/polls/polledit.php, row 261
+// modules/polls/polledit.php, row 256
 "Select design type - before vote" => "Megjelenés szavazás előtt", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "Select design type - after vote" => "Megjelenés szavazás után", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "If the design after vote should look differently, then specify it here." => "Ha a szavazás utáni megjelenésnek másnak kell lennie, itt adja meg.", // ai 2026-06
 ];

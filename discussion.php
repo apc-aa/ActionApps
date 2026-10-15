@@ -51,22 +51,6 @@ foreach ($_REQUEST as $k => $v) {
 // ----- input variables normalization - end ----------------------------------
 
 
-/**
- * PutSearchLog
- */
-function PutSearchLog($searchlog, $found_count = 0): void
-{
-    $httpquery    = $_SERVER['QUERY_STRING_UNESCAPED'] . $_SERVER['REDIRECT_QUERY_STRING_UNESCAPED'];
-    $httpquery    = DeBackslash($httpquery);
-    $httpquery    = str_replace("'", "\\'", $httpquery);
-    $db           = getDb();
-    [$usec, $sec] = explode(" ", microtime());
-    $slice_time   = 1000 * ((float) $usec + (float) $sec - $GLOBALS['disc_starttime']);
-    $user         = $_SERVER['PHP_AUTH_USER'];
-    $db->query("INSERT INTO searchlog (date,query,user,found_count,search_time,additional1) VALUES (" . time() . ",'$httpquery','$user',$found_count,$slice_time,'discuss $searchlog')");
-    freeDb($db);
-}
-
 /** APC-AA configuration file */
 require_once __DIR__ . "/./include/config.php";
 /** Set of useful functions used on most pages */
@@ -81,6 +65,8 @@ require_once __DIR__ . "/include/view.php";
 require_once __DIR__ . "/include/discussion.php";
 /** functions for searching and filtering items */
 require_once __DIR__ . "/include/searchlib.php";
+/** PutSearchLog() */
+require_once __DIR__ . "/include/slice.php";
 /** Main include file for using session management function on page */
 require_once __DIR__ . "/include/locsess.php";    // DB_AA object definition
 
@@ -89,9 +75,6 @@ add_vars();
 if (!is_object($db)) {
     $db = getDB();
 }
-
-[$usec, $sec]   = explode(" ", microtime());
-$disc_starttime = ((float) $usec + (float) $sec);
 
 $view_param              = AA_View::parseViewParameters();
 // the x item is the item of this response - processPage() counts it, also when it comes from the cache;
@@ -127,6 +110,6 @@ if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // noc
 }
 
 if ($searchlog) {
-    PutSearchLog($searchlog, count($view_param["disc_ids"]));
+    PutSearchLog(is_string($searchlog) ? "discuss $searchlog" : null, count($view_param["disc_ids"]));
 }
 exit;

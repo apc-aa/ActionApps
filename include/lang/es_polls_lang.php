@@ -56,11 +56,11 @@ return [
 "Prints poll question" => "Muestra la pregunta de la encuesta",
 
 // modules/polls/include/util.php, row 49
-// modules/polls/polledit.php, row 235, 242
+// modules/polls/polledit.php, row 230, 237
 "Publish Date" => "Fecha de publicaci\xF3n",
 
 // modules/polls/include/util.php, row 50
-// modules/polls/polledit.php, row 236, 243
+// modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Fecha de expiraci\xF3n",
 
 // modules/polls/include/util.php, row 51
@@ -103,11 +103,11 @@ return [
 "View poll" => "Ver encuesta",
 
 // modules/polls/menu.php, row 67, 68
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Edit poll" => "Editar encuesta",
 
 // modules/polls/menu.php, row 67
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Add poll" => "A\xF1adir encuesta",
 
 // modules/polls/menu.php, row 68
@@ -152,94 +152,94 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Dise\xF1os",
 
-// modules/polls/modedit.php, row 102
+// modules/polls/modedit.php, row 100
 "You do not have permissions to add polls" => "Usted no tiene permisos para a\xF1adir encuestas",
 
-// modules/polls/modedit.php, row 107
+// modules/polls/modedit.php, row 105
 "You do not have permissions to edit this poll" => "Usted no tiene permisos de editar esta encuesta",
 
-// modules/polls/modedit.php, row 124, 249
-// modules/polls/polledit.php, row 251
+// modules/polls/modedit.php, row 122, 243
+// modules/polls/polledit.php, row 246
 "IP Locking timeout" => "Utilice bloqueo de IP por tiempo",
 
-// modules/polls/modedit.php, row 125, 251
+// modules/polls/modedit.php, row 123, 245
 "Cookies prefix" => "Prefijo de cookies",
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Add Polls" => "A\xF1adir encuestas",
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Edit Polls" => "Editar encuestas",
 
-// modules/polls/modedit.php, row 237
+// modules/polls/modedit.php, row 231
 "Polls Module general data" => "M\xF3dulo de datos generales de encuestas",
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 236
 "Used Language File" => "Archivo de idioma utilizado",
 
-// modules/polls/modedit.php, row 246
+// modules/polls/modedit.php, row 240
 "Defaults for polls in this module" => "Predeterminados para m\xF3dulo de encuestas",
 
-// modules/polls/modedit.php, row 247
-// modules/polls/polledit.php, row 249
+// modules/polls/modedit.php, row 241
+// modules/polls/polledit.php, row 244
 "Use logging" => "Utilice log de acceso",
 
-// modules/polls/modedit.php, row 248
-// modules/polls/polledit.php, row 250
+// modules/polls/modedit.php, row 242
+// modules/polls/polledit.php, row 245
 "Use IP locking" => "Utilice bloqueo de IP",
 
-// modules/polls/modedit.php, row 250
-// modules/polls/polledit.php, row 252
+// modules/polls/modedit.php, row 244
+// modules/polls/polledit.php, row 247
 "Use cookies" => "Utilice cookies",
 
 // modules/polls/polledit.php, row 74
 "No permission to add/edit poll." => "Sin permisos para a\xF1adir o editar encuestas.",
 
 // modules/polls/polledit.php, row 80
-"Poll not found." => "",
+"Poll not found." => "Encuesta no encontrada.", // ai 2026-10
 
 // modules/polls/polledit.php, row 80
-"The poll belongs to another module." => "",
+"The poll belongs to another module." => "La encuesta pertenece a otro m\xF3dulo.", // ai 2026-10
 
-// modules/polls/polledit.php, row 119
+// modules/polls/polledit.php, row 117
 "Can't insert new poll" => "No es posible insertar una nueva encuesta",
 
-// modules/polls/polledit.php, row 125
+// modules/polls/polledit.php, row 123
 "Can't update poll with id %1" => "No se pudo actualizar la encuesta con id %1",
 
-// modules/polls/polledit.php, row 214
+// modules/polls/polledit.php, row 209
 "Insert question and answers" => "Introduzca la pregunta y respuestas",
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Headline" => "Encabezado",
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Question" => "Pregunta",
 
-// modules/polls/polledit.php, row 234, 241
+// modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Inserte nuevas respuestas y seleccione su orden",
 
-// modules/polls/polledit.php, row 246
+// modules/polls/polledit.php, row 241
 "Polls settings" => "Configuraci\xF3n de encuestas",
 
-// modules/polls/polledit.php, row 248
+// modules/polls/polledit.php, row 243
 "Poll is locked" => "Encuesta bloqueada",
 
-// modules/polls/polledit.php, row 251
+// modules/polls/polledit.php, row 246
 "time in seconds" => "tiempo en segundos",
 
-// modules/polls/polledit.php, row 254
+// modules/polls/polledit.php, row 249
 "Parameters" => "Par\xE1metros",
 
-// modules/polls/polledit.php, row 256
+// modules/polls/polledit.php, row 251
 "Polls design templates" => "Plantillas de Dise\xF1o de encuestas",
 
-// modules/polls/polledit.php, row 261
+// modules/polls/polledit.php, row 256
 "Select design type - before vote" => "Seleccione tipo de dise\xF1o - antes de votar",
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "Select design type - after vote" => "Seleccione tipo de dise\xF1o - despu\xE9s de votar",
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "If the design after vote should look differently, then specify it here." => "Si el dise\xF1o despu\xE9s de votar debe verse diferente, especif\xEDquelo aqu\xED",
 ];

@@ -204,13 +204,13 @@ return [
 "Number = positive integer number" => "Broj - pozitivni cjeli broj",
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Najmanja dopuštena vrijednost", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Najveća dopuštena vrijednost", // ai 2026-06
@@ -399,7 +399,7 @@ return [
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL druge stranice koja prikazuje sadržaj stavke. (Ta stranica treba sadržavati SSI include ../slice.php.). Ako nije popunjeno, za puni tekst koristi se ista stranica kao za popis stavki (što je očekivano ponašanje).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291, 419
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanci/solarno.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
 "text" => "Tekst",
@@ -498,7 +498,7 @@ return [
 "prints date in a user defined format" => "Prikazuje datum u korisnički definiranom formatu",
 
 // include/constants_param_wizard.php, row 380
-"format" => "",
+"format" => "format", // ai 2026-10
 
 // include/constants_param_wizard.php, row 381
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "Format kao u PHP-u - pogledajte <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP priručnik</a>", // ai 2026-06

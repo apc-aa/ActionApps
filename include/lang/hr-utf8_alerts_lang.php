@@ -71,116 +71,116 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nemate dozvolu za dodati stranicu",
 
-// modules/alerts/acf.php, row 114
+// modules/alerts/acf.php, row 107
 "Alerts Selections" => "Selekcije upozorenja",
 
-// modules/alerts/acf.php, row 118
+// modules/alerts/acf.php, row 111
 "Choose selections which form the Alert email." => "Odaberite selekcije koje čine mail upozorenja",
 
-// modules/alerts/acf.php, row 122, 149
+// modules/alerts/acf.php, row 115, 142
 "order" => "Redoslijed",
 
-// modules/alerts/acf.php, row 122
+// modules/alerts/acf.php, row 115
 "selection" => "Selekcija",
 
-// modules/alerts/acf.php, row 122
-"remove" => "",
+// modules/alerts/acf.php, row 115
+"remove" => "ukloni", // ai 2026-10
 
-// modules/alerts/acf.php, row 131
-"No selections chosen yet." => "",
+// modules/alerts/acf.php, row 124
+"No selections chosen yet." => "Još nije odabran nijedan izbor.", // ai 2026-10
 
-// modules/alerts/acf.php, row 134
-"Save order" => "",
+// modules/alerts/acf.php, row 127
+"Save order" => "Spremite redoslijed", // ai 2026-10
 
-// modules/alerts/acf.php, row 135
-"Remove checked" => "",
+// modules/alerts/acf.php, row 128
+"Remove checked" => "Uklonite označene", // ai 2026-10
 
-// modules/alerts/acf.php, row 150
-"Add selection" => "",
+// modules/alerts/acf.php, row 143
+"Add selection" => "Dodajte izbor", // ai 2026-10
 
-// modules/alerts/acf.php, row 152
+// modules/alerts/acf.php, row 145
 "No selections defined. You must define some." => "Nema definiranih selekcija. Morate definirati neke",
 
-// modules/alerts/alerts_sending.php, row 515
+// modules/alerts/alerts_sending.php, row 505
 "alerts alert" => "Upozorenje",
 
-// modules/alerts/alerts_sending.php, row 516
+// modules/alerts/alerts_sending.php, row 506
 "alerts welcome" => "Upozorenje: Dobro došli",
 
-// modules/alerts/alerts_sending.php, row 517
+// modules/alerts/alerts_sending.php, row 507
 "slice wizard welcome" => "Dobro došli na čarobnjak stranica",
 
-// modules/alerts/alerts_sending.php, row 518
+// modules/alerts/alerts_sending.php, row 508
 "user template" => "predložak korisnika", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 519
+// modules/alerts/alerts_sending.php, row 509
 "password change" => "promjena lozinke", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 520
+// modules/alerts/alerts_sending.php, row 510
 "other" => "Drugi",
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 521
 "Aliases for Alerts Alert" => "Sinonimi za upozorenja",
 
-// modules/alerts/alerts_sending.php, row 533
+// modules/alerts/alerts_sending.php, row 523
 "complete filter text" => "Puni tekst filtera",
 
-// modules/alerts/alerts_sending.php, row 534, 543
+// modules/alerts/alerts_sending.php, row 524, 533
 "howoften" => "Kako često",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 525
 "Anonym Form URL (set in Alerts Admin - Settings)" => "Web adresa anonimne forme",
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 526
 "Unsubscribe Form URL" => "Ukinite web adresu forme",
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Welcome" => "Sinonimi za Upozorenja",
 
-// modules/alerts/alerts_sending.php, row 544
+// modules/alerts/alerts_sending.php, row 534
 "Collection Form URL (set in Alerts Admin - Settings)" => "Web adresa za formu Kolekcije",
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 535
 "email confirmed" => "e-mail potvrđen",
 
-// modules/alerts/alerts_sending.php, row 551
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Slice Wizard Welcome" => "Sinonim za Dobrodošli na čarobnjak stranica",
 
-// modules/alerts/alerts_sending.php, row 553, 565
+// modules/alerts/alerts_sending.php, row 543, 555
 "Slice name" => "Ime stranice",
 
-// modules/alerts/alerts_sending.php, row 554, 566
+// modules/alerts/alerts_sending.php, row 544, 556
 "New user name" => "Novo korisničko ime",
 
-// modules/alerts/alerts_sending.php, row 555
+// modules/alerts/alerts_sending.php, row 545
 "New user login name" => "Nov korisnički login",
 
-// modules/alerts/alerts_sending.php, row 556
+// modules/alerts/alerts_sending.php, row 546
 "New user role (editor / admin)" => "Nova uloga korisnika/korisnice (Urednik/ica  / Administrator/ica)",
 
-// modules/alerts/alerts_sending.php, row 557
+// modules/alerts/alerts_sending.php, row 547
 "My name" => "Moje ime",
 
-// modules/alerts/alerts_sending.php, row 558
+// modules/alerts/alerts_sending.php, row 548
 "My email" => "Moja e-mail adresa",
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 553
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasi za predloške korisnika (možete koristiti i sve aliase korisnika)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 571
+// modules/alerts/alerts_sending.php, row 561
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasi za e-mail promjene lozinke (možete koristiti i sve aliase korisnika)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 573
+// modules/alerts/alerts_sending.php, row 563
 "HTML link to the password change page for current user" => "HTML poveznica na stranicu za promjenu lozinke trenutnog korisnika", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 574
+// modules/alerts/alerts_sending.php, row 564
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "URL parametar koji se koristi za poveznicu promjene lozinke u _#PWD_LINK (možete ga koristiti ako želite vlastiti url)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
 "Language" => "Jezik",
 
 // modules/alerts/cf_common.php, row 48
-// modules/alerts/send_emails.php, row 71
+// modules/alerts/send_emails.php, row 72
 "Email" => "E-mail",
 
 // modules/alerts/cf_common.php, row 54
@@ -213,7 +213,7 @@ return [
 "Email templates" => "E-mail predlošci",
 
 // modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 165, 168
+// modules/alerts/modedit.php, row 160, 163
 "Alerts Settings" => "POstavke upozorenja",
 
 // modules/alerts/menu.php, row 62
@@ -240,28 +240,28 @@ return [
 "Common" => "Uobičajeno",
 
 // modules/alerts/modedit.php, row 93
-"You do not have permissions to edit this Alerts module" => "",
+"You do not have permissions to edit this Alerts module" => "Nemate dozvolu za uređivanje ovog modula Upozorenja", // ai 2026-10
 
-// modules/alerts/modedit.php, row 165
-"Add Alerts" => "",
+// modules/alerts/modedit.php, row 160
+"Add Alerts" => "Dodajte Upozorenja", // ai 2026-10
 
-// modules/alerts/modedit.php, row 173
+// modules/alerts/modedit.php, row 168
 "language" => "jezik",
 
-// modules/alerts/modedit.php, row 177
-"Alert emails" => "",
+// modules/alerts/modedit.php, row 172
+"Alert emails" => "E-mailovi upozorenja", // ai 2026-10
 
-// modules/alerts/modedit.php, row 181, 187
-"Edit '%1'" => "",
+// modules/alerts/modedit.php, row 176, 182
+"Edit '%1'" => "Uredite '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 183
+// modules/alerts/modedit.php, row 178
 "welcome email" => "E-mail dobrodošlice",
 
-// modules/alerts/modedit.php, row 189
+// modules/alerts/modedit.php, row 184
 // modules/alerts/send.php, row 76
 "alert email" => "E-mail upozorenja",
 
-// modules/alerts/modedit.php, row 192
+// modules/alerts/modedit.php, row 187
 "alerts ID" => "Oznake upozorenja",
 
 // modules/alerts/send.php, row 44
@@ -271,39 +271,39 @@ return [
 "Send Emails" => "Šalje e-mail poruke",
 
 // modules/alerts/send.php, row 75
-"Alert email to send" => "",
+"Alert email to send" => "E-mail upozorenja za slanje", // ai 2026-10
 
 // modules/alerts/send.php, row 77
-"Set" => "",
+"Set" => "Postavite", // ai 2026-10
 
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/send_emails.php, row 65
 "Send now an example alert email to email" => "Pošaljite sada probni e-mail upozorenja na e-mail adresu", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 72, 91
+// modules/alerts/send_emails.php, row 73, 92
 "as if" => "kao ako",
 
-// modules/alerts/send_emails.php, row 73, 92, 108
+// modules/alerts/send_emails.php, row 74, 93, 109
 "Go!" => "Krenite!",
 
-// modules/alerts/send_emails.php, row 83
+// modules/alerts/send_emails.php, row 84
 "Send now an example alert email to Reader" => "Pošaljite sada probni e-mail upozorenja čitatelju", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 90
+// modules/alerts/send_emails.php, row 91
 "Reader" => "Čitatelj", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 99
+// modules/alerts/send_emails.php, row 100
 "Send alerts" => "Pošaljite upozorenja",
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Send now alerts to all users subscribed to " => "Pošaljite upozorenja svim pretplačenim korisnicima/icama",
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Warning: This is a real command!" => "Upozorenje: Ovo je stvarna komanda",
 
-// modules/alerts/send_emails.php, row 111
+// modules/alerts/send_emails.php, row 112
 "Last time the alerts were sent on:" => "Upozorenje je zadnji put poslano:",
 
-// modules/alerts/send_emails.php, row 122
+// modules/alerts/send_emails.php, row 123
 "%1 email(s) sent" => "%1 e-mailova poslano",
 
 // modules/alerts/send_emails.php, row 151
@@ -318,7 +318,7 @@ return [
  => "Definirajte odabire na stranicama s kojih želite slati upozorenja,\n"
    ."        u pogledima tipa Alerts Selection Set", // ai 2026-06
 
-// modules/alerts/synchro.php, row 65
+// modules/alerts/synchro.php, row 66
 "Synchronization with Reader Management Slice" => "Sinkronizacija sa stranicom za uređivanje podataka o čitateljima/icama",
 
 // modules/alerts/synchro.php, row 95
@@ -374,42 +374,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "%1 polja je dodano",
 
-// modules/alerts/synchro2.php, row 201
+// modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 polja i  %2 grupa konstanti je obrisano",
 
-// modules/alerts/synchro2.php, row 229
+// modules/alerts/synchro2.php, row 222
 "not set" => "nije postavljeno",
 
-// modules/alerts/util.php, row 54
-"-- none --" => "",
+// modules/alerts/util.php, row 53
+"-- none --" => "-- nijedan --", // ai 2026-10
 
-// modules/alerts/util.php, row 60
-"email" => "",
+// modules/alerts/util.php, row 59
+"email" => "e-mail", // ai 2026-10
 
-// modules/alerts/util.php, row 87
+// modules/alerts/util.php, row 86
 "instant" => "odmah",
 
-// modules/alerts/util.php, row 88
+// modules/alerts/util.php, row 87
 "daily" => "dnevno",
 
-// modules/alerts/util.php, row 89
+// modules/alerts/util.php, row 88
 "weekly" => "tjedno",
 
-// modules/alerts/util.php, row 90
+// modules/alerts/util.php, row 89
 "twoweeks" => "svaka dva tjedna", // ai 2026-06
 
-// modules/alerts/util.php, row 91
+// modules/alerts/util.php, row 90
 "monthly" => "mjesečno",
 
-// modules/alerts/util.php, row 92
+// modules/alerts/util.php, row 91
 "irregular" => "neredovito", // ai 2026-06
 
-// modules/alerts/util.php, row 99
+// modules/alerts/util.php, row 98
 "Active" => "Aktivno",
 
-// modules/alerts/util.php, row 100
+// modules/alerts/util.php, row 99
 "Holding bin" => "prostor za dokumente na čekanju",
 
-// modules/alerts/util.php, row 101
+// modules/alerts/util.php, row 100
 "Trash bin" => "smeće",
 ];

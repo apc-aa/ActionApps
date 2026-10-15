@@ -50,7 +50,7 @@ return [
 "Show example params" => "Показване на примерни параметри", // ai 2026-06
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Параметри", // ai 2026-06
@@ -274,7 +274,7 @@ return [
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "URL на друга страница, която показва съдържанието на статията. (Тази страница трябва да съдържа SSI include ../slice.php.). Ако не е попълнено, за пълния текст се използва същата страница като за прегледа на статиите (което е обичайното поведение).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291, 419
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/statii/solarni.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
 "text" => "текст", // ai 2026-06
@@ -508,13 +508,13 @@ return [
 "e-mail" => "имейл", // ai 2026-06
 
 // include/constants_param_wizard.php, row 515
-"field/text" => "",
+"field/text" => "поле/текст", // ai 2026-10
 
 // include/constants_param_wizard.php, row 516
 "if this parameter is a field id, the field's content is used, else it is used verbatim" => "ако този параметър е id на поле, се използва съдържанието на полето, иначе се използва дословно", // ai 2026-06
 
 // include/constants_param_wizard.php, row 521
-"else_field/text" => "",
+"else_field/text" => "иначе_поле/текст", // ai 2026-10
 
 // include/constants_param_wizard.php, row 522
 "if <i>the field</i> is empty, only this text (or field content) is printed" => "ако <i>полето</i> е празно, се изписва само този текст (или съдържанието на полето)", // ai 2026-06
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "извежда 'откъс' (част от текст) от друга рубрика въз основа на просто условие.<br>Ако <i>полето</i> (или полето зададено в <b>stringToMatch</b>) в текущата рубрика съвпада със съдържанието на <b>fieldToMatch</b> в <b>blurbSliceId</b>, връща съдържанието на <b>fieldToReturn</b> в <b>blurbSliceId</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "По подразбиране е <i>полето</i>.  Може да се зададе или като id на поле (headline........), ИЛИ като статичен текст.", // ai 2026-06
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "дълго (unpacked) id на рубриката, в която е съхранен текстът на откъса", // ai 2026-06
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id на полето в <b>blurbSliceId</b>, в което се търси <b>stringToMatch</b>", // ai 2026-06
@@ -604,13 +604,13 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id на полето в <b>blurbSliceId</b>, в което е съхранен текстът на откъса (какво да се изведе)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 605
-"RSS tag" => "",
+"RSS tag" => "RSS таг", // ai 2026-10
 
 // include/constants_param_wizard.php, row 606
 "serves for internal purposes of the predefined RSS aliases (e.g. _#RSS_TITL). Adds the RSS 0.91 compliant tags." => "служи за вътрешни нужди на предефинираните RSS алиаси (напр. _#RSS_TITL). Добавя тагове съвместими с RSS 0.91.", // ai 2026-06
@@ -634,7 +634,7 @@ return [
 "prints <i>the field</i> content (or <i>unalias string</i>) depending on the html flag (if html flag is not set, it converts the content to html. In difference to f_h function, it converts to html line-breaks, too (in its basic variant)" => "извежда съдържанието на <i>полето</i> (или <i>unalias string</i>) в зависимост от флага html (ако флагът html не е зададен, преобразува съдържанието в html. За разлика от функцията f_h преобразува в html и краищата на редовете (в основния си вариант)", // ai 2026-06
 
 // include/constants_param_wizard.php, row 625
-"unalias string" => "",
+"unalias string" => "низ за заместване на алиаси", // ai 2026-10
 
 // include/constants_param_wizard.php, row 626
 "if the <i>unalias string</i> is defined, then the function ignores <i>the field</i> and it rather prints the <i>unalias string</i>. You can of course use any aliases (or fields like {headline.........}) in this string" => "ако <i>unalias string</i> е дефиниран, функцията игнорира <i>полето</i> и извежда вместо това <i>unalias string</i>. В този низ разбира се можете да използвате произволни алиаси (или полета като {headline.........})", // ai 2026-06

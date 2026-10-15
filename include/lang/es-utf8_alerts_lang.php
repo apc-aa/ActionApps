@@ -80,116 +80,116 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Usted no tiene permisos en este canal",
 
-// modules/alerts/acf.php, row 114
+// modules/alerts/acf.php, row 107
 "Alerts Selections" => "Selecciones de Alertas",
 
-// modules/alerts/acf.php, row 118
+// modules/alerts/acf.php, row 111
 "Choose selections which form the Alert email." => "Seleccione las opciomes que formarán la alerta de correo-e",
 
-// modules/alerts/acf.php, row 122, 149
+// modules/alerts/acf.php, row 115, 142
 "order" => "orden",
 
-// modules/alerts/acf.php, row 122
+// modules/alerts/acf.php, row 115
 "selection" => "selección",
 
-// modules/alerts/acf.php, row 122
-"remove" => "",
+// modules/alerts/acf.php, row 115
+"remove" => "eliminar", // ai 2026-10
 
-// modules/alerts/acf.php, row 131
-"No selections chosen yet." => "",
+// modules/alerts/acf.php, row 124
+"No selections chosen yet." => "Todavía no se ha elegido ninguna selección.", // ai 2026-10
 
-// modules/alerts/acf.php, row 134
-"Save order" => "",
+// modules/alerts/acf.php, row 127
+"Save order" => "Guardar orden", // ai 2026-10
 
-// modules/alerts/acf.php, row 135
-"Remove checked" => "",
+// modules/alerts/acf.php, row 128
+"Remove checked" => "Eliminar marcados", // ai 2026-10
 
-// modules/alerts/acf.php, row 150
-"Add selection" => "",
+// modules/alerts/acf.php, row 143
+"Add selection" => "Añadir selección", // ai 2026-10
 
-// modules/alerts/acf.php, row 152
+// modules/alerts/acf.php, row 145
 "No selections defined. You must define some." => "No se han definido selecciones. Defina alguna.",
 
-// modules/alerts/alerts_sending.php, row 515
+// modules/alerts/alerts_sending.php, row 505
 "alerts alert" => "alerta de alertas",
 
-// modules/alerts/alerts_sending.php, row 516
+// modules/alerts/alerts_sending.php, row 506
 "alerts welcome" => "bienvenida de alertas",
 
-// modules/alerts/alerts_sending.php, row 517
+// modules/alerts/alerts_sending.php, row 507
 "slice wizard welcome" => "bienvenida del asistente de canal",
 
-// modules/alerts/alerts_sending.php, row 518
+// modules/alerts/alerts_sending.php, row 508
 "user template" => "plantilla de usuario",
 
-// modules/alerts/alerts_sending.php, row 519
+// modules/alerts/alerts_sending.php, row 509
 "password change" => "cambio de contraseña",
 
-// modules/alerts/alerts_sending.php, row 520
+// modules/alerts/alerts_sending.php, row 510
 "other" => "otro",
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 521
 "Aliases for Alerts Alert" => "Alias para la alerta de alertas",
 
-// modules/alerts/alerts_sending.php, row 533
+// modules/alerts/alerts_sending.php, row 523
 "complete filter text" => "texto completo del filtro",
 
-// modules/alerts/alerts_sending.php, row 534, 543
+// modules/alerts/alerts_sending.php, row 524, 533
 "howoften" => "frecuencia",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 525
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL del formulario anónimo (configurada en Administración de Alertas - Configuración)",
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 526
 "Unsubscribe Form URL" => "URL del formulario de baja",
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Welcome" => "Alias para la bienvenida de alertas",
 
-// modules/alerts/alerts_sending.php, row 544
+// modules/alerts/alerts_sending.php, row 534
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL del formulario de colección (configurada en Administración de Alertas - Configuración)",
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 535
 "email confirmed" => "email confirmado",
 
-// modules/alerts/alerts_sending.php, row 551
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Slice Wizard Welcome" => "Alias para la bienvenida del asistente de canal",
 
-// modules/alerts/alerts_sending.php, row 553, 565
+// modules/alerts/alerts_sending.php, row 543, 555
 "Slice name" => "Nombre del canal",
 
-// modules/alerts/alerts_sending.php, row 554, 566
+// modules/alerts/alerts_sending.php, row 544, 556
 "New user name" => "Nombre del nuevo usuario",
 
-// modules/alerts/alerts_sending.php, row 555
+// modules/alerts/alerts_sending.php, row 545
 "New user login name" => "Nombre de inicio de sesión del nuevo usuario",
 
-// modules/alerts/alerts_sending.php, row 556
+// modules/alerts/alerts_sending.php, row 546
 "New user role (editor / admin)" => "Rol del nuevo usuario (editor / admin)",
 
-// modules/alerts/alerts_sending.php, row 557
+// modules/alerts/alerts_sending.php, row 547
 "My name" => "Mi nombre",
 
-// modules/alerts/alerts_sending.php, row 558
+// modules/alerts/alerts_sending.php, row 548
 "My email" => "Mi email",
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 553
 "Aliases for User Templates (you can use also all aliases of the user)" => "Alias para plantillas de usuario (también puede usar todos los alias del usuario)",
 
-// modules/alerts/alerts_sending.php, row 571
+// modules/alerts/alerts_sending.php, row 561
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Alias para el email de cambio de contraseña (también puede usar todos los alias del usuario)",
 
-// modules/alerts/alerts_sending.php, row 573
+// modules/alerts/alerts_sending.php, row 563
 "HTML link to the password change page for current user" => "Enlace HTML a la página de cambio de contraseña del usuario actual",
 
-// modules/alerts/alerts_sending.php, row 574
+// modules/alerts/alerts_sending.php, row 564
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parámetro de URL usado para el enlace de cambio de contraseña en _#PWD_LINK (puede usarlo si desea utilizar su propia url)",
 
 // modules/alerts/cf_common.php, row 42
 "Language" => "Idioma",
 
 // modules/alerts/cf_common.php, row 48
-// modules/alerts/send_emails.php, row 71
+// modules/alerts/send_emails.php, row 72
 "Email" => "Correo-e",
 
 // modules/alerts/cf_common.php, row 54
@@ -222,7 +222,7 @@ return [
 "Email templates" => "Plantillas de correo",
 
 // modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 165, 168
+// modules/alerts/modedit.php, row 160, 163
 "Alerts Settings" => "Configuración Alertas",
 
 // modules/alerts/menu.php, row 62
@@ -249,28 +249,28 @@ return [
 "Common" => "Común",
 
 // modules/alerts/modedit.php, row 93
-"You do not have permissions to edit this Alerts module" => "",
+"You do not have permissions to edit this Alerts module" => "No tiene permisos para editar este módulo de Alertas", // ai 2026-10
 
-// modules/alerts/modedit.php, row 165
-"Add Alerts" => "",
+// modules/alerts/modedit.php, row 160
+"Add Alerts" => "Añadir Alertas", // ai 2026-10
 
-// modules/alerts/modedit.php, row 173
+// modules/alerts/modedit.php, row 168
 "language" => "idioma",
 
-// modules/alerts/modedit.php, row 177
-"Alert emails" => "",
+// modules/alerts/modedit.php, row 172
+"Alert emails" => "Correos de Alertas", // ai 2026-10
 
-// modules/alerts/modedit.php, row 181, 187
-"Edit '%1'" => "",
+// modules/alerts/modedit.php, row 176, 182
+"Edit '%1'" => "Editar '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 183
+// modules/alerts/modedit.php, row 178
 "welcome email" => "correo-e bienvenida",
 
-// modules/alerts/modedit.php, row 189
+// modules/alerts/modedit.php, row 184
 // modules/alerts/send.php, row 76
 "alert email" => "correo-e alerta",
 
-// modules/alerts/modedit.php, row 192
+// modules/alerts/modedit.php, row 187
 "alerts ID" => "ID alertas",
 
 // modules/alerts/send.php, row 44
@@ -280,39 +280,39 @@ return [
 "Send Emails" => "Envía correos-e",
 
 // modules/alerts/send.php, row 75
-"Alert email to send" => "",
+"Alert email to send" => "Correo de Alertas a enviar", // ai 2026-10
 
 // modules/alerts/send.php, row 77
-"Set" => "",
+"Set" => "Establecer", // ai 2026-10
 
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/send_emails.php, row 65
 "Send now an example alert email to email" => "Enviar ahora un email de alerta de prueba a un email",
 
-// modules/alerts/send_emails.php, row 72, 91
+// modules/alerts/send_emails.php, row 73, 92
 "as if" => "como sí",
 
-// modules/alerts/send_emails.php, row 73, 92, 108
+// modules/alerts/send_emails.php, row 74, 93, 109
 "Go!" => "Ir",
 
-// modules/alerts/send_emails.php, row 83
+// modules/alerts/send_emails.php, row 84
 "Send now an example alert email to Reader" => "Enviar ahora un email de alerta de prueba a un suscriptor",
 
-// modules/alerts/send_emails.php, row 90
+// modules/alerts/send_emails.php, row 91
 "Reader" => "Suscriptor",
 
-// modules/alerts/send_emails.php, row 99
+// modules/alerts/send_emails.php, row 100
 "Send alerts" => "Envíe alertas",
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Send now alerts to all users subscribed to " => "Enviar ahora las alertas a todos los suscriptores",
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Warning: This is a real command!" => "Atención: Este es un comando real!",
 
-// modules/alerts/send_emails.php, row 111
+// modules/alerts/send_emails.php, row 112
 "Last time the alerts were sent on:" => "Ultima vez que las alertas fueron enviadas",
 
-// modules/alerts/send_emails.php, row 122
+// modules/alerts/send_emails.php, row 123
 "%1 email(s) sent" => "%1 correo(s) enviados",
 
 // modules/alerts/send_emails.php, row 151
@@ -327,7 +327,7 @@ return [
  => "Defina las selecciones en los canales desde los que desea enviar alertas,\n"
    ."        en vistas de tipo Alerts Selection Set",
 
-// modules/alerts/synchro.php, row 65
+// modules/alerts/synchro.php, row 66
 "Synchronization with Reader Management Slice" => "Sincronización con el canal de Administración de Lectura",
 
 // modules/alerts/synchro.php, row 95
@@ -383,42 +383,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "%1 campo(s) añadido(s)",
 
-// modules/alerts/synchro2.php, row 201
+// modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 campo(s) y %2 grupo(s) de constantes borrado(s)",
 
-// modules/alerts/synchro2.php, row 229
+// modules/alerts/synchro2.php, row 222
 "not set" => "no activado",
 
-// modules/alerts/util.php, row 54
-"-- none --" => "",
+// modules/alerts/util.php, row 53
+"-- none --" => "-- ninguno --", // ai 2026-10
 
-// modules/alerts/util.php, row 60
-"email" => "",
+// modules/alerts/util.php, row 59
+"email" => "correo", // ai 2026-10
 
-// modules/alerts/util.php, row 87
+// modules/alerts/util.php, row 86
 "instant" => "instantáneo",
 
-// modules/alerts/util.php, row 88
+// modules/alerts/util.php, row 87
 "daily" => "diario",
 
-// modules/alerts/util.php, row 89
+// modules/alerts/util.php, row 88
 "weekly" => "semanal",
 
-// modules/alerts/util.php, row 90
+// modules/alerts/util.php, row 89
 "twoweeks" => "cada dos semanas",
 
-// modules/alerts/util.php, row 91
+// modules/alerts/util.php, row 90
 "monthly" => "mensual",
 
-// modules/alerts/util.php, row 92
+// modules/alerts/util.php, row 91
 "irregular" => "irregularmente", // ai 2026-06
 
-// modules/alerts/util.php, row 99
+// modules/alerts/util.php, row 98
 "Active" => "Aprobados",
 
-// modules/alerts/util.php, row 100
+// modules/alerts/util.php, row 99
 "Holding bin" => "Por aprobar",
 
-// modules/alerts/util.php, row 101
+// modules/alerts/util.php, row 100
 "Trash bin" => "Papelera",
 ];

@@ -49,7 +49,7 @@ return [
 "Show example params" => "Zobrazit uk\xE1zkov\xE9 parametry",
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Parametry",
@@ -67,19 +67,19 @@ return [
 "URL" => "",
 
 // include/constants_param_wizard.php, row 85
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = kladn\xE9 cel\xE9 \xE8\xEDslo",
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Nejmen\x9A\xED povolen\xE1 hodnota",
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Nejv\xECt\x9A\xED povolen\xE1 hodnota",
@@ -228,7 +228,7 @@ return [
 "max number of characters grabbed from the <b>fulltext</b> field" => "maxim\xE1ln\xED po\xE8et znak\xF9 p\xF8evzat\xFDch z pol\xED\xE8ka <b>fulltext</b>",
 
 // include/constants_param_wizard.php, row 258
-"fulltext" => "",
+"fulltext" => "fulltext", // ai 2026-10
 
 // include/constants_param_wizard.php, row 259
 "field id of fulltext field (like full_text.......), from which the text is grabbed. If empty, the text is grabbed from <i>the field</i> itself." => "id pol\xED\xE8ka s cel\xFDm textem (nap\xF8. full_text.......), ze kter\xE9ho se text p\xF8eb\xEDr\xE1. Pokud je pr\xE1zdn\xE9, text se p\xF8eb\xEDr\xE1 p\xF8\xEDmo z <i>pol\xED\xE8ka</i>.",
@@ -276,7 +276,7 @@ return [
 "http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarni.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
-"text" => "",
+"text" => "text", // ai 2026-10
 
 // include/constants_param_wizard.php, row 295
 "The text to be surrounded by the link. If this parameter is a field id, the field's content is used, else it is used verbatim" => "Text, kter\xFD bude obklopen odkazem. Pokud je tento parametr id pol\xED\xE8ka, pou\x9Eije se obsah pol\xED\xE8ka, jinak se pou\x9Eije tak, jak je",
@@ -504,7 +504,7 @@ return [
 "text before the link" => "text p\xF8ed odkazem",
 
 // include/constants_param_wizard.php, row 512
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 515
 "field/text" => "field/text",
@@ -576,7 +576,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "vyp\xED\x9Ae 'blurb' (kousek textu) z jin\xE9ho web\xEDku na z\xE1klad\xEC jednoduch\xE9 podm\xEDnky.<br>Pokud se <i>pol\xED\xE8ko</i> (nebo pol\xED\xE8ko zadan\xE9 v <b>stringToMatch</b>) v aktu\xE1ln\xEDm web\xEDku shoduje s obsahem <b>fieldToMatch</b> ve web\xEDku <b>blurbSliceId</b>, vr\xE1t\xED obsah <b>fieldToReturn</b> z web\xEDku <b>blurbSliceId</b>.",
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "V\xFDchoz\xED je <i>pol\xED\xE8ko</i>.  Lze zadat bu\xEF jako id pol\xED\xE8ka (headline........), NEBO jako statick\xFD text.",
@@ -585,7 +585,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "dlouh\xE9 (unpacked) id web\xEDku, ve kter\xE9m je text blurbu ulo\x9Een",
@@ -594,7 +594,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id pol\xED\xE8ka ve web\xEDku <b>blurbSliceId</b>, ve kter\xE9m se hled\xE1 <b>stringToMatch</b>",
@@ -603,7 +603,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id pol\xED\xE8ka ve web\xEDku <b>blurbSliceId</b>, ve kter\xE9m je ulo\x9Een text blurbu (co se m\xE1 vypsat)",

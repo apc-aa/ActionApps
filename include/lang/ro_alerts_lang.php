@@ -23,116 +23,116 @@ return [
 // modules/alerts/modedit.php, row 89
 "You do not have permissions to add slice" => "Nu ave\xFEi dreptul s\xE3 ad\xE3uga\xFEi sec\xFEiune",
 
-// modules/alerts/acf.php, row 114
+// modules/alerts/acf.php, row 107
 "Alerts Selections" => "Selectii alerte", // ai 2026-06
 
-// modules/alerts/acf.php, row 118
+// modules/alerts/acf.php, row 111
 "Choose selections which form the Alert email." => "Alegeti selectiile care formeaz\xE3 emailul de alert\xE3.", // ai 2026-06
 
-// modules/alerts/acf.php, row 122, 149
+// modules/alerts/acf.php, row 115, 142
 "order" => "ordine", // ai 2026-06
 
-// modules/alerts/acf.php, row 122
+// modules/alerts/acf.php, row 115
 "selection" => "selectie", // ai 2026-06
 
-// modules/alerts/acf.php, row 122
-"remove" => "",
+// modules/alerts/acf.php, row 115
+"remove" => "eliminare", // ai 2026-10
 
-// modules/alerts/acf.php, row 131
-"No selections chosen yet." => "",
+// modules/alerts/acf.php, row 124
+"No selections chosen yet." => "Nicio selectie aleas\xE3 \xEEnc\xE3.", // ai 2026-10
 
-// modules/alerts/acf.php, row 134
-"Save order" => "",
+// modules/alerts/acf.php, row 127
+"Save order" => "Salvare ordine", // ai 2026-10
 
-// modules/alerts/acf.php, row 135
-"Remove checked" => "",
+// modules/alerts/acf.php, row 128
+"Remove checked" => "Eliminare bifate", // ai 2026-10
 
-// modules/alerts/acf.php, row 150
-"Add selection" => "",
+// modules/alerts/acf.php, row 143
+"Add selection" => "Ad\xE3ugare selectie", // ai 2026-10
 
-// modules/alerts/acf.php, row 152
+// modules/alerts/acf.php, row 145
 "No selections defined. You must define some." => "Nu sunt definite selectii. Trebuie s\xE3 definiti c\xE2teva.", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 515
+// modules/alerts/alerts_sending.php, row 505
 "alerts alert" => "alerte - mesaj", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 516
+// modules/alerts/alerts_sending.php, row 506
 "alerts welcome" => "alerte - bun venit", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 517
+// modules/alerts/alerts_sending.php, row 507
 "slice wizard welcome" => "asistent sectiune - bun venit", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 518
+// modules/alerts/alerts_sending.php, row 508
 "user template" => "sablon utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 519
+// modules/alerts/alerts_sending.php, row 509
 "password change" => "schimbare parol\xE3", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 520
+// modules/alerts/alerts_sending.php, row 510
 "other" => "altele", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 531
+// modules/alerts/alerts_sending.php, row 521
 "Aliases for Alerts Alert" => "Aliasuri pentru Alerts Alert",
 
-// modules/alerts/alerts_sending.php, row 533
+// modules/alerts/alerts_sending.php, row 523
 "complete filter text" => "text filtru complet",
 
-// modules/alerts/alerts_sending.php, row 534, 543
+// modules/alerts/alerts_sending.php, row 524, 533
 "howoften" => "c\xEEt de des",
 
-// modules/alerts/alerts_sending.php, row 535
+// modules/alerts/alerts_sending.php, row 525
 "Anonym Form URL (set in Alerts Admin - Settings)" => "URL formular anonim (se seteaz\xE3 \xEEn Administrare alerte - Set\xE3ri)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 536
+// modules/alerts/alerts_sending.php, row 526
 "Unsubscribe Form URL" => "URL formular de dezabonare", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 541
+// modules/alerts/alerts_sending.php, row 531
 "Aliases for Alerts Welcome" => "Aliasuri pentru mesajul de bun venit al alertelor", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 544
+// modules/alerts/alerts_sending.php, row 534
 "Collection Form URL (set in Alerts Admin - Settings)" => "URL formular colectie (se seteaz\xE3 \xEEn Administrare alerte - Set\xE3ri)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 545
+// modules/alerts/alerts_sending.php, row 535
 "email confirmed" => "e-mail confirmat", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 551
+// modules/alerts/alerts_sending.php, row 541
 "Aliases for Slice Wizard Welcome" => "Aliasuri pentru mesajul de bun venit al asistentului de sectiune", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 553, 565
+// modules/alerts/alerts_sending.php, row 543, 555
 "Slice name" => "Denumire sec\xFEiune",
 
-// modules/alerts/alerts_sending.php, row 554, 566
+// modules/alerts/alerts_sending.php, row 544, 556
 "New user name" => "Numele noului utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 555
+// modules/alerts/alerts_sending.php, row 545
 "New user login name" => "Numele de autentificare al noului utilizator", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 556
+// modules/alerts/alerts_sending.php, row 546
 "New user role (editor / admin)" => "Rolul noului utilizator (editor / admin)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 557
+// modules/alerts/alerts_sending.php, row 547
 "My name" => "Numele meu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 558
+// modules/alerts/alerts_sending.php, row 548
 "My email" => "E-mailul meu", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 563
+// modules/alerts/alerts_sending.php, row 553
 "Aliases for User Templates (you can use also all aliases of the user)" => "Aliasuri pentru sabloanele utilizatorului (puteti folosi si toate aliasurile utilizatorului)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 571
+// modules/alerts/alerts_sending.php, row 561
 "Aliases for Password Change email (you can use also all aliases of the user)" => "Aliasuri pentru e-mailul de schimbare a parolei (puteti folosi si toate aliasurile utilizatorului)", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 573
+// modules/alerts/alerts_sending.php, row 563
 "HTML link to the password change page for current user" => "Link HTML c\xE3tre pagina de schimbare a parolei pentru utilizatorul curent", // ai 2026-06
 
-// modules/alerts/alerts_sending.php, row 574
+// modules/alerts/alerts_sending.php, row 564
 "URL parameter used for password change link in _#PWD_LINK (you can use it, if you want to use your own url for it)" => "Parametru URL folosit pentru linkul de schimbare a parolei \xEEn _#PWD_LINK (\xEEl puteti folosi dac\xE3 doriti s\xE3 utilizati propriul URL)", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 42
 "Language" => "Limb\xE3", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 48
-// modules/alerts/send_emails.php, row 71
+// modules/alerts/send_emails.php, row 72
 "Email" => "E-mail", // ai 2026-06
 
 // modules/alerts/cf_common.php, row 54
@@ -165,7 +165,7 @@ return [
 "Email templates" => "Sabloane email", // ai 2026-06
 
 // modules/alerts/menu.php, row 50, 51
-// modules/alerts/modedit.php, row 165, 168
+// modules/alerts/modedit.php, row 160, 163
 "Alerts Settings" => "Set\xE3ri alerte", // ai 2026-06
 
 // modules/alerts/menu.php, row 62
@@ -192,28 +192,28 @@ return [
 "Common" => "Comune", // ai 2026-06
 
 // modules/alerts/modedit.php, row 93
-"You do not have permissions to edit this Alerts module" => "",
+"You do not have permissions to edit this Alerts module" => "Nu aveti dreptul s\xE3 editati acest modul Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 165
-"Add Alerts" => "",
+// modules/alerts/modedit.php, row 160
+"Add Alerts" => "Ad\xE3ugare Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 173
+// modules/alerts/modedit.php, row 168
 "language" => "limb\xE3", // ai 2026-06
 
-// modules/alerts/modedit.php, row 177
-"Alert emails" => "",
+// modules/alerts/modedit.php, row 172
+"Alert emails" => "E-mailuri Alerte", // ai 2026-10
 
-// modules/alerts/modedit.php, row 181, 187
-"Edit '%1'" => "",
+// modules/alerts/modedit.php, row 176, 182
+"Edit '%1'" => "Editare '%1'", // ai 2026-10
 
-// modules/alerts/modedit.php, row 183
+// modules/alerts/modedit.php, row 178
 "welcome email" => "email de bun venit", // ai 2026-06
 
-// modules/alerts/modedit.php, row 189
+// modules/alerts/modedit.php, row 184
 // modules/alerts/send.php, row 76
 "alert email" => "email de alert\xE3", // ai 2026-06
 
-// modules/alerts/modedit.php, row 192
+// modules/alerts/modedit.php, row 187
 "alerts ID" => "ID alerte", // ai 2026-06
 
 // modules/alerts/send.php, row 44
@@ -223,39 +223,39 @@ return [
 "Send Emails" => "Trimite emailuri", // ai 2026-06
 
 // modules/alerts/send.php, row 75
-"Alert email to send" => "",
+"Alert email to send" => "E-mail Alerte de trimis", // ai 2026-10
 
 // modules/alerts/send.php, row 77
-"Set" => "",
+"Set" => "Setare", // ai 2026-10
 
-// modules/alerts/send_emails.php, row 64
+// modules/alerts/send_emails.php, row 65
 "Send now an example alert email to email" => "Trimite acum un e-mail de alert\xE3 de prob\xE3 la un e-mail", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 72, 91
+// modules/alerts/send_emails.php, row 73, 92
 "as if" => "ca si cum ar fi", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 73, 92, 108
+// modules/alerts/send_emails.php, row 74, 93, 109
 "Go!" => "Du-te!",
 
-// modules/alerts/send_emails.php, row 83
+// modules/alerts/send_emails.php, row 84
 "Send now an example alert email to Reader" => "Trimite acum un e-mail de alert\xE3 de prob\xE3 c\xE3tre un cititor", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 90
+// modules/alerts/send_emails.php, row 91
 "Reader" => "Cititor", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 99
+// modules/alerts/send_emails.php, row 100
 "Send alerts" => "Trimitere alerte", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Send now alerts to all users subscribed to " => "Trimite acum alerte tuturor utilizatorilor abonati la ", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 107
+// modules/alerts/send_emails.php, row 108
 "Warning: This is a real command!" => "Atentie: Aceasta este o comand\xE3 real\xE3!", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 111
+// modules/alerts/send_emails.php, row 112
 "Last time the alerts were sent on:" => "Ultima trimitere a alertelor:", // ai 2026-06
 
-// modules/alerts/send_emails.php, row 122
+// modules/alerts/send_emails.php, row 123
 "%1 email(s) sent" => "E-mailuri trimise: %1", // ai 2026-06
 
 // modules/alerts/send_emails.php, row 151
@@ -270,7 +270,7 @@ return [
  => "Definiti selectiile \xEEn sectiunile din care doriti s\xE3 trimiteti alerte,\n"
    ."        \xEEn vederi de tip Alerts Selection Set", // ai 2026-06
 
-// modules/alerts/synchro.php, row 65
+// modules/alerts/synchro.php, row 66
 "Synchronization with Reader Management Slice" => "Sincronizare cu sectiunea de administrare a cititorilor", // ai 2026-06
 
 // modules/alerts/synchro.php, row 95
@@ -327,42 +327,42 @@ return [
 // modules/alerts/synchro2.php, row 171
 "%1 field(s) added" => "%1 c\xE2mp(uri) ad\xE3ugat(e)", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 201
+// modules/alerts/synchro2.php, row 198
 "%1 field(s) and %2 constant group(s) deleted" => "%1 c\xE2mp(uri) si %2 grup(uri) de constante sterse", // ai 2026-06
 
-// modules/alerts/synchro2.php, row 229
+// modules/alerts/synchro2.php, row 222
 "not set" => "nesetat", // ai 2026-06
 
-// modules/alerts/util.php, row 54
-"-- none --" => "",
+// modules/alerts/util.php, row 53
+"-- none --" => "-- niciunul --", // ai 2026-10
 
-// modules/alerts/util.php, row 60
-"email" => "",
+// modules/alerts/util.php, row 59
+"email" => "e-mail", // ai 2026-10
 
-// modules/alerts/util.php, row 87
+// modules/alerts/util.php, row 86
 "instant" => "imediat", // ai 2026-06
 
-// modules/alerts/util.php, row 88
+// modules/alerts/util.php, row 87
 "daily" => "zilnic", // ai 2026-06
 
-// modules/alerts/util.php, row 89
+// modules/alerts/util.php, row 88
 "weekly" => "s\xE3pt\xE3m\xE2nal", // ai 2026-06
 
-// modules/alerts/util.php, row 90
+// modules/alerts/util.php, row 89
 "twoweeks" => "la dou\xE3 s\xE3pt\xE3m\xE2ni", // ai 2026-06
 
-// modules/alerts/util.php, row 91
+// modules/alerts/util.php, row 90
 "monthly" => "lunar", // ai 2026-06
 
-// modules/alerts/util.php, row 92
+// modules/alerts/util.php, row 91
 "irregular" => "neregulat", // ai 2026-06
 
-// modules/alerts/util.php, row 99
+// modules/alerts/util.php, row 98
 "Active" => "Activ",
 
-// modules/alerts/util.php, row 100
+// modules/alerts/util.php, row 99
 "Holding bin" => "\xCEn asteptare", // ai 2026-06
 
-// modules/alerts/util.php, row 101
+// modules/alerts/util.php, row 100
 "Trash bin" => "Co\xBA",
 ];

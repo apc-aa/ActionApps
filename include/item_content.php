@@ -65,7 +65,8 @@ class AA_Value implements IteratorAggregate, ArrayAccess, Countable
     public function __construct($value = null, $flag = null)
     {
         $this->clear()->addValue($value);
-        $this->setFlag(!is_null($flag) ? $flag : ((is_array($value) && is_array($value[0])) ? $value[0]['flag'] : 0));
+        $first = is_array($value) ? reset($value) : null;   // a translation-only value has no index 0
+        $this->setFlag(!is_null($flag) ? $flag : (is_array($first) ? ($first['flag'] ?? 0) : 0));
     }
 
     /** For creating value from any value
@@ -118,7 +119,7 @@ class AA_Value implements IteratorAggregate, ArrayAccess, Countable
             $aav->arr[(int) $key] = $val['value'];
         }
         $first = reset($arr);
-        return $aav->setFlag($first['flag']);
+        return $aav->setFlag($first['flag'] ?? 0);
     }
 
 
@@ -1776,19 +1777,20 @@ class AA_Field_Cleaner
         $this->fields2delete($fields_to_delete, $content);  // fills $fields_to_delete array
         if ($fields_to_delete) {
             // delete content just for displayed fields
+            $translated = [];
             foreach ($fields_to_delete as $lang => $field_arr) {
                 if ($lang == 0) {
                     DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)]]);
                 } else {
-                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', $lang*AA_Value::MAX_INDEX, '>='), array('number', ($lang+1)*AA_Value::MAX_INDEX, '<'))));
-                    //huhl(DB_AA::makeWhere(array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)), array('number', 0, '>='), array('number', AA_Value::MAX_INDEX, '<'))));
-                    //huhl($in);
-                    //huhl(DB_AA::select(array(), 'SELECT * FROM content', array(array('item_id', $id, 'l'), array('field_id', array_unique($field_arr)))));
-                    //exit;
                     DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', $lang * AA_Value::MAX_INDEX, '>='], ['number', ($lang + 1) * AA_Value::MAX_INDEX, '<']]);
-                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', 0, '>='], ['number', AA_Value::MAX_INDEX, '<']]);
-                    DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', array_unique($field_arr)], ['number', '', 'ISNULL']]);
+                    $translated = array_merge($translated, $field_arr);
                 }
+            }
+            // a translated field keeps no untranslated value - once for all its languages
+            if ($translated) {
+                $translated = array_values(array_unique($translated));
+                DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', $translated], ['number', 0, '>='], ['number', AA_Value::MAX_INDEX, '<']]);
+                DB_AA::delete('content', [['item_id', $id, 'l'], ['field_id', $translated], ['number', '', 'ISNULL']]);
             }
         }
     }
@@ -1811,9 +1813,9 @@ class AA_Field_Cleaner
                 if (!$fld->getProperty('in_item_tbl') && !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
                     // deal with translations. if only translated values are present, then delete just the specific translation
                     // however - if also basic 0-1000000 indexes are present, clear all the field content
-                    $keys = (is_array($cont) && $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
-                    foreach ($keys as $k) {
-                        $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
+                    $keys = ($cont instanceof AA_Value) ? array_keys($cont->getValues()) : (is_array($cont) ? array_keys($cont) : []);
+                    foreach ($keys ?: [0] as $k) {   // no value clears the whole field (delete file...)
+                        $in[$ind = intdiv((int) $k, AA_Value::MAX_INDEX)][] = $fid;
                         if ($ind == 0) {
                             continue 2;
                         }

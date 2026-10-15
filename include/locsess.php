@@ -614,9 +614,9 @@ function freeDB(&$db): void
  *                                 <database_column> |
  *                                 'unpack:<database_column>' |
  *                                 true
- * @return array|bool|string
+ * @return array|bool|string|null  null: 'aa_first' of a NULL column (MIN() of an empty table)
  */
-function GetTable2Array($SQL, $key="id", $values='aa_all'): bool|array|string
+function GetTable2Array($SQL, $key="id", $values='aa_all'): bool|array|string|null
 {
     $db = getDB();
     $db->query($SQL);
@@ -674,6 +674,25 @@ class AA_Session extends Session
         parent::__construct();
         // in AA_Session we also start it
         $this->start();
+        $this->dropUnmarkedPermissionCache();
+    }
+
+    /** Older AA let a request variable overwrite the permission cache kept in the session (r_superuser,
+     *  permission_to), and a session keeps it for as long as it is used. A session without the mark gets
+     *  the cache rebuilt from the database once (AA_Perm::cache() on the next permission check).
+     */
+    private function dropUnmarkedPermissionCache(): void
+    {
+        if (!is_array($_SESSION ?? null) || (($_SESSION['perm_cache_v'] ?? 0) === 2)) {
+            return;
+        }
+        foreach (['permission_uid', 'permission_to', 'r_superuser'] as $key) {
+            if (array_key_exists($key, $_SESSION)) {   // start() copied it into the global
+                unset($_SESSION[$key]);
+                $GLOBALS[$key] = null;
+            }
+        }
+        $_SESSION['perm_cache_v'] = 2;
     }
 
     /** Token store for AA forms - to avoid CSRF attacks
@@ -706,13 +725,15 @@ class AA_Session extends Session
 
     /** Opens the session on the first write - the site module does not open it for anonymous visitors.
      *  Must run before the body is sent (the site module renders the page into a string first).
+     *  The page then holds what was written (a form token, a connector id), so it belongs to this
+     *  visitor's session and must not be cached - also when the session was open already.
      */
     public static function ensureStarted(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             pageOpen('nobody');   // with the cookie of a logged-in user the login is checked, as on any page
-            AA::Pagecache()->switchCacheNostore();   // the page now belongs to this visitor's session
         }
+        AA::Pagecache()->switchCacheNostore();
     }
 }
 

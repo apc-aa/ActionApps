@@ -50,7 +50,7 @@ return [
 "Show example params" => "パラメータの例を表示", // ai 2026-06
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "パラメータ", // ai 2026-06
@@ -274,7 +274,7 @@ return [
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "項目の内容を表示する別のページのURL。(そのページにはSSI include ../slice.phpを含めてください。)未入力の場合、全文には項目一覧と同じページが使用されます(通常の動作です)。", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291, 419
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/articles/solar.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
 "text" => "テキスト", // ai 2026-06
@@ -403,7 +403,7 @@ return [
 "Return url being called from, usually leave blank and allow default" => "呼び出し元に戻るための URL。通常は空欄のままにして省略値を使用します", // ai 2026-06
 
 // include/constants_param_wizard.php, row 401
-"/mysite.shtml" => "",
+"/mysite.shtml" => "/mysite.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 406
 "fulltext link" => "全文へのリンク", // ai 2026-06
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "簡単な条件に基づいて、別のスライスから「blurb」（テキストの断片）を出力します。<br>現在のスライスの<i>フィールド</i>（または <b>stringToMatch</b> で指定したフィールド）が <b>blurbSliceId</b> の <b>fieldToMatch</b> の内容と一致する場合、<b>blurbSliceId</b> の <b>fieldToReturn</b> の内容を返します。", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "省略時は<i>フィールド</i>になります。フィールドの id（headline........）または静的テキストのいずれかとして指定できます。", // ai 2026-06
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "blurb テキストが保存されているスライスの長い（unpacked）id", // ai 2026-06
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "<b>stringToMatch</b> を検索する <b>blurbSliceId</b> 内のフィールドの id", // ai 2026-06
@@ -604,7 +604,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "blurb テキストが保存されている <b>blurbSliceId</b> 内のフィールドの id（出力される内容）", // ai 2026-06
