@@ -32,6 +32,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Security\LoginThrottle;
 
 const MAX_GROUPS_DEEP   = 16;   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
 const MAX_ENTRIES_SHOWN = 10;   // Maximum number of shown users in search for users/groups
@@ -394,6 +395,9 @@ class AA_Perm {
     /** @var $perm_mode - '' | 'cron' - currently used only for toexecute task for ANONYMOUS_EDIT_CRON permission  */
     private string $perm_mode = '';
 
+    /** password hashes compared so far (comparePwds()) - tells authenticateUsername() whether any backend checked one */
+    private static int $compared = 0;
+
     /** AA_Perm::ROLES[role]['id'] is number stored to permission system for specified
      * role. On usege time the number is replaced by set of letters defined in
      * AA_Perm::ROLES[role]['perm']. However, it is possible to store the permission
@@ -473,15 +477,28 @@ class AA_Perm {
      * @param string $username
      * @param string $password
      * @param string $code2fa
+     * @param bool   $template true when a template passed the credentials ({jwtencode}) - a failure then counts only
+     *                         for the name (LoginThrottle::failed())
      * @return string|false
      */
-    public function authenticateUsername($username, $password, $code2fa=''): false|string
+    public function authenticateUsername($username, $password, $code2fa='', bool $template = false): false|string
     {
+        $username = (string) $username;
+        // the one gate of every password check
+        if (($username === '') || !LoginThrottle::admit($username)) {
+            return false;
+        }
+        $compared = self::$compared;
         foreach ($this->perm_systems as $perm_sys) {
             if ($user_id = $perm_sys->authenticateUsername($username, $password, $code2fa)) {
                 return $user_id;
             }
         }
+        // an unknown name would answer without the cost of a hash - its speed would tell which names exist
+        if (self::$compared === $compared) {
+            password_verify((string) $password, '$2y$' . sprintf('%02d', PASSWORD_BCRYPT_DEFAULT_COST) . '$' . str_repeat('.', 53));
+        }
+        LoginThrottle::failed($username, $template);
         return false;
     }
 
@@ -807,6 +824,7 @@ class AA_Perm {
         // null (no password sent, empty users.password) must fail quietly, not raise deprecations/TypeError below
         $password = (string) $password;
         $hash     = (string) $hash;
+        ++self::$compared;
 
         $ret = false;
         if (str_starts_with($hash, '{')) {

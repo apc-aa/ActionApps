@@ -28,6 +28,7 @@ use AA\Central\Package\DbSource;
 use AA\Central\ResponderPolicy;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\CheckSessionidUse;
+use AA\Security\LoginThrottle;
 use AA\Util\Langs;
 use AA\Util\LoginToken;
 
@@ -771,6 +772,12 @@ class AA_Responder_Item_History_Diff extends AA_Responder
 }
 
 pageOpen('nobody');
+// a login made to wait would otherwise go on as nobody and end in "no permission"; status 200, as AA clients
+// read the error only from an answer that came through
+if (!is_null($refused = LoginThrottle::refuse(false))) {
+    AA_Response::error($refused, ResponderPolicy::ERR_LOGIN_THROTTLED);
+    exit;
+}
 if (in_array(AA_Auth::login(), ['token', 'bad-token'], true)) {
     LoginToken::forgetSession();   // a token login lives for this request only
     if (AA_Auth::login() === 'bad-token') {

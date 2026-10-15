@@ -29,6 +29,7 @@
 
 use AA\Central\AppStore;
 use AA\IO\DB\DB_AA;
+use AA\Security\LoginThrottle;
 use AA\Util\LoginToken;
 use AA\Util\LogOnce;
 
@@ -95,9 +96,12 @@ class AA_Auth extends Auth
         bind_mgettext_domain(DEFAULT_LANG_INCLUDE);
 
         if (!$login_msg && $username) {
-            $login_msg = '<div style="color:red;" class="aa-err-login"><b>' . _m("Either your username or your password is not valid") . '</b></div>';
-            $login_msg .= '<div>' . _m("Please try again!") . '</div>';
-            $login_msg .= '<div>' . _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>", [ERROR_REPORTING_EMAIL]) . '</div>';
+            $refused   = LoginThrottle::refuse();
+            $login_msg = '<div style="color:red;" class="aa-err-login"><b>' . ($refused ?? _m("Either your username or your password is not valid")) . '</b></div>';
+            if (is_null($refused)) {
+                $login_msg .= '<div>' . _m("Please try again!") . '</div>';
+                $login_msg .= '<div>' . _m("If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>", [ERROR_REPORTING_EMAIL]) . '</div>';
+            }
         }
 
         require_once __DIR__ . "/loginform.inc";
@@ -109,9 +113,9 @@ class AA_Auth extends Auth
      */
     public function auth_validatelogin(): string|false
     {
-        $username = $_POST["username"];  // there was problem with variables
-        $password = $_POST["password"];  // in cookies - if someone writes
-        $code2fa  = $_POST["code2fa"];
+        $username = $_POST["username"] ?? '';  // there was problem with variables
+        $password = $_POST["password"] ?? '';  // in cookies - if someone writes
+        $code2fa  = $_POST["code2fa"] ?? '';
         // to cookies username, then the
         // cookies username is used - error
 
@@ -123,7 +127,13 @@ class AA_Auth extends Auth
         return $this->_validatelogin($username, $password, $code2fa);
     }
 
-    protected function _validatelogin($username, $password, $code2fa = ''): false|string
+    /** the login of init_page.php (?free=&freepwd=) - a module's public account, such as "anonym" of Links */
+    public function freeLogin(string $username, string $password): false|string
+    {
+        return $this->_validatelogin($username, $password, '', true);
+    }
+
+    protected function _validatelogin($username, $password, $code2fa = '', bool $free = false): false|string
     {
         $uid = AA::$perm->authenticateUsername($username, $password, $code2fa);
         // its password is public: only central/responder.php takes it, and gives it only a store token there
@@ -133,7 +143,12 @@ class AA_Auth extends Auth
         $before = $this->auth['uid'] ?? '';
         $this->auth['uname'] = $uid ? $username : '';
         $this->auth['uid']   = $uid ?: '';
-        AA_Log::write('LOGIN', AA_Log::context($uid), $username);
+        if ($free && $uid) {
+            // crawlers follow the free links, a row each visit would bury the real logins - a row a day shows it is used
+            LogOnce::daily('FREE_LOGIN', (string) $username);
+        } elseif ($uid) {   // failures are logged by AA_Perm::authenticateUsername(), which counts them
+            AA_Log::write('LOGIN', AA_Log::context($uid), LoginThrottle::stored((string) $username));
+        }
         // a session id known before the login (planted cookie, a shared device) must not become the logged-in one;
         // the free login of init_page.php repeats on every request - a new id each time would break parallel requests
         if ($uid && ($uid !== $before) && (session_status() === PHP_SESSION_ACTIVE) && !headers_sent()) {
@@ -159,7 +174,7 @@ class AA_Auth extends Auth
         self::$login = '';
         self::$scope = '';
         if (isset($_POST['username']) && isset($_POST['password'])) {
-            $uid = $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa']);
+            $uid = $this->_validatelogin($_POST['username'], $_POST['password'], $_POST['code2fa'] ?? '');
             self::$login = $uid ? 'password' : '';
             return $uid;
         }

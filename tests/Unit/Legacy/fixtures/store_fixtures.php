@@ -11,6 +11,7 @@
  *  - FakeFields     AA_Fields backed by an in-memory id => AA_Field map
  *  - FakeSlice      AA_Slice registered in AA_Module's module cache, so
  *                   AA_Slice::getModule() (used by AA_Field_Writer) finds it
+ *  - FakePermsystem a perm backend for the login tests, under the real AA_Perm facade
  *
  * The real include/locsess.php is loaded here on purpose (the test file defines the
  * config constants it needs first): its getDB()/freeDB() serve handles from
@@ -27,6 +28,8 @@ use AA\IO\DB\DB_PDO;
 use AA_Field;
 use AA_Fields;
 use AA_Module;
+use AA_Perm;
+use AA_Permsystem;
 use AA_Slice;
 
 require_once __DIR__ . '/../../../../include/locsess.php';
@@ -406,5 +409,45 @@ final class FakeAuth
     {
         $GLOBALS['permission_uid'] = $user_id;
         $GLOBALS['permission_to']  = [];
+    }
+}
+
+/** A perm backend whose authenticateUsername() is the given closure - the rest answers "nobody". */
+final class FakePermsystem extends AA_Permsystem
+{
+    /** @param \Closure(mixed, mixed, mixed): (false|string) $authenticate */
+    public function __construct(private \Closure $authenticate) {}
+
+    /** AA_Perm (the real facade, with its login gate) over these backends */
+    public static function perm(self ...$systems): AA_Perm
+    {
+        $perm = new AA_Perm([]);
+        (new \ReflectionProperty(AA_Perm::class, 'perm_systems'))->setValue($perm, $systems);
+        return $perm;
+    }
+
+    public function authenticateUsername($username, $password, $code2fa = ''): false|string
+    {
+        return ($this->authenticate)($username, $password, $code2fa);
+    }
+
+    public function getGroup($group_id): false|array
+    {
+        return false;
+    }
+
+    public function getIDsInfo($uid): false|array
+    {
+        return false;
+    }
+
+    public function getGroupMembers($group_id): array
+    {
+        return [];
+    }
+
+    public function getMembership($id, $flags = 0): array
+    {
+        return [];
     }
 }

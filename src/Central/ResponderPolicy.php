@@ -67,6 +67,8 @@ class ResponderPolicy
     public const ERR_PUBLIC_ACCOUNT = 22;
     /** the public account sent too many requests from the address this hour (AppStore::admit()) */
     public const ERR_RATE_LIMIT = 23;
+    /** the login of the request waits after too many failures from the address (AA\Security\LoginThrottle) */
+    public const ERR_LOGIN_THROTTLED = 24;
     /** no permission - isPerm() of the command refused the login */
     public const ERR_NO_PERMISSION = 101;
 

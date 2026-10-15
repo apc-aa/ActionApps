@@ -41,6 +41,7 @@ use AA\IO\DB\DB_AA;
 use AA\Later\LaterInterface;
 use AA\Optimize\AddDurationLog;
 use AA\Optimize\CheckCkeditorUse;
+use AA\Security\LoginThrottle;
 use AA\Util\ChangesMonitor;
 use AA\Util\InputVars;
 use AA\Util\Langs;
@@ -365,6 +366,19 @@ class AA_Stringexpand_User extends AA_Stringexpand {
                 }
                 return GetItemFromContent(self::$auth_user_info[$auth_user])?->subst_alias($field);
         }
+    }
+}
+
+/** Minutes until the visitor may try to log in again, after a login of this request was refused for too many
+ *  failed attempts from their address; empty when none was refused. For the page that receives a reader's login
+ *  form - a redirect to err_url leaves it behind:
+ *    {ifset:{loginwait}:Too many failed logins. Try again in _#1 min.}
+ */
+class AA_Stringexpand_Loginwait extends AA_Stringexpand_Nevercache
+{
+    function expand(): string
+    {
+        return (string) (LoginThrottle::minutes() ?: '');
     }
 }
 
@@ -9525,7 +9539,7 @@ class AA_Stringexpand_Jwtencode extends AA_Stringexpand {
      */
     function expand($key='', $username='', $password='', $lifetime='', $add_validity=''): string
     {
-        if (!strlen($key) || !strlen($username) || !strlen($password) || !($uid = AA::$perm->authenticateUsername($username, $password))) {
+        if (!strlen($key) || !strlen($username) || !strlen($password) || !($uid = AA::$perm->authenticateUsername($username, $password, '', true))) {
             return '';
         }
 
@@ -9605,7 +9619,7 @@ class AA_Stringexpand_Setsecret extends AA_Stringexpand_Nevercache {
      */
     function expand($username='', $password='', $code2fa=''): string
     {
-        if (!strlen($username) || !strlen($password) || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa)) || $uid !== AuthGetUid()) {
+        if (!strlen($username) || !strlen($password) || !($uid = AA::$perm->authenticateUsername($username, $password, $code2fa, true)) || $uid !== AuthGetUid()) {
             return '';
         }
         $ga = new PHPGangsta_GoogleAuthenticator();

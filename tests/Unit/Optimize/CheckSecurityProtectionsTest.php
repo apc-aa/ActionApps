@@ -52,4 +52,20 @@ final class CheckSecurityProtectionsTest extends TestCase
         $this->assertStringContainsString('example.org/cz/rocnik', $finding->title);
         $this->assertStringContainsString('shown as text', $finding->title);
     }
+
+    public function test_logins_made_to_wait_inform_and_name_the_address(): void
+    {
+        $row = ['selector' => ParamImplode(['refused', '2001:db8::1', '']), 'days' => '3', 'first' => '1790000000', 'last' => '1790172800', 'params' => ''];
+        [$finding] = CheckSecurityProtections::findingsFor([], [[Protection::LoginThrottle, $row]]);
+        $this->assertSame(Finding::INFO, $finding->severity, 'the protection at work - nothing to fix');
+        $this->assertStringContainsString('2001:db8::1', $finding->title);
+        $this->assertSame('2001:db8::1', $finding->evidence[0]['Address']);
+    }
+
+    public function test_repeated_failures_with_the_protection_off_warn(): void
+    {
+        $row = ['selector' => ParamImplode(['allowed', '192.0.2.1', '']), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
+        [$finding] = CheckSecurityProtections::findingsFor([], [[Protection::LoginThrottle, $row]]);
+        $this->assertSame(Finding::WARNING, $finding->severity);
+    }
 }

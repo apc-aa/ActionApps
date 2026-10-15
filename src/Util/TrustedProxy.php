@@ -207,7 +207,7 @@ final class TrustedProxy
     }
 
     /** binary form; an IPv4 client on a dual-stack socket comes as ::ffff:a.b.c.d and is unwrapped to IPv4 */
-    private static function pack(string $address): ?string
+    public static function pack(string $address): ?string
     {
         if (!filter_var($address, FILTER_VALIDATE_IP)) {
             return null;

@@ -92,17 +92,17 @@ class CheckSecurityProtections extends AbstractOptimize
             $selector = (string) $row['selector'];
             [$refused, $param, $source] = ProtectionLog::parse($selector);
             $findings[] = new Finding(
-                Finding::WARNING,
+                $protection->loggedNeedsAction($refused) ? Finding::WARNING : Finding::INFO,
                 $protection->loggedTitle($refused, $source, $param),
                 count: (int) $row['days'],
                 since: (int) $row['first'],
                 evidence: [[
-                    _m('Parameter') => safe($param),
+                    $protection->loggedParam() => safe($param),
                     _m('Page')      => safe($source),
                     _m('Days seen') => (string) (int) $row['days'],
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: $protection->migration() . ' ' . _m('If you do not know the page, the request did not come from your pages and nothing needs to change.'),
+                advice: $protection->loggedAdvice(),
                 links: [_m('Log rows') => AA_Log::getAdminUrl((string) $protection->event(), $selector)] + $page,
                 key: $selector,
                 last: (int) $row['last'],
