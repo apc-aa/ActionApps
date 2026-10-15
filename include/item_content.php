@@ -1811,9 +1811,9 @@ class AA_Field_Cleaner
                 if (!$fld->getProperty('in_item_tbl') && !$fld->isSafeStored()) {   // do not delete 'secret....* ',  'password....', ... fields (the content should be rewritten in Inserter, if all conditions matches)
                     // deal with translations. if only translated values are present, then delete just the specific translation
                     // however - if also basic 0-1000000 indexes are present, clear all the field content
-                    $keys = (is_array($cont) && $cont) ? array_keys($cont) : [0]; // sometimes we want to delete field so no AA_Value is passed (delete file...)
-                    foreach ($keys as $k) {
-                        $in[$ind = ($k / AA_Value::MAX_INDEX)][] = $fid;
+                    $keys = ($cont instanceof AA_Value) ? array_keys($cont->getValues()) : (is_array($cont) ? array_keys($cont) : []);
+                    foreach ($keys ?: [0] as $k) {   // no value clears the whole field (delete file...)
+                        $in[$ind = intdiv((int) $k, AA_Value::MAX_INDEX)][] = $fid;
                         if ($ind == 0) {
                             continue 2;
                         }
