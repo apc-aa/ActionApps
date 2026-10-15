@@ -674,6 +674,23 @@ class AA_Session extends Session
         parent::__construct();
         // in AA_Session we also start it
         $this->start();
+        $this->dropUnmarkedPermissionCache();
+    }
+
+    /** Older AA let a request variable overwrite the permission cache kept in the session (r_superuser,
+     *  permission_to), and a session keeps it for as long as it is used. A session without the mark gets
+     *  the cache rebuilt from the database once (AA_Perm::cache() on the next permission check).
+     */
+    private function dropUnmarkedPermissionCache(): void
+    {
+        if (!is_array($_SESSION ?? null) || (($_SESSION['perm_cache_v'] ?? 0) === 2)) {
+            return;
+        }
+        foreach (['permission_uid', 'permission_to', 'r_superuser'] as $key) {
+            unset($_SESSION[$key]);
+            $GLOBALS[$key] = null;
+        }
+        $_SESSION['perm_cache_v'] = 2;
     }
 
     /** Token store for AA forms - to avoid CSRF attacks
