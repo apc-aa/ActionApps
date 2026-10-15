@@ -92,8 +92,6 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Import/Checkable.php | Source that can tell whether it is reachable and its keys work | Checkable::check() | S |
 | Import/CheckResult.php | Result of a source check | CheckResult | S |
 | Import/Context.php | What a source gets for a step: the network, its keys, the step's end | Context::http() | M |
-| Import/Credential/Secret.php | Key/password/token wrapped so it cannot leak by accident | Secret | S |
-| Import/Credential/Store.php | Keys of imports, read from constants in config.php | Store | S |
 | Import/Definition.php | Import definition: source, settings and mapping for the owning slice | Definition | L |
 | Import/DetailCatalog.php | Catalog part of the import detail page: new, missing, renamed, adopt | DetailCatalog | S |
 | Import/DetailConfig.php | Settings, keys and mapping part of the import detail page | DetailConfig | M |
@@ -416,6 +414,13 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Http/Response.php | One answer: status, body, headers, redirect target | ok(), json(), excerpt() | S |
 | Http/TransportException.php | No answer at all - not a status | Exception | S |
 | Http/ResponseTooLargeException.php | The answer is over the size the caller allowed | Exception | S |
+
+### Credential (keys for outside services)
+
+| File | Purpose | Key API | Size |
+|------|---------|---------|------|
+| Credential/Secret.php | Key/password/token wrapped so it cannot leak by accident | Secret::reveal(), hint() | S |
+| Credential/Store.php | Keys from AA_APIKEY_* constants in config.php; one line each, damaged ones refused | Store::resolve(), describe(), damagedIn() | S |
 
 ### Expand
 

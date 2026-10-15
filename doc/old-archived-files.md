@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/src/Import/Credential/**Secret.php**, **Store.php**, /tests/Unit/Import/Credential/**StoreTest.php**  
+Keys of import sources: AA_APIKEY_* constants from config.php, wrapped in a Secret that cannot leak by accident; a key with a line break refused.  
+_Moved, not dropped: the same classes are now AA\Credential\Secret and AA\Credential\Store (src/Credential/, tests/Unit/Credential/StoreTest.php), one key store for every part of AA. Removed 2026-10-16 - honzam_
+
 /src/Central/**ManagerActionPolicy.php**, /tests/Unit/Central/**ManagerActionPolicyTest.php**  
 When central/index.php and admin/aa_optimize.php let a Manager action or Empty trash run - a POST from this site, and a row button or Empty trash also by a GET link of the same page.  
 _The Manager now takes actions and writing switches only by POST and refuses a request sent by a page of another site itself (Manager::performActions() with ResponderPolicy::isForeignBrowserRequest()), on every Manager page. Removed 2026-10-04 - honzam_

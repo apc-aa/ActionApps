@@ -34,7 +34,7 @@ use Throwable;
 /**
  * An import definition: which source fills the slice that owns it, with which settings and mapping.
  * Every property is text, so the whole record lies in object_text. Settings never hold a secret -
- * keys come through AA\Import\Credential.
+ * keys come through AA\Credential.
  *
  * The Manager form edits only the name, the source of a new definition and "enabled". Saving an
  * existing definition therefore rewrites only the name and "enabled", under the lock a starting run

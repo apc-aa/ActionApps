@@ -449,6 +449,7 @@ final class CheckImportsTest extends TestCase
         $this->assertSame(Finding::ERROR, $finding->severity);
         $this->assertStringContainsString('AA_APIKEY_NZIS', self::text($finding));
         $this->assertStringNotContainsString('s3cr3t', self::text($finding));
+        $this->assertStringContainsString('jq -c', $finding->advice, 'a multi-line JSON key is the usual case - say how to make it one line');
         $this->assertCount(1, self::findings(time(), $constants));
     }
 
