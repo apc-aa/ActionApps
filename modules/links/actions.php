@@ -59,22 +59,22 @@ function Links_DeleteLink($lid)
         return _m("Can't get association information");
     }
 
-    if ($assignment['base'] === 'y') {    // we have to find another base for the link
-        // no LIMIT 1: rows tie on state, and a LIMIT may let MySQL put another of them first
-        $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['a_id', $aid, '<>']], ['state-'])[0] ?? false;  // visible - highlight - hidden
-        if ($new_base) {                                      // new base
-            if ($new_base['state'] === 'hidden') {
-                AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $new_base['a_id'], 'state' => 'visible', 'base' => 'y']);
-            } else {
-                AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $new_base['a_id'], 'base' => 'y']);
+    // the new base and the removal together - a link must not end with two bases or none
+    DB_AA::transaction(static function () use ($assignment, $aid) {
+        if ($assignment['base'] === 'y') {    // we have to find another base for the link
+            // no LIMIT 1: rows tie on state, and a LIMIT may let MySQL put another of them first
+            $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['a_id', $aid, '<>']], ['state-'])[0] ?? false;  // visible - highlight - hidden
+            if ($new_base) {                                      // new base
+                if ($new_base['state'] === 'hidden') {
+                    AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $new_base['a_id'], 'state' => 'visible', 'base' => 'y']);
+                } else {
+                    AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $new_base['a_id'], 'base' => 'y']);
+                }
             }
         }
-    }
-    // else - no other assignment - we create unused link
-    $SQL = "DELETE FROM links_link_cat WHERE a_id = $aid";
-    $db = getDB();
-    $db->query($SQL);
-    freeDB($db);
+        // else - no other assignment - we create unused link
+        DB_AA::delete('links_link_cat', [['a_id', $aid, 'i']]);
+    });
     return false;                                         // OK - no error
 }
 
@@ -125,20 +125,19 @@ function Links_RefuseLink($param, $lid, $akce_param)
         return _m("Can't get association information");
     }
 
-    if ($assignment['base'] === 'y') {            // we have to find new base
-        // no LIMIT 1: rows tie on proposal and state, and a LIMIT may let MySQL put another of them first
-        $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['base', 'n']], ['proposal', 'state'])[0] ?? false;  // true links first
-        if ($new_base) {       // link is linked to another category
-            AA::Metabase()->doUpdate('links_link_cat', ($new_base['state'] === 'hidden')
-                ? ['a_id' => $new_base['a_id'], 'base' => 'y', 'state' => 'visible']
-                : ['a_id' => $new_base['a_id'], 'base' => 'y']);
+    // the new base and the removal together - a link must not end with two bases or none
+    DB_AA::transaction(static function () use ($assignment, $aid) {
+        if ($assignment['base'] === 'y') {            // we have to find new base
+            // no LIMIT 1: rows tie on proposal and state, and a LIMIT may let MySQL put another of them first
+            $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['base', 'n']], ['proposal', 'state'])[0] ?? false;  // true links first
+            if ($new_base) {       // link is linked to another category
+                AA::Metabase()->doUpdate('links_link_cat', ($new_base['state'] === 'hidden')
+                    ? ['a_id' => $new_base['a_id'], 'base' => 'y', 'state' => 'visible']
+                    : ['a_id' => $new_base['a_id'], 'base' => 'y']);
+            }
         }
-    }
-    $db = getDB();
-    $db->query("DELETE FROM links_link_cat WHERE a_id=$aid");  // delete assig.
-    // we have to make all other assignments
-
-    freeDB($db);
+        DB_AA::delete('links_link_cat', [['a_id', $aid, 'i']]);  // delete assig.
+    });
     return false;                                         // OK - no error
 }
 
