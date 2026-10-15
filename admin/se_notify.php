@@ -88,24 +88,25 @@ try {
     AA_Adminpageutil::pageParameterError($e);
 }
 
-/** save_notify2db function
+/** notify_rows function - email_notify rows for the valid e-mails of the textarea
  * @param $slice_id
  * @param $function
- * @param $emails
+ * @param $emails  addslashes()-ed - an e-mail valid by its pattern contains no ' or \, so it is the original
+ * @return array
  */
-function save_notify2db($slice_id, $function, $emails): void
+function notify_rows($slice_id, $function, $emails): array
 {
-    global $db;
-    $p_slice_id = xpack_id($slice_id);
+    $rows = [];
     // split $notify_holding_item_e textarea into array
     $arr = explode("\n", $emails);
     foreach ($arr as $uid) {
         $uid = trim($uid);
-        if (AA_Validate::doValidate($uid, 'email')) {
-            $SQL = "INSERT INTO email_notify (uid, slice_id, function) VALUES ( '$uid', $p_slice_id, $function)";
-            $db->query($SQL);
+        // an address listed twice would break the key (slice, uid, function), which ignores case
+        if (AA_Validate::doValidate($uid, 'email') && !isset($rows[strtolower($uid)])) {
+            $rows[strtolower($uid)] = ['uid' => $uid, 'slice_id' => $slice_id, 'function' => $function];
         }
     }
+    return array_values($rows);
 }
 
 // sanity checks
@@ -127,7 +128,6 @@ if (!IfSlPerm(PS_EDIT)) {
 // initialization of vars needed by the next 3 parts of the program
 
 $err = [];          // error array (Init - just for initializing variable
-$varset      = new Cvarset();
 $superadmin  = IsSuperadmin();
 
 
@@ -145,18 +145,18 @@ if ($update) {
         exit;
     }
 
-    // if we passed our validation, change the slice records
-    $up  = "notify_holding_item_s = '" . $notify_holding_item_s . "',\n ";
-    $up .= "notify_holding_item_b = '" . $notify_holding_item_b . "',\n";
-    $up .= "notify_holding_item_edit_s = '" . $notify_holding_item_edit_s . "',\n";
-    $up .= "notify_holding_item_edit_b = '" . $notify_holding_item_edit_b . "',\n";
-    $up .= "notify_active_item_s = '" . $notify_active_item_s . "',\n";
-    $up .= "notify_active_item_b = '" . $notify_active_item_b . "',\n";
-    $up .= "notify_active_item_edit_s = '" . $notify_active_item_edit_s . "',\n";
-    $up .= "notify_active_item_edit_b = '" . $notify_active_item_edit_b . "' ";
-
-    $SQL    = "UPDATE slice set $up WHERE id = '$p_slice_id'";
-    $db->query($SQL);
+    // if we passed our validation, change the slice records (the texts come addslashes()-ed)
+    AA::Metabase()->doUpdate('slice', [
+        'id'                         => AA::$module_id,
+        'notify_holding_item_s'      => stripslashes($notify_holding_item_s),
+        'notify_holding_item_b'      => stripslashes($notify_holding_item_b),
+        'notify_holding_item_edit_s' => stripslashes($notify_holding_item_edit_s),
+        'notify_holding_item_edit_b' => stripslashes($notify_holding_item_edit_b),
+        'notify_active_item_s'       => stripslashes($notify_active_item_s),
+        'notify_active_item_b'       => stripslashes($notify_active_item_b),
+        'notify_active_item_edit_s'  => stripslashes($notify_active_item_edit_s),
+        'notify_active_item_edit_b'  => stripslashes($notify_active_item_edit_b),
+    ]);
 
     // in email_notify
 
@@ -167,15 +167,16 @@ if ($update) {
     $SQL    = "delete from email_notify where slice_id = 'not_transition'";
     $db->query($SQL);
 
-    $SQL    = "update email_notify SET slice_id = 'not_transition' WHERE slice_id='$p_slice_id'";
-    $db->query($SQL);
+    DB_AA::update('email_notify', [['slice_id', 'not_transition', 's']], [['slice_id', pack_id(AA::$module_id), 'b']]);
 
     // insert all the records into email_notify
 
-    save_notify2db(AA::$module_id, 1, $notify_holding_item_e);
-    save_notify2db(AA::$module_id, 2, $notify_holding_item_edit_e);
-    save_notify2db(AA::$module_id, 3, $notify_active_item_e);
-    save_notify2db(AA::$module_id, 4, $notify_active_item_edit_e);
+    AA::Metabase()->doInsertMulti('email_notify', array_merge(
+        notify_rows(AA::$module_id, 1, $notify_holding_item_e),
+        notify_rows(AA::$module_id, 2, $notify_holding_item_edit_e),
+        notify_rows(AA::$module_id, 3, $notify_active_item_e),
+        notify_rows(AA::$module_id, 4, $notify_active_item_edit_e)
+    ));
 
     // delete the backed-up users
     $SQL    = "DELETE FROM email_notify WHERE slice_id='not_transition'";

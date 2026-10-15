@@ -6,6 +6,7 @@ namespace Tests\Unit\IO\DB;
 
 use AA\IO\DB\DB_AA;
 use AA\IO\DB\DB_PDO;
+use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
@@ -236,6 +237,22 @@ final class DbAaTransactionTest extends TestCase
 
         $this->assertSame(42, $ret, 'the work still runs');
         $this->assertSame(['DELETE FROM x'], FakeDb::$log, 'no begin/commit, and no exception');
+    }
+
+    public function test_runs_on_a_handle_the_caller_keeps(): void
+    {
+        $kept = new FakeDb();
+        DB_AA::transaction(static function () use ($kept) {
+            $kept->query('DELETE FROM a');          // the caller's own use of its handle
+            $db = getDB();                          // DB_AA and Metabase get the same one
+            Assert::assertSame($kept, $db);
+            $db->query('INSERT INTO a');
+            freeDB($db);
+        }, $kept);
+
+        $this->assertSame(['begin', 'DELETE FROM a', 'INSERT INTO a', 'commit'], FakeDb::$log);
+        $this->assertCount(1, $GLOBALS['spareDBs'], 'the caller keeps its handle - it does not go to the pool');
+        $this->assertNotSame($kept, $GLOBALS['spareDBs'][0]);
     }
 }
 

@@ -42,7 +42,6 @@ use AA_Log;
 use AA_Logentry;
 use AA_Logentry_X;
 use AA_Logentry_Xrun;
-use Cvarset;
 
 /** AA\Later\Toexecute class - used for many short tasks, such as sending an e-mail for
  *  alerts. Instead of sending thounsands of e-mails in one php script run (bad
@@ -142,18 +141,18 @@ class Toexecute
      */
     public function later($object, $params = [], $selector = '', $priority = 100, $time = null): string|true
     {
-        $varset = new Cvarset([
-            ['created', time()],
-            ['execute_after', ((int) $time < time() ? time() : $time)],  // task for user queue uses TOEXECUTE_USER_TASK_TIME
-            ['aa_user', AuthGetUid()],
-            ['priority', $priority],
-            ['selector', ($selector ?: get_class_name($object, true))],
-            ['object', serialize($object)],
-            ['params', serialize($params)],
-        ]);
+        $task = [
+            'created'       => time(),
+            'execute_after' => ((int) $time < time() ? time() : $time),  // task for user queue uses TOEXECUTE_USER_TASK_TIME
+            'aa_user'       => AuthGetUid(),
+            'priority'      => $priority,
+            'selector'      => ($selector ?: get_class_name($object, true)),
+            'object'        => serialize($object),
+            'params'        => serialize($params),
+        ];
 
         // store the task in the queue (toexecute table)
-        if (!$varset->doInsert('toexecute')) {
+        if (!AA::Metabase()->doInsert('toexecute', $task)) {
             // if you can't store it in the queue (table not created?)
             // - execute it directly
             return $this->execute_one($object, $params);

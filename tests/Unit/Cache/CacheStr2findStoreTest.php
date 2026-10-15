@@ -20,10 +20,10 @@ require_once __DIR__ . '/../../../include/metabase.class.php';
  * str2find ids run in the same order as pagecache.stored. That in turn holds
  * only while every INSERT lets MariaDB assign `id` itself.
  *
- * doInsertMulti() emits every column of the table, taking the values from
- * getSQLData(), so the invariant reduces to: an omitted `id` must render as
- * NULL (auto_increment), never as a value. That is what these tests pin - pure
- * schema behaviour, no DB connection.
+ * doInsertMulti() names only the columns getSQLData() returns for the rows, so
+ * the invariant reduces to: an omitted `id` must stay out of getSQLData(), never
+ * get a value. That is what these tests pin - pure schema behaviour, no DB
+ * connection.
  */
 final class CacheStr2findStoreTest extends TestCase
 {
@@ -37,22 +37,12 @@ final class CacheStr2findStoreTest extends TestCase
     }
 
     /** The load-bearing invariant: `id` is left to auto_increment. */
-    public function test_omitted_id_renders_as_null_so_auto_increment_still_assigns_it(): void
+    public function test_omitted_id_stays_out_so_auto_increment_still_assigns_it(): void
     {
         $sql = $this->table()->getSQLData(['pagecache_id' => 'abc', 'str2find' => 'M=xyz']);
 
-        $this->assertSame('NULL', $sql['id'], 'a value here would break invalidateOlder()\'s id-prefix cut');
-    }
-
-    /** doInsertMulti() builds the column list and each VALUES tuple from the same
-     *  ordered column set, so the tuples must line up positionally. */
-    public function test_value_tuple_matches_the_emitted_column_order(): void
-    {
-        $cols = $this->table()->getColumnNames();
-        $sql  = $this->table()->getSQLData(['pagecache_id' => 'abc', 'str2find' => 'M=xyz']);
-
-        $this->assertSame(['id', 'pagecache_id', 'str2find'], $cols);
-        $this->assertSame($cols, array_keys($sql), 'VALUES tuple order must follow the column list');
+        $this->assertArrayNotHasKey('id', $sql, 'a value here would break invalidateOlder()\'s id-prefix cut');
+        $this->assertSame(['pagecache_id', 'str2find'], array_keys($sql));
     }
 
     /** Values still go through the metabase escaping, not raw interpolation. */

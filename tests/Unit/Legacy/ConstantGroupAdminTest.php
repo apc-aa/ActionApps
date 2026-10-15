@@ -293,9 +293,9 @@ namespace Tests\Unit\Legacy {
             [$select, $update] = RecordingDb::$log;
             $this->assertStringContainsString("(field.input_show_func LIKE '___:a\\\\_b:%' OR field.input_show_func LIKE '___:a\\\\_b')", $select);
             $this->assertStringContainsString("content.text = 'O\\'Brien'", $select);
-            $this->assertStringStartsWith("UPDATE content SET text='x\\\\\\', flag=1 WHERE 1 #' WHERE ", $update);
+            $this->assertStringStartsWith("UPDATE `content` SET  text = 'x\\\\\\', flag=1 WHERE 1 #' WHERE ", $update);
             $this->assertStringContainsString('item_id = 0x33333333333333333333333333333333', $update);
-            $this->assertStringEndsWith("AND text='O\\'Brien'", $update);
+            $this->assertStringEndsWith("AND text = 'O\\'Brien'", $update);
         }
 
         public function test_add_and_refresh_refuse_invalid_group_ids(): void
@@ -331,9 +331,9 @@ namespace Tests\Unit\Legacy {
             $this->assertStringContainsString("group_id = 'g'", RecordingDb::$log[0], 'the short id map is read for the group only');
             $update = RecordingDb::$log[1];
             $this->assertStringStartsWith('UPDATE `constant` SET ', $update);
-            $this->assertStringContainsString("`name`='n\\\\'", $update);
-            $this->assertStringContainsString("`value`='x\\\\'", $update);
-            $this->assertStringContainsString("`description`='d\\\\\\' OR 1=1 #'", $update);
+            $this->assertStringContainsString(" name = 'n\\\\' ", $update);
+            $this->assertStringContainsString(" value = 'x\\\\' ", $update);
+            $this->assertStringContainsString(" description = 'd\\\\\\' OR 1=1 #' ", $update);
             $this->assertStringEndsWith("WHERE short_id = 7 AND group_id = 'g'", $update);
 
             [$insert] = RecordingDb::inserts('constant');

@@ -114,7 +114,6 @@ if (!$send) {               // for the first time - directly from item manager
     // we really want to send email - so store template
     do {
         // --- write the e-mail template to the table ---
-        $varset = new Cvarset();
         $description     = date('Y-m-d H:i:s') . ', ' . AuthGetUid();
         $type            = 'bulk email';
         ValidateInput("subject", _m("Subject"), $subject, $err, true, "text");
@@ -150,17 +149,27 @@ if (!$send) {               // for the first time - directly from item manager
             break;
         }
 
-        $varset->addglobals(['description', 'subject', 'header_from', 'reply_to', 'errors_to', 'sender', 'lang', 'type', 'attachments'], 'text');
-        $varset->add('owner_module_id', 'unpacked', AA::$module_id);
+        $email = [
+            'description'     => $description,
+            'subject'         => $subject,
+            'header_from'     => $header_from,
+            'reply_to'        => $reply_to,
+            'errors_to'       => $errors_to,
+            'sender'          => $sender,
+            'lang'            => $lang,
+            'type'            => $type,
+            'attachments'     => $attachments,
+            'owner_module_id' => AA::$module_id,
+            'html'            => $html,
+        ];
 
         if ($template_id && !($mailtemplate = new AA_Mailtemplate((int) $template_id))->isEmpty()) {
-            $varset->add('body', 'text', str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']], $mailtemplate['body']));
+            $email['body'] = str_replace(['_#BODYTEXT','_#SUBJECT_'], [$_POST['body'], $_POST['subject']], $mailtemplate['body']);
         } else {
-            $varset->add('body', 'text', $body);
+            $email['body'] = $body;
         }
-        $varset->add('html', 'number', $html);
 
-        $mail_id = $varset->doINSERT('email');  // get mail template id - last_insert_id
+        $mail_id = AA::Metabase()->doInsert('email', $email);  // get mail template id - last_insert_id
 
         if (!ctype_digit((string) $mail_id)) {
             $err["mail"] = MsgErr(_m("No template set (which is strange - template was just written to the database)"));
@@ -194,8 +203,7 @@ if (!$send) {               // for the first time - directly from item manager
         }
         AA_Log::write("EMAIL_SENT", $sel, new AA_Logentry_Em(['mail_id' => $mail_id, 'users' => $users_count, 'sent' => $mails_sent]));
         // remove temporary email template from database
-        $SQL = "UPDATE email SET description='" . quote($description . " - $mails_sent/$users_count") . "' WHERE id='$mail_id'";
-        if (!$db->query($SQL)) {
+        if (!AA::Metabase()->doUpdate('email', ['id' => $mail_id, 'description' => $description . " - $mails_sent/$users_count"])) {
             $err["DB"] = MsgErr(_m("Can't update email template"));
             break;    // not necessary - we have set the halt_on_error
         }

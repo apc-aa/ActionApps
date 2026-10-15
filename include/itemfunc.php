@@ -1974,14 +1974,8 @@ class AA_Field_Writer
             // max(pri) of an empty group is NULL, so its first constant gets 10 - as it always did
             $pri = (int) DB_AA::select1('max_pri', 'SELECT max(pri) as max_pri FROM `constant`', [['group_id', $group_id]]);
             foreach ($missing as $value) {
-                $pri   += 10;
-                $varset = new Cvarset();
-                $varset->set('id', new_id(), 'unpacked');
-                $varset->set('group_id', $group_id, 'text');
-                $varset->set('name', $value, 'text');
-                $varset->set('value', $value, 'text');
-                $varset->set('pri', $pri, 'number');
-                $varset->doInsert('constant');
+                $pri += 10;
+                AA::Metabase()->doInsert('constant', ['id' => new_id(), 'group_id' => $group_id, 'name' => $value, 'value' => $value, 'pri' => $pri]);
             }
             ConstantsChanged();                 // new constant rows - drop the cached reads
         }

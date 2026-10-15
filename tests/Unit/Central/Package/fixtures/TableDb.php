@@ -226,7 +226,7 @@ final class TableDb extends DB_PDO
     /** @param list<string> $columns @param list<int|float|string|null> $values */
     private function insert(string $table, array $columns, array $values): bool
     {
-        $row                   = array_combine($columns, $values);
+        $row                   = array_filter(array_combine($columns, $values), static fn($v) => $v !== SqlScanner::DEFAULT);   // as if left out
         self::$sent[$table][]  = $row;
         $this->lastId          = 0;
         foreach (AA_Metabase::singleton()->getColumns($table) as $name => $column) {
@@ -357,6 +357,9 @@ final class TableDb extends DB_PDO
 /** Reads the SQL literals and `column = literal` pairs of the statements TableDb applies. */
 final class SqlScanner
 {
+    /** the DEFAULT keyword of doInsertMulti() - the column takes its default, as if left out */
+    public const DEFAULT = "\0DEFAULT";
+
     public function __construct(private readonly string $sql, private int $pos) {}
 
     /** comma-separated literals up to the closing `)` @return list<int|float|string|null> */
@@ -451,12 +454,13 @@ final class SqlScanner
             $this->pos = $i + 1;
             return $out;
         }
-        if (!preg_match('/\GNULL|\G0x([0-9a-fA-F]*)|\G-?\d+(\.\d+)?/', $this->sql, $m, 0, $this->pos)) {
+        if (!preg_match('/\GNULL|\GDEFAULT|\G0x([0-9a-fA-F]*)|\G-?\d+(\.\d+)?/', $this->sql, $m, 0, $this->pos)) {
             throw new RuntimeException('SqlScanner: no literal at ' . substr($this->sql, $this->pos, 40));
         }
         $this->pos += strlen($m[0]);
         return match (true) {
             $m[0] === 'NULL'              => null,
+            $m[0] === 'DEFAULT'           => self::DEFAULT,
             str_starts_with($m[0], '0x')  => strtolower($m[1]),
             isset($m[2])                  => (float) $m[0],
             default                       => (int) $m[0],

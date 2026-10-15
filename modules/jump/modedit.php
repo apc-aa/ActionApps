@@ -78,38 +78,26 @@ if ($update) {
     if (!$jump_id) {
         $jump_id = new_id();
     }
-    $q_jump_id = xpack_id($jump_id);
+    $jump = ['slice_id' => $jump_id, 'destination' => $jump_url, 'dest_slice_id' => $dest_id];
 
-    $varset = new Cvarset();
-    $varset->clear();
-    $varset->add("destination", "text", $jump_url);
-    $varset->add("dest_slice_id", "unpacked", $dest_id);
-
-    if (DB_AA::test('module', [['id', $jump_id, 'l']])) {
-        $db->query("UPDATE jump SET " . $varset->makeUPDATE() . " WHERE slice_id=$q_jump_id");
-
-        $varset->clear();
-        $varset->add("name", "text", $jump_name);
-        $db->query("UPDATE module SET " . $varset->makeUPDATE() . " WHERE id=$q_jump_id");
-    } else {
-        $varset->add("slice_id", "unpacked", $jump_id);
-        $varset->doINSERT('jump');
-
-        $varset->clear();
-        $varset->add("id", "unpacked", $jump_id);
-        $varset->add("name", "text", $jump_name);
-        $varset->add("type", "text", 'J');
-        $varset->add("lang_file", "text", "en_news_lang.php");
-        $varset->add("owner", "text", '');
-        $varset->add("created_by", "text", AuthGetUid());
-        $varset->add("created_at", "text", now());
-
-        //        $varset->set("slice_url", $slice_url, "text");
-        //        $varset->set("priority", $priority, "number");
-        $varset->set("deleted", 0, "number");
-
-        $varset->doINSERT('module');
-    }
+    DB_AA::transaction(static function () use ($jump, $jump_id, $jump_name) {
+        if (DB_AA::test('module', [['id', $jump_id, 'l']])) {
+            AA::Metabase()->doUpdate('jump', $jump);
+            AA::Metabase()->doUpdate('module', ['id' => $jump_id, 'name' => $jump_name]);
+        } else {
+            AA::Metabase()->doInsert('jump', $jump);
+            AA::Metabase()->doInsert('module', [
+                'id'         => $jump_id,
+                'name'       => $jump_name,
+                'type'       => 'J',
+                'lang_file'  => 'en_news_lang.php',
+                'owner'      => '',
+                'created_by' => AuthGetUid(),
+                'created_at' => now(),
+                'deleted'    => 0,
+            ]);
+        }
+    });
     $jumps = DB_AA::select(['jid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS jid, name FROM module', [['type','J']]);
 }
 

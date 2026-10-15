@@ -103,11 +103,7 @@ if ($cancel) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-if (!is_object( $db )) {
-    $db = getDB();
-}
 
-$varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = $slice_id;
 
@@ -132,7 +128,7 @@ if (!$add && ($settings_error = AA_Module_Site::processModuleObject($module_id))
 if ($add || $update) {
     do {
         if (!$owner ) {  // insert new owner
-            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
+            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err))) {
                 break;
             }
         }
@@ -169,7 +165,6 @@ if ($add || $update) {
         }
         AA::$module_id = $module_id;
         $slice_id      = $module_id;
-        $p_module_id   = xpack_id($module_id);
 
         // store used modules into relation table
         DB_AA::delete('relation', [['source_id', $module_id, 'l'],['flag',REL_FLAG_MODULE_DEPEND,'i']]);
@@ -183,42 +178,29 @@ if ($add || $update) {
         }
 
         // now set all module specific settings
-        $varset->clear();
         if ( $update ) {
-            $varset->add("state_file",   "text",   $state_file);
-            $varset->add("flag",         "number", $router);
-
-            $SQL = "UPDATE site SET ". $varset->makeUPDATE() . " WHERE id=$p_module_id";
-            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+            if (!AA::Metabase()->doUpdate('site', ['id' => $module_id, 'state_file' => $state_file, 'flag' => $router])) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change site");
                 break;
             }
         } else { // insert (add)
-            // prepare varset variables for setFromArray() function
-            $varset->addArray(['id','structure','state_file'], ['flag']);
-
             if (!($site = DB_AA::select1('', 'SELECT * FROM `site`', [['id', $template_id, 'l']]))) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->resetFromRecord($site);
-            $varset->set("id",         $module_id,        "unpacked");
-            $varset->set("state_file", $state_file,       "text");
-            $varset->set("flag",       $router,           "number");
-
-            // create new site
-            $varset->doInsert('site');
 
             // copy spots
             $sitespots = DB_AA::select([], 'SELECT spot_id, content FROM `site_spot`', [['site_id', $template_id, 'l']]);
+            $spots     = [];
             foreach ($sitespots as $spot) {
-                $varset->clear();
-                $varset->set("site_id", $module_id, "unpacked" );
-                $varset->set("spot_id", $spot['spot_id'], "number" );
-                $varset->set("content", $spot['content'], "text" );
-                $varset->set("flag", "", "number" );
-                $varset->doInsert('site_spot');
+                $spots[] = ['site_id' => $module_id, 'spot_id' => $spot['spot_id'], 'content' => $spot['content'], 'flag' => 0];
             }
+
+            // create new site
+            DB_AA::transaction(static function () use ($module_id, $state_file, $site, $router, $spots) {
+                AA::Metabase()->doInsert('site', ['id' => $module_id, 'state_file' => $state_file, 'structure' => $site['structure'] ?? '', 'flag' => $router]);
+                AA::Metabase()->doInsertMulti('site_spot', $spots);
+            });
 
             if ($settings_error = AA_Module_Site::processModuleObject($module_id)) {
                 $err['settings'] = MsgErr($settings_error);

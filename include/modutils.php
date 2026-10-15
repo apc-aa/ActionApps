@@ -38,12 +38,10 @@ const MODULE_DELETE_TOKEN = 'aa-module-delete';
  * @param $new_owner
  * @param $new_owner_email
  * @param $err
- * @param $varset
  * @return false|string - unpacked owner_id or false (on error)
  */
-function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset): false|string
+function CreateNewOwner($new_owner, $new_owner_email, &$err): false|string
 {
-    $varset->clear();
     ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
     ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 
@@ -52,16 +50,12 @@ function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset): false|str
     }
 
     $owner = new_id();
-    $varset->set("id", $owner, "unpacked");
-    $varset->set("name", $new_owner, "text");
-    $varset->set("email", $new_owner_email, "text");
 
     // create new owner
-    if (!$varset->doINSERT('slice_owner')) {
+    if (!AA::Metabase()->doInsert('slice_owner', ['id' => $owner, 'name' => $new_owner, 'email' => $new_owner_email])) {
         $err["DB"] .= MsgErr("Can't add owner");
         return false;
     }
-    $varset->clear();
     return $owner;
 }
 
@@ -205,20 +199,14 @@ function ValidateModuleFields($name, $slice_url, $priority, $lang_file, $owner, 
 function WriteModuleFields(?string $module_id, $superadmin, $type, $name, $slice_url, $priority, $lang_file, $owner, $deleted, string $new_id = ""): ?string
 {
     global $err;
-    $varset     = new CVarset();
 
     if ($module_id) {
-        $varset->add("name", "text", $name);
-        $varset->add("slice_url", "text", $slice_url);
-        $varset->add("priority", "number", $priority);
-        $varset->add("lang_file", "text", $lang_file);
-        $varset->add("owner", "unpacked", $owner);
-        $varset->addkey("id", "unpacked", $module_id);
+        $module = ['id' => $module_id, 'name' => $name, 'slice_url' => $slice_url, 'priority' => $priority, 'lang_file' => $lang_file, 'owner' => $owner];
         if ($superadmin) {
-            $varset->add("deleted", "number", $deleted);
+            $module['deleted'] = $deleted;
         }
 
-        if (!$varset->doUpdate('module', null, $module_id)) {  // not necessary - we have set the halt_on_error
+        if (!AA::Metabase()->doUpdate('module', $module, null, $module_id)) {  // not necessary - we have set the halt_on_error
             $err["DB"] = MsgErr("Can't change module");
             return null;
         }
@@ -228,18 +216,20 @@ function WriteModuleFields(?string $module_id, $superadmin, $type, $name, $slice
     } else {  // insert (add)
         $module_id = ($new_id ?: new_id());   // sometimes we need specific
         // module_id (links module)
-        $varset->set("id", $module_id, "unpacked");
-        $varset->set("created_by", AuthGetUid(), "text");
-        $varset->set("created_at", now(), "text");
-        $varset->set("name", $name, "text");
-        $varset->set("owner", $owner, "unpacked");
-        $varset->set("slice_url", $slice_url, "text");
-        $varset->set("priority", $priority, "number");
-        $varset->set("deleted", $deleted, "number");
-        $varset->set("lang_file", $lang_file, "text");
-        $varset->set("type", $type, "text");
+        $module = [
+            'id'         => $module_id,
+            'created_by' => AuthGetUid(),
+            'created_at' => now(),
+            'name'       => $name,
+            'owner'      => $owner,
+            'slice_url'  => $slice_url,
+            'priority'   => $priority,
+            'deleted'    => $deleted,
+            'lang_file'  => $lang_file,
+            'type'       => $type,
+        ];
 
-        if (!$varset->doInsert('module')) {
+        if (!AA::Metabase()->doInsert('module', $module)) {
             $err["DB"] .= MsgErr("Can't add module");
             return null;
         }

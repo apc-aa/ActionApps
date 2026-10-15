@@ -3,6 +3,7 @@
 namespace AA\Optimize;
 
 use AA;
+use AA\IO\DB\DB_AA;
 use AA_Metabase;
 
 /** Change module ID to new one
@@ -68,9 +69,9 @@ class ChangeModuleId extends AbstractOptimize
         $converted = 0;
         foreach ($module_fields as $table => $field) {
             if (AA_Metabase::isPacked($table, $field)) {
-                $SQL = "UPDATE `$table` SET $field=$p_new_id WHERE $field=$p_current_id";
+                $SQL = "UPDATE `$table` SET $field=$p_new_id " . DB_AA::makeWhere([[$field, $current_id, 'l']]);
             } else {
-                $SQL = "UPDATE `$table` SET $field='$new_id' WHERE $field='$current_id'";
+                $SQL = "UPDATE `$table` SET $field='$new_id' " . DB_AA::makeWhere([[$field, $current_id]]);
             }
             $this->message(_m('Changing ID for table %1 (%2)', [$table, $field]));
             $this->query($SQL);

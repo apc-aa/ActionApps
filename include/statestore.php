@@ -1558,10 +1558,7 @@ class AA_Temporary_Table
         $SQL = "CREATE TEMPORARY TABLE IF NOT EXISTS {$this->tablename} ({$fields})";
         DB_AA::sql($SQL);
         ($metabase = AA::Metabase())->addTable(AA_MbT::factoryFromDb($this->tablename));
-
-        foreach ($contents as $content) {
-            $metabase->doInsert($this->tablename, $content->getAllAsScalar(', '));
-        }
+        $metabase->doInsertMulti($this->tablename, array_map(static fn($content) => $content->getAllAsScalar(', '), $contents));
     }
 }
 

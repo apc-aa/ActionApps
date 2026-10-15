@@ -5,7 +5,6 @@ namespace AA\Later;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\AddDurationLog;
-use CVarset;
 
 /** Groups data in hit_archive table
  *  We store all the hits into the hit_archive table. It is good for counting
@@ -61,16 +60,16 @@ class HitcounterGroup implements LaterInterface
         // possible new approach
         // SELECT id, CONCAT(FROM_UNIXTIME(`time`, '%Y-%m-%d'),' ',`id`) as grp, sum(hits) as sum, count(*) as cnt FROM hit_archive WHERE time < 1250000000 GROUP BY grp HAVING cnt > 1
 
-        $varset = new CVarset();
         $hits = DB_AA::select(['id' => 'sum'], 'SELECT `id`, SUM(`hits`) as sum FROM `hit_archive`', $time_cond, null, ['id']);
-        DB_AA::delete('hit_archive', $time_cond);
+        $rows = [];
         foreach ($hits as $id => $sum) {
-            $varset->clear();
-            $varset->add('id', 'number', $id);
-            $varset->add('hits', 'number', $sum);
-            $varset->add('time', 'number', $begin);
-            $varset->doInsert('hit_archive');
+            $rows[] = ['id' => $id, 'hits' => $sum, 'time' => $begin];
         }
+        // one transaction: a failure after the DELETE would lose the period's hits
+        DB_AA::transaction(static function () use ($time_cond, $rows) {
+            DB_AA::delete('hit_archive', $time_cond);
+            AA::Metabase()->doInsertMulti('hit_archive', $rows);
+        });
     }
 
     /**
@@ -126,8 +125,10 @@ class HitcounterGroup implements LaterInterface
             }
         }
         // exit;
-        DB_AA::delete('hit_archive', $time_cond);
-        AA::Metabase()->doInsertMulti('hit_archive', $to_insert);
+        DB_AA::transaction(static function () use ($time_cond, $to_insert) {
+            DB_AA::delete('hit_archive', $time_cond);
+            AA::Metabase()->doInsertMulti('hit_archive', $to_insert);
+        });
     }
 
     /**

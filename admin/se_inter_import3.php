@@ -55,7 +55,6 @@ try {
 
 $l_categs = FeedUtil::GetGroupConstants(AA::$module_id);        // get all categories belong to local slice
 
-$catVS = new Cvarset();
 $msg   = '';
 foreach ($f_slices as $f_slice) {
     $channel = $aa_rss['channels'][$f_slice];
@@ -76,43 +75,46 @@ foreach ($f_slices as $f_slice) {
         'feed_mode'         => ($exact_copy ? 'exact' : ''),
     ];
 
-    if (!($feed_id = AA::Metabase()->doInsert('external_feeds', $data))) {
-        $err["DB"] .= MsgErr("Can't add external import");
-    }
-
-    // insert categories
-    foreach ($channel['categories'] as $cat_id => $v) {
-        $cat = $aa_rss['categories'][$cat_id];
-
-        $catVS->clear();
-        $catVS->add("feed_id", "number", $feed_id);
-        $catVS->add("category", "text", $cat['value']);
-        $catVS->add("category_name", "text", $cat['name']);
-        $catVS->add("category_id", "unpacked", $cat_id);
-        $catVS->add("target_category_id", "unpacked", FeedUtil::MapDefaultCategory($l_categs, $cat['value'], $cat['catparent']));       // default category
-        $catVS->add("approved", "number", 0);
-
-        if (!$catVS->doTrueReplace('ef_categories')) {
+    // the feed, its categories and its field mapping are stored together or not at all
+    DB_AA::transaction(static function () use ($data, $channel, $aa_rss, $l_categs, $remote_slice_id, &$err) {
+        if (!($feed_id = AA::Metabase()->doInsert('external_feeds', $data))) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
-    }
 
-    // fill up feedmap table
-    foreach ($channel['fields'] as $field_id => $v) {
+        // insert categories
+        foreach ($channel['categories'] as $cat_id => $v) {
+            $cat = $aa_rss['categories'][$cat_id];
 
-        $catVS->clear();
-        $catVS->add("from_slice_id", "unpacked", $remote_slice_id);
-        $catVS->add("from_field_id", "packed", $field_id);
-        $catVS->add("to_slice_id", "unpacked", AA::$module_id);
-        $catVS->add("to_field_id", "packed", $field_id);
-        $catVS->add("flag", "number", FEEDMAP_FLAG_EXTMAP);
-        $catVS->add("value", "text", '');
-        $catVS->add("from_field_name", "text", $aa_rss['fields'][$field_id]['name']);
+            $category = [
+                'feed_id'            => $feed_id,
+                'category'           => (string) $cat['value'],
+                'category_name'      => (string) $cat['name'],
+                'category_id'        => $cat_id,
+                'target_category_id' => FeedUtil::MapDefaultCategory($l_categs, $cat['value'], $cat['catparent']) ?: '',       // default category
+                'approved'           => 0,
+            ];
+            if (!AA::Metabase()->doReplace('ef_categories', $category)) {
+                $err["DB"] .= MsgErr("Can't add external import");
+            }
+        }
 
-        if (!$catVS->doINSERT('feedmap')) {
+        // fill up feedmap table
+        $feedmap = [];
+        foreach ($channel['fields'] as $field_id => $v) {
+            $feedmap[] = [
+                'from_slice_id'   => $remote_slice_id,
+                'from_field_id'   => $field_id,
+                'to_slice_id'     => AA::$module_id,
+                'to_field_id'     => $field_id,
+                'flag'            => FEEDMAP_FLAG_EXTMAP,
+                'value'           => '',
+                'from_field_name' => (string) $aa_rss['fields'][$field_id]['name'],
+            ];
+        }
+        if (AA::Metabase()->doInsertMulti('feedmap', $feedmap) === false) {
             $err["DB"] .= MsgErr("Can't add external import");
         }
-    }
+    });
     $msg = rawurlencode(_m("The import was successfully created"));
 }
 

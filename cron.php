@@ -201,7 +201,7 @@ function cron($time = 0): void
             //echo "Nearest time: "; print_r ($nearest);
             // DB_AA::sql("UPDATE cron SET last_run=".$time." WHERE id=".$row["id"]);
         } elseif ($nearest_part > -1 && $nearest_time > $row["last_run"]) {
-            DB_AA::sql("UPDATE cron SET last_run=" . $time . " WHERE id=" . $row["id"]);
+            DB_AA::update('cron', [['last_run', $time, 'i']], [['id', $row["id"], 'i']]);
             fopen($url, 'rb');
         }
     }

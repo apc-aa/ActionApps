@@ -569,7 +569,7 @@ class linkcounter implements LaterInterface
         $count = $zids->count();
         // now update database
         if ($update) {
-            DB_AA::sql("UPDATE links_categories SET link_count='$count' WHERE path='$cpath'");
+            DB_AA::update('links_categories', [['link_count', $count, 'i']], [['path', $cpath]]);
         }
         return $count;
     }

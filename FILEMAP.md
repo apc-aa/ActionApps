@@ -521,7 +521,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | se_mapping.php | Feeding field mapping | Procedural | M |
 | se_mapping2.php | Write field mapping | Procedural | M |
 | se_nodes.php | Remote node administration | Procedural | S |
-| se_notify.php | Notification settings | save_notify2db() | M |
+| se_notify.php | Notification settings | notify_rows() | M |
 | se_profile.php | User profile settings | Procedural | M |
 | se_rssfeeds.php | RSS feed configuration | Procedural | M |
 | se_sets.php | Set creation | Procedural | M |

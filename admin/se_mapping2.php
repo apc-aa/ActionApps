@@ -66,15 +66,16 @@ $err = [];       // error array (Init - just for initializing variable)
 // First we DELETE current fields mapping and then INSERT new.
 $db->query("DELETE FROM feedmap WHERE from_slice_id=$p_from_slice_id AND to_slice_id = '$p_slice_id' ");
 
-// insert into feedmap
-$catVS = new Cvarset();
+// insert into feedmap - a row without from_field_id gets the column's default, NULL or '' depending on the database
+$rows = [];
 foreach ($fmap as $to_field_id => $val) {
 
-    $catVS->clear();
-    $catVS->add("from_slice_id", "unpacked", $from_slice_id);
-    $catVS->add("to_slice_id", "unpacked", AA::$module_id);
-    $catVS->add("to_field_id", "text", $to_field_id);
-    $catVS->add("from_field_name", "text", $map_to[$val]);
+    $feedmap = [
+        'from_slice_id'   => $from_slice_id,
+        'to_slice_id'     => AA::$module_id,
+        'to_field_id'     => $to_field_id,
+        'from_field_name' => (string) $map_to[$val],
+    ];
 
     switch ($val) {
         case _m("-- Not map --"):
@@ -82,46 +83,44 @@ foreach ($fmap as $to_field_id => $val) {
             break;
         case _m("-- Value --"):
             $flag = FEEDMAP_FLAG_VALUE ;
-            $catVS->add("value", "text", $fval[$to_field_id]);
+            $feedmap['value'] = (string) $fval[$to_field_id];
             break;
         case _m("-- Joined fields --"):
             $flag = FEEDMAP_FLAG_JOIN;
-            $catVS->add("value", "text", $fval[$to_field_id]);
+            $feedmap['value'] = (string) $fval[$to_field_id];
             break;
         case _m("-- RSS field or expr --"):
             $flag = FEEDMAP_FLAG_RSS;
-            $catVS->add("value", "text", $fval[$to_field_id]);
+            $feedmap['value'] = (string) $fval[$to_field_id];
             if (! $map_to[$val]) {
-                $catVS->add("from_field_name", "text", $fval[$to_field_id]);
+                $feedmap['from_field_name'] = (string) $fval[$to_field_id];
             }
             unset($map_to[$val]);
             break;
         default:  // $val is the id of the source field
             $flag = ($ext_slice) ? FEEDMAP_FLAG_EXTMAP : FEEDMAP_FLAG_MAP ;
-            $catVS->add("from_field_id", "text", $val);
+            $feedmap['from_field_id'] = $val;
             unset($map_to[$val]);
             break;
     }
-    $catVS->add("flag", "number", $flag);
-
-    if (!$catVS->doINSERT('feedmap')) {
-        $err["DB"] .= MsgErr("Can't add fields mapping");
-    }
+    $feedmap['flag'] = $flag;
+    $rows[] = $feedmap;
 }
 
 // Write external fields, which did not map.
 if ($map_to && is_array($map_to)) {
     foreach (array_keys($map_to) as $from_field_id) {
-        $catVS->clear();
-        $catVS->add("from_slice_id", "unpacked", $from_slice_id);
-        $catVS->add("to_slice_id", "unpacked", AA::$module_id);
-        $catVS->add("from_field_id", "text", $from_field_id);
-        $catVS->add("from_field_name", "text", $map_to[$from_field_id]);
-        $catVS->add("flag", "number", FEEDMAP_FLAG_EXTMAP);
-        if (!$catVS->doINSERT('feedmap')) {
-            $err["DB"] .= MsgErr("Can't add fields mapping");
-        }
+        $rows[] = [
+            'from_slice_id'   => $from_slice_id,
+            'to_slice_id'     => AA::$module_id,
+            'from_field_id'   => $from_field_id,
+            'from_field_name' => $map_to[$from_field_id],
+            'flag'            => FEEDMAP_FLAG_EXTMAP,
+        ];
     }
+}
+if (AA::Metabase()->doInsertMulti('feedmap', $rows) === false) {
+    $err["DB"] .= MsgErr("Can't add fields mapping");
 }
 
 go_url(StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=" . rawurlencode($from_slice_id) . "&Msg=" . rawurlencode(_m("Fields' mapping update successful")));  // @todo Mssg

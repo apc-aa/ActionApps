@@ -345,7 +345,6 @@ class FeedUtil
     public static function updateCategories($feed_id, &$l_categs, $ext_categs, $cat_refs, $categs): void
     {
         global $debugfeed;
-        $db = getDB();
         // add new categories or update categories' fields
         if (isset($cat_refs) && is_array($cat_refs)) {
             foreach (array_keys($cat_refs) as $r_cat_id) {
@@ -353,21 +352,23 @@ class FeedUtil
 
                 if ($ext_categs[$r_cat_id]) {
                     // remote category is in the ef_categories table, so update name and value
-                    $SQL = "UPDATE ef_categories SET category_name='" . $category['name'] . "',
-                         category='" . $category['value'] . "'
-                         WHERE feed_id='$feed_id' AND category_id=" . xpack_id($r_cat_id);
+                    if ($debugfeed >= 8) {
+                        print("\n<br>UPDATE ef_categories " . safe($r_cat_id));
+                    }
+                    DB_AA::update('ef_categories', [['category_name', (string) $category['name'], 's'], ['category', (string) $category['value'], 's']], [['feed_id', $feed_id], ['category_id', $r_cat_id, 'l']]);
                 } else {
                     $l_cat_id = self::MapDefaultCategory($l_categs, $category['value'], $category['catparent']);
-                    $SQL      = "INSERT INTO ef_categories VALUES ('" . $category['value'] . "','" . $category['name'] . "',
+                    $SQL      = "INSERT INTO ef_categories VALUES ('" . quote($category['value']) . "','" . quote($category['name']) . "',
                          " . xpack_id($category['id']) . ",'" . $feed_id . "'," . xpack_id($l_cat_id) . ",'0')";
+                    if ($debugfeed >= 8) {
+                        print("\n<br>" . safe($SQL));   // the category comes from the remote AA
+                    }
+                    DB_AA::sql($SQL);
                 }
-                if ($debugfeed >= 8) {
-                    print("\n<br>$SQL");
-                }
-                $db->query($SQL);
             }
         }
 
+        $db = getDB();
         // remove the categories from table, which were not sent
         if (isset($ext_categs) && is_array($ext_categs)) {
             foreach (array_keys($ext_categs) as $r_cat_id) {
@@ -397,52 +398,40 @@ class FeedUtil
         global $debugfeed;
 
         [$ext_map, $field_map] = self::GetExternalMapping($l_slice_id, $r_slice_id);
-        $p_l_slice_id = xpack_id($l_slice_id);
-        $p_r_slice_id = xpack_id($r_slice_id);
-
         // add new ones
-        $db = getDB();
+        $new_rows = [];
         if (isset($field_refs) && is_array($field_refs)) {
             foreach (array_keys($field_refs) as $r_field_id) {
                 $new_name = $fields[$r_field_id]['name'];
                 if ($ext_map && $ext_map[$r_field_id]) {
                     // remote field is in the feedmap table => update name
                     if ($ext_map[$r_field_id] != $new_name) { // update if field name changed on remote AA
-                        $SQL = "UPDATE feedmap SET from_field_name='" . quote($new_name) . "'
-                            WHERE from_slice_id=$p_r_slice_id
-                            AND to_slice_id=$p_l_slice_id
-                            AND from_field_id='$r_field_id'";
                         if ($debugfeed >= 8) {
-                            print("\n<br>$SQL");
+                            print("\n<br>UPDATE feedmap " . safe($r_field_id));
                         }
-                        $db->query($SQL);
+                        DB_AA::update('feedmap', [['from_field_name', (string) $new_name, 's']], [['from_slice_id', $r_slice_id, 'l'], ['to_slice_id', $l_slice_id, 'l'], ['from_field_id', $r_field_id]]);
                     }
                 } else {
-                    $SQL = "INSERT INTO feedmap VALUES($p_r_slice_id,'$r_field_id',$p_l_slice_id,'$r_field_id','" . FEEDMAP_FLAG_EXTMAP . "','','" . quote($new_name) . "')";
                     if ($debugfeed >= 8) {
-                        print("\n<br>$SQL");
+                        print("\n<br>INSERT feedmap " . safe($r_field_id));
                     }
-                    $db->query($SQL);
+                    $new_rows[] = ['from_slice_id' => $r_slice_id, 'from_field_id' => $r_field_id, 'to_slice_id' => $l_slice_id, 'to_field_id' => $r_field_id, 'flag' => FEEDMAP_FLAG_EXTMAP, 'value' => '', 'from_field_name' => (string) $new_name];
                 }
             }
         }
-        freeDB($db);
+        AA::Metabase()->doInsertMulti('feedmap', $new_rows);
         if (!$ext_map) {
             return;
         }
-        $db = getDB();
         foreach ($ext_map as $r_field_id => $foo) {
             if (!$field_refs[$r_field_id]) {
-                $SQL = "DELETE FROM feedmap WHERE from_slice_id=$p_r_slice_id
-                    AND to_slice_id=$p_l_slice_id
-                    AND from_field_id='$r_field_id'";
                 if ($debugfeed >= 8) {
-                    print("\n<br>$SQL");
+                    print("\n<br>DELETE feedmap " . safe($r_field_id));
                 }
-                $db->query($SQL);
+                // the field id came from the remote AA - never put it into SQL by hand
+                DB_AA::delete('feedmap', [['from_slice_id', $r_slice_id, 'l'], ['to_slice_id', $l_slice_id, 'l'], ['from_field_id', $r_field_id]]);
             }
         }
-        freeDB($db);
     }
 
     /** field2arr function

@@ -30,8 +30,8 @@
 
 namespace AA\Util;
 
+use AA;
 use AA_Logentry_H;
-use CVarset;
 use zids;
 
 /** used for packing duration to 1B int tttttttcn
@@ -159,17 +159,12 @@ class Hitcounter
             'uri'           => $uri,
         ]))->serializeToString();
 
-        $varset = new CVarset();
-        $varset->add('time', 'number', time());
-        $varset->add('agent', 'text', substr($ua_raw, 0, 255));  // @todo - convert to metabase and check the length using metabase real field length
-        $varset->add('info', 'text', substr($info, 0, 255)); // @todo - convert to metabase and check the length using metabase real field length
+        $row = ['time' => time(), 'agent' => substr($ua_raw, 0, 255), 'info' => substr($info, 0, 255)];
 
         if ($zids->use_short_ids()) {
-            $varset->add('id', 'number', $zids->id());
-            $varset->doInsert('hit_short_id');
+            AA::Metabase()->doInsert('hit_short_id', ['id' => $zids->id()] + $row);
         } else {
-            $varset->add('id', 'unpacked', $zids->longids(0));
-            $varset->doInsert('hit_long_id');
+            AA::Metabase()->doInsert('hit_long_id', ['id' => $zids->longids(0)] + $row);
         }
 
         // no longer necessary to plan it here - we plan the task in toexecute.php which must be called anyway if we want to run tasks

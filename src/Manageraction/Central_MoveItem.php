@@ -71,8 +71,7 @@ class Central_MoveItem extends AbstractManageraction
         $item_ids = $item_zids->shortids();
 
         if ($item_ids) {
-            $SQL = "UPDATE central_conf SET status_code = '" . $this->to_bin . "' WHERE id IN ('" . join_and_quote("','", $item_ids) . "')";
-            DB_AA::sql($SQL);
+            DB_AA::update('central_conf', [['status_code', $this->to_bin, 'i']], [['id', $item_ids]]);
         }
         return false;                                     // OK - no error
     }

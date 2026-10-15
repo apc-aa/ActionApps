@@ -54,15 +54,12 @@ if (!IfSlPerm(PS_FEEDING)) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-$catVS       = new Cvarset();
-$expVS       = new Cvarset();
 
 $slice      = AA_Slice::getModule(AA::$module_id);
 
 // update export_to_all switch
 if (($slice->getProperty('export_to_all') ? 1 : 0) !== ($to_all ? 1 : 0)) {
-    $SQL = "UPDATE slice SET export_to_all=" . ($to_all ? 1 : 0) . " WHERE id='$p_slice_id'";
-    $db->query($SQL);
+    AA::Metabase()->doUpdate('slice', ['id' => AA::$module_id, 'export_to_all' => ($to_all ? 1 : 0)]);
     AA_Log::write(($to_all ? "FEED2ALL_1" : "FEED2ALL_0"), AA::$module_id);
 }
 
@@ -79,19 +76,20 @@ $feedto = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`to_id`)) AS unid FR
 
 do {
     if (isset($E) && is_array($E)) {  // Export to any slice
+        $feedperms = [];
         foreach ($E as $val) {
             if ($feedto[$val]) {
                 $feedto[$val] = false;      // this feed is allready in database => don't change
                 continue;
             }
-            $expVS->clear();
-            $expVS->add("from_id", "unpacked", AA::$module_id);
-            $expVS->add("to_id", "unpacked", $val);
-            if (!$expVS->doINSERT('feedperms')) {
-                $err["DB"] .= MsgErr("Can't add export to $val");
-                break;    // not necessary - we have set the halt_on_error
+            $feedperms[] = ['from_id' => AA::$module_id, 'to_id' => $val];
+        }
+        if (AA::Metabase()->doInsertMulti('feedperms', $feedperms) === false) {
+            $err["DB"] .= MsgErr("Can't add export");    // not necessary - we have set the halt_on_error
+        } else {
+            foreach ($feedperms as $feedperm) {
+                AA_Log::write("FEED_ENBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $feedperm['to_id']]));
             }
-            AA_Log::write("FEED_ENBLE", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $val]));
         }
     }
     foreach ($feedto as $to => $val) {
@@ -110,22 +108,21 @@ $feedfrom = DB_AA::select(['unid' => true], "SELECT LOWER(HEX(`from_id`)) AS uni
 
 do {
     if (isset($I) && is_array($I)) {  // insert to categories
+        $feeds = [];
         foreach ($I as $val) {
             if ($feedfrom[$val]) {
                 $feedfrom[$val] = false;      // this feed is allready in database => don't change
                 continue;
             }
-            $catVS->clear();
-            $catVS->add("to_id", "unpacked", AA::$module_id);
-            $catVS->add("from_id", "unpacked", $val);
-            $catVS->add("all_categories", "number", 1);
-            $catVS->add("to_approved", "number", 0);
-            $catVS->add("to_category_id", "unpacked", "0");   // zero means import to the same category (if all_actegories==1)
-            if (!$catVS->doINSERT('feeds')) {
-                $err["DB"] .= MsgErr("Can't add import from $val");
-                break;  // not necessary - we have set the halt_on_error
+            // '0' (import to the same category, if all_categories==1) is stored as an empty id
+            $feeds[] = ['to_id' => AA::$module_id, 'from_id' => $val, 'all_categories' => 1, 'to_approved' => 0, 'to_category_id' => ''];
+        }
+        if (AA::Metabase()->doInsertMulti('feeds', $feeds) === false) {
+            $err["DB"] .= MsgErr("Can't add import");    // not necessary - we have set the halt_on_error
+        } else {
+            foreach ($feeds as $feed) {
+                AA_Log::write("FEED_ADD", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $feed['from_id']]));
             }
-            AA_Log::write("FEED_ADD", new AA_Logentry_Fd(['module' => AA::$module_id, 'target' => $val]));
         }
     }
 

@@ -536,8 +536,7 @@ class PageCache
 
         if ($force || (ENABLE_PAGE_CACHE && !$this->cache_nostore)) {  // $this->cache_nostore used if {user:xxxx} alias is used
             AA::$debug & 2 && AA::$dbg->log("Pagecache->store(): - storing");
-            $varset = new Cvarset([['content', $content], ['stored', time()], ['flag', $flag, 'i']]);
-            $varset->addkey('id', 'text', $key);
+            $row = ['id' => $key, 'content' => $content, 'stored' => time(), 'flag' => $flag];
 
             // true replace mean it calls REPLACE command and no
             // SELECT+INSERT/UPDATE (which is better for tables with
@@ -550,9 +549,9 @@ class PageCache
             // one transaction, so the three statements cost one commit instead of three
             // (each commit is two fsyncs here) and the str2find rows can never point at
             // a pagecache row that was not written
-            DB_AA::transaction(static function () use ($str2find, $key, $varset) {
-                $str2find->store($key);               // DELETE + INSERT into pagecache_str2find
-                $varset->doTrueReplace('pagecache');  // REPLACE INTO pagecache
+            DB_AA::transaction(static function () use ($str2find, $key, $row) {
+                $str2find->store($key);                         // DELETE + INSERT into pagecache_str2find
+                AA::Metabase()->doReplace('pagecache', $row);  // REPLACE INTO pagecache
             });
 
             // it is not necessary to check, if the  AA\Later\PagecachePurge is planed

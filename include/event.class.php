@@ -300,15 +300,7 @@ function AddNotification($type, $class, $selector, $reaction, $params): void
 
     // check if user already is not set for this item
     if (!count(GetNotifications($type, $class, $selector, $reaction, $params))) {
-        $notification_id = new_id();
-        $notificationVS = new Cvarset();
-        $notificationVS->add("id", "text", $notification_id);
-        $notificationVS->add("type", "text", $type);
-        $notificationVS->add("class", "text", $class);
-        $notificationVS->add("selector", "text", $selector);
-        $notificationVS->add("reaction", "text", $reaction);
-        $notificationVS->add("params", "quoted", $params);
-        $notificationVS->doInsert('event');
+        AA::Metabase()->doInsert('event', ['id' => new_id(), 'type' => $type, 'class' => $class, 'selector' => $selector, 'reaction' => $reaction, 'params' => $params]);
     }
 }
 

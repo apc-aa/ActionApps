@@ -27,16 +27,20 @@ final class DB_AA
      *  transaction, so an inner failure rolls the whole block back.
      *
      * @usage DB_AA::transaction(static function () { ...several writes... });
+     * @param DB_PDO|null $db a handle the caller keeps (and goes on using directly); null = one from getDB()
      * @return mixed whatever $work returned
      */
-    public static function transaction(callable $work): mixed
+    public static function transaction(callable $work, ?DB_PDO $db = null): mixed
     {
         if (self::$tx_db) {
             return $work();                     // already inside - join the outer transaction
         }
-        $db = getDB();
+        $own = ($db === null);
+        $db ??= getDB();
         if (!$db->beginTransaction()) {
-            freeDB($db);
+            if ($own) {
+                freeDB($db);
+            }
             return $work();                     // no transaction available - behave as before
         }
         self::$tx_db     = $db;
@@ -59,7 +63,9 @@ final class DB_AA
         } finally {
             self::$tx_db     = null;   // unpin first - only then freeDB() returns the handle to the pool
             self::$tx_db_out = false;
-            freeDB($db);
+            if ($own) {
+                freeDB($db);
+            }
         }
     }
 
@@ -314,7 +320,7 @@ final class DB_AA
     }
 
     /** creates cols string for INSERT or UPDATE
-     * @param string[] $varlist
+     * @param array<array{0: string, 1: mixed, 2?: string}> $varlist [column, value, type] - type optional
      * @return string
      */
     protected static function makeCols(array $varlist): string
@@ -323,7 +329,7 @@ final class DB_AA
         $cols  = '';
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, value, type)
-            [$name, $value, $type] = $vardef;
+            [$name, $value, $type] = array_pad($vardef, 3, null);
             $part  = match ($type) {
                 "i" => (int) $value,
                 "l" => xpack_id($value),

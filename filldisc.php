@@ -204,29 +204,29 @@ $cookie->set('d_e_mail', $d_e_mail, 60 * 60 * 24 * 90);   // 90 days
 $cookie->set('d_url_address', $d_url_address, 60 * 60 * 24 * 90);   // 90 days
 $cookie->set('d_url_description', $d_url_description, 60 * 60 * 24 * 90);   // 90 days
 
-$catVS = new Cvarset();
-$catVS->add("id", "unpacked", $new_id);
-$catVS->add("parent", "unpacked", $d_parent);
-$catVS->add("item_id", "unpacked", $d_item_id);
-// All user-supplied values arrive RAW (InputVars::stringPOST / $_REQUEST / $_SERVER), so the
-// DB layer must escape them: type "text" applies quote()=addslashes once. Do NOT use "quoted"
-// (it inserts the value verbatim, assuming pre-slashing) — that was an unauthenticated SQL
-// injection here (2026-09, finding N1).
-$catVS->add("subject", "text", $d_subject);
-$catVS->add("author", "text", $d_author);
-$catVS->add("e_mail", "text", $d_e_mail);
-$catVS->add("body", "text", $d_body);
-$catVS->add("state", "text", $d_state);
-$catVS->add("flag", "text", $d_flag);
-$catVS->add("free1", "text", $d_free1);
-// the poster's cookies, but no session id - free2 is shown to the discussion's admins and templates
-$catVS->add("free2", "text", $d_free2 ?? var_export(array_filter($_COOKIE, static fn($name) => stripos((string) $name, 'sess') === false, ARRAY_FILTER_USE_KEY), true));
-$catVS->add("url_address", "text", $d_url_address);
-$catVS->add("url_description", "text", $d_url_description);
-$catVS->add("date", "quoted", time());
-$catVS->add("remote_addr", "text", $ip_address);
+// All user-supplied values arrive RAW (InputVars::stringPOST / $_REQUEST / $_SERVER) - Metabase
+// escapes them once; never pass pre-slashed values here.
+$discussion = [
+    'id'              => $new_id,
+    'parent'          => pack_id($d_parent),   // not a packed column for Metabase, but holds packed ids
+    'item_id'         => $d_item_id,
+    'subject'         => $d_subject,
+    'author'          => $d_author,
+    'e_mail'          => $d_e_mail,
+    'body'            => $d_body,
+    // (string): an array from the request is stored as 0, not cast to 1
+    'state'           => (string) $d_state,
+    'flag'            => (string) $d_flag,
+    'free1'           => $d_free1,
+    // the poster's cookies, but no session id - free2 is shown to the discussion's admins and templates
+    'free2'           => $d_free2 ?? var_export(array_filter($_COOKIE, static fn($name) => stripos((string) $name, 'sess') === false, ARRAY_FILTER_USE_KEY), true),
+    'url_address'     => $d_url_address,
+    'url_description' => $d_url_description,
+    'date'            => time(),
+    'remote_addr'     => $ip_address,
+];
 
-if (!$catVS->doInsert('discussion')) {  // not necessary - we have set the halt_on_error
+if (!AA::Metabase()->doInsert('discussion', $discussion)) {  // not necessary - we have set the halt_on_error
     $err["DB"] .= MsgErr("Can't add discussion comment");
 }
 
