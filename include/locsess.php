@@ -706,13 +706,15 @@ class AA_Session extends Session
 
     /** Opens the session on the first write - the site module does not open it for anonymous visitors.
      *  Must run before the body is sent (the site module renders the page into a string first).
+     *  The page then holds what was written (a form token, a connector id), so it belongs to this
+     *  visitor's session and must not be cached - also when the session was open already.
      */
     public static function ensureStarted(): void
     {
         if (session_status() !== PHP_SESSION_ACTIVE) {
             pageOpen('nobody');   // with the cookie of a logged-in user the login is checked, as on any page
-            AA::Pagecache()->switchCacheNostore();   // the page now belongs to this visitor's session
         }
+        AA::Pagecache()->switchCacheNostore();
     }
 }
 
