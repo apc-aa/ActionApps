@@ -6725,9 +6725,7 @@ class AA_Unalias_Callback {
                 $param      = str_replace(['&amp;','-&lt;','-&gt;','&lt;-','&gt;-'], ['&','-<','->','<-','>-'], aa_substr($out, (str_starts_with($out, 'view.php?')) ? 9 : 10));
                 // do not store in the pagecache, but store into contentcache
 
-                $showview   = new AA_Showview(AA_View::parseViewParameters(DeQuoteColons($param)));
-
-                return QuoteColons(AA::Contentcache()->get_result([$showview,'getViewOutput']));
+                return QuoteColons((new AA_Showview(AA_View::parseViewParameters(DeQuoteColons($param))))->getViewOutputCached());
             }
 
             // like AA_Stringexpand_Dequote

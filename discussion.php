@@ -94,6 +94,10 @@ if (!is_object($db)) {
 $disc_starttime = ((float) $usec + (float) $sec);
 
 $view_param              = AA_View::parseViewParameters();
+// the x item is the item of this response - processPage() counts it, also when it comes from the cache;
+// '_' because add_vars() of a nested {view.php?…} must not overwrite it (InputVars::isProtectedGlobal())
+$_hits = $view_param['hits'];
+unset($view_param['hits']);
 $view_param["disc_ids"]  = QueryDiscIDs($slice_id, $conds, $sort, $slices);
 $view_param["disc_type"] = "list";
 // special url parameter disc_url - tell us, where we have to show
@@ -107,14 +111,14 @@ $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
 $nocache = (int) ($nocache ?? 0);   // a non-numeric string or an array from the request makes `&` throw a TypeError
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // nocache=1 or nocache=3, ... - first bit set
-    $cacheentry->processPage(true);
+    $cacheentry->processPage(true, ...$_hits);
 } else {
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
     $cache_sids   = AA_Module::getUsedModules();
 
     $cacheentry = new Cacheentry($page_content, AA::getHeaders());
-    $cacheentry->processPage();
+    $cacheentry->processPage(false, ...$_hits);
 
     if (!$nocache) {
         $str2find = new CacheStr2find($cache_sids);

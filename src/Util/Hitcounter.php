@@ -117,8 +117,9 @@ class Hitcounter
      *  hit_long_id (for long item ids).
      * @param zids $zids
      * @param bool $cached
+     * @param float|null $duration seconds the shown output took; null = the request so far (a page counts at its end)
      */
-    public static function hit($zids, bool $cached = false, bool $not_modified = false): void
+    public static function hit($zids, bool $cached = false, bool $not_modified = false, ?float $duration = null): void
     {
         if (!is_object($zids) || $zids->isEmpty()) {
             return;
@@ -149,7 +150,7 @@ class Hitcounter
             return;
         }
 
-        $time = timestartdiff();
+        $time = $duration ?? timestartdiff();
         $info = (new AA_Logentry_H([
             "cached"        => $cached,
             "not_modified"  => $not_modified,

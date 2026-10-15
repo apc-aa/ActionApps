@@ -28,6 +28,7 @@
  *
 */
 
+use AA\Util\Hitcounter;
 use AA\Util\Langs;
 
 require_once __DIR__ . "/mgettext.php";
@@ -225,8 +226,13 @@ class AA_Showview
 {
     protected $_view_param     = [];
 
+    /** @var zids[] the item of an x command and the random item shown - counted once the output is there */
+    private array $hits = [];
+
     public function __construct($view_param)
     {
+        $this->hits = is_array($view_param['hits'] ?? null) ? $view_param['hits'] : [];
+        unset($view_param['hits']);
         $this->_view_param = $view_param;
     }
 
@@ -295,8 +301,31 @@ class AA_Showview
 
     public function getViewOutput(): string
     {
-        $dbgtime = microtime(true);
+        $start = microtime(true);
+        $ret   = $this->viewOutput($start);
+        $this->countHits(false, microtime(true) - $start);
+        return $ret;
+    }
 
+    /** getViewOutput() reused for the same parameters within the request ({view.php?…}) - the hits count on every call */
+    public function getViewOutputCached(): string
+    {
+        $start = microtime(true);
+        $ret   = AA::Contentcache()->get_result([$this, 'getViewOutput']);
+        $this->countHits(true, microtime(true) - $start);   // still here only when the output came from the cache
+        return $ret;
+    }
+
+    private function countHits(bool $cached, float $duration): void
+    {
+        foreach ($this->hits as $zids) {
+            Hitcounter::hit($zids, $cached, false, $duration);
+        }
+        $this->hits = [];
+    }
+
+    private function viewOutput(float $dbgtime): string
+    {
         if (!($view = AA_Views::getView($this->_view_param["vid"]))) {
             return '';
         }
@@ -614,6 +643,10 @@ class AA_Showview
                 $formatstring = $view_info["odd"];          // it is better to copy format-
                 $ret = $CurItem->unalias($formatstring);  // string to variable - unalias
                 break;
+        }
+
+        if (isset($itemview->random_hit)) {
+            $this->hits[] = $itemview->random_hit;
         }
 
         AA::$debug & 64 && AA::$dbg->log("getViewOutput: ret=", $ret);
