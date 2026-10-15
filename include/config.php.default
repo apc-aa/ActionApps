@@ -233,6 +233,13 @@ define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
 /** path from server root to image/file directory */
 define("IMG_UPLOAD_PATH", AA_SITE_PATH."img_upload/");
 
+/** img.php looks for images under AA_SITE_PATH. When one AA serves several sites whose files
+ *  live elsewhere, map each AA_HTTP_DOMAIN to that site's document root:
+ *  define('AA_IMG_DOCUMENT_ROOTS', [
+ *      'https://example.org/' => '/var/www/example.org',
+ *  ]);
+ */
+
 /** mkdir perms - AA creates new directory for each slice in image/file upload
 *  directory specified above. Each slice then have its own subdirectory.
 *  Default is 774 */
