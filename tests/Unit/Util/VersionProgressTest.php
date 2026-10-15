@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Util;
 
 use AA\Util\ConfigTimeline;
+use AA\Util\AA_Packtime;
 use AA\Util\VersionProgress;
 use PHPUnit\Framework\TestCase;
 
@@ -19,8 +20,11 @@ use PHPUnit\Framework\TestCase;
  */
 final class VersionProgressTest extends TestCase
 {
-    /** One index step is 18.728%: the resolution of the stored duration byte. */
-    private const STEP = 1.18728;
+    /** One index step, 18.6 %: the resolution of the stored duration byte. */
+    private static function step(): float
+    {
+        return AA_Packtime::scale()->calculateStep();
+    }
 
     /** @param list<array{string,string}> $days [first day, day after the last] */
     private static function intervals(array $days): array
@@ -66,14 +70,15 @@ final class VersionProgressTest extends TestCase
     }
 
     /**
-     * One item-day: how many hits in each cache state, and what index they averaged.
+     * One item-day: how many hits in each cache state, and the index of their mean time.
      * Uncached and cached are the only two states the panel measures.
      */
     private static function day(int $uncached_hits, float $uncached_index, int $cached_hits = 0, float $cached_index = 0.0): array
     {
+        $scale = AA_Packtime::scale();
         return [
             'h' => [$uncached_hits, 0, $cached_hits, 0],
-            'w' => [0 => (int) round($uncached_hits * $uncached_index), 2 => (int) round($cached_hits * $cached_index)],
+            'w' => [0 => $uncached_hits * $scale->index2float($uncached_index), 2 => $cached_hits * $scale->index2float($cached_index)],
         ];
     }
 
@@ -135,9 +140,9 @@ final class VersionProgressTest extends TestCase
             'b' => self::steady(24, 25),
         ], self::twoWindows());
 
-        self::assertEqualsWithDelta(18.7, $summary['rows'][1]['d_nc'], 0.1);
+        self::assertEqualsWithDelta(100 * (self::step() - 1), $summary['rows'][1]['d_nc'], 0.05);
         self::assertEqualsWithDelta(
-            self::STEP,
+            self::step(),
             $summary['rows'][1]['ms_nc'] / $summary['rows'][0]['ms_nc'],
             0.001,
             'milliseconds move by the same ratio as the index',
@@ -151,8 +156,22 @@ final class VersionProgressTest extends TestCase
             'b' => self::steady(25, 24),
         ], self::twoWindows());
 
-        self::assertEqualsWithDelta(-15.8, $summary['rows'][1]['d_nc'], 0.1);
+        self::assertEqualsWithDelta(100 * (1 / self::step() - 1), $summary['rows'][1]['d_nc'], 0.05);
         self::assertNull($summary['rows'][0]['d_nc'] ?? null, 'the oldest window has nothing to compare against');
+    }
+
+    public function testAnItemsSlowHitsCountWithTheirWholeTime(): void
+    {
+        // a tenth of the hits 16 steps (15×) slower: the item spends 2.44× the time,
+        // which averaging the indexes would report as only 1.6 steps (+31 %)
+        $scale = AA_Packtime::scale();
+        $mixed = ['h' => [100, 0, 0, 0], 'w' => [0 => 90 * $scale->index2float(24) + 10 * $scale->index2float(40), 2 => 0.0]];
+        $item  = self::steady(24, 24);
+        $item['2026-07-05'] = $item['2026-07-06'] = $mixed;
+
+        $summary = self::summarize(['a' => $item, 'b' => $item], self::twoWindows());
+
+        self::assertEqualsWithDelta(0.9 + 0.1 * self::step() ** 16, $summary['rows'][1]['ms_nc'] / $summary['rows'][0]['ms_nc'], 0.001);
     }
 
     public function testTheFirstWindowCarriesNoComparison(): void
@@ -255,8 +274,8 @@ final class VersionProgressTest extends TestCase
         // Each item averages 24.5 over the period, so its slow days sit one half
         // step above that and its fast days one half step below.
         self::assertSame(['2026-07-01', '2026-07-02', '2026-07-05', '2026-07-06'], $daily['labels']);
-        self::assertEqualsWithDelta(100 / sqrt(self::STEP), $daily['nc'][0], 0.05);
-        self::assertEqualsWithDelta(100 * sqrt(self::STEP), $daily['nc'][3], 0.05);
+        self::assertEqualsWithDelta(100 / sqrt(self::step()), $daily['nc'][0], 0.05);
+        self::assertEqualsWithDelta(100 * sqrt(self::step()), $daily['nc'][3], 0.05);
     }
 
     public function testAWindowWithNoCachedTrafficReportsNothingRatherThanZero(): void

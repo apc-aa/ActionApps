@@ -35,7 +35,7 @@ use AA_Logentry_H;
 use zids;
 
 /** used for packing duration to 1B int tttttttcn
- *   - ttttttt - time index (0-63) - 6 bits - logaritmical scale from 0.002s (0) to 80s (63))
+ *   - ttttttt - time index (0-63) - 6 bits - logaritmical scale, 1 = 2 ms, 63 = 80 s; a whole byte 0 = no time stored
  *   - c - cached - 1 bit
  *   - n - not modified - 1 bit
  *
@@ -55,14 +55,50 @@ class AA_Packtime
 
     public function __construct(float $time, bool $cached, bool $not_modified)
     {
-        $this->index        = (new LogarithmIndex(.002, 80, 63))->getIndex($time);
+        $this->index        = self::scale()->getIndex($time);
         $this->cached       = $cached;
         $this->not_modified = $not_modified;
     }
 
+    /** The time index: 1 = 2 ms, 63 = 80 s and more. */
+    public static function scale(): LogarithmIndex
+    {
+        static $scale = null;
+        return $scale ??= new LogarithmIndex(.002, 80, 63);
+    }
+
+    /**
+     * SQL for the seconds of `duration`, to be summed: averaging the indexes gives
+     * the geometric mean, which hides the slow requests that cost the most.
+     */
+    public static function sqlSeconds(): string
+    {
+        return self::scale()->sqlMiddle('`duration` >> 2');
+    }
+
+    /** Seconds a stored duration stands for. */
+    public static function seconds(int $packed): float
+    {
+        static $middles = [];
+        $index = $packed >> 2;
+        return $middles[$index] ??= self::scale()->index2middle($index);
+    }
+
+    /** Stored duration of grouped hits in one cache state (0-3) whose mean time is $seconds. */
+    public static function packMean(float $seconds, int $state): int
+    {
+        return self::pack(self::scale()->nearestIndex($seconds), $state);
+    }
+
     public function getAsInt(): int
     {
-        return $this->index * 4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
+        return self::pack($this->index, ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0));
+    }
+
+    /** A measured hit never packs to 0, which readers skip as a hit stored without its time. */
+    private static function pack(int $index, int $state): int
+    {
+        return (($state === 0 ? max(1, $index) : $index) << 2) + $state;
     }
 
     public static function factoryFromInt(int $int): static

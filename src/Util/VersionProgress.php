@@ -25,11 +25,17 @@ use AA\Later\HitcounterGroup;
  *    page has been echoed. Storing the page cache, writing the log and the hit
  *    row, the whole admin interface and everything cron does all happen after
  *    it stops. See TaskProgress for the queue side.
- *  - Durations are stored as a 6-bit logarithmic index, one step being 18.7%,
- *    and days older than a week are averaged per day. Averaging a cohort
- *    recovers the resolution the rounding costs, but the noise floor of a
- *    window-to-window comparison is still a few percent. The sign test in the
- *    last column, not the percentage, is what says whether a move is real.
+ *  - Durations are stored as a 6-bit logarithmic index, one step being 18.6%,
+ *    and days older than a week are averaged per day. An item's duration is the
+ *    mean time of its hits, so a single slow render moves an item with few hits
+ *    a lot; the cohort then averages the items' logs, so each page counts as one
+ *    relative change. Averaging a cohort recovers the resolution the rounding
+ *    costs, but the noise floor of a window-to-window comparison is still a few
+ *    percent. The sign test in the last column, not the percentage, is what
+ *    says whether a move is real.
+ *  - Days grouped by an AA older than mid-October 2026 hold the mean of the
+ *    logs, which runs lower than the mean time, so a window made of such days
+ *    reads too fast against the later ones.
  *  - Within the last week hits keep their time, so windows start at the change
  *    itself. Each window is measured over its freshest whole days only
  *    (ConfigTimeline::measuredSpan()): pages are built faster at night than in
@@ -60,9 +66,6 @@ final class VersionProgress
 
     /** The fewest items the sign test can call a move real with. @see ProgressPanel::isSignificant() */
     private const SIGN_TEST_MIN = 5;
-
-    /** One duration index step, as a ratio. @see LogarithmIndex::calculateStep() */
-    private const STEP = 1.18728;
 
     /** Cache states, as encoded by AA_Packtime: 0 = NC+M, 1 = NC+NM, 2 = C+M, 3 = C+NM. */
     private const STATE_UNCACHED = 0;
@@ -149,7 +152,7 @@ final class VersionProgress
     }
 
     /**
-     * Per item and hour, hits and summed duration index for each cache state.
+     * Per item and hour, hits and summed duration in seconds for each cache state.
      *
      * Hours rather than days so a window can start at the change itself. Only the
      * last week has them: hit_archive keeps older days as one row stamped at
@@ -167,8 +170,9 @@ final class VersionProgress
         foreach ([0, 1, 2, 3] as $state) {
             $cols[] = "SUM(CASE WHEN `duration` & 3 = $state THEN `hits` ELSE 0 END) AS `h$state`";
         }
+        $seconds = AA_Packtime::sqlSeconds();
         foreach ([self::STATE_UNCACHED, self::STATE_CACHED] as $state) {
-            $cols[] = "SUM(CASE WHEN `duration` & 3 = $state THEN (`duration` >> 2) * `hits` ELSE 0 END) AS `w$state`";
+            $cols[] = "SUM(CASE WHEN `duration` & 3 = $state THEN `hits` * $seconds ELSE 0 END) AS `w$state`";
         }
         // One row per item and grouped day, or item and hour in the last week: the
         // cap is that count, here so a later change to the period or the cohort
@@ -229,21 +233,21 @@ final class VersionProgress
             }
         }
 
-        // Each item's duration index per window, once: the cohort mean and the sign
+        // Each item's log time per window, once: the cohort mean and the sign
         // test below then provably read the same numbers.
-        $nc_index = self::indexPerWindow($per_item, self::STATE_UNCACHED);
-        $c_index  = self::indexPerWindow($per_item, self::STATE_CACHED);
+        $nc_log = self::logPerWindow($per_item, self::STATE_UNCACHED);
+        $c_log  = self::logPerWindow($per_item, self::STATE_CACHED);
 
         $rows = [];
         foreach ($intervals as $i => $interval) {
-            $idx_nc = self::mean($nc_index, $cohort, $i);
-            $idx_c  = self::mean($c_index, $cached_cohort, $i);
+            $log_nc = self::mean($nc_log, $cohort, $i);
+            $log_c  = self::mean($c_log, $cached_cohort, $i);
             $rows[] = [
                 'interval'  => $interval,
-                'idx_nc'    => $idx_nc,
-                'idx_c'     => $idx_c,
-                'ms_nc'     => self::indexToMs($idx_nc),
-                'ms_c'      => self::indexToMs($idx_c),
+                'log_nc'    => $log_nc,
+                'log_c'     => $log_c,
+                'ms_nc'     => self::logToMs($log_nc),
+                'ms_c'      => self::logToMs($log_c),
                 'cache_pct' => self::meanCachePct($per_item, $cohort, $i),
                 'hits_nc'   => self::sumHits($per_item, $cohort, $i, self::STATE_UNCACHED),
                 'hits_c'    => self::sumHits($per_item, $cached_cohort, $i, self::STATE_CACHED),
@@ -256,13 +260,13 @@ final class VersionProgress
             if ($i === 0 || $row['interval']['short']) {
                 continue;
             }
-            $rows[$i]['d_nc']     = self::ratioPct($row['idx_nc'], $rows[$i - 1]['idx_nc']);
-            $rows[$i]['d_c']      = self::ratioPct($row['idx_c'], $rows[$i - 1]['idx_c']);
+            $rows[$i]['d_nc']     = self::ratioPct($row['log_nc'], $rows[$i - 1]['log_nc']);
+            $rows[$i]['d_c']      = self::ratioPct($row['log_c'], $rows[$i - 1]['log_c']);
             $rows[$i]['d_cache']  = ($row['cache_pct'] === null || $rows[$i - 1]['cache_pct'] === null)
                 ? null
                 : $row['cache_pct'] - $rows[$i - 1]['cache_pct'];
-            $rows[$i]['agree_nc'] = ProgressPanel::agreement($nc_index, $cohort, $i);
-            $rows[$i]['agree_c']  = ProgressPanel::agreement($c_index, $cached_cohort, $i);
+            $rows[$i]['agree_nc'] = ProgressPanel::agreement($nc_log, $cohort, $i);
+            $rows[$i]['agree_c']  = ProgressPanel::agreement($c_log, $cached_cohort, $i);
         }
 
         // What each measured item rests on, so a reader can judge how far to trust a row.
@@ -390,26 +394,26 @@ final class VersionProgress
     }
 
     /**
-     * Each item's hit-weighted duration index in each window, for one cache state.
+     * Each item's log time in each window, for one cache state.
      *
      * @param  array $per_item  from foldIntoIntervals()
-     * @return array<string,array<int,?float>> item => window index => index, null where too quiet to average
+     * @return array<string,array<int,?float>> item => window index => log time, null where too quiet to average
      */
-    private static function indexPerWindow(array $per_item, int $state): array
+    private static function logPerWindow(array $per_item, int $state): array
     {
-        $index = [];
+        $log = [];
         foreach ($per_item as $sid => $windows) {
             foreach ($windows as $i => $window) {
-                $index[$sid][$i] = self::itemIndex($window, $state);
+                $log[$sid][$i] = self::itemLog($window, $state);
             }
         }
-        return $index;
+        return $log;
     }
 
     /**
      * Cohort mean of a per-item measurement in one window.
      *
-     * @param array<string,array<int,?float>> $values  from indexPerWindow()
+     * @param array<string,array<int,?float>> $values  from logPerWindow()
      */
     private static function mean(array $values, array $cohort, int $i): ?float
     {
@@ -424,16 +428,16 @@ final class VersionProgress
     }
 
     /**
-     * One item's hit-weighted duration index over a span, or null when there is
-     * not enough of it to average. The stored index is a coarse logarithmic byte,
-     * so a handful of hits is a quantised sample, not a measurement.
+     * Natural log of one item's mean time over a span, or null when there is not
+     * enough of it to average. The stored time is a coarse logarithmic byte, so a
+     * handful of hits is a quantised sample, not a measurement.
      */
-    private static function itemIndex(?array $window, int $state, int $min_hits = 1): ?float
+    private static function itemLog(?array $window, int $state, int $min_hits = 1): ?float
     {
         if (!$window || $window['h'][$state] < $min_hits) {
             return null;
         }
-        return $window['w'][$state] / $window['h'][$state];
+        return log($window['w'][$state] / $window['h'][$state]);
     }
 
     /** Cohort mean of the per-item share of hits served from the page cache. */
@@ -494,7 +498,7 @@ final class VersionProgress
         foreach ($cohort as $sid) {
             $values = [];
             foreach ($item_days[$sid] ?? [] as $counts) {
-                $value = self::itemIndex($counts, $state, self::MIN_HITS);
+                $value = self::itemLog($counts, $state, self::MIN_HITS);
                 if ($value !== null) {
                     $values[] = $value;
                 }
@@ -508,31 +512,31 @@ final class VersionProgress
         foreach ($labels as $day) {
             $deltas = [];
             foreach ($cohort as $sid) {
-                $value = self::itemIndex($item_days[$sid][$day] ?? null, $state, self::MIN_HITS);
+                $value = self::itemLog($item_days[$sid][$day] ?? null, $state, self::MIN_HITS);
                 if ($value !== null && isset($baseline[$sid])) {
                     $deltas[] = $value - $baseline[$sid];
                 }
             }
             $series[] = $deltas
-                ? round(100 * (self::STEP ** (array_sum($deltas) / count($deltas))), 1)
+                ? round(100 * exp(array_sum($deltas) / count($deltas)), 1)
                 : null;
         }
         return $series;
     }
 
-    /** Duration index to milliseconds. The index is logarithmic; see AA_Packtime. */
-    private static function indexToMs(?float $index): ?float
+    /** Log time in seconds to milliseconds. */
+    private static function logToMs(?float $log): ?float
     {
-        return $index === null ? null : (new LogarithmIndex(.002, 80, 63))->index2float($index) * 1000;
+        return $log === null ? null : exp($log) * 1000;
     }
 
-    /** Change between two duration indexes, in percent. Negative is faster. */
+    /** Change between two log times, in percent. Negative is faster. */
     private static function ratioPct(?float $now, ?float $before): ?float
     {
         if ($now === null || $before === null) {
             return null;
         }
-        return ((self::STEP ** ($now - $before)) - 1) * 100;
+        return (exp($now - $before) - 1) * 100;
     }
 
     // -------------------------------------------------------------------------
