@@ -481,10 +481,8 @@ if ($insert) {
     if (!$permok) {
         $result["permissions"] = _m("You are not allowed to update this item.");
     }
-    // as in the aa[] forms - except for a visitor who gave the item's password above (the check reads the posted one)
-    if ($slice->getProperty("permit_anonymous_edit") != ANONYMOUS_EDIT_PASSWORD) {
-        $content4id = AA\IO\Grabber\Form::withoutAccountFields($slice, $content4id);
-    }
+    // as in the aa[] forms, in the password mode too: its check above passes only for an item without a password
+    $content4id = AA\IO\Grabber\Form::withoutAccountFields($slice, $content4id);
 }
 
 // See doc/anonym.html for structure of $result, which is intended
