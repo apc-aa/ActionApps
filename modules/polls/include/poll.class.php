@@ -184,8 +184,6 @@ class AA_Poll
         $vote_invalid = false;
         $current_time = now();
 
-        $varset = new CVarset();
-
         // checkig for duplicated votes - ip_locking method
         if ($this->getProperty('locked') == 1) {
             $vote_invalid = "Locked";
@@ -201,8 +199,7 @@ class AA_Poll
             if (DB_AA::test('polls_ip_lock', [['poll_id', $poll_id], ['voters_ip', $voters_ip]])) {
                 $vote_invalid = "IP";
             } else {
-                $varset->resetFromRecord(['poll_id' => $poll_id, 'voters_ip' => $voters_ip, 'timestamp' => $current_time]);
-                $varset->doInsert('polls_ip_lock');
+                AA::Metabase()->doInsert('polls_ip_lock', ['poll_id' => $poll_id, 'voters_ip' => $voters_ip, 'timestamp' => $current_time]);
             }
         }
 
@@ -223,8 +220,7 @@ class AA_Poll
             AA::Pagecache()->invalidateFor($this->getModuleId());
 
             if ($this->getProperty('logging') == 1) {
-                $varset->resetFromRecord(['answer_id' => $vote_id, 'voters_ip' => $voters_ip, 'timestamp' => $current_time]);
-                $varset->doInsert('polls_log');
+                AA::Metabase()->doInsert('polls_log', ['answer_id' => $vote_id, 'voters_ip' => $voters_ip, 'timestamp' => $current_time]);
             }
         }
         return !(bool) $vote_invalid;

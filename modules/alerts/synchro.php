@@ -80,9 +80,9 @@ if ($change_to_cmd && ($change_to != $collectionprop["slice_id"])) {
         echo "<b>" . delete_fields_from_slice($collectionid, $collectionprop["slice_id"]) . "</b><br><br>";
     }
     if ($change_to) {
-        $db->query("UPDATE alerts_collection SET slice_id=" . xpack_id($change_to) . " WHERE id='$collectionid'");
+        DB_AA::update('alerts_collection', [['slice_id', $change_to, 'l']], [['id', $collectionid]]);
     } else {
-        $db->query("UPDATE alerts_collection SET slice_id = NULL WHERE id='$collectionid'");
+        DB_AA::sql("UPDATE alerts_collection SET slice_id = NULL", [['id', $collectionid]]);
     }
     $collectionprop["slice_id"] = $change_to;
 }

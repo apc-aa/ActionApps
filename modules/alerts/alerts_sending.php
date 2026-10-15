@@ -637,8 +637,7 @@ function initialize_last(): void
     $init["monthly"]   = mktime($now['hours'], $now['minutes'], $now['seconds'], $now['mon'] - 1);
     $init["irregular"] = 0;
 
-    $db2 = getDB();
-
+    $missing = [];
     $hos = get_howoften_options();
     foreach ($hos as $ho => $v) {
         // fill alerts_collection_howoften.last in cases the row for this period
@@ -646,8 +645,7 @@ function initialize_last(): void
         foreach (DB_AA::select([], "SELECT C.id FROM alerts_collection C LEFT JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id AND howoften='$ho'
             WHERE last IS NULL") as $row) {
-            $db2->query("INSERT INTO alerts_collection_howoften (collectionid, howoften, last)
-                VALUES ('" . $row["id"] . "', '$ho', " . $init[$ho] . ")");
+            $missing[] = ['collectionid' => $row["id"], 'howoften' => $ho, 'last' => $init[$ho]];
         }
 
         // the same as above, but for rows, which exist but with last=0
@@ -661,7 +659,9 @@ function initialize_last(): void
             //     ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
         }
     }
-    freeDB($db2);
+    if ($missing) {
+        AA::Metabase()->doInsertMulti('alerts_collection_howoften', $missing);
+    }
 }
 
 // -------------------------------------------------------------------------------------

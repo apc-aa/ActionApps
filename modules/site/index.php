@@ -119,17 +119,11 @@ if ($addcond) {
 } elseif ($delcond) {
     $tree->removeCondition($current_spot_id, $delcond);
 } elseif ($content || $name) {
-    $varset     = new CVarset();
-    $varset->add("content", "text", $content);
-
     $db_id = DB_AA::select1('id', 'SELECT `id` FROM `site_spot`', [ ['site_id', $module_id, 'l'], ['spot_id', $current_spot_id] ]);
     if ($db_id) {
-        $varset->addkey("id", "number", $db_id);
-        $varset->doUpdate('site_spot', null, "S.$db_id");
+        AA::Metabase()->doUpdate('site_spot', ['id' => $db_id, 'content' => $content], null, "S.$db_id");
     } else {
-        $varset->add("site_id", "unpacked", $module_id);
-        $varset->add("spot_id", "number", $current_spot_id);
-        $varset->doInsert('site_spot');
+        AA::Metabase()->doInsert('site_spot', ['site_id' => $module_id, 'spot_id' => $current_spot_id, 'content' => $content]);
     }
 
     // $SQL = "SELECT id FROM site_spot WHERE site_id='$p_module_id' AND spot_id='$r_spot_id'";

@@ -97,11 +97,7 @@ if ($do_save && is_array($idx)) {
 }
 if ($add && $add_filterid && isset($available[$add_filterid])
         && !DB_AA::test('alerts_collection_filter', [['collectionid', $collectionid, 's'], ['filterid', $add_filterid, 'i']])) {
-    $varset = new CVarset();
-    $varset->set('collectionid', $collectionid, 'text');
-    $varset->set('filterid', $add_filterid, 'number');
-    $varset->set('myindex', $add_myindex ?: 1, 'number');
-    $varset->doInsert('alerts_collection_filter');
+    AA::Metabase()->doInsert('alerts_collection_filter', ['collectionid' => $collectionid, 'filterid' => $add_filterid, 'myindex' => $add_myindex ?: 1]);
 }
 
 // ---- current selections ----------------------------------------------------

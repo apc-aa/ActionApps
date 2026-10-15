@@ -123,12 +123,7 @@ if ($is_add ? $insert : $update) {
                 [['module_id', $module_id, 'l']],
             );
         } else {
-            $cv = new CVarset();
-            $cv->set('id', new_collection_id(), 'text');
-            $cv->set('module_id', $module_id, 'unpacked');
-            $cv->set('emailid_welcome', $emailid_welcome, 'number');
-            $cv->set('emailid_alert', $emailid_alert, 'number');
-            $cv->doInsert('alerts_collection');
+            AA::Metabase()->doInsert('alerts_collection', ['id' => new_collection_id(), 'module_id' => $module_id, 'emailid_welcome' => $emailid_welcome, 'emailid_alert' => $emailid_alert]);
         }
 
         AA::Pagecache()->invalidateFor($module_id);  // invalidate cached values for this slice

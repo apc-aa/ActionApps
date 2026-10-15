@@ -93,8 +93,6 @@ if ($insert  || $update ) {
     $datectrl->update();                   // updates datectrl
     $expiry_date   = $datectrl->get_date();
 
-    $varset = new CVarset();
-
     $data = [
         //'poll_id' => $poll_id,
         'module_id' => AA::$module_id,
@@ -176,13 +174,10 @@ if ($insert  || $update ) {
         }
     }
 
-    $varset->clear();
-    DB_AA::delete('polls_answer', [['poll_id', $poll_id]]);
-
-    foreach ($answers2store as $record) {
-        $varset->resetFromRecord($record);
-        $varset->doINSERT('polls_answer');
-    }
+    DB_AA::transaction(static function () use ($poll_id, $answers2store) {
+        DB_AA::delete('polls_answer', [['poll_id', $poll_id]]);
+        AA::Metabase()->doInsertMulti('polls_answer', $answers2store);
+    });
     // clear cache
     AA::Pagecache()->invalidateFor([$poll_id,AA::$module_id]);    // invalidate this concrete poll and also the list of polls in this module, if used
 

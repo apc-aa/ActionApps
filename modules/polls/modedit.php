@@ -26,7 +26,6 @@ https://www.apc.org/
 */
 
 use AA\IO\DB\DB_AA;
-use AA\Optimize\AddPolls;
 use AA\Util\InputVars;
 
 // Creating a module: slicedit.php always sends no_slice_id, the template only when one exists already.
@@ -166,38 +165,38 @@ if ($is_add ? $insert : $update) {
                 break;
             }
         } else { // insert (add)
-            $varset->clear();
-
             $p_template_id = ($template['P'] ? pack_id(substr($template['P'], 1)) : 'PollsTemplate...');
 
-            if ($row = DB_AA::select1([], 'SELECT * FROM polls', [['module_id', $p_template_id, 'b'], ['status_code', 0, 'i']])) {
-                $varset->resetFromRecord($row);
-            } else {
+            if (!($row = DB_AA::select1([], 'SELECT * FROM polls', [['module_id', $p_template_id, 'b'], ['status_code', 0, 'i']]))) {
                 warn("Bad template id");
-                $varset->resetFromRecord(AddPolls::POLLS_DEFAULT_VALUES);
+                $row = [];
             }
-            $varset->set("id", new_id(), "text");
-            $varset->set("module_id", $module_id, "unpacked");
-            $varset->set("logging", $logging, "number");
-            $varset->set("ip_locking", $ip_locking, "number");
-            $varset->set("ip_lock_timeout", $ip_lock_timeout, "number");
-            $varset->set("set_cookies", $set_cookies, "number");
-            $varset->set("cookies_prefix", $cookies_prefix, "text");
-            $varset->set("status_code", 0, "number");
-            $varset->set("headline", '', "text");
-            $varset->set("params", '', "text");
-            $varset->set("publish_date", now(), "number");
-
-            // create new poll
-            $varset->doInsert('polls');
+            // a NULL of the template (design ids) is stored as ''
+            $poll = array_merge(array_map(static fn($v) => $v ?? '', $row), [
+                'id'              => new_id(),
+                'module_id'       => $module_id,
+                'logging'         => $logging,
+                'ip_locking'      => $ip_locking,
+                'ip_lock_timeout' => $ip_lock_timeout,
+                'set_cookies'     => $set_cookies,
+                'cookies_prefix'  => $cookies_prefix,
+                'status_code'     => 0,
+                'headline'        => '',
+                'params'          => '',
+                'publish_date'    => now(),
+            ]);
 
             // copy design themes...
+            $designs = [];
             foreach (DB_AA::select([], 'SELECT * FROM polls_design', [['module_id', $p_template_id, 'b']]) as $row) {
-                $varset->resetFromRecord($row);
-                $varset->set("module_id", $module_id, "unpacked");
-                $varset->set('id', new_id(), 'text');
-                $varset->doInsert('polls_design');
+                $designs[] = ['module_id' => $module_id, 'id' => new_id()] + $row;
             }
+
+            // create new poll
+            DB_AA::transaction(static function () use ($poll, $designs) {
+                AA::Metabase()->doInsert('polls', $poll);
+                AA::Metabase()->doInsertMulti('polls_design', $designs);
+            });
         }
         AA::Pagecache()->invalidateFor($module_id);  // invalidate old cached values for this slice
     } while (false);
