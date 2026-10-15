@@ -552,7 +552,7 @@ class LdapPermsToSql extends AbstractOptimize
         if (!$hash) {
             return;
         }
-        DB_AA::update('users', [['password', $hash]], [['id', $sql_id, 'i']]);
+        AA::Metabase()->doUpdate('users', ['id' => $sql_id, 'password' => $hash]);
     }
 
     //----- mapping table helpers

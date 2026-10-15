@@ -61,7 +61,7 @@ $collectionid = $GLOBALS['collectionid'];
 
 // choose which alert email template is sent for this collection (saved on alerts_collection)
 if ($set_alert) {
-    DB_AA::update('alerts_collection', [['emailid_alert', $emailid_alert, 'i']], [['id', $collectionid, 's']]);
+    AA::Metabase()->doUpdate('alerts_collection', ['id' => $collectionid, 'emailid_alert' => $emailid_alert]);
 }
 $current_alert = (int) DB_AA::select1('emailid_alert', "SELECT emailid_alert FROM alerts_collection", [['id', $collectionid, 's']]);
 

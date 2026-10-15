@@ -1344,7 +1344,7 @@ class AA_Fields implements IteratorAggregate, Countable
 
         foreach ($rows as $fid => $row) {
             if ($fid !== 'New_Field') {
-                DB_AA::update('field', [['name', $row['name'], 's'], ['input_pri', $row['input_pri'], 'i'], ['required', $row['required'], 'i'], ['input_show', $row['input_show'], 'i']], [['id', $fid], ['slice_id', $slice_id, 'l']]);
+                AA::Metabase()->doUpdate('field', ['id' => $fid, 'slice_id' => $slice_id] + $row);
                 continue;
             }
             [$tpl_slice, $tpl_id] = array_pad(explode('-', $ftype, 2), 2, '');
