@@ -84,11 +84,7 @@ try {
     // array ( '' => 153, )
     $mlxl = InputVars::stringPOST('mlxl'); // empty
     // array ( 'aa[n1_4085d…' => 2, 'aa[ua723bc0…' => 2, )-array ( '' => 150, 'aa[n1_4085d…' => 1, 'aa[ua723bc0…' => 2, )
-    $openervar = InputVars::stringGETPOST('openervar'); // -
-    // a form field name or /rim/<sid>/<fid>/<base_id>; it goes into a script and an AA expression in CloseDialog()
-    if (!preg_match('~^[A-Za-z0-9_.\[\]/-]*$~D', $openervar)) {
-        $openervar = '';
-    }
+    $openervar = InputVars::stringGETPOST('openervar'); // - checked below, after the globals from the request
     // array ( 'close_dialog' => 9, )
     $return_url = InputVars::stringGETPOST('return_url');
     // array ( 20 => 1, 1 => 8, 6 => 2, 27 => 17, 8 => 2, 31 => 12, )
@@ -168,6 +164,9 @@ if ($encap) {
 
 // encap is already read; slice_id stays the one init_page checked; r_slice_view_url (the redirect after saving) is the slice's own URL
 InputVars::QuoteVars("post", ['encap' => 1, 'slice_id' => 1, 'r_slice_view_url' => 1]);
+// a form field name or /rim/<sid>/<fid>/<base_id>; it goes into a script and an AA expression in CloseDialog() -
+// checked only here, QuoteVars() and add_vars() above set it again from the request
+$openervar = (is_string($openervar) && preg_match('~^[A-Za-z0-9_.\[\]/-]*$~D', $openervar)) ? $openervar : '';
 AA::setEncoding(Langs::getCharset());
 
 $insert  = false;
