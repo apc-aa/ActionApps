@@ -109,6 +109,17 @@ final class LoginThrottleTest extends TestCase
         $this->assertSame(60, LoginThrottle::wait($rows, 'admin', self::IP, self::NOW), 'still 20 failures from the address');
     }
 
+    public function test_a_name_a_superadmin_let_in_forgets_its_failures_from_every_address(): void
+    {
+        $rows = array_merge(self::failures(22, 'jana', 60), [self::row(30, 'Jana', '198.51.100.9', '1', LoginThrottle::CLEARED)]);
+        $this->assertSame(0, LoginThrottle::wait($rows, 'jana', self::IP, self::NOW), 'neither the name nor the address counter');
+        $this->assertSame(180, LoginThrottle::wait($rows, 'petr', self::IP, self::NOW), 'another name still waits for the address');
+        foreach ([20, 15, 10, 5, 0] as $ago) {
+            $rows[] = self::row($ago, 'jana');
+        }
+        $this->assertSame(30, LoginThrottle::wait($rows, 'jana', self::IP, self::NOW), 'failures after it count again');
+    }
+
     public function test_a_template_trying_name_after_name_waits_after_100_but_the_logins_of_the_address_do_not(): void
     {
         $rows = [];

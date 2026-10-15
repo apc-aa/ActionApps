@@ -63,12 +63,12 @@ class CheckLoginAddresses extends AbstractOptimize
             $needles = array_map(static fn(string $address): string => ':' . str_replace(':', '_', $address) . ':', array_keys($slowed));
             $logins  = DB_AA::select([], 'SELECT `selector`, `params` FROM `log`', array_merge($login, [['selector', ':', 'NOT BEGIN'], ['selector', $needles, 'CONTAIN']]), null, null, 10000);
             foreach ($logins as $row) {
-                if (isset($slowed[$address = self::address((string) $row['selector'])])) {
+                if (isset($slowed[$address = LoginThrottle::address((string) $row['selector'])])) {
                     $slowed[$address][mb_strtolower((string) $row['params'], 'UTF-8')] = true;
                 }
             }
         }
-        return self::assess((int) ($spread['addresses'] ?? 0), (int) ($spread['names'] ?? 0), self::address((string) ($spread['one'] ?? '')), array_map('count', $slowed));
+        return self::assess((int) ($spread['addresses'] ?? 0), (int) ($spread['names'] ?? 0), LoginThrottle::address((string) ($spread['one'] ?? '')), array_map('count', $slowed));
     }
 
     /**
@@ -110,11 +110,5 @@ class CheckLoginAddresses extends AbstractOptimize
     private static function proxyAdvice(string $address): string
     {
         return _m('If %1 is a proxy in front of AA, add it to AA_TRUSTED_PROXIES in include/config.php: %2 - AA then counts each visitor by their own address.', [$address, "define('AA_TRUSTED_PROXIES', ['127.0.0.1', '::1', '" . $address . "']);"]);
-    }
-
-    /** the visitor address of a LOGIN selector, as REMOTE_ADDR had it */
-    private static function address(string $selector): string
-    {
-        return str_replace('_', ':', (string) (ParamExplode($selector)[2] ?? ''));
     }
 }

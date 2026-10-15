@@ -57,8 +57,9 @@ ITEM_DEL        item_id
 M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
 LOGIN           uid:module_id:ip:uri:Qa         user name as typed             // a login (AA_Auth) or a failed check of a password (empty uid, AA_Perm::authenticateUsername() - LoginThrottle counts them); never deleted
 FREE_LOGIN      user name                                                      // a login of a module's public account (?free=&freepwd=), once a day instead of a LOGIN row per visit (AA_Auth, LogOnce)
-LOGIN_TPL       :module_id:ip:uri:Qa            user name                      // a failed check of credentials a template passed ({jwtencode}, {setsecret}) - LoginThrottle counts it only for the name
+LOGIN_TPL       :module_id:ip:uri:Qa            user name                      // a failed check of credentials a template passed ({jwtencode}, {setsecret}) - LoginThrottle counts it for the name, and for the address only against template checks
 LOGIN_THR       refused|allowed:client IP                                      // a login made to wait after repeated failures (allowed: the protection is off), once a day (AA\Security\LoginThrottle, ProtectionLog)
+LOGIN_CLR       uid:module_id:ip:uri:Qa         user name                      // a superadmin let the name in (Security page): its failures before stop counting, from any address (LoginThrottle::allow())
 STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
 NIGHTLY         run | check:spec | page | url   Nrun:… | Nran:… | Nf:… | Ne:…  // the nightly test's findings as State Check shows them: every push writes the whole current state as one set of rows with one time (AA\Optimize\NightlyLog)
 ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)

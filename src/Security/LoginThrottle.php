@@ -15,7 +15,7 @@ use AA_Logentry;
  * LOGIN rows of the last 12 hours from the visitor's address: after the free failures each next attempt
  * waits since the last one, twice as long each time, up to a cap. Two counters: the address alone (one
  * address trying many names) and the address with the typed name (one name guessed). None counts the name
- * from every address, so nobody can slow down someone else's login.
+ * from every address, so nobody can slow down someone else's login. A superadmin can let a name in at once (allow()).
  * A refused attempt checks no password and writes no LOGIN row, so an attack does not grow what is counted;
  * a few requests sent at once may still pass over the limit.
  */
@@ -25,6 +25,8 @@ final class LoginThrottle
     public const EVENT = 'LOGIN_THR';
     /** log.type of a failed check of credentials a template passed - it counts only for the name */
     public const TEMPLATE = 'LOGIN_TPL';
+    /** log.type of a name a superadmin let in - the failures before it no longer hold that name back, from any address */
+    public const CLEARED = 'LOGIN_CLR';
 
     private const WINDOW = 43200;
     /** [free failures, first wait, longest wait] in seconds */
@@ -32,8 +34,12 @@ final class LoginThrottle
     private const ACCOUNT = [5, 30, 900];
     /** checks a template runs, from one address - stops a template that tries name after name, not a page with wrong example credentials */
     private const TEMPLATES = [100, 60, 3600];
+    private const COUNTED   = ['LOGIN', self::TEMPLATE];
     /** a failed check answers this long after it started - above the costliest stored hash (bcrypt cost 14: 0.7 s) */
     private const FAILURE_SECONDS = 1.0;
+    /** failed logins status() reads at most, and the addresses it works out the wait for (a query each) */
+    private const STATUS_ROWS      = 10000;
+    private const STATUS_ADDRESSES = 20;
 
     /** seconds the refused login of this request has to wait */
     private static int $wait = 0;
@@ -51,9 +57,8 @@ final class LoginThrottle
         if (is_null($needle = self::needle($ip))) {
             return true;   // command line: nobody to count
         }
-        $now  = time();
-        $rows = DB_AA::select([], 'SELECT `time`, `type`, `selector`, `params` FROM `log`', [['type', ['LOGIN', self::TEMPLATE]], ['time', $now - self::WINDOW, '>='], ['selector', $needle, 'CONTAIN']], ['time', 'id']);
-        if (($wait = self::wait($rows, $username, $ip, $now, $template)) === 0) {
+        $now = time();
+        if (($wait = self::wait(self::rows($needle, $now), $username, $ip, $now, $template)) === 0) {
             return true;
         }
         $allowed = !Settings::isOn(Protection::LoginThrottle);
@@ -74,6 +79,40 @@ final class LoginThrottle
     public static function failed(string $username, bool $template = false): void
     {
         AA_Log::write($template ? self::TEMPLATE : 'LOGIN', AA_Log::context(''), self::stored($username));
+    }
+
+    /** The next login of $username is checked at once, from any address; $by_uid is the superadmin who let it in. */
+    public static function allow(string $username, string $by_uid): void
+    {
+        AA_Log::write(self::CLEARED, AA_Log::context($by_uid), self::stored($username));
+    }
+
+    /**
+     * The failed logins of $username in the last 12 hours by address (IPv6 by its network /64, as counted), newest
+     * first, and how long its next login from there waits - for the superadmin helping the user. A login refused only
+     * for the failures of other names from its address is not among them.
+     * @return array{0: list<array{address: string, failures: int, last: int, wait: int}>, 1: int} the newest
+     *         STATUS_ADDRESSES addresses, and how many there are
+     */
+    public static function status(string $username, int $now): array
+    {
+        $name   = self::nameKey($username);
+        $groups = [];
+        // log.params is binary - converted, it compares in any letter case; the index range on type_time comes first
+        $where = [['type', self::COUNTED], ['time', $now - self::WINDOW, '>='], ['selector', ':', 'BEGIN'], ['CONVERT(`params` USING utf8mb4)', trim(self::stored($username))]];
+        foreach (DB_AA::select([], 'SELECT `time`, `selector`, `params` FROM `log`', $where, ['time-'], null, self::STATUS_ROWS) as $row) {
+            $address = self::address((string) $row['selector']);
+            if ((self::nameKey((string) $row['params']) === $name) && !is_null($source = self::source($address))) {
+                $groups[$source] ??= ['address' => self::shown($source), 'failures' => 0, 'last' => (int) $row['time'], 'sample' => $address];
+                ++$groups[$source]['failures'];
+            }
+        }
+        $status = [];
+        foreach (array_slice($groups, 0, self::STATUS_ADDRESSES) as $group) {
+            $wait     = self::wait(self::rows((string) self::needle($group['sample']), $now), $username, $group['sample'], $now);
+            $status[] = ['address' => $group['address'], 'failures' => $group['failures'], 'last' => $group['last'], 'wait' => $wait];
+        }
+        return [$status, count($groups)];
     }
 
     /**
@@ -119,8 +158,8 @@ final class LoginThrottle
 
     /**
      * Seconds the login of $username from $ip has to wait at $now; 0 = check it now.
-     * @param list<array{time: int|string, type?: string, selector: string, params: ?string}> $rows LOGIN and
-     *        TEMPLATE rows, oldest first; rows of other addresses are skipped
+     * @param list<array{time: int|string, type?: string, selector: string, params: ?string}> $rows LOGIN, TEMPLATE
+     *        and CLEARED rows, oldest first; rows of other addresses are skipped
      * @param bool $template a check of credentials a template passed - the address counts its template checks too
      */
     public static function wait(array $rows, string $username, string $ip, int $now, bool $template = false): int
@@ -129,12 +168,18 @@ final class LoginThrottle
         $name    = self::nameKey($username);
         $by_source = $by_name = $by_template = [];
         foreach ($rows as $row) {
+            $same_name = (self::nameKey((string) $row['params']) === $name);
+            if (($row['type'] ?? '') === self::CLEARED) {
+                if ($same_name) {
+                    $by_source = $by_name = $by_template = [];   // let in by a superadmin - from wherever the failures came
+                }
+                continue;
+            }
             [$uid, , $address] = array_pad(ParamExplode((string) $row['selector']), 3, '');
             // a row without a name is no guess (older AA logged even an empty login form)
             if ((self::source(str_replace('_', ':', (string) $address)) !== $source) || ((string) $row['params'] === '')) {
                 continue;
             }
-            $same_name = (self::nameKey((string) $row['params']) === $name);
             if ($uid !== '') {
                 if ($same_name) {
                     $by_name = [];   // the right password forgets the failures before it - of the name, not of the address
@@ -165,6 +210,25 @@ final class LoginThrottle
             return 0;
         }
         return max(0, end($failures) + min($longest, $first * 2 ** min($over, 20)) - $now);
+    }
+
+    /** the LOGIN and TEMPLATE rows whose selector contains $needle, and the names let in, of the window, oldest first */
+    private static function rows(string $needle, int $now): array
+    {
+        $counted = [['type', self::COUNTED], ['selector', $needle, 'CONTAIN']];
+        return DB_AA::select([], 'SELECT `time`, `type`, `selector`, `params` FROM `log`', [['time', $now - self::WINDOW, '>='], [null, [$counted, [['type', self::CLEARED]]], 'OR']], ['time', 'id']);
+    }
+
+    /** the visitor address of a LOGIN row, as REMOTE_ADDR had it (AA_Log::context() writes "_" for ":") */
+    public static function address(string $selector): string
+    {
+        return str_replace('_', ':', (string) (ParamExplode($selector)[2] ?? ''));
+    }
+
+    /** an address as counted, for people: IPv4 as it is, IPv6 as its network /64 */
+    private static function shown(string $source): string
+    {
+        return (strlen($source) === 4) ? (string) inet_ntop($source) : inet_ntop($source . str_repeat("\0", 8)) . '/64';
     }
 
     /** what an address counts as: an IPv4 address, an IPv6 /64 (one network - a wider prefix may hold other customers); null for none */

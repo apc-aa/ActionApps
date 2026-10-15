@@ -58,9 +58,11 @@ namespace Tests\Unit\Legacy {
             LogOnce::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb()];
             $this->checked = [];
-            RecordingDb::$answer = static fn(string $sql): array => str_starts_with($sql, 'SELECT `time`, `type`, `selector`, `params` FROM `log`')
-                ? array_values(array_filter(RecordingDb::inserts('log'), static fn(array $row): bool => in_array($row['type'], ['LOGIN', LoginThrottle::TEMPLATE], true)))
-                : [];
+            RecordingDb::$answer = static fn(string $sql): array => match (true) {
+                str_starts_with($sql, 'SELECT `time`, `type`, `selector`, `params` FROM `log`') => self::logged(['LOGIN', LoginThrottle::TEMPLATE, LoginThrottle::CLEARED]),
+                str_starts_with($sql, 'SELECT `time`, `selector`, `params` FROM `log`')         => array_reverse(array_filter(self::logged(['LOGIN', LoginThrottle::TEMPLATE]), static fn(array $row): bool => str_starts_with($row['selector'], ':'))),
+                default                                                                         => [],
+            };
             unset($_SERVER['HTTP_SEC_FETCH_SITE'], $_SERVER['HTTP_SEC_FETCH_DEST']);
             $_SERVER['REMOTE_ADDR'] = '192.0.2.1';
             $_SERVER['HTTP_HOST']   = 'aa.example.org';
@@ -83,6 +85,12 @@ namespace Tests\Unit\Legacy {
                 $checked[] = $password;
                 return (($username === 'admin') && AA_Perm::comparePwds($password, $hash)) ? '7' : false;
             }));
+        }
+
+        /** the log rows of these types written so far, oldest first */
+        private static function logged(array $types): array
+        {
+            return array_values(array_filter(RecordingDb::inserts('log'), static fn(array $row): bool => in_array($row['type'], $types, true)));
         }
 
         /** [type, selector, params] of the log rows written so far */
@@ -177,6 +185,34 @@ namespace Tests\Unit\Legacy {
 
             $_SERVER['HTTP_SEC_FETCH_DEST'] = 'document';   // a link from another site
             $this->assertSame('7', $this->perm()->authenticateUsername('admin', 'pw'));
+        }
+
+        public function test_a_superadmin_lets_a_waiting_name_in(): void
+        {
+            $this->failedBefore(5, 'admin');
+            [[$one], $addresses] = LoginThrottle::status('Admin', time());
+            $this->assertSame(1, $addresses);
+            $this->assertSame(['192.0.2.1', 5], [$one['address'], $one['failures']]);
+            $this->assertGreaterThan(0, $one['wait']);
+            $this->assertFalse($this->perm()->authenticateUsername('admin', 'pw'), 'waits');
+
+            $_SERVER['REMOTE_ADDR'] = '198.51.100.9';   // the superadmin's
+            LoginThrottle::allow('ADMIN', '1');
+            $_SERVER['REMOTE_ADDR'] = '192.0.2.1';
+            $this->assertSame(0, LoginThrottle::status('admin', time())[0][0]['wait']);
+            $this->assertSame('7', $this->perm()->authenticateUsername('admin', 'pw'));
+            $this->assertStringContainsString("OR type = 'LOGIN_CLR')", implode("\n", RecordingDb::$log), 'the rows of the address and the names let in from anywhere');
+        }
+
+        public function test_the_status_shows_an_ipv6_network_as_one_address_as_it_is_counted(): void
+        {
+            foreach (['2001:db8::1', '2001:db8::2', '192.0.2.1'] as $address) {
+                $_SERVER['REMOTE_ADDR'] = $address;
+                $this->perm()->authenticateUsername('admin', 'guess');
+            }
+            [$status, $addresses] = LoginThrottle::status('admin', time());
+            $this->assertSame(2, $addresses);
+            $this->assertSame([['192.0.2.1', 1], ['2001:db8::/64', 2]], array_map(static fn(array $one): array => [$one['address'], $one['failures']], $status), 'newest first');
         }
 
         public function test_a_script_without_an_address_is_not_counted(): void

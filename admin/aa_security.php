@@ -28,6 +28,7 @@
 
 use AA\Central\ResponderPolicy;
 use AA\Optimize\CheckSecurityProtections;
+use AA\Security\LoginThrottle;
 use AA\Security\Protection;
 use AA\Security\ProtectionLog;
 use AA\Security\Settings;
@@ -39,12 +40,16 @@ require_once __DIR__ . "/../include/init_page.php";
 require_once __DIR__ . "/../include/formutil.php";
 
 const SECURITY_TOKEN = 'aa-security';
+const SECURITY_LOGIN_TOKEN = 'aa-security-login';
 
 try {
     $save  = InputVars::boolPOST('save');
     $token = InputVars::stringPOST('token');
     $off   = InputVars::arrayPOST('off');
     $saved = InputVars::intGET('saved');
+    $login_name = InputVars::stringGET('login_name');
+    $allowed    = InputVars::boolGET('allowed');
+    $allow      = InputVars::stringPOST('allow_login');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
@@ -60,6 +65,48 @@ if ($save) {
     }
     $changed = Settings::store(array_values(array_filter(array_map(static fn($v) => is_string($v) ? Protection::tryFrom($v) : null, $off))));
     go_url(get_admin_url('aa_security.php', ['saved' => count($changed)]));
+}
+
+if ($allow !== '') {
+    if (ResponderPolicy::isForeignBrowserRequest($_SERVER) || !FormToken::checkPost(SECURITY_LOGIN_TOKEN, $token, $_SERVER)) {
+        AA_Adminpageutil::MsgPageMenu(get_admin_url('aa_security.php'), _m('The form has expired; reload the page and try again.'), 'admin');
+    }
+    LoginThrottle::allow($allow, AuthGetUid());
+    go_url(get_admin_url('aa_security.php', ['login_name' => $allow, 'allowed' => 1]) . '#aa-security-login');
+}
+
+/** the failed logins of one name and the button that lets it in - for a superadmin helping someone who cannot log in */
+function security_login(string $login_name): string
+{
+    $html = '<section class="aa-security-login" id="aa-security-login"><h2>' . _m('Someone cannot log in after failed attempts') . '</h2>'
+        . '<p>' . _m('Type their login name to see its failed logins of the last 12 hours, and let it log in at once.') . '</p>'
+        . '<form method="get" action="' . safe(AA_INSTAL_PATH . 'admin/aa_security.php') . '#aa-security-login">'
+        . (is_long_id(AA::$module_id) ? '<input type="hidden" name="module_id" value="' . safe(AA::$module_id) . '">' : '')
+        . '<label for="aa-security-login-name">' . _m('Login name') . '</label> '
+        . '<input type="text" id="aa-security-login-name" name="login_name" value="' . safe($login_name) . '" autocomplete="off" required> '
+        . '<button type="submit">' . _m('Show') . '</button></form>';
+    if ($login_name === '') {
+        return $html . '</section>';
+    }
+    [$status, $addresses] = LoginThrottle::status($login_name, now());
+    $off = !Settings::isOn(Protection::LoginThrottle);
+    if (!$status) {
+        $html .= '<p>' . _m('No failed login of %1 in the last 12 hours. If the login is refused all the same, other names failed from the same address; letting %1 in lets it through as well.', [safe($login_name)]) . '</p>';
+    } else {
+        $html .= '<table class="aa-table aa-table-simple aa-w-no-full"><tr><th>' . _m('Address') . '</th><th>' . _m('Failed logins') . '</th><th>' . _m('Last one') . '</th><th>' . _m('Next login') . '</th></tr>';
+        foreach ($status as $one) {
+            $html .= '<tr><td>' . safe($one['address']) . '</td><td>' . $one['failures'] . '</td><td>' . date('Y-m-d H:i', $one['last']) . '</td><td>'
+                . (($one['wait'] && !$off) ? _m('waits %1 min', [(int) ceil($one['wait'] / 60)]) : _m('checked at once')) . '</td></tr>';
+        }
+        $html .= '</table>';
+        if ($addresses > count($status)) {
+            $html .= '<p>' . _m('%1 more addresses tried this name.', [$addresses - count($status)]) . '</p>';
+        }
+    }
+    return $html . '<form method="post" action="' . safe(get_admin_url('aa_security.php')) . '">' . FormToken::field(SECURITY_LOGIN_TOKEN)
+        . '<input type="hidden" name="allow_login" value="' . safe($login_name) . '">'
+        . '<button type="submit">' . _m('Let %1 log in now', [safe($login_name)]) . '</button></form>'
+        . '<p class="aa-security-scope">' . _m('Its failed logins until now stop counting, from every address; the log keeps who let it in. After 5 more wrong passwords it waits again.') . '</p></section>';
 }
 
 /** what the log shows of the protection at work - or that AA does not know */
@@ -118,6 +165,8 @@ $apage->addRequire('
     .aa-security-switch .aa-security-note { display: none; margin-top: 0.5em; font-size: var(--sz-s); }
     li:has(.aa-security-switch input:checked) .aa-security-note { display: block; }
     .aa-security-actions { margin-top: 1.2em; }
+    .aa-security-login { max-width: 56rem; margin-top: 2.5em; }
+    .aa-security-login form { margin: 0.6em 0; }
     @media (max-width: 50rem) {
         .aa-security > li { grid-template-columns: minmax(0, 1fr); }
         .aa-security-switch { grid-column: 1; grid-row: auto; }
@@ -126,6 +175,11 @@ $apage->addRequire('
 if ($saved > 0) {
     $apage->addRequire('aa-jslib');
     $apage->addRequire("AA_Message('" . escape4js(_m('Saved. Changes are written to the log.')) . "', 'ok')", 'AA_Req_Load');
+}
+if ($allowed && ($login_name !== '')) {
+    $apage->addRequire('aa-jslib');
+    // no name in it - the link of anyone could put one there
+    $apage->addRequire("AA_Message('" . escape4js(_m('Done: the failed logins of the name below no longer count.')) . "', 'ok')", 'AA_Req_Load');
 }
 $apage->printHead();
 
@@ -151,5 +205,7 @@ foreach (Protection::cases() as $protection) {
 echo '</ul>';
 echo '<p class="aa-security-actions"><button type="submit" name="save" value="1">' . _m('Save') . '</button></p>';
 echo '</form>';
+
+echo security_login($login_name);
 
 $apage->printFoot();
