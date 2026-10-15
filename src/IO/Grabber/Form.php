@@ -408,8 +408,8 @@ class Form extends AbstractGrabber
     }
 
     /** Fields an anonymous edit of an existing item must not change: the flags and the author of any
-     *  item, a password and a 2FA secret, and the login of a reader - they give the account or the item
-     *  away.
+     *  item, a password and a 2FA secret, and the login and e-mail of a reader - they give the account
+     *  or the item away.
      */
     private static function isAccountField(AA_Slice $slice, AA_Field $field): bool
     {
@@ -418,8 +418,8 @@ class Form extends AbstractGrabber
         if (in_array($field_id, ['flags...........', 'posted_by.......'], true) || str_starts_with($field_id, 'password') || str_starts_with($field_id, 'secret')) {
             return true;
         }
-        // headline........ is an ordinary title outside Reader Management
-        if (($field_id === FIELDID_USERNAME) && ($slice->type() === 'ReaderManagement')) {
+        // the login and the address the password reset goes to; ordinary fields outside Reader Management
+        if (in_array($field_id, [FIELDID_USERNAME, FIELDID_EMAIL], true) && ($slice->type() === 'ReaderManagement')) {
             return true;
         }
         // the widget of a field of a fieldslice is not in input_show_func

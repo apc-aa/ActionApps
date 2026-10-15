@@ -56,6 +56,7 @@ namespace Tests\Unit\Legacy {
             'password........' => 'password________',
             'secret..........' => 'secret__________',
             'headline........' => 'headline________',
+            'con_email.......' => 'con_email_______',   // where the password reset goes
             'text...........1' => 'text___________1',   // pwd inserter
             'text...........2' => 'text___________2',   // pwd widget
             'text...........3' => 'text___________3',   // 2FA widget
@@ -80,6 +81,7 @@ namespace Tests\Unit\Legacy {
                 'password........' => ['input_show_func' => 'pwd:', 'input_insert_func' => 'pwd:'],
                 'secret..........' => [],
                 'headline........' => [],
+                'con_email.......' => [],
                 'full_text.......' => [],
                 'text...........1' => ['input_insert_func' => 'pwd:'],
                 'text...........2' => ['input_show_func' => 'pwd:'],
@@ -270,13 +272,14 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], self::logged());
         }
 
-        public function test_the_headline_of_an_ordinary_slice_stays_editable(): void
+        public function test_the_headline_and_email_of_an_ordinary_slice_stay_editable(): void
         {
             self::$slice->type = 'News_EN_tmpl....';
 
-            $item = self::grabOne(['u' . self::ITEM => ['headline________' => ['A title'], 'flags___________' => ['0']]]);
+            $item = self::grabOne(['u' . self::ITEM => ['headline________' => ['A title'], 'con_email_______' => ['a@b.cz'], 'flags___________' => ['0']]]);
 
             $this->assertSame(['A title'], $item->getAaValue(self::HEAD)->getValues());
+            $this->assertSame(['a@b.cz'], $item->getAaValue('con_email.......')->getValues());
             $this->assertFalse($item->isSet('flags...........'), 'flags are protected in any slice');
             $this->assertSame([ParamImplode([self::SLICE, 'flags...........'])], array_column(self::logged(), 'selector'));
         }
