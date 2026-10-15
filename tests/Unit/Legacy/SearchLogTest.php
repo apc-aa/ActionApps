@@ -73,7 +73,8 @@ namespace Tests\Unit\Legacy {
             unset($_SERVER['PHP_AUTH_USER']);
             PutSearchLog(['x'], 0);
 
-            self::assertStringContainsString("''", self::insert());
+            self::insert();
+            self::assertSame('', RecordingDb::inserts('searchlog')[0]['additional1'] ?? null);
         }
 
         private static function insert(): string
