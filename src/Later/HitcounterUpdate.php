@@ -65,14 +65,14 @@ class HitcounterUpdate implements LaterInterface
                 unset($hits_l[$short_id]);
             }
             if ($count > 0) {
-                DB_AA::sql("UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
+                DB_AA::sql('UPDATE item SET display_count=(display_count+' . (int) $count . ')', [['short_id', $short_id, 'i']]);
             }
         }
 
         // Now the rest long_ids
         foreach ($hits_l as $short_id => $count) {
             if ($count > 0) {
-                DB_AA::sql("UPDATE item SET display_count=(display_count+$count) WHERE short_id = $short_id");
+                DB_AA::sql('UPDATE item SET display_count=(display_count+' . (int) $count . ')', [['short_id', $short_id, 'i']]);
             }
         }
 
@@ -84,16 +84,16 @@ class HitcounterUpdate implements LaterInterface
             // of those = the 5th field, which is `packtime` (1-byte tttttttcn encoding).
             // The positional contract is documented on AA_Logentry_H::getClassProperties().
             // @see \AA_Logentry_H — DO NOT reorder its property array.
-            DB_AA::sql("INSERT INTO hit_archive (`id`, `time`, `duration`) SELECT `id`, `time`, SUBSTRING_INDEX(SUBSTRING_INDEX(`info`, ':', 5), ':', -1) AS duration FROM hit_short_id WHERE time < $time");
+            DB_AA::sql("INSERT INTO hit_archive (`id`, `time`, `duration`) SELECT `id`, `time`, SUBSTRING_INDEX(SUBSTRING_INDEX(`info`, ':', 5), ':', -1) AS duration FROM hit_short_id", [['time', $time, '<']]);
             DB_AA::sql("DELETE FROM hit_short_id WHERE time < $time");
 
-            DB_AA::sql("INSERT INTO hit_archive (`id`, `time`, `duration`) SELECT item.short_id, hit_long_id.time, SUBSTRING_INDEX(SUBSTRING_INDEX(`hit_long_id`.`info`, ':', 5), ':', -1) AS duration FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
+            DB_AA::sql("INSERT INTO hit_archive (`id`, `time`, `duration`) SELECT item.short_id, hit_long_id.time, SUBSTRING_INDEX(SUBSTRING_INDEX(`hit_long_id`.`info`, ':', 5), ':', -1) AS duration FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id", [['time', $time, '<']]);
             DB_AA::sql("DELETE FROM hit_long_id WHERE time < $time");
         } else {
-            DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT id, time FROM hit_short_id WHERE time < $time");
+            DB_AA::sql('INSERT INTO hit_archive (id, time) SELECT id, time FROM hit_short_id', [['time', $time, '<']]);
             DB_AA::sql("DELETE FROM hit_short_id WHERE time < $time");
 
-            DB_AA::sql("INSERT INTO hit_archive (id, time) SELECT item.short_id, hit_long_id.time FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id WHERE time < $time");
+            DB_AA::sql('INSERT INTO hit_archive (id, time) SELECT item.short_id, hit_long_id.time FROM hit_long_id INNER JOIN item ON hit_long_id.id=item.id', [['time', $time, '<']]);
             DB_AA::sql("DELETE FROM hit_long_id WHERE time < $time");
         }
 

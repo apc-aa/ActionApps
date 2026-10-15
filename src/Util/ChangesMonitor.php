@@ -104,29 +104,32 @@ class ChangesMonitor
         }
 
         $change_id = new_id();
-        $varset = new Cvarset();
-        $varset->addkey("id", "text", $change_id);
-        //$varset->add("time", "number", now());
-        // changed to nanotime(), which produces 1 000 000 000 * bigger values, but it should be OK for database
-        // there was problem with now() - some history records had the same time of change (the same second), so the order then could be wrong
-        $varset->add("time", "number", nanotime());
-        $varset->add("user", "text", AuthGetUid());
-        $varset->add("type", "text", $type);
-        $varset->add("resource_id", 'text', $change->getResourceId());
-        $varset->doInsert('change');
+        $record = [
+            'id'          => $change_id,
+            // changed to nanotime(), which produces 1 000 000 000 * bigger values, but it should be OK for database
+            // there was problem with now() - some history records had the same time of change (the same second), so the order then could be wrong
+            'time'        => nanotime(),
+            'user'        => AuthGetUid(),
+            'type'        => $type,
+            'resource_id' => $change->getResourceId(),
+        ];
 
+        $rows = [];
         foreach ($change_proposals as $change) {
             $priority = 0;
             foreach ($change->getValues() as $value) {
-                $varset->clear();
-                $varset->add("change_id", "text", $change_id);
-                $varset->add("selector", "text", $change->getSelector());
-                $varset->add("priority", "number", $priority++);
-                $varset->add("type", "text", gettype($value));
-                $varset->add("value", "text", $value);
-                $varset->doInsert('change_record');
+                // null as '': a missing value is written as DEFAULT, and the NOT NULL longtext has none
+                $rows[] = ['change_id' => $change_id, 'selector' => $change->getSelector(), 'priority' => $priority++, 'type' => gettype($value), 'value' => $value ?? ''];
             }
         }
+        if (!$rows) {
+            AA::Metabase()->doInsert('change', $record);   // one statement - no transaction needed
+            return true;
+        }
+        DB_AA::transaction(static function () use ($record, $rows) {
+            AA::Metabase()->doInsert('change', $record);
+            AA::Metabase()->doInsertMulti('change_record', $rows);
+        });
         return true;
     }
 
