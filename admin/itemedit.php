@@ -160,9 +160,10 @@ function CloseDialog(?zids $zid = null, string $openervar = '', bool $insert = t
 AA_Credentials::singleton()->loadFromSlice(AA::$module_id);
 
 if ($encap) {
-    $slice_view_url   = $r_slice_view_url;   // the redirect after saving stays the slice's own URL
-    add_vars();                              // values from the URL (QUERY_STRING_UNESCAPED, REDIRECT_...)
-    $r_slice_view_url = $slice_view_url;
+    // values from the URL (QUERY_STRING_UNESCAPED, REDIRECT_...); the redirect after saving stays the slice's own URL
+    $url_vars = add_vars('', 'return');
+    unset($url_vars['r_slice_view_url']);
+    array_merge_append_global($url_vars);
 }
 
 // encap is already read; slice_id stays the one init_page checked; r_slice_view_url (the redirect after saving) is the slice's own URL
