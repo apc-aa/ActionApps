@@ -614,9 +614,9 @@ function freeDB(&$db): void
  *                                 <database_column> |
  *                                 'unpack:<database_column>' |
  *                                 true
- * @return array|bool|string
+ * @return array|bool|string|null  null: 'aa_first' of a NULL column (MIN() of an empty table)
  */
-function GetTable2Array($SQL, $key="id", $values='aa_all'): bool|array|string
+function GetTable2Array($SQL, $key="id", $values='aa_all'): bool|array|string|null
 {
     $db = getDB();
     $db->query($SQL);
