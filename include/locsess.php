@@ -687,8 +687,10 @@ class AA_Session extends Session
             return;
         }
         foreach (['permission_uid', 'permission_to', 'r_superuser'] as $key) {
-            unset($_SESSION[$key]);
-            $GLOBALS[$key] = null;
+            if (array_key_exists($key, $_SESSION)) {   // start() copied it into the global
+                unset($_SESSION[$key]);
+                $GLOBALS[$key] = null;
+            }
         }
         $_SESSION['perm_cache_v'] = 2;
     }

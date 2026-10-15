@@ -76,6 +76,17 @@ namespace Tests\Unit\Legacy {
             $this->assertNull($GLOBALS['r_superuser']);
         }
 
+        public function test_globals_not_taken_from_the_session_stay(): void
+        {
+            $_SESSION = ['r_state' => ['a' => 1]];
+            $GLOBALS['permission_to'] = ['slice' => ['x' => 'Q']];
+
+            self::drop();
+
+            $this->assertSame(['r_state' => ['a' => 1], 'perm_cache_v' => 2], $_SESSION);
+            $this->assertSame(['slice' => ['x' => 'Q']], $GLOBALS['permission_to']);
+        }
+
         public function test_marked_session_keeps_its_cache(): void
         {
             $_SESSION = ['permission_uid' => 'u1', 'r_superuser' => ['x' => true], 'perm_cache_v' => 2];
