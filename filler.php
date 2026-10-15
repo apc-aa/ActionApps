@@ -369,11 +369,14 @@ if (!is_object($slice) || !$slice->isValid()) {
 
 // huhl($_REQUEST['aa_token'], $slice->useFormTokens(), $_SESSION);
 
-if ( $_REQUEST['aa_token'] || $slice->useFormTokens() ) {
-    // the form stored its token in the visitor's session - open it, as the aa[] branch does
-    if (($_COOKIE['AA_Session'] ?? '') && (session_status() !== PHP_SESSION_ACTIVE)) {
-        pageOpen('nobody');
-    }
+// A logged-in reader or editor may change account fields, as in the aa[] branch. Only a POST counts: a link
+// from another site brings the session cookie on GET, and could change the account of whoever clicks it.
+// The form token is kept in the session, so it needs the session as well.
+$check_token = $_REQUEST['aa_token'] || $slice->useFormTokens();
+if (($_COOKIE['AA_Session'] ?? '') && ($check_token || (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST')) && (session_status() !== PHP_SESSION_ACTIVE)) {
+    pageOpen('nobody');
+}
+if ($check_token) {
     if (!AA_Session::tokenStoreCheck($_REQUEST['aa_token'] ?? '')) {
         SendErrorPage(["fatal" => _m("Bad Token. Not allowed to post comments")]);
     }
@@ -482,7 +485,7 @@ if ($insert) {
         $result["permissions"] = _m("You are not allowed to update this item.");
     }
     // as in the aa[] forms, in the password mode too: its check above passes only for an item without a password
-    $content4id = AA\IO\Grabber\Form::withoutAccountFields($slice, $content4id);
+    $content4id = AA\IO\Grabber\Form::withoutAccountFields($slice, $content4id, $oldcontent4id);
 }
 
 // See doc/anonym.html for structure of $result, which is intended

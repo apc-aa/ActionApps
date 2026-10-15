@@ -314,11 +314,6 @@ class Form extends AbstractGrabber
                     continue;
                 }
 
-                // a form without login could take over the reader's account or the item - the field stays as stored
-                if ($anonymous_edit && self::isAccountField($slice, $field)) {
-                    self::refused($item_slice_id, $field_id, $dirty_item_id[0]);
-                    continue;
-                }
                 $default_val = $oldcontent4id ? $oldcontent4id->getAaValue($field_id) : $field->getDefault();
 
                 // Get the content of the field (values and flags)
@@ -332,6 +327,13 @@ class Form extends AbstractGrabber
 
                 if ($oldcontent4id && $dirty_item_id[0] === 'r' && $field_id !== 'slice_id........') {
                     $aa_value = $oldcontent4id->getAaValue($field_id)->removeValues($aa_value->getValues());
+                }
+                // a form without login could take over the reader's account or the item - the field stays as stored
+                if ($anonymous_edit && self::isAccountField($slice, $field)) {
+                    if (($dirty_item_id[0] !== 'u') || !self::sameValues($aa_value->getValues(), $oldcontent4id->getValuesArray($field_id))) {
+                        self::refused($item_slice_id, $field_id, $dirty_item_id[0]);
+                    }
+                    continue;
                 }
                 $item->setAaValue($field_id, $aa_value);
                 $set_fields[] = $field_id;
@@ -393,12 +395,12 @@ class Form extends AbstractGrabber
     }
 
     /** The old-style form of filler.php (v<field> inputs) edits an existing item too: without a login the
-     *  fields of isAccountField() are left out there as well, so the item keeps the stored ones. That branch
-     *  opens the session only to check a form token - without one a logged-in reader counts as anonymous.
-     *  @param array<string, array> $content4id  field id => values, as filler.php stores them
-     *  @return array<string, array>
+     *  fields of isAccountField() are left out there as well, so the item keeps the stored ones.
+     *  @param array<string, array|AA_Value|null> $content4id  field id => values, as filler.php stores them
+     *  @param AA_Content|null                    $stored      the item as stored
+     *  @return array<string, array|AA_Value|null>
      */
-    public static function withoutAccountFields(AA_Slice $slice, array $content4id): array
+    public static function withoutAccountFields(AA_Slice $slice, array $content4id, ?AA_Content $stored = null): array
     {
         if (!self::anonymous()) {
             return $content4id;
@@ -407,12 +409,17 @@ class Form extends AbstractGrabber
             if (!($field = $slice->getField((string) $field_id)) || !self::isAccountField($slice, $field)) {
                 continue;
             }
+            $posted = $content4id[$field_id];
             unset($content4id[$field_id]);
-            // logged only when the form sent the field: v<hex id>, with a suffix for a password or a date
+            // logged only when the form sent the field (v<hex id>, with a suffix for a password or a date)
+            // and not just its stored value; a field in notshown comes as the stored AA_Value
             $var = 'v' . unpack_id((string) $field_id);
             foreach (array_keys($_REQUEST) as $name) {
                 if (str_starts_with((string) $name, $var)) {
-                    self::refused($slice->getId(), (string) $field_id, 'u');
+                    $values = ($posted instanceof AA_Value) ? $posted->getValues() : array_column((array) $posted, 'value');
+                    if (!$stored || !self::sameValues($values, $stored->getValuesArray((string) $field_id))) {
+                        self::refused($slice->getId(), (string) $field_id, 'u');
+                    }
                     break;
                 }
             }
@@ -420,13 +427,27 @@ class Form extends AbstractGrabber
         return $content4id;
     }
 
-    /** No user is logged in. filler.php opens the session only when the visitor has its cookie, so
-     *  $auth may be missing; a logged-in reader is a user.
+    /** No user is logged in. filler.php opens the session only when the visitor has its cookie (an old-style
+     *  form only on POST or with a form token), so $auth may be missing; a logged-in reader is a user.
      */
     private static function anonymous(): bool
     {
         $auth = $GLOBALS['auth'] ?? null;
         return !is_object($auth) || !$auth->is_user();
+    }
+
+    /** The stored value posted again (in other letter case, an empty input for a field with no value) is no
+     *  attempt to change the account - forms send the whole record back - so the refusal is not logged.
+     *  @param array<mixed> $posted
+     *  @param array<mixed> $stored
+     */
+    private static function sameValues(array $posted, array $stored): bool
+    {
+        $normalized = static fn(array $values): array => array_values(array_filter(
+            array_map(static fn($value): string => mb_strtolower(trim((string) $value)), $values),
+            static fn(string $value): bool => $value !== '',
+        ));
+        return $normalized($posted) === $normalized($stored);
     }
 
     /** the field of the item was left as stored - logged once a day, never the value */

@@ -221,12 +221,37 @@ namespace Tests\Unit\Legacy {
         #[DataProvider('editModes')]
         public function test_adding_and_removing_values_is_refused_too(string $mode): void
         {
-            $item = self::grabOne([$mode . self::ITEM => ['password________' => ['x'], 'posted_by_______' => [self::READER], 'full_text_______' => ['y']]]);
+            $item = self::grabOne([$mode . self::ITEM => ['password________' => ['x'], 'posted_by_______' => [self::USER], 'full_text_______' => ['y']]]);
 
             $this->assertFalse($item->isSet('password........'));
             $this->assertFalse($item->isSet('posted_by.......'));
             $this->assertTrue($item->isSet(self::BODY));
             $this->assertSame([ParamImplode([$mode, 'filler.php'])], array_unique(array_column(self::logged(), 'params')));
+        }
+
+        public function test_the_stored_email_posted_back_is_kept_and_not_logged(): void
+        {
+            AnonymousEditForm::$stored[self::ITEM]->setAaValue('con_email.......', new AA_Value('Reader@Example.org', 0));
+
+            $item = self::grabOne(['u' . self::ITEM => ['con_email_______' => [' reader@example.org'], 'full_text_______' => ['y']]]);
+
+            $this->assertFalse($item->isSet('con_email.......'), 'the stored spelling stays');
+            $this->assertTrue($item->isSet(self::BODY));
+            $this->assertSame([], self::logged(), 'the whole record sent back is no attempt');
+        }
+
+        public function test_an_empty_password_is_not_set_on_a_reader_without_one(): void
+        {
+            AnonymousEditForm::$stored[self::ITEM]->setAaValue('password........', new AA_Value('', 0));
+
+            $this->assertFalse(self::grabOne(['u' . self::ITEM => ['password________' => ['']]])->isSet('password........'), 'an empty password would let anyone log in');
+        }
+
+        public function test_another_email_is_refused(): void
+        {
+            AnonymousEditForm::$stored[self::ITEM]->setAaValue('con_email.......', new AA_Value('reader@example.org', 0));
+
+            $this->assertFalse(self::grabOne(['u' . self::ITEM => ['con_email_______' => ['evil@example.org']]])->isSet('con_email.......'));
         }
 
         public function test_a_field_id_spelled_with_dots_is_refused(): void
@@ -252,6 +277,41 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame([self::BODY], array_keys($kept), 'the stored account fields stay');
             $this->assertSame([ParamImplode([self::SLICE, 'con_email.......']), ParamImplode([self::SLICE, 'password........'])], array_column(self::logged(), 'selector'), 'only the fields the form sent are logged');
+        }
+
+        public function test_the_old_style_form_posting_the_stored_email_back_is_not_logged(): void
+        {
+            $request  = $_REQUEST;
+            $_REQUEST = ['v' . unpack_id('con_email.......') => 'READER@example.org'];
+            $stored   = new ItemContent();
+            $stored->setAaValue('con_email.......', new AA_Value('reader@example.org', 0));
+            $content  = ['con_email.......' => [['value' => 'READER@example.org', 'flag' => 0]], self::BODY => [['value' => 'v', 'flag' => 0]]];
+            try {
+                $kept = Form::withoutAccountFields(self::$slice, $content, $stored);
+            } finally {
+                $_REQUEST = $request;
+            }
+
+            $this->assertSame([self::BODY], array_keys($kept), 'the stored spelling stays');
+            $this->assertSame([], self::logged());
+        }
+
+        public function test_the_old_style_form_leaves_out_an_empty_password_and_a_stored_value_from_notshown(): void
+        {
+            $request  = $_REQUEST;
+            $_REQUEST = ['v' . unpack_id('password........') . 'a' => '', 'v' . unpack_id('posted_by.......') => self::READER];
+            $stored   = new ItemContent();
+            $stored->setAaValue('posted_by.......', new AA_Value(self::READER, 0));
+            // filler.php copies a field listed in notshown as the stored AA_Value
+            $content  = ['password........' => [['value' => '', 'flag' => 0]], 'posted_by.......' => new AA_Value(self::READER, 0), self::BODY => [['value' => 'v', 'flag' => 0]]];
+            try {
+                $kept = Form::withoutAccountFields(self::$slice, $content, $stored);
+            } finally {
+                $_REQUEST = $request;
+            }
+
+            $this->assertSame([self::BODY], array_keys($kept));
+            $this->assertSame([], self::logged(), 'neither changes what is stored');
         }
 
         public function test_the_old_style_form_of_a_logged_in_user_is_unchanged(): void
