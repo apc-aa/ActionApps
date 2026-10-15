@@ -370,6 +370,10 @@ if (!is_object($slice) || !$slice->isValid()) {
 // huhl($_REQUEST['aa_token'], $slice->useFormTokens(), $_SESSION);
 
 if ( $_REQUEST['aa_token'] || $slice->useFormTokens() ) {
+    // the form stored its token in the visitor's session - open it, as the aa[] branch does
+    if (($_COOKIE['AA_Session'] ?? '') && (session_status() !== PHP_SESSION_ACTIVE)) {
+        pageOpen('nobody');
+    }
     if (!AA_Session::tokenStoreCheck($_REQUEST['aa_token'] ?? '')) {
         SendErrorPage(["fatal" => _m("Bad Token. Not allowed to post comments")]);
     }
