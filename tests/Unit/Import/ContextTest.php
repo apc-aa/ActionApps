@@ -470,6 +470,14 @@ final class ContextTest extends TestCase
         self::assertSame(304, $this->context([new MockResponse('', ['http_code' => 304])])->http()->request('GET', 'https://1.1.1.1/a')->status);
     }
 
+    // the guard checks the address it resolved; a proxy from the server's environment would resolve it again
+    public function test_http_neverGoesThroughAProxy(): void
+    {
+        $this->context([new MockResponse('a')])->http()->request('GET', 'https://1.1.1.1/a');
+
+        self::assertSame('*', $this->requests[0]['options']['no_proxy'] ?? null);
+    }
+
     public function test_http_sendsImportUserAgent(): void
     {
         $this->context([new MockResponse('a')])->http()->request('GET', 'https://1.1.1.1/a');
