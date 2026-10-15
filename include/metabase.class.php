@@ -513,6 +513,15 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
     }
 
 
+    /** getCreateSql() with the indexes by name: their order means nothing, and an index dropped
+     *  and added again goes last on the live table */
+    public function getCompareSql(): string
+    {
+        $table = clone $this;
+        ksort($table->i);
+        return $table->getCreateSql();
+    }
+
     public function getCreateSql(string $prefix = '', string $engine_template_table = ''): string
     {
         $sql_parts = [];
@@ -1397,8 +1406,8 @@ class AA_Metabase
         $eq_novars = ['char'   , '', '', '', 'timestamp', 'binary'];
 
         foreach ($this->tables as $tablename => $table) {
-            $table_sql_1 = $table->getCreateSql();
-            $table_sql_2 = $metabase->getCreateSql($tablename);
+            $table_sql_1 = $table->getCompareSql();
+            $table_sql_2 = isset($metabase->tables[$tablename]) ? $metabase->tables[$tablename]->getCompareSql() : '';
 
             $diffs[$tablename] = [
                 'equal'  => (str_replace($eq_vars, $eq_novars, $table_sql_1) === str_replace($eq_vars, $eq_novars, $table_sql_2)),
