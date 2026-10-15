@@ -101,11 +101,12 @@ function notify_rows($slice_id, $function, $emails): array
     $arr = explode("\n", $emails);
     foreach ($arr as $uid) {
         $uid = trim($uid);
-        if (AA_Validate::doValidate($uid, 'email')) {
-            $rows[] = ['uid' => $uid, 'slice_id' => $slice_id, 'function' => $function];
+        // an address listed twice would break the key (slice, uid, function), which ignores case
+        if (AA_Validate::doValidate($uid, 'email') && !isset($rows[strtolower($uid)])) {
+            $rows[strtolower($uid)] = ['uid' => $uid, 'slice_id' => $slice_id, 'function' => $function];
         }
     }
-    return $rows;
+    return array_values($rows);
 }
 
 // sanity checks
