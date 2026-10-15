@@ -58,6 +58,17 @@ try {
     AA_Adminpageutil::pageParameterError($e);
 }
 
+// the menu offers the page only to those who may add modules; a Jump module has no permissions of its own
+if (!CheckPerms(AuthGetUid(), "aa", AA_ID, PS_ADD)) {
+    MsgPage(_m("You do not have permissions to access this page"));
+    exit;
+}
+// an existing id must be a Jump - the form would rename (and redirect) any other module
+if ($jump_id && !DB_AA::test('module', [['id', $jump_id, 'l'], ['type', 'J']])) {
+    MsgPage(_m("You do not have permissions to access this page"));
+    exit;
+}
+
 // create the $jumps array:
 $jumps = AA_Module::getModules('J');
 
