@@ -147,25 +147,15 @@ if ($is_add ? ($insert && $superadmin) : $update) {
             // Maybe we could allow also administrators to change $select_start in
             // future
 
-            $p_module_id = xpack_id($module_id);
-
-            $varset->clear();
-
             // we can't change start_id (module_id is derived from it)
-            //      $varset->add("start_id", "number", $start_id);
-            $varset->add("tree_start", "number", $tree_start);
-            $varset->add("select_start", "number", $select_start);
 
             // defaults - we use the same table for all links. The setting of defaults to 1
             // flags this as default for this poll module
-            $SQL = "UPDATE links SET " . $varset->makeUPDATE() . " WHERE (id=$p_module_id)";
-            if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
+            if (DB_AA::update('links', [['tree_start', $tree_start, 'i'], ['select_start', $select_start, 'i']], [['id', $module_id, 'l']]) === false) {  // not necessary - we have set the halt_on_error
                 $err["DB"] = MsgErr("Can't change links table");
                 break;
             }
         } elseif ($is_add && $superadmin) { // insert (add)
-            $varset->clear();
-
             $p_template_id = ($template['Links']
             ? pack_id(substr($template['Links'], 1)) : 'LinksTemplate...');
 
@@ -174,16 +164,9 @@ if ($is_add ? ($insert && $superadmin) : $update) {
                 $err["DB"] = MsgErr("Bad template id");
                 break;
             }
-            $varset->resetFromRecord($row);
-            $varset->set("id", $module_id, "unpacked");
-            $varset->set("start_id", $start_id, "number");
-            $varset->set("tree_start", $tree_start, "number");
-            $varset->set("select_start", $select_start, "number");
-            //      $varset->set("default_cat_tmpl", $default_cat_tmpl, "text");
-            //      $varset->set("link_tmpl", $link_tmpl, "text");
 
             // create new links
-            if (!$varset->doINSERT('links')) {
+            if (!AA::Metabase()->doInsert('links', ['id' => $module_id, 'start_id' => $start_id, 'tree_start' => $tree_start, 'select_start' => $select_start] + $row)) {
                 $err["DB"] .= MsgErr("Can't add links");
                 break;
             }

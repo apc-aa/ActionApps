@@ -234,24 +234,20 @@ class linkassignment
     }
 
 
-    public function dbSave(): bool
+    /** links_link_cat row of this assignment, null when category or link is not set */
+    public function dbRow(): ?array
     {
         if (!$this->category || !$this->link) {
-            return false;
+            return null;
         }
-        $varset = new Cvarset();
-
-        $varset->addArray(['category_id', 'what_id', 'base', 'state', 'priority', 'proposal', 'proposal_delete']);
-        $varset->setFromArray(['category_id'    => $this->category,
+        // casts: a missing state or priority is stored as '' and 0, not as the column DEFAULT
+        return ['category_id'    => $this->category,
             'what_id'        => $this->link,
             'base'           => $this->base ? 'y' : 'n',
-            'state'          => $this->state,
-            'priority'       => $this->priority,
+            'state'          => (string) $this->state,
+            'priority'       => (float) $this->priority,
             'proposal'       => $this->proposal ? 'y' : 'n',
-            'proposal_delete' => $this->proposal_delete ? 'y' : 'n']);
-
-        $varset->doINSERT('links_link_cat');
-        return true;
+            'proposal_delete' => $this->proposal_delete ? 'y' : 'n'];
     }
 
     public function getCategory()
@@ -631,9 +627,13 @@ class assignmentset
             $this->fix_assignments($base);
         }
         debug('Save assignments:', $this);
+        $rows = [];
         foreach ((array) $this->assignments as $ass) {
-            $ass->dbSave();
+            if ($row = $ass->dbRow()) {
+                $rows[] = $row;
+            }
         }
+        AA::Metabase()->doInsertMulti('links_link_cat', $rows);
     }
 
     /** Removes the assignment identified by its key from this assignmentset
@@ -990,7 +990,6 @@ class linkobj
 
 
         $varset = new Cvarset();
-        $db = getDB();
 
         debug("link->save() - Before normalization:", $this);
         // remove duplicity in assignments, ...
@@ -1035,30 +1034,31 @@ class linkobj
             }
         } else {            // insert
             $varset->addkey("id", "number", $this->lid);
-            $db->query($varset->makeINSERTorUPDATE('links_links'));
+            DB_AA::sql($varset->makeINSERTorUPDATE('links_links'));
             // now you can delete all old link settings
             $this->dbDeleteSetting();
         }
 
         // Regions
+        $rows = [];
         foreach (array_keys((array) $this->region) as $id) {
-            $SQL = 'INSERT INTO links_link_reg (link_id, region_id) VALUES (' . $this->lid . ", $id)";
-            $db->query($SQL);
+            $rows[] = ['link_id' => $this->lid, 'region_id' => $id];
         }
+        AA::Metabase()->doInsertMulti('links_link_reg', $rows);
 
         // Languages
+        $rows = [];
         foreach (array_keys((array) $this->language) as $id) {
-            $SQL = 'INSERT INTO links_link_lang (link_id, lang_id) VALUES (' . $this->lid . ", $id)";
-            $db->query($SQL);
+            $rows[] = ['link_id' => $this->lid, 'lang_id' => $id];
         }
+        AA::Metabase()->doInsertMulti('links_link_lang', $rows);
 
         // Proposals
         foreach ((array) $this->changes as $change) {
             if (!$change->rejected) {  // do not save rejected (rejected is old feature - now unsupported (never was))
                 $ch_id = $change['link']->save();
                 if ($ch_id) {   // change link could be empty => not stored => skip
-                    $SQL = 'INSERT INTO links_changes (changed_link_id, proposal_link_id, rejected) VALUES (' . $this->lid . ', ' . $ch_id . ', \'n\')';
-                    $db->query($SQL);
+                    AA::Metabase()->doInsert('links_changes', ['changed_link_id' => $this->lid, 'proposal_link_id' => $ch_id, 'rejected' => 'n']);
                 }
             }
         }
@@ -1068,7 +1068,6 @@ class linkobj
         if ($this->numberOfAssignments() > 0) {
             $this->assignments->save($this->isGeneral(), $this->lid);
         }
-        freeDB($db);
         return $this->lid;
     }
 
