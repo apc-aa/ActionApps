@@ -610,7 +610,7 @@ if (!$zids->isEmpty()) {
 }
 
 if ($searchlog) {
-    PutSearchLog($searchlog, count($GLOBALS['item_ids']));
+    PutSearchLog($searchlog, $zids->count());
 }
 
 if ($debug) {
