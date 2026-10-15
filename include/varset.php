@@ -425,11 +425,15 @@ class Cvarset
             return "Error using doUpdate: " . count($data) . " rows match the query";
         }
         $data = $data[0]; // we have only one row
-        $packed = AA_Metabase::getPacked($tablename);
-        foreach ($packed as $col) {
+        $new  = $this->getArray();
+        foreach (AA_Metabase::getPacked($tablename) as $col) {
             $data[$col] = unpack_id($data[$col]);
+            // an id that is not 32 hex (old data) is sent packed - compare it unpacked too
+            if (isset($new[$col]) && !is_long_ids($new[$col])) {
+                $new[$col] = unpack_id($new[$col]);
+            }
         }
-        ChangesMonitor::singleton()->addHistory(ChangesMonitor::getDiff($id, $data, $this->getArray()));
+        ChangesMonitor::singleton()->addHistory(ChangesMonitor::getDiff($id, $data, $new));
         return '';
     }
 
