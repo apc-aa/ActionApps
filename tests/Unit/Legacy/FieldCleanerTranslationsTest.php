@@ -82,7 +82,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_one_translation_leaves_the_other_languages(): void
         {
-            $deletes = $this->deletes(new AA_Value([self::CZ => 'Ahoj', self::CZ + 1 => 'Nazdar'], 0));
+            $deletes = $this->deletes(new AA_Value([self::CZ => 'Ahoj', self::CZ + 1 => 'Nazdar']));
 
             self::assertNotEmpty($deletes);
             foreach ($deletes as $sql) {
