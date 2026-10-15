@@ -20,6 +20,9 @@
 - /misc/mgettext/
 - /misc/missCache/
 - /misc/smtp_smoketest.php
+# developer one-off scripts without a login check (file2slice/ imports into the database)
+- /misc/file2slice/
+- /misc/doit_list_related_slices.php
 - /PRODUCT.md
 - /DESIGN.md
 - /FILEMAP.md
