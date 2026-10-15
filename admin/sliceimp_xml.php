@@ -86,15 +86,6 @@ function sliceimp_xml_parse($xml_data, $dry_run = false, $force_this_slice = fal
         MsgPage(_m("\nERROR: File doesn't contain SLICEEXPORT"));
         exit;
     }
-    if ($s['PROCESS']) {
-
-        // This is some kind of data preprocessing from Mitra
-        // Looks like slice specific - ask Mitra for more details
-        $v = $s['PROCESS'] . "_preimport";
-        print("\nPre-processing with $v");
-        $v($s);
-    }
-
     if ($s['VERSION'] === "1.0") {   // older format of XML file
         $sl            = $s['SLICE'][0];
         $slice         = unserialize(base64_decode($sl['DATA']), ['allowed_classes' => false]);
