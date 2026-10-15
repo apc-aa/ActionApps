@@ -587,10 +587,10 @@ class AA_Validate_Float extends AA_Validate
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No float value'), $var_id);
         }
         $var = str_replace(',', '.', $var); // Phpfloat does not work well for long int - 123456789012345678901234567890
-        if (!is_null($this->f_max) && $var > $this->f_max) {
+        if (is_numeric($this->f_max) && $var > $this->f_max) {   // an empty limit is no limit
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
-        if (!is_null($this->f_min) && $var < $this->f_min) {
+        if (is_numeric($this->f_min) && $var < $this->f_min) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
@@ -602,9 +602,9 @@ class AA_Validate_Float extends AA_Validate
             return (float) $var;
         }
         if (AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
-            return (float) (is_null($this->f_max) ? 0 : $this->f_max);
+            return (float) (is_numeric($this->f_max) ? $this->f_max : 0);
         }
-        return (float) (is_null($this->f_min) ? 0 : $this->f_min);
+        return (float) (is_numeric($this->f_min) ? $this->f_min : 0);
     }
 }
 
@@ -640,10 +640,10 @@ class AA_Validate_Decimal extends AA_Validate
             return AA_Validate::bad(VALIDATE_ERROR_BAD_TYPE, _m('No decimal value'), $var_id);
         }
         $var = str_replace(',', '.', $var); // Phpfloat does not work well for long int - 123456789012345678901234567890
-        if (!is_null($this->f_max) && $var > $this->f_max) {
+        if (is_numeric($this->f_max) && $var > $this->f_max) {   // an empty limit is no limit
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MAX, _m('Out of range - too big'), $var_id);
         }
-        if (!is_null($this->f_min) && $var < $this->f_min) {
+        if (is_numeric($this->f_min) && $var < $this->f_min) {
             return AA_Validate::bad(VALIDATE_ERROR_OUT_OF_RANGE_MIN, _m('Out of range - too small'), $var_id);
         }
         return true;
@@ -655,9 +655,9 @@ class AA_Validate_Decimal extends AA_Validate
             return (string) $var;
         }
         if (AA_Validate::lastErr() === VALIDATE_ERROR_OUT_OF_RANGE_MAX) {
-            return (string) (is_null($this->f_max) ? 0 : $this->f_max);
+            return (string) (is_numeric($this->f_max) ? $this->f_max : 0);
         }
-        return (string) (is_null($this->f_min) ? 0 : $this->f_min);
+        return (string) (is_numeric($this->f_min) ? $this->f_min : 0);
     }
 }
 
