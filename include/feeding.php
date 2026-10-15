@@ -115,11 +115,10 @@ function GetBaseItem(string $item_id): string
  */
 function IsItemFed(string $item_id, string $destination): bool
 {
-    $p_destination = q_pack_id($destination);
-    $base_id       = GetBaseItem($item_id);  // Trace back to the original id
+    $base_id = GetBaseItem($item_id);  // Trace back to the original id
 
     // if item comes from $destination slice (i.e. $destination slice contains base record)
-    if ($p_destination == DB_AA::select1('slice_id', 'SELECT slice_id FROM `item`', [['id', $base_id, 'l']])) {
+    if (pack_id($destination) === DB_AA::select1('slice_id', 'SELECT slice_id FROM `item`', [['id', $base_id, 'l']])) {
         return true;
     }
 

@@ -27,7 +27,7 @@ namespace Tests\Unit\Legacy {
 
     /**
      * GetBaseItem() and IsItemFed() - feeding traces an item back through the relation table to
-     * decide whether it already reached a slice. include/feeding.php pulls in stringexpand.php, so
+     * decide whether it already reached a slice (then it is not fed again). include/feeding.php pulls in stringexpand.php, so
      * the two functions are extracted from the real file.
      */
     final class FeedingBaseItemTest extends TestCase
@@ -96,6 +96,16 @@ namespace Tests\Unit\Legacy {
             $this->fed = [self::A => self::B, self::B => self::A];
 
             $this->assertContains(aa_test_GetBaseItem(self::A), [self::A, self::B], 'a loop has no real base - it just has to end');
+        }
+
+        public function test_item_from_the_destination_slice_counts_as_fed(): void
+        {
+            // a packed id holding a quote or a backslash byte - one of about five slice ids
+            $slice       = '27aa5caa00aa5caa27aa5caa00aa5caa';
+            $this->slice = [self::A => $slice];
+
+            $this->assertTrue(aa_test_IsItemFed(self::A, $slice));
+            $this->assertFalse(aa_test_IsItemFed(self::A, 'cccccccccccccccccccccccccccccccc'));
         }
 
         /** Source of one function, from its keyword to the closing brace (comments/strings safe) */
