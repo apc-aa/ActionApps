@@ -34,6 +34,24 @@ return [
 // End of runtime-translated messages
 
 // Unused messages — no longer found in the sources; kept commented for reference.
+// "The index %1 of the content table does not contain the field" => "Indeks %1 u tablici content ne sadrži polje", // ai 2026-10
+// "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "Dodaje indeks (field_id, text) u tablicu content, tako da se vrijednost u jednom polju pronalazi bez čitanja iste vrijednosti u svim ostalim poljima. Na velikoj bazi podataka traje nekoliko minuta i zauzima otprilike onoliko prostora na disku koliko i ostali indeksi tablice - pokrenite ga kad je promet slab.", // ai 2026-10
+// "The index %1 is missing in the content table" => "U tablici content nedostaje indeks %1", // ai 2026-10
+// "OK - the content table has the index %1" => "OK - tablica content ima indeks %1", // ai 2026-10
+// "The content table already has the index %1" => "Tablica content već ima indeks %1", // ai 2026-10
+// "The index %1 added" => "Indeks %1 dodan", // ai 2026-10
+// "The index %1 removed" => "Indeks %1 uklonjen", // ai 2026-10
+// "No form sent an unsigned expression in the last %1 days." => "Nijedan obrazac nije poslao nepotpisani izraz u posljednjih %1 dana.", // ai 2026-10
+// "Each protection is on unless you switch it off here. Switch one off only for an old site whose forms still use the older way, and only until they are converted." => "Svaka je zaštita uključena dok je ovdje ne isključite. Isključite je samo za stari web čiji obrasci još koriste stariji način, i samo dok se ne prerade.", // ai 2026-10
+// "%1 problems, %2 warnings, %3 recommendations, %4 checks passed." => "Problemi: %1, upozorenja: %2, preporuke: %3, uspješne provjere: %4.", // ai 2026-10
+// "Resolution" => "Rješenje", // ai 2026-10
+// "Resolved" => "Riješeno", // ai 2026-10
+// "No check passed." => "Nijedna provjera nije uspjela.", // ai 2026-10
+// "Extended checks" => "Proširene provjere", // ai 2026-10
+// "Slow checks" => "Spore provjere", // ai 2026-10
+// "Lists the security protections switched off on this install and the unsigned expressions forms sent in the last %1 days." => "Navodi sigurnosne zaštite isključene u ovoj instalaciji i nepotpisane izraze koje su obrasci poslali u posljednjih %1 dana.", // ai 2026-10
+// "If you do not know the page, the request did not come from your forms and nothing needs to change." => "Ako stranicu ne poznajete, zahtjev nije došao iz vaših obrazaca i ništa ne treba mijenjati.", // ai 2026-10
+// "All protections are on and no form sent an unsigned expression in the last %1 days" => "Sve zaštite su uključene i u posljednjih %1 dana nijedan obrazac nije poslao nepotpisan izraz", // ai 2026-10
 // "Unique number in sequence 1,2,3,..." => "Jedinstveni broj u nizu 1,2,3,...", // ai 2026-06
 // "Data source" => "Izvor podataka", // ai 2026-06
 // "Upload periodically" => "Učitavaj periodično", // ai 2026-06
@@ -434,10 +452,10 @@ return [
 "enabled" => "omogućeno", // ai 2026-06
 
 // admin/aa_cron.php, row 103
-"AA's own jobs (alerts, feeding, link check, table optimization) run from the task queue since 2026-09; this table is only for scripts you added yourself." => "",
+"AA's own jobs (alerts, feeding, link check, table optimization) run from the task queue since 2026-09; this table is only for scripts you added yourself." => "Vlastni poslovi AA (upozorenja, razmjena stavki, provjera poveznica, optimizacija tablica) od 2026-09 izvode se iz reda zadataka; ova tablica služi samo za skripte koje ste sami dodali.", // ai 2026-10
 
 // admin/aa_cron.php, row 104
-"For a new periodic task prefer %1 - they run from the queue too, with no system cron row to keep." => "",
+"For a new periodic task prefer %1 - they run from the queue too, with no system cron row to keep." => "Za novi periodični zadatak radije koristite %1 – i oni se izvode iz reda, bez retka u sistemskom cronu koji treba održavati.", // ai 2026-10
 
 // admin/aa_cron.php, row 104
 // include/menu.php, row 171
@@ -463,13 +481,13 @@ return [
 "Cron" => "Pokretanje u određeno vrijeme",
 
 // admin/aa_dataimports.php, row 34
-"You do not have permissions to see the imports of all slices" => "",
+"You do not have permissions to see the imports of all slices" => "Nemate dozvolu za pregled uvoza svih stranica", // ai 2026-10
 
 // admin/aa_dataimports.php, row 39
-"Imports of all slices" => "",
+"Imports of all slices" => "Uvozi svih stranica", // ai 2026-10
 
 // admin/aa_dataimports.php, row 40
-"The imports of every slice of this installation. A new import is added on the Imports page of its slice." => "",
+"The imports of every slice of this installation. A new import is added on the Imports page of its slice." => "Uvozi svih stranica ove instalacije. Novi uvoz dodaje se na stranici Uvozi pripadajuće stranice.", // ai 2026-10
 
 // admin/aa_emails.php, row 42
 // admin/se_emails.php, row 42
@@ -488,19 +506,22 @@ return [
 "View Log" => "Prikaži zapisnik", // ai 2026-06
 
 // admin/aa_note.php, row 54
-"You do not have permissions to write notes" => "",
+"You do not have permissions to write notes" => "Nemate dozvolu za pisanje bilješki", // ai 2026-10
 
 // admin/aa_note.php, row 58
-// admin/aa_security.php, row 59
-// admin/aa_statecheck.php, row 133
+// admin/aa_security.php, row 64, 72
+// admin/aa_statecheck.php, row 197
 // admin/aafinder.php, row 98
+// admin/console.php, row 78
+// admin/fileman.php, row 110
+// admin/slicedel2.php, row 70
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
-"The form has expired; reload the page and try again." => "",
+"The form has expired; reload the page and try again." => "Obrazac je istekao; ponovno učitajte stranicu i pokušajte ponovno.", // ai 2026-10
 
 // admin/aa_optimize.php, row 50
-// include/feeding.php, row 465, 501
+// include/feeding.php, row 451, 487
 "Test" => "Testirajte", // ai 2026-06
 
 // admin/aa_optimize.php, row 65
@@ -513,7 +534,7 @@ return [
 "Test current" => "Testirajte trenutni", // ai 2026-06
 
 // admin/aa_optimize.php, row 129
-// admin/aa_statecheck.php, row 84
+// admin/aa_statecheck.php, row 139
 "Repair" => "Popravite", // ai 2026-06
 
 // admin/aa_optimize.php, row 145
@@ -532,66 +553,133 @@ return [
 // include/menu_util.php, row 78
 "View SearchLog" => "Prikaži zapisnik pretraživanja", // ai 2026-06
 
-// admin/aa_security.php, row 53
-"You do not have permissions to change the security protections" => "",
+// admin/aa_security.php, row 58
+"You do not have permissions to change the security protections" => "Nemate dozvolu za mijenjanje sigurnosnih zaštita", // ai 2026-10
 
-// admin/aa_security.php, row 70
-"Not measured: AA cannot tell whether a site relies on this protection." => "",
+// admin/aa_security.php, row 81
+"Someone cannot log in after failed attempts" => "Netko se ne može prijaviti nakon neuspjelih pokušaja", // ai 2026-10
 
-// admin/aa_security.php, row 84
-"No form sent an unsigned expression in the last %1 days." => "",
+// admin/aa_security.php, row 82
+"Type their login name to see its failed logins of the last 12 hours, and let it log in at once." => "Upišite korisničko ime da biste vidjeli njegove neuspjele prijave u posljednjih 12 sati i odmah dopustili prijavu.", // ai 2026-10
 
 // admin/aa_security.php, row 85
-"Last %1 days: %2 refused, %3 run (counted once per page and day)." => "",
+// admin/setup.php, row 99, 240
+// admin/slicewiz.php, row 84
+// admin/um_passwd.php, row 111
+// admin/um_uedit.php, row 313, 317
+// include/itemfunc.php, row 613, 1202
+// include/um_util.php, row 296
+"Login name" => "Korisničko ime",
 
-// admin/aa_security.php, row 86
+// admin/aa_security.php, row 87
+// admin/aa_statecheck.php, row 177
+// admin/aa_statistics.php, row 91
+// admin/anonym_wizard.php, row 223
+// admin/console.php, row 71
+// admin/se_fields.php, row 303
+// admin/se_statistics.php, row 69
+// admin/se_views.php, row 148
+// include/formutil.php, row 1427, 1430, 2016
+// src/Widget/FilWidget.php, row 154, 233
+// src/Widget/FldWidget.php, row 156
+"Show" => "Prikaži",
+
+// admin/aa_security.php, row 94
+"No failed login of %1 in the last 12 hours. If the login is refused all the same, other names failed from the same address; letting %1 in lets it through as well." => "Za %1 nema neuspjelih prijava u posljednjih 12 sati. Ako se prijava ipak odbija, s iste su se adrese neuspješno prijavljivala druga imena; dopustite li prijavu za %1, ipak će proći.", // ai 2026-10
+
+// admin/aa_security.php, row 96
+// src/Optimize/CheckHttp.php, row 82, 91
+// src/Optimize/CheckLoginAddresses.php, row 88, 101
+// src/Optimize/CheckSessionidUse.php, row 99
+// src/Optimize/CheckTrustedProxies.php, row 103
+// src/Optimize/CheckUploadRefusals.php, row 86
+// src/Security/Protection.php, row 92
+"Address" => "Adresa", // ai 2026-10
+
+// admin/aa_security.php, row 96
+"Failed logins" => "Neuspjele prijave", // ai 2026-10
+
+// admin/aa_security.php, row 96
+"Last one" => "Posljednja", // ai 2026-10
+
+// admin/aa_security.php, row 96
+"Next login" => "Sljedeća prijava", // ai 2026-10
+
+// admin/aa_security.php, row 99
+"waits %1 min" => "čeka %1 min", // ai 2026-10
+
+// admin/aa_security.php, row 99
+"checked at once" => "provjerava se odmah", // ai 2026-10
+
+// admin/aa_security.php, row 103
+"%1 more addresses tried this name." => "S ovim su imenom pokušale i druge adrese (još %1).", // ai 2026-10
+
+// admin/aa_security.php, row 108
+"Let %1 log in now" => "Odmah dopustite prijavu za %1", // ai 2026-10
+
+// admin/aa_security.php, row 109
+"Its failed logins until now stop counting, from every address; the log keeps who let it in. After 5 more wrong passwords it waits again." => "Dosadašnje neuspjele prijave tog imena prestaju se brojati, sa svih adresa; zapisnik bilježi tko je dopustio prijavu. Nakon još 5 pogrešnih lozinki ponovno čeka.", // ai 2026-10
+
+// admin/aa_security.php, row 117
+"Not measured: AA cannot tell whether a site relies on this protection." => "Nije mjereno: AA ne može utvrditi oslanja li se web na ovu zaštitu.", // ai 2026-10
+
+// admin/aa_security.php, row 131
+"Nothing refused or run in the last %1 days." => "U posljednjih %1 dana ništa nije odbijeno ni izvršeno.", // ai 2026-10
+
+// admin/aa_security.php, row 132
+"Last %1 days: %2 refused, %3 run (counted once per page and day)." => "Posljednjih %1 dana: odbijeno %2, izvedeno %3 (broji se jednom po stranici i danu).", // ai 2026-10
+
+// admin/aa_security.php, row 133
 // src/Optimize/CheckAjaxUnsigned.php, row 86
 // src/Optimize/CheckAlertitemRefusals.php, row 95
 // src/Optimize/CheckAnonymousEditRefusals.php, row 93
 // src/Optimize/CheckBlockedRequests.php, row 94
 // src/Optimize/CheckCkeditorUse.php, row 102
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 96
+// src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
-// src/Optimize/CheckSecurityProtections.php, row 103
+// src/Optimize/CheckSecurityProtections.php, row 106
 // src/Optimize/CheckSessionidUse.php, row 105
+// src/Optimize/CheckTrustedProxies.php, row 109
 // src/Optimize/CheckUploadRefusals.php, row 98
 // src/Optimize/CheckUserAliasFunctionLog.php, row 74
-"Log rows" => "",
+"Log rows" => "Zapisi dnevnika", // ai 2026-10
 
-// admin/aa_security.php, row 93
-"On" => "",
-
-// admin/aa_security.php, row 96
-"Off since %1, %2" => "",
-
-// admin/aa_security.php, row 96
-// src/Import/DetailPage.php, row 726
-"Off" => "",
-
-// admin/aa_security.php, row 101
-// include/menu_util.php, row 82
-// src/Optimize/CheckSecurityProtections.php, row 69
-"Security" => "",
-
-// admin/aa_security.php, row 128
-"Saved. Changes are written to the log." => "",
-
-// admin/aa_security.php, row 132
-"Each protection is on unless you switch it off here. Switch one off only for an old site whose forms still use the older way, and only until they are converted." => "",
+// admin/aa_security.php, row 140
+"On" => "Uključeno", // ai 2026-10
 
 // admin/aa_security.php, row 143
-"Switch this protection off" => "",
+"Off since %1, %2" => "Isključeno od %1, %2", // ai 2026-10
 
-// admin/aa_security.php, row 144
-"State Check reminds you until it is on again." => "",
+// admin/aa_security.php, row 143
+// src/Import/DetailPage.php, row 726
+"Off" => "Isključeno", // ai 2026-10
 
-// admin/aa_security.php, row 147
-"How to convert older forms" => "",
+// admin/aa_security.php, row 148
+// include/menu_util.php, row 82
+// src/Optimize/CheckSecurityProtections.php, row 73
+"Security" => "Sigurnost", // ai 2026-10
 
-// admin/aa_security.php, row 152
+// admin/aa_security.php, row 177
+"Saved. Changes are written to the log." => "Spremljeno. Promjene se zapisuju u dnevnik.", // ai 2026-10
+
+// admin/aa_security.php, row 182
+"Done: the failed logins of the name below no longer count." => "Gotovo: neuspjele prijave imena navedenog u nastavku više se ne broje.", // ai 2026-10
+
+// admin/aa_security.php, row 186
+"Each protection is on unless you switch it off here. Switch one off only for an old site whose forms or links still use the older way, and only until they are converted." => "Svaka je zaštita uključena, osim ako je ovdje isključite. Isključite je samo za stari web čiji obrasci ili poveznice još rade na stariji način, i samo dok ih ne prepravite.", // ai 2026-10
+
+// admin/aa_security.php, row 197
+"Switch this protection off" => "Isključite ovu zaštitu", // ai 2026-10
+
+// admin/aa_security.php, row 198
+"State Check reminds you until it is on again." => "Provjera stanja podsjećat će vas na to dok je ponovno ne uključite.", // ai 2026-10
+
+// admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 392
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 120
@@ -600,146 +688,86 @@ return [
 // src/Widget/Widget.php, row 445
 "Save" => "Spremi", // ai 2026-06
 
-// admin/aa_statecheck.php, row 59
-"You do not have permissions to see State Check" => "",
-
-// admin/aa_statecheck.php, row 70
-"Problem" => "",
-
-// admin/aa_statecheck.php, row 71
-"Warning" => "",
-
 // admin/aa_statecheck.php, row 72
-"Advice" => "",
-
-// admin/aa_statecheck.php, row 73
-// admin/constants_sel.php, row 110
-// admin/prev_navigation.php, row 57
-// src/Manageraction/Central_Linkcheck.php, row 42
-"OK" => "U redu",
+"You do not have permissions to see State Check" => "Nemate dozvolu za pregled Provjere stanja", // ai 2026-10
 
 // admin/aa_statecheck.php, row 88
-"Recheck" => "",
+// src/Optimize/CheckSecurityProtections.php, row 82
+"unknown" => "nepoznato", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99, 249
-// include/logs.php, row 681
-"Severity" => "",
+// admin/aa_statecheck.php, row 120
+"not counted" => "ne broji se", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99, 249
-"Check" => "",
+// admin/aa_statecheck.php, row 125
+"Verify again" => "Ponovna provjera", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99, 249
-// include/logs.php, row 683
-"Finding" => "",
+// admin/aa_statecheck.php, row 133
+// central/installapp.php, row 1343
+// src/Optimize/CheckUniversalAnalytics.php, row 109
+// src/Optimize/ImgMeasuring.php, row 53
+"Where" => "Gdje", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99
-// include/formutil.php, row 3280
-// include/logs.php, row 682, 942
-"Count" => "Broj", // ai 2026-06
+// admin/aa_statecheck.php, row 145
+"Recheck" => "Provjerite ponovno", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99
-"Since" => "",
+// admin/aa_statecheck.php, row 177
+// admin/discedit.php, row 165
+"Hide" => "Sakrij",
 
-// admin/aa_statecheck.php, row 99
-// admin/discedit.php, row 134
-// admin/related_sel.php, row 152
-// admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
-// src/Manager.php, row 230
-// src/Optimize/AbstractOptimize.php, row 173
-"Actions" => "Akcije",
+// admin/aa_statecheck.php, row 199
+"No such check: %1" => "Nema takve provjere: %1", // ai 2026-10
 
-// admin/aa_statecheck.php, row 135
-"No such check: %1" => "",
+// admin/aa_statecheck.php, row 201
+"%1 has no repair action" => "%1 nema akciju popravka", // ai 2026-10
 
-// admin/aa_statecheck.php, row 137
-"%1 has no repair action" => "",
+// admin/aa_statecheck.php, row 206
+"Repair of %1 done." => "Popravak %1 je izvršen.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 142
-"Repair of %1 done." => "",
+// admin/aa_statecheck.php, row 206
+"Repair of %1 failed." => "Popravak %1 nije uspio.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 142
-"Repair of %1 failed." => "",
+// admin/aa_statecheck.php, row 246
+"Checked again at %1: still there. %2" => "Ponovno provjereno u %1: još postoji. %2", // ai 2026-10
 
-// admin/aa_statecheck.php, row 186
-"Checked again at %1: still there. %2" => "",
+// admin/aa_statecheck.php, row 247
+"Checked again at %1: the problem is gone." => "Ponovno provjereno u %1: problem je nestao.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 187
-"Checked again at %1: the problem is gone." => "",
-
-// admin/aa_statecheck.php, row 202
+// admin/aa_statecheck.php, row 254
 // include/menu_util.php, row 81
-"State Check" => "",
+"State Check" => "Provjera stanja", // ai 2026-10
 
-// admin/aa_statecheck.php, row 227
-"%1 problems, %2 warnings, %3 recommendations, %4 checks passed." => "",
+// admin/aa_statecheck.php, row 372
+"Basic checks ran now in %1 s." => "Osnovne provjere izvedene su sada za %1 s.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 228
-"Basic checks ran now in %1 s." => "",
+// admin/aa_statecheck.php, row 373
+"Extended checks ran now in %1 s." => "Proširene provjere izvedene su sada za %1 s.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 229
-"Extended checks ran now in %1 s." => "",
+// admin/aa_statecheck.php, row 373
+"Extended checks were not run." => "Proširene provjere nisu pokrenute.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 229
-"Extended checks were not run." => "",
+// admin/aa_statecheck.php, row 374
+"Slow checks ran now in %1 s." => "Spore provjere izvedene su sada za %1 s.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 230
-"Slow checks ran now in %1 s." => "",
+// admin/aa_statecheck.php, row 375
+"The daily snapshot last ran %1." => "Dnevna snimka posljednji je put napravljena %1.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 231
-"The daily snapshot last ran %1." => "",
+// admin/aa_statecheck.php, row 375
+"No daily snapshot yet." => "Još nema dnevne snimke.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 231
-"No daily snapshot yet." => "",
+// admin/aa_statecheck.php, row 379
+"No problems found. %1 checks passed at %2." => "Nisu pronađeni problemi. Uspješne provjere: %1, u %2.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 234
-// include/logs.php, row 701
-"Problems" => "",
+// admin/aa_statecheck.php, row 382
+"Full scans of the database; they take seconds to minutes on a large installation. Their findings are merged into the sections above once run." => "Potpuni prolazi kroz bazu podataka; na velikoj instalaciji traju od nekoliko sekundi do nekoliko minuta. Nakon pokretanja njihovi se nalazi dodaju u odjeljke iznad.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 234
-"No problems found. %1 checks passed at %2." => "",
+// admin/aa_statecheck.php, row 383
+"Run extended checks now" => "Pokrenite proširene provjere", // ai 2026-10
 
-// admin/aa_statecheck.php, row 236
-// include/logs.php, row 702
-"Warnings" => "",
+// admin/aa_statecheck.php, row 384
+"Full scans of the largest tables; on a big installation they take many minutes and load the database server, so they are not part of the daily snapshot. Run them now and then, preferably outside peak hours. Their findings are merged into the sections above once run." => "Potpuni prolazi kroz najveće tablice; na velikoj instalaciji traju mnogo minuta i opterećuju poslužitelj baze podataka, pa nisu dio dnevne snimke. Pokrećite ih povremeno, po mogućnosti izvan vršnih sati. Nakon pokretanja njihovi se nalazi dodaju u odjeljke iznad.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 239
-// include/logs.php, row 703
-"Recommendations" => "",
-
-// admin/aa_statecheck.php, row 249
-"Resolution" => "",
-
-// admin/aa_statecheck.php, row 251
-"Resolved" => "",
-
-// admin/aa_statecheck.php, row 253
-"Passed checks" => "",
-
-// admin/aa_statecheck.php, row 253
-"No check passed." => "",
-
-// admin/aa_statecheck.php, row 257
-"Extended checks" => "",
-
-// admin/aa_statecheck.php, row 258
-"Full scans of the database; they take seconds to minutes on a large installation. Their findings are merged into the sections above once run." => "",
-
-// admin/aa_statecheck.php, row 260
-"Run extended checks now" => "",
-
-// admin/aa_statecheck.php, row 265
-"Slow checks" => "",
-
-// admin/aa_statecheck.php, row 266
-"Full scans of the largest tables; on a big installation they take many minutes and load the database server, so they are not part of the daily snapshot. Run them now and then, preferably outside peak hours. Their findings are merged into the sections above once run." => "",
-
-// admin/aa_statecheck.php, row 268
-"Run slow checks now" => "",
-
-// admin/aa_statecheck.php, row 271
-// src/Optimize/CheckEnvironment.php, row 18
-"Environment" => "Okružje",
+// admin/aa_statecheck.php, row 385
+"Run slow checks now" => "Pokrenite spore provjere", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
 // admin/se_statistics.php, row 53
@@ -748,17 +776,6 @@ return [
 // admin/aa_statistics.php, row 86
 // admin/se_statistics.php, row 64
 "Admin - Statistics" => "Admin - Statistika", // ai 2026-06
-
-// admin/aa_statistics.php, row 91
-// admin/anonym_wizard.php, row 223
-// admin/console.php, row 58
-// admin/se_fields.php, row 303
-// admin/se_statistics.php, row 69
-// admin/se_views.php, row 148
-// include/formutil.php, row 1427, 1430, 2016
-// src/Widget/FilWidget.php, row 154, 233
-// src/Widget/FldWidget.php, row 156
-"Show" => "Prikaži",
 
 // admin/aa_statistics.php, row 94
 // admin/se_statistics.php, row 72
@@ -857,18 +874,18 @@ return [
 "Sites" => "Web stranice", // ai 2026-06
 
 // admin/aa_statistics.php, row 135
-// admin/aafinder.php, row 507, 520
-// admin/se_inputform.php, row 292
+// admin/aafinder.php, row 484, 497
+// admin/se_inputform.php, row 285
 // central/appstore.php, row 164
 // include/searchlib.php, row 1015
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Stranice", // ai 2026-06
 
 // admin/aa_statistics.php, row 162
-"Version progress" => "",
+"Version progress" => "Razvoj po verzijama", // ai 2026-10
 
 // admin/aa_statistics.php, row 173
-"Queue progress" => "",
+"Queue progress" => "Napredak reda", // ai 2026-10
 
 // admin/aa_statistics.php, row 184
 "Quick diagnostics" => "Brza dijagnostika", // ai 2026-06
@@ -939,7 +956,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1701
+// include/metabase.class.php, row 1703
 "Manage %1" => "Upravljanje %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -983,7 +1000,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1044
+// include/logs.php, row 1193
 // include/menu.php, row 133
 // include/slice.class.php, row 587
 // include/sliceadd.php, row 54, 79
@@ -992,6 +1009,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 88
 // src/Optimize/CheckAnonymousEditRefusals.php, row 84
 // src/Optimize/CheckImports.php, row 367
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 86
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
@@ -1012,7 +1030,7 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 293
+// include/logs.php, row 338
 // src/AA_Plannedtask.php, row 204
 "Log" => "Zapisnik", // ai 2026-06
 
@@ -1020,29 +1038,29 @@ return [
 // include/menu_util.php, row 79
 "AA finder" => "AA tražilica",
 
-// admin/aafinder.php, row 252
+// admin/aafinder.php, row 244
 "Jump" => "Skoči",
 
-// admin/aafinder.php, row 474, 526
+// admin/aafinder.php, row 451, 503
 // admin/itemhistory.php, row 47
 // include/itemfunc.php, row 82, 83, 286, 408
 // include/menu.php, row 163
 // include/menu_util.php, row 84
 "History" => "Povijest", // ai 2026-06
 
-// admin/aafinder.php, row 486
+// admin/aafinder.php, row 463
 "Manage" => "Upravljanje", // ai 2026-06
 
-// admin/aafinder.php, row 489
+// admin/aafinder.php, row 466
 "Manage User:" => "Upravljanje korisnikom:", // ai 2026-06
 
-// admin/aafinder.php, row 491, 497, 513, 541, 554
+// admin/aafinder.php, row 468, 474, 490, 518, 531
 "Go!" => "Kreni!",
 
-// admin/aafinder.php, row 495
+// admin/aafinder.php, row 472
 "Manage Group:" => "Upravljanje grupom:", // ai 2026-06
 
-// admin/aafinder.php, row 501, 531
+// admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
 // admin/um_uedit.php, row 248
 // include/se_users.php, row 138, 143
@@ -1053,18 +1071,18 @@ return [
 // src/Widget/RichtextMarkup.php, row 72
 "Search" => "Traži",
 
-// admin/aafinder.php, row 504
+// admin/aafinder.php, row 481
 "Find in" => "Traži u", // ai 2026-06
 
-// admin/aafinder.php, row 505
+// admin/aafinder.php, row 482
 "ID & SEO" => "ID i SEO", // ai 2026-06
 
-// admin/aafinder.php, row 506, 519
+// admin/aafinder.php, row 483, 496
 // include/itemfunc.php, row 195
 // include/menu.php, row 144
 "Views" => "Pogledi",
 
-// admin/aafinder.php, row 508, 521
+// admin/aafinder.php, row 485, 498
 // admin/anonym_wizard.php, row 217
 // include/exporter.class.php, row 550
 // include/itemfunc.php, row 383
@@ -1072,69 +1090,69 @@ return [
 // include/searchlib.php, row 171
 "Fields" => "Polja",
 
-// admin/aafinder.php, row 509, 522
+// admin/aafinder.php, row 486, 499
 "Site spots" => "Mjesta na webu", // ai 2026-06
 
-// admin/aafinder.php, row 510, 527
+// admin/aafinder.php, row 487, 504
 "Discussion comments" => "Komentari diskusije", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 495
 "Search and Replace in" => "Traži i zamijeni u", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 500
 "Objects" => "Objekti", // ai 2026-06
 
-// admin/aafinder.php, row 524
+// admin/aafinder.php, row 501
 "Items from slices with 'Slice Type' like Code... " => "Stavke sa stranica čiji 'Slice Type' sadrži Code...", // ai 2026-06
 
-// admin/aafinder.php, row 524
+// admin/aafinder.php, row 501
 "Code Items" => "Kodne stavke", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 502
 "All Items" => "Sve stavke", // ai 2026-06
 
-// admin/aafinder.php, row 529
+// admin/aafinder.php, row 506
 "minimum 2 characters for replace function" => "najmanje 2 znaka za funkciju zamjene", // ai 2026-06
 
-// admin/aafinder.php, row 530
+// admin/aafinder.php, row 507
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "najmanje 6 znakova za funkciju zamjene (ili koristite vrijednost {#AAA} koja će biti zamijenjena praznim nizom)", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 509
 "Replace!" => "Zamijeni!", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 516
 "Get all information about the ITEM" => "Dohvati sve informacije o STAVCI", // ai 2026-06
 
-// admin/aafinder.php, row 546
+// admin/aafinder.php, row 523
 "Shortcut to edit ITEM" => "Prečac za uređivanje STAVKE", // ai 2026-06
 
-// admin/aafinder.php, row 549
+// admin/aafinder.php, row 526
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 48, 49, 127, 136
 "contains" => "Sadrži",
 
-// admin/aafinder.php, row 550
+// admin/aafinder.php, row 527
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 127, 136
 "is" => "je",
 
-// admin/aafinder.php, row 551
+// admin/aafinder.php, row 528
 // admin/se_profile.php, row 97
 "Item number" => "Broj stavke",
 
-// admin/aafinder.php, row 552
+// admin/aafinder.php, row 529
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
 // admin/se_filters.php, row 51
 // admin/se_filters2.php, row 64
-// admin/se_import.php, row 47
+// admin/se_import.php, row 48
 // admin/se_import2.php, row 52
 // admin/se_inter_export.php, row 52
-// admin/se_inter_import.php, row 44
+// admin/se_inter_import.php, row 45
 // admin/se_inter_import2.php, row 38
 // admin/se_inter_import3.php, row 40
-// admin/se_mapping.php, row 48
+// admin/se_mapping.php, row 49
 // admin/se_mapping2.php, row 55
 // admin/se_rssfeeds.php, row 37
 // admin/xmlclient.php, row 107
@@ -1148,16 +1166,16 @@ return [
 "ActionApps Anonymous form" => "ActionApps anonimna forma", // ai 2026-06
 
 // admin/anonym_wizard.php, row 129
-// admin/write_mail.php, row 260
+// admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 9874, 9953
+// include/stringexpand.php, row 9956, 10035
 "Send" => "Pošaljite",
 
 // admin/anonym_wizard.php, row 151
-// admin/mailman_create_list.php, row 68
+// admin/mailman_create_list.php, row 69
 // admin/se_constant.php, row 87
 // admin/se_constant_import.php, row 63
-// admin/se_fieldid.php, row 90
+// admin/se_fieldid.php, row 89
 // admin/se_fields.php, row 86
 // admin/se_inputform.php, row 130
 // admin/se_javascript.php, row 50
@@ -1197,7 +1215,7 @@ return [
 "Use a PHP script to show the result on the OK and Error pages:" => "Koristite PHP skriptu za prikaz rezultata na OK stranici i stranici greške",
 
 // admin/anonym_wizard.php, row 221
-// admin/se_fieldid.php, row 310
+// admin/se_fieldid.php, row 296
 // admin/se_fields.php, row 299
 // admin/se_javascript.php, row 92
 // admin/se_profile.php, row 207
@@ -1208,14 +1226,15 @@ return [
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 88
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckUserAliasFunctionLog.php, row 85
 // src/Optimize/CheckUserAliasFunctions.php, row 87
-// src/Util/ChangesMonitor.php, row 454
+// src/Util/ChangesMonitor.php, row 450
 "Field" => "Polje",
 
 // admin/anonym_wizard.php, row 222
-// admin/se_fieldid.php, row 310
+// admin/se_fieldid.php, row 296
 // admin/se_fields.php, row 300
 // admin/se_history.php, row 140
 // admin/se_javascript.php, row 92
@@ -1234,28 +1253,28 @@ return [
    ."         are offered on this page."
  => "Samo polja iznačena sa su ponuđena na ovoj stranici",
 
-// admin/console.php, row 44
+// admin/console.php, row 49
 "You do not have permissions to access Console" => "Nemate dozvolu za pristup konzoli", // ai 2026-06
 
-// admin/console.php, row 53
+// admin/console.php, row 66
 "ActionApps Console" => "ActionApps konzola", // ai 2026-06
 
-// admin/console.php, row 61
+// admin/console.php, row 74
 // include/menu_util.php, row 86
 "Console" => "Konzola", // ai 2026-06
 
-// admin/console.php, row 62
+// admin/console.php, row 75
 // admin/se_javascript.php, row 81
-// include/stringexpand.php, row 94
+// include/stringexpand.php, row 97
 // src/Import/DetailPage.php, row 1025, 1091
 // src/Optimize/CheckImports.php, row 236, 238
 "Code" => "Kod", // ai 2026-06
 
-// admin/console.php, row 63
+// admin/console.php, row 76
 "HTML output" => "HTML izlaz", // ai 2026-06
 
-// admin/console.php, row 65
-// src/Optimize/AbstractOptimize.php, row 176
+// admin/console.php, row 78, 80
+// src/Optimize/AbstractOptimize.php, row 178
 "Result" => "Rezultat", // ai 2026-06
 
 // admin/constants_sel.php, row 62
@@ -1267,74 +1286,86 @@ return [
 // admin/constants_sel.php, row 102
 "Select constants" => "Odaberite konstante", // ai 2026-06
 
-// admin/discedit.php, row 58
+// admin/constants_sel.php, row 110
+// admin/prev_navigation.php, row 57
+// src/Manageraction/Central_Linkcheck.php, row 42
+// src/Optimize/StateCheckModel.php, row 222
+"OK" => "U redu",
+
+// admin/discedit.php, row 59
+// admin/slicefieldsedit.php, row 81
 "You don't have permissions to edit all items." => "Nemate dozvolu za uređivanje svih stavki",
 
-// admin/discedit.php, row 103
+// admin/discedit.php, row 104
 "Are you sure you want to delete selected comment?" => "Jeste li sigurni da želite obrisati odabrani komentar?", // ai 2026-06
 
-// admin/discedit.php, row 109
+// admin/discedit.php, row 110
 "Are you sure you want to delete ALL comments? There is no way back!" => "Jeste li sigurni da želite obrisati SVE komentare? Povratka nema!", // ai 2026-06
 
-// admin/discedit.php, row 115
+// admin/discedit.php, row 116
 "Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!" => "Jeste li sigurni da želite obrisati SVE neskrivene komentare (komentare koji NISU SKRIVENI)? Povratka nema!", // ai 2026-06
 
-// admin/discedit.php, row 123
+// admin/discedit.php, row 124
 "Admin - Discussion comments management" => "Admin - upravljanje komentarima diskusije", // ai 2026-06
 
-// admin/discedit.php, row 128
+// admin/discedit.php, row 129
 "Item: " => "Stavka",
 
-// admin/discedit.php, row 130
-// include/modutils.php, row 78, 179
-// include/slicedit.php, row 193
+// admin/discedit.php, row 131
+// include/modutils.php, row 75, 176
+// include/slicedit.php, row 187
 "Title" => "Naslov",
 
-// admin/discedit.php, row 131
-// admin/discedit2.php, row 93, 150
+// admin/discedit.php, row 132
+// admin/discedit2.php, row 93, 147
 // admin/se_users.php, row 125, 185
 // include/se_users.php, row 108, 180
 // src/Util/Note.php, row 61
 "Author" => "Autor - autorica",
 
-// admin/discedit.php, row 132
-// include/logs.php, row 729
+// admin/discedit.php, row 133
+// include/logs.php, row 878
 "IP Address" => "IP adresa", // ai 2026-06
 
-// admin/discedit.php, row 133
-// admin/discedit2.php, row 153
+// admin/discedit.php, row 134
+// admin/discedit2.php, row 150
 // src/Widget/DteWidget.php, row 36
 "Date" => "Datum",
 
-// admin/discedit.php, row 140
+// admin/discedit.php, row 135
+// admin/related_sel.php, row 155
+// admin/se_views.php, row 136
+// src/Import/DetailPage.php, row 313
+// src/Manager.php, row 230
+// src/Optimize/AbstractOptimize.php, row 175
+"Actions" => "Akcije",
+
+// admin/discedit.php, row 141
 "No discussion comments" => "Nema koentara na diskusije",
 
-// admin/discedit.php, row 163
+// admin/discedit.php, row 164
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
 // include/field.class.php, row 696
-// include/filedit.php, row 115
+// include/filedit.php, row 113
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1643
+// include/metabase.class.php, row 1645
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
-// modules/jump/modedit.php, row 144
+// modules/jump/modedit.php, row 141
 "Edit" => "Uredite",
 
-// admin/discedit.php, row 164
-"Hide" => "Sakrij",
-
-// admin/discedit.php, row 164
+// admin/discedit.php, row 165
 "Approve" => "Dozvolite",
 
-// admin/discedit.php, row 165
-// admin/se_inter_export.php, row 133
-// admin/se_inter_import.php, row 77, 97
+// admin/discedit.php, row 166
+// admin/se_inter_export.php, row 132
+// admin/se_inter_import.php, row 76, 96
 // admin/se_views.php, row 150
-// admin/slicedel.php, row 68
+// admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
@@ -1350,61 +1381,61 @@ return [
 // src/Widget/FilWidget.php, row 201
 "Delete" => "Obrišite",
 
-// admin/discedit.php, row 171
+// admin/discedit.php, row 172
 // include/adminpage.class.php, row 345
 // include/se_users.php, row 128
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Back" => "Natrag",
 
-// admin/discedit.php, row 172
+// admin/discedit.php, row 173
 "Delete All" => "Obriši sve", // ai 2026-06
 
-// admin/discedit.php, row 173
+// admin/discedit.php, row 174
 "Delete All Unhidden" => "Obriši sve neskrivene", // ai 2026-06
 
-// admin/discedit2.php, row 79
+// admin/discedit2.php, row 80
 "You do not have permission to edit items in this slice" => "Nemate dozvolu za uređivanje stavki na stranici",
 
-// admin/discedit2.php, row 92, 149
-// admin/write_mail.php, row 120, 240
-// include/logs.php, row 891
+// admin/discedit2.php, row 92, 146
+// admin/write_mail.php, row 119, 248
+// include/logs.php, row 1040
 // include/mail.php, row 663
 "Subject" => "Subjekt",
 
-// admin/discedit2.php, row 94, 151
+// admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
-// admin/slicewiz.php, row 90
+// admin/slicewiz.php, row 89
 // admin/um_passwd.php, row 118
 // admin/um_uedit.php, row 325
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
 "E-mail" => "e-mail",
 
-// admin/discedit2.php, row 95, 152
+// admin/discedit2.php, row 95, 149
 "Text of discussion comment" => "Tekst komentara na diskusiju",
 
-// admin/discedit2.php, row 96, 154
+// admin/discedit2.php, row 96, 151
 "Author's WWW  - URL" => "web autora - autorice",
 
-// admin/discedit2.php, row 97, 155
+// admin/discedit2.php, row 97, 152
 "Author's WWW - description" => "WWW autora - opis", // ai 2026-06
 
-// admin/discedit2.php, row 98, 156
+// admin/discedit2.php, row 98, 153
 "Remote address" => "Udaljena adresa", // ai 2026-06
 
 // admin/discedit2.php, row 99
 "Free1" => "Slobodno1", // ai 2026-06
 
-// admin/discedit2.php, row 100, 158
+// admin/discedit2.php, row 100, 155
 "Tracking" => "Praćenje", // ai 2026-06
 
-// admin/discedit2.php, row 136
+// admin/discedit2.php, row 133
 "Items management - Discussion comments management - Edit comment" => "Upravljanje stavkama - upravljanje komentarima diskusije - uređivanje komentara", // ai 2026-06
 
-// admin/discedit2.php, row 147
+// admin/discedit2.php, row 144
 "Edit comment" => "Uredite komentar", // ai 2026-06
 
-// admin/discedit2.php, row 157
+// admin/discedit2.php, row 154
 "Free 1" => "Slobodno 1", // ai 2026-06
 
 // admin/feed_to.php, row 57
@@ -1416,7 +1447,7 @@ return [
 
 // admin/feed_to.php, row 67
 // admin/se_export.php, row 119
-// admin/se_filters.php, row 190
+// admin/se_filters.php, row 183
 // admin/slicedit.php, row 141, 147
 // include/exporter.class.php, row 511
 // include/menu.php, row 189
@@ -1437,49 +1468,49 @@ return [
 // include/menu_util.php, row 95
 "Export" => "Izvezite",
 
-// admin/fileman.php, row 78
+// admin/fileman.php, row 85
 "No permissions for file manager." => "Nemate dozvolu za file manager",
 
-// admin/fileman.php, row 83
+// admin/fileman.php, row 90
 "Unable to run File Manager" => "Nije moguće pokrenuti file manager",
 
-// admin/fileman.php, row 83
+// admin/fileman.php, row 90
 "doesn't exist" => "ne postoji",
 
-// admin/fileman.php, row 89
+// admin/fileman.php, row 97
 "Unable to mkdir" => "Nije moguće naparviti mapu",
 
-// admin/fileman.php, row 116
+// admin/fileman.php, row 129
 // include/filedit.php, row 67
 // include/menu.php, row 167
 "File Manager" => "Upravitelj datoteka", // ai 2026-06
 
-// admin/fileman.php, row 118
-// include/fileman.php, row 134, 152
+// admin/fileman.php, row 131
+// include/fileman.php, row 159, 177
 // src/Optimize/ImgCacheWritable.php, row 47
 "Directory" => "Mapa",
 
-// admin/fileman.php, row 179
+// admin/fileman.php, row 192
 "Unselect all" => "Deselektirajte sve",
 
-// admin/fileman.php, row 180
-// admin/slicedel.php, row 93
+// admin/fileman.php, row 193
+// admin/slicedel.php, row 106
 "Delete selected" => "Obrišite odabrano",
 
-// admin/fileman.php, row 217
+// admin/fileman.php, row 230
 "Create new file" => "Kreirajte novu datoteku",
 
-// admin/fileman.php, row 221
+// admin/fileman.php, row 234
 "Upload file" => "POšaljite datoteku",
 
-// admin/fileman.php, row 232
+// admin/fileman.php, row 245
 "Copy template dir" => "Iskopirajte mapu s predlošcima",
 
-// admin/fileman.php, row 235
+// admin/fileman.php, row 248
 "Create new directory" => "Napravite novu mapu",
 
 // admin/index.php, row 102
-// include/init_page.php, row 120
+// include/init_page.php, row 117
 "You do not have permission to edit items in the slice:" => "Nemate dozvolu uređivanja",
 
 // admin/index.php, row 182
@@ -1488,27 +1519,27 @@ return [
 // admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - Upravitelj stavki", // ai 2026-06
 
-// admin/itemedit.php, row 305
+// admin/itemedit.php, row 310
 // include/date.php, row 189
 // include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Greška u",
 
-// admin/itemedit.php, row 349
-// admin/slicefieldsedit.php, row 126
+// admin/itemedit.php, row 354
+// admin/slicefieldsedit.php, row 131
 "Error: no fields." => "Greška: nema polja",
 
-// admin/itemedit.php, row 357
-// admin/slicefieldsedit.php, row 134
+// admin/itemedit.php, row 362
+// admin/slicefieldsedit.php, row 139
 "Bad item ID id=%1" => "Neispravan ID stavke id=%1", // ai 2026-06
 
-// admin/itemedit.php, row 369
+// admin/itemedit.php, row 374
 "Error: You have no rights to edit item." => "Greška: Nemate dozvolu za uređivanje stavke.", // ai 2026-06
 
-// admin/itemedit.php, row 404, 405
+// admin/itemedit.php, row 409, 410
 "Edit Item" => "Uredite stavku",
 
-// admin/itemedit.php, row 404, 405
+// admin/itemedit.php, row 409, 410
 // include/menu.php, row 83
 "Add Item" => "Dodajte stavku",
 
@@ -1537,58 +1568,59 @@ return [
 // src/Util/Adminlink.php, row 124
 "Statistics" => "Statistika", // ai 2026-06
 
-// admin/mailman_create_list.php, row 73
+// admin/mailman_create_list.php, row 74
 "Admin - Create Mailman List" => "Administracija - napravite mail listu",
 
-// admin/mailman_create_list.php, row 78
+// admin/mailman_create_list.php, row 79
 "First set Mailman Lists Field in Slice Settings." => "Prvo napravite polja mail liste u postavkama stranice",
 
-// admin/mailman_create_list.php, row 104
+// admin/mailman_create_list.php, row 100
 "Error: This list name is already used." => "Greška: postojeće ime liste",
 
-// admin/mailman_create_list.php, row 138
+// admin/mailman_create_list.php, row 129
 "The list was successfully created." => "Lista je uspješno kreirana",
 
-// admin/mailman_create_list.php, row 160
+// admin/mailman_create_list.php, row 151
 "List Settings" => "Postavke liste",
 
-// admin/mailman_create_list.php, row 161
+// admin/mailman_create_list.php, row 152
 "The list will be added to mailman and also\n"
    ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."
  => "Lista će biti dodana u mailman",
 
-// admin/mailman_create_list.php, row 163
+// admin/mailman_create_list.php, row 154
 "All the fields are required." => "Sva polja su obavezna",
 
-// admin/mailman_create_list.php, row 164
+// admin/mailman_create_list.php, row 155
 "List name" => "Ime liste",
 
-// admin/mailman_create_list.php, row 166
+// admin/mailman_create_list.php, row 157
 "Admin email" => "e-mail admina",
 
-// admin/mailman_create_list.php, row 168
+// admin/mailman_create_list.php, row 159
 "Admin password" => "Administratorska lozinka",
 
-// admin/mailman_create_list.php, row 172
+// admin/mailman_create_list.php, row 163
 // admin/setup.php, row 109, 233
-// modules/jump/modedit.php, row 182
+// modules/jump/modedit.php, row 179
 "Create" => "Kreirajte",
 
 // admin/preview.php, row 49
 "Wrong slice_id." => "Pogrešan slice_id.", // ai 2026-06
 
-// admin/related_sel.php, row 152
+// admin/related_sel.php, row 155
 // src/Manager.php, row 230
 "Publish date" => "Datum objave", // ai 2026-06
 
-// admin/related_sel.php, row 152
+// admin/related_sel.php, row 155
 // src/Manager.php, row 230
 "Headline" => "Naslov", // ai 2026-06
 
-// admin/related_sel.php, row 180
+// admin/related_sel.php, row 183
 "Editor window - item manager, related selection window" => "Uređivanje stavki - odabir povezanih stavki", // ai 2026-06
 
 // admin/rsstest.php, row 36
+// modules/jump/modedit.php, row 63, 68
 "You do not have permissions to access this page" => "Nemate dozvolu za pristup ovoj stranici", // ai 2026-06
 
 // admin/rsstest.php, row 46
@@ -1597,172 +1629,172 @@ return [
 // admin/se_admin.php, row 74
 "You have no permission to set configuration parameters of this slice" => "Nemate dozvolu za postavljanje konfiguracijskih postavki za ovu stranicu",
 
-// admin/se_admin.php, row 83, 177
-// admin/se_compact.php, row 93, 237
+// admin/se_admin.php, row 82, 178
+// admin/se_compact.php, row 93, 235
 // include/constants.php, row 654, 704, 724, 778, 813, 844, 868, 911, 940, 966, 1000
 "Top HTML" => "Vrh HTML-a",
 
-// admin/se_admin.php, row 84, 189
+// admin/se_admin.php, row 83, 190
 "Item format" => "format stavke",
 
-// admin/se_admin.php, row 85, 201
-// admin/se_compact.php, row 94, 247
+// admin/se_admin.php, row 84, 202
+// admin/se_compact.php, row 94, 245
 // include/constants.php, row 659, 706, 726, 782, 815, 846, 871, 916, 942, 971, 1005
 "Bottom HTML" => "Dno HTML-a",
 
-// admin/se_admin.php, row 86, 213
-// admin/se_compact.php, row 95, 275
-// admin/se_fulltext.php, row 71, 199
+// admin/se_admin.php, row 85, 214
+// admin/se_compact.php, row 95, 273
+// admin/se_fulltext.php, row 70, 197
 // include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
 "Remove strings" => "Uklonite kod",
 
-// admin/se_admin.php, row 87, 222
+// admin/se_admin.php, row 86, 223
 // include/constants.php, row 694, 717, 804, 830, 861, 894, 928, 958, 992, 1026
 "HTML code for \"No item found\" message" => "HTML kod za \"Stavka nije pronađena\" poruku",
 
-// admin/se_admin.php, row 88
-// admin/se_fulltext.php, row 72, 207, 211
+// admin/se_admin.php, row 87
+// admin/se_fulltext.php, row 71, 205, 209
 "Show discussion" => "Pokažite raspravu",
 
-// admin/se_admin.php, row 100
-// admin/se_compact.php, row 127
-// admin/se_fulltext.php, row 93
+// admin/se_admin.php, row 101
+// admin/se_compact.php, row 128
+// admin/se_fulltext.php, row 91
 // admin/se_view.php, row 170, 339
 "Can't change slice settings" => "Nije moguće promjeniti postavke stranice",
 
-// admin/se_admin.php, row 112
+// admin/se_admin.php, row 113
 "Admin fields update successful" => "Administracijska polja uspješno obnovljena",
 
-// admin/se_admin.php, row 161
+// admin/se_admin.php, row 162
 "Admin - design Item Manager view" => "Uređivanje stavki",
 
-// admin/se_admin.php, row 170
-// admin/se_compact.php, row 227
-// admin/se_fulltext.php, row 155
-// admin/se_inputform.php, row 189, 439
+// admin/se_admin.php, row 171
+// admin/se_compact.php, row 225
+// admin/se_fulltext.php, row 153
+// admin/se_inputform.php, row 189, 432
 // src/Util/UiPrefs.php, row 56
 "Default" => "Zadano",
 
-// admin/se_admin.php, row 173
+// admin/se_admin.php, row 174
 "Listing of items in Admin interface" => "Izlist stavki u admin sučelju",
 
-// admin/se_admin.php, row 182
-// admin/se_compact.php, row 238, 267
-// admin/se_fulltext.php, row 168
+// admin/se_admin.php, row 183
+// admin/se_compact.php, row 236, 265
+// admin/se_fulltext.php, row 166
 "HTML code which appears at the top of slice area" => "HTML kod koji se pojavljuje u vrhu stranice",
 
-// admin/se_admin.php, row 194
-// admin/se_compact.php, row 241, 270
-// admin/se_fulltext.php, row 180
+// admin/se_admin.php, row 195
+// admin/se_compact.php, row 239, 268
+// admin/se_fulltext.php, row 178
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "Ovdje stavite HTML kod",
 
-// admin/se_admin.php, row 206
-// admin/se_compact.php, row 248, 273
-// admin/se_fulltext.php, row 192
+// admin/se_admin.php, row 207
+// admin/se_compact.php, row 246, 271
+// admin/se_fulltext.php, row 190
 "HTML code which appears at the bottom of slice area" => "HTML kod koji se pojavljuje u dnu stranice",
 
-// admin/se_admin.php, row 218
-// admin/se_compact.php, row 276
-// admin/se_fulltext.php, row 204
+// admin/se_admin.php, row 219
+// admin/se_compact.php, row 274
+// admin/se_fulltext.php, row 202
 "Removes empty brackets etc. Use ## as delimiter." => "Uklanja prazne zagrade. Koristite ## kao odjeljivač",
 
-// admin/se_admin.php, row 227
+// admin/se_admin.php, row 228
 "Code to be printed when no item is filled (or user has no permission to any item in the slice)" => "Kod koji se ispisuje kada nijedna stavka nije ispunjena (ili korisnik nema dozvolu ni za jednu stavku na stranici)", // ai 2026-06
 
-// admin/se_admin.php, row 234
+// admin/se_admin.php, row 235
 "Use special view" => "Koristite poseban pogled", // ai 2026-06
 
-// admin/se_admin.php, row 238
+// admin/se_admin.php, row 239
 "You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)" => "Poseban pogled - predložak za formu za unos - možete postaviti na stranici \"Design\" -> \"View\" (pogled forme za unos)", // ai 2026-06
 
-// admin/se_admin.php, row 244
-// admin/se_compact.php, row 284
-// admin/se_fulltext.php, row 216
+// admin/se_admin.php, row 245
+// admin/se_compact.php, row 282
+// admin/se_fulltext.php, row 214
 // admin/se_view.php, row 580
 "Use these aliases for database fields" => "Koristite ove sinonime za polja u bazi",
 
-// admin/se_compact.php, row 83
+// admin/se_compact.php, row 84
 "You do not have permissions to change compact view formatting" => "Nemate dozvolu za promjenu oblikovanja ",
 
-// admin/se_compact.php, row 92, 240
+// admin/se_compact.php, row 92, 238
 // include/constants.php, row 655, 705, 779, 814, 845, 912, 967, 1001
 "Odd Rows" => "Neparni redovi",
 
-// admin/se_compact.php, row 96, 277
+// admin/se_compact.php, row 96, 275
 "'No item found' message" => "Stavka nije pronađena",
 
-// admin/se_compact.php, row 98, 244
+// admin/se_compact.php, row 98, 242
 // include/constants.php, row 657, 780, 914, 969, 1003
 "Even Rows" => "Parni redovi",
 
-// admin/se_compact.php, row 101, 266
+// admin/se_compact.php, row 101, 264
 "Category top HTML" => "HTML vrha kategorije",
 
-// admin/se_compact.php, row 102, 269
+// admin/se_compact.php, row 102, 267
 "Category Headline" => "Naslov kaegorije",
 
-// admin/se_compact.php, row 103, 272
+// admin/se_compact.php, row 103, 270
 "Category bottom HTML" => "HTML dna kategorije",
 
-// admin/se_compact.php, row 134
+// admin/se_compact.php, row 135
 "Design of compact design successfully changed" => "Dizajn kompaktnog dizajna uspješno promijenjen",
 
-// admin/se_compact.php, row 214
+// admin/se_compact.php, row 212
 "Admin - design Index view" => "Admin - pogled u dizajn indexa",
 
-// admin/se_compact.php, row 215
+// admin/se_compact.php, row 213
 "Use these boxes ( and the tags listed below ) to control what appears on summary page" => "Koristite ove kućice za kontrolu prikaza na zbirnoj stranici",
 
-// admin/se_compact.php, row 232
+// admin/se_compact.php, row 230
 "HTML code for index view" => "HTML kod za indexni pogled",
 
-// admin/se_compact.php, row 243
+// admin/se_compact.php, row 241
 // include/constants.php, row 656, 805, 913, 968, 1002
 "Use different HTML code for even rows" => "Koristite različit HTML kod za parne redove",
 
-// admin/se_compact.php, row 245
+// admin/se_compact.php, row 243
 "You can define different code for odd and even rows\n"
    ."                         <br>first red, second black, for example"
  => "Možete odrediti različitu boju koda za parne i neparne redove",
 
-// admin/se_compact.php, row 250
+// admin/se_compact.php, row 248
 // include/constants.php, row 673, 789, 922, 977, 1011
 "Group by" => "Sortirajte po",
 
-// admin/se_compact.php, row 257
+// admin/se_compact.php, row 255
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 "Ascending" => "Uzlazno",
 
-// admin/se_compact.php, row 258
+// admin/se_compact.php, row 256
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
 // include/searchlib.php, row 368
 "Descending" => "silazno",
 
-// admin/se_compact.php, row 259
+// admin/se_compact.php, row 257
 // admin/se_view.php, row 189
 "Ascending by Priority" => "Uzlazno po važnosti",
 
-// admin/se_compact.php, row 260
+// admin/se_compact.php, row 258
 // admin/se_view.php, row 189
 "Descending by Priority" => "Silazno po važnosti",
 
-// admin/se_compact.php, row 263
+// admin/se_compact.php, row 261
 "'by Priority' is usable just for fields using constants (like category)" => "Po važnosti",
 
-// admin/se_compact.php, row 278
+// admin/se_compact.php, row 276
 "message to show in place of slice.php, if no item matches the query" => "poruka koja se prikazuje umjesto slice.php ako nijedna stavka ne odgovara upitu", // ai 2026-06
 
 // admin/se_constant.php, row 95, 186
-// include/constedit_util.php, row 629, 752
-"Wrong constant group id" => "",
+// include/constedit_util.php, row 602, 717
+"Wrong constant group id" => "Pogrešan ID grupe konstanti", // ai 2026-10
 
 // admin/se_constant.php, row 119
-"Can't delete constant group" => "",
+"Can't delete constant group" => "Grupu konstanti nije moguće izbrisati", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
 // admin/se_users.php, row 185
@@ -1771,19 +1803,19 @@ return [
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
-// include/fileman.php, row 32
-// include/logs.php, row 1031
+// include/fileman.php, row 34
+// include/logs.php, row 1180
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
-// src/Optimize/AbstractOptimize.php, row 171
+// src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 "Name" => "Ime",
 
 // admin/se_constant.php, row 176, 378
-// admin/se_mapping.php, row 182
+// admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
 // include/constants.php, row 453
 // include/constedit.php, row 76
@@ -1792,15 +1824,15 @@ return [
 "Value" => "Vrijednost",
 
 // admin/se_constant.php, row 177, 379
-// admin/se_inputform.php, row 528
+// admin/se_inputform.php, row 521
 // admin/se_view.php, row 153
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 98
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
-// src/Optimize/AbstractOptimize.php, row 172
+// src/Optimize/AbstractOptimize.php, row 174
 "Description" => "Objašnjenje",
 
 // admin/se_constant.php, row 178, 380
@@ -1808,21 +1840,21 @@ return [
 // include/constants.php, row 454
 // include/constedit.php, row 82
 // include/field.class.php, row 1336
-// src/Optimize/AbstractOptimize.php, row 175
+// src/Optimize/AbstractOptimize.php, row 177
 "Priority" => "Važnost",
 
 // admin/se_constant.php, row 184, 327
 // admin/se_constant_import.php, row 74, 126
-// admin/se_inputform.php, row 282
+// admin/se_inputform.php, row 275
 // include/constants.php, row 784
 "Constant Group" => "Konstantna grupa",
 
 // admin/se_constant.php, row 192
-// include/constedit_util.php, row 635
+// include/constedit_util.php, row 606
 "This constant group already exists" => "Ova konstantna grupa već postoji",
 
 // admin/se_constant.php, row 214
-"You do not have permissions to change fields settings in the new owner slice" => "",
+"You do not have permissions to change fields settings in the new owner slice" => "Nemate dozvolu za promjenu svojstava polja na novoj stranici vlasnici", // ai 2026-10
 
 // admin/se_constant.php, row 277
 // admin/se_constant_import.php, row 109
@@ -1832,7 +1864,7 @@ return [
 "Admin - Constants Setting" => "Administracija - postavke konstanti",
 
 // admin/se_constant.php, row 288
-"The constant group can be only viewed here" => "",
+"The constant group can be only viewed here" => "Grupu konstanti ovdje je moguće samo pregledati", // ai 2026-10
 
 // admin/se_constant.php, row 297
 "Delete whole group" => "Obrišite cijelu grupu",
@@ -1845,7 +1877,7 @@ return [
 
 // admin/se_constant.php, row 319
 // admin/se_constant_import.php, row 75, 125, 136
-// admin/se_inputform.php, row 418
+// admin/se_inputform.php, row 411
 "Constants" => "Konstante",
 
 // admin/se_constant.php, row 333
@@ -1894,7 +1926,7 @@ return [
 "Are you sure you want to PERMANENTLY DELETE this group?" => "Jeste li sigurni da želite TRAJNO IZBRISATI ovu grupu?", // ai 2026-06
 
 // admin/se_constant_import.php, row 82
-// include/constedit_util.php, row 639
+// include/constedit_util.php, row 610
 "No constants specified" => "Nisu navedene konstante", // ai 2026-06
 
 // admin/se_constant_import.php, row 115
@@ -1914,7 +1946,7 @@ return [
 
 // admin/se_csv_import.php, row 133
 // admin/se_csv_import2.php, row 214
-"The data to import are no longer on the server - load them again" => "",
+"The data to import are no longer on the server - load them again" => "Podaci za uvoz više nisu na poslužitelju – učitajte ih ponovno", // ai 2026-10
 
 // admin/se_csv_import.php, row 142
 "Cannot read input url" => "Nije moguće pročitati ulazni URL", // ai 2026-06
@@ -1933,7 +1965,8 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1061
+// include/logs.php, row 1210
+// src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckUserAliasFunctionLog.php, row 86
 "File" => "Datoteka",
 
@@ -1943,7 +1976,7 @@ return [
 "URL" => "Web adresa",
 
 // admin/se_csv_import.php, row 240, 245
-// admin/se_inputform.php, row 471, 472
+// admin/se_inputform.php, row 464, 465
 // include/itemfunc.php, row 668, 777, 806
 // src/Util/Note.php, row 63
 "Text" => "Tekst",
@@ -1996,18 +2029,18 @@ return [
 "Mapping settings" => "Postavke mapiranja",
 
 // admin/se_csv_import2.php, row 410
-// admin/se_filters.php, row 189
-// admin/se_mapping.php, row 180
+// admin/se_filters.php, row 182
+// admin/se_mapping.php, row 177
 "To" => "Do",
 
 // admin/se_csv_import2.php, row 411
-// admin/se_filters.php, row 188
-// admin/se_mapping.php, row 181
+// admin/se_filters.php, row 181
+// admin/se_mapping.php, row 178
 "From" => "Od",
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1668
+// include/metabase.class.php, row 1670
 // include/statestore.php, row 1077, 1414
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
@@ -2075,33 +2108,33 @@ return [
 // admin/se_csv_import2.php, row 483
 "Store settings..." => "Spremi postavke...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 489
+// admin/se_csv_import2.php, row 490
 "Load setting" => "Učitaj postavke", // ai 2026-06
 
-// admin/se_csv_import2.php, row 491
+// admin/se_csv_import2.php, row 492
 "Save setting as" => "Spremi postavke kao", // ai 2026-06
 
-// admin/se_csv_import2.php, row 545
+// admin/se_csv_import2.php, row 533
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Admin - uvezite CSV - mapiranje i akcije",
 
 // admin/se_dataimport.php, row 59
 // admin/se_dataimports.php, row 35
-"You do not have permissions to manage the imports of this slice" => "",
+"You do not have permissions to manage the imports of this slice" => "Nemate dozvolu za upravljanje uvozima ove stranice", // ai 2026-10
 
 // admin/se_dataimport.php, row 66
-"There is no such import in this slice." => "",
+"There is no such import in this slice." => "Na ovoj stranici nema takvog uvoza.", // ai 2026-10
 
 // admin/se_dataimport.php, row 77
-"Import: %1" => "",
+"Import: %1" => "Uvoz: %1", // ai 2026-10
 
 // admin/se_dataimports.php, row 40
 // include/menu.php, row 156
 // include/menu_util.php, row 92
 // src/Optimize/CheckImports.php, row 35
-"Imports" => "",
+"Imports" => "Uvozi", // ai 2026-10
 
 // admin/se_dataimports.php, row 41
-"An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "",
+"An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "Uvoz puni stranicu podacima iz drugog izvora, odmah ili planiranim zadatkom. Gumb „Pokrenite“ ga započinje; uvoz se zatim izvodi u pozadini, a njegov detalj prikazuje tijek.", // ai 2026-10
 
 // admin/se_export.php, row 74
 "You do not have permissions to export" => "Nemate dozvolu za izvoz", // ai 2026-06
@@ -2168,8 +2201,8 @@ return [
 // admin/sliceexp_text.php, row 365
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
-// include/fileman.php, row 34
-// include/logs.php, row 488
+// include/fileman.php, row 36
+// include/logs.php, row 533
 // include/se_users.php, row 180
 // src/Widget/Widget.php, row 753
 "Type" => "Tip",
@@ -2211,41 +2244,41 @@ return [
 // admin/se_export.php, row 156
 "Add any AA {expression} as extra column - each row = one column" => "Dodajte bilo koji AA {expression} kao dodatni stupac - svaki redak = jedan stupac", // ai 2026-06
 
-// admin/se_fieldid.php, row 224
+// admin/se_fieldid.php, row 210
 "The new ID is the same as the old one" => "Novi ID jednak je starom", // ai 2026-06
 
-// admin/se_fieldid.php, row 226
+// admin/se_fieldid.php, row 212
 "The old ID is not valid" => "Stari ID nije ispravan", // ai 2026-06
 
-// admin/se_fieldid.php, row 228
+// admin/se_fieldid.php, row 214
 "The new ID is not valid" => "Novi ID nije ispravan", // ai 2026-06
 
-// admin/se_fieldid.php, row 230
+// admin/se_fieldid.php, row 216
 "This ID is reserved" => "Ovaj ID je rezerviran",
 
-// admin/se_fieldid.php, row 232
+// admin/se_fieldid.php, row 218
 "This ID is already used" => "Ovaj ID je već zauzet",
 
-// admin/se_fieldid.php, row 259
+// admin/se_fieldid.php, row 245
 "Admin - change Field IDs" => "Administracija - promjena polja",
 
-// admin/se_fieldid.php, row 263
+// admin/se_fieldid.php, row 249
 "field IDs were changed" => "ID polja je promijenjen",
 
-// admin/se_fieldid.php, row 268
+// admin/se_fieldid.php, row 254
 "Change Field IDs" => "Promjena ID-ova polja", // ai 2026-06
 
-// admin/se_fieldid.php, row 270
+// admin/se_fieldid.php, row 256
 "This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
    ."    added automatically.<br>"
  => "Ovdje možete promjeniti ID polja. Potencijalno opasna operacija, koristite na vlastitu odgovornost",
 
-// admin/se_fieldid.php, row 271
+// admin/se_fieldid.php, row 257
 "Change from" => "Promjenite od",
 
-// admin/se_fieldid.php, row 283
+// admin/se_fieldid.php, row 269
 // admin/sliceexp.php, row 132
 "to" => "do",
 
@@ -2265,7 +2298,7 @@ return [
 "Alias moved OK" => "Alias uspješno premješten", // ai 2026-06
 
 // admin/se_fields.php, row 184
-// admin/se_inputform.php, row 276
+// admin/se_inputform.php, row 269
 "Fields update successful" => "Polja uspješno promijenjena",
 
 // admin/se_fields.php, row 204
@@ -2278,7 +2311,7 @@ return [
 "Do you really want to delete this field from this slice?" => "Želite li doista izbrisati ovo polje s ove stranice?", // ai 2026-06
 
 // admin/se_fields.php, row 249
-// admin/se_inputform.php, row 386
+// admin/se_inputform.php, row 379
 "Admin - configure Fields" => "Administracija - oblikujte polja",
 
 // admin/se_fields.php, row 281
@@ -2291,91 +2324,91 @@ return [
 "Required" => "Zahtijevano polje",
 
 // admin/se_fields.php, row 305
-// include/stringexpand.php, row 108
+// include/stringexpand.php, row 111
 "Aliases" => "Sinonimi",
 
-// admin/se_filters.php, row 85
-// admin/se_mapping.php, row 106
+// admin/se_filters.php, row 83
+// admin/se_mapping.php, row 103
 "There are no imported slices" => "Nema uvezenih stranica",
 
-// admin/se_filters.php, row 107
+// admin/se_filters.php, row 101
 "-- The same --" => "Isto",
 
-// admin/se_filters.php, row 162
+// admin/se_filters.php, row 155
 "Admin - Content Pooling - Filters" => "Admin - filteri za sadržaj na čekanju",
 
-// admin/se_filters.php, row 169
-// admin/se_import.php, row 129
-// admin/se_mapping.php, row 161
+// admin/se_filters.php, row 162
+// admin/se_import.php, row 131
+// admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 388
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2925
-// modules/jump/modedit.php, row 182
+// modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Obnovi",
 
-// admin/se_filters.php, row 176
+// admin/se_filters.php, row 169
 "Content Pooling - Configure Filters" => "Konfiguracija filtera za sadržaj na čekanju",
 
-// admin/se_filters.php, row 179
+// admin/se_filters.php, row 172
 "Filter for imported slice" => "Filer za uvezene stranice",
 
-// admin/se_filters.php, row 183
+// admin/se_filters.php, row 176
 "Categories" => "Kategorije",
 
-// admin/se_filters.php, row 201
+// admin/se_filters.php, row 194
 "All Categories" => "Sve kategorije",
 
-// admin/se_filters.php, row 208, 232
+// admin/se_filters.php, row 201, 225
 "No category defined" => "Nema definirane kategorije",
 
-// admin/se_filters.php, row 268
+// admin/se_filters.php, row 258
 // src/Manager.php, row 1404
 "Select all" => "Odaberite sve",
 
-// admin/se_filters.php, row 330
+// admin/se_filters.php, row 320
 "No From category selected!" => "Nije odabrana izvorna kategorija!", // ai 2026-06
 
-// admin/se_filters2.php, row 110
-// src/IO/Feed.php, row 581
+// admin/se_filters2.php, row 106
+// src/IO/Feed.php, row 567
 "Other categories" => "Ostale kategorije", // ai 2026-06
 
-// admin/se_filters2.php, row 179
-// admin/se_import2.php, row 144, 146
+// admin/se_filters2.php, row 184
+// admin/se_import2.php, row 141, 143
 "Content Pooling update successful" => "Sadržaj na čekanju uspješno obnovljen",
 
 // admin/se_forms.php, row 37
 "You do not have permissions to manage forms" => "Nemate dozvolu za upravljanje formama", // ai 2026-06
 
-// admin/se_fulltext.php, row 68, 163
+// admin/se_fulltext.php, row 67, 161
 "Top HTML code" => "HTML kod zaglavlja",
 
-// admin/se_fulltext.php, row 69, 175
+// admin/se_fulltext.php, row 68, 173
 "Fulltext HTML code" => "HTML punog teksta",
 
-// admin/se_fulltext.php, row 70, 187
+// admin/se_fulltext.php, row 69, 185
 "Bottom HTML code" => "HTML kod podnožja",
 
-// admin/se_fulltext.php, row 101
+// admin/se_fulltext.php, row 99
 "Fulltext format update successful" => "Oblikovanje punog teksta uspješno izvršeno",
 
-// admin/se_fulltext.php, row 135
+// admin/se_fulltext.php, row 133
 "Admin - design Fulltext view" => "Admin - oblikovanje punog teksta",
 
-// admin/se_fulltext.php, row 136
+// admin/se_fulltext.php, row 134
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Koristite kućice za za kontrolu prikaza punog teksta za svaku stavku",
 
-// admin/se_fulltext.php, row 160
+// admin/se_fulltext.php, row 158
 "HTML code for fulltext view" => "HTML za pogled punog teksta",
 
-// admin/se_fulltext.php, row 207, 211
+// admin/se_fulltext.php, row 205, 209
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "Predložak za diskusiju možete postaviti na stranici \"Dizajn\" -> \"Pogledi\"", // ai 2026-06
 
-// admin/se_fulltext.php, row 208
+// admin/se_fulltext.php, row 206
 "Use HTML tags" => "Koristite HTML",
 
-// admin/se_fulltext.php, row 209
+// admin/se_fulltext.php, row 207
 "New comments disabled" => "Novi komentari onemogućeni", // ai 2026-06
 
 // admin/se_history.php, row 57
@@ -2393,7 +2426,7 @@ return [
 // admin/se_history.php, row 143, 165, 166
 // admin/um_uedit.php, row 262
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 389, 430
+// include/perm_sql.php, row 384, 426
 // src/Optimize/CheckAlertitemRefusals.php, row 89
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2419,47 +2452,47 @@ return [
 // admin/se_history.php, row 216, 217
 "ActionApps - History Manager" => "ActionApps - Upravitelj povijesti", // ai 2026-06
 
-// admin/se_import.php, row 120
+// admin/se_import.php, row 122
 "Admin - configure Content Pooling" => "Administracija -  konfiguracija sadržaja na čekanju",
 
-// admin/se_import.php, row 135
+// admin/se_import.php, row 137
 "Enable export to slice:" => "Omogućite izvoz u stranicu",
 
-// admin/se_import.php, row 138
+// admin/se_import.php, row 140
 "Export disable" => "Izvoz onemogućen",
 
-// admin/se_import.php, row 140
+// admin/se_import.php, row 142
 "Export enable" => "Izvoz omogućen",
 
-// admin/se_import.php, row 174
+// admin/se_import.php, row 176
 "Enable export to any slice" => "Dozvolite izvoz u bilo koju stranicu",
 
-// admin/se_import.php, row 176
+// admin/se_import.php, row 178
 "Currently exported to" => "Trenutno se izvozi u", // ai 2026-06
 
-// admin/se_import.php, row 179
+// admin/se_import.php, row 181
 "Wrong export (non-existent slice!):" => "Pogrešan izvoz (nepostojeća stranica!):", // ai 2026-06
 
-// admin/se_import.php, row 184
+// admin/se_import.php, row 186
 "Import from slice:" => "Uvezite sa stranice",
 
-// admin/se_import.php, row 193
+// admin/se_import.php, row 195
 "Do not import" => "Nemojte uvesti",
 
-// admin/se_import.php, row 195
+// admin/se_import.php, row 197
 // include/menu_util.php, row 96
 // src/Import/Definition.php, row 135, 161
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 176, 178, 287, 367
 "Import" => "Uvezite",
 
-// admin/se_inputform.php, row 186, 494
+// admin/se_inputform.php, row 186, 487
 "Before HTML code" => "Ispred HTML koda",
 
-// admin/se_inputform.php, row 187, 492
+// admin/se_inputform.php, row 187, 485
 "Help for this field" => "Pomoć za polje",
 
-// admin/se_inputform.php, row 188, 493
+// admin/se_inputform.php, row 188, 486
 "More help" => "Dodatna pomoć",
 
 // admin/se_inputform.php, row 190
@@ -2468,203 +2501,203 @@ return [
 // admin/se_inputform.php, row 192
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Alias mora uvijek biti _# + 8 VELIKIH slova, npr. _#<b>SOMTHING</b>.", // ai 2026-06
 
-// admin/se_inputform.php, row 197, 525
-// include/stringexpand.php, row 93
+// admin/se_inputform.php, row 197, 518
+// include/stringexpand.php, row 96
 // src/Optimize/CheckUserAliasFunctions.php, row 88
 "Alias" => "Sinonim",
 
-// admin/se_inputform.php, row 201, 526
+// admin/se_inputform.php, row 201, 519
 // admin/se_profile.php, row 208
 "Function" => "Funkcija",
 
-// admin/se_inputform.php, row 303
+// admin/se_inputform.php, row 296
 "No field found" => "Nije pronađeno nijedno polje", // ai 2026-06
 
-// admin/se_inputform.php, row 362
+// admin/se_inputform.php, row 355
 "You selected slice and not constant group. It is impossible to create slice from here." => "Odabrali ste stranicu, a ne grupu konstanti. Odavde nije moguće stvoriti stranicu.", // ai 2026-06
 
-// admin/se_inputform.php, row 387
+// admin/se_inputform.php, row 380
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "UPOZORENJE: Ne mijenjajte ovu postavku ako niste sigurni što radite!", // ai 2026-06
 
-// admin/se_inputform.php, row 401
+// admin/se_inputform.php, row 394
 // include/formutil.php, row 191
 "Update & Edit" => "Ažurirajte i uredite", // ai 2026-06
 
-// admin/se_inputform.php, row 402
+// admin/se_inputform.php, row 395
 // admin/se_view.php, row 493
-// include/slice.class.php, row 1307
+// include/slice.class.php, row 1300
 "Show History" => "Prikaži povijest", // ai 2026-06
 
-// admin/se_inputform.php, row 406
+// admin/se_inputform.php, row 399
 "Field properties" => "Osobine polja",
 
-// admin/se_inputform.php, row 414
+// admin/se_inputform.php, row 407
 // src/Widget/Widget.php, row 765
 "Input type" => "Tip unosa",
 
-// admin/se_inputform.php, row 417
+// admin/se_inputform.php, row 410
 "Input field type in Add / Edit item." => "Tip polja za unos u dodajte obrišite stavci",
 
-// admin/se_inputform.php, row 421
+// admin/se_inputform.php, row 414
 "Edit|Use as new|New" => "Uredite - koristite kao novo",
 
-// admin/se_inputform.php, row 423
+// admin/se_inputform.php, row 416
 "Choose a Constant Group or a Slice." => "Izaberite konstantnu grupu ili stranicu",
 
-// admin/se_inputform.php, row 437
+// admin/se_inputform.php, row 430
 "Allow translation" => "Dozvoli prijevod", // ai 2026-06
 
-// admin/se_inputform.php, row 437
+// admin/se_inputform.php, row 430
 "Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "Samo widgeti Text Area i Text Field dopuštaju prijevod. Jezike treba postaviti na stranici postavki stranice.", // ai 2026-06
 
-// admin/se_inputform.php, row 446
+// admin/se_inputform.php, row 439
 "How to generate the default value" => "Kako generirati zadanu vrijednost",
 
-// admin/se_inputform.php, row 453
-// include/feeding.php, row 467
+// admin/se_inputform.php, row 446
+// include/feeding.php, row 453
 "Validate" => "Provjerite",
 
-// admin/se_inputform.php, row 464
+// admin/se_inputform.php, row 457
 "Stored as" => "Pohranjeno kao", // ai 2026-06
 
-// admin/se_inputform.php, row 467
+// admin/se_inputform.php, row 460
 "Stored in <em>item</em> table - it is not possible to change store method" => "Pohranjeno u tablici <em>item</em> - način pohrane nije moguće promijeniti", // ai 2026-06
 
-// admin/se_inputform.php, row 471, 472
+// admin/se_inputform.php, row 464, 465
 // src/Central/FindingText.php, row 176, 186
 "Number" => "Broj", // ai 2026-06
 
-// admin/se_inputform.php, row 480
-// admin/sliceimp.php, row 427
+// admin/se_inputform.php, row 473
+// admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
 // include/formutil.php, row 209, 2936
 "Insert" => "Umetnite",
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 476
 "Defines how value is stored in database." => "Određuje kako su vrijednosti spremljene u bazu",
 
-// admin/se_inputform.php, row 490
+// admin/se_inputform.php, row 483
 "Show 'HTML' / 'plain text' option" => "Priakaz HTML ili običan tekst",
 
-// admin/se_inputform.php, row 491
+// admin/se_inputform.php, row 484
 "'HTML' as default" => "Zadano HTML",
 
-// admin/se_inputform.php, row 491
+// admin/se_inputform.php, row 484
 "HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "Opcija HTML znači da se polje ispisuje onako kako je uneseno pomoću aliasa {field...........}. Običan tekst znači da se novi redovi pretvaraju u &lt;br&gt; itd. HTML je dobra opcija barem za sve netekstualne podatke.", // ai 2026-06
 
-// admin/se_inputform.php, row 492
+// admin/se_inputform.php, row 485
 "Shown help for this field" => "Prikaz pomoći za ovo polje",
 
-// admin/se_inputform.php, row 493
+// admin/se_inputform.php, row 486
 "Text shown after user click on '?' in input form" => "Tekst prikazan nakon klika na '?' u formi za unos",
 
-// admin/se_inputform.php, row 494
+// admin/se_inputform.php, row 487
 "Code shown in input form before this field" => "Kod prikazan u formi za upis prije ovog polja",
 
-// admin/se_inputform.php, row 496
+// admin/se_inputform.php, row 489
 "Searchable in AA Item Manager" => "Pretraživo u AA upravitelju stavki", // ai 2026-06
 
-// admin/se_inputform.php, row 496
+// admin/se_inputform.php, row 489
 "The field is shown in Search box in Item Manager." => "Polje se prikazuje u okviru za pretraživanje u upravitelju stavki.", // ai 2026-06
 
-// admin/se_inputform.php, row 497
+// admin/se_inputform.php, row 490
 "Feeding mode" => "Mod upisa",
 
-// admin/se_inputform.php, row 497
+// admin/se_inputform.php, row 490
 "Should the content of this field be copied to another slice if it is fed?" => "Da li da sadržaj ovog polja bude kopiran u drugu stranicu?",
 
-// admin/se_inputform.php, row 499
+// admin/se_inputform.php, row 492
 "ALIASES used in views to print field content (%1)" => "ALIASI koji se koriste u pogledima za ispis sadržaja polja (%1)", // ai 2026-06
 
-// admin/se_inputform.php, row 519
+// admin/se_inputform.php, row 512
 "8 CHARS" => "8 ZNAKOVA", // ai 2026-06
 
-// admin/se_inputform.php, row 519
+// admin/se_inputform.php, row 512
 "8 UPPERCASE letters or _" => "Broj i 8 velikih slova",
 
-// admin/se_inputform.php, row 520
+// admin/se_inputform.php, row 513
 // src/Import/DetailPage.php, row 604
 // src/Import/RunView.php, row 188
 "Disabled" => "Onemogućeno", // ai 2026-06
 
-// admin/se_inputform.php, row 521
-// src/Util/ChangesMonitor.php, row 513
+// admin/se_inputform.php, row 514
+// src/Util/ChangesMonitor.php, row 509
 "Copy to clipboard" => "Kopiraj u međuspremnik", // ai 2026-06
 
-// admin/se_inputform.php, row 522
+// admin/se_inputform.php, row 515
 "Reset" => "Poništi", // ai 2026-06
 
-// admin/se_inputform.php, row 527
-// include/logs.php, row 568
+// admin/se_inputform.php, row 520
+// include/logs.php, row 613
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Postavke",
 
-// admin/se_inter_export.php, row 98
+// admin/se_inter_export.php, row 97
 "No selected export" => "Nije odabran nijedan izvoz", // ai 2026-06
 
-// admin/se_inter_export.php, row 101
+// admin/se_inter_export.php, row 100
 "Are you sure you want to delete the export?" => "Jeste li sigurni da želite obrisati izvoz?", // ai 2026-06
 
-// admin/se_inter_export.php, row 110, 114
+// admin/se_inter_export.php, row 109, 113
 "Inter node export settings" => "Unesite postavku čvora za izvoz",
 
-// admin/se_inter_export.php, row 116
+// admin/se_inter_export.php, row 115
 "Existing exports of the slice " => "Postojeći izvozi stranice",
 
-// admin/se_inter_export.php, row 136
+// admin/se_inter_export.php, row 135
 "Insert new item" => "Umetnite novu stavku",
 
-// admin/se_inter_export.php, row 138
+// admin/se_inter_export.php, row 137
 "Remote Nodes" => "Serverski čvorovi",
 
-// admin/se_inter_export.php, row 149
+// admin/se_inter_export.php, row 148
 "User name" => "Ime korisnika/ice",
 
-// admin/se_inter_import.php, row 75, 97
+// admin/se_inter_import.php, row 74, 96
 // admin/se_inter_import2.php, row 110
 "Exact copy" => "Točna kopija", // ai 2026-06
 
-// admin/se_inter_import.php, row 76
+// admin/se_inter_import.php, row 75
 "Missing!!!" => "Nedostaje!!!", // ai 2026-06
 
-// admin/se_inter_import.php, row 87
+// admin/se_inter_import.php, row 86
 // admin/se_inter_import2.php, row 95
 "Inter node import settings" => "Postavke uvoza unutranjeg čvora",
 
-// admin/se_inter_import.php, row 92
+// admin/se_inter_import.php, row 91
 "Create new feed from node" => "Stvori novu razmjenu iz čvora", // ai 2026-06
 
-// admin/se_inter_import.php, row 97
-// include/feeding.php, row 541
+// admin/se_inter_import.php, row 96
+// include/feeding.php, row 527
 "Remote slice" => "Udaljena stranica", // ai 2026-06
 
-// admin/se_inter_import.php, row 97
+// admin/se_inter_import.php, row 96
 "Node" => "Čvor", // ai 2026-06
 
-// admin/se_inter_import.php, row 97
+// admin/se_inter_import.php, row 96
 // misc/datovka/datovka.php, row 119
 // src/Import/DetailConfig.php, row 291
 // src/Import/DetailPage.php, row 377
 // src/Util/Note.php, row 64
 "State" => "Država",
 
-// admin/se_inter_import.php, row 98
+// admin/se_inter_import.php, row 97
 "Existing remote imports into the slice" => "Postoječi uvozi u stranice", // ai 2026-06
 
-// admin/se_inter_import.php, row 100
+// admin/se_inter_import.php, row 99
 "No remote imports into the slice" => "Nema udaljenih uvoza u stranicu", // ai 2026-06
 
-// admin/se_inter_import.php, row 105
+// admin/se_inter_import.php, row 104
 // include/menu.php, row 153
 "Inter Node Import" => "Uvoz između čvorova", // ai 2026-06
 
-// admin/se_inter_import.php, row 106
+// admin/se_inter_import.php, row 105
 "Add from remote node" => "Dodaj s udaljenog čvora", // ai 2026-06
 
-// admin/se_inter_import.php, row 116
+// admin/se_inter_import.php, row 115
 "Are you sure you want to delete the import?" => "Jeste li sigurni da želite obrisati uvoz?", // ai 2026-06
 
-// admin/se_inter_import.php, row 125
+// admin/se_inter_import.php, row 124
 "No selected node" => "Nije odabran nijedan čvor", // ai 2026-06
 
 // admin/se_inter_import2.php, row 62, 67, 84
@@ -2694,10 +2727,10 @@ return [
 // admin/se_inter_import2.php, row 116
 "The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "Stranica će biti točna kopija udaljene stranice. Kopirat će se sve stavke, uključujući stavke iz spremišta (holding bin) i koša. Također, pri svakoj promjeni udaljene stavke sadržaj će se kopirati u lokalnu kopiju stavke. Stavke će imati iste duge ID-ove (ne kratke!). Nema smisla mijenjati stavke u lokalnoj kopiji - bit će prepisane s udaljenog izvora.", // ai 2026-06
 
-// admin/se_inter_import3.php, row 66
+// admin/se_inter_import3.php, row 65
 "The import was already created" => "Uvoz je več kreiran",
 
-// admin/se_inter_import3.php, row 116
+// admin/se_inter_import3.php, row 118
 "The import was successfully created" => "Uvoz je uspješno kreiran",
 
 // admin/se_javascript.php, row 73
@@ -2734,35 +2767,35 @@ return [
 // admin/se_javascript.php, row 105
 "Triggers" => "Okidači",
 
-// admin/se_mapping.php, row 127, 199
-// admin/se_mapping2.php, row 80
+// admin/se_mapping.php, row 124, 196
+// admin/se_mapping2.php, row 81
 "-- Not map --" => "Nije mapirano",
 
-// admin/se_mapping.php, row 128, 193
-// admin/se_mapping2.php, row 83
+// admin/se_mapping.php, row 125, 190
+// admin/se_mapping2.php, row 84
 "-- Value --" => "Vrijednost",
 
-// admin/se_mapping.php, row 129, 196
-// admin/se_mapping2.php, row 87
+// admin/se_mapping.php, row 126, 193
+// admin/se_mapping2.php, row 88
 "-- Joined fields --" => "Združena polja",
 
-// admin/se_mapping.php, row 130, 207
-// admin/se_mapping2.php, row 91
+// admin/se_mapping.php, row 127, 204
+// admin/se_mapping2.php, row 92
 "-- RSS field or expr --" => "RSS polja ili izrazi",
 
-// admin/se_mapping.php, row 150
+// admin/se_mapping.php, row 147
 "Admin - Content Pooling - Fields' Mapping" => "Administriranje sadržaja - označavanje polja",
 
-// admin/se_mapping.php, row 168
+// admin/se_mapping.php, row 165
 "Content Pooling - Fields' mapping" => "Sadržaj - mapiranje polja",
 
-// admin/se_mapping.php, row 171
+// admin/se_mapping.php, row 168
 "Mapping from slice" => "Mapiranje iz stranice",
 
-// admin/se_mapping.php, row 175
+// admin/se_mapping.php, row 172
 "Fields' mapping" => "Mapiranje polja",
 
-// admin/se_mapping2.php, row 127
+// admin/se_mapping2.php, row 126
 "Fields' mapping update successful" => "Mapiranje polja uspješno ažurirano", // ai 2026-06
 
 // admin/se_nodes.php, row 37
@@ -2771,7 +2804,7 @@ return [
 // admin/se_nodes.php, row 45
 "Remote node administration" => "Daljinsko administriranje čvorova",
 
-// admin/se_notify.php, row 122
+// admin/se_notify.php, row 124
 // include/slicedit.php, row 146
 "You do not have permissions to edit this slice" => "Nemate dozvolu za uređivanje stranice",
 
@@ -2807,7 +2840,7 @@ return [
 "You do not have permissions to manage users" => "Nemate dozvolu za uređivanje korisničkih podataka",
 
 // admin/se_profile.php, row 76
-// include/profile.class.php, row 363
+// include/profile.class.php, row 359
 "Rule deleted" => "Pravilo je obrisano",
 
 // admin/se_profile.php, row 80
@@ -3021,7 +3054,7 @@ return [
 // admin/se_profile.php, row 210
 // include/formutil.php, row 1225
 // include/transformation.class.php, row 192, 381, 454, 548, 738
-// include/widget.class.php, row 661
+// include/widget.class.php, row 657
 "HTML" => "",
 
 // admin/se_profile.php, row 217
@@ -3082,7 +3115,7 @@ return [
 "Copy Profile from" => "Kopirajte profil iz", // ai 2026-06
 
 // admin/se_profile.php, row 267
-// src/Util/ChangesMonitor.php, row 513
+// src/Util/ChangesMonitor.php, row 509
 "Copy" => "Kopirajte", // ai 2026-06
 
 // admin/se_sets.php, row 66
@@ -3117,10 +3150,10 @@ return [
 
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
-// include/feeding.php, row 485, 542
+// include/feeding.php, row 471, 528
 // include/statestore.php, row 1077
 // src/AA_Plannedtask.php, row 182
-// src/Optimize/AbstractOptimize.php, row 170
+// src/Optimize/AbstractOptimize.php, row 172
 "ID" => "Oznaka",
 
 // admin/se_sets.php, row 132, 139
@@ -3187,13 +3220,14 @@ return [
 "User Tasks" => "Korisnički zadaci", // ai 2026-06
 
 // admin/se_users.php, row 126, 185
-// admin/slicewiz.php, row 82
+// admin/slicewiz.php, row 81
 // include/se_users.php, row 109, 180
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 87
 "Editor" => "Urednik",
 
 // admin/se_users.php, row 127, 185
 // include/se_users.php, row 110, 180
-"Administrator" => "",
+"Administrator" => "Administrator", // ai 2026-10
 
 // admin/se_users.php, row 128, 185
 // include/um_util.php, row 104, 155
@@ -3251,7 +3285,7 @@ return [
 "You do not have permission to change views" => "Nemate dozvolu za promjenu pogleda",
 
 // admin/se_view.php, row 343
-// admin/sliceimp_xml.php, row 269
+// admin/sliceimp_xml.php, row 260
 "Can't insert into view." => "Ne možete umetnuti u pogled",
 
 // admin/se_view.php, row 358
@@ -3273,8 +3307,8 @@ return [
 
 // admin/se_view.php, row 553
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1627
-// include/stringexpand.php, row 1854
+// include/slice.class.php, row 1620
+// include/stringexpand.php, row 1876
 "No" => "Ne",
 
 // admin/se_view.php, row 553
@@ -3296,7 +3330,7 @@ return [
 "View successfully deleted" => "Pogled je uspješno obrisan",
 
 // admin/se_views.php, row 72
-"The view was not found in this slice." => "",
+"The view was not found in this slice." => "Pogled nije pronađen na ovoj stranici.", // ai 2026-10
 
 // admin/se_views.php, row 149, 223
 "Create new view from this one" => "Stvori novi pogled iz ovoga", // ai 2026-06
@@ -3304,6 +3338,7 @@ return [
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1770, 1777
 // src/Import/DetailPage.php, row 329, 666
+// src/Optimize/StateCheckModel.php, row 231
 "New" => "Novi",
 
 // admin/se_views.php, row 150
@@ -3332,12 +3367,12 @@ return [
 
 // admin/search_replace.php, row 167
 // central/installapp.php, row 832
-// include/slice.class.php, row 678
+// include/slice.class.php, row 674
 // src/Optimize/SeoDuplicates.php, row 148
 "Items" => "Stavke", // ai 2026-06
 
 // admin/search_replace.php, row 167
-// admin/write_mail.php, row 228
+// admin/write_mail.php, row 236
 "Stored searches for " => "Spremljene pretrage za ", // ai 2026-06
 
 // admin/search_replace.php, row 169
@@ -3364,7 +3399,7 @@ return [
 
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 269
 // src/Widget/RichtextMarkup.php, row 74
 "Close" => "Zatvorite", // ai 2026-06
 
@@ -3378,16 +3413,8 @@ return [
 // admin/um_uedit.php, row 330
 "Superadmin account" => "Račun superadmina",
 
-// admin/setup.php, row 99, 240
-// admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1202
-// include/um_util.php, row 296
-"Login name" => "Korisničko ime",
-
 // admin/setup.php, row 100, 241
-// admin/slicewiz.php, row 86
+// admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 114
 // admin/um_uedit.php, row 321
 // central/index.php, row 140
@@ -3402,7 +3429,7 @@ return [
 "Retype Password" => "Ponovo upišite lozinku",
 
 // admin/setup.php, row 102, 245
-// admin/slicewiz.php, row 88
+// admin/slicewiz.php, row 87
 // admin/um_passwd.php, row 116
 // admin/um_uedit.php, row 323
 // include/um_util.php, row 298
@@ -3480,41 +3507,41 @@ return [
 // src/Manager.php, row 239, 1261
 "Add" => "Dodajte",
 
-// admin/slicedel.php, row 48
+// admin/slicedel.php, row 51
 "You don't have permissions to delete module." => "Nemate dozvolu za brisanje modula.", // ai 2026-06
 
-// admin/slicedel.php, row 76
+// admin/slicedel.php, row 79
 "Do you really want to delete this module and all its fields and all its items?" => "Želite li zaista obrisati ovaj modul i sva njegova polja i sve njegove stavke?", // ai 2026-06
 
-// admin/slicedel.php, row 86
+// admin/slicedel.php, row 99
 "Admin - Delete Module" => "Admin - brisanje modula", // ai 2026-06
 
-// admin/slicedel.php, row 101
+// admin/slicedel.php, row 114
 "Select module to delete" => "Odaberite modul za brisanje", // ai 2026-06
 
-// admin/slicedel.php, row 104
+// admin/slicedel.php, row 117
 "Modules to show" => "Moduli za prikaz", // ai 2026-06
 
-// admin/slicedel.php, row 105
+// admin/slicedel.php, row 118
 "Marked as \"Deleted\"" => "Označeni kao \"Obrisani\"", // ai 2026-06
 
-// admin/slicedel.php, row 108
+// admin/slicedel.php, row 121
 "This option allows you to display all the slices and delete them, so be careful!" => "Ova opcija omogućuje prikaz svih stranica i njihovo brisanje, stoga budite oprezni!", // ai 2026-06
 
-// admin/slicedel.php, row 114
+// admin/slicedel.php, row 127
 "Modules to delete" => "Moduli za brisanje", // ai 2026-06
 
-// admin/slicedel.php, row 128
+// admin/slicedel.php, row 140
 "No module marked for deletion" => "Nijedan modul nije označen za brisanje", // ai 2026-06
 
-// admin/slicedel2.php, row 57, 62
+// admin/slicedel2.php, row 60, 65
 "You don't have permissions to delete slice." => "Nemate dozvolu za brisanje stranice",
 
-// admin/slicedel2.php, row 70
-// include/modutils.php, row 275
+// admin/slicedel2.php, row 77
+// include/modutils.php, row 268
 "No such module." => "Nema takvog modula",
 
-// admin/slicedel2.php, row 79
+// admin/slicedel2.php, row 86
 "Slice successfully deleted, tables are optimized" => "Stranica je uspješno obrisana, tablice su optimizirane",
 
 // admin/slicedit.php, row 139, 146, 153
@@ -3564,7 +3591,7 @@ return [
 "Language" => "Jezik",
 
 // admin/slicedit.php, row 260
-// include/slicedit.php, row 196
+// include/slicedit.php, row 190
 "Slice Type" => "Tip stranice", // ai 2026-06
 
 // admin/slicedit.php, row 264
@@ -3579,17 +3606,17 @@ return [
 "Show content of pending items" => "Prikaži sadržaj stavki na čekanju", // ai 2026-06
 
 // admin/slicedit.php, row 269
-// include/slicedit.php, row 199
+// include/slicedit.php, row 193
 // src/Central/FindingText.php, row 430
 "Allow anonymous posting of items" => "Dozvolite anonimno objavljivanje stavki",
 
 // admin/slicedit.php, row 270
-// include/slicedit.php, row 200
+// include/slicedit.php, row 194
 // src/Central/FindingText.php, row 431
 "Allow anonymous editing of items" => "Dozvolite anonimno uređivanje stavki",
 
 // admin/slicedit.php, row 271
-// include/slicedit.php, row 201
+// include/slicedit.php, row 195
 "Allow off-line item filling" => "Dozvolite off-line ispunajvanje stavki",
 
 // admin/slicedit.php, row 277
@@ -3618,7 +3645,7 @@ return [
 
 // admin/slicedit.php, row 294
 // include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
-// include/slicedit.php, row 204
+// include/slicedit.php, row 198
 // src/Widget/Widget.php, row 810
 "Listing length" => "Dužina izlista",
 
@@ -3632,16 +3659,16 @@ return [
 "MLX: Language Control Slice" => "MLX: stranica za upravljanje prijevodima", // ai 2026-06
 
 // admin/slicedit.php, row 305
-// include/slicedit.php, row 208
+// include/slicedit.php, row 202
 // src/Central/FindingText.php, row 432
 "File Manager Access" => "Pristup upravljaču datoteka",
 
 // admin/slicedit.php, row 306
-// include/slicedit.php, row 209
+// include/slicedit.php, row 203
 "File Manager Directory" => "Mapa upravljača datoteka",
 
 // admin/sliceexp.php, row 78
-// admin/sliceimp.php, row 63
+// admin/sliceimp.php, row 64
 "You are not allowed to export / import slices" => "Nemate dozvolu za uvoz / izvoz stranica",
 
 // admin/sliceexp.php, row 102, 107
@@ -3723,84 +3750,84 @@ return [
 // admin/sliceexp_text.php, row 365, 369
 "Hidden" => "Skriveno", // ai 2026-06
 
-// admin/slicefieldsedit.php, row 146
+// admin/slicefieldsedit.php, row 151
 "Slice Setting" => "Postavke stranice", // ai 2026-06
 
-// admin/sliceimp.php, row 79
+// admin/sliceimp.php, row 80
 "Slice_ID (%1) has wrong length (%2, should be 32)" => "Pogrešna dužina ID-a stranice(%2, treba biti 32)",
 
-// admin/sliceimp.php, row 104, 146, 426
-// admin/sliceimp_xml.php, row 256
+// admin/sliceimp.php, row 103, 144, 424
+// admin/sliceimp_xml.php, row 247
 "Overwrite" => "Prebrišite",
 
-// admin/sliceimp.php, row 177, 183, 242, 248, 428
+// admin/sliceimp.php, row 175, 181, 240, 246, 426
 "Insert with new ids" => "Umetnite sa novim ID-em",
 
-// admin/sliceimp.php, row 317
+// admin/sliceimp.php, row 315
 "Import exported data (slice structure and content)" => "Uvezite izvezene podatke (strukturu i sadržaj stranica",
 
-// admin/sliceimp.php, row 321
+// admin/sliceimp.php, row 319
 "Import exported data" => "Uvoz izvezenih podataka", // ai 2026-06
 
-// admin/sliceimp.php, row 326
+// admin/sliceimp.php, row 324
 "Count of imported slices: %d." => "Broj uvezenih stranica %d.",
 
-// admin/sliceimp.php, row 328, 343
+// admin/sliceimp.php, row 326, 341
 "Added were:" => "Dodano:",
 
-// admin/sliceimp.php, row 334, 349
+// admin/sliceimp.php, row 332, 347
 "Overwritten were:" => "Prebrisano:",
 
-// admin/sliceimp.php, row 340
+// admin/sliceimp.php, row 338
 "Count of imported stories: %d." => "Broj uvezenih priča: %d. ",
 
-// admin/sliceimp.php, row 355
+// admin/sliceimp.php, row 353
 "Failed were:" => "Neuspjelo: ",
 
-// admin/sliceimp.php, row 366
+// admin/sliceimp.php, row 364
 "Here you can import exported data to ActionApps. You can use two types of import:" => "Ovdje možete uvesti izvezene podatke u ActionApps. Možete koristiti dvije vrste uvoza:", // ai 2026-06
 
-// admin/sliceimp.php, row 372
+// admin/sliceimp.php, row 370
 "Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>" => "Već postoji stranica sa tim ID-em",
 
-// admin/sliceimp.php, row 390
+// admin/sliceimp.php, row 388
 "<p>Views with some of the same IDs exist already. Please edit on the right-hand side of the arrow</p>" => "Pogledi sa nekim od ID-a već postoje. Promjenite ID na desnoj strani strelice",
 
-// admin/sliceimp.php, row 405
+// admin/sliceimp.php, row 403
 "<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>" => "Pogledi sa nekim od ID-a već postoje. Promjenite ID na desnoj strani strelice",
 
-// admin/sliceimp.php, row 418
+// admin/sliceimp.php, row 416
 "<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures get new ids and their content too.</p>" => "<p>Ako odaberete OVERWRITE (prepiši), stranice i podaci s nepromijenjenim ID-om bit će prepisani, a novi dodani. <br>Ako odaberete INSERT (umetni), stranice i podaci sa sukobom ID-a bit će zanemareni, a novi dodani.<br>I na kraju, ako odaberete \"Insert with new ids\" (umetni s novim ID-ovima), strukture stranica dobit će nove ID-ove, kao i njihov sadržaj.</p>", // ai 2026-06
 
-// admin/sliceimp.php, row 429, 475
+// admin/sliceimp.php, row 427, 473
 "cancel" => "odustani", // ai 2026-06
 
-// admin/sliceimp.php, row 438
+// admin/sliceimp.php, row 436
 "1) If you have exported data in file, insert its name here (eg. D:\\data\\apc_aa_slice.aaxml):" => "Ako imate izvezene podatke u datoteci, unesite njeno ime (npr. D:\\data\\apc_aa_slice.aaxml): ",
 
-// admin/sliceimp.php, row 441
+// admin/sliceimp.php, row 439
 "Send file with slice structure and data" => "Pošaljite datoteku sa strukturom stranice i podacima", // ai 2026-06
 
-// admin/sliceimp.php, row 448
+// admin/sliceimp.php, row 446
 "2) If you have exported data in browser's window, insert the exported text into the textarea below:" => "Ako imate izvezene podatke u prozoru preglednika, unesite izvezeni tekst ispod",
 
-// admin/sliceimp.php, row 465
+// admin/sliceimp.php, row 463
 "Here specify, what do you want to import:" => "Precizirajte što želite uvesti",
 
-// admin/sliceimp.php, row 466
+// admin/sliceimp.php, row 464
 "Import slice definition" => "Uvezite definiciju stranica",
 
-// admin/sliceimp.php, row 467
+// admin/sliceimp.php, row 465
 "Import slice items" => "Uvezite stavke stranica",
 
-// admin/sliceimp.php, row 468
+// admin/sliceimp.php, row 466
 "Import into this slice - whatever file says" => "Uvezite u ovu stranicu",
 
-// admin/sliceimp.php, row 469
+// admin/sliceimp.php, row 467
 // src/Import/DetailPage.php, row 303
 "Dry run" => "Probno pokretanje", // ai 2026-06
 
-// admin/sliceimp.php, row 471
+// admin/sliceimp.php, row 469
 "Send the slice structure and data" => "Pošaljite strukturu stranice i podatke", // ai 2026-06
 
 // admin/sliceimp_xml.php, row 86
@@ -3808,47 +3835,47 @@ return [
    ."ERROR: File doesn't contain SLICEEXPORT"
  => "GREŠKA: Datoteka ne sadrži SLICEEXPORT",
 
-// admin/sliceimp_xml.php, row 102, 127, 179
+// admin/sliceimp_xml.php, row 93, 118, 170
 "ERROR: Text is not OK. Check whether you copied it well from the Export." => "GREŠKA: Tekst nije u redu. Provjerite da li ste ga ispravno kopirali iz izvoza",
 
-// admin/sliceimp_xml.php, row 192
+// admin/sliceimp_xml.php, row 183
 "ERROR: Unsupported version for import" => "GEŠKA: verzija za uvoz nije podržana",
 
-// admin/sliceimp_xml.php, row 259
+// admin/sliceimp_xml.php, row 250
 "<br>Overwriting view %1" => "Prepisivanje pogleda",
 
-// admin/slicewiz.php, row 69
+// admin/slicewiz.php, row 68
 "Add Slice Wizard" => "Dodajte čarobnjaka stranica",
 
-// admin/slicewiz.php, row 76
+// admin/slicewiz.php, row 75
 "[Optional] Create New User" => "[Nije obavezno] Kreirajte novog korisnika  / icu",
 
-// admin/slicewiz.php, row 81
+// admin/slicewiz.php, row 80
 "Level of Access" => "Nivo pristupa",
 
-// admin/slicewiz.php, row 82
+// admin/slicewiz.php, row 81
 // include/constants.php, row 1194
 "Slice Administrator" => "Administrator stranica",
 
-// admin/slicewiz.php, row 87
+// admin/slicewiz.php, row 86
 // admin/um_passwd.php, row 115
 // admin/um_uedit.php, row 322
 // include/um_util.php, row 302
 "Retype password" => "Ponovo upišite lozinku",
 
-// admin/slicewiz.php, row 89
+// admin/slicewiz.php, row 88
 // admin/um_passwd.php, row 117
 // admin/um_uedit.php, row 324
 // include/um_util.php, row 297
 "Surname" => "Prezime",
 
-// admin/slicewiz.php, row 95
+// admin/slicewiz.php, row 94
 "Do Not Email Welcome" => "Ne šalje e-mail dobrodošlice",
 
-// admin/slicewiz.php, row 97
+// admin/slicewiz.php, row 96
 "Email Welcome" => "Šalje e-mail dobrodošlice",
 
-// admin/slicewiz.php, row 106
+// admin/slicewiz.php, row 105
 "Go: Add Slice" => "Krenite: Dodaj stranicu",
 
 // admin/um_gedit.php, row 95
@@ -3903,7 +3930,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 407
+// include/perm_sql.php, row 403
 // include/um_gsrch.php, row 50
 "Group" => "Grupa",
 
@@ -3921,9 +3948,10 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 230, 241
-// include/logs.php, row 742
+// include/logs.php, row 891
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
+// src/Optimize/CheckLoginAddresses.php, row 101
 "Users" => "Korisnici ice",
 
 // admin/um_gedit.php, row 320
@@ -3991,190 +4019,190 @@ return [
 // admin/usershow.php, row 122
 "Show selected users" => "Prikaži odabrane korisnike", // ai 2026-06
 
-// admin/write_mail.php, row 121, 247
+// admin/write_mail.php, row 120, 255
 // include/mail.php, row 666
 "Body" => "Tijelo poruke", // ai 2026-06
 
-// admin/write_mail.php, row 122, 248
+// admin/write_mail.php, row 121, 256
 "From (email)" => "Od (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 123, 249
+// admin/write_mail.php, row 122, 257
 // include/mail.php, row 668
 "Reply to (email)" => "Odgovori na (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 124, 250
+// admin/write_mail.php, row 123, 258
 // include/mail.php, row 669
 "Errors to (email)" => "Greške na (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 125, 251
+// admin/write_mail.php, row 124, 259
 "Sender (email)" => "Pošiljatelj/ica (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 126, 252
+// admin/write_mail.php, row 125, 260
 // include/mail.php, row 658
 "Language (charset)" => "Jezik (kodna stranica)", // ai 2026-06
 
-// admin/write_mail.php, row 127, 253
+// admin/write_mail.php, row 126, 261
 // include/mail.php, row 656
 "Use HTML" => "Koristi HTML", // ai 2026-06
 
-// admin/write_mail.php, row 128, 244
+// admin/write_mail.php, row 127, 252
 "Email template" => "E-mail predložak",
 
-// admin/write_mail.php, row 166
+// admin/write_mail.php, row 175
 "No template set (which is strange - template was just written to the database)" => "Nije postavljen predložak (što je čudno - predložak je upravo zapisan u bazu podataka)", // ai 2026-06
 
-// admin/write_mail.php, row 183
+// admin/write_mail.php, row 192
 "Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-mail je uspješno poslan (Korisnici: %1, Poslano e-mailova (valjane adrese...): %2, ID predloška: %3)", // ai 2026-06
 
-// admin/write_mail.php, row 187
+// admin/write_mail.php, row 196
 "Manually selected" => "Ručno odabrano", // ai 2026-06
 
-// admin/write_mail.php, row 193
+// admin/write_mail.php, row 202
 // include/searchbar.class.php, row 652
 // src/Import/Definition.php, row 92
 // src/Import/DetailConfig.php, row 394
 "Filter" => "Filtar", // ai 2026-06
 
-// admin/write_mail.php, row 199
+// admin/write_mail.php, row 207
 "Can't update email template" => "Nije moguće ažurirati predložak e-maila", // ai 2026-06
 
-// admin/write_mail.php, row 206
+// admin/write_mail.php, row 214
 "Bulk Email Wizard" => "Čarobnjak za masovni e-mail", // ai 2026-06
 
-// admin/write_mail.php, row 207
+// admin/write_mail.php, row 215
 "Write email to users" => "Napišite e-mail korisnicima", // ai 2026-06
 
-// admin/write_mail.php, row 228
-// include/logs.php, row 890
+// admin/write_mail.php, row 236
+// include/logs.php, row 1039
 "Recipients" => "Primatelji", // ai 2026-06
 
-// admin/write_mail.php, row 230
+// admin/write_mail.php, row 238
 "View Recipients" => "Prikaži primatelje", // ai 2026-06
 
-// admin/write_mail.php, row 231
+// admin/write_mail.php, row 239
 "Selected users" => "Odabrani korisnici", // ai 2026-06
 
-// admin/write_mail.php, row 232
+// admin/write_mail.php, row 240
 "Test email address(es)" => "Testna e-mail adresa (adrese)", // ai 2026-06
 
-// admin/write_mail.php, row 238
+// admin/write_mail.php, row 246
 "Write the email" => "Napišite e-mail", // ai 2026-06
 
-// admin/write_mail.php, row 253
+// admin/write_mail.php, row 261
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "no" => "ne",
 
-// admin/write_mail.php, row 253
+// admin/write_mail.php, row 261
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "yes" => "da",
 
-// admin/write_mail.php, row 254
+// admin/write_mail.php, row 262
 "Attachment 1" => "Privitak 1", // ai 2026-06
 
-// admin/write_mail.php, row 255
+// admin/write_mail.php, row 263
 "Attachment 2" => "Privitak 2", // ai 2026-06
 
-// admin/write_mail.php, row 256
+// admin/write_mail.php, row 264
 "Attachment 3" => "Privitak 3", // ai 2026-06
 
 // central/appstore.php, row 64
-"Only a superadmin may install apps from the app store." => "",
+"Only a superadmin may install apps from the app store." => "Aplikacije iz kataloga aplikacija smije instalirati samo superadmin.", // ai 2026-10
 
 // central/appstore.php, row 71, 105
-"App store" => "",
+"App store" => "Katalog aplikacija", // ai 2026-10
 
 // central/appstore.php, row 100
-"The app store" => "",
+"The app store" => "Katalog aplikacija", // ai 2026-10
 
 // central/appstore.php, row 106
-"Apps of" => "",
+"Apps of" => "Aplikacije od", // ai 2026-10
 
 // central/appstore.php, row 106
-"This AA logs in to it by the public account of the app store; it lists the apps that AA publishes." => "",
+"This AA logs in to it by the public account of the app store; it lists the apps that AA publishes." => "Ovaj se AA na njega prijavljuje javnim računom kataloga aplikacija; prikazuje aplikacije koje taj AA objavljuje.", // ai 2026-10
 
 // central/appstore.php, row 108
-"Show the apps" => "",
+"Show the apps" => "Prikažite aplikacije", // ai 2026-10
 
 // central/appstore.php, row 115
 // central/installapp.php, row 463, 519
-"No such AA in the Central list." => "",
+"No such AA in the Central list." => "Takvog AA nema na popisu Central.", // ai 2026-10
 
 // central/appstore.php, row 123
-"That AA has no app store account (Optimize \"App store account\" creates it there), or it is too old." => "",
+"That AA has no app store account (Optimize \"App store account\" creates it there), or it is too old." => "Taj AA nema račun kataloga aplikacija (tamo ga stvara optimizacija „Račun kataloga aplikacija“) ili je prestar.", // ai 2026-10
 
 // central/appstore.php, row 130
 // central/installapp.php, row 387
-"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "",
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Tablica ovog AA ne podržava transakcije (nije InnoDB) – pretvorite je na stranici AA > Optimizirajte: %1", // ai 2026-10
 
 // central/appstore.php, row 142
 // central/installapp.php, row 723, 1214
-"This preview is no longer open - it was written already or forgotten." => "",
+"This preview is no longer open - it was written already or forgotten." => "Ovaj pregled više nije otvoren – već je zapisan ili zaboravljen.", // ai 2026-10
 
 // central/appstore.php, row 160
-"That AA publishes no app." => "",
+"That AA publishes no app." => "Taj AA ne objavljuje nijednu aplikaciju.", // ai 2026-10
 
 // central/appstore.php, row 164
-"App" => "",
+"App" => "Aplikacija", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1032
-"Version" => "",
+// include/logs.php, row 1181
+"Version" => "Verzija", // ai 2026-10
 
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
 // include/menu_util.php, row 448, 758
-// include/slice.class.php, row 1394
+// include/slice.class.php, row 1387
 // src/Central/FindingText.php, row 496
 "Alerts" => "Upozorenja",
 
 // central/appstore.php, row 166
-"not published" => "",
+"not published" => "nije objavljeno", // ai 2026-10
 
 // central/appstore.php, row 171
 // central/installapp.php, row 479, 831, 1205
-"Install" => "",
+"Install" => "Instalirajte", // ai 2026-10
 
 // central/appstore.php, row 173
-"Install shows a preview first; nothing is written before you confirm it." => "",
+"Install shows a preview first; nothing is written before you confirm it." => "„Instalirajte“ najprije prikazuje pregled; ništa se ne zapisuje dok to ne potvrdite.", // ai 2026-10
 
 // central/import_csv.php, row 33
 "You don't have permissions to import sites from CSV." => "Nemate dozvolu za uvoz web-mjesta iz CSV-a.", // ai 2026-06
 
 // central/import_csv.php, row 42
-"No CSV file received (upload error %1)." => "",
+"No CSV file received (upload error %1)." => "Nije primljena CSV datoteka (greška pri učitavanju %1).", // ai 2026-10
 
 // central/import_csv.php, row 53
-"The first line is empty. It must hold the column names." => "",
+"The first line is empty. It must hold the column names." => "Prvi redak je prazan. Mora sadržavati nazive stupaca.", // ai 2026-10
 
 // central/import_csv.php, row 56
-"The file looks semicolon-separated. Separate the fields by comma." => "",
+"The file looks semicolon-separated. Separate the fields by comma." => "Čini se da je datoteka odvojena točkom sa zarezom. Polja odvojite zarezom.", // ai 2026-10
 
 // central/import_csv.php, row 59
-"The first line must hold the column names (see below), none of them was found." => "",
+"The first line must hold the column names (see below), none of them was found." => "Prvi redak mora sadržavati nazive stupaca (vidi dolje), nijedan od njih nije pronađen.", // ai 2026-10
 
 // central/import_csv.php, row 62
-"Column %1 is in the first line twice, nothing was imported." => "",
+"Column %1 is in the first line twice, nothing was imported." => "Stupac %1 nalazi se u prvom retku dvaput, ništa nije uvezeno.", // ai 2026-10
 
 // central/import_csv.php, row 77
 "inserted" => "Dodano",
 
 // central/import_csv.php, row 80
-"Ignored columns" => "",
+"Ignored columns" => "Zanemareni stupci", // ai 2026-10
 
 // central/import_csv.php, row 83
-"Row %1 skipped - it has %2 fields, the first row has a different number." => "",
+"Row %1 skipped - it has %2 fields, the first row has a different number." => "Redak %1 preskočen – broj polja: %2, a prvi redak ima drugačiji broj.", // ai 2026-10
 
 // central/import_csv.php, row 85
 "Done" => "Gotovo", // ai 2026-06
 
 // central/import_csv.php, row 89
-"Database error at row %1 - import rolled back, nothing was inserted." => "",
+"Database error at row %1 - import rolled back, nothing was inserted." => "Greška baze podataka u retku %1 – uvoz je poništen, ništa nije umetnuto.", // ai 2026-10
 
 // central/import_csv.php, row 90
-"Database error - import rolled back, nothing was inserted." => "",
+"Database error - import rolled back, nothing was inserted." => "Greška baze podataka – uvoz je poništen, ništa nije umetnuto.", // ai 2026-10
 
 // central/import_csv.php, row 97
 "Central - Import Sites from CSV" => "Central - Uvoz web-mjesta iz CSV-a", // ai 2026-06
@@ -4183,7 +4211,7 @@ return [
 "CSV file" => "CSV datoteka", // ai 2026-06
 
 // central/import_csv.php, row 106
-"CSV file for upload, fields separated by comma. The first row holds the column names, in any order; each following row is one AA. Accepted column names (others are ignored):<br>%1" => "",
+"CSV file for upload, fields separated by comma. The first row holds the column names, in any order; each following row is one AA. Accepted column names (others are ignored):<br>%1" => "CSV datoteka za učitavanje, polja odvojena zarezom. Prvi redak sadrži nazive stupaca, bilo kojim redoslijedom; svaki sljedeći redak je jedan AA. Prihvaćeni nazivi stupaca (ostali se zanemaruju):<br>%1", // ai 2026-10
 
 // central/include/actionapps.class.php, row 276
 // include/menu_util.php, row 59
@@ -4193,7 +4221,7 @@ return [
 "You do not have permission to manage ActionApps installations" => "Nemate dozvolu za upravljanje ActionApps instalacijama", // ai 2026-06
 
 // central/index.php, row 78
-"The authentication was not performed - start it from the ActionApps Central page" => "",
+"The authentication was not performed - start it from the ActionApps Central page" => "Provjera autentičnosti nije izvršena – pokrenite je sa stranice ActionApps Central", // ai 2026-10
 
 // central/index.php, row 89
 "Successfully authenticated to %1" => "Uspješna autentifikacija na %1", // ai 2026-06
@@ -4219,50 +4247,50 @@ return [
 "Auth" => "Autentifikacija", // ai 2026-06
 
 // central/index.php, row 148
-"Apps" => "",
+"Apps" => "Aplikacije", // ai 2026-10
 
 // central/index.php, row 148
-"Install an app from this AA..." => "",
+"Install an app from this AA..." => "Instalirajte aplikaciju iz ovog AA...", // ai 2026-10
 
 // central/installapp.php, row 135, 136
-"You may not install apps (PS_INSTALL_APP)." => "",
+"You may not install apps (PS_INSTALL_APP)." => "Ne smijete instalirati aplikacije (PS_INSTALL_APP).", // ai 2026-10
 
 // central/installapp.php, row 147, 148
-"Only a superadmin may transfer apps with their items." => "",
+"Only a superadmin may transfer apps with their items." => "Aplikacije sa stavkama smije prenositi samo superadmin.", // ai 2026-10
 
 // central/installapp.php, row 152
-"Only a superadmin may install apps from another AA." => "",
+"Only a superadmin may install apps from another AA." => "Aplikacije iz drugog AA smije instalirati samo superadmin.", // ai 2026-10
 
 // central/installapp.php, row 179
-"No such transfer, or not yours." => "",
+"No such transfer, or not yours." => "Takav prijenos ne postoji ili nije vaš.", // ai 2026-10
 
 // central/installapp.php, row 184
-"The request failed - details are in the PHP error log." => "",
+"The request failed - details are in the PHP error log." => "Zahtjev nije uspio – pojedinosti su u dnevniku grešaka PHP-a.", // ai 2026-10
 
 // central/installapp.php, row 189
-"Install an app" => "",
+"Install an app" => "Instalacija aplikacije", // ai 2026-10
 
 // central/installapp.php, row 359
-"%1 failed (%2) - details are in the PHP error log." => "",
+"%1 failed (%2) - details are in the PHP error log." => "%1 nije uspjelo (%2) – pojedinosti su u dnevniku grešaka PHP-a.", // ai 2026-10
 
 // central/installapp.php, row 380
-"Open the app store again" => "",
+"Open the app store again" => "Ponovno otvorite katalog aplikacija", // ai 2026-10
 
 // central/installapp.php, row 381, 1434
-"Log in to the source AA again" => "",
+"Log in to the source AA again" => "Ponovno se prijavite u izvorni AA", // ai 2026-10
 
 // central/installapp.php, row 417
-"Unfinished transfers" => "",
+"Unfinished transfers" => "Nedovršeni prijenosi", // ai 2026-10
 
 // central/installapp.php, row 430
-"What to install from this AA" => "",
+"What to install from this AA" => "Što instalirati iz ovog AA", // ai 2026-10
 
 // central/installapp.php, row 445
-"This AA" => "",
+"This AA" => "Ovaj AA", // ai 2026-10
 
 // central/installapp.php, row 451
-// include/feeding.php, row 466, 502
-// include/logs.php, row 1033
+// include/feeding.php, row 452, 488
+// include/logs.php, row 1182
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
@@ -4270,353 +4298,353 @@ return [
 "Source" => "Izvor", // ai 2026-06
 
 // central/installapp.php, row 452
-"Install from" => "",
+"Install from" => "Instalacija iz", // ai 2026-10
 
 // central/installapp.php, row 452
-"Another AA asks for the login of its superadmin." => "",
+"Another AA asks for the login of its superadmin." => "Drugi AA traži prijavu svojeg superadmina.", // ai 2026-10
 
 // central/installapp.php, row 454
-"Choose the source" => "",
+"Choose the source" => "Odaberite izvor", // ai 2026-10
 
 // central/installapp.php, row 467
-"Install an app from %1" => "",
+"Install an app from %1" => "Instalacija aplikacije iz %1", // ai 2026-10
 
 // central/installapp.php, row 471
-"Log in and choose the app" => "",
+"Log in and choose the app" => "Prijavite se i odaberite aplikaciju", // ai 2026-10
 
 // central/installapp.php, row 480
-"a site" => "",
+"a site" => "web", // ai 2026-10
 
 // central/installapp.php, row 481
-"slices and Alerts" => "",
+"slices and Alerts" => "stranice i Upozorenja", // ai 2026-10
 
 // central/installapp.php, row 484, 1357
-// include/slice.class.php, row 1145
+// include/slice.class.php, row 1138
 // src/Central/FindingText.php, row 496
 // src/Optimize/SeoDuplicates.php, row 66
 "Site" => "Web stranice",
 
 // central/installapp.php, row 488
-"The site brings the slices and Alerts modules it uses." => "",
+"The site brings the slices and Alerts modules it uses." => "Web sa sobom donosi stranice i module Upozorenja koje koristi.", // ai 2026-10
 
 // central/installapp.php, row 491
-"Slices and Alerts" => "",
+"Slices and Alerts" => "Stranice i Upozorenja", // ai 2026-10
 
 // central/installapp.php, row 495
-"Hold Ctrl to choose more of them." => "",
+"Hold Ctrl to choose more of them." => "Za odabir više njih držite Ctrl.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 1075
+// include/logs.php, row 770, 1224
 "Mode" => "Način", // ai 2026-06
 
 // central/installapp.php, row 506
-"Install - a clean app, no items" => "",
+"Install - a clean app, no items" => "Instalacija – čista aplikacija, bez stavki", // ai 2026-10
 
 // central/installapp.php, row 507
-"Transfer - a copy with the items and readers" => "",
+"Transfer - a copy with the items and readers" => "Prijenos – kopija sa stavkama i čitateljima", // ai 2026-10
 
 // central/installapp.php, row 508
-"Items of" => "",
+"Items of" => "Stavke iz", // ai 2026-10
 
 // central/installapp.php, row 509
-"the active bin" => "",
+"the active bin" => "aktivnog spremnika", // ai 2026-10
 
 // central/installapp.php, row 510
-"all bins" => "",
+"all bins" => "svih spremnika", // ai 2026-10
 
 // central/installapp.php, row 540
-"Choose the app from the list of its apps" => "",
+"Choose the app from the list of its apps" => "Odaberite aplikaciju s popisa njegovih aplikacija", // ai 2026-10
 
 // central/installapp.php, row 555, 829
-"What to install" => "",
+"What to install" => "Što instalirati", // ai 2026-10
 
 // central/installapp.php, row 555, 1363
-"transfer with the items" => "",
+"transfer with the items" => "prijenos sa stavkama", // ai 2026-10
 
 // central/installapp.php, row 555, 1363
-"install, no items" => "",
+"install, no items" => "instalacija bez stavki", // ai 2026-10
 
 // central/installapp.php, row 564
-"Username on the source AA" => "",
+"Username on the source AA" => "Korisničko ime u izvornom AA", // ai 2026-10
 
 // central/installapp.php, row 565
-"A superadmin of the source AA. The password is used for this request only; this AA keeps a login token for a day, until the transfer ends." => "",
+"A superadmin of the source AA. The password is used for this request only; this AA keeps a login token for a day, until the transfer ends." => "Superadmin izvornog AA. Lozinka se koristi samo za ovaj zahtjev; ovaj AA čuva token za prijavu jedan dan, do kraja prijenosa.", // ai 2026-10
 
 // central/installapp.php, row 567
-"2FA code" => "",
+"2FA code" => "Kôd 2FA", // ai 2026-10
 
 // central/installapp.php, row 568
-"Only when the user has two-factor login on the source AA." => "",
+"Only when the user has two-factor login on the source AA." => "Samo ako korisnik u izvornom AA ima dvofaktorsku prijavu.", // ai 2026-10
 
 // central/installapp.php, row 662
-"You may not change the module %1 - it cannot be exported." => "",
+"You may not change the module %1 - it cannot be exported." => "Ne smijete mijenjati modul %1 – ne može se izvesti.", // ai 2026-10
 
 // central/installapp.php, row 663
-"The source has no such app, or you may not export it." => "",
+"The source has no such app, or you may not export it." => "Izvor nema takvu aplikaciju ili je ne smijete izvesti.", // ai 2026-10
 
 // central/installapp.php, row 672
-"Reading the app" => "",
+"Reading the app" => "Čitanje aplikacije", // ai 2026-10
 
 // central/installapp.php, row 699, 727
-"Choose a site, or slices and Alerts modules - not both." => "",
+"Choose a site, or slices and Alerts modules - not both." => "Odaberite web ili stranice i module Upozorenja – ne oboje.", // ai 2026-10
 
 // central/installapp.php, row 739
-"Choose another app" => "",
+"Choose another app" => "Odaberite drugu aplikaciju", // ai 2026-10
 
 // central/installapp.php, row 749
-"The run has moved on meanwhile." => "",
+"The run has moved on meanwhile." => "Izvođenje je u međuvremenu napredovalo.", // ai 2026-10
 
 // central/installapp.php, row 749
-"Show the run" => "",
+"Show the run" => "Prikažite izvođenje", // ai 2026-10
 
 // central/installapp.php, row 779, 1239
-"The app cannot be installed - see the errors (E) above." => "",
+"The app cannot be installed - see the errors (E) above." => "Aplikaciju nije moguće instalirati – pogledajte greške (E) iznad.", // ai 2026-10
 
 // central/installapp.php, row 788
-"a new slice" => "",
+"a new slice" => "nova stranica", // ai 2026-10
 
 // central/installapp.php, row 790
-"existing: %1" => "",
+"existing: %1" => "postojeća: %1", // ai 2026-10
 
 // central/installapp.php, row 801
-"chosen by its role: %1" => "",
+"chosen by its role: %1" => "odabrano prema ulozi: %1", // ai 2026-10
 
 // central/installapp.php, row 803
-"the views and fields of the app will work on its live reader data" => "",
+"the views and fields of the app will work on its live reader data" => "pogledi i polja aplikacije radit će sa živim podacima čitatelja te stranice", // ai 2026-10
 
 // central/installapp.php, row 831, 842
-"Into" => "",
+"Into" => "Kamo", // ai 2026-10
 
 // central/installapp.php, row 838, 839
-"Install %1" => "",
+"Install %1" => "Instalirajte %1", // ai 2026-10
 
 // central/installapp.php, row 841
-"not installed" => "",
+"not installed" => "nije instalirano", // ai 2026-10
 
 // central/installapp.php, row 843
-"a new module" => "",
+"a new module" => "novi modul", // ai 2026-10
 
 // central/installapp.php, row 853
-"A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice." => "",
+"A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice." => "Stranica koju izostavite neće se instalirati; što u ostatku aplikacije upućuje na nju, navedeno je u upozorenjima niže. Stranica instalirana u postojeću stranicu zadržava naziv te stranice.", // ai 2026-10
 
 // central/installapp.php, row 862
-"Check the changes" => "",
+"Check the changes" => "Provjerite promjene", // ai 2026-10
 
 // central/installapp.php, row 862
-"After a change, check it before installing." => "",
+"After a change, check it before installing." => "Nakon promjene provjerite je prije instalacije.", // ai 2026-10
 
 // central/installapp.php, row 870
-"Check the changes first" => "",
+"Check the changes first" => "Najprije provjerite promjene", // ai 2026-10
 
 // central/installapp.php, row 885
-"Links outside the app" => "",
+"Links outside the app" => "Poveznice izvan aplikacije", // ai 2026-10
 
 // central/installapp.php, row 885
-"The app links to these slices (or sites), but neither the app nor this AA has them. Send the links to a slice of this AA, or keep the id - it then leads nowhere." => "",
+"The app links to these slices (or sites), but neither the app nor this AA has them. Send the links to a slice of this AA, or keep the id - it then leads nowhere." => "Aplikacija upućuje na ove stranice (ili webove), ali nema ih ni aplikacija ni ovaj AA. Preusmjerite poveznice na stranicu ovog AA ili zadržite ID – tada ne vodi nikamo.", // ai 2026-10
 
 // central/installapp.php, row 886
-"Outside the app" => "",
+"Outside the app" => "Izvan aplikacije", // ai 2026-10
 
 // central/installapp.php, row 886, 891
-"Links go to" => "",
+"Links go to" => "Poveznice vode u", // ai 2026-10
 
 // central/installapp.php, row 890, 1419, 1495
-"and %1 more" => "",
+"and %1 more" => "i još %1", // ai 2026-10
 
 // central/installapp.php, row 892
-"keep the id - leads nowhere" => "",
+"keep the id - leads nowhere" => "zadržite ID – ne vodi nikamo", // ai 2026-10
 
 // central/installapp.php, row 896
-"as an earlier install from the same source" => "",
+"as an earlier install from the same source" => "kao pri ranijoj instalaciji iz istog izvora", // ai 2026-10
 
 // central/installapp.php, row 906, 908, 909, 910
-"of %1 items" => "",
+"of %1 items" => "od %1 stavki", // ai 2026-10
 
 // central/installapp.php, row 907, 912
-"items" => "",
+"items" => "stavki", // ai 2026-10
 
 // central/installapp.php, row 924
-"Transfer only some items" => "",
+"Transfer only some items" => "Prenesite samo neke stavke", // ai 2026-10
 
 // central/installapp.php, row 925
-"Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above." => "",
+"Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above." => "Prazno preuzima sve stavke. Uvjet: %1, na primjer %2. „Provjerite promjene“ zatim u tablici iznad prebroji njegove stavke.", // ai 2026-10
 
 // central/installapp.php, row 943
-"all items" => "",
+"all items" => "sve stavke", // ai 2026-10
 
 // central/installapp.php, row 967
-"Cannot be used." => "",
+"Cannot be used." => "Nije moguće koristiti.", // ai 2026-10
 
 // central/installapp.php, row 968
-"Takes every item." => "",
+"Takes every item." => "Preuzima sve stavke.", // ai 2026-10
 
 // central/installapp.php, row 968
-"It narrows nothing; empty the field if all the items should go." => "",
+"It narrows nothing; empty the field if all the items should go." => "Ništa ne sužava; ispraznite polje ako trebaju ići sve stavke.", // ai 2026-10
 
 // central/installapp.php, row 991
-"The slice has %1 \"%2\"." => "",
+"The slice has %1 \"%2\"." => "Stranica ima %1 „%2“.", // ai 2026-10
 
 // central/installapp.php, row 1003
-"Links will point nowhere." => "",
+"Links will point nowhere." => "Poveznice neće voditi nikamo.", // ai 2026-10
 
 // central/installapp.php, row 1005
-"%1 values link to items a condition leaves behind." => "",
+"%1 values link to items a condition leaves behind." => "Vrijednosti koje upućuju na stavke koje uvjet izostavlja: %1.", // ai 2026-10
 
 // central/installapp.php, row 1010
-"%1 values link to items of %2 that stay behind." => "",
+"%1 values link to items of %2 that stay behind." => "Vrijednosti koje upućuju na stavke iz %2 koje ostaju: %1.", // ai 2026-10
 
 // central/installapp.php, row 1011
-"To take only the items linking to items that go:" => "",
+"To take only the items linking to items that go:" => "Da biste preuzeli samo stavke koje upućuju na prenesene stavke:", // ai 2026-10
 
 // central/installapp.php, row 1051
-"relation to %1, holds the item id" => "",
+"relation to %1, holds the item id" => "veza na %1, sadrži ID stavke", // ai 2026-10
 
 // central/installapp.php, row 1051, 1071
-"another slice" => "",
+"another slice" => "druga stranica", // ai 2026-10
 
 // central/installapp.php, row 1052
-"checkbox, 1 when ticked" => "",
+"checkbox, 1 when ticked" => "potvrdni okvir, 1 kada je označen", // ai 2026-10
 
 // central/installapp.php, row 1053
 "date" => "datum",
 
 // central/installapp.php, row 1071
-"The items of %1 linked to one item of %2: %3 is a relation field, it holds the item id of the linked item (32 characters, the id= in the address of its edit page), not its name." => "",
+"The items of %1 linked to one item of %2: %3 is a relation field, it holds the item id of the linked item (32 characters, the id= in the address of its edit page), not its name." => "Stavke iz %1 povezane s jednom stavkom iz %2: %3 je polje veze, sadrži ID povezane stavke (32 znaka, id= u adresi njezine stranice za uređivanje), a ne njezin naziv.", // ai 2026-10
 
 // central/installapp.php, row 1078
-"equals the value exactly" => "",
+"equals the value exactly" => "točno je jednako vrijednosti", // ai 2026-10
 
 // central/installapp.php, row 1078
-"contains the text; \"a\" OR \"b\" for either" => "",
+"contains the text; \"a\" OR \"b\" for either" => "sadrži tekst; \"a\" OR \"b\" za bilo koji od njih", // ai 2026-10
 
 // central/installapp.php, row 1078
-"differs from the value (one word or number)" => "",
+"differs from the value (one word or number)" => "razlikuje se od vrijednosti (jedna riječ ili broj)", // ai 2026-10
 
 // central/installapp.php, row 1079
-"is smaller or greater (numbers)" => "",
+"is smaller or greater (numbers)" => "manje je ili veće (brojevi)", // ai 2026-10
 
 // central/installapp.php, row 1079
-"begins with the text" => "",
+"begins with the text" => "počinje tekstom", // ai 2026-10
 
 // central/installapp.php, row 1079
-"is not set (write any value)" => "",
+"is not set (write any value)" => "nije postavljeno (upišite bilo koju vrijednost)", // ai 2026-10
 
 // central/installapp.php, row 1080
-"is set (write any value)" => "",
+"is set (write any value)" => "postavljeno je (upišite bilo koju vrijednost)", // ai 2026-10
 
 // central/installapp.php, row 1080
-"lies between two numbers" => "",
+"lies between two numbers" => "nalazi se između dva broja", // ai 2026-10
 
 // central/installapp.php, row 1080
-"matches the regular expression" => "",
+"matches the regular expression" => "odgovara regularnom izrazu", // ai 2026-10
 
 // central/installapp.php, row 1081
-"is before or after a date (any form PHP strtotime reads)" => "",
+"is before or after a date (any form PHP strtotime reads)" => "je prije ili nakon datuma (u bilo kojem obliku koji čita PHP strtotime)", // ai 2026-10
 
 // central/installapp.php, row 1081
-"is before or after a date written dd.mm.yyyy" => "",
+"is before or after a date written dd.mm.yyyy" => "je prije ili nakon datuma u obliku dd.mm.yyyy", // ai 2026-10
 
 // central/installapp.php, row 1082
-"How to write a condition, with field ids" => "",
+"How to write a condition, with field ids" => "Kako napisati uvjet, s ID-ovima polja", // ai 2026-10
 
 // central/installapp.php, row 1083
-"Parts" => "",
+"Parts" => "Dijelovi", // ai 2026-10
 
 // central/installapp.php, row 1084
 "field id" => "ID polja", // ai 2026-10
 
 // central/installapp.php, row 1084
-"16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end." => "",
+"16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end." => "16 znakova, kratki ID nadopunjen točkama: headline........, relation.......4. Točka više ili manje znači nepoznato polje. ID-ovi polja svih stranica navedeni su na kraju.", // ai 2026-10
 
 // central/installapp.php, row 1085
-"operator" => "",
+"operator" => "operator", // ai 2026-10
 
 // central/installapp.php, row 1085
-"how to compare, see the operators below." => "",
+"how to compare, see the operators below." => "kako usporediti, pogledajte operatore niže.", // ai 2026-10
 
 // central/installapp.php, row 1086
-"value" => "",
+"value" => "vrijednost", // ai 2026-10
 
 // central/installapp.php, row 1086
-"what to compare with. Capitals count. A dash inside a value is written doubled, see below." => "",
+"what to compare with. Capitals count. A dash inside a value is written doubled, see below." => "s čime usporediti. Velika i mala slova se razlikuju. Crtica unutar vrijednosti piše se udvostručeno, pogledajte niže.", // ai 2026-10
 
 // central/installapp.php, row 1087
-"Examples" => "",
+"Examples" => "Primjeri", // ai 2026-10
 
 // central/installapp.php, row 1088
-"Edited after 1 January %1. d:> is after, d:< before." => "",
+"Edited after 1 January %1. d:> is after, d:< before." => "Uređeno nakon 1. siječnja %1. d:> znači nakon, d:< prije.", // ai 2026-10
 
 // central/installapp.php, row 1089
-"Operators" => "",
+"Operators" => "Operatori", // ai 2026-10
 
 // central/installapp.php, row 1089
 // include/searchlib.php, row 173
-"Operator" => "",
+"Operator" => "Operator", // ai 2026-10
 
 // central/installapp.php, row 1089
-"Keeps the items whose field" => "",
+"Keeps the items whose field" => "Zadržava stavke čije polje", // ai 2026-10
 
 // central/installapp.php, row 1089
-"Value, e.g." => "",
+"Value, e.g." => "Vrijednost, npr.", // ai 2026-10
 
 // central/installapp.php, row 1093
-"More than one condition" => "",
+"More than one condition" => "Više od jednog uvjeta", // ai 2026-10
 
 // central/installapp.php, row 1093
-"Repeat field, operator and value after the first one, without a second d-. An item must match all of them. Up to %1 conditions and %2 characters." => "",
+"Repeat field, operator and value after the first one, without a second d-. An item must match all of them. Up to %1 conditions and %2 characters." => "Nakon prvog uvjeta ponovite polje, operator i vrijednost, bez drugog d-. Stavka mora zadovoljiti sve uvjete. Najviše uvjeta: %1, znakova: %2.", // ai 2026-10
 
 // central/installapp.php, row 1095
-"A dash inside a value" => "",
+"A dash inside a value" => "Crtica unutar vrijednosti", // ai 2026-10
 
 // central/installapp.php, row 1095
-"A single dash ends the value, so a dash in a date or a name is written doubled (--). Otherwise the condition cannot be used." => "",
+"A single dash ends the value, so a dash in a date or a name is written doubled (--). Otherwise the condition cannot be used." => "Jedna crtica završava vrijednost, pa se crtica u datumu ili imenu piše udvostručeno (--). Inače se uvjet ne može koristiti.", // ai 2026-10
 
 // central/installapp.php, row 1097
-"Field ids" => "",
+"Field ids" => "ID-ovi polja", // ai 2026-10
 
 // central/installapp.php, row 1099
-"%1 fields" => "",
+"%1 fields" => "polja: %1", // ai 2026-10
 
 // central/installapp.php, row 1114, 1116
-"Owner of the new modules" => "",
+"Owner of the new modules" => "Vlasnik novih modula", // ai 2026-10
 
 // central/installapp.php, row 1122
-// include/modutils.php, row 85
+// include/modutils.php, row 82
 "+ Add new owner" => "+ Dodajte novog vlasnika", // ai 2026-06
 
 // central/installapp.php, row 1123
-// include/modutils.php, row 44, 96
-// include/slicedit.php, row 173
+// include/modutils.php, row 45, 93
+// include/slicedit.php, row 172
 "New Owner" => "Novi vlasnik - ica",
 
 // central/installapp.php, row 1124
-// include/modutils.php, row 45, 97
-// include/slicedit.php, row 174
+// include/modutils.php, row 46, 94
+// include/slicedit.php, row 173
 "New Owner's E-mail" => "e-mail novog vlasnika - ice",
 
 // central/installapp.php, row 1126
-"A slice going into an existing slice keeps the owner of that slice." => "",
+"A slice going into an existing slice keeps the owner of that slice." => "Stranica instalirana u postojeću stranicu zadržava vlasnika te stranice.", // ai 2026-10
 
 // central/installapp.php, row 1164
-"The field changes the value when it is saved - fill it in the slice after installing." => "",
+"The field changes the value when it is saved - fill it in the slice after installing." => "Polje pri spremanju mijenja vrijednost – popunite ga na stranici nakon instalacije.", // ai 2026-10
 
 // central/installapp.php, row 1166, 1173
-"keep the value of the app" => "",
+"keep the value of the app" => "zadržite vrijednost aplikacije", // ai 2026-10
 
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1627
-// include/stringexpand.php, row 1854
+// include/slice.class.php, row 1620
+// include/stringexpand.php, row 1876
 "Yes" => "Da",
 
 // central/installapp.php, row 1178
-// src/Util/ChangesMonitor.php, row 510
+// src/Util/ChangesMonitor.php, row 506
 "(empty)" => "(prazno)", // ai 2026-06
 
 // central/installapp.php, row 1183
-"Slice settings" => "",
+"Slice settings" => "Postavke stranice", // ai 2026-10
 
 // central/installapp.php, row 1183
-"Values that hold for the whole slice, not for single items. Leave a field empty to keep the value of the app; you can change them later in the slice under Setting." => "",
+"Values that hold for the whole slice, not for single items. Leave a field empty to keep the value of the app; you can change them later in the slice under Setting." => "Vrijednosti koje vrijede za cijelu stranicu, a ne za pojedine stavke. Ostavite polje prazno da zadržite vrijednost aplikacije; kasnije ih možete promijeniti na stranici pod Postavke.", // ai 2026-10
 
 // central/installapp.php, row 1184
 // include/menu.php, row 219
@@ -4624,142 +4652,139 @@ return [
 "Setting" => "Postavke", // ai 2026-06
 
 // central/installapp.php, row 1184
-"Value of the app" => "",
+"Value of the app" => "Vrijednost aplikacije", // ai 2026-10
 
 // central/installapp.php, row 1184
-"New value" => "",
+"New value" => "Nova vrijednost", // ai 2026-10
 
 // central/installapp.php, row 1200
-"I have read the security findings (S) and want to install the app with them." => "",
+"I have read the security findings (S) and want to install the app with them." => "Pročitao/la sam sigurnosne nalaze (S) i želim instalirati aplikaciju s njima.", // ai 2026-10
 
 // central/installapp.php, row 1203
-"Do not edit the source while the transfer runs. The items then go in batches in the task queue of this AA - the progress page only shows them, it may be closed." => "",
+"Do not edit the source while the transfer runs. The items then go in batches in the task queue of this AA - the progress page only shows them, it may be closed." => "Ne uređujte izvor dok prijenos traje. Stavke zatim idu u serijama kroz red zadataka ovog AA – stranica napretka ih samo prikazuje, možete je zatvoriti.", // ai 2026-10
 
 // central/installapp.php, row 1205
-"Writing the definitions…" => "",
+"Writing the definitions…" => "Zapisivanje definicija…", // ai 2026-10
 
 // central/installapp.php, row 1205
-"Write the definitions and transfer the items" => "",
+"Write the definitions and transfer the items" => "Zapišite definicije i prenesite stavke", // ai 2026-10
 
 // central/installapp.php, row 1221, 1251
-"The choice changed since the preview - preview again." => "",
+"The choice changed since the preview - preview again." => "Odabir se promijenio od pregleda – ponovno prikažite pregled.", // ai 2026-10
 
 // central/installapp.php, row 1234
-"The source changed since the preview - preview again." => "",
+"The source changed since the preview - preview again." => "Izvor se promijenio od pregleda – ponovno prikažite pregled.", // ai 2026-10
 
 // central/installapp.php, row 1254
-"Writing the app" => "",
+"Writing the app" => "Zapisivanje aplikacije", // ai 2026-10
 
 // central/installapp.php, row 1273
-"existing slice" => "",
+"existing slice" => "postojeća stranica", // ai 2026-10
 
 // central/installapp.php, row 1281
-"The definitions are written; modules: %1" => "",
+"The definitions are written; modules: %1" => "Definicije su zapisane; moduli: %1", // ai 2026-10
 
 // central/installapp.php, row 1287
-"The definitions are written." => "",
+"The definitions are written." => "Definicije su zapisane.", // ai 2026-10
 
 // central/installapp.php, row 1300
-"Slice settings to fill in" => "",
+"Slice settings to fill in" => "Postavke stranice koje treba popuniti", // ai 2026-10
 
 // central/installapp.php, row 1301
-"Some slices have settings - values that hold for the whole slice, not for single items (an address, a version, a switch shown on the pages). These got no value: neither the app nor you gave one, so the pages that show them show nothing." => "",
+"Some slices have settings - values that hold for the whole slice, not for single items (an address, a version, a switch shown on the pages). These got no value: neither the app nor you gave one, so the pages that show them show nothing." => "Neke stranice imaju postavke – vrijednosti koje vrijede za cijelu stranicu, a ne za pojedine stavke (adresa, verzija, prekidač prikazan na stranicama). Ove nisu dobile vrijednost: nije je dala ni aplikacija ni vi, pa stranice koje ih prikazuju ne prikazuju ništa.", // ai 2026-10
 
 // central/installapp.php, row 1302, 1340
 // src/Central/TransferText.php, row 119
-"What to do" => "",
+"What to do" => "Što učiniti", // ai 2026-10
 
 // central/installapp.php, row 1303
-"Fill them in by the links below, or later: in the slice open Setting in the menu of the item manager." => "",
+"Fill them in by the links below, or later: in the slice open Setting in the menu of the item manager." => "Popunite ih putem poveznica niže ili kasnije: na stranici otvorite Postavke u izborniku upravitelja stavki.", // ai 2026-10
 
 // central/installapp.php, row 1307
-"fill them in" => "",
+"fill them in" => "popunite ih", // ai 2026-10
 
 // central/installapp.php, row 1334
-"in conditions" => "",
+"in conditions" => "u uvjetima", // ai 2026-10
 
 // central/installapp.php, row 1343
-// src/Optimize/CheckUniversalAnalytics.php, row 109
-// src/Optimize/ImgMeasuring.php, row 53
-"Where" => "",
-
-// central/installapp.php, row 1343
-"Found" => "",
+// src/Optimize/CheckNightly.php, row 145, 153
+"Found" => "Pronađeno", // ai 2026-10
 
 // central/installapp.php, row 1368
-"Transferring the items" => "",
+"Transferring the items" => "Prijenos stavki", // ai 2026-10
 
 // central/installapp.php, row 1368
 // src/Import/RunView.php, row 61, 63
-"Stopped by an error" => "",
+"Stopped by an error" => "Zaustavljeno greškom", // ai 2026-10
 
 // central/installapp.php, row 1369
+// include/logs.php, row 772
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
-"Finished" => "",
+"Finished" => "Završeno", // ai 2026-10
 
 // central/installapp.php, row 1369
-"Ended" => "",
+"Ended" => "Okončano", // ai 2026-10
 
 // central/installapp.php, row 1380
-"No such install run of yours." => "",
+"No such install run of yours." => "Ne postoji takvo vaše pokretanje instalacije.", // ai 2026-10
 
 // central/installapp.php, row 1388
-"This app was previewed, but not installed yet." => "",
+"This app was previewed, but not installed yet." => "Pregled ove aplikacije je prikazan, ali aplikacija još nije instalirana.", // ai 2026-10
 
 // central/installapp.php, row 1388
-"Preview it again" => "",
+"Preview it again" => "Ponovno prikažite pregled", // ai 2026-10
 
 // central/installapp.php, row 1393
-"The app is installed." => "",
+"The app is installed." => "Aplikacija je instalirana.", // ai 2026-10
 
 // central/installapp.php, row 1406
-"Transferring a batch…" => "",
+"Transferring a batch…" => "Prijenos paketa…", // ai 2026-10
 
 // central/installapp.php, row 1407
-"Waiting for the task queue…" => "",
+"Waiting for the task queue…" => "Čekanje na red zadataka…", // ai 2026-10
 
 // central/installapp.php, row 1408
-"The source failed (%1 of %2 tries) - the next try at %3" => "",
+"The source failed (%1 of %2 tries) - the next try at %3" => "Izvor nije uspio (pokušaj %1 od %2) – sljedeći pokušaj u %3", // ai 2026-10
 
 // central/installapp.php, row 1409
-"No batch has come for a long time - is the task queue of this AA running? Continue tries at once." => "",
+"No batch has come for a long time - is the task queue of this AA running? Continue tries at once." => "Dugo nije stigao nijedan paket – radi li red zadataka ovog AA? Gumb „Nastavite“ pokušat će odmah.", // ai 2026-10
 
 // central/installapp.php, row 1410
-"Written %1 of %2 items (%3 %)" => "",
+"Written %1 of %2 items (%3 %)" => "Zapisano stavki: %1 od %2 (%3 %)", // ai 2026-10
 
 // central/installapp.php, row 1411
-"Written %1 items" => "",
+"Written %1 items" => "Zapisano stavki: %1", // ai 2026-10
 
 // central/installapp.php, row 1412
-"Last progress: %1" => "",
+"Last progress: %1" => "Posljednji napredak: %1", // ai 2026-10
 
 // central/installapp.php, row 1413
-"checked at %1" => "",
+"checked at %1" => "provjereno u %1", // ai 2026-10
 
 // central/installapp.php, row 1414
-"This page lost the connection to the server - the transfer goes on without it. Asking again…" => "",
+"This page lost the connection to the server - the transfer goes on without it. Asking again…" => "Stranica je izgubila vezu s poslužiteljem – prijenos se nastavlja i bez nje. Ponovno pokušavam…", // ai 2026-10
 
 // central/installapp.php, row 1415
-"A batch may still be working - press Continue again in a few minutes." => "",
+"A batch may still be working - press Continue again in a few minutes." => "Paket možda još radi – za nekoliko minuta ponovno pritisnite „Nastavite“.", // ai 2026-10
 
 // central/installapp.php, row 1416
-"Log in to the source AA again, then press Continue." => "",
+"Log in to the source AA again, then press Continue." => "Ponovno se prijavite u izvorni AA, a zatim pritisnite „Nastavite“.", // ai 2026-10
 
 // central/installapp.php, row 1417
-"End the transfer? The items written so far stay." => "",
+"End the transfer? The items written so far stay." => "Završiti prijenos? Dosad zapisane stavke ostaju.", // ai 2026-10
 
 // central/installapp.php, row 1418
-"The session has expired - log in again and reload this page." => "",
+"The session has expired - log in again and reload this page." => "Prijava je istekla – ponovno se prijavite i osvježite ovu stranicu.", // ai 2026-10
 
 // central/installapp.php, row 1422
-"The app is installed and works - only the finish of its run waits for the task queue of this AA." => "",
+"The app is installed and works - only the finish of its run waits for the task queue of this AA." => "Aplikacija je instalirana i radi – samo završetak njezina pokretanja čeka na red zadataka ovog AA.", // ai 2026-10
 
 // central/installapp.php, row 1430
-"The transfer runs in the task queue of this AA; you may close this page. Do not edit the source until it finishes." => "",
+"The transfer runs in the task queue of this AA; you may close this page. Do not edit the source until it finishes." => "Prijenos se izvodi u redu zadataka ovog AA; ovu stranicu možete zatvoriti. Dok ne završi, nemojte uređivati izvor.", // ai 2026-10
 
 // central/installapp.php, row 1432
-"Show the final check" => "",
+"Show the final check" => "Prikažite završnu provjeru", // ai 2026-10
 
 // central/installapp.php, row 1436
 // src/Import/DetailPage.php, row 938, 947
@@ -4767,66 +4792,66 @@ return [
 
 // central/installapp.php, row 1436
 // src/Import/DetailPage.php, row 958
-"End" => "",
+"End" => "Završite", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
-"Written" => "",
+"Written" => "Zapisano", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
-"On the source" => "",
+"On the source" => "Na izvoru", // ai 2026-10
 
 // central/installapp.php, row 1472
-"The transfer is finished. Checked at %1:" => "",
+"The transfer is finished. Checked at %1:" => "Prijenos je završen. Provjereno u %1:", // ai 2026-10
 
 // central/installapp.php, row 1472
-"On this AA" => "",
+"On this AA" => "Na ovom AA", // ai 2026-10
 
 // central/installapp.php, row 1479
-"Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "",
+"Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "Učitane datoteke se ne prenose – kopirajte ih ručno. Domenu prebacite na novi web tek nakon što ga provjerite.", // ai 2026-10
 
-// central/responder.php, row 110
-"Get_Jwt needs ttl as seconds and scope admin or apps" => "",
+// central/responder.php, row 112
+"Get_Jwt needs ttl as seconds and scope admin or apps" => "Get_Jwt zahtijeva ttl u sekundama i scope admin ili apps", // ai 2026-10
 
-// central/responder.php, row 116
-"A token needs a login by the username and password in this request, of a user whose password change this AA can detect" => "",
+// central/responder.php, row 118
+"A token needs a login by the username and password in this request, of a user whose password change this AA can detect" => "Token zahtijeva prijavu korisničkim imenom i lozinkom u ovom zahtjevu, i to korisnika čiju promjenu lozinke ovaj AA može prepoznati", // ai 2026-10
 
-// central/responder.php, row 194
-"Unknown module type" => "",
-
-// central/responder.php, row 222
-"Wrong command - not a synchronization action" => "",
+// central/responder.php, row 198
+"Unknown module type" => "Nepoznata vrsta modula", // ai 2026-10
 
 // central/responder.php, row 226
-"Wrong command - %1" => "",
+"Wrong command - not a synchronization action" => "Pogrešna naredba – nije akcija sinkronizacije", // ai 2026-10
 
-// central/responder.php, row 775
-"Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "",
+// central/responder.php, row 230
+"Wrong command - %1" => "Pogrešna naredba – %1", // ai 2026-10
 
-// central/responder.php, row 806
+// central/responder.php, row 785
+"Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "Token za prijavu odbijen (vrijedi jedan dan, a promjena lozinke ga poništava) – ponovno autentificirajte ovaj AA u Centralu", // ai 2026-10
+
+// central/responder.php, row 816
 "No request sent for responder.php" => "Nije poslan zahtjev za responder.php", // ai 2026-06
 
-// central/responder.php, row 812
+// central/responder.php, row 822
 "Bad request sent for responder.php - %1" => "Poslan je neispravan zahtjev za responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 819
-"This command is not accepted in the URL" => "",
-
-// central/responder.php, row 823
-"This command must be sent by POST" => "",
-
 // central/responder.php, row 829
-"Request from another site refused" => "",
+"This command is not accepted in the URL" => "Ova naredba ne prihvaća se u URL-u", // ai 2026-10
 
-// central/responder.php, row 846
-"The login token does not allow %1" => "",
+// central/responder.php, row 833
+"This command must be sent by POST" => "Ova naredba mora biti poslana metodom POST", // ai 2026-10
 
-// central/responder.php, row 847
-"The app store account may not run %1" => "",
+// central/responder.php, row 839
+"Request from another site refused" => "Zahtjev s drugog weba odbijen", // ai 2026-10
 
-// central/responder.php, row 848
-"The app store is busy - try again later" => "",
+// central/responder.php, row 856
+"The login token does not allow %1" => "Token za prijavu ne dopušta %1", // ai 2026-10
 
-// central/responder.php, row 849
+// central/responder.php, row 857
+"The app store account may not run %1" => "Račun kataloga aplikacija ne smije pokretati %1", // ai 2026-10
+
+// central/responder.php, row 858
+"The app store is busy - try again later" => "Katalog aplikacija je zauzet – pokušajte kasnije", // ai 2026-10
+
+// central/responder.php, row 859
 "You (%2) don't have permissions to run %1" => "Vi (%2) nemate dozvolu za pokretanje %1", // ai 2026-06
 
 // central/synchronize.php, row 31
@@ -4864,7 +4889,7 @@ return [
 "Slice Mapping" => "Mapiranje stranica", // ai 2026-06
 
 // central/synchronize3.php, row 44
-"Template AA sent no definition for slice %1" => "",
+"Template AA sent no definition for slice %1" => "Predložak AA nije poslao definiciju stranice %1", // ai 2026-10
 
 // central/synchronize3.php, row 109
 "%1 synchronization actions planned. See" => "Planirano je %1 akcija sinkronizacije. Pogledajte", // ai 2026-06
@@ -4895,30 +4920,30 @@ return [
 // central/synchronize3.php, row 183
 "Compared and Updated ActionApps" => "Uspoređene i ažurirane ActionApps", // ai 2026-06
 
-// filldisc.php, row 103, 144
-// filler.php, row 412
+// filldisc.php, row 104, 154
+// filler.php, row 416
 "Not accepted, sorry. Looks like spam." => "Nije prihvaćeno, žao nam je. Izgleda kao spam.", // ai 2026-06
 
-// filldisc.php, row 110
+// filldisc.php, row 111
 // filler.php, row 300
 "Wrong result, not possible to post comments." => "Pogrešan rezultat, nije moguće objaviti komentare.", // ai 2026-06
 
-// filldisc.php, row 119
+// filldisc.php, row 120
 "Comment to wrong item - item's slice not found." => "Komentar na pogrešnu stavku - stranica stavke nije pronađena.", // ai 2026-06
 
-// filldisc.php, row 123
+// filldisc.php, row 124, 131
 "New comments disabled." => "Novi komentari su onemogućeni.", // ai 2026-06
 
-// filldisc.php, row 185
+// filldisc.php, row 195
 "Not accepted, your IP address is banned." => "Nije prihvaćeno, vaša IP adresa je blokirana.", // ai 2026-06
 
-// filldisc.php, row 196
+// filldisc.php, row 205
 "Not accepted, item is not published or does not exist." => "Nije prihvaćeno, stavka nije objavljena ili ne postoji.", // ai 2026-06
 
 // filler.php, row 294
 "Not allowed to post comments" => "Nije dozvoljeno slanje komentara", // ai 2026-06
 
-// filler.php, row 335, 374
+// filler.php, row 335, 378
 "Bad Token. Not allowed to post comments" => "Neispravan token. Nije dozvoljeno slanje komentara", // ai 2026-06
 
 // filler.php, row 361
@@ -4927,13 +4952,13 @@ return [
 // filler.php, row 367
 "Bad slice ID" => "Neispravan ID stranice",
 
-// filler.php, row 433
+// filler.php, row 437
 "Anonymous posting not admitted." => "Nisu dozvoljene anonimne poruke.",
 
-// filler.php, row 475
+// filler.php, row 479
 "You are not allowed to update this item." => "Nemate dozvolu za update",
 
-// filler.php, row 486
+// filler.php, row 490
 "Some error in store item." => "Greška.",
 
 // include/adminpage.class.php, row 68
@@ -4943,7 +4968,7 @@ return [
 "Short Id" => "Kratki ID",
 
 // include/constants.php, row 456
-// include/logs.php, row 781, 813
+// include/logs.php, row 930, 962
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "klasa",
 
@@ -4952,7 +4977,7 @@ return [
 "Level" => "Nivo",
 
 // include/constants.php, row 509
-// include/logs.php, row 992
+// include/logs.php, row 1141
 "Feed" => "Kopirati sadržaj", // ai 2026-06
 
 // include/constants.php, row 510
@@ -5201,16 +5226,16 @@ return [
 "Edit item form template" => "Predložak forme za uređivanje stavke", // ai 2026-06
 
 // include/constants.php, row 1086
-// include/discussion.php, row 222
+// include/discussion.php, row 211
 "Show selected" => "Pokaži odabrano",
 
 // include/constants.php, row 1087
-// include/discussion.php, row 223
+// include/discussion.php, row 212
 "Show all" => "Pokaži sve",
 
 // include/constants.php, row 1088
 // include/constedit_util.php, row 136
-// include/discussion.php, row 224
+// include/discussion.php, row 213
 "Add new" => "Dodajte novu",
 
 // include/constants.php, row 1123
@@ -5266,19 +5291,19 @@ return [
 // src/Import/Definition.php, row 140
 "Select" => "Odaberite",
 
-// include/constedit_util.php, row 626
+// include/constedit_util.php, row 599
 "No group id specified" => "Nije naveden ID grupe", // ai 2026-06
 
-// include/constedit_util.php, row 755
-"This constant group is used by ActionApps itself and can't be changed here" => "",
+// include/constedit_util.php, row 720
+"This constant group is used by ActionApps itself and can't be changed here" => "Ovu grupu konstanti koristi sam ActionApps i ovdje se ne može mijenjati", // ai 2026-10
 
-// include/constedit_util.php, row 758
+// include/constedit_util.php, row 723
 "You do not have permissions to change fields settings for the slice owning this group" => "Nemate dozvolu za promjenu svojstava polja za stranicu koja pripada ovoj grupi",
 
-// include/constedit_util.php, row 763
-"The constant group is used also in slice you do not have permissions to change fields settings" => "",
+// include/constedit_util.php, row 728
+"The constant group is used also in slice you do not have permissions to change fields settings" => "Grupa konstanti koristi se i na stranici na kojoj nemate dozvolu za promjenu svojstava polja", // ai 2026-10
 
-// include/constedit_util.php, row 813
+// include/constedit_util.php, row 784
 " items changed to new value " => "Stavke promjenjene u novu vrijednost",
 
 // include/date.php, row 36
@@ -5332,62 +5357,62 @@ return [
 // include/exporter.class.php, row 634
 "Bad file format - specify format" => "Neispravan format datoteke - navedite format", // ai 2026-06
 
-// include/feeding.php, row 463, 504
+// include/feeding.php, row 449, 490
 "Map" => "Mapiranje", // ai 2026-06
 
-// include/feeding.php, row 464, 503
+// include/feeding.php, row 450, 489
 "Run (queue)" => "Pokrenite (red čekanja)", // ai 2026-06
 
-// include/feeding.php, row 477, 483, 540
+// include/feeding.php, row 463, 469, 526
 "Local slice" => "Lokalna stranica", // ai 2026-06
 
-// include/feeding.php, row 486
+// include/feeding.php, row 472
 "URL of the feed" => "URL obrasca",
 
-// include/feeding.php, row 486
+// include/feeding.php, row 472
 "e.g. https://www.someplace.com/rss/index.xml" => "npr. https://www.someplace.com/rss/index.xml", // ai 2026-06
 
-// include/feeding.php, row 486
+// include/feeding.php, row 472
 "Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!" => "NEMOJTE mijenjati ovaj URL ako ste već postavili mapiranje (ili ažurirajte mapiranje nakon promjene). Mapiranje je vezano uz ovaj URL!", // ai 2026-06
 
-// include/feeding.php, row 487
+// include/feeding.php, row 473
 "RSS Feed name" => "Ime RSS obrasca",
 
-// include/feeding.php, row 488, 544
+// include/feeding.php, row 474, 530
 "warnings last hour" => "upozorenja u zadnjem satu", // ai 2026-06
 
-// include/feeding.php, row 488, 544
+// include/feeding.php, row 474, 530
 "warnings last day" => "upozorenja u zadnjem danu", // ai 2026-06
 
-// include/feeding.php, row 488, 544
+// include/feeding.php, row 474, 530
 "warnings last month" => "upozorenja u zadnjem mjesecu", // ai 2026-06
 
-// include/feeding.php, row 493, 548
+// include/feeding.php, row 479, 534
 "Warnings in log [hour/day/month]" => "Upozorenja u logu [sat/dan/mjesec]", // ai 2026-06
 
-// include/feeding.php, row 539
+// include/feeding.php, row 525
 "Remote node" => "Udaljeni čvor", // ai 2026-06
 
 // include/field.class.php, row 162
-"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "jedinstvena vrijednost – provjerava se prije obrezivanja razmaka, pa bi duplikat mogao proći", // ai 2026-10
 
 // include/field.class.php, row 167
-"code - its indentation and the last new line are kept on purpose" => "",
+"code - its indentation and the last new line are kept on purpose" => "kôd – uvlake i zadnji novi redak namjerno se čuvaju", // ai 2026-10
 
 // include/field.class.php, row 174
-"stores the text of the selected items" => "",
+"stores the text of the selected items" => "sprema tekst odabranih stavki", // ai 2026-10
 
 // include/field.class.php, row 180
-"constants of a group" => "",
+"constants of a group" => "konstante grupe", // ai 2026-10
 
 // include/field.class.php, row 187
-"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "konstanta „%1“ ima razmake ili nove retke na rubovima – najprije obrežite konstante", // ai 2026-10
 
 // include/field.class.php, row 709
 "Move to another field" => "Premjestite u drugo polje", // ai 2026-06
 
 // include/field.class.php, row 1084
-// include/itemview.php, row 127
+// include/itemview.php, row 129
 "number of found items" => "broj pronađenih stavki",
 
 // include/field.class.php, row 1085
@@ -5443,7 +5468,7 @@ return [
 " (this)" => " (ovo)", // ai 2026-06
 
 // include/field.class.php, row 1354, 1367, 1380
-"Can't copy field" => "",
+"Can't copy field" => "Polje nije moguće kopirati", // ai 2026-10
 
 // include/filedit.php, row 82
 "Back to file list" => "Vratite se na listu datoteka",
@@ -5455,127 +5480,131 @@ return [
 "Rename to" => "Preimenujte u ",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 133, 499
+// include/fileman.php, row 158, 535
 "Text file" => "Tekstualna datoteka",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 131
+// include/fileman.php, row 156
 "Web file" => "Web datoteka",
 
 // include/filedit.php, row 89
-// include/fileman.php, row 130, 499
+// include/fileman.php, row 155, 535
 "HTML file" => "HTML datoteka",
 
-// include/filedit.php, row 124
+// include/filedit.php, row 121
 "Save changes" => "Spremite promjene",
 
-// include/filedit.php, row 125
+// include/filedit.php, row 122
 "Reset content" => "Obnovite sadržaj",
 
-// include/filedit.php, row 130
+// include/filedit.php, row 127
 "File content" => "Sadržaj datoteke",
 
-// include/filedit.php, row 138
-// include/fileman.php, row 132
+// include/filedit.php, row 135
+// include/fileman.php, row 157
 "Image file" => "Slikovna datoteka",
 
-// include/filedit.php, row 141
+// include/filedit.php, row 138
 "This is a file of type" => "Ova je datoteka tipa",
 
-// include/filedit.php, row 141
+// include/filedit.php, row 138
 "I can't view it. If you want to view or edit it, change its extension." => "Ne mogu vidjeti datoteku. Ako ju želite pregledati ili urediti, promjenite njen nastavak",
 
-// include/fileman.php, row 33
+// include/fileman.php, row 35
 "Size" => "Veličina",
 
-// include/fileman.php, row 35
+// include/fileman.php, row 37
 "Last modified" => "Datum zadnje promjene",
 
-// include/fileman.php, row 135, 148
+// include/fileman.php, row 75
+"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Skripte i postavke poslužitelja (poput .php ili .htaccess) ne mogu se čuvati u Upravitelju datoteka.", // ai 2026-10
+
+// include/fileman.php, row 160, 173
 "Parent" => "Povratak na glavni",
 
-// include/fileman.php, row 136, 164
+// include/fileman.php, row 161, 189
 "Other" => "Drugi",
 
-// include/fileman.php, row 337
+// include/fileman.php, row 365
 "Wrong file name." => "Neispravno ime datoteke",
 
-// include/fileman.php, row 345
+// include/fileman.php, row 376
 "File already exists" => "Datoteka već postoji",
 
-// include/fileman.php, row 349, 502
+// include/fileman.php, row 380, 538
 "Unable to create file" => "Ne mogu napraviti datoteku",
 
-// include/fileman.php, row 360
+// include/fileman.php, row 391
+// include/slicedit.php, row 205
 "Wrong directory name." => "Neispravno ime mape",
 
-// include/fileman.php, row 366
+// include/fileman.php, row 397
 "Unable to create directory" => "Ne mogu kreirati mapu",
 
-// include/fileman.php, row 376
+// include/fileman.php, row 408
 "First delete all files from directory" => "Prvo obrišite sve datoteke iz mape",
 
-// include/fileman.php, row 378
+// include/fileman.php, row 410
 "Unable to delete directory" => "Ne mogu obrisati mapu",
 
-// include/fileman.php, row 381
+// include/fileman.php, row 413
 "Unable to delete file" => "Ne mogu obrisati datoteku",
 
-// include/fileman.php, row 399
+// include/fileman.php, row 432
 "Error: " => "Greška",
 
-// include/fileman.php, row 411
+// include/fileman.php, row 448
 "Unable to open file for writing" => "Ne mogu otvoriti datoteku za pisanje",
 
-// include/fileman.php, row 415
+// include/fileman.php, row 452
 "Error writing to file" => "Greška u pisanju u datoteku",
 
-// include/fileman.php, row 424
+// include/fileman.php, row 464
 "File with this name already exists" => "Već postoji datoteka s tim imenom",
 
-// include/fileman.php, row 426
+// include/fileman.php, row 466
 "Unable to rename" => "Ne mogu preimenovati",
 
-// include/fileman.php, row 486
+// include/fileman.php, row 522
 "Wrong directory name" => "Neispravno ime mape",
 
-// include/fileman.php, row 495
+// include/fileman.php, row 531
 "Files with the same names as some in the template already exist. Please change the file names first." => "Datoteke imaju isto ime kao neke postojeće u prdlošcima. Molimo Vas da prvo promijenite imena datoteka.",
 
-// include/fileman.php, row 545
+// include/fileman.php, row 582
 "Are you sure you want to delete the selected files and folders?" => "Da li sigurno želite obrisati odabrane datoteke i mape",
 
-// include/files.class.php, row 113
+// include/files.class.php, row 116
 "No destination directory for image uploads specified" => "Nije naveden odredišni direktorij za prijenos slika", // ai 2026-06
 
-// include/files.class.php, row 117
+// include/files.class.php, row 120
 "Can't create directory for image uploads" => "Ne mogu kreirati mapu za unos datoteka",
 
-// include/files.class.php, row 171
+// include/files.class.php, row 174
 "Can't read the file %1" => "Nije moguće pročitati datoteku %1", // ai 2026-06
 
-// include/files.class.php, row 204
+// include/files.class.php, row 207
 "No destination file specified" => "Nije navedena odredišna datoteka", // ai 2026-06
 
-// include/files.class.php, row 220
+// include/files.class.php, row 212, 227
 "type of uploaded file not allowed" => "tip prenesene datoteke nije dozvoljen", // ai 2026-06
 
-// include/files.class.php, row 244
+// include/files.class.php, row 251
 "Can't move image  %1 to %2 (%3)" => "Nije moguće premjestiti sliku %1 u %2 (%3)", // ai 2026-06
 
-// include/files.class.php, row 251
+// include/files.class.php, row 258
 "Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "Nije moguće promijeniti dozvole prenesene datoteke: %1 - %2. Pogledajte IMG_UPLOAD_FILE_MODE u vašem config.php", // ai 2026-06
 
-// include/files.class.php, row 276
+// include/files.class.php, row 283
 "Can't open file for writing: %1" => "Nije moguće otvoriti datoteku za pisanje: %1", // ai 2026-06
 
-// include/files.class.php, row 282
+// include/files.class.php, row 289
 "Can't write to file: %1" => "Nije moguće pisati u datoteku: %1", // ai 2026-06
 
-// include/files.class.php, row 356
+// include/files.class.php, row 363
 "can't create backup of the file" => "nije moguće napraviti sigurnosnu kopiju datoteke", // ai 2026-06
 
-// include/files.class.php, row 1421
+// include/files.class.php, row 1438
 ": No such directory" => ": Direktorij ne postoji", // ai 2026-06
 
 // include/form.class.php, row 104
@@ -5654,7 +5683,7 @@ return [
 
 // include/formutil.php, row 1228
 // include/transformation.class.php, row 193, 382, 455, 549, 739
-// include/widget.class.php, row 662
+// include/widget.class.php, row 658
 "Plain text" => "Običan tekst",
 
 // include/formutil.php, row 1270
@@ -5667,7 +5696,7 @@ return [
 // include/formutil.php, row 1781
 // include/menu.php, row 140
 // src/Import/DetailCatalog.php, row 124
-// src/Util/ChangesMonitor.php, row 454
+// src/Util/ChangesMonitor.php, row 450
 "Change" => "Promijenite",
 
 // include/formutil.php, row 1924, 2111
@@ -5679,7 +5708,7 @@ return [
 "Offer" => "Ponuđeno",
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10866, 10889
+// include/stringexpand.php, row 10948, 10971
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5702,6 +5731,12 @@ return [
 
 // include/formutil.php, row 3279
 "Group Name" => "Naziv grupe", // ai 2026-06
+
+// include/formutil.php, row 3280
+// include/logs.php, row 727, 827, 1091
+// src/Optimize/CheckNightly.php, row 146, 153
+// src/Optimize/StateCheckModel.php, row 270
+"Count" => "Broj", // ai 2026-06
 
 // include/formutil.php, row 3281
 "Created on" => "Stvoreno", // ai 2026-06
@@ -5733,11 +5768,11 @@ return [
 // include/formutil.php, row 3297
 "All items in trash bin" => "Sve stavke u smeću", // ai 2026-06
 
-// include/init_page.php, row 87
-// include/locauth.php, row 98
+// include/init_page.php, row 84
+// include/locauth.php, row 100
 "Either your username or your password is not valid" => "Korisničko ime ili lozinka nisu ispravni", // ai 2026-06
 
-// include/init_page.php, row 144
+// include/init_page.php, row 136
 "No slice found for you" => "Nema stranice pronađene za Vas",
 
 // include/item.php, row 113
@@ -5860,25 +5895,25 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Greška: pogrešna funkcija sinonima %1 za %2", // ai 2026-06
 
-// include/item_content.php, row 1126, 1184
+// include/item_content.php, row 1127, 1185
 "No Slice Id specified" => "ID stranice nije naveden", // ai 2026-06
 
-// include/item_content.php, row 1172
+// include/item_content.php, row 1173
 "No Permission to insert Item for user %1" => "Korisnik %1 nema dozvolu za dodavanje stavke", // ai 2026-06
 
-// include/item_content.php, row 1188
+// include/item_content.php, row 1189
 "Bad Item Id" => "Neispravan ID stavke", // ai 2026-06
 
-// include/item_content.php, row 1329
+// include/item_content.php, row 1330
 "No Id specified (%1 - %2)" => "ID nije naveden (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1334
+// include/item_content.php, row 1335
 "Duplicated ID - skipped (%1 - %2)" => "Duplicirani ID - preskočeno (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1359
+// include/item_content.php, row 1360
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem za stranicu %1 - provjera parametara nije uspjela za id = '%2'", // ai 2026-06
 
-// include/item_content.php, row 1369
+// include/item_content.php, row 1370
 "No Status code" => "Nedostaje statusni kod", // ai 2026-06
 
 // include/itemfunc.php, row 67
@@ -5903,7 +5938,7 @@ return [
 "Published" => "Objavljeno", // ai 2026-06
 
 // include/itemfunc.php, row 174
-"View on public site" => "",
+"View on public site" => "Pogledajte na javnom webu", // ai 2026-10
 
 // include/itemfunc.php, row 188
 "Never" => "Nikada", // ai 2026-06
@@ -6073,7 +6108,7 @@ return [
 "Item IDs" => "ID stavki",
 
 // include/itemfunc.php, row 1140
-"The tag '%1' could not be stored: %2" => "",
+"The tag '%1' could not be stored: %2" => "Oznaku '%1' nije moguće spremiti: %2", // ai 2026-10
 
 // include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "Korisnički ID = uvijek sprema trenutni korisnički ID",
@@ -6142,283 +6177,337 @@ return [
 "Unique number for this field (from 1,..)" => "Jedinstveni broj za ovo polje (od 1,..)", // ai 2026-06
 
 // include/itemfunc.php, row 1376
-"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "Nova stavka dobiva najveći broj ovog polja na stranici + 1 (1 za prvu stavku). Broje se stavke u svim spremnicima, uključujući smeće, pa se nijedan broj ne dodjeljuje dvaput. Svaka vrijednost koju nova stavka donese (kopija druge stavke, uvoz, vraćena sigurnosna kopija stranice) se zamjenjuje. Postojeća stavka zadržava svoj broj kad polje stigne prazno i kad je ažurira feed. Potrebne su InnoDB tablice – s MyISAM-om dva istodobna umetanja mogu dobiti isti broj.", // ai 2026-10
 
-// include/itemfunc.php, row 1499
+// include/itemfunc.php, row 1502
 "File = uploaded file" => "Datoteka = poslana datoteka",
 
-// include/itemfunc.php, row 1503
+// include/itemfunc.php, row 1506
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Sprema poslanu datoteku i vezu na nju, osobine datteke se primjenjuju samo ako je datoteka tipa slika/nešto",
 
-// include/itemfunc.php, row 1512
+// include/itemfunc.php, row 1515
 "Mime types accepted" => "Prihvaćen Mime tip",
 
-// include/itemfunc.php, row 1512
+// include/itemfunc.php, row 1515
 "Only files of matching mime types will be accepted" => "Samo datoteke odgovarajućeg Mime tipa će biti prihvaćene",
 
-// include/itemfunc.php, row 1513
+// include/itemfunc.php, row 1516
 "Maximum image width" => "Najveća dozvoljena širina slikovne datoteke",
 
-// include/itemfunc.php, row 1514
+// include/itemfunc.php, row 1517
 "Maximum image height" => "Najveća dozvoljena visina slikovne datoteke",
 
-// include/itemfunc.php, row 1514
+// include/itemfunc.php, row 1517
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Slika će biti promijenjena unutar tih granica zadržavajući razmjere",
 
-// include/itemfunc.php, row 1515
+// include/itemfunc.php, row 1518
 "Other fields" => "Ostala polja",
 
-// include/itemfunc.php, row 1515
+// include/itemfunc.php, row 1518
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Popis drugih polja koja će primiti ovu sliku, odvojenih s ##. Ne radi dobro za višestruke prijenose.", // ai 2026-06
 
-// include/itemfunc.php, row 1516
+// include/itemfunc.php, row 1519
 "Upload policy" => "Pravila prijenosa", // ai 2026-06
 
-// include/itemfunc.php, row 1516
+// include/itemfunc.php, row 1519
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Ovaj parametar određuje što učiniti ako prenesena datoteka već postoji:<br>new - AA stvara novi naziv datoteke (dodavanjem nastavka _x) i sprema je pod tim novim nazivom (zadano)<br>overwrite - stara datoteka istog naziva se prepisuje<br>backup - stara datoteka se kopira u novu (nepostojeću) datoteku, a trenutna datoteka se sprema pod trenutnim nazivom.<br>U svim slučajevima naziv datoteke se pročišćava, tako da će svi ne-slovni znakovi biti zamijenjeni donjom crtom.", // ai 2026-06
 
-// include/itemfunc.php, row 1517
+// include/itemfunc.php, row 1520
 "Exact dimensions" => "Točne dimenzije", // ai 2026-06
 
-// include/itemfunc.php, row 1517
+// include/itemfunc.php, row 1520
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ako je postavljeno na 1, slika će se smanjiti točno na navedene dimenzije (i obrezati po potrebi). Zadano je 0 ili prazno: pri smanjivanju slike zadržava se omjer širine i visine.", // ai 2026-06
 
-// include/itemfunc.php, row 1518
+// include/itemfunc.php, row 1521
 "Filename template" => "Predložak naziva datoteke", // ai 2026-06
 
-// include/itemfunc.php, row 1518
+// include/itemfunc.php, row 1521
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Preimenuje datoteku prema predlošku. Možete koristiti AA izraze kao i posebne aliase _#name i _#ext ili _#full (naziv datoteke, ekstenzija i puni naziv). Aliasi stavke u AA izrazima ne rade pri INSERT (stavka ne postoji u trenutku zapisa datoteke). Radit će pri UPDATE.", // ai 2026-06
 
-// include/itemfunc.php, row 1674
+// include/itemfunc.php, row 1682
 "Password and Change Password" => "Lozinka i promjena lozinke",
 
-// include/itemfunc.php, row 1678
+// include/itemfunc.php, row 1686
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Sprema vrijednost iz polja tipa \"Lozinka i promjena lozinke\". Najprije provjerava podudara li se nova lozinka s ponovno upisanom novom lozinkom i, ako da, šifrira novu lozinku i sprema je.", // ai 2026-06
 
-// include/itemfunc.php, row 1687
+// include/itemfunc.php, row 1695
 "Copy of password" => "Kopija lozinke", // ai 2026-06
 
-// include/itemfunc.php, row 1687
+// include/itemfunc.php, row 1695
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id u koji želite spremiti kopiju lozinke. Ponekad korisno ako želite omogućiti ljudima da dobiju svoju staru lozinku. Izričito se preporučuje da je ne spremate u čistom tekstu nego da je šifrirate. Vidi drugi parametar.", // ai 2026-06
 
-// include/itemfunc.php, row 1688, 1734
+// include/itemfunc.php, row 1696, 1742
 "Encrypt phrase" => "Fraza za šifriranje", // ai 2026-06
 
-// include/itemfunc.php, row 1688
+// include/itemfunc.php, row 1696
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ako navedete polje \"Kopija lozinke\", preporučuje se šifrirati lozinku u bazi podataka. Upišite ovdje bilo koji niz znakova. Ako vam zatim zatreba lozinka, možete je dešifrirati iz polja koristeći istu frazu - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1721
+// include/itemfunc.php, row 1729
 "2FA Secret" => "2FA tajni ključ", // ai 2026-06
 
-// include/itemfunc.php, row 1725
+// include/itemfunc.php, row 1733
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Generira i sprema tajni ključ za dvofaktorsku autentifikaciju, po želji šifriran lozinkom", // ai 2026-06
 
-// include/itemfunc.php, row 1734
+// include/itemfunc.php, row 1742
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Lozinka koja će se primijeniti za šifriranje vrijednosti ovog polja. Može sadržavati AA izraze ili aliase (za stavku korisnika u stranici Upravljanje čitateljima)", // ai 2026-06
 
-// include/itemview.php, row 120
+// include/itemview.php, row 122
 "Selected item" => "Odabrana stavka", // ai 2026-06
 
-// include/itemview.php, row 375
+// include/itemview.php, row 377
 "No comment was selected" => "Nije odabran nijedan komentar",
 
-// include/itemview.php, row 707, 715
+// include/itemview.php, row 712, 720
 "exact group name" => "točan naziv grupe", // ai 2026-06
 
-// include/locauth.php, row 99
+// include/locauth.php, row 102
 "Please try again!" => "Molimo Vsa, pokušajte ponovo!",
 
-// include/locauth.php, row 100
+// include/locauth.php, row 103
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ako ste sigurni da ste upisali ispravnu lozinku, molimo pošaljite e-mail na <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 476
+// include/logs.php, row 521
 "Created time" => "Vrijeme stvaranja", // ai 2026-06
 
-// include/logs.php, row 477
+// include/logs.php, row 522
 "Readers to be emailed" => "Čitatelji kojima se šalje e-mail", // ai 2026-06
 
-// include/logs.php, row 489
+// include/logs.php, row 534
 // src/Optimize/CheckCkeditorUse.php, row 96
-// src/Optimize/CheckSecurityProtections.php, row 98
+// src/Optimize/CheckNightly.php, row 144, 153
+// src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Stranica", // ai 2026-06
 
-// include/logs.php, row 564, 608, 623
+// include/logs.php, row 609, 653, 668
 "Time [s]" => "Vrijeme [s]", // ai 2026-06
 
-// include/logs.php, row 565, 610
+// include/logs.php, row 610, 655
 "Memory usage [MB]" => "Korištena memorija [MB]", // ai 2026-06
 
-// include/logs.php, row 566
+// include/logs.php, row 611
 "Memory peak [MB]" => "Vršna memorija [MB]", // ai 2026-06
 
-// include/logs.php, row 567
+// include/logs.php, row 612
 "Return code" => "Povratni kod", // ai 2026-06
 
-// include/logs.php, row 583
+// include/logs.php, row 628
 "Tasks done" => "Završeni zadaci", // ai 2026-06
 
-// include/logs.php, row 584
+// include/logs.php, row 629
 "Tasks started" => "Pokrenuti zadaci", // ai 2026-06
 
-// include/logs.php, row 585
+// include/logs.php, row 630
 "Duration [s]" => "Trajanje [s]", // ai 2026-06
 
-// include/logs.php, row 586
+// include/logs.php, row 631
 "Allowed [s]" => "Dopušteno [s]", // ai 2026-06
 
-// include/logs.php, row 606
+// include/logs.php, row 651
 "Cached" => "Iz predmemorije", // ai 2026-06
 
-// include/logs.php, row 607
+// include/logs.php, row 652
 "Not Modified (304)" => "Nepromijenjeno (304)", // ai 2026-06
 
-// include/logs.php, row 609
+// include/logs.php, row 654
 "Time + Cached + 304" => "Vrijeme + predmemorija + 304", // ai 2026-06
 
-// include/logs.php, row 611, 624, 730, 916
+// include/logs.php, row 656, 669, 879, 1065
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "Web adresa",
 
-// include/logs.php, row 651
+// include/logs.php, row 696
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 652
+// include/logs.php, row 697
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 653
+// include/logs.php, row 698
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 654
+// include/logs.php, row 699
 "DB" => "",
 
-// include/logs.php, row 655
+// include/logs.php, row 700
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Memorija", // ai 2026-06
 
-// include/logs.php, row 656
+// include/logs.php, row 701
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 657
+// include/logs.php, row 702
 // src/Optimize/CheckEnvironment.php, row 64
-"Server settings" => "",
+"Server settings" => "Postavke poslužitelja", // ai 2026-10
 
-// include/logs.php, row 704
-"Checks" => "",
+// include/logs.php, row 726, 825
+"Severity" => "Ozbiljnost", // ai 2026-10
 
-// include/logs.php, row 727
+// include/logs.php, row 728, 823, 852
+"Finding" => "Nalaz", // ai 2026-10
+
+// include/logs.php, row 746
+"Problems" => "Problemi", // ai 2026-10
+
+// include/logs.php, row 747
+"Warnings" => "Upozorenja", // ai 2026-10
+
+// include/logs.php, row 748
+"Recommendations" => "Preporuke", // ai 2026-10
+
+// include/logs.php, row 749
+"Checks" => "Provjere", // ai 2026-10
+
+// include/logs.php, row 769, 800
+// src/Import/DetailPage.php, row 300, 367, 800
+// src/Manageraction/Import_Run.php, row 29
+"Run" => "Pokrenite", // ai 2026-10
+
+// include/logs.php, row 771
+// src/Import/DetailPage.php, row 329
+// src/Optimize/CheckImports.php, row 150, 154
+// src/Optimize/CheckInstallRuns.php, row 54
+"Started" => "Početak", // ai 2026-10
+
+// include/logs.php, row 773
+"Last full run" => "Posljednje potpuno izvođenje", // ai 2026-10
+
+// include/logs.php, row 774
+"Last full run started" => "Početak posljednjeg potpunog izvođenja", // ai 2026-10
+
+// include/logs.php, row 799, 824
+"Pair" => "Par", // ai 2026-10
+
+// include/logs.php, row 801
+// src/Optimize/CheckNightly.php, row 89
+"Ran" => "Izvedeno", // ai 2026-10
+
+// include/logs.php, row 802, 826
+"Known issue" => "Poznati problem", // ai 2026-10
+
+// include/logs.php, row 828
+// src/Optimize/CheckNightly.php, row 147, 153
+"First seen" => "Prvi put uočeno", // ai 2026-10
+
+// include/logs.php, row 829
+// src/Optimize/CheckNightly.php, row 148, 153
+"Runs in a row" => "Izvođenja zaredom", // ai 2026-10
+
+// include/logs.php, row 853
+"Evidence" => "Dokaz", // ai 2026-10
+
+// include/logs.php, row 876
 "Identifier" => "Identifikator", // ai 2026-06
 
-// include/logs.php, row 728, 1092, 1107
-// modules/jump/modedit.php, row 180
+// include/logs.php, row 877, 1241, 1256
+// modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID modula", // ai 2026-06
 
-// include/logs.php, row 741
+// include/logs.php, row 890
 "Template id" => "ID predloška", // ai 2026-06
 
-// include/logs.php, row 743
+// include/logs.php, row 892
 "Emails sent" => "Poslane e-poruke", // ai 2026-06
 
-// include/logs.php, row 782
-"Object id" => "",
+// include/logs.php, row 931
+"Object id" => "ID objekta", // ai 2026-10
 
-// include/logs.php, row 814
-"Mail template" => "",
+// include/logs.php, row 963
+"Mail template" => "Predložak e-pošte", // ai 2026-10
 
-// include/logs.php, row 815
-"Reader item" => "",
+// include/logs.php, row 964
+"Reader item" => "Stavka čitatelja", // ai 2026-10
 
-// include/logs.php, row 816
-"Origin" => "",
+// include/logs.php, row 965
+"Origin" => "Podrijetlo", // ai 2026-10
 
-// include/logs.php, row 887
-"Transport" => "",
+// include/logs.php, row 1036
+"Transport" => "Način slanja", // ai 2026-10
 
-// include/logs.php, row 888
-"Recipients sent" => "",
+// include/logs.php, row 1037
+"Recipients sent" => "Poslano primateljima", // ai 2026-10
 
-// include/logs.php, row 889
-"Server response" => "",
+// include/logs.php, row 1038
+"Server response" => "Odgovor poslužitelja", // ai 2026-10
 
-// include/logs.php, row 902
+// include/logs.php, row 1051
 "Items selected" => "Odabrane stavke", // ai 2026-06
 
-// include/logs.php, row 903
+// include/logs.php, row 1052
 "Items updated" => "Ažurirane stavke", // ai 2026-06
 
-// include/logs.php, row 904
+// include/logs.php, row 1053
 "Items planned" => "Planirane stavke", // ai 2026-06
 
-// include/logs.php, row 915
+// include/logs.php, row 1064
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Poruka", // ai 2026-06
 
-// include/logs.php, row 917
-"Referer" => "",
+// include/logs.php, row 1066
+"Referer" => "Referer", // ai 2026-10
 
-// include/logs.php, row 928
+// include/logs.php, row 1077
 "New name" => "Novi naziv", // ai 2026-06
 
-// include/logs.php, row 929
+// include/logs.php, row 1078
 "Old name" => "Stari naziv", // ai 2026-06
 
-// include/logs.php, row 940, 1005
+// include/logs.php, row 1089, 1154
 "Phase" => "Faza", // ai 2026-06
 
-// include/logs.php, row 941
+// include/logs.php, row 1090
 // src/Optimize/CheckAlertitemRefusals.php, row 87
 // src/Optimize/CheckAlerts.php, row 72
 "Collection" => "Zbirka", // ai 2026-06
 
-// include/logs.php, row 943, 994, 1006
+// include/logs.php, row 1092, 1143, 1155
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckUploadRefusals.php, row 87
 "Detail" => "Detalj", // ai 2026-06
 
-// include/logs.php, row 993
+// include/logs.php, row 1142
 // src/Import/Definition.php, row 135, 162
-"Status" => "",
+"Status" => "Status", // ai 2026-10
 
-// include/logs.php, row 1045
+// include/logs.php, row 1194
 "Processed" => "Obrađeno", // ai 2026-06
 
-// include/logs.php, row 1046
+// include/logs.php, row 1195
 "Stored" => "Pohranjeno", // ai 2026-06
 
-// include/logs.php, row 1047
+// include/logs.php, row 1196
 "Errors" => "Greške", // ai 2026-06
 
-// include/logs.php, row 1060
+// include/logs.php, row 1209
 // src/Import/DetailPage.php, row 329
 "Outcome" => "Ishod", // ai 2026-06
 
-// include/logs.php, row 1076
+// include/logs.php, row 1225
 "Flags" => "Zastavice", // ai 2026-06
 
-// include/logs.php, row 1077
+// include/logs.php, row 1226
 "Context" => "Kontekst", // ai 2026-06
 
-// include/logs.php, row 1093
+// include/logs.php, row 1242
 "Feed counterpart" => "Parnjak izvora", // ai 2026-06
 
-// include/logs.php, row 1108
+// include/logs.php, row 1257
 "Field ID" => "ID polja",
 
 // include/mail.php, row 657
 "Email type" => "Vrsta e-maila", // ai 2026-06
 
 // include/mail.php, row 661
-"— all modules (global) —" => "",
+"— all modules (global) —" => "— svi moduli (globalno) —", // ai 2026-10
 
 // include/mail.php, row 661
-// include/modutils.php, row 91, 180
-// include/slicedit.php, row 194
+// include/modutils.php, row 88, 177
+// include/slicedit.php, row 188
 // include/statestore.php, row 1077
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlasnik - ica",
@@ -6628,10 +6717,10 @@ return [
 "AA Central" => "",
 
 // include/menu_util.php, row 127
-"Install an app..." => "",
+"Install an app..." => "Instalirajte aplikaciju...", // ai 2026-10
 
 // include/menu_util.php, row 128
-"App store..." => "",
+"App store..." => "Katalog aplikacija...", // ai 2026-10
 
 // include/menu_util.php, row 129
 "Synchronize..." => "Sinkronizirajte...", // ai 2026-06
@@ -6652,7 +6741,7 @@ return [
 "Jump inside control panel" => "Prebacite se u Kontrol panel",
 
 // include/menu_util.php, row 450
-// include/slice.class.php, row 1429
+// include/slice.class.php, row 1422
 // src/Central/FindingText.php, row 311
 "Links" => "Veze",
 
@@ -6692,7 +6781,7 @@ return [
 "Feedback" => "Povratne informacije", // ai 2026-06
 
 // include/menu_util.php, row 762
-// include/slice.class.php, row 679
+// include/slice.class.php, row 675
 "Reader management" => "Podaci o alatu za čitanje",
 
 // include/menu_util.php, row 774
@@ -6707,7 +6796,7 @@ return [
 // include/menu_util.php, row 871
 "Collapse / expand menu" => "Sažmite / proširite izbornik", // ai 2026-06
 
-// include/metabase.class.php, row 1663
+// include/metabase.class.php, row 1665
 "More" => "Više", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6720,34 +6809,34 @@ return [
 // include/mlx.php, row 432
 "No ID for MLX" => "Nedostaje ID za MLX", // ai 2026-06
 
-// include/modutils.php, row 79, 181
-// include/slicedit.php, row 195
+// include/modutils.php, row 76, 178
+// include/slicedit.php, row 189
 "URL of .shtml page (often leave blank)" => "URL .shtml stranice",
 
-// include/modutils.php, row 80, 182
-// include/slicedit.php, row 198
+// include/modutils.php, row 77, 179
+// include/slicedit.php, row 192
 "Priority (order in slice-menu)" => "Prioritet (redoslijed u izborniku stranica)", // ai 2026-06
 
-// include/modutils.php, row 86
+// include/modutils.php, row 83
 "× Cancel" => "× Odustanite", // ai 2026-06
 
-// include/modutils.php, row 136
+// include/modutils.php, row 133
 "Deleted" => "Obrisano",
 
-// include/modutils.php, row 183
-// include/slicedit.php, row 202
+// include/modutils.php, row 180
+// include/slicedit.php, row 196
 "Used Language File" => "Korištena jezična datoteka",
 
-// include/modutils.php, row 258
+// include/modutils.php, row 251
 "Select owner" => "Izaberite vlasnika",
 
-// include/perm_core.php, row 1202, 1225
+// include/perm_core.php, row 1202, 1229
 "Reader Slice" => "Stranica čitatelja", // ai 2026-06
 
-// include/perm_core.php, row 1210, 1227
+// include/perm_core.php, row 1214, 1231
 "Reader Set" => "Skup čitatelja", // ai 2026-06
 
-// include/profile.class.php, row 360, 370, 379, 388, 397, 406, 414
+// include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
 "Rule added" => "Pravilo je dodano",
 
 // include/profile.php, row 111
@@ -6770,7 +6859,7 @@ return [
 "&laquo;" => "",
 
 // include/se_users.php, row 76
-"deleted user" => "",
+"deleted user" => "izbrisani korisnik", // ai 2026-10
 
 // include/se_users.php, row 81
 "Reader" => "Čitatelj", // ai 2026-06
@@ -6899,183 +6988,183 @@ return [
 // include/slice.class.php, row 428
 "Error while loading module settings form:" => "Greška pri učitavanju forme postavki modula:", // ai 2026-06
 
-// include/slice.class.php, row 680
+// include/slice.class.php, row 676
 "Code - Pages" => "Kod - Stranice", // ai 2026-06
 
-// include/slice.class.php, row 681
+// include/slice.class.php, row 677
 "Code - Views / Snippets" => "Kod - Pogledi / Snippeti", // ai 2026-06
 
-// include/slice.class.php, row 682
+// include/slice.class.php, row 678
 // src/Optimize/CheckImports.php, row 272
 "Constant" => "Konstanta", // ai 2026-06
 
-// include/slice.class.php, row 683
+// include/slice.class.php, row 679
 // include/transformation.class.php, row 752
 "Translations" => "Prijevodi", // ai 2026-06
 
-// include/slice.class.php, row 684
+// include/slice.class.php, row 680
 "Field definitions" => "Definicije polja", // ai 2026-06
 
-// include/slice.class.php, row 909
-// include/util.php, row 993
+// include/slice.class.php, row 905
+// include/util.php, row 992
 "Error: Missing Reading Password" => "GREŠKA: Nema lozinke za čitanje",
 
-// include/slice.class.php, row 1297
+// include/slice.class.php, row 1290
 "Spot ID" => "ID spota", // ai 2026-06
 
-// include/slice.class.php, row 1297
+// include/slice.class.php, row 1290
 "You can include this spot code in another spot by using {sitespot:%1}" => "Kod ovog spota možete uključiti u drugi spot pomoću {sitespot:%1}", // ai 2026-06
 
-// include/slice.class.php, row 1315
+// include/slice.class.php, row 1308
 "Spot name" => "Ime točke",
 
-// include/slice.class.php, row 1457
+// include/slice.class.php, row 1450
 "Jump inside AA control panel" => "Prebacite se u AA postavke",
 
-// include/slice.class.php, row 1482
+// include/slice.class.php, row 1475
 "Polls for AA" => "Ankete u AA", // ai 2026-06
 
-// include/slice.class.php, row 1551
+// include/slice.class.php, row 1544
 "Languages for translation" => "Jezici za prijevod", // ai 2026-06
 
-// include/slice.class.php, row 1551
+// include/slice.class.php, row 1544
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "navedite kodove jezika na koje želite prevoditi sadržaj - malim slovima, dva slova - npr.: en, es, de, ...", // ai 2026-06
 
-// include/slice.class.php, row 1552
+// include/slice.class.php, row 1545
 "Automatic field creation" => "Automatsko stvaranje polja", // ai 2026-06
 
-// include/slice.class.php, row 1552
+// include/slice.class.php, row 1545
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Ako je označeno, stranica dopušta spremanje vrijednosti u polje text....*, čak i ako odgovarajuće polje text....* nije definirano u stranici. Polje će biti stvoreno prema polju text............ kao predlošku.", // ai 2026-06
 
-// include/slice.class.php, row 1553
+// include/slice.class.php, row 1546
 "Fields defined by another slice" => "Polja definirana drugom stranicom", // ai 2026-06
 
-// include/slice.class.php, row 1553
+// include/slice.class.php, row 1546
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Za definiranje dodatnih polja možete koristiti posebnu stranicu. Tu upišite ID stranice koja definira polja.<br>Može se koristiti za podatkovnu stranicu koja sprema vrijednosti formi koje su izradili korisnici.", // ai 2026-06
 
-// include/slice.class.php, row 1554
+// include/slice.class.php, row 1547
 "Store item history for N days" => "Čuvaj povijest stavki N dana", // ai 2026-06
 
-// include/slice.class.php, row 1554
+// include/slice.class.php, row 1547
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - ne briši zapis povijesti (zadano)<br>0 - ne čuvaj povijest stavki (ni ITEM_UPD/ITEM_NEW događaje u Logu)<br><em>broj</em> - broj dana nakon kojih se povijest stavki briše", // ai 2026-06
 
-// include/slice.class.php, row 1555
+// include/slice.class.php, row 1548
 "No pending items" => "Bez stavki na čekanju", // ai 2026-06
 
-// include/slice.class.php, row 1555
+// include/slice.class.php, row 1548
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - potpuno onemogućuje koš 'Na čekanju' u ovoj stranici (polje publish_date ponaša se kao obično)<br>{aa-expression} - ako se izračuna kao 1, onemogućuje provjeru čekanja (za pogled, stranicu, {ids...}) (ovdje koristite izraz {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1556
+// include/slice.class.php, row 1549
 "No expired items" => "Bez isteklih stavki", // ai 2026-06
 
-// include/slice.class.php, row 1556
+// include/slice.class.php, row 1549
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - potpuno onemogućuje koš 'Isteklo' u ovoj stranici (polje expiry_date ponaša se kao obično)<br>{aa-expression} - ako se izračuna kao 1, onemogućuje provjeru datuma isteka (za pogled, stranicu, {ids...}) (ovdje koristite izraz {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1615
+// include/slice.class.php, row 1608
 "Slice with translations" => "Stranica s prijevodima", // ai 2026-06
 
-// include/slice.class.php, row 1615
+// include/slice.class.php, row 1608
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "stranica koja se koristi za {tr:text...} prijevode (stranica treba imati samo polje headline........ postavljeno kao 'Allow translation')", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1609
 "Additional aliases" => "Dodatni sinonimi", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1609
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "Odaberite site modul u kojem treba tražiti dodatne {_:...} sinonime", // ai 2026-06
 
-// include/slice.class.php, row 1617
+// include/slice.class.php, row 1610
 "Languages on website" => "Jezici na webu", // ai 2026-06
 
-// include/slice.class.php, row 1617
+// include/slice.class.php, row 1610
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Navedite sve jezike za koje želite koristiti site modul - en, es, cz, ..<br>Molimo <b>učinite to</b>, čak i ako koristite samo 1 jezik. <br>To je nužno ako želite pozivati site modul na noviji način iz Apachea:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Page not Found (404)" => "Stranica nije pronađena (404)", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Do not care" => "Zanemari", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Send standard 404 page, when {xid} is empty" => "Pošalji standardnu 404 stranicu kada je {xid} prazan", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Send code below" => "Pošalji kod ispod", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Kada je odabrana prva opcija \"Zanemari\" (staro ponašanje), neispunjeni {xid} trebate sami provjeriti u svom site modulu", // ai 2026-06
 
-// include/slice.class.php, row 1619
+// include/slice.class.php, row 1612
 "HTML code for \"Page not Found\" (404)" => "HTML kod za \"Stranica nije pronađena\" (404)", // ai 2026-06
 
-// include/slice.class.php, row 1620
+// include/slice.class.php, row 1613
 "sitemap.xml alias" => "Sinonim za sitemap.xml", // ai 2026-06
 
-// include/slice.class.php, row 1620
+// include/slice.class.php, row 1613
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "Datoteka sitemap.xml generirat će se iz svih stranica (redoslijedom gore) u kojima postoji navedeni sinonim (npr. _#SMAP_URL). Sinonim treba generirati puni URL stavke u svakoj stranici. Za privatne/skrivene stavke treba generirati prazan niz kako se URL ne bi prikazao.", // ai 2026-06
 
-// include/slice.class.php, row 1621
+// include/slice.class.php, row 1614
 "Permission alias" => "Sinonim za dozvolu", // ai 2026-06
 
-// include/slice.class.php, row 1621
+// include/slice.class.php, row 1614
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "Možete definirati sinonim koji će se provjeravati za sve prikazane {xid} (=stranice). Ako vrijednost bude riječ \"Valid\", stranica će se prikazati. Inače će se prikazati forma za prijavu (vidi dolje). Naravno, ovu mogućnost ne morate koristiti i možete to riješiti na stariji način - izravno u stablu site modula.", // ai 2026-06
 
-// include/slice.class.php, row 1622
+// include/slice.class.php, row 1615
 "HTML code for \"Login page\"" => "HTML kod za \"Stranicu za prijavu\"", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 434
 "User login databases" => "Baze podataka za prijavu korisnika", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "prva stranica za upravljanje čitateljima navedena u Koristi stranice", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "sve stranice za upravljanje čitateljima navedene u Koristi stranice", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 411
 "AA + all Reader Management slices in AA (old behavior)" => "AA + sve stranice za upravljanje čitateljima u AA (staro ponašanje)", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "Preporučena opcija je prva stranica za upravljanje čitateljima - samo se osobe s te stranice mogu prijaviti na javne stranice. Ako nije odabrano, koristi se opcija \"AA + sve stranice za upravljanje čitateljima\".", // ai 2026-06
 
-// include/slice.class.php, row 1624
+// include/slice.class.php, row 1617
 "Google analytics tracking id" => "Google Analytics ID za praćenje", // ai 2026-06
 
-// include/slice.class.php, row 1624
+// include/slice.class.php, row 1617
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Ako u kodu svog site modula koristite {generate:HEAD} i {generate:FOOT}, kod za Google Analytics generira se s ovim ID-om za praćenje. Generirani kod može se u budućnosti promijeniti kada Google promijeni isječak.<br>Za traku privole korisnika dodajte {eucookies} ili {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} na stranice.", // ai 2026-06
 
-// include/slice.class.php, row 1625
+// include/slice.class.php, row 1618
 "Alternate URL" => "Alternativni URL", // ai 2026-06
 
-// include/slice.class.php, row 1625
+// include/slice.class.php, row 1618
 "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "Druge domene na kojima web treba biti vidljiv. Ipak, razmislite o preusmjeravanju na poslužitelju kako biste koristili jednu domenu, što je bolje za SEO.", // ai 2026-06
 
-// include/slice.class.php, row 1627
-"Publish in the app store" => "",
+// include/slice.class.php, row 1620
+"Publish in the app store" => "Objavite u katalogu aplikacija", // ai 2026-10
 
-// include/slice.class.php, row 1627
-"Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "",
+// include/slice.class.php, row 1620
+"Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "Svaki AA tada može instalirati ovaj web zajedno sa stranicama i upozorenjima koje koristi – njihove predloške, polja i poglede, nikada stavke. Grupe konstanti drugih stranica također moraju pripadati objavljenom webu.", // ai 2026-10
 
-// include/slice.class.php, row 1628
-"App description" => "",
+// include/slice.class.php, row 1621
+"App description" => "Opis aplikacije", // ai 2026-10
 
-// include/slice.class.php, row 1628
-"What the app does, for the list of the app store." => "",
+// include/slice.class.php, row 1621
+"What the app does, for the list of the app store." => "Što aplikacija radi, za popis u katalogu aplikacija.", // ai 2026-10
 
-// include/slice.class.php, row 1629
-"App version" => "",
+// include/slice.class.php, row 1622
+"App version" => "Verzija aplikacije", // ai 2026-10
 
-// include/slice.class.php, row 1629
-"Like 1.2.0." => "",
+// include/slice.class.php, row 1622
+"Like 1.2.0." => "Na primjer 1.2.0.", // ai 2026-10
 
-// include/slice.class.php, row 1631
-"Published modules" => "",
+// include/slice.class.php, row 1624
+"Published modules" => "Objavljeni moduli", // ai 2026-10
 
-// include/slice.class.php, row 1678
-"The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "",
+// include/slice.class.php, row 1671
+"The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Verzija aplikacije ima najviše 32 slova, znamenke i znakove . + - (npr. 1.2.0), opis najviše %1 znakova.", // ai 2026-10
 
 // include/slice.php, row 69
 "Select Category " => "Izaberite kategoriju",
@@ -7122,24 +7211,24 @@ return [
 "Error mailing" => "Greška u slanju e-maila",
 
 // include/slicedit.php, row 163
-"The settings and the other fields of this page were not saved." => "",
+"The settings and the other fields of this page were not saved." => "Postavke i ostala polja ove stranice nisu spremljeni.", // ai 2026-10
 
-// include/slicedit.php, row 197
+// include/slicedit.php, row 191
 "Upload URL" => "URL za upload", // ai 2026-06
 
-// include/slicedit.php, row 206
+// include/slicedit.php, row 200
 "Language Control Slice" => "Stranica za upravljanje prijevodima", // ai 2026-06
 
-// include/slicedit.php, row 212
+// include/slicedit.php, row 209
 "This File Manager Directory is already used by another slice." => "Mapu za uređivanje datoteka već koristi druga stranica",
 
-// include/slicedit.php, row 355
+// include/slicedit.php, row 353
 "Error when copying constants." => "Greška u kopiranju konstanti",
 
-// include/slicedit.php, row 366
+// include/slicedit.php, row 364
 "Error when copying views." => "Greška u kopiranju pogleda",
 
-// include/slicedit.php, row 374
+// include/slicedit.php, row 372
 "Internal error when changing user role." => "Interna greška u promjeni uloge korisnika/ice",
 
 // include/statestore.php, row 1077
@@ -7151,123 +7240,123 @@ return [
 // include/statestore.php, row 1445
 "Manage components" => "Upravljanje komponentama", // ai 2026-06
 
-// include/stringexpand.php, row 93
+// include/stringexpand.php, row 96
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Sinonim se poziva kao {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}", // ai 2026-06
 
-// include/stringexpand.php, row 94
+// include/stringexpand.php, row 97
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "Kod koji ispisuje sinonim. Sinonim može imati parametre koje možete koristiti putem varijabli _#P1, _#P2, ...", // ai 2026-06
 
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 99
 "Usage example" => "Primjer korištenja", // ai 2026-06
 
-// include/stringexpand.php, row 911
+// include/stringexpand.php, row 927
 "Jabber Online Status Indicator" => "Indikator online statusa za Jabber", // ai 2026-06
 
-// include/stringexpand.php, row 5439
+// include/stringexpand.php, row 5464
 "save changes" => "spremi promjene", // ai 2026-06
 
-// include/stringexpand.php, row 5655
+// include/stringexpand.php, row 5680
 "No item ID" => "Nema ID-a stavke", // ai 2026-06
 
-// include/stringexpand.php, row 5662
+// include/stringexpand.php, row 5687
 "No transformations" => "Nema transformacija", // ai 2026-06
 
-// include/stringexpand.php, row 5676
+// include/stringexpand.php, row 5701
 "No slice for item" => "Nema stranice za stavku", // ai 2026-06
 
-// include/stringexpand.php, row 5677
+// include/stringexpand.php, row 5702
 "No current slice(s)" => "Nema trenutne stranice (stranica)", // ai 2026-06
 
-// include/stringexpand.php, row 5678
+// include/stringexpand.php, row 5703
 "Item slice is not in list of allowed slices" => "Stranica stavke nije na popisu dozvoljenih stranica", // ai 2026-06
 
-// include/stringexpand.php, row 5683
+// include/stringexpand.php, row 5708
 "No permit_anonymous_edit permission for the slice" => "Nema dozvole permit_anonymous_edit za stranicu", // ai 2026-06
 
-// include/stringexpand.php, row 6078
+// include/stringexpand.php, row 6103
 "No dictionaries specified for {dictionary}" => "Nema navedenih rječnika za {dictionary}", // ai 2026-06
 
-// include/stringexpand.php, row 6161
+// include/stringexpand.php, row 6233
 "No module for dictionary slice" => "Nema modula za stranicu rječnika", // ai 2026-06
 
-// include/stringexpand.php, row 7799
+// include/stringexpand.php, row 7881
 "version" => "verzija", // ai 2026-06
 
-// include/stringexpand.php, row 7983
+// include/stringexpand.php, row 8065
 "show" => "prikaži", // ai 2026-06
 
-// include/stringexpand.php, row 7984
+// include/stringexpand.php, row 8066
 "hide" => "sakrij", // ai 2026-06
 
-// include/stringexpand.php, row 7985
+// include/stringexpand.php, row 8067
 "loading" => "učitavanje", // ai 2026-06
 
-// include/stringexpand.php, row 9116
+// include/stringexpand.php, row 9198
 "E-mail confirmed." => "E-mail potvrđen.", // ai 2026-06
 
-// include/stringexpand.php, row 9120
+// include/stringexpand.php, row 9202
 "E-mail unsubscribed" => "E-mail odjavljen", // ai 2026-06
 
-// include/stringexpand.php, row 9869
+// include/stringexpand.php, row 9951
 "Forgot your password? Fill in your email." => "Zaboravili ste lozinku? Upišite svoju e-mail adresu.", // ai 2026-06
 
-// include/stringexpand.php, row 9871
+// include/stringexpand.php, row 9953
 // src/Central/FindingText.php, row 457
 "e-mail" => "e-pošta", // ai 2026-06
 
-// include/stringexpand.php, row 9889, 9893
+// include/stringexpand.php, row 9971, 9975
 "Unable to find user - please check if it has been misspelled." => "Korisnik nije pronađen - provjerite je li ispravno napisan.", // ai 2026-06
 
-// include/stringexpand.php, row 9907
+// include/stringexpand.php, row 9989
 "Password link" => "Poveznica za lozinku", // ai 2026-06
 
-// include/stringexpand.php, row 9908
+// include/stringexpand.php, row 9990
 "Password change url parameter" => "URL parametar za promjenu lozinke", // ai 2026-06
 
-// include/stringexpand.php, row 9920
+// include/stringexpand.php, row 10002
 "Password change" => "Promjena lozinke", // ai 2026-06
 
-// include/stringexpand.php, row 9921
+// include/stringexpand.php, row 10003
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Za promjenu lozinke posjetite sljedeću adresu:<br>%1<br>Promjena će biti moguća dva sata - nakon toga ključ istječe i morat ćete zatražiti novi.", // ai 2026-06
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 10012
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s ključem za promjenu lozinke upravo je poslan na adresu: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9941, 9970
+// include/stringexpand.php, row 10023, 10052
 "Bad or expired key." => "Neispravan ili istekao ključ.", // ai 2026-06
 
-// include/stringexpand.php, row 9946
+// include/stringexpand.php, row 10028
 "Fill in the new password" => "Upišite novu lozinku", // ai 2026-06
 
-// include/stringexpand.php, row 9948
+// include/stringexpand.php, row 10030
 "New password" => "Nova lozinka", // ai 2026-06
 
-// include/stringexpand.php, row 9949
+// include/stringexpand.php, row 10031
 "Retype New Password" => "Utipkajte ponovo novu lozinku",
 
-// include/stringexpand.php, row 9973
+// include/stringexpand.php, row 10055
 "Passwords do not match - please try again." => "Lozinke se ne podudaraju - pokušajte ponovno.", // ai 2026-06
 
-// include/stringexpand.php, row 9976
+// include/stringexpand.php, row 10058
 "The password must be at least 6 characters long." => "Lozinka mora imati najmanje 6 znakova.", // ai 2026-06
 
-// include/stringexpand.php, row 9982
+// include/stringexpand.php, row 10064
 "Password changed." => "Lozinka promijenjena.", // ai 2026-06
 
-// include/stringexpand.php, row 9984
+// include/stringexpand.php, row 10066
 "An error occurred during password change - please contact: %1." => "Došlo je do greške pri promjeni lozinke - kontaktirajte: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10863, 10886
+// include/stringexpand.php, row 10945, 10968
 "Are you sure you want to permanently DELETE this record?" => "Jeste li sigurni da želite ZAUVIJEK obrisati označene zapis",
 
-// include/stringexpand.php, row 10869, 10872, 10892, 10895
+// include/stringexpand.php, row 10951, 10954, 10974, 10977
 // src/Widget/RimWidget.php, row 270
 "edit" => "Uredite",
 
-// include/stringexpand.php, row 10875, 10898
+// include/stringexpand.php, row 10957, 10980
 "back" => "natrag", // ai 2026-06
 
-// include/stringexpand.php, row 10878, 10901
+// include/stringexpand.php, row 10960, 10983
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "povucite datoteke ovdje ili kliknite za prijenos", // ai 2026-06
 
@@ -7380,7 +7469,7 @@ return [
 "Can't change group" => "Ne mogu promijeniti grupu",
 
 // include/um_util.php, row 151, 175
-"ADMINISTRATOR" => "",
+"ADMINISTRATOR" => "ADMINISTRATOR", // ai 2026-10
 
 // include/um_util.php, row 173
 "AUTHOR" => "AUTOR", // ai 2026-06
@@ -7391,10 +7480,10 @@ return [
 // include/um_util.php, row 358
 "Can't change user" => "Ne mogu promijeniti korisnika/icu",
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "Alat za nove poruke",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "Ponovna prijava", // ai 2026-06
 
 // include/validate.php, row 54
@@ -7502,7 +7591,7 @@ return [
 // include/validate.php, row 981
 "The two password copies differ." => "Lozinke se razlikuju",
 
-// include/view.class.php, row 322
+// include/view.class.php, row 321
 "Jump to view:" => "Skoči na pogled:", // ai 2026-06
 
 // include/widget.class.php, row 179
@@ -7522,7 +7611,7 @@ return [
 "persistent" => "",
 
 // include/widget.class.php, row 184
-"validator" => "",
+"validator" => "validator", // ai 2026-10
 
 // include/widget.class.php, row 185
 "required" => "obavezno", // ai 2026-06
@@ -7549,6 +7638,7 @@ return [
 "const_arr" => "",
 
 // include/widget.class.php, row 193
+// src/Optimize/CheckTrustedProxies.php, row 69
 "default" => "pretpostavljeno",
 
 // include/widget.class.php, row 470
@@ -7629,61 +7719,61 @@ return [
 // misc/datovka/datovka.php, row 141
 "Allow substitute delivery" => "Dopusti zamjensku dostavu", // ai 2026-06
 
-// misc/msconvert/index.php, row 23
+// misc/msconvert/index.php, row 36
 "Foreign Formats Convertor" => "Konverter stranih formata", // ai 2026-06
 
-// misc/msconvert/index.php, row 35
+// misc/msconvert/index.php, row 48
 "Action Apps PDF/DOC Convertor" => "PDF/DOC konverter za Action Apps", // ai 2026-06
 
-// misc/msconvert/index.php, row 36
+// misc/msconvert/index.php, row 49
 "Experimental feature" => "Eksperimentalna značajka", // ai 2026-06
 
-// modules/jump/modedit.php, row 72
+// modules/jump/modedit.php, row 83
 "Edit Jump module" => "Uredite modul Jump", // ai 2026-06
 
-// modules/jump/modedit.php, row 72
+// modules/jump/modedit.php, row 83
 "Create new Jump module" => "Napravite novi modul Jump", // ai 2026-06
 
-// modules/jump/modedit.php, row 134
+// modules/jump/modedit.php, row 131
 "Choose module to be edited" => "Odaberite modul za uređivanje", // ai 2026-06
 
-// modules/jump/modedit.php, row 157
+// modules/jump/modedit.php, row 154
 "Edit module" => "Uredite modul", // ai 2026-06
 
-// modules/jump/modedit.php, row 159
+// modules/jump/modedit.php, row 156
 "Module name" => "Naziv modula", // ai 2026-06
 
-// modules/jump/modedit.php, row 161
+// modules/jump/modedit.php, row 158
 "Jump to" => "Skoči na", // ai 2026-06
 
-// modules/jump/modedit.php, row 163
+// modules/jump/modedit.php, row 160
 "Type in an AA-relative path, e.g." => "Upišite putanju relativnu na AA, npr.", // ai 2026-06
 
-// modules/jump/modedit.php, row 164
+// modules/jump/modedit.php, row 161
 "Jump to slice" => "Skoči na stranicu", // ai 2026-06
 
-// slice.php, row 236
+// slice.php, row 237
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Neispravan parametar inc - uključena datoteka smije sadržavati samo alfanumeričke znakove", // ai 2026-06
 
-// slice.php, row 240
+// slice.php, row 241
 "No such file" => "Ne postoji datoteka",
 
-// slice.php, row 265
+// slice.php, row 262
 "Invalid slice number or slice was deleted" => "Krivi broj stranice ili je stranica obrisana",
 
-// slice.php, row 268
+// slice.php, row 265
 "slice.php output forbidden for this slice" => "Izlaz preko slice.php zabranjen je za ovu stranicu", // ai 2026-06
 
-// slice.php, row 323
+// slice.php, row 320
 "session id" => "ID sesije", // ai 2026-06
 
-// slice.php, row 581
+// slice.php, row 573
 "number of current page (on pagescroller)" => "broj trenutne stranice (u straničenju)", // ai 2026-06
 
-// slice.php, row 582
+// slice.php, row 574
 "page length (number of items)" => "duljina stranice (broj stavki)", // ai 2026-06
 
-// slice.php, row 617
+// slice.php, row 609
 // src/Manager.php, row 881
 "No item found" => "Nije pronađeno",
 
@@ -7722,10 +7812,10 @@ return [
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Po želji navedite kontekst - dugi ID stavke za koju će se zadatak izvršiti. U zadatku tada možete koristiti {id..............} i ostale sinonime stavke. ID stavke moguće je dobiti i u varijabli {var:aa_event_for}. Kod \"događajnih\" zadataka (Stavka ažurirana/nova) uvijek je popunjen ID-om izmijenjene stavke.", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 80
-"Saved by" => "",
+"Saved by" => "Spremio/la", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 83
-"Result of the last run" => "",
+"Result of the last run" => "Rezultat posljednjeg izvođenja", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 157
 "Planned tasks" => "Planirani zadaci", // ai 2026-06
@@ -7743,22 +7833,22 @@ return [
 "Scheduled to" => "Planirano za", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 266
-"done" => "",
+"done" => "gotovo", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 267
-"done, no output" => "",
+"done, no output" => "gotovo, bez izlaza", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 268
-"condition not met" => "",
+"condition not met" => "uvjet nije ispunjen", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 269
-"failed" => "",
+"failed" => "neuspjelo", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 386
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "Zadatak nije spremljen – zadatak koji pokreće događaj ne smije pozivati {import}: stavke koje uveze ponovno bi pokrenule zadatak.", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 389
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "Zadatak nije spremljen – zadatak s {import} smije spremiti samo korisnik koji upravlja razmjenom stavki (feeding) stranice.", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 453
 "not scheduled, yet" => "još nije planirano", // ai 2026-06
@@ -7767,97 +7857,97 @@ return [
 "next run" => "sljedeće pokretanje", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 51, 72
-"The file is too big" => "",
+"The file is too big" => "Datoteka je prevelika", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 64
-"You may not upload files here. If you were editing, your login may have expired - reload the page." => "",
+"You may not upload files here. If you were editing, your login may have expired - reload the page." => "Ovdje ne smijete učitavati datoteke. Ako ste uređivali, prijava vam je možda istekla – ponovno učitajte stranicu.", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 67
-"Too many uploads - try again in an hour" => "",
+"Too many uploads - try again in an hour" => "Previše učitavanja – pokušajte ponovno za sat vremena", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 75, 240
-"No file received" => "",
+"No file received" => "Nije primljena nijedna datoteka", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 83
-"Files of this type cannot be uploaded here: %1" => "",
+"Files of this type cannot be uploaded here: %1" => "Datoteke ove vrste ne mogu se ovdje učitati: %1", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 86
-"The content of the file does not match its extension %1" => "",
+"The content of the file does not match its extension %1" => "Sadržaj datoteke ne odgovara njezinu nastavku %1", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 89
-"The image is bigger than %1 MB" => "",
+"The image is bigger than %1 MB" => "Slika je veća od %1 MB", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 92
-"The image has more than %1 megapixels" => "",
+"The image has more than %1 megapixels" => "Slika ima više od %1 megapiksela", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 97
-"The upload directory of the slice is not writable" => "",
+"The upload directory of the slice is not writable" => "U mapu za učitane datoteke stranice nije moguće pisati", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 107
-"The file could not be stored" => "",
+"The file could not be stored" => "Datoteku nije moguće spremiti", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 129
-"Only editors of the slice can browse its files" => "",
+"Only editors of the slice can browse its files" => "Datoteke stranice mogu pregledavati samo njezini urednici", // ai 2026-10
 
 // src/Central/Actionapps.php, row 179
-"This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "",
+"This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Ovaj PHP nema AES-GCM (sodium) – token za prijavu nije moguće spremiti šifrirano", // ai 2026-10
 
 // src/Central/Actionapps.php, row 207
 "Not configured" => "Nije konfigurirano", // ai 2026-06
 
 // src/Central/Actionapps.php, row 207
-"Not authenticated - get a token" => "",
+"Not authenticated - get a token" => "Nije autentificirano – nabavite token", // ai 2026-10
 
 // src/Central/Actionapps.php, row 210
-"Authenticated until %1" => "",
+"Authenticated until %1" => "Autentificirano do %1", // ai 2026-10
 
 // src/Central/Actionapps.php, row 210
-"Expired - get a token" => "",
+"Expired - get a token" => "Isteklo – nabavite token", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA gave no login token - update it" => "",
+"The remote AA gave no login token - update it" => "Udaljeni AA nije dao token za prijavu – ažurirajte ga", // ai 2026-10
 
 // src/Central/Actionapps.php, row 235
-"The remote AA gave a token for longer than a day - update the remote AA" => "",
+"The remote AA gave a token for longer than a day - update the remote AA" => "Udaljeni AA dao je token dulji od jednog dana – ažurirajte udaljeni AA", // ai 2026-10
 
 // src/Central/Actionapps.php, row 271
 "Can't get org_name - " => "Nije moguće dohvatiti org_name -", // ai 2026-06
 
 // src/Central/Actionapps.php, row 337
-"the update may still be running on the remote AA - wait, then run Test before retrying" => "",
+"the update may still be running on the remote AA - wait, then run Test before retrying" => "ažuriranje se na udaljenom AA možda još izvodi – pričekajte, a prije ponovnog pokušaja pokrenite „Testirajte“", // ai 2026-10
 
 // src/Central/Actionapps.php, row 348
-"Unexpected response from remote AA" => "",
+"Unexpected response from remote AA" => "Neočekivan odgovor udaljenog AA", // ai 2026-10
 
 // src/Central/Actionapps.php, row 351
-"This AA does not support this command (update it first)" => "",
+"This AA does not support this command (update it first)" => "Ovaj AA ne podržava ovu naredbu (najprije ga ažurirajte)", // ai 2026-10
 
 // src/Central/Actionapps.php, row 362
-"The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "",
+"The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Spremljeni token za prijavu ne može se koristiti (promijenili su se AA_SECRET, lozinka baze podataka ili adresa ovog AA) – ponovno autentificirajte ovaj AA na stranici ActionApps Central", // ai 2026-10
 
 // src/Central/Actionapps.php, row 363
-"No login token for this AA - Authenticate this AA on the ActionApps Central page" => "",
+"No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Nema tokena za prijavu za ovaj AA – pritisnite „Autentificirajte“ na stranici ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
-"Template slice %1 has no definition" => "",
+"Template slice %1 has no definition" => "Predložak stranice %1 nema definiciju", // ai 2026-10
 
 // src/Central/Difference.php, row 58
 "Comparison slice (%1) does not exist" => "Stranica za usporedbu (%1) ne postoji", // ai 2026-06
 
 // src/Central/Difference.php, row 96
-"The template sent no %1 rows" => "",
+"The template sent no %1 rows" => "Predložak nije poslao nijedan redak %1", // ai 2026-10
 
 // src/Central/Difference.php, row 105
-"no unique named view or name" => "",
+"no unique named view or name" => "nema jednoznačno imenovanog pogleda ni naziva", // ai 2026-10
 
 // src/Central/Difference.php, row 105
-"no unique description" => "",
+"no unique description" => "nema jednoznačnog opisa", // ai 2026-10
 
 // src/Central/Difference.php, row 106, 189
 "Destination" => "Odredište", // ai 2026-06
 
 // src/Central/Difference.php, row 108
-"%1: %2 %3 '%4' not compared - %5" => "",
+"%1: %2 %3 '%4' not compared - %5" => "%1: %2 %3 '%4' nije uspoređeno – %5", // ai 2026-10
 
 // src/Central/Difference.php, row 118, 217
 "%1 are identical" => "%1 su identični", // ai 2026-06
@@ -7884,955 +7974,955 @@ return [
 "There is no such key (%1) in template slice for %2" => "Ne postoji ključ (%1) u predlošku stranice za %2", // ai 2026-06
 
 // src/Central/FindingText.php, row 28
-"Security findings (S)" => "",
+"Security findings (S)" => "Sigurnosni nalazi (S)", // ai 2026-10
 
 // src/Central/FindingText.php, row 28
-"Errors (E)" => "",
+"Errors (E)" => "Greške (E)", // ai 2026-10
 
 // src/Central/FindingText.php, row 28
-"Warnings (W)" => "",
+"Warnings (W)" => "Upozorenja (W)", // ai 2026-10
 
 // src/Central/FindingText.php, row 28
-"Notes (I)" => "",
+"Notes (I)" => "Napomene (I)", // ai 2026-10
 
 // src/Central/FindingText.php, row 35
-"Parts of the app that could harm this AA or its visitors if the app is not what it claims. They block nothing, but you confirm them before installing." => "",
+"Parts of the app that could harm this AA or its visitors if the app is not what it claims. They block nothing, but you confirm them before installing." => "Dijelovi aplikacije koji bi mogli naštetiti ovom AA ili njegovim posjetiteljima ako aplikacija nije ono za što se izdaje. Ništa ne blokiraju, ali ih prije instalacije potvrđujete.", // ai 2026-10
 
 // src/Central/FindingText.php, row 36
-"The app cannot be installed until they are solved." => "",
+"The app cannot be installed until they are solved." => "Aplikacija se ne može instalirati dok se oni ne riješe.", // ai 2026-10
 
 // src/Central/FindingText.php, row 37
-"The app can be installed; check these places after installing." => "",
+"The app can be installed; check these places after installing." => "Aplikacija se može instalirati; nakon instalacije provjerite ova mjesta.", // ai 2026-10
 
 // src/Central/FindingText.php, row 38
-"For your information - usually nothing to do." => "",
+"For your information - usually nothing to do." => "Za informaciju – obično nije potrebno ništa poduzeti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 53
-"Prints facts about the installation" => "",
+"Prints facts about the installation" => "Ispisuje podatke o instalaciji", // ai 2026-10
 
 // src/Central/FindingText.php, row 54
-"{debug}, {version} or {serverload} show visitors debugging output, the version of AA or the load of the server." => "",
+"{debug}, {version} or {serverload} show visitors debugging output, the version of AA or the load of the server." => "{debug}, {version} ili {serverload} prikazuju posjetiteljima ispis za otklanjanje grešaka, verziju AA ili opterećenje poslužitelja.", // ai 2026-10
 
 // src/Central/FindingText.php, row 55
-"Usually harmless. Remove it from public pages if visitors should not see it." => "",
+"Usually harmless. Remove it from public pages if visitors should not see it." => "Obično bezopasno. Uklonite to s javnih stranica ako to posjetitelji ne bi trebali vidjeti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 56
-"Shows data of the signed-in user" => "",
+"Shows data of the signed-in user" => "Prikazuje podatke prijavljenog korisnika", // ai 2026-10
 
 // src/Central/FindingText.php, row 57
-"The text prints something of the user who is signed in, such as the name - not the password." => "",
+"The text prints something of the user who is signed in, such as the name - not the password." => "Tekst ispisuje nešto o prijavljenom korisniku, npr. ime – ne lozinku.", // ai 2026-10
 
 // src/Central/FindingText.php, row 58, 64, 67, 132, 161, 213, 235, 265
-"Nothing to do." => "",
+"Nothing to do." => "Nije potrebno ništa poduzeti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 59
-"Calls a function of this AA" => "",
+"Calls a function of this AA" => "Poziva funkciju ovog AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 60
-"The field alias calls a usr_ function; such functions are defined by each AA in include/usr_aliasfnc.php." => "",
+"The field alias calls a usr_ function; such functions are defined by each AA in include/usr_aliasfnc.php." => "Sinonim polja poziva funkciju usr_; takve funkcije svaki AA definira u include/usr_aliasfnc.php.", // ai 2026-10
 
 // src/Central/FindingText.php, row 61
-"Check that this AA has the function, otherwise the field shows nothing." => "",
+"Check that this AA has the function, otherwise the field shows nothing." => "Provjerite ima li ovaj AA tu funkciju, inače polje neće ništa prikazati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 62
-"A thumbnail of a picture of the app" => "",
+"A thumbnail of a picture of the app" => "Minijatura slike aplikacije", // ai 2026-10
 
 // src/Central/FindingText.php, row 63
-"The text makes a thumbnail of a picture of the app or of a field of the item." => "",
+"The text makes a thumbnail of a picture of the app or of a field of the item." => "Tekst izrađuje minijaturu slike aplikacije ili polja stavke.", // ai 2026-10
 
 // src/Central/FindingText.php, row 65
-"Sets a common HTTP header" => "",
+"Sets a common HTTP header" => "Postavlja uobičajeno HTTP zaglavlje", // ai 2026-10
 
 // src/Central/FindingText.php, row 66
-"The text sets a status code, the type of the content, a file name or a common protective header - nothing that allows browsers more." => "",
+"The text sets a status code, the type of the content, a file name or a common protective header - nothing that allows browsers more." => "Tekst postavlja statusni kôd, vrstu sadržaja, naziv datoteke ili uobičajeno zaštitno zaglavlje – ništa što bi preglednicima dopustilo više.", // ai 2026-10
 
 // src/Central/FindingText.php, row 70
-"The other AA did not give the app" => "",
+"The other AA did not give the app" => "Drugi AA nije dao aplikaciju", // ai 2026-10
 
 // src/Central/FindingText.php, row 71
-"The AA the app comes from refused to export it or failed while exporting." => "",
+"The AA the app comes from refused to export it or failed while exporting." => "AA iz kojeg aplikacija dolazi odbio ju je izvesti ili nije uspio pri izvozu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 72
-"Check that you are signed in there and may edit all the slices of the app. Then try again; if it repeats, look at the logs of that AA." => "",
+"Check that you are signed in there and may edit all the slices of the app. Then try again; if it repeats, look at the logs of that AA." => "Provjerite jeste li tamo prijavljeni i smijete li uređivati sve stranice aplikacije. Zatim pokušajte ponovno; ako se ponavlja, pogledajte zapise tog AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 73
-"The app package is damaged" => "",
+"The app package is damaged" => "Paket aplikacije je oštećen", // ai 2026-10
 
 // src/Central/FindingText.php, row 74
-"The package has a part in a form AA never writes - it was edited by hand, cut, or made by another version of AA." => "",
+"The package has a part in a form AA never writes - it was edited by hand, cut, or made by another version of AA." => "Paket sadrži dio u obliku koji AA nikad ne zapisuje – ručno je uređen, skraćen ili ga je izradila druga verzija AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 75
-"Export the app from its AA again. When the error stays, update the AA it comes from (or this one) to the current version." => "",
+"Export the app from its AA again. When the error stays, update the AA it comes from (or this one) to the current version." => "Ponovno izvezite aplikaciju iz njezina AA. Ako greška ostane, ažurirajte AA iz kojeg dolazi (ili ovaj) na aktualnu verziju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 75
-"The part is left out. Usually nothing to do." => "",
+"The part is left out. Usually nothing to do." => "Taj se dio izostavlja. Obično nije potrebno ništa poduzeti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 76
-"Parts this AA does not know" => "",
+"Parts this AA does not know" => "Dijelovi koje ovaj AA ne poznaje", // ai 2026-10
 
 // src/Central/FindingText.php, row 77
-"The package was made by a newer version of AA, or edited by hand; this AA leaves out what it does not know." => "",
+"The package was made by a newer version of AA, or edited by hand; this AA leaves out what it does not know." => "Paket je izradila novija verzija AA ili je ručno uređen; ovaj AA izostavlja ono što ne poznaje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 78
-"Usually nothing. When something of the app is missing after installing, update this AA and install again." => "",
+"Usually nothing. When something of the app is missing after installing, update this AA and install again." => "Obično ništa. Ako nakon instalacije nešto od aplikacije nedostaje, ažurirajte ovaj AA i instalirajte ponovno.", // ai 2026-10
 
 // src/Central/FindingText.php, row 79
-"Items in a published app" => "",
+"Items in a published app" => "Stavke u objavljenoj aplikaciji", // ai 2026-10
 
 // src/Central/FindingText.php, row 80
-"A published app carries only definitions - no items, readers or passwords." => "",
+"A published app carries only definitions - no items, readers or passwords." => "Objavljena aplikacija nosi samo definicije – nikakve stavke, čitatelje ni lozinke.", // ai 2026-10
 
 // src/Central/FindingText.php, row 81
-"Publish the app without its items; items travel only in a transfer between two AAs." => "",
+"Publish the app without its items; items travel only in a transfer between two AAs." => "Objavite aplikaciju bez njezinih stavki; stavke se prenose samo pri prijenosu između dva AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 82
-"The server converts characters wrongly" => "",
+"The server converts characters wrongly" => "Poslužitelj pogrešno pretvara znakove", // ai 2026-10
 
 // src/Central/FindingText.php, row 83
-"The PHP of this server converts the Central European characters wrongly, so no text of the app could be trusted." => "",
+"The PHP of this server converts the Central European characters wrongly, so no text of the app could be trusted." => "PHP ovog poslužitelja pogrešno pretvara srednjoeuropske znakove, pa se nijednom tekstu aplikacije ne bi moglo vjerovati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 84
-"Ask the administrator of the server to fix the iconv of PHP." => "",
+"Ask the administrator of the server to fix the iconv of PHP." => "Zamolite administratora poslužitelja da popravi iconv u PHP-u.", // ai 2026-10
 
 // src/Central/FindingText.php, row 87
-"Database tables without transactions" => "",
+"Database tables without transactions" => "Tablice baze podataka bez transakcija", // ai 2026-10
 
 // src/Central/FindingText.php, row 88
-"Some tables of this AA are not InnoDB. An install that failed in the middle could not be taken back and would leave half an app." => "",
+"Some tables of this AA are not InnoDB. An install that failed in the middle could not be taken back and would leave half an app." => "Neke tablice ovog AA nisu InnoDB. Instalacija koja ne uspije usred postupka ne bi se mogla poništiti i ostavila bi pola aplikacije.", // ai 2026-10
 
 // src/Central/FindingText.php, row 89
-"Run the optimization named in the value (AA > Optimize) and preview the app again." => "",
+"Run the optimization named in the value (AA > Optimize) and preview the app again." => "Pokrenite optimizaciju navedenu u vrijednosti (AA > „Optimizirajte“) i ponovno prikažite pregled aplikacije.", // ai 2026-10
 
 // src/Central/FindingText.php, row 90
-"Tables" => "",
+"Tables" => "Tablice", // ai 2026-10
 
 // src/Central/FindingText.php, row 91
-"A setting takes a number" => "",
+"A setting takes a number" => "Postavka traži broj", // ai 2026-10
 
 // src/Central/FindingText.php, row 92
-"The value you typed for this slice setting is no whole number, and the field stores whole numbers only." => "",
+"The value you typed for this slice setting is no whole number, and the field stores whole numbers only." => "Vrijednost koju ste unijeli za ovu postavku stranice nije cijeli broj, a polje sprema samo cijele brojeve.", // ai 2026-10
 
 // src/Central/FindingText.php, row 93
-"Type a number, or leave the field empty to keep the value of the app, and check the changes." => "",
+"Type a number, or leave the field empty to keep the value of the app, and check the changes." => "Unesite broj ili ostavite polje prazno kako bi ostala vrijednost aplikacije, i provjerite promjene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 95
-"A setting refuses the value" => "",
+"A setting refuses the value" => "Postavka odbija vrijednost", // ai 2026-10
 
 // src/Central/FindingText.php, row 96
-"The value you typed for this slice setting does not pass the check of its field (an e-mail, a URL, a number, a value of a list, yes or no, ...)." => "",
+"The value you typed for this slice setting does not pass the check of its field (an e-mail, a URL, a number, a value of a list, yes or no, ...)." => "Vrijednost koju ste unijeli za ovu postavku stranice ne prolazi provjeru svog polja (e-pošta, web adresa, broj, vrijednost s popisa, da ili ne, ...).", // ai 2026-10
 
 // src/Central/FindingText.php, row 97
-"Type a value the field takes, or leave the field empty to keep the value of the app, and check the changes." => "",
+"Type a value the field takes, or leave the field empty to keep the value of the app, and check the changes." => "Unesite vrijednost koju polje prihvaća ili ostavite polje prazno kako bi ostala vrijednost aplikacije, i provjerite promjene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 99
-"A setting to fill in later" => "",
+"A setting to fill in later" => "Postavka koju treba ispuniti kasnije", // ai 2026-10
 
 // src/Central/FindingText.php, row 100
-"The field of this slice setting changes the value when it is saved (a password stores its hash, for example), so a value typed here would be stored wrong." => "",
+"The field of this slice setting changes the value when it is saved (a password stores its hash, for example), so a value typed here would be stored wrong." => "Polje ove postavke stranice mijenja vrijednost pri spremanju (lozinka npr. sprema svoj hash), pa bi se ovdje unesena vrijednost spremila pogrešno.", // ai 2026-10
 
 // src/Central/FindingText.php, row 101
-"Leave the field empty and check the changes; after installing fill it in: in the slice open Setting in the menu of the item manager." => "",
+"Leave the field empty and check the changes; after installing fill it in: in the slice open Setting in the menu of the item manager." => "Ostavite polje prazno i provjerite promjene; nakon instalacije ga ispunite: na stranici otvorite „Postavke“ u izborniku upravitelja stavki.", // ai 2026-10
 
 // src/Central/FindingText.php, row 102
-"Insert function" => "",
+"Insert function" => "Funkcija umetanja", // ai 2026-10
 
 // src/Central/FindingText.php, row 103
-"The new owner is not complete" => "",
+"The new owner is not complete" => "Podaci novog vlasnika nisu potpuni", // ai 2026-10
 
 // src/Central/FindingText.php, row 104
-"A new owner needs a name and a valid e-mail, each at most 80 bytes (a letter with an accent may take two) and in characters the new modules can store." => "",
+"A new owner needs a name and a valid e-mail, each at most 80 bytes (a letter with an accent may take two) and in characters the new modules can store." => "Novi vlasnik treba ime i valjanu e-poštu, svako najviše 80 bajtova (slovo s dijakritikom može zauzeti dva) i u znakovima koje novi moduli mogu spremiti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 105
-"Fill in both in \"Owner of the new modules\" above and check the changes." => "",
+"Fill in both in \"Owner of the new modules\" above and check the changes." => "Ispunite oboje u „Vlasnik novih modula“ iznad i provjerite promjene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 107
-"Alerts lose a part of a slice left out" => "",
+"Alerts lose a part of a slice left out" => "Upozorenja gube dio izostavljene stranice", // ai 2026-10
 
 // src/Central/FindingText.php, row 108
-"The Alerts module uses a slice you left out - its readers, the view of a filter or an e-mail template. The Alerts module is installed without it." => "",
+"The Alerts module uses a slice you left out - its readers, the view of a filter or an e-mail template. The Alerts module is installed without it." => "Modul Upozorenja koristi stranicu koju ste izostavili – njezine čitatelje, pogled filtra ili predložak e-pošte. Modul Upozorenja instalira se bez nje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 109
-"After installing set the reader slice, the filters and the e-mails in the settings of the Alerts module - or install that slice too." => "",
+"After installing set the reader slice, the filters and the e-mails in the settings of the Alerts module - or install that slice too." => "Nakon instalacije postavite stranicu čitatelja, filtre i e-poštu u postavkama modula Upozorenja – ili instalirajte i tu stranicu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 110
-"Slice, view or e-mail" => "",
+"Slice, view or e-mail" => "Stranica, pogled ili e-pošta", // ai 2026-10
 
 // src/Central/FindingText.php, row 111
-"A list of values of a slice left out" => "",
+"A list of values of a slice left out" => "Popis vrijednosti izostavljene stranice", // ai 2026-10
 
 // src/Central/FindingText.php, row 112
-"The list of values (constant group) belongs to a slice you left out, and other parts of the app use it - it is installed without an owner." => "",
+"The list of values (constant group) belongs to a slice you left out, and other parts of the app use it - it is installed without an owner." => "Popis vrijednosti (grupa konstanti) pripada stranici koju ste izostavili, a koriste ga drugi dijelovi aplikacije – instalira se bez vlasnika.", // ai 2026-10
 
 // src/Central/FindingText.php, row 113
-"Usually nothing." => "",
+"Usually nothing." => "Obično ništa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 114
-"Slice left out" => "",
+"Slice left out" => "Izostavljena stranica", // ai 2026-10
 
 // src/Central/FindingText.php, row 115
-"No owner for the new modules" => "",
+"No owner for the new modules" => "Novi moduli nemaju vlasnika", // ai 2026-10
 
 // src/Central/FindingText.php, row 116
-"The new slices and sites need an owner of this AA, and none was chosen." => "",
+"The new slices and sites need an owner of this AA, and none was chosen." => "Nove stranice i webovi trebaju vlasnika iz ovog AA, a nijedan nije odabran.", // ai 2026-10
 
 // src/Central/FindingText.php, row 117
-"Choose the owner in \"Owner of the new modules\" above and check the changes." => "",
+"Choose the owner in \"Owner of the new modules\" above and check the changes." => "Odaberite vlasnika u „Vlasnik novih modula“ iznad i provjerite promjene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 118
-"Reader logins with broken characters" => "",
+"Reader logins with broken characters" => "Prijave čitatelja s oštećenim znakovima", // ai 2026-10
 
 // src/Central/FindingText.php, row 119
-"Login names of some readers in the AA the app comes from are not valid text, so this AA cannot check whether they collide with its own logins." => "",
+"Login names of some readers in the AA the app comes from are not valid text, so this AA cannot check whether they collide with its own logins." => "Korisnička imena nekih čitatelja u AA iz kojeg aplikacija dolazi nisu valjan tekst, pa ovaj AA ne može provjeriti sukobljavaju li se s njegovim korisničkim imenima.", // ai 2026-10
 
 // src/Central/FindingText.php, row 120
-"Fix the login names of those readers in the AA the app comes from and transfer again." => "",
+"Fix the login names of those readers in the AA the app comes from and transfer again." => "Ispravite korisnička imena tih čitatelja u AA iz kojeg aplikacija dolazi i ponovite prijenos.", // ai 2026-10
 
 // src/Central/FindingText.php, row 121
-"A text this AA cannot store" => "",
+"A text this AA cannot store" => "Tekst koji ovaj AA ne može spremiti", // ai 2026-10
 
 // src/Central/FindingText.php, row 122
-"The text is longer than this AA can store in that place." => "",
+"The text is longer than this AA can store in that place." => "Tekst je dulji nego što ga ovaj AA može spremiti na tom mjestu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 122
-"The text has characters the character set of this AA (or of the slice) cannot hold - usually an old windows-1250 slice and a character like an emoji." => "",
+"The text has characters the character set of this AA (or of the slice) cannot hold - usually an old windows-1250 slice and a character like an emoji." => "Tekst sadrži znakove koje skup znakova ovog AA (ili stranice) ne može sadržavati – obično stara stranica u windows-1250 i znak poput emojija.", // ai 2026-10
 
 // src/Central/FindingText.php, row 123
-"Shorten or change the text in the AA the app comes from and preview again, or install into a UTF-8 slice." => "",
+"Shorten or change the text in the AA the app comes from and preview again, or install into a UTF-8 slice." => "Skratite ili promijenite tekst u AA iz kojeg aplikacija dolazi i ponovno prikažite pregled ili instalirajte u stranicu s UTF-8.", // ai 2026-10
 
 // src/Central/FindingText.php, row 124
-"A text may not fit" => "",
+"A text may not fit" => "Tekst možda neće stati", // ai 2026-10
 
 // src/Central/FindingText.php, row 125
-"The text is close to the length this AA stores there; it may be cut." => "",
+"The text is close to the length this AA stores there; it may be cut." => "Tekst je blizu duljine koju ovaj AA tamo sprema; može biti skraćen.", // ai 2026-10
 
 // src/Central/FindingText.php, row 126
-"After installing check the end of the text." => "",
+"After installing check the end of the text." => "Nakon instalacije provjerite kraj teksta.", // ai 2026-10
 
 // src/Central/FindingText.php, row 127
-"An item too big to transfer" => "",
+"An item too big to transfer" => "Stavka prevelika za prijenos", // ai 2026-10
 
 // src/Central/FindingText.php, row 128
-"One item alone is bigger than the transfer carries at once." => "",
+"One item alone is bigger than the transfer carries at once." => "Jedna stavka sama je veća nego što prijenos odjednom prenosi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 129
-"Make the item smaller in its AA (move big texts or files out) and transfer again." => "",
+"Make the item smaller in its AA (move big texts or files out) and transfer again." => "Smanjite stavku u njezinu AA (premjestite velike tekstove ili datoteke drugamo) i ponovite prijenos.", // ai 2026-10
 
 // src/Central/FindingText.php, row 130
-"Language of a module" => "",
+"Language of a module" => "Jezik modula", // ai 2026-10
 
 // src/Central/FindingText.php, row 131
-"The module has a language this AA does not know, so it does not know its character set either." => "",
+"The module has a language this AA does not know, so it does not know its character set either." => "Modul ima jezik koji ovaj AA ne poznaje, pa ne poznaje ni njegov skup znakova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 131
-"The language file of the module is written as this AA names it; the language stays the same." => "",
+"The language file of the module is written as this AA names it; the language stays the same." => "Jezična datoteka modula zapisuje se onako kako je imenuje ovaj AA; jezik ostaje isti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 132
-"Set a language in the settings of the module in the AA the app comes from and export again." => "",
+"Set a language in the settings of the module in the AA the app comes from and export again." => "Postavite jezik u postavkama modula u AA iz kojeg aplikacija dolazi i ponovno izvezite.", // ai 2026-10
 
 // src/Central/FindingText.php, row 133
-"The tree of the site" => "",
+"The tree of the site" => "Stablo weba", // ai 2026-10
 
 // src/Central/FindingText.php, row 135
-"The tree of the pages (spots) of the site is damaged." => "",
+"The tree of the pages (spots) of the site is damaged." => "Stablo stranica (spotova) weba je oštećeno.", // ai 2026-10
 
 // src/Central/FindingText.php, row 136
-"Contents of spots no longer in the tree of the site - they are left out." => "",
+"Contents of spots no longer in the tree of the site - they are left out." => "Sadržaji spotova koji više nisu u stablu weba – izostavljaju se.", // ai 2026-10
 
 // src/Central/FindingText.php, row 137
-"The site has no tree of pages - it starts empty." => "",
+"The site has no tree of pages - it starts empty." => "Web nema stablo stranica – počinje prazan.", // ai 2026-10
 
 // src/Central/FindingText.php, row 138
-"A name or a condition of a spot contains HTML tags; the tags are removed from the names, conditions stay as they are." => "",
+"A name or a condition of a spot contains HTML tags; the tags are removed from the names, conditions stay as they are." => "Naziv ili uvjet spota sadrži HTML oznake; oznake se uklanjaju iz naziva, uvjeti ostaju kakvi jesu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 140
-"Open the site in its AA, save its tree in Code Manager and export again." => "",
+"Open the site in its AA, save its tree in Code Manager and export again." => "Otvorite web u njegovu AA, spremite njegovo stablo u „Upravitelj koda“ i ponovno izvezite.", // ai 2026-10
 
 // src/Central/FindingText.php, row 140
-"Nothing to do; check the names and conditions of the spots after installing." => "",
+"Nothing to do; check the names and conditions of the spots after installing." => "Nije potrebno ništa poduzeti; nakon instalacije provjerite nazive i uvjete spotova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 141
-"A control file of the other AA" => "",
+"A control file of the other AA" => "Kontrolna datoteka drugog AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 142
-"The site names a file on the server of the AA it comes from, which this AA would run - it cannot be installed so." => "",
+"The site names a file on the server of the AA it comes from, which this AA would run - it cannot be installed so." => "Web navodi datoteku na poslužitelju AA iz kojeg dolazi, koju bi ovaj AA pokretao – tako se ne može instalirati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 142
-"The site names a file on the server of the AA it comes from; it is left out." => "",
+"The site names a file on the server of the AA it comes from; it is left out." => "Web navodi datoteku na poslužitelju AA iz kojeg dolazi; izostavlja se.", // ai 2026-10
 
 // src/Central/FindingText.php, row 143
-"Remove the file from the site settings in the AA the app comes from and export again." => "",
+"Remove the file from the site settings in the AA the app comes from and export again." => "Uklonite datoteku iz postavki weba u AA iz kojeg aplikacija dolazi i ponovno izvezite.", // ai 2026-10
 
 // src/Central/FindingText.php, row 143
-"Nothing to do, unless the site needs such a file here - then set it in Module Settings of the site." => "",
+"Nothing to do, unless the site needs such a file here - then set it in Module Settings of the site." => "Nije potrebno ništa poduzeti, osim ako web ovdje treba takvu datoteku – tada je postavite u „Podešavanje modula“ weba.", // ai 2026-10
 
 // src/Central/FindingText.php, row 144
-"Values of a slice outside the published app" => "",
+"Values of a slice outside the published app" => "Vrijednosti stranice izvan objavljene aplikacije", // ai 2026-10
 
 // src/Central/FindingText.php, row 145
-"The app uses a list of values (a constant group) of a slice no published site carries - publishing would show its values." => "",
+"The app uses a list of values (a constant group) of a slice no published site carries - publishing would show its values." => "Aplikacija koristi popis vrijednosti (grupu konstanti) stranice koju ne nosi nijedan objavljeni web – objavljivanjem bi se prikazale njegove vrijednosti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 146
-"Let the field use another list of values, or publish the slice that owns it." => "",
+"Let the field use another list of values, or publish the slice that owns it." => "Neka polje koristi drugi popis vrijednosti ili objavite stranicu koja ga posjeduje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 147
-"Lists of values (constant groups)" => "",
+"Lists of values (constant groups)" => "Popisi vrijednosti (grupe konstanti)", // ai 2026-10
 
 // src/Central/FindingText.php, row 149
-"There is no free name for a list of values of the app." => "",
+"There is no free name for a list of values of the app." => "Nema slobodnog naziva za popis vrijednosti aplikacije.", // ai 2026-10
 
 // src/Central/FindingText.php, row 150
-"This AA already has a list of values of that name, so the app gets its list under a new name; the app is changed to use it." => "",
+"This AA already has a list of values of that name, so the app gets its list under a new name; the app is changed to use it." => "Ovaj AA već ima popis vrijednosti s tim nazivom, pa aplikacija dobiva svoj popis pod novim nazivom; aplikacija se mijenja da ga koristi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 151
-"A field offers values of a list that does not exist - it offers nothing." => "",
+"A field offers values of a list that does not exist - it offers nothing." => "Polje nudi vrijednosti popisa koji ne postoji – ne nudi ništa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 152
-"The text reads a list of values the app does not carry; this AA must have a list of that name." => "",
+"The text reads a list of values the app does not carry; this AA must have a list of that name." => "Tekst čita popis vrijednosti koji aplikacija ne nosi; ovaj AA mora imati popis s tim nazivom.", // ai 2026-10
 
 // src/Central/FindingText.php, row 153
-"The existing slice keeps its own list of values; the app uses that one." => "",
+"The existing slice keeps its own list of values; the app uses that one." => "Postojeća stranica zadržava svoj popis vrijednosti; aplikacija koristi njega.", // ai 2026-10
 
 // src/Central/FindingText.php, row 154
-"The text names a list of values in a form the install does not rewrite; when the list gets a new name here, the text keeps the old one." => "",
+"The text names a list of values in a form the install does not rewrite; when the list gets a new name here, the text keeps the old one." => "Tekst navodi popis vrijednosti u obliku koji instalacija ne prepisuje; kad popis ovdje dobije novi naziv, tekst zadržava stari.", // ai 2026-10
 
 // src/Central/FindingText.php, row 155
-"A list of values is used as it is." => "",
+"A list of values is used as it is." => "Popis vrijednosti koristi se kakav jest.", // ai 2026-10
 
 // src/Central/FindingText.php, row 158
-"Rename or delete some of the lists of values in this AA and preview again." => "",
+"Rename or delete some of the lists of values in this AA and preview again." => "Preimenujte ili izbrišite neke popise vrijednosti u ovom AA i ponovno prikažite pregled.", // ai 2026-10
 
 // src/Central/FindingText.php, row 159
-"After installing, create the list or choose another one in the field settings." => "",
+"After installing, create the list or choose another one in the field settings." => "Nakon instalacije izradite popis ili u postavkama polja odaberite drugi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 160
-"When the list is renamed (see the notes), change the name in the text after installing." => "",
+"When the list is renamed (see the notes), change the name in the text after installing." => "Ako je popis preimenovan (vidi napomene), nakon instalacije promijenite naziv u tekstu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 163
-"List" => "",
+"List" => "Popis", // ai 2026-10
 
 // src/Central/FindingText.php, row 164
-"A list of values without its slice" => "",
+"A list of values without its slice" => "Popis vrijednosti bez svoje stranice", // ai 2026-10
 
 // src/Central/FindingText.php, row 165
-"A list of values (a constant group) belongs to a slice that is not in the app or no longer exists. The list travels anyway; only the character set is taken from this AA." => "",
+"A list of values (a constant group) belongs to a slice that is not in the app or no longer exists. The list travels anyway; only the character set is taken from this AA." => "Popis vrijednosti (grupa konstanti) pripada stranici koja nije u aplikaciji ili više ne postoji. Popis se svejedno prenosi; samo se skup znakova preuzima iz ovog AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 166
-"Usually nothing. On a UTF-8 AA it makes no difference." => "",
+"Usually nothing. On a UTF-8 AA it makes no difference." => "Obično ništa. Na AA s UTF-8 to nema utjecaja.", // ai 2026-10
 
 // src/Central/FindingText.php, row 167
-"Owner (slice id)" => "",
+"Owner (slice id)" => "Vlasnik (ID stranice)", // ai 2026-10
 
 // src/Central/FindingText.php, row 168
-"Broken characters" => "",
+"Broken characters" => "Oštećeni znakovi", // ai 2026-10
 
 // src/Central/FindingText.php, row 169
-"A text is not valid UTF-8 - probably damaged in its AA. It travels byte by byte." => "",
+"A text is not valid UTF-8 - probably damaged in its AA. It travels byte by byte." => "Tekst nije valjan UTF-8 – vjerojatno je oštećen u svom AA. Prenosi se bajt po bajt.", // ai 2026-10
 
 // src/Central/FindingText.php, row 170
-"After installing check the text and fix wrong characters." => "",
+"After installing check the text and fix wrong characters." => "Nakon instalacije provjerite tekst i ispravite pogrešne znakove.", // ai 2026-10
 
 // src/Central/FindingText.php, row 173
-"Alerts use a part outside the app" => "",
+"Alerts use a part outside the app" => "Upozorenja koriste dio izvan aplikacije", // ai 2026-10
 
 // src/Central/FindingText.php, row 174
-"An Alerts collection or filter uses a view or an e-mail template that is not in the app." => "",
+"An Alerts collection or filter uses a view or an e-mail template that is not in the app." => "Kolekcija ili filtar modula Upozorenja koristi pogled ili predložak e-pošte koji nije u aplikaciji.", // ai 2026-10
 
 // src/Central/FindingText.php, row 175
-"Add the slice with that view or template to the app, or change the Alerts setting in the AA the app comes from, and preview again." => "",
+"Add the slice with that view or template to the app, or change the Alerts setting in the AA the app comes from, and preview again." => "Dodajte u aplikaciju stranicu s tim pogledom ili predloškom ili promijenite postavku Upozorenja u AA iz kojeg aplikacija dolazi, i ponovno prikažite pregled.", // ai 2026-10
 
 // src/Central/FindingText.php, row 177
-"A link to a part outside the app" => "",
+"A link to a part outside the app" => "Poveznica na dio izvan aplikacije", // ai 2026-10
 
 // src/Central/FindingText.php, row 179
-"The text shows a view by its number, and that view is not in the app. Here the number means another view, or none." => "",
+"The text shows a view by its number, and that view is not in the app. Here the number means another view, or none." => "Tekst prikazuje pogled prema broju, a taj pogled nije u aplikaciji. Ovdje taj broj znači drugi pogled ili nijedan.", // ai 2026-10
 
 // src/Central/FindingText.php, row 180
-"The text sends an e-mail template by its number, and that template is not in the app. Here the number means another template, or none." => "",
+"The text sends an e-mail template by its number, and that template is not in the app. Here the number means another template, or none." => "Tekst šalje predložak e-pošte prema broju, a taj predložak nije u aplikaciji. Ovdje taj broj znači drugi predložak ili nijedan.", // ai 2026-10
 
 // src/Central/FindingText.php, row 181
-"The text reads a slice or a site that is not in the app. Here that id means nothing." => "",
+"The text reads a slice or a site that is not in the app. Here that id means nothing." => "Tekst čita stranicu ili web koji nije u aplikaciji. Ovdje taj ID ništa ne znači.", // ai 2026-10
 
 // src/Central/FindingText.php, row 184
-"Add the slice with it to the app (for a site: to its Uses) and preview again; or, when the preview of the install lists it under Links outside the app, send the links to a slice of the AA it goes to." => "",
+"Add the slice with it to the app (for a site: to its Uses) and preview again; or, when the preview of the install lists it under Links outside the app, send the links to a slice of the AA it goes to." => "Dodajte stranicu s njim u aplikaciju (za web: u njegovo „Koristi“) i ponovno prikažite pregled; ili, ako ga pregled instalacije navodi pod „Poveznice izvan aplikacije“, usmjerite poveznice na stranicu AA u koji se instalira.", // ai 2026-10
 
 // src/Central/FindingText.php, row 185
-"Add the slice with it to the app (for a site: to its Uses) and preview again, or after installing change the number to the right one here." => "",
+"Add the slice with it to the app (for a site: to its Uses) and preview again, or after installing change the number to the right one here." => "Dodajte stranicu s njim u aplikaciju (za web: u njegovo „Koristi“) i ponovno prikažite pregled ili nakon instalacije ovdje promijenite broj u ispravan.", // ai 2026-10
 
 // src/Central/FindingText.php, row 187
-"A link to a slice of this AA" => "",
+"A link to a slice of this AA" => "Poveznica na stranicu ovog AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 189
-"The text reads a slice or a site that is not in the app, but this AA has it - the link keeps going there." => "",
+"The text reads a slice or a site that is not in the app, but this AA has it - the link keeps going there." => "Tekst čita stranicu ili web koji nije u aplikaciji, ali ga ovaj AA ima – poveznica i dalje vodi tamo.", // ai 2026-10
 
 // src/Central/FindingText.php, row 190
-"The text reads a slice that is neither in the app nor in this AA; as chosen in Links outside the app, it goes to a slice of this AA." => "",
+"The text reads a slice that is neither in the app nor in this AA; as chosen in Links outside the app, it goes to a slice of this AA." => "Tekst čita stranicu koja nije ni u aplikaciji ni u ovom AA; prema izboru u „Poveznice izvan aplikacije“ vodi na stranicu ovog AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 191
-"Usually nothing. Check after installing that it is the slice meant." => "",
+"Usually nothing. Check after installing that it is the slice meant." => "Obično ništa. Nakon instalacije provjerite je li to željena stranica.", // ai 2026-10
 
 // src/Central/FindingText.php, row 192, 196
-"Id => slice" => "",
+"Id => slice" => "Id => stranica", // ai 2026-10
 
 // src/Central/FindingText.php, row 193
-"A link goes to no slice" => "",
+"A link goes to no slice" => "Veza ne vodi ni na jednu stranicu", // ai 2026-10
 
 // src/Central/FindingText.php, row 194
-"A link outside the app was sent to a slice that this AA does not have, or that you may not change." => "",
+"A link outside the app was sent to a slice that this AA does not have, or that you may not change." => "Veza izvan aplikacije preusmjerena je na stranicu koju ovaj AA nema ili koju ne smijete mijenjati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 195
-"Choose another slice under Links outside the app, or keep the id, and check the changes." => "",
+"Choose another slice under Links outside the app, or keep the id, and check the changes." => "Odaberite drugu stranicu u „Veze izvan aplikacije“ ili zadržite id, pa provjerite promjene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 197
-"A link the check cannot follow" => "",
+"A link the check cannot follow" => "Veza koju provjera ne može slijediti", // ai 2026-10
 
 // src/Central/FindingText.php, row 199
-"The number of a view or an e-mail is computed when the page is shown, so it cannot be renumbered for this AA." => "",
+"The number of a view or an e-mail is computed when the page is shown, so it cannot be renumbered for this AA." => "Broj pogleda ili e-maila izračunava se tek pri prikazu stranice, pa ga za ovaj AA nije moguće prenumerirati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 200
-"A number equal to the number of a view of the app, in a place where it may mean something else (a width, a date) - left as it is." => "",
+"A number equal to the number of a view of the app, in a place where it may mean something else (a width, a date) - left as it is." => "Broj jednak broju pogleda aplikacije na mjestu gdje može značiti nešto drugo (širinu, datum) – ostavljen je kakav jest.", // ai 2026-10
 
 // src/Central/FindingText.php, row 201
-"{form:...} uses a form of this AA; forms do not travel with an app." => "",
+"{form:...} uses a form of this AA; forms do not travel with an app." => "{form:...} koristi formular ovog AA; formulari se ne prenose s aplikacijom.", // ai 2026-10
 
 // src/Central/FindingText.php, row 202
-"The link is written in a form the install does not rewrite; it stays as it is." => "",
+"The link is written in a form the install does not rewrite; it stays as it is." => "Veza je zapisana u obliku koji instalacija ne prepisuje; ostaje kakva jest.", // ai 2026-10
 
 // src/Central/FindingText.php, row 204
-"When it is a view there, change it after installing to the new number of that view." => "",
+"When it is a view there, change it after installing to the new number of that view." => "Ako je ondje riječ o pogledu, nakon instalacije ga promijenite na novi broj tog pogleda.", // ai 2026-10
 
 // src/Central/FindingText.php, row 204
-"After installing check that the place shows the right thing." => "",
+"After installing check that the place shows the right thing." => "Nakon instalacije provjerite prikazuje li se na tom mjestu ono pravo.", // ai 2026-10
 
 // src/Central/FindingText.php, row 205
-"Modules outside the app" => "",
+"Modules outside the app" => "Moduli izvan aplikacije", // ai 2026-10
 
 // src/Central/FindingText.php, row 207
-"The Alerts module sends items of a slice that is not in the app." => "",
+"The Alerts module sends items of a slice that is not in the app." => "Modul Upozorenja šalje stavke stranice koja nije u aplikaciji.", // ai 2026-10
 
 // src/Central/FindingText.php, row 208
-"An Alerts module that is not in the app sends items of its slice; it stays behind." => "",
+"An Alerts module that is not in the app sends items of its slice; it stays behind." => "Modul Upozorenja koji nije u aplikaciji šalje stavke svoje stranice; ne prenosi se.", // ai 2026-10
 
 // src/Central/FindingText.php, row 209
-"The site uses a module of a kind an app does not carry (polls, links, jump) - it is left out." => "",
+"The site uses a module of a kind an app does not carry (polls, links, jump) - it is left out." => "Web koristi modul vrste koju aplikacija ne prenosi (ankete, veze, jump) – izostavlja se.", // ai 2026-10
 
 // src/Central/FindingText.php, row 210
-"The site lists a module that no longer exists - AA ignores it, so does the install." => "",
+"The site lists a module that no longer exists - AA ignores it, so does the install." => "Web navodi modul koji više ne postoji – AA ga zanemaruje, a tako i instalacija.", // ai 2026-10
 
 // src/Central/FindingText.php, row 211
-"An Alerts setting of a module outside the app is written as it is; here it does nothing." => "",
+"An Alerts setting of a module outside the app is written as it is; here it does nothing." => "Postavka Upozorenja modula izvan aplikacije zapisuje se kakva jest; ovdje ne radi ništa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 213
-"Add that slice to the app, or remove it from the Alerts collection." => "",
+"Add that slice to the app, or remove it from the Alerts collection." => "Dodajte tu stranicu u aplikaciju ili je uklonite iz kolekcije Upozorenja.", // ai 2026-10
 
 // src/Central/FindingText.php, row 214
-"An e-mail address of the other organisation" => "",
+"An e-mail address of the other organisation" => "E-mail adresa druge organizacije", // ai 2026-10
 
 // src/Central/FindingText.php, row 215
-"An e-mail template has a fixed address (the sender, a copy) - it travels with the app." => "",
+"An e-mail template has a fixed address (the sender, a copy) - it travels with the app." => "Predložak e-maila ima fiksnu adresu (pošiljatelj, kopija) – prenosi se s aplikacijom.", // ai 2026-10
 
 // src/Central/FindingText.php, row 216
-"After installing change the address in the e-mail templates to your own." => "",
+"After installing change the address in the e-mail templates to your own." => "Nakon instalacije promijenite adresu u predlošcima e-mailova na svoju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 217
-"An e-mail attachment left out" => "",
+"An e-mail attachment left out" => "Izostavljen privitak e-maila", // ai 2026-10
 
 // src/Central/FindingText.php, row 218
-"An e-mail template attaches a file of the server; that would attach a file of this server, so it is removed." => "",
+"An e-mail template attaches a file of the server; that would attach a file of this server, so it is removed." => "Predložak e-maila prilaže datoteku sa servera; time bi se priložila datoteka ovog servera, pa se uklanja.", // ai 2026-10
 
 // src/Central/FindingText.php, row 219
-"After installing set the attachment again if it is needed." => "",
+"After installing set the attachment again if it is needed." => "Nakon instalacije ponovno postavite privitak ako je potreban.", // ai 2026-10
 
 // src/Central/FindingText.php, row 220
-"Site settings left out" => "",
+"Site settings left out" => "Izostavljene postavke weba", // ai 2026-10
 
 // src/Central/FindingText.php, row 221
-"The Google Analytics id, other domains of the site and app settings belong to the other AA; they are not installed." => "",
+"The Google Analytics id, other domains of the site and app settings belong to the other AA; they are not installed." => "Id za Google Analytics, ostale domene weba i postavke aplikacija pripadaju drugom AA; ne instaliraju se.", // ai 2026-10
 
 // src/Central/FindingText.php, row 222
-"Set them in Module Settings of the site after installing." => "",
+"Set them in Module Settings of the site after installing." => "Nakon instalacije ih postavite u „Podešavanje modula“ weba.", // ai 2026-10
 
 // src/Central/FindingText.php, row 223
-"A slice setting without a value" => "",
+"A slice setting without a value" => "Postavka stranice bez vrijednosti", // ai 2026-10
 
 // src/Central/FindingText.php, row 224
-"A setting of the slice has a default that depends on who installs (a user, a random code, an expression) - it is left empty." => "",
+"A setting of the slice has a default that depends on who installs (a user, a random code, an expression) - it is left empty." => "Postavka stranice ima zadanu vrijednost koja ovisi o tome tko instalira (korisnik, slučajni kôd, izraz) – ostaje prazna.", // ai 2026-10
 
 // src/Central/FindingText.php, row 225
-"Fill it in the Setting of the slice after installing." => "",
+"Fill it in the Setting of the slice after installing." => "Nakon instalacije je ispunite u „Postavke“ stranice.", // ai 2026-10
 
 // src/Central/FindingText.php, row 226
-"Objects the app does not carry" => "",
+"Objects the app does not carry" => "Objekti koje aplikacija ne prenosi", // ai 2026-10
 
 // src/Central/FindingText.php, row 227
-"Some objects of the module do not travel: forms, notes on admin pages and similar helpers of the other AA." => "",
+"Some objects of the module do not travel: forms, notes on admin pages and similar helpers of the other AA." => "Neki objekti modula se ne prenose: formulari, bilješke na administracijskim stranicama i slična pomagala drugog AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 228
-"Usually nothing. A form the pages show ({form:...}) has to be made here again." => "",
+"Usually nothing. A form the pages show ({form:...}) has to be made here again." => "Obično ništa. Formular koji stranice prikazuju ({form:...}) treba ovdje ponovno izraditi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 229
-"Kind (count)" => "",
+"Kind (count)" => "Vrsta (broj)", // ai 2026-10
 
 // src/Central/FindingText.php, row 230
-"A part of an object is missing" => "",
+"A part of an object is missing" => "Nedostaje dio objekta", // ai 2026-10
 
 // src/Central/FindingText.php, row 231
-"An object (an alias, a form or a similar setting) refers to a part that no longer exists; the part is left out." => "",
+"An object (an alias, a form or a similar setting) refers to a part that no longer exists; the part is left out." => "Objekt (sinonim, formular ili slična postavka) upućuje na dio koji više ne postoji; taj se dio izostavlja.", // ai 2026-10
 
 // src/Central/FindingText.php, row 232
-"After installing check the settings of the module that use the object." => "",
+"After installing check the settings of the module that use the object." => "Nakon instalacije provjerite postavke modula koje koriste taj objekt.", // ai 2026-10
 
 // src/Central/FindingText.php, row 233
-"An unknown profile setting" => "",
+"An unknown profile setting" => "Nepoznata postavka profila", // ai 2026-10
 
 // src/Central/FindingText.php, row 234
-"A default profile of the slice has a setting this AA does not know; AA ignores it." => "",
+"A default profile of the slice has a setting this AA does not know; AA ignores it." => "Zadani profil stranice ima postavku koju ovaj AA ne poznaje; AA je zanemaruje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 238
-"Who may write into the slice" => "",
+"Who may write into the slice" => "Tko smije pisati u stranicu", // ai 2026-10
 
 // src/Central/FindingText.php, row 239
-"The slice lets visitors of the web (not signed in) add or edit items, gives access to its file manager, or lets readers of a group field sign in. That is right for a public form - a sign-up, a comment - and wrong elsewhere." => "",
+"The slice lets visitors of the web (not signed in) add or edit items, gives access to its file manager, or lets readers of a group field sign in. That is right for a public form - a sign-up, a comment - and wrong elsewhere." => "Stranica dopušta posjetiteljima weba (neprijavljenima) dodavanje ili uređivanje stavki, daje pristup svom upravitelju datoteka ili dopušta prijavu čitateljima iz polja grupe. To je ispravno za javni formular – prijavnicu, komentar – a drugdje pogrešno.", // ai 2026-10
 
 // src/Central/FindingText.php, row 240
-"After installing check in Slice Admin > Slice that the slice should allow it; otherwise switch it off there." => "",
+"After installing check in Slice Admin > Slice that the slice should allow it; otherwise switch it off there." => "Nakon instalacije provjerite u „Administracija stranica“ > „Stranica“ treba li stranica to dopuštati; inače to ondje isključite.", // ai 2026-10
 
 // src/Central/FindingText.php, row 241, 245
-"Set to" => "",
+"Set to" => "Postavljeno na", // ai 2026-10
 
 // src/Central/FindingText.php, row 242
-"Who can sign in to the site" => "",
+"Who can sign in to the site" => "Tko se smije prijaviti na web", // ai 2026-10
 
 // src/Central/FindingText.php, row 243
-"The site does not say which readers may sign in to its pages, so every user of this AA and the readers of all its Reader Management slices can." => "",
+"The site does not say which readers may sign in to its pages, so every user of this AA and the readers of all its Reader Management slices can." => "Web ne određuje koji se čitatelji smiju prijaviti na njegove stranice, pa to može svaki korisnik ovog AA i čitatelji svih njegovih stranica Upravljanje čitateljima.", // ai 2026-10
 
 // src/Central/FindingText.php, row 244
-"After installing open Module Settings of the site and set \"User login databases\" to \"first Reader Management slice listed in Uses slices\"." => "",
+"After installing open Module Settings of the site and set \"User login databases\" to \"first Reader Management slice listed in Uses slices\"." => "Nakon instalacije otvorite „Podešavanje modula“ weba i postavite „Baze podataka za prijavu korisnika“ na „prva stranica Upravljanje čitateljima navedena u Koristi stranice“.", // ai 2026-10
 
 // src/Central/FindingText.php, row 246
-"An existing slice was chosen" => "",
+"An existing slice was chosen" => "Odabrana je postojeća stranica", // ai 2026-10
 
 // src/Central/FindingText.php, row 248
-"The app goes into your existing Reader Management slice - its views and fields will work with your real readers." => "",
+"The app goes into your existing Reader Management slice - its views and fields will work with your real readers." => "Aplikacija se instalira u vašu postojeću stranicu Upravljanje čitateljima – njezini pogledi i polja radit će s vašim stvarnim čitateljima.", // ai 2026-10
 
 // src/Central/FindingText.php, row 249
-"A slice of the same role exists, but it cannot take the slice of the app; a new slice is made." => "",
+"A slice of the same role exists, but it cannot take the slice of the app; a new slice is made." => "Stranica iste uloge postoji, ali ne može preuzeti stranicu aplikacije; izrađuje se nova stranica.", // ai 2026-10
 
 // src/Central/FindingText.php, row 250
-"The slice of the app goes into your existing slice of the same role." => "",
+"The slice of the app goes into your existing slice of the same role." => "Stranica aplikacije instalira se u vašu postojeću stranicu iste uloge.", // ai 2026-10
 
 // src/Central/FindingText.php, row 252
-"Choose another slice (or \"a new slice\") in the table above if this is not what you want." => "",
+"Choose another slice (or \"a new slice\") in the table above if this is not what you want." => "Ako to ne želite, odaberite u tablici iznad drugu stranicu (ili „nova stranica“).", // ai 2026-10
 
 // src/Central/FindingText.php, row 255
-"The chosen slice cannot take the app" => "",
+"The chosen slice cannot take the app" => "Odabrana stranica ne može preuzeti aplikaciju", // ai 2026-10
 
 // src/Central/FindingText.php, row 257
-"A transfer into the very slice it copies would copy its items into it again." => "",
+"A transfer into the very slice it copies would copy its items into it again." => "Prijenos u istu stranicu koju kopira ponovno bi u nju kopirao njezine stavke.", // ai 2026-10
 
 // src/Central/FindingText.php, row 258
-"One of the slices keeps the logins of readers (Reader Management) and the other not - the logins would not work." => "",
+"One of the slices keeps the logins of readers (Reader Management) and the other not - the logins would not work." => "Jedna od stranica čuva prijave čitatelja (Upravljanje čitateljima), a druga ne – prijava ne bi radila.", // ai 2026-10
 
 // src/Central/FindingText.php, row 259
-"A field of the chosen slice stores its values otherwise (text or number, a password) - the items would be broken." => "",
+"A field of the chosen slice stores its values otherwise (text or number, a password) - the items would be broken." => "Polje odabrane stranice sprema vrijednosti drugačije (tekst ili broj, lozinka) – stavke bi bile oštećene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 260
-"The slice chosen in \"Into\" does not exist, you may not edit it, or it is chosen twice - the value says which." => "",
+"The slice chosen in \"Into\" does not exist, you may not edit it, or it is chosen twice - the value says which." => "Stranica odabrana u „Kamo“ ne postoji, ne smijete je uređivati ili je odabrana dvaput – vrijednost navodi što od toga vrijedi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 262
-"Choose another slice, or \"a new slice\", in the table above and preview again." => "",
+"Choose another slice, or \"a new slice\", in the table above and preview again." => "Odaberite u tablici iznad drugu stranicu ili „nova stranica“ i ponovno prikažite pregled.", // ai 2026-10
 
 // src/Central/FindingText.php, row 263
-"Into an existing slice" => "",
+"Into an existing slice" => "U postojeću stranicu", // ai 2026-10
 
 // src/Central/FindingText.php, row 264
-"The slice of the app goes into an existing slice; what the slice has (its views, e-mails, settings) stays and the app uses it." => "",
+"The slice of the app goes into an existing slice; what the slice has (its views, e-mails, settings) stays and the app uses it." => "Stranica aplikacije instalira se u postojeću stranicu; ono što stranica ima (pogledi, e-mailovi, postavke) ostaje i aplikacija to koristi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 266
-"The existing slice differs" => "",
+"The existing slice differs" => "Postojeća stranica se razlikuje", // ai 2026-10
 
 // src/Central/FindingText.php, row 268
-"A relation field of the existing slice selects from another slice than the app expects - the transferred links would point elsewhere." => "",
+"A relation field of the existing slice selects from another slice than the app expects - the transferred links would point elsewhere." => "Polje veze postojeće stranice bira iz druge stranice nego što aplikacija očekuje – prenesene veze vodile bi drugamo.", // ai 2026-10
 
 // src/Central/FindingText.php, row 269
-"The existing slice has a view of the same name, but another one; the slice keeps its view." => "",
+"The existing slice has a view of the same name, but another one; the slice keeps its view." => "Postojeća stranica ima pogled istog naziva, ali drugačiji; stranica zadržava svoj pogled.", // ai 2026-10
 
 // src/Central/FindingText.php, row 270
-"The existing slice has the field, but set otherwise; the slice keeps its setting." => "",
+"The existing slice has the field, but set otherwise; the slice keeps its setting." => "Postojeća stranica ima to polje, ali drugačije postavljeno; stranica zadržava svoju postavku.", // ai 2026-10
 
 // src/Central/FindingText.php, row 272
-"If the app behaves oddly after installing, compare these settings with the ones of the app." => "",
+"If the app behaves oddly after installing, compare these settings with the ones of the app." => "Ako se aplikacija nakon instalacije ponaša neobično, usporedite ove postavke s postavkama aplikacije.", // ai 2026-10
 
 // src/Central/FindingText.php, row 273
-"Differs in" => "",
+"Differs in" => "Razlika u", // ai 2026-10
 
 // src/Central/FindingText.php, row 274
-"Maybe twice" => "",
+"Maybe twice" => "Možda dvaput", // ai 2026-10
 
 // src/Central/FindingText.php, row 275
-"A view, an e-mail or an object without a unique name cannot be matched with the existing slice, so it is added - the slice may then have it twice." => "",
+"A view, an e-mail or an object without a unique name cannot be matched with the existing slice, so it is added - the slice may then have it twice." => "Pogled, e-mail ili objekt bez jedinstvenog naziva ne može se upariti s postojećom stranicom, pa se dodaje – stranica ga tada može imati dvaput.", // ai 2026-10
 
 // src/Central/FindingText.php, row 276
-"After installing delete the duplicate." => "",
+"After installing delete the duplicate." => "Nakon instalacije obrišite duplikat.", // ai 2026-10
 
 // src/Central/FindingText.php, row 277
-"Values that must be unique" => "",
+"Values that must be unique" => "Vrijednosti koje moraju biti jedinstvene", // ai 2026-10
 
 // src/Central/FindingText.php, row 278
-"The slice has fields whose values must not repeat (a unique field, an SEO name, a sequence); transferred items may repeat values of the items already there." => "",
+"The slice has fields whose values must not repeat (a unique field, an SEO name, a sequence); transferred items may repeat values of the items already there." => "Stranica ima polja čije se vrijednosti ne smiju ponavljati (jedinstveno polje, SEO naziv, redni broj); prenesene stavke mogu ponoviti vrijednosti stavki koje su već ondje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 279
-"After the transfer check these fields of the new items." => "",
+"After the transfer check these fields of the new items." => "Nakon prijenosa provjerite ta polja kod novih stavki.", // ai 2026-10
 
 // src/Central/FindingText.php, row 282
-"The items are here already" => "",
+"The items are here already" => "Stavke su već ovdje", // ai 2026-10
 
 // src/Central/FindingText.php, row 283
-"This AA already has items with the same ids - the app was probably transferred here before (maybe deleted since, but not purged from the trash)." => "",
+"This AA already has items with the same ids - the app was probably transferred here before (maybe deleted since, but not purged from the trash)." => "Ovaj AA već ima stavke s istim id-ovima – aplikacija je ovamo vjerojatno već prije prenesena (možda u međuvremenu obrisana, ali nije trajno uklonjena iz smeća).", // ai 2026-10
 
 // src/Central/FindingText.php, row 284
-"Transfer into the slice that has them (choose it in \"Into\"), or delete the earlier copy completely, including the trash, and try again." => "",
+"Transfer into the slice that has them (choose it in \"Into\"), or delete the earlier copy completely, including the trash, and try again." => "Prenesite u stranicu koja ih ima (odaberite je u „Kamo“) ili potpuno obrišite raniju kopiju, uključujući smeće, i pokušajte ponovno.", // ai 2026-10
 
 // src/Central/FindingText.php, row 285
-"Reader logins collide" => "",
+"Reader logins collide" => "Sukob prijava čitatelja", // ai 2026-10
 
 // src/Central/FindingText.php, row 287
-"A reader has the same login name or e-mail as a user of this AA with rights to the administration." => "",
+"A reader has the same login name or e-mail as a user of this AA with rights to the administration." => "Čitatelj ima isto korisničko ime ili e-mail kao korisnik ovog AA s pravima na administraciju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 288
-"A reader of this AA already has the same login name or e-mail." => "",
+"A reader of this AA already has the same login name or e-mail." => "Čitatelj ovog AA već ima isto korisničko ime ili e-mail.", // ai 2026-10
 
 // src/Central/FindingText.php, row 289
-"Two transferred readers have the same login name or e-mail." => "",
+"Two transferred readers have the same login name or e-mail." => "Dva prenesena čitatelja imaju isto korisničko ime ili e-mail.", // ai 2026-10
 
 // src/Central/FindingText.php, row 290
-"A reader has more login names or e-mails." => "",
+"A reader has more login names or e-mails." => "Čitatelj ima više korisničkih imena ili e-mailova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 292
-"Change the login of the reader in the AA it comes from (or of the user here) and preview again." => "",
+"Change the login of the reader in the AA it comes from (or of the user here) and preview again." => "Promijenite korisničko ime čitatelja u AA iz kojeg dolazi (ili korisnika ovdje) i ponovno prikažite pregled.", // ai 2026-10
 
 // src/Central/FindingText.php, row 292
-"After the transfer check these readers can sign in." => "",
+"After the transfer check these readers can sign in." => "Nakon prijenosa provjerite mogu li se ti čitatelji prijaviti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 293
 // src/Optimize/CheckSessionidUse.php, row 100
-"Login" => "",
+"Login" => "Prijava", // ai 2026-10
 
 // src/Central/FindingText.php, row 294
-"Passwords of the readers travel" => "",
+"Passwords of the readers travel" => "Lozinke čitatelja se prenose", // ai 2026-10
 
 // src/Central/FindingText.php, row 295
-"The transfer carries the logins of readers with their password hashes (and two-factor secrets)." => "",
+"The transfer carries the logins of readers with their password hashes (and two-factor secrets)." => "Prijenos nosi prijave čitatelja s hashevima njihovih lozinki (i tajnama za dvofaktorsku prijavu).", // ai 2026-10
 
 // src/Central/FindingText.php, row 296
-"Nothing to do here; do not keep downloaded packages of such apps." => "",
+"Nothing to do here; do not keep downloaded packages of such apps." => "Ovdje ništa ne treba raditi; preuzete pakete takvih aplikacija nemojte čuvati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 297
-"Item values left out" => "",
+"Item values left out" => "Izostavljene vrijednosti stavki", // ai 2026-10
 
 // src/Central/FindingText.php, row 298
-"An item is in no bin (active, holding, trash) - no list of the slice will show it." => "",
+"An item is in no bin (active, holding, trash) - no list of the slice will show it." => "Stavka nije ni u jednom spremniku (aktivne, na čekanju, smeće) – nijedan popis stranice je neće prikazati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 298
-"Items have values of a field the slice does not have - they are left out." => "",
+"Items have values of a field the slice does not have - they are left out." => "Stavke imaju vrijednosti polja koje stranica nema – izostavljaju se.", // ai 2026-10
 
 // src/Central/FindingText.php, row 299
-"Usually nothing to do." => "",
+"Usually nothing to do." => "Obično ništa ne treba raditi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 300
-"A condition of the items to transfer cannot be used" => "",
+"A condition of the items to transfer cannot be used" => "Uvjet za stavke koje se prenose nije moguće koristiti", // ai 2026-10
 
 // src/Central/FindingText.php, row 301
-"AA cannot read the condition as it is written, or the source AA did not check it. A condition read wrongly could take other items than you mean, so no items are counted and the app cannot be installed until the condition passes a check." => "",
+"AA cannot read the condition as it is written, or the source AA did not check it. A condition read wrongly could take other items than you mean, so no items are counted and the app cannot be installed until the condition passes a check." => "AA ne može pročitati uvjet onako kako je zapisan ili ga izvorni AA nije provjerio. Pogrešno pročitan uvjet mogao bi obuhvatiti druge stavke nego što mislite, pa se nijedna stavka ne broji i aplikaciju nije moguće instalirati dok uvjet ne prođe provjeru.", // ai 2026-10
 
 // src/Central/FindingText.php, row 302
-"Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "",
+"Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "Ispravite uvjet ili ispraznite njegovo polje da se prenesu sve stavke stranice, a zatim ponovno provjerite promjene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 303
 // src/Optimize/CheckImports.php, row 176, 178
 // src/Optimize/ImgMeasuring.php, row 55
-"Why" => "",
+"Why" => "Razlog", // ai 2026-10
 
 // src/Central/FindingText.php, row 304
-"A condition that takes every item" => "",
+"A condition that takes every item" => "Uvjet koji obuhvaća sve stavke", // ai 2026-10
 
 // src/Central/FindingText.php, row 305
-"Every item of the slice matches, so the condition leaves nothing out and the whole slice goes. That is allowed, but a condition is usually written to narrow: it may name a field every item has set, or a value they all share." => "",
+"Every item of the slice matches, so the condition leaves nothing out and the whole slice goes. That is allowed, but a condition is usually written to narrow: it may name a field every item has set, or a value they all share." => "Uvjetu odgovaraju sve stavke stranice, pa ništa ne izostavlja i prenosi se cijela stranica. To je dopušteno, ali uvjet se obično piše da bi suzio izbor: možda navodi polje koje sve stavke imaju ispunjeno ili vrijednost koja im je svima zajednička.", // ai 2026-10
 
 // src/Central/FindingText.php, row 306
-"If all the items should go, empty the field. If not, change the condition so that it narrows; the Items column of the plan shows how many items it takes." => "",
+"If all the items should go, empty the field. If not, change the condition so that it narrows; the Items column of the plan shows how many items it takes." => "Ako se trebaju prenijeti sve stavke, ispraznite polje. Ako ne, promijenite uvjet tako da sužava; stupac „Stavke“ u planu pokazuje koliko stavki obuhvaća.", // ai 2026-10
 
 // src/Central/FindingText.php, row 307
-"Items matching" => "",
+"Items matching" => "Odgovarajuće stavke", // ai 2026-10
 
 // src/Central/FindingText.php, row 308
-"Links to items a condition leaves behind" => "",
+"Links to items a condition leaves behind" => "Veze na stavke koje uvjet izostavlja", // ai 2026-10
 
 // src/Central/FindingText.php, row 309
-"Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere." => "",
+"Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere." => "Stavke koje se prenose povezane su sa stavkama druge stranice, a uvjet te stranice neke od njih izostavlja. Nakon prijenosa te veze vode na stavke koje ovaj AA nema. Broj je najmanji mogući; provjera nakon prijenosa prebrojit će svaku vezu koja vodi nikamo.", // ai 2026-10
 
 // src/Central/FindingText.php, row 310
-"Widen or empty the condition of the slice that leaves items behind; or give the slice with the links a condition that follows the link (printed under its field when there is one); or accept the links and clean them up after the transfer." => "",
+"Widen or empty the condition of the slice that leaves items behind; or give the slice with the links a condition that follows the link (printed under its field when there is one); or accept the links and clean them up after the transfer." => "Proširite ili ispraznite uvjet stranice koja izostavlja stavke; ili stranici s vezama zadajte uvjet koji slijedi vezu (ako postoji, ispisan je ispod njezina polja); ili prihvatite veze i očistite ih nakon prijenosa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 312
-"Check the transferred items" => "",
+"Check the transferred items" => "Provjerite prenesene stavke", // ai 2026-10
 
 // src/Central/FindingText.php, row 314
-"The slice here has another number of items than the one it comes from (there => here). Into an existing slice that is expected - its own items stay." => "",
+"The slice here has another number of items than the one it comes from (there => here). Into an existing slice that is expected - its own items stay." => "Stranica ovdje ima drugačiji broj stavki od one iz koje dolazi (ondje => ovdje). Kod postojeće stranice to je očekivano – njezine vlastite stavke ostaju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 315
-"Items were edited in the other AA while the transfer ran; the changes may be missing here." => "",
+"Items were edited in the other AA while the transfer ran; the changes may be missing here." => "Stavke su u drugom AA uređivane tijekom prijenosa; promjene ovdje možda nedostaju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 316
-"Some items link to items this AA does not have." => "",
+"Some items link to items this AA does not have." => "Neke stavke vode na stavke koje ovaj AA nema.", // ai 2026-10
 
 // src/Central/FindingText.php, row 317
-"The other AA did not say how many items it has, so the transfer cannot be compared." => "",
+"The other AA did not say how many items it has, so the transfer cannot be compared." => "Drugi AA nije naveo koliko stavki ima, pa prijenos nije moguće usporediti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 319
-"Transfer also the slice with the linked items." => "",
+"Transfer also the slice with the linked items." => "Prenesite i stranicu s povezanim stavkama.", // ai 2026-10
 
 // src/Central/FindingText.php, row 319
-"Run the transfer again when the numbers should match." => "",
+"Run the transfer again when the numbers should match." => "Ako bi se brojevi trebali podudarati, ponovno pokrenite prijenos.", // ai 2026-10
 
 // src/Central/FindingText.php, row 320
-"A domain of the site left out" => "",
+"A domain of the site left out" => "Izostavljena domena weba", // ai 2026-10
 
 // src/Central/FindingText.php, row 321
-"The site answers to this domain in its AA, but here it belongs to another site or to this AA itself." => "",
+"The site answers to this domain in its AA, but here it belongs to another site or to this AA itself." => "Web u svom AA odgovara na ovu domenu, ali ovdje ona pripada drugom webu ili samom ovom AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 322
-"Nothing to do, unless the domain should move here - then set it in the site settings." => "",
+"Nothing to do, unless the domain should move here - then set it in the site settings." => "Ništa ne treba raditi, osim ako se domena treba preseliti ovamo – tada je postavite u postavkama weba.", // ai 2026-10
 
 // src/Central/FindingText.php, row 332
-"Reads a file or a web address" => "",
+"Reads a file or a web address" => "Čita datoteku ili web adresu", // ai 2026-10
 
 // src/Central/FindingText.php, row 333
-"The text makes this AA read a file or a URL. The server asks for it, not the visitor: it can read local files of the server or reach addresses of the internal network; a relative URL is fetched with the cookies of the visitor." => "",
+"The text makes this AA read a file or a URL. The server asks for it, not the visitor: it can read local files of the server or reach addresses of the internal network; a relative URL is fetched with the cookies of the visitor." => "Tekst navodi ovaj AA da pročita datoteku ili URL. Traži ga server, ne posjetitelj: može tako čitati lokalne datoteke servera ili doći do adresa unutarnje mreže; relativni URL dohvaća se s kolačićima posjetitelja.", // ai 2026-10
 
 // src/Central/FindingText.php, row 334
-"Fine when it reads a public address the app needs (a feed, an image or a page of its own site). Do not install it when it points to a local path (../, /etc/, file://), to an internal address (localhost, 10.x, 192.168.x) or when the address is built from what a visitor sends (URL parameters)." => "",
+"Fine when it reads a public address the app needs (a feed, an image or a page of its own site). Do not install it when it points to a local path (../, /etc/, file://), to an internal address (localhost, 10.x, 192.168.x) or when the address is built from what a visitor sends (URL parameters)." => "U redu je ako čita javnu adresu koju aplikacija treba (feed, sliku ili stranicu vlastitog weba). Nemojte je instalirati ako vodi na lokalnu putanju (../, /etc/, file://), na unutarnju adresu (localhost, 10.x, 192.168.x) ili ako se adresa sastavlja od onoga što šalje posjetitelj (parametri URL-a).", // ai 2026-10
 
 // src/Central/FindingText.php, row 335
-"Prints data of the visitor, a user or the server" => "",
+"Prints data of the visitor, a user or the server" => "Ispisuje podatke posjetitelja, korisnika ili servera", // ai 2026-10
 
 // src/Central/FindingText.php, row 336
-"The text prints data of the request, of a user or of the server: {server} server variables, {cookie} the cookies of the visitor, {userinfo} the login log of any user, {user:password} the password the user signed in with." => "",
+"The text prints data of the request, of a user or of the server: {server} server variables, {cookie} the cookies of the visitor, {userinfo} the login log of any user, {user:password} the password the user signed in with." => "Tekst ispisuje podatke zahtjeva, korisnika ili servera: {server} varijable servera, {cookie} kolačiće posjetitelja, {userinfo} zapisnik prijava bilo kojeg korisnika, {user:password} lozinku kojom se korisnik prijavio.", // ai 2026-10
 
 // src/Central/FindingText.php, row 337
-"Fine when it shows the visitors their own data (their name, the address of the page). Do not install it when it prints passwords or server settings, or sends such data out - in a URL, an e-mail or a hidden form field." => "",
+"Fine when it shows the visitors their own data (their name, the address of the page). Do not install it when it prints passwords or server settings, or sends such data out - in a URL, an e-mail or a hidden form field." => "U redu je ako posjetiteljima prikazuje njihove vlastite podatke (ime, adresu stranice). Nemojte je instalirati ako ispisuje lozinke ili postavke servera ili takve podatke šalje van – u URL-u, e-mailu ili skrivenom polju formulara.", // ai 2026-10
 
 // src/Central/FindingText.php, row 338
-"Carries a password or another secret" => "",
+"Carries a password or another secret" => "Nosi lozinku ili drugu tajnu", // ai 2026-10
 
 // src/Central/FindingText.php, row 339
-"The text carries or issues a secret: a reading password of a slice ({credentials}), a signed token ({jwtencode}), a stored secret ({setsecret}) or a change of a password ({changepwd...}). A secret written in the app travels with it to every AA it is installed on." => "",
+"The text carries or issues a secret: a reading password of a slice ({credentials}), a signed token ({jwtencode}), a stored secret ({setsecret}) or a change of a password ({changepwd...}). A secret written in the app travels with it to every AA it is installed on." => "Tekst nosi ili izdaje tajnu: lozinku za čitanje stranice ({credentials}), potpisani token ({jwtencode}), spremljenu tajnu ({setsecret}) ili promjenu lozinke ({changepwd...}). Tajna zapisana u aplikaciji prenosi se s njom u svaki AA na koji se instalira.", // ai 2026-10
 
 // src/Central/FindingText.php, row 340
-"Expected only in apps with a login or an API. Check that the secret is never printed to visitors; after installing replace it with a secret of this AA." => "",
+"Expected only in apps with a login or an API. Check that the secret is never printed to visitors; after installing replace it with a secret of this AA." => "Očekuje se samo u aplikacijama s prijavom ili API-jem. Provjerite da se tajna nikad ne ispisuje posjetiteljima; nakon instalacije je zamijenite tajnom ovog AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 341
-"Sends e-mail" => "",
+"Sends e-mail" => "Šalje e-mail", // ai 2026-10
 
 // src/Central/FindingText.php, row 342
-"The app sends e-mail from this AA. When a visitor may choose the recipient, anyone can send mail through this AA (spam); attachments are downloaded by the server, a field filled by a visitor lets the visitor choose what is attached." => "",
+"The app sends e-mail from this AA. When a visitor may choose the recipient, anyone can send mail through this AA (spam); attachments are downloaded by the server, a field filled by a visitor lets the visitor choose what is attached." => "Aplikacija šalje e-mail iz ovog AA. Ako primatelja smije odabrati posjetitelj, bilo tko može slati poštu preko ovog AA (spam); privitke preuzima server, a polje koje ispunjava posjetitelj omogućuje mu da odabere što se prilaže.", // ai 2026-10
 
 // src/Central/FindingText.php, row 343
-"Check that the recipients are fixed addresses or those of the item, not a value from the URL or a form, that the attachments are public files of the app, and that the mail is not sent by a page anyone can load again and again." => "",
+"Check that the recipients are fixed addresses or those of the item, not a value from the URL or a form, that the attachments are public files of the app, and that the mail is not sent by a page anyone can load again and again." => "Provjerite jesu li primatelji fiksne adrese ili adrese iz stavke, a ne vrijednost iz URL-a ili formulara, jesu li privici javne datoteke aplikacije i da e-mail ne šalje stranica koju bilo tko može učitavati iznova i iznova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 344
-"Writes data whenever it is shown" => "",
+"Writes data whenever it is shown" => "Zapisuje podatke pri svakom prikazu", // ai 2026-10
 
 // src/Central/FindingText.php, row 345
-"The text writes data whenever it is shown: it creates or changes items ({newitem}, {updateitem}, {ensureitem}, {recompute}) or sends a data box message ({datovka})." => "",
+"The text writes data whenever it is shown: it creates or changes items ({newitem}, {updateitem}, {ensureitem}, {recompute}) or sends a data box message ({datovka})." => "Tekst zapisuje podatke pri svakom prikazu: stvara ili mijenja stavke ({newitem}, {updateitem}, {ensureitem}, {recompute}) ili šalje poruku u podatkovni pretinac ({datovka}).", // ai 2026-10
 
 // src/Central/FindingText.php, row 346
-"Check which slice it writes into - it should be a slice of this app. Writing into another slice by its id, or with values taken from the URL, is suspicious; {datovka} on a public page sends a message on every load." => "",
+"Check which slice it writes into - it should be a slice of this app. Writing into another slice by its id, or with values taken from the URL, is suspicious; {datovka} on a public page sends a message on every load." => "Provjerite u koju stranicu zapisuje – to bi trebala biti stranica ove aplikacije. Zapisivanje u drugu stranicu prema njezinu id-u ili s vrijednostima preuzetima iz URL-a je sumnjivo; {datovka} na javnoj stranici šalje poruku pri svakom učitavanju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 347
-"Calls PHP code of AA" => "",
+"Calls PHP code of AA" => "Poziva PHP kôd AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 348
-"The text calls an internal PHP method of AA with the data of the item." => "",
+"The text calls an internal PHP method of AA with the data of the item." => "Tekst poziva internu PHP metodu AA s podacima stavke.", // ai 2026-10
 
 // src/Central/FindingText.php, row 349
-"Apps rarely need it - install only when you know why the app calls it." => "",
+"Apps rarely need it - install only when you know why the app calls it." => "Aplikacije to rijetko trebaju – instalirajte samo ako znate zašto je aplikacija poziva.", // ai 2026-10
 
 // src/Central/FindingText.php, row 350
-"Sends the visitor elsewhere" => "",
+"Sends the visitor elsewhere" => "Šalje posjetitelja drugamo", // ai 2026-10
 
 // src/Central/FindingText.php, row 351
-"The text sends the visitor to another address. An address taken from the URL lets anyone make a link of your site that leads to a foreign (phishing) page." => "",
+"The text sends the visitor to another address. An address taken from the URL lets anyone make a link of your site that leads to a foreign (phishing) page." => "Tekst šalje posjetitelja na drugu adresu. Adresa preuzeta iz URL-a omogućuje bilo kome da napravi vezu s vašeg weba koja vodi na tuđu (phishing) stranicu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 352
-"Fine with a fixed address of the site; not with an address built from URL parameters." => "",
+"Fine with a fixed address of the site; not with an address built from URL parameters." => "U redu s fiksnom adresom weba; ne s adresom sastavljenom od parametara URL-a.", // ai 2026-10
 
 // src/Central/FindingText.php, row 353
-"Sets a security header" => "",
+"Sets a security header" => "Postavlja sigurnosno zaglavlje", // ai 2026-10
 
 // src/Central/FindingText.php, row 354
-"The text sets an HTTP header which decides what browsers allow: Content-Security-Policy (CSP - which scripts and styles may run), CORS (which other sites may read the answers), Report-To and NEL (where the browsers of the visitors send their error reports), Referrer-Policy (to which sites the browsers send the address of the page). A status code or a content type is only a note (I)." => "",
+"The text sets an HTTP header which decides what browsers allow: Content-Security-Policy (CSP - which scripts and styles may run), CORS (which other sites may read the answers), Report-To and NEL (where the browsers of the visitors send their error reports), Referrer-Policy (to which sites the browsers send the address of the page). A status code or a content type is only a note (I)." => "Tekst postavlja HTTP zaglavlje koje određuje što preglednici dopuštaju: Content-Security-Policy (CSP – koje skripte i stilovi smiju raditi), CORS (koji drugi webovi smiju čitati odgovore), Report-To i NEL (kamo preglednici posjetitelja šalju izvješća o pogreškama), Referrer-Policy (kojim webovima preglednici šalju adresu stranice). Statusni kôd ili vrsta sadržaja samo je napomena (I).", // ai 2026-10
 
 // src/Central/FindingText.php, row 355
-"Check that the CSP allows no scripts of foreign domains, that CORS is not opened to * unless the page is a public API, that Report-To and NEL send the reports to an address you trust, and that Referrer-Policy is neither unsafe-url nor no-referrer-when-downgrade. Security headers the site sets on purpose are fine - confirm them." => "",
+"Check that the CSP allows no scripts of foreign domains, that CORS is not opened to * unless the page is a public API, that Report-To and NEL send the reports to an address you trust, and that Referrer-Policy is neither unsafe-url nor no-referrer-when-downgrade. Security headers the site sets on purpose are fine - confirm them." => "Provjerite da CSP ne dopušta skripte s tuđih domena, da CORS nije otvoren za * osim ako je stranica javni API, da Report-To i NEL šalju izvješća na adresu kojoj vjerujete te da Referrer-Policy nije ni unsafe-url ni no-referrer-when-downgrade. Sigurnosna zaglavlja koja web postavlja namjerno su u redu – potvrdite ih.", // ai 2026-10
 
 // src/Central/FindingText.php, row 356
-"Runs a text as a template again" => "",
+"Runs a text as a template again" => "Ponovno obrađuje tekst kao predložak", // ai 2026-10
 
 // src/Central/FindingText.php, row 357
-"The text expands a text as a template again. When that text comes from visitors (an item of a public form, a URL parameter), they can put AA commands into it and run them with the rights of this AA." => "",
+"The text expands a text as a template again. When that text comes from visitors (an item of a public form, a URL parameter), they can put AA commands into it and run them with the rights of this AA." => "Tekst ponovno razvija tekst kao predložak. Ako taj tekst dolazi od posjetitelja (stavka iz javnog formulara, parametar URL-a), oni u njega mogu umetnuti naredbe AA i pokrenuti ih s pravima ovog AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 358
-"Fine over the texts of the app itself; do not install it when it expands item content filled by anonymous posting or parameters of the URL." => "",
+"Fine over the texts of the app itself; do not install it when it expands item content filled by anonymous posting or parameters of the URL." => "U redu nad tekstovima same aplikacije; nemojte je instalirati ako razvija sadržaj stavki ispunjen anonimnim slanjem ili parametrima URL-a.", // ai 2026-10
 
 // src/Central/FindingText.php, row 359
-"Calls a PHP function" => "",
+"Calls a PHP function" => "Poziva PHP funkciju", // ai 2026-10
 
 // src/Central/FindingText.php, row 360
-"The field alias calls a PHP function by its name, and it is not a literal usr_ function the check could recognise." => "",
+"The field alias calls a PHP function by its name, and it is not a literal usr_ function the check could recognise." => "Sinonim polja poziva PHP funkciju prema imenu, a to nije doslovno zapisana funkcija usr_ koju bi provjera prepoznala.", // ai 2026-10
 
 // src/Central/FindingText.php, row 361
-"Ask the author which function it calls; install only when it is a usr_ function defined in include/usr_aliasfnc.php of this AA." => "",
+"Ask the author which function it calls; install only when it is a usr_ function defined in include/usr_aliasfnc.php of this AA." => "Pitajte autora koju funkciju poziva; instalirajte samo ako je to funkcija usr_ definirana u include/usr_aliasfnc.php ovog AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 362
-"A command whose name is built when shown" => "",
+"A command whose name is built when shown" => "Naredba čiji se naziv sastavlja tek pri prikazu", // ai 2026-10
 
 // src/Central/FindingText.php, row 363
-"The name of a command is built only when the page is shown (from another command, a placeholder, JSON escapes or the internal quoting of AA), so the check cannot tell which command runs - it may be any of the dangerous ones." => "",
+"The name of a command is built only when the page is shown (from another command, a placeholder, JSON escapes or the internal quoting of AA), so the check cannot tell which command runs - it may be any of the dangerous ones." => "Naziv naredbe sastavlja se tek pri prikazu stranice (iz druge naredbe, zamjenskog znaka, JSON escape sekvenci ili internog navođenja AA), pa provjera ne može znati koja će se naredba izvršiti – može biti bilo koja od opasnih.", // ai 2026-10
 
 // src/Central/FindingText.php, row 364
-"Read the text around it. Common templates do not need that; unless you see why it is built this way, do not install the app." => "",
+"Read the text around it. Common templates do not need that; unless you see why it is built this way, do not install the app." => "Pročitajte tekst oko nje. Uobičajeni predlošci to ne trebaju; ako ne vidite zašto je sastavljena na taj način, nemojte instalirati aplikaciju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 365
-"Too complex to check" => "",
+"Too complex to check" => "Presloženo za provjeru", // ai 2026-10
 
 // src/Central/FindingText.php, row 366
-"The text is so complex that the check ran out of its limits - it is not checked completely." => "",
+"The text is so complex that the check ran out of its limits - it is not checked completely." => "Tekst je toliko složen da je provjera iscrpila svoja ograničenja – nije u potpunosti provjeren.", // ai 2026-10
 
 // src/Central/FindingText.php, row 367
-"Read the text yourself before installing." => "",
+"Read the text yourself before installing." => "Prije instalacije sami pročitajte tekst.", // ai 2026-10
 
 // src/Central/FindingText.php, row 368
-"A reading password in a URL" => "",
+"A reading password in a URL" => "Lozinka za čitanje u URL-u", // ai 2026-10
 
 // src/Central/FindingText.php, row 369
-"A URL carries the reading password of a slice (slice_pwd=...). The password travels with the app and shows in pages and server logs." => "",
+"A URL carries the reading password of a slice (slice_pwd=...). The password travels with the app and shows in pages and server logs." => "URL nosi lozinku za čitanje stranice (slice_pwd=...). Lozinka se prenosi s aplikacijom i vidi se u stranicama i zapisnicima servera.", // ai 2026-10
 
 // src/Central/FindingText.php, row 370
-"After installing remove it from the URL and set a new reading password of the slice on this AA." => "",
+"After installing remove it from the URL and set a new reading password of the slice on this AA." => "Nakon instalacije je uklonite iz URL-a i na ovom AA postavite stranici novu lozinku za čitanje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 371
-"The domain moves with the site" => "",
+"The domain moves with the site" => "Domena se seli s webom", // ai 2026-10
 
 // src/Central/FindingText.php, row 372
-"The site answers to this domain in its AA; the transfer gives the domain to the new site here." => "",
+"The site answers to this domain in its AA; the transfer gives the domain to the new site here." => "Web u svom AA odgovara na ovu domenu; prijenos domenu dodjeljuje novom webu ovdje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 373
-"Confirm it when the site moves here. When the site in the other AA stays in use, remove the domain from the settings of the new site after the transfer." => "",
+"Confirm it when the site moves here. When the site in the other AA stays in use, remove the domain from the settings of the new site after the transfer." => "Potvrdite to ako se web seli ovamo. Ako web u drugom AA ostaje u uporabi, nakon prijenosa uklonite domenu iz postavki novog weba.", // ai 2026-10
 
 // src/Central/FindingText.php, row 392
-"Longer than %1 bytes." => "",
+"Longer than %1 bytes." => "Dulje od %1 B.", // ai 2026-10
 
 // src/Central/FindingText.php, row 393
-"More than %1 conditions." => "",
+"More than %1 conditions." => "Više od %1 uvjeta.", // ai 2026-10
 
 // src/Central/FindingText.php, row 394
-"A condition starts with d-." => "",
+"A condition starts with d-." => "Uvjet počinje s d-.", // ai 2026-10
 
 // src/Central/FindingText.php, row 395
-"Not in threes of field, operator and value - most likely a dash inside a value or a date, which is written doubled: 2026--01--01." => "",
+"Not in threes of field, operator and value - most likely a dash inside a value or a date, which is written doubled: 2026--01--01." => "Nije u trojkama polje, operator i vrijednost – najvjerojatnije crtica unutar vrijednosti ili datuma, koja se piše udvostručeno: 2026--01--01.", // ai 2026-10
 
 // src/Central/FindingText.php, row 396
-"A control character, a line break or a backslash." => "",
+"A control character, a line break or a backslash." => "Kontrolni znak, prijelom retka ili obrnuta kosa crta.", // ai 2026-10
 
 // src/Central/FindingText.php, row 397
-"No field %1 in this slice." => "",
+"No field %1 in this slice." => "Polje %1 ne postoji na ovoj stranici.", // ai 2026-10
 
 // src/Central/FindingText.php, row 398
-"\"%1\" is not an operator of AA." => "",
+"\"%1\" is not an operator of AA." => "„%1“ nije operator AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 399
-"A value is missing, cannot be read, or would match every item." => "",
+"A value is missing, cannot be read, or would match every item." => "Vrijednost nedostaje, ne može se pročitati ili bi odgovarala svakoj stavci.", // ai 2026-10
 
 // src/Central/FindingText.php, row 400
-"<> takes one exact value - no OR, AND, NOT or quotes." => "",
+"<> takes one exact value - no OR, AND, NOT or quotes." => "<> prima jednu točnu vrijednost – bez OR, AND, NOT i navodnika.", // ai 2026-10
 
 // src/Central/FindingText.php, row 401
-"The value compared with %1 cannot be read." => "",
+"The value compared with %1 cannot be read." => "Vrijednost koja se uspoređuje s %1 ne može se pročitati.", // ai 2026-10
 
 // src/Central/FindingText.php, row 402
-"A value has a character the slice cannot store." => "",
+"A value has a character the slice cannot store." => "Vrijednost sadrži znak koji stranica ne može spremiti.", // ai 2026-10
 
 // src/Central/FindingText.php, row 403
-"The source AA did not answer about it. An older AA cannot filter items and has to be updated first; otherwise check the changes again." => "",
+"The source AA did not answer about it. An older AA cannot filter items and has to be updated first; otherwise check the changes again." => "Izvorni AA nije na to odgovorio. Stariji AA ne može filtrirati stavke i najprije ga treba ažurirati; inače ponovno provjerite promjene.", // ai 2026-10
 
 // src/Central/FindingText.php, row 435
-"alias %1" => "",
+"alias %1" => "sinonim %1", // ai 2026-10
 
 // src/Central/FindingText.php, row 454
-"spot" => "",
+"spot" => "mjesto", // ai 2026-10
 
 // src/Central/FindingText.php, row 455
-"field" => "",
+"field" => "polje", // ai 2026-10
 
 // src/Central/FindingText.php, row 458
-"filter" => "",
+"filter" => "filtar", // ai 2026-10
 
 // src/Central/FindingText.php, row 459
-"collection" => "",
+"collection" => "kolekcija", // ai 2026-10
 
 // src/Central/FindingText.php, row 460
-"object" => "",
+"object" => "objekt", // ai 2026-10
 
 // src/Central/FindingText.php, row 461
-"item" => "",
+"item" => "stavka", // ai 2026-10
 
 // src/Central/FindingText.php, row 462
-"constant group" => "",
+"constant group" => "grupa konstanti", // ai 2026-10
 
 // src/Central/FindingText.php, row 463
-"constant" => "",
+"constant" => "konstanta", // ai 2026-10
 
 // src/Central/FindingText.php, row 464
-"settings" => "",
+"settings" => "postavke", // ai 2026-10
 
 // src/Central/FindingText.php, row 465
-"values of the settings" => "",
+"values of the settings" => "vrijednosti postavki", // ai 2026-10
 
 // src/Central/FindingText.php, row 466, 474
-"variable" => "",
+"variable" => "varijabla", // ai 2026-10
 
 // src/Central/FindingText.php, row 467
 "condition" => "Uvjet",
 
 // src/Central/RemoteHtml.php, row 22
-"(no output)" => "",
+"(no output)" => "(nema izlaza)", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 37
-"Wrong command - this table is not synchronized" => "",
+"Wrong command - this table is not synchronized" => "Pogrešna naredba – ova se tablica ne sinkronizira", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 42
 "Wrong command - row is not defined - %1" => "Pogrešna naredba - redak nije definiran - %1", // ai 2026-06
 
 // src/Central/SyncExecutor.php, row 50
-"%1 %2 in slice %3: nothing to update" => "",
+"%1 %2 in slice %3: nothing to update" => "%1 %2 na stranici %3: nema što ažurirati", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 53
-"Error: %1 %2 in slice %3 not updated" => "",
+"Error: %1 %2 in slice %3 not updated" => "Greška: %1 %2 na stranici %3 nije ažurirano", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 54
 "%1 %2 in slice %3 updated" => "%1 %2 na stranici %3 ažurirano", // ai 2026-06
 
 // src/Central/SyncExecutor.php, row 66
-"Error: %1 %2 not inserted into slice %3" => "",
+"Error: %1 %2 not inserted into slice %3" => "Greška: %1 %2 nije umetnuto u stranicu %3", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 70
-"%1 %2 inserted into slice %3 as %4" => "",
+"%1 %2 inserted into slice %3 as %4" => "%1 %2 umetnuto u stranicu %3 kao %4", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 71
 "%1 %2 inserted into slice %3" => "%1 %2 umetnuto na stranicu %3", // ai 2026-06
 
 // src/Central/SyncExecutor.php, row 77
-"Error: %1 %2 not deleted from slice %3" => "",
+"Error: %1 %2 not deleted from slice %3" => "Greška: %1 %2 nije obrisano sa stranice %3", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 78
 "%1 %2 deleted from slice %3" => "%1 %2 izbrisano sa stranice %3", // ai 2026-06
@@ -8841,66 +8931,66 @@ return [
 "Unknown action (%1) for field %2 in slice %3" => "Nepoznata akcija (%1) za polje %2 na stranici %3", // ai 2026-06
 
 // src/Central/Task/RemoteAaTask.php, row 41
-"Err: no central_conf row for the AA (id %1) - the task is not run" => "",
+"Err: no central_conf row for the AA (id %1) - the task is not run" => "Greška: za AA (id %1) nema retka u central_conf – zadatak se ne pokreće", // ai 2026-10
 
 // src/Central/TransferText.php, row 89
-"A cache was not cleared after the transfer" => "",
+"A cache was not cleared after the transfer" => "Predmemorija nakon prijenosa nije očišćena", // ai 2026-10
 
 // src/Central/TransferText.php, row 92
-"Pages of the new modules may show old content until their cache expires; the details are in the PHP error log." => "",
+"Pages of the new modules may show old content until their cache expires; the details are in the PHP error log." => "Stranice novih modula mogu prikazivati stari sadržaj dok im predmemorija ne istekne; pojedinosti su u PHP zapisniku pogrešaka.", // ai 2026-10
 
 // src/Central/TransferText.php, row 133
-"The source AA refused the login" => "",
+"The source AA refused the login" => "Izvorni AA odbio je prijavu", // ai 2026-10
 
 // src/Central/TransferText.php, row 134
-"The source AA cannot be reached" => "",
+"The source AA cannot be reached" => "Izvorni AA nije dostupan", // ai 2026-10
 
 // src/Central/TransferText.php, row 135
-"The source AA did not answer in time" => "",
+"The source AA did not answer in time" => "Izvorni AA nije odgovorio na vrijeme", // ai 2026-10
 
 // src/Central/TransferText.php, row 136
-"The source AA gave no usable answer" => "",
+"The source AA gave no usable answer" => "Izvorni AA nije dao upotrebljiv odgovor", // ai 2026-10
 
 // src/Central/TransferText.php, row 137
-"The source could not read the items" => "",
+"The source could not read the items" => "Izvor nije mogao pročitati stavke", // ai 2026-10
 
 // src/Central/TransferText.php, row 138
-"The source gives no items of the slice" => "",
+"The source gives no items of the slice" => "Izvor ne daje nijednu stavku stranice", // ai 2026-10
 
 // src/Central/TransferText.php, row 139
-"The user who started the transfer is no superadmin of this AA any more" => "",
+"The user who started the transfer is no superadmin of this AA any more" => "Korisnik koji je pokrenuo prijenos više nije superadmin ovog AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 140
-"Writing the items failed - the details are in the PHP error log of this AA" => "",
+"Writing the items failed - the details are in the PHP error log of this AA" => "Zapisivanje stavki nije uspjelo – pojedinosti su u PHP zapisniku pogrešaka ovog AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 141
-"The batch did not fit into the time of a queue step, not even a smaller one" => "",
+"The batch did not fit into the time of a queue step, not even a smaller one" => "Paket nije stao u vrijeme koraka reda čekanja, čak ni smanjen", // ai 2026-10
 
 // src/Central/TransferText.php, row 142
-"The batch step stopped before its end several times - the details are in the PHP error log of this AA" => "",
+"The batch step stopped before its end several times - the details are in the PHP error log of this AA" => "Korak paketa nekoliko se puta zaustavio prije kraja – pojedinosti su u PHP zapisniku pogrešaka ovog AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 143
-"The check at the end failed - the details are in the PHP error log of this AA" => "",
+"The check at the end failed - the details are in the PHP error log of this AA" => "Završna provjera nije uspjela – pojedinosti su u PHP zapisniku pogrešaka ovog AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 144
-"The batch step failed - the details are in the PHP error log of this AA" => "",
+"The batch step failed - the details are in the PHP error log of this AA" => "Korak paketa nije uspio – pojedinosti su u PHP zapisniku pogrešaka ovog AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 145
-"The database of this AA refused to write - the details are in the PHP error log of this AA" => "",
+"The database of this AA refused to write - the details are in the PHP error log of this AA" => "Baza podataka ovog AA odbila je zapisivanje – pojedinosti su u PHP zapisniku pogrešaka ovog AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 146
-"A slice the transfer writes into was deleted meanwhile" => "",
+"A slice the transfer writes into was deleted meanwhile" => "Stranica u koju prijenos zapisuje u međuvremenu je obrisana", // ai 2026-10
 
 // src/Central/TransferText.php, row 147
-"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize" => "",
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize" => "Tablica ovog AA ne podržava transakcije (nije InnoDB) – pretvorite je u AA > Optimizirajte", // ai 2026-10
 
 // src/Central/TransferText.php, row 166
-"item %1" => "",
+"item %1" => "stavka %1", // ai 2026-10
 
-// src/IO/Grabber/AARSS.php, row 117
+// src/IO/Grabber/AARSS.php, row 118
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 125
+// src/IO/Grabber/AARSS.php, row 126
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Dohvaća podatke iz običnog RSS-a ili AA RSS-a (koristi se za razmjenu stavki između različitih AA instalacija)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 67
@@ -8970,21 +9060,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Koje informacije dohvatiti", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 74
+// src/IO/Grabber/Form.php, row 75
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "Forma", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 82
+// src/IO/Grabber/Form.php, row 83
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "Dohvaća podatke poslane (POST) putem AA forme", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 167
+// src/IO/Grabber/Form.php, row 168
 "No slice found: %1" => "Stranica nije pronađena: %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 170
+// src/IO/Grabber/Form.php, row 171
 "No file, img_upload, or img_src field type found in slice %1" => "U stranici %1 nije pronađeno polje tipa file, img_upload ili img_src", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 203
+// src/IO/Grabber/Form.php, row 204
 "no POST nor FILES sent" => "nije poslan ni POST ni FILES", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -9045,7 +9135,7 @@ return [
 "Host IP address" => "IP adresa poslužitelja", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 115
-"Port" => "",
+"Port" => "Port", // ai 2026-10
 
 // src/IO/Grabber/SQL.php, row 116
 "Charset (utf8mb4,...)" => "Skup znakova (utf8mb4,...)", // ai 2026-06
@@ -9087,1150 +9177,1144 @@ return [
 "No permission - no user is authenticated. Try to relogin, please." => "Nema dozvole - nijedan korisnik nije prijavljen. Pokušajte se ponovno prijaviti.", // ai 2026-06
 
 // src/Import/Credential/Store.php, row 55
-"damaged (a line break or NUL in %1)" => "",
+"damaged (a line break or NUL in %1)" => "oštećeno (prijelom retka ili NUL u %1)", // ai 2026-10
 
 // src/Import/Credential/Store.php, row 56
-"set (%1)" => "",
+"set (%1)" => "postavljeno (%1)", // ai 2026-10
 
 // src/Import/Definition.php, row 88
 // src/Import/DetailConfig.php, row 390
-"Key fields" => "",
+"Key fields" => "Ključna polja", // ai 2026-10
 
 // src/Import/Definition.php, row 89
 // src/Import/DetailConfig.php, row 391
-"Store mode" => "",
+"Store mode" => "Način spremanja", // ai 2026-10
 
 // src/Import/Definition.php, row 90
 // src/Import/DetailConfig.php, row 392
-"Validation" => "",
+"Validation" => "Validacija", // ai 2026-10
 
 // src/Import/Definition.php, row 91
 // src/Import/DetailConfig.php, row 393
-"After a stream" => "",
+"After a stream" => "Nakon toka", // ai 2026-10
 
 // src/Import/Definition.php, row 93
 // src/Import/DetailPage.php, row 604
-"Enabled" => "",
+"Enabled" => "Uključeno", // ai 2026-10
 
 // src/Import/Definition.php, row 113
-"The source is changed in the import detail." => "",
+"The source is changed in the import detail." => "Izvor se mijenja u detalju uvoza.", // ai 2026-10
 
 // src/Import/Definition.php, row 129
-"The slice has no import yet." => "",
+"The slice has no import yet." => "Stranica još nema uvoz.", // ai 2026-10
 
 // src/Import/Definition.php, row 135, 164
-"Next plan" => "",
+"Next plan" => "Sljedeće izvođenje", // ai 2026-10
 
 // src/Import/Definition.php, row 367
-"None - the import is disabled" => "",
+"None - the import is disabled" => "Nema – uvoz je isključen", // ai 2026-10
 
 // src/Import/Definition.php, row 370
-"Not planned - no task starts it" => "",
+"Not planned - no task starts it" => "Nije planirano – nijedan zadatak ga ne pokreće", // ai 2026-10
 
 // src/Import/Definition.php, row 423
-"The import needs a name." => "",
+"The import needs a name." => "Uvoz mora imati naziv.", // ai 2026-10
 
 // src/Import/Definition.php, row 427
-"The name of an import may not contain a colon (:) or look like an id." => "",
+"The name of an import may not contain a colon (:) or look like an id." => "Naziv uvoza ne smije sadržavati dvotočku (:) niti izgledati kao id.", // ai 2026-10
 
 // src/Import/Definition.php, row 430
-"Another import of the slice has this name." => "",
+"Another import of the slice has this name." => "Drugi uvoz stranice već ima taj naziv.", // ai 2026-10
 
 // src/Import/Definition.php, row 438
-"Change the source in the import detail." => "",
+"Change the source in the import detail." => "Izvor promijenite u detalju uvoza.", // ai 2026-10
 
 // src/Import/Definition.php, row 446
 // src/Import/DetailPage.php, row 545
-"Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "",
+"Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Uvozi se ovdje ne mogu pokretati: njihove tablice baze podataka (object_text, toexecute) ne podržavaju transakcije (InnoDB).", // ai 2026-10
 
 // src/Import/Definition.php, row 455
-"The mapping of the import is not valid." => "",
+"The mapping of the import is not valid." => "Mapiranje uvoza nije valjano.", // ai 2026-10
 
 // src/Import/Definition.php, row 477
-"The import source refused these settings: %1" => "",
+"The import source refused these settings: %1" => "Izvor uvoza odbio je ove postavke: %1", // ai 2026-10
 
 // src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "",
+"Only a user who manages the feeding of the slice may change its imports." => "Uvoze stranice smije mijenjati samo korisnik koji upravlja razmjenom sadržaja te stranice.", // ai 2026-10
 
 // src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "",
+"This import uses API keys, so only a superadmin may change or delete it." => "Ovaj uvoz koristi API ključeve, pa ga smije mijenjati ili brisati samo superadmin.", // ai 2026-10
 
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "",
+"The import was not saved - it is not an import of this slice." => "Uvoz nije spremljen – to nije uvoz ove stranice.", // ai 2026-10
 
 // src/Import/Definition.php, row 483
 // src/Import/DetailPage.php, row 546
-"The import source is not available." => "",
+"The import source is not available." => "Izvor uvoza nije dostupan.", // ai 2026-10
 
 // src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "",
+"The import source did not give its mapping." => "Izvor uvoza nije dao svoje mapiranje.", // ai 2026-10
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "",
+"The mapping of the import does not fit the slice." => "Mapiranje uvoza ne odgovara stranici.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
 // src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "",
+"A setting of the import source is not valid." => "Postavka izvora uvoza nije valjana.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "",
+"The setting \"%1\" of the import source is not valid." => "Postavka „%1“ izvora uvoza nije valjana.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
 // src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "",
+"The settings name a slice whose feeding you do not manage." => "Postavke navode stranicu čijom razmjenom sadržaja ne upravljate.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "",
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Postavka „%1“ navodi stranicu čijom razmjenom sadržaja ne upravljate.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "",
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Postavke uvoza su se u međuvremenu promijenile. Ponovno učitajte stranicu i ponovno ih postavite.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
-"The import source refused these settings." => "",
+"The import source refused these settings." => "Izvor uvoza odbio je ove postavke.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 31
-"No catalog yet. Check source lists what the source offers." => "",
+"No catalog yet. Check source lists what the source offers." => "Katalog još ne postoji. Što izvor nudi, ispisat će gumb „Provjerite izvor“.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 37
-"The stored catalog cannot be read. The next check of the source lists it again." => "",
+"The stored catalog cannot be read. The next check of the source lists it again." => "Spremljeni katalog ne može se pročitati. Sljedeća provjera izvora ponovno će ga ispisati.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 41
-"The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "",
+"The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Katalog je nepotpun: posljednja provjera nije ga ispisala cijelog (zasad unosa: %1). Dok ga provjera ne ispiše cijelog, ništa se kod izvora ne prijavljuje kao nedostajuće.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 42
-"Listed by the check of %1: %2 entries." => "",
+"Listed by the check of %1: %2 entries." => "Provjera od %1 ispisala je unosa: %2.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 47
-"Pages of the catalog" => "",
+"Pages of the catalog" => "Stranice kataloga", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 74
-"The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "",
+"The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Tok je dodan ili ažuriran iz kataloga. Tokovi uvoza prikazat će ga nakon sljedeće provjere izvora.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 75
-"The catalog has no such entry. Check the source to list its catalog again." => "",
+"The catalog has no such entry. Check the source to list its catalog again." => "Katalog nema takav unos. Pokrenite „Provjerite izvor“ kako bi se katalog ponovno ispisao.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 76, 77
-"Nothing was added from the catalog:" => "",
+"Nothing was added from the catalog:" => "Iz kataloga ništa nije dodano:", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 85
-"This import uses API keys, so only a superadmin may add streams from its catalog." => "",
+"This import uses API keys, so only a superadmin may add streams from its catalog." => "Ovaj uvoz koristi API ključeve, pa tokove iz njegovog kataloga smije dodavati samo superadmin.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 86
-"Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "",
+"Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Dodavanje iz kataloga zahtijeva dozvolu za uređivanje svih stavki stranice u koju izvor dodaje svoje tokove.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 87
-"The import source cannot add streams from its catalog." => "",
+"The import source cannot add streams from its catalog." => "Izvor uvoza ne može dodavati tokove iz svog kataloga.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 88
-"The import source could not be reached or did not answer. Try again later." => "",
+"The import source could not be reached or did not answer. Try again later." => "Izvor uvoza nije bio dostupan ili nije odgovorio. Pokušajte ponovno kasnije.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 102
-"1 entry is new at the source - no stream comes from it." => "",
+"1 entry is new at the source - no stream comes from it." => "1 unos je nov u izvoru - iz njega ne dolazi nijedan tok.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 103
-"%1 entries are new at the source - no stream comes from them." => "",
+"%1 entries are new at the source - no stream comes from them." => "Novih unosa u izvoru: %1 - iz njih ne dolazi nijedan tok.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 111
-"Missing at the source" => "",
+"Missing at the source" => "Nedostaje u izvoru", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 111
-"Renamed at the source" => "",
+"Renamed at the source" => "Preimenovano u izvoru", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124, 143
 // src/Import/DetailPage.php, row 377, 1025, 1046
-"Stream" => "",
+"Stream" => "Tok", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124
-"Catalog key" => "",
+"Catalog key" => "Ključ u katalogu", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124
-"Name of the stream" => "",
+"Name of the stream" => "Naziv toka", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124
-"Name in the catalog" => "",
+"Name in the catalog" => "Naziv u katalogu", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 143
 // src/Import/DetailConfig.php, row 291
-"Key" => "",
+"Key" => "Ključ", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 143
 // src/Import/DetailPage.php, row 329, 666
-"Updated" => "",
+"Updated" => "Ažurirano", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 171
-"Catalog of the source" => "",
+"Catalog of the source" => "Katalog izvora", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 136
-"The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "",
+"The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Mapiranje je ponovno postavljeno iz izvora. Odbačeno je ono što je uvoz znao o tokovima - verzije, vremena uvoza i posljednja provjera izvora - pa će ih sljedeće pokretanje sve ponovno učitati.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 137
-"The mapping is the same as the source gives - nothing changed." => "",
+"The mapping is the same as the source gives - nothing changed." => "Mapiranje je isto kao ono koje daje izvor - ništa se nije promijenilo.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 138, 139
-"The mapping was not reset:" => "",
+"The mapping was not reset:" => "Mapiranje nije ponovno postavljeno:", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 140
-"The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "",
+"The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Postavke su spremljene i mapiranje je ponovno postavljeno iz izvora. Ako je pokretanje bilo otvoreno, završeno je, a odbačeno je ono što je uvoz znao o tokovima.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 141
-"The settings are the same as stored - nothing changed." => "",
+"The settings are the same as stored - nothing changed." => "Postavke su iste kao spremljene - ništa se nije promijenilo.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 142
-"The settings were not saved:" => "",
+"The settings were not saved:" => "Postavke nisu spremljene:", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 144
-"Choose a source." => "",
+"Choose a source." => "Odaberite izvor.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 155, 179
-"Settings of the source" => "",
+"Settings of the source" => "Postavke izvora", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 159
-"Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "",
+"Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Planirana pokretanja i dalje koriste spremljene postavke; ako želite uvoz pokrenuti ručno, promijenite ih u %1 niže.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 161
-"Change the settings or the source in %1 below." => "",
+"Change the settings or the source in %1 below." => "Promijenite postavke ili izvor u %1 niže.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 188
-"No other source is available." => "",
+"No other source is available." => "Nijedan drugi izvor nije dostupan.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 192
-"(current)" => "",
+"(current)" => "(trenutni)", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 203
-"Show its settings" => "",
+"Show its settings" => "Prikažite njegove postavke", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 204
-"Keep the current source" => "",
+"Keep the current source" => "Zadržite trenutni izvor", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 214
-"This source is not available, so its settings cannot be shown. Choose another source above." => "",
+"This source is not available, so its settings cannot be shown. Choose another source above." => "Ovaj izvor nije dostupan, pa se njegove postavke ne mogu prikazati. Odaberite drugi izvor gore.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 222
-"The stored settings cannot be read; saving the form stores them again." => "",
+"The stored settings cannot be read; saving the form stores them again." => "Spremljene postavke ne mogu se pročitati; spremanjem obrasca ponovno će se spremiti.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 228
-"The source did not describe its settings, so they cannot be changed now." => "",
+"The source did not describe its settings, so they cannot be changed now." => "Izvor nije opisao svoje postavke, pa se sada ne mogu mijenjati.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 232
-"You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "",
+"You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Mijenjate izvor iz %1 u %2. Spremanje završava otvoreno pokretanje, odbacuje ono što uvoz zna o tokovima i katalogu te preuzima mapiranje iz novog izvora.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 233
-"Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "",
+"Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Promijeniti izvor? Otvoreno pokretanje završava, odbacuje se ono što uvoz zna o tokovima, a mapiranje se preuzima iz novog izvora.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 234
-"Change the source and save" => "",
+"Change the source and save" => "Promijenite izvor i spremite", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 236
-"Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "",
+"Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Spremanje promijenjenih postavki završava otvoreno pokretanje, odbacuje ono što uvoz zna o tokovima i katalogu te ponovno postavlja mapiranje iz izvora. Nepromijenjene postavke ništa ne mijenjaju.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 237
-"Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "",
+"Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Spremiti postavke? Ako su se promijenile, otvoreno pokretanje završava, odbacuje se ono što uvoz zna o tokovima, a mapiranje se ponovno postavlja iz izvora.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 238
-"Save the settings" => "",
+"Save the settings" => "Spremite postavke", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 272
-"The source has no settings." => "",
+"The source has no settings." => "Izvor nema postavki.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 283
-"Keys" => "",
+"Keys" => "Ključevi", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 285
-"The source did not say which keys it needs." => "",
+"The source did not say which keys it needs." => "Izvor nije naveo koje ključeve treba.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 288
-"The source needs no key." => "",
+"The source needs no key." => "Izvoru ne treba ključ.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 291
 // src/Widget/Widget.php, row 849
 "Hint" => "Savjet",
 
 // src/Import/DetailConfig.php, row 297
-"Key is set" => "",
+"Key is set" => "Ključ je postavljen", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 298
-"Key is damaged" => "",
+"Key is damaged" => "Ključ je oštećen", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 299
-"Key is missing" => "",
+"Key is missing" => "Ključ nedostaje", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 305
-"The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "",
+"The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "Ključeve postavlja administrator poslužitelja u config.php, nikada ovdje. Bez ključa izvor ne uspijeva kada ga treba; oštećeni ključ sadrži prijelom retka i nikada se ne šalje.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 327
-"define one of %1 in config.php" => "",
+"define one of %1 in config.php" => "definirajte jedno od %1 u config.php", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 350
-"The mapping of the import cannot be read. Reset it from the source." => "",
+"The mapping of the import cannot be read. Reset it from the source." => "Mapiranje uvoza ne može se pročitati. Ponovno ga postavite iz izvora.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 356
-"Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "",
+"Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Ponovno postaviti mapiranje iz izvora? Mapiranje, ključna polja, način spremanja, provjera valjanosti, izraz nakon toka i filtar zamijenit će se onim što daje izvor.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 357
-"Reset mapping from the source" => "",
+"Reset mapping from the source" => "Ponovno postavite mapiranje iz izvora", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 358
-"Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "",
+"Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Ponovno postavlja mapiranje, ključna polja, način spremanja, provjeru valjanosti, izraz nakon toka i filtar onako kako ih izvor daje za spremljene postavke. Novo mapiranje odbacuje ono što je uvoz znao o tokovima, pa će ih sljedeće pokretanje sve ponovno učitati. Nije dopušteno dok je pokretanje otvoreno, zaustavljeno greškom ili se još završava.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 366
-"The mapping has no rows." => "",
+"The mapping has no rows." => "Mapiranje nema redaka.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 369
-"Target" => "",
+"Target" => "Cilj", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 369
-"Transformation" => "",
+"Transformation" => "Transformacija", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 379
-"the field the job parameter names" => "",
+"the field the job parameter names" => "polje koje navodi parametar zadatka", // ai 2026-10
 
 // src/Import/DetailPage.php, row 269
-"This page is out of date – reload it." => "",
+"This page is out of date – reload it." => "Ova stranica je zastarjela – ponovno je učitajte.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 282
-"Last import" => "",
+"Last import" => "Posljednji uvoz", // ai 2026-10
 
 // src/Import/DetailPage.php, row 283
-"Next start" => "",
+"Next start" => "Sljedeće pokretanje", // ai 2026-10
 
 // src/Import/DetailPage.php, row 284
-"Last check of the source" => "",
+"Last check of the source" => "Posljednja provjera izvora", // ai 2026-10
 
 // src/Import/DetailPage.php, row 290
-"Overview" => "",
-
-// src/Import/DetailPage.php, row 300, 367, 800
-// src/Manageraction/Import_Run.php, row 29
-"Run" => "",
+"Overview" => "Pregled", // ai 2026-10
 
 // src/Import/DetailPage.php, row 300
-"Imports every stream." => "",
+"Imports every stream." => "Uvozi sve tokove.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 301, 801
-"Run changed only" => "",
+"Run changed only" => "Pokrenite samo promijenjene", // ai 2026-10
 
 // src/Import/DetailPage.php, row 301
-"Skips the streams the source says did not change." => "",
+"Skips the streams the source says did not change." => "Preskače tokove za koje izvor kaže da se nisu promijenili.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 302, 367, 802
-"Check source" => "",
+"Check source" => "Provjerite izvor", // ai 2026-10
 
 // src/Import/DetailPage.php, row 302
-"Asks the source whether it works. Stores nothing." => "",
+"Asks the source whether it works. Stores nothing." => "Pita izvor radi li. Ništa ne sprema.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 303
-"Reads up to 500 items and shows what it would store. Stores nothing." => "",
+"Reads up to 500 items and shows what it would store. Stores nothing." => "Čita do 500 stavki i prikazuje što bi spremio. Ništa ne sprema.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 309
-"More actions" => "",
+"More actions" => "Više radnji", // ai 2026-10
 
 // src/Import/DetailPage.php, row 327, 352
-"Runs" => "",
+"Runs" => "Izvođenja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 327
-"No run yet." => "",
+"No run yet." => "Još nema izvođenja.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329
-// src/Optimize/CheckImports.php, row 150, 154
-// src/Optimize/CheckInstallRuns.php, row 54
-"Started" => "",
-
-// src/Import/DetailPage.php, row 329
-"Took" => "",
+"Took" => "Trajanje", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Read" => "",
+"Read" => "Pročitano", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Skipped" => "",
+"Skipped" => "Preskočeno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Filtered out" => "",
+"Filtered out" => "Filtrirano", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Item errors" => "",
+"Item errors" => "Greške stavki", // ai 2026-10
 
 // src/Import/DetailPage.php, row 342
-"working %1" => "",
+"working %1" => "od toga rad %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 366
-"The stored state of the streams cannot be read." => "",
+"The stored state of the streams cannot be read." => "Spremljeno stanje tokova ne može se pročitati.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 367
-"No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "",
+"No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Još nijedan tok nije uvezen ni provjeren. Popis će ispuniti %1 ili %2 (Radnje, gore).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 368, 396
-"Streams" => "",
+"Streams" => "Tokovi", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Records" => "",
+"Records" => "Zapisi", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Last recorded" => "",
+"Last recorded" => "Posljednji zapis", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Source checked" => "",
+"Source checked" => "Provjera izvora", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Data version" => "",
+"Data version" => "Verzija podataka", // ai 2026-10
 
 // src/Import/DetailPage.php, row 390
-"by the run started %1" => "",
+"by the run started %1" => "pokretanjem započetim %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 395
-"Pages of the streams" => "",
+"Pages of the streams" => "Stranice tokova", // ai 2026-10
 
 // src/Import/DetailPage.php, row 421
-"Page %1 of %2" => "",
+"Page %1 of %2" => "Stranica %1 od %2", // ai 2026-10
 
 // src/Import/DetailPage.php, row 507
-"The run is queued. It goes on in the background; reload the page to see how far it got." => "",
+"The run is queued. It goes on in the background; reload the page to see how far it got." => "Pokretanje je u redu čekanja. Nastavlja se u pozadini; ponovno učitajte stranicu da vidite dokle je stiglo.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 508
-"The run goes on - its next step is queued." => "",
+"The run goes on - its next step is queued." => "Pokretanje se nastavlja - njegov sljedeći korak je u redu čekanja.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 509
-"The run is ended. What it imported stays." => "",
+"The run is ended. What it imported stays." => "Pokretanje je završeno. Ono što je uvezeno ostaje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 511
-"No such action." => "",
+"No such action." => "Takva radnja ne postoji.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 512
-"Choose a stream of the source." => "",
+"Choose a stream of the source." => "Odaberite tok izvora.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 513
-"Not started." => "",
+"Not started." => "Nije pokrenuto.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "",
+"Its last step may still be working. Try again in a few minutes." => "Njegov posljednji korak možda još radi. Pokušajte ponovno za nekoliko minuta.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "",
+"This import no longer exists in this slice." => "Ovaj uvoz više ne postoji na ovoj stranici.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 517
-"No such run of this import." => "",
+"No such run of this import." => "Takvo pokretanje ovog uvoza ne postoji.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 518
-"The run is finished already." => "",
+"The run is finished already." => "Pokretanje je već završeno.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "",
+"The action failed. The log of import failures has its cause." => "Radnja nije uspjela. Uzrok je u zapisniku grešaka uvoza.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "",
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Posljednje pokretanje zaustavljeno je greškom. Najprije ga nastavite („Nastavite“) ili završite („Završite“). Planirano pokretanje samo ga završava; ručno pokretanje ne.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "",
+"The last run stopped by an error. Continue it or End it first." => "Posljednje pokretanje zaustavljeno je greškom. Najprije ga nastavite („Nastavite“) ili završite („Završite“).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "",
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Na posljednjem pokretanju dugo nije radio nijedan korak. Najprije ga nastavite („Nastavite“) ili završite („Završite“). Planirano pokretanje samo ga završava; ručno pokretanje ne.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "",
+"No step has worked on the last run for a long time. Continue it or End it first." => "Na posljednjem pokretanju dugo nije radio nijedan korak. Najprije ga nastavite („Nastavite“) ili završite („Završite“).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "",
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Posljednji korak prethodnog pokretanja još se završava. Pokušajte ponovno za nekoliko minuta.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "",
+"Its next step is already on its way." => "Njegov sljedeći korak već je na putu.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 535
-"The last run is still running." => "",
+"The last run is still running." => "Posljednje pokretanje još traje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "",
+"Only a user who manages the feeding of the slice may run its imports." => "Uvoze stranice smije pokretati samo korisnik koji upravlja razmjenom sadržaja te stranice.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "",
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Definicija uvoza ne može se koristiti - njezino mapiranje ne odgovara stranici ili se ne može pročitati (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "",
+"The source has no such stream now." => "Izvor sada nema takav tok.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "",
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "Kôd izvora uvoza nije uspio (SOURCE). Klasa i redak su u zapisniku grešaka uvoza.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "",
+"The first row of the file lacks columns the mapping needs." => "Prvom retku datoteke nedostaju stupci koje mapiranje treba.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "",
+"The source did not accept the key." => "Izvor nije prihvatio ključ.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "",
+"The key of the source is damaged in the configuration." => "Ključ izvora oštećen je u konfiguraciji.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "",
+"The source could not be reached." => "Izvor nije dostupan.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "",
+"The run is finished; it cannot go on." => "Pokretanje je završeno; ne može se nastaviti.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "",
+"The import is switched off." => "Uvoz je isključen.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "",
+"This import uses API keys, so only a superadmin may do this." => "Ovaj uvoz koristi API ključeve, pa to smije učiniti samo superadmin.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "",
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Izvor uvoza ne može odrediti verzije svojih tokova, pa nema stanja koje bi se moglo zabilježiti.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "",
+"The import source refused: %1" => "Izvor uvoza je odbio: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "",
+"The request to the source failed." => "Zahtjev prema izvoru nije uspio.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "",
+"The source is not available now." => "Izvor sada nije dostupan.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 588
 // src/Import/RunView.php, row 177
-"No import yet" => "",
+"No import yet" => "Još nema uvoza", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "",
+"Latest run: %1" => "Posljednje izvođenje: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
-"Since then: %1" => "",
+"Since then: %1" => "Od tada: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 604
-"Source: %1" => "",
+"Source: %1" => "Izvor: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 604
-"this source is not available" => "",
+"this source is not available" => "ovaj izvor nije dostupan", // ai 2026-10
 
 // src/Import/DetailPage.php, row 626
-"First item error:" => "",
+"First item error:" => "Prva greška stavke:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 653
-"Latest runs" => "",
+"Latest runs" => "Posljednja izvođenja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 653
-"Outcomes of the latest runs, newest first" => "",
+"Outcomes of the latest runs, newest first" => "Ishodi posljednjih pokretanja, najnovije prvo", // ai 2026-10
 
 // src/Import/DetailPage.php, row 654
-"Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "",
+"Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Najnovije prvo. Isprekidani krug je pokretanje koje ništa nije spremilo: provjera izvora, probno pokretanje ili bilježenje stanja. Puni kvadrat %1 je pokretanje završeno prije dovršetka.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 679
-"The open run" => "",
+"The open run" => "Otvoreno izvođenje", // ai 2026-10
 
 // src/Import/DetailPage.php, row 681
-"Streams done: %1 of %2." => "",
+"Streams done: %1 of %2." => "Gotovi tokovi: %1 od %2.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 684
-"Now at: %1." => "",
+"Now at: %1." => "Trenutno obrađuje: %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 686
-"Last progress: %1." => "",
+"Last progress: %1." => "Posljednji napredak: %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 689
-"Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "",
+"Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Ništa se više ne uvozi dok ne poduzmete nešto ili dok planirani zadatak ponovno ne pokrene uvoz (time se ovo pokretanje završava).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 690
-"Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "",
+"Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "„Nastavite“ nastavlja tamo gdje je stalo, kada se uzrok ukloni; „Završite“ ga trajno zaustavlja i zadržava ono što je uvezeno.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 691
-"No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "",
+"No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "Na njemu dugo nije radio nijedan korak - provjerite pokreće li cron red zadataka i jesu li njegovi krugovi dovoljno dugi za jedan korak (TOEXECUTE_ALLOWED_TIME u config.php). „Nastavite“ ga sada pokušava ponovno; „Završite“ ga trajno zaustavlja i zadržava ono što je uvezeno. Planirano pokretanje uvoza ga završava i započinje novo pokretanje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 692
-"A step is working now." => "",
+"A step is working now." => "Upravo radi jedan korak.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 694
-"Waiting to try again at %1 after 1 failed try." => "",
+"Waiting to try again at %1 after 1 failed try." => "Čeka novi pokušaj u %1 nakon 1 neuspjelog pokušaja.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 695
-"Waiting to try again at %1 after %2 failed tries." => "",
+"Waiting to try again at %1 after %2 failed tries." => "Čeka novi pokušaj u %1. Neuspjelih pokušaja: %2.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 696
-"Waiting to try again at %1." => "",
+"Waiting to try again at %1." => "Čeka novi pokušaj u %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 698, 944
-"Its last step may still be working." => "",
+"Its last step may still be working." => "Njegov posljednji korak možda još radi.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 699
-"Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "",
+"Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Njegov posljednji korak zaustavio se prije dovršetka. Red zadataka pokušat će ponovno unutar %1 min; „Pokušajte odmah“ to čini odmah.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 708
-"Its next step waits in the task queue until %1." => "",
+"Its next step waits in the task queue until %1." => "Njegov sljedeći korak čeka u redu zadataka do %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 708
-"Its next step waits in the task queue." => "",
+"Its next step waits in the task queue." => "Njegov sljedeći korak čeka u redu zadataka.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "",
+"The import is disabled, so no planned task starts it." => "Uvoz je isključen, pa ga nijedan planirani zadatak ne pokreće.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 732
-"Not planned" => "",
+"Not planned" => "Nije planirano", // ai 2026-10
 
 // src/Import/DetailPage.php, row 733
-"A planned task calls it, but none has a time to start it." => "",
+"A planned task calls it, but none has a time to start it." => "Poziva ga planirani zadatak, ali nijedan nema vrijeme pokretanja.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 734
-"It runs only when you start it. To run it on a schedule, add a planned task." => "",
+"It runs only when you start it. To run it on a schedule, add a planned task." => "Pokreće se samo kada ga vi pokrenete. Za pokretanje prema rasporedu dodajte planirani zadatak.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 745
-"Written by hand, a planned task starts it with %1." => "",
+"Written by hand, a planned task starts it with %1." => "Ručno napisan planirani zadatak pokreće ga pomoću %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 756
-"Planned tasks need the Forms permission" => "",
+"Planned tasks need the Forms permission" => "Planirani zadaci zahtijevaju dozvolu „Forme“", // ai 2026-10
 
 // src/Import/DetailPage.php, row 760
-"Planned tasks: %1" => "",
+"Planned tasks: %1" => "Planirani zadaci: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 761
-"Planned tasks: %1, next %2" => "",
+"Planned tasks: %1, next %2" => "Planirani zadaci: %1, sljedeći %2", // ai 2026-10
 
 // src/Import/DetailPage.php, row 763, 778
-"Schedule" => "",
+"Schedule" => "Zakažite", // ai 2026-10
 
 // src/Import/DetailPage.php, row 766
-"(import off)" => "",
+"(import off)" => "(uvoz isključen)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 773
-"next %1" => "",
+"next %1" => "sljedeće %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 773
-"no time set" => "",
+"no time set" => "vrijeme nije postavljeno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 774
-"save the task again to let it start the import" => "",
+"save the task again to let it start the import" => "ponovno spremite zadatak kako bi mogao pokrenuti uvoz", // ai 2026-10
 
 // src/Import/DetailPage.php, row 775
-"queued" => "",
+"queued" => "u redu čekanja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 775
-"not queued" => "",
+"not queued" => "nije u redu čekanja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 793
-"Import %1" => "",
+"Import %1" => "Uvoz %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 803
-"mode set by an expression" => "",
+"mode set by an expression" => "način određen izrazom", // ai 2026-10
 
 // src/Import/DetailPage.php, row 803
-"unknown mode %1" => "",
+"unknown mode %1" => "nepoznat način %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 826, 833
-"Passed" => "",
+"Passed" => "U redu", // ai 2026-10
 
 // src/Import/DetailPage.php, row 826, 833
-"Failed" => "",
+"Failed" => "Nije uspjelo", // ai 2026-10
 
 // src/Import/DetailPage.php, row 828
-"Taken from the run list: the stream state holds no newer check result." => "",
+"Taken from the run list: the stream state holds no newer check result." => "Preuzeto iz popisa pokretanja: stanje tokova ne sadrži noviji rezultat provjere.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 831
-"The stored result cannot be read." => "",
+"The stored result cannot be read." => "Spremljeni rezultat ne može se pročitati.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 831
-"Never checked" => "",
+"Never checked" => "Nikad provjereno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 849
-"The mapping of the import cannot be read; no run starts until it is set again." => "",
+"The mapping of the import cannot be read; no run starts until it is set again." => "Mapiranje uvoza ne može se pročitati; nijedno pokretanje neće započeti dok se ponovno ne postavi.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 856
-"The mapping does not fit the slice; no run starts until it is fixed:" => "",
+"The mapping does not fit the slice; no run starts until it is fixed:" => "Mapiranje ne odgovara stranici; nijedno pokretanje neće započeti dok se ne ispravi:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 899
-"No stream is known yet - run the import or check the source first." => "",
+"No stream is known yet - run the import or check the source first." => "Još nije poznat nijedan tok - najprije pokrenite uvoz ili provjerite izvor.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 903
-"One stream" => "",
+"One stream" => "Jedan tok", // ai 2026-10
 
 // src/Import/DetailPage.php, row 904
-"Run the stream" => "",
+"Run the stream" => "Pokrenite tok", // ai 2026-10
 
 // src/Import/DetailPage.php, row 905
-"Dry run of the stream" => "",
+"Dry run of the stream" => "Probno pokretanje toka", // ai 2026-10
 
 // src/Import/DetailPage.php, row 918
-"Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "",
+"Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Zabilježiti verzije koje izvor sada ima, kao da su uvezene? Tokovi koji se nakon toga ne promijene neće se uvoziti.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 919
-"Record the current state of the source" => "",
+"Record the current state of the source" => "Zabilježite trenutno stanje izvora", // ai 2026-10
 
 // src/Import/DetailPage.php, row 921
-"Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "",
+"Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Sprema verziju koju svaki tok sada ima, bez uvoza, pa „Pokrenite samo promijenjene“ zatim uzima samo ono što se kasnije promijeni. Koristite to samo kada su podaci izvora već na stranici.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 937
-"No run is open." => "",
+"No run is open." => "Nijedno pokretanje nije otvoreno.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 943
-"Its step is working now." => "",
+"Its step is working now." => "Njegov korak upravo radi.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 947
-"Try now" => "",
+"Try now" => "Pokušajte odmah", // ai 2026-10
 
 // src/Import/DetailPage.php, row 957
-"End the run for good? What it imported stays; the next run starts from the beginning." => "",
+"End the run for good? What it imported stays; the next run starts from the beginning." => "Trajno završiti pokretanje? Ono što je uvezeno ostaje; sljedeće pokretanje počinje ispočetka.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1024
-"The first item errors (%1)" => "",
+"The first item errors (%1)" => "Prve greške stavki (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1025, 1046
-"Job" => "",
+"Job" => "Zadatak", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1036
-"Skipped - the key came out empty (%1)" => "",
+"Skipped - the key came out empty (%1)" => "Preskočeno - ključ je ispao prazan (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1046
-"Source value" => "",
+"Source value" => "Vrijednost iz izvora", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1056
-"The filter kept no item of 1 job." => "",
+"The filter kept no item of 1 job." => "Filtar nije zadržao nijednu stavku iz 1 zadatka.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1056
-"The filter kept no item of %1 jobs." => "",
+"The filter kept no item of %1 jobs." => "Filtar nije zadržao nijednu stavku iz zadataka: %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1057
-"If those items should be imported, check the filter in Mapping." => "",
+"If those items should be imported, check the filter in Mapping." => "Ako te stavke treba uvesti, provjerite filtar u „Mapiranje“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1066
-"The source went round in 1 stream; the rest of it was skipped." => "",
+"The source went round in 1 stream; the rest of it was skipped." => "Izvor se zavrtio u krug u 1 toku; ostatak je preskočen.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1066
-"The source went round in %1 streams; the rest of each was skipped." => "",
+"The source went round in %1 streams; the rest of each was skipped." => "Izvor se zavrtio u krug u tokovima: %1; ostatak svakoga je preskočen.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1067
-"The source pages wrongly or changed its paging; check the source, then run the import again." => "",
+"The source pages wrongly or changed its paging; check the source, then run the import again." => "Izvor pogrešno straniči ili je promijenio straničenje; provjerite izvor, zatim ponovno pokrenite uvoz.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1082
-"Remarks of the source (%1)" => "",
+"Remarks of the source (%1)" => "Napomene izvora (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1091
-"Remark" => "",
+"Remark" => "Napomena", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1099
-"The dry run found no item to store." => "",
+"The dry run found no item to store." => "Probno pokretanje nije pronašlo nijednu stavku za spremanje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1101
-"What the dry run would store - the first %1 items" => "",
+"What the dry run would store - the first %1 items" => "Što bi probno pokretanje spremilo - prve stavke (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1123
-"Last try failed:" => "",
+"Last try failed:" => "Posljednji pokušaj nije uspio:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1123
 "Error:" => "Greška:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1124
-"At: %1" => "",
+"At: %1" => "Mjesto: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1126
-"What to do:" => "",
+"What to do:" => "Što učiniti:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1136
-"Check the address of the source in its settings, then Continue or End the run." => "",
+"Check the address of the source in its settings, then Continue or End the run." => "Provjerite adresu izvora u njegovim postavkama, zatim pokretanje nastavite („Nastavite“) ili završite („Završite“).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1140
-"Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "",
+"Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Ispravite mapiranje stupaca ili datoteku tako da stupci koji nedostaju postoje, zatim ponovno pokrenite „Provjerite izvor“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1141
-"Check the key of the source in its settings, then run Check source." => "",
+"Check the key of the source in its settings, then run Check source." => "Provjerite ključ izvora u njegovim postavkama, zatim pokrenite „Provjerite izvor“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1142
-"Enter the key of the source again in its settings, then run Check source." => "",
+"Enter the key of the source again in its settings, then run Check source." => "Ponovno unesite ključ izvora u njegovim postavkama, zatim pokrenite „Provjerite izvor“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1143
-"The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "",
+"The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "Izvor nije dostupan. Provjerite njegovu adresu u postavkama; ako je ispravna, kasnije nastavite pokretanje („Nastavite“).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1144
-"Correct the settings of the source, then run Check source." => "",
+"Correct the settings of the source, then run Check source." => "Ispravite postavke izvora, zatim pokrenite „Provjerite izvor“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1145
-"Choose a stream the source still has, then start the import again." => "",
+"Choose a stream the source still has, then start the import again." => "Odaberite tok koji izvor još ima, zatim ponovno pokrenite uvoz.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1146
-"Check that every mapped field exists in the slice, then start the import again." => "",
+"Check that every mapped field exists in the slice, then start the import again." => "Provjerite postoji li svako mapirano polje na stranici, zatim ponovno pokrenite uvoz.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1147
-"Look the failure up in the log of import failures, then Continue or End the run." => "",
+"Look the failure up in the log of import failures, then Continue or End the run." => "Potražite grešku u zapisniku grešaka uvoza, zatim pokretanje nastavite („Nastavite“) ili završite („Završite“).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1161
-"full run" => "",
+"full run" => "potpuno izvođenje", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "",
+"one stream (%1)" => "jedan tok (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1163
-"%1 streams" => "",
+"%1 streams" => "tokova: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1199
-"Baseline only" => "",
+"Baseline only" => "Samo zabilježeno stanje", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1199
-"Nothing imported yet. Run changed only takes what changes after this." => "",
+"Nothing imported yet. Run changed only takes what changes after this." => "Još ništa nije uvezeno. „Pokrenite samo promijenjene“ uzima ono što se promijeni nakon ovoga.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1207, 1208
-"Imported with item errors" => "",
+"Imported with item errors" => "Uvezeno s greškama stavki", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1207
-"1 item error in the run that imported it - see Runs." => "",
+"1 item error in the run that imported it - see Runs." => "1 greška stavke u pokretanju koje ga je uvezlo - vidi „Izvođenja“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1208
-"%1 item errors in the run that imported it - see Runs." => "",
+"%1 item errors in the run that imported it - see Runs." => "Greške stavki (%1) u pokretanju koje ga je uvezlo - vidi „Izvođenja“.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1210
-"Imported" => "",
+"Imported" => "Uvezeno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1210
-"The source was asked again after the import." => "",
+"The source was asked again after the import." => "Izvor je ponovno upitan nakon uvoza.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1210
-"The source has not been asked since." => "",
+"The source has not been asked since." => "Izvor od tada nije upitan.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1214
-"Checked, not imported yet" => "",
+"Checked, not imported yet" => "Provjereno, još nije uvezeno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1214
-"Run imports it; Run changed only too, as it has no version to compare." => "",
+"Run imports it; Run changed only too, as it has no version to compare." => "„Pokrenite“ ga uvozi; „Pokrenite samo promijenjene“ također, jer nema verziju za usporedbu.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1215
-"Not seen yet" => "",
+"Not seen yet" => "Još nije viđeno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1215
-"No run has imported or checked it." => "",
+"No run has imported or checked it." => "Nijedno pokretanje ga nije uvezlo ni provjerilo.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1228
-"%1 read" => "",
+"%1 read" => "pročitano %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1229
-"%1 new, %2 updated, %3 skipped" => "",
+"%1 new, %2 updated, %3 skipped" => "novih %1, ažuriranih %2, preskočenih %3", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1230
-"%1 filtered out" => "",
+"%1 filtered out" => "filtrirano %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1231
-"dry run - nothing stored" => "",
+"dry run - nothing stored" => "probno pokretanje - ništa nije spremljeno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1231
-"all streams of the run together" => "",
+"all streams of the run together" => "svi tokovi izvođenja zajedno", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1250
-"None yet - an import records it" => "",
+"None yet - an import records it" => "Još nema - bilježi je uvoz", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1251
-"None - the source gives no version" => "",
+"None - the source gives no version" => "Nema - izvor ne daje verziju", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1304
-"took %1" => "",
+"took %1" => "trajalo %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1304
-"took %1, working %2" => "",
+"took %1, working %2" => "trajalo %1, od toga rad %2", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1310
-"%1 s" => "",
+"%1 s" => "%1 s", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1313
-"%1 min %2 s" => "",
+"%1 min %2 s" => "%1 min %2 s", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1313, 1315
-"%1 min" => "",
+// src/Optimize/StateCheckModel.php, row 257
+"%1 min" => "%1 min", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1315
-"%1 h" => "",
+// src/Optimize/StateCheckModel.php, row 258
+"%1 h" => "%1 h", // ai 2026-10
 
 // src/Import/Mapping.php, row 219
-"The slice of the import is not available." => "",
+"The slice of the import is not available." => "Stranica uvoza nije dostupna.", // ai 2026-10
 
 // src/Import/Mapping.php, row 220
-"A row of the mapping uses a transformation that does not exist." => "",
+"A row of the mapping uses a transformation that does not exist." => "Redak mapiranja koristi transformaciju koja ne postoji.", // ai 2026-10
 
 // src/Import/Mapping.php, row 221
-"A row of the mapping has parameters its transformation does not take." => "",
+"A row of the mapping has parameters its transformation does not take." => "Redak mapiranja ima parametre koje njegova transformacija ne prima.", // ai 2026-10
 
 // src/Import/Mapping.php, row 222
-"The mapping fills a field the slice does not have: %1." => "",
+"The mapping fills a field the slice does not have: %1." => "Mapiranje popunjava polje koje stranica nema: %1.", // ai 2026-10
 
 // src/Import/Mapping.php, row 222
-"The mapping fills a field the slice does not have." => "",
+"The mapping fills a field the slice does not have." => "Mapiranje popunjava polje koje stranica nema.", // ai 2026-10
 
 // src/Import/Mapping.php, row 223
-"The mapping fills a field an import may not set." => "",
+"The mapping fills a field an import may not set." => "Mapiranje popunjava polje koje uvoz ne smije postaviti.", // ai 2026-10
 
 // src/Import/Mapping.php, row 224
-"Two rows of the mapping fill the same field." => "",
+"Two rows of the mapping fill the same field." => "Dva retka mapiranja popunjavaju isto polje.", // ai 2026-10
 
 // src/Import/Mapping.php, row 225
-"The mapping has no key field, so an item cannot be found again." => "",
+"The mapping has no key field, so an item cannot be found again." => "Mapiranje nema ključno polje, pa se stavka ne može ponovno pronaći.", // ai 2026-10
 
 // src/Import/Mapping.php, row 226
-"A key field is not filled by the mapping." => "",
+"A key field is not filled by the mapping." => "Mapiranje ne popunjava ključno polje.", // ai 2026-10
 
 // src/Import/Mapping.php, row 227
-"The mapping has a problem." => "",
+"The mapping has a problem." => "Mapiranje ima problem.", // ai 2026-10
 
 // src/Import/RunView.php, row 60
-"Finished with item errors" => "",
+"Finished with item errors" => "Završeno s greškama stavki", // ai 2026-10
 
 // src/Import/RunView.php, row 64
-"then ended - the settings changed" => "",
+"then ended - the settings changed" => "zatim prekinuto - postavke su promijenjene", // ai 2026-10
 
 // src/Import/RunView.php, row 65
-"then ended - a planned run started" => "",
+"then ended - a planned run started" => "zatim prekinuto - pokrenuto je planirano izvođenje", // ai 2026-10
 
 // src/Import/RunView.php, row 66
-"then ended by hand" => "",
+"then ended by hand" => "zatim prekinuto ručno", // ai 2026-10
 
 // src/Import/RunView.php, row 69
-"Ended - the settings changed" => "",
+"Ended - the settings changed" => "Prekinuto - postavke su promijenjene", // ai 2026-10
 
 // src/Import/RunView.php, row 70
-"Ended - a planned run started" => "",
+"Ended - a planned run started" => "Prekinuto - pokrenuto je planirano izvođenje", // ai 2026-10
 
 // src/Import/RunView.php, row 71
-"Ended by hand" => "",
+"Ended by hand" => "Prekinuto ručno", // ai 2026-10
 
 // src/Import/RunView.php, row 74
-"Stuck — see State Check" => "",
+"Stuck — see State Check" => "Zapelo — pogledajte Provjeru stanja", // ai 2026-10
 
 // src/Import/RunView.php, row 75, 171
-"Running" => "",
+"Running" => "U tijeku", // ai 2026-10
 
 // src/Import/RunView.php, row 76
-"Waiting to retry" => "",
+"Waiting to retry" => "Čeka ponovni pokušaj", // ai 2026-10
 
 // src/Import/RunView.php, row 77
-"Queued" => "",
+"Queued" => "U redu čekanja", // ai 2026-10
 
 // src/Import/RunView.php, row 97
-"Ended before reading anything" => "",
+"Ended before reading anything" => "Prekinuto prije čitanja podataka", // ai 2026-10
 
 // src/Import/RunView.php, row 97
-"Stopped before reading anything" => "",
+"Stopped before reading anything" => "Zaustavljeno prije čitanja podataka", // ai 2026-10
 
 // src/Import/RunView.php, row 106
-"The source answered %1." => "",
+"The source answered %1." => "Izvor je odgovorio kodom %1.", // ai 2026-10
 
 // src/Import/RunView.php, row 109
-"The address of the source could not be resolved (DNS)." => "",
+"The address of the source could not be resolved (DNS)." => "Adresu izvora nije moguće razriješiti (DNS).", // ai 2026-10
 
 // src/Import/RunView.php, row 110
-"The source did not answer in time." => "",
+"The source did not answer in time." => "Izvor nije odgovorio na vrijeme.", // ai 2026-10
 
 // src/Import/RunView.php, row 111
-"The secure connection to the source failed (TLS)." => "",
+"The secure connection to the source failed (TLS)." => "Sigurna veza s izvorom nije uspjela (TLS).", // ai 2026-10
 
 // src/Import/RunView.php, row 112
-"The source refused the connection." => "",
+"The source refused the connection." => "Izvor je odbio vezu.", // ai 2026-10
 
 // src/Import/RunView.php, row 113
-"The address of the source is not allowed or not valid." => "",
+"The address of the source is not allowed or not valid." => "Adresa izvora nije dopuštena ili nije valjana.", // ai 2026-10
 
 // src/Import/RunView.php, row 114
-"The answer of the source is too large." => "",
+"The answer of the source is too large." => "Odgovor izvora je prevelik.", // ai 2026-10
 
 // src/Import/RunView.php, row 115
-"The source redirected too many times." => "",
+"The source redirected too many times." => "Izvor je preusmjeravao previše puta.", // ai 2026-10
 
 // src/Import/RunView.php, row 127
-"just now" => "",
+// src/Optimize/StateCheckModel.php, row 256
+"just now" => "upravo sada", // ai 2026-10
 
 // src/Import/RunView.php, row 128
-"%1 min ago" => "",
+"%1 min ago" => "prije %1 min", // ai 2026-10
 
 // src/Import/RunView.php, row 129
-"%1 h ago" => "",
+"%1 h ago" => "prije %1 h", // ai 2026-10
 
 // src/Import/RunView.php, row 130
-"1 day ago" => "",
+"1 day ago" => "prije 1 dan", // ai 2026-10
 
 // src/Import/RunView.php, row 131
-"%1 days ago" => "",
+"%1 days ago" => "prije %1 dana", // ai 2026-10
 
 // src/Import/RunView.php, row 159, 162, 165, 169
-"Failing" => "",
+"Failing" => "Ne uspijeva", // ai 2026-10
 
 // src/Import/RunView.php, row 159
-"The source of this import is not available, so it cannot run." => "",
+"The source of this import is not available, so it cannot run." => "Izvor ovog uvoza nije dostupan, pa se uvoz ne može pokrenuti.", // ai 2026-10
 
 // src/Import/RunView.php, row 162
-"The mapping does not fit the slice, so no run can start until it is fixed." => "",
+"The mapping does not fit the slice, so no run can start until it is fixed." => "Mapiranje ne odgovara stranici, pa se nijedno izvođenje ne može pokrenuti dok ga ne ispravite.", // ai 2026-10
 
 // src/Import/RunView.php, row 169
-"A run has made no progress for a long time - cron may not be running its steps." => "",
+"A run has made no progress for a long time - cron may not be running its steps." => "Izvođenje već dugo ne napreduje - cron možda ne pokreće njegove korake.", // ai 2026-10
 
 // src/Import/RunView.php, row 170, 178, 181, 182, 183
-"Needs attention" => "",
+"Needs attention" => "Zahtijeva pažnju", // ai 2026-10
 
 // src/Import/RunView.php, row 170
-"A run failed a step and waits to try again." => "",
+"A run failed a step and waits to try again." => "Izvođenje nije uspjelo u jednom koraku i čeka ponovni pokušaj.", // ai 2026-10
 
 // src/Import/RunView.php, row 171
-"A run is in progress: %1." => "",
+"A run is in progress: %1." => "Izvođenje je u tijeku: %1.", // ai 2026-10
 
 // src/Import/RunView.php, row 176
-"Never ran" => "",
+"Never ran" => "Nikad pokrenuto", // ai 2026-10
 
 // src/Import/RunView.php, row 176
-"No run yet. Run starts the first import." => "",
+"No run yet. Run starts the first import." => "Još nema izvođenja. „Pokrenite“ pokreće prvi uvoz.", // ai 2026-10
 
 // src/Import/RunView.php, row 177
-"Only source checks or dry runs so far - nothing was imported." => "",
+"Only source checks or dry runs so far - nothing was imported." => "Dosad samo provjere izvora ili probna izvođenja - ništa nije uvezeno.", // ai 2026-10
 
 // src/Import/RunView.php, row 179
-"The last import stopped by an error and was then ended, so the data may be incomplete." => "",
+"The last import stopped by an error and was then ended, so the data may be incomplete." => "Posljednji uvoz zaustavila je pogreška, a zatim je prekinut, pa podaci možda nisu potpuni.", // ai 2026-10
 
 // src/Import/RunView.php, row 180
-"The last import was ended before it finished, so the data may be incomplete." => "",
+"The last import was ended before it finished, so the data may be incomplete." => "Posljednji uvoz prekinut je prije završetka, pa podaci možda nisu potpuni.", // ai 2026-10
 
 // src/Import/RunView.php, row 181
-"The last import finished, but 1 item could not be stored." => "",
+"The last import finished, but 1 item could not be stored." => "Posljednji uvoz je završen, ali 1 stavku nije bilo moguće spremiti.", // ai 2026-10
 
 // src/Import/RunView.php, row 182
-"The last import finished, but %1 items could not be stored." => "",
+"The last import finished, but %1 items could not be stored." => "Posljednji uvoz je završen, ali neke stavke nije bilo moguće spremiti: %1.", // ai 2026-10
 
 // src/Import/RunView.php, row 183
-"The last full import read nothing - the source may be empty." => "",
+"The last full import read nothing - the source may be empty." => "Posljednji potpuni uvoz nije ništa pročitao - izvor je možda prazan.", // ai 2026-10
 
 // src/Import/RunView.php, row 184, 185
-"Healthy" => "",
+"Healthy" => "U redu", // ai 2026-10
 
 // src/Import/RunView.php, row 184
-"The last import finished without errors; nothing had changed." => "",
+"The last import finished without errors; nothing had changed." => "Posljednji uvoz završen je bez pogrešaka; ništa se nije promijenilo.", // ai 2026-10
 
 // src/Import/RunView.php, row 185
-"The last import finished without errors (%1 read)." => "",
+"The last import finished without errors (%1 read)." => "Posljednji uvoz završen je bez pogrešaka (pročitano: %1).", // ai 2026-10
 
 // src/Import/RunView.php, row 188
-"Runs only by hand." => "",
+"Runs only by hand." => "Pokreće se samo ručno.", // ai 2026-10
 
 // src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "",
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Posljednje probno izvođenje zaustavila je pogreška. Ništa se više ne uvozi dok ne intervenirate.", // ai 2026-10
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "",
+"The last source check stopped by an error. Nothing more is imported until you act." => "Posljednju provjeru izvora zaustavila je pogreška. Ništa se više ne uvozi dok ne intervenirate.", // ai 2026-10
 
 // src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "",
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Bilježenje stanja izvora zaustavila je pogreška. Ništa se više ne uvozi dok ne intervenirate.", // ai 2026-10
 
 // src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "",
+"The last import stopped by an error. Nothing more is imported until you act." => "Posljednji uvoz zaustavila je pogreška. Ništa se više ne uvozi dok ne intervenirate.", // ai 2026-10
 
 // src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "",
+"Source check failed - nothing imported" => "Provjera izvora nije uspjela - ništa nije uvezeno", // ai 2026-10
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "",
+"Source check under way" => "Provjera izvora u tijeku", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "",
+"Source reachable - nothing imported" => "Izvor je dostupan - ništa nije uvezeno", // ai 2026-10
 
 // src/Import/RunView.php, row 217
-"Nothing had changed" => "",
+"Nothing had changed" => "Ništa se nije promijenilo", // ai 2026-10
 
 // src/Import/RunView.php, row 218
-"Nothing read" => "",
+"Nothing read" => "Ništa nije pročitano", // ai 2026-10
 
 // src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "",
+"%1 read, %2 new, %3 changed" => "Pročitano: %1, novo: %2, promijenjeno: %3", // ai 2026-10
 
 // src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "",
+"%1 (nothing stored)" => "%1 (ništa nije spremljeno)", // ai 2026-10
 
 // src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "",
+"Recorded the state of 1 stream - nothing imported" => "Zabilježeno stanje 1 toka - ništa nije uvezeno", // ai 2026-10
 
 // src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "",
+"Recorded the state of %1 streams - nothing imported" => "Zabilježeno stanje tokova: %1 - ništa nije uvezeno", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "",
+"%1 without a version" => "Bez verzije: %1", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "",
+"changed only" => "samo promijenjeno", // ai 2026-10
 
 // src/Import/RunView.php, row 238
-"check" => "",
+"check" => "provjera", // ai 2026-10
 
 // src/Import/RunView.php, row 239
-"recording the state of the source" => "",
+"recording the state of the source" => "bilježenje stanja izvora", // ai 2026-10
 
 // src/Import/RunView.php, row 242
-"dry run" => "",
+"dry run" => "probno pokretanje", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "",
+"by hand" => "ručno", // ai 2026-10
 
 // src/Import/RunView.php, row 245
-"planned" => "",
+"planned" => "planirano", // ai 2026-10
 
 // src/Import/RunView.php, row 246
-"on an event" => "",
+"on an event" => "potaknuto događajem", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "",
+"Disabled - it does not start" => "Isključeno - ne pokreće se", // ai 2026-10
 
 // src/Import/RunView.php, row 268
-"No run yet" => "",
+"No run yet" => "Još nema izvođenja", // ai 2026-10
 
 // src/Import/RunView.php, row 280
-"1 item error" => "",
+"1 item error" => "1 pogreška stavke", // ai 2026-10
 
 // src/Import/RunView.php, row 281
-"%1 item errors" => "",
+"%1 item errors" => "Pogreške stavki: %1", // ai 2026-10
 
 // src/Import/RunView.php, row 284
-"Last import: %1" => "",
+"Last import: %1" => "Posljednji uvoz: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
-"No slice ID" => "",
+"No slice ID" => "Nema ID-a stranice", // ai 2026-10
 
 // src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "",
+"Expected a JSON object {\"column\": \"field id\"}" => "Očekuje se JSON objekt {\"column\": \"field id\"}", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 42
-"CSV file at a URL" => "",
+"CSV file at a URL" => "CSV datoteka na web adresi", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 47
-"Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "",
+"Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Uvozi retke CSV datoteke s javne http(s) adrese; postavke određuju koji stupac popunjava koje polje.", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 53
-"http or https only, on a public address, without a user name and password" => "",
+"http or https only, on a public address, without a user name and password" => "samo http ili https, na javnoj adresi, bez korisničkog imena i lozinke", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 55
 // src/Widget/Widget.php, row 744, 813
 "Columns" => "Stupci",
 
 // src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "",
+"JSON object: the column name in the first row => the field it fills" => "JSON objekt: naziv stupca u prvom retku => polje koje popunjava", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 56
-"Key column" => "",
+"Key column" => "Ključni stupac", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 56
-"The column that identifies the item; it must be one of the columns" => "",
+"The column that identifies the item; it must be one of the columns" => "Stupac koji identificira stavku; mora biti jedan od stupaca", // ai 2026-10
 
-// src/Later/ComputedfieldsUpdater.php, row 83
+// src/Later/ComputedfieldsUpdater.php, row 84
 "Planned %1 chunks with %2 items" => "Planirano %1 dijelova s %2 stavki", // ai 2026-06
 
-// src/Later/Toexecute.php, row 362
-"task is no longer in the queue" => "",
+// src/Later/Toexecute.php, row 361
+"task is no longer in the queue" => "zadatak više nije u redu čekanja", // ai 2026-10
 
-// src/Later/Toexecute.php, row 366
-"skipped - the task changed meanwhile (reload the list)" => "",
+// src/Later/Toexecute.php, row 365
+"skipped - the task changed meanwhile (reload the list)" => "preskočeno - zadatak se u međuvremenu promijenio (osvježite popis)", // ai 2026-10
 
-// src/Later/Toexecute.php, row 462
-"the task failed with %1" => "",
+// src/Later/Toexecute.php, row 461
+"the task failed with %1" => "zadatak nije uspio, iznimka %1", // ai 2026-10
 
 // src/Manager.php, row 430
-"You can not save this object here." => "",
+"You can not save this object here." => "Ovaj objekt ovdje ne možete spremiti.", // ai 2026-10
 
 // src/Manager.php, row 445
-"The object was not saved - it changed meanwhile. Reload and try again." => "",
+"The object was not saved - it changed meanwhile. Reload and try again." => "Objekt nije spremljen - u međuvremenu se promijenio. Osvježite stranicu i pokušajte ponovno.", // ai 2026-10
 
 // src/Manager.php, row 460
-"This object can not be edited here - it is not an object of this module." => "",
+"This object can not be edited here - it is not an object of this module." => "Ovaj objekt ovdje nije moguće uređivati - ne pripada ovom modulu.", // ai 2026-10
 
 // src/Manager.php, row 481
-"The object was not saved - it is not the object of this form in this module." => "",
+"The object was not saved - it is not the object of this form in this module." => "Objekt nije spremljen - nije objekt ovog obrasca u ovom modulu.", // ai 2026-10
 
 // src/Manager.php, row 606
 "Optional" => "Neobavezno", // ai 2026-06
 
 // src/Manager.php, row 649
-"The row was not saved - it is not the row of this form in this module." => "",
+"The row was not saved - it is not the row of this form in this module." => "Redak nije spremljen - nije redak ovog obrasca u ovom modulu.", // ai 2026-10
 
 // src/Manager.php, row 668
-"You can not save this row here." => "",
+"You can not save this row here." => "Ovaj redak ovdje ne možete spremiti.", // ai 2026-10
 
 // src/Manager.php, row 812
 "Searchbar" => "Traka za pretraživanje", // ai 2026-06
@@ -10248,7 +10332,7 @@ return [
 "Manager ID" => "ID upravitelja", // ai 2026-06
 
 // src/Manager.php, row 1180
-"The action was not performed - use the button on the page." => "",
+"The action was not performed - use the button on the page." => "Radnja nije izvršena - upotrijebite gumb na stranici.", // ai 2026-10
 
 // src/Manager.php, row 1261
 "Edit id" => "Uredite ID", // ai 2026-06
@@ -10277,12 +10361,12 @@ return [
 // src/Manageraction/AbstractManageraction.php, row 49
 "Additional URL parameters" => "Dodatni URL parametri", // ai 2026-06
 
-// src/Manageraction/Central_DeleteTrash.php, row 30
+// src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
 // src/Manageraction/Polls_DeleteTrash.php, row 71
 "Remove (delete from database)" => "Uklonite (izbrišite iz baze podataka)", // ai 2026-06
 
-// src/Manageraction/Central_DeleteTrash.php, row 37
+// src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
 // src/Manageraction/Taskmanager_Execute.php, row 24
 "You do not have permissions to remove items" => "Nemate dozvolu za brisanje stavki",
@@ -10324,7 +10408,7 @@ return [
 "Update DB (sql_update)" => "Ažurirajte bazu (sql_update)", // ai 2026-06
 
 // src/Manageraction/Central_OptimizeType.php, row 49
-"Error: %1" => "",
+"Error: %1" => "Pogreška: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
 // src/Manageraction/Object_Delete.php, row 17
@@ -10332,7 +10416,7 @@ return [
 "Delete row" => "Izbrišite redak", // ai 2026-06
 
 // src/Manageraction/Import_Delete.php, row 27
-"Do you really want to delete this import? Its runs, its stream state and its catalog are deleted with it; a running import stops." => "",
+"Do you really want to delete this import? Its runs, its stream state and its catalog are deleted with it; a running import stops." => "Želite li zaista izbrisati ovaj uvoz? Zajedno s njim brišu se njegova izvođenja, stanje tokova i katalog; uvoz u tijeku se zaustavlja.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
@@ -10342,38 +10426,38 @@ return [
 // src/Manageraction/Polls_DeleteTrash.php, row 83
 // src/Manageraction/Polls_MoveItem.php, row 41
 // src/Manageraction/Table_Row_Delete.php, row 40
-"This action does not work on this page." => "",
+"This action does not work on this page." => "Ova radnja ne radi na ovom zaslonu.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 58
-"Some of the selected imports were not deleted." => "",
+"Some of the selected imports were not deleted." => "Neki od odabranih uvoza nisu izbrisani.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
 // src/Manageraction/Object_Delete.php, row 51
-"Some of the selected objects were not deleted - they belong to a module you can not change them in." => "",
+"Some of the selected objects were not deleted - they belong to a module you can not change them in." => "Neki od odabranih objekata nisu izbrisani - pripadaju modulu u kojem ih ne smijete mijenjati.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
-"Run import" => "",
+"Run import" => "Pokrenite uvoz", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 31
-"Run the import now? It stores the items of the source into the slice. The run goes on in the background; the import detail shows its progress." => "",
+"Run the import now? It stores the items of the source into the slice. The run goes on in the background; the import detail shows its progress." => "Pokrenuti uvoz sada? Spremit će stavke iz izvora na stranicu. Izvođenje se nastavlja u pozadini; napredak prikazuje detalj uvoza.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 47
-"Some of the selected objects were not run - they belong to a module you can not change them in." => "",
+"Some of the selected objects were not run - they belong to a module you can not change them in." => "Neki od odabranih objekata nisu pokrenuti - pripadaju modulu u kojem ih ne smijete mijenjati.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 89
-"Imports queued to run: %1. The import detail shows their progress." => "",
+"Imports queued to run: %1. The import detail shows their progress." => "Uvozi stavljeni u red za pokretanje: %1. Njihov napredak prikazuje detalj uvoza.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 92
-"Imports not started - their last run is still running: %1." => "",
+"Imports not started - their last run is still running: %1." => "Uvozi nisu pokrenuti - njihovo posljednje izvođenje još traje: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 95
-"Imports not started - their last run stopped by an error; continue or end it in the import detail: %1." => "",
+"Imports not started - their last run stopped by an error; continue or end it in the import detail: %1." => "Uvozi nisu pokrenuti - njihovo posljednje izvođenje zaustavila je pogreška; u detalju uvoza nastavite ga ili prekinite: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 98
-"Imports not started - the last step of their previous run is still finishing; try again in a few minutes: %1." => "",
+"Imports not started - the last step of their previous run is still finishing; try again in a few minutes: %1." => "Uvozi nisu pokrenuti - posljednji korak njihova prethodnog izvođenja još se dovršava; pokušajte ponovno za nekoliko minuta: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 101
-"Imports not started: %1 (%2). The import detail tells more." => "",
+"Imports not started: %1 (%2). The import detail tells more." => "Uvozi nisu pokrenuti: %1 (%2). Više pokazuje detalj uvoza.", // ai 2026-10
 
 // src/Manageraction/Item_Duplicate.php, row 23
 "Duplicate Item" => "Duplicirajte stavku", // ai 2026-06
@@ -10391,13 +10475,13 @@ return [
 "No slice selected" => "Nije odabrana nijedna stranica", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 50
-"Items can be exported only to a slice." => "",
+"Items can be exported only to a slice." => "Stavke se mogu izvesti samo na stranicu.", // ai 2026-10
 
 // src/Manageraction/Item_Feed.php, row 52
-"You do not have permission to export items to the slice %1." => "",
+"You do not have permission to export items to the slice %1." => "Nemate dozvolu za izvoz stavki na stranicu %1.", // ai 2026-10
 
 // src/Manageraction/Item_Feed.php, row 68
-"Some of the selected items were not exported - they are not items of this slice." => "",
+"Some of the selected items were not exported - they are not items of this slice." => "Neke od odabranih stavki nisu izvezene - nisu stavke ove stranice.", // ai 2026-10
 
 // src/Manageraction/Item_Modifycontent.php, row 13
 "Modify content" => "Izmijenite sadržaj", // ai 2026-06
@@ -10410,7 +10494,7 @@ return [
 "Move to slice" => "Preselite na stranicu", // ai 2026-06
 
 // src/Manageraction/Item_Move2Slice.php, row 89
-"Items can be moved only to a slice." => "",
+"Items can be moved only to a slice." => "Stavke se mogu premjestiti samo na stranicu.", // ai 2026-10
 
 // src/Manageraction/Item_Move2Slice.php, row 93
 "You do not have permissions to move items" => "Nemate dozvolu seljenja stavki",
@@ -10438,43 +10522,43 @@ return [
 "Do you really want to delete this row?" => "Želite li doista izbrisati ovaj redak?", // ai 2026-06
 
 // src/Manageraction/Object_Move2slice.php, row 37
-"Tasks can be moved only to a slice." => "",
+"Tasks can be moved only to a slice." => "Zadaci se mogu premjestiti samo na stranicu.", // ai 2026-10
 
 // src/Manageraction/Object_Move2slice.php, row 41
 "You do not have permissions to move it" => "Nemate dozvolu za premještanje", // ai 2026-06
 
 // src/Manageraction/Object_Move2slice.php, row 54
-"Some of the selected objects were not moved - they belong to a module you can not change them in." => "",
+"Some of the selected objects were not moved - they belong to a module you can not change them in." => "Neki od odabranih objekata nisu premješteni - pripadaju modulu u kojem ih ne smijete mijenjati.", // ai 2026-10
 
 // src/Manageraction/Object_Move2slice.php, row 60
-"The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "",
+"The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "Zadatak %1 nije premješten - zadatak s {import} onamo smije premjestiti samo korisnik koji upravlja razmjenom stavki stranice.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
-"Run now" => "",
+"Run now" => "Pokrenite odmah", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 29
-"Run the task now? It may send e-mails or change data." => "",
+"Run the task now? It may send e-mails or change data." => "Pokrenuti zadatak sada? Može poslati e-poruke ili promijeniti podatke.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 44
-"Some of the selected tasks were not run - they belong to a module you can not change them in." => "",
+"Some of the selected tasks were not run - they belong to a module you can not change them in." => "Neki od odabranih zadataka nisu pokrenuti - pripadaju modulu u kojem ih ne smijete mijenjati.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 54
-"The task %1 was not run - only a user who manages the feeding of the slice may run a task with {import}." => "",
+"The task %1 was not run - only a user who manages the feeding of the slice may run a task with {import}." => "Zadatak %1 nije pokrenut - zadatak s {import} smije pokrenuti samo korisnik koji upravlja razmjenom stavki stranice.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 60
-"The task %1 is already waiting in the queue." => "",
+"The task %1 is already waiting in the queue." => "Zadatak %1 već čeka u redu čekanja.", // ai 2026-10
 
 // src/Manageraction/Polls_DeleteTrash.php, row 78
 "You do not have permissions to remove polls" => "Nemate dozvolu za uklanjanje anketa", // ai 2026-06
 
 // src/Manageraction/Polls_DeleteTrash.php, row 97
-"Some of the selected polls were not removed - they belong to another module." => "",
+"Some of the selected polls were not removed - they belong to another module." => "Neke od odabranih anketa nisu uklonjene - pripadaju drugom modulu.", // ai 2026-10
 
 // src/Manageraction/Polls_MoveItem.php, row 47
-"Some of the selected polls were not moved - they belong to another module." => "",
+"Some of the selected polls were not moved - they belong to another module." => "Neke od odabranih anketa nisu premještene - pripadaju drugom modulu.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
-"Some of the selected rows were not deleted - they belong to another module." => "",
+"Some of the selected rows were not deleted - they belong to another module." => "Neki od odabranih redaka nisu izbrisani - pripadaju drugom modulu.", // ai 2026-10
 
 // src/Manageraction/Taskmanager_Delete.php, row 15
 "Remove (cancel task)" => "Uklonite (otkažite zadatak)", // ai 2026-06
@@ -10489,7 +10573,7 @@ return [
 "Move view to another slice" => "Preselite pogled na drugu stranicu", // ai 2026-06
 
 // src/Manageraction/View_Move2slice.php, row 35
-"Views can be moved only to a slice." => "",
+"Views can be moved only to a slice." => "Pogledi se mogu premjestiti samo na stranicu.", // ai 2026-10
 
 // src/Manageraction/View_Move2slice.php, row 39
 "You do not have permissions to move views" => "Nemate dozvolu za premještanje pogleda", // ai 2026-06
@@ -10515,10 +10599,10 @@ return [
 // src/Module/Poll/Menu.php, row 84
 "Designs" => "Dizajni", // ai 2026-10
 
-// src/Optimize/AbstractOptimize.php, row 174
+// src/Optimize/AbstractOptimize.php, row 176
 "Types" => "Tipovi", // ai 2026-06
 
-// src/Optimize/AbstractOptimize.php, row 177
+// src/Optimize/AbstractOptimize.php, row 179
 "Result text" => "Tekst rezultata", // ai 2026-06
 
 // src/Optimize/AbstractOptimizeById.php, row 42
@@ -10544,6 +10628,24 @@ return [
 
 // src/Optimize/AddComputedTxtFieldTemplate.php, row 10
 "Add computed_txt field template" => "Dodaj predložak polja computed_txt", // ai 2026-06
+
+// src/Optimize/AddContentFieldIndex.php, row 25
+"Index of field values in the content table" => "Indeks vrijednosti polja u tablici content", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 30
+"Adds the field to the text index of the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes - run it when the traffic is low." => "Dodaje polje u indeks text u tablici content, tako da se vrijednost u jednom polju pronalazi bez čitanja iste vrijednosti u svim ostalim poljima. Na velikoj bazi podataka to traje nekoliko minuta – pokrenite kada je promet slab.", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 52
+"The content table needs: %1" => "Tablici content potrebno je: %1", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 55
+"OK - the index %1 of the content table contains the field" => "U redu - indeks %1 u tablici content sadrži polje", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 62
+"The index %1 of the content table already contains the field" => "Indeks %1 u tablici content već sadrži polje", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 67
+"The index %1 of the content table changed" => "Indeks %1 u tablici content je promijenjen", // ai 2026-10
 
 // src/Optimize/AddCountryFieldTemplate.php, row 10
 "Add country field template" => "Dodaj predložak polja country", // ai 2026-06
@@ -10623,19 +10725,19 @@ return [
 // src/Optimize/AddMandatoryDisplayCount.php, row 10
 // src/Optimize/AddMandatoryId.php, row 10
 // src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 11
+// src/Optimize/AddMandatoryStatusCode.php, row 13
 "Fixing missing %1 field definitions in slices" => "Ispravljanje nedostajućih definicija polja %1 u stranicama", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 17
+// src/Optimize/AddMandatoryStatusCode.php, row 19
 "Adds field definitions for slices, where missing" => "Dodaje definicije polja u stranice gdje nedostaju", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 43
+// src/Optimize/AddMandatoryStatusCode.php, row 45
 "Missing %1 field definition in some slices - need to repair" => "U nekim stranicama nedostaje definicija polja %1 - potreban popravak", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 52
+// src/Optimize/AddMandatoryStatusCode.php, row 54
 "Fixing missing %1 fields in slices" => "Ispravljanje nedostajućih polja %1 u stranicama", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 65
+// src/Optimize/AddMandatoryStatusCode.php, row 69
 "Mandatory field %1 added to all slices" => "Obavezno polje %1 dodano u sve stranice", // ai 2026-06
 
 // src/Optimize/AddMlxctrlFieldTemplate.php, row 10
@@ -10702,7 +10804,7 @@ return [
 "Backup tables" => "Sigurnosna kopija tablica", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 27
+// src/Optimize/RestoreBckTables.php, row 28
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[eksperimentalno]", // ai 2026-06
 
@@ -10724,16 +10826,16 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 147
 "%1 done." => "%1 gotovo.", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 15
+// src/Optimize/CategorySort2groupBy.php, row 17
 "Convert slice.category_sort to slice.group_by" => "Pretvori slice.category_sort u slice.group_by", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 23
+// src/Optimize/CategorySort2groupBy.php, row 25
 "In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We have used the newer group_by field for quite a long time so most probably all your slices are already converted." => "U starijim verzijama AA za grupiranje stavki koristili smo samo polja kategorija. Sada je to univerzalno, pa boolean category_sort više nije dovoljan. Novije polje group_by koristimo već dugo, tako da su najvjerojatnije sve vaše stranice već pretvorene.", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 34
+// src/Optimize/CategorySort2groupBy.php, row 36
 "%1 slices are not converted" => "%1 stranica nije pretvoreno", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 37
+// src/Optimize/CategorySort2groupBy.php, row 39
 "All slices are already converted" => "Sve stranice su već pretvorene", // ai 2026-06
 
 // src/Optimize/ChangeF_h2F_1.php, row 19
@@ -10754,364 +10856,391 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "Zamjenjuje alias f_t korišten za kod bržom funkcijom f__", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 19
+// src/Optimize/ChangeModuleId.php, row 20
 "Change current module ID to new one" => "Promijeni trenutni ID modula u novi", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 27
+// src/Optimize/ChangeModuleId.php, row 28
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Koristi se ponekad kada klonirate bazu podataka ili kopirate stranice u drugu bazu za drugog klijenta i ne želite koristiti iste ID-ove stranica/site modula. Vjerojatno to trebate učiniti za sve stranice i site modul.<br>MIJENJA TRENUTNI ID STRANICE!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 41
+// src/Optimize/ChangeModuleId.php, row 42
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Ovdje se nema što testirati. Samo budite oprezni - MIJENJA TRENUTNI ID STRANICE bez pitanja!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 62
+// src/Optimize/ChangeModuleId.php, row 63
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "Bit će promijenjen module_id %1 -> %2 (%3 -> %4)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 75
+// src/Optimize/ChangeModuleId.php, row 76
 "Changing ID for table %1 (%2)" => "Promjena ID-a za tablicu %1 (%2)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 84
+// src/Optimize/ChangeModuleId.php, row 85
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Pretvoreno %1 tablica", // ai 2026-06
 
 // src/Optimize/ChangeQte2Trm.php, row 24
-"Trim text fields" => "",
+"Trim text fields" => "Obrezivanje tekstnih polja", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 29
-"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Prebacuje tekstna polja s funkcije unosa „Tekst = nemojte mijenjati“ na „Obrezati“, pa se razmaci i novi retci oko vrijednosti ne spremaju. Polja za kod, jedinstvene vrijednosti, kopije lozinki i polja čije konstante imaju takve razmake zadržavaju svoju postavku. Ranije spremljene vrijednosti se ne mijenjaju.", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 77
-"%1 text fields switched to Trim" => "",
+"%1 text fields switched to Trim" => "Tekstna polja prebačena na „Obrezati“: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 77
-"%1 text fields to switch to Trim" => "",
+"%1 text fields to switch to Trim" => "Tekstna polja za prebacivanje na „Obrezati“: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 139
-"Field templates" => "",
+"Field templates" => "Predlošci polja", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 142
-"switched to Trim: %1" => "",
+"switched to Trim: %1" => "prebačeno na „Obrezati“: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 142
-"to switch to Trim: %1" => "",
+"to switch to Trim: %1" => "za prebacivanje na „Obrezati“: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 145
-"%1 keeps \"Text = don't modify\": %2" => "",
+"%1 keeps \"Text = don't modify\": %2" => "%1 zadržava „Tekst = nemojte mijenjati“: %2", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
-"Unsigned {ajax} widget settings" => "",
+"Unsigned {ajax} widget settings" => "Nepotpisane postavke widgeta {ajax}", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 29
-"Lists the fields whose {ajax} edits came without a valid signature of their widget type and properties in the last 30 days, so AA used the field's own widget instead." => "",
+"Lists the fields whose {ajax} edits came without a valid signature of their widget type and properties in the last 30 days, so AA used the field's own widget instead." => "Navodi polja čije su izmjene putem {ajax} u posljednjih 30 dana stigle bez valjanog potpisa vrste i svojstava widgeta, pa je AA upotrijebio vlastiti widget polja.", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 75
-"{ajax} edit of field %1 in slice %2 came without a valid signature" => "",
+"{ajax} edit of field %1 in slice %2 came without a valid signature" => "Izmjena polja %1 na stranici %2 putem {ajax} stigla je bez valjanog potpisa", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckUploadRefusals.php, row 85
-"Reason" => "",
+"Reason" => "Razlog", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckAlertitemRefusals.php, row 91
 // src/Optimize/CheckAnonymousEditRefusals.php, row 89
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 92
 // src/Optimize/CheckObjectFormRefusals.php, row 102
 // src/Optimize/CheckQueuedClassMissing.php, row 68
-// src/Optimize/CheckSecurityProtections.php, row 99
+// src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
+// src/Optimize/CheckTrustedProxies.php, row 104
 // src/Optimize/CheckUploadRefusals.php, row 88
 // src/Optimize/CheckUserAliasFunctionLog.php, row 87
-"Days seen" => "",
+"Days seen" => "Dana pojave", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 83
 // src/Optimize/CheckAlertitemRefusals.php, row 92
 // src/Optimize/CheckAnonymousEditRefusals.php, row 90
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 99
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
-// src/Optimize/CheckSecurityProtections.php, row 100
+// src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 102
+// src/Optimize/CheckTrustedProxies.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 89
 // src/Optimize/CheckUserAliasFunctionLog.php, row 88
-"Last" => "",
+// src/Optimize/StateCheckModel.php, row 270
+"Last" => "Zadnji put", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 85
-"The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice." => "",
+"The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice." => "Web-stranica je poslala vrstu ili svojstva widgeta (5. i 6. parametar {ajax}) bez potpisa koji AA dodaje od ove verzije, pa je polje uređeno vlastitim widgetom. Web-stranice u predmemoriji ostaju nepotpisane dok se ponovno ne generiraju - ispraznite predmemoriju weba. Ako se retci i nakon toga nastave pojavljivati, netko šalje krivotvorene zahtjeve - ili je, kod neispravnog potpisa, web-stranica u drugom kodiranju znakova nego stranica.", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 91
-"No unsigned {ajax} widget settings in the last 30 days" => "",
+"No unsigned {ajax} widget settings in the last 30 days" => "U posljednjih 30 dana nema nepotpisanih postavki widgeta {ajax}", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 28
-"Refused alert sends" => "",
+"Refused alert sends" => "Odbijena slanja upozorenja", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 33
-"Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "",
+"Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Navodi slanja stavki putem upozorenja odbijena u posljednjih 30 dana jer kolekcija nije povezana sa stranicom stavke (nema filtar na stranicu, nije njezina stranica čitatelja, nemaju zajednički web).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 83
-"Alert send of an item of slice %1 through collection %2 was refused" => "",
+"Alert send of an item of slice %1 through collection %2 was refused" => "Slanje stavke sa stranice %1 putem kolekcije %2 je odbijeno", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 94
-"An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection's reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection." => "",
+"An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection's reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection." => "Urednik stranice poslao je stavku putem kolekcije koja nema filtar na tu stranicu, čija stranica čitatelja nije ta stranica i koja s njom ne dijeli nijedan web. Ako je slanje namjerno, dodajte kolekciji filtar na stranicu (stvarno slanje čitateljima ionako ga treba) ili dodajte stranicu i stranicu čitatelja kolekcije u isti web. Inače ispravite gumb za slanje u predlošcima stranice ili otkrijte tko je pokušao poslati e-poštu čitateljima druge kolekcije.", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 100
-"No alert send was refused in the last 30 days" => "",
+"No alert send was refused in the last 30 days" => "U posljednjih 30 dana nije odbijeno nijedno slanje upozorenja", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 23
-"Alerts sending" => "",
+"Alerts sending" => "Slanje upozorenja", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 28
-"Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "",
+"Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "Provjerava da se svaka učestalost na koju se čitatelji mogu pretplatiti zaista šalje i da nijedna kolekcija ne kasni toliko da bi sljedeće slanje preskočilo stavke umjesto da ih pošalje.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 73
-"Frequency" => "",
+"Frequency" => "Učestalost", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 74
-"Last sent" => "",
+"Last sent" => "Zadnje slanje", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 75
-"Would skip" => "",
+"Would skip" => "Preskočilo bi", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 75
-"up to %1 days" => "",
+"up to %1 days" => "do %1 dana", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 83
-"%1 alert collections are so far behind that the next sweep will skip items" => "",
+"%1 alert collections are so far behind that the next sweep will skip items" => "Kolekcije upozorenja koje toliko kasne da će sljedeće slanje preskočiti stavke: %1", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 86
-"A sweep never reaches back more than two of its periods, so everything older is dropped, not mailed. Check that the task queue plans this frequency and decide whether to let the gap go or to send it by hand from the module." => "",
+"A sweep never reaches back more than two of its periods, so everything older is dropped, not mailed. Check that the task queue plans this frequency and decide whether to let the gap go or to send it by hand from the module." => "Slanje nikad ne seže unatrag više od dva svoja razdoblja, pa se sve starije odbacuje, a ne šalje. Provjerite planira li red zadataka ovu učestalost i odlučite hoćete li prazninu zanemariti ili je poslati ručno iz modula.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 97
-"Readers can subscribe to a frequency nothing sweeps: %1" => "",
+"Readers can subscribe to a frequency nothing sweeps: %1" => "Čitatelji se mogu pretplatiti na učestalost koju ništa ne šalje: %1", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 99
-"AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "",
+"AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE za nju nema unos, pa se nikad ne planira nijedan zadatak i ti čitatelji ne dobivaju ništa.", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 26
-"Forms without login changing accounts or authors" => "",
+"Forms without login changing accounts or authors" => "Obrasci bez prijave koji mijenjaju račune ili autore", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 31
-"Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "",
+"Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "Navodi polja postojećih stavki koja je obrazac u posljednjih 30 dana pokušao promijeniti bez prijavljenog korisnika, iako sadrže oznake ili autora stavke, lozinku, 2FA tajni ključ ili korisničko ime čitatelja, odnosno stranicu stavke. Polja su ostala kako su bila spremljena.", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 70
-"replace" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
+"replace" => "zamijeni", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 70
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
 "add" => "Dodajte",
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 70
-"remove" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
+"remove" => "ukloni", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 80
-"A form without login tried to change the field %1 of an item in slice %2 (last %3)" => "",
+"A form without login tried to change the field %1 of an item in slice %2 (last %3)" => "Obrazac bez prijave pokušao je promijeniti polje %1 stavke na stranici %2 (zadnji put %3)", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 87
-"Item mode" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 90
+"Item mode" => "Način izmjene", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 88
 // src/Optimize/CheckCron.php, row 68
-"Script" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 91
+"Script" => "Skripta", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 92
-"The field was left as stored, the rest of the item was saved. Either a form of the site sends this field without a login - then the site must let the reader log in before the form is sent - or the request was forged to take over a reader's account or the item." => "",
+"The field was left as stored, the rest of the item was saved. Either a form of the site sends this field without a login - then the site must let the reader log in before the form is sent - or the request was forged to take over a reader's account or the item." => "Polje je ostalo kako je bilo spremljeno, ostatak stavke je spremljen. Ili obrazac weba šalje ovo polje bez prijave - tada web mora čitatelju omogućiti prijavu prije slanja obrasca - ili je zahtjev krivotvoren kako bi se preuzeo račun čitatelja ili stavka.", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 98
-"No form without login tried to change an account or author field in the last 30 days" => "",
+"No form without login tried to change an account or author field in the last 30 days" => "U posljednjih 30 dana nijedan obrazac bez prijave nije pokušao promijeniti polje računa ili autora", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 42
-"Refused requests to the local network" => "",
+"Refused requests to the local network" => "Odbijeni zahtjevi prema lokalnoj mreži", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 47
-"Lists the addresses AA refused to fetch in the last 30 days because they lead to the local or private network of the server." => "",
+"Lists the addresses AA refused to fetch in the last 30 days because they lead to the local or private network of the server." => "Navodi adrese koje je AA u posljednjih 30 dana odbio dohvatiti jer vode u lokalnu ili privatnu mrežu poslužitelja.", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 83
-"%1 from %2 asked for %3, which was refused" => "",
+"%1 from %2 asked for %3, which was refused" => "%1 s %2 zatražio je %3, što je odbijeno", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 87
-"Asked by" => "",
+"Asked by" => "Zatražio", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 88
-"Client" => "",
+"Client" => "Klijent", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 89
-"Host" => "",
+"Host" => "Host", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 93
-"AA fetches only public addresses for forms and templates - otherwise whoever chooses the address reads the internal services of the server. Most often this is a probe. If it is a site of yours, use its public domain name." => "",
+"AA fetches only public addresses for forms and templates - otherwise whoever chooses the address reads the internal services of the server. Most often this is a probe. If it is a site of yours, use its public domain name." => "AA za obrasce i predloške dohvaća samo javne adrese - inače bi onaj tko bira adresu čitao interne usluge poslužitelja. Najčešće je riječ o sondiranju. Ako je to vaš web, upotrijebite njegovo javno ime domene.", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 99
-"No address was refused in the last 30 days" => "",
+"No address was refused in the last 30 days" => "U posljednjih 30 dana nije odbijena nijedna adresa", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 16
-"Central logins" => "",
+"Central logins" => "Pristupi za Central", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 21
-"Checks that ActionApps Central keeps the logins to its AAs only as encrypted tokens - no passwords or plain tokens in the database." => "",
+"Checks that ActionApps Central keeps the logins to its AAs only as encrypted tokens - no passwords or plain tokens in the database." => "Provjerava da ActionApps Central čuva pristupe svojim AA-ovima samo kao šifrirane tokene - bez lozinki ili nešifriranih tokena u bazi podataka.", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 55
-"Central keeps no password and no plain token" => "",
+"Central keeps no password and no plain token" => "Central ne čuva nijednu lozinku ni nešifrirani token", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 59
-"Central keeps a password or a plain token of %1 AAs" => "",
+"Central keeps a password or a plain token of %1 AAs" => "Central čuva lozinku ili nešifrirani token za AA-ove: %1", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 62
-"Central never sends them. Press Get Token for that AA on the ActionApps Central page (it overwrites the value)." => "",
+"Central never sends them. Press Get Token for that AA on the ActionApps Central page (it overwrites the value)." => "Central ih nikad ne šalje. Na stranici ActionApps Central za taj AA pritisnite „Dohvatite token“ (prepisat će vrijednost).", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 41
-"CKEditor 4 use" => "",
+"CKEditor 4 use" => "Upotreba CKEditora 4", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 46
-"Lists the pages that loaded the old CKEditor 4 by {require:ckeditor} in the last 30 days. AA edits text with TinyMCE now; CKEditor 4 will be removed once no template asks for it." => "",
+"Lists the pages that loaded the old CKEditor 4 by {require:ckeditor} in the last 30 days. AA edits text with TinyMCE now; CKEditor 4 will be removed once no template asks for it." => "Navodi web-stranice koje su u posljednjih 30 dana učitale stari CKEditor 4 putem {require:ckeditor}. AA sada uređuje tekst pomoću TinyMCE; CKEditor 4 bit će uklonjen kad ga nijedan predložak više ne bude tražio.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 92
-"CKEditor 4 loaded on %1" => "",
+"CKEditor 4 loaded on %1" => "CKEditor 4 učitan na: %1", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 101
-"A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "",
+"A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "Predložak web-stranice sadrži {require:ckeditor} (i CKEDITOR.replace()). Umjesto toga omotajte textarea u <aa-richtext mode=\"rich\"> s {require:aa-richtext@1} - textarea zadržava ime i vrijednost, pa obrazac i skripte koje čitaju textarea.value rade bez izmjena; CKEDITOR.instances[...].getData() postaje vrijednost textarea.", // ai 2026-10
 
-// src/Optimize/CheckCkeditorUse.php, row 107
-"No page loaded CKEditor 4 in the last 30 days" => "",
+// src/Optimize/CheckCkeditorUse.php, row 108
+"No page loaded CKEditor 4 in the last 30 days" => "U posljednjih 30 dana nijedna web-stranica nije učitala CKEditor 4", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 16
+"Cookies read past the page cache" => "Kolačići čitani mimo predmemorije web-stranica", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 21
+"Lists installation PHP files (include/usr_aliasfnc.php, include/custom/, modules/site/sites/) that read cookies directly - cached site pages do not vary on such a cookie." => "Navodi PHP datoteke instalacije (include/usr_aliasfnc.php, include/custom/, modules/site/sites/) koje izravno čitaju kolačiće - web-stranice iz predmemorije ne razlikuju se prema takvom kolačiću.", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 53
+"%1 reads cookies directly" => "%1 izravno čita kolačiće", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 55
+"Lines" => "Retci", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 56
+"A cached site page does not vary on such a cookie - the variant of the first visitor is served to everyone. Read the cookie with \\AA\\Cache\\PageCache::cookie('name'), in templates {cookie:name}; the page is then cached once per value of that cookie." => "Web-stranica iz predmemorije ne razlikuje se prema takvom kolačiću - varijanta prvog posjetitelja prikazuje se svima. Kolačić čitajte pomoću \\AA\\Cache\\PageCache::cookie('name'), u predlošcima {cookie:name}; web-stranica se tada sprema u predmemoriju zasebno za svaku vrijednost tog kolačića.", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 61
+"No installation file reads cookies directly" => "Nijedna datoteka instalacije ne čita kolačiće izravno", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 24
-"Cron table" => "",
+"Cron table" => "Tablica crona", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 29
-"Checks the AA cron table: unreadable schedules, scripts scheduled twice, rows that have not run for twice their period, and AA jobs that belong to the queue." => "",
+"Checks the AA cron table: unreadable schedules, scripts scheduled twice, rows that have not run for twice their period, and AA jobs that belong to the queue." => "Provjerava AA tablicu crona: nečitljive rasporede, skripte zakazane dvaput, retke koji se nisu izvršili dvostruko dulje od svog razdoblja te AA poslove koji pripadaju redu zadataka.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 57
-"Cron row %1 (%2) has an unreadable schedule: %3" => "",
+"Cron row %1 (%2) has an unreadable schedule: %3" => "Redak crona %1 (%2) ima nečitljiv raspored: %3", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 57
-"cron.php skips a row it cannot parse, so the script never runs. Allowed are digits, commas, ranges and */step; fix the fields or delete the row." => "",
+"cron.php skips a row it cannot parse, so the script never runs. Allowed are digits, commas, ranges and */step; fix the fields or delete the row." => "cron.php preskače redak koji ne može raščlaniti, pa se skripta nikad ne izvršava. Dopuštene su znamenke, zarezi, rasponi i */korak; ispravite polja ili izbrišite redak.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 62
-"Job %1 is scheduled %2 times" => "",
+"Job %1 is scheduled %2 times" => "Posao %1 zakazan je %2 puta", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 62
-"Usually an old .php3 row next to the .php one, so the script runs twice. Delete the older row." => "",
+"Usually an old .php3 row next to the .php one, so the script runs twice. Delete the older row." => "Obično stari redak .php3 uz redak .php, pa se skripta izvršava dvaput. Izbrišite stariji redak.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 70
-"Expected every" => "",
+"Expected every" => "Očekivano svakih", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 72
-"%1 cron rows have not run for longer than twice their period" => "",
+"%1 cron rows have not run for longer than twice their period" => "Retci crona koji se nisu izvršili dulje od dvostrukog razdoblja: %1", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 72
-"cron.php runs (see the task queue) but skipped these rows, or their schedule means something else than you expect." => "",
+"cron.php runs (see the task queue) but skipped these rows, or their schedule means something else than you expect." => "cron.php radi (pogledajte red zadataka), ali je preskočio ove retke ili njihov raspored znači nešto drugo nego što očekujete.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 77
-"AA jobs are still in the cron table and run twice" => "",
+"AA jobs are still in the cron table and run twice" => "AA poslovi još su u tablici crona i izvršavaju se dvaput", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 77
-"Run service/sql_update.php." => "",
+"Run service/sql_update.php." => "Pokrenite service/sql_update.php.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 81
-"%1 cron rows, all readable and running on schedule" => "",
+"%1 cron rows, all readable and running on schedule" => "Redaka crona: %1, svi su čitljivi i izvršavaju se prema rasporedu", // ai 2026-10
+
+// src/Optimize/CheckEnvironment.php, row 18
+// src/Optimize/StateCheckModel.php, row 295
+"Environment" => "Okružje",
 
 // src/Optimize/CheckEnvironment.php, row 23
-"Shows the AA version, SVN revision, PHP and database versions from the last system status row, and when they last changed." => "",
+"Shows the AA version, SVN revision, PHP and database versions from the last system status row, and when they last changed." => "Prikazuje verziju AA, SVN reviziju, verzije PHP-a i baze podataka iz posljednjeg zapisa o stanju sustava te kada su se zadnji put promijenile.", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 45
-"No system status recorded yet; the task queue writes one every 10 minutes" => "",
+"No system status recorded yet; the task queue writes one every 10 minutes" => "Stanje sustava još nije zabilježeno; red zadataka zapisuje ga svakih 10 minuta", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 51
 "SVN" => "",
 
 // src/Optimize/CheckEnvironment.php, row 53
-"Database" => "",
+"Database" => "Baza podataka", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 56
-"Unchanged since" => "",
+"Unchanged since" => "Bez promjene od", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 57
-"Recorded changes" => "",
+"Recorded changes" => "Zabilježene promjene", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 66
-"AA %1 (%2), PHP %3, %4; unchanged since %5" => "",
+"AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; bez promjene od %5", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 29
-"Outgoing HTTP" => "",
+"Outgoing HTTP" => "Odlazni HTTP", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 34
-"Fetches this installation's own address to check that PHP can make HTTP requests at all - {include} of local pages, Central and the link checker all need it." => "",
+"Fetches this installation's own address to check that PHP can make HTTP requests at all - {include} of local pages, Central and the link checker all need it." => "Dohvaća vlastitu adresu ove instalacije kako bi provjerio može li PHP uopće slati HTTP zahtjeve - trebaju ih {include} lokalnih stranica, Central i provjera poveznica.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 61
-"PHP cannot fetch %1" => "",
+"PHP cannot fetch %1" => "PHP ne može dohvatiti %1", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 63
-"Check that this server resolves its own hostname, that outgoing HTTP is not blocked by a firewall, and that PHP has a CA bundle for https. Until this works, {include} of local pages renders nothing and Central cannot reach its installations." => "",
+"Check that this server resolves its own hostname, that outgoing HTTP is not blocked by a firewall, and that PHP has a CA bundle for https. Until this works, {include} of local pages renders nothing and Central cannot reach its installations." => "Provjerite razrješava li ovaj poslužitelj vlastito ime hosta, blokira li vatrozid odlazni HTTP i ima li PHP skup CA certifikata za https. Dok to ne radi, {include} lokalnih stranica ne prikazuje ništa, a Central ne može doći do svojih instalacija.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 71
-"AA_INSTAL_URL redirects to %1" => "",
+"AA_INSTAL_URL redirects to %1" => "AA_INSTAL_URL preusmjerava na %1", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 72
-"Configured" => "",
+"Configured" => "Postavljeno", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 72
-"Answered" => "",
+"Answered" => "Odgovor", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 73
-"Set AA_INSTAL_URL in config.php to the address the server actually serves. Every extra hop is paid on each local request, and a redirect that drops the session cookie breaks included pages." => "",
+"Set AA_INSTAL_URL in config.php to the address the server actually serves. Every extra hop is paid on each local request, and a redirect that drops the session cookie breaks included pages." => "Postavite AA_INSTAL_URL u config.php na adresu koju poslužitelj stvarno poslužuje. Svaki dodatni skok plaća se pri svakom lokalnom zahtjevu, a preusmjeravanje koje izgubi kolačić sesije kvari uključene stranice.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 81
-"This installation's own address answers HTTP %1" => "",
-
-// src/Optimize/CheckHttp.php, row 82, 91
-// src/Optimize/CheckSessionidUse.php, row 99
-// src/Optimize/CheckUploadRefusals.php, row 86
-"Address" => "",
+"This installation's own address answers HTTP %1" => "Vlastita adresa ove instalacije odgovara s HTTP %1", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 82
 // src/Optimize/MissCacheRouting.php, row 98, 129
-"Answer" => "",
+"Answer" => "Odgovor", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 83
-"AA can reach the network, but AA_INSTAL_URL does not lead to this installation. Included local pages will render the error instead of the page." => "",
+"AA can reach the network, but AA_INSTAL_URL does not lead to this installation. Included local pages will render the error instead of the page." => "AA može pristupiti mreži, ali AA_INSTAL_URL ne vodi na ovu instalaciju. Uključene lokalne stranice umjesto sadržaja prikazat će pogrešku.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 90
-"The server reaches its own address (HTTP %1)" => "",
+"The server reaches its own address (HTTP %1)" => "Poslužitelj dolazi do vlastite adrese (HTTP %1)", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 103
 "curl" => "",
 
 // src/Optimize/CheckImportStores.php, row 19
-"Import stream states and catalogs" => "",
+"Import stream states and catalogs" => "Stanja tokova i katalozi uvoza", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 24
-"Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "",
+"Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "Čita spremljene verzije tokova i kataloge uvoza i navodi one koje nije moguće pročitati.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 48
 // src/Optimize/CheckImports.php, row 80
-"No import is defined" => "",
+"No import is defined" => "Nije definiran nijedan uvoz", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 60
-"The stream state of an import cannot be read" => "",
+"The stream state of an import cannot be read" => "Stanje tokova uvoza nije moguće pročitati", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 60
-"Its versions read as empty, so the next run of changed data imports everything; that run stores the state again." => "",
+"Its versions read as empty, so the next run of changed data imports everything; that run stores the state again." => "Njegove se verzije čitaju kao prazne, pa sljedeće izvođenje samo promijenjenih podataka uvozi sve; to izvođenje ponovno sprema stanje.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 67
-"The catalog of an import source cannot be read" => "",
+"The catalog of an import source cannot be read" => "Katalog izvora uvoza nije moguće pročitati", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 67
-"It reads as empty, so the import detail lists every stream as missing at the source. Check the source again to fill it anew." => "",
+"It reads as empty, so the import detail lists every stream as missing at the source. Check the source again to fill it anew." => "Čita se kao prazan, pa detalj uvoza navodi svaki tok kao nepostojeći u izvoru. Ponovno provjerite izvor kako bi se katalog iznova popunio.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 71
-"The stream states and catalogs of %1 imports can be read" => "",
+"The stream states and catalogs of %1 imports can be read" => "Stanja tokova i katalozi uvoza su čitljivi (uvoza: %1)", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 40
-"Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "",
+"Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "Navodi uvoze zaustavljene pogreškom ili koji ne napreduju, uvoze koji se ne mogu pokrenuti, oštećene ključeve, pogreške u zapisniku i zapise preostale od izbrisanih uvoza.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 80
-"%1 imports, none needs attention" => "",
+"%1 imports, none needs attention" => "Uvoza: %1, nijedan ne zahtijeva pažnju", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 93
-"Removed %1 runs and %2 stream states and catalogs of deleted imports." => "",
+"Removed %1 runs and %2 stream states and catalogs of deleted imports." => "Uklonjeno iz izbrisanih uvoza - izvođenja: %1, stanja tokova i kataloga: %2.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 150
-"An import stopped by an error" => "",
+"An import stopped by an error" => "Uvoz zaustavljen pogreškom", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 150, 287
 // src/Optimize/CheckInstallRuns.php, row 62
@@ -11119,573 +11248,858 @@ return [
 "Error" => "Greška", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 150
-"Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "",
+"Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "Ništa se više ne uvozi dok netko ne intervenira ili dok planirani zadatak ponovno ne pokrene uvoz (time se ovo izvođenje prekida). Otvorite uvoz, pogledajte pogrešku, uklonite njezin uzrok i odaberite „Nastavite“ - ili izvođenje prekinite, čime se zadržava ono što je uvezeno.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
-"An import has not moved on for %1 hours" => "",
+"An import has not moved on for %1 hours" => "Uvoz ne napreduje već %1 h", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
-"Idle since" => "",
+"Idle since" => "Neaktivno od", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "Na njemu ne radi nijedan korak reda. Provjerite pokreće li cron red zadataka i jesu li njegovi krugovi dovoljno dugi za jedan korak (TOEXECUTE_ALLOWED_TIME u config.php), a zatim kod uvoza odaberite „Nastavite“. Planirano pokretanje uvoza prekida ga i pokreće novo izvođenje.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 171
-"Imports cannot run: a table does not support transactions" => "",
+"Imports cannot run: a table does not support transactions" => "Uvozi se ne mogu pokrenuti: tablica ne podržava transakcije", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 171
-"Table" => "",
+"Table" => "Tablica", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 171
-"Every run is refused. Convert the table to InnoDB or ask the server administrator." => "",
+"Every run is refused. Convert the table to InnoDB or ask the server administrator." => "Svako izvođenje se odbija. Pretvorite tablicu u InnoDB ili se obratite administratoru poslužitelja.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 176
-"not found" => "",
+"not found" => "nije pronađeno", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 180
-"%1 imports have a source that is not available" => "",
+"%1 imports have a source that is not available" => "Uvozi čiji izvor nije dostupan: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 180
-"A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "",
+"A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "Izvođenje takvog uvoza odmah se zaustavlja s pogreškom. Ispravite ili vratite datoteku izvora ili izbrišite uvoz.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 197
-"Another record holds the place of the stream state or catalog of an import" => "",
+"Another record holds the place of the stream state or catalog of an import" => "Mjesto stanja tokova ili kataloga uvoza zauzima drugi zapis", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 197
-"The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "",
+"The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "Kraj svakog koraka njegovih izvođenja na njemu ne uspijeva, a brisanje uvoza ga ostavlja. Izbrišite objekt s ID-om njegova stanja tokova ili kataloga.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 206
-"The last run of an import skipped 1 stream: the source went round" => "",
+"The last run of an import skipped 1 stream: the source went round" => "Posljednje izvođenje uvoza preskočilo je 1 tok: izvor se vrtio u krug", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 206
-"The last run of an import skipped %1 streams: the source went round" => "",
+"The last run of an import skipped %1 streams: the source went round" => "Posljednje izvođenje uvoza preskočilo je tokove (%1): izvor se vrtio u krug", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 206
-"The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "",
+"The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "Izvor je ponovno izdao isti posao ili više poslova nego što dopušta, pa je izvođenje preskočilo ostatak tih tokova i njihovi podaci možda nedostaju. Izvor pogrešno straniči ili je promijenio straničenje; provjerite izvor, a zatim ponovno pokrenite uvoz. Detalj uvoza navodi te tokove.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 209
-"The last run of an import had %1 item errors" => "",
+"The last run of an import had %1 item errors" => "Posljednje izvođenje uvoza imalo je greške u stavkama: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 209
-"The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "",
+"The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "Ostale stavke su spremljene. Detalj uvoza navodi prve greške; ispravite podatke ili mapiranje i ponovno pokrenite uvoz.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 213
-"An enabled import has no planned task" => "",
+"An enabled import has no planned task" => "Uključeni uvoz nema planirani zadatak", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 213
-"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "",
+"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "Nijedan planirani zadatak stranice ne poziva {import} s njegovim imenom ili ID-om, pa se pokreće samo ručno. Isplanirajte zadatak ili isključite „Uključeno“.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 218
-"%1 imports of one slice have the same name" => "",
+"%1 imports of one slice have the same name" => "Uvozi jedne stranice s istim imenom: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 218
-"{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "",
+"{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "{import} ih ne može razlikovati i odbija ime, pa planirani zadatak s njim ne uspijeva. Preimenujte sve osim jednog.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 233
-"The last check of an import source cannot be read" => "",
+"The last check of an import source cannot be read" => "Posljednja provjera izvora uvoza ne može se pročitati", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 233
-"Its stored result is damaged. The next check of the source stores it again." => "",
+"Its stored result is damaged. The next check of the source stores it again." => "Njezin spremljeni rezultat je oštećen. Sljedeća provjera izvora spremit će ga ponovno.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236
-"The last check of an import source failed" => "",
+"The last check of an import source failed" => "Posljednja provjera izvora uvoza nije uspjela", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236, 238
-"Checked" => "",
+"Checked" => "Provjereno", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236
-"A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "",
+"A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "Stvarno izvođenje zaustavlja se s greškom kada izvor ne prođe provjeru. Detalj uvoza prikazuje što je izvor javio; ispravite ključ ili postavke i ponovno provjerite izvor.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 238
-"The last check of an import source passed with a remark" => "",
+"The last check of an import source passed with a remark" => "Posljednja provjera izvora uvoza prošla je s napomenom", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 238
-"The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "",
+"The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "Uvoz radi, ali izvor upozorava na nešto što treba ispraviti - na primjer definicije koje izostavlja. Detalj uvoza prikazuje što je izvor javio.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 244
-"The catalog of an import source is incomplete" => "",
+"The catalog of an import source is incomplete" => "Katalog izvora uvoza je nepotpun", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 244
-"The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "",
+"The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "Posljednja provjera nije dovršila popis izvora, pa detalj uvoza ne može utvrditi koje tokove izvor više nema. Ponovno provjerite izvor.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 260
-"%1 records of deleted imports are left: runs, stream states, catalogs" => "",
+"%1 records of deleted imports are left: runs, stream states, catalogs" => "Preostali zapisi obrisanih uvoza (%1): izvođenja, stanja tokova, katalozi", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 262
-"A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "",
+"A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "Korak obrisanog uvoza još radi i može spremati stavke dok mu ne istekne vrijeme. Popravak briše zapise; korak zatim više ništa ne zapisuje natrag.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 262
-"Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "",
+"Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "Ništa ih ne koristi i ništa drugo ih ne uklanja. Popravak ih briše zajedno s njihovim koracima u redu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A key in config.php is damaged" => "",
+"A key in config.php is damaged" => "Ključ u config.php je oštećen", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "",
+"The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "Ključ sadrži prijelom retka ili NUL, pa ga nijedan izvor uvoza ne smije koristiti. Ispravite konstantu u config.php.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 291
-"Imports logged %1 failures in the last 7 days" => "",
+"Imports logged %1 failures in the last 7 days" => "Greške uvoza zabilježene u posljednjih 7 dana: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 295
-"A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "",
+"A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "Neuspjeli korak reda zaustavlja svoj uvoz s greškom; ostali redovi su greške izvan koraka, na primjer osvježavanje stranica u predmemoriji nakon brisanja uvoza. Bilježe se samo klasa i mjesto greške ili kôd odbijanja - poruka može sadržavati ključ.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 296
-"Failed steps" => "",
+"Failed steps" => "Neuspjeli koraci", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 296
-"Other failures" => "",
+"Other failures" => "Ostale greške", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 373
-"Import detail" => "",
+"Import detail" => "Detalj uvoza", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 16
-"App transfers" => "",
+"App transfers" => "Prijenosi aplikacija", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 21
-"Warns about app transfers that hang and lists those stopped by an error." => "",
+"Warns about app transfers that hang and lists those stopped by an error." => "Upozorava na prijenose aplikacija koji su zapeli i navodi one zaustavljene greškom.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 55
-"Last progress" => "",
+"Last progress" => "Posljednji napredak", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 58
-"Items written" => "",
+"Items written" => "Zapisane stavke", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 67
-"An app transfer stopped by an error" => "",
+"An app transfer stopped by an error" => "Prijenos aplikacije zaustavljen je greškom", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 68
-"An app transfer has not moved on for %1 hours" => "",
+"An app transfer has not moved on for %1 hours" => "Prijenos aplikacije nije napredovao već %1 h", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 69
-"An installed app has waited for its finish for %1 hours" => "",
+"An installed app has waited for its finish for %1 hours" => "Instalirana aplikacija čeka na dovršetak već %1 h", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 74
-"The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written." => "",
+"The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written." => "Novi moduli sadrže samo dio stavki. Provjerite radi li red zadataka ovog AA; korisnik koji je pokrenuo prijenos otvara njegovu stranicu napretka i bira „Nastavite“ - ili „Završite“ (bilo koji superadmin), čime se zadržava ono što je zapisano.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 75
-"The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it." => "",
+"The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it." => "Aplikacija je instalirana i radi - samo dovršetak njezina izvođenja čeka na red zadataka. Provjerite radi li red ovog AA; na stranici napretka „Nastavite“ ga odmah dovršava, „Završite“ ga zatvara.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 76
-"Progress page" => "",
+"Progress page" => "Stranica napretka", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 80
-"No app transfer is stuck" => "",
+"No app transfer is stuck" => "Nijedan prijenos aplikacije nije zapeo", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 27
+"Item edits without the edit permission" => "Izmjene stavki bez dozvole za uređivanje", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 32
+"Lists the slices whose existing items were changed in the last 30 days through a form of the site by visitors without login, by readers or by users without the permission to edit the items. Such edits are allowed for now; the list shows which forms rely on them." => "Navodi stranice čije su postojeće stavke u posljednjih 30 dana izmijenili putem obrasca na webu posjetitelji bez prijave, čitatelji ili korisnici bez dozvole za uređivanje stavki. Takve su izmjene zasad dopuštene; popis pokazuje koji se obrasci na njih oslanjaju.", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+"visitor without login" => "posjetitelj bez prijave", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+"reader or author of the item" => "čitatelj ili autor stavke", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+"user without permission" => "korisnik bez dozvole", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 82
+"Field %1 of items in slice %2 changed by: %3 (last %4)" => "Polje %1 stavki na stranici %2 mijenjao je: %3 (posljednji put %4)", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 95
+"A future version will let only users with the permission to edit the item change it. If this is a form of the site, note it - it will need a login or a signed edit link." => "Buduća verzija dopuštat će izmjenu stavke samo korisnicima s dozvolom za njezino uređivanje. Ako je to obrazac na webu, zabilježite to - trebat će prijavu ili potpisanu poveznicu za uređivanje.", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 101
+"No item was changed without the edit permission in the last 30 days" => "U posljednjih 30 dana nijedna stavka nije izmijenjena bez dozvole za uređivanje", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 25
+"Login addresses" => "Adrese prijava", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 30
+"Warns when the logins of the last 30 days come from one address, or when an address that was slowed down after failed logins is shared by several users - failed logins are counted per address." => "Upozorava kada sve prijave iz posljednjih 30 dana dolaze s jedne adrese ili kada adresu usporenu nakon neuspjelih prijava dijeli više korisnika - neuspjele prijave broje se po adresi.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 87
+"Every login of the last 30 days came from one address, %1" => "Sve prijave u posljednjih 30 dana došle su s jedne adrese, %1", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 88
+"Names" => "Imena", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 89
+"Until then AA sees all visitors as one, and 20 failed logins of anyone, a scanner included, slow down the login of everybody. If it is the address of the only office that uses this AA, nothing needs to change." => "Dotad AA sve posjetitelje vidi kao jednoga, a 20 neuspjelih prijava bilo koga, uključujući skener, usporava prijavu svima. Ako je to adresa jedinog ureda koji koristi ovaj AA, ništa ne treba mijenjati.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 100
+"Logins from %1 were slowed down after failed attempts, and %2 users log in from that address" => "Prijave s adrese %1 usporene su nakon neuspjelih pokušaja, a s te se adrese prijavljuje više korisnika (%2)", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 102
+"Their failed logins add up, so all of them wait." => "Njihove se neuspjele prijave zbrajaju, pa čekaju svi.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 102
+"If it is the shared address of an office, find the failing logins in the Log (event LOGIN) - often a script or a browser keeps an old password." => "Ako je to zajednička adresa ureda, pronađite neuspjele prijave u Zapisniku (događaj LOGIN) - skripta ili preglednik često čuva staru lozinku.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 107
+"Logins come from %1 addresses; no address slowed down after failed logins is shared by several users" => "Broj adresa s kojih dolaze prijave: %1; nijednu adresu usporenu nakon neuspjelih prijava ne dijeli više korisnika", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 112
+"If %1 is a proxy in front of AA, add it to AA_TRUSTED_PROXIES in include/config.php: %2 - AA then counts each visitor by their own address." => "Ako je %1 proxy ispred AA, dodajte ga u AA_TRUSTED_PROXIES u include/config.php: %2 - AA tada svakog posjetitelja broji prema njegovoj vlastitoj adresi.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 30
+"Nightly test" => "Noćni test", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 35
+"What the nightly test (test4update) found in its last run of each check: PHP errors, broken or unescaped output, missing pages, failing Expression Reference examples. Shown only on installations the nightly test reports to." => "Što je noćni test (test4update) pronašao u posljednjem izvođenju svake provjere: PHP pogreške, neispravan ili neescapiran ispis, nedostajuće web-stranice, neuspjele primjere iz Reference izraza. Prikazuje se samo na instalacijama kojima noćni test šalje izvještaje.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 87
+"%1: nothing found" => "%1: ništa nije pronađeno", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 89
+"Check" => "Provjera", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 100
+"Nightly test: %1 checks found nothing" => "Noćni test – provjere bez nalaza: %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 153
+"%1 more pages" => "još web-stranica: %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 156
+"Known issue: %1" => "Poznati problem: %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 156
+"Known issue of the nightly test." => "Poznati problem noćnog testa.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 189
+"Verified by the next nightly run; to verify now run ./run-tests.sh in aa/doc." => "Provjerava se pri sljedećem noćnom izvođenju; za provjeru odmah pokrenite ./run-tests.sh u aa/doc.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 199
+"Verified by the next nightly run; to verify now run %1 in test4update." => "Provjerava se pri sljedećem noćnom izvođenju; za provjeru odmah pokrenite %1 u test4update.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 200
+"Verified by the next nightly run." => "Provjerava se pri sljedećem noćnom izvođenju.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 209
+"Unexpanded aliases on public pages" => "Nerazriješeni sinonimi na javnim web-stranicama", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 209
+"A public page shows an alias such as _#HEADLINE as plain text. The template uses an alias the slice does not define (a typo, or the alias was renamed), so visitors see the code instead of the value. Open the page, find the alias from the evidence and compare it with the aliases on the Fields page of the slice." => "Javna web-stranica prikazuje sinonim poput _#HEADLINE kao običan tekst. Predložak koristi sinonim koji stranica ne definira (pogreška pri tipkanju ili je sinonim preimenovan), pa posjetitelji vide kôd umjesto vrijednosti. Otvorite web-stranicu, pronađite sinonim iz dokaza i usporedite ga sa sinonimima na zaslonu „Polja“ te stranice.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 210
+"Raw item ids in the text of a page" => "Sirovi ID-ovi stavki u tekstu web-stranice", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 210
+"A 32-character hexadecimal id appears in the visible text of an Expression Reference page, outside a code sample. Usually a relation field or an expression prints the id instead of the item it points to. Open the page and look for the id from the evidence." => "U vidljivom tekstu web-stranice Reference izraza, izvan primjera koda, pojavljuje se heksadecimalni ID od 32 znaka. Obično polje veze ili izraz ispisuje ID umjesto stavke na koju upućuje. Otvorite web-stranicu i potražite ID iz dokaza.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 211
+"Garbled characters (mojibake)" => "Iskrivljeni znakovi (mojibake)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 211
+"The page contains sequences like Ã, Å or â€: UTF-8 text decoded as Latin-1 or Windows-1252 on its way. Accented letters and typographic quotes then show as garbage. Open the page and look for such characters; they usually come from one field or one part of a template." => "Web-stranica sadrži nizove poput Ã, Å ili â€: tekst u UTF-8 usput je dekodiran kao Latin-1 ili Windows-1252. Slova s dijakritičkim znakovima i tipografski navodnici tada se prikazuju kao besmislice. Otvorite web-stranicu i potražite takve znakove; obično dolaze iz jednog polja ili jednog dijela predloška.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 212
+"Double-escaped HTML" => "Dvostruko escapiran HTML", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 212
+"A value was HTML-escaped twice, so the reader sees the code of a character (an ampersand followed by lt;) instead of the character itself, here the < sign. Open the page and look for such codes in the visible text; the template or the field output escapes a value that was already escaped." => "Vrijednost je dvaput HTML-escapirana, pa čitatelj vidi kôd znaka (znak & iza kojeg slijedi lt;) umjesto samog znaka, ovdje znaka <. Otvorite web-stranicu i potražite takve kodove u vidljivom tekstu; predložak ili ispis polja escapira vrijednost koja je već bila escapirana.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 213
+"Expressions printed instead of run" => "Ispisani, a ne izvršeni izrazi", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 213
+"The visible text of an Expression Reference page contains {( outside a code sample: an expression that should have run on the server was printed instead. Open the page and search its text for {(." => "Vidljivi tekst web-stranice Reference izraza sadrži {( izvan primjera koda: izraz koji se trebao izvršiti na poslužitelju umjesto toga je ispisan. Otvorite web-stranicu i potražite u njezinu tekstu {(.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 214
+"PHP errors in page output" => "PHP pogreške u ispisu web-stranice", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 214
+"The page printed a PHP error, warning or notice with its file and line, or a database error (SQLSTATE). Visitors see the message and the rest of the page may be missing. Open the page; the message names the file and line to fix." => "Web-stranica je ispisala PHP pogrešku, upozorenje ili obavijest s datotekom i retkom ili pogrešku baze podataka (SQLSTATE). Posjetitelji vide poruku, a ostatak web-stranice može nedostajati. Otvorite web-stranicu; poruka navodi datoteku i redak koje treba popraviti.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 215
+"Pages not answering 200 OK" => "Web-stranice koje ne odgovaraju 200 OK", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 215
+"The page answered with an error status (404, 500 and the like) or did not answer at all, so the link to it is broken or the script fails. Open the page and look at the status in the Network tab of the browser developer tools." => "Web-stranica je odgovorila statusom pogreške (404, 500 i slično) ili uopće nije odgovorila, pa je poveznica na nju neispravna ili skripta ne radi. Otvorite web-stranicu i pogledajte status na kartici Mreža (Network) u alatima za razvojne programere u pregledniku.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 216
+"Missing page served as a full page (soft 404)" => "Nedostajuća web-stranica poslana kao cijela web-stranica (soft 404)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 216
+"The address answers 404 Not Found but still sends a full page of content. Search engines and link checkers get a mixed answer and the old content stays reachable. Open the address: it should show either a real page with status 200 or a short \"not found\" page." => "Adresa odgovara 404 Not Found, ali ipak šalje cijelu web-stranicu sadržaja. Tražilice i alati za provjeru poveznica dobivaju proturječan odgovor, a stari sadržaj ostaje dostupan. Otvorite adresu: trebala bi prikazati ili pravu web-stranicu sa statusom 200 ili kratku web-stranicu „nije pronađeno“.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 217
+"Characters lost when saving (charset)" => "Znakovi izgubljeni pri spremanju (charset)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 217
+"Characters outside Latin-1 (ě, č, ř, emoji, Chinese) came back as ? after an item was saved: the database columns hold fewer bytes per character than the connection sends. Such text is damaged for good once saved. Save an item with ěščřžýáíé in its text and open it again in the editor." => "Znakovi izvan Latin-1 (ě, č, ř, emoji, kineski) vratili su se kao ? nakon spremanja stavke: stupci baze podataka drže manje bajtova po znaku nego što ih šalje veza. Takav je tekst nakon spremanja trajno oštećen. Spremite stavku s ěščřžýáíé u tekstu i ponovno je otvorite u uređivaču.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 218
+"Admin pages cut off before the end" => "Administratorski zasloni prekinuti prije kraja", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 218
+"The HTML of the admin page does not end with </body></html>: the script stopped while printing it, usually after a fatal error or a timeout, and the rest of the page (buttons, the footer) is missing. Open the page and scroll to the bottom; look for a PHP fatal error of that page too." => "HTML administratorskog zaslona ne završava s </body></html>: skripta se zaustavila tijekom ispisa, obično nakon fatalne pogreške ili isteka vremena, pa ostatak zaslona (gumbi, podnožje) nedostaje. Otvorite zaslon i pomaknite se do dna; potražite i PHP fatalnu pogrešku tog zaslona.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 219
+"Missing images, scripts or styles" => "Nedostajuće slike, skripte ili stilovi", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 219
+"The page loads a file (an image, a script, a style sheet) that answers with an error status. The page may look broken or a feature may not work. Open the page with the Network tab of the browser developer tools and look for the files named in the evidence." => "Web-stranica učitava datoteku (sliku, skriptu, stilsku tablicu) koja odgovara statusom pogreške. Web-stranica može izgledati neispravno ili neka funkcija možda ne radi. Otvorite web-stranicu s karticom Mreža (Network) u alatima za razvojne programere u pregledniku i potražite datoteke navedene u dokazu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 220
+"Slow admin pages" => "Spori administratorski zasloni", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 220
+"The admin page took more than 3 seconds to load during the nightly crawl. Editors wait for it, and a page slow at night is slower by day. Open the page with &debug=150 added to its address to see which queries and functions take the time." => "Učitavanje administratorskog zaslona tijekom noćnog obilaska trajalo je više od 3 sekunde. Urednici na njega čekaju, a zaslon koji je spor noću danju je još sporiji. Otvorite zaslon s &debug=150 dodanim njegovoj adresi da vidite koji upiti i funkcije troše vrijeme.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 221
+"Admin pages wider than the window" => "Administratorski zasloni širi od prozora", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 221
+"In a 1280 px wide window the admin page scrolls sideways: a long value or a wide table does not wrap, and controls on the right are easy to miss. Open the page in a window of that width and look for the horizontal scroll bar." => "U prozoru širokom 1280 px administratorski se zaslon pomiče vodoravno: duga vrijednost ili široka tablica ne prelama se, a kontrole s desne strane lako se previde. Otvorite zaslon u prozoru te širine i potražite vodoravnu traku za pomicanje.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 222
+"JavaScript errors" => "JavaScript pogreške", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 222
+"A script on the page threw an uncaught error, so the feature it belongs to (a widget, a button, live editing) may not work. Open the page with the browser developer console open and reload; the error from the evidence appears there." => "Skripta na web-stranici izbacila je neuhvaćenu pogrešku, pa funkcija kojoj pripada (widget, gumb, uređivanje uživo) možda ne radi. Otvorite web-stranicu s otvorenom konzolom za razvojne programere u pregledniku i ponovno učitajte web-stranicu; ondje se pojavljuje pogreška iz dokaza.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 223
+"Errors in the browser console" => "Pogreške u konzoli preglednika", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 223
+"The page logged an error to the browser console, often a failed request or a blocked resource; a feature may fail without a visible sign. Open the browser developer console on the page and reload." => "Web-stranica je zapisala pogrešku u konzolu preglednika, često neuspio zahtjev ili blokiran resurs; neka funkcija može zakazati bez vidljivog znaka. Otvorite konzolu za razvojne programere u pregledniku na toj web-stranici i ponovno učitajte web-stranicu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 224
+"Unescaped text in page output (XSS)" => "Neescapiran tekst u ispisu web-stranice (XSS)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 224
+"A test text with quotes and angle brackets was saved and then printed into the page without HTML escaping. This is a security problem: the value must be printed through safe(). In the page source around the test text, the < and \" signs must appear as HTML entities." => "Testni tekst s navodnicima i šiljastim zagradama spremljen je i zatim ispisan u web-stranicu bez HTML escapiranja. To je sigurnosni problem: vrijednost se mora ispisivati kroz safe(). U izvornom kodu web-stranice oko testnog teksta znakovi < i \" moraju se pojaviti kao HTML entiteti.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 225
+"Pages the test could not open" => "Web-stranice koje test nije mogao otvoriti", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 225
+"The browser could not open or finish the page: a timeout, a download instead of a page, or a redirect while the page was being checked. Nothing else could be checked there. Open the page and watch whether it loads." => "Preglednik nije mogao otvoriti ili dovršiti web-stranicu: isteklo je vrijeme, umjesto web-stranice stiglo je preuzimanje ili je došlo do preusmjeravanja dok se web-stranica provjeravala. Ondje se ništa drugo nije moglo provjeriti. Otvorite web-stranicu i pratite učitava li se.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 226
+"Admin forms the test could not read" => "Administratorski obrasci koje test nije mogao pročitati", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 226
+"The nightly test did not find the controls it expects on an admin form (a field, the save button, the template slice), or the form did not keep what was sent. Either the form changed or it is broken. Open the form and check that it shows and saves the fields named in the evidence." => "Noćni test nije pronašao kontrole koje očekuje na administratorskom obrascu (polje, gumb za spremanje, predložak stranice) ili obrazac nije zadržao poslano. Obrazac se ili promijenio ili je neispravan. Otvorite obrazac i provjerite prikazuje li i sprema li polja navedena u dokazu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 227
+"Item edits that did not save" => "Izmjene stavki koje se nisu spremile", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 227
+"The test changed the headline of an item in the item editor, saved it and read it back, and got a different value. Changes made by editors may be lost. Edit an item, save it and open it again to see whether the change stayed." => "Test je u uređivaču stavki promijenio naslov stavke, spremio ga i ponovno pročitao, a dobio je drugu vrijednost. Izmjene urednika mogu se izgubiti. Uredite stavku, spremite je i ponovno otvorite da vidite je li izmjena ostala.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 228
+"Saved text missing from the public listing" => "Spremljeni tekst nedostaje na javnom popisu", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 228
+"The text of the test items (abstract and full text) did not show on the public listing of the slice, or not in the abstract paragraph. An alias probably expands to nothing, so visitors see empty places. Open the listing and compare it with the content of the items." => "Tekst testnih stavki (sažetak i cijeli tekst) nije se prikazao na javnom popisu stranice ili se nije prikazao u odlomku sažetka. Neki se sinonim vjerojatno razrješava u prazno, pa posjetitelji vide prazna mjesta. Otvorite popis i usporedite ga sa sadržajem stavki.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 229
+"Items missing from the public listing" => "Stavke nedostaju na javnom popisu", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 229
+"A published test item did not appear on the public listing of its slice, so visitors miss items that should be there. Check the conditions, sorting and item count of the listing; open it and look for the item from the evidence." => "Objavljena testna stavka nije se pojavila na javnom popisu svoje stranice, pa posjetitelji ne vide stavke koje bi ondje trebale biti. Provjerite uvjete, redoslijed i broj stavki popisa; otvorite ga i potražite stavku iz dokaza.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 230
+"Field values that did not save" => "Vrijednosti polja koje se nisu spremile", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 230
+"The test wrote a value into a field in the item editor, saved it and read it back, and the field kept its old value or came back empty. Editors may lose what they type into that field. Edit an item, change the field named in the evidence, save it and open it again." => "Test je u uređivaču stavki upisao vrijednost u polje, spremio je i ponovno pročitao, a polje je zadržalo staru vrijednost ili se vratilo prazno. Urednici mogu izgubiti ono što upišu u to polje. Uredite stavku, promijenite polje navedeno u dokazu, spremite je i ponovno otvorite.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 231
+"Backslashes lost when saving" => "Obrnute kose crte izgubljene pri spremanju", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 231
+"A value with backslashes came back with characters missing from its middle, typically because the input went through stripslashes() once too often. Paths, regular expressions and code samples get damaged when saved. Save an item with C:\\temp\\x in a text field and open it again." => "Vrijednost s obrnutim kosim crtama vratila se bez nekih znakova iz sredine, obično zato što je unos jednom previše prošao kroz stripslashes(). Putanje, regularni izrazi i primjeri koda oštećuju se pri spremanju. Spremite stavku s C:\\temp\\x u tekstualnom polju i ponovno je otvorite.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 232
+"Saved text changed by saving" => "Spremljeni tekst izmijenjen spremanjem", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 232
+"The text of a test item came back different from what was saved, not just shorter or with characters lost: an input function, a field filter or the editor rewrote it. Save an item with the text from the evidence and compare it with what the editor shows after saving." => "Tekst testne stavke vratio se drukčiji od spremljenog, ne samo kraći ili s izgubljenim znakovima: prepisala ga je ulazna funkcija, filtar polja ili uređivač. Spremite stavku s tekstom iz dokaza i usporedite ga s onim što uređivač prikazuje nakon spremanja.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 233
+"Failing Expression Reference examples" => "Neuspjeli primjeri iz Reference izraza", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 233
+"An example of the Expression Reference gave a different result than the documented one: either the expression changed its behaviour or the example is wrong. Open the test view of the Expression Reference and compare the actual and the expected result of the example from the evidence." => "Primjer iz Reference izraza dao je drukčiji rezultat od dokumentiranog: ili je izraz promijenio ponašanje ili je primjer pogrešan. Otvorite testni pogled Reference izraza i usporedite stvarni i očekivani rezultat primjera iz dokaza.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 234
+"Expression Reference examples" => "Primjeri iz Reference izraza", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 234
+"The run of all Expression Reference examples; the totals are in the evidence and each failing example is listed on its own." => "Izvođenje svih primjera iz Reference izraza; zbrojevi su u dokazu, a svaki neuspjeli primjer naveden je zasebno.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 235
+"Nightly check %1" => "Noćna provjera %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 235
+"The nightly test reported this on the pages below. The report of the nightly test (test4update) explains the check." => "Noćni test prijavio je ovo na web-stranicama u nastavku. Izvještaj noćnog testa (test4update) objašnjava provjeru.", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 34
-"Refused object forms" => "",
+"Refused object forms" => "Odbijeni obrasci objekata", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 39
-"Lists the settings and Manager forms and actions refused in the last 30 days because they posted an object or row of another module, of another type or other than the edited one." => "",
+"Lists the settings and Manager forms and actions refused in the last 30 days because they posted an object or row of another module, of another type or other than the edited one." => "Navodi obrasce postavki i Upravitelja te akcije odbijene u posljednjih 30 dana jer su poslale objekt ili redak drugog modula, drugog tipa ili drugi od uređivanog.", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 88
-"(no such object)" => "",
+"(no such object)" => "(takav objekt ne postoji)", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 92
-"The Item Manager of %1 tried to export the item %2 of another slice" => "",
+"The Item Manager of %1 tried to export the item %2 of another slice" => "„Uređivanje stavki“ za %1 pokušalo je izvesti stavku %2 druge stranice", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 92
-"A form of %1 tried to write the object %2" => "",
+"A form of %1 tried to write the object %2" => "Obrazac za %1 pokušao je zapisati objekt %2", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 98
-"Form type" => "",
+"Form type" => "Tip obrasca", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 99
-"Stored type" => "",
+"Stored type" => "Spremljeni tip", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 105
-"The export to slice posted an item of another slice (Owner) to copy it out of there; it was not exported. The Item Manager lists only the items of its slice, so unless the item was moved meanwhile, the user edited the request, most likely to read or copy the items of a slice he has no rights to. Find out who the user is." => "",
+"The export to slice posted an item of another slice (Owner) to copy it out of there; it was not exported. The Item Manager lists only the items of its slice, so unless the item was moved meanwhile, the user edited the request, most likely to read or copy the items of a slice he has no rights to. Find out who the user is." => "Izvoz u stranicu poslao je stavku druge stranice (Vlasnik) kako bi je odande kopirao; nije izvezena. „Uređivanje stavki“ prikazuje samo stavke svoje stranice, pa ako stavka u međuvremenu nije premještena, korisnik je izmijenio zahtjev, najvjerojatnije da pročita ili kopira stavke stranice za koju nema prava. Utvrdite tko je korisnik.", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 105
-"The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is." => "",
+"The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is." => "Obrazac ili akcija poslali su objekt ili redak različit od onoga za koji su otvoreni, koji pripada drugom modulu (Vlasnik) ili je drugog tipa; ostao je netaknut. Stranice šalju samo uređivane objekte i objekte navedenog modula, pa ako objekt u međuvremenu nije premješten ili obrisan (prazan vlasnik - ne postoji), korisnik je izmijenio zahtjev, najvjerojatnije da promijeni postavke drugog weba ili stranice. Utvrdite tko je korisnik.", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 111
-"No object form was refused in the last 30 days" => "",
+// src/Optimize/CheckObjectFormRefusals.php, row 109
+"Export of an item of another slice refused" => "Izvoz stavke druge stranice odbijen", // ai 2026-10
+
+// src/Optimize/CheckObjectFormRefusals.php, row 109
+"Write to an object of another module refused" => "Upis u objekt drugog modula odbijen", // ai 2026-10
+
+// src/Optimize/CheckObjectFormRefusals.php, row 113
+"No object form was refused in the last 30 days" => "U posljednjih 30 dana nije odbijen nijedan obrazac objekta", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 24
-"PHP fatal errors" => "",
+"PHP fatal errors" => "Fatalne greške PHP-a", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 29
-"Lists PHP fatal errors logged in the last 7 days by file and line, with counts and whether they appeared after the last deployment. Warns when fatal errors are not logged at all." => "",
+"Lists PHP fatal errors logged in the last 7 days by file and line, with counts and whether they appeared after the last deployment. Warns when fatal errors are not logged at all." => "Navodi fatalne greške PHP-a zabilježene u posljednjih 7 dana po datoteci i retku, s brojem pojavljivanja i podatkom jesu li se pojavile nakon posljednjeg postavljanja. Upozorava kada se fatalne greške uopće ne bilježe.", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 50
-"PHP fatal errors are not logged" => "",
+"PHP fatal errors are not logged" => "Fatalne greške PHP-a se ne bilježe", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 50
-"Add define('AA_LOG_PHP_FATALS', true); to include/config.php. Until then a page that dies leaves no trace here, only in the web server error log." => "",
+"Add define('AA_LOG_PHP_FATALS', true); to include/config.php. Until then a page that dies leaves no trace here, only in the web server error log." => "Dodajte define('AA_LOG_PHP_FATALS', true); u include/config.php. Do tada stranica koja se sruši ne ostavlja trag ovdje, nego samo u error logu web poslužitelja.", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 56
-"No PHP fatal errors in the last 7 days" => "",
+"No PHP fatal errors in the last 7 days" => "Nema fatalnih grešaka PHP-a u posljednjih 7 dana", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 66
-"Started after last deployment" => "",
+"Started after last deployment" => "Počelo nakon posljednjeg postavljanja", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 70
-"Open page" => "",
+"Open page" => "Otvorite web-stranicu", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 72
-"PHP fatal error in %1" => "",
+"PHP fatal error in %1" => "Fatalna greška PHP-a u %1", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 72
-"Open the file at that line. Every occurrence is a page the visitor never got." => "",
+"Open the file at that line. Every occurrence is a page the visitor never got." => "Otvorite datoteku na tom retku. Svako pojavljivanje je stranica koju posjetitelj nije dobio.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 31
-"Task queue" => "",
+"Task queue" => "Red zadataka", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 36
-"Checks that the task queue runs, whether OS cron or only the post-response fallback drives it, how often runs exceed their time limit, and which tasks were given up." => "",
+"Checks that the task queue runs, whether OS cron or only the post-response fallback drives it, how often runs exceed their time limit, and which tasks were given up." => "Provjerava radi li red zadataka, pokreće li ga cron OS-a ili samo rezervno pokretanje nakon odgovora, koliko često izvođenja prekoračuju vremensko ograničenje i koji su zadaci odustali.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 66
-"The task queue has never run" => "",
+"The task queue has never run" => "Red zadataka nikada nije pokrenut", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 66
-"Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback." => "",
+"Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback." => "E-mailovi, upozorenja i razmjena sadržaja čekaju u redu dok cron OS-a ne pozove cron.php ili posjet ne pokrene rezervno pokretanje nakon odgovora.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 68
-"The task queue has not run since %1" => "",
+"The task queue has not run since %1" => "Red zadataka nije pokrenut od %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 68
-"Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php)." => "",
+"Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php)." => "E-mailovi, upozorenja i razmjena sadržaja čekaju. Provjerite sistemski crontab (cron.php svake minute) i rezervno pokretanje nakon odgovora (DISABLE_CRON_FALLBACK u config.php).", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 75
-"OS cron has not called cron.php since %1; the post-response fallback keeps the queue alive" => "",
+"OS cron has not called cron.php since %1; the post-response fallback keeps the queue alive" => "Cron OS-a nije pozvao cron.php od %1; red održava rezervno pokretanje nakon odgovora", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 75
-"OS cron has never called cron.php; the post-response fallback keeps the queue alive" => "",
+"OS cron has never called cron.php; the post-response fallback keeps the queue alive" => "Cron OS-a nikada nije pozvao cron.php; red održava rezervno pokretanje nakon odgovora", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 77
-"The fallback only runs after a visit, so mails, alerts and feeds arrive late on a quiet site. Let the system crontab call cron.php every minute." => "",
+"The fallback only runs after a visit, so mails, alerts and feeds arrive late on a quiet site. Let the system crontab call cron.php every minute." => "Rezervno pokretanje radi samo nakon posjeta, pa na slabo posjećenom webu e-mailovi, upozorenja i razmjena sadržaja kasne. Neka sistemski crontab poziva cron.php svake minute.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 89
-"The post-response cron fallback failed %1 times in the last 7 days" => "",
+"The post-response cron fallback failed %1 times in the last 7 days" => "Neuspjela rezervna pokretanja crona nakon odgovora u posljednjih 7 dana: %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 99
-"Queued tasks failed %1 times in the last 7 days" => "",
+"Queued tasks failed %1 times in the last 7 days" => "Neuspjeli zadaci u redu u posljednjih 7 dana: %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 99
-"A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords." => "",
+"A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords." => "Neuspjeli zadatak ponovno se pokreće nakon %1 min s nižim prioritetom, a nakon ponovljenih neuspjeha se odustaje od njega. Zadatak iz korisničkog reda u „Upravitelj zadataka“ ne pokušava se ponovno - čeka tamo dok ga netko ponovno ne pokrene. Bilježe se samo klasa greške i mjesto gdje je nastala - poruka može sadržavati lozinke.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 106
-"%1 of %2 queue runs in the last 7 days exceeded the allowed %3 s (longest %4 s); %5 runs left tasks waiting" => "",
+"%1 of %2 queue runs in the last 7 days exceeded the allowed %3 s (longest %4 s); %5 runs left tasks waiting" => "Izvođenja reda u posljednjih 7 dana koja su prekoračila dopuštenih %3 s: %1 od %2 (najduže %4 s); izvođenja nakon kojih su zadaci ostali čekati: %5", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 109
-"Long tasks block everything behind them - imports of dead feeds and mass mails most often. Disable or slow down the feeds listed, or raise TOEXECUTE_ALLOWED_TIME in config.php." => "",
+"Long tasks block everything behind them - imports of dead feeds and mass mails most often. Disable or slow down the feeds listed, or raise TOEXECUTE_ALLOWED_TIME in config.php." => "Dugi zadaci blokiraju sve iza sebe - najčešće uvozi iz neispravnih izvora i masovni e-mailovi. Isključite ili usporite navedene izvore ili povećajte TOEXECUTE_ALLOWED_TIME u config.php.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 117
-"%1 queued tasks were given up after repeated failures" => "",
+"%1 queued tasks were given up after repeated failures" => "Zadaci u redu od kojih se odustalo nakon ponovljenih neuspjeha: %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 117
-"They never run again on their own. Open the Task Manager, see what they are, and delete them or fix the cause." => "",
+"They never run again on their own. Open the Task Manager, see what they are, and delete them or fix the cause." => "Sami se više nikada neće pokrenuti. Otvorite „Upravitelj zadataka“, pogledajte što su i obrišite ih ili uklonite uzrok.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 121
-"%1 queued tasks have been waiting for more than an hour" => "",
+"%1 queued tasks have been waiting for more than an hour" => "Zadaci u redu koji čekaju dulje od sat vremena: %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 121
-"The queue does not keep up, or these tasks fail and get postponed (their priority sinks with each failure)." => "",
+"The queue does not keep up, or these tasks fail and get postponed (their priority sinks with each failure)." => "Red ne stiže ili ovi zadaci ne uspijevaju i odgađaju se (njihov prioritet pada sa svakim neuspjehom).", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 125
-"Queue ran at %1; %2 runs in the last 7 days, %3 over the time limit" => "",
+"Queue ran at %1; %2 runs in the last 7 days, %3 over the time limit" => "Red je radio u %1; izvođenja u posljednjih 7 dana: %2, od toga preko vremenskog ograničenja: %3", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 179
-"Runs (24 h)" => "",
+"Runs (24 h)" => "Izvođenja (24 h)", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 180
-"Average [s]" => "",
+"Average [s]" => "Prosjek [s]", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 181
-"Longest [s]" => "",
+"Longest [s]" => "Najduže [s]", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 23
-"Queued tasks of a missing class" => "",
+"Queued tasks of a missing class" => "Zadaci u redu s nepostojećom klasom", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 28
-"Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
+"Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "Navodi klase zadataka u redu koji se u posljednjih 30 dana nisu mogli izvesti jer ovaj AA nema tu klasu.", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 62
-"Queued tasks of class %1 cannot run - the class is missing" => "",
+"Queued tasks of class %1 cannot run - the class is missing" => "Zadaci u redu klase %1 ne mogu se izvesti - klasa nedostaje", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 67
-"Selector" => "",
+"Selector" => "Selektor", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 71
-"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "Zadaci ostaju u redu i ponovno se pokušavaju, isprva svake minute, a zatim rjeđe, do jednom na sat; pokreće ih AA koji tu klasu ima. Ako klasa nedostaje nakon postavljanja (nisu kopirane sve datoteke, stari composer classmap) ili je ovaj AA stariji od drugog koji koristi istu bazu podataka, ažurirajte ga. Ako je funkcija uklonjena, obrišite zadatke u „Upravitelj zadataka“.", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 77
-"No queued task with a missing class in the last 30 days" => "",
+"No queued task with a missing class in the last 30 days" => "U posljednjih 30 dana nema zadataka u redu s nepostojećom klasom", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 17
-"Required slice settings" => "",
+"Required slice settings" => "Obavezne postavke stranice", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 22
-"Warns about slices whose required settings fields have no value." => "",
+"Warns about slices whose required settings fields have no value." => "Upozorava na stranice čija obavezna polja postavki nemaju vrijednost.", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 44
-"No slice has a required settings field" => "",
+"No slice has a required settings field" => "Nijedna stranica nema obavezno polje postavki", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 67
-"Slice \"%1\" has %2 required settings without a value" => "",
+"Slice \"%1\" has %2 required settings without a value" => "Stranica „%1“ ima obavezne postavke bez vrijednosti: %2", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 70
-"Fill them in on the Setting page of the slice - templates reading them show nothing until then." => "",
+"Fill them in on the Setting page of the slice - templates reading them show nothing until then." => "Ispunite ih na stranici „Postavke“ stranice - predlošci koji ih čitaju do tada ništa ne prikazuju.", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 75
-"All %1 required settings fields have a value" => "",
+"All %1 required settings fields have a value" => "Sva obavezna polja postavki (%1) imaju vrijednost", // ai 2026-10
 
 // src/Optimize/CheckRunner.php, row 57
-"Check %1 failed: %2" => "",
+"Check %1 failed: %2" => "Provjera %1 nije uspjela: %2", // ai 2026-10
 
 // src/Optimize/CheckRunner.php, row 57
-"The check itself is broken; the state it watches is unknown." => "",
+"The check itself is broken; the state it watches is unknown." => "Sama provjera je neispravna; stanje koje prati nije poznato.", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 19
-"Server secret" => "",
+"Server secret" => "Tajni ključ poslužitelja", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 24
-"Checks that AA_SECRET is set in config.php - the key for login tokens, mail forms and password reset links." => "",
+"Checks that AA_SECRET is set in config.php - the key for login tokens, mail forms and password reset links." => "Provjerava je li AA_SECRET postavljen u config.php - ključ za tokene za prijavu, obrasce za e-poštu i poveznice za obnovu lozinke.", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 50
-"AA_SECRET is set" => "",
+"AA_SECRET is set" => "AA_SECRET je postavljen", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 52
-"Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET." => "",
+"Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET." => "Dodajte u include/config.php: define('AA_SECRET', '...'); s bilo kojim dugim slučajnim nizom, npr. izlazom naredbe php -r \"echo bin2hex(random_bytes(32));\". Učinite to pri ažuriranju AA, kako bi se Centrali ovom AA ponovno autentificirali samo jednom. Bez AA_SECRET promjena DB_PASSWORD ima isti učinak kao novi tajni ključ. Centrali čuvaju lozinke baza podataka svojih AA u central_conf - još jedan razlog za AA_SECRET.", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 54
-"AA_SECRET is shorter than %1 bytes, so it is ignored" => "",
+"AA_SECRET is shorter than %1 bytes, so it is ignored" => "AA_SECRET je kraći od %1 bajtova, pa se zanemaruje", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 57
-"AA_SECRET is not set and the database password is short, so login tokens, mail forms and password reset links could be guessed offline" => "",
+"AA_SECRET is not set and the database password is short, so login tokens, mail forms and password reset links could be guessed offline" => "AA_SECRET nije postavljen, a lozinka baze podataka je kratka, pa bi se tokeni za prijavu, obrasci za e-poštu i poveznice za obnovu lozinke mogli pogoditi offline", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 59
-"AA_SECRET is not set - the keys are derived from the database password" => "",
+"AA_SECRET is not set - the keys are derived from the database password" => "AA_SECRET nije postavljen - ključevi se izvode iz lozinke baze podataka", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 24
-"Security protections" => "",
+"Security protections" => "Sigurnosne zaštite", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 29
-"Lists the security protections switched off on this install and the unsigned expressions forms sent in the last %1 days." => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 74
-"Protection \"%1\" is switched off" => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 77
-"Protection" => "",
+"Lists the security protections switched off on this install and what they refused in the last %1 days." => "Navodi sigurnosne zaštite isključene na ovoj instalaciji i što su zaštite odbile u posljednjih %1 dana.", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 78
-// src/Security/Settings.php, row 28
-"Switched off" => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 78
-"unknown" => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 79
-"By" => "",
+"Protection \"%1\" is switched off" => "Zaštita „%1“ je isključena", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 81
-"Switch it on again once the older forms are converted." => "",
+"Protection" => "Zaštita", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 92
-"A form on %1 sent an unsigned expression in %2; it was refused" => "",
+// src/Optimize/CheckSecurityProtections.php, row 82
+// src/Security/Settings.php, row 28
+"Switched off" => "Isključeno", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 92, 93
-"an unknown page" => "",
+// src/Optimize/CheckSecurityProtections.php, row 83
+"By" => "Tko", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 93
-"A form on %1 sent an unsigned expression in %2; it ran because the protection was off" => "",
+// src/Optimize/CheckSecurityProtections.php, row 85
+"Switch it on again once the older forms are converted." => "Ponovno je uključite čim starije obrasce pretvorite.", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 97
-"Parameter" => "",
+// src/Optimize/CheckSecurityProtections.php, row 88
+"Protection switched off" => "Zaštita isključena", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 102
-"If you do not know the page, the request did not come from your forms and nothing needs to change." => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 108
-"All protections are on and no form sent an unsigned expression in the last %1 days" => "",
+// src/Optimize/CheckSecurityProtections.php, row 113
+"All protections are on and none of them refused anything in the last %1 days" => "Sve su zaštite uključene i nijedna u posljednjih %1 dana ništa nije odbila", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 45
-"Get_Sessionid use" => "",
+"Get_Sessionid use" => "Korištenje Get_Sessionid", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 50
-"Lists who asked for a session id by the Get_Sessionid remote command in the last 30 days - scripts logging in to the admin pages, or external sites using AA_ClientAuth." => "",
+"Lists who asked for a session id by the Get_Sessionid remote command in the last 30 days - scripts logging in to the admin pages, or external sites using AA_ClientAuth." => "Navodi tko je u posljednjih 30 dana zatražio ID sesije udaljenom naredbom Get_Sessionid - skripte koje se prijavljuju u administraciju ili vanjski webovi koji koriste AA_ClientAuth.", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 77
-"An external site logs its readers in by AA_ClientAuth (free/freepwd)." => "",
+"An external site logs its readers in by AA_ClientAuth (free/freepwd)." => "Vanjski web prijavljuje svoje čitatelje putem AA_ClientAuth (free/freepwd).", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 78
-"A username and password login - a script using the admin pages, or an ActionApps Central older than this AA." => "",
+"A username and password login - a script using the admin pages, or an ActionApps Central older than this AA." => "Prijava korisničkim imenom i lozinkom - skripta koja koristi administraciju ili ActionApps Central stariji od ovog AA.", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 79
-"An external site resumes its reader sessions by AA_ClientAuth (the AA_Sess cookie, checked on each page view)." => "",
+"An external site resumes its reader sessions by AA_ClientAuth (the AA_Sess cookie, checked on each page view)." => "Vanjski web obnavlja sesije svojih čitatelja putem AA_ClientAuth (kolačić AA_Sess, provjerava se pri svakom prikazu stranice).", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 95
-"Get_Sessionid called from %1 (%2 login)" => "",
+"Get_Sessionid called from %1 (%2 login)" => "Get_Sessionid pozvan s %1 (prijava tipa %2)", // ai 2026-10
 
-// src/Optimize/CheckSessionidUse.php, row 110
-"Nobody called Get_Sessionid in the last 30 days" => "",
+// src/Optimize/CheckSessionidUse.php, row 111
+"Nobody called Get_Sessionid in the last 30 days" => "U posljednjih 30 dana nitko nije pozvao Get_Sessionid", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 18
-"Site state files" => "",
+"Site state files" => "Datoteke stanja webova", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 23
-"Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "",
+"Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "Provjerava ima li svaki modul Web koji koristi datoteku stanja (staru upravljačku datoteku) tu datoteku u modules/site/sites/ i je li čitljiva.", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 66
-"Site module \"%1\" has no state file" => "",
+"Site module \"%1\" has no state file" => "Modul Web „%1“ nema datoteku stanja", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 68
-"Missing file" => "",
+"Missing file" => "Nedostaje datoteka", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 69
-"State file setting" => "",
+"State file setting" => "Postavka datoteke stanja", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 71
-"Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "",
+"Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "Svaka javna stranica tog weba odgovara s HTTP 500 (bilježi se kao SITE_CONF). Dodajte datoteku ili ispravite postavku „Datoteka stanja“ modula Web.", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 72
 // src/Optimize/CheckUniversalAnalytics.php, row 83
-"Site settings" => "",
+"Site settings" => "Postavke weba", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 77
-"All %1 site state files are in place" => "",
+"All %1 site state files are in place" => "Sve datoteke stanja webova (%1) su na mjestu", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 77
-"No site module uses a state file" => "",
+"No site module uses a state file" => "Nijedan modul Web ne koristi datoteku stanja", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 31
+"Reverse proxy" => "Reverzni proxy", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 36
+"Checks AA_TRUSTED_PROXIES in config.php and lists proxies outside it that sent requests in the last 30 days - AA takes the visitor address, the domain and https only from a trusted proxy." => "Provjerava AA_TRUSTED_PROXIES u config.php i navodi proxyje izvan tog popisa koji su slali zahtjeve u posljednjih 30 dana - AA adresu posjetitelja, domenu i https preuzima samo od pouzdanog proxyja.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 69
+"nobody" => "nijedan", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 76
+"AA_TRUSTED_PROXIES in config.php has entries that are neither an address nor a range: %1" => "AA_TRUSTED_PROXIES u config.php ima unose koji nisu ni adresa ni raspon: %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 78
+"Write addresses and CIDR ranges, e.g. %1" => "Upišite adrese i CIDR raspone, npr. %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 85
+"AA_TRUSTED_PROXIES in config.php trusts a range wider than any private network: %1" => "AA_TRUSTED_PROXIES u config.php vjeruje rasponu širem od bilo koje privatne mreže: %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 87
+"List only the addresses or the network of your proxies, e.g. %1" => "Navedite samo adrese ili mrežu svojih proxyja, npr. %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 99
+"Proxy headers came from %1, which is not in AA_TRUSTED_PROXIES, so AA ignored them" => "Zaglavlja proxyja stigla su s adrese %1, koja nije u AA_TRUSTED_PROXIES, pa ih je AA zanemario", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 108
+"If %1 is your proxy, add it to include/config.php: define('AA_TRUSTED_PROXIES', ['%1']); Until then AA sees every visitor with the address of the proxy and builds links with the host name the proxy uses for AA." => "Ako je %1 vaš proxy, dodajte ga u include/config.php: define('AA_TRUSTED_PROXIES', ['%1']); Dotad AA svakog posjetitelja vidi s adresom proxyja i gradi poveznice s nazivom hosta koji proxy koristi za AA.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 117
+"This page came through the trusted proxy %1" => "Ova je web-stranica stigla preko pouzdanog proxyja %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 121
+"The proxy %1 does not tell AA the address of the visitor" => "Proxy %1 ne javlja AA-u adresu posjetitelja", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 122
+"Let the proxy send the X-Forwarded-For header with the address of the visitor. Until then AA sees every visitor with one address." => "Neka proxy šalje zaglavlje X-Forwarded-For s adresom posjetitelja. Dotad AA sve posjetitelje vidi s jednom adresom.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 129
+"The proxy %1 does not tell AA whether the visitor uses https" => "Proxy %1 ne javlja AA-u koristi li posjetitelj https", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 130
+"Let the proxy set the X-Forwarded-Proto header - in Apache RequestHeader set X-Forwarded-Proto \"https\" in the https virtual host and \"http\" in the plain one. AA then marks its cookies secure and builds https links." => "Neka proxy postavlja zaglavlje X-Forwarded-Proto - u Apacheu RequestHeader set X-Forwarded-Proto \"https\" u https virtualnom hostu i \"http\" u običnom. AA tada svoje kolačiće označava kao secure i gradi https poveznice.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 135
+"No proxy outside AA_TRUSTED_PROXIES sent requests in the last 30 days" => "Nijedan proxy izvan AA_TRUSTED_PROXIES nije slao zahtjeve u posljednjih 30 dana", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 26
-"Old Google Analytics (Universal Analytics)" => "",
+"Old Google Analytics (Universal Analytics)" => "Stari Google Analytics (Universal Analytics)", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 31
-"Lists the sites and slices whose templates or settings still use a Universal Analytics id (UA-...). Google stopped collecting its data on 1 July 2023, so such code measures no visits." => "",
+"Lists the sites and slices whose templates or settings still use a Universal Analytics id (UA-...). Google stopped collecting its data on 1 July 2023, so such code measures no visits." => "Navodi webove i stranice čiji predlošci ili postavke još koriste ID za Universal Analytics (UA-...). Google je prestao prikupljati njegove podatke 1. srpnja 2023., pa takav kôd ne mjeri nikakve posjete.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 110
-"Old id (UA)" => "",
+"Old id (UA)" => "Stari ID (UA)", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 111
-"New id (GA4, Tag Manager)" => "",
+"New id (GA4, Tag Manager)" => "Novi ID (GA4, Tag Manager)", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 121
-"%1 still uses the old Google Analytics (UA-...) - no visits are measured" => "",
+"%1 still uses the old Google Analytics (UA-...) - no visits are measured" => "%1 još koristi stari Google Analytics (UA-...) - posjeti se ne mjere", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 124
-"Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "",
+"Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "Google je prestao prikupljati podatke Universal Analytics 1. srpnja 2023. 1. U Google Analytics otvorite Administrator > GA4 svojstvo weba > Tokovi podataka > web tok i kopirajte njegov ID mjerenja (G-...); ako web nema GA4 svojstvo, izradite ga. 2. Na navedenim mjestima: u gtag kodu upišite ID G-... umjesto UA-... (u gtag/js?id= i u gtag('config', ...)) i zadržite postavke privole; obrišite blokove _gaq, ga.js, analytics.js i _gat; gdje nije ostao nikakav gtag kôd, zalijepite standardni GA4 isječak. ID UA-... u postavkama weba (ID za praćenje Google Analytics) zamijenite ID-om G-.... 3. Sljedeći dan u GA4 > Izvješća > U stvarnom vremenu provjerite dolaze li posjeti.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 129
-"%1 still has the old Google Analytics code (UA-...) next to the new one - it can be removed" => "",
+"%1 still has the old Google Analytics code (UA-...) next to the new one - it can be removed" => "%1 pored novog još ima stari kôd Google Analytics (UA-...) - može se ukloniti", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 132
-"The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "",
+"The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "Novi kôd (%1) već je ondje; retci UA-... samo učitavaju skriptu koja ništa ne mjeri. Obrišite blokove _gaq, ga.js, analytics.js i _gat te gtag('config', 'UA-...'); gdje adresa gtag/js?id= sadrži ID UA-..., umjesto brisanja retka ondje upišite ID G-.... ID UA-... u postavkama weba (ID za praćenje Google Analytics) izbrišite ili zamijenite ID-om G-.... Spremnik GTM-... mjeri samo ako sadrži GA4 oznaku - provjerite to u Tag Manageru. Zatim u GA4 > Izvješća > U stvarnom vremenu provjerite dolaze li posjeti i dalje.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 136
-"No template uses the old Google Analytics (Universal Analytics)" => "",
+"No template uses the old Google Analytics (Universal Analytics)" => "Nijedan predložak ne koristi stari Google Analytics (Universal Analytics)", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 23
-"Refused uploads" => "",
+"Refused uploads" => "Odbijena učitavanja", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 28
-"Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "",
+"Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "Navodi učitavanja iz uređivača obogaćenog teksta koja je AA odbio u posljednjih 30 dana, po stranici i razlogu, te stranice čija mapa za učitavanje nije zapisiva.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 77
-"Slice %1 cannot store uploads - its directory is not writable" => "",
+"Slice %1 cannot store uploads - its directory is not writable" => "Stranica %1 ne može spremati učitane datoteke - njezina mapa nije zapisiva", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 78
-"Slice %1 could not store an upload" => "",
+"Slice %1 could not store an upload" => "Stranica %1 nije mogla spremiti učitanu datoteku", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 79
-"Uploads to slice %1 refused: %2" => "",
+"Uploads to slice %1 refused: %2" => "Odbijena učitavanja na stranicu %1: %2", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 92
-"PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "",
+"PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "PHP ne može pisati u mapu za učitavanje stranice (IMG_UPLOAD_PATH/<slice id> ili mapu njezina upravitelja datoteka). Ispravite vlasnika ili dozvole na poslužitelju.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 93
-"An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "",
+"An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "Jedna adresa učitala je u sat vremena više anonimnih slika nego što AA dopušta (%1 po adresi, %2 po stranici). Najvjerojatnije robot - adresa je u logu.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 94
-"Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "",
+"Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "Netko je pokušao učitati bez dozvole: urednik kojemu je istekla prijava (pomaže ponovno učitati stranicu) ili ispitivanje - mnogo dana s jedne adrese.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 95
-"Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "",
+"Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "Anonimni posjetitelji smiju učitavati slike do %1 MB; urednike ograničavaju upload_max_filesize i post_max_size u PHP-u.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 96
-"The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "",
+"The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "Uređivač je odbio tip datoteke ili datoteku čiji sadržaj nije odgovarao nastavku. Dopušteni tipovi zadani su u AA\\Upload\\UploadPolicy; ništa što bi preglednik ili PHP pokrenuo nikada ne prolazi.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 103
-"No refused uploads in the last 30 days" => "",
+"No refused uploads in the last 30 days" => "U posljednjih 30 dana nema odbijenih učitavanja", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 24
-"f_u calls on pages" => "",
+"f_u calls on pages" => "Pozivi f_u na web-stranicama", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 29
-"Lists the f_u alias calls of the last 30 days that AA refused (PHP or AA functions, undefined ones) or still made only for compatibility (installation functions without the usr_ prefix), by field and slice." => "",
+"Lists the f_u alias calls of the last 30 days that AA refused (PHP or AA functions, undefined ones) or still made only for compatibility (installation functions without the usr_ prefix), by field and slice." => "Navodi pozive sinonima f_u iz posljednjih 30 dana koje je AA odbio (funkcije PHP-a ili AA, nedefinirane) ili ih još izvršava samo radi kompatibilnosti (funkcije instalacije bez prefiksa usr_), po polju i stranici.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 76
-"Field settings" => "",
+"Field settings" => "Postavke polja", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 80
-"field %1 of slice %2" => "",
+"field %1 of slice %2" => "polje %1 stranice %2", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 91
-"The call is in the definition of the field or in a template using {alias:<field>:f_u:..}." => "",
+"The call is in the definition of the field or in a template using {alias:<field>:f_u:..}." => "Poziv je u definiciji polja ili u predlošku koji koristi {alias:<field>:f_u:..}.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 97
-"Every f_u call of the last 30 days called a usr_* function" => "",
+"Every f_u call of the last 30 days called a usr_* function" => "Svaki poziv f_u u posljednjih 30 dana pozvao je funkciju usr_*", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 31
-"f_u functions in field definitions" => "",
+"f_u functions in field definitions" => "Funkcije f_u u definicijama polja", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 36
-"Lists the field alias definitions using f_u whose function AA does not call (PHP or AA functions, undefined ones) or still calls only for compatibility (installation functions without the usr_ prefix)." => "",
+"Lists the field alias definitions using f_u whose function AA does not call (PHP or AA functions, undefined ones) or still calls only for compatibility (installation functions without the usr_ prefix)." => "Navodi definicije sinonima polja s f_u čiju funkciju AA ne poziva (funkcije PHP-a ili AA, nedefinirane) ili je još poziva samo radi kompatibilnosti (funkcije instalacije bez prefiksa usr_).", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 89
-"Definition" => "",
+"Definition" => "Definicija", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 109
-"All %1 f_u field definitions call usr_* functions" => "",
+"All %1 f_u field definitions call usr_* functions" => "Sve definicije polja s f_u (%1) pozivaju funkcije usr_*", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 109
-"No field definition uses f_u" => "",
+"No field definition uses f_u" => "Nijedna definicija polja ne koristi f_u", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 131
-"f_u calls %1, an installation function without the usr_ prefix" => "",
+"f_u calls %1, an installation function without the usr_ prefix" => "f_u poziva %1, funkciju instalacije bez prefiksa usr_", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 132
-"f_u without a function name" => "",
+"f_u without a function name" => "f_u bez imena funkcije", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 133
-"f_u names %1, which is not defined" => "",
+"f_u names %1, which is not defined" => "f_u navodi %1, koja nije definirana", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 134
-"f_u names %1, a PHP function - not called" => "",
+"f_u names %1, a PHP function - not called" => "f_u navodi %1, funkciju PHP-a - ne poziva se", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 135
-"f_u names %1, a function of AA itself (%2) - not called" => "",
+"f_u names %1, a function of AA itself (%2) - not called" => "f_u navodi %1, funkciju samog AA (%2) - ne poziva se", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 136
-"f_u names %1, defined outside AA in %2 - not called" => "",
+"f_u names %1, defined outside AA in %2 - not called" => "f_u navodi %1, definiranu izvan AA u %2 - ne poziva se", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 137
-"f_u call of %1 failed" => "",
+"f_u call of %1 failed" => "Poziv %1 putem f_u nije uspio", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 138
-"f_u names \"%1\", which is not a function name - not called" => "",
+"f_u names \"%1\", which is not a function name - not called" => "f_u navodi „%1“, što nije ime funkcije - ne poziva se", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 146
-"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "",
+"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA je još poziva kako bi stari webovi i dalje radili, ali f_u je namijenjen samo funkcijama usr_*. Preimenujte funkciju u usr_%1 (definirana u %2) i promijenite definicije.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 147
-"The alias shows nothing (it never did). Remove it or name a usr_* function." => "",
+"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Sinonim ništa ne prikazuje (nikada nije). Uklonite ga ili navedite funkciju usr_*.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 148
-"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "",
+"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Funkcija nije definirana na ovoj stranici administracije. Web je ipak može definirati (upravljačka datoteka weba, datoteka koju učitavaju samo njegove stranice) - što su stranice stvarno pozvale, kaže provjera „Pozivi f_u na stranicama“; vjerujte njoj. Ako ni ondje nije, definirajte usr_%1 u include/usr_aliasfnc.php ili uklonite sinonim.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 149
-"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "",
+"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Stranica nije imala takvu funkciju, sinonim ništa nije prikazao. Definirajte usr_%1 u include/usr_aliasfnc.php ili uklonite sinonim.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 150
-"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "",
+"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Pozivaju se samo funkcije instalacije: usr_*, funkcije definirane u include/usr_aliasfnc.php (i datotekama koje uključuje), include/custom/ ili modules/site/sites/. Ondje definirajte funkciju kao usr_%1.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 151
-"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "",
+"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Poziv nije uspio: %1. Ili funkcija ne prima ono što f_u prosljeđuje (polje sadržaja, ID polja kao niz, parametre kao niz) ili je zakazala iznutra. Dok se to ne ispravi, sinonim ništa ne prikazuje.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 152
-"The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "",
+"The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Sinonim ništa ne prikazuje: f_u poziva samo funkcije instalacije (usr_* u include/usr_aliasfnc.php), nikada funkcije PHP-a ili AA. Napišite funkciju usr_* koja radi što je potrebno ili umjesto toga upotrijebite AA izraz.", // ai 2026-10
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "Očisti pagecache", // ai 2026-06
@@ -11727,10 +12141,10 @@ return [
 "We found %1 tables which need to be converted" => "Pronađeno je %1 tablica koje treba pretvoriti", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 71
-"Unique numbers (seq) may repeat" => "",
+"Unique numbers (seq) may repeat" => "Jedinstveni brojevi (seq) mogu se ponoviti", // ai 2026-10
 
 // src/Optimize/Convert2innodb.php, row 71
-"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "Tablice %1 ne podržavaju transakcije, pa dvije stavke dodane u istom trenutku mogu dobiti isti broj. Pretvorite tablice u InnoDB.", // ai 2026-10
 
 // src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "Pretvori tablicu %1 (%2) u InnoDB", // ai 2026-06
@@ -11754,7 +12168,7 @@ return [
 "Please do not forget to change DB_CHARACTER_SET to \"utf8mb4\" and DB_COLLATION_CONNECTION to \"%1\" in your config.php" => "Ne zaboravite promijeniti DB_CHARACTER_SET u \"utf8mb4\" i DB_COLLATION_CONNECTION u \"%1\" u svom config.php", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 136
-"Convert the MyISAM tables %1 to InnoDB first - Optimize \"%2\"." => "",
+"Convert the MyISAM tables %1 to InnoDB first - Optimize \"%2\"." => "Najprije pretvorite MyISAM tablice %1 u InnoDB - „Optimizirajte“ > „%2“.", // ai 2026-10
 
 // src/Optimize/ConvertSliceEncoding.php, row 18
 "Convert Slice Encoding to UTF" => "Pretvori kodiranje stranice u UTF", // ai 2026-06
@@ -11784,13 +12198,13 @@ return [
 "\"%1\" module is not in %2 encoding. Skipping." => "Modul \"%1\" nije u %2 kodiranju. Preskačem.", // ai 2026-06
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 17
-"Convert database from 1Byte encoding (latin1, cp1250, ...) to utf8mb4 collation" => "",
+"Convert database from 1Byte encoding (latin1, cp1250, ...) to utf8mb4 collation" => "Pretvorite bazu podataka iz 1-bajtnog kodiranja (latin1, cp1250, ...) u utf8mb4", // ai 2026-10
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 25
-"Convert all tables with 1Byte encoded texts (latin1, cp1250, ...) to utf8mb4 and set database default to utf8mb4. Texts keep the characters AA reads from them now." => "",
+"Convert all tables with 1Byte encoded texts (latin1, cp1250, ...) to utf8mb4 and set database default to utf8mb4. Texts keep the characters AA reads from them now." => "Pretvara sve tablice s tekstovima u 1-bajtnom kodiranju (latin1, cp1250, ...) u utf8mb4 i postavlja zadano kodiranje baze podataka na utf8mb4. Tekstovi zadržavaju znakove koje AA iz njih sada čita.", // ai 2026-10
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
-"DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "",
+"DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "DB_CHARACTER_SET u config.php je „%1“. Najprije ga prebacite na „utf8mb4“ i provjerite izgledaju li tekstovi u AA ispravno - pretvorba zadržava ono što AA prikazuje preko utf8mb4 veze.", // ai 2026-10
 
 // src/Optimize/CopyContent.php, row 13
 "Copy Content Table" => "Kopiraj tablicu content", // ai 2026-06
@@ -11814,34 +12228,34 @@ return [
 "Deleted items to be recreated: %1." => "Izbrisane stavke koje će se ponovno stvoriti: %1.", // ai 2026-06
 
 // src/Optimize/CreateAppStoreAccount.php, row 14
-"App store account" => "",
+"App store account" => "Račun kataloga aplikacija", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 19
-"Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "",
+"Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Stvara javni račun kojim drugi AA čitaju objavljene aplikacije ovog AA (korisnik %1, bez prava). Njegova lozinka je javna; račun se ne može prijaviti u administraciju.", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 34
-"No app store account - this AA publishes no apps" => "",
+"No app store account - this AA publishes no apps" => "Nema računa kataloga aplikacija - ovaj AA ne objavljuje aplikacije", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 39
-"The user %1 exists, but not with the public password of the app store - rename it, then repair" => "",
+"The user %1 exists, but not with the public password of the app store - rename it, then repair" => "Korisnik %1 postoji, ali nema javnu lozinku kataloga aplikacija - preimenujte ga, a zatim popravite", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 44
-"The app store account %1 has rights or groups - remove them" => "",
+"The app store account %1 has rights or groups - remove them" => "Račun kataloga aplikacija %1 ima prava ili grupe - uklonite ih", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 47
-"The app store account is ready" => "",
+"The app store account is ready" => "Račun kataloga aplikacija je spreman", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 55
-"Only a superadmin may create the app store account" => "",
+"Only a superadmin may create the app store account" => "Račun kataloga aplikacija smije stvoriti samo superadmin", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 67
-"The app store account could not be created" => "",
+"The app store account could not be created" => "Račun kataloga aplikacija nije moguće stvoriti", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 70
-"The app store account %1 is created" => "",
+"The app store account %1 is created" => "Račun kataloga aplikacija %1 je stvoren", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 77
-"The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "",
+"The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "Račun kataloga aplikacija treba korisnike samog AA (PERM_LIB sql); ovaj AA koristi %1 - može instalirati iz kataloga, ali ne može biti katalog", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
 "Create upload directory for current slice" => "Stvori direktorij za učitavanje za trenutnu stranicu", // ai 2026-06
@@ -11858,44 +12272,44 @@ return [
 // src/Optimize/DbBinaryTrailingZeros.php, row 35
 "Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17" => "Zamjenjuje binary polja s varbinary i uklanja završne nule. Potrebno za MySQL > 5.0.17", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 22
+// src/Optimize/DbFeedInconsistency.php, row 23
 "Feeds table inconsistent records" => "Nekonzistentni zapisi u tablici feeds", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 30
+// src/Optimize/DbFeedInconsistency.php, row 31
 "Testing if feeds table does not contain relations to non-existent slices (after slice deletion)" => "Provjerava sadrži li tablica feeds veze na nepostojeće stranice (nakon brisanja stranice)", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 47
+// src/Optimize/DbFeedInconsistency.php, row 51
 "Wrong destination slice id: %1 -> %2" => "Pogrešan ID odredišne stranice: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 58
+// src/Optimize/DbFeedInconsistency.php, row 65
 "Wrong source slice id: %1 -> %2" => "Pogrešan ID izvorne stranice: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 63
-// src/Optimize/DbInconsistency.php, row 70
+// src/Optimize/DbFeedInconsistency.php, row 70
+// src/Optimize/DbInconsistency.php, row 78
 "No wrong references found, hurray!" => "Nisu pronađene pogrešne reference, hura!", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 20
+// src/Optimize/DbInconsistency.php, row 22
 "Check database consistency" => "Provjeri konzistentnost baze podataka", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 28
+// src/Optimize/DbInconsistency.php, row 30
 "Test content table for records without item table reference, test discussion for the same, ..." => "Provjerava ima li u tablici content zapisa bez reference na tablicu item, isto za diskusije, ...", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 45
+// src/Optimize/DbInconsistency.php, row 47
 "Wrong slice id in item table: %1" => "Pogrešan ID stranice u tablici item: %1", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 55
+// src/Optimize/DbInconsistency.php, row 60
 "Wrong item id in content table: %1 -> %2" => "Pogrešan ID stavke u tablici content: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 65
+// src/Optimize/DbInconsistency.php, row 73
 "Wrong item id in discussion table: %1 -> %2" => "Pogrešan ID stavke u tablici discussion: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 89
+// src/Optimize/DbInconsistency.php, row 96
 "Data for slice id %1 in item table deleted" => "Podaci za ID stranice %1 u tablici item izbrisani", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 100
+// src/Optimize/DbInconsistency.php, row 109
 "Data for item id %1 in content table deleted" => "Podaci za ID stavke %1 u tablici content izbrisani", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 111
+// src/Optimize/DbInconsistency.php, row 122
 "Data for item id %1 in discussion table deleted" => "Podaci za ID stavke %1 u tablici discussion izbrisani", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 29
@@ -11919,48 +12333,48 @@ return [
 // src/Optimize/DbInconsistencyConstants.php, row 122
 "Deleted %1 constants in %2 (%3) unused constant groups" => "Izbrisano %1 konstanti u %2 (%3) nekorištenih grupa konstanti", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 21
+// src/Optimize/DbRelationDups.php, row 23
 "Relation table duplicate records" => "Duplicirani zapisi u tablici relacija", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 29
+// src/Optimize/DbRelationDups.php, row 31
 "Testing if relation table contains records, where values in both columns are identical (which was a bug fixed in Jan 2006)" => "Provjerava sadrži li tablica relacija zapise u kojima su vrijednosti u oba stupca identične (greška ispravljena u siječnju 2006.)", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 41
+// src/Optimize/DbRelationDups.php, row 43
 "%1 duplicates found" => "Pronađeno %1 duplikata", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 44
-// src/Optimize/FieldDuplicates.php, row 50, 66
+// src/Optimize/DbRelationDups.php, row 46
+// src/Optimize/FieldDuplicates.php, row 51, 65
 "No duplicates found" => "Nema duplikata", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 20
+// src/Optimize/DbRelationStartsxy.php, row 22
 "Slices relation started by x or y records" => "Zapisi veza stranica koji počinju znakom x ili y", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 28
+// src/Optimize/DbRelationStartsxy.php, row 30
 "Testing if relations between slices are OK (without x or y chars on the beginning)" => "Provjerava jesu li veze među stranicama u redu (bez znakova x ili y na početku)", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 40, 56
+// src/Optimize/DbRelationStartsxy.php, row 42, 57
 "%1 bad relation records found" => "Pronađeno %1 neispravnih zapisa veza", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 43
+// src/Optimize/DbRelationStartsxy.php, row 45
 "No bad relation records found" => "Nema neispravnih zapisa veza", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 58
+// src/Optimize/DbRelationStartsxy.php, row 59
 "repair value: %1 with item_id: %2" => "popravak vrijednosti: %1 s item_id: %2", // ai 2026-06
 
 // src/Optimize/DebuglogLeftover.php, row 23
-"Find forgotten {debuglog} expressions" => "",
+"Find forgotten {debuglog} expressions" => "Pronađite zaboravljene izraze {debuglog}", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 28
-"Lists views, slice/module/site settings, fields, site spots, alias functions and Code slice items which contain {debuglog}, and the DEBUG log rows written in the last 24 hours. Remove the expression once the debugging is over - it logs on every render of the page." => "",
+"Lists views, slice/module/site settings, fields, site spots, alias functions and Code slice items which contain {debuglog}, and the DEBUG log rows written in the last 24 hours. Remove the expression once the debugging is over - it logs on every render of the page." => "Navodi poglede, postavke stranica/modula/webova, polja, mjesta na webu, funkcije sinonima i stavke stranice Kod koje sadrže {debuglog}, te retke loga DEBUG zapisane u posljednja 24 sata. Kad završite s otklanjanjem grešaka, uklonite izraz - bilježi pri svakom iscrtavanju stranice.", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 60
-"DEBUG rows in the last 24 hours" => "",
+"DEBUG rows in the last 24 hours" => "Retci DEBUG u posljednja 24 sata", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 62
-"%1 rows, last %2" => "",
+"%1 rows, last %2" => "Redaka: %1, posljednji %2", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 67
-"No {debuglog} found in code points, no DEBUG rows logged in the last 24 hours" => "",
+"No {debuglog} found in code points, no DEBUG rows logged in the last 24 hours" => "Nigdje u kodu nema {debuglog}, u posljednja 24 sata nisu zabilježeni retci DEBUG", // ai 2026-10
 
 // src/Optimize/DropBackupTables.php, row 20
 "Delete backup tables" => "Izbrišite sigurnosne kopije tablica", // ai 2026-06
@@ -11968,40 +12382,40 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Briše sve trenutačne sigurnosne kopije tablica (bck_slice, bck_item, ...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 15
+// src/Optimize/FieldDuplicates.php, row 16
 "Fix field definitions duplicates" => "Popravite duplikate definicija polja", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 23
+// src/Optimize/FieldDuplicates.php, row 24
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "U svim stranicama trebao bi postojati samo jedan par slice_id - field_id, ali ponekad ih je više (uglavnom zbog greške u nekadašnjoj skripti sql_update.php, koja je dodala više polja display_count...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 54
+// src/Optimize/FieldDuplicates.php, row 55
 "Duplicate in slice - field: %1 - %2" => "Duplikat u stranici - polje: %1 - %2", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 80
+// src/Optimize/FieldDuplicates.php, row 83
 "Field %2 in slice %1 fixed" => "Polje %2 u stranici %1 popravljeno", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 21
+// src/Optimize/FixContentColumn.php, row 23
 "Set right content column for field" => "Postavite ispravan stupac sadržaja za polje", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 29
+// src/Optimize/FixContentColumn.php, row 31
 "Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for number fields" => "Postavlja oznaku FLAG_TEXT_STORED za sav sadržaj kod kojeg je polje označeno kao tekstualno, a uklanja je za brojčana polja", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 45
+// src/Optimize/FixContentColumn.php, row 47
 "No problem found, hurray" => "Nije pronađen nijedan problem, hura", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 54
+// src/Optimize/FixContentColumn.php, row 56
 "slice %1: field_id: %2 item_id: %3" => "stranica %1: field_id: %2 item_id: %3", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 57, 80
+// src/Optimize/FixContentColumn.php, row 59, 81
 "and more..." => "i još...", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 60
+// src/Optimize/FixContentColumn.php, row 62
 "We found %1 inconsistent rows in content table" => "Pronađeno %1 nekonzistentnih redaka u tablici content", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 78
+// src/Optimize/FixContentColumn.php, row 79
 "fixed (id-field): %1 - %2 (%3)" => "popravljeno (id-polje): %1 - %2 (%3)", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 83
+// src/Optimize/FixContentColumn.php, row 84
 "We fixed %1 inconsistent rows in content table" => "Popravljeno %1 nekonzistentnih redaka u tablici content", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 18
@@ -12048,212 +12462,212 @@ return [
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Samo za programere - ispisuje sadržaj include/metabase_schema.php (očekivanu shemu baze podataka kao čitljiv PHP array) generiran iz trenutne baze podataka; kopirajte ga u datoteku i commitajte.", // ai 2026-06
 
 // src/Optimize/ImgCacheWritable.php, row 17
-"Image cache can store" => "",
+"Image cache can store" => "Predmemorija slika može spremati", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 22
-"Resized images are generated once and kept in the cache directory in IMG_UPLOAD_PATH. Where PHP cannot write there, every request for such an image generates it again." => "",
+"Resized images are generated once and kept in the cache directory in IMG_UPLOAD_PATH. Where PHP cannot write there, every request for such an image generates it again." => "Smanjene slike generiraju se jednom i čuvaju u mapi predmemorije u IMG_UPLOAD_PATH. Ako PHP onamo ne može pisati, svaki zahtjev za takvu sliku ponovno je generira.", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 50
-"The image cache directory is a symbolic link" => "",
+"The image cache directory is a symbolic link" => "Mapa predmemorije slika je simbolička poveznica", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 50
-"Resized images are stored through it, but AA neither purges old ones there nor writes the routing rule - the cache grows without limit. Replace the link with a directory, or keep it small by other means." => "",
+"Resized images are stored through it, but AA neither purges old ones there nor writes the routing rule - the cache grows without limit. Replace the link with a directory, or keep it small by other means." => "Smanjene slike spremaju se kroz nju, ali AA ondje niti briše stare niti zapisuje pravilo usmjeravanja - predmemorija raste bez ograničenja. Zamijenite poveznicu mapom ili je održavajte malom na drugi način.", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 53
-"The image cache can store resized images" => "",
+"The image cache can store resized images" => "Predmemorija slika može spremati smanjene slike", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 54
-"The image cache cannot store resized images" => "",
+"The image cache cannot store resized images" => "Predmemorija slika ne može spremati smanjene slike", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 54
-"The images show, but each one which is not in the cache yet is generated again on every request - the load and delay of a site without the cache. Let the PHP user write into the directory, or into the upload directory, where AA creates it." => "",
+"The images show, but each one which is not in the cache yet is generated again on every request - the load and delay of a site without the cache. Let the PHP user write into the directory, or into the upload directory, where AA creates it." => "Slike se prikazuju, ali svaka koja još nije u predmemoriji ponovno se generira pri svakom zahtjevu - opterećenje i kašnjenje weba bez predmemorije. Dopustite PHP korisniku pisanje u mapu ili u mapu za učitavanje, gdje je AA stvara.", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 22
-"{img} which measures the image on every page view" => "",
+"{img} which measures the image on every page view" => "{img} koji mjeri sliku pri svakom prikazu stranice", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 27
-"Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "",
+"Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "Navodi izraze {img} u pogledima, poljima, mjestima na webu i drugom kodu koji ispisuju veličinu slike, ali je njihovi parametri ne određuju - pa se smanjena slika pri svakom proširenju učitava preko HTTP-a.", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 54
-"Expression" => "",
+"Expression" => "Izraz", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 60
-"No {img} in the templates measures its image" => "",
+"No {img} in the templates measures its image" => "Nijedan {img} u predlošcima ne mjeri svoju sliku", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 64
-"%1 {img} expressions measure the image on every page view" => "",
+"%1 {img} expressions measure the image on every page view" => "Izrazi {img} koji mjere sliku pri svakom prikazu stranice: %1", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 67
-"Give both w and h together with zc, iar or far, and leave out parameters which make the size depend on the photo (ar, ra, wp, hp, wl, hl, ws, hs, sx, sy, sw, sh, fltr) - then the size follows from the parameters. Or print just the url (info \"url\" or \"im\") and set the size in the HTML or CSS." => "",
+"Give both w and h together with zc, iar or far, and leave out parameters which make the size depend on the photo (ar, ra, wp, hp, wl, hl, ws, hs, sx, sy, sw, sh, fltr) - then the size follows from the parameters. Or print just the url (info \"url\" or \"im\") and set the size in the HTML or CSS." => "Zadajte i w i h zajedno sa zc, iar ili far i izostavite parametre zbog kojih veličina ovisi o fotografiji (ar, ra, wp, hp, wl, hl, ws, hs, sx, sy, sw, sh, fltr) - tada veličina proizlazi iz parametara. Ili ispišite samo url (info „url“ ili „im“) i veličinu postavite u HTML-u ili CSS-u.", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 83
-"\"%1\" needs the output format, which only the image tells" => "",
+"\"%1\" needs the output format, which only the image tells" => "„%1“ treba izlazni format, koji određuje samo slika", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 84
-"the parameters are computed - check that every variant tells the size" => "",
+"the parameters are computed - check that every variant tells the size" => "parametri se izračunavaju - provjerite određuje li svaka varijanta veličinu", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 85
-"the parameters do not tell the size" => "",
+"the parameters do not tell the size" => "parametri ne određuju veličinu", // ai 2026-10
 
-// src/Optimize/ItemDiscussion.php, row 16
+// src/Optimize/ItemDiscussion.php, row 17
 "Delete discussion comments for non-existent items" => "Izbrišite komentare diskusija za nepostojeće stavke", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 36, 54
+// src/Optimize/ItemDiscussion.php, row 40, 58
 "No problems found" => "Nisu pronađeni problemi", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 40
+// src/Optimize/ItemDiscussion.php, row 44
 "Problem for item %1 - %2 comments found" => "Problem za stavku %1 - pronađeno %2 komentara", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 61
+// src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "Riješeno problema: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 48
+// src/Optimize/LdapPermsToSql.php, row 49
 "Migrate LDAP perms to SQL perms" => "Migracija LDAP dozvola u SQL dozvole", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 54
+// src/Optimize/LdapPermsToSql.php, row 55
 "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Kopira sve korisnike, grupe, članstva i dozvole iz LDAP backenda u tablice SQL backenda (users, membership, perms) te prepisuje item.posted_by / item.edited_by iz LDAP DN oblika (uid=...,ou=...) u nove SQL numeričke id-ove. Pokrenite jednom po instalaciji, zatim u configu prebacite PERM_LIB na 'sql'. 'Test' je probno izvođenje koje samo čita. 'Repair' izvodi migraciju i može se pokretati opetovano. 'Revert' pomoću tablice mapiranja poništava sve izmjene.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 71
+// src/Optimize/LdapPermsToSql.php, row 72
 "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Ovaj optimizator radi samo kada je PERM_LIB='ldap'. Trenutno PERM_LIB='%1'.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 86
+// src/Optimize/LdapPermsToSql.php, row 87
 "Would create mapping table `%1`" => "Stvorila bi se tablica mapiranja `%1`", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 115
+// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "Test nije uspio: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 118
+// src/Optimize/LdapPermsToSql.php, row 119
 "Test finished (dry run - no changes made)." => "Test završen (probno izvođenje - bez izmjena).", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 134
+// src/Optimize/LdapPermsToSql.php, row 135
 "Repair failed: %1" => "Popravak nije uspio: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 137
+// src/Optimize/LdapPermsToSql.php, row 138
 "Repair finished." => "Popravak završen.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 153
+// src/Optimize/LdapPermsToSql.php, row 154
 "Revert failed: %1" => "Vraćanje nije uspjelo: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 156
+// src/Optimize/LdapPermsToSql.php, row 157
 "Revert finished." => "Vraćanje završeno.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 177
+// src/Optimize/LdapPermsToSql.php, row 178
 "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames nije uspio ili je vratio: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 180
+// src/Optimize/LdapPermsToSql.php, row 181
 "LDAP users found: %1" => "Pronađeno LDAP korisnika: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 196
+// src/Optimize/LdapPermsToSql.php, row 197
 "Skipping user %1 - cannot determine login" => "Preskačem korisnika %1 - nije moguće odrediti korisničko ime", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 205
+// src/Optimize/LdapPermsToSql.php, row 206
 "User %1 already exists in SQL (id %2), reusing" => "Korisnik %1 već postoji u SQL-u (id %2), koristi se postojeći", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 219
+// src/Optimize/LdapPermsToSql.php, row 220
 "Would create SQL user: %1 (from %2)" => "Stvorio bi se SQL korisnik: %1 (iz %2)", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 227
+// src/Optimize/LdapPermsToSql.php, row 228
 "Failed to create SQL user %1" => "Stvaranje SQL korisnika %1 nije uspjelo", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 234
+// src/Optimize/LdapPermsToSql.php, row 235
 "Users: created=%1 reused=%2 failed=%3" => "Korisnici: stvoreno=%1 ponovno_iskorišteno=%2 neuspjelo=%3", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 242
+// src/Optimize/LdapPermsToSql.php, row 243
 "LDAP groups found: %1" => "Pronađeno LDAP grupa: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 263
+// src/Optimize/LdapPermsToSql.php, row 264
 "Group %1 already exists in SQL (id %2), reusing" => "Grupa %1 već postoji u SQL-u (id %2), koristi se postojeća", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 272
+// src/Optimize/LdapPermsToSql.php, row 273
 "Would create SQL group: %1 (from %2)" => "Stvorila bi se SQL grupa: %1 (iz %2)", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 279
+// src/Optimize/LdapPermsToSql.php, row 280
 "Failed to create SQL group %1" => "Stvaranje SQL grupe %1 nije uspjelo", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 286
+// src/Optimize/LdapPermsToSql.php, row 287
 "Groups: created=%1 reused=%2 failed=%3" => "Grupe: stvoreno=%1 ponovno_iskorišteno=%2 neuspjelo=%3", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 325
 "Memberships: added=%1 skipped_unmapped=%2" => "Članstva: dodano=%1 preskočeno_nemapirano=%2", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 366
+// src/Optimize/LdapPermsToSql.php, row 367
 "Permission rows migrated: %1" => "Migrirano redaka dozvola: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 388
+// src/Optimize/LdapPermsToSql.php, row 389
 "No mapping entries - nothing to rewrite." => "Nema zapisa mapiranja - nema se što prepisati.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 407
+// src/Optimize/LdapPermsToSql.php, row 408
 "Rewrite %1.%2: %3 rows" => "Prepisivanje %1.%2: %3 redaka", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 417
+// src/Optimize/LdapPermsToSql.php, row 418
 "Mapping table is empty - nothing to revert." => "Tablica mapiranja je prazna - nema se što vratiti.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 433
+// src/Optimize/LdapPermsToSql.php, row 434
 "Revert %1.%2: %3 rows" => "Vraćanje %1.%2: %3 redaka", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 451
+// src/Optimize/LdapPermsToSql.php, row 452
 "Deleted SQL users=%1 groups=%2" => "Izbrisano SQL korisnika=%1 grupa=%2", // ai 2026-06
 
 // src/Optimize/MissCacheRouting.php, row 37
-"Image cache routing" => "",
+"Image cache routing" => "Usmjeravanje predmemorije slika", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 42
-"Resized images are served as static files; a request for one which is not generated yet has to reach AA. Repair writes the .htaccess which routes it there, the extended State Check asks the web server whether such a request really gets through." => "",
+"Resized images are served as static files; a request for one which is not generated yet has to reach AA. Repair writes the .htaccess which routes it there, the extended State Check asks the web server whether such a request really gets through." => "Smanjene slike poslužuju se kao statične datoteke; zahtjev za sliku koja još nije generirana mora stići do AA. „Popravite“ zapisuje .htaccess koji ga onamo usmjerava, a proširena Provjera stanja pita web poslužitelj prolazi li takav zahtjev stvarno.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 62
-"%1 is missing" => "",
+"%1 is missing" => "%1 nedostaje", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 74
-"AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "",
+"AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "AA_INSTAL_PATH %1 ne može se upotrijebiti u pravilu rewrite", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 78
 // src/Util/Imgfunc.php, row 252
-"Cannot write %1" => "",
+"Cannot write %1" => "Nije moguće zapisati %1", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 87
-"The image cache is switched off or not configured - {img} uses img.php" => "",
+"The image cache is switched off or not configured - {img} uses img.php" => "Predmemorija slika je isključena ili nije postavljena - {img} koristi img.php", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 97
-"Probe" => "",
+"Probe" => "Test", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "",
+"none" => "nema", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
 ".htaccess" => "",
 
 // src/Optimize/MissCacheRouting.php, row 99
-"present" => "",
+"present" => "postoji", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
-"missing" => "",
+"missing" => "nedostaje", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
-"the cache directory is a symbolic link, AA does not write there" => "",
+"the cache directory is a symbolic link, AA does not write there" => "mapa predmemorije je simbolička poveznica, AA onamo ne zapisuje", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 101
-"A request for an image which is not generated yet does not reach AA" => "",
+"A request for an image which is not generated yet does not reach AA" => "Zahtjev za sliku koja još nije generirana ne stiže do AA", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 104
-"A request for an image which is not generated yet reaches AA" => "",
+"A request for an image which is not generated yet reaches AA" => "Zahtjev za sliku koja još nije generirana stiže do AA", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 105
-"Every image which is not generated yet shows broken. Repair writes the .htaccess into the cache directory (service/sql_update.php does the same); on nginx add the rule from config.php.default to the server configuration." => "",
+"Every image which is not generated yet shows broken. Repair writes the .htaccess into the cache directory (service/sql_update.php does the same); on nginx add the rule from config.php.default to the server configuration." => "Svaka slika koja još nije generirana prikazuje se neispravno. „Popravite“ zapisuje .htaccess u mapu predmemorije (isto radi service/sql_update.php); na nginxu dodajte pravilo iz config.php.default u konfiguraciju poslužitelja.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 106
-"The server cannot load its own image url" => "",
+"The server cannot load its own image url" => "Poslužitelj ne može učitati vlastiti url slike", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 106
-"Check that the server resolves and reaches the host of IMG_UPLOAD_URL." => "",
+"Check that the server resolves and reaches the host of IMG_UPLOAD_URL." => "Provjerite razrješava li poslužitelj ime hosta iz IMG_UPLOAD_URL i može li ga doseći.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 107
-"The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration." => "",
+"The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration." => "Datoteka .htaccess u mapi predmemorije nema učinka: AllowOverride je ne dopušta, poslužitelj radi na nginxu ili usmjerava na stablo AA koje na ovom hostu ne odgovara - „Popravite“ je tada usmjerava na ovo. Inače dodajte pravilo iz config.php.default u konfiguraciju poslužitelja.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 128
-"img.php does not answer the server itself" => "",
+"img.php does not answer the server itself" => "img.php ne odgovara samom poslužitelju", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 130
-"Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects." => "",
+"Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects." => "Slike koje još nisu u predmemoriji ne mogu se generirati. Nema odgovora: provjerite razrješava li poslužitelj ime hosta iz AA_INSTAL_URL i može li ga doseći. Preusmjeravanje: postavite AA_INSTAL_URL na adresu na koju preusmjerava (https, www) - generator ne slijedi preusmjeravanja.", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 35
 "Multivalue Duplicates" => "Duplikati u viševrijednosnim poljima", // ai 2026-06
@@ -12277,36 +12691,36 @@ return [
 "No duplicates found, hurray!" => "Nema duplikata, hura!", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 123
-"The repair stopped after %1 rows deleted: %2" => "",
+"The repair stopped after %1 rows deleted: %2" => "Popravak se zaustavio nakon brisanja redaka (%1): %2", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 123
-"no database transaction could be started" => "",
+"no database transaction could be started" => "nije bilo moguće započeti transakciju baze podataka", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 126
-"%1 rows deleted" => "",
+"%1 rows deleted" => "Obrisano redaka: %1", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 139
-"The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "",
+"The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "Tablica content nije InnoDB, pa se duplikati ovdje ne mogu popraviti. Najprije pokrenite „%1“.", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 15
+// src/Optimize/ReadersLogin2id.php, row 16
 "Convert Readers login to reader id" => "Pretvori login čitatelja u ID čitatelja", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 23
+// src/Optimize/ReadersLogin2id.php, row 24
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "U AA v2.8.1 promijenjena je funkcionalnost upravljanja čitateljima, pa se čitatelji interno više ne identificiraju svojim loginom, nego ID-om čitatelja (ID stavke čitatelja u stranici čitatelja). To je mnogo moćnije - relacije možete stvarati jednako kao u običnoj stranici. Sve radi bez ikakvih izmjena. Jedini problem nastaje ako ste neku stranicu postavili tako da je mogu uređivati korisnici iz stranice čitatelja. U tom se slučaju polja edited_by........ i posted_by........ popunjavaju loginom čitatelja umjesto ID-om čitatelja. To možete popraviti opcijom \"Repair\".", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 37, 81
+// src/Optimize/ReadersLogin2id.php, row 38, 82
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Nije moguće testirati - vaš sustav dozvola ne dopušta popis svih korisničkih imena (LDAP?)", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 42
+// src/Optimize/ReadersLogin2id.php, row 43
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Pronađeno %1 logina iz stranice čitatelja u zapisima item.posted_by, što je pogrešno (od AA v2.8.1 tamo treba biti ID čitatelja). \"Repair\" će to ispraviti.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 47
+// src/Optimize/ReadersLogin2id.php, row 48
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "Pronađeno %1 logina iz stranice čitatelja u zapisima item.edited_by, što je pogrešno (od AA v2.8.1 tamo treba biti ID čitatelja). \"Repair\" će to ispraviti.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 91
+// src/Optimize/ReadersLogin2id.php, row 90
 "Column item.posted_by updated for %1 (id: %2)." => "Stupac item.posted_by ažuriran za %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 98
+// src/Optimize/ReadersLogin2id.php, row 96
 "Column item.edited_by updated for %1 (id: %2)." => "Stupac item.edited_by ažuriran za %1 (id: %2).", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 18
@@ -12330,22 +12744,22 @@ return [
 // src/Optimize/RedefineCoreConstants.php, row 81
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Brisanje kodnih stranica, jezičnih konstanti, konstanti AA spremnika i zajedničkih APC kategorija", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 84
+// src/Optimize/RedefineCoreConstants.php, row 85
 "Recreate Code-pages" => "Ponovno stvori kodne stranice", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 95
+// src/Optimize/RedefineCoreConstants.php, row 96
 "Recreate Languages" => "Ponovno stvori jezike", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 143
+// src/Optimize/RedefineCoreConstants.php, row 144
 "Recreate AA Bins" => "Ponovno stvori AA spremnike", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 148
+// src/Optimize/RedefineCoreConstants.php, row 149
 "APC wide categories" => "Zajedničke APC kategorije", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 232
+// src/Optimize/RedefineCoreConstants.php, row 233
 "Make sure, the constants are registered" => "Provjeri jesu li konstante registrirane", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 240
+// src/Optimize/RedefineCoreConstants.php, row 242
 "Redefine core constants - done." => "Ponovno definiranje osnovnih konstanti - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 43
@@ -12361,16 +12775,16 @@ return [
 // src/Optimize/RedefineSliceNewsTemplates.php, row 57
 "Deleting all fields from \"ActionApps Core\" slice" => "Brisanje svih polja iz stranice \"ActionApps Core\"", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 98
+// src/Optimize/RedefineFieldTemplates.php, row 99
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Provjeri postoji li vlasnik stranice Action Applications System i vrati na zadane vrijednosti", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 101
+// src/Optimize/RedefineFieldTemplates.php, row 102
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Provjeri postoji li stranica \"ActionApps Core\" i vrati na zadane vrijednosti", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 105
+// src/Optimize/RedefineFieldTemplates.php, row 106
 "Recreate field definitions" => "Ponovno stvori definicije polja", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 195
+// src/Optimize/RedefineFieldTemplates.php, row 197
 "Redefine field defaults - done." => "Ponovno definiranje zadanih vrijednosti polja - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -12386,7 +12800,7 @@ return [
 // src/Optimize/RedefineSiteTemplates.php, row 47
 "Replacing module definition" => "Zamjena definicije modula", // ai 2026-06
 
-// src/Optimize/RedefineLinksTemplates.php, row 126
+// src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Ponovno stvaranje predloška modula Links - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSiteTemplates.php, row 13
@@ -12398,7 +12812,7 @@ return [
 // src/Optimize/RedefineSiteTemplates.php, row 36
 "Site Module template should be recreated" => "Predložak modula Site treba ponovno stvoriti", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 51
+// src/Optimize/RedefineSiteTemplates.php, row 53
 "Site Module template recreation - done." => "Ponovno stvaranje predloška modula Site - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 15
@@ -12413,13 +12827,13 @@ return [
 // src/Optimize/RedefineSlicReaderTemplates.php, row 58
 "Deleting all fields from \"Reader Management\" slice" => "Brisanje svih polja iz stranice \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 61
+// src/Optimize/RedefineSlicReaderTemplates.php, row 62
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "Provjerite da stranica \"Reader Management\" postoji i obnovite zadane postavke", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 65
+// src/Optimize/RedefineSlicReaderTemplates.php, row 66
 "Recreate field definitions for \"Reader Management\"" => "Ponovno stvorite definicije polja za \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 90
+// src/Optimize/RedefineSlicReaderTemplates.php, row 92
 "Reader Management template slice creation - done." => "Stvaranje predloška stranice Reader Management - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 15
@@ -12431,13 +12845,13 @@ return [
 // src/Optimize/RedefineSliceNewsTemplates.php, row 41
 "News EN template slice is not defined" => "Predložak stranice News EN nije definiran", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 60
+// src/Optimize/RedefineSliceNewsTemplates.php, row 61
 "Make sure \"News EN\" slice exists and reset to defaults" => "Provjerite da stranica \"News EN\" postoji i obnovite zadane postavke", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 64
+// src/Optimize/RedefineSliceNewsTemplates.php, row 65
 "Recreate field definitions for \"News EN\"" => "Ponovno stvorite definicije polja za \"News EN\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 99
 "News EN template slice creation - done." => "Stvaranje predloška stranice News EN - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
@@ -12452,13 +12866,13 @@ return [
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
 "Deleting all fields from \"Noticas - ES\" slice" => "Brisanje svih polja iz stranice \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 61
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Provjerite da stranica \"Noticas - ES\" postoji i obnovite zadane postavke", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 65
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
 "Recreate field definitions for \"Noticas - ES\"" => "Ponovno stvorite definicije polja za \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 98
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
 "Noticas - ES template slice creation - done." => "Stvaranje predloška stranice Noticas - ES - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineViewCalendarTemplates.php, row 10
@@ -12482,10 +12896,10 @@ return [
 // src/Optimize/RedefineViewDiscusTemplates.php, row 58
 "Deleting the view template \"%1\"" => "Brisanje predloška pogleda \"%1\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 61
+// src/Optimize/RedefineViewDiscusTemplates.php, row 62
 "Inserting the view \"discus\" template" => "Umetanje predloška pogleda \"discus\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 64
+// src/Optimize/RedefineViewDiscusTemplates.php, row 66
 "view \"%1\" redefinition - done." => "redefinicija pogleda \"%1\" - gotovo.", // ai 2026-06
 
 // src/Optimize/RedefineViewFullTemplates.php, row 10
@@ -12507,16 +12921,16 @@ return [
 "Redefine urls template view" => "Redefinirajte predložak pogleda urls", // ai 2026-06
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
-"Removes the AA jobs from the cron table" => "",
+"Removes the AA jobs from the cron table" => "Uklanja poslove AA iz tablice crona", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 27
-"Alerts sending, feeding, link checking, table optimization and the queue run itself are queue tasks since 2026-09 (cron.php runs the queue directly). A cron table row still calling one of those scripts runs the job twice, so it is deleted; your own rows stay." => "",
+"Alerts sending, feeding, link checking, table optimization and the queue run itself are queue tasks since 2026-09 (cron.php runs the queue directly). A cron table row still calling one of those scripts runs the job twice, so it is deleted; your own rows stay." => "Slanje upozorenja, razmjena sadržaja, provjera poveznica, optimizacija tablica i samo izvođenje reda od 2026-09 su zadaci reda (cron.php izravno pokreće red). Redak tablice crona koji još poziva neku od tih skripti pokreće posao dvaput, pa se briše; vaši vlastiti retci ostaju.", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 49
-"AA job still in the cron table: %1 %2" => "",
+"AA job still in the cron table: %1 %2" => "Posao AA još je u tablici crona: %1 %2", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 60
-"%1 AA cron rows deleted" => "",
+"%1 AA cron rows deleted" => "Obrisano redaka crona AA: %1", // ai 2026-10
 
 // src/Optimize/RemoveUndefineAlias.php, row 45
 "Remove _#UNDEFINE alias and default help.html for more help text in field" => "Uklonite sinonim _#UNDEFINE i zadani help.html iz proširene pomoći polja", // ai 2026-06
@@ -12557,47 +12971,47 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "U redu - nema obaveznih checkbox polja", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 19
+// src/Optimize/RestoreBckTables.php, row 20
 "Restore data from backup tables" => "Vrati podatke iz backup tablica", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 27
+// src/Optimize/RestoreBckTables.php, row 28
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Briše sve trenutne tablice (slice, item, ...) za koje postoji bck_ tablica i preimenuje sve backup tablice (bck_slice, bck_item, ...) u prave nazive (slice, item, ...).", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 39
+// src/Optimize/RestoreBckTables.php, row 40
 "The bck_ tables do not exist (or at least bck_content table)" => "Tablice bck_ ne postoje (ili barem tablica bck_content)", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 58
+// src/Optimize/RestoreBckTables.php, row 59
 "There is no bck_%1 table - %1 not restored." => "Tablica bck_%1 ne postoji - %1 nije vraćena.", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 61
+// src/Optimize/RestoreBckTables.php, row 62
 "Replace table bck_%1 -> %1" => "Zamijeni tablicu bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 44
 "SEO name duplicates" => "Duplikati SEO naziva", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 49
-"Lists items which share one SEO name inside a site module - such items compete for the same URL. Active, pending and expired items are compared; items waiting in the holding bin and in the trash own no URL, so they are not. Which item to rename is the editor's call, so there is no repair." => "",
+"Lists items which share one SEO name inside a site module - such items compete for the same URL. Active, pending and expired items are compared; items waiting in the holding bin and in the trash own no URL, so they are not. Which item to rename is the editor's call, so there is no repair." => "Navodi stavke koje unutar modula Web dijele isto SEO ime - takve se stavke natječu za istu web adresu. Uspoređuju se aktivne stavke, stavke na čekanju i istekle stavke; stavke u spremniku i u smeću nemaju web adresu, pa se ne uspoređuju. Koju stavku preimenovati, odlučuje urednik, pa popravka nema.", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 73
-"OK - no duplicate SEO names in any site module" => "",
+"OK - no duplicate SEO names in any site module" => "OK - ni u jednom modulu Web nema dupliciranih SEO imena", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 87
-"%1: %2 SEO names are used by more than one item" => "",
+"%1: %2 SEO names are used by more than one item" => "%1: SEO nazivi koje koristi više stavki: %2", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 90
-"The site resolves such a URL to whichever item the query returns first, so the visitor may land on the wrong one. Rename all but one of them." => "",
+"The site resolves such a URL to whichever item the query returns first, so the visitor may land on the wrong one. Rename all but one of them." => "Web takav URL pripisuje stavci koju upit vrati prvu, pa posjetitelj može završiti na pogrešnoj. Preimenujte sve osim jedne.", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 96
-"No duplicate SEO names in any site module" => "",
+"No duplicate SEO names in any site module" => "Ni u jednom modulu weba nema dupliciranih SEO naziva", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 147
-"SEO name" => "",
+"SEO name" => "SEO naziv", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 149
-"Which" => "",
+"Which" => "Koje", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 171
-"... and %1 more" => "",
+"... and %1 more" => "... i još %1", // ai 2026-10
 
 // src/Optimize/SetExpirydate.php, row 18
 "Set Expiry date to maximum value" => "Postavi datum isteka na najveću vrijednost", // ai 2026-06
@@ -12611,29 +13025,179 @@ return [
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "zadana vrijednost polja expiry_date..... promijenjena u %1 /%2 stranica: %3)", // ai 2026-06
 
+// src/Optimize/StateCheckItem.php, row 73
+"now" => "sada", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 219
+"Problem" => "Problem", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 220
+"Warning" => "Upozorenje", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 221
+"Advice" => "Preporuka", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 232
+"Back again" => "Ponovno prisutno", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 233
+"Not verified" => "Nepotvrđeno", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 234, 293
+"Muted" => "Utišano", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 259
+"%1 d" => "%1 d", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 260
+"%1 w" => "%1 tj.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 261
+"%1 mo" => "%1 mj.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 262
+"%1 y" => "%1 g.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 270
+"Since" => "Od", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 290
+"New findings" => "Novi nalazi", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 291
+"Ongoing" => "Trajni", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 292
+"Not verified now" => "Sada nepotvrđeno", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 294
+"Passed checks" => "Uspješne provjere", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 305
+"Not there at the daily snapshot of %1 (nightly test: at its previous run), or back after it was resolved or had gone." => "Nisu postojali pri dnevnoj snimci od %1 (noćni test: pri njegovu prethodnom izvođenju) ili su se vratili nakon što su bili riješeni ili nestali.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 306
+"There is no daily snapshot to compare with yet, so every problem found counts as new." => "Još nema dnevne snimke za usporedbu, pa se svaki pronađeni problem računa kao nov.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 308
+"Already there at the daily snapshot of %1 (nightly test: at its previous run), and still there." => "Postojali su već pri dnevnoj snimci od %1 (noćni test: pri njegovu prethodnom izvođenju) i još postoje.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 309
+"Already there at the previous run of the nightly test, and still there." => "Postojali su već pri prethodnom izvođenju noćnog testa i još postoje.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 311
+"Hidden on purpose: resolved by a note, or a known issue of the nightly test. Each says why." => "Namjerno skriveni: riješeni bilješkom ili poznati problemi noćnog testa. Uz svaki piše zašto.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 312
+"Ran now and found nothing." => "Izvedene sada, ništa nisu pronašle.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 313
+"What this installation runs on - for reference, nothing to fix." => "Na čemu ova instalacija radi - za informaciju, ništa za popravak.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"%1 new" => "Novih: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"Nothing new" => "Ništa novo", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"%1 ongoing" => "trajnih: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"nothing ongoing" => "nema trajnih", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 375
+"%1 problems, %2 warnings, %3 recommendations" => "problemi: %1, upozorenja: %2, preporuke: %3", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 376
+"%1 checks not verified now" => "sada nepotvrđene provjere: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 376
+"every check verified now" => "sve provjere sada potvrđene", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 377
+"%1 muted" => "utišanih: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 377
+"nothing muted" => "nema utišanih", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 378
+"%1 checks passed" => "uspješnih provjera: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 435
+"After the fix, press Recheck at this item on the State Check page." => "Nakon popravka pritisnite „Provjerite ponovno“ kod ove provjere na zaslonu „Provjera stanja“.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 438, 577
+"As of %1." => "Stanje od %1.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 535
+"Marked resolved by %1 until %2." => "Korisnik %1 označio je ovo kao riješeno do %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 535
+"Marked resolved by %1 for good." => "Korisnik %1 označio je ovo kao trajno riješeno.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 576
+"Press Recheck to run this check now." => "Pritisnite „Provjerite ponovno“ da biste odmah pokrenuli ovu provjeru.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 585
+"These checks did not run on this load; each row shows the problem as it was last known." => "Ove provjere nisu se izvele pri ovom učitavanju; svaki redak prikazuje problem kakav je bio posljednji put poznat.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 587
+"Extended checks: as the daily snapshot of %1 found them." => "Proširene provjere: kako ih je zatekla dnevna snimka od %1.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 591
+"Nightly test: the types missing from its latest full run, as their own last run found them." => "Noćni test: vrste koje nedostaju u njegovu posljednjem potpunom izvođenju, kako ih je zateklo njihovo vlastito posljednje izvođenje.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 592
+"Nightly test: its latest full run is from %1, older than %2 h, so every type shows its own last run." => "Noćni test: njegovo posljednje potpuno izvođenje od %1 starije je od %2 h, pa svaka vrsta prikazuje svoje posljednje izvođenje.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 593
+"Nightly test: no full run in the last 40 days, so every type shows its own last run." => "Noćni test: nema potpunog izvođenja u posljednjih 40 dana, pa svaka vrsta prikazuje svoje posljednje izvođenje.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 611
+"%1 extended checks did not run now; they passed at the last daily snapshot, %2: %3." => "Proširene provjere koje se sada nisu izvele (%1) prošle su pri posljednjoj dnevnoj snimci, %2: %3.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 612
+"%1 extended checks did not run now, and there is no daily snapshot yet: %2." => "Proširene provjere nisu se sada izvele (%1), a dnevne snimke još nema: %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 613
+"%1 slow checks did not run now; they are never part of the daily snapshot: %2." => "Spore provjere nisu se sada izvele (%1); nikad nisu dio dnevne snimke: %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 614
+"%1 checks of the nightly test found nothing when they last ran: %2." => "Provjere noćnog testa koje pri posljednjem izvođenju ništa nisu pronašle (%1): %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 691
+"After the fix, open a finding below and press its Recheck." => "Nakon popravka otvorite jedan od nalaza u nastavku i pritisnite njegov gumb „Provjerite ponovno“.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 708
+"%1 — %2 findings" => "%1 — nalaza: %2", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 709
+"%1 — %2 findings, most often on %3" => "%1 — nalaza: %2, najčešće na %3", // ai 2026-10
+
 // src/Optimize/TrimFieldValues.php, row 39
-"Trim stored values" => "",
+"Trim stored values" => "Obrezivanje pohranjenih vrijednosti", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 44
-"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "Obrezuje vrijednosti pohranjene prije nego što je polje dobilo funkciju unosa Obrezati (vidi „%1“) – razmake i nove retke oko vrijednosti te nenormalizirane dijakritičke znakove. Popravak to planira u redu zadataka: stavke se ponovno tiho pohranjuju, pa zadnja izmjena, izračunata polja, događaji i prosljeđivanje ostaju netaknuti; povijest bilježi promjenu. Jedinstvena polja se samo prijavljuju, polja definirana u stranici polja se ne provjeravaju.", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 63
-"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "Vrijeme je isteklo – provjerene stranice: %1 od %2. Popravak planira sve.", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 68
-"%1 items to trim" => "",
+"%1 items to trim" => "Stavki za obrezivanje: %1", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 80
-"Trimming of %1 slices planned in the queue" => "",
+"Trimming of %1 slices planned in the queue" => "Obrezivanje planirano u redu zadataka, stranica: %1", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 91
-"%1 items planned to be trimmed in the queue" => "",
+"%1 items planned to be trimmed in the queue" => "Stavki planiranih za obrezivanje u redu zadataka: %1", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 129
-"%1 items with a unique value to trim by hand, e.g. %2" => "",
+"%1 items with a unique value to trim by hand, e.g. %2" => "Stavki s jedinstvenom vrijednošću za ručno obrezivanje: %1, npr. %2", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 139
-"%1 items to trim, e.g. %2" => "",
+"%1 items to trim, e.g. %2" => "Stavki za obrezivanje: %1, npr. %2", // ai 2026-10
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Ažuriraj strukturu baze podataka", // ai 2026-06
@@ -12674,55 +13238,133 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "backup stare tablice %1 -> bck_%1 i korištenje novih tablica umjesto njih tmp_%1 -> %1", // ai 2026-06
 
-// src/Security/Protection.php, row 19
-"Forms run only expressions signed by AA" => "",
+// src/Security/LoginThrottle.php, row 156
+"Too many failed login attempts. Try again in %1 min." => "Previše neuspjelih pokušaja prijave. Pokušajte ponovno za %1 min.", // ai 2026-10
 
-// src/Security/Protection.php, row 27
-"ret_code and ok_url sent to filler.php" => "",
+// src/Security/Protection.php, row 21
+"Forms run only expressions signed by AA" => "Forme izvršavaju samo izraze koje je potpisao AA", // ai 2026-10
 
-// src/Security/Protection.php, row 39
-"Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases." => "",
+// src/Security/Protection.php, row 22
+"Values from the URL are text" => "Vrijednosti iz web-adrese su tekst", // ai 2026-10
+
+// src/Security/Protection.php, row 23
+"Repeated failed logins are slowed down" => "Ponovljene neuspjele prijave usporavaju se", // ai 2026-10
+
+// src/Security/Protection.php, row 31
+"ret_code and ok_url sent to filler.php" => "ret_code i ok_url poslani u filler.php", // ai 2026-10
+
+// src/Security/Protection.php, row 32
+"als[] and the state of site pages, taken from the URL" => "als[] i stanje web-stranica, preuzeti iz web-adrese", // ai 2026-10
+
+// src/Security/Protection.php, row 33
+"Logins to the administration and to reader accounts, counted per address of the visitor" => "Prijave u administraciju i u čitateljske račune, brojene po adresi posjetitelja", // ai 2026-10
+
+// src/Security/Protection.php, row 40
+"How to convert older forms" => "Kako preraditi starije obrasce", // ai 2026-10
+
+// src/Security/Protection.php, row 41
+"How to convert older links" => "Kako prepraviti starije poveznice", // ai 2026-10
+
+// src/Security/Protection.php, row 42
+"When a script or a whole office is slowed down" => "Kada je usporena skripta ili cijeli ured", // ai 2026-10
+
+// src/Security/Protection.php, row 54
+"Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases." => "Forme koje AA generira pomoću {form} ili {ajax} te forma za dodavanje povezane stavke su potpisane i ne trebaju promjenu. Tekst, _#ALIASES i polja poput {headline........} u ret_code ili ok_url također i dalje rade. Ako vaša vlastita forma ili poveznica tamo šalje neki drugi {expression}, generirajte formu pomoću {form} ili {ajax} ili izraz zamijenite sinonimima.", // ai 2026-10
+
+// src/Security/Protection.php, row 55
+"Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "Tekst, brojevi, ID-ovi i _#ALIASES u als[] i u stanju web-stranica i dalje rade; {expression} se ondje prikazuje kao tekst. Izraz napišite u predložak koji gradi poveznicu, kako bi se ondje izvršio prije slanja poveznice, ili proslijedite ID, a ostalo izračunajte na web-stranici koja ga prima.", // ai 2026-10
+
+// src/Security/Protection.php, row 56
+"After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Nakon 20 neuspjelih prijava s jedne adrese u 12 sati ili 5 s jednim korisničkim imenom sljedeća prijava čeka od pola minute do minute, nakon svakog daljnjeg neuspjeha dvostruko dulje, najviše sat vremena. Čeka i skripta koja se neprestano prijavljuje starom lozinkom: pronađite njezinu adresu u Zapisniku (događaj LOGIN) i dajte joj aktualnu lozinku. Ako se čini da svi posjetitelji dolaze s jedne adrese, AA radi iza proxyja koji nedostaje u AA_TRUSTED_PROXIES - „Provjera stanja“ ga navodi; dodajte ga u config.php umjesto da isključite ovu zaštitu.", // ai 2026-10
+
+// src/Security/Protection.php, row 64
+"Unsigned expression refused" => "Nepotpisan izraz odbijen", // ai 2026-10
+
+// src/Security/Protection.php, row 64
+"Unsigned expression ran, protection off" => "Nepotpisan izraz izvršen, zaštita isključena", // ai 2026-10
+
+// src/Security/Protection.php, row 65
+"Expression in a link shown as text" => "Izraz u poveznici prikazan kao tekst", // ai 2026-10
+
+// src/Security/Protection.php, row 65
+"Expression in a link ran, protection off" => "Izraz u poveznici izvršen, zaštita isključena", // ai 2026-10
+
+// src/Security/Protection.php, row 66
+"Logins slowed down" => "Prijave usporene", // ai 2026-10
+
+// src/Security/Protection.php, row 66
+"Repeated failed logins, protection off" => "Ponovljene neuspjele prijave, zaštita isključena", // ai 2026-10
+
+// src/Security/Protection.php, row 73
+"an unknown page" => "nepoznatoj web-stranici", // ai 2026-10
+
+// src/Security/Protection.php, row 76
+"A form on %1 sent an unsigned expression in %2; it was refused" => "Obrazac na %1 poslao je nepotpisan izraz u %2; odbijen je", // ai 2026-10
+
+// src/Security/Protection.php, row 77
+"A form on %1 sent an unsigned expression in %2; it ran because the protection was off" => "Obrazac na %1 poslao je nepotpisan izraz u %2; izvršen je jer je zaštita bila isključena", // ai 2026-10
+
+// src/Security/Protection.php, row 79
+"A link to %1 sent an expression in %2; it was shown as text" => "Poveznica na %1 poslala je izraz u %2; prikazan je kao tekst", // ai 2026-10
+
+// src/Security/Protection.php, row 80
+"A link to %1 sent an expression in %2; it ran because the protection was off" => "Poveznica na %1 poslala je izraz u %2; izvršen je jer je zaštita bila isključena", // ai 2026-10
+
+// src/Security/Protection.php, row 82
+"Logins from %1 were slowed down after repeated failures" => "Prijave s adrese %1 usporene su nakon ponovljenih neuspjeha", // ai 2026-10
+
+// src/Security/Protection.php, row 83
+"Logins from %1 failed repeatedly; they were not slowed down because the protection was off" => "Prijave s adrese %1 više puta nisu uspjele; nisu usporene jer je zaštita bila isključena", // ai 2026-10
+
+// src/Security/Protection.php, row 91
+"Parameter" => "Parametar", // ai 2026-10
+
+// src/Security/Protection.php, row 109
+"If you do not know the page, the request did not come from your pages and nothing needs to change." => "Ako ne poznajete tu web-stranicu, zahtjev nije došao s vaših web-stranica i ništa ne treba mijenjati.", // ai 2026-10
+
+// src/Security/Protection.php, row 110
+"An address you do not know needs nothing: only its own logins are slowed down." => "Za nepoznatu adresu ne treba ništa: usporavaju se samo njezine vlastite prijave.", // ai 2026-10
 
 // src/Util/ChangesMonitor.php, row 92
 "history (%1)" => "povijest (%1)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 335
+// src/Util/ChangesMonitor.php, row 331
 "No recorded changes for this item." => "Za ovu stavku nema zabilježenih promjena.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 359
+// src/Util/ChangesMonitor.php, row 355
 "1 field changed" => "1 polje promijenjeno", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 359
+// src/Util/ChangesMonitor.php, row 355
 "%1 fields changed" => "%1 polja promijenjeno", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 368, 455
+// src/Util/ChangesMonitor.php, row 364, 451
 "Restore" => "Vrati", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
+// src/Util/ChangesMonitor.php, row 378
 "(this change)" => "(ova promjena)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 386, 572, 576
+// src/Util/ChangesMonitor.php, row 382, 568, 572
 "Current (live)" => "Trenutno (uživo)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 387
+// src/Util/ChangesMonitor.php, row 383
 "Compare to" => "Usporedi s", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 396
+// src/Util/ChangesMonitor.php, row 392
 "change %1 | uid %2 | %3 ns | resource %4" => "promjena %1 | uid %2 | %3 ns | resurs %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 448
+// src/Util/ChangesMonitor.php, row 444
 "View" => "Pogled",
 
-// src/Util/ChangesMonitor.php, row 449
+// src/Util/ChangesMonitor.php, row 445
 "Diff" => "Razlike", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 480
+// src/Util/ChangesMonitor.php, row 476
 "seq %1" => "redoslijed %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 487
+// src/Util/ChangesMonitor.php, row 483
 "No change between these versions." => "Nema razlike između ovih verzija.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 570
+// src/Util/ChangesMonitor.php, row 566
 "Original" => "Izvorno", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
@@ -12735,95 +13377,95 @@ return [
 "ResampleImage unable to %1" => "Ne mogu prilagoditi sliku",
 
 // src/Util/Imgfunc.php, row 215
-"This type of image cannot be uploaded here" => "",
+"This type of image cannot be uploaded here" => "Ova vrsta slike ne može se ovdje učitati", // ai 2026-10
 
 // src/Util/Imgfunc.php, row 218
-"The image has too many pixels" => "",
+"The image has too many pixels" => "Slika ima previše piksela", // ai 2026-10
 
 // src/Util/Imgfunc.php, row 222
-"The image cannot be read" => "",
+"The image cannot be read" => "Sliku nije moguće pročitati", // ai 2026-10
 
 // src/Util/Note.php, row 47
 "Note" => "Bilješka", // ai 2026-10
 
 // src/Util/Note.php, row 52
-"A note on an admin page, a view or a State Check finding" => "",
+"A note on an admin page, a view or a State Check finding" => "Bilješka na administratorskom zaslonu, u pogledu ili uz nalaz Provjere stanja", // ai 2026-10
 
 // src/Util/Note.php, row 59
-"Resource" => "",
+"Resource" => "Resurs", // ai 2026-10
 
 // src/Util/Note.php, row 62
-"For" => "",
+"For" => "Za", // ai 2026-10
 
 // src/Util/Note.php, row 62
-"everyone" => "",
+"everyone" => "sve", // ai 2026-10
 
 // src/Util/Note.php, row 62
-"me only" => "",
+"me only" => "samo mene", // ai 2026-10
 
 // src/Util/Note.php, row 64
-"valid" => "",
+"valid" => "važeća", // ai 2026-10
 
 // src/Util/Note.php, row 64
 // src/Util/Notes.php, row 96
-"resolved" => "",
+"resolved" => "riješena", // ai 2026-10
 
 // src/Util/Note.php, row 64
 "deleted" => "obrisano",
 
 // src/Util/Note.php, row 65
-"Until" => "",
+"Until" => "Do", // ai 2026-10
 
 // src/Util/Notes.php, row 54
-"Notes on this page" => "",
+"Notes on this page" => "Bilješke na ovom zaslonu", // ai 2026-10
 
 // src/Util/Notes.php, row 57
-"Add a note to this page" => "",
+"Add a note to this page" => "Dodajte bilješku na ovaj zaslon", // ai 2026-10
 
 // src/Util/Notes.php, row 67
-"Note text (a little HTML is fine)" => "",
+"Note text (a little HTML is fine)" => "Tekst bilješke (malo HTML-a je u redu)", // ai 2026-10
 
 // src/Util/Notes.php, row 69
-"for everyone" => "",
+"for everyone" => "za sve", // ai 2026-10
 
 // src/Util/Notes.php, row 70, 93
-"only for me" => "",
+"only for me" => "samo za mene", // ai 2026-10
 
 // src/Util/Notes.php, row 73
-"Add note" => "",
+"Add note" => "Dodajte bilješku", // ai 2026-10
 
 // src/Util/Notes.php, row 96
-"until %1" => "",
+"until %1" => "do %1", // ai 2026-10
 
 // src/Util/Notes.php, row 96, 116
-"forever" => "",
+"forever" => "zauvijek", // ai 2026-10
 
 // src/Util/Notes.php, row 102
-"Unresolve" => "",
+"Unresolve" => "Ponovno otvorite", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"today" => "",
+"today" => "za danas", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"a week" => "",
+"a week" => "na tjedan", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"a month" => "",
+"a month" => "na mjesec", // ai 2026-10
 
 // src/Util/Notes.php, row 116, 125
-"a date" => "",
+"a date" => "do datuma", // ai 2026-10
 
 // src/Util/Notes.php, row 123
-"Hide for" => "",
+"Hide for" => "Sakrijte", // ai 2026-10
 
 // src/Util/Notes.php, row 126
-"Why (optional)" => "",
+"Why (optional)" => "Zašto (neobavezno)", // ai 2026-10
 
 // src/Util/Notes.php, row 128
-"Mark resolved" => "",
+"Mark resolved" => "Označite kao riješeno", // ai 2026-10
 
 // src/Util/Notes.php, row 129
-"Resolve" => "",
+"Resolve" => "Riješite", // ai 2026-10
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- bilo koje numeričko polje --", // ai 2026-06
@@ -12909,10 +13551,10 @@ return [
 // src/Widget/Widget.php, row 445
 "To save changes click here or outside the field." => "Za spremanje promjena kliknite ovdje ili izvan polja.", // ai 2026-06
 
-// src/Widget/MngWidget.php, row 32
+// src/Widget/MngWidget.php, row 33
 "Manager" => "Upravitelj", // ai 2026-06
 
-// src/Widget/MngWidget.php, row 38
+// src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Najbolje za galerije i druge tablične podatke koji imaju više vrijednosti i razlikuju se za svaku stavku", // ai 2026-06
 
 // src/Widget/MseWidget.php, row 25
@@ -12928,16 +13570,16 @@ return [
 "Password and Change password" => "Lozinka i promjena lozinke",
 
 // src/Widget/RichtextMarkup.php, row 75
-"Loading..." => "",
+"Loading..." => "Učitavanje...", // ai 2026-10
 
 // src/Widget/RichtextMarkup.php, row 76
-"No files" => "",
+"No files" => "Nema datoteka", // ai 2026-10
 
 // src/Widget/RichtextMarkup.php, row 77
-"Uploading..." => "",
+"Uploading..." => "Prenošenje...", // ai 2026-10
 
 // src/Widget/RichtextMarkup.php, row 78
-"Upload failed" => "",
+"Upload failed" => "Prijenos nije uspio", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
 "Related Item Manager" => "Upravitelj povezanih stavki", // ai 2026-06
@@ -13273,7 +13915,7 @@ return [
 "The URL of your local web server from where you want to start browsing for a particular URL." => "URL vašeg lokalnog web poslužitelja od kojeg želite početi traženje određenog URL-a.", // ai 2026-06
 
 // src/Widget/Widget.php, row 903
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanci/solarno.shtml", // ai 2026-10
 
 // src/Widget/Widget.php, row 906
 "Ajax inline" => "Ajax umetnuto", // ai 2026-06

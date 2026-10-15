@@ -12,38 +12,38 @@ setlocale(LC_ALL, 'en_US.utf8', 'en_US');  // sort, date, uppercase, ..
 
 return [
 
-// ./slice.php, row 236
+// ./slice.php, row 237
 "Bad inc parameter - included file must contain only alphanumeric characters" => "",
 
-// ./slice.php, row 240
+// ./slice.php, row 241
 "No such file" => "",
 
-// ./slice.php, row 265
+// ./slice.php, row 262
 "Invalid slice number or slice was deleted" => "",
 
-// ./slice.php, row 268
+// ./slice.php, row 265
 "slice.php output forbidden for this slice" => "",
 
-// ./slice.php, row 323
+// ./slice.php, row 320
 "session id" => "",
 
-// ./slice.php, row 581
+// ./slice.php, row 573
 "number of current page (on pagescroller)" => "",
 
-// ./slice.php, row 582
+// ./slice.php, row 574
 "page length (number of items)" => "",
 
-// ./slice.php, row 617
-// include/view.php, row 361
+// ./slice.php, row 609
+// include/view.php, row 390
 "No item found" => "",
 
-// include/discussion.php, row 222
+// include/discussion.php, row 211
 "Show selected" => "",
 
-// include/discussion.php, row 223
+// include/discussion.php, row 212
 "Show all" => "",
 
-// include/discussion.php, row 224
+// include/discussion.php, row 213
 "Add new" => "",
 
 // include/item.php, row 113
@@ -162,16 +162,16 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "",
 
-// include/itemview.php, row 120
+// include/itemview.php, row 122
 "Selected item" => "",
 
-// include/itemview.php, row 127
+// include/itemview.php, row 129
 "number of found items" => "",
 
-// include/itemview.php, row 375
+// include/itemview.php, row 377
 "No comment was selected" => "",
 
-// include/itemview.php, row 707, 715
+// include/itemview.php, row 712, 720
 "exact group name" => "",
 
 // include/scroller.php, row 86
@@ -198,24 +198,24 @@ return [
 // include/slice.php, row 71
 "All categories" => "",
 
-// include/util.php, row 993
+// include/util.php, row 992
 "Error: Missing Reading Password" => "",
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Back" => "",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "",
 
-// misc/proposefieldchange.php, row 90
+// misc/proposefieldchange.php, row 110
 "Assignment form" => "",
 
-// misc/proposefieldchange.php, row 98
+// misc/proposefieldchange.php, row 118
 "Grabs item relations data POSTed by form" => "",
 
-// modules/site/site.php, row 289
+// modules/site/site.php, row 304
 "Site is misconfigured: %1 does not exist or is not readable. Add that file, or fix the \"State file\" setting of this site module." => "",
 ];

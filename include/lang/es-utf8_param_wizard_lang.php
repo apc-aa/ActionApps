@@ -397,7 +397,7 @@ return [
 "Float - including scientific notation 1.2E+9" => "Flotante - incluida la notación científica 1.2E+9",
 
 // include/constants_param_wizard.php, row 135
-"Decimal" => "",
+"Decimal" => "Decimal", // ai 2026-10
 
 // include/constants_param_wizard.php, row 138
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 dígitos hexadecimales",
@@ -632,7 +632,7 @@ return [
 "text to print when condition is not satisfied" => "texto a mostrar cuando la condicion no se satisface",
 
 // include/constants_param_wizard.php, row 345
-"No" => "",
+"No" => "No", // ai 2026-10
 
 // include/constants_param_wizard.php, row 348
 "cond_field" => "campo_condicion",

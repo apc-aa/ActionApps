@@ -28,48 +28,48 @@ return [
 // modules/site/index.php, row 68
 "Starting spot not found" => "Východiskový spot nebol nájdený", // ai 2026-06
 
-// modules/site/index.php, row 157
+// modules/site/index.php, row 151
 "Editor window - site code manager" => "Editačné okno - správca kódu webu", // ai 2026-06
 
-// modules/site/index.php, row 177
+// modules/site/index.php, row 171
 "Add&nbsp;spot" => "Pridať&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 172
 "Add&nbsp;choice" => "Pridať&nbsp;voľbu", // ai 2026-06
 
-// modules/site/index.php, row 181
+// modules/site/index.php, row 175
 "Move&nbsp;up" => "Posunúť&nbsp;nahor", // ai 2026-06
 
-// modules/site/index.php, row 182
+// modules/site/index.php, row 176
 "Move&nbsp;down" => "Posunúť&nbsp;nadol", // ai 2026-06
 
-// modules/site/index.php, row 185
+// modules/site/index.php, row 179
 "Move&nbsp;left" => "Posunúť&nbsp;doľava", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 180
 "Move&nbsp;right" => "Posunúť&nbsp;doprava", // ai 2026-06
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Vymazať",
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 "Are you sure you want to delete the spot?" => "Naozaj chcete tento spot vymazať?", // ai 2026-06
 
-// modules/site/index.php, row 192
+// modules/site/index.php, row 186
 "Enable" => "Povoliť", // ai 2026-06
 
-// modules/site/index.php, row 193
+// modules/site/index.php, row 187
 "Disable" => "Zakázať", // ai 2026-06
 
-// modules/site/index.php, row 214
+// modules/site/index.php, row 208
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Možné systémové require - &lcub;require:...&rcub; alebo &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47
 "View site" => "Zobraz modul",
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 318
+// modules/site/modedit.php, row 298
 "Site" => "Web", // ai 2026-06
 
 // modules/site/menu.php, row 80
@@ -81,95 +81,96 @@ return [
 // modules/site/menu.php, row 82
 "Aliases" => "Aliasy", // ai 2026-06
 
-// modules/site/moddelete.php, row 45
+// modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Nemáte právo vymazať web.", // ai 2026-06
 
-// modules/site/moddelete.php, row 49
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 212
+"The form has expired; reload the page and try again." => "Platnosť formulára vypršala; obnovte stránku a skúste to znova.", // ai 2026-10
+
+// modules/site/moddelete.php, row 56
 "Module not found." => "Modul nebol nájdený.", // ai 2026-06
 
-// modules/site/moddelete.php, row 69
+// modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Modul bol vymazaný, tabuľky boly optimalizované",
 
-// modules/site/modedit.php, row 116
+// modules/site/modedit.php, row 112
 "You do not have permissions to add slice" => "Nemáte právo pridávať modul",
 
-// modules/site/modedit.php, row 121
+// modules/site/modedit.php, row 117
 "You do not have permissions to edit this slice" => "Nemáte právo upravovať tento modul",
 
-// modules/site/modedit.php, row 129
-"The settings and the other fields of this page were not saved." => "",
+// modules/site/modedit.php, row 125
+"The settings and the other fields of this page were not saved." => "Nastavenia ani ostatné polia tejto stránky neboli uložené.", // ai 2026-10
 
-// modules/site/modedit.php, row 144
+// modules/site/modedit.php, row 140
 "State file" => "Stavový súbor", // ai 2026-06
 
-// modules/site/modedit.php, row 145, 326
-"Router" => "",
+// modules/site/modedit.php, row 141, 306
+"Router" => "Router", // ai 2026-10
 
-// modules/site/modedit.php, row 146, 340
+// modules/site/modedit.php, row 142, 320
 "Uses modules" => "Používa moduly", // ai 2026-06
 
-// modules/site/modedit.php, row 156
-"You can not use these modules in the site - you have no permission to them: %1" => "",
+// modules/site/modedit.php, row 152
+"You can not use these modules in the site - you have no permission to them: %1" => "Tieto moduly nemôžete na webe použiť - nemáte k nim oprávnenie: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 230
-"The form has expired; reload the page and try again." => "",
+// modules/site/modedit.php, row 223
+"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Nastavenia katalógu aplikácií neboli uložené - katalóg web neponúkne, kým nebudú opravené tieto chyby:", // ai 2026-10
 
-// modules/site/modedit.php, row 241
-"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "",
-
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Add Site" => "Pridať web", // ai 2026-06
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Edit Site" => "Upraviť web", // ai 2026-06
 
-// modules/site/modedit.php, row 325
+// modules/site/modedit.php, row 305
 "Used Language File" => "Použitý language súbor",
 
-// modules/site/modedit.php, row 326
+// modules/site/modedit.php, row 306
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Použite AA_Router_Seo. Inak budete používať starý prístup modulu site s 'riadiacim súborom', čo neodporúčame.", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "Home or State file" => "Domovská stránka alebo stavový súbor", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Pre AA_Router_Seo vyplňte <b>východiskovú url</b> (domovskú stránku) - napr. <em>/en/home</em>, alebo ponechajte prázdne<br><br>Pre staršie weby bez AA_Router_Seo vyplňte názov <b>riadiaceho súboru webu</b> - bude umiestnený v adresári /modules/site/sites/. K zadanému názvu sa pridá predpona 'site_', takže ak súbor pomenujete napr. 'apc.php', riadiaci súbor webu bude /modules/site/sites/site_apc.php.", // ai 2026-06
 
-// modules/site/modedit.php, row 342
+// modules/site/modedit.php, row 322
 "Additional setting" => "Ďalšie nastavenia", // ai 2026-06
 
-// modules/site/modedit.php, row 347
-"App store" => "",
+// modules/site/modedit.php, row 327
+"App store" => "Katalóg aplikácií", // ai 2026-10
 
-// modules/site/modedit.php, row 349
-"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "",
+// modules/site/modedit.php, row 329
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Zverejnený web si z tohto AA môže nainštalovať ktorékoľvek AA - aj s modulmi a Zasielaniami, ktoré používa: ich šablóny, položky, pohľady a hodnoty, nikdy však správy. Nastaviť to môže len superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 353
-"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "",
+// modules/site/modedit.php, row 333
+"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Moduly webu sa od zverejnenia zmenili: %1 - katalóg aplikácií web neponúkne, kým ich neschváli superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Approve the changed modules: %1" => "",
+// modules/site/modedit.php, row 334
+"Approve the changed modules: %1" => "Schváliť zmenené moduly: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Their templates, fields, views and constants then go to the app store with the site." => "",
+// modules/site/modedit.php, row 334
+"Their templates, fields, views and constants then go to the app store with the site." => "Ich šablóny, položky, pohľady a hodnoty potom pôjdu do katalógu aplikácií spolu s webom.", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"Publish in the app store" => "",
+// modules/site/modedit.php, row 336
+"Publish in the app store" => "Zverejniť v katalógu aplikácií", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "",
+// modules/site/modedit.php, row 336
+"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Zverejnená aplikácia nemá varovania: každé varovanie jej exportu je chybou. Zastaví ju aj skupina hodnôt, ktorú vlastní modul mimo všetkých zverejnených webov.", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"App description" => "",
+// modules/site/modedit.php, row 337
+"App description" => "Popis aplikácie", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"What the app does, for the list of the app store." => "",
+// modules/site/modedit.php, row 337
+"What the app does, for the list of the app store." => "Čo aplikácia robí - pre zoznam v katalógu aplikácií.", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"App version" => "",
+// modules/site/modedit.php, row 338
+"App version" => "Verzia aplikácie", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"Like 1.2.0." => "",
+// modules/site/modedit.php, row 338
+"Like 1.2.0." => "Napr. 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005
 "Spot&nbsp;variables" => "Premenné&nbsp;spotu", // ai 2026-06

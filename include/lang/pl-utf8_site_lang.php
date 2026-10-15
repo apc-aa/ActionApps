@@ -28,48 +28,48 @@ return [
 // modules/site/index.php, row 68
 "Starting spot not found" => "Nie znaleziono początkowego spotu", // ai 2026-06
 
-// modules/site/index.php, row 157
+// modules/site/index.php, row 151
 "Editor window - site code manager" => "Okno edycji - menedżer kodu witryny", // ai 2026-06
 
-// modules/site/index.php, row 177
+// modules/site/index.php, row 171
 "Add&nbsp;spot" => "Dodaj&nbsp;spot", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 172
 "Add&nbsp;choice" => "Dodaj&nbsp;wybór", // ai 2026-06
 
-// modules/site/index.php, row 181
+// modules/site/index.php, row 175
 "Move&nbsp;up" => "Przesuń&nbsp;w górę", // ai 2026-06
 
-// modules/site/index.php, row 182
+// modules/site/index.php, row 176
 "Move&nbsp;down" => "Przesuń&nbsp;w dół", // ai 2026-06
 
-// modules/site/index.php, row 185
+// modules/site/index.php, row 179
 "Move&nbsp;left" => "Przesuń&nbsp;w lewo", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 180
 "Move&nbsp;right" => "Przesuń&nbsp;w prawo", // ai 2026-06
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Usuń", // ai 2026-06
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 "Are you sure you want to delete the spot?" => "Czy na pewno chcesz usunąć ten spot?", // ai 2026-06
 
-// modules/site/index.php, row 192
+// modules/site/index.php, row 186
 "Enable" => "Włącz", // ai 2026-06
 
-// modules/site/index.php, row 193
+// modules/site/index.php, row 187
 "Disable" => "Wyłącz", // ai 2026-06
 
-// modules/site/index.php, row 214
+// modules/site/index.php, row 208
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Możliwe systemowe require - &lcub;require:...&rcub; lub &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47
 "View site" => "Pokaż witrynę", // ai 2026-06
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 318
+// modules/site/modedit.php, row 298
 "Site" => "Witryna", // ai 2026-06
 
 // modules/site/menu.php, row 80
@@ -81,95 +81,96 @@ return [
 // modules/site/menu.php, row 82
 "Aliases" => "Aliasy", // ai 2026-06
 
-// modules/site/moddelete.php, row 45
+// modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Nie masz uprawnień do usunięcia witryny.", // ai 2026-06
 
-// modules/site/moddelete.php, row 49
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 212
+"The form has expired; reload the page and try again." => "Formularz wygasł; odśwież stronę i spróbuj ponownie.", // ai 2026-10
+
+// modules/site/moddelete.php, row 56
 "Module not found." => "Nie znaleziono modułu.", // ai 2026-06
 
-// modules/site/moddelete.php, row 69
+// modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "Rubryka została pomyślnie usunięta, tabele zostały zoptymalizowane", // ai 2026-06
 
-// modules/site/modedit.php, row 116
+// modules/site/modedit.php, row 112
 "You do not have permissions to add slice" => "Nie masz uprawnień do dodania rubryki", // ai 2026-06
 
-// modules/site/modedit.php, row 121
+// modules/site/modedit.php, row 117
 "You do not have permissions to edit this slice" => "Nie masz uprawnień do edycji tej rubryki", // ai 2026-06
 
-// modules/site/modedit.php, row 129
-"The settings and the other fields of this page were not saved." => "",
+// modules/site/modedit.php, row 125
+"The settings and the other fields of this page were not saved." => "Ustawienia ani pozostałe pola tej strony nie zostały zapisane.", // ai 2026-10
 
-// modules/site/modedit.php, row 144
+// modules/site/modedit.php, row 140
 "State file" => "Plik stanu", // ai 2026-06
 
-// modules/site/modedit.php, row 145, 326
-"Router" => "",
+// modules/site/modedit.php, row 141, 306
+"Router" => "Router", // ai 2026-10
 
-// modules/site/modedit.php, row 146, 340
+// modules/site/modedit.php, row 142, 320
 "Uses modules" => "Używa modułów", // ai 2026-06
 
-// modules/site/modedit.php, row 156
-"You can not use these modules in the site - you have no permission to them: %1" => "",
+// modules/site/modedit.php, row 152
+"You can not use these modules in the site - you have no permission to them: %1" => "Nie możesz używać tych modułów w witrynie – nie masz do nich uprawnień: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 230
-"The form has expired; reload the page and try again." => "",
+// modules/site/modedit.php, row 223
+"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Ustawienia katalogu aplikacji nie zostały zapisane – katalog nie udostępni witryny, dopóki te błędy nie zostaną poprawione:", // ai 2026-10
 
-// modules/site/modedit.php, row 241
-"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "",
-
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Add Site" => "Dodaj witrynę", // ai 2026-06
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Edit Site" => "Edytuj witrynę", // ai 2026-06
 
-// modules/site/modedit.php, row 325
+// modules/site/modedit.php, row 305
 "Used Language File" => "Używany plik językowy", // ai 2026-06
 
-// modules/site/modedit.php, row 326
+// modules/site/modedit.php, row 306
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Użyj AA_Router_Seo. W przeciwnym razie zastosujesz stare podejście modułu site z 'plikiem sterującym', którego nie zalecamy.", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "Home or State file" => "Strona główna lub plik stanu", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Dla AA_Router_Seo wpisz <b>domyślny url</b> (stronę główną) - np. <em>/en/home</em> lub pozostaw puste<br><br>Dla starszych witryn bez AA_Router_Seo wpisz nazwę <b>pliku sterującego witryny</b> - zostanie umieszczony w katalogu /modules/site/sites/. Do podanej nazwy zostanie dodany przedrostek 'site_', więc jeśli na przykład nazwiesz plik 'apc.php', plik sterujący witryny będzie miał postać /modules/site/sites/site_apc.php.", // ai 2026-06
 
-// modules/site/modedit.php, row 342
+// modules/site/modedit.php, row 322
 "Additional setting" => "Ustawienie dodatkowe", // ai 2026-06
 
-// modules/site/modedit.php, row 347
-"App store" => "",
+// modules/site/modedit.php, row 327
+"App store" => "Katalog aplikacji", // ai 2026-10
 
-// modules/site/modedit.php, row 349
-"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "",
+// modules/site/modedit.php, row 329
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "Opublikowaną witrynę może z tego AA zainstalować dowolne AA – wraz z rubrykami i modułami Powiadomienia, których używa: ich szablonami, polami, widokami i stałymi, nigdy jednak z artykułami. Ustawić to może tylko superadmin.", // ai 2026-10
 
-// modules/site/modedit.php, row 353
-"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "",
+// modules/site/modedit.php, row 333
+"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "Moduły witryny zmieniły się od publikacji: %1 – katalog aplikacji nie udostępni witryny, dopóki superadmin ich nie zatwierdzi.", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Approve the changed modules: %1" => "",
+// modules/site/modedit.php, row 334
+"Approve the changed modules: %1" => "Zatwierdź zmienione moduły: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Their templates, fields, views and constants then go to the app store with the site." => "",
+// modules/site/modedit.php, row 334
+"Their templates, fields, views and constants then go to the app store with the site." => "Ich szablony, pola, widoki i stałe trafią wtedy do katalogu aplikacji razem z witryną.", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"Publish in the app store" => "",
+// modules/site/modedit.php, row 336
+"Publish in the app store" => "Opublikuj w katalogu aplikacji", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "",
+// modules/site/modedit.php, row 336
+"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "Opublikowana aplikacja nie ma ostrzeżeń: każde ostrzeżenie jej eksportu jest błędem. Zatrzymuje ją też grupa stałych należąca do rubryki spoza wszystkich opublikowanych witryn.", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"App description" => "",
+// modules/site/modedit.php, row 337
+"App description" => "Opis aplikacji", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"What the app does, for the list of the app store." => "",
+// modules/site/modedit.php, row 337
+"What the app does, for the list of the app store." => "Co aplikacja robi – do listy w katalogu aplikacji.", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"App version" => "",
+// modules/site/modedit.php, row 338
+"App version" => "Wersja aplikacji", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"Like 1.2.0." => "",
+// modules/site/modedit.php, row 338
+"Like 1.2.0." => "Np. 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005
 "Spot&nbsp;variables" => "Zmienne&nbsp;spotu", // ai 2026-06

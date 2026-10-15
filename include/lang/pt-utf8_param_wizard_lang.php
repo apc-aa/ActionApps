@@ -68,7 +68,7 @@ return [
 "URL" => "",
 
 // include/constants_param_wizard.php, row 85
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = número inteiro positivo", // ai 2026-06
@@ -95,7 +95,7 @@ return [
 "Float - including scientific notation 1.2E+9" => "Float - incluindo notação científica 1.2E+9", // ai 2026-06
 
 // include/constants_param_wizard.php, row 135
-"Decimal" => "",
+"Decimal" => "Decimal", // ai 2026-10
 
 // include/constants_param_wizard.php, row 138
 "Id = 1-32 hexadecimal digits [0-9a-f]" => "Id = 1-32 dígitos hexadecimais [0-9a-f]", // ai 2026-06
@@ -259,7 +259,7 @@ return [
 "link_only......." => "",
 
 // include/constants_param_wizard.php, row 282
-"url_field" => "",
+"url_field" => "url_field", // ai 2026-10
 
 // include/constants_param_wizard.php, row 283
 "field id if field, where external URL is stored (like hl_href.........)" => "id do campo onde está armazenado o URL externo (como hl_href.........)", // ai 2026-06
@@ -274,7 +274,7 @@ return [
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "O URL de outra página que mostra o conteúdo do artigo. (Essa página deve conter o SSI include ../slice.php.). Se não for preenchido, usa-se para o texto integral a mesma página que para o índice de artigos (que é o comportamento óbvio).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291, 419
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/artigos/solar.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
 "text" => "texto", // ai 2026-06
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "apresenta um 'blurb' (pedaço de texto) de outra secção, com base numa condição simples.<br>Se <i>o campo</i> (ou o campo indicado em <b>stringToMatch</b>) na secção atual corresponder ao conteúdo de <b>fieldToMatch</b> em <b>blurbSliceId</b>, devolve o conteúdo de <b>fieldToReturn</b> em <b>blurbSliceId</b>.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Por predefinição é <i>o campo</i>. Pode ser indicado como id de um campo (headline........) OU como texto estático.", // ai 2026-06
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "id desempacotado (unpacked) da secção onde está guardado o texto do blurb", // ai 2026-06
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "id do campo em <b>blurbSliceId</b> onde procurar por <b>stringToMatch</b>", // ai 2026-06
@@ -604,7 +604,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "id do campo em <b>blurbSliceId</b> onde está guardado o texto do blurb (o que apresentar)", // ai 2026-06

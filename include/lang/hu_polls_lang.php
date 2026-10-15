@@ -48,11 +48,11 @@ return [
 "Prints poll question" => "Ki\xEDrja a szavaz\xE1s k\xE9rd\xE9s\xE9t", // ai 2026-06
 
 // modules/polls/include/util.php, row 49
-// modules/polls/polledit.php, row 235, 242
+// modules/polls/polledit.php, row 230, 237
 "Publish Date" => "K\xF6zz\xE9t\xE9tel d\xE1tuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 50
-// modules/polls/polledit.php, row 236, 243
+// modules/polls/polledit.php, row 231, 238
 "Expiry Date" => "Lej\xE1rat d\xE1tuma", // ai 2026-06
 
 // modules/polls/include/util.php, row 51
@@ -95,11 +95,11 @@ return [
 "View poll" => "Szavaz\xE1s megtekint\xE9se", // ai 2026-06
 
 // modules/polls/menu.php, row 67, 68
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Edit poll" => "Szavaz\xE1s szerkeszt\xE9se", // ai 2026-06
 
 // modules/polls/menu.php, row 67
-// modules/polls/polledit.php, row 193
+// modules/polls/polledit.php, row 188
 "Add poll" => "Szavaz\xE1s hozz\xE1ad\xE1sa", // ai 2026-06
 
 // modules/polls/menu.php, row 68
@@ -144,94 +144,94 @@ return [
 // modules/polls/menu.php, row 119
 "Designs" => "Megjelen\xE9sek", // ai 2026-06
 
-// modules/polls/modedit.php, row 102
+// modules/polls/modedit.php, row 100
 "You do not have permissions to add polls" => "Nincs jogosults\xE1ga szavaz\xE1sok hozz\xE1ad\xE1s\xE1hoz", // ai 2026-06
 
-// modules/polls/modedit.php, row 107
+// modules/polls/modedit.php, row 105
 "You do not have permissions to edit this poll" => "Nincs jogosults\xE1ga a szavaz\xE1s szerkeszt\xE9s\xE9hez", // ai 2026-06
 
-// modules/polls/modedit.php, row 124, 249
-// modules/polls/polledit.php, row 251
+// modules/polls/modedit.php, row 122, 243
+// modules/polls/polledit.php, row 246
 "IP Locking timeout" => "IP-z\xE1rol\xE1s id\xF5korl\xE1tja", // ai 2026-06
 
-// modules/polls/modedit.php, row 125, 251
+// modules/polls/modedit.php, row 123, 245
 "Cookies prefix" => "Cookie-el\xF5tag", // ai 2026-06
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Add Polls" => "Szavaz\xE1sok hozz\xE1ad\xE1sa", // ai 2026-06
 
-// modules/polls/modedit.php, row 234
+// modules/polls/modedit.php, row 228
 "Edit Polls" => "Szavaz\xE1sok szerkeszt\xE9se", // ai 2026-06
 
-// modules/polls/modedit.php, row 237
+// modules/polls/modedit.php, row 231
 "Polls Module general data" => "Szavaz\xE1sok modul - \xE1ltal\xE1nos adatok", // ai 2026-06
 
-// modules/polls/modedit.php, row 242
+// modules/polls/modedit.php, row 236
 "Used Language File" => "Haszn\xE1lt nyelvi f\xE1jl", // ai 2026-06
 
-// modules/polls/modedit.php, row 246
+// modules/polls/modedit.php, row 240
 "Defaults for polls in this module" => "Alap\xE9rtelmez\xE9sek a modul szavaz\xE1saihoz", // ai 2026-06
 
-// modules/polls/modedit.php, row 247
-// modules/polls/polledit.php, row 249
+// modules/polls/modedit.php, row 241
+// modules/polls/polledit.php, row 244
 "Use logging" => "Napl\xF3z\xE1s haszn\xE1lata", // ai 2026-06
 
-// modules/polls/modedit.php, row 248
-// modules/polls/polledit.php, row 250
+// modules/polls/modedit.php, row 242
+// modules/polls/polledit.php, row 245
 "Use IP locking" => "IP-z\xE1rol\xE1s haszn\xE1lata", // ai 2026-06
 
-// modules/polls/modedit.php, row 250
-// modules/polls/polledit.php, row 252
+// modules/polls/modedit.php, row 244
+// modules/polls/polledit.php, row 247
 "Use cookies" => "Cookie-k haszn\xE1lata", // ai 2026-06
 
 // modules/polls/polledit.php, row 74
 "No permission to add/edit poll." => "Nincs jogosults\xE1ga szavaz\xE1s hozz\xE1ad\xE1s\xE1hoz/szerkeszt\xE9s\xE9hez.", // ai 2026-06
 
 // modules/polls/polledit.php, row 80
-"Poll not found." => "",
+"Poll not found." => "A szavaz\xE1s nem tal\xE1lhat\xF3.", // ai 2026-10
 
 // modules/polls/polledit.php, row 80
-"The poll belongs to another module." => "",
+"The poll belongs to another module." => "A szavaz\xE1s egy m\xE1sik modulhoz tartozik.", // ai 2026-10
 
-// modules/polls/polledit.php, row 119
+// modules/polls/polledit.php, row 117
 "Can't insert new poll" => "Nem siker\xFClt besz\xFArni az \xFAj szavaz\xE1st", // ai 2026-06
 
-// modules/polls/polledit.php, row 125
+// modules/polls/polledit.php, row 123
 "Can't update poll with id %1" => "Nem siker\xFClt friss\xEDteni a(z) %1 azonos\xEDt\xF3j\xFA szavaz\xE1st", // ai 2026-06
 
-// modules/polls/polledit.php, row 214
+// modules/polls/polledit.php, row 209
 "Insert question and answers" => "Adja meg a k\xE9rd\xE9st \xE9s a v\xE1laszokat", // ai 2026-06
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Headline" => "C\xEDm", // ai 2026-06
 
-// modules/polls/polledit.php, row 233, 240
+// modules/polls/polledit.php, row 228, 235
 "Question" => "K\xE9rd\xE9s", // ai 2026-06
 
-// modules/polls/polledit.php, row 234, 241
+// modules/polls/polledit.php, row 229, 236
 "Insert new answers and choose their order" => "Adja meg az \xFAj v\xE1laszokat, \xE9s v\xE1lassza ki sorrendj\xFCket", // ai 2026-06
 
-// modules/polls/polledit.php, row 246
+// modules/polls/polledit.php, row 241
 "Polls settings" => "Szavaz\xE1sok be\xE1ll\xEDt\xE1sai", // ai 2026-06
 
-// modules/polls/polledit.php, row 248
+// modules/polls/polledit.php, row 243
 "Poll is locked" => "A szavaz\xE1s z\xE1rolva van", // ai 2026-06
 
-// modules/polls/polledit.php, row 251
+// modules/polls/polledit.php, row 246
 "time in seconds" => "id\xF5 m\xE1sodpercben", // ai 2026-06
 
-// modules/polls/polledit.php, row 254
+// modules/polls/polledit.php, row 249
 "Parameters" => "Param\xE9terek", // ai 2026-06
 
-// modules/polls/polledit.php, row 256
+// modules/polls/polledit.php, row 251
 "Polls design templates" => "Szavaz\xE1sok megjelen\xE9si sablonjai", // ai 2026-06
 
-// modules/polls/polledit.php, row 261
+// modules/polls/polledit.php, row 256
 "Select design type - before vote" => "Megjelen\xE9s szavaz\xE1s el\xF5tt", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "Select design type - after vote" => "Megjelen\xE9s szavaz\xE1s ut\xE1n", // ai 2026-06
 
-// modules/polls/polledit.php, row 262
+// modules/polls/polledit.php, row 257
 "If the design after vote should look differently, then specify it here." => "Ha a szavaz\xE1s ut\xE1ni megjelen\xE9snek m\xE1snak kell lennie, itt adja meg.", // ai 2026-06
 ];

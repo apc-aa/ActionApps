@@ -15,6 +15,24 @@ return [
 // End of runtime-translated messages
 
 // Unused messages - no longer found in the sources; kept commented for reference.
+// "The index %1 of the content table does not contain the field" => "Index %1 tabu\xBEky content neobsahuje polo\x9Eku", // ai 2026-10
+// "Adds the index (field_id, text) to the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes and about as much disk as the other indexes of the table - run it when the traffic is low." => "Prid\xE1 do tabu\xBEky content index (field_id, text), aby sa hodnota na\x9Ala v jednej polo\x9Eke bez \xE8\xEDtania tej istej hodnoty v\x9Aetk\xFDch ostatn\xFDch polo\x9Eiek. Na ve\xBEkej datab\xE1ze to trv\xE1 min\xFAty a zaberie asi to\xBEko miesta na disku ako ostatn\xE9 indexy tabu\xBEky - sp\xFA\x9A\x9Dajte to pri n\xEDzkej n\xE1v\x9Atevnosti.", // ai 2026-10
+// "The index %1 is missing in the content table" => "V tabu\xBEke content ch\xFDba index %1", // ai 2026-10
+// "OK - the content table has the index %1" => "OK - tabu\xBEka content m\xE1 index %1", // ai 2026-10
+// "The content table already has the index %1" => "Tabu\xBEka content u\x9E m\xE1 index %1", // ai 2026-10
+// "The index %1 added" => "Index %1 bol pridan\xFD", // ai 2026-10
+// "The index %1 removed" => "Index %1 bol odstr\xE1nen\xFD", // ai 2026-10
+// "No form sent an unsigned expression in the last %1 days." => "Za sledovan\xE9 obdobie (dn\xED: %1) \x9Eiadny formul\xE1r neodoslal nepodp\xEDsan\xFD v\xFDraz.", // ai 2026-10
+// "Each protection is on unless you switch it off here. Switch one off only for an old site whose forms still use the older way, and only until they are converted." => "Ka\x9Ed\xE1 ochrana je zapnut\xE1, k\xFDm ju tu nevypnete. Vyp\xEDnajte ju len pri starom webe, ktor\xE9ho formul\xE1re e\x9Ate pou\x9E\xEDvaj\xFA star\x9A\xED sp\xF4sob, a len dovtedy, k\xFDm nebud\xFA preveden\xE9.", // ai 2026-10
+// "%1 problems, %2 warnings, %3 recommendations, %4 checks passed." => "Probl\xE9my: %1, varovania: %2, odpor\xFA\xE8ania: %3, \xFAspe\x9An\xE9 kontroly: %4.", // ai 2026-10
+// "Resolution" => "Rie\x9Aenie", // ai 2026-10
+// "Resolved" => "Vyrie\x9Aen\xE9", // ai 2026-10
+// "No check passed." => "\x8Eiadna kontrola nepre\x9Ala.", // ai 2026-10
+// "Extended checks" => "Roz\x9A\xEDren\xE9 kontroly", // ai 2026-10
+// "Slow checks" => "Pomal\xE9 kontroly", // ai 2026-10
+// "Lists the security protections switched off on this install and the unsigned expressions forms sent in the last %1 days." => "Vyp\xED\x9Ae bezpe\xE8nostn\xE9 ochrany vypnut\xE9 v tejto in\x9Atal\xE1cii a nepodp\xEDsan\xE9 v\xFDrazy, ktor\xE9 formul\xE1re poslali za posledn\xFDch %1 dn\xED.", // ai 2026-10
+// "If you do not know the page, the request did not come from your forms and nothing needs to change." => "Ak str\xE1nku nepozn\xE1te, po\x9Eiadavka nepri\x9Ala z va\x9Aich formul\xE1rov a nie je potrebn\xE9 ni\xE8 meni\x9D.", // ai 2026-10
+// "All protections are on and no form sent an unsigned expression in the last %1 days" => "V\x9Aetky ochrany s\xFA zapnut\xE9 a za posledn\xFDch %1 dn\xED \x9Eiadny formul\xE1r neposlal nepodp\xEDsan\xFD v\xFDraz", // ai 2026-10
 // "Unique number in sequence 1,2,3,..." => "Unik\xE1tne \xE8\xEDslo v porad\xED 1,2,3,...", // ai 2026-06
 // "Data source" => "Zdroj d\xE1t", // ai 2026-06
 // "Upload periodically" => "Nahr\xE1va\x9D pravidelne", // ai 2026-06
@@ -220,10 +238,10 @@ return [
 "enabled" => "zapnut\xE9", // ai 2026-06
 
 // admin/aa_cron.php, row 103
-"AA's own jobs (alerts, feeding, link check, table optimization) run from the task queue since 2026-09; this table is only for scripts you added yourself." => "",
+"AA's own jobs (alerts, feeding, link check, table optimization) run from the task queue since 2026-09; this table is only for scripts you added yourself." => "Vlastn\xE9 \xFAlohy AA (posielanie upozornen\xED, v\xFDmena spr\xE1v, kontrola odkazov, optimaliz\xE1cia tabuliek) be\x9Eia od 2026-09 z fronty \xFAloh; t\xE1to tabu\xBEka je len pre skripty, ktor\xE9 ste pridali sami.", // ai 2026-10
 
 // admin/aa_cron.php, row 104
-"For a new periodic task prefer %1 - they run from the queue too, with no system cron row to keep." => "",
+"For a new periodic task prefer %1 - they run from the queue too, with no system cron row to keep." => "Pre nov\xFA pravideln\xFA \xFAlohu rad\x9Aej pou\x9Eite %1 \x96 aj tie be\x9Eia z fronty a nepotrebuj\xFA riadok v syst\xE9movom crone.", // ai 2026-10
 
 // admin/aa_cron.php, row 104
 // include/menu.php, row 171
@@ -249,13 +267,13 @@ return [
 "Cron" => "",
 
 // admin/aa_dataimports.php, row 34
-"You do not have permissions to see the imports of all slices" => "",
+"You do not have permissions to see the imports of all slices" => "Nem\xE1te pr\xE1vo zobrazi\x9D importy v\x9Aetk\xFDch modulov", // ai 2026-10
 
 // admin/aa_dataimports.php, row 39
-"Imports of all slices" => "",
+"Imports of all slices" => "Importy v\x9Aetk\xFDch modulov", // ai 2026-10
 
 // admin/aa_dataimports.php, row 40
-"The imports of every slice of this installation. A new import is added on the Imports page of its slice." => "",
+"The imports of every slice of this installation. A new import is added on the Imports page of its slice." => "Importy v\x9Aetk\xFDch modulov tejto in\x9Atal\xE1cie. Nov\xFD import sa prid\xE1va na str\xE1nke Importy pr\xEDslu\x9An\xE9ho modulu.", // ai 2026-10
 
 // admin/aa_emails.php, row 42
 // admin/se_emails.php, row 42
@@ -274,20 +292,23 @@ return [
 "View Log" => "Zobrazi\x9D log", // ai 2026-06
 
 // admin/aa_note.php, row 54
-"You do not have permissions to write notes" => "",
+"You do not have permissions to write notes" => "Nem\xE1te pr\xE1vo p\xEDsa\x9D pozn\xE1mky", // ai 2026-10
 
 // admin/aa_note.php, row 58
-// admin/aa_security.php, row 59
-// admin/aa_statecheck.php, row 133
+// admin/aa_security.php, row 64, 72
+// admin/aa_statecheck.php, row 197
 // admin/aafinder.php, row 98
+// admin/console.php, row 78
+// admin/fileman.php, row 110
+// admin/slicedel2.php, row 70
 // central/appstore.php, row 67
 // central/installapp.php, row 139, 140
 // src/Import/DetailPage.php, row 510
-"The form has expired; reload the page and try again." => "",
+"The form has expired; reload the page and try again." => "Platnos\x9D formul\xE1ra vypr\x9Aala; obnovte str\xE1nku a sk\xFAste to znova.", // ai 2026-10
 
 // admin/aa_optimize.php, row 50
-// include/feeding.php, row 465, 501
-"Test" => "",
+// include/feeding.php, row 451, 487
+"Test" => "Otestova\x9D", // ai 2026-10
 
 // admin/aa_optimize.php, row 65
 "No %1 action in %2." => "Akcia %1 v %2 neexistuje.", // ai 2026-06
@@ -299,7 +320,7 @@ return [
 "Test current" => "Otestova\x9D aktu\xE1lny modul", // ai 2026-06
 
 // admin/aa_optimize.php, row 129
-// admin/aa_statecheck.php, row 84
+// admin/aa_statecheck.php, row 139
 "Repair" => "Opravi\x9D", // ai 2026-06
 
 // admin/aa_optimize.php, row 145
@@ -318,66 +339,133 @@ return [
 // include/menu_util.php, row 78
 "View SearchLog" => "Zobrazi\x9D log h\xBEadania", // ai 2026-06
 
-// admin/aa_security.php, row 53
-"You do not have permissions to change the security protections" => "",
+// admin/aa_security.php, row 58
+"You do not have permissions to change the security protections" => "Nem\xE1te pr\xE1vo meni\x9D bezpe\xE8nostn\xE9 ochrany", // ai 2026-10
 
-// admin/aa_security.php, row 70
-"Not measured: AA cannot tell whether a site relies on this protection." => "",
+// admin/aa_security.php, row 81
+"Someone cannot log in after failed attempts" => "Niekto sa po ne\xFAspe\x9An\xFDch pokusoch nem\xF4\x9Ee prihl\xE1si\x9D", // ai 2026-10
 
-// admin/aa_security.php, row 84
-"No form sent an unsigned expression in the last %1 days." => "",
+// admin/aa_security.php, row 82
+"Type their login name to see its failed logins of the last 12 hours, and let it log in at once." => "Zadajte jeho prihlasovacie meno: zobrazia sa ne\xFAspe\x9An\xE9 prihl\xE1senia tohto mena za posledn\xFDch 12 hod\xEDn a m\xF4\x9Eete mu hne\xEF povoli\x9D prihl\xE1senie.", // ai 2026-10
 
 // admin/aa_security.php, row 85
-"Last %1 days: %2 refused, %3 run (counted once per page and day)." => "",
+// admin/setup.php, row 99, 240
+// admin/slicewiz.php, row 84
+// admin/um_passwd.php, row 111
+// admin/um_uedit.php, row 313, 317
+// include/itemfunc.php, row 613, 1202
+// include/um_util.php, row 296
+"Login name" => "U\x9Eivate\xBEsk\xE9 meno",
 
-// admin/aa_security.php, row 86
+// admin/aa_security.php, row 87
+// admin/aa_statecheck.php, row 177
+// admin/aa_statistics.php, row 91
+// admin/anonym_wizard.php, row 223
+// admin/console.php, row 71
+// admin/se_fields.php, row 303
+// admin/se_statistics.php, row 69
+// admin/se_views.php, row 148
+// include/formutil.php, row 1427, 1430, 2016
+// src/Widget/FilWidget.php, row 154, 233
+// src/Widget/FldWidget.php, row 156
+"Show" => "Zobrazi\x9D",
+
+// admin/aa_security.php, row 94
+"No failed login of %1 in the last 12 hours. If the login is refused all the same, other names failed from the same address; letting %1 in lets it through as well." => "Meno %1 nem\xE1 za posledn\xFDch 12 hod\xEDn \x9Eiadne ne\xFAspe\x9An\xE9 prihl\xE1senie. Ak je prihl\xE1senie napriek tomu odmietnut\xE9, z tej istej adresy zlyhali in\xE9 men\xE1; ke\xEF %1 povol\xEDte prihl\xE1senie, prejde aj tak.", // ai 2026-10
+
+// admin/aa_security.php, row 96
+// src/Optimize/CheckHttp.php, row 82, 91
+// src/Optimize/CheckLoginAddresses.php, row 88, 101
+// src/Optimize/CheckSessionidUse.php, row 99
+// src/Optimize/CheckTrustedProxies.php, row 103
+// src/Optimize/CheckUploadRefusals.php, row 86
+// src/Security/Protection.php, row 92
+"Address" => "Adresa", // ai 2026-10
+
+// admin/aa_security.php, row 96
+"Failed logins" => "Ne\xFAspe\x9An\xE9 prihl\xE1senia", // ai 2026-10
+
+// admin/aa_security.php, row 96
+"Last one" => "Posledn\xE9", // ai 2026-10
+
+// admin/aa_security.php, row 96
+"Next login" => "\xCFal\x9Aie prihl\xE1senie", // ai 2026-10
+
+// admin/aa_security.php, row 99
+"waits %1 min" => "\xE8ak\xE1 %1 min", // ai 2026-10
+
+// admin/aa_security.php, row 99
+"checked at once" => "over\xED sa hne\xEF", // ai 2026-10
+
+// admin/aa_security.php, row 103
+"%1 more addresses tried this name." => "Toto meno sk\xFA\x9Aali aj \xEFal\x9Aie adresy: %1.", // ai 2026-10
+
+// admin/aa_security.php, row 108
+"Let %1 log in now" => "Hne\xEF povoli\x9D prihl\xE1senie pre %1", // ai 2026-10
+
+// admin/aa_security.php, row 109
+"Its failed logins until now stop counting, from every address; the log keeps who let it in. After 5 more wrong passwords it waits again." => "Jeho doteraj\x9Aie ne\xFAspe\x9An\xE9 prihl\xE1senia sa prestan\xFA po\xE8\xEDta\x9D zo v\x9Aetk\xFDch adries; v logu zostane, kto ho pustil. Po \xEFal\x9A\xEDch 5 nespr\xE1vnych hesl\xE1ch bude znova \xE8aka\x9D.", // ai 2026-10
+
+// admin/aa_security.php, row 117
+"Not measured: AA cannot tell whether a site relies on this protection." => "Nemeran\xE9: AA nedok\xE1\x9Ee zisti\x9D, \xE8i web na tejto ochrane z\xE1vis\xED.", // ai 2026-10
+
+// admin/aa_security.php, row 131
+"Nothing refused or run in the last %1 days." => "Za posledn\xFDch %1 dn\xED nebolo ni\xE8 odmietnut\xE9 ani vykonan\xE9.", // ai 2026-10
+
+// admin/aa_security.php, row 132
+"Last %1 days: %2 refused, %3 run (counted once per page and day)." => "Sledovan\xE9 obdobie (dn\xED: %1): odmietnut\xE9: %2, spusten\xE9: %3 (po\xE8\xEDta sa raz za str\xE1nku a de\xF2).", // ai 2026-10
+
+// admin/aa_security.php, row 133
 // src/Optimize/CheckAjaxUnsigned.php, row 86
 // src/Optimize/CheckAlertitemRefusals.php, row 95
 // src/Optimize/CheckAnonymousEditRefusals.php, row 93
 // src/Optimize/CheckBlockedRequests.php, row 94
 // src/Optimize/CheckCkeditorUse.php, row 102
 // src/Optimize/CheckEnvironment.php, row 66
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 96
+// src/Optimize/CheckLoginAddresses.php, row 90, 103
 // src/Optimize/CheckObjectFormRefusals.php, row 106
 // src/Optimize/CheckPhpFatals.php, row 68
 // src/Optimize/CheckQueue.php, row 89, 99
 // src/Optimize/CheckQueuedClassMissing.php, row 72
-// src/Optimize/CheckSecurityProtections.php, row 103
+// src/Optimize/CheckSecurityProtections.php, row 106
 // src/Optimize/CheckSessionidUse.php, row 105
+// src/Optimize/CheckTrustedProxies.php, row 109
 // src/Optimize/CheckUploadRefusals.php, row 98
 // src/Optimize/CheckUserAliasFunctionLog.php, row 74
-"Log rows" => "",
+"Log rows" => "Z\xE1znamy logu", // ai 2026-10
 
-// admin/aa_security.php, row 93
-"On" => "",
-
-// admin/aa_security.php, row 96
-"Off since %1, %2" => "",
-
-// admin/aa_security.php, row 96
-// src/Import/DetailPage.php, row 726
-"Off" => "",
-
-// admin/aa_security.php, row 101
-// include/menu_util.php, row 82
-// src/Optimize/CheckSecurityProtections.php, row 69
-"Security" => "",
-
-// admin/aa_security.php, row 128
-"Saved. Changes are written to the log." => "",
-
-// admin/aa_security.php, row 132
-"Each protection is on unless you switch it off here. Switch one off only for an old site whose forms still use the older way, and only until they are converted." => "",
+// admin/aa_security.php, row 140
+"On" => "Zapnut\xE9", // ai 2026-10
 
 // admin/aa_security.php, row 143
-"Switch this protection off" => "",
+"Off since %1, %2" => "Vypnut\xE9 od %1, %2", // ai 2026-10
 
-// admin/aa_security.php, row 144
-"State Check reminds you until it is on again." => "",
+// admin/aa_security.php, row 143
+// src/Import/DetailPage.php, row 726
+"Off" => "Vypnut\xE9", // ai 2026-10
 
-// admin/aa_security.php, row 147
-"How to convert older forms" => "",
+// admin/aa_security.php, row 148
+// include/menu_util.php, row 82
+// src/Optimize/CheckSecurityProtections.php, row 73
+"Security" => "Zabezpe\xE8enie", // ai 2026-10
 
-// admin/aa_security.php, row 152
+// admin/aa_security.php, row 177
+"Saved. Changes are written to the log." => "Ulo\x9Een\xE9. Zmeny sa zapisuj\xFA do logu.", // ai 2026-10
+
+// admin/aa_security.php, row 182
+"Done: the failed logins of the name below no longer count." => "Hotovo: ne\xFAspe\x9An\xE9 prihl\xE1senia mena uveden\xE9ho ni\x9E\x9Aie sa u\x9E nepo\xE8\xEDtaj\xFA.", // ai 2026-10
+
+// admin/aa_security.php, row 186
+"Each protection is on unless you switch it off here. Switch one off only for an old site whose forms or links still use the older way, and only until they are converted." => "Ka\x9Ed\xE1 ochrana je zapnut\xE1, k\xFDm ju tu nevypnete. Vyp\xEDnajte ju len pri starom webe, ktor\xE9ho formul\xE1re alebo odkazy e\x9Ate pou\x9E\xEDvaj\xFA star\x9A\xED sp\xF4sob, a len dovtedy, k\xFDm nebud\xFA preveden\xE9.", // ai 2026-10
+
+// admin/aa_security.php, row 197
+"Switch this protection off" => "Vypn\xFA\x9D t\xFAto ochranu", // ai 2026-10
+
+// admin/aa_security.php, row 198
+"State Check reminds you until it is on again." => "Kontrola stavu v\xE1m to bude pripom\xEDna\x9D, k\xFDm ju znova nezapnete.", // ai 2026-10
+
+// admin/aa_security.php, row 206
 // admin/se_csv_import2.php, row 392
 // include/searchbar.class.php, row 769
 // src/Widget/MflWidget.php, row 120
@@ -386,146 +474,86 @@ return [
 // src/Widget/Widget.php, row 445
 "Save" => "Ulo\x9Ei\x9D", // ai 2026-06
 
-// admin/aa_statecheck.php, row 59
-"You do not have permissions to see State Check" => "",
-
-// admin/aa_statecheck.php, row 70
-"Problem" => "",
-
-// admin/aa_statecheck.php, row 71
-"Warning" => "",
-
 // admin/aa_statecheck.php, row 72
-"Advice" => "",
-
-// admin/aa_statecheck.php, row 73
-// admin/constants_sel.php, row 110
-// admin/prev_navigation.php, row 57
-// src/Manageraction/Central_Linkcheck.php, row 42
-"OK" => "",
+"You do not have permissions to see State Check" => "Nem\xE1te pr\xE1vo zobrazi\x9D Kontrolu stavu", // ai 2026-10
 
 // admin/aa_statecheck.php, row 88
-"Recheck" => "",
+// src/Optimize/CheckSecurityProtections.php, row 82
+"unknown" => "nezn\xE1me", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99, 249
-// include/logs.php, row 681
-"Severity" => "",
+// admin/aa_statecheck.php, row 120
+"not counted" => "nespo\xE8\xEDtan\xE9", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99, 249
-"Check" => "",
+// admin/aa_statecheck.php, row 125
+"Verify again" => "Znova overi\x9D", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99, 249
-// include/logs.php, row 683
-"Finding" => "",
+// admin/aa_statecheck.php, row 133
+// central/installapp.php, row 1343
+// src/Optimize/CheckUniversalAnalytics.php, row 109
+// src/Optimize/ImgMeasuring.php, row 53
+"Where" => "Kde", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99
-// include/formutil.php, row 3280
-// include/logs.php, row 682, 942
-"Count" => "Po\xE8et", // ai 2026-06
+// admin/aa_statecheck.php, row 145
+"Recheck" => "Skontrolova\x9D znova", // ai 2026-10
 
-// admin/aa_statecheck.php, row 99
-"Since" => "",
+// admin/aa_statecheck.php, row 177
+// admin/discedit.php, row 165
+"Hide" => "Skryt",
 
-// admin/aa_statecheck.php, row 99
-// admin/discedit.php, row 134
-// admin/related_sel.php, row 152
-// admin/se_views.php, row 136
-// src/Import/DetailPage.php, row 313
-// src/Manager.php, row 230
-// src/Optimize/AbstractOptimize.php, row 173
-"Actions" => "Akcia",
+// admin/aa_statecheck.php, row 199
+"No such check: %1" => "Tak\xE1 kontrola neexistuje: %1", // ai 2026-10
 
-// admin/aa_statecheck.php, row 135
-"No such check: %1" => "",
+// admin/aa_statecheck.php, row 201
+"%1 has no repair action" => "%1 nem\xE1 akciu na opravu", // ai 2026-10
 
-// admin/aa_statecheck.php, row 137
-"%1 has no repair action" => "",
+// admin/aa_statecheck.php, row 206
+"Repair of %1 done." => "Oprava %1 prebehla.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 142
-"Repair of %1 done." => "",
+// admin/aa_statecheck.php, row 206
+"Repair of %1 failed." => "Oprava %1 zlyhala.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 142
-"Repair of %1 failed." => "",
+// admin/aa_statecheck.php, row 246
+"Checked again at %1: still there. %2" => "Znova skontrolovan\xE9 o %1: st\xE1le trv\xE1. %2", // ai 2026-10
 
-// admin/aa_statecheck.php, row 186
-"Checked again at %1: still there. %2" => "",
+// admin/aa_statecheck.php, row 247
+"Checked again at %1: the problem is gone." => "Znova skontrolovan\xE9 o %1: probl\xE9m zmizol.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 187
-"Checked again at %1: the problem is gone." => "",
-
-// admin/aa_statecheck.php, row 202
+// admin/aa_statecheck.php, row 254
 // include/menu_util.php, row 81
-"State Check" => "",
+"State Check" => "Kontrola stavu", // ai 2026-10
 
-// admin/aa_statecheck.php, row 227
-"%1 problems, %2 warnings, %3 recommendations, %4 checks passed." => "",
+// admin/aa_statecheck.php, row 372
+"Basic checks ran now in %1 s." => "Z\xE1kladn\xE9 kontroly prebehli teraz za %1 s.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 228
-"Basic checks ran now in %1 s." => "",
+// admin/aa_statecheck.php, row 373
+"Extended checks ran now in %1 s." => "Roz\x9A\xEDren\xE9 kontroly prebehli teraz za %1 s.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 229
-"Extended checks ran now in %1 s." => "",
+// admin/aa_statecheck.php, row 373
+"Extended checks were not run." => "Roz\x9A\xEDren\xE9 kontroly neboli spusten\xE9.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 229
-"Extended checks were not run." => "",
+// admin/aa_statecheck.php, row 374
+"Slow checks ran now in %1 s." => "Pomal\xE9 kontroly prebehli teraz za %1 s.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 230
-"Slow checks ran now in %1 s." => "",
+// admin/aa_statecheck.php, row 375
+"The daily snapshot last ran %1." => "Denn\xFD sn\xEDmok bol naposledy vytvoren\xFD %1.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 231
-"The daily snapshot last ran %1." => "",
+// admin/aa_statecheck.php, row 375
+"No daily snapshot yet." => "Zatia\xBE \x9Eiadny denn\xFD sn\xEDmok.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 231
-"No daily snapshot yet." => "",
+// admin/aa_statecheck.php, row 379
+"No problems found. %1 checks passed at %2." => "Nena\x9Ali sa \x9Eiadne probl\xE9my. \xDAspe\x9An\xE9 kontroly: %1, o %2.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 234
-// include/logs.php, row 701
-"Problems" => "",
+// admin/aa_statecheck.php, row 382
+"Full scans of the database; they take seconds to minutes on a large installation. Their findings are merged into the sections above once run." => "\xDApln\xE9 prech\xE1dzanie datab\xE1zy; na ve\xBEkej in\x9Atal\xE1cii trv\xE1 sekundy a\x9E min\xFAty. Zistenia sa po spusten\xED pridaj\xFA do sekci\xED vy\x9A\x9Aie.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 234
-"No problems found. %1 checks passed at %2." => "",
+// admin/aa_statecheck.php, row 383
+"Run extended checks now" => "Spusti\x9D roz\x9A\xEDren\xE9 kontroly", // ai 2026-10
 
-// admin/aa_statecheck.php, row 236
-// include/logs.php, row 702
-"Warnings" => "",
+// admin/aa_statecheck.php, row 384
+"Full scans of the largest tables; on a big installation they take many minutes and load the database server, so they are not part of the daily snapshot. Run them now and then, preferably outside peak hours. Their findings are merged into the sections above once run." => "\xDApln\xE9 prech\xE1dzanie najv\xE4\xE8\x9A\xEDch tabuliek; na ve\xBEkej in\x9Atal\xE1cii trv\xE1 mnoho min\xFAt a za\x9Da\x9Euje datab\xE1zov\xFD server, preto nie je s\xFA\xE8as\x9Dou denn\xE9ho sn\xEDmku. Sp\xFA\x9A\x9Dajte ich ob\xE8as, najlep\x9Aie mimo \x9Api\xE8ky. Zistenia sa po spusten\xED pridaj\xFA do sekci\xED vy\x9A\x9Aie.", // ai 2026-10
 
-// admin/aa_statecheck.php, row 239
-// include/logs.php, row 703
-"Recommendations" => "",
-
-// admin/aa_statecheck.php, row 249
-"Resolution" => "",
-
-// admin/aa_statecheck.php, row 251
-"Resolved" => "",
-
-// admin/aa_statecheck.php, row 253
-"Passed checks" => "",
-
-// admin/aa_statecheck.php, row 253
-"No check passed." => "",
-
-// admin/aa_statecheck.php, row 257
-"Extended checks" => "",
-
-// admin/aa_statecheck.php, row 258
-"Full scans of the database; they take seconds to minutes on a large installation. Their findings are merged into the sections above once run." => "",
-
-// admin/aa_statecheck.php, row 260
-"Run extended checks now" => "",
-
-// admin/aa_statecheck.php, row 265
-"Slow checks" => "",
-
-// admin/aa_statecheck.php, row 266
-"Full scans of the largest tables; on a big installation they take many minutes and load the database server, so they are not part of the daily snapshot. Run them now and then, preferably outside peak hours. Their findings are merged into the sections above once run." => "",
-
-// admin/aa_statecheck.php, row 268
-"Run slow checks now" => "",
-
-// admin/aa_statecheck.php, row 271
-// src/Optimize/CheckEnvironment.php, row 18
-"Environment" => "Prostredie", // ai 2026-10
+// admin/aa_statecheck.php, row 385
+"Run slow checks now" => "Spusti\x9D pomal\xE9 kontroly", // ai 2026-10
 
 // admin/aa_statistics.php, row 58
 // admin/se_statistics.php, row 53
@@ -534,17 +562,6 @@ return [
 // admin/aa_statistics.php, row 86
 // admin/se_statistics.php, row 64
 "Admin - Statistics" => "Admin - \x8Atatistika", // ai 2026-06
-
-// admin/aa_statistics.php, row 91
-// admin/anonym_wizard.php, row 223
-// admin/console.php, row 58
-// admin/se_fields.php, row 303
-// admin/se_statistics.php, row 69
-// admin/se_views.php, row 148
-// include/formutil.php, row 1427, 1430, 2016
-// src/Widget/FilWidget.php, row 154, 233
-// src/Widget/FldWidget.php, row 156
-"Show" => "Zobrazi\x9D",
 
 // admin/aa_statistics.php, row 94
 // admin/se_statistics.php, row 72
@@ -643,18 +660,18 @@ return [
 "Sites" => "Weby", // ai 2026-06
 
 // admin/aa_statistics.php, row 135
-// admin/aafinder.php, row 507, 520
-// admin/se_inputform.php, row 292
+// admin/aafinder.php, row 484, 497
+// admin/se_inputform.php, row 285
 // central/appstore.php, row 164
 // include/searchlib.php, row 1015
 // src/Optimize/CheckInstallRuns.php, row 57
 "Slices" => "Moduly", // ai 2026-06
 
 // admin/aa_statistics.php, row 162
-"Version progress" => "",
+"Version progress" => "V\xFDvoj medzi verziami", // ai 2026-10
 
 // admin/aa_statistics.php, row 173
-"Queue progress" => "",
+"Queue progress" => "V\xFDvoj fronty", // ai 2026-10
 
 // admin/aa_statistics.php, row 184
 "Quick diagnostics" => "R\xFDchla diagnostika", // ai 2026-06
@@ -725,7 +742,7 @@ return [
 // admin/se_forms.php, row 50
 // admin/se_taskmanager.php, row 77
 // admin/se_tasks.php, row 44
-// include/metabase.class.php, row 1701
+// include/metabase.class.php, row 1703
 "Manage %1" => "Spr\xE1va %1", // ai 2026-06
 
 // admin/aa_tasks.php, row 46
@@ -769,7 +786,7 @@ return [
 // admin/slicedit.php, row 249
 // central/installapp.php, row 1357, 1437, 1472
 // include/itemfunc.php, row 197
-// include/logs.php, row 1044
+// include/logs.php, row 1193
 // include/menu.php, row 133
 // include/slice.class.php, row 587
 // include/sliceadd.php, row 54, 79
@@ -778,6 +795,7 @@ return [
 // src/Optimize/CheckAlertitemRefusals.php, row 88
 // src/Optimize/CheckAnonymousEditRefusals.php, row 84
 // src/Optimize/CheckImports.php, row 367
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 86
 // src/Optimize/CheckUploadRefusals.php, row 84
 // src/Optimize/CheckUserAliasFunctionLog.php, row 84
 // src/Optimize/CheckUserAliasFunctions.php, row 86
@@ -798,37 +816,37 @@ return [
 
 // admin/aafinder.php, row 150
 // include/itemfunc.php, row 306
-// include/logs.php, row 293
+// include/logs.php, row 338
 // src/AA_Plannedtask.php, row 204
-"Log" => "",
+"Log" => "Log", // ai 2026-10
 
 // admin/aafinder.php, row 172
 // include/menu_util.php, row 79
 "AA finder" => "AA vyh\xBEad\xE1va\xE8", // ai 2026-06
 
-// admin/aafinder.php, row 252
+// admin/aafinder.php, row 244
 "Jump" => "Prejs\x9D", // ai 2026-06
 
-// admin/aafinder.php, row 474, 526
+// admin/aafinder.php, row 451, 503
 // admin/itemhistory.php, row 47
 // include/itemfunc.php, row 82, 83, 286, 408
 // include/menu.php, row 163
 // include/menu_util.php, row 84
 "History" => "Hist\xF3ria", // ai 2026-06
 
-// admin/aafinder.php, row 486
+// admin/aafinder.php, row 463
 "Manage" => "Spravova\x9D", // ai 2026-06
 
-// admin/aafinder.php, row 489
+// admin/aafinder.php, row 466
 "Manage User:" => "Spravova\x9D u\x9E\xEDvate\xBEa:", // ai 2026-06
 
-// admin/aafinder.php, row 491, 497, 513, 541, 554
+// admin/aafinder.php, row 468, 474, 490, 518, 531
 "Go!" => "Cho\xEF!", // ai 2026-06
 
-// admin/aafinder.php, row 495
+// admin/aafinder.php, row 472
 "Manage Group:" => "Spravova\x9D skupinu:", // ai 2026-06
 
-// admin/aafinder.php, row 501, 531
+// admin/aafinder.php, row 478, 508
 // admin/um_gedit.php, row 207, 324
 // admin/um_uedit.php, row 248
 // include/se_users.php, row 138, 143
@@ -839,18 +857,18 @@ return [
 // src/Widget/RichtextMarkup.php, row 72
 "Search" => "H\xBEadanie",
 
-// admin/aafinder.php, row 504
+// admin/aafinder.php, row 481
 "Find in" => "H\xBEada\x9D v", // ai 2026-06
 
-// admin/aafinder.php, row 505
+// admin/aafinder.php, row 482
 "ID & SEO" => "ID a SEO", // ai 2026-06
 
-// admin/aafinder.php, row 506, 519
+// admin/aafinder.php, row 483, 496
 // include/itemfunc.php, row 195
 // include/menu.php, row 144
 "Views" => "Poh\xBEady",
 
-// admin/aafinder.php, row 508, 521
+// admin/aafinder.php, row 485, 498
 // admin/anonym_wizard.php, row 217
 // include/exporter.class.php, row 550
 // include/itemfunc.php, row 383
@@ -858,69 +876,69 @@ return [
 // include/searchlib.php, row 171
 "Fields" => "Pole spr\xE1v",
 
-// admin/aafinder.php, row 509, 522
+// admin/aafinder.php, row 486, 499
 "Site spots" => "Miesta na webe", // ai 2026-06
 
-// admin/aafinder.php, row 510, 527
+// admin/aafinder.php, row 487, 504
 "Discussion comments" => "Diskusn\xE9 pr\xEDspevky", // ai 2026-06
 
-// admin/aafinder.php, row 518
+// admin/aafinder.php, row 495
 "Search and Replace in" => "H\xBEada\x9D a nahradi\x9D v", // ai 2026-06
 
-// admin/aafinder.php, row 523
+// admin/aafinder.php, row 500
 "Objects" => "Objekty", // ai 2026-06
 
-// admin/aafinder.php, row 524
+// admin/aafinder.php, row 501
 "Items from slices with 'Slice Type' like Code... " => "Spr\xE1vy z modulov, ktor\xFDch 'Typ modulu' obsahuje Code...", // ai 2026-06
 
-// admin/aafinder.php, row 524
+// admin/aafinder.php, row 501
 "Code Items" => "K\xF3dov\xE9 spr\xE1vy", // ai 2026-06
 
-// admin/aafinder.php, row 525
+// admin/aafinder.php, row 502
 "All Items" => "V\x9Aetky spr\xE1vy", // ai 2026-06
 
-// admin/aafinder.php, row 529
+// admin/aafinder.php, row 506
 "minimum 2 characters for replace function" => "minim\xE1lne 2 znaky pre funkciu nahradenia", // ai 2026-06
 
-// admin/aafinder.php, row 530
+// admin/aafinder.php, row 507
 "minimum 6 characters for replace function (or use {#AAA} value which will be replaced by empty string)" => "minim\xE1lne 6 znakov pre funkciu nahradenia (alebo pou\x9Eite hodnotu {#AAA}, ktor\xE1 bude nahraden\xE1 pr\xE1zdnym re\x9Dazcom)", // ai 2026-06
 
-// admin/aafinder.php, row 532
+// admin/aafinder.php, row 509
 "Replace!" => "Nahradi\x9D!", // ai 2026-06
 
-// admin/aafinder.php, row 539
+// admin/aafinder.php, row 516
 "Get all information about the ITEM" => "Z\xEDska\x9D v\x9Aetky inform\xE1cie o SPR\xC1VE", // ai 2026-06
 
-// admin/aafinder.php, row 546
+// admin/aafinder.php, row 523
 "Shortcut to edit ITEM" => "Skratka na \xFApravu SPR\xC1VY", // ai 2026-06
 
-// admin/aafinder.php, row 549
+// admin/aafinder.php, row 526
 // include/searchbar.class.php, row 576
 // include/searchlib.php, row 48, 49, 127, 136
 "contains" => "obsahuje", // ai 2026-06
 
-// admin/aafinder.php, row 550
+// admin/aafinder.php, row 527
 // include/searchbar.class.php, row 584
 // include/searchlib.php, row 127, 136
 "is" => "je", // ai 2026-06
 
-// admin/aafinder.php, row 551
+// admin/aafinder.php, row 528
 // admin/se_profile.php, row 97
 "Item number" => "Po\xE8et spr\xE1v",
 
-// admin/aafinder.php, row 552
+// admin/aafinder.php, row 529
 "seo............. =" => "",
 
 // admin/aarsstest.php, row 37
 // admin/se_filters.php, row 51
 // admin/se_filters2.php, row 64
-// admin/se_import.php, row 47
+// admin/se_import.php, row 48
 // admin/se_import2.php, row 52
 // admin/se_inter_export.php, row 52
-// admin/se_inter_import.php, row 44
+// admin/se_inter_import.php, row 45
 // admin/se_inter_import2.php, row 38
 // admin/se_inter_import3.php, row 40
-// admin/se_mapping.php, row 48
+// admin/se_mapping.php, row 49
 // admin/se_mapping2.php, row 55
 // admin/se_rssfeeds.php, row 37
 // admin/xmlclient.php, row 107
@@ -934,16 +952,16 @@ return [
 "ActionApps Anonymous form" => "ActionApps Anonymn\xFD formul\xE1r", // ai 2026-06
 
 // admin/anonym_wizard.php, row 129
-// admin/write_mail.php, row 260
+// admin/write_mail.php, row 268
 // include/menu_util.php, row 629
-// include/stringexpand.php, row 9874, 9953
+// include/stringexpand.php, row 9956, 10035
 "Send" => "Odosla\x9D", // ai 2026-06
 
 // admin/anonym_wizard.php, row 151
-// admin/mailman_create_list.php, row 68
+// admin/mailman_create_list.php, row 69
 // admin/se_constant.php, row 87
 // admin/se_constant_import.php, row 63
-// admin/se_fieldid.php, row 90
+// admin/se_fieldid.php, row 89
 // admin/se_fields.php, row 86
 // admin/se_inputform.php, row 130
 // admin/se_javascript.php, row 50
@@ -983,7 +1001,7 @@ return [
 "Use a PHP script to show the result on the OK and Error pages:" => "Pou\x9Ei\x9D PHP skript na zobrazenie v\xFDsledku na OK a chybovej str\xE1nke:", // ai 2026-06
 
 // admin/anonym_wizard.php, row 221
-// admin/se_fieldid.php, row 310
+// admin/se_fieldid.php, row 296
 // admin/se_fields.php, row 299
 // admin/se_javascript.php, row 92
 // admin/se_profile.php, row 207
@@ -994,14 +1012,15 @@ return [
 // include/searchlib.php, row 367
 // src/Optimize/CheckAjaxUnsigned.php, row 80
 // src/Optimize/CheckAnonymousEditRefusals.php, row 85
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 88
 // src/Optimize/CheckRequiredSettings.php, row 69
 // src/Optimize/CheckUserAliasFunctionLog.php, row 85
 // src/Optimize/CheckUserAliasFunctions.php, row 87
-// src/Util/ChangesMonitor.php, row 454
+// src/Util/ChangesMonitor.php, row 450
 "Field" => "Polo\x9Eka",
 
 // admin/anonym_wizard.php, row 222
-// admin/se_fieldid.php, row 310
+// admin/se_fieldid.php, row 296
 // admin/se_fields.php, row 300
 // admin/se_history.php, row 140
 // admin/se_javascript.php, row 92
@@ -1021,28 +1040,28 @@ return [
  => "Na tejto str\xE1nke s\xFA pon\xFAkan\xE9 iba polo\x9Eky ozna\xE8en\xE9 ako \"Zobrazi\x9D\"\n"
    ."         na str\xE1nke \"Pole spr\xE1v\".", // ai 2026-06
 
-// admin/console.php, row 44
+// admin/console.php, row 49
 "You do not have permissions to access Console" => "Nem\xE1te pr\xE1vo na pr\xEDstup ku Konzole", // ai 2026-06
 
-// admin/console.php, row 53
+// admin/console.php, row 66
 "ActionApps Console" => "Konzola ActionApps", // ai 2026-06
 
-// admin/console.php, row 61
+// admin/console.php, row 74
 // include/menu_util.php, row 86
 "Console" => "Konzola", // ai 2026-06
 
-// admin/console.php, row 62
+// admin/console.php, row 75
 // admin/se_javascript.php, row 81
-// include/stringexpand.php, row 94
+// include/stringexpand.php, row 97
 // src/Import/DetailPage.php, row 1025, 1091
 // src/Optimize/CheckImports.php, row 236, 238
 "Code" => "K\xF3d", // ai 2026-06
 
-// admin/console.php, row 63
+// admin/console.php, row 76
 "HTML output" => "HTML v\xFDstup", // ai 2026-06
 
-// admin/console.php, row 65
-// src/Optimize/AbstractOptimize.php, row 176
+// admin/console.php, row 78, 80
+// src/Optimize/AbstractOptimize.php, row 178
 "Result" => "V\xFDsledok", // ai 2026-06
 
 // admin/constants_sel.php, row 62
@@ -1054,74 +1073,86 @@ return [
 // admin/constants_sel.php, row 102
 "Select constants" => "Vybra\x9D kon\x9Atanty", // ai 2026-06
 
-// admin/discedit.php, row 58
+// admin/constants_sel.php, row 110
+// admin/prev_navigation.php, row 57
+// src/Manageraction/Central_Linkcheck.php, row 42
+// src/Optimize/StateCheckModel.php, row 222
+"OK" => "OK", // ai 2026-10
+
+// admin/discedit.php, row 59
+// admin/slicefieldsedit.php, row 81
 "You don't have permissions to edit all items." => "Nem\xE1te pr\xE1vo upravova\x9D v\x9Aetky spr\xE1vy.", // ai 2026-06
 
-// admin/discedit.php, row 103
+// admin/discedit.php, row 104
 "Are you sure you want to delete selected comment?" => "Naozaj chcete vymaza\x9D vybran\xFD pr\xEDspevok?", // ai 2026-06
 
-// admin/discedit.php, row 109
+// admin/discedit.php, row 110
 "Are you sure you want to delete ALL comments? There is no way back!" => "Naozaj chcete vymaza\x9D V\x8AETKY pr\xEDspevky? T\xE1to akcia je nevratn\xE1!", // ai 2026-06
 
-// admin/discedit.php, row 115
+// admin/discedit.php, row 116
 "Are you sure you want to delete ALL unhidden comments (the comments, which are NOT HIDDEN)? There is no way back!" => "Naozaj chcete vymaza\x9D V\x8AETKY neskryt\xE9 pr\xEDspevky (pr\xEDspevky, ktor\xE9 NIE S\xDA SKRYT\xC9)? T\xE1to akcia je nevratn\xE1!", // ai 2026-06
 
-// admin/discedit.php, row 123
+// admin/discedit.php, row 124
 "Admin - Discussion comments management" => "Administr\xE1cia - Spr\xE1va diskusn\xFDch pr\xEDspevkov", // ai 2026-06
 
-// admin/discedit.php, row 128
+// admin/discedit.php, row 129
 "Item: " => "Cl\xE1nok: ",
 
-// admin/discedit.php, row 130
-// include/modutils.php, row 78, 179
-// include/slicedit.php, row 193
+// admin/discedit.php, row 131
+// include/modutils.php, row 75, 176
+// include/slicedit.php, row 187
 "Title" => "Meno",
 
-// admin/discedit.php, row 131
-// admin/discedit2.php, row 93, 150
+// admin/discedit.php, row 132
+// admin/discedit2.php, row 93, 147
 // admin/se_users.php, row 125, 185
 // include/se_users.php, row 108, 180
 // src/Util/Note.php, row 61
 "Author" => "Autor",
 
-// admin/discedit.php, row 132
-// include/logs.php, row 729
+// admin/discedit.php, row 133
+// include/logs.php, row 878
 "IP Address" => "IP adresa", // ai 2026-06
 
-// admin/discedit.php, row 133
-// admin/discedit2.php, row 153
+// admin/discedit.php, row 134
+// admin/discedit2.php, row 150
 // src/Widget/DteWidget.php, row 36
 "Date" => "D\xE1tum",
 
-// admin/discedit.php, row 140
+// admin/discedit.php, row 135
+// admin/related_sel.php, row 155
+// admin/se_views.php, row 136
+// src/Import/DetailPage.php, row 313
+// src/Manager.php, row 230
+// src/Optimize/AbstractOptimize.php, row 175
+"Actions" => "Akcia",
+
+// admin/discedit.php, row 141
 "No discussion comments" => "\x8Eiadne diskusn\xE9 pr\xEDspevky",
 
-// admin/discedit.php, row 163
+// admin/discedit.php, row 164
 // admin/prev_navigation.php, row 47
 // admin/se_views.php, row 147
 // admin/um_gedit.php, row 223
 // admin/um_uedit.php, row 265
 // include/field.class.php, row 696
-// include/filedit.php, row 115
+// include/filedit.php, row 113
 // include/formutil.php, row 1773, 3379
-// include/metabase.class.php, row 1643
+// include/metabase.class.php, row 1645
 // include/mlx.php, row 373
 // include/statestore.php, row 1139
 // include/um_gsrch.php, row 52
-// modules/jump/modedit.php, row 144
+// modules/jump/modedit.php, row 141
 "Edit" => "Edit\xE1cia",
 
-// admin/discedit.php, row 164
-"Hide" => "Skryt",
-
-// admin/discedit.php, row 164
+// admin/discedit.php, row 165
 "Approve" => "Schv\xE1lit",
 
-// admin/discedit.php, row 165
-// admin/se_inter_export.php, row 133
-// admin/se_inter_import.php, row 77, 97
+// admin/discedit.php, row 166
+// admin/se_inter_export.php, row 132
+// admin/se_inter_import.php, row 76, 96
 // admin/se_views.php, row 150
-// admin/slicedel.php, row 68
+// admin/slicedel.php, row 71
 // admin/um_gedit.php, row 225
 // admin/um_uedit.php, row 267
 // central/include/actionapps.class.php, row 274
@@ -1137,61 +1168,61 @@ return [
 // src/Widget/FilWidget.php, row 201
 "Delete" => "Vymaza\x9D",
 
-// admin/discedit.php, row 171
+// admin/discedit.php, row 172
 // include/adminpage.class.php, row 345
 // include/se_users.php, row 128
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Back" => "Sp\xE4t",
 
-// admin/discedit.php, row 172
+// admin/discedit.php, row 173
 "Delete All" => "Vymaza\x9D v\x9Aetky", // ai 2026-06
 
-// admin/discedit.php, row 173
+// admin/discedit.php, row 174
 "Delete All Unhidden" => "Vymaza\x9D v\x9Aetky neskryt\xE9", // ai 2026-06
 
-// admin/discedit2.php, row 79
+// admin/discedit2.php, row 80
 "You do not have permission to edit items in this slice" => "Nem\xE1te pr\xE1vo upravova\x9D spr\xE1vy v tomto module",
 
-// admin/discedit2.php, row 92, 149
-// admin/write_mail.php, row 120, 240
-// include/logs.php, row 891
+// admin/discedit2.php, row 92, 146
+// admin/write_mail.php, row 119, 248
+// include/logs.php, row 1040
 // include/mail.php, row 663
 "Subject" => "Predmet",
 
-// admin/discedit2.php, row 94, 151
+// admin/discedit2.php, row 94, 148
 // admin/setup.php, row 104, 247
-// admin/slicewiz.php, row 90
+// admin/slicewiz.php, row 89
 // admin/um_passwd.php, row 118
 // admin/um_uedit.php, row 325
 // include/um_util.php, row 308, 309, 310
 // src/Central/FindingText.php, row 106
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
-// admin/discedit2.php, row 95, 152
+// admin/discedit2.php, row 95, 149
 "Text of discussion comment" => "Text pr\xEDspevku",
 
-// admin/discedit2.php, row 96, 154
+// admin/discedit2.php, row 96, 151
 "Author's WWW  - URL" => "WWW autora - URL",
 
-// admin/discedit2.php, row 97, 155
+// admin/discedit2.php, row 97, 152
 "Author's WWW - description" => "WWW autora - popis",
 
-// admin/discedit2.php, row 98, 156
+// admin/discedit2.php, row 98, 153
 "Remote address" => "Vzdialen\xE1 adresa", // ai 2026-06
 
 // admin/discedit2.php, row 99
 "Free1" => "Vo\xBEn\xE91", // ai 2026-06
 
-// admin/discedit2.php, row 100, 158
+// admin/discedit2.php, row 100, 155
 "Tracking" => "Sledovanie", // ai 2026-06
 
-// admin/discedit2.php, row 136
+// admin/discedit2.php, row 133
 "Items management - Discussion comments management - Edit comment" => "Spr\xE1vy - Spr\xE1va diskusn\xFDch pr\xEDspevkov - Edit\xE1cia pr\xEDspevku",
 
-// admin/discedit2.php, row 147
+// admin/discedit2.php, row 144
 "Edit comment" => "Edit\xE1cia pr\xEDspevku",
 
-// admin/discedit2.php, row 157
+// admin/discedit2.php, row 154
 "Free 1" => "Vo\xBEn\xE9 1", // ai 2026-06
 
 // admin/feed_to.php, row 57
@@ -1203,7 +1234,7 @@ return [
 
 // admin/feed_to.php, row 67
 // admin/se_export.php, row 119
-// admin/se_filters.php, row 190
+// admin/se_filters.php, row 183
 // admin/slicedit.php, row 141, 147
 // include/exporter.class.php, row 511
 // include/menu.php, row 189
@@ -1224,49 +1255,49 @@ return [
 // include/menu_util.php, row 95
 "Export" => "V\xFDmena spr\xE1v",
 
-// admin/fileman.php, row 78
+// admin/fileman.php, row 85
 "No permissions for file manager." => "Nem\xE1te pr\xE1vo pou\x9E\xEDva\x9D spr\xE1vcu s\xFAborov.", // ai 2026-06
 
-// admin/fileman.php, row 83
+// admin/fileman.php, row 90
 "Unable to run File Manager" => "Nepodarilo sa spusti\x9D Spr\xE1vcu s\xFAborov", // ai 2026-06
 
-// admin/fileman.php, row 83
+// admin/fileman.php, row 90
 "doesn't exist" => "neexistuje", // ai 2026-06
 
-// admin/fileman.php, row 89
+// admin/fileman.php, row 97
 "Unable to mkdir" => "Nepodarilo sa vytvori\x9D adres\xE1r", // ai 2026-06
 
-// admin/fileman.php, row 116
+// admin/fileman.php, row 129
 // include/filedit.php, row 67
 // include/menu.php, row 167
 "File Manager" => "Spr\xE1vca s\xFAborov", // ai 2026-06
 
-// admin/fileman.php, row 118
-// include/fileman.php, row 134, 152
+// admin/fileman.php, row 131
+// include/fileman.php, row 159, 177
 // src/Optimize/ImgCacheWritable.php, row 47
 "Directory" => "Adres\xE1r", // ai 2026-06
 
-// admin/fileman.php, row 179
+// admin/fileman.php, row 192
 "Unselect all" => "Zru\x9Ai\x9D v\xFDber",
 
-// admin/fileman.php, row 180
-// admin/slicedel.php, row 93
+// admin/fileman.php, row 193
+// admin/slicedel.php, row 106
 "Delete selected" => "Vymaza\x9D vybran\xE9", // ai 2026-06
 
-// admin/fileman.php, row 217
+// admin/fileman.php, row 230
 "Create new file" => "Vytvori\x9D nov\xFD s\xFAbor", // ai 2026-06
 
-// admin/fileman.php, row 221
+// admin/fileman.php, row 234
 "Upload file" => "Nahra\x9D s\xFAbor", // ai 2026-06
 
-// admin/fileman.php, row 232
+// admin/fileman.php, row 245
 "Copy template dir" => "Skop\xEDrova\x9D adres\xE1r \x9Aabl\xF3ny", // ai 2026-06
 
-// admin/fileman.php, row 235
+// admin/fileman.php, row 248
 "Create new directory" => "Vytvori\x9D nov\xFD adres\xE1r", // ai 2026-06
 
 // admin/index.php, row 102
-// include/init_page.php, row 120
+// include/init_page.php, row 117
 "You do not have permission to edit items in the slice:" => "Nem\xE1te pr\xE1vo upravova\x9D spr\xE1vy v module:", // ai 2026-06
 
 // admin/index.php, row 182
@@ -1275,27 +1306,27 @@ return [
 // admin/index.php, row 182
 "ActionApps - Item Manager" => "ActionApps - Spr\xE1vy", // ai 2026-06
 
-// admin/itemedit.php, row 305
+// admin/itemedit.php, row 310
 // include/date.php, row 189
 // include/field.class.php, row 1332
 // include/validate.php, row 54, 58
 "Error in" => "Chyba v",
 
-// admin/itemedit.php, row 349
-// admin/slicefieldsedit.php, row 126
+// admin/itemedit.php, row 354
+// admin/slicefieldsedit.php, row 131
 "Error: no fields." => "Chyba: \x9Eiadne polo\x9Eky.", // ai 2026-06
 
-// admin/itemedit.php, row 357
-// admin/slicefieldsedit.php, row 134
+// admin/itemedit.php, row 362
+// admin/slicefieldsedit.php, row 139
 "Bad item ID id=%1" => "Chybn\xE9 ID spr\xE1vy id=%1", // ai 2026-06
 
-// admin/itemedit.php, row 369
+// admin/itemedit.php, row 374
 "Error: You have no rights to edit item." => "Chyba: Nem\xE1te pr\xE1vo upravova\x9D spr\xE1vu.", // ai 2026-06
 
-// admin/itemedit.php, row 404, 405
+// admin/itemedit.php, row 409, 410
 "Edit Item" => "Upravi\x9D spr\xE1vu",
 
-// admin/itemedit.php, row 404, 405
+// admin/itemedit.php, row 409, 410
 // include/menu.php, row 83
 "Add Item" => "Prida\x9D spr\xE1vu",
 
@@ -1324,59 +1355,60 @@ return [
 // src/Util/Adminlink.php, row 124
 "Statistics" => "\x8Atatistika", // ai 2026-06
 
-// admin/mailman_create_list.php, row 73
+// admin/mailman_create_list.php, row 74
 "Admin - Create Mailman List" => "Administr\xE1cia - Vytvori\x9D distribu\xE8n\xFD zoznam pre Mailman", // ai 2026-06
 
-// admin/mailman_create_list.php, row 78
+// admin/mailman_create_list.php, row 79
 "First set Mailman Lists Field in Slice Settings." => "Najprv nastavte polo\x9Eku Mailman zoznamov v Nastaveniach modulu.", // ai 2026-06
 
-// admin/mailman_create_list.php, row 104
+// admin/mailman_create_list.php, row 100
 "Error: This list name is already used." => "Chyba: Tento n\xE1zov zoznamu sa u\x9E pou\x9E\xEDva.", // ai 2026-06
 
-// admin/mailman_create_list.php, row 138
+// admin/mailman_create_list.php, row 129
 "The list was successfully created." => "Zoznam bol \xFAspe\x9Ane vytvoren\xFD.", // ai 2026-06
 
-// admin/mailman_create_list.php, row 160
+// admin/mailman_create_list.php, row 151
 "List Settings" => "Nastavenia zoznamu", // ai 2026-06
 
-// admin/mailman_create_list.php, row 161
+// admin/mailman_create_list.php, row 152
 "The list will be added to mailman and also\n"
    ."    to the constant group for the field %1 selected as Mailman Lists Field in Slice Settings."
  => "Zoznam bude pridan\xFD do mailmanu a tie\x9E\n"
    ."    do skupiny hodn\xF4t pre polo\x9Eku %1 zvolen\xFA v Nastaveniach modulu ako polo\x9Eka Mailman zoznamov.", // ai 2026-06
 
-// admin/mailman_create_list.php, row 163
+// admin/mailman_create_list.php, row 154
 "All the fields are required." => "V\x9Aetky polo\x9Eky s\xFA povinn\xE9.", // ai 2026-06
 
-// admin/mailman_create_list.php, row 164
+// admin/mailman_create_list.php, row 155
 "List name" => "N\xE1zov zoznamu", // ai 2026-06
 
-// admin/mailman_create_list.php, row 166
+// admin/mailman_create_list.php, row 157
 "Admin email" => "E-mail spr\xE1vcu", // ai 2026-06
 
-// admin/mailman_create_list.php, row 168
+// admin/mailman_create_list.php, row 159
 "Admin password" => "Heslo spr\xE1vcu", // ai 2026-06
 
-// admin/mailman_create_list.php, row 172
+// admin/mailman_create_list.php, row 163
 // admin/setup.php, row 109, 233
-// modules/jump/modedit.php, row 182
+// modules/jump/modedit.php, row 179
 "Create" => "Vytvori\x9D", // ai 2026-06
 
 // admin/preview.php, row 49
 "Wrong slice_id." => "Chybn\xE9 slice_id.", // ai 2026-06
 
-// admin/related_sel.php, row 152
+// admin/related_sel.php, row 155
 // src/Manager.php, row 230
 "Publish date" => "D\xE1tum zverejnenia", // ai 2026-06
 
-// admin/related_sel.php, row 152
+// admin/related_sel.php, row 155
 // src/Manager.php, row 230
 "Headline" => "Nadpis", // ai 2026-06
 
-// admin/related_sel.php, row 180
+// admin/related_sel.php, row 183
 "Editor window - item manager, related selection window" => "ActionApps - V\xFDber s\xFAvisiacich spr\xE1v", // ai 2026-06
 
 // admin/rsstest.php, row 36
+// modules/jump/modedit.php, row 63, 68
 "You do not have permissions to access this page" => "Nem\xE1te pr\xE1vo na pr\xEDstup k tejto str\xE1nke", // ai 2026-06
 
 // admin/rsstest.php, row 46
@@ -1385,173 +1417,173 @@ return [
 // admin/se_admin.php, row 74
 "You have no permission to set configuration parameters of this slice" => "Nem\xE1te pr\xE1vo nastavova\x9D konfigura\xE8n\xE9 parametre tohoto modulu",
 
-// admin/se_admin.php, row 83, 177
-// admin/se_compact.php, row 93, 237
+// admin/se_admin.php, row 82, 178
+// admin/se_compact.php, row 93, 235
 // include/constants.php, row 654, 704, 724, 778, 813, 844, 868, 911, 940, 966, 1000
 "Top HTML" => "Horn\xFD HTML k\xF3d",
 
-// admin/se_admin.php, row 84, 189
+// admin/se_admin.php, row 83, 190
 "Item format" => "HTML k\xF3d pre zobrazenie spr\xE1vy",
 
-// admin/se_admin.php, row 85, 201
-// admin/se_compact.php, row 94, 247
+// admin/se_admin.php, row 84, 202
+// admin/se_compact.php, row 94, 245
 // include/constants.php, row 659, 706, 726, 782, 815, 846, 871, 916, 942, 971, 1005
 "Bottom HTML" => "Spodn\xFD HTML k\xF3d",
 
-// admin/se_admin.php, row 86, 213
-// admin/se_compact.php, row 95, 275
-// admin/se_fulltext.php, row 71, 199
+// admin/se_admin.php, row 85, 214
+// admin/se_compact.php, row 95, 273
+// admin/se_fulltext.php, row 70, 197
 // include/constants.php, row 660, 707, 783, 872, 917, 943, 972, 1006, 1038
 "Remove strings" => "Odstra\xF2ovan\xE9 re\x9Dazce",
 
-// admin/se_admin.php, row 87, 222
+// admin/se_admin.php, row 86, 223
 // include/constants.php, row 694, 717, 804, 830, 861, 894, 928, 958, 992, 1026
 "HTML code for \"No item found\" message" => "HTML k\xF3d pre hl\xE1\x9Aku \"Nen\xE1jden\xE1 \x9Eiadna spr\xE1va\"", // ai 2026-06
 
-// admin/se_admin.php, row 88
-// admin/se_fulltext.php, row 72, 207, 211
+// admin/se_admin.php, row 87
+// admin/se_fulltext.php, row 71, 205, 209
 "Show discussion" => "Zobrazit diskusiu",
 
-// admin/se_admin.php, row 100
-// admin/se_compact.php, row 127
-// admin/se_fulltext.php, row 93
+// admin/se_admin.php, row 101
+// admin/se_compact.php, row 128
+// admin/se_fulltext.php, row 91
 // admin/se_view.php, row 170, 339
 "Can't change slice settings" => "Nepodarilo sa zmeni\x9D nastavenie modulu",
 
-// admin/se_admin.php, row 112
+// admin/se_admin.php, row 113
 "Admin fields update successful" => "Vzh\xBEad administrat\xEDvnych str\xE1nok \xFAspe\x9Ane zmenen\xFD",
 
-// admin/se_admin.php, row 161
+// admin/se_admin.php, row 162
 "Admin - design Item Manager view" => "Nastavenia modulu - Vzh\xBEad Administr\xE1cie",
 
-// admin/se_admin.php, row 170
-// admin/se_compact.php, row 227
-// admin/se_fulltext.php, row 155
-// admin/se_inputform.php, row 189, 439
+// admin/se_admin.php, row 171
+// admin/se_compact.php, row 225
+// admin/se_fulltext.php, row 153
+// admin/se_inputform.php, row 189, 432
 // src/Util/UiPrefs.php, row 56
 "Default" => "Predvolen\xE9", // ai 2026-06
 
-// admin/se_admin.php, row 173
+// admin/se_admin.php, row 174
 "Listing of items in Admin interface" => "V\xFDpis spr\xE1v v administrat\xEDvnych str\xE1nk\xE1ch",
 
-// admin/se_admin.php, row 182
-// admin/se_compact.php, row 238, 267
-// admin/se_fulltext.php, row 168
+// admin/se_admin.php, row 183
+// admin/se_compact.php, row 236, 265
+// admin/se_fulltext.php, row 166
 "HTML code which appears at the top of slice area" => "HTML k\xF3d, ktor\xFD sa zobraz\xED pred k\xF3dom modulu",
 
-// admin/se_admin.php, row 194
-// admin/se_compact.php, row 241, 270
-// admin/se_fulltext.php, row 180
+// admin/se_admin.php, row 195
+// admin/se_compact.php, row 239, 268
+// admin/se_fulltext.php, row 178
 "Put here the HTML code combined with aliases form bottom of this page\n"
    ."                     <br>The aliases will be substituted by real values from database when it will be posted to page"
  => "Sem patr\xED HTML k\xF3d v kombin\xE1cii s aliasmi uveden\xFDmi dole na str\xE1nke\n"
    ."                     <br>Aliasy bud\xFA v momente zobrazovania na web nahraden\xE9 skuto\xE8n\xFDmi hodnotami z datab\xE1zy",
 
-// admin/se_admin.php, row 206
-// admin/se_compact.php, row 248, 273
-// admin/se_fulltext.php, row 192
+// admin/se_admin.php, row 207
+// admin/se_compact.php, row 246, 271
+// admin/se_fulltext.php, row 190
 "HTML code which appears at the bottom of slice area" => "HTML k\xF3d, ktor\xFD sa zobraz\xED za vlastn\xFDm k\xF3dom modulu",
 
-// admin/se_admin.php, row 218
-// admin/se_compact.php, row 276
-// admin/se_fulltext.php, row 204
+// admin/se_admin.php, row 219
+// admin/se_compact.php, row 274
+// admin/se_fulltext.php, row 202
 "Removes empty brackets etc. Use ## as delimiter." => "Odstr\xE1ni pr\xE1zdn\xE9 z\xE1tvorky a pod. Pou\x9Eite ## ako oddelova\xE8.",
 
-// admin/se_admin.php, row 227
+// admin/se_admin.php, row 228
 "Code to be printed when no item is filled (or user has no permission to any item in the slice)" => "K\xF3d, ktor\xFD sa zobraz\xED, ak nie je vyplnen\xE1 \x9Eiadna spr\xE1va (alebo u\x9E\xEDvate\xBE nem\xE1 pr\xE1vo na \x9Eiadnu spr\xE1vu v module)", // ai 2026-06
 
-// admin/se_admin.php, row 234
+// admin/se_admin.php, row 235
 "Use special view" => "Pou\x9Ei\x9D \x9Apeci\xE1lny poh\xBEad", // ai 2026-06
 
-// admin/se_admin.php, row 238
+// admin/se_admin.php, row 239
 "You can set special view - template for the Inputform on \"Design\" -> \"View\" page (inputform view)" => "\x8Apeci\xE1lny poh\xBEad - \x9Aabl\xF3nu pre vstupn\xFD formul\xE1r - m\xF4\x9Eete nastavi\x9D na str\xE1nke \"Vzh\xBEad\" -> \"Poh\xBEad\" (poh\xBEad typu inputform)", // ai 2026-06
 
-// admin/se_admin.php, row 244
-// admin/se_compact.php, row 284
-// admin/se_fulltext.php, row 216
+// admin/se_admin.php, row 245
+// admin/se_compact.php, row 282
+// admin/se_fulltext.php, row 214
 // admin/se_view.php, row 580
 "Use these aliases for database fields" => "Pou\x9Ei n\xE1sleduj\xFAce aliasy datab\xE1zov\xFDch pol\xED",
 
-// admin/se_compact.php, row 83
+// admin/se_compact.php, row 84
 "You do not have permissions to change compact view formatting" => "Nem\xE1te pr\xE1vo meni\x9D form\xE1tovanie preh\xBEadu spr\xE1v", // ai 2026-06
 
-// admin/se_compact.php, row 92, 240
+// admin/se_compact.php, row 92, 238
 // include/constants.php, row 655, 705, 779, 814, 845, 912, 967, 1001
 "Odd Rows" => "Nep\xE1rny z\xE1znam",
 
-// admin/se_compact.php, row 96, 277
+// admin/se_compact.php, row 96, 275
 "'No item found' message" => "Hl\xE1\x9Aka 'Nen\xE1jden\xE1 \x9Eiadna spr\xE1va'",
 
-// admin/se_compact.php, row 98, 244
+// admin/se_compact.php, row 98, 242
 // include/constants.php, row 657, 780, 914, 969, 1003
 "Even Rows" => "P\xE1rny z\xE1znam",
 
-// admin/se_compact.php, row 101, 266
+// admin/se_compact.php, row 101, 264
 "Category top HTML" => "Horn\xFD HTML k\xF3d pre kateg\xF3riu",
 
-// admin/se_compact.php, row 102, 269
+// admin/se_compact.php, row 102, 267
 "Category Headline" => "Nadpis kateg\xF3rie",
 
-// admin/se_compact.php, row 103, 272
+// admin/se_compact.php, row 103, 270
 "Category bottom HTML" => "Spodn\xFD HTML k\xF3d pre kateg\xF3riu",
 
-// admin/se_compact.php, row 134
+// admin/se_compact.php, row 135
 "Design of compact design successfully changed" => "Vzh\xBEad preh\xBEadu spr\xE1v bol \xFAspe\x9Ane zmenen\xFD",
 
-// admin/se_compact.php, row 214
+// admin/se_compact.php, row 212
 "Admin - design Index view" => "Nastavenia modulu - Vzh\xBEad preh\xBEadu spr\xE1v",
 
-// admin/se_compact.php, row 215
+// admin/se_compact.php, row 213
 "Use these boxes ( and the tags listed below ) to control what appears on summary page" => "Na tejto str\xE1nke je mo\x9En\xE9 nastavi\x9D, \xE8o sa objav\xED na str\xE1nke preh\xBEadu spr\xE1v",
 
-// admin/se_compact.php, row 232
+// admin/se_compact.php, row 230
 "HTML code for index view" => "HTML k\xF3d pre preh\xBEad spr\xE1v",
 
-// admin/se_compact.php, row 243
+// admin/se_compact.php, row 241
 // include/constants.php, row 656, 805, 913, 968, 1002
 "Use different HTML code for even rows" => "Odli\x9An\xFD HTML k\xF3d pre p\xE1rne z\xE1znamy",
 
-// admin/se_compact.php, row 245
+// admin/se_compact.php, row 243
 "You can define different code for odd and even rows\n"
    ."                         <br>first red, second black, for example"
  => "TIP: Rozl\xED\x9Aen\xEDm p\xE1rnych a nep\xE1rnych z\xE1znamov m\xF4\x9Eete dosiahn\xFA\x9D napr\xEDklad farebn\xE9 odl\xED\x9Aenie riadkov",
 
-// admin/se_compact.php, row 250
+// admin/se_compact.php, row 248
 // include/constants.php, row 673, 789, 922, 977, 1011
 "Group by" => "Zoskupi\x9D pod\xBEa",
 
-// admin/se_compact.php, row 257
+// admin/se_compact.php, row 255
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 "Ascending" => "Vzostupne",
 
-// admin/se_compact.php, row 258
+// admin/se_compact.php, row 256
 // admin/se_profile.php, row 114
 // admin/se_view.php, row 188, 189, 213
 // include/searchbar.class.php, row 637
 // include/searchlib.php, row 368
 "Descending" => "Zostupne",
 
-// admin/se_compact.php, row 259
+// admin/se_compact.php, row 257
 // admin/se_view.php, row 189
 "Ascending by Priority" => "Vzostupne pod\xBEa priority", // ai 2026-06
 
-// admin/se_compact.php, row 260
+// admin/se_compact.php, row 258
 // admin/se_view.php, row 189
 "Descending by Priority" => "Zostupne pod\xBEa priority", // ai 2026-06
 
-// admin/se_compact.php, row 263
+// admin/se_compact.php, row 261
 "'by Priority' is usable just for fields using constants (like category)" => "'pod\xBEa priority' je pou\x9Eite\xBEn\xE9 len pre polo\x9Eky pou\x9E\xEDvaj\xFAce kon\x9Atanty (ako kateg\xF3ria)", // ai 2026-06
 
-// admin/se_compact.php, row 278
+// admin/se_compact.php, row 276
 "message to show in place of slice.php, if no item matches the query" => "spr\xE1va, ktor\xE1 sa objav\xED pri nen\xE1jden\xED \x9Eiadneho odpovedaj\xFAceho z\xE1znamu",
 
 // admin/se_constant.php, row 95, 186
-// include/constedit_util.php, row 629, 752
-"Wrong constant group id" => "",
+// include/constedit_util.php, row 602, 717
+"Wrong constant group id" => "Chybn\xE9 id skupiny hodn\xF4t", // ai 2026-10
 
 // admin/se_constant.php, row 119
-"Can't delete constant group" => "",
+"Can't delete constant group" => "Skupinu hodn\xF4t nie je mo\x9En\xE9 zmaza\x9D", // ai 2026-10
 
 // admin/se_constant.php, row 175, 377
 // admin/se_users.php, row 185
@@ -1560,19 +1592,19 @@ return [
 // central/installapp.php, row 831, 846
 // include/constants.php, row 452
 // include/constedit.php, row 73
-// include/fileman.php, row 32
-// include/logs.php, row 1031
+// include/fileman.php, row 34
+// include/logs.php, row 1180
 // include/se_users.php, row 180
 // include/searchbar.class.php, row 772
 // include/um_gedit.php, row 32
 // src/AA_Plannedtask.php, row 182
 // src/Import/DetailCatalog.php, row 143
-// src/Optimize/AbstractOptimize.php, row 171
+// src/Optimize/AbstractOptimize.php, row 173
 // src/Optimize/CheckRequiredSettings.php, row 69
 "Name" => "Meno",
 
 // admin/se_constant.php, row 176, 378
-// admin/se_mapping.php, row 182
+// admin/se_mapping.php, row 179
 // admin/se_profile.php, row 209
 // include/constants.php, row 453
 // include/constedit.php, row 76
@@ -1581,15 +1613,15 @@ return [
 "Value" => "Hodnota",
 
 // admin/se_constant.php, row 177, 379
-// admin/se_inputform.php, row 528
+// admin/se_inputform.php, row 521
 // admin/se_view.php, row 153
 // admin/um_gedit.php, row 299, 302
 // include/constants.php, row 459
 // include/constedit.php, row 84
-// include/stringexpand.php, row 95
+// include/stringexpand.php, row 98
 // include/um_gedit.php, row 33
 // src/Manageraction/Central_Linkcheck.php, row 31
-// src/Optimize/AbstractOptimize.php, row 172
+// src/Optimize/AbstractOptimize.php, row 174
 "Description" => "Popis",
 
 // admin/se_constant.php, row 178, 380
@@ -1597,21 +1629,21 @@ return [
 // include/constants.php, row 454
 // include/constedit.php, row 82
 // include/field.class.php, row 1336
-// src/Optimize/AbstractOptimize.php, row 175
+// src/Optimize/AbstractOptimize.php, row 177
 "Priority" => "Priorita",
 
 // admin/se_constant.php, row 184, 327
 // admin/se_constant_import.php, row 74, 126
-// admin/se_inputform.php, row 282
+// admin/se_inputform.php, row 275
 // include/constants.php, row 784
 "Constant Group" => "Skupina hodn\xF4t",
 
 // admin/se_constant.php, row 192
-// include/constedit_util.php, row 635
+// include/constedit_util.php, row 606
 "This constant group already exists" => "T\xE1to skupina hodn\xF4t u\x9E existuje",
 
 // admin/se_constant.php, row 214
-"You do not have permissions to change fields settings in the new owner slice" => "",
+"You do not have permissions to change fields settings in the new owner slice" => "Nem\xE1te pr\xE1vo meni\x9D nastavenia polo\x9Eiek v novom vlastn\xEDckom module", // ai 2026-10
 
 // admin/se_constant.php, row 277
 // admin/se_constant_import.php, row 109
@@ -1621,7 +1653,7 @@ return [
 "Admin - Constants Setting" => "Spr\xE1va modulu - Nastavenia hodn\xF4t",
 
 // admin/se_constant.php, row 288
-"The constant group can be only viewed here" => "",
+"The constant group can be only viewed here" => "Skupinu hodn\xF4t tu mo\x9Eno len prezera\x9D", // ai 2026-10
 
 // admin/se_constant.php, row 297
 "Delete whole group" => "Vymaza\x9D cel\xFA skupinu", // ai 2026-06
@@ -1634,7 +1666,7 @@ return [
 
 // admin/se_constant.php, row 319
 // admin/se_constant_import.php, row 75, 125, 136
-// admin/se_inputform.php, row 418
+// admin/se_inputform.php, row 411
 "Constants" => "Hodnoty",
 
 // admin/se_constant.php, row 333
@@ -1683,7 +1715,7 @@ return [
 "Are you sure you want to PERMANENTLY DELETE this group?" => "Naozaj chcete NEN\xC1VRATNE VYMAZA\x8D t\xFAto skupinu?", // ai 2026-06
 
 // admin/se_constant_import.php, row 82
-// include/constedit_util.php, row 639
+// include/constedit_util.php, row 610
 "No constants specified" => "Nie s\xFA zadan\xE9 \x9Eiadne kon\x9Atanty", // ai 2026-06
 
 // admin/se_constant_import.php, row 115
@@ -1703,7 +1735,7 @@ return [
 
 // admin/se_csv_import.php, row 133
 // admin/se_csv_import2.php, row 214
-"The data to import are no longer on the server - load them again" => "",
+"The data to import are no longer on the server - load them again" => "D\xE1ta na import u\x9E na serveri nie s\xFA \x96 na\xE8\xEDtajte ich znova", // ai 2026-10
 
 // admin/se_csv_import.php, row 142
 "Cannot read input url" => "Nepodarilo sa pre\xE8\xEDta\x9D vstupn\xE9 URL", // ai 2026-06
@@ -1722,7 +1754,8 @@ return [
 
 // admin/se_csv_import.php, row 238, 243
 // include/filedit.php, row 67
-// include/logs.php, row 1061
+// include/logs.php, row 1210
+// src/Optimize/CheckCookieReads.php, row 55
 // src/Optimize/CheckUserAliasFunctionLog.php, row 86
 "File" => "S\xFAbor",
 
@@ -1732,10 +1765,10 @@ return [
 "URL" => "",
 
 // admin/se_csv_import.php, row 240, 245
-// admin/se_inputform.php, row 471, 472
+// admin/se_inputform.php, row 464, 465
 // include/itemfunc.php, row 668, 777, 806
 // src/Util/Note.php, row 63
-"Text" => "",
+"Text" => "Text", // ai 2026-10
 
 // admin/se_csv_import.php, row 253
 "Source of CSV data" => "Zdroj CSV d\xE1t", // ai 2026-06
@@ -1785,18 +1818,18 @@ return [
 "Mapping settings" => "Nastavenie mapovania", // ai 2026-06
 
 // admin/se_csv_import2.php, row 410
-// admin/se_filters.php, row 189
-// admin/se_mapping.php, row 180
+// admin/se_filters.php, row 182
+// admin/se_mapping.php, row 177
 "To" => "Do",
 
 // admin/se_csv_import2.php, row 411
-// admin/se_filters.php, row 188
-// admin/se_mapping.php, row 181
+// admin/se_filters.php, row 181
+// admin/se_mapping.php, row 178
 "From" => "Z",
 
 // admin/se_csv_import2.php, row 412
 // admin/search_replace.php, row 185
-// include/metabase.class.php, row 1668
+// include/metabase.class.php, row 1670
 // include/statestore.php, row 1077, 1414
 // src/AA_Plannedtask.php, row 182
 // src/Import/Definition.php, row 135, 165
@@ -1864,33 +1897,33 @@ return [
 // admin/se_csv_import2.php, row 483
 "Store settings..." => "Ulo\x9Ei\x9D nastavenia...", // ai 2026-06
 
-// admin/se_csv_import2.php, row 489
+// admin/se_csv_import2.php, row 490
 "Load setting" => "Na\xE8\xEDta\x9D nastavenie", // ai 2026-06
 
-// admin/se_csv_import2.php, row 491
+// admin/se_csv_import2.php, row 492
 "Save setting as" => "Ulo\x9Ei\x9D nastavenie ako", // ai 2026-06
 
-// admin/se_csv_import2.php, row 545
+// admin/se_csv_import2.php, row 533
 "Admin - Import CSV (2/2) - Mapping and Actions" => "Nastavenia modulu - Import CSV (2/2) - Mapovanie a akcie", // ai 2026-06
 
 // admin/se_dataimport.php, row 59
 // admin/se_dataimports.php, row 35
-"You do not have permissions to manage the imports of this slice" => "",
+"You do not have permissions to manage the imports of this slice" => "Nem\xE1te pr\xE1vo spravova\x9D importy tohto modulu", // ai 2026-10
 
 // admin/se_dataimport.php, row 66
-"There is no such import in this slice." => "",
+"There is no such import in this slice." => "V tomto module tak\xFD import nie je.", // ai 2026-10
 
 // admin/se_dataimport.php, row 77
-"Import: %1" => "",
+"Import: %1" => "Import: %1", // ai 2026-10
 
 // admin/se_dataimports.php, row 40
 // include/menu.php, row 156
 // include/menu_util.php, row 92
 // src/Optimize/CheckImports.php, row 35
-"Imports" => "",
+"Imports" => "Importy", // ai 2026-10
 
 // admin/se_dataimports.php, row 41
-"An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "",
+"An import fills the slice with the data of another source, now or by a planned task. Run starts it; the import runs on in the background and its detail shows how it goes." => "Import napln\xED modul d\xE1tami z in\xE9ho zdroja, hne\xEF alebo napl\xE1novanou \xFAlohou. Tla\xE8idlo \x84Spusti\x9D\x93 ho za\xE8ne; import potom be\x9E\xED na pozad\xED a v jeho detaile vid\xEDte priebeh.", // ai 2026-10
 
 // admin/se_export.php, row 74
 "You do not have permissions to export" => "Nem\xE1te pr\xE1vo exportova\x9D", // ai 2026-06
@@ -1957,8 +1990,8 @@ return [
 // admin/sliceexp_text.php, row 365
 // central/installapp.php, row 831, 1271
 // include/exporter.class.php, row 537
-// include/fileman.php, row 34
-// include/logs.php, row 488
+// include/fileman.php, row 36
+// include/logs.php, row 533
 // include/se_users.php, row 180
 // src/Widget/Widget.php, row 753
 "Type" => "Typ",
@@ -2000,31 +2033,31 @@ return [
 // admin/se_export.php, row 156
 "Add any AA {expression} as extra column - each row = one column" => "Pridajte \xBEubovo\xBEn\xFD AA {expression} ako \xEFal\x9A\xED st\xE5pec - ka\x9Ed\xFD riadok = jeden st\xE5pec", // ai 2026-06
 
-// admin/se_fieldid.php, row 224
+// admin/se_fieldid.php, row 210
 "The new ID is the same as the old one" => "Nov\xE9 ID je rovnak\xE9 ako star\xE9", // ai 2026-06
 
-// admin/se_fieldid.php, row 226
+// admin/se_fieldid.php, row 212
 "The old ID is not valid" => "Star\xE9 ID nie je platn\xE9", // ai 2026-06
 
-// admin/se_fieldid.php, row 228
+// admin/se_fieldid.php, row 214
 "The new ID is not valid" => "Nov\xE9 ID nie je platn\xE9", // ai 2026-06
 
-// admin/se_fieldid.php, row 230
+// admin/se_fieldid.php, row 216
 "This ID is reserved" => "Toto ID je rezervovan\xE9", // ai 2026-06
 
-// admin/se_fieldid.php, row 232
+// admin/se_fieldid.php, row 218
 "This ID is already used" => "Toto ID je u\x9E pou\x9Eit\xE9", // ai 2026-06
 
-// admin/se_fieldid.php, row 259
+// admin/se_fieldid.php, row 245
 "Admin - change Field IDs" => "Nastavenia modulu - Zmena ID polo\x9Eiek", // ai 2026-06
 
-// admin/se_fieldid.php, row 263
+// admin/se_fieldid.php, row 249
 "field IDs were changed" => "ID polo\x9Eiek boli zmenen\xE9", // ai 2026-06
 
-// admin/se_fieldid.php, row 268
+// admin/se_fieldid.php, row 254
 "Change Field IDs" => "Zmeni\x9D ID polo\x9Eiek", // ai 2026-06
 
-// admin/se_fieldid.php, row 270
+// admin/se_fieldid.php, row 256
 "This page allows to change field IDs. It is a bit dangerous operation and may last long.\n"
    ."    You need to do it only in special cases, like using search form for multiple slices. <br><br>\n"
    ."    Choose a field ID to be changed and the new name and number, the dots ..... will be\n"
@@ -2034,10 +2067,10 @@ return [
    ."    Vyberte ID polo\x9Eky, ktor\xE9 chcete zmeni\x9D, a nov\xE9 meno a \xE8\xEDslo, bodky ..... bud\xFA\n"
    ."    doplnen\xE9 automaticky.<br>", // ai 2026-06
 
-// admin/se_fieldid.php, row 271
+// admin/se_fieldid.php, row 257
 "Change from" => "Zmeni\x9D z", // ai 2026-06
 
-// admin/se_fieldid.php, row 283
+// admin/se_fieldid.php, row 269
 // admin/sliceexp.php, row 132
 "to" => "do", // ai 2026-06
 
@@ -2057,7 +2090,7 @@ return [
 "Alias moved OK" => "Alias \xFAspe\x9Ane presunut\xFD", // ai 2026-06
 
 // admin/se_fields.php, row 184
-// admin/se_inputform.php, row 276
+// admin/se_inputform.php, row 269
 "Fields update successful" => "Nastavenia polo\x9Eiek \xFAspe\x9Ane zmenen\xE9",
 
 // admin/se_fields.php, row 204
@@ -2070,7 +2103,7 @@ return [
 "Do you really want to delete this field from this slice?" => "Naozaj chcete vymaza\x9D t\xFAto polo\x9Eku z tohto modulu?", // ai 2026-06
 
 // admin/se_fields.php, row 249
-// admin/se_inputform.php, row 386
+// admin/se_inputform.php, row 379
 "Admin - configure Fields" => "Nastavenia modulu - Nastavenia pol\xED",
 
 // admin/se_fields.php, row 281
@@ -2083,91 +2116,91 @@ return [
 "Required" => "Povinn\xE1",
 
 // admin/se_fields.php, row 305
-// include/stringexpand.php, row 108
+// include/stringexpand.php, row 111
 "Aliases" => "Aliasy", // ai 2026-06
 
-// admin/se_filters.php, row 85
-// admin/se_mapping.php, row 106
+// admin/se_filters.php, row 83
+// admin/se_mapping.php, row 103
 "There are no imported slices" => "Nie je nastaven\xFD \x9Eiaden modul, z ktor\xE9ho sa maj\xFA pr\xEDjma\x9D spr\xE1vy",
 
-// admin/se_filters.php, row 107
+// admin/se_filters.php, row 101
 "-- The same --" => "-- rovnak\xE1 --",
 
-// admin/se_filters.php, row 162
+// admin/se_filters.php, row 155
 "Admin - Content Pooling - Filters" => "Nastavenia modulu - Filtre pre v\xFDmenu spr\xE1v",
 
-// admin/se_filters.php, row 169
-// admin/se_import.php, row 129
-// admin/se_mapping.php, row 161
+// admin/se_filters.php, row 162
+// admin/se_import.php, row 131
+// admin/se_mapping.php, row 158
 // admin/um_gedit.php, row 280
 // admin/um_uedit.php, row 388
 // central/include/actionapps.class.php, row 279
 // include/formutil.php, row 190, 2925
-// modules/jump/modedit.php, row 182
+// modules/jump/modedit.php, row 179
 // src/Import/DetailCatalog.php, row 151
 "Update" => "Zmeni\x9D",
 
-// admin/se_filters.php, row 176
+// admin/se_filters.php, row 169
 "Content Pooling - Configure Filters" => "Nastavenie filtrov pre pr\xEDjem spr\xE1v",
 
-// admin/se_filters.php, row 179
+// admin/se_filters.php, row 172
 "Filter for imported slice" => "Filter pre pr\xEDjem spr\xE1v z modulu",
 
-// admin/se_filters.php, row 183
+// admin/se_filters.php, row 176
 "Categories" => "Kateg\xF3rie",
 
-// admin/se_filters.php, row 201
+// admin/se_filters.php, row 194
 "All Categories" => "V\x9Aetky kateg\xF3rie",
 
-// admin/se_filters.php, row 208, 232
+// admin/se_filters.php, row 201, 225
 "No category defined" => "Kateg\xF3rie neboli definovan\xE9",
 
-// admin/se_filters.php, row 268
+// admin/se_filters.php, row 258
 // src/Manager.php, row 1404
 "Select all" => "Vybra\x9D zobrazen\xE9",
 
-// admin/se_filters.php, row 330
+// admin/se_filters.php, row 320
 "No From category selected!" => "Nie je vybran\xE1 zdrojov\xE1 kateg\xF3ria!", // ai 2026-06
 
-// admin/se_filters2.php, row 110
-// src/IO/Feed.php, row 581
+// admin/se_filters2.php, row 106
+// src/IO/Feed.php, row 567
 "Other categories" => "Ostatn\xE9 kateg\xF3rie", // ai 2026-06
 
-// admin/se_filters2.php, row 179
-// admin/se_import2.php, row 144, 146
+// admin/se_filters2.php, row 184
+// admin/se_import2.php, row 141, 143
 "Content Pooling update successful" => "Nastavenia v\xFDmeny spr\xE1v \xFAspe\x9Ane zmenen\xE9",
 
 // admin/se_forms.php, row 37
 "You do not have permissions to manage forms" => "Nem\xE1te pr\xE1vo spravova\x9D formul\xE1re", // ai 2026-06
 
-// admin/se_fulltext.php, row 68, 163
+// admin/se_fulltext.php, row 67, 161
 "Top HTML code" => "Horn\xFD HTML k\xF3d",
 
-// admin/se_fulltext.php, row 69, 175
+// admin/se_fulltext.php, row 68, 173
 "Fulltext HTML code" => "HTML k\xF3d textu spr\xE1vy",
 
-// admin/se_fulltext.php, row 70, 187
+// admin/se_fulltext.php, row 69, 185
 "Bottom HTML code" => "Spodn\xFD HTML k\xF3d",
 
-// admin/se_fulltext.php, row 101
+// admin/se_fulltext.php, row 99
 "Fulltext format update successful" => "Vzh\xBEad textu spr\xE1vy bol \xFAspe\x9Ane zmenen\xFD",
 
-// admin/se_fulltext.php, row 135
+// admin/se_fulltext.php, row 133
 "Admin - design Fulltext view" => "Spr\xE1va modulu - Vzh\xBEad jednej spr\xE1vy",
 
-// admin/se_fulltext.php, row 136
+// admin/se_fulltext.php, row 134
 "Use these boxes ( with the tags listed below ) to control what appears on full text view of each item" => "Na tejto str\xE1nke je mo\x9En\xE9 nastavi\x9D, \xE8o sa objav\xED na str\xE1nke pri prezeran\xED tela spr\xE1vy",
 
-// admin/se_fulltext.php, row 160
+// admin/se_fulltext.php, row 158
 "HTML code for fulltext view" => "HTML k\xF3d pre zobrazenie spr\xE1vy",
 
-// admin/se_fulltext.php, row 207, 211
+// admin/se_fulltext.php, row 205, 209
 "The template for discussion you can set on \"Design\" -> \"View\" page" => "\x8Aabl\xF3nu pre diskusiu m\xF4\x9Eete nastavi\x9D na str\xE1nke \"Vzh\xBEad\" -> \"Poh\xBEad\"", // ai 2026-06
 
-// admin/se_fulltext.php, row 208
+// admin/se_fulltext.php, row 206
 "Use HTML tags" => "Diskusiu form\xE1tovat v HTML",
 
-// admin/se_fulltext.php, row 209
+// admin/se_fulltext.php, row 207
 "New comments disabled" => "Prid\xE1vanie nov\xFDch pr\xEDspevkov je zak\xE1zan\xE9", // ai 2026-06
 
 // admin/se_history.php, row 57
@@ -2185,7 +2218,7 @@ return [
 // admin/se_history.php, row 143, 165, 166
 // admin/um_uedit.php, row 262
 // admin/usershow.php, row 89
-// include/perm_sql.php, row 389, 430
+// include/perm_sql.php, row 384, 426
 // src/Optimize/CheckAlertitemRefusals.php, row 89
 // src/Optimize/CheckInstallRuns.php, row 56
 // src/Optimize/CheckObjectFormRefusals.php, row 101
@@ -2211,47 +2244,47 @@ return [
 // admin/se_history.php, row 216, 217
 "ActionApps - History Manager" => "ActionApps - Spr\xE1va hist\xF3rie", // ai 2026-06
 
-// admin/se_import.php, row 120
+// admin/se_import.php, row 122
 "Admin - configure Content Pooling" => "Spr\xE1va modulu - V\xFDmena spr\xE1v",
 
-// admin/se_import.php, row 135
+// admin/se_import.php, row 137
 "Enable export to slice:" => "Povoli\x9D zasielanie spr\xE1v do modulu:",
 
-// admin/se_import.php, row 138
+// admin/se_import.php, row 140
 "Export disable" => "Zasielanie zak\xE1zan\xE9",
 
-// admin/se_import.php, row 140
+// admin/se_import.php, row 142
 "Export enable" => "Zasielanie povolen\xE9",
 
-// admin/se_import.php, row 174
+// admin/se_import.php, row 176
 "Enable export to any slice" => "Povoli\x9D exportova\x9D spr\xE1vy do v\x9Aetk\xFDch modulov",
 
-// admin/se_import.php, row 176
+// admin/se_import.php, row 178
 "Currently exported to" => "Moment\xE1lne poskytovan\xE9 do", // ai 2026-06
 
-// admin/se_import.php, row 179
+// admin/se_import.php, row 181
 "Wrong export (non-existent slice!):" => "Chybn\xE9 poskytovanie (neexistuj\xFAci modul!):", // ai 2026-06
 
-// admin/se_import.php, row 184
+// admin/se_import.php, row 186
 "Import from slice:" => "Pr\xEDjma\x9D spr\xE1vy z:",
 
-// admin/se_import.php, row 193
+// admin/se_import.php, row 195
 "Do not import" => "Nepr\xEDjma\x9D",
 
-// admin/se_import.php, row 195
+// admin/se_import.php, row 197
 // include/menu_util.php, row 96
 // src/Import/Definition.php, row 135, 161
 // src/Optimize/CheckImportStores.php, row 53
 // src/Optimize/CheckImports.php, row 176, 178, 287, 367
 "Import" => "Pr\xEDjma\x9D",
 
-// admin/se_inputform.php, row 186, 494
+// admin/se_inputform.php, row 186, 487
 "Before HTML code" => "HTML k\xF3d pred t\xFDmto po\xBEom",
 
-// admin/se_inputform.php, row 187, 492
+// admin/se_inputform.php, row 187, 485
 "Help for this field" => "N\xE1poveda",
 
-// admin/se_inputform.php, row 188, 493
+// admin/se_inputform.php, row 188, 486
 "More help" => "Viac inform\xE1ci\xED",
 
 // admin/se_inputform.php, row 190
@@ -2260,203 +2293,203 @@ return [
 // admin/se_inputform.php, row 192
 "Alias must be always _# + 8 UPPERCASE letters, e.g. _#<b>SOMTHING</b>." => "Alias mus\xED by\x9D v\x9Edy _# + 8 VE\xBCK\xDDCH p\xEDsmen, napr. _#<b>SOMTHING</b>.", // ai 2026-06
 
-// admin/se_inputform.php, row 197, 525
-// include/stringexpand.php, row 93
+// admin/se_inputform.php, row 197, 518
+// include/stringexpand.php, row 96
 // src/Optimize/CheckUserAliasFunctions.php, row 88
-"Alias" => "",
+"Alias" => "Alias", // ai 2026-10
 
-// admin/se_inputform.php, row 201, 526
+// admin/se_inputform.php, row 201, 519
 // admin/se_profile.php, row 208
 "Function" => "Funkcia",
 
-// admin/se_inputform.php, row 303
+// admin/se_inputform.php, row 296
 "No field found" => "Nen\xE1jden\xE1 \x9Eiadna polo\x9Eka", // ai 2026-06
 
-// admin/se_inputform.php, row 362
+// admin/se_inputform.php, row 355
 "You selected slice and not constant group. It is impossible to create slice from here." => "Vybrali ste modul a nie skupinu hodn\xF4t. Odtia\xBEto nie je mo\x9En\xE9 vytvori\x9D modul.", // ai 2026-06
 
-// admin/se_inputform.php, row 387
+// admin/se_inputform.php, row 380
 "WARNING: Do not change this setting if you are not sure what you're doing!" => "VAROVANIE: Neme\xF2te toto nastavenie, ak si nie ste ist\xED, \xE8o rob\xEDte!", // ai 2026-06
 
-// admin/se_inputform.php, row 401
+// admin/se_inputform.php, row 394
 // include/formutil.php, row 191
 "Update & Edit" => "Zmeni\x9D a \xEFalej upravova\x9D", // ai 2026-06
 
-// admin/se_inputform.php, row 402
+// admin/se_inputform.php, row 395
 // admin/se_view.php, row 493
-// include/slice.class.php, row 1307
+// include/slice.class.php, row 1300
 "Show History" => "Zobrazi\x9D hist\xF3riu", // ai 2026-06
 
-// admin/se_inputform.php, row 406
+// admin/se_inputform.php, row 399
 "Field properties" => "Vlastnosti polo\x9Eky", // ai 2026-06
 
-// admin/se_inputform.php, row 414
+// admin/se_inputform.php, row 407
 // src/Widget/Widget.php, row 765
 "Input type" => "Typ Vstupu",
 
-// admin/se_inputform.php, row 417
+// admin/se_inputform.php, row 410
 "Input field type in Add / Edit item." => "Typ vstupn\xE9ho po\xBEa pri prid\xE1van\xED / \xFAprave spr\xE1vy.", // ai 2026-06
 
-// admin/se_inputform.php, row 421
+// admin/se_inputform.php, row 414
 "Edit|Use as new|New" => "Upravi\x9D|Upravi\x9D k\xF3piu|Nov\xE1 skupina", // ai 2026-06
 
-// admin/se_inputform.php, row 423
+// admin/se_inputform.php, row 416
 "Choose a Constant Group or a Slice." => "Vyberte Skupinu Kon\x9At\xE1nt alebo Modul.",
 
-// admin/se_inputform.php, row 437
+// admin/se_inputform.php, row 430
 "Allow translation" => "Povoli\x9D preklad", // ai 2026-06
 
-// admin/se_inputform.php, row 437
+// admin/se_inputform.php, row 430
 "Only Text Area and Text Field widgets allow translation. Languages should be set on Slice Setting page." => "Preklad umo\x9E\xF2uj\xFA iba widgety Text Area a Text Field. Jazyky je potrebn\xE9 nastavi\x9D na str\xE1nke Nastavenia modulu.", // ai 2026-06
 
-// admin/se_inputform.php, row 446
+// admin/se_inputform.php, row 439
 "How to generate the default value" => "Ako generova\x9D predvolen\xFA hodnotu", // ai 2026-06
 
-// admin/se_inputform.php, row 453
-// include/feeding.php, row 467
+// admin/se_inputform.php, row 446
+// include/feeding.php, row 453
 "Validate" => "Zkontrolova\x9D",
 
-// admin/se_inputform.php, row 464
+// admin/se_inputform.php, row 457
 "Stored as" => "Ulo\x9Een\xE9 ako", // ai 2026-06
 
-// admin/se_inputform.php, row 467
+// admin/se_inputform.php, row 460
 "Stored in <em>item</em> table - it is not possible to change store method" => "Ulo\x9Een\xE9 v tabu\xBEke <em>item</em> - sp\xF4sob ulo\x9Eenia nie je mo\x9En\xE9 zmeni\x9D", // ai 2026-06
 
-// admin/se_inputform.php, row 471, 472
+// admin/se_inputform.php, row 464, 465
 // src/Central/FindingText.php, row 176, 186
 "Number" => "\xC8\xEDslo",
 
-// admin/se_inputform.php, row 480
-// admin/sliceimp.php, row 427
+// admin/se_inputform.php, row 473
+// admin/sliceimp.php, row 425
 // include/form.class.php, row 474, 476
 // include/formutil.php, row 209, 2936
 "Insert" => "Vlo\x9Ei\x9D",
 
-// admin/se_inputform.php, row 483
+// admin/se_inputform.php, row 476
 "Defines how value is stored in database." => "Ur\xE8uje, ako je hodnota ulo\x9Een\xE1 v datab\xE1ze.", // ai 2026-06
 
-// admin/se_inputform.php, row 490
+// admin/se_inputform.php, row 483
 "Show 'HTML' / 'plain text' option" => "Zobrazi\x9D vo\xBEbu 'HTML' / 'oby\xE8ajn\xFD text'",
 
-// admin/se_inputform.php, row 491
+// admin/se_inputform.php, row 484
 "'HTML' as default" => "'HTML' ako predvolen\xE9", // ai 2026-06
 
-// admin/se_inputform.php, row 491
+// admin/se_inputform.php, row 484
 "HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least." => "Vo\xBEba HTML znamen\xE1, \x9Ee polo\x9Eka sa vyp\xED\x9Ae presne tak, ako je vyplnen\xE1, pomocou aliasu {field...........}. Prost\xFD text znamen\xE1, \x9Ee nov\xE9 riadky sa preved\xFA na &lt;br&gt; at\xEF. HTML je vhodn\xE1 vo\xBEba prinajmen\x9Aom pre ak\xE9ko\xBEvek netextov\xE9 d\xE1ta.", // ai 2026-06
 
-// admin/se_inputform.php, row 492
+// admin/se_inputform.php, row 485
 "Shown help for this field" => "N\xE1poveda zobrazen\xE1 pre toto pole vo vstupnom formul\xE1ri",
 
-// admin/se_inputform.php, row 493
+// admin/se_inputform.php, row 486
 "Text shown after user click on '?' in input form" => "N\xE1poveda, ktor\xE1 sa zobraz\xED po stla\xE8en\xED '?' vo vstupnom formul\xE1ri",
 
-// admin/se_inputform.php, row 494
+// admin/se_inputform.php, row 487
 "Code shown in input form before this field" => "HTML k\xF3d, ktor\xFD sa zobraz\xED vo vstupnom formul\xE1ri pred t\xFDmto po\xBEom",
 
-// admin/se_inputform.php, row 496
+// admin/se_inputform.php, row 489
 "Searchable in AA Item Manager" => "Vyh\xBEad\xE1vate\xBEn\xE9 v preh\xBEade spr\xE1v AA", // ai 2026-06
 
-// admin/se_inputform.php, row 496
+// admin/se_inputform.php, row 489
 "The field is shown in Search box in Item Manager." => "Polo\x9Eka sa zobraz\xED vo vyh\xBEad\xE1vacom poli v preh\xBEade spr\xE1v.", // ai 2026-06
 
-// admin/se_inputform.php, row 497
+// admin/se_inputform.php, row 490
 "Feeding mode" => "Zdie\xBEanie tohto po\xBEa",
 
-// admin/se_inputform.php, row 497
+// admin/se_inputform.php, row 490
 "Should the content of this field be copied to another slice if it is fed?" => "M\xE1 sa kop\xEDrova\x9D obsah tohoto po\xBEa do \xEFal\x9A\xEDch modulov pri v\xFDmene spr\xE1v mezi modulmi?",
 
-// admin/se_inputform.php, row 499
+// admin/se_inputform.php, row 492
 "ALIASES used in views to print field content (%1)" => "ALIASY pou\x9E\xEDvan\xE9 v poh\xBEadoch pre v\xFDpis obsahu polo\x9Eky (%1)", // ai 2026-06
 
-// admin/se_inputform.php, row 519
+// admin/se_inputform.php, row 512
 "8 CHARS" => "8 ZNAKOV", // ai 2026-06
 
-// admin/se_inputform.php, row 519
+// admin/se_inputform.php, row 512
 "8 UPPERCASE letters or _" => "8 VE\xBCK\xDDCH p\xEDsmen alebo _", // ai 2026-06
 
-// admin/se_inputform.php, row 520
+// admin/se_inputform.php, row 513
 // src/Import/DetailPage.php, row 604
 // src/Import/RunView.php, row 188
 "Disabled" => "Zak\xE1zan\xE9", // ai 2026-06
 
-// admin/se_inputform.php, row 521
-// src/Util/ChangesMonitor.php, row 513
+// admin/se_inputform.php, row 514
+// src/Util/ChangesMonitor.php, row 509
 "Copy to clipboard" => "Kop\xEDrova\x9D do schr\xE1nky", // ai 2026-06
 
-// admin/se_inputform.php, row 522
+// admin/se_inputform.php, row 515
 "Reset" => "Obnovi\x9D", // ai 2026-06
 
-// admin/se_inputform.php, row 527
-// include/logs.php, row 568
+// admin/se_inputform.php, row 520
+// include/logs.php, row 613
 // src/Import/DetailConfig.php, row 369
 "Parameters" => "Parametre",
 
-// admin/se_inter_export.php, row 98
+// admin/se_inter_export.php, row 97
 "No selected export" => "Nie je vybran\xFD \x9Eiadny export", // ai 2026-06
 
-// admin/se_inter_export.php, row 101
+// admin/se_inter_export.php, row 100
 "Are you sure you want to delete the export?" => "Naozaj chcete vymaza\x9D export?", // ai 2026-06
 
-// admin/se_inter_export.php, row 110, 114
+// admin/se_inter_export.php, row 109, 113
 "Inter node export settings" => "Spr\xE1va povolen\xED zasielania modulov",
 
-// admin/se_inter_export.php, row 116
+// admin/se_inter_export.php, row 115
 "Existing exports of the slice " => "Zoznam uzlov a u\x9Eivatelov, kde bude zasielan\xFD modul ",
 
-// admin/se_inter_export.php, row 136
+// admin/se_inter_export.php, row 135
 "Insert new item" => "Pridajte uzol a u\x9Eivatela",
 
-// admin/se_inter_export.php, row 138
+// admin/se_inter_export.php, row 137
 "Remote Nodes" => "Zoznam uzlov",
 
-// admin/se_inter_export.php, row 149
+// admin/se_inter_export.php, row 148
 "User name" => "Meno u\x9Eivatela",
 
-// admin/se_inter_import.php, row 75, 97
+// admin/se_inter_import.php, row 74, 96
 // admin/se_inter_import2.php, row 110
 "Exact copy" => "Presn\xE1 k\xF3pia", // ai 2026-06
 
-// admin/se_inter_import.php, row 76
+// admin/se_inter_import.php, row 75
 "Missing!!!" => "Neexistuje!!!", // ai 2026-06
 
-// admin/se_inter_import.php, row 87
+// admin/se_inter_import.php, row 86
 // admin/se_inter_import2.php, row 95
 "Inter node import settings" => "Spr\xE1va prijman\xFDch modulov",
 
-// admin/se_inter_import.php, row 92
+// admin/se_inter_import.php, row 91
 "Create new feed from node" => "Vytvori\x9D nov\xFA v\xFDmenu spr\xE1v z uzla", // ai 2026-06
 
-// admin/se_inter_import.php, row 97
-// include/feeding.php, row 541
+// admin/se_inter_import.php, row 96
+// include/feeding.php, row 527
 "Remote slice" => "Vzdialen\xFD modul", // ai 2026-06
 
-// admin/se_inter_import.php, row 97
+// admin/se_inter_import.php, row 96
 "Node" => "Uzol", // ai 2026-06
 
-// admin/se_inter_import.php, row 97
+// admin/se_inter_import.php, row 96
 // misc/datovka/datovka.php, row 119
 // src/Import/DetailConfig.php, row 291
 // src/Import/DetailPage.php, row 377
 // src/Util/Note.php, row 64
 "State" => "Stav", // ai 2026-06
 
-// admin/se_inter_import.php, row 98
+// admin/se_inter_import.php, row 97
 "Existing remote imports into the slice" => "Zoznam pr\xEDjman\xFDch modulov do modulu", // ai 2026-06
 
-// admin/se_inter_import.php, row 100
+// admin/se_inter_import.php, row 99
 "No remote imports into the slice" => "\x8Eiadne vzdialen\xE9 importy do modulu", // ai 2026-06
 
-// admin/se_inter_import.php, row 105
+// admin/se_inter_import.php, row 104
 // include/menu.php, row 153
 "Inter Node Import" => "Pr\xEDjem z uzlov",
 
-// admin/se_inter_import.php, row 106
+// admin/se_inter_import.php, row 105
 "Add from remote node" => "Prida\x9D zo vzdialen\xE9ho uzla", // ai 2026-06
 
-// admin/se_inter_import.php, row 116
+// admin/se_inter_import.php, row 115
 "Are you sure you want to delete the import?" => "Naozaj chcete vymaza\x9D import?", // ai 2026-06
 
-// admin/se_inter_import.php, row 125
+// admin/se_inter_import.php, row 124
 "No selected node" => "Nie je vybran\xFD \x9Eiadny uzol", // ai 2026-06
 
 // admin/se_inter_import2.php, row 62, 67, 84
@@ -2486,10 +2519,10 @@ return [
 // admin/se_inter_import2.php, row 116
 "The slice will be an exact copy of the remote slice. All items will be copied including holdingbin and trash bin items. Also on any change in the remote item, the content will be copied to local copy of the item. The items will have the same long ids (not the short ones!). It makes no sense to change items in local copy - it will be overwritten from remote master." => "Modul bude presnou k\xF3piou vzdialen\xE9ho modulu. Skop\xEDruj\xFA sa v\x9Aetky spr\xE1vy vr\xE1tane spr\xE1v v z\xE1sobn\xEDku a ko\x9Ai. Pri ka\x9Edej zmene vzdialenej spr\xE1vy sa jej obsah skop\xEDruje do lok\xE1lnej k\xF3pie. Spr\xE1vy bud\xFA ma\x9D rovnak\xE9 dlh\xE9 id (nie kr\xE1tke!). Nem\xE1 zmysel meni\x9D spr\xE1vy v lok\xE1lnej k\xF3pii - bud\xFA prep\xEDsan\xE9 zo vzdialen\xE9ho zdroja.", // ai 2026-06
 
-// admin/se_inter_import3.php, row 66
+// admin/se_inter_import3.php, row 65
 "The import was already created" => "Pr\xEDjem z modulu bol u\x9E vytvoren\xFD",
 
-// admin/se_inter_import3.php, row 116
+// admin/se_inter_import3.php, row 118
 "The import was successfully created" => "Pr\xEDjem z modulu \xFAspe\x9Ane vytvoren\xFD",
 
 // admin/se_javascript.php, row 73
@@ -2526,35 +2559,35 @@ return [
 // admin/se_javascript.php, row 105
 "Triggers" => "Triggery", // ai 2026-06
 
-// admin/se_mapping.php, row 127, 199
-// admin/se_mapping2.php, row 80
+// admin/se_mapping.php, row 124, 196
+// admin/se_mapping2.php, row 81
 "-- Not map --" => "-- Nemapova\x9D --",
 
-// admin/se_mapping.php, row 128, 193
-// admin/se_mapping2.php, row 83
+// admin/se_mapping.php, row 125, 190
+// admin/se_mapping2.php, row 84
 "-- Value --" => "-- Hodnota --",
 
-// admin/se_mapping.php, row 129, 196
-// admin/se_mapping2.php, row 87
+// admin/se_mapping.php, row 126, 193
+// admin/se_mapping2.php, row 88
 "-- Joined fields --" => "-- Spojenie pol\xED --",
 
-// admin/se_mapping.php, row 130, 207
-// admin/se_mapping2.php, row 91
+// admin/se_mapping.php, row 127, 204
+// admin/se_mapping2.php, row 92
 "-- RSS field or expr --" => "-- pole alebo v\xFDraz pre RSS --", // ai 2026-06
 
-// admin/se_mapping.php, row 150
+// admin/se_mapping.php, row 147
 "Admin - Content Pooling - Fields' Mapping" => "Spr\xE1va modulu - v\xFDmena spr\xE1v - mapovanie pol\xED",
 
-// admin/se_mapping.php, row 168
+// admin/se_mapping.php, row 165
 "Content Pooling - Fields' mapping" => "V\xFDmena spr\xE1v - mapovanie pol\xED",
 
-// admin/se_mapping.php, row 171
+// admin/se_mapping.php, row 168
 "Mapping from slice" => "Mapovanie z modulu",
 
-// admin/se_mapping.php, row 175
+// admin/se_mapping.php, row 172
 "Fields' mapping" => "Mapovanie pol\xED",
 
-// admin/se_mapping2.php, row 127
+// admin/se_mapping2.php, row 126
 "Fields' mapping update successful" => "Nastavenie mapovania pol\xED \xFAspe\x9Ane zmenen\xE9",
 
 // admin/se_nodes.php, row 37
@@ -2563,7 +2596,7 @@ return [
 // admin/se_nodes.php, row 45
 "Remote node administration" => "Spr\xE1va uzlov",
 
-// admin/se_notify.php, row 122
+// admin/se_notify.php, row 124
 // include/slicedit.php, row 146
 "You do not have permissions to edit this slice" => "Nem\xE1te pr\xE1vo upravova\x9D tento modul",
 
@@ -2599,7 +2632,7 @@ return [
 "You do not have permissions to manage users" => "Nem\xE1te pr\xE1vo ku spr\xE1ve u\x9Eivate\xBEov",
 
 // admin/se_profile.php, row 76
-// include/profile.class.php, row 363
+// include/profile.class.php, row 359
 "Rule deleted" => "Pravidlo \xFAspe\x9Ane vymazan\xE9",
 
 // admin/se_profile.php, row 80
@@ -2813,7 +2846,7 @@ return [
 // admin/se_profile.php, row 210
 // include/formutil.php, row 1225
 // include/transformation.class.php, row 192, 381, 454, 548, 738
-// include/widget.class.php, row 661
+// include/widget.class.php, row 657
 "HTML" => "",
 
 // admin/se_profile.php, row 217
@@ -2874,7 +2907,7 @@ return [
 "Copy Profile from" => "Kop\xEDrova\x9D profil z", // ai 2026-06
 
 // admin/se_profile.php, row 267
-// src/Util/ChangesMonitor.php, row 513
+// src/Util/ChangesMonitor.php, row 509
 "Copy" => "Kop\xEDrova\x9D", // ai 2026-06
 
 // admin/se_sets.php, row 66
@@ -2909,10 +2942,10 @@ return [
 
 // admin/se_sets.php, row 131
 // admin/sliceexp_text.php, row 365
-// include/feeding.php, row 485, 542
+// include/feeding.php, row 471, 528
 // include/statestore.php, row 1077
 // src/AA_Plannedtask.php, row 182
-// src/Optimize/AbstractOptimize.php, row 170
+// src/Optimize/AbstractOptimize.php, row 172
 "ID" => "",
 
 // admin/se_sets.php, row 132, 139
@@ -2979,9 +3012,10 @@ return [
 "User Tasks" => "U\x9E\xEDvate\xBEsk\xE9 \xFAlohy", // ai 2026-06
 
 // admin/se_users.php, row 126, 185
-// admin/slicewiz.php, row 82
+// admin/slicewiz.php, row 81
 // include/se_users.php, row 109, 180
-"Editor" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 87
+"Editor" => "Editor", // ai 2026-10
 
 // admin/se_users.php, row 127, 185
 // include/se_users.php, row 110, 180
@@ -3004,7 +3038,7 @@ return [
 // central/index.php, row 139
 // include/se_users.php, row 180
 // src/Widget/TfaWidget.php, row 71
-"Username" => "",
+"Username" => "Username", // ai 2026-10
 
 // admin/se_users.php, row 185
 // admin/usershow.php, row 89
@@ -3043,7 +3077,7 @@ return [
 "You do not have permission to change views" => "Nem\xE1te pr\xE1vo meni\x9D poh\xBEady",
 
 // admin/se_view.php, row 343
-// admin/sliceimp_xml.php, row 269
+// admin/sliceimp_xml.php, row 260
 "Can't insert into view." => "Nepodarilo sa vlo\x9Ei\x9D do poh\xBEadu.", // ai 2026-06
 
 // admin/se_view.php, row 358
@@ -3065,8 +3099,8 @@ return [
 
 // admin/se_view.php, row 553
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1627
-// include/stringexpand.php, row 1854
+// include/slice.class.php, row 1620
+// include/stringexpand.php, row 1876
 "No" => "Nie", // ai 2026-06
 
 // admin/se_view.php, row 553
@@ -3088,7 +3122,7 @@ return [
 "View successfully deleted" => "Poh\xBEad bol \xFAspe\x9Ane zmazan\xFD",
 
 // admin/se_views.php, row 72
-"The view was not found in this slice." => "",
+"The view was not found in this slice." => "Poh\xBEad sa v tomto module nena\x9Aiel.", // ai 2026-10
 
 // admin/se_views.php, row 149, 223
 "Create new view from this one" => "Vytvori\x9D nov\xFD poh\xBEad pod\xBEa tohto", // ai 2026-06
@@ -3096,6 +3130,7 @@ return [
 // admin/se_views.php, row 149, 203, 223
 // include/formutil.php, row 1770, 1777
 // src/Import/DetailPage.php, row 329, 666
+// src/Optimize/StateCheckModel.php, row 231
 "New" => "Nov\xFD",
 
 // admin/se_views.php, row 150
@@ -3124,12 +3159,12 @@ return [
 
 // admin/search_replace.php, row 167
 // central/installapp.php, row 832
-// include/slice.class.php, row 678
+// include/slice.class.php, row 674
 // src/Optimize/SeoDuplicates.php, row 148
 "Items" => "Spr\xE1vy", // ai 2026-06
 
 // admin/search_replace.php, row 167
-// admin/write_mail.php, row 228
+// admin/write_mail.php, row 236
 "Stored searches for " => "Ulo\x9Een\xE9 filtre pre ", // ai 2026-06
 
 // admin/search_replace.php, row 169
@@ -3156,7 +3191,7 @@ return [
 
 // admin/search_replace.php, row 191
 // admin/usershow.php, row 179
-// admin/write_mail.php, row 261
+// admin/write_mail.php, row 269
 // src/Widget/RichtextMarkup.php, row 74
 "Close" => "Zavrie\x9D", // ai 2026-06
 
@@ -3170,16 +3205,8 @@ return [
 // admin/um_uedit.php, row 330
 "Superadmin account" => "Administrat\xEDvny \xFA\xE8et",
 
-// admin/setup.php, row 99, 240
-// admin/slicewiz.php, row 85
-// admin/um_passwd.php, row 111
-// admin/um_uedit.php, row 313, 317
-// include/itemfunc.php, row 613, 1202
-// include/um_util.php, row 296
-"Login name" => "U\x9Eivate\xBEsk\xE9 meno",
-
 // admin/setup.php, row 100, 241
-// admin/slicewiz.php, row 86
+// admin/slicewiz.php, row 85
 // admin/um_passwd.php, row 114
 // admin/um_uedit.php, row 321
 // central/index.php, row 140
@@ -3194,7 +3221,7 @@ return [
 "Retype Password" => "Zopakujte heslo", // ai 2026-06
 
 // admin/setup.php, row 102, 245
-// admin/slicewiz.php, row 88
+// admin/slicewiz.php, row 87
 // admin/um_passwd.php, row 116
 // admin/um_uedit.php, row 323
 // include/um_util.php, row 298
@@ -3272,41 +3299,41 @@ return [
 // src/Manager.php, row 239, 1261
 "Add" => "Prida\x9D",
 
-// admin/slicedel.php, row 48
+// admin/slicedel.php, row 51
 "You don't have permissions to delete module." => "Nem\xE1te pr\xE1vo vymaza\x9D modul.", // ai 2026-06
 
-// admin/slicedel.php, row 76
+// admin/slicedel.php, row 79
 "Do you really want to delete this module and all its fields and all its items?" => "Naozaj chcete vymaza\x9D tento modul so v\x9Aetk\xFDmi jeho polo\x9Ekami a v\x9Aetk\xFDmi jeho spr\xE1vami?", // ai 2026-06
 
-// admin/slicedel.php, row 86
+// admin/slicedel.php, row 99
 "Admin - Delete Module" => "Spr\xE1va modulu - Vymaza\x9D modul",
 
-// admin/slicedel.php, row 101
+// admin/slicedel.php, row 114
 "Select module to delete" => "Vyber modul pre vymazanie",
 
-// admin/slicedel.php, row 104
+// admin/slicedel.php, row 117
 "Modules to show" => "Moduly na zobrazenie", // ai 2026-06
 
-// admin/slicedel.php, row 105
+// admin/slicedel.php, row 118
 "Marked as \"Deleted\"" => "Ozna\xE8en\xE9 ako \"Vymazan\xE9\"", // ai 2026-06
 
-// admin/slicedel.php, row 108
+// admin/slicedel.php, row 121
 "This option allows you to display all the slices and delete them, so be careful!" => "T\xE1to vo\xBEba umo\x9E\xF2uje zobrazi\x9D v\x9Aetky moduly a vymaza\x9D ich, preto bu\xEFte opatrn\xED!", // ai 2026-06
 
-// admin/slicedel.php, row 114
+// admin/slicedel.php, row 127
 "Modules to delete" => "Moduly na vymazanie", // ai 2026-06
 
-// admin/slicedel.php, row 128
+// admin/slicedel.php, row 140
 "No module marked for deletion" => "\x8Eiaden modul nebol ozna\xE8en\xFD za vymazan\xFD",
 
-// admin/slicedel2.php, row 57, 62
+// admin/slicedel2.php, row 60, 65
 "You don't have permissions to delete slice." => "Nem\xE1te pr\xE1vo vymaza\x9D modul.", // ai 2026-06
 
-// admin/slicedel2.php, row 70
-// include/modutils.php, row 275
+// admin/slicedel2.php, row 77
+// include/modutils.php, row 268
 "No such module." => "Tak\xFD modul neexistuje.", // ai 2026-06
 
-// admin/slicedel2.php, row 79
+// admin/slicedel2.php, row 86
 "Slice successfully deleted, tables are optimized" => "Modul bol vymazan\xFD, tabu\xBEky boly optimalizovan\xE9",
 
 // admin/slicedit.php, row 139, 146, 153
@@ -3356,7 +3383,7 @@ return [
 "Language" => "Jazyk", // ai 2026-06
 
 // admin/slicedit.php, row 260
-// include/slicedit.php, row 196
+// include/slicedit.php, row 190
 "Slice Type" => "Typ modulu", // ai 2026-06
 
 // admin/slicedit.php, row 264
@@ -3371,17 +3398,17 @@ return [
 "Show content of pending items" => "Zobrazi\x9D obsah pripraven\xFDch spr\xE1v", // ai 2026-06
 
 // admin/slicedit.php, row 269
-// include/slicedit.php, row 199
+// include/slicedit.php, row 193
 // src/Central/FindingText.php, row 430
 "Allow anonymous posting of items" => "Anonymn\xE9 vkladanie",
 
 // admin/slicedit.php, row 270
-// include/slicedit.php, row 200
+// include/slicedit.php, row 194
 // src/Central/FindingText.php, row 431
 "Allow anonymous editing of items" => "Povoli\x9D anonymn\xE9 upravovanie spr\xE1v", // ai 2026-06
 
 // admin/slicedit.php, row 271
-// include/slicedit.php, row 201
+// include/slicedit.php, row 195
 "Allow off-line item filling" => "Off-line plnenie",
 
 // admin/slicedit.php, row 277
@@ -3410,7 +3437,7 @@ return [
 
 // admin/slicedit.php, row 294
 // include/constants.php, row 688, 803, 829, 860, 893, 957, 991, 1025
-// include/slicedit.php, row 204
+// include/slicedit.php, row 198
 // src/Widget/Widget.php, row 810
 "Listing length" => "Po\xE8et vypisovan\xFDch spr\xE1v",
 
@@ -3424,16 +3451,16 @@ return [
 "MLX: Language Control Slice" => "MLX: modul na spr\xE1vu prekladov", // ai 2026-06
 
 // admin/slicedit.php, row 305
-// include/slicedit.php, row 208
+// include/slicedit.php, row 202
 // src/Central/FindingText.php, row 432
 "File Manager Access" => "Pr\xEDstup k spr\xE1vcovi s\xFAborov", // ai 2026-06
 
 // admin/slicedit.php, row 306
-// include/slicedit.php, row 209
+// include/slicedit.php, row 203
 "File Manager Directory" => "Adres\xE1r spr\xE1vcu s\xFAborov", // ai 2026-06
 
 // admin/sliceexp.php, row 78
-// admin/sliceimp.php, row 63
+// admin/sliceimp.php, row 64
 "You are not allowed to export / import slices" => "Nem\xE1te pr\xE1vo exportovat / importovat moduly",
 
 // admin/sliceexp.php, row 102, 107
@@ -3515,84 +3542,84 @@ return [
 // admin/sliceexp_text.php, row 365, 369
 "Hidden" => "Skryt\xE9", // ai 2026-06
 
-// admin/slicefieldsedit.php, row 146
+// admin/slicefieldsedit.php, row 151
 "Slice Setting" => "Nastavenie modulu", // ai 2026-06
 
-// admin/sliceimp.php, row 79
+// admin/sliceimp.php, row 80
 "Slice_ID (%1) has wrong length (%2, should be 32)" => "Slice_ID (%1) m\xE1 nespr\xE1vnu d\xE5\x9Eku (%2, m\xE1 by\x9D 32)", // ai 2026-06
 
-// admin/sliceimp.php, row 104, 146, 426
-// admin/sliceimp_xml.php, row 256
+// admin/sliceimp.php, row 103, 144, 424
+// admin/sliceimp_xml.php, row 247
 "Overwrite" => "Prep\xEDsa\x9D", // ai 2026-06
 
-// admin/sliceimp.php, row 177, 183, 242, 248, 428
+// admin/sliceimp.php, row 175, 181, 240, 246, 426
 "Insert with new ids" => "Vlo\x9Ei\x9D s nov\xFDmi ID", // ai 2026-06
 
-// admin/sliceimp.php, row 317
+// admin/sliceimp.php, row 315
 "Import exported data (slice structure and content)" => "Import exportovan\xFDch d\xE1t (\x9Atrukt\xFAra a obsah modulu)", // ai 2026-06
 
-// admin/sliceimp.php, row 321
+// admin/sliceimp.php, row 319
 "Import exported data" => "Import exportovan\xFDch d\xE1t", // ai 2026-06
 
-// admin/sliceimp.php, row 326
+// admin/sliceimp.php, row 324
 "Count of imported slices: %d." => "Po\xE8et importovan\xFDch modulov: %d.", // ai 2026-06
 
-// admin/sliceimp.php, row 328, 343
+// admin/sliceimp.php, row 326, 341
 "Added were:" => "Pridan\xE9 boli:", // ai 2026-06
 
-// admin/sliceimp.php, row 334, 349
+// admin/sliceimp.php, row 332, 347
 "Overwritten were:" => "Prep\xEDsan\xE9 boli:", // ai 2026-06
 
-// admin/sliceimp.php, row 340
+// admin/sliceimp.php, row 338
 "Count of imported stories: %d." => "Po\xE8et importovan\xFDch spr\xE1v: %d.", // ai 2026-06
 
-// admin/sliceimp.php, row 355
+// admin/sliceimp.php, row 353
 "Failed were:" => "Ne\xFAspe\x9An\xE9 boli:", // ai 2026-06
 
-// admin/sliceimp.php, row 366
+// admin/sliceimp.php, row 364
 "Here you can import exported data to ActionApps. You can use two types of import:" => "Tu m\xF4\x9Eete importova\x9D exportovan\xE9 d\xE1ta do ActionApps. M\xF4\x9Eete pou\x9Ei\x9D dva typy importu:", // ai 2026-06
 
-// admin/sliceimp.php, row 372
+// admin/sliceimp.php, row 370
 "Slices with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. If you do something wrong (wrong characters count, wrong characters, or if you change the ID on the arrow's left side), that ID will be considered unchanged.</p>" => "Moduly s niektor\xFDmi z t\xFDchto ID u\x9E existuj\xFA. Zme\xF2te ID na pravej strane \x9A\xEDpky.<br> Pou\x9E\xEDvajte iba hexadecim\xE1lne znaky 0-9,a-f. Ak urob\xEDte nie\xE8o nespr\xE1vne (nespr\xE1vny po\xE8et znakov, nespr\xE1vne znaky, alebo ak zmen\xEDte ID na \xBEavej strane \x9A\xEDpky), bude toto ID pova\x9Eovan\xE9 za nezmenen\xE9.</p>", // ai 2026-06
 
-// admin/sliceimp.php, row 390
+// admin/sliceimp.php, row 388
 "<p>Views with some of the same IDs exist already. Please edit on the right-hand side of the arrow</p>" => "<p>Poh\xBEady s niektor\xFDmi z rovnak\xFDch ID u\x9E existuj\xFA. Upravte ich, pros\xEDm, na pravej strane \x9A\xEDpky</p>", // ai 2026-06
 
-// admin/sliceimp.php, row 405
+// admin/sliceimp.php, row 403
 "<p>Slice content with some of the IDs exist already. Change the IDs on the right side of the arrow.<br> Use only hexadecimal characters 0-9,a-f. </p>" => "<p>Obsah modulu s niektor\xFDmi z t\xFDchto ID u\x9E existuje. Zme\xF2te ID na pravej strane \x9A\xEDpky.<br> Pou\x9E\xEDvajte iba hexadecim\xE1lne znaky 0-9,a-f. </p>", // ai 2026-06
 
-// admin/sliceimp.php, row 418
+// admin/sliceimp.php, row 416
 "<p>If you choose OVERWRITE, the slices and data with unchanged ID will be overwritten and the new ones added. <br>If you choose INSERT, the slices and data with ID conflict will be ignored and the new ones added.<br>And finally, if you choose \"Insert with new ids\", slice structures get new ids and their content too.</p>" => "<p>Ak zvol\xEDte PREP\xCDSA\x8D, moduly a d\xE1ta s nezmenen\xFDm ID bud\xFA prep\xEDsan\xE9 a nov\xE9 pridan\xE9. <br>Ak zvol\xEDte VLO\x8EI\x8D, moduly a d\xE1ta s konfliktom ID bud\xFA ignorovan\xE9 a nov\xE9 pridan\xE9.<br>A nakoniec, ak zvol\xEDte \"Vlo\x9Ei\x9D s nov\xFDmi ID\", \x9Atrukt\xFAry modulov dostan\xFA nov\xE9 ID a ich obsah tie\x9E.</p>", // ai 2026-06
 
-// admin/sliceimp.php, row 429, 475
+// admin/sliceimp.php, row 427, 473
 "cancel" => "zru\x9Ai\x9D", // ai 2026-06
 
-// admin/sliceimp.php, row 438
+// admin/sliceimp.php, row 436
 "1) If you have exported data in file, insert its name here (eg. D:\\data\\apc_aa_slice.aaxml):" => "1) Ak m\xE1te exportovan\xE9 d\xE1ta v s\xFAbore, vlo\x9Ete sem jeho meno (napr. D:\\data\\apc_aa_slice.aaxml):", // ai 2026-06
 
-// admin/sliceimp.php, row 441
+// admin/sliceimp.php, row 439
 "Send file with slice structure and data" => "Posla\x9D s\xFAbor so \x9Atrukt\xFArou a d\xE1tami modulu", // ai 2026-06
 
-// admin/sliceimp.php, row 448
+// admin/sliceimp.php, row 446
 "2) If you have exported data in browser's window, insert the exported text into the textarea below:" => "2) Ak m\xE1te exportovan\xE9 d\xE1ta v okne prehliada\xE8a, vlo\x9Ete exportovan\xFD text do textov\xE9ho po\xBEa ni\x9E\x9Aie:", // ai 2026-06
 
-// admin/sliceimp.php, row 465
+// admin/sliceimp.php, row 463
 "Here specify, what do you want to import:" => "Tu ur\xE8te, \xE8o chcete importova\x9D:", // ai 2026-06
 
-// admin/sliceimp.php, row 466
+// admin/sliceimp.php, row 464
 "Import slice definition" => "Importova\x9D defin\xEDciu modulu", // ai 2026-06
 
-// admin/sliceimp.php, row 467
+// admin/sliceimp.php, row 465
 "Import slice items" => "Importova\x9D spr\xE1vy modulu", // ai 2026-06
 
-// admin/sliceimp.php, row 468
+// admin/sliceimp.php, row 466
 "Import into this slice - whatever file says" => "Importova\x9D do tohoto modulu - bez oh\xBEadu na to, \xE8o hovor\xED s\xFAbor", // ai 2026-06
 
-// admin/sliceimp.php, row 469
+// admin/sliceimp.php, row 467
 // src/Import/DetailPage.php, row 303
 "Dry run" => "Sk\xFA\x9Aobn\xFD beh", // ai 2026-06
 
-// admin/sliceimp.php, row 471
+// admin/sliceimp.php, row 469
 "Send the slice structure and data" => "Posla\x9D \x9Atrukt\xFAru a d\xE1ta modulu", // ai 2026-06
 
 // admin/sliceimp_xml.php, row 86
@@ -3601,47 +3628,47 @@ return [
  => "\n"
    ."CHYBA: S\xFAbor neobsahuje SLICEEXPORT", // ai 2026-06
 
-// admin/sliceimp_xml.php, row 102, 127, 179
+// admin/sliceimp_xml.php, row 93, 118, 170
 "ERROR: Text is not OK. Check whether you copied it well from the Export." => "CHYBA: Text nie je v poriadku. Skontrolujte, \xE8i ste ho z Exportu dobre skop\xEDrovali.", // ai 2026-06
 
-// admin/sliceimp_xml.php, row 192
+// admin/sliceimp_xml.php, row 183
 "ERROR: Unsupported version for import" => "CHYBA: Nepodporovan\xE1 verzia pre import", // ai 2026-06
 
-// admin/sliceimp_xml.php, row 259
+// admin/sliceimp_xml.php, row 250
 "<br>Overwriting view %1" => "<br>Prepisuje sa poh\xBEad %1", // ai 2026-06
 
-// admin/slicewiz.php, row 69
+// admin/slicewiz.php, row 68
 "Add Slice Wizard" => "Sprievodca pridan\xEDm modulu", // ai 2026-06
 
-// admin/slicewiz.php, row 76
+// admin/slicewiz.php, row 75
 "[Optional] Create New User" => "[Nepovinn\xE9] Vytvori\x9D nov\xE9ho u\x9E\xEDvate\xBEa", // ai 2026-06
 
-// admin/slicewiz.php, row 81
+// admin/slicewiz.php, row 80
 "Level of Access" => "\xDArove\xF2 pr\xEDstupu", // ai 2026-06
 
-// admin/slicewiz.php, row 82
+// admin/slicewiz.php, row 81
 // include/constants.php, row 1194
 "Slice Administrator" => "Administr\xE1tor modulu", // ai 2026-06
 
-// admin/slicewiz.php, row 87
+// admin/slicewiz.php, row 86
 // admin/um_passwd.php, row 115
 // admin/um_uedit.php, row 322
 // include/um_util.php, row 302
 "Retype password" => "Potvrdi\x9D heslo",
 
-// admin/slicewiz.php, row 89
+// admin/slicewiz.php, row 88
 // admin/um_passwd.php, row 117
 // admin/um_uedit.php, row 324
 // include/um_util.php, row 297
 "Surname" => "Priezvisko",
 
-// admin/slicewiz.php, row 95
+// admin/slicewiz.php, row 94
 "Do Not Email Welcome" => "Neposiela\x9D uv\xEDtac\xED email", // ai 2026-06
 
-// admin/slicewiz.php, row 97
+// admin/slicewiz.php, row 96
 "Email Welcome" => "Posla\x9D uv\xEDtac\xED email", // ai 2026-06
 
-// admin/slicewiz.php, row 106
+// admin/slicewiz.php, row 105
 "Go: Add Slice" => "Spusti\x9D: Prida\x9D modul", // ai 2026-06
 
 // admin/um_gedit.php, row 95
@@ -3696,7 +3723,7 @@ return [
 
 // admin/um_gedit.php, row 220
 // include/constants.php, row 455
-// include/perm_sql.php, row 407
+// include/perm_sql.php, row 403
 // include/um_gsrch.php, row 50
 "Group" => "Skupina", // ai 2026-06
 
@@ -3714,9 +3741,10 @@ return [
 
 // admin/um_gedit.php, row 312
 // admin/um_uedit.php, row 230, 241
-// include/logs.php, row 742
+// include/logs.php, row 891
 // include/menu_util.php, row 70
 // include/se_users.php, row 136
+// src/Optimize/CheckLoginAddresses.php, row 101
 "Users" => "U\x9Eivatelia",
 
 // admin/um_gedit.php, row 320
@@ -3784,190 +3812,190 @@ return [
 // admin/usershow.php, row 122
 "Show selected users" => "Zobrazi\x9D vybran\xFDch u\x9E\xEDvate\xBEov", // ai 2026-06
 
-// admin/write_mail.php, row 121, 247
+// admin/write_mail.php, row 120, 255
 // include/mail.php, row 666
 "Body" => "Text", // ai 2026-06
 
-// admin/write_mail.php, row 122, 248
+// admin/write_mail.php, row 121, 256
 "From (email)" => "Od (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 123, 249
+// admin/write_mail.php, row 122, 257
 // include/mail.php, row 668
 "Reply to (email)" => "Odpoveda\x9D na (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 124, 250
+// admin/write_mail.php, row 123, 258
 // include/mail.php, row 669
 "Errors to (email)" => "Chyby na (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 125, 251
+// admin/write_mail.php, row 124, 259
 "Sender (email)" => "Odosielate\xBE (e-mail)", // ai 2026-06
 
-// admin/write_mail.php, row 126, 252
+// admin/write_mail.php, row 125, 260
 // include/mail.php, row 658
 "Language (charset)" => "Jazyk (znakov\xE1 sada)", // ai 2026-06
 
-// admin/write_mail.php, row 127, 253
+// admin/write_mail.php, row 126, 261
 // include/mail.php, row 656
 "Use HTML" => "Pou\x9Ei\x9D HTML", // ai 2026-06
 
-// admin/write_mail.php, row 128, 244
+// admin/write_mail.php, row 127, 252
 "Email template" => "\x8Aabl\xF3na e-mailu", // ai 2026-06
 
-// admin/write_mail.php, row 166
+// admin/write_mail.php, row 175
 "No template set (which is strange - template was just written to the database)" => "Nie je nastaven\xE1 \x9Eiadna \x9Aabl\xF3na (\xE8o je zvl\xE1\x9Atne - \x9Aabl\xF3na bola pr\xE1ve zap\xEDsan\xE1 do datab\xE1zy)", // ai 2026-06
 
-// admin/write_mail.php, row 183
+// admin/write_mail.php, row 192
 "Email successfully sent (Users: %1, Emails sent (valid e-mails...): %2, template id: %3)" => "E-mail \xFAspe\x9Ane odoslan\xFD (U\x9E\xEDvatelia: %1, odoslan\xFDch e-mailov (platn\xE9 adresy...): %2, id \x9Aabl\xF3ny: %3)", // ai 2026-06
 
-// admin/write_mail.php, row 187
+// admin/write_mail.php, row 196
 "Manually selected" => "Vybran\xE9 ru\xE8ne", // ai 2026-06
 
-// admin/write_mail.php, row 193
+// admin/write_mail.php, row 202
 // include/searchbar.class.php, row 652
 // src/Import/Definition.php, row 92
 // src/Import/DetailConfig.php, row 394
-"Filter" => "",
-
-// admin/write_mail.php, row 199
-"Can't update email template" => "Nepodarilo sa zmeni\x9D \x9Aabl\xF3nu e-mailu", // ai 2026-06
-
-// admin/write_mail.php, row 206
-"Bulk Email Wizard" => "Sprievodca hromadn\xFDm e-mailom", // ai 2026-06
+"Filter" => "Filter", // ai 2026-10
 
 // admin/write_mail.php, row 207
+"Can't update email template" => "Nepodarilo sa zmeni\x9D \x9Aabl\xF3nu e-mailu", // ai 2026-06
+
+// admin/write_mail.php, row 214
+"Bulk Email Wizard" => "Sprievodca hromadn\xFDm e-mailom", // ai 2026-06
+
+// admin/write_mail.php, row 215
 "Write email to users" => "Nap\xEDsa\x9D e-mail u\x9E\xEDvate\xBEom", // ai 2026-06
 
-// admin/write_mail.php, row 228
-// include/logs.php, row 890
+// admin/write_mail.php, row 236
+// include/logs.php, row 1039
 "Recipients" => "Pr\xEDjemcovia", // ai 2026-06
 
-// admin/write_mail.php, row 230
+// admin/write_mail.php, row 238
 "View Recipients" => "Zobrazi\x9D pr\xEDjemcov", // ai 2026-06
 
-// admin/write_mail.php, row 231
+// admin/write_mail.php, row 239
 "Selected users" => "Vybran\xED u\x9E\xEDvatelia", // ai 2026-06
 
-// admin/write_mail.php, row 232
+// admin/write_mail.php, row 240
 "Test email address(es)" => "Testovacia e-mailov\xE1 adresa (adresy)", // ai 2026-06
 
-// admin/write_mail.php, row 238
+// admin/write_mail.php, row 246
 "Write the email" => "Nap\xEDsa\x9D e-mail", // ai 2026-06
 
-// admin/write_mail.php, row 253
+// admin/write_mail.php, row 261
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "no" => "nie", // ai 2026-06
 
-// admin/write_mail.php, row 253
+// admin/write_mail.php, row 261
 // include/sliceadd.php, row 93
 // src/Optimize/CheckPhpFatals.php, row 66
 "yes" => "\xE1no", // ai 2026-06
 
-// admin/write_mail.php, row 254
+// admin/write_mail.php, row 262
 "Attachment 1" => "Pr\xEDloha 1", // ai 2026-06
 
-// admin/write_mail.php, row 255
+// admin/write_mail.php, row 263
 "Attachment 2" => "Pr\xEDloha 2", // ai 2026-06
 
-// admin/write_mail.php, row 256
+// admin/write_mail.php, row 264
 "Attachment 3" => "Pr\xEDloha 3", // ai 2026-06
 
 // central/appstore.php, row 64
-"Only a superadmin may install apps from the app store." => "",
+"Only a superadmin may install apps from the app store." => "Aplik\xE1cie z katal\xF3gu aplik\xE1ci\xED smie in\x9Atalova\x9D len superadmin.", // ai 2026-10
 
 // central/appstore.php, row 71, 105
-"App store" => "",
+"App store" => "Katal\xF3g aplik\xE1ci\xED", // ai 2026-10
 
 // central/appstore.php, row 100
-"The app store" => "",
+"The app store" => "Katal\xF3g aplik\xE1ci\xED", // ai 2026-10
 
 // central/appstore.php, row 106
-"Apps of" => "",
+"Apps of" => "Aplik\xE1cie z", // ai 2026-10
 
 // central/appstore.php, row 106
-"This AA logs in to it by the public account of the app store; it lists the apps that AA publishes." => "",
+"This AA logs in to it by the public account of the app store; it lists the apps that AA publishes." => "Toto AA sa k nemu prihlasuje verejn\xFDm \xFA\xE8tom katal\xF3gu aplik\xE1ci\xED; zobraz\xED aplik\xE1cie, ktor\xE9 dan\xE9 AA zverej\xF2uje.", // ai 2026-10
 
 // central/appstore.php, row 108
-"Show the apps" => "",
+"Show the apps" => "Zobrazi\x9D aplik\xE1cie", // ai 2026-10
 
 // central/appstore.php, row 115
 // central/installapp.php, row 463, 519
-"No such AA in the Central list." => "",
+"No such AA in the Central list." => "Tak\xE9 AA v zozname Central nie je.", // ai 2026-10
 
 // central/appstore.php, row 123
-"That AA has no app store account (Optimize \"App store account\" creates it there), or it is too old." => "",
+"That AA has no app store account (Optimize \"App store account\" creates it there), or it is too old." => "To AA nem\xE1 \xFA\xE8et katal\xF3gu aplik\xE1ci\xED (vytvor\xED ho tam Optimaliz\xE1cia \x84\xDA\xE8et katal\xF3gu aplik\xE1ci\xED\x93), alebo je pr\xEDli\x9A star\xE9.", // ai 2026-10
 
 // central/appstore.php, row 130
 // central/installapp.php, row 387
-"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "",
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize: %1" => "Tabu\xBEka tohto AA nepodporuje transakcie (nie je InnoDB) \x96 preve\xEFte ju v AA > Optimalizova\x9D: %1", // ai 2026-10
 
 // central/appstore.php, row 142
 // central/installapp.php, row 723, 1214
-"This preview is no longer open - it was written already or forgotten." => "",
+"This preview is no longer open - it was written already or forgotten." => "Tento n\xE1h\xBEad u\x9E nie je otvoren\xFD \x96 bol u\x9E zap\xEDsan\xFD alebo zabudnut\xFD.", // ai 2026-10
 
 // central/appstore.php, row 160
-"That AA publishes no app." => "",
+"That AA publishes no app." => "To AA nezverej\xF2uje \x9Eiadnu aplik\xE1ciu.", // ai 2026-10
 
 // central/appstore.php, row 164
-"App" => "",
+"App" => "Aplik\xE1cia", // ai 2026-10
 
 // central/appstore.php, row 164
-// include/logs.php, row 1032
-"Version" => "",
+// include/logs.php, row 1181
+"Version" => "Verzia", // ai 2026-10
 
 // central/appstore.php, row 164
 // central/installapp.php, row 1357
 // include/menu.php, row 232
 // include/menu_util.php, row 448, 758
-// include/slice.class.php, row 1394
+// include/slice.class.php, row 1387
 // src/Central/FindingText.php, row 496
 "Alerts" => "Zasielanie", // ai 2026-06
 
 // central/appstore.php, row 166
-"not published" => "",
+"not published" => "nezverejnen\xE9", // ai 2026-10
 
 // central/appstore.php, row 171
 // central/installapp.php, row 479, 831, 1205
-"Install" => "",
+"Install" => "In\x9Atalova\x9D", // ai 2026-10
 
 // central/appstore.php, row 173
-"Install shows a preview first; nothing is written before you confirm it." => "",
+"Install shows a preview first; nothing is written before you confirm it." => "Tla\xE8idlo \x84In\x9Atalova\x9D\x93 najprv zobraz\xED n\xE1h\xBEad; ni\xE8 sa nezap\xED\x9Ae, k\xFDm to nepotvrd\xEDte.", // ai 2026-10
 
 // central/import_csv.php, row 33
 "You don't have permissions to import sites from CSV." => "Nem\xE1te pr\xE1vo importova\x9D weby z CSV.", // ai 2026-06
 
 // central/import_csv.php, row 42
-"No CSV file received (upload error %1)." => "",
+"No CSV file received (upload error %1)." => "Nebol prijat\xFD \x9Eiadny CSV s\xFAbor (chyba nahr\xE1vania %1).", // ai 2026-10
 
 // central/import_csv.php, row 53
-"The first line is empty. It must hold the column names." => "",
+"The first line is empty. It must hold the column names." => "Prv\xFD riadok je pr\xE1zdny. Mus\xED obsahova\x9D n\xE1zvy st\xE5pcov.", // ai 2026-10
 
 // central/import_csv.php, row 56
-"The file looks semicolon-separated. Separate the fields by comma." => "",
+"The file looks semicolon-separated. Separate the fields by comma." => "S\xFAbor vyzer\xE1 ako oddelen\xFD bodko\xE8iarkami. Polia odde\xBEte \xE8iarkou.", // ai 2026-10
 
 // central/import_csv.php, row 59
-"The first line must hold the column names (see below), none of them was found." => "",
+"The first line must hold the column names (see below), none of them was found." => "Prv\xFD riadok mus\xED obsahova\x9D n\xE1zvy st\xE5pcov (pozri ni\x9E\x9Aie), \x9Eiadny z nich sa nena\x9Aiel.", // ai 2026-10
 
 // central/import_csv.php, row 62
-"Column %1 is in the first line twice, nothing was imported." => "",
+"Column %1 is in the first line twice, nothing was imported." => "St\xE5pec %1 je v prvom riadku dvakr\xE1t, ni\xE8 nebolo importovan\xE9.", // ai 2026-10
 
 // central/import_csv.php, row 77
 "inserted" => "vlo\x9Een\xE1", // ai 2026-06
 
 // central/import_csv.php, row 80
-"Ignored columns" => "",
+"Ignored columns" => "Ignorovan\xE9 st\xE5pce", // ai 2026-10
 
 // central/import_csv.php, row 83
-"Row %1 skipped - it has %2 fields, the first row has a different number." => "",
+"Row %1 skipped - it has %2 fields, the first row has a different number." => "Riadok %1 presko\xE8en\xFD \x96 po\xE8et pol\xED: %2, prv\xFD riadok m\xE1 in\xFD po\xE8et.", // ai 2026-10
 
 // central/import_csv.php, row 85
 "Done" => "Hotovo", // ai 2026-06
 
 // central/import_csv.php, row 89
-"Database error at row %1 - import rolled back, nothing was inserted." => "",
+"Database error at row %1 - import rolled back, nothing was inserted." => "Chyba datab\xE1zy na riadku %1 \x96 import bol vr\xE1ten\xFD sp\xE4\x9D, ni\xE8 nebolo vlo\x9Een\xE9.", // ai 2026-10
 
 // central/import_csv.php, row 90
-"Database error - import rolled back, nothing was inserted." => "",
+"Database error - import rolled back, nothing was inserted." => "Chyba datab\xE1zy \x96 import bol vr\xE1ten\xFD sp\xE4\x9D, ni\xE8 nebolo vlo\x9Een\xE9.", // ai 2026-10
 
 // central/import_csv.php, row 97
 "Central - Import Sites from CSV" => "Central - Import webov z CSV", // ai 2026-06
@@ -3976,7 +4004,7 @@ return [
 "CSV file" => "CSV s\xFAbor", // ai 2026-06
 
 // central/import_csv.php, row 106
-"CSV file for upload, fields separated by comma. The first row holds the column names, in any order; each following row is one AA. Accepted column names (others are ignored):<br>%1" => "",
+"CSV file for upload, fields separated by comma. The first row holds the column names, in any order; each following row is one AA. Accepted column names (others are ignored):<br>%1" => "CSV s\xFAbor na nahranie, polia oddelen\xE9 \xE8iarkou. Prv\xFD riadok obsahuje n\xE1zvy st\xE5pcov v \xBEubovo\xBEnom porad\xED; ka\x9Ed\xFD \xEFal\x9A\xED riadok je jedno AA. Prij\xEDman\xE9 n\xE1zvy st\xE5pcov (ostatn\xE9 sa ignoruj\xFA):<br>%1", // ai 2026-10
 
 // central/include/actionapps.class.php, row 276
 // include/menu_util.php, row 59
@@ -3986,7 +4014,7 @@ return [
 "You do not have permission to manage ActionApps installations" => "Nem\xE1te pr\xE1vo spravova\x9D in\x9Atal\xE1cie ActionApps", // ai 2026-06
 
 // central/index.php, row 78
-"The authentication was not performed - start it from the ActionApps Central page" => "",
+"The authentication was not performed - start it from the ActionApps Central page" => "Overenie neprebehlo \x96 spustite ho zo str\xE1nky ActionApps Central", // ai 2026-10
 
 // central/index.php, row 89
 "Successfully authenticated to %1" => "\xDAspe\x9An\xE1 autentifik\xE1cia k %1", // ai 2026-06
@@ -4012,50 +4040,50 @@ return [
 "Auth" => "Autentifik\xE1cia", // ai 2026-06
 
 // central/index.php, row 148
-"Apps" => "",
+"Apps" => "Aplik\xE1cie", // ai 2026-10
 
 // central/index.php, row 148
-"Install an app from this AA..." => "",
+"Install an app from this AA..." => "In\x9Atalova\x9D aplik\xE1ciu z tohto AA...", // ai 2026-10
 
 // central/installapp.php, row 135, 136
-"You may not install apps (PS_INSTALL_APP)." => "",
+"You may not install apps (PS_INSTALL_APP)." => "Nesmiete in\x9Atalova\x9D aplik\xE1cie (PS_INSTALL_APP).", // ai 2026-10
 
 // central/installapp.php, row 147, 148
-"Only a superadmin may transfer apps with their items." => "",
+"Only a superadmin may transfer apps with their items." => "Aplik\xE1cie aj so spr\xE1vami smie pren\xE1\x9Aa\x9D len superadmin.", // ai 2026-10
 
 // central/installapp.php, row 152
-"Only a superadmin may install apps from another AA." => "",
+"Only a superadmin may install apps from another AA." => "Aplik\xE1cie z in\xE9ho AA smie in\x9Atalova\x9D len superadmin.", // ai 2026-10
 
 // central/installapp.php, row 179
-"No such transfer, or not yours." => "",
+"No such transfer, or not yours." => "Tak\xFD prenos neexistuje alebo nie je v\xE1\x9A.", // ai 2026-10
 
 // central/installapp.php, row 184
-"The request failed - details are in the PHP error log." => "",
+"The request failed - details are in the PHP error log." => "Po\x9Eiadavka zlyhala \x96 podrobnosti s\xFA v chybovom logu PHP.", // ai 2026-10
 
 // central/installapp.php, row 189
-"Install an app" => "",
+"Install an app" => "In\x9Atal\xE1cia aplik\xE1cie", // ai 2026-10
 
 // central/installapp.php, row 359
-"%1 failed (%2) - details are in the PHP error log." => "",
+"%1 failed (%2) - details are in the PHP error log." => "%1 zlyhalo (%2) \x96 podrobnosti s\xFA v chybovom logu PHP.", // ai 2026-10
 
 // central/installapp.php, row 380
-"Open the app store again" => "",
+"Open the app store again" => "Znova otvori\x9D katal\xF3g aplik\xE1ci\xED", // ai 2026-10
 
 // central/installapp.php, row 381, 1434
-"Log in to the source AA again" => "",
+"Log in to the source AA again" => "Znova sa prihl\xE1si\x9D k zdrojov\xE9mu AA", // ai 2026-10
 
 // central/installapp.php, row 417
-"Unfinished transfers" => "",
+"Unfinished transfers" => "Nedokon\xE8en\xE9 prenosy", // ai 2026-10
 
 // central/installapp.php, row 430
-"What to install from this AA" => "",
+"What to install from this AA" => "\xC8o z tohto AA in\x9Atalova\x9D", // ai 2026-10
 
 // central/installapp.php, row 445
-"This AA" => "",
+"This AA" => "Toto AA", // ai 2026-10
 
 // central/installapp.php, row 451
-// include/feeding.php, row 466, 502
-// include/logs.php, row 1033
+// include/feeding.php, row 452, 488
+// include/logs.php, row 1182
 // src/Import/Definition.php, row 85, 113
 // src/Import/DetailConfig.php, row 188, 202
 // src/Optimize/CheckImports.php, row 176, 178
@@ -4063,353 +4091,353 @@ return [
 "Source" => "Zdroj", // ai 2026-06
 
 // central/installapp.php, row 452
-"Install from" => "",
+"Install from" => "In\x9Atalova\x9D z", // ai 2026-10
 
 // central/installapp.php, row 452
-"Another AA asks for the login of its superadmin." => "",
+"Another AA asks for the login of its superadmin." => "In\xE9 AA vy\x9Eaduje prihl\xE1senie svojho superadmina.", // ai 2026-10
 
 // central/installapp.php, row 454
-"Choose the source" => "",
+"Choose the source" => "Zvoli\x9D zdroj", // ai 2026-10
 
 // central/installapp.php, row 467
-"Install an app from %1" => "",
+"Install an app from %1" => "In\x9Atal\xE1cia aplik\xE1cie z %1", // ai 2026-10
 
 // central/installapp.php, row 471
-"Log in and choose the app" => "",
+"Log in and choose the app" => "Prihl\xE1si\x9D sa a vybra\x9D aplik\xE1ciu", // ai 2026-10
 
 // central/installapp.php, row 480
-"a site" => "",
+"a site" => "web", // ai 2026-10
 
 // central/installapp.php, row 481
-"slices and Alerts" => "",
+"slices and Alerts" => "moduly a Zasielanie", // ai 2026-10
 
 // central/installapp.php, row 484, 1357
-// include/slice.class.php, row 1145
+// include/slice.class.php, row 1138
 // src/Central/FindingText.php, row 496
 // src/Optimize/SeoDuplicates.php, row 66
 "Site" => "Web", // ai 2026-06
 
 // central/installapp.php, row 488
-"The site brings the slices and Alerts modules it uses." => "",
+"The site brings the slices and Alerts modules it uses." => "Web so sebou prinesie moduly a moduly Zasielanie, ktor\xE9 pou\x9E\xEDva.", // ai 2026-10
 
 // central/installapp.php, row 491
-"Slices and Alerts" => "",
+"Slices and Alerts" => "Moduly a Zasielanie", // ai 2026-10
 
 // central/installapp.php, row 495
-"Hold Ctrl to choose more of them." => "",
+"Hold Ctrl to choose more of them." => "Na v\xFDber viacer\xFDch podr\x9Ete Ctrl.", // ai 2026-10
 
 // central/installapp.php, row 505
-// include/logs.php, row 1075
+// include/logs.php, row 770, 1224
 "Mode" => "Re\x9Eim", // ai 2026-06
 
 // central/installapp.php, row 506
-"Install - a clean app, no items" => "",
+"Install - a clean app, no items" => "In\x9Atal\xE1cia \x96 \xE8ist\xE1 aplik\xE1cia bez spr\xE1v", // ai 2026-10
 
 // central/installapp.php, row 507
-"Transfer - a copy with the items and readers" => "",
+"Transfer - a copy with the items and readers" => "Prenos \x96 k\xF3pia so spr\xE1vami a \xE8itate\xBEmi", // ai 2026-10
 
 // central/installapp.php, row 508
-"Items of" => "",
+"Items of" => "Spr\xE1vy", // ai 2026-10
 
 // central/installapp.php, row 509
-"the active bin" => "",
+"the active bin" => "zo schr\xE1nky Aktu\xE1lne", // ai 2026-10
 
 // central/installapp.php, row 510
-"all bins" => "",
+"all bins" => "zo v\x9Aetk\xFDch schr\xE1nok", // ai 2026-10
 
 // central/installapp.php, row 540
-"Choose the app from the list of its apps" => "",
+"Choose the app from the list of its apps" => "Vybra\x9D aplik\xE1ciu zo zoznamu jeho aplik\xE1ci\xED", // ai 2026-10
 
 // central/installapp.php, row 555, 829
-"What to install" => "",
+"What to install" => "\xC8o in\x9Atalova\x9D", // ai 2026-10
 
 // central/installapp.php, row 555, 1363
-"transfer with the items" => "",
+"transfer with the items" => "prenos so spr\xE1vami", // ai 2026-10
 
 // central/installapp.php, row 555, 1363
-"install, no items" => "",
+"install, no items" => "in\x9Atal\xE1cia bez spr\xE1v", // ai 2026-10
 
 // central/installapp.php, row 564
-"Username on the source AA" => "",
+"Username on the source AA" => "U\x9E\xEDvate\xBEsk\xE9 meno v zdrojovom AA", // ai 2026-10
 
 // central/installapp.php, row 565
-"A superadmin of the source AA. The password is used for this request only; this AA keeps a login token for a day, until the transfer ends." => "",
+"A superadmin of the source AA. The password is used for this request only; this AA keeps a login token for a day, until the transfer ends." => "Superadmin zdrojov\xE9ho AA. Heslo sa pou\x9Eije len pre t\xFAto po\x9Eiadavku; toto AA si ponech\xE1 prihlasovac\xED token na jeden de\xF2, do konca prenosu.", // ai 2026-10
 
 // central/installapp.php, row 567
-"2FA code" => "",
+"2FA code" => "K\xF3d 2FA", // ai 2026-10
 
 // central/installapp.php, row 568
-"Only when the user has two-factor login on the source AA." => "",
+"Only when the user has two-factor login on the source AA." => "Len ak m\xE1 u\x9E\xEDvate\xBE v zdrojovom AA dvojf\xE1zov\xE9 prihl\xE1senie.", // ai 2026-10
 
 // central/installapp.php, row 662
-"You may not change the module %1 - it cannot be exported." => "",
+"You may not change the module %1 - it cannot be exported." => "Modul %1 nesmiete meni\x9D \x96 ned\xE1 sa exportova\x9D.", // ai 2026-10
 
 // central/installapp.php, row 663
-"The source has no such app, or you may not export it." => "",
+"The source has no such app, or you may not export it." => "Zdroj tak\xFA aplik\xE1ciu nem\xE1 alebo ju nesmiete exportova\x9D.", // ai 2026-10
 
 // central/installapp.php, row 672
-"Reading the app" => "",
+"Reading the app" => "Na\xE8\xEDtanie aplik\xE1cie", // ai 2026-10
 
 // central/installapp.php, row 699, 727
-"Choose a site, or slices and Alerts modules - not both." => "",
+"Choose a site, or slices and Alerts modules - not both." => "Zvo\xBEte web, alebo moduly a moduly Zasielanie \x96 nie oboje.", // ai 2026-10
 
 // central/installapp.php, row 739
-"Choose another app" => "",
+"Choose another app" => "Zvoli\x9D in\xFA aplik\xE1ciu", // ai 2026-10
 
 // central/installapp.php, row 749
-"The run has moved on meanwhile." => "",
+"The run has moved on meanwhile." => "Beh medzit\xFDm pokro\xE8il.", // ai 2026-10
 
 // central/installapp.php, row 749
-"Show the run" => "",
+"Show the run" => "Zobrazi\x9D beh", // ai 2026-10
 
 // central/installapp.php, row 779, 1239
-"The app cannot be installed - see the errors (E) above." => "",
+"The app cannot be installed - see the errors (E) above." => "Aplik\xE1ciu nie je mo\x9En\xE9 nain\x9Atalova\x9D \x96 pozri chyby (E) vy\x9A\x9Aie.", // ai 2026-10
 
 // central/installapp.php, row 788
-"a new slice" => "",
+"a new slice" => "nov\xFD modul", // ai 2026-10
 
 // central/installapp.php, row 790
-"existing: %1" => "",
+"existing: %1" => "existuj\xFAci: %1", // ai 2026-10
 
 // central/installapp.php, row 801
-"chosen by its role: %1" => "",
+"chosen by its role: %1" => "vybran\xE9 pod\xBEa roly: %1", // ai 2026-10
 
 // central/installapp.php, row 803
-"the views and fields of the app will work on its live reader data" => "",
+"the views and fields of the app will work on its live reader data" => "poh\xBEady a polo\x9Eky aplik\xE1cie bud\xFA pracova\x9D so \x9Eiv\xFDmi d\xE1tami \xE8itate\xBEov tohto modulu", // ai 2026-10
 
 // central/installapp.php, row 831, 842
-"Into" => "",
+"Into" => "Kam", // ai 2026-10
 
 // central/installapp.php, row 838, 839
-"Install %1" => "",
+"Install %1" => "In\x9Atalova\x9D %1", // ai 2026-10
 
 // central/installapp.php, row 841
-"not installed" => "",
+"not installed" => "nein\x9Atalovan\xE9", // ai 2026-10
 
 // central/installapp.php, row 843
-"a new module" => "",
+"a new module" => "nov\xFD modul", // ai 2026-10
 
 // central/installapp.php, row 853
-"A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice." => "",
+"A slice you leave out is not installed; what points to it in the rest of the app is listed in the warnings below. A slice going into an existing slice keeps the name of that slice." => "Modul, ktor\xFD vynech\xE1te, sa nenain\x9Ataluje; \xE8o na\xF2 vo zvy\x9Aku aplik\xE1cie odkazuje, uv\xE1dzaj\xFA varovania ni\x9E\x9Aie. Modul in\x9Atalovan\xFD do existuj\xFAceho modulu si ponech\xE1 n\xE1zov toho modulu.", // ai 2026-10
 
 // central/installapp.php, row 862
-"Check the changes" => "",
+"Check the changes" => "Skontrolova\x9D zmeny", // ai 2026-10
 
 // central/installapp.php, row 862
-"After a change, check it before installing." => "",
+"After a change, check it before installing." => "Po zmene ju pred in\x9Atal\xE1ciou skontrolujte.", // ai 2026-10
 
 // central/installapp.php, row 870
-"Check the changes first" => "",
+"Check the changes first" => "Najprv skontrolujte zmeny", // ai 2026-10
 
 // central/installapp.php, row 885
-"Links outside the app" => "",
+"Links outside the app" => "Odkazy mimo aplik\xE1ciu", // ai 2026-10
 
 // central/installapp.php, row 885
-"The app links to these slices (or sites), but neither the app nor this AA has them. Send the links to a slice of this AA, or keep the id - it then leads nowhere." => "",
+"The app links to these slices (or sites), but neither the app nor this AA has them. Send the links to a slice of this AA, or keep the id - it then leads nowhere." => "Aplik\xE1cia odkazuje na tieto moduly (alebo weby), ale nem\xE1 ich ani aplik\xE1cia, ani toto AA. Presmerujte odkazy na modul tohto AA, alebo ponechajte id \x96 potom nikam nevedie.", // ai 2026-10
 
 // central/installapp.php, row 886
-"Outside the app" => "",
+"Outside the app" => "Mimo aplik\xE1cie", // ai 2026-10
 
 // central/installapp.php, row 886, 891
-"Links go to" => "",
+"Links go to" => "Odkazy ved\xFA do", // ai 2026-10
 
 // central/installapp.php, row 890, 1419, 1495
-"and %1 more" => "",
+"and %1 more" => "a \xEFal\x9Aie: %1", // ai 2026-10
 
 // central/installapp.php, row 892
-"keep the id - leads nowhere" => "",
+"keep the id - leads nowhere" => "ponecha\x9D id \x96 nikam nevedie", // ai 2026-10
 
 // central/installapp.php, row 896
-"as an earlier install from the same source" => "",
+"as an earlier install from the same source" => "ako pri skor\x9Aej in\x9Atal\xE1cii z rovnak\xE9ho zdroja", // ai 2026-10
 
 // central/installapp.php, row 906, 908, 909, 910
-"of %1 items" => "",
+"of %1 items" => "z %1 spr\xE1v", // ai 2026-10
 
 // central/installapp.php, row 907, 912
-"items" => "",
+"items" => "spr\xE1v", // ai 2026-10
 
 // central/installapp.php, row 924
-"Transfer only some items" => "",
+"Transfer only some items" => "Prenies\x9D len niektor\xE9 spr\xE1vy", // ai 2026-10
 
 // central/installapp.php, row 925
-"Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above." => "",
+"Empty takes every item. A condition: %1, for example %2. Check the changes then counts its items in the table above." => "Pr\xE1zdne pole prevezme v\x9Aetky spr\xE1vy. Podmienka: %1, napr\xEDklad %2. Tla\xE8idlo \x84Skontrolova\x9D zmeny\x93 potom v tabu\xBEke vy\x9A\x9Aie spo\xE8\xEDta vyhovuj\xFAce spr\xE1vy.", // ai 2026-10
 
 // central/installapp.php, row 943
-"all items" => "",
+"all items" => "v\x9Aetky spr\xE1vy", // ai 2026-10
 
 // central/installapp.php, row 967
-"Cannot be used." => "",
+"Cannot be used." => "Ned\xE1 sa pou\x9Ei\x9D.", // ai 2026-10
 
 // central/installapp.php, row 968
-"Takes every item." => "",
+"Takes every item." => "Prevezme v\x9Aetky spr\xE1vy.", // ai 2026-10
 
 // central/installapp.php, row 968
-"It narrows nothing; empty the field if all the items should go." => "",
+"It narrows nothing; empty the field if all the items should go." => "Ni\xE8 nezu\x9Euje; ak sa maj\xFA prenies\x9D v\x9Aetky spr\xE1vy, pole vypr\xE1zdnite.", // ai 2026-10
 
 // central/installapp.php, row 991
-"The slice has %1 \"%2\"." => "",
+"The slice has %1 \"%2\"." => "Modul m\xE1 %1 \x84%2\x93.", // ai 2026-10
 
 // central/installapp.php, row 1003
-"Links will point nowhere." => "",
+"Links will point nowhere." => "Odkazy nebud\xFA nikam vies\x9D.", // ai 2026-10
 
 // central/installapp.php, row 1005
-"%1 values link to items a condition leaves behind." => "",
+"%1 values link to items a condition leaves behind." => "Po\xE8et hodn\xF4t odkazuj\xFAcich na spr\xE1vy, ktor\xE9 podmienka vynech\xE1: %1.", // ai 2026-10
 
 // central/installapp.php, row 1010
-"%1 values link to items of %2 that stay behind." => "",
+"%1 values link to items of %2 that stay behind." => "Po\xE8et hodn\xF4t odkazuj\xFAcich na spr\xE1vy z %2, ktor\xE9 zostan\xFA v zdroji: %1.", // ai 2026-10
 
 // central/installapp.php, row 1011
-"To take only the items linking to items that go:" => "",
+"To take only the items linking to items that go:" => "Aby sa preniesli len spr\xE1vy odkazuj\xFAce na pren\xE1\x9Aan\xE9 spr\xE1vy:", // ai 2026-10
 
 // central/installapp.php, row 1051
-"relation to %1, holds the item id" => "",
+"relation to %1, holds the item id" => "v\xE4zba na %1, obsahuje id spr\xE1vy", // ai 2026-10
 
 // central/installapp.php, row 1051, 1071
-"another slice" => "",
+"another slice" => "in\xFD modul", // ai 2026-10
 
 // central/installapp.php, row 1052
-"checkbox, 1 when ticked" => "",
+"checkbox, 1 when ticked" => "za\x9Akrt\xE1vacie pol\xED\xE8ko, 1 ak je za\x9Akrtnut\xE9", // ai 2026-10
 
 // central/installapp.php, row 1053
 "date" => "d\xE1tum", // ai 2026-06
 
 // central/installapp.php, row 1071
-"The items of %1 linked to one item of %2: %3 is a relation field, it holds the item id of the linked item (32 characters, the id= in the address of its edit page), not its name." => "",
+"The items of %1 linked to one item of %2: %3 is a relation field, it holds the item id of the linked item (32 characters, the id= in the address of its edit page), not its name." => "Spr\xE1vy z %1 naviazan\xE9 na jednu spr\xE1vu (%2): %3 je polo\x9Eka v\xE4zby, obsahuje id naviazanej spr\xE1vy (32 znakov, id= v adrese jej edita\xE8nej str\xE1nky), nie jej n\xE1zov.", // ai 2026-10
 
 // central/installapp.php, row 1078
-"equals the value exactly" => "",
+"equals the value exactly" => "sa presne rovn\xE1 hodnote", // ai 2026-10
 
 // central/installapp.php, row 1078
-"contains the text; \"a\" OR \"b\" for either" => "",
+"contains the text; \"a\" OR \"b\" for either" => "obsahuje text; \"a\" OR \"b\" pre ktor\xFDko\xBEvek z nich", // ai 2026-10
 
 // central/installapp.php, row 1078
-"differs from the value (one word or number)" => "",
+"differs from the value (one word or number)" => "sa l\xED\x9Ai od hodnoty (jedno slovo alebo \xE8\xEDslo)", // ai 2026-10
 
 // central/installapp.php, row 1079
-"is smaller or greater (numbers)" => "",
+"is smaller or greater (numbers)" => "je men\x9Aia alebo v\xE4\xE8\x9Aia (\xE8\xEDsla)", // ai 2026-10
 
 // central/installapp.php, row 1079
-"begins with the text" => "",
+"begins with the text" => "za\xE8\xEDna textom", // ai 2026-10
 
 // central/installapp.php, row 1079
-"is not set (write any value)" => "",
+"is not set (write any value)" => "nie je vyplnen\xE1 (nap\xED\x9Ate \xBEubovo\xBEn\xFA hodnotu)", // ai 2026-10
 
 // central/installapp.php, row 1080
-"is set (write any value)" => "",
+"is set (write any value)" => "je vyplnen\xE1 (nap\xED\x9Ate \xBEubovo\xBEn\xFA hodnotu)", // ai 2026-10
 
 // central/installapp.php, row 1080
-"lies between two numbers" => "",
+"lies between two numbers" => "le\x9E\xED medzi dvoma \xE8\xEDslami", // ai 2026-10
 
 // central/installapp.php, row 1080
-"matches the regular expression" => "",
+"matches the regular expression" => "zodpoved\xE1 regul\xE1rnemu v\xFDrazu", // ai 2026-10
 
 // central/installapp.php, row 1081
-"is before or after a date (any form PHP strtotime reads)" => "",
+"is before or after a date (any form PHP strtotime reads)" => "je pred d\xE1tumom alebo po \xF2om (v \xBEubovo\xBEnom tvare, ktor\xFD pre\xE8\xEDta PHP strtotime)", // ai 2026-10
 
 // central/installapp.php, row 1081
-"is before or after a date written dd.mm.yyyy" => "",
+"is before or after a date written dd.mm.yyyy" => "je pred d\xE1tumom alebo po \xF2om (v tvare dd.mm.yyyy)", // ai 2026-10
 
 // central/installapp.php, row 1082
-"How to write a condition, with field ids" => "",
+"How to write a condition, with field ids" => "Ako zap\xEDsa\x9D podmienku, s id polo\x9Eiek", // ai 2026-10
 
 // central/installapp.php, row 1083
-"Parts" => "",
+"Parts" => "\xC8asti", // ai 2026-10
 
 // central/installapp.php, row 1084
-"field id" => "",
+"field id" => "id polo\x9Eky", // ai 2026-10
 
 // central/installapp.php, row 1084
-"16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end." => "",
+"16 characters, a short id padded with dots: headline........, relation.......4. A dot too many or too few is an unknown field. The ids of every slice are listed at the end." => "16 znakov, kr\xE1tke id doplnen\xE9 bodkami: headline........, relation.......4. O bodku viac alebo menej = nezn\xE1ma polo\x9Eka. Id polo\x9Eiek v\x9Aetk\xFDch modulov s\xFA uveden\xE9 na konci.", // ai 2026-10
 
 // central/installapp.php, row 1085
-"operator" => "",
+"operator" => "oper\xE1tor", // ai 2026-10
 
 // central/installapp.php, row 1085
-"how to compare, see the operators below." => "",
+"how to compare, see the operators below." => "ako porovna\x9D, pozri oper\xE1tory ni\x9E\x9Aie.", // ai 2026-10
 
 // central/installapp.php, row 1086
-"value" => "",
+"value" => "hodnota", // ai 2026-10
 
 // central/installapp.php, row 1086
-"what to compare with. Capitals count. A dash inside a value is written doubled, see below." => "",
+"what to compare with. Capitals count. A dash inside a value is written doubled, see below." => "s \xE8\xEDm porovna\x9D. Na ve\xBEkosti p\xEDsmen z\xE1le\x9E\xED. Poml\xE8ka vn\xFAtri hodnoty sa p\xED\x9Ae zdvojene, pozri ni\x9E\x9Aie.", // ai 2026-10
 
 // central/installapp.php, row 1087
-"Examples" => "",
+"Examples" => "Pr\xEDklady", // ai 2026-10
 
 // central/installapp.php, row 1088
-"Edited after 1 January %1. d:> is after, d:< before." => "",
+"Edited after 1 January %1. d:> is after, d:< before." => "Upraven\xE9 po 1. janu\xE1ri %1. d:> znamen\xE1 po, d:< pred.", // ai 2026-10
 
 // central/installapp.php, row 1089
-"Operators" => "",
+"Operators" => "Oper\xE1tory", // ai 2026-10
 
 // central/installapp.php, row 1089
 // include/searchlib.php, row 173
 "Operator" => "Oper\xE1tor", // ai 2026-06
 
 // central/installapp.php, row 1089
-"Keeps the items whose field" => "",
+"Keeps the items whose field" => "Ponech\xE1 spr\xE1vy, ktor\xFDch polo\x9Eka", // ai 2026-10
 
 // central/installapp.php, row 1089
-"Value, e.g." => "",
+"Value, e.g." => "Hodnota, napr.", // ai 2026-10
 
 // central/installapp.php, row 1093
-"More than one condition" => "",
+"More than one condition" => "Viac podmienok", // ai 2026-10
 
 // central/installapp.php, row 1093
-"Repeat field, operator and value after the first one, without a second d-. An item must match all of them. Up to %1 conditions and %2 characters." => "",
+"Repeat field, operator and value after the first one, without a second d-. An item must match all of them. Up to %1 conditions and %2 characters." => "Za prvou podmienkou zopakujte polo\x9Eku, oper\xE1tor a hodnotu, bez druh\xE9ho d-. Spr\xE1va mus\xED splni\x9D v\x9Aetky. Najviac podmienok: %1, znakov: %2.", // ai 2026-10
 
 // central/installapp.php, row 1095
-"A dash inside a value" => "",
+"A dash inside a value" => "Poml\xE8ka vn\xFAtri hodnoty", // ai 2026-10
 
 // central/installapp.php, row 1095
-"A single dash ends the value, so a dash in a date or a name is written doubled (--). Otherwise the condition cannot be used." => "",
+"A single dash ends the value, so a dash in a date or a name is written doubled (--). Otherwise the condition cannot be used." => "Jednoduch\xE1 poml\xE8ka hodnotu ukon\xE8uje, preto sa poml\xE8ka v d\xE1tume alebo mene p\xED\x9Ae zdvojene (--). Inak podmienku nie je mo\x9En\xE9 pou\x9Ei\x9D.", // ai 2026-10
 
 // central/installapp.php, row 1097
-"Field ids" => "",
+"Field ids" => "Id polo\x9Eiek", // ai 2026-10
 
 // central/installapp.php, row 1099
-"%1 fields" => "",
+"%1 fields" => "polo\x9Eiek: %1", // ai 2026-10
 
 // central/installapp.php, row 1114, 1116
-"Owner of the new modules" => "",
+"Owner of the new modules" => "Vlastn\xEDk nov\xFDch modulov", // ai 2026-10
 
 // central/installapp.php, row 1122
-// include/modutils.php, row 85
+// include/modutils.php, row 82
 "+ Add new owner" => "+ Prida\x9D nov\xE9ho vlastn\xEDka", // ai 2026-06
 
 // central/installapp.php, row 1123
-// include/modutils.php, row 44, 96
-// include/slicedit.php, row 173
+// include/modutils.php, row 45, 93
+// include/slicedit.php, row 172
 "New Owner" => "Nov\xFD vlastn\xEDk",
 
 // central/installapp.php, row 1124
-// include/modutils.php, row 45, 97
-// include/slicedit.php, row 174
+// include/modutils.php, row 46, 94
+// include/slicedit.php, row 173
 "New Owner's E-mail" => "E-mail nov\xE9ho vlastn\xEDka",
 
 // central/installapp.php, row 1126
-"A slice going into an existing slice keeps the owner of that slice." => "",
+"A slice going into an existing slice keeps the owner of that slice." => "Modul in\x9Atalovan\xFD do existuj\xFAceho modulu si ponech\xE1 vlastn\xEDka toho modulu.", // ai 2026-10
 
 // central/installapp.php, row 1164
-"The field changes the value when it is saved - fill it in the slice after installing." => "",
+"The field changes the value when it is saved - fill it in the slice after installing." => "Polo\x9Eka pri ulo\x9Een\xED men\xED hodnotu \x96 vypl\xF2te ju v module po in\x9Atal\xE1cii.", // ai 2026-10
 
 // central/installapp.php, row 1166, 1173
-"keep the value of the app" => "",
+"keep the value of the app" => "ponecha\x9D hodnotu aplik\xE1cie", // ai 2026-10
 
 // central/installapp.php, row 1167
-// include/slice.class.php, row 1627
-// include/stringexpand.php, row 1854
+// include/slice.class.php, row 1620
+// include/stringexpand.php, row 1876
 "Yes" => "\xC1no", // ai 2026-06
 
 // central/installapp.php, row 1178
-// src/Util/ChangesMonitor.php, row 510
+// src/Util/ChangesMonitor.php, row 506
 "(empty)" => "(pr\xE1zdne)", // ai 2026-06
 
 // central/installapp.php, row 1183
-"Slice settings" => "",
+"Slice settings" => "Nastavenia modulu", // ai 2026-10
 
 // central/installapp.php, row 1183
-"Values that hold for the whole slice, not for single items. Leave a field empty to keep the value of the app; you can change them later in the slice under Setting." => "",
+"Values that hold for the whole slice, not for single items. Leave a field empty to keep the value of the app; you can change them later in the slice under Setting." => "Hodnoty platn\xE9 pre cel\xFD modul, nie pre jednotliv\xE9 spr\xE1vy. Ak pole nech\xE1te pr\xE1zdne, zostane hodnota aplik\xE1cie; nesk\xF4r ich m\xF4\x9Eete zmeni\x9D v module v \xE8asti Nastavenie.", // ai 2026-10
 
 // central/installapp.php, row 1184
 // include/menu.php, row 219
@@ -4417,142 +4445,139 @@ return [
 "Setting" => "Nastavenie", // ai 2026-06
 
 // central/installapp.php, row 1184
-"Value of the app" => "",
+"Value of the app" => "Hodnota aplik\xE1cie", // ai 2026-10
 
 // central/installapp.php, row 1184
-"New value" => "",
+"New value" => "Nov\xE1 hodnota", // ai 2026-10
 
 // central/installapp.php, row 1200
-"I have read the security findings (S) and want to install the app with them." => "",
+"I have read the security findings (S) and want to install the app with them." => "Pre\xE8\xEDtal(a) som bezpe\xE8nostn\xE9 zistenia (S) a chcem aplik\xE1ciu nain\x9Atalova\x9D aj s nimi.", // ai 2026-10
 
 // central/installapp.php, row 1203
-"Do not edit the source while the transfer runs. The items then go in batches in the task queue of this AA - the progress page only shows them, it may be closed." => "",
+"Do not edit the source while the transfer runs. The items then go in batches in the task queue of this AA - the progress page only shows them, it may be closed." => "Po\xE8as prenosu zdroj neupravujte. Spr\xE1vy potom p\xF4jdu po d\xE1vkach cez frontu \xFAloh tohto AA \x96 str\xE1nka priebehu ich len zobrazuje, m\xF4\x9Eete ju zavrie\x9D.", // ai 2026-10
 
 // central/installapp.php, row 1205
-"Writing the definitions\xE2\x80\xA6" => "",
+"Writing the definitions\xE2\x80\xA6" => "Zapisovanie defin\xEDci\xED\x85", // ai 2026-10
 
 // central/installapp.php, row 1205
-"Write the definitions and transfer the items" => "",
+"Write the definitions and transfer the items" => "Zap\xEDsa\x9D defin\xEDcie a prenies\x9D spr\xE1vy", // ai 2026-10
 
 // central/installapp.php, row 1221, 1251
-"The choice changed since the preview - preview again." => "",
+"The choice changed since the preview - preview again." => "V\xFDber sa od n\xE1h\xBEadu zmenil \x96 zobrazte n\xE1h\xBEad znova.", // ai 2026-10
 
 // central/installapp.php, row 1234
-"The source changed since the preview - preview again." => "",
+"The source changed since the preview - preview again." => "Zdroj sa od n\xE1h\xBEadu zmenil \x96 zobrazte n\xE1h\xBEad znova.", // ai 2026-10
 
 // central/installapp.php, row 1254
-"Writing the app" => "",
+"Writing the app" => "Zapisovanie aplik\xE1cie", // ai 2026-10
 
 // central/installapp.php, row 1273
-"existing slice" => "",
+"existing slice" => "existuj\xFAci modul", // ai 2026-10
 
 // central/installapp.php, row 1281
-"The definitions are written; modules: %1" => "",
+"The definitions are written; modules: %1" => "Defin\xEDcie s\xFA zap\xEDsan\xE9; moduly: %1", // ai 2026-10
 
 // central/installapp.php, row 1287
-"The definitions are written." => "",
+"The definitions are written." => "Defin\xEDcie s\xFA zap\xEDsan\xE9.", // ai 2026-10
 
 // central/installapp.php, row 1300
-"Slice settings to fill in" => "",
+"Slice settings to fill in" => "Nastavenia modulu na vyplnenie", // ai 2026-10
 
 // central/installapp.php, row 1301
-"Some slices have settings - values that hold for the whole slice, not for single items (an address, a version, a switch shown on the pages). These got no value: neither the app nor you gave one, so the pages that show them show nothing." => "",
+"Some slices have settings - values that hold for the whole slice, not for single items (an address, a version, a switch shown on the pages). These got no value: neither the app nor you gave one, so the pages that show them show nothing." => "Niektor\xE9 moduly maj\xFA nastavenia \x96 hodnoty platn\xE9 pre cel\xFD modul, nie pre jednotliv\xE9 spr\xE1vy (adresa, verzia, prep\xEDna\xE8 zobrazen\xFD na str\xE1nkach). Tieto nastavenia nedostali hodnotu: nezadala ju aplik\xE1cia ani vy, tak\x9Ee str\xE1nky, ktor\xE9 ich zobrazuj\xFA, nezobrazia ni\xE8.", // ai 2026-10
 
 // central/installapp.php, row 1302, 1340
 // src/Central/TransferText.php, row 119
-"What to do" => "",
+"What to do" => "\xC8o robi\x9D", // ai 2026-10
 
 // central/installapp.php, row 1303
-"Fill them in by the links below, or later: in the slice open Setting in the menu of the item manager." => "",
+"Fill them in by the links below, or later: in the slice open Setting in the menu of the item manager." => "Vypl\xF2te ich pomocou odkazov ni\x9E\x9Aie, alebo nesk\xF4r: v module otvorte Nastavenie v menu str\xE1nky Spr\xE1vy.", // ai 2026-10
 
 // central/installapp.php, row 1307
-"fill them in" => "",
+"fill them in" => "vyplni\x9D", // ai 2026-10
 
 // central/installapp.php, row 1334
-"in conditions" => "",
+"in conditions" => "v podmienkach", // ai 2026-10
 
 // central/installapp.php, row 1343
-// src/Optimize/CheckUniversalAnalytics.php, row 109
-// src/Optimize/ImgMeasuring.php, row 53
-"Where" => "",
-
-// central/installapp.php, row 1343
-"Found" => "",
+// src/Optimize/CheckNightly.php, row 145, 153
+"Found" => "N\xE1jden\xE9", // ai 2026-10
 
 // central/installapp.php, row 1368
-"Transferring the items" => "",
+"Transferring the items" => "Prenos spr\xE1v", // ai 2026-10
 
 // central/installapp.php, row 1368
 // src/Import/RunView.php, row 61, 63
-"Stopped by an error" => "",
+"Stopped by an error" => "Zastaven\xE9 chybou", // ai 2026-10
 
 // central/installapp.php, row 1369
+// include/logs.php, row 772
 // src/Import/RunView.php, row 60
 // src/Optimize/CheckImports.php, row 206, 209
-"Finished" => "",
+"Finished" => "Dokon\xE8en\xE9", // ai 2026-10
 
 // central/installapp.php, row 1369
-"Ended" => "",
+"Ended" => "Ukon\xE8en\xE9", // ai 2026-10
 
 // central/installapp.php, row 1380
-"No such install run of yours." => "",
+"No such install run of yours." => "Tak\xFDto v\xE1\x9A beh in\x9Atal\xE1cie neexistuje.", // ai 2026-10
 
 // central/installapp.php, row 1388
-"This app was previewed, but not installed yet." => "",
+"This app was previewed, but not installed yet." => "N\xE1h\xBEad tejto aplik\xE1cie bol zobrazen\xFD, ale aplik\xE1cia e\x9Ate nie je nain\x9Atalovan\xE1.", // ai 2026-10
 
 // central/installapp.php, row 1388
-"Preview it again" => "",
+"Preview it again" => "Zobrazi\x9D n\xE1h\xBEad znova", // ai 2026-10
 
 // central/installapp.php, row 1393
-"The app is installed." => "",
+"The app is installed." => "Aplik\xE1cia je nain\x9Atalovan\xE1.", // ai 2026-10
 
 // central/installapp.php, row 1406
-"Transferring a batch\xE2\x80\xA6" => "",
+"Transferring a batch\xE2\x80\xA6" => "Pren\xE1\x9Aa sa d\xE1vka\x85", // ai 2026-10
 
 // central/installapp.php, row 1407
-"Waiting for the task queue\xE2\x80\xA6" => "",
+"Waiting for the task queue\xE2\x80\xA6" => "\xC8ak\xE1 sa na frontu \xFAloh\x85", // ai 2026-10
 
 // central/installapp.php, row 1408
-"The source failed (%1 of %2 tries) - the next try at %3" => "",
+"The source failed (%1 of %2 tries) - the next try at %3" => "Zdroj zlyhal (pokus %1 z %2) \x96 \xEFal\x9A\xED pokus o %3", // ai 2026-10
 
 // central/installapp.php, row 1409
-"No batch has come for a long time - is the task queue of this AA running? Continue tries at once." => "",
+"No batch has come for a long time - is the task queue of this AA running? Continue tries at once." => "Dlho nepri\x9Ala \x9Eiadna d\xE1vka \x96 be\x9E\xED fronta \xFAloh tohto AA? Tla\xE8idlo \x84Pokra\xE8ova\x9D\x93 to sk\xFAsi hne\xEF.", // ai 2026-10
 
 // central/installapp.php, row 1410
-"Written %1 of %2 items (%3 %)" => "",
+"Written %1 of %2 items (%3 %)" => "Zap\xEDsan\xE9 spr\xE1vy: %1 z %2 (%3 %)", // ai 2026-10
 
 // central/installapp.php, row 1411
-"Written %1 items" => "",
+"Written %1 items" => "Zap\xEDsan\xE9 spr\xE1vy: %1", // ai 2026-10
 
 // central/installapp.php, row 1412
-"Last progress: %1" => "",
+"Last progress: %1" => "Posledn\xFD postup: %1", // ai 2026-10
 
 // central/installapp.php, row 1413
-"checked at %1" => "",
+"checked at %1" => "skontrolovan\xE9 o %1", // ai 2026-10
 
 // central/installapp.php, row 1414
-"This page lost the connection to the server - the transfer goes on without it. Asking again\xE2\x80\xA6" => "",
+"This page lost the connection to the server - the transfer goes on without it. Asking again\xE2\x80\xA6" => "Str\xE1nka stratila spojenie so serverom \x96 prenos pokra\xE8uje aj bez nej. Sk\xFA\x9Aam to znova\x85", // ai 2026-10
 
 // central/installapp.php, row 1415
-"A batch may still be working - press Continue again in a few minutes." => "",
+"A batch may still be working - press Continue again in a few minutes." => "D\xE1vka mo\x9Eno e\x9Ate be\x9E\xED \x96 o nieko\xBEko min\xFAt znova stla\xE8te \x84Pokra\xE8ova\x9D\x93.", // ai 2026-10
 
 // central/installapp.php, row 1416
-"Log in to the source AA again, then press Continue." => "",
+"Log in to the source AA again, then press Continue." => "Znova sa prihl\xE1ste do zdrojov\xE9ho AA a potom stla\xE8te \x84Pokra\xE8ova\x9D\x93.", // ai 2026-10
 
 // central/installapp.php, row 1417
-"End the transfer? The items written so far stay." => "",
+"End the transfer? The items written so far stay." => "Ukon\xE8i\x9D prenos? Doteraz zap\xEDsan\xE9 spr\xE1vy zostan\xFA.", // ai 2026-10
 
 // central/installapp.php, row 1418
-"The session has expired - log in again and reload this page." => "",
+"The session has expired - log in again and reload this page." => "Prihl\xE1senie vypr\x9Aalo \x96 prihl\xE1ste sa znova a obnovte t\xFAto str\xE1nku.", // ai 2026-10
 
 // central/installapp.php, row 1422
-"The app is installed and works - only the finish of its run waits for the task queue of this AA." => "",
+"The app is installed and works - only the finish of its run waits for the task queue of this AA." => "Aplik\xE1cia je nain\x9Atalovan\xE1 a funguje \x96 iba dokon\xE8enie jej behu \xE8ak\xE1 na frontu \xFAloh tohto AA.", // ai 2026-10
 
 // central/installapp.php, row 1430
-"The transfer runs in the task queue of this AA; you may close this page. Do not edit the source until it finishes." => "",
+"The transfer runs in the task queue of this AA; you may close this page. Do not edit the source until it finishes." => "Prenos be\x9E\xED vo fronte \xFAloh tohto AA; t\xFAto str\xE1nku m\xF4\x9Eete zavrie\x9D. K\xFDm neskon\xE8\xED, zdroj neupravujte.", // ai 2026-10
 
 // central/installapp.php, row 1432
-"Show the final check" => "",
+"Show the final check" => "Zobrazi\x9D z\xE1vere\xE8n\xFA kontrolu", // ai 2026-10
 
 // central/installapp.php, row 1436
 // src/Import/DetailPage.php, row 938, 947
@@ -4560,66 +4585,66 @@ return [
 
 // central/installapp.php, row 1436
 // src/Import/DetailPage.php, row 958
-"End" => "",
+"End" => "Ukon\xE8i\x9D", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
-"Written" => "",
+"Written" => "Zap\xEDsan\xE9", // ai 2026-10
 
 // central/installapp.php, row 1437, 1472
-"On the source" => "",
+"On the source" => "V zdroji", // ai 2026-10
 
 // central/installapp.php, row 1472
-"The transfer is finished. Checked at %1:" => "",
+"The transfer is finished. Checked at %1:" => "Prenos je dokon\xE8en\xFD. Skontrolovan\xE9 o %1:", // ai 2026-10
 
 // central/installapp.php, row 1472
-"On this AA" => "",
+"On this AA" => "V tomto AA", // ai 2026-10
 
 // central/installapp.php, row 1479
-"Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "",
+"Uploaded files are not transferred - copy them by hand. Switch the domain to the new site only after checking it." => "Nahran\xE9 s\xFAbory sa nepren\xE1\x9Aaj\xFA \x96 skop\xEDrujte ich ru\xE8ne. Dom\xE9nu prepnite na nov\xFD web a\x9E po jeho kontrole.", // ai 2026-10
 
-// central/responder.php, row 110
-"Get_Jwt needs ttl as seconds and scope admin or apps" => "",
+// central/responder.php, row 112
+"Get_Jwt needs ttl as seconds and scope admin or apps" => "Get_Jwt vy\x9Eaduje ttl v sekund\xE1ch a scope admin alebo apps", // ai 2026-10
 
-// central/responder.php, row 116
-"A token needs a login by the username and password in this request, of a user whose password change this AA can detect" => "",
+// central/responder.php, row 118
+"A token needs a login by the username and password in this request, of a user whose password change this AA can detect" => "Token vy\x9Eaduje prihl\xE1senie u\x9E\xEDvate\xBEsk\xFDm menom a heslom v tejto po\x9Eiadavke, a to u\x9E\xEDvate\xBEa, ktor\xE9ho zmenu hesla toto AA dok\xE1\x9Ee rozpozna\x9D", // ai 2026-10
 
-// central/responder.php, row 194
-"Unknown module type" => "",
-
-// central/responder.php, row 222
-"Wrong command - not a synchronization action" => "",
+// central/responder.php, row 198
+"Unknown module type" => "Nezn\xE1my typ modulu", // ai 2026-10
 
 // central/responder.php, row 226
-"Wrong command - %1" => "",
+"Wrong command - not a synchronization action" => "Chybn\xFD pr\xEDkaz \x96 nejde o synchroniza\xE8n\xFA akciu", // ai 2026-10
 
-// central/responder.php, row 775
-"Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "",
+// central/responder.php, row 230
+"Wrong command - %1" => "Chybn\xFD pr\xEDkaz \x96 %1", // ai 2026-10
 
-// central/responder.php, row 806
+// central/responder.php, row 785
+"Login token refused (it lives a day, and a password change ends it) - authenticate this AA again in Central" => "Prihlasovac\xED token odmietnut\xFD (plat\xED jeden de\xF2 a zmena hesla ho ukon\xE8\xED) \x96 znova autentifikujte toto AA v Central", // ai 2026-10
+
+// central/responder.php, row 816
 "No request sent for responder.php" => "Pre responder.php nebola odoslan\xE1 \x9Eiadna po\x9Eiadavka", // ai 2026-06
 
-// central/responder.php, row 812
+// central/responder.php, row 822
 "Bad request sent for responder.php - %1" => "Chybn\xE1 po\x9Eiadavka pre responder.php - %1", // ai 2026-06
 
-// central/responder.php, row 819
-"This command is not accepted in the URL" => "",
-
-// central/responder.php, row 823
-"This command must be sent by POST" => "",
-
 // central/responder.php, row 829
-"Request from another site refused" => "",
+"This command is not accepted in the URL" => "Tento pr\xEDkaz nemo\x9Eno posla\x9D v URL", // ai 2026-10
 
-// central/responder.php, row 846
-"The login token does not allow %1" => "",
+// central/responder.php, row 833
+"This command must be sent by POST" => "Tento pr\xEDkaz mus\xED by\x9D poslan\xFD met\xF3dou POST", // ai 2026-10
 
-// central/responder.php, row 847
-"The app store account may not run %1" => "",
+// central/responder.php, row 839
+"Request from another site refused" => "Po\x9Eiadavka z in\xE9ho webu odmietnut\xE1", // ai 2026-10
 
-// central/responder.php, row 848
-"The app store is busy - try again later" => "",
+// central/responder.php, row 856
+"The login token does not allow %1" => "Prihlasovac\xED token nepovo\xBEuje %1", // ai 2026-10
 
-// central/responder.php, row 849
+// central/responder.php, row 857
+"The app store account may not run %1" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED nesmie sp\xFA\x9A\x9Da\x9D %1", // ai 2026-10
+
+// central/responder.php, row 858
+"The app store is busy - try again later" => "Katal\xF3g aplik\xE1ci\xED je zanepr\xE1zdnen\xFD \x96 sk\xFAste to nesk\xF4r", // ai 2026-10
+
+// central/responder.php, row 859
 "You (%2) don't have permissions to run %1" => "Nem\xE1te (%2) pr\xE1vo spusti\x9D %1", // ai 2026-06
 
 // central/synchronize.php, row 31
@@ -4657,7 +4682,7 @@ return [
 "Slice Mapping" => "Mapovanie modulov", // ai 2026-06
 
 // central/synchronize3.php, row 44
-"Template AA sent no definition for slice %1" => "",
+"Template AA sent no definition for slice %1" => "\x8Aabl\xF3nov\xE9 AA neposlalo defin\xEDciu modulu %1", // ai 2026-10
 
 // central/synchronize3.php, row 109
 "%1 synchronization actions planned. See" => "Napl\xE1novan\xFDch synchroniza\xE8n\xFDch akci\xED: %1. Pozri", // ai 2026-06
@@ -4688,30 +4713,30 @@ return [
 // central/synchronize3.php, row 183
 "Compared and Updated ActionApps" => "Porovnan\xE9 a aktualizovan\xE9 ActionApps", // ai 2026-06
 
-// filldisc.php, row 103, 144
-// filler.php, row 412
+// filldisc.php, row 104, 154
+// filler.php, row 416
 "Not accepted, sorry. Looks like spam." => "Neprijat\xE9, prep\xE1\xE8te. Vyzer\xE1 to ako spam.", // ai 2026-06
 
-// filldisc.php, row 110
+// filldisc.php, row 111
 // filler.php, row 300
 "Wrong result, not possible to post comments." => "Nespr\xE1vny v\xFDsledok, pr\xEDspevky nie je mo\x9En\xE9 odosla\x9D.", // ai 2026-06
 
-// filldisc.php, row 119
+// filldisc.php, row 120
 "Comment to wrong item - item's slice not found." => "Pr\xEDspevok k nespr\xE1vnej spr\xE1ve - modul spr\xE1vy sa nena\x9Aiel.", // ai 2026-06
 
-// filldisc.php, row 123
+// filldisc.php, row 124, 131
 "New comments disabled." => "Nov\xE9 pr\xEDspevky s\xFA zak\xE1zan\xE9.", // ai 2026-06
 
-// filldisc.php, row 185
+// filldisc.php, row 195
 "Not accepted, your IP address is banned." => "Neprijat\xE9, va\x9Aa IP adresa je zablokovan\xE1.", // ai 2026-06
 
-// filldisc.php, row 196
+// filldisc.php, row 205
 "Not accepted, item is not published or does not exist." => "Neprijat\xE9, spr\xE1va nie je publikovan\xE1 alebo neexistuje.", // ai 2026-06
 
 // filler.php, row 294
 "Not allowed to post comments" => "Prid\xE1vanie pr\xEDspevkov nie je povolen\xE9", // ai 2026-06
 
-// filler.php, row 335, 374
+// filler.php, row 335, 378
 "Bad Token. Not allowed to post comments" => "Neplatn\xFD token. Prid\xE1vanie pr\xEDspevkov nie je povolen\xE9", // ai 2026-06
 
 // filler.php, row 361
@@ -4720,13 +4745,13 @@ return [
 // filler.php, row 367
 "Bad slice ID" => "Chybn\xE9 ID modulu", // ai 2026-06
 
-// filler.php, row 433
+// filler.php, row 437
 "Anonymous posting not admitted." => "Anonymn\xE9 prispievanie nie je povolen\xE9.", // ai 2026-06
 
-// filler.php, row 475
+// filler.php, row 479
 "You are not allowed to update this item." => "Nem\xE1te pr\xE1vo upravi\x9D t\xFAto spr\xE1vu.", // ai 2026-06
 
-// filler.php, row 486
+// filler.php, row 490
 "Some error in store item." => "Pri ukladan\xED spr\xE1vy do\x9Alo k chybe.", // ai 2026-06
 
 // include/adminpage.class.php, row 68
@@ -4736,7 +4761,7 @@ return [
 "Short Id" => "ID (kr\xE1tke)", // ai 2026-06
 
 // include/constants.php, row 456
-// include/logs.php, row 781, 813
+// include/logs.php, row 930, 962
 // src/Optimize/CheckQueuedClassMissing.php, row 66
 "Class" => "Trieda", // ai 2026-06
 
@@ -4745,7 +4770,7 @@ return [
 "Level" => "\xDArove\xF2", // ai 2026-06
 
 // include/constants.php, row 509
-// include/logs.php, row 992
+// include/logs.php, row 1141
 "Feed" => "Kop\xEDrova\x9D obsah",
 
 // include/constants.php, row 510
@@ -4995,16 +5020,16 @@ return [
 "Edit item form template" => "\x8Aabl\xF3na formul\xE1ra pre edit\xE1ciu spr\xE1vy", // ai 2026-06
 
 // include/constants.php, row 1086
-// include/discussion.php, row 222
+// include/discussion.php, row 211
 "Show selected" => "Zobraz vybran\xE9",
 
 // include/constants.php, row 1087
-// include/discussion.php, row 223
+// include/discussion.php, row 212
 "Show all" => "Zobraz v\x9Aetko",
 
 // include/constants.php, row 1088
 // include/constedit_util.php, row 136
-// include/discussion.php, row 224
+// include/discussion.php, row 213
 "Add new" => "Pridaj nov\xFD",
 
 // include/constants.php, row 1123
@@ -5023,7 +5048,7 @@ return [
 "Calendar: Year number of processed cell" => "Kalend\xE1r: \xC8\xEDslo roka spracov\xE1vanej bunky", // ai 2026-06
 
 // include/constants.php, row 1192
-"Superadmin" => "",
+"Superadmin" => "Superadmin", // ai 2026-10
 
 // include/constedit.php, row 55
 "Constants - Hierarchical editor" => "Hodnoty - Hierarchick\xFD editor", // ai 2026-06
@@ -5060,19 +5085,19 @@ return [
 // src/Import/Definition.php, row 140
 "Select" => "Vybra\x9D", // ai 2026-06
 
-// include/constedit_util.php, row 626
+// include/constedit_util.php, row 599
 "No group id specified" => "Nebolo zadan\xE9 id skupiny", // ai 2026-06
 
-// include/constedit_util.php, row 755
-"This constant group is used by ActionApps itself and can't be changed here" => "",
+// include/constedit_util.php, row 720
+"This constant group is used by ActionApps itself and can't be changed here" => "T\xFAto skupinu hodn\xF4t pou\x9E\xEDva samotn\xE9 ActionApps a tu ju nemo\x9Eno meni\x9D", // ai 2026-10
 
-// include/constedit_util.php, row 758
+// include/constedit_util.php, row 723
 "You do not have permissions to change fields settings for the slice owning this group" => "Nem\xE1te pr\xE1vo meni\x9D nastavenia polo\x9Eiek pre modul, ktor\xFD vlastn\xED t\xFAto skupinu", // ai 2026-06
 
-// include/constedit_util.php, row 763
-"The constant group is used also in slice you do not have permissions to change fields settings" => "",
+// include/constedit_util.php, row 728
+"The constant group is used also in slice you do not have permissions to change fields settings" => "Skupina hodn\xF4t sa pou\x9E\xEDva aj v module, v ktorom nem\xE1te pr\xE1vo meni\x9D nastavenia polo\x9Eiek", // ai 2026-10
 
-// include/constedit_util.php, row 813
+// include/constedit_util.php, row 784
 " items changed to new value " => " spr\xE1v bolo zmenen\xFDch na nov\xFA hodnotu ", // ai 2026-06
 
 // include/date.php, row 36
@@ -5097,19 +5122,19 @@ return [
 "July" => "J\xFAl",
 
 // include/date.php, row 36
-"August" => "",
+"August" => "August", // ai 2026-10
 
 // include/date.php, row 36
-"September" => "",
+"September" => "September", // ai 2026-10
 
 // include/date.php, row 36
 "October" => "Okt\xF3ber",
 
 // include/date.php, row 36
-"November" => "",
+"November" => "November", // ai 2026-10
 
 // include/date.php, row 36
-"December" => "",
+"December" => "December", // ai 2026-10
 
 // include/exporter.class.php, row 535
 "What to export" => "\xC8o exportova\x9D", // ai 2026-06
@@ -5126,62 +5151,62 @@ return [
 // include/exporter.class.php, row 634
 "Bad file format - specify format" => "Nespr\xE1vny form\xE1t s\xFAboru - zadajte form\xE1t", // ai 2026-06
 
-// include/feeding.php, row 463, 504
+// include/feeding.php, row 449, 490
 "Map" => "Mapova\x9D", // ai 2026-06
 
-// include/feeding.php, row 464, 503
+// include/feeding.php, row 450, 489
 "Run (queue)" => "Spusti\x9D (fronta)", // ai 2026-06
 
-// include/feeding.php, row 477, 483, 540
+// include/feeding.php, row 463, 469, 526
 "Local slice" => "Lok\xE1lny modul", // ai 2026-06
 
-// include/feeding.php, row 486
+// include/feeding.php, row 472
 "URL of the feed" => "URL kan\xE1la", // ai 2026-06
 
-// include/feeding.php, row 486
+// include/feeding.php, row 472
 "e.g. https://www.someplace.com/rss/index.xml" => "napr. https://www.someplace.com/rss/index.xml", // ai 2026-06
 
-// include/feeding.php, row 486
+// include/feeding.php, row 472
 "Do NOT change this URL if you already set the Mapping (or update mapping after the change). The mapping is tied to this url!" => "NEME\xD2TE toto URL, ak ste u\x9E nastavili mapovanie (alebo po zmene mapovanie aktualizujte). Mapovanie je viazan\xE9 na toto URL!", // ai 2026-06
 
-// include/feeding.php, row 487
+// include/feeding.php, row 473
 "RSS Feed name" => "N\xE1zov RSS kan\xE1la", // ai 2026-06
 
-// include/feeding.php, row 488, 544
+// include/feeding.php, row 474, 530
 "warnings last hour" => "varovania za posledn\xFA hodinu", // ai 2026-06
 
-// include/feeding.php, row 488, 544
+// include/feeding.php, row 474, 530
 "warnings last day" => "varovania za posledn\xFD de\xF2", // ai 2026-06
 
-// include/feeding.php, row 488, 544
+// include/feeding.php, row 474, 530
 "warnings last month" => "varovania za posledn\xFD mesiac", // ai 2026-06
 
-// include/feeding.php, row 493, 548
+// include/feeding.php, row 479, 534
 "Warnings in log [hour/day/month]" => "Varovania v logu [hodina/de\xF2/mesiac]", // ai 2026-06
 
-// include/feeding.php, row 539
+// include/feeding.php, row 525
 "Remote node" => "Vzdialen\xFD uzol", // ai 2026-06
 
 // include/field.class.php, row 162
-"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "",
+"unique value - it is checked before it is trimmed, so a duplicate could slip through" => "jedine\xE8n\xE1 hodnota \x96 kontroluje sa pred orezan\xEDm medzier, tak\x9Ee duplicita m\xF4\x9Ee prek\xE5znu\x9D", // ai 2026-10
 
 // include/field.class.php, row 167
-"code - its indentation and the last new line are kept on purpose" => "",
+"code - its indentation and the last new line are kept on purpose" => "k\xF3d \x96 jeho odsadenie a posledn\xFD nov\xFD riadok sa zachov\xE1vaj\xFA z\xE1merne", // ai 2026-10
 
 // include/field.class.php, row 174
-"stores the text of the selected items" => "",
+"stores the text of the selected items" => "uklad\xE1 text vybran\xFDch hodn\xF4t", // ai 2026-10
 
 // include/field.class.php, row 180
-"constants of a group" => "",
+"constants of a group" => "hodnoty skupiny", // ai 2026-10
 
 // include/field.class.php, row 187
-"the constant \"%1\" has spaces or new lines around - trim the constants first" => "",
+"the constant \"%1\" has spaces or new lines around - trim the constants first" => "hodnota \x84%1\x93 m\xE1 okolo seba medzery alebo nov\xE9 riadky \x96 najprv hodnoty ore\x9Ete", // ai 2026-10
 
 // include/field.class.php, row 709
 "Move to another field" => "Presun\xFA\x9D do inej polo\x9Eky", // ai 2026-06
 
 // include/field.class.php, row 1084
-// include/itemview.php, row 127
+// include/itemview.php, row 129
 "number of found items" => "po\xE8et nalezen\xFDch \xE8l\xE1nk\xF9",
 
 // include/field.class.php, row 1085
@@ -5237,7 +5262,7 @@ return [
 " (this)" => " (tento)", // ai 2026-06
 
 // include/field.class.php, row 1354, 1367, 1380
-"Can't copy field" => "",
+"Can't copy field" => "Polo\x9Eku nemo\x9Eno skop\xEDrova\x9D", // ai 2026-10
 
 // include/filedit.php, row 82
 "Back to file list" => "Sp\xE4\x9D na zoznam s\xFAborov", // ai 2026-06
@@ -5249,127 +5274,131 @@ return [
 "Rename to" => "Premenova\x9D na", // ai 2026-06
 
 // include/filedit.php, row 89
-// include/fileman.php, row 133, 499
+// include/fileman.php, row 158, 535
 "Text file" => "Textov\xFD s\xFAbor", // ai 2026-06
 
 // include/filedit.php, row 89
-// include/fileman.php, row 131
+// include/fileman.php, row 156
 "Web file" => "Webov\xFD s\xFAbor", // ai 2026-06
 
 // include/filedit.php, row 89
-// include/fileman.php, row 130, 499
+// include/fileman.php, row 155, 535
 "HTML file" => "HTML s\xFAbor", // ai 2026-06
 
-// include/filedit.php, row 124
+// include/filedit.php, row 121
 "Save changes" => "Ulo\x9Ei\x9D zmeny", // ai 2026-06
 
-// include/filedit.php, row 125
+// include/filedit.php, row 122
 "Reset content" => "Obnovi\x9D obsah", // ai 2026-06
 
-// include/filedit.php, row 130
+// include/filedit.php, row 127
 "File content" => "Obsah s\xFAboru", // ai 2026-06
 
-// include/filedit.php, row 138
-// include/fileman.php, row 132
+// include/filedit.php, row 135
+// include/fileman.php, row 157
 "Image file" => "Obr\xE1zkov\xFD s\xFAbor", // ai 2026-06
 
-// include/filedit.php, row 141
+// include/filedit.php, row 138
 "This is a file of type" => "Toto je s\xFAbor typu", // ai 2026-06
 
-// include/filedit.php, row 141
+// include/filedit.php, row 138
 "I can't view it. If you want to view or edit it, change its extension." => "Nie je mo\x9En\xE9 ho zobrazi\x9D. Ak ho chcete zobrazi\x9D alebo upravi\x9D, zme\xF2te jeho pr\xEDponu.", // ai 2026-06
 
-// include/fileman.php, row 33
+// include/fileman.php, row 35
 "Size" => "Ve\xBEkos\x9D", // ai 2026-06
 
-// include/fileman.php, row 35
+// include/fileman.php, row 37
 "Last modified" => "Posledn\xE1 zmena", // ai 2026-06
 
-// include/fileman.php, row 135, 148
+// include/fileman.php, row 75
+"Scripts and server settings (such as .php or .htaccess) cannot be kept in the File Manager." => "Skripty a nastavenia servera (napr\xEDklad .php alebo .htaccess) nemo\x9Eno uchov\xE1va\x9D v Spr\xE1vcovi s\xFAborov.", // ai 2026-10
+
+// include/fileman.php, row 160, 173
 "Parent" => "Nadkateg\xF3rie",
 
-// include/fileman.php, row 136, 164
+// include/fileman.php, row 161, 189
 "Other" => "In\xE9", // ai 2026-06
 
-// include/fileman.php, row 337
+// include/fileman.php, row 365
 "Wrong file name." => "Nespr\xE1vny n\xE1zov s\xFAboru.", // ai 2026-06
 
-// include/fileman.php, row 345
+// include/fileman.php, row 376
 "File already exists" => "S\xFAbor u\x9E existuje", // ai 2026-06
 
-// include/fileman.php, row 349, 502
+// include/fileman.php, row 380, 538
 "Unable to create file" => "Nepodarilo sa vytvori\x9D s\xFAbor", // ai 2026-06
 
-// include/fileman.php, row 360
+// include/fileman.php, row 391
+// include/slicedit.php, row 205
 "Wrong directory name." => "Nespr\xE1vny n\xE1zov adres\xE1ra.", // ai 2026-06
 
-// include/fileman.php, row 366
+// include/fileman.php, row 397
 "Unable to create directory" => "Nepodarilo sa vytvori\x9D adres\xE1r", // ai 2026-06
 
-// include/fileman.php, row 376
+// include/fileman.php, row 408
 "First delete all files from directory" => "Najprv vyma\x9Ete v\x9Aetky s\xFAbory z adres\xE1ra", // ai 2026-06
 
-// include/fileman.php, row 378
+// include/fileman.php, row 410
 "Unable to delete directory" => "Nepodarilo sa vymaza\x9D adres\xE1r", // ai 2026-06
 
-// include/fileman.php, row 381
+// include/fileman.php, row 413
 "Unable to delete file" => "Nepodarilo sa vymaza\x9D s\xFAbor", // ai 2026-06
 
-// include/fileman.php, row 399
+// include/fileman.php, row 432
 "Error: " => "Chyba: ", // ai 2026-06
 
-// include/fileman.php, row 411
+// include/fileman.php, row 448
 "Unable to open file for writing" => "Nepodarilo sa otvori\x9D s\xFAbor na z\xE1pis", // ai 2026-06
 
-// include/fileman.php, row 415
+// include/fileman.php, row 452
 "Error writing to file" => "Chyba pri z\xE1pise do s\xFAboru", // ai 2026-06
 
-// include/fileman.php, row 424
+// include/fileman.php, row 464
 "File with this name already exists" => "S\xFAbor s t\xFDmto n\xE1zvom u\x9E existuje", // ai 2026-06
 
-// include/fileman.php, row 426
+// include/fileman.php, row 466
 "Unable to rename" => "Nepodarilo sa premenova\x9D", // ai 2026-06
 
-// include/fileman.php, row 486
+// include/fileman.php, row 522
 "Wrong directory name" => "Nespr\xE1vny n\xE1zov adres\xE1ra", // ai 2026-06
 
-// include/fileman.php, row 495
+// include/fileman.php, row 531
 "Files with the same names as some in the template already exist. Please change the file names first." => "S\xFAbory s rovnak\xFDmi n\xE1zvami ako niektor\xE9 v \x9Aabl\xF3ne u\x9E existuj\xFA. Najprv pros\xEDm zme\xF2te n\xE1zvy s\xFAborov.", // ai 2026-06
 
-// include/fileman.php, row 545
+// include/fileman.php, row 582
 "Are you sure you want to delete the selected files and folders?" => "Naozaj chcete vymaza\x9D vybran\xE9 s\xFAbory a adres\xE1re?", // ai 2026-06
 
-// include/files.class.php, row 113
+// include/files.class.php, row 116
 "No destination directory for image uploads specified" => "Nie je zadan\xFD cie\xBEov\xFD adres\xE1r pre nahr\xE1vanie obr\xE1zkov", // ai 2026-06
 
-// include/files.class.php, row 117
+// include/files.class.php, row 120
 "Can't create directory for image uploads" => "Nie je mo\x9En\xE9 vytvori\x9D adres\xE1r pre obr\xE1zky",
 
-// include/files.class.php, row 171
+// include/files.class.php, row 174
 "Can't read the file %1" => "Nepodarilo sa pre\xE8\xEDta\x9D s\xFAbor %1", // ai 2026-06
 
-// include/files.class.php, row 204
+// include/files.class.php, row 207
 "No destination file specified" => "Nie je zadan\xFD cie\xBEov\xFD s\xFAbor", // ai 2026-06
 
-// include/files.class.php, row 220
+// include/files.class.php, row 212, 227
 "type of uploaded file not allowed" => "typ nahr\xE1van\xE9ho s\xFAboru nie je povolen\xFD", // ai 2026-06
 
-// include/files.class.php, row 244
+// include/files.class.php, row 251
 "Can't move image  %1 to %2 (%3)" => "Nepodarilo sa presun\xFA\x9D obr\xE1zok %1 do %2 (%3)", // ai 2026-06
 
-// include/files.class.php, row 251
+// include/files.class.php, row 258
 "Can't change permissions on uploaded file: %1 - %2. See IMG_UPLOAD_FILE_MODE in your config.php" => "Nepodarilo sa zmeni\x9D pr\xEDstupov\xE9 pr\xE1va nahran\xE9ho s\xFAboru: %1 - %2. Pozrite IMG_UPLOAD_FILE_MODE vo va\x9Aom config.php", // ai 2026-06
 
-// include/files.class.php, row 276
+// include/files.class.php, row 283
 "Can't open file for writing: %1" => "Nepodarilo sa otvori\x9D s\xFAbor na z\xE1pis: %1", // ai 2026-06
 
-// include/files.class.php, row 282
+// include/files.class.php, row 289
 "Can't write to file: %1" => "Nepodarilo sa zap\xEDsa\x9D do s\xFAboru: %1", // ai 2026-06
 
-// include/files.class.php, row 356
+// include/files.class.php, row 363
 "can't create backup of the file" => "nepodarilo sa vytvori\x9D z\xE1lo\x9En\xFA k\xF3piu s\xFAboru", // ai 2026-06
 
-// include/files.class.php, row 1421
+// include/files.class.php, row 1438
 ": No such directory" => ": Adres\xE1r neexistuje", // ai 2026-06
 
 // include/form.class.php, row 104
@@ -5448,7 +5477,7 @@ return [
 
 // include/formutil.php, row 1228
 // include/transformation.class.php, row 193, 382, 455, 549, 739
-// include/widget.class.php, row 662
+// include/widget.class.php, row 658
 "Plain text" => "Oby\xE8ajn\xFD text",
 
 // include/formutil.php, row 1270
@@ -5461,7 +5490,7 @@ return [
 // include/formutil.php, row 1781
 // include/menu.php, row 140
 // src/Import/DetailCatalog.php, row 124
-// src/Util/ChangesMonitor.php, row 454
+// src/Util/ChangesMonitor.php, row 450
 "Change" => "Zmena s\xFA\xE8asn\xFDch pr\xE1v",
 
 // include/formutil.php, row 1924, 2111
@@ -5473,7 +5502,7 @@ return [
 "Offer" => "Ponuka", // ai 2026-06
 
 // include/formutil.php, row 2175
-// include/stringexpand.php, row 10866, 10889
+// include/stringexpand.php, row 10948, 10971
 // src/Import/DetailCatalog.php, row 150
 // src/Widget/MflWidget.php, row 166
 // src/Widget/RimWidget.php, row 287
@@ -5496,6 +5525,12 @@ return [
 
 // include/formutil.php, row 3279
 "Group Name" => "N\xE1zov skupiny", // ai 2026-06
+
+// include/formutil.php, row 3280
+// include/logs.php, row 727, 827, 1091
+// src/Optimize/CheckNightly.php, row 146, 153
+// src/Optimize/StateCheckModel.php, row 270
+"Count" => "Po\xE8et", // ai 2026-06
 
 // include/formutil.php, row 3281
 "Created on" => "Vytvoren\xE9", // ai 2026-06
@@ -5527,11 +5562,11 @@ return [
 // include/formutil.php, row 3297
 "All items in trash bin" => "V\x9Aetky spr\xE1vy v ko\x9Ai", // ai 2026-06
 
-// include/init_page.php, row 87
-// include/locauth.php, row 98
+// include/init_page.php, row 84
+// include/locauth.php, row 100
 "Either your username or your password is not valid" => "Nespr\xE1vne u\x9E\xEDvate\xBEsk\xE9 meno alebo heslo", // ai 2026-06
 
-// include/init_page.php, row 144
+// include/init_page.php, row 136
 "No slice found for you" => "Nebol n\xE1jden\xFD \x9Eiaden modul, ku ktor\xE9mu m\xE1te pr\xEDstup",
 
 // include/item.php, row 113
@@ -5663,25 +5698,25 @@ return [
 // include/item.php, row 830
 "Error: wrong alias function %1 for %2" => "Chyba: nespr\xE1vna funkcia aliasu %1 pre %2", // ai 2026-06
 
-// include/item_content.php, row 1126, 1184
+// include/item_content.php, row 1127, 1185
 "No Slice Id specified" => "Nie je zadan\xE9 Id modulu", // ai 2026-06
 
-// include/item_content.php, row 1172
+// include/item_content.php, row 1173
 "No Permission to insert Item for user %1" => "U\x9E\xEDvate\xBE %1 nem\xE1 pr\xE1vo vlo\x9Ei\x9D spr\xE1vu", // ai 2026-06
 
-// include/item_content.php, row 1188
+// include/item_content.php, row 1189
 "Bad Item Id" => "Chybn\xE9 Id spr\xE1vy", // ai 2026-06
 
-// include/item_content.php, row 1329
+// include/item_content.php, row 1330
 "No Id specified (%1 - %2)" => "Nie je zadan\xE9 Id (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1334
+// include/item_content.php, row 1335
 "Duplicated ID - skipped (%1 - %2)" => "Duplicitn\xE9 ID - presko\xE8en\xE9 (%1 - %2)", // ai 2026-06
 
-// include/item_content.php, row 1359
+// include/item_content.php, row 1360
 "StoreItem for slice %1 - failed parameter check for id = '%2'" => "StoreItem pre modul %1 - zlyhala kontrola parametrov pre id = '%2'", // ai 2026-06
 
-// include/item_content.php, row 1369
+// include/item_content.php, row 1370
 "No Status code" => "Ch\xFDba stavov\xFD k\xF3d", // ai 2026-06
 
 // include/itemfunc.php, row 67
@@ -5706,7 +5741,7 @@ return [
 "Published" => "Zverejnen\xE9", // ai 2026-06
 
 // include/itemfunc.php, row 174
-"View on public site" => "",
+"View on public site" => "Zobrazi\x9D na verejnom webe", // ai 2026-10
 
 // include/itemfunc.php, row 188
 "Never" => "Nikdy", // ai 2026-06
@@ -5855,7 +5890,7 @@ return [
 "Boolean = store 0 or 1" => "Boolean = ulo\x9E\xED 0 alebo 1", // ai 2026-06
 
 // include/itemfunc.php, row 1042
-"Float" => "",
+"Float" => "Desatinn\xE9 \xE8\xEDslo", // ai 2026-10
 
 // include/itemfunc.php, row 1046
 "Real float - could convert big numbers to scientific notation (1.23E+29)" => "Skuto\xE8n\xFD float - ve\xBEk\xE9 \xE8\xEDsla m\xF4\x9Ee previes\x9D do vedeck\xE9ho z\xE1pisu (1.23E+29)", // ai 2026-06
@@ -5876,7 +5911,7 @@ return [
 "Item IDs" => "ID \xE8l\xE1nku",
 
 // include/itemfunc.php, row 1140
-"The tag '%1' could not be stored: %2" => "",
+"The tag '%1' could not be stored: %2" => "\x8At\xEDtok '%1' nemo\x9Eno ulo\x9Ei\x9D: %2", // ai 2026-10
 
 // include/itemfunc.php, row 1174
 "User ID = always store current user ID" => "ID u\x9E\xEDvate\xBEa = v\x9Edy ulo\x9E\xED ID aktu\xE1lneho u\x9E\xEDvate\xBEa", // ai 2026-06
@@ -5945,283 +5980,337 @@ return [
 "Unique number for this field (from 1,..)" => "Unik\xE1tne \xE8\xEDslo pre t\xFAto polo\x9Eku (od 1,..)", // ai 2026-06
 
 // include/itemfunc.php, row 1376
-"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "",
+"A new item gets the highest number of this field in the slice + 1 (1 for the first item). Items in all bins count, trash included, so a number is never given twice. Any value the new item brings (a copy of another item, an import, a restored slice backup) is replaced. An existing item keeps its number when the field comes empty and when a feed updates it. Needs InnoDB tables - with MyISAM two inserts at the same moment may get the same number." => "Nov\xE1 spr\xE1va dostane najvy\x9A\x9Aie \xE8\xEDslo tejto polo\x9Eky v module + 1 (1 pre prv\xFA spr\xE1vu). Po\xE8\xEDtaj\xFA sa spr\xE1vy vo v\x9Aetk\xFDch schr\xE1nkach vr\xE1tane ko\x9Aa, tak\x9Ee \x9Eiadne \xE8\xEDslo sa nepridel\xED dvakr\xE1t. Ak\xE1ko\xBEvek hodnota, ktor\xFA nov\xE1 spr\xE1va prinesie (k\xF3pia inej spr\xE1vy, import, obnoven\xE1 z\xE1loha modulu), sa nahrad\xED. Existuj\xFAca spr\xE1va si \xE8\xEDslo ponech\xE1, ke\xEF polo\x9Eka pr\xEDde pr\xE1zdna aj ke\xEF ju aktualizuje v\xFDmena spr\xE1v. Vy\x9Eaduje tabu\xBEky InnoDB \x96 pri MyISAM m\xF4\x9Eu dve vlo\x9Eenia v rovnakom okamihu dosta\x9D rovnak\xE9 \xE8\xEDslo.", // ai 2026-10
 
-// include/itemfunc.php, row 1499
+// include/itemfunc.php, row 1502
 "File = uploaded file" => "S\xFAbor = nahran\xFD s\xFAbor", // ai 2026-06
 
-// include/itemfunc.php, row 1503
+// include/itemfunc.php, row 1506
 "Stores the uploaded file and a link to it, parameters only apply if type is image/something." => "Ulo\x9E\xED nahran\xFD s\xFAbor a odkaz na\xF2, parametre sa pou\x9Eij\xFA, len ak je typ image/something.", // ai 2026-06
 
-// include/itemfunc.php, row 1512
+// include/itemfunc.php, row 1515
 "Mime types accepted" => "Akceptovan\xE9 MIME typy", // ai 2026-06
 
-// include/itemfunc.php, row 1512
+// include/itemfunc.php, row 1515
 "Only files of matching mime types will be accepted" => "Akceptovan\xE9 bud\xFA len s\xFAbory zodpovedaj\xFAcich mime typov", // ai 2026-06
 
-// include/itemfunc.php, row 1513
+// include/itemfunc.php, row 1516
 "Maximum image width" => "Maxim\xE1lna \x9A\xEDrka obr\xE1zka", // ai 2026-06
 
-// include/itemfunc.php, row 1514
+// include/itemfunc.php, row 1517
 "Maximum image height" => "Maxim\xE1lna v\xFD\x9Aka obr\xE1zka", // ai 2026-06
 
-// include/itemfunc.php, row 1514
+// include/itemfunc.php, row 1517
 "The image will be resampled to be within these limits, while retaining aspect ratio." => "Obr\xE1zok bude prevzorkovan\xFD tak, aby sa zmestil do t\xFDchto limitov, pri zachovan\xED pomeru str\xE1n.", // ai 2026-06
 
-// include/itemfunc.php, row 1515
+// include/itemfunc.php, row 1518
 "Other fields" => "\xCFal\x9Aie polo\x9Eky", // ai 2026-06
 
-// include/itemfunc.php, row 1515
+// include/itemfunc.php, row 1518
 "List of other fields to receive this image, separated by ##. Does not work well for multi uploads." => "Zoznam \xEFal\x9A\xEDch polo\x9Eiek, do ktor\xFDch sa m\xE1 ulo\x9Ei\x9D tento obr\xE1zok, oddelen\xFD ##. Nefunguje dobre pri viacn\xE1sobnom nahr\xE1van\xED s\xFAborov.", // ai 2026-06
 
-// include/itemfunc.php, row 1516
+// include/itemfunc.php, row 1519
 "Upload policy" => "Sp\xF4sob nahr\xE1vania", // ai 2026-06
 
-// include/itemfunc.php, row 1516
+// include/itemfunc.php, row 1519
 "new | overwrite | backup<br>This parameter controls what to do if uploaded file alredy exists:<br>new - AA creates new filename (by adding _x postfix) and store it with this new name (default)<br>overwrite - the old file of the same name is overwritten<br>backup - the old file is copied to new (non-existing) file and current file is stored with current name.<br>In all cases the filename is escaped, so any non-word characters will be replaced by an underscore." => "new | overwrite | backup<br>Tento parameter ur\xE8uje, \xE8o sa stane, ak nahr\xE1van\xFD s\xFAbor u\x9E existuje:<br>new - AA vytvor\xED nov\xFD n\xE1zov s\xFAboru (pridan\xEDm _x na koniec) a ulo\x9E\xED ho pod t\xFDmto nov\xFDm n\xE1zvom (predvolen\xE9)<br>overwrite - star\xFD s\xFAbor s rovnak\xFDm n\xE1zvom sa prep\xED\x9Ae<br>backup - star\xFD s\xFAbor sa skop\xEDruje do nov\xE9ho (neexistuj\xFAceho) s\xFAboru a aktu\xE1lny s\xFAbor sa ulo\x9E\xED pod p\xF4vodn\xFDm n\xE1zvom.<br>Vo v\x9Aetk\xFDch pr\xEDpadoch sa n\xE1zov s\xFAboru o\x9Aetr\xED, tak\x9Ee v\x9Aetky neslovn\xE9 znaky bud\xFA nahraden\xE9 pod\xE8iarkovn\xEDkom.", // ai 2026-06
 
-// include/itemfunc.php, row 1517
+// include/itemfunc.php, row 1520
 "Exact dimensions" => "Presn\xE9 rozmery", // ai 2026-06
 
-// include/itemfunc.php, row 1517
+// include/itemfunc.php, row 1520
 "If set to 1 the image will be downsized exactly to the specified dimensions (and cropped if needed). Default is 0 or empty: Maintain aspect ratio while resizing the image." => "Ak je nastaven\xE9 na 1, obr\xE1zok sa zmen\x9A\xED presne na zadan\xE9 rozmery (a v pr\xEDpade potreby sa ore\x9Ee). Predvolen\xE9 je 0 alebo pr\xE1zdne: pri zmene ve\xBEkosti obr\xE1zka sa zachov\xE1 pomer str\xE1n.", // ai 2026-06
 
-// include/itemfunc.php, row 1518
+// include/itemfunc.php, row 1521
 "Filename template" => "\x8Aabl\xF3na n\xE1zvu s\xFAboru", // ai 2026-06
 
-// include/itemfunc.php, row 1518
+// include/itemfunc.php, row 1521
 "Renames file according to template. You can use AA expressions as well as special alias _#name and _#ext or _#full (file name, extension and fullname). The item aliases in AA expressions do not work on INSERT (item does not exist at time of file write). They will work on UPDATE." => "Premenuje s\xFAbor pod\xBEa \x9Aabl\xF3ny. M\xF4\x9Eete pou\x9Ei\x9D AA v\xFDrazy aj \x9Apeci\xE1lne aliasy _#name a _#ext alebo _#full (n\xE1zov s\xFAboru, pr\xEDpona a cel\xFD n\xE1zov). Aliasy spr\xE1vy v AA v\xFDrazoch nefunguj\xFA pri INSERT (spr\xE1va v \xE8ase z\xE1pisu s\xFAboru e\x9Ate neexistuje). Pri UPDATE fungova\x9D bud\xFA.", // ai 2026-06
 
-// include/itemfunc.php, row 1674
+// include/itemfunc.php, row 1682
 "Password and Change Password" => "Heslo a Zmena hesla", // ai 2026-06
 
-// include/itemfunc.php, row 1678
+// include/itemfunc.php, row 1686
 "Stores value from a \"Password and Change Password\" field type. First proves the new password matches the retyped new password, and if so, encrypts the new password and stores it." => "Ulo\x9E\xED hodnotu z typu polo\x9Eky \"Heslo a zmena hesla\". Najprv over\xED, \xE8i sa nov\xE9 heslo zhoduje so znovu zadan\xFDm nov\xFDm heslom, a ak \xE1no, nov\xE9 heslo za\x9Aifruje a ulo\x9E\xED.", // ai 2026-06
 
-// include/itemfunc.php, row 1687
+// include/itemfunc.php, row 1695
 "Copy of password" => "K\xF3pia hesla", // ai 2026-06
 
-// include/itemfunc.php, row 1687
+// include/itemfunc.php, row 1695
 "Field_id, where you want to store the copy of the password. Sometimes useful if you want to allow people to get his/her old password. It is strongly recommended to not store it in plaintext and encrypt it. See second parameter." => "Field_id (id polo\x9Eky), do ktorej chcete ulo\x9Ei\x9D k\xF3piu hesla. Niekedy u\x9Eito\xE8n\xE9, ak chcete umo\x9Eni\x9D \xBEu\xEFom z\xEDska\x9D ich star\xE9 heslo. D\xF4razne odpor\xFA\xE8ame neuklada\x9D ho ako \xE8ist\xFD text, ale za\x9Aifrova\x9D ho. Pozrite druh\xFD parameter.", // ai 2026-06
 
-// include/itemfunc.php, row 1688, 1734
+// include/itemfunc.php, row 1696, 1742
 "Encrypt phrase" => "\x8Aifrovacia fr\xE1za", // ai 2026-06
 
-// include/itemfunc.php, row 1688
+// include/itemfunc.php, row 1696
 "If you specify the \"Copy of password\" field, it is recommended to encrypt the password in the database. Fill there any string. If you then need the password, you can decrypt it from the field by using the same phrase - {decrypt:{password.......1}:Some Phrase}" => "Ak zad\xE1te polo\x9Eku \"K\xF3pia hesla\", odpor\xFA\xE8ame heslo v datab\xE1ze za\x9Aifrova\x9D. Vypl\xF2te sem \xBEubovo\xBEn\xFD re\x9Dazec. Ak potom heslo potrebujete, m\xF4\x9Eete ho z polo\x9Eky de\x9Aifrova\x9D pomocou rovnakej fr\xE1zy - {decrypt:{password.......1}:Some Phrase}", // ai 2026-06
 
-// include/itemfunc.php, row 1721
+// include/itemfunc.php, row 1729
 "2FA Secret" => "Tajn\xFD k\xBE\xFA\xE8 2FA", // ai 2026-06
 
-// include/itemfunc.php, row 1725
+// include/itemfunc.php, row 1733
 "Generates and stores secret for Two-factor authentication, possibly encrypted by password" => "Vygeneruje a ulo\x9E\xED tajn\xFD k\xBE\xFA\xE8 pre dvojfaktorov\xFA autentifik\xE1ciu, pr\xEDpadne za\x9Aifrovan\xFD heslom", // ai 2026-06
 
-// include/itemfunc.php, row 1734
+// include/itemfunc.php, row 1742
 "Password to be applied for encrypting this field value. Could contain AA expressions or aliases (for user item in Reader Management slice)" => "Heslo, ktor\xE9 sa pou\x9Eije na za\x9Aifrovanie hodnoty tejto polo\x9Eky. M\xF4\x9Ee obsahova\x9D AA v\xFDrazy alebo aliasy (pre spr\xE1vu u\x9E\xEDvate\xBEa v module Spr\xE1va \xE8itate\xBEov)", // ai 2026-06
 
-// include/itemview.php, row 120
+// include/itemview.php, row 122
 "Selected item" => "Vybran\xE1 spr\xE1va", // ai 2026-06
 
-// include/itemview.php, row 375
+// include/itemview.php, row 377
 "No comment was selected" => "Nebol vybran\xFD \x9Eiaden pr\xEDspevok",
 
-// include/itemview.php, row 707, 715
+// include/itemview.php, row 712, 720
 "exact group name" => "presn\xFD n\xE1zov skupiny", // ai 2026-06
 
-// include/locauth.php, row 99
+// include/locauth.php, row 102
 "Please try again!" => "Sk\xFAste to znova, pros\xEDm!", // ai 2026-06
 
-// include/locauth.php, row 100
+// include/locauth.php, row 103
 "If you are sure you have typed the correct password, please e-mail <a href=mailto:%1>%1</a>" => "Ak ste si ist\xED, \x9Ee ste zadali spr\xE1vne heslo, nap\xED\x9Ate pros\xEDm e-mail na <a href=mailto:%1>%1</a>", // ai 2026-06
 
-// include/logs.php, row 476
+// include/logs.php, row 521
 "Created time" => "\xC8as vytvorenia", // ai 2026-06
 
-// include/logs.php, row 477
+// include/logs.php, row 522
 "Readers to be emailed" => "\xC8itatelia, ktor\xFDm sa m\xE1 posla\x9D e-mail", // ai 2026-06
 
-// include/logs.php, row 489
+// include/logs.php, row 534
 // src/Optimize/CheckCkeditorUse.php, row 96
-// src/Optimize/CheckSecurityProtections.php, row 98
+// src/Optimize/CheckNightly.php, row 144, 153
+// src/Optimize/CheckSecurityProtections.php, row 101
 "Page" => "Str\xE1nka", // ai 2026-06
 
-// include/logs.php, row 564, 608, 623
+// include/logs.php, row 609, 653, 668
 "Time [s]" => "\xC8as [s]", // ai 2026-06
 
-// include/logs.php, row 565, 610
+// include/logs.php, row 610, 655
 "Memory usage [MB]" => "Pou\x9Eit\xE1 pam\xE4\x9D [MB]", // ai 2026-06
 
-// include/logs.php, row 566
+// include/logs.php, row 611
 "Memory peak [MB]" => "Maximum pam\xE4te [MB]", // ai 2026-06
 
-// include/logs.php, row 567
+// include/logs.php, row 612
 "Return code" => "N\xE1vratov\xFD k\xF3d", // ai 2026-06
 
-// include/logs.php, row 583
+// include/logs.php, row 628
 "Tasks done" => "Dokon\xE8en\xE9 \xFAlohy", // ai 2026-06
 
-// include/logs.php, row 584
+// include/logs.php, row 629
 "Tasks started" => "Spusten\xE9 \xFAlohy", // ai 2026-06
 
-// include/logs.php, row 585
+// include/logs.php, row 630
 "Duration [s]" => "Trvanie [s]", // ai 2026-06
 
-// include/logs.php, row 586
+// include/logs.php, row 631
 "Allowed [s]" => "Povolen\xE9 [s]", // ai 2026-06
 
-// include/logs.php, row 606
+// include/logs.php, row 651
 "Cached" => "Z cache", // ai 2026-06
 
-// include/logs.php, row 607
+// include/logs.php, row 652
 "Not Modified (304)" => "Nezmenen\xE9 (304)", // ai 2026-06
 
-// include/logs.php, row 609
+// include/logs.php, row 654
 "Time + Cached + 304" => "\xC8as + cache + 304", // ai 2026-06
 
-// include/logs.php, row 611, 624, 730, 916
+// include/logs.php, row 656, 669, 879, 1065
 // src/Optimize/MissCacheRouting.php, row 129
 "Url" => "URL", // ai 2026-06
 
-// include/logs.php, row 651
+// include/logs.php, row 696
 // include/menu_util.php, row 45
 // src/Optimize/CheckCentralCredentials.php, row 51
 // src/Optimize/CheckEnvironment.php, row 50
 "AA" => "",
 
-// include/logs.php, row 652
+// include/logs.php, row 697
 "SVN AA (util.php)" => "",
 
-// include/logs.php, row 653
+// include/logs.php, row 698
 // src/Optimize/CheckEnvironment.php, row 52
 "PHP" => "",
 
-// include/logs.php, row 654
+// include/logs.php, row 699
 "DB" => "",
 
-// include/logs.php, row 655
+// include/logs.php, row 700
 // src/Optimize/CheckEnvironment.php, row 54
 "Memory" => "Pam\xE4\x9D", // ai 2026-06
 
-// include/logs.php, row 656
+// include/logs.php, row 701
 // src/Optimize/CheckEnvironment.php, row 55
 "CPU" => "",
 
-// include/logs.php, row 657
+// include/logs.php, row 702
 // src/Optimize/CheckEnvironment.php, row 64
-"Server settings" => "",
+"Server settings" => "Nastavenia servera", // ai 2026-10
 
-// include/logs.php, row 704
-"Checks" => "",
+// include/logs.php, row 726, 825
+"Severity" => "Z\xE1va\x9Enos\x9D", // ai 2026-10
 
-// include/logs.php, row 727
+// include/logs.php, row 728, 823, 852
+"Finding" => "Zistenie", // ai 2026-10
+
+// include/logs.php, row 746
+"Problems" => "Probl\xE9my", // ai 2026-10
+
+// include/logs.php, row 747
+"Warnings" => "Varovania", // ai 2026-10
+
+// include/logs.php, row 748
+"Recommendations" => "Odpor\xFA\xE8ania", // ai 2026-10
+
+// include/logs.php, row 749
+"Checks" => "Kontroly", // ai 2026-10
+
+// include/logs.php, row 769, 800
+// src/Import/DetailPage.php, row 300, 367, 800
+// src/Manageraction/Import_Run.php, row 29
+"Run" => "Spusti\x9D", // ai 2026-10
+
+// include/logs.php, row 771
+// src/Import/DetailPage.php, row 329
+// src/Optimize/CheckImports.php, row 150, 154
+// src/Optimize/CheckInstallRuns.php, row 54
+"Started" => "Za\xE8iatok", // ai 2026-10
+
+// include/logs.php, row 773
+"Last full run" => "Posledn\xFD \xFApln\xFD beh", // ai 2026-10
+
+// include/logs.php, row 774
+"Last full run started" => "Za\xE8iatok posledn\xE9ho \xFApln\xE9ho behu", // ai 2026-10
+
+// include/logs.php, row 799, 824
+"Pair" => "P\xE1r", // ai 2026-10
+
+// include/logs.php, row 801
+// src/Optimize/CheckNightly.php, row 89
+"Ran" => "Spusten\xE9", // ai 2026-10
+
+// include/logs.php, row 802, 826
+"Known issue" => "Zn\xE1my probl\xE9m", // ai 2026-10
+
+// include/logs.php, row 828
+// src/Optimize/CheckNightly.php, row 147, 153
+"First seen" => "Prv\xFD v\xFDskyt", // ai 2026-10
+
+// include/logs.php, row 829
+// src/Optimize/CheckNightly.php, row 148, 153
+"Runs in a row" => "Behov po sebe", // ai 2026-10
+
+// include/logs.php, row 853
+"Evidence" => "D\xF4kaz", // ai 2026-10
+
+// include/logs.php, row 876
 "Identifier" => "Identifik\xE1tor", // ai 2026-06
 
-// include/logs.php, row 728, 1092, 1107
-// modules/jump/modedit.php, row 180
+// include/logs.php, row 877, 1241, 1256
+// modules/jump/modedit.php, row 177
 // src/Manager.php, row 816
 "Module ID" => "ID modulu", // ai 2026-06
 
-// include/logs.php, row 741
+// include/logs.php, row 890
 "Template id" => "Id \x9Aabl\xF3ny", // ai 2026-06
 
-// include/logs.php, row 743
+// include/logs.php, row 892
 "Emails sent" => "Odoslan\xE9 e-maily", // ai 2026-06
 
-// include/logs.php, row 782
-"Object id" => "",
+// include/logs.php, row 931
+"Object id" => "Id objektu", // ai 2026-10
 
-// include/logs.php, row 814
-"Mail template" => "",
+// include/logs.php, row 963
+"Mail template" => "\x8Aabl\xF3na e-mailu", // ai 2026-10
 
-// include/logs.php, row 815
-"Reader item" => "",
+// include/logs.php, row 964
+"Reader item" => "Spr\xE1va \xE8itate\xBEa", // ai 2026-10
 
-// include/logs.php, row 816
-"Origin" => "",
+// include/logs.php, row 965
+"Origin" => "P\xF4vod", // ai 2026-10
 
-// include/logs.php, row 887
-"Transport" => "",
+// include/logs.php, row 1036
+"Transport" => "Sp\xF4sob odoslania", // ai 2026-10
 
-// include/logs.php, row 888
-"Recipients sent" => "",
+// include/logs.php, row 1037
+"Recipients sent" => "Odoslan\xE9 pr\xEDjemcom", // ai 2026-10
 
-// include/logs.php, row 889
-"Server response" => "",
+// include/logs.php, row 1038
+"Server response" => "Odpove\xEF servera", // ai 2026-10
 
-// include/logs.php, row 902
+// include/logs.php, row 1051
 "Items selected" => "Vybran\xE9 spr\xE1vy", // ai 2026-06
 
-// include/logs.php, row 903
+// include/logs.php, row 1052
 "Items updated" => "Aktualizovan\xE9 spr\xE1vy", // ai 2026-06
 
-// include/logs.php, row 904
+// include/logs.php, row 1053
 "Items planned" => "Pl\xE1novan\xE9 spr\xE1vy", // ai 2026-06
 
-// include/logs.php, row 915
+// include/logs.php, row 1064
 // src/Import/DetailPage.php, row 1025
 // src/Optimize/CheckPhpFatals.php, row 64
 "Message" => "Spr\xE1va", // ai 2026-06
 
-// include/logs.php, row 917
-"Referer" => "",
+// include/logs.php, row 1066
+"Referer" => "Odkazuj\xFAca str\xE1nka", // ai 2026-10
 
-// include/logs.php, row 928
+// include/logs.php, row 1077
 "New name" => "Nov\xFD n\xE1zov", // ai 2026-06
 
-// include/logs.php, row 929
+// include/logs.php, row 1078
 "Old name" => "Star\xFD n\xE1zov", // ai 2026-06
 
-// include/logs.php, row 940, 1005
+// include/logs.php, row 1089, 1154
 "Phase" => "F\xE1za", // ai 2026-06
 
-// include/logs.php, row 941
+// include/logs.php, row 1090
 // src/Optimize/CheckAlertitemRefusals.php, row 87
 // src/Optimize/CheckAlerts.php, row 72
 "Collection" => "Kolekcia", // ai 2026-06
 
-// include/logs.php, row 943, 994, 1006
+// include/logs.php, row 1092, 1143, 1155
 // src/Import/Definition.php, row 154
 // src/Optimize/CheckUploadRefusals.php, row 87
-"Detail" => "",
+"Detail" => "Detail", // ai 2026-10
 
-// include/logs.php, row 993
+// include/logs.php, row 1142
 // src/Import/Definition.php, row 135, 162
 "Status" => "Stav", // ai 2026-06
 
-// include/logs.php, row 1045
+// include/logs.php, row 1194
 "Processed" => "Spracovan\xE9", // ai 2026-06
 
-// include/logs.php, row 1046
+// include/logs.php, row 1195
 "Stored" => "Ulo\x9Een\xE9", // ai 2026-06
 
-// include/logs.php, row 1047
+// include/logs.php, row 1196
 "Errors" => "Chyby", // ai 2026-06
 
-// include/logs.php, row 1060
+// include/logs.php, row 1209
 // src/Import/DetailPage.php, row 329
 "Outcome" => "V\xFDsledok", // ai 2026-06
 
-// include/logs.php, row 1076
+// include/logs.php, row 1225
 "Flags" => "Pr\xEDznaky", // ai 2026-06
 
-// include/logs.php, row 1077
+// include/logs.php, row 1226
 "Context" => "Kontext", // ai 2026-06
 
-// include/logs.php, row 1093
+// include/logs.php, row 1242
 "Feed counterpart" => "N\xE1protivok v\xFDmeny", // ai 2026-06
 
-// include/logs.php, row 1108
+// include/logs.php, row 1257
 "Field ID" => "ID polo\x9Eky", // ai 2026-06
 
 // include/mail.php, row 657
 "Email type" => "Typ e-mailu", // ai 2026-06
 
 // include/mail.php, row 661
-"\xE2\x80\x94 all modules (global) \xE2\x80\x94" => "",
+"\xE2\x80\x94 all modules (global) \xE2\x80\x94" => "\x97 v\x9Aetky moduly (glob\xE1lne) \x97", // ai 2026-10
 
 // include/mail.php, row 661
-// include/modutils.php, row 91, 180
-// include/slicedit.php, row 194
+// include/modutils.php, row 88, 177
+// include/slicedit.php, row 188
 // include/statestore.php, row 1077
 // src/Optimize/CheckObjectFormRefusals.php, row 100
 "Owner" => "Vlastn\xEDk",
@@ -6431,10 +6520,10 @@ return [
 "AA Central" => "",
 
 // include/menu_util.php, row 127
-"Install an app..." => "",
+"Install an app..." => "In\x9Atalova\x9D aplik\xE1ciu...", // ai 2026-10
 
 // include/menu_util.php, row 128
-"App store..." => "",
+"App store..." => "Katal\xF3g aplik\xE1ci\xED...", // ai 2026-10
 
 // include/menu_util.php, row 129
 "Synchronize..." => "Synchronizova\x9D...", // ai 2026-06
@@ -6455,7 +6544,7 @@ return [
 "Jump inside control panel" => "Skok v r\xE1mci administr\xE1cie", // ai 2026-06
 
 // include/menu_util.php, row 450
-// include/slice.class.php, row 1429
+// include/slice.class.php, row 1422
 // src/Central/FindingText.php, row 311
 "Links" => "Odkazy", // ai 2026-06
 
@@ -6495,7 +6584,7 @@ return [
 "Feedback" => "Sp\xE4tn\xE1 v\xE4zba", // ai 2026-06
 
 // include/menu_util.php, row 762
-// include/slice.class.php, row 679
+// include/slice.class.php, row 675
 "Reader management" => "Spr\xE1va \xE8itate\xBEov", // ai 2026-06
 
 // include/menu_util.php, row 774
@@ -6510,7 +6599,7 @@ return [
 // include/menu_util.php, row 871
 "Collapse / expand menu" => "Zbali\x9D / rozbali\x9D menu", // ai 2026-06
 
-// include/metabase.class.php, row 1663
+// include/metabase.class.php, row 1665
 "More" => "Viac", // ai 2026-06
 
 // include/mlx.php, row 387
@@ -6523,34 +6612,34 @@ return [
 // include/mlx.php, row 432
 "No ID for MLX" => "Ch\xFDba ID pre MLX", // ai 2026-06
 
-// include/modutils.php, row 79, 181
-// include/slicedit.php, row 195
+// include/modutils.php, row 76, 178
+// include/slicedit.php, row 189
 "URL of .shtml page (often leave blank)" => "URL modulu",
 
-// include/modutils.php, row 80, 182
-// include/slicedit.php, row 198
+// include/modutils.php, row 77, 179
+// include/slicedit.php, row 192
 "Priority (order in slice-menu)" => "Priorita (poradie v menu modulov)", // ai 2026-06
 
-// include/modutils.php, row 86
+// include/modutils.php, row 83
 "\xC3\x97 Cancel" => "\xD7 Zru\x9Ai\x9D", // ai 2026-06
 
-// include/modutils.php, row 136
+// include/modutils.php, row 133
 "Deleted" => "Zmazan\xFD",
 
-// include/modutils.php, row 183
-// include/slicedit.php, row 202
+// include/modutils.php, row 180
+// include/slicedit.php, row 196
 "Used Language File" => "Pou\x9Eit\xFD language s\xFAbor",
 
-// include/modutils.php, row 258
+// include/modutils.php, row 251
 "Select owner" => "V\xFDber vlastn\xEDka",
 
-// include/perm_core.php, row 1202, 1225
+// include/perm_core.php, row 1202, 1229
 "Reader Slice" => "Modul \xE8itate\xBEov", // ai 2026-06
 
-// include/perm_core.php, row 1210, 1227
+// include/perm_core.php, row 1214, 1231
 "Reader Set" => "Sada \xE8itate\xBEov", // ai 2026-06
 
-// include/profile.class.php, row 360, 370, 379, 388, 397, 406, 414
+// include/profile.class.php, row 356, 366, 375, 384, 393, 402, 410
 "Rule added" => "Pravidlo pridan\xE9",
 
 // include/profile.php, row 111
@@ -6573,7 +6662,7 @@ return [
 "&laquo;" => "",
 
 // include/se_users.php, row 76
-"deleted user" => "",
+"deleted user" => "zmazan\xFD u\x9E\xEDvate\xBE", // ai 2026-10
 
 // include/se_users.php, row 81
 "Reader" => "\xC8itate\xBE", // ai 2026-06
@@ -6697,188 +6786,188 @@ return [
 "select ..." => "vyberte ...", // ai 2026-06
 
 // include/searchlib.php, row 369
-"Limit" => "",
+"Limit" => "Limit", // ai 2026-10
 
 // include/slice.class.php, row 428
 "Error while loading module settings form:" => "Chyba pri na\xE8\xEDtan\xED formul\xE1ra nastaven\xED modulu:", // ai 2026-06
 
-// include/slice.class.php, row 680
+// include/slice.class.php, row 676
 "Code - Pages" => "K\xF3d - Str\xE1nky", // ai 2026-06
 
-// include/slice.class.php, row 681
+// include/slice.class.php, row 677
 "Code - Views / Snippets" => "K\xF3d - Poh\xBEady / Snippety", // ai 2026-06
 
-// include/slice.class.php, row 682
+// include/slice.class.php, row 678
 // src/Optimize/CheckImports.php, row 272
 "Constant" => "Hodnoty", // ai 2026-06
 
-// include/slice.class.php, row 683
+// include/slice.class.php, row 679
 // include/transformation.class.php, row 752
 "Translations" => "Preklady", // ai 2026-06
 
-// include/slice.class.php, row 684
+// include/slice.class.php, row 680
 "Field definitions" => "Defin\xEDcie polo\x9Eiek", // ai 2026-06
 
-// include/slice.class.php, row 909
-// include/util.php, row 993
+// include/slice.class.php, row 905
+// include/util.php, row 992
 "Error: Missing Reading Password" => "Chyba: ch\xFDba heslo na \xE8\xEDtanie", // ai 2026-06
 
-// include/slice.class.php, row 1297
+// include/slice.class.php, row 1290
 "Spot ID" => "ID spotu", // ai 2026-06
 
-// include/slice.class.php, row 1297
+// include/slice.class.php, row 1290
 "You can include this spot code in another spot by using {sitespot:%1}" => "K\xF3d tohto spotu m\xF4\x9Eete vlo\x9Ei\x9D do in\xE9ho spotu pomocou {sitespot:%1}", // ai 2026-06
 
-// include/slice.class.php, row 1315
+// include/slice.class.php, row 1308
 "Spot name" => "N\xE1zov spotu", // ai 2026-06
 
-// include/slice.class.php, row 1457
+// include/slice.class.php, row 1450
 "Jump inside AA control panel" => "Skok vn\xFAtri administr\xE1cie AA", // ai 2026-06
 
-// include/slice.class.php, row 1482
+// include/slice.class.php, row 1475
 "Polls for AA" => "Ankety v AA", // ai 2026-06
 
-// include/slice.class.php, row 1551
+// include/slice.class.php, row 1544
 "Languages for translation" => "Jazyky pre preklad", // ai 2026-06
 
-// include/slice.class.php, row 1551
+// include/slice.class.php, row 1544
 "specify language codes in which you want to translate content - small caps, two letters - like: en, es, de, ..." => "zadajte k\xF3dy jazykov, do ktor\xFDch chcete preklada\x9D obsah - mal\xE9 p\xEDsmen\xE1, dva znaky - napr\xEDklad: en, es, de, ...", // ai 2026-06
 
-// include/slice.class.php, row 1552
+// include/slice.class.php, row 1545
 "Automatic field creation" => "Automatick\xE9 vytv\xE1ranie polo\x9Eiek", // ai 2026-06
 
-// include/slice.class.php, row 1552
+// include/slice.class.php, row 1545
 "If checked, slice allows storing values to text....* field, even if the appropriate text....* is not defined in the slice. The field will be created using field text............ as template." => "Ak je zapnut\xE9, modul umo\x9En\xED uklada\x9D hodnoty do polo\x9Eky text....*, aj ke\xEF pr\xEDslu\x9An\xE1 polo\x9Eka text....* nie je v module definovan\xE1. Polo\x9Eka bude vytvoren\xE1 s pou\x9Eit\xEDm polo\x9Eky text............ ako \x9Aabl\xF3ny.", // ai 2026-06
 
-// include/slice.class.php, row 1553
+// include/slice.class.php, row 1546
 "Fields defined by another slice" => "Polo\x9Eky definovan\xE9 in\xFDm modulom", // ai 2026-06
 
-// include/slice.class.php, row 1553
+// include/slice.class.php, row 1546
 "You can use special slice for additional fields definition. There you can write slice ID, which defines the fields.<br>Could be used for data slice, which stores values for user created forms." => "Pre defin\xEDciu \xEFal\x9A\xEDch polo\x9Eiek m\xF4\x9Eete pou\x9Ei\x9D \x9Apeci\xE1lny modul. Sem nap\xED\x9Ate ID modulu, ktor\xFD polo\x9Eky definuje.<br>D\xE1 sa vyu\x9Ei\x9D pre d\xE1tov\xFD modul, ktor\xFD uklad\xE1 hodnoty u\x9E\xEDvate\xBEsky vytvoren\xFDch formul\xE1rov.", // ai 2026-06
 
-// include/slice.class.php, row 1554
+// include/slice.class.php, row 1547
 "Store item history for N days" => "Uchov\xE1va\x9D hist\xF3riu spr\xE1v N dn\xED", // ai 2026-06
 
-// include/slice.class.php, row 1554
+// include/slice.class.php, row 1547
 "ALL - do not delete history log (default)<br>0 - do not store item history (nor ITEM_UPD/ITEM_NEW events in Log)<br><em>number</em> - days after which the history of items will be deleted" => "ALL - nemaza\x9D log hist\xF3rie (predvolen\xE9)<br>0 - neuklada\x9D hist\xF3riu spr\xE1v (ani udalosti ITEM_UPD/ITEM_NEW v Logu)<br><em>\xE8\xEDslo</em> - po\xE8et dn\xED, po ktor\xFDch bude hist\xF3ria spr\xE1v vymazan\xE1", // ai 2026-06
 
-// include/slice.class.php, row 1555
+// include/slice.class.php, row 1548
 "No pending items" => "Bez pripravovan\xFDch spr\xE1v", // ai 2026-06
 
-// include/slice.class.php, row 1555
+// include/slice.class.php, row 1548
 "1 - disable pending bin completely in this slice (act publish_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable pending check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - \xFAplne vypne pripravovan\xE9 v tomto module (polo\x9Eka publish_date funguje ako be\x9En\xE1)<br>{aa-expression} - ak sa vyhodnot\xED ako 1, vypne kontrolu pripravovan\xFDch (pre poh\xBEad, modul, {ids...}) (pou\x9Eite tu v\xFDrazy {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1556
+// include/slice.class.php, row 1549
 "No expired items" => "Bez expirovan\xFDch spr\xE1v", // ai 2026-06
 
-// include/slice.class.php, row 1556
+// include/slice.class.php, row 1549
 "1 - disable expired bin completely in this slice (act expiry_date field as normal one)<br>{aa-expression} - if evaluated as 1, disable expiry date check (for view, slice, {ids...}) (use {if:{qss:..}, {var:..}, {server:..} expression here)" => "1 - \xFAplne vypne expirovan\xE9 v tomto module (polo\x9Eka expiry_date funguje ako be\x9En\xE1)<br>{aa-expression} - ak sa vyhodnot\xED ako 1, vypne kontrolu d\xE1tumu expir\xE1cie (pre poh\xBEad, modul, {ids...}) (pou\x9Eite tu v\xFDrazy {if:{qss:..}, {var:..}, {server:..})", // ai 2026-06
 
-// include/slice.class.php, row 1615
+// include/slice.class.php, row 1608
 "Slice with translations" => "Modul s prekladmi", // ai 2026-06
 
-// include/slice.class.php, row 1615
+// include/slice.class.php, row 1608
 "the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')" => "modul pou\x9E\xEDvan\xFD pre preklady {tr:text...} (modul mus\xED ma\x9D nastaven\xE9 'Allow translation' iba pri polo\x9Eke headline........)", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1609
 "Additional aliases" => "\xCFal\x9Aie aliasy", // ai 2026-06
 
-// include/slice.class.php, row 1616
+// include/slice.class.php, row 1609
 "Select sitemodule, where we have to look for additional {_:...} aliases" => "Vyberte sitemodul, v ktorom sa maj\xFA h\xBEada\x9D \xEFal\x9Aie aliasy {_:...}", // ai 2026-06
 
-// include/slice.class.php, row 1617
+// include/slice.class.php, row 1610
 "Languages on website" => "Jazyky na webe", // ai 2026-06
 
-// include/slice.class.php, row 1617
+// include/slice.class.php, row 1610
 "List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>" => "Vymenujte v\x9Aetky jazyky, pre ktor\xE9 chcete sitemodul pou\x9E\xEDva\x9D - en, es, cz, ..<br>Pros\xEDme, <b>vypl\xF2te</b> aj v pr\xEDpade, \x9Ee pou\x9E\xEDvate len 1 jazyk. <br>Je to nutn\xE9, ak chcete sitemodul vola\x9D nov\x9A\xEDm sp\xF4sobom z Apache:<br> RewriteEngine on<br> RewriteRule ^\$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Page not Found (404)" => "Str\xE1nka nen\xE1jden\xE1 (404)", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Do not care" => "Nerie\x9Ai\x9D", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Send standard 404 page, when {xid} is empty" => "Posla\x9D \x9Atandardn\xFA str\xE1nku 404, ak je {xid} pr\xE1zdne", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "Send code below" => "Posla\x9D ni\x9E\x9Aie uveden\xFD k\xF3d", // ai 2026-06
 
-// include/slice.class.php, row 1618
+// include/slice.class.php, row 1611
 "When first option \"Do not care\" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself" => "Ak je vybran\xE1 prv\xE1 vo\xBEba \"Nerie\x9Ai\x9D\" (star\xE9 spr\xE1vanie), mus\xEDte nevyplnen\xE9 {xid} testova\x9D vo svojom sitemodule sami", // ai 2026-06
 
-// include/slice.class.php, row 1619
+// include/slice.class.php, row 1612
 "HTML code for \"Page not Found\" (404)" => "HTML k\xF3d pre \"Str\xE1nka nen\xE1jden\xE1\" (404)", // ai 2026-06
 
-// include/slice.class.php, row 1620
+// include/slice.class.php, row 1613
 "sitemap.xml alias" => "Alias pre sitemap.xml", // ai 2026-06
 
-// include/slice.class.php, row 1620
+// include/slice.class.php, row 1613
 "The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown." => "S\xFAbor sitemap.xml sa vygeneruje zo v\x9Aetk\xFDch modulov (v porad\xED vy\x9A\x9Aie), v ktor\xFDch existuje zadan\xFD alias (napr. _#SMAP_URL). Alias by mal generova\x9D pln\xFA URL spr\xE1vy v ka\x9Edom module. Pre s\xFAkromn\xE9/skryt\xE9 spr\xE1vy by mal generova\x9D pr\xE1zdny re\x9Dazec, aby sa ich URL nezobrazila.", // ai 2026-06
 
-// include/slice.class.php, row 1621
+// include/slice.class.php, row 1614
 "Permission alias" => "Alias pre pr\xE1va", // ai 2026-06
 
-// include/slice.class.php, row 1621
+// include/slice.class.php, row 1614
 "You can define the alias, which will be checked for all the displayed {xid} (=pages). If the value will be word \"Valid\", then the page will be shown. Otherwise the loginform (see below) will be shown. Of course, you do not need to use this feature and do it older way - directly in the tree of sitemodule." => "M\xF4\x9Eete definova\x9D alias, ktor\xFD sa vyhodnot\xED pre v\x9Aetky zobrazovan\xE9 {xid} (=str\xE1nky). Ak bude hodnotou slovo \"Valid\", str\xE1nka sa zobraz\xED. Inak sa zobraz\xED prihlasovac\xED formul\xE1r (pozri ni\x9E\x9Aie). T\xFAto funkciu samozrejme nemus\xEDte pou\x9E\xEDva\x9D a m\xF4\x9Eete v\x9Aetko rie\x9Ai\x9D postaru - priamo v strome sitemodulu.", // ai 2026-06
 
-// include/slice.class.php, row 1622
+// include/slice.class.php, row 1615
 "HTML code for \"Login page\"" => "HTML k\xF3d pre \"Prihlasovaciu str\xE1nku\"", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 434
 "User login databases" => "Datab\xE1zy pre prihlasovanie u\x9E\xEDvate\xBEov", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 409
 "first Reader Management slice listed in Uses slices" => "prv\xFD modul pre spr\xE1vu \xE8itate\xBEov uveden\xFD v Pou\x9E\xEDva moduly", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 410
 "all Reader Management slices listed in Uses slices" => "v\x9Aetky moduly pre spr\xE1vu \xE8itate\xBEov uveden\xE9 v Pou\x9E\xEDva moduly", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 // src/Central/FindingText.php, row 411
 "AA + all Reader Management slices in AA (old behavior)" => "AA + v\x9Aetky moduly pre spr\xE1vu \xE8itate\xBEov v AA (star\xE9 spr\xE1vanie)", // ai 2026-06
 
-// include/slice.class.php, row 1623
+// include/slice.class.php, row 1616
 "First Reader Management slice is encouraged option - only the people from this slice are allowed to login to public pages. If not selected, \"AA + all Reader Management slices\" option is used." => "Odpor\xFA\xE8anou vo\xBEbou je prv\xFD modul Spr\xE1vy \xE8itate\xBEov - na verejn\xE9 str\xE1nky sa m\xF4\x9Eu prihl\xE1si\x9D iba u\x9E\xEDvatelia z tohto modulu. Ak nie je vybran\xFD, pou\x9Eije sa vo\xBEba \"AA + v\x9Aetky moduly Spr\xE1vy \xE8itate\xBEov\".", // ai 2026-06
 
-// include/slice.class.php, row 1624
+// include/slice.class.php, row 1617
 "Google analytics tracking id" => "Sledovacie ID Google Analytics", // ai 2026-06
 
-// include/slice.class.php, row 1624
+// include/slice.class.php, row 1617
 "If you are using {generate:HEAD} and {generate:FOOT} in your sitemodule code, then the Google Analytics code is generated with this tracking ID. The generated code could be changed in the future when Google changes the snippet.<br>To use user Consent bar, add {eucookies} or {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top} in the site." => "Ak v k\xF3de svojho modulu site pou\x9E\xEDvate {generate:HEAD} a {generate:FOOT}, k\xF3d Google Analytics sa vygeneruje s t\xFDmto sledovac\xEDm ID. Vygenerovan\xFD k\xF3d sa m\xF4\x9Ee v bud\xFAcnosti zmeni\x9D, ke\xEF Google zmen\xED dan\xFD snippet.<br>Ak chcete pou\x9Ei\x9D li\x9Atu s\xFAhlasu u\x9E\xEDvate\xBEa, pridajte na str\xE1nku {eucookies} alebo {eucookies:OK to use cookies?:OK:more://www.example.cz/cz/cookies-strategy::No:top}.", // ai 2026-06
 
-// include/slice.class.php, row 1625
+// include/slice.class.php, row 1618
 "Alternate URL" => "Alternat\xEDvna URL", // ai 2026-06
 
-// include/slice.class.php, row 1625
+// include/slice.class.php, row 1618
 "Another domain(s) for which the web should be visible. However, consider using server-side redirect to use single domain, which is more SEO friendly." => "\xCFal\x9Aia dom\xE9na (dom\xE9ny), pre ktor\xFA m\xE1 by\x9D web vidite\xBEn\xFD. Zv\xE1\x9Ete v\x9Aak pou\x9Eitie presmerovania na strane servera a pou\x9E\xEDvanie jedinej dom\xE9ny, ktor\xE9 je lep\x9Aie pre SEO.", // ai 2026-06
 
-// include/slice.class.php, row 1627
-"Publish in the app store" => "",
+// include/slice.class.php, row 1620
+"Publish in the app store" => "Zverejni\x9D v katal\xF3gu aplik\xE1ci\xED", // ai 2026-10
 
-// include/slice.class.php, row 1627
-"Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "",
+// include/slice.class.php, row 1620
+"Any AA may then install this site with the slices and Alerts it uses - their templates, fields and views, never the items. Constant groups of other slices must belong to a published site too." => "Ak\xE9ko\xBEvek AA potom m\xF4\x9Ee tento web nain\x9Atalova\x9D aj s modulmi a Zasielan\xEDm, ktor\xE9 pou\x9E\xEDva \x96 ich \x9Aabl\xF3ny, polo\x9Eky a poh\xBEady, nikdy spr\xE1vy. Skupiny hodn\xF4t in\xFDch modulov musia tie\x9E patri\x9D k zverejnen\xE9mu webu.", // ai 2026-10
 
-// include/slice.class.php, row 1628
-"App description" => "",
+// include/slice.class.php, row 1621
+"App description" => "Popis aplik\xE1cie", // ai 2026-10
 
-// include/slice.class.php, row 1628
-"What the app does, for the list of the app store." => "",
+// include/slice.class.php, row 1621
+"What the app does, for the list of the app store." => "\xC8o aplik\xE1cia rob\xED, pre zoznam v katal\xF3gu aplik\xE1ci\xED.", // ai 2026-10
 
-// include/slice.class.php, row 1629
-"App version" => "",
+// include/slice.class.php, row 1622
+"App version" => "Verzia aplik\xE1cie", // ai 2026-10
 
-// include/slice.class.php, row 1629
-"Like 1.2.0." => "",
+// include/slice.class.php, row 1622
+"Like 1.2.0." => "Napr\xEDklad 1.2.0.", // ai 2026-10
 
-// include/slice.class.php, row 1631
-"Published modules" => "",
+// include/slice.class.php, row 1624
+"Published modules" => "Zverejnen\xE9 moduly", // ai 2026-10
 
-// include/slice.class.php, row 1678
-"The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "",
+// include/slice.class.php, row 1671
+"The app version is at most 32 letters, digits and . + - (like 1.2.0), the description at most %1 characters." => "Verzia aplik\xE1cie m\xE1 najviac 32 p\xEDsmen, \xE8\xEDslic a znakov . + - (napr. 1.2.0), popis najviac %1 znakov.", // ai 2026-10
 
 // include/slice.php, row 69
 "Select Category " => "Zvo\xBEte kateg\xF3riu", // ai 2026-06
@@ -6925,24 +7014,24 @@ return [
 "Error mailing" => "Chyba pri odosielan\xED e-mailu", // ai 2026-06
 
 // include/slicedit.php, row 163
-"The settings and the other fields of this page were not saved." => "",
+"The settings and the other fields of this page were not saved." => "Nastavenia a ostatn\xE9 polo\x9Eky tejto str\xE1nky neboli ulo\x9Een\xE9.", // ai 2026-10
 
-// include/slicedit.php, row 197
+// include/slicedit.php, row 191
 "Upload URL" => "URL pre upload", // ai 2026-06
 
-// include/slicedit.php, row 206
+// include/slicedit.php, row 200
 "Language Control Slice" => "Modul spr\xE1vy prekladov", // ai 2026-06
 
-// include/slicedit.php, row 212
+// include/slicedit.php, row 209
 "This File Manager Directory is already used by another slice." => "Tento adres\xE1r Spr\xE1vcu s\xFAborov u\x9E pou\x9E\xEDva in\xFD modul.", // ai 2026-06
 
-// include/slicedit.php, row 355
+// include/slicedit.php, row 353
 "Error when copying constants." => "Chyba pri kop\xEDrovan\xED hodn\xF4t.", // ai 2026-06
 
-// include/slicedit.php, row 366
+// include/slicedit.php, row 364
 "Error when copying views." => "Chyba pri kop\xEDrovan\xED poh\xBEadov.", // ai 2026-06
 
-// include/slicedit.php, row 374
+// include/slicedit.php, row 372
 "Internal error when changing user role." => "Intern\xE1 chyba pri zmene role u\x9E\xEDvate\xBEa.", // ai 2026-06
 
 // include/statestore.php, row 1077
@@ -6954,123 +7043,123 @@ return [
 // include/statestore.php, row 1445
 "Manage components" => "Spr\xE1va komponentov", // ai 2026-06
 
-// include/stringexpand.php, row 93
+// include/stringexpand.php, row 96
 "Alias will be called as {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}" => "Alias sa bude vola\x9D ako {_:&lt;Alias_name&gt;[:&lt;Possible parameters - colon separated&gt;]}", // ai 2026-06
 
-// include/stringexpand.php, row 94
+// include/stringexpand.php, row 97
 "Code printed by the alias. Alias could have parameters and you can use it by _#P1, _#P2, ... variables" => "K\xF3d vyp\xEDsan\xFD aliasom. Alias m\xF4\x9Ee ma\x9D parametre a tie m\xF4\x9Eete pou\x9Ei\x9D ako premenn\xE9 _#P1, _#P2, ...", // ai 2026-06
 
-// include/stringexpand.php, row 96
+// include/stringexpand.php, row 99
 "Usage example" => "Pr\xEDklad pou\x9Eitia", // ai 2026-06
 
-// include/stringexpand.php, row 911
+// include/stringexpand.php, row 927
 "Jabber Online Status Indicator" => "Indik\xE1tor online stavu Jabber", // ai 2026-06
 
-// include/stringexpand.php, row 5439
+// include/stringexpand.php, row 5464
 "save changes" => "ulo\x9Ei\x9D zmeny", // ai 2026-06
 
-// include/stringexpand.php, row 5655
+// include/stringexpand.php, row 5680
 "No item ID" => "Ch\xFDba ID spr\xE1vy", // ai 2026-06
 
-// include/stringexpand.php, row 5662
+// include/stringexpand.php, row 5687
 "No transformations" => "\x8Eiadne transform\xE1cie", // ai 2026-06
 
-// include/stringexpand.php, row 5676
+// include/stringexpand.php, row 5701
 "No slice for item" => "\x8Eiadny modul pre spr\xE1vu", // ai 2026-06
 
-// include/stringexpand.php, row 5677
+// include/stringexpand.php, row 5702
 "No current slice(s)" => "\x8Eiadny aktu\xE1lny modul (moduly)", // ai 2026-06
 
-// include/stringexpand.php, row 5678
+// include/stringexpand.php, row 5703
 "Item slice is not in list of allowed slices" => "Modul spr\xE1vy nie je v zozname povolen\xFDch modulov", // ai 2026-06
 
-// include/stringexpand.php, row 5683
+// include/stringexpand.php, row 5708
 "No permit_anonymous_edit permission for the slice" => "Modul nem\xE1 pr\xE1vo permit_anonymous_edit", // ai 2026-06
 
-// include/stringexpand.php, row 6078
+// include/stringexpand.php, row 6103
 "No dictionaries specified for {dictionary}" => "Pre {dictionary} nie s\xFA zadan\xE9 \x9Eiadne slovn\xEDky", // ai 2026-06
 
-// include/stringexpand.php, row 6161
+// include/stringexpand.php, row 6233
 "No module for dictionary slice" => "Nen\xE1jden\xFD slovn\xEDkov\xFD modul", // ai 2026-06
 
-// include/stringexpand.php, row 7799
+// include/stringexpand.php, row 7881
 "version" => "verzia", // ai 2026-06
 
-// include/stringexpand.php, row 7983
+// include/stringexpand.php, row 8065
 "show" => "zobrazi\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 7984
+// include/stringexpand.php, row 8066
 "hide" => "skry\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 7985
+// include/stringexpand.php, row 8067
 "loading" => "na\xE8\xEDtavam", // ai 2026-06
 
-// include/stringexpand.php, row 9116
+// include/stringexpand.php, row 9198
 "E-mail confirmed." => "E-mail potvrden\xFD.", // ai 2026-06
 
-// include/stringexpand.php, row 9120
+// include/stringexpand.php, row 9202
 "E-mail unsubscribed" => "E-mail odhl\xE1sen\xFD", // ai 2026-06
 
-// include/stringexpand.php, row 9869
+// include/stringexpand.php, row 9951
 "Forgot your password? Fill in your email." => "Zabudli ste heslo? Vypl\xF2te svoj e-mail.", // ai 2026-06
 
-// include/stringexpand.php, row 9871
+// include/stringexpand.php, row 9953
 // src/Central/FindingText.php, row 457
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
-// include/stringexpand.php, row 9889, 9893
+// include/stringexpand.php, row 9971, 9975
 "Unable to find user - please check if it has been misspelled." => "U\x9E\xEDvate\xBEa sa nepodarilo n\xE1js\x9D - skontrolujte pros\xEDm, \xE8i nie je meno nap\xEDsan\xE9 chybne.", // ai 2026-06
 
-// include/stringexpand.php, row 9907
+// include/stringexpand.php, row 9989
 "Password link" => "Odkaz pre heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9908
+// include/stringexpand.php, row 9990
 "Password change url parameter" => "URL parameter pre zmenu hesla", // ai 2026-06
 
-// include/stringexpand.php, row 9920
+// include/stringexpand.php, row 10002
 "Password change" => "Zmena hesla", // ai 2026-06
 
-// include/stringexpand.php, row 9921
+// include/stringexpand.php, row 10003
 "To change the password, please visit the following address:<br>%1<br>Change will be possible for two hours - otherwise the key will expire and you will need to request a new one." => "Pre zmenu hesla nav\x9At\xEDvte pros\xEDm nasleduj\xFAcu adresu:<br>%1<br>Zmena bude mo\x9En\xE1 po\xE8as dvoch hod\xEDn - potom platnos\x9D k\xBE\xFA\xE8a vypr\x9A\xED a budete musie\x9D po\x9Eiada\x9D o nov\xFD.", // ai 2026-06
 
-// include/stringexpand.php, row 9930
+// include/stringexpand.php, row 10012
 "E-mail with a key to change the password has just been sent to the e-mail address: %1" => "E-mail s k\xBE\xFA\xE8om pre zmenu hesla bol pr\xE1ve odoslan\xFD na e-mailov\xFA adresu: %1", // ai 2026-06
 
-// include/stringexpand.php, row 9941, 9970
+// include/stringexpand.php, row 10023, 10052
 "Bad or expired key." => "Chybn\xFD alebo expirovan\xFD k\xBE\xFA\xE8.", // ai 2026-06
 
-// include/stringexpand.php, row 9946
+// include/stringexpand.php, row 10028
 "Fill in the new password" => "Zadajte nov\xE9 heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9948
+// include/stringexpand.php, row 10030
 "New password" => "Nov\xE9 heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9949
+// include/stringexpand.php, row 10031
 "Retype New Password" => "Zopakujte nov\xE9 heslo", // ai 2026-06
 
-// include/stringexpand.php, row 9973
+// include/stringexpand.php, row 10055
 "Passwords do not match - please try again." => "Hesl\xE1 sa nezhoduj\xFA - sk\xFAste to pros\xEDm znova.", // ai 2026-06
 
-// include/stringexpand.php, row 9976
+// include/stringexpand.php, row 10058
 "The password must be at least 6 characters long." => "Heslo mus\xED ma\x9D aspo\xF2 6 znakov.", // ai 2026-06
 
-// include/stringexpand.php, row 9982
+// include/stringexpand.php, row 10064
 "Password changed." => "Heslo bolo zmenen\xE9.", // ai 2026-06
 
-// include/stringexpand.php, row 9984
+// include/stringexpand.php, row 10066
 "An error occurred during password change - please contact: %1." => "Pri zmene hesla do\x9Alo k chybe - kontaktujte pros\xEDm: %1.", // ai 2026-06
 
-// include/stringexpand.php, row 10863, 10886
+// include/stringexpand.php, row 10945, 10968
 "Are you sure you want to permanently DELETE this record?" => "Naozaj chcete natrvalo VYMAZA\x8D tento z\xE1znam?", // ai 2026-06
 
-// include/stringexpand.php, row 10869, 10872, 10892, 10895
+// include/stringexpand.php, row 10951, 10954, 10974, 10977
 // src/Widget/RimWidget.php, row 270
 "edit" => "upravi\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 10875, 10898
+// include/stringexpand.php, row 10957, 10980
 "back" => "sp\xE4\x9D", // ai 2026-06
 
-// include/stringexpand.php, row 10878, 10901
+// include/stringexpand.php, row 10960, 10983
 // src/Widget/RimWidget.php, row 296
 "drop files here or click to upload" => "pretiahnite s\xFAbory sem alebo kliknite pre nahranie", // ai 2026-06
 
@@ -7189,15 +7278,15 @@ return [
 "AUTHOR" => "AUTOR", // ai 2026-06
 
 // include/um_util.php, row 174
-"EDITOR" => "",
+"EDITOR" => "EDITOR", // ai 2026-10
 
 // include/um_util.php, row 358
 "Can't change user" => "Nie je mo\x9En\xE9 zmeni\x9D \xFAdaje u\x9Eivate\xBEa - LDAP Error",
 
-// include/util.php, row 1355
+// include/util.php, row 1347
 "Toolkit news message" => "Nastavenia",
 
-// include/util.php, row 1369
+// include/util.php, row 1361
 "Relogin" => "Znovu sa prihl\xE1si\x9D", // ai 2026-06
 
 // include/validate.php, row 54
@@ -7305,7 +7394,7 @@ return [
 // include/validate.php, row 981
 "The two password copies differ." => "K\xF3pie hesla sa l\xED\x9Aia.", // ai 2026-06
 
-// include/view.class.php, row 322
+// include/view.class.php, row 321
 "Jump to view:" => "Prejs\x9D na poh\xBEad:", // ai 2026-06
 
 // include/widget.class.php, row 179
@@ -7319,7 +7408,7 @@ return [
 "type" => "typ", // ai 2026-06
 
 // include/widget.class.php, row 182
-"multi" => "",
+"multi" => "viachodnotov\xE9", // ai 2026-10
 
 // include/widget.class.php, row 183
 "persistent" => "",
@@ -7352,6 +7441,7 @@ return [
 "const_arr" => "",
 
 // include/widget.class.php, row 193
+// src/Optimize/CheckTrustedProxies.php, row 69
 "default" => "predvolen\xE1 hodnota", // ai 2026-06
 
 // include/widget.class.php, row 470
@@ -7432,61 +7522,61 @@ return [
 // misc/datovka/datovka.php, row 141
 "Allow substitute delivery" => "Povoli\x9D n\xE1hradn\xE9 doru\xE8enie", // ai 2026-06
 
-// misc/msconvert/index.php, row 23
+// misc/msconvert/index.php, row 36
 "Foreign Formats Convertor" => "Konvertor cudz\xEDch form\xE1tov", // ai 2026-06
 
-// misc/msconvert/index.php, row 35
+// misc/msconvert/index.php, row 48
 "Action Apps PDF/DOC Convertor" => "Konvertor PDF/DOC pre Action Apps", // ai 2026-06
 
-// misc/msconvert/index.php, row 36
+// misc/msconvert/index.php, row 49
 "Experimental feature" => "Experiment\xE1lna funkcia", // ai 2026-06
 
-// modules/jump/modedit.php, row 72
+// modules/jump/modedit.php, row 83
 "Edit Jump module" => "Upravi\x9D modul Jump", // ai 2026-06
 
-// modules/jump/modedit.php, row 72
+// modules/jump/modedit.php, row 83
 "Create new Jump module" => "Vytvori\x9D nov\xFD modul Jump", // ai 2026-06
 
-// modules/jump/modedit.php, row 134
+// modules/jump/modedit.php, row 131
 "Choose module to be edited" => "Vyberte modul, ktor\xFD chcete upravi\x9D", // ai 2026-06
 
-// modules/jump/modedit.php, row 157
+// modules/jump/modedit.php, row 154
 "Edit module" => "Upravi\x9D modul", // ai 2026-06
 
-// modules/jump/modedit.php, row 159
+// modules/jump/modedit.php, row 156
 "Module name" => "N\xE1zov modulu", // ai 2026-06
 
-// modules/jump/modedit.php, row 161
+// modules/jump/modedit.php, row 158
 "Jump to" => "Sko\xE8i\x9D na", // ai 2026-06
 
-// modules/jump/modedit.php, row 163
+// modules/jump/modedit.php, row 160
 "Type in an AA-relative path, e.g." => "Zadajte cestu relat\xEDvnu k AA, napr.", // ai 2026-06
 
-// modules/jump/modedit.php, row 164
+// modules/jump/modedit.php, row 161
 "Jump to slice" => "Sko\xE8i\x9D na modul", // ai 2026-06
 
-// slice.php, row 236
+// slice.php, row 237
 "Bad inc parameter - included file must contain only alphanumeric characters" => "Chybn\xFD parameter inc - vkladan\xFD s\xFAbor mus\xED obsahova\x9D iba alfanumerick\xE9 znaky", // ai 2026-06
 
-// slice.php, row 240
+// slice.php, row 241
 "No such file" => "S\xFAbor neexistuje", // ai 2026-06
 
-// slice.php, row 265
+// slice.php, row 262
 "Invalid slice number or slice was deleted" => "Neplatn\xE9 \xE8\xEDslo modulu alebo bol modul vymazan\xFD", // ai 2026-06
 
-// slice.php, row 268
+// slice.php, row 265
 "slice.php output forbidden for this slice" => "v\xFDstup slice.php je pre tento modul zak\xE1zan\xFD", // ai 2026-06
 
-// slice.php, row 323
+// slice.php, row 320
 "session id" => "ID session", // ai 2026-06
 
-// slice.php, row 581
+// slice.php, row 573
 "number of current page (on pagescroller)" => "\xE8\xEDslo aktu\xE1lnej str\xE1nky (v str\xE1nkovan\xED)", // ai 2026-06
 
-// slice.php, row 582
+// slice.php, row 574
 "page length (number of items)" => "d\xE5\x9Eka str\xE1nky (po\xE8et spr\xE1v)", // ai 2026-06
 
-// slice.php, row 617
+// slice.php, row 609
 // src/Manager.php, row 881
 "No item found" => "Nenalezena \x9E\xE1dn\xE1 zpr\xE1va",
 
@@ -7525,10 +7615,10 @@ return [
 "Optionally specify the context - the long Item Id for which the task will be executed. You can then use {id..............} and other aliases of the item in the task. The id of item could be also obtained in variable {var:aa_event_for}. For \"event\" tasks (Item updated/new) it is always filled with id of modified item." => "Volite\xBEne zadajte kontext - dlh\xE9 Id spr\xE1vy, pre ktor\xFA sa \xFAloha vykon\xE1. V \xFAlohe potom m\xF4\x9Eete pou\x9Ei\x9D {id..............} a \xEFal\x9Aie aliasy spr\xE1vy. Id spr\xE1vy je mo\x9En\xE9 z\xEDska\x9D aj v premennej {var:aa_event_for}. Pri \"udalostn\xFDch\" \xFAloh\xE1ch (Spr\xE1va zmenen\xE1/nov\xE1) je v\x9Edy vyplnen\xE9 id zmenenej spr\xE1vy.", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 80
-"Saved by" => "",
+"Saved by" => "Ulo\x9Eil(a)", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 83
-"Result of the last run" => "",
+"Result of the last run" => "V\xFDsledok posledn\xE9ho behu", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 157
 "Planned tasks" => "Napl\xE1novan\xE9 \xFAlohy", // ai 2026-06
@@ -7546,22 +7636,22 @@ return [
 "Scheduled to" => "Napl\xE1novan\xE9 na", // ai 2026-06
 
 // src/AA_Plannedtask.php, row 266
-"done" => "",
+"done" => "hotovo", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 267
-"done, no output" => "",
+"done, no output" => "hotovo, bez v\xFDstupu", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 268
-"condition not met" => "",
+"condition not met" => "podmienka nesplnen\xE1", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 269
-"failed" => "",
+"failed" => "zlyhalo", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 386
-"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "",
+"The task was not saved - a task run on an event may not call {import}: the items it imports would run the task again." => "\xDAloha nebola ulo\x9Een\xE1 \x96 \xFAloha sp\xFA\x9A\x9Dan\xE1 udalos\x9Dou nesmie vola\x9D {import}: spr\xE1vy, ktor\xE9 importuje, by \xFAlohu spustili znova.", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 389
-"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "",
+"The task was not saved - only a user who manages the feeding of the slice may save a task with {import}." => "\xDAloha nebola ulo\x9Een\xE1 \x96 \xFAlohu s {import} smie ulo\x9Ei\x9D iba u\x9E\xEDvate\xBE, ktor\xFD spravuje v\xFDmenu spr\xE1v modulu.", // ai 2026-10
 
 // src/AA_Plannedtask.php, row 453
 "not scheduled, yet" => "zatia\xBE nenapl\xE1novan\xE9", // ai 2026-06
@@ -7570,97 +7660,97 @@ return [
 "next run" => "najbli\x9E\x9Aie spustenie", // ai 2026-06
 
 // src/Api/Controller/FilesController.php, row 51, 72
-"The file is too big" => "",
+"The file is too big" => "S\xFAbor je pr\xEDli\x9A ve\xBEk\xFD", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 64
-"You may not upload files here. If you were editing, your login may have expired - reload the page." => "",
+"You may not upload files here. If you were editing, your login may have expired - reload the page." => "Sem nesmiete nahr\xE1va\x9D s\xFAbory. Ak ste upravovali, mohlo v\xE1m vypr\x9Aa\x9D prihl\xE1senie \x96 na\xE8\xEDtajte str\xE1nku znova.", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 67
-"Too many uploads - try again in an hour" => "",
+"Too many uploads - try again in an hour" => "Pr\xEDli\x9A ve\xBEa nahr\xE1van\xED \x96 sk\xFAste to znova o hodinu", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 75, 240
-"No file received" => "",
+"No file received" => "Nebol prijat\xFD \x9Eiadny s\xFAbor", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 83
-"Files of this type cannot be uploaded here: %1" => "",
+"Files of this type cannot be uploaded here: %1" => "S\xFAbory tohto typu sem nemo\x9Eno nahra\x9D: %1", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 86
-"The content of the file does not match its extension %1" => "",
+"The content of the file does not match its extension %1" => "Obsah s\xFAboru nezodpoved\xE1 jeho pr\xEDpone %1", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 89
-"The image is bigger than %1 MB" => "",
+"The image is bigger than %1 MB" => "Obr\xE1zok je v\xE4\xE8\x9A\xED ako %1 MB", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 92
-"The image has more than %1 megapixels" => "",
+"The image has more than %1 megapixels" => "Obr\xE1zok m\xE1 viac ako %1 megapixelov", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 97
-"The upload directory of the slice is not writable" => "",
+"The upload directory of the slice is not writable" => "Do adres\xE1ra pre nahran\xE9 s\xFAbory modulu nemo\x9Eno zapisova\x9D", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 107
-"The file could not be stored" => "",
+"The file could not be stored" => "S\xFAbor nemo\x9Eno ulo\x9Ei\x9D", // ai 2026-10
 
 // src/Api/Controller/FilesController.php, row 129
-"Only editors of the slice can browse its files" => "",
+"Only editors of the slice can browse its files" => "Prech\xE1dza\x9D s\xFAbory modulu m\xF4\x9Eu iba jeho editori", // ai 2026-10
 
 // src/Central/Actionapps.php, row 179
-"This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "",
+"This PHP has no AES-GCM (sodium) - the login token cannot be stored encrypted" => "Toto PHP nem\xE1 AES-GCM (sodium) \x96 prihlasovac\xED token nemo\x9Eno ulo\x9Ei\x9D \x9Aifrovane", // ai 2026-10
 
 // src/Central/Actionapps.php, row 207
 "Not configured" => "Nenakonfigurovan\xE9", // ai 2026-06
 
 // src/Central/Actionapps.php, row 207
-"Not authenticated - get a token" => "",
+"Not authenticated - get a token" => "Neautentifikovan\xE9 \x96 z\xEDskajte token", // ai 2026-10
 
 // src/Central/Actionapps.php, row 210
-"Authenticated until %1" => "",
+"Authenticated until %1" => "Autentifikovan\xE9 do %1", // ai 2026-10
 
 // src/Central/Actionapps.php, row 210
-"Expired - get a token" => "",
+"Expired - get a token" => "Vypr\x9Aalo \x96 z\xEDskajte token", // ai 2026-10
 
 // src/Central/Actionapps.php, row 234
-"The remote AA gave no login token - update it" => "",
+"The remote AA gave no login token - update it" => "Vzdialen\xE9 AA nevydalo prihlasovac\xED token \x96 aktualizujte ho", // ai 2026-10
 
 // src/Central/Actionapps.php, row 235
-"The remote AA gave a token for longer than a day - update the remote AA" => "",
+"The remote AA gave a token for longer than a day - update the remote AA" => "Vzdialen\xE9 AA vydalo token na dlh\x9Aie ako jeden de\xF2 \x96 aktualizujte vzdialen\xE9 AA", // ai 2026-10
 
 // src/Central/Actionapps.php, row 271
 "Can't get org_name - " => "Nepodarilo sa z\xEDska\x9D org_name -", // ai 2026-06
 
 // src/Central/Actionapps.php, row 337
-"the update may still be running on the remote AA - wait, then run Test before retrying" => "",
+"the update may still be running on the remote AA - wait, then run Test before retrying" => "aktualiz\xE1cia na vzdialenom AA mo\x9Eno e\x9Ate be\x9E\xED \x96 po\xE8kajte a pred \xEFal\x9A\xEDm pokusom spustite test", // ai 2026-10
 
 // src/Central/Actionapps.php, row 348
-"Unexpected response from remote AA" => "",
+"Unexpected response from remote AA" => "Neo\xE8ak\xE1van\xE1 odpove\xEF vzdialen\xE9ho AA", // ai 2026-10
 
 // src/Central/Actionapps.php, row 351
-"This AA does not support this command (update it first)" => "",
+"This AA does not support this command (update it first)" => "Toto AA tento pr\xEDkaz nepodporuje (najprv ho aktualizujte)", // ai 2026-10
 
 // src/Central/Actionapps.php, row 362
-"The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "",
+"The stored login token cannot be used (AA_SECRET, the database password or the address of this AA changed) - authenticate this AA again on the ActionApps Central page" => "Ulo\x9Een\xFD prihlasovac\xED token nemo\x9Eno pou\x9Ei\x9D (zmenil sa AA_SECRET, heslo k datab\xE1ze alebo adresa tohto AA) \x96 znova autentifikujte toto AA na str\xE1nke ActionApps Central", // ai 2026-10
 
 // src/Central/Actionapps.php, row 363
-"No login token for this AA - Authenticate this AA on the ActionApps Central page" => "",
+"No login token for this AA - Authenticate this AA on the ActionApps Central page" => "Pre toto AA nie je prihlasovac\xED token \x96 autentifikujte toto AA na str\xE1nke ActionApps Central", // ai 2026-10
 
 // src/Central/Difference.php, row 55
-"Template slice %1 has no definition" => "",
+"Template slice %1 has no definition" => "\x8Aabl\xF3nov\xFD modul %1 nem\xE1 defin\xEDciu", // ai 2026-10
 
 // src/Central/Difference.php, row 58
 "Comparison slice (%1) does not exist" => "Porovn\xE1van\xFD modul (%1) neexistuje", // ai 2026-06
 
 // src/Central/Difference.php, row 96
-"The template sent no %1 rows" => "",
+"The template sent no %1 rows" => "\x8Aabl\xF3na neposlala \x9Eiadne riadky %1", // ai 2026-10
 
 // src/Central/Difference.php, row 105
-"no unique named view or name" => "",
+"no unique named view or name" => "ch\xFDba jednozna\xE8ne pomenovan\xFD poh\xBEad alebo n\xE1zov", // ai 2026-10
 
 // src/Central/Difference.php, row 105
-"no unique description" => "",
+"no unique description" => "ch\xFDba jednozna\xE8n\xFD popis", // ai 2026-10
 
 // src/Central/Difference.php, row 106, 189
 "Destination" => "Cie\xBE", // ai 2026-06
 
 // src/Central/Difference.php, row 108
-"%1: %2 %3 '%4' not compared - %5" => "",
+"%1: %2 %3 '%4' not compared - %5" => "%1: %2 %3 '%4' neporovnan\xE9 \x96 %5", // ai 2026-10
 
 // src/Central/Difference.php, row 118, 217
 "%1 are identical" => "%1 s\xFA identick\xE9", // ai 2026-06
@@ -7687,955 +7777,955 @@ return [
 "There is no such key (%1) in template slice for %2" => "V \x9Aabl\xF3novom module neexistuje k\xBE\xFA\xE8 (%1) pre %2", // ai 2026-06
 
 // src/Central/FindingText.php, row 28
-"Security findings (S)" => "",
+"Security findings (S)" => "Bezpe\xE8nostn\xE9 zistenia (S)", // ai 2026-10
 
 // src/Central/FindingText.php, row 28
-"Errors (E)" => "",
+"Errors (E)" => "Chyby (E)", // ai 2026-10
 
 // src/Central/FindingText.php, row 28
-"Warnings (W)" => "",
+"Warnings (W)" => "Varovania (W)", // ai 2026-10
 
 // src/Central/FindingText.php, row 28
-"Notes (I)" => "",
+"Notes (I)" => "Pozn\xE1mky (I)", // ai 2026-10
 
 // src/Central/FindingText.php, row 35
-"Parts of the app that could harm this AA or its visitors if the app is not what it claims. They block nothing, but you confirm them before installing." => "",
+"Parts of the app that could harm this AA or its visitors if the app is not what it claims. They block nothing, but you confirm them before installing." => "\xC8asti aplik\xE1cie, ktor\xE9 by mohli po\x9Akodi\x9D toto AA alebo jeho n\xE1v\x9Atevn\xEDkov, ak aplik\xE1cia nie je t\xFDm, za \xE8o sa vyd\xE1va. Ni\xE8 neblokuj\xFA, ale pred in\x9Atal\xE1ciou ich potvrd\xEDte.", // ai 2026-10
 
 // src/Central/FindingText.php, row 36
-"The app cannot be installed until they are solved." => "",
+"The app cannot be installed until they are solved." => "Aplik\xE1ciu nemo\x9Eno nain\x9Atalova\x9D, k\xFDm nebud\xFA vyrie\x9Aen\xE9.", // ai 2026-10
 
 // src/Central/FindingText.php, row 37
-"The app can be installed; check these places after installing." => "",
+"The app can be installed; check these places after installing." => "Aplik\xE1ciu mo\x9Eno nain\x9Atalova\x9D; po in\x9Atal\xE1cii skontrolujte tieto miesta.", // ai 2026-10
 
 // src/Central/FindingText.php, row 38
-"For your information - usually nothing to do." => "",
+"For your information - usually nothing to do." => "Pre inform\xE1ciu \x96 obvykle netreba ni\xE8 robi\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 53
-"Prints facts about the installation" => "",
+"Prints facts about the installation" => "Vypisuje \xFAdaje o in\x9Atal\xE1cii", // ai 2026-10
 
 // src/Central/FindingText.php, row 54
-"{debug}, {version} or {serverload} show visitors debugging output, the version of AA or the load of the server." => "",
+"{debug}, {version} or {serverload} show visitors debugging output, the version of AA or the load of the server." => "{debug}, {version} alebo {serverload} ukazuj\xFA n\xE1v\x9Atevn\xEDkom ladiaci v\xFDpis, verziu AA alebo z\xE1\x9Da\x9E servera.", // ai 2026-10
 
 // src/Central/FindingText.php, row 55
-"Usually harmless. Remove it from public pages if visitors should not see it." => "",
+"Usually harmless. Remove it from public pages if visitors should not see it." => "Obvykle ne\x9Akodn\xE9. Ak to n\xE1v\x9Atevn\xEDci nemaj\xFA vidie\x9D, odstr\xE1\xF2te to z verejn\xFDch str\xE1nok.", // ai 2026-10
 
 // src/Central/FindingText.php, row 56
-"Shows data of the signed-in user" => "",
+"Shows data of the signed-in user" => "Zobrazuje \xFAdaje prihl\xE1sen\xE9ho u\x9E\xEDvate\xBEa", // ai 2026-10
 
 // src/Central/FindingText.php, row 57
-"The text prints something of the user who is signed in, such as the name - not the password." => "",
+"The text prints something of the user who is signed in, such as the name - not the password." => "Text vypisuje nie\xE8o o prihl\xE1senom u\x9E\xEDvate\xBEovi, napr\xEDklad meno \x96 nie heslo.", // ai 2026-10
 
 // src/Central/FindingText.php, row 58, 64, 67, 132, 161, 213, 235, 265
-"Nothing to do." => "",
+"Nothing to do." => "Netreba ni\xE8 robi\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 59
-"Calls a function of this AA" => "",
+"Calls a function of this AA" => "Vol\xE1 funkciu tohto AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 60
-"The field alias calls a usr_ function; such functions are defined by each AA in include/usr_aliasfnc.php." => "",
+"The field alias calls a usr_ function; such functions are defined by each AA in include/usr_aliasfnc.php." => "Alias polo\x9Eky vol\xE1 funkciu usr_; tak\xE9to funkcie si ka\x9Ed\xE9 AA definuje v include/usr_aliasfnc.php.", // ai 2026-10
 
 // src/Central/FindingText.php, row 61
-"Check that this AA has the function, otherwise the field shows nothing." => "",
+"Check that this AA has the function, otherwise the field shows nothing." => "Skontrolujte, \x9Ee toto AA t\xFAto funkciu m\xE1, inak polo\x9Eka ni\xE8 nezobraz\xED.", // ai 2026-10
 
 // src/Central/FindingText.php, row 62
-"A thumbnail of a picture of the app" => "",
+"A thumbnail of a picture of the app" => "N\xE1h\xBEad obr\xE1zka aplik\xE1cie", // ai 2026-10
 
 // src/Central/FindingText.php, row 63
-"The text makes a thumbnail of a picture of the app or of a field of the item." => "",
+"The text makes a thumbnail of a picture of the app or of a field of the item." => "Text vytv\xE1ra n\xE1h\xBEad obr\xE1zka aplik\xE1cie alebo polo\x9Eky spr\xE1vy.", // ai 2026-10
 
 // src/Central/FindingText.php, row 65
-"Sets a common HTTP header" => "",
+"Sets a common HTTP header" => "Nastavuje be\x9En\xFA HTTP hlavi\xE8ku", // ai 2026-10
 
 // src/Central/FindingText.php, row 66
-"The text sets a status code, the type of the content, a file name or a common protective header - nothing that allows browsers more." => "",
+"The text sets a status code, the type of the content, a file name or a common protective header - nothing that allows browsers more." => "Text nastavuje stavov\xFD k\xF3d, typ obsahu, n\xE1zov s\xFAboru alebo be\x9En\xFA ochrann\xFA hlavi\xE8ku \x96 ni\xE8, \xE8o by prehliada\xE8om povolilo viac.", // ai 2026-10
 
 // src/Central/FindingText.php, row 70
-"The other AA did not give the app" => "",
+"The other AA did not give the app" => "Druh\xE9 AA aplik\xE1ciu nevydalo", // ai 2026-10
 
 // src/Central/FindingText.php, row 71
-"The AA the app comes from refused to export it or failed while exporting." => "",
+"The AA the app comes from refused to export it or failed while exporting." => "AA, z ktor\xE9ho aplik\xE1cia poch\xE1dza, ju odmietlo exportova\x9D alebo pri exporte zlyhalo.", // ai 2026-10
 
 // src/Central/FindingText.php, row 72
-"Check that you are signed in there and may edit all the slices of the app. Then try again; if it repeats, look at the logs of that AA." => "",
+"Check that you are signed in there and may edit all the slices of the app. Then try again; if it repeats, look at the logs of that AA." => "Skontrolujte, \x9Ee ste tam prihl\xE1sen\xED a smiete upravova\x9D v\x9Aetky moduly aplik\xE1cie. Potom to sk\xFAste znova; ak sa to opakuje, pozrite sa do logov toho AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 73
-"The app package is damaged" => "",
+"The app package is damaged" => "Bal\xEDk aplik\xE1cie je po\x9Akoden\xFD", // ai 2026-10
 
 // src/Central/FindingText.php, row 74
-"The package has a part in a form AA never writes - it was edited by hand, cut, or made by another version of AA." => "",
+"The package has a part in a form AA never writes - it was edited by hand, cut, or made by another version of AA." => "Bal\xEDk obsahuje \xE8as\x9D v podobe, ktor\xFA AA nikdy nezapisuje \x96 bol ru\xE8ne upraven\xFD, skr\xE1ten\xFD alebo vytvoren\xFD inou verziou AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 75
-"Export the app from its AA again. When the error stays, update the AA it comes from (or this one) to the current version." => "",
+"Export the app from its AA again. When the error stays, update the AA it comes from (or this one) to the current version." => "Exportujte aplik\xE1ciu z jej AA znova. Ak chyba pretrv\xE1va, aktualizujte AA, z ktor\xE9ho poch\xE1dza (alebo toto), na aktu\xE1lnu verziu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 75
-"The part is left out. Usually nothing to do." => "",
+"The part is left out. Usually nothing to do." => "T\xE1to \xE8as\x9D sa vynech\xE1. Obvykle netreba ni\xE8 robi\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 76
-"Parts this AA does not know" => "",
+"Parts this AA does not know" => "\xC8asti, ktor\xE9 toto AA nepozn\xE1", // ai 2026-10
 
 // src/Central/FindingText.php, row 77
-"The package was made by a newer version of AA, or edited by hand; this AA leaves out what it does not know." => "",
+"The package was made by a newer version of AA, or edited by hand; this AA leaves out what it does not know." => "Bal\xEDk vytvorila nov\x9Aia verzia AA alebo bol ru\xE8ne upraven\xFD; toto AA vynech\xE1, \xE8o nepozn\xE1.", // ai 2026-10
 
 // src/Central/FindingText.php, row 78
-"Usually nothing. When something of the app is missing after installing, update this AA and install again." => "",
+"Usually nothing. When something of the app is missing after installing, update this AA and install again." => "Obvykle ni\xE8. Ak po in\x9Atal\xE1cii nie\xE8o z aplik\xE1cie ch\xFDba, aktualizujte toto AA a in\x9Atalujte znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 79
-"Items in a published app" => "",
+"Items in a published app" => "Spr\xE1vy vo zverejnenej aplik\xE1cii", // ai 2026-10
 
 // src/Central/FindingText.php, row 80
-"A published app carries only definitions - no items, readers or passwords." => "",
+"A published app carries only definitions - no items, readers or passwords." => "Zverejnen\xE1 aplik\xE1cia nesie iba defin\xEDcie \x96 \x9Eiadne spr\xE1vy, \xE8itate\xBEov ani hesl\xE1.", // ai 2026-10
 
 // src/Central/FindingText.php, row 81
-"Publish the app without its items; items travel only in a transfer between two AAs." => "",
+"Publish the app without its items; items travel only in a transfer between two AAs." => "Zverejnite aplik\xE1ciu bez spr\xE1v; spr\xE1vy sa pren\xE1\x9Aaj\xFA iba pri prenose medzi dvoma AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 82
-"The server converts characters wrongly" => "",
+"The server converts characters wrongly" => "Server chybne prev\xE1dza znaky", // ai 2026-10
 
 // src/Central/FindingText.php, row 83
-"The PHP of this server converts the Central European characters wrongly, so no text of the app could be trusted." => "",
+"The PHP of this server converts the Central European characters wrongly, so no text of the app could be trusted." => "PHP tohto servera chybne prev\xE1dza stredoeur\xF3pske znaky, tak\x9Ee \x9Eiadnemu textu aplik\xE1cie nemo\x9Eno veri\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 84
-"Ask the administrator of the server to fix the iconv of PHP." => "",
+"Ask the administrator of the server to fix the iconv of PHP." => "Po\x9Eiadajte spr\xE1vcu servera o opravu iconv v PHP.", // ai 2026-10
 
 // src/Central/FindingText.php, row 87
-"Database tables without transactions" => "",
+"Database tables without transactions" => "Datab\xE1zov\xE9 tabu\xBEky bez transakci\xED", // ai 2026-10
 
 // src/Central/FindingText.php, row 88
-"Some tables of this AA are not InnoDB. An install that failed in the middle could not be taken back and would leave half an app." => "",
+"Some tables of this AA are not InnoDB. An install that failed in the middle could not be taken back and would leave half an app." => "Niektor\xE9 tabu\xBEky tohto AA nie s\xFA InnoDB. In\x9Atal\xE1ciu, ktor\xE1 zlyh\xE1 uprostred, by nebolo mo\x9En\xE9 vr\xE1ti\x9D a zostala by polovica aplik\xE1cie.", // ai 2026-10
 
 // src/Central/FindingText.php, row 89
-"Run the optimization named in the value (AA > Optimize) and preview the app again." => "",
+"Run the optimization named in the value (AA > Optimize) and preview the app again." => "Spustite optimaliz\xE1ciu uveden\xFA v hodnote (AA > Optimalizova\x9D) a zobrazte n\xE1h\xBEad aplik\xE1cie znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 90
-"Tables" => "",
+"Tables" => "Tabu\xBEky", // ai 2026-10
 
 // src/Central/FindingText.php, row 91
-"A setting takes a number" => "",
+"A setting takes a number" => "Nastavenie vy\x9Eaduje \xE8\xEDslo", // ai 2026-10
 
 // src/Central/FindingText.php, row 92
-"The value you typed for this slice setting is no whole number, and the field stores whole numbers only." => "",
+"The value you typed for this slice setting is no whole number, and the field stores whole numbers only." => "Hodnota, ktor\xFA ste zadali pre toto nastavenie modulu, nie je cel\xE9 \xE8\xEDslo a polo\x9Eka uklad\xE1 iba cel\xE9 \xE8\xEDsla.", // ai 2026-10
 
 // src/Central/FindingText.php, row 93
-"Type a number, or leave the field empty to keep the value of the app, and check the changes." => "",
+"Type a number, or leave the field empty to keep the value of the app, and check the changes." => "Zadajte \xE8\xEDslo alebo polo\x9Eku nechajte pr\xE1zdnu, aby zostala hodnota aplik\xE1cie, a skontrolujte zmeny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 95
-"A setting refuses the value" => "",
+"A setting refuses the value" => "Nastavenie odmieta hodnotu", // ai 2026-10
 
 // src/Central/FindingText.php, row 96
-"The value you typed for this slice setting does not pass the check of its field (an e-mail, a URL, a number, a value of a list, yes or no, ...)." => "",
+"The value you typed for this slice setting does not pass the check of its field (an e-mail, a URL, a number, a value of a list, yes or no, ...)." => "Hodnota, ktor\xFA ste zadali pre toto nastavenie modulu, nepre\x9Ala kontrolou svojej polo\x9Eky (e-mail, URL, \xE8\xEDslo, hodnota zo zoznamu, \xE1no alebo nie, ...).", // ai 2026-10
 
 // src/Central/FindingText.php, row 97
-"Type a value the field takes, or leave the field empty to keep the value of the app, and check the changes." => "",
+"Type a value the field takes, or leave the field empty to keep the value of the app, and check the changes." => "Zadajte hodnotu, ktor\xFA polo\x9Eka prijme, alebo ju nechajte pr\xE1zdnu, aby zostala hodnota aplik\xE1cie, a skontrolujte zmeny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 99
-"A setting to fill in later" => "",
+"A setting to fill in later" => "Nastavenie na neskor\x9Aie vyplnenie", // ai 2026-10
 
 // src/Central/FindingText.php, row 100
-"The field of this slice setting changes the value when it is saved (a password stores its hash, for example), so a value typed here would be stored wrong." => "",
+"The field of this slice setting changes the value when it is saved (a password stores its hash, for example), so a value typed here would be stored wrong." => "Polo\x9Eka tohto nastavenia modulu pri ulo\x9Een\xED men\xED hodnotu (heslo napr\xEDklad uklad\xE1 svoj hash), tak\x9Ee hodnota zadan\xE1 tu by sa ulo\x9Eila zle.", // ai 2026-10
 
 // src/Central/FindingText.php, row 101
-"Leave the field empty and check the changes; after installing fill it in: in the slice open Setting in the menu of the item manager." => "",
+"Leave the field empty and check the changes; after installing fill it in: in the slice open Setting in the menu of the item manager." => "Polo\x9Eku nechajte pr\xE1zdnu a skontrolujte zmeny; po in\x9Atal\xE1cii ju vypl\xF2te: v module otvorte \x84Nastavenie\x93 v menu str\xE1nky Spr\xE1vy.", // ai 2026-10
 
 // src/Central/FindingText.php, row 102
-"Insert function" => "",
+"Insert function" => "Funkcia vlo\x9Eenia", // ai 2026-10
 
 // src/Central/FindingText.php, row 103
-"The new owner is not complete" => "",
+"The new owner is not complete" => "\xDAdaje nov\xE9ho vlastn\xEDka nie s\xFA \xFApln\xE9", // ai 2026-10
 
 // src/Central/FindingText.php, row 104
-"A new owner needs a name and a valid e-mail, each at most 80 bytes (a letter with an accent may take two) and in characters the new modules can store." => "",
+"A new owner needs a name and a valid e-mail, each at most 80 bytes (a letter with an accent may take two) and in characters the new modules can store." => "Nov\xFD vlastn\xEDk potrebuje meno a platn\xFD e-mail, ka\x9Ed\xE9 najviac 80 bajtov (p\xEDsmeno s diakritikou m\xF4\x9Ee zabra\x9D dva) a v znakoch, ktor\xE9 nov\xE9 moduly dok\xE1\x9Eu ulo\x9Ei\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 105
-"Fill in both in \"Owner of the new modules\" above and check the changes." => "",
+"Fill in both in \"Owner of the new modules\" above and check the changes." => "Vypl\xF2te oboje v \x84Vlastn\xEDk nov\xFDch modulov\x93 vy\x9A\x9Aie a skontrolujte zmeny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 107
-"Alerts lose a part of a slice left out" => "",
+"Alerts lose a part of a slice left out" => "Zasielanie pr\xEDde o \xE8as\x9D vynechan\xE9ho modulu", // ai 2026-10
 
 // src/Central/FindingText.php, row 108
-"The Alerts module uses a slice you left out - its readers, the view of a filter or an e-mail template. The Alerts module is installed without it." => "",
+"The Alerts module uses a slice you left out - its readers, the view of a filter or an e-mail template. The Alerts module is installed without it." => "Modul Zasielanie pou\x9E\xEDva modul, ktor\xFD ste vynechali \x96 jeho \xE8itate\xBEov, poh\xBEad filtra alebo \x9Aabl\xF3nu e-mailu. Modul Zasielanie sa nain\x9Ataluje bez neho.", // ai 2026-10
 
 // src/Central/FindingText.php, row 109
-"After installing set the reader slice, the filters and the e-mails in the settings of the Alerts module - or install that slice too." => "",
+"After installing set the reader slice, the filters and the e-mails in the settings of the Alerts module - or install that slice too." => "Po in\x9Atal\xE1cii nastavte v nastaveniach modulu Zasielanie modul \xE8itate\xBEov, filtre a e-maily \x96 alebo nain\x9Atalujte aj ten modul.", // ai 2026-10
 
 // src/Central/FindingText.php, row 110
-"Slice, view or e-mail" => "",
+"Slice, view or e-mail" => "Modul, poh\xBEad alebo e-mail", // ai 2026-10
 
 // src/Central/FindingText.php, row 111
-"A list of values of a slice left out" => "",
+"A list of values of a slice left out" => "Zoznam hodn\xF4t vynechan\xE9ho modulu", // ai 2026-10
 
 // src/Central/FindingText.php, row 112
-"The list of values (constant group) belongs to a slice you left out, and other parts of the app use it - it is installed without an owner." => "",
+"The list of values (constant group) belongs to a slice you left out, and other parts of the app use it - it is installed without an owner." => "Zoznam hodn\xF4t (skupina hodn\xF4t) patr\xED k modulu, ktor\xFD ste vynechali, a pou\x9E\xEDvaj\xFA ho in\xE9 \xE8asti aplik\xE1cie \x96 nain\x9Ataluje sa bez vlastn\xEDka.", // ai 2026-10
 
 // src/Central/FindingText.php, row 113
-"Usually nothing." => "",
+"Usually nothing." => "Obvykle ni\xE8.", // ai 2026-10
 
 // src/Central/FindingText.php, row 114
-"Slice left out" => "",
+"Slice left out" => "Vynechan\xFD modul", // ai 2026-10
 
 // src/Central/FindingText.php, row 115
-"No owner for the new modules" => "",
+"No owner for the new modules" => "Nov\xE9 moduly nemaj\xFA vlastn\xEDka", // ai 2026-10
 
 // src/Central/FindingText.php, row 116
-"The new slices and sites need an owner of this AA, and none was chosen." => "",
+"The new slices and sites need an owner of this AA, and none was chosen." => "Nov\xE9 moduly a weby potrebuj\xFA vlastn\xEDka z tohto AA a \x9Eiadny nebol vybran\xFD.", // ai 2026-10
 
 // src/Central/FindingText.php, row 117
-"Choose the owner in \"Owner of the new modules\" above and check the changes." => "",
+"Choose the owner in \"Owner of the new modules\" above and check the changes." => "Vyberte vlastn\xEDka v \x84Vlastn\xEDk nov\xFDch modulov\x93 vy\x9A\x9Aie a skontrolujte zmeny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 118
-"Reader logins with broken characters" => "",
+"Reader logins with broken characters" => "Prihlasovacie men\xE1 \xE8itate\xBEov s po\x9Akoden\xFDmi znakmi", // ai 2026-10
 
 // src/Central/FindingText.php, row 119
-"Login names of some readers in the AA the app comes from are not valid text, so this AA cannot check whether they collide with its own logins." => "",
+"Login names of some readers in the AA the app comes from are not valid text, so this AA cannot check whether they collide with its own logins." => "Prihlasovacie men\xE1 niektor\xFDch \xE8itate\xBEov v AA, z ktor\xE9ho aplik\xE1cia poch\xE1dza, nie s\xFA platn\xFD text, tak\x9Ee toto AA nem\xF4\x9Ee overi\x9D, \xE8i sa nekr\xED\x9Eia s jeho vlastn\xFDmi prihlasovac\xEDmi menami.", // ai 2026-10
 
 // src/Central/FindingText.php, row 120
-"Fix the login names of those readers in the AA the app comes from and transfer again." => "",
+"Fix the login names of those readers in the AA the app comes from and transfer again." => "Opravte prihlasovacie men\xE1 t\xFDchto \xE8itate\xBEov v AA, z ktor\xE9ho aplik\xE1cia poch\xE1dza, a preneste znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 121
-"A text this AA cannot store" => "",
+"A text this AA cannot store" => "Text, ktor\xFD toto AA nedok\xE1\x9Ee ulo\x9Ei\x9D", // ai 2026-10
 
 // src/Central/FindingText.php, row 122
-"The text is longer than this AA can store in that place." => "",
+"The text is longer than this AA can store in that place." => "Text je dlh\x9A\xED, ne\x9E toto AA na tom mieste dok\xE1\x9Ee ulo\x9Ei\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 122
-"The text has characters the character set of this AA (or of the slice) cannot hold - usually an old windows-1250 slice and a character like an emoji." => "",
+"The text has characters the character set of this AA (or of the slice) cannot hold - usually an old windows-1250 slice and a character like an emoji." => "Text obsahuje znaky, ktor\xE9 znakov\xE1 sada tohto AA (alebo modulu) nepojme \x96 obvykle star\xFD modul vo windows-1250 a znak ako emoji.", // ai 2026-10
 
 // src/Central/FindingText.php, row 123
-"Shorten or change the text in the AA the app comes from and preview again, or install into a UTF-8 slice." => "",
+"Shorten or change the text in the AA the app comes from and preview again, or install into a UTF-8 slice." => "Skr\xE1\x9Dte alebo zme\xF2te text v AA, z ktor\xE9ho aplik\xE1cia poch\xE1dza, a zobrazte n\xE1h\xBEad znova, alebo in\x9Atalujte do modulu v UTF-8.", // ai 2026-10
 
 // src/Central/FindingText.php, row 124
-"A text may not fit" => "",
+"A text may not fit" => "Text sa nemus\xED zmesti\x9D", // ai 2026-10
 
 // src/Central/FindingText.php, row 125
-"The text is close to the length this AA stores there; it may be cut." => "",
+"The text is close to the length this AA stores there; it may be cut." => "Text sa bl\xED\x9Ei d\xE5\x9Eke, ktor\xFA toto AA na tom mieste uklad\xE1; m\xF4\x9Ee by\x9D skr\xE1ten\xFD.", // ai 2026-10
 
 // src/Central/FindingText.php, row 126
-"After installing check the end of the text." => "",
+"After installing check the end of the text." => "Po in\x9Atal\xE1cii skontrolujte koniec textu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 127
-"An item too big to transfer" => "",
+"An item too big to transfer" => "Spr\xE1va pr\xEDli\x9A ve\xBEk\xE1 na prenos", // ai 2026-10
 
 // src/Central/FindingText.php, row 128
-"One item alone is bigger than the transfer carries at once." => "",
+"One item alone is bigger than the transfer carries at once." => "Jedin\xE1 spr\xE1va je v\xE4\xE8\x9Aia, ne\x9E prenos unesie naraz.", // ai 2026-10
 
 // src/Central/FindingText.php, row 129
-"Make the item smaller in its AA (move big texts or files out) and transfer again." => "",
+"Make the item smaller in its AA (move big texts or files out) and transfer again." => "Zmen\x9Aite spr\xE1vu v jej AA (ve\xBEk\xE9 texty alebo s\xFAbory presu\xF2te inam) a preneste znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 130
-"Language of a module" => "",
+"Language of a module" => "Jazyk modulu", // ai 2026-10
 
 // src/Central/FindingText.php, row 131
-"The module has a language this AA does not know, so it does not know its character set either." => "",
+"The module has a language this AA does not know, so it does not know its character set either." => "Modul m\xE1 jazyk, ktor\xFD toto AA nepozn\xE1, tak\x9Ee nepozn\xE1 ani jeho znakov\xFA sadu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 131
-"The language file of the module is written as this AA names it; the language stays the same." => "",
+"The language file of the module is written as this AA names it; the language stays the same." => "Jazykov\xFD s\xFAbor modulu sa zap\xED\x9Ae tak, ako ho pomen\xFAva toto AA; jazyk zost\xE1va rovnak\xFD.", // ai 2026-10
 
 // src/Central/FindingText.php, row 132
-"Set a language in the settings of the module in the AA the app comes from and export again." => "",
+"Set a language in the settings of the module in the AA the app comes from and export again." => "Nastavte jazyk v nastaveniach modulu v AA, z ktor\xE9ho aplik\xE1cia poch\xE1dza, a exportujte znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 133
-"The tree of the site" => "",
+"The tree of the site" => "Strom webu", // ai 2026-10
 
 // src/Central/FindingText.php, row 135
-"The tree of the pages (spots) of the site is damaged." => "",
+"The tree of the pages (spots) of the site is damaged." => "Strom str\xE1nok (spotov) webu je po\x9Akoden\xFD.", // ai 2026-10
 
 // src/Central/FindingText.php, row 136
-"Contents of spots no longer in the tree of the site - they are left out." => "",
+"Contents of spots no longer in the tree of the site - they are left out." => "Obsah spotov, ktor\xE9 u\x9E v strome webu nie s\xFA \x96 vynech\xE1 sa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 137
-"The site has no tree of pages - it starts empty." => "",
+"The site has no tree of pages - it starts empty." => "Web nem\xE1 strom str\xE1nok \x96 za\xE8\xEDna pr\xE1zdny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 138
-"A name or a condition of a spot contains HTML tags; the tags are removed from the names, conditions stay as they are." => "",
+"A name or a condition of a spot contains HTML tags; the tags are removed from the names, conditions stay as they are." => "N\xE1zov alebo podmienka spotu obsahuje HTML zna\xE8ky; z n\xE1zvov sa zna\xE8ky odstr\xE1nia, podmienky zostan\xFA, ako s\xFA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 140
-"Open the site in its AA, save its tree in Code Manager and export again." => "",
+"Open the site in its AA, save its tree in Code Manager and export again." => "Otvorte web v jeho AA, ulo\x9Ete jeho strom v \x84Mana\x9E\xE9r k\xF3du\x93 a exportujte znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 140
-"Nothing to do; check the names and conditions of the spots after installing." => "",
+"Nothing to do; check the names and conditions of the spots after installing." => "Netreba ni\xE8 robi\x9D; po in\x9Atal\xE1cii skontrolujte n\xE1zvy a podmienky spotov.", // ai 2026-10
 
 // src/Central/FindingText.php, row 141
-"A control file of the other AA" => "",
+"A control file of the other AA" => "Riadiaci s\xFAbor in\xE9ho AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 142
-"The site names a file on the server of the AA it comes from, which this AA would run - it cannot be installed so." => "",
+"The site names a file on the server of the AA it comes from, which this AA would run - it cannot be installed so." => "Web uv\xE1dza s\xFAbor na serveri AA, z ktor\xE9ho poch\xE1dza, a toto AA by ho sp\xFA\x9A\x9Dalo \x96 takto ho nemo\x9Eno nain\x9Atalova\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 142
-"The site names a file on the server of the AA it comes from; it is left out." => "",
+"The site names a file on the server of the AA it comes from; it is left out." => "Web uv\xE1dza s\xFAbor na serveri AA, z ktor\xE9ho poch\xE1dza; vynech\xE1 sa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 143
-"Remove the file from the site settings in the AA the app comes from and export again." => "",
+"Remove the file from the site settings in the AA the app comes from and export again." => "Odstr\xE1\xF2te s\xFAbor z nastaven\xED webu v AA, z ktor\xE9ho aplik\xE1cia poch\xE1dza, a exportujte znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 143
-"Nothing to do, unless the site needs such a file here - then set it in Module Settings of the site." => "",
+"Nothing to do, unless the site needs such a file here - then set it in Module Settings of the site." => "Netreba ni\xE8 robi\x9D. Ak v\x9Aak web tak\xFD s\xFAbor tu potrebuje, nastavte ho v \x84Nastavenia modulu\x93 webu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 144
-"Values of a slice outside the published app" => "",
+"Values of a slice outside the published app" => "Hodnoty modulu mimo zverejnenej aplik\xE1cie", // ai 2026-10
 
 // src/Central/FindingText.php, row 145
-"The app uses a list of values (a constant group) of a slice no published site carries - publishing would show its values." => "",
+"The app uses a list of values (a constant group) of a slice no published site carries - publishing would show its values." => "Aplik\xE1cia pou\x9E\xEDva zoznam hodn\xF4t (skupinu hodn\xF4t) modulu, ktor\xFD nenesie \x9Eiadny zverejnen\xFD web \x96 zverejnen\xEDm by sa uk\xE1zali jeho hodnoty.", // ai 2026-10
 
 // src/Central/FindingText.php, row 146
-"Let the field use another list of values, or publish the slice that owns it." => "",
+"Let the field use another list of values, or publish the slice that owns it." => "Nechajte polo\x9Eku pou\x9E\xEDva\x9D in\xFD zoznam hodn\xF4t alebo zverejnite modul, ktor\xFD ho vlastn\xED.", // ai 2026-10
 
 // src/Central/FindingText.php, row 147
-"Lists of values (constant groups)" => "",
+"Lists of values (constant groups)" => "Zoznamy hodn\xF4t (skupiny hodn\xF4t)", // ai 2026-10
 
 // src/Central/FindingText.php, row 149
-"There is no free name for a list of values of the app." => "",
+"There is no free name for a list of values of the app." => "Pre zoznam hodn\xF4t aplik\xE1cie nie je vo\xBEn\xFD n\xE1zov.", // ai 2026-10
 
 // src/Central/FindingText.php, row 150
-"This AA already has a list of values of that name, so the app gets its list under a new name; the app is changed to use it." => "",
+"This AA already has a list of values of that name, so the app gets its list under a new name; the app is changed to use it." => "Toto AA u\x9E zoznam hodn\xF4t s t\xFDmto n\xE1zvom m\xE1, tak\x9Ee aplik\xE1cia dostane svoj zoznam pod nov\xFDm n\xE1zvom; aplik\xE1cia sa uprav\xED, aby ho pou\x9E\xEDvala.", // ai 2026-10
 
 // src/Central/FindingText.php, row 151
-"A field offers values of a list that does not exist - it offers nothing." => "",
+"A field offers values of a list that does not exist - it offers nothing." => "Polo\x9Eka pon\xFAka hodnoty zoznamu, ktor\xFD neexistuje \x96 nepon\xFAka ni\xE8.", // ai 2026-10
 
 // src/Central/FindingText.php, row 152
-"The text reads a list of values the app does not carry; this AA must have a list of that name." => "",
+"The text reads a list of values the app does not carry; this AA must have a list of that name." => "Text \xE8\xEDta zoznam hodn\xF4t, ktor\xFD aplik\xE1cia nenesie; toto AA mus\xED ma\x9D zoznam s t\xFDmto n\xE1zvom.", // ai 2026-10
 
 // src/Central/FindingText.php, row 153
-"The existing slice keeps its own list of values; the app uses that one." => "",
+"The existing slice keeps its own list of values; the app uses that one." => "Existuj\xFAci modul si ponech\xE1 svoj zoznam hodn\xF4t; aplik\xE1cia pou\x9Eije ten.", // ai 2026-10
 
 // src/Central/FindingText.php, row 154
-"The text names a list of values in a form the install does not rewrite; when the list gets a new name here, the text keeps the old one." => "",
+"The text names a list of values in a form the install does not rewrite; when the list gets a new name here, the text keeps the old one." => "Text uv\xE1dza zoznam hodn\xF4t v podobe, ktor\xFA in\x9Atal\xE1cia neprepisuje; ke\xEF zoznam tu dostane nov\xFD n\xE1zov, text si ponech\xE1 star\xFD.", // ai 2026-10
 
 // src/Central/FindingText.php, row 155
-"A list of values is used as it is." => "",
+"A list of values is used as it is." => "Zoznam hodn\xF4t sa pou\x9Eije tak, ako je.", // ai 2026-10
 
 // src/Central/FindingText.php, row 158
-"Rename or delete some of the lists of values in this AA and preview again." => "",
+"Rename or delete some of the lists of values in this AA and preview again." => "Premenujte alebo zma\x9Ete niektor\xE9 zoznamy hodn\xF4t v tomto AA a zobrazte n\xE1h\xBEad znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 159
-"After installing, create the list or choose another one in the field settings." => "",
+"After installing, create the list or choose another one in the field settings." => "Po in\x9Atal\xE1cii zoznam vytvorte alebo v nastaveniach polo\x9Eky vyberte in\xFD.", // ai 2026-10
 
 // src/Central/FindingText.php, row 160
-"When the list is renamed (see the notes), change the name in the text after installing." => "",
+"When the list is renamed (see the notes), change the name in the text after installing." => "Ak je zoznam premenovan\xFD (pozri pozn\xE1mky), zme\xF2te po in\x9Atal\xE1cii n\xE1zov v texte.", // ai 2026-10
 
 // src/Central/FindingText.php, row 163
-"List" => "",
+"List" => "Zoznam", // ai 2026-10
 
 // src/Central/FindingText.php, row 164
-"A list of values without its slice" => "",
+"A list of values without its slice" => "Zoznam hodn\xF4t bez svojho modulu", // ai 2026-10
 
 // src/Central/FindingText.php, row 165
-"A list of values (a constant group) belongs to a slice that is not in the app or no longer exists. The list travels anyway; only the character set is taken from this AA." => "",
+"A list of values (a constant group) belongs to a slice that is not in the app or no longer exists. The list travels anyway; only the character set is taken from this AA." => "Zoznam hodn\xF4t (skupina hodn\xF4t) patr\xED k modulu, ktor\xFD nie je v aplik\xE1cii alebo u\x9E neexistuje. Zoznam sa prenesie aj tak; iba znakov\xE1 sada sa prevezme z tohto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 166
-"Usually nothing. On a UTF-8 AA it makes no difference." => "",
+"Usually nothing. On a UTF-8 AA it makes no difference." => "Obvykle ni\xE8. Pri AA v UTF-8 to nehr\xE1 rolu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 167
-"Owner (slice id)" => "",
+"Owner (slice id)" => "Vlastn\xEDk (id modulu)", // ai 2026-10
 
 // src/Central/FindingText.php, row 168
-"Broken characters" => "",
+"Broken characters" => "Po\x9Akoden\xE9 znaky", // ai 2026-10
 
 // src/Central/FindingText.php, row 169
-"A text is not valid UTF-8 - probably damaged in its AA. It travels byte by byte." => "",
+"A text is not valid UTF-8 - probably damaged in its AA. It travels byte by byte." => "Text nie je platn\xE9 UTF-8 \x96 pravdepodobne bol po\x9Akoden\xFD vo svojom AA. Prenesie sa bajt po bajte.", // ai 2026-10
 
 // src/Central/FindingText.php, row 170
-"After installing check the text and fix wrong characters." => "",
+"After installing check the text and fix wrong characters." => "Po in\x9Atal\xE1cii text skontrolujte a opravte chybn\xE9 znaky.", // ai 2026-10
 
 // src/Central/FindingText.php, row 173
-"Alerts use a part outside the app" => "",
+"Alerts use a part outside the app" => "Zasielanie pou\x9E\xEDva \xE8as\x9D mimo aplik\xE1cie", // ai 2026-10
 
 // src/Central/FindingText.php, row 174
-"An Alerts collection or filter uses a view or an e-mail template that is not in the app." => "",
+"An Alerts collection or filter uses a view or an e-mail template that is not in the app." => "Kolekcia alebo filter Zasielania pou\x9E\xEDva poh\xBEad alebo \x9Aabl\xF3nu e-mailu, ktor\xE9 nie s\xFA v aplik\xE1cii.", // ai 2026-10
 
 // src/Central/FindingText.php, row 175
-"Add the slice with that view or template to the app, or change the Alerts setting in the AA the app comes from, and preview again." => "",
+"Add the slice with that view or template to the app, or change the Alerts setting in the AA the app comes from, and preview again." => "Pridajte do aplik\xE1cie modul s t\xFDmto poh\xBEadom alebo \x9Aabl\xF3nou, alebo zme\xF2te nastavenie Zasielania v AA, z ktor\xE9ho aplik\xE1cia poch\xE1dza, a zobrazte n\xE1h\xBEad znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 177
-"A link to a part outside the app" => "",
+"A link to a part outside the app" => "Odkaz na \xE8as\x9D mimo aplik\xE1cie", // ai 2026-10
 
 // src/Central/FindingText.php, row 179
-"The text shows a view by its number, and that view is not in the app. Here the number means another view, or none." => "",
+"The text shows a view by its number, and that view is not in the app. Here the number means another view, or none." => "Text zobrazuje poh\xBEad pod\xBEa \xE8\xEDsla a ten poh\xBEad v aplik\xE1cii nie je. Tu to \xE8\xEDslo znamen\xE1 in\xFD poh\xBEad alebo \x9Eiadny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 180
-"The text sends an e-mail template by its number, and that template is not in the app. Here the number means another template, or none." => "",
+"The text sends an e-mail template by its number, and that template is not in the app. Here the number means another template, or none." => "Text posiela \x9Aabl\xF3nu e-mailu pod\xBEa \xE8\xEDsla a t\xE1 \x9Aabl\xF3na v aplik\xE1cii nie je. Tu to \xE8\xEDslo znamen\xE1 in\xFA \x9Aabl\xF3nu alebo \x9Eiadnu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 181
-"The text reads a slice or a site that is not in the app. Here that id means nothing." => "",
+"The text reads a slice or a site that is not in the app. Here that id means nothing." => "Text \xE8\xEDta modul alebo web, ktor\xFD v aplik\xE1cii nie je. Tu toto id ni\xE8 neznamen\xE1.", // ai 2026-10
 
 // src/Central/FindingText.php, row 184
-"Add the slice with it to the app (for a site: to its Uses) and preview again; or, when the preview of the install lists it under Links outside the app, send the links to a slice of the AA it goes to." => "",
+"Add the slice with it to the app (for a site: to its Uses) and preview again; or, when the preview of the install lists it under Links outside the app, send the links to a slice of the AA it goes to." => "Pridajte modul s n\xEDm do aplik\xE1cie (pri webe: do jeho \x84Pou\x9E\xEDva moduly\x93) a zobrazte n\xE1h\xBEad znova; alebo ak ho n\xE1h\xBEad in\x9Atal\xE1cie uv\xE1dza v \xE8asti \x84Odkazy mimo aplik\xE1cie\x93, presmerujte odkazy na modul toho AA, kam sa in\x9Ataluje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 185
-"Add the slice with it to the app (for a site: to its Uses) and preview again, or after installing change the number to the right one here." => "",
+"Add the slice with it to the app (for a site: to its Uses) and preview again, or after installing change the number to the right one here." => "Pridajte modul s n\xEDm do aplik\xE1cie (pri webe: do jeho \x84Pou\x9E\xEDva moduly\x93) a zobrazte n\xE1h\xBEad znova, alebo po in\x9Atal\xE1cii zme\xF2te \xE8\xEDslo tu na spr\xE1vne.", // ai 2026-10
 
 // src/Central/FindingText.php, row 187
-"A link to a slice of this AA" => "",
+"A link to a slice of this AA" => "Odkaz na modul tohto AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 189
-"The text reads a slice or a site that is not in the app, but this AA has it - the link keeps going there." => "",
+"The text reads a slice or a site that is not in the app, but this AA has it - the link keeps going there." => "Text \xE8\xEDta modul alebo web, ktor\xFD v aplik\xE1cii nie je, ale toto AA ho m\xE1 \x96 odkaz na\xEFalej vedie tam.", // ai 2026-10
 
 // src/Central/FindingText.php, row 190
-"The text reads a slice that is neither in the app nor in this AA; as chosen in Links outside the app, it goes to a slice of this AA." => "",
+"The text reads a slice that is neither in the app nor in this AA; as chosen in Links outside the app, it goes to a slice of this AA." => "Text \xE8\xEDta modul, ktor\xFD nie je ani v aplik\xE1cii, ani v tomto AA; pod\xBEa vo\xBEby v \xE8asti \x84Odkazy mimo aplik\xE1cie\x93 vedie na modul tohto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 191
-"Usually nothing. Check after installing that it is the slice meant." => "",
+"Usually nothing. Check after installing that it is the slice meant." => "Zvy\xE8ajne ni\xE8. Po in\x9Atal\xE1cii skontrolujte, \x9Ee ide o zam\xFD\x9A\xBEan\xFD modul.", // ai 2026-10
 
 // src/Central/FindingText.php, row 192, 196
-"Id => slice" => "",
+"Id => slice" => "Id => modul", // ai 2026-10
 
 // src/Central/FindingText.php, row 193
-"A link goes to no slice" => "",
+"A link goes to no slice" => "Odkaz nevedie na \x9Eiadny modul", // ai 2026-10
 
 // src/Central/FindingText.php, row 194
-"A link outside the app was sent to a slice that this AA does not have, or that you may not change." => "",
+"A link outside the app was sent to a slice that this AA does not have, or that you may not change." => "Odkaz mimo aplik\xE1cie bol presmerovan\xFD na modul, ktor\xFD toto AA nem\xE1 alebo ktor\xFD nesmiete meni\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 195
-"Choose another slice under Links outside the app, or keep the id, and check the changes." => "",
+"Choose another slice under Links outside the app, or keep the id, and check the changes." => "Vyberte in\xFD modul v \xE8asti \x84Odkazy mimo aplik\xE1cie\x93 alebo ponechajte id a skontrolujte zmeny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 197
-"A link the check cannot follow" => "",
+"A link the check cannot follow" => "Odkaz, ktor\xFD kontrola nedok\xE1\x9Ee sledova\x9D", // ai 2026-10
 
 // src/Central/FindingText.php, row 199
-"The number of a view or an e-mail is computed when the page is shown, so it cannot be renumbered for this AA." => "",
+"The number of a view or an e-mail is computed when the page is shown, so it cannot be renumbered for this AA." => "\xC8\xEDslo poh\xBEadu alebo e-mailu sa po\xE8\xEDta a\x9E pri zobrazen\xED str\xE1nky, preto ho nemo\x9Eno pre toto AA pre\xE8\xEDslova\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 200
-"A number equal to the number of a view of the app, in a place where it may mean something else (a width, a date) - left as it is." => "",
+"A number equal to the number of a view of the app, in a place where it may mean something else (a width, a date) - left as it is." => "\xC8\xEDslo zhodn\xE9 s \xE8\xEDslom poh\xBEadu aplik\xE1cie na mieste, kde m\xF4\x9Ee znamena\x9D nie\xE8o in\xE9 (\x9A\xEDrku, d\xE1tum) \x96 ponechan\xE9, ako je.", // ai 2026-10
 
 // src/Central/FindingText.php, row 201
-"{form:...} uses a form of this AA; forms do not travel with an app." => "",
+"{form:...} uses a form of this AA; forms do not travel with an app." => "{form:...} pou\x9E\xEDva formul\xE1r tohto AA; formul\xE1re sa s aplik\xE1ciou nepren\xE1\x9Aaj\xFA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 202
-"The link is written in a form the install does not rewrite; it stays as it is." => "",
+"The link is written in a form the install does not rewrite; it stays as it is." => "Odkaz je zap\xEDsan\xFD v podobe, ktor\xFA in\x9Atal\xE1cia neprepisuje; zost\xE1va, ako je.", // ai 2026-10
 
 // src/Central/FindingText.php, row 204
-"When it is a view there, change it after installing to the new number of that view." => "",
+"When it is a view there, change it after installing to the new number of that view." => "Ak ide o poh\xBEad, zme\xF2te ho po in\x9Atal\xE1cii na nov\xE9 \xE8\xEDslo toho poh\xBEadu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 204
-"After installing check that the place shows the right thing." => "",
+"After installing check that the place shows the right thing." => "Po in\x9Atal\xE1cii skontrolujte, \x9Ee sa na tom mieste zobrazuje to spr\xE1vne.", // ai 2026-10
 
 // src/Central/FindingText.php, row 205
-"Modules outside the app" => "",
+"Modules outside the app" => "Moduly mimo aplik\xE1cie", // ai 2026-10
 
 // src/Central/FindingText.php, row 207
-"The Alerts module sends items of a slice that is not in the app." => "",
+"The Alerts module sends items of a slice that is not in the app." => "Modul Zasielanie posiela spr\xE1vy modulu, ktor\xFD v aplik\xE1cii nie je.", // ai 2026-10
 
 // src/Central/FindingText.php, row 208
-"An Alerts module that is not in the app sends items of its slice; it stays behind." => "",
+"An Alerts module that is not in the app sends items of its slice; it stays behind." => "Modul Zasielanie, ktor\xFD v aplik\xE1cii nie je, posiela spr\xE1vy svojho modulu; neprenesie sa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 209
-"The site uses a module of a kind an app does not carry (polls, links, jump) - it is left out." => "",
+"The site uses a module of a kind an app does not carry (polls, links, jump) - it is left out." => "Web pou\x9E\xEDva modul druhu, ktor\xFD aplik\xE1cia nepren\xE1\x9Aa (ankety, odkazy, jump) \x96 vynech\xE1 sa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 210
-"The site lists a module that no longer exists - AA ignores it, so does the install." => "",
+"The site lists a module that no longer exists - AA ignores it, so does the install." => "Web uv\xE1dza modul, ktor\xFD u\x9E neexistuje \x96 AA ho ignoruje, in\x9Atal\xE1cia tie\x9E.", // ai 2026-10
 
 // src/Central/FindingText.php, row 211
-"An Alerts setting of a module outside the app is written as it is; here it does nothing." => "",
+"An Alerts setting of a module outside the app is written as it is; here it does nothing." => "Nastavenie Zasielania modulu mimo aplik\xE1cie sa zap\xED\x9Ae, ako je; tu ni\xE8 nerob\xED.", // ai 2026-10
 
 // src/Central/FindingText.php, row 213
-"Add that slice to the app, or remove it from the Alerts collection." => "",
+"Add that slice to the app, or remove it from the Alerts collection." => "Pridajte ten modul do aplik\xE1cie alebo ho odoberte z kolekcie Zasielania.", // ai 2026-10
 
 // src/Central/FindingText.php, row 214
-"An e-mail address of the other organisation" => "",
+"An e-mail address of the other organisation" => "E-mailov\xE1 adresa inej organiz\xE1cie", // ai 2026-10
 
 // src/Central/FindingText.php, row 215
-"An e-mail template has a fixed address (the sender, a copy) - it travels with the app." => "",
+"An e-mail template has a fixed address (the sender, a copy) - it travels with the app." => "\x8Aabl\xF3na e-mailu m\xE1 pevn\xFA adresu (odosielate\xBE, k\xF3pia) \x96 prenesie sa s aplik\xE1ciou.", // ai 2026-10
 
 // src/Central/FindingText.php, row 216
-"After installing change the address in the e-mail templates to your own." => "",
+"After installing change the address in the e-mail templates to your own." => "Po in\x9Atal\xE1cii zme\xF2te adresu v \x9Aabl\xF3nach e-mailov na svoju.", // ai 2026-10
 
 // src/Central/FindingText.php, row 217
-"An e-mail attachment left out" => "",
+"An e-mail attachment left out" => "Vynechan\xE1 pr\xEDloha e-mailu", // ai 2026-10
 
 // src/Central/FindingText.php, row 218
-"An e-mail template attaches a file of the server; that would attach a file of this server, so it is removed." => "",
+"An e-mail template attaches a file of the server; that would attach a file of this server, so it is removed." => "\x8Aabl\xF3na e-mailu priklad\xE1 s\xFAbor zo servera; t\xFDm by sa prilo\x9Eil s\xFAbor tohto servera, preto sa odstr\xE1ni.", // ai 2026-10
 
 // src/Central/FindingText.php, row 219
-"After installing set the attachment again if it is needed." => "",
+"After installing set the attachment again if it is needed." => "Po in\x9Atal\xE1cii pr\xEDlohu znova nastavte, ak je potrebn\xE1.", // ai 2026-10
 
 // src/Central/FindingText.php, row 220
-"Site settings left out" => "",
+"Site settings left out" => "Vynechan\xE9 nastavenia webu", // ai 2026-10
 
 // src/Central/FindingText.php, row 221
-"The Google Analytics id, other domains of the site and app settings belong to the other AA; they are not installed." => "",
+"The Google Analytics id, other domains of the site and app settings belong to the other AA; they are not installed." => "Id Google Analytics, \xEFal\x9Aie dom\xE9ny webu a nastavenia aplik\xE1ci\xED patria druh\xE9mu AA; nein\x9Ataluj\xFA sa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 222
-"Set them in Module Settings of the site after installing." => "",
+"Set them in Module Settings of the site after installing." => "Po in\x9Atal\xE1cii ich nastavte v \x84Nastaveniach modulu\x93 webu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 223
-"A slice setting without a value" => "",
+"A slice setting without a value" => "Nastavenie modulu bez hodnoty", // ai 2026-10
 
 // src/Central/FindingText.php, row 224
-"A setting of the slice has a default that depends on who installs (a user, a random code, an expression) - it is left empty." => "",
+"A setting of the slice has a default that depends on who installs (a user, a random code, an expression) - it is left empty." => "Nastavenie modulu m\xE1 predvolen\xFA hodnotu, ktor\xE1 z\xE1vis\xED od toho, kto in\x9Ataluje (u\x9E\xEDvate\xBE, n\xE1hodn\xFD k\xF3d, v\xFDraz) \x96 zostane pr\xE1zdne.", // ai 2026-10
 
 // src/Central/FindingText.php, row 225
-"Fill it in the Setting of the slice after installing." => "",
+"Fill it in the Setting of the slice after installing." => "Po in\x9Atal\xE1cii ho vypl\xF2te v \x84Nastaven\xED\x93 modulu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 226
-"Objects the app does not carry" => "",
+"Objects the app does not carry" => "Objekty, ktor\xE9 aplik\xE1cia nepren\xE1\x9Aa", // ai 2026-10
 
 // src/Central/FindingText.php, row 227
-"Some objects of the module do not travel: forms, notes on admin pages and similar helpers of the other AA." => "",
+"Some objects of the module do not travel: forms, notes on admin pages and similar helpers of the other AA." => "Niektor\xE9 objekty modulu sa nepren\xE1\x9Aaj\xFA: formul\xE1re, pozn\xE1mky na str\xE1nkach administr\xE1cie a podobn\xE9 pom\xF4cky druh\xE9ho AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 228
-"Usually nothing. A form the pages show ({form:...}) has to be made here again." => "",
+"Usually nothing. A form the pages show ({form:...}) has to be made here again." => "Zvy\xE8ajne ni\xE8. Formul\xE1r, ktor\xFD str\xE1nky zobrazuj\xFA ({form:...}), treba vytvori\x9D tu znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 229
-"Kind (count)" => "",
+"Kind (count)" => "Druh (po\xE8et)", // ai 2026-10
 
 // src/Central/FindingText.php, row 230
-"A part of an object is missing" => "",
+"A part of an object is missing" => "Ch\xFDba \xE8as\x9D objektu", // ai 2026-10
 
 // src/Central/FindingText.php, row 231
-"An object (an alias, a form or a similar setting) refers to a part that no longer exists; the part is left out." => "",
+"An object (an alias, a form or a similar setting) refers to a part that no longer exists; the part is left out." => "Objekt (alias, formul\xE1r alebo podobn\xE9 nastavenie) odkazuje na \xE8as\x9D, ktor\xE1 u\x9E neexistuje; t\xE1to \xE8as\x9D sa vynech\xE1.", // ai 2026-10
 
 // src/Central/FindingText.php, row 232
-"After installing check the settings of the module that use the object." => "",
+"After installing check the settings of the module that use the object." => "Po in\x9Atal\xE1cii skontrolujte nastavenia modulu, ktor\xE9 objekt pou\x9E\xEDvaj\xFA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 233
-"An unknown profile setting" => "",
+"An unknown profile setting" => "Nezn\xE1me nastavenie profilu", // ai 2026-10
 
 // src/Central/FindingText.php, row 234
-"A default profile of the slice has a setting this AA does not know; AA ignores it." => "",
+"A default profile of the slice has a setting this AA does not know; AA ignores it." => "Predvolen\xFD profil modulu m\xE1 nastavenie, ktor\xE9 toto AA nepozn\xE1; AA ho ignoruje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 238
-"Who may write into the slice" => "",
+"Who may write into the slice" => "Kto smie do modulu zapisova\x9D", // ai 2026-10
 
 // src/Central/FindingText.php, row 239
-"The slice lets visitors of the web (not signed in) add or edit items, gives access to its file manager, or lets readers of a group field sign in. That is right for a public form - a sign-up, a comment - and wrong elsewhere." => "",
+"The slice lets visitors of the web (not signed in) add or edit items, gives access to its file manager, or lets readers of a group field sign in. That is right for a public form - a sign-up, a comment - and wrong elsewhere." => "Modul umo\x9E\xF2uje n\xE1v\x9Atevn\xEDkom webu (neprihl\xE1sen\xFDm) prid\xE1va\x9D alebo upravova\x9D spr\xE1vy, d\xE1va pr\xEDstup k svojmu spr\xE1vcovi s\xFAborov alebo umo\x9E\xF2uje prihl\xE1senie \xE8itate\xBEom z polo\x9Eky skupiny. To je spr\xE1vne pri verejnom formul\xE1ri \x96 prihl\xE1\x9Ake, koment\xE1ri \x96 a inde nespr\xE1vne.", // ai 2026-10
 
 // src/Central/FindingText.php, row 240
-"After installing check in Slice Admin > Slice that the slice should allow it; otherwise switch it off there." => "",
+"After installing check in Slice Admin > Slice that the slice should allow it; otherwise switch it off there." => "Po in\x9Atal\xE1cii skontrolujte v \x84Nastavenia modulu > Modul\x93, \xE8i to modul m\xE1 umo\x9E\xF2ova\x9D; inak to tam vypnite.", // ai 2026-10
 
 // src/Central/FindingText.php, row 241, 245
-"Set to" => "",
+"Set to" => "Nastaven\xE9 na", // ai 2026-10
 
 // src/Central/FindingText.php, row 242
-"Who can sign in to the site" => "",
+"Who can sign in to the site" => "Kto sa smie prihl\xE1si\x9D na web", // ai 2026-10
 
 // src/Central/FindingText.php, row 243
-"The site does not say which readers may sign in to its pages, so every user of this AA and the readers of all its Reader Management slices can." => "",
+"The site does not say which readers may sign in to its pages, so every user of this AA and the readers of all its Reader Management slices can." => "Web neur\xE8uje, ktor\xED \xE8itatelia sa sm\xFA prihl\xE1si\x9D na jeho str\xE1nky, preto to m\xF4\x9Ee ka\x9Ed\xFD u\x9E\xEDvate\xBE tohto AA aj \xE8itatelia v\x9Aetk\xFDch jeho modulov Spr\xE1va \xE8itate\xBEov.", // ai 2026-10
 
 // src/Central/FindingText.php, row 244
-"After installing open Module Settings of the site and set \"User login databases\" to \"first Reader Management slice listed in Uses slices\"." => "",
+"After installing open Module Settings of the site and set \"User login databases\" to \"first Reader Management slice listed in Uses slices\"." => "Po in\x9Atal\xE1cii otvorte \x84Nastavenia modulu\x93 webu a nastavte \x84Datab\xE1zy pre prihlasovanie u\x9E\xEDvate\xBEov\x93 na \x84prv\xFD modul Spr\xE1va \xE8itate\xBEov uveden\xFD v Pou\x9E\xEDva moduly\x93.", // ai 2026-10
 
 // src/Central/FindingText.php, row 246
-"An existing slice was chosen" => "",
+"An existing slice was chosen" => "Bol vybran\xFD existuj\xFAci modul", // ai 2026-10
 
 // src/Central/FindingText.php, row 248
-"The app goes into your existing Reader Management slice - its views and fields will work with your real readers." => "",
+"The app goes into your existing Reader Management slice - its views and fields will work with your real readers." => "Aplik\xE1cia sa nain\x9Ataluje do v\xE1\x9Aho existuj\xFAceho modulu Spr\xE1va \xE8itate\xBEov \x96 jej poh\xBEady a polo\x9Eky bud\xFA pracova\x9D s va\x9Aimi skuto\xE8n\xFDmi \xE8itate\xBEmi.", // ai 2026-10
 
 // src/Central/FindingText.php, row 249
-"A slice of the same role exists, but it cannot take the slice of the app; a new slice is made." => "",
+"A slice of the same role exists, but it cannot take the slice of the app; a new slice is made." => "Modul s rovnakou rolou existuje, ale nem\xF4\x9Ee prevzia\x9D modul aplik\xE1cie; vytvor\xED sa nov\xFD modul.", // ai 2026-10
 
 // src/Central/FindingText.php, row 250
-"The slice of the app goes into your existing slice of the same role." => "",
+"The slice of the app goes into your existing slice of the same role." => "Modul aplik\xE1cie sa nain\x9Ataluje do v\xE1\x9Aho existuj\xFAceho modulu s rovnakou rolou.", // ai 2026-10
 
 // src/Central/FindingText.php, row 252
-"Choose another slice (or \"a new slice\") in the table above if this is not what you want." => "",
+"Choose another slice (or \"a new slice\") in the table above if this is not what you want." => "Ak to nechcete, vyberte v tabu\xBEke vy\x9A\x9Aie in\xFD modul (alebo \x84nov\xFD modul\x93).", // ai 2026-10
 
 // src/Central/FindingText.php, row 255
-"The chosen slice cannot take the app" => "",
+"The chosen slice cannot take the app" => "Vybran\xFD modul nem\xF4\x9Ee prevzia\x9D aplik\xE1ciu", // ai 2026-10
 
 // src/Central/FindingText.php, row 257
-"A transfer into the very slice it copies would copy its items into it again." => "",
+"A transfer into the very slice it copies would copy its items into it again." => "Prenos do toho ist\xE9ho modulu, ktor\xFD kop\xEDruje, by do\xF2 znova skop\xEDroval jeho spr\xE1vy.", // ai 2026-10
 
 // src/Central/FindingText.php, row 258
-"One of the slices keeps the logins of readers (Reader Management) and the other not - the logins would not work." => "",
+"One of the slices keeps the logins of readers (Reader Management) and the other not - the logins would not work." => "Jeden z modulov uchov\xE1va prihlasovacie \xFAdaje \xE8itate\xBEov (Spr\xE1va \xE8itate\xBEov) a druh\xFD nie \x96 prihlasovanie by nefungovalo.", // ai 2026-10
 
 // src/Central/FindingText.php, row 259
-"A field of the chosen slice stores its values otherwise (text or number, a password) - the items would be broken." => "",
+"A field of the chosen slice stores its values otherwise (text or number, a password) - the items would be broken." => "Polo\x9Eka vybran\xE9ho modulu uklad\xE1 hodnoty inak (text alebo \xE8\xEDslo, heslo) \x96 spr\xE1vy by boli po\x9Akoden\xE9.", // ai 2026-10
 
 // src/Central/FindingText.php, row 260
-"The slice chosen in \"Into\" does not exist, you may not edit it, or it is chosen twice - the value says which." => "",
+"The slice chosen in \"Into\" does not exist, you may not edit it, or it is chosen twice - the value says which." => "Modul vybran\xFD v st\xE5pci \x84Kam\x93 neexistuje, nesmiete ho upravova\x9D alebo je vybran\xFD dvakr\xE1t \x96 hodnota uv\xE1dza, \xE8o z toho plat\xED.", // ai 2026-10
 
 // src/Central/FindingText.php, row 262
-"Choose another slice, or \"a new slice\", in the table above and preview again." => "",
+"Choose another slice, or \"a new slice\", in the table above and preview again." => "Vyberte v tabu\xBEke vy\x9A\x9Aie in\xFD modul alebo \x84nov\xFD modul\x93 a zobrazte n\xE1h\xBEad znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 263
-"Into an existing slice" => "",
+"Into an existing slice" => "Do existuj\xFAceho modulu", // ai 2026-10
 
 // src/Central/FindingText.php, row 264
-"The slice of the app goes into an existing slice; what the slice has (its views, e-mails, settings) stays and the app uses it." => "",
+"The slice of the app goes into an existing slice; what the slice has (its views, e-mails, settings) stays and the app uses it." => "Modul aplik\xE1cie sa nain\x9Ataluje do existuj\xFAceho modulu; \xE8o modul m\xE1 (poh\xBEady, e-maily, nastavenia), zostane a aplik\xE1cia to pou\x9Eije.", // ai 2026-10
 
 // src/Central/FindingText.php, row 266
-"The existing slice differs" => "",
+"The existing slice differs" => "Existuj\xFAci modul sa l\xED\x9Ai", // ai 2026-10
 
 // src/Central/FindingText.php, row 268
-"A relation field of the existing slice selects from another slice than the app expects - the transferred links would point elsewhere." => "",
+"A relation field of the existing slice selects from another slice than the app expects - the transferred links would point elsewhere." => "Polo\x9Eka v\xE4zby existuj\xFAceho modulu vyber\xE1 z in\xE9ho modulu, ne\x9E aplik\xE1cia o\xE8ak\xE1va \x96 prenesen\xE9 odkazy by viedli inam.", // ai 2026-10
 
 // src/Central/FindingText.php, row 269
-"The existing slice has a view of the same name, but another one; the slice keeps its view." => "",
+"The existing slice has a view of the same name, but another one; the slice keeps its view." => "Existuj\xFAci modul m\xE1 poh\xBEad rovnak\xE9ho n\xE1zvu, ale in\xFD; modul si ponech\xE1 svoj poh\xBEad.", // ai 2026-10
 
 // src/Central/FindingText.php, row 270
-"The existing slice has the field, but set otherwise; the slice keeps its setting." => "",
+"The existing slice has the field, but set otherwise; the slice keeps its setting." => "Existuj\xFAci modul polo\x9Eku m\xE1, ale inak nastaven\xFA; modul si ponech\xE1 svoje nastavenie.", // ai 2026-10
 
 // src/Central/FindingText.php, row 272
-"If the app behaves oddly after installing, compare these settings with the ones of the app." => "",
+"If the app behaves oddly after installing, compare these settings with the ones of the app." => "Ak sa aplik\xE1cia po in\x9Atal\xE1cii spr\xE1va zvl\xE1\x9Atne, porovnajte tieto nastavenia s nastaveniami aplik\xE1cie.", // ai 2026-10
 
 // src/Central/FindingText.php, row 273
-"Differs in" => "",
+"Differs in" => "L\xED\x9Ai sa v", // ai 2026-10
 
 // src/Central/FindingText.php, row 274
-"Maybe twice" => "",
+"Maybe twice" => "Mo\x9Eno dvakr\xE1t", // ai 2026-10
 
 // src/Central/FindingText.php, row 275
-"A view, an e-mail or an object without a unique name cannot be matched with the existing slice, so it is added - the slice may then have it twice." => "",
+"A view, an e-mail or an object without a unique name cannot be matched with the existing slice, so it is added - the slice may then have it twice." => "Poh\xBEad, e-mail alebo objekt bez jednozna\xE8n\xE9ho n\xE1zvu nemo\x9Eno sp\xE1rova\x9D s existuj\xFAcim modulom, preto sa prid\xE1 \x96 modul ho potom m\xF4\x9Ee ma\x9D dvakr\xE1t.", // ai 2026-10
 
 // src/Central/FindingText.php, row 276
-"After installing delete the duplicate." => "",
+"After installing delete the duplicate." => "Po in\x9Atal\xE1cii duplik\xE1t zma\x9Ete.", // ai 2026-10
 
 // src/Central/FindingText.php, row 277
-"Values that must be unique" => "",
+"Values that must be unique" => "Hodnoty, ktor\xE9 musia by\x9D jedine\xE8n\xE9", // ai 2026-10
 
 // src/Central/FindingText.php, row 278
-"The slice has fields whose values must not repeat (a unique field, an SEO name, a sequence); transferred items may repeat values of the items already there." => "",
+"The slice has fields whose values must not repeat (a unique field, an SEO name, a sequence); transferred items may repeat values of the items already there." => "Modul m\xE1 polo\x9Eky, ktor\xFDch hodnoty sa nesm\xFA opakova\x9D (jedine\xE8n\xE1 polo\x9Eka, SEO n\xE1zov, poradov\xE9 \xE8\xEDslo); prenesen\xE9 spr\xE1vy m\xF4\x9Eu opakova\x9D hodnoty spr\xE1v, ktor\xE9 tam u\x9E s\xFA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 279
-"After the transfer check these fields of the new items." => "",
+"After the transfer check these fields of the new items." => "Po prenose skontrolujte tieto polo\x9Eky pri nov\xFDch spr\xE1vach.", // ai 2026-10
 
 // src/Central/FindingText.php, row 282
-"The items are here already" => "",
+"The items are here already" => "Spr\xE1vy tu u\x9E s\xFA", // ai 2026-10
 
 // src/Central/FindingText.php, row 283
-"This AA already has items with the same ids - the app was probably transferred here before (maybe deleted since, but not purged from the trash)." => "",
+"This AA already has items with the same ids - the app was probably transferred here before (maybe deleted since, but not purged from the trash)." => "Toto AA u\x9E m\xE1 spr\xE1vy s rovnak\xFDmi id \x96 aplik\xE1cia sem bola pravdepodobne prenesen\xE1 u\x9E sk\xF4r (mo\x9Eno medzit\xFDm zmazan\xE1, ale nevysypan\xE1 z ko\x9Aa).", // ai 2026-10
 
 // src/Central/FindingText.php, row 284
-"Transfer into the slice that has them (choose it in \"Into\"), or delete the earlier copy completely, including the trash, and try again." => "",
+"Transfer into the slice that has them (choose it in \"Into\"), or delete the earlier copy completely, including the trash, and try again." => "Preneste do modulu, ktor\xFD ich m\xE1 (vyberte ho v st\xE5pci \x84Kam\x93), alebo predch\xE1dzaj\xFAcu k\xF3piu \xFAplne zma\x9Ete vr\xE1tane ko\x9Aa a sk\xFAste to znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 285
-"Reader logins collide" => "",
+"Reader logins collide" => "Kol\xEDzia prihlasovac\xEDch mien \xE8itate\xBEov", // ai 2026-10
 
 // src/Central/FindingText.php, row 287
-"A reader has the same login name or e-mail as a user of this AA with rights to the administration." => "",
+"A reader has the same login name or e-mail as a user of this AA with rights to the administration." => "\xC8itate\xBE m\xE1 rovnak\xE9 prihlasovacie meno alebo e-mail ako u\x9E\xEDvate\xBE tohto AA s pr\xE1vami k administr\xE1cii.", // ai 2026-10
 
 // src/Central/FindingText.php, row 288
-"A reader of this AA already has the same login name or e-mail." => "",
+"A reader of this AA already has the same login name or e-mail." => "\xC8itate\xBE tohto AA u\x9E m\xE1 rovnak\xE9 prihlasovacie meno alebo e-mail.", // ai 2026-10
 
 // src/Central/FindingText.php, row 289
-"Two transferred readers have the same login name or e-mail." => "",
+"Two transferred readers have the same login name or e-mail." => "Dvaja pren\xE1\x9Aan\xED \xE8itatelia maj\xFA rovnak\xE9 prihlasovacie meno alebo e-mail.", // ai 2026-10
 
 // src/Central/FindingText.php, row 290
-"A reader has more login names or e-mails." => "",
+"A reader has more login names or e-mails." => "\xC8itate\xBE m\xE1 viac prihlasovac\xEDch mien alebo e-mailov.", // ai 2026-10
 
 // src/Central/FindingText.php, row 292
-"Change the login of the reader in the AA it comes from (or of the user here) and preview again." => "",
+"Change the login of the reader in the AA it comes from (or of the user here) and preview again." => "Zme\xF2te prihlasovacie meno \xE8itate\xBEa v AA, z ktor\xE9ho poch\xE1dza (alebo u\x9E\xEDvate\xBEa tu), a zobrazte n\xE1h\xBEad znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 292
-"After the transfer check these readers can sign in." => "",
+"After the transfer check these readers can sign in." => "Po prenose overte, \x9Ee sa t\xEDto \xE8itatelia m\xF4\x9Eu prihl\xE1si\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 293
 // src/Optimize/CheckSessionidUse.php, row 100
-"Login" => "",
+"Login" => "Prihl\xE1senie", // ai 2026-10
 
 // src/Central/FindingText.php, row 294
-"Passwords of the readers travel" => "",
+"Passwords of the readers travel" => "Hesl\xE1 \xE8itate\xBEov sa pren\xE1\x9Aaj\xFA", // ai 2026-10
 
 // src/Central/FindingText.php, row 295
-"The transfer carries the logins of readers with their password hashes (and two-factor secrets)." => "",
+"The transfer carries the logins of readers with their password hashes (and two-factor secrets)." => "Prenos nesie prihlasovacie \xFAdaje \xE8itate\xBEov s hashmi ich hesiel (a tajomstvami pre dvojf\xE1zov\xE9 prihl\xE1senie).", // ai 2026-10
 
 // src/Central/FindingText.php, row 296
-"Nothing to do here; do not keep downloaded packages of such apps." => "",
+"Nothing to do here; do not keep downloaded packages of such apps." => "Tu netreba ni\xE8 robi\x9D; stiahnut\xE9 bal\xED\xE8ky tak\xFDch aplik\xE1ci\xED neuchov\xE1vajte.", // ai 2026-10
 
 // src/Central/FindingText.php, row 297
-"Item values left out" => "",
+"Item values left out" => "Vynechan\xE9 hodnoty spr\xE1v", // ai 2026-10
 
 // src/Central/FindingText.php, row 298
-"An item is in no bin (active, holding, trash) - no list of the slice will show it." => "",
+"An item is in no bin (active, holding, trash) - no list of the slice will show it." => "Spr\xE1va nie je v \x9Eiadnej schr\xE1nke (Aktu\xE1lne, Z\xE1sobn\xEDk, K\xF4\x9A) \x96 \x9Eiadny v\xFDpis modulu ju nezobraz\xED.", // ai 2026-10
 
 // src/Central/FindingText.php, row 298
-"Items have values of a field the slice does not have - they are left out." => "",
+"Items have values of a field the slice does not have - they are left out." => "Spr\xE1vy maj\xFA hodnoty polo\x9Eky, ktor\xFA modul nem\xE1 \x96 vynechaj\xFA sa.", // ai 2026-10
 
 // src/Central/FindingText.php, row 299
-"Usually nothing to do." => "",
+"Usually nothing to do." => "Zvy\xE8ajne netreba ni\xE8 robi\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 300
-"A condition of the items to transfer cannot be used" => "",
+"A condition of the items to transfer cannot be used" => "Podmienku pre pren\xE1\x9Aan\xE9 spr\xE1vy nemo\x9Eno pou\x9Ei\x9D", // ai 2026-10
 
 // src/Central/FindingText.php, row 301
-"AA cannot read the condition as it is written, or the source AA did not check it. A condition read wrongly could take other items than you mean, so no items are counted and the app cannot be installed until the condition passes a check." => "",
+"AA cannot read the condition as it is written, or the source AA did not check it. A condition read wrongly could take other items than you mean, so no items are counted and the app cannot be installed until the condition passes a check." => "AA nedok\xE1\x9Ee pre\xE8\xEDta\x9D podmienku tak, ako je zap\xEDsan\xE1, alebo ju zdrojov\xE9 AA neskontrolovalo. Chybne pre\xE8\xEDtan\xE1 podmienka by mohla prevzia\x9D in\xE9 spr\xE1vy, ne\x9E mysl\xEDte, preto sa \x9Eiadne spr\xE1vy nepo\xE8\xEDtaj\xFA a aplik\xE1ciu nemo\x9Eno nain\x9Atalova\x9D, k\xFDm podmienka neprejde kontrolou.", // ai 2026-10
 
 // src/Central/FindingText.php, row 302
-"Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "",
+"Correct the condition, or empty its field to transfer all the items of the slice, then check the changes again." => "Opravte podmienku alebo jej pole vypr\xE1zdnite, aby sa preniesli v\x9Aetky spr\xE1vy modulu, a potom znova skontrolujte zmeny.", // ai 2026-10
 
 // src/Central/FindingText.php, row 303
 // src/Optimize/CheckImports.php, row 176, 178
 // src/Optimize/ImgMeasuring.php, row 55
-"Why" => "",
+"Why" => "D\xF4vod", // ai 2026-10
 
 // src/Central/FindingText.php, row 304
-"A condition that takes every item" => "",
+"A condition that takes every item" => "Podmienka, ktor\xE1 prevezme v\x9Aetky spr\xE1vy", // ai 2026-10
 
 // src/Central/FindingText.php, row 305
-"Every item of the slice matches, so the condition leaves nothing out and the whole slice goes. That is allowed, but a condition is usually written to narrow: it may name a field every item has set, or a value they all share." => "",
+"Every item of the slice matches, so the condition leaves nothing out and the whole slice goes. That is allowed, but a condition is usually written to narrow: it may name a field every item has set, or a value they all share." => "Podmienke vyhovuj\xFA v\x9Aetky spr\xE1vy modulu, tak\x9Ee ni\xE8 nevynech\xE1 a prenesie sa cel\xFD modul. Je to povolen\xE9, ale podmienka sa zvy\xE8ajne p\xED\x9Ae preto, aby zu\x9Eovala: mo\x9Eno uv\xE1dza polo\x9Eku, ktor\xFA maj\xFA vyplnen\xFA v\x9Aetky spr\xE1vy, alebo hodnotu, ktor\xFA maj\xFA v\x9Aetky spolo\xE8n\xFA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 306
-"If all the items should go, empty the field. If not, change the condition so that it narrows; the Items column of the plan shows how many items it takes." => "",
+"If all the items should go, empty the field. If not, change the condition so that it narrows; the Items column of the plan shows how many items it takes." => "Ak maj\xFA \xEDs\x9D v\x9Aetky spr\xE1vy, pole vypr\xE1zdnite. Ak nie, upravte podmienku tak, aby zu\x9Eovala; st\xE5pec \x84Spr\xE1vy\x93 v pl\xE1ne ukazuje, ko\xBEko spr\xE1v prevezme.", // ai 2026-10
 
 // src/Central/FindingText.php, row 307
-"Items matching" => "",
+"Items matching" => "Vyhovuj\xFAce spr\xE1vy", // ai 2026-10
 
 // src/Central/FindingText.php, row 308
-"Links to items a condition leaves behind" => "",
+"Links to items a condition leaves behind" => "Odkazy na spr\xE1vy, ktor\xE9 podmienka vynech\xE1", // ai 2026-10
 
 // src/Central/FindingText.php, row 309
-"Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere." => "",
+"Items that go along link to items of another slice, and the condition of that slice leaves some of them behind. After the transfer those links point to items this AA does not have. The count is the least; the check after the transfer counts every link pointing nowhere." => "Pren\xE1\x9Aan\xE9 spr\xE1vy odkazuj\xFA na spr\xE1vy in\xE9ho modulu a podmienka toho modulu niektor\xE9 z nich vynech\xE1. Po prenose bud\xFA tieto odkazy vies\x9D na spr\xE1vy, ktor\xE9 toto AA nem\xE1. Po\xE8et je najmen\x9A\xED mo\x9En\xFD; kontrola po prenose spo\xE8\xEDta ka\x9Ed\xFD odkaz, ktor\xFD vedie nikam.", // ai 2026-10
 
 // src/Central/FindingText.php, row 310
-"Widen or empty the condition of the slice that leaves items behind; or give the slice with the links a condition that follows the link (printed under its field when there is one); or accept the links and clean them up after the transfer." => "",
+"Widen or empty the condition of the slice that leaves items behind; or give the slice with the links a condition that follows the link (printed under its field when there is one); or accept the links and clean them up after the transfer." => "Roz\x9A\xEDrte alebo vypr\xE1zdnite podmienku modulu, ktor\xFD spr\xE1vy vynech\xE1va; alebo dajte modulu s odkazmi podmienku, ktor\xE1 odkaz sleduje (ak existuje, je vyp\xEDsan\xE1 pod jeho po\xBEom); alebo odkazy prijmite a po prenose ich vy\xE8istite.", // ai 2026-10
 
 // src/Central/FindingText.php, row 312
-"Check the transferred items" => "",
+"Check the transferred items" => "Skontrolujte prenesen\xE9 spr\xE1vy", // ai 2026-10
 
 // src/Central/FindingText.php, row 314
-"The slice here has another number of items than the one it comes from (there => here). Into an existing slice that is expected - its own items stay." => "",
+"The slice here has another number of items than the one it comes from (there => here). Into an existing slice that is expected - its own items stay." => "Modul tu m\xE1 in\xFD po\xE8et spr\xE1v ne\x9E ten, z ktor\xE9ho poch\xE1dza (tam => tu). Pri existuj\xFAcom module sa to o\xE8ak\xE1va \x96 jeho vlastn\xE9 spr\xE1vy zost\xE1vaj\xFA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 315
-"Items were edited in the other AA while the transfer ran; the changes may be missing here." => "",
+"Items were edited in the other AA while the transfer ran; the changes may be missing here." => "Po\xE8as prenosu boli spr\xE1vy v druhom AA upraven\xE9; zmeny tu m\xF4\x9Eu ch\xFDba\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 316
-"Some items link to items this AA does not have." => "",
+"Some items link to items this AA does not have." => "Niektor\xE9 spr\xE1vy odkazuj\xFA na spr\xE1vy, ktor\xE9 toto AA nem\xE1.", // ai 2026-10
 
 // src/Central/FindingText.php, row 317
-"The other AA did not say how many items it has, so the transfer cannot be compared." => "",
+"The other AA did not say how many items it has, so the transfer cannot be compared." => "Druh\xE9 AA neuviedlo, ko\xBEko m\xE1 spr\xE1v, preto prenos nemo\x9Eno porovna\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 319
-"Transfer also the slice with the linked items." => "",
+"Transfer also the slice with the linked items." => "Preneste aj modul s naviazan\xFDmi spr\xE1vami.", // ai 2026-10
 
 // src/Central/FindingText.php, row 319
-"Run the transfer again when the numbers should match." => "",
+"Run the transfer again when the numbers should match." => "Ak by po\xE8ty mali s\xFAhlasi\x9D, spustite prenos znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 320
-"A domain of the site left out" => "",
+"A domain of the site left out" => "Vynechan\xE1 dom\xE9na webu", // ai 2026-10
 
 // src/Central/FindingText.php, row 321
-"The site answers to this domain in its AA, but here it belongs to another site or to this AA itself." => "",
+"The site answers to this domain in its AA, but here it belongs to another site or to this AA itself." => "Web na t\xFAto dom\xE9nu odpoved\xE1 vo svojom AA, ale tu patr\xED in\xE9mu webu alebo samotn\xE9mu tomuto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 322
-"Nothing to do, unless the domain should move here - then set it in the site settings." => "",
+"Nothing to do, unless the domain should move here - then set it in the site settings." => "Netreba ni\xE8 robi\x9D, pokia\xBE sa dom\xE9na nem\xE1 presun\xFA\x9D sem \x96 vtedy ju nastavte v nastaveniach webu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 332
-"Reads a file or a web address" => "",
+"Reads a file or a web address" => "\xC8\xEDta s\xFAbor alebo webov\xFA adresu", // ai 2026-10
 
 // src/Central/FindingText.php, row 333
-"The text makes this AA read a file or a URL. The server asks for it, not the visitor: it can read local files of the server or reach addresses of the internal network; a relative URL is fetched with the cookies of the visitor." => "",
+"The text makes this AA read a file or a URL. The server asks for it, not the visitor: it can read local files of the server or reach addresses of the internal network; a relative URL is fetched with the cookies of the visitor." => "Text prin\xFAti toto AA pre\xE8\xEDta\x9D s\xFAbor alebo URL. \x8Eiada o\xF2 server, nie n\xE1v\x9Atevn\xEDk: m\xF4\x9Ee tak \xE8\xEDta\x9D lok\xE1lne s\xFAbory servera alebo sa dosta\x9D na adresy vn\xFAtornej siete; relat\xEDvna URL sa s\x9Dahuje s cookies n\xE1v\x9Atevn\xEDka.", // ai 2026-10
 
 // src/Central/FindingText.php, row 334
-"Fine when it reads a public address the app needs (a feed, an image or a page of its own site). Do not install it when it points to a local path (../, /etc/, file://), to an internal address (localhost, 10.x, 192.168.x) or when the address is built from what a visitor sends (URL parameters)." => "",
+"Fine when it reads a public address the app needs (a feed, an image or a page of its own site). Do not install it when it points to a local path (../, /etc/, file://), to an internal address (localhost, 10.x, 192.168.x) or when the address is built from what a visitor sends (URL parameters)." => "V poriadku, ak \xE8\xEDta verejn\xFA adresu, ktor\xFA aplik\xE1cia potrebuje (kan\xE1l, obr\xE1zok alebo str\xE1nku vlastn\xE9ho webu). Nein\x9Atalujte aplik\xE1ciu, ak mieri na lok\xE1lnu cestu (../, /etc/, file://), na vn\xFAtorn\xFA adresu (localhost, 10.x, 192.168.x) alebo ak sa adresa sklad\xE1 z toho, \xE8o posiela n\xE1v\x9Atevn\xEDk (parametre URL).", // ai 2026-10
 
 // src/Central/FindingText.php, row 335
-"Prints data of the visitor, a user or the server" => "",
+"Prints data of the visitor, a user or the server" => "Vypisuje \xFAdaje n\xE1v\x9Atevn\xEDka, u\x9E\xEDvate\xBEa alebo servera", // ai 2026-10
 
 // src/Central/FindingText.php, row 336
-"The text prints data of the request, of a user or of the server: {server} server variables, {cookie} the cookies of the visitor, {userinfo} the login log of any user, {user:password} the password the user signed in with." => "",
+"The text prints data of the request, of a user or of the server: {server} server variables, {cookie} the cookies of the visitor, {userinfo} the login log of any user, {user:password} the password the user signed in with." => "Text vypisuje \xFAdaje po\x9Eiadavky, u\x9E\xEDvate\xBEa alebo servera: {server} premenn\xE9 servera, {cookie} cookies n\xE1v\x9Atevn\xEDka, {userinfo} z\xE1znam prihl\xE1sen\xED \xBEubovo\xBEn\xE9ho u\x9E\xEDvate\xBEa, {user:password} heslo, ktor\xFDm sa u\x9E\xEDvate\xBE prihl\xE1sil.", // ai 2026-10
 
 // src/Central/FindingText.php, row 337
-"Fine when it shows the visitors their own data (their name, the address of the page). Do not install it when it prints passwords or server settings, or sends such data out - in a URL, an e-mail or a hidden form field." => "",
+"Fine when it shows the visitors their own data (their name, the address of the page). Do not install it when it prints passwords or server settings, or sends such data out - in a URL, an e-mail or a hidden form field." => "V poriadku, ak n\xE1v\x9Atevn\xEDkom ukazuje ich vlastn\xE9 \xFAdaje (ich meno, adresu str\xE1nky). Nein\x9Atalujte aplik\xE1ciu, ak vypisuje hesl\xE1 alebo nastavenia servera alebo tak\xE9 \xFAdaje posiela von \x96 v URL, e-maile alebo skrytom poli formul\xE1ra.", // ai 2026-10
 
 // src/Central/FindingText.php, row 338
-"Carries a password or another secret" => "",
+"Carries a password or another secret" => "Nesie heslo alebo in\xE9 tajomstvo", // ai 2026-10
 
 // src/Central/FindingText.php, row 339
-"The text carries or issues a secret: a reading password of a slice ({credentials}), a signed token ({jwtencode}), a stored secret ({setsecret}) or a change of a password ({changepwd...}). A secret written in the app travels with it to every AA it is installed on." => "",
+"The text carries or issues a secret: a reading password of a slice ({credentials}), a signed token ({jwtencode}), a stored secret ({setsecret}) or a change of a password ({changepwd...}). A secret written in the app travels with it to every AA it is installed on." => "Text nesie alebo vyd\xE1va tajomstvo: heslo na \xE8\xEDtanie modulu ({credentials}), podp\xEDsan\xFD token ({jwtencode}), ulo\x9Een\xE9 tajomstvo ({setsecret}) alebo zmenu hesla ({changepwd...}). Tajomstvo zap\xEDsan\xE9 v aplik\xE1cii sa s \xF2ou prenesie do ka\x9Ed\xE9ho AA, kam sa nain\x9Ataluje.", // ai 2026-10
 
 // src/Central/FindingText.php, row 340
-"Expected only in apps with a login or an API. Check that the secret is never printed to visitors; after installing replace it with a secret of this AA." => "",
+"Expected only in apps with a login or an API. Check that the secret is never printed to visitors; after installing replace it with a secret of this AA." => "O\xE8ak\xE1va sa len v aplik\xE1ci\xE1ch s prihlasovan\xEDm alebo API. Skontrolujte, \x9Ee sa tajomstvo nikdy nevypisuje n\xE1v\x9Atevn\xEDkom; po in\x9Atal\xE1cii ho nahra\xEFte tajomstvom tohto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 341
-"Sends e-mail" => "",
+"Sends e-mail" => "Posiela e-maily", // ai 2026-10
 
 // src/Central/FindingText.php, row 342
-"The app sends e-mail from this AA. When a visitor may choose the recipient, anyone can send mail through this AA (spam); attachments are downloaded by the server, a field filled by a visitor lets the visitor choose what is attached." => "",
+"The app sends e-mail from this AA. When a visitor may choose the recipient, anyone can send mail through this AA (spam); attachments are downloaded by the server, a field filled by a visitor lets the visitor choose what is attached." => "Aplik\xE1cia posiela e-maily z tohto AA. Ak m\xF4\x9Ee pr\xEDjemcu zvoli\x9D n\xE1v\x9Atevn\xEDk, m\xF4\x9Ee cez toto AA posiela\x9D po\x9Atu ktoko\xBEvek (spam); pr\xEDlohy s\x9Dahuje server a pole vyplnen\xE9 n\xE1v\x9Atevn\xEDkom mu umo\x9En\xED zvoli\x9D, \xE8o sa prilo\x9E\xED.", // ai 2026-10
 
 // src/Central/FindingText.php, row 343
-"Check that the recipients are fixed addresses or those of the item, not a value from the URL or a form, that the attachments are public files of the app, and that the mail is not sent by a page anyone can load again and again." => "",
+"Check that the recipients are fixed addresses or those of the item, not a value from the URL or a form, that the attachments are public files of the app, and that the mail is not sent by a page anyone can load again and again." => "Skontrolujte, \x9Ee pr\xEDjemcovia s\xFA pevn\xE9 adresy alebo adresy zo spr\xE1vy, nie hodnota z URL alebo formul\xE1ra, \x9Ee pr\xEDlohy s\xFA verejn\xE9 s\xFAbory aplik\xE1cie a \x9Ee e-mail neposiela str\xE1nka, ktor\xFA m\xF4\x9Ee ktoko\xBEvek na\xE8\xEDtava\x9D znova a znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 344
-"Writes data whenever it is shown" => "",
+"Writes data whenever it is shown" => "Zapisuje d\xE1ta pri ka\x9Edom zobrazen\xED", // ai 2026-10
 
 // src/Central/FindingText.php, row 345
-"The text writes data whenever it is shown: it creates or changes items ({newitem}, {updateitem}, {ensureitem}, {recompute}) or sends a data box message ({datovka})." => "",
+"The text writes data whenever it is shown: it creates or changes items ({newitem}, {updateitem}, {ensureitem}, {recompute}) or sends a data box message ({datovka})." => "Text zapisuje d\xE1ta pri ka\x9Edom zobrazen\xED: vytv\xE1ra alebo men\xED spr\xE1vy ({newitem}, {updateitem}, {ensureitem}, {recompute}) alebo posiela z\xE1sielku do d\xE1tovej schr\xE1nky ({datovka}).", // ai 2026-10
 
 // src/Central/FindingText.php, row 346
-"Check which slice it writes into - it should be a slice of this app. Writing into another slice by its id, or with values taken from the URL, is suspicious; {datovka} on a public page sends a message on every load." => "",
+"Check which slice it writes into - it should be a slice of this app. Writing into another slice by its id, or with values taken from the URL, is suspicious; {datovka} on a public page sends a message on every load." => "Skontrolujte, do ktor\xE9ho modulu zapisuje \x96 mal by to by\x9D modul tejto aplik\xE1cie. Z\xE1pis do in\xE9ho modulu pod\xBEa jeho id alebo s hodnotami prevzat\xFDmi z URL je podozriv\xFD; {datovka} na verejnej str\xE1nke po\x9Ale z\xE1sielku pri ka\x9Edom na\xE8\xEDtan\xED.", // ai 2026-10
 
 // src/Central/FindingText.php, row 347
-"Calls PHP code of AA" => "",
+"Calls PHP code of AA" => "Vol\xE1 PHP k\xF3d AA", // ai 2026-10
 
 // src/Central/FindingText.php, row 348
-"The text calls an internal PHP method of AA with the data of the item." => "",
+"The text calls an internal PHP method of AA with the data of the item." => "Text vol\xE1 intern\xFA PHP met\xF3du AA s d\xE1tami spr\xE1vy.", // ai 2026-10
 
 // src/Central/FindingText.php, row 349
-"Apps rarely need it - install only when you know why the app calls it." => "",
+"Apps rarely need it - install only when you know why the app calls it." => "Aplik\xE1cie to potrebuj\xFA zriedka \x96 in\x9Atalujte len vtedy, ke\xEF viete, pre\xE8o to aplik\xE1cia vol\xE1.", // ai 2026-10
 
 // src/Central/FindingText.php, row 350
-"Sends the visitor elsewhere" => "",
+"Sends the visitor elsewhere" => "Presmer\xFAva n\xE1v\x9Atevn\xEDka inam", // ai 2026-10
 
 // src/Central/FindingText.php, row 351
-"The text sends the visitor to another address. An address taken from the URL lets anyone make a link of your site that leads to a foreign (phishing) page." => "",
+"The text sends the visitor to another address. An address taken from the URL lets anyone make a link of your site that leads to a foreign (phishing) page." => "Text presmeruje n\xE1v\x9Atevn\xEDka na in\xFA adresu. Adresa prevzat\xE1 z URL umo\x9En\xED komuko\xBEvek vytvori\x9D odkaz z v\xE1\x9Aho webu, ktor\xFD vedie na cudziu (phishingov\xFA) str\xE1nku.", // ai 2026-10
 
 // src/Central/FindingText.php, row 352
-"Fine with a fixed address of the site; not with an address built from URL parameters." => "",
+"Fine with a fixed address of the site; not with an address built from URL parameters." => "V poriadku s pevnou adresou webu; nie s adresou zostavenou z parametrov URL.", // ai 2026-10
 
 // src/Central/FindingText.php, row 353
-"Sets a security header" => "",
+"Sets a security header" => "Nastavuje bezpe\xE8nostn\xFA hlavi\xE8ku", // ai 2026-10
 
 // src/Central/FindingText.php, row 354
-"The text sets an HTTP header which decides what browsers allow: Content-Security-Policy (CSP - which scripts and styles may run), CORS (which other sites may read the answers), Report-To and NEL (where the browsers of the visitors send their error reports), Referrer-Policy (to which sites the browsers send the address of the page). A status code or a content type is only a note (I)." => "",
+"The text sets an HTTP header which decides what browsers allow: Content-Security-Policy (CSP - which scripts and styles may run), CORS (which other sites may read the answers), Report-To and NEL (where the browsers of the visitors send their error reports), Referrer-Policy (to which sites the browsers send the address of the page). A status code or a content type is only a note (I)." => "Text nastavuje HTTP hlavi\xE8ku, ktor\xE1 rozhoduje, \xE8o prehliada\xE8e povolia: Content-Security-Policy (CSP \x96 ktor\xE9 skripty a \x9At\xFDly sm\xFA be\x9Ea\x9D), CORS (ktor\xE9 in\xE9 weby sm\xFA \xE8\xEDta\x9D odpovede), Report-To a NEL (kam prehliada\xE8e n\xE1v\x9Atevn\xEDkov posielaj\xFA hl\xE1senia o chyb\xE1ch), Referrer-Policy (ktor\xFDm webom prehliada\xE8e posielaj\xFA adresu str\xE1nky). Stavov\xFD k\xF3d alebo typ obsahu je len pozn\xE1mka (I).", // ai 2026-10
 
 // src/Central/FindingText.php, row 355
-"Check that the CSP allows no scripts of foreign domains, that CORS is not opened to * unless the page is a public API, that Report-To and NEL send the reports to an address you trust, and that Referrer-Policy is neither unsafe-url nor no-referrer-when-downgrade. Security headers the site sets on purpose are fine - confirm them." => "",
+"Check that the CSP allows no scripts of foreign domains, that CORS is not opened to * unless the page is a public API, that Report-To and NEL send the reports to an address you trust, and that Referrer-Policy is neither unsafe-url nor no-referrer-when-downgrade. Security headers the site sets on purpose are fine - confirm them." => "Skontrolujte, \x9Ee CSP nepovo\xBEuje skripty z cudz\xEDch dom\xE9n, \x9Ee CORS nie je otvoren\xFD pre *, ak str\xE1nka nie je verejn\xE9 API, \x9Ee Report-To a NEL posielaj\xFA hl\xE1senia na adresu, ktorej d\xF4verujete, a \x9Ee Referrer-Policy nie je unsafe-url ani no-referrer-when-downgrade. Bezpe\xE8nostn\xE9 hlavi\xE8ky, ktor\xE9 web nastavuje z\xE1merne, s\xFA v poriadku \x96 potvr\xEFte ich.", // ai 2026-10
 
 // src/Central/FindingText.php, row 356
-"Runs a text as a template again" => "",
+"Runs a text as a template again" => "Znova spracuje text ako \x9Aabl\xF3nu", // ai 2026-10
 
 // src/Central/FindingText.php, row 357
-"The text expands a text as a template again. When that text comes from visitors (an item of a public form, a URL parameter), they can put AA commands into it and run them with the rights of this AA." => "",
+"The text expands a text as a template again. When that text comes from visitors (an item of a public form, a URL parameter), they can put AA commands into it and run them with the rights of this AA." => "Text znova rozvinie text ako \x9Aabl\xF3nu. Ak ten text poch\xE1dza od n\xE1v\x9Atevn\xEDkov (spr\xE1va z verejn\xE9ho formul\xE1ra, parameter URL), m\xF4\x9Eu do\xF2 vlo\x9Ei\x9D pr\xEDkazy AA a spusti\x9D ich s pr\xE1vami tohto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 358
-"Fine over the texts of the app itself; do not install it when it expands item content filled by anonymous posting or parameters of the URL." => "",
+"Fine over the texts of the app itself; do not install it when it expands item content filled by anonymous posting or parameters of the URL." => "Pri textoch samotnej aplik\xE1cie je to v poriadku; nein\x9Atalujte aplik\xE1ciu, ak rozv\xEDja obsah spr\xE1v vyplnen\xFD anonymn\xFDm vkladan\xEDm alebo parametrami URL.", // ai 2026-10
 
 // src/Central/FindingText.php, row 359
-"Calls a PHP function" => "",
+"Calls a PHP function" => "Vol\xE1 PHP funkciu", // ai 2026-10
 
 // src/Central/FindingText.php, row 360
-"The field alias calls a PHP function by its name, and it is not a literal usr_ function the check could recognise." => "",
+"The field alias calls a PHP function by its name, and it is not a literal usr_ function the check could recognise." => "Alias polo\x9Eky vol\xE1 PHP funkciu pod\xBEa n\xE1zvu a nejde o doslovne zap\xEDsan\xFA funkciu usr_, ktor\xFA by kontrola rozpoznala.", // ai 2026-10
 
 // src/Central/FindingText.php, row 361
-"Ask the author which function it calls; install only when it is a usr_ function defined in include/usr_aliasfnc.php of this AA." => "",
+"Ask the author which function it calls; install only when it is a usr_ function defined in include/usr_aliasfnc.php of this AA." => "Op\xFDtajte sa autora, ak\xFA funkciu vol\xE1; in\x9Atalujte len vtedy, ak je to funkcia usr_ definovan\xE1 v include/usr_aliasfnc.php tohto AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 362
-"A command whose name is built when shown" => "",
+"A command whose name is built when shown" => "Pr\xEDkaz, ktor\xE9ho n\xE1zov sa zostav\xED a\x9E pri zobrazen\xED", // ai 2026-10
 
 // src/Central/FindingText.php, row 363
-"The name of a command is built only when the page is shown (from another command, a placeholder, JSON escapes or the internal quoting of AA), so the check cannot tell which command runs - it may be any of the dangerous ones." => "",
+"The name of a command is built only when the page is shown (from another command, a placeholder, JSON escapes or the internal quoting of AA), so the check cannot tell which command runs - it may be any of the dangerous ones." => "N\xE1zov pr\xEDkazu sa zostav\xED a\x9E pri zobrazen\xED str\xE1nky (z in\xE9ho pr\xEDkazu, z\xE1stupn\xE9ho symbolu, JSON escape sekvenci\xED alebo intern\xE9ho \xFAvodzovkovania AA), preto kontrola nepozn\xE1, ktor\xFD pr\xEDkaz pobe\x9E\xED \x96 m\xF4\x9Ee to by\x9D ktor\xFDko\xBEvek z nebezpe\xE8n\xFDch.", // ai 2026-10
 
 // src/Central/FindingText.php, row 364
-"Read the text around it. Common templates do not need that; unless you see why it is built this way, do not install the app." => "",
+"Read the text around it. Common templates do not need that; unless you see why it is built this way, do not install the app." => "Pre\xE8\xEDtajte si text okolo. Be\x9En\xE9 \x9Aabl\xF3ny to nepotrebuj\xFA; ak nevid\xEDte, pre\xE8o je zostaven\xFD takto, aplik\xE1ciu nein\x9Atalujte.", // ai 2026-10
 
 // src/Central/FindingText.php, row 365
-"Too complex to check" => "",
+"Too complex to check" => "Pr\xEDli\x9A zlo\x9Eit\xE9 na kontrolu", // ai 2026-10
 
 // src/Central/FindingText.php, row 366
-"The text is so complex that the check ran out of its limits - it is not checked completely." => "",
+"The text is so complex that the check ran out of its limits - it is not checked completely." => "Text je tak\xFD zlo\x9Eit\xFD, \x9Ee kontrola vy\xE8erpala svoje limity \x96 nie je skontrolovan\xFD \xFAplne.", // ai 2026-10
 
 // src/Central/FindingText.php, row 367
-"Read the text yourself before installing." => "",
+"Read the text yourself before installing." => "Pred in\x9Atal\xE1ciou si text pre\xE8\xEDtajte sami.", // ai 2026-10
 
 // src/Central/FindingText.php, row 368
-"A reading password in a URL" => "",
+"A reading password in a URL" => "Heslo na \xE8\xEDtanie v URL", // ai 2026-10
 
 // src/Central/FindingText.php, row 369
-"A URL carries the reading password of a slice (slice_pwd=...). The password travels with the app and shows in pages and server logs." => "",
+"A URL carries the reading password of a slice (slice_pwd=...). The password travels with the app and shows in pages and server logs." => "URL nesie heslo na \xE8\xEDtanie modulu (slice_pwd=...). Heslo sa prenesie s aplik\xE1ciou a objavuje sa v str\xE1nkach a logoch servera.", // ai 2026-10
 
 // src/Central/FindingText.php, row 370
-"After installing remove it from the URL and set a new reading password of the slice on this AA." => "",
+"After installing remove it from the URL and set a new reading password of the slice on this AA." => "Po in\x9Atal\xE1cii ho z URL odstr\xE1\xF2te a v tomto AA nastavte modulu nov\xE9 heslo na \xE8\xEDtanie.", // ai 2026-10
 
 // src/Central/FindingText.php, row 371
-"The domain moves with the site" => "",
+"The domain moves with the site" => "Dom\xE9na sa presunie s webom", // ai 2026-10
 
 // src/Central/FindingText.php, row 372
-"The site answers to this domain in its AA; the transfer gives the domain to the new site here." => "",
+"The site answers to this domain in its AA; the transfer gives the domain to the new site here." => "Web vo svojom AA odpoved\xE1 na t\xFAto dom\xE9nu; prenos dom\xE9nu pridel\xED nov\xE9mu webu tu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 373
-"Confirm it when the site moves here. When the site in the other AA stays in use, remove the domain from the settings of the new site after the transfer." => "",
+"Confirm it when the site moves here. When the site in the other AA stays in use, remove the domain from the settings of the new site after the transfer." => "Potvr\xEFte to, ak sa web s\x9Dahuje sem. Ak web v druhom AA zostane v prev\xE1dzke, odstr\xE1\xF2te po prenose dom\xE9nu z nastaven\xED nov\xE9ho webu.", // ai 2026-10
 
 // src/Central/FindingText.php, row 392
-"Longer than %1 bytes." => "",
+"Longer than %1 bytes." => "Dlh\x9Aie ako %1 bajtov.", // ai 2026-10
 
 // src/Central/FindingText.php, row 393
-"More than %1 conditions." => "",
+"More than %1 conditions." => "Viac ako %1 podmienok.", // ai 2026-10
 
 // src/Central/FindingText.php, row 394
-"A condition starts with d-." => "",
+"A condition starts with d-." => "Podmienka za\xE8\xEDna d-.", // ai 2026-10
 
 // src/Central/FindingText.php, row 395
-"Not in threes of field, operator and value - most likely a dash inside a value or a date, which is written doubled: 2026--01--01." => "",
+"Not in threes of field, operator and value - most likely a dash inside a value or a date, which is written doubled: 2026--01--01." => "Nejde o trojice polo\x9Eka, oper\xE1tor a hodnota \x96 najsk\xF4r poml\xE8ka vn\xFAtri hodnoty alebo d\xE1tumu, ktor\xE1 sa p\xED\x9Ae zdvojene: 2026--01--01.", // ai 2026-10
 
 // src/Central/FindingText.php, row 396
-"A control character, a line break or a backslash." => "",
+"A control character, a line break or a backslash." => "Riadiaci znak, zalomenie riadku alebo sp\xE4tn\xE1 lomka.", // ai 2026-10
 
 // src/Central/FindingText.php, row 397
-"No field %1 in this slice." => "",
+"No field %1 in this slice." => "Polo\x9Eka %1 v tomto module nie je.", // ai 2026-10
 
 // src/Central/FindingText.php, row 398
-"\"%1\" is not an operator of AA." => "",
+"\"%1\" is not an operator of AA." => "\x84%1\x93 nie je oper\xE1tor AA.", // ai 2026-10
 
 // src/Central/FindingText.php, row 399
-"A value is missing, cannot be read, or would match every item." => "",
+"A value is missing, cannot be read, or would match every item." => "Hodnota ch\xFDba, ned\xE1 sa pre\xE8\xEDta\x9D alebo by vyhovela ka\x9Edej spr\xE1ve.", // ai 2026-10
 
 // src/Central/FindingText.php, row 400
-"<> takes one exact value - no OR, AND, NOT or quotes." => "",
+"<> takes one exact value - no OR, AND, NOT or quotes." => "<> berie jednu presn\xFA hodnotu \x96 bez OR, AND, NOT a \xFAvodzoviek.", // ai 2026-10
 
 // src/Central/FindingText.php, row 401
-"The value compared with %1 cannot be read." => "",
+"The value compared with %1 cannot be read." => "Hodnotu porovn\xE1van\xFA s %1 nemo\x9Eno pre\xE8\xEDta\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 402
-"A value has a character the slice cannot store." => "",
+"A value has a character the slice cannot store." => "Hodnota obsahuje znak, ktor\xFD modul nedok\xE1\x9Ee ulo\x9Ei\x9D.", // ai 2026-10
 
 // src/Central/FindingText.php, row 403
-"The source AA did not answer about it. An older AA cannot filter items and has to be updated first; otherwise check the changes again." => "",
+"The source AA did not answer about it. An older AA cannot filter items and has to be updated first; otherwise check the changes again." => "Zdrojov\xE9 AA na to neodpovedalo. Star\x9Aie AA nevie filtrova\x9D spr\xE1vy a treba ho najprv aktualizova\x9D; inak skontrolujte zmeny znova.", // ai 2026-10
 
 // src/Central/FindingText.php, row 435
-"alias %1" => "",
+"alias %1" => "alias %1", // ai 2026-10
 
 // src/Central/FindingText.php, row 454
-"spot" => "",
+"spot" => "spot", // ai 2026-10
 
 // src/Central/FindingText.php, row 455
-"field" => "",
+"field" => "polo\x9Eka", // ai 2026-10
 
 // src/Central/FindingText.php, row 458
-"filter" => "",
+"filter" => "filter", // ai 2026-10
 
 // src/Central/FindingText.php, row 459
-"collection" => "",
+"collection" => "kolekcia", // ai 2026-10
 
 // src/Central/FindingText.php, row 460
-"object" => "",
+"object" => "objekt", // ai 2026-10
 
 // src/Central/FindingText.php, row 461
-"item" => "",
+"item" => "spr\xE1va", // ai 2026-10
 
 // src/Central/FindingText.php, row 462
-"constant group" => "",
+"constant group" => "skupina hodn\xF4t", // ai 2026-10
 
 // src/Central/FindingText.php, row 463
-"constant" => "",
+"constant" => "hodnota", // ai 2026-10
 
 // src/Central/FindingText.php, row 464
-"settings" => "",
+"settings" => "nastavenia", // ai 2026-10
 
 // src/Central/FindingText.php, row 465
-"values of the settings" => "",
+"values of the settings" => "hodnoty nastaven\xED", // ai 2026-10
 
 // src/Central/FindingText.php, row 466, 474
-"variable" => "",
+"variable" => "premenn\xE1", // ai 2026-10
 
 // src/Central/FindingText.php, row 467
 "condition" => "podmienka", // ai 2026-06
 
 // src/Central/RemoteHtml.php, row 22
-"(no output)" => "",
+"(no output)" => "(\x9Eiadny v\xFDstup)", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 37
-"Wrong command - this table is not synchronized" => "",
+"Wrong command - this table is not synchronized" => "Chybn\xFD pr\xEDkaz \x96 t\xE1to tabu\xBEka sa nesynchronizuje", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 42
 "Wrong command - row is not defined - %1" => "Chybn\xFD pr\xEDkaz - riadok nie je definovan\xFD - %1", // ai 2026-06
 
 // src/Central/SyncExecutor.php, row 50
-"%1 %2 in slice %3: nothing to update" => "",
+"%1 %2 in slice %3: nothing to update" => "%1 %2 v module %3: nie je \xE8o aktualizova\x9D", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 53
-"Error: %1 %2 in slice %3 not updated" => "",
+"Error: %1 %2 in slice %3 not updated" => "Chyba: %1 %2 v module %3 neaktualizovan\xE9", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 54
 "%1 %2 in slice %3 updated" => "%1 %2 v module %3 aktualizovan\xE9", // ai 2026-06
 
 // src/Central/SyncExecutor.php, row 66
-"Error: %1 %2 not inserted into slice %3" => "",
+"Error: %1 %2 not inserted into slice %3" => "Chyba: %1 %2 nevlo\x9Een\xE9 do modulu %3", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 70
-"%1 %2 inserted into slice %3 as %4" => "",
+"%1 %2 inserted into slice %3 as %4" => "%1 %2 vlo\x9Een\xE9 do modulu %3 ako %4", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 71
 "%1 %2 inserted into slice %3" => "%1 %2 vlo\x9Een\xE9 do modulu %3", // ai 2026-06
 
 // src/Central/SyncExecutor.php, row 77
-"Error: %1 %2 not deleted from slice %3" => "",
+"Error: %1 %2 not deleted from slice %3" => "Chyba: %1 %2 nezmazan\xE9 z modulu %3", // ai 2026-10
 
 // src/Central/SyncExecutor.php, row 78
 "%1 %2 deleted from slice %3" => "%1 %2 vymazan\xE9 z modulu %3", // ai 2026-06
@@ -8644,66 +8734,66 @@ return [
 "Unknown action (%1) for field %2 in slice %3" => "Nezn\xE1ma akcia (%1) pre polo\x9Eku %2 v module %3", // ai 2026-06
 
 // src/Central/Task/RemoteAaTask.php, row 41
-"Err: no central_conf row for the AA (id %1) - the task is not run" => "",
+"Err: no central_conf row for the AA (id %1) - the task is not run" => "Chyba: pre AA (id %1) ch\xFDba riadok central_conf \x96 \xFAloha sa nespust\xED", // ai 2026-10
 
 // src/Central/TransferText.php, row 89
-"A cache was not cleared after the transfer" => "",
+"A cache was not cleared after the transfer" => "Cache nebola po prenose vypr\xE1zdnen\xE1", // ai 2026-10
 
 // src/Central/TransferText.php, row 92
-"Pages of the new modules may show old content until their cache expires; the details are in the PHP error log." => "",
+"Pages of the new modules may show old content until their cache expires; the details are in the PHP error log." => "Str\xE1nky nov\xFDch modulov m\xF4\x9Eu zobrazova\x9D star\xFD obsah, k\xFDm ich cache nevypr\x9A\xED; podrobnosti s\xFA v chybovom logu PHP.", // ai 2026-10
 
 // src/Central/TransferText.php, row 133
-"The source AA refused the login" => "",
+"The source AA refused the login" => "Zdrojov\xE9 AA odmietlo prihl\xE1senie", // ai 2026-10
 
 // src/Central/TransferText.php, row 134
-"The source AA cannot be reached" => "",
+"The source AA cannot be reached" => "Zdrojov\xE9 AA nie je dostupn\xE9", // ai 2026-10
 
 // src/Central/TransferText.php, row 135
-"The source AA did not answer in time" => "",
+"The source AA did not answer in time" => "Zdrojov\xE9 AA neodpovedalo v\xE8as", // ai 2026-10
 
 // src/Central/TransferText.php, row 136
-"The source AA gave no usable answer" => "",
+"The source AA gave no usable answer" => "Zdrojov\xE9 AA nedalo pou\x9Eite\xBEn\xFA odpove\xEF", // ai 2026-10
 
 // src/Central/TransferText.php, row 137
-"The source could not read the items" => "",
+"The source could not read the items" => "Zdroj nemohol na\xE8\xEDta\x9D spr\xE1vy", // ai 2026-10
 
 // src/Central/TransferText.php, row 138
-"The source gives no items of the slice" => "",
+"The source gives no items of the slice" => "Zdroj nevyd\xE1va \x9Eiadne spr\xE1vy modulu", // ai 2026-10
 
 // src/Central/TransferText.php, row 139
-"The user who started the transfer is no superadmin of this AA any more" => "",
+"The user who started the transfer is no superadmin of this AA any more" => "U\x9E\xEDvate\xBE, ktor\xFD prenos spustil, u\x9E nie je superadminom tohto AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 140
-"Writing the items failed - the details are in the PHP error log of this AA" => "",
+"Writing the items failed - the details are in the PHP error log of this AA" => "Z\xE1pis spr\xE1v zlyhal \x96 podrobnosti s\xFA v chybovom logu PHP tohto AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 141
-"The batch did not fit into the time of a queue step, not even a smaller one" => "",
+"The batch did not fit into the time of a queue step, not even a smaller one" => "D\xE1vka sa nezmestila do \xE8asu kroku fronty, ani zmen\x9Aen\xE1", // ai 2026-10
 
 // src/Central/TransferText.php, row 142
-"The batch step stopped before its end several times - the details are in the PHP error log of this AA" => "",
+"The batch step stopped before its end several times - the details are in the PHP error log of this AA" => "Krok d\xE1vky sa nieko\xBEkokr\xE1t zastavil pred koncom \x96 podrobnosti s\xFA v chybovom logu PHP tohto AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 143
-"The check at the end failed - the details are in the PHP error log of this AA" => "",
+"The check at the end failed - the details are in the PHP error log of this AA" => "Z\xE1vere\xE8n\xE1 kontrola zlyhala \x96 podrobnosti s\xFA v chybovom logu PHP tohto AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 144
-"The batch step failed - the details are in the PHP error log of this AA" => "",
+"The batch step failed - the details are in the PHP error log of this AA" => "Krok d\xE1vky zlyhal \x96 podrobnosti s\xFA v chybovom logu PHP tohto AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 145
-"The database of this AA refused to write - the details are in the PHP error log of this AA" => "",
+"The database of this AA refused to write - the details are in the PHP error log of this AA" => "Datab\xE1za tohto AA odmietla z\xE1pis \x96 podrobnosti s\xFA v chybovom logu PHP tohto AA", // ai 2026-10
 
 // src/Central/TransferText.php, row 146
-"A slice the transfer writes into was deleted meanwhile" => "",
+"A slice the transfer writes into was deleted meanwhile" => "Modul, do ktor\xE9ho prenos zapisuje, bol medzit\xFDm zmazan\xFD", // ai 2026-10
 
 // src/Central/TransferText.php, row 147
-"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize" => "",
+"A table of this AA has no transactions (not InnoDB) - convert it in AA > Optimize" => "Tabu\xBEka tohto AA nepodporuje transakcie (nie je InnoDB) \x96 preve\xEFte ju v AA > Optimalizova\x9D", // ai 2026-10
 
 // src/Central/TransferText.php, row 166
-"item %1" => "",
+"item %1" => "spr\xE1va %1", // ai 2026-10
 
-// src/IO/Grabber/AARSS.php, row 117
+// src/IO/Grabber/AARSS.php, row 118
 "AA RSS" => "",
 
-// src/IO/Grabber/AARSS.php, row 125
+// src/IO/Grabber/AARSS.php, row 126
 "Grabs data from generic RSS or AA RSS (used for item exchange between different AA installations)" => "Preber\xE1 d\xE1ta z oby\xE8ajn\xE9ho RSS alebo AA RSS (pou\x9E\xEDva sa na v\xFDmenu spr\xE1v medzi r\xF4znymi in\x9Atal\xE1ciami AA)", // ai 2026-06
 
 // src/IO/Grabber/CSV.php, row 67
@@ -8750,7 +8840,7 @@ return [
 "Import data from FTP directories" => "Import d\xE1t z FTP adres\xE1rov", // ai 2026-06
 
 // src/IO/Grabber/FilesFTP.php, row 99
-"FTP server" => "",
+"FTP server" => "FTP server", // ai 2026-10
 
 // src/IO/Grabber/FilesFTP.php, row 100
 "FTP Username" => "U\x9E\xEDvate\xBEsk\xE9 meno FTP", // ai 2026-06
@@ -8773,21 +8863,21 @@ return [
 // src/IO/Grabber/FilesFTP.php, row 106
 "Info to get" => "Ktor\xE9 inform\xE1cie z\xEDska\x9D", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 74
+// src/IO/Grabber/Form.php, row 75
 // src/IO/Grabber/ObjectForm.php, row 61
 "Form" => "Formul\xE1r", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 82
+// src/IO/Grabber/Form.php, row 83
 // src/IO/Grabber/ObjectForm.php, row 69
 "Grabs data POSTed by AA form" => "S\x9Dahuje d\xE1ta odoslan\xE9 (POST) AA formul\xE1rom", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 167
+// src/IO/Grabber/Form.php, row 168
 "No slice found: %1" => "Nen\xE1jden\xFD \x9Eiadny modul: %1", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 170
+// src/IO/Grabber/Form.php, row 171
 "No file, img_upload, or img_src field type found in slice %1" => "V module %1 nebola n\xE1jden\xE1 \x9Eiadna polo\x9Eka typu file, img_upload alebo img_src", // ai 2026-06
 
-// src/IO/Grabber/Form.php, row 203
+// src/IO/Grabber/Form.php, row 204
 "no POST nor FILES sent" => "neboli odoslan\xE9 \x9Eiadne d\xE1ta POST ani FILES", // ai 2026-06
 
 // src/IO/Grabber/Ical.php, row 43
@@ -8848,7 +8938,7 @@ return [
 "Host IP address" => "IP adresa servera", // ai 2026-06
 
 // src/IO/Grabber/SQL.php, row 115
-"Port" => "",
+"Port" => "Port", // ai 2026-10
 
 // src/IO/Grabber/SQL.php, row 116
 "Charset (utf8mb4,...)" => "Znakov\xE1 sada (utf8mb4,...)", // ai 2026-06
@@ -8890,1150 +8980,1144 @@ return [
 "No permission - no user is authenticated. Try to relogin, please." => "Ch\xFDba pr\xE1vo - nie je prihl\xE1sen\xFD \x9Eiadny u\x9E\xEDvate\xBE. Sk\xFAste sa, pros\xEDm, znovu prihl\xE1si\x9D.", // ai 2026-06
 
 // src/Import/Credential/Store.php, row 55
-"damaged (a line break or NUL in %1)" => "",
+"damaged (a line break or NUL in %1)" => "po\x9Akoden\xE9 (zalomenie riadku alebo NUL v %1)", // ai 2026-10
 
 // src/Import/Credential/Store.php, row 56
-"set (%1)" => "",
+"set (%1)" => "nastaven\xE9 (%1)", // ai 2026-10
 
 // src/Import/Definition.php, row 88
 // src/Import/DetailConfig.php, row 390
-"Key fields" => "",
+"Key fields" => "K\xBE\xFA\xE8ov\xE9 polo\x9Eky", // ai 2026-10
 
 // src/Import/Definition.php, row 89
 // src/Import/DetailConfig.php, row 391
-"Store mode" => "",
+"Store mode" => "Sp\xF4sob ulo\x9Eenia", // ai 2026-10
 
 // src/Import/Definition.php, row 90
 // src/Import/DetailConfig.php, row 392
-"Validation" => "",
+"Validation" => "Valid\xE1cia", // ai 2026-10
 
 // src/Import/Definition.php, row 91
 // src/Import/DetailConfig.php, row 393
-"After a stream" => "",
+"After a stream" => "Po skon\xE8en\xED pr\xFAdu", // ai 2026-10
 
 // src/Import/Definition.php, row 93
 // src/Import/DetailPage.php, row 604
-"Enabled" => "",
+"Enabled" => "Povolen\xE9", // ai 2026-10
 
 // src/Import/Definition.php, row 113
-"The source is changed in the import detail." => "",
+"The source is changed in the import detail." => "Zdroj sa men\xED v detaile importu.", // ai 2026-10
 
 // src/Import/Definition.php, row 129
-"The slice has no import yet." => "",
+"The slice has no import yet." => "Modul zatia\xBE nem\xE1 \x9Eiadny import.", // ai 2026-10
 
 // src/Import/Definition.php, row 135, 164
-"Next plan" => "",
+"Next plan" => "\xCFal\x9Aie spustenie", // ai 2026-10
 
 // src/Import/Definition.php, row 367
-"None - the import is disabled" => "",
+"None - the import is disabled" => "\x8Eiadne \x96 import je vypnut\xFD", // ai 2026-10
 
 // src/Import/Definition.php, row 370
-"Not planned - no task starts it" => "",
+"Not planned - no task starts it" => "Nepl\xE1novan\xE9 \x96 \x9Eiadna \xFAloha ho nesp\xFA\x9A\x9Da", // ai 2026-10
 
 // src/Import/Definition.php, row 423
-"The import needs a name." => "",
+"The import needs a name." => "Import potrebuje n\xE1zov.", // ai 2026-10
 
 // src/Import/Definition.php, row 427
-"The name of an import may not contain a colon (:) or look like an id." => "",
+"The name of an import may not contain a colon (:) or look like an id." => "N\xE1zov importu nesmie obsahova\x9D dvojbodku (:) ani vyzera\x9D ako id.", // ai 2026-10
 
 // src/Import/Definition.php, row 430
-"Another import of the slice has this name." => "",
+"Another import of the slice has this name." => "In\xFD import modulu m\xE1 tento n\xE1zov.", // ai 2026-10
 
 // src/Import/Definition.php, row 438
-"Change the source in the import detail." => "",
+"Change the source in the import detail." => "Zdroj zme\xF2te v detaile importu.", // ai 2026-10
 
 // src/Import/Definition.php, row 446
 // src/Import/DetailPage.php, row 545
-"Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "",
+"Imports cannot run here: their database tables (object_text, toexecute) do not support transactions (InnoDB)." => "Importy tu nem\xF4\x9Eu be\x9Ea\x9D: ich datab\xE1zov\xE9 tabu\xBEky (object_text, toexecute) nepodporuj\xFA transakcie (InnoDB).", // ai 2026-10
 
 // src/Import/Definition.php, row 455
-"The mapping of the import is not valid." => "",
+"The mapping of the import is not valid." => "Mapovanie importu nie je platn\xE9.", // ai 2026-10
 
 // src/Import/Definition.php, row 477
-"The import source refused these settings: %1" => "",
+"The import source refused these settings: %1" => "Zdroj importu odmietol tieto nastavenia: %1", // ai 2026-10
 
 // src/Import/Definition.php, row 480
-"Only a user who manages the feeding of the slice may change its imports." => "",
+"Only a user who manages the feeding of the slice may change its imports." => "Importy modulu smie meni\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje v\xFDmenu spr\xE1v modulu.", // ai 2026-10
 
 // src/Import/Definition.php, row 481
-"This import uses API keys, so only a superadmin may change or delete it." => "",
+"This import uses API keys, so only a superadmin may change or delete it." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto ho smie meni\x9D alebo maza\x9D len superadmin.", // ai 2026-10
 
 // src/Import/Definition.php, row 482
-"The import was not saved - it is not an import of this slice." => "",
+"The import was not saved - it is not an import of this slice." => "Import nebol ulo\x9Een\xFD \x96 nejde o import tohto modulu.", // ai 2026-10
 
 // src/Import/Definition.php, row 483
 // src/Import/DetailPage.php, row 546
-"The import source is not available." => "",
+"The import source is not available." => "Zdroj importu nie je k dispoz\xEDcii.", // ai 2026-10
 
 // src/Import/Definition.php, row 484
-"The import source did not give its mapping." => "",
+"The import source did not give its mapping." => "Zdroj importu neposkytol svoje mapovanie.", // ai 2026-10
 
 // src/Import/Definition.php, row 485
-"The mapping of the import does not fit the slice." => "",
+"The mapping of the import does not fit the slice." => "Mapovanie importu nezodpoved\xE1 modulu.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
 // src/Import/DetailPage.php, row 548
-"A setting of the import source is not valid." => "",
+"A setting of the import source is not valid." => "Nastavenie zdroja importu nie je platn\xE9.", // ai 2026-10
 
 // src/Import/Definition.php, row 486
-"The setting \"%1\" of the import source is not valid." => "",
+"The setting \"%1\" of the import source is not valid." => "Nastavenie \x84%1\x93 zdroja importu nie je platn\xE9.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
 // src/Import/DetailPage.php, row 549
-"The settings name a slice whose feeding you do not manage." => "",
+"The settings name a slice whose feeding you do not manage." => "Nastavenia uv\xE1dzaj\xFA modul, ktor\xE9ho v\xFDmenu spr\xE1v nespravujete.", // ai 2026-10
 
 // src/Import/Definition.php, row 487
-"The setting \"%1\" names a slice whose feeding you do not manage." => "",
+"The setting \"%1\" names a slice whose feeding you do not manage." => "Nastavenie \x84%1\x93 uv\xE1dza modul, ktor\xE9ho v\xFDmenu spr\xE1v nespravujete.", // ai 2026-10
 
 // src/Import/Definition.php, row 488
-"The settings of the import changed meanwhile. Reload the page and set them again." => "",
+"The settings of the import changed meanwhile. Reload the page and set them again." => "Nastavenia importu sa medzit\xFDm zmenili. Na\xE8\xEDtajte str\xE1nku znova a nastavte ich znova.", // ai 2026-10
 
 // src/Import/Definition.php, row 489
-"The import source refused these settings." => "",
+"The import source refused these settings." => "Zdroj importu tieto nastavenia odmietol.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 31
-"No catalog yet. Check source lists what the source offers." => "",
+"No catalog yet. Check source lists what the source offers." => "Zatia\xBE \x9Eiadny katal\xF3g. \xC8o zdroj pon\xFAka, vyp\xED\x9Ae tla\xE8idlo \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 37
-"The stored catalog cannot be read. The next check of the source lists it again." => "",
+"The stored catalog cannot be read. The next check of the source lists it again." => "Ulo\x9Een\xFD katal\xF3g nie je mo\x9En\xE9 pre\xE8\xEDta\x9D. \xCFal\x9Aia kontrola zdroja ho vyp\xED\x9Ae znova.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 41
-"The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "",
+"The catalog is incomplete: the last check did not list all of it (%1 entries so far). Nothing is reported missing at the source until a check lists it whole." => "Katal\xF3g je ne\xFApln\xFD: posledn\xE1 kontrola ho nevyp\xEDsala cel\xFD (zatia\xBE z\xE1znamov: %1). K\xFDm ho kontrola nevyp\xED\x9Ae cel\xFD, ni\xE8 sa pri zdroji nehl\xE1si ako ch\xFDbaj\xFAce.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 42
-"Listed by the check of %1: %2 entries." => "",
+"Listed by the check of %1: %2 entries." => "Kontrola z %1 vyp\xEDsala z\xE1znamov: %2.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 47
-"Pages of the catalog" => "",
+"Pages of the catalog" => "Str\xE1nky katal\xF3gu", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 74
-"The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "",
+"The stream is added or updated from the catalog. The streams of the import show it after the next check of the source." => "Pr\xFAd bol z katal\xF3gu pridan\xFD alebo aktualizovan\xFD. V \xE8asti \x84Pr\xFAdy\x93 sa zobraz\xED po \xEFal\x9Aej kontrole zdroja.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 75
-"The catalog has no such entry. Check the source to list its catalog again." => "",
+"The catalog has no such entry. Check the source to list its catalog again." => "Katal\xF3g tak\xFD z\xE1znam nem\xE1. Skontrolujte zdroj, aby sa katal\xF3g vyp\xEDsal znova.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 76, 77
-"Nothing was added from the catalog:" => "",
+"Nothing was added from the catalog:" => "Z katal\xF3gu nebolo ni\xE8 pridan\xE9:", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 85
-"This import uses API keys, so only a superadmin may add streams from its catalog." => "",
+"This import uses API keys, so only a superadmin may add streams from its catalog." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto smie pr\xFAdy z jeho katal\xF3gu prid\xE1va\x9D len superadmin.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 86
-"Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "",
+"Adding from the catalog needs the permission to edit all items of the slice the source adds its streams to." => "Prid\xE1vanie z katal\xF3gu vy\x9Eaduje pr\xE1vo upravova\x9D v\x9Aetky spr\xE1vy modulu, do ktor\xE9ho zdroj prid\xE1va svoje pr\xFAdy.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 87
-"The import source cannot add streams from its catalog." => "",
+"The import source cannot add streams from its catalog." => "Zdroj importu nevie prid\xE1va\x9D pr\xFAdy zo svojho katal\xF3gu.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 88
-"The import source could not be reached or did not answer. Try again later." => "",
+"The import source could not be reached or did not answer. Try again later." => "Zdroj importu nebol dostupn\xFD alebo neodpovedal. Sk\xFAste to nesk\xF4r.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 102
-"1 entry is new at the source - no stream comes from it." => "",
+"1 entry is new at the source - no stream comes from it." => "1 z\xE1znam je pri zdroji nov\xFD \x96 nevych\xE1dza z neho \x9Eiadny pr\xFAd.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 103
-"%1 entries are new at the source - no stream comes from them." => "",
+"%1 entries are new at the source - no stream comes from them." => "Nov\xFDch z\xE1znamov pri zdroji: %1 \x96 nevych\xE1dza z nich \x9Eiadny pr\xFAd.", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 111
-"Missing at the source" => "",
+"Missing at the source" => "Pri zdroji ch\xFDba", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 111
-"Renamed at the source" => "",
+"Renamed at the source" => "Pri zdroji premenovan\xE9", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124, 143
 // src/Import/DetailPage.php, row 377, 1025, 1046
-"Stream" => "",
+"Stream" => "Pr\xFAd", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124
-"Catalog key" => "",
+"Catalog key" => "K\xBE\xFA\xE8 v katal\xF3gu", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124
-"Name of the stream" => "",
+"Name of the stream" => "N\xE1zov pr\xFAdu", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 124
-"Name in the catalog" => "",
+"Name in the catalog" => "N\xE1zov v katal\xF3gu", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 143
 // src/Import/DetailConfig.php, row 291
-"Key" => "",
+"Key" => "K\xBE\xFA\xE8", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 143
 // src/Import/DetailPage.php, row 329, 666
-"Updated" => "",
+"Updated" => "Aktualizovan\xE9", // ai 2026-10
 
 // src/Import/DetailCatalog.php, row 171
-"Catalog of the source" => "",
+"Catalog of the source" => "Katal\xF3g zdroja", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 136
-"The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "",
+"The mapping is set again from the source. What the import knew of the streams - versions, import times and the last check of the source - is dropped, so the next run reads them all again." => "Mapovanie bolo znova nastaven\xE9 zo zdroja. Zahodilo sa, \xE8o import o pr\xFAdoch vedel (verzie, \xE8asy importu a posledn\xE1 kontrola zdroja), tak\x9Ee \xEFal\x9A\xED beh ich na\xE8\xEDta v\x9Aetky znova.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 137
-"The mapping is the same as the source gives - nothing changed." => "",
+"The mapping is the same as the source gives - nothing changed." => "Mapovanie je rovnak\xE9, ak\xE9 d\xE1va zdroj \x96 ni\xE8 sa nezmenilo.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 138, 139
-"The mapping was not reset:" => "",
+"The mapping was not reset:" => "Mapovanie nebolo obnoven\xE9:", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 140
-"The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "",
+"The settings are saved and the mapping is set again from the source. If a run was open, it is ended, and what the import knew of the streams is dropped." => "Nastavenia boli ulo\x9Een\xE9 a mapovanie bolo znova nastaven\xE9 zo zdroja. Ak bol otvoren\xFD beh, bol ukon\xE8en\xFD a zahodilo sa, \xE8o import o pr\xFAdoch vedel.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 141
-"The settings are the same as stored - nothing changed." => "",
+"The settings are the same as stored - nothing changed." => "Nastavenia s\xFA rovnak\xE9 ako ulo\x9Een\xE9 \x96 ni\xE8 sa nezmenilo.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 142
-"The settings were not saved:" => "",
+"The settings were not saved:" => "Nastavenia neboli ulo\x9Een\xE9:", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 144
-"Choose a source." => "",
+"Choose a source." => "Zvo\xBEte zdroj.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 155, 179
-"Settings of the source" => "",
+"Settings of the source" => "Nastavenia zdroja", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 159
-"Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "",
+"Planned starts still run with the stored settings; to run the import by hand, change them in %1 below." => "Pl\xE1novan\xE9 spustenia st\xE1le be\x9Eia s ulo\x9Een\xFDmi nastaveniami; ak chcete import spusti\x9D ru\xE8ne, zme\xF2te ich v \xE8asti %1 ni\x9E\x9Aie.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 161
-"Change the settings or the source in %1 below." => "",
+"Change the settings or the source in %1 below." => "Zme\xF2te nastavenia alebo zdroj v \xE8asti %1 ni\x9E\x9Aie.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 188
-"No other source is available." => "",
+"No other source is available." => "\x8Eiadny in\xFD zdroj nie je k dispoz\xEDcii.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 192
-"(current)" => "",
+"(current)" => "(aktu\xE1lny)", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 203
-"Show its settings" => "",
+"Show its settings" => "Zobrazi\x9D jeho nastavenia", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 204
-"Keep the current source" => "",
+"Keep the current source" => "Ponecha\x9D aktu\xE1lny zdroj", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 214
-"This source is not available, so its settings cannot be shown. Choose another source above." => "",
+"This source is not available, so its settings cannot be shown. Choose another source above." => "Tento zdroj nie je k dispoz\xEDcii, tak\x9Ee jeho nastavenia nie je mo\x9En\xE9 zobrazi\x9D. Zvo\xBEte vy\x9A\x9Aie in\xFD zdroj.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 222
-"The stored settings cannot be read; saving the form stores them again." => "",
+"The stored settings cannot be read; saving the form stores them again." => "Ulo\x9Een\xE9 nastavenia nie je mo\x9En\xE9 pre\xE8\xEDta\x9D; ulo\x9Een\xEDm formul\xE1ra sa ulo\x9Eia znova.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 228
-"The source did not describe its settings, so they cannot be changed now." => "",
+"The source did not describe its settings, so they cannot be changed now." => "Zdroj svoje nastavenia nepop\xEDsal, tak\x9Ee ich teraz nie je mo\x9En\xE9 zmeni\x9D.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 232
-"You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "",
+"You are changing the source from %1 to %2. Saving ends the open run, drops what the import knows of the streams and the catalog, and takes the mapping from the new source." => "Men\xEDte zdroj z %1 na %2. Ulo\x9Eenie ukon\xE8\xED otvoren\xFD beh, zahod\xED, \xE8o import vie o pr\xFAdoch a katal\xF3gu, a prevezme mapovanie z nov\xE9ho zdroja.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 233
-"Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "",
+"Change the source? The open run ends, what the import knows of the streams is dropped and the mapping comes from the new source." => "Zmeni\x9D zdroj? Otvoren\xFD beh sa skon\xE8\xED, \xE8o import vie o pr\xFAdoch, sa zahod\xED a mapovanie sa prevezme z nov\xE9ho zdroja.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 234
-"Change the source and save" => "",
+"Change the source and save" => "Zmeni\x9D zdroj a ulo\x9Ei\x9D", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 236
-"Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "",
+"Saving changed settings ends the open run, drops what the import knows of the streams and the catalog, and sets the mapping again from the source. Unchanged settings change nothing." => "Ulo\x9Eenie zmenen\xFDch nastaven\xED ukon\xE8\xED otvoren\xFD beh, zahod\xED, \xE8o import vie o pr\xFAdoch a katal\xF3gu, a znova nastav\xED mapovanie zo zdroja. Nezmenen\xE9 nastavenia ni\xE8 nemenia.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 237
-"Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "",
+"Save the settings? If they changed, the open run ends, what the import knows of the streams is dropped and the mapping is set again from the source." => "Ulo\x9Ei\x9D nastavenia? Ak sa zmenili, otvoren\xFD beh sa skon\xE8\xED, \xE8o import vie o pr\xFAdoch, sa zahod\xED a mapovanie sa znova nastav\xED zo zdroja.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 238
-"Save the settings" => "",
+"Save the settings" => "Ulo\x9Ei\x9D nastavenia", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 272
-"The source has no settings." => "",
+"The source has no settings." => "Zdroj nem\xE1 \x9Eiadne nastavenia.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 283
-"Keys" => "",
+"Keys" => "K\xBE\xFA\xE8e", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 285
-"The source did not say which keys it needs." => "",
+"The source did not say which keys it needs." => "Zdroj neuviedol, ktor\xE9 k\xBE\xFA\xE8e potrebuje.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 288
-"The source needs no key." => "",
+"The source needs no key." => "Zdroj nepotrebuje \x9Eiadny k\xBE\xFA\xE8.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 291
 // src/Widget/Widget.php, row 849
 "Hint" => "N\xE1poveda", // ai 2026-06
 
 // src/Import/DetailConfig.php, row 297
-"Key is set" => "",
+"Key is set" => "K\xBE\xFA\xE8 je nastaven\xFD", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 298
-"Key is damaged" => "",
+"Key is damaged" => "K\xBE\xFA\xE8 je po\x9Akoden\xFD", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 299
-"Key is missing" => "",
+"Key is missing" => "K\xBE\xFA\xE8 ch\xFDba", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 305
-"The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "",
+"The administrator of the server sets the keys in config.php, never here. Without its key the source fails when it needs it; a damaged key holds a line break and is never sent." => "K\xBE\xFA\xE8e nastavuje spr\xE1vca servera v config.php, nikdy tu. Bez k\xBE\xFA\xE8a zdroj zlyh\xE1, ke\xEF ho potrebuje; po\x9Akoden\xFD k\xBE\xFA\xE8 obsahuje zalomenie riadku a nikdy sa neodo\x9Ale.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 327
-"define one of %1 in config.php" => "",
+"define one of %1 in config.php" => "definujte jednu z %1 v config.php", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 350
-"The mapping of the import cannot be read. Reset it from the source." => "",
+"The mapping of the import cannot be read. Reset it from the source." => "Mapovanie importu nie je mo\x9En\xE9 pre\xE8\xEDta\x9D. Obnovte ho zo zdroja.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 356
-"Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "",
+"Reset the mapping from the source? The mapping, the key fields, the store mode, the validation, the expression after a stream and the filter are replaced by what the source gives." => "Obnovi\x9D mapovanie zo zdroja? Mapovanie, k\xBE\xFA\xE8ov\xE9 polo\x9Eky, sp\xF4sob ulo\x9Eenia, valid\xE1cia, v\xFDraz po skon\xE8en\xED pr\xFAdu a filter sa nahradia t\xFDm, \xE8o d\xE1va zdroj.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 357
-"Reset mapping from the source" => "",
+"Reset mapping from the source" => "Obnovi\x9D mapovanie zo zdroja", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 358
-"Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "",
+"Sets the mapping, the key fields, the store mode, the validation, the expression after a stream and the filter again as the source gives them for the stored settings. A new mapping drops what the import knew of the streams, so the next run reads them all again. It is refused while a run is open, stopped by an error or still finishing." => "Znova nastav\xED mapovanie, k\xBE\xFA\xE8ov\xE9 polo\x9Eky, sp\xF4sob ulo\x9Eenia, valid\xE1ciu, v\xFDraz po skon\xE8en\xED pr\xFAdu a filter tak, ako ich zdroj d\xE1va pre ulo\x9Een\xE9 nastavenia. Nov\xE9 mapovanie zahod\xED, \xE8o import o pr\xFAdoch vedel, tak\x9Ee \xEFal\x9A\xED beh ich na\xE8\xEDta v\x9Aetky znova. Nie je to mo\x9En\xE9, k\xFDm je beh otvoren\xFD, zastaven\xFD chybou alebo sa e\x9Ate dokon\xE8uje.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 366
-"The mapping has no rows." => "",
+"The mapping has no rows." => "Mapovanie nem\xE1 \x9Eiadne riadky.", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 369
-"Target" => "",
+"Target" => "Cie\xBE", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 369
-"Transformation" => "",
+"Transformation" => "Transform\xE1cia", // ai 2026-10
 
 // src/Import/DetailConfig.php, row 379
-"the field the job parameter names" => "",
+"the field the job parameter names" => "polo\x9Eka ur\xE8en\xE1 parametrom \xFAlohy", // ai 2026-10
 
 // src/Import/DetailPage.php, row 269
-"This page is out of date \xE2\x80\x93 reload it." => "",
+"This page is out of date \xE2\x80\x93 reload it." => "T\xE1to str\xE1nka je zastaran\xE1 \x96 na\xE8\xEDtajte ju znova.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 282
-"Last import" => "",
+"Last import" => "Posledn\xFD import", // ai 2026-10
 
 // src/Import/DetailPage.php, row 283
-"Next start" => "",
+"Next start" => "\xCFal\x9Aie spustenie", // ai 2026-10
 
 // src/Import/DetailPage.php, row 284
-"Last check of the source" => "",
+"Last check of the source" => "Posledn\xE1 kontrola zdroja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 290
-"Overview" => "",
-
-// src/Import/DetailPage.php, row 300, 367, 800
-// src/Manageraction/Import_Run.php, row 29
-"Run" => "",
+"Overview" => "Preh\xBEad", // ai 2026-10
 
 // src/Import/DetailPage.php, row 300
-"Imports every stream." => "",
+"Imports every stream." => "Importuje v\x9Aetky pr\xFAdy.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 301, 801
-"Run changed only" => "",
+"Run changed only" => "Spusti\x9D len zmenen\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 301
-"Skips the streams the source says did not change." => "",
+"Skips the streams the source says did not change." => "Presko\xE8\xED pr\xFAdy, ktor\xE9 sa pod\xBEa zdroja nezmenili.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 302, 367, 802
-"Check source" => "",
+"Check source" => "Skontrolova\x9D zdroj", // ai 2026-10
 
 // src/Import/DetailPage.php, row 302
-"Asks the source whether it works. Stores nothing." => "",
+"Asks the source whether it works. Stores nothing." => "Op\xFDta sa zdroja, \xE8i funguje. Ni\xE8 neuklad\xE1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 303
-"Reads up to 500 items and shows what it would store. Stores nothing." => "",
+"Reads up to 500 items and shows what it would store. Stores nothing." => "Na\xE8\xEDta a\x9E 500 spr\xE1v a uk\xE1\x9Ee, \xE8o by ulo\x9Eil. Ni\xE8 neuklad\xE1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 309
-"More actions" => "",
+"More actions" => "\xCFal\x9Aie akcie", // ai 2026-10
 
 // src/Import/DetailPage.php, row 327, 352
-"Runs" => "",
+"Runs" => "Behy", // ai 2026-10
 
 // src/Import/DetailPage.php, row 327
-"No run yet." => "",
+"No run yet." => "Zatia\xBE \x9Eiadny beh.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329
-// src/Optimize/CheckImports.php, row 150, 154
-// src/Optimize/CheckInstallRuns.php, row 54
-"Started" => "",
-
-// src/Import/DetailPage.php, row 329
-"Took" => "",
+"Took" => "Trvanie", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Read" => "",
+"Read" => "Na\xE8\xEDtan\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Skipped" => "",
+"Skipped" => "Presko\xE8en\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Filtered out" => "",
+"Filtered out" => "Odfiltrovan\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 329, 666
-"Item errors" => "",
+"Item errors" => "Chyby spr\xE1v", // ai 2026-10
 
 // src/Import/DetailPage.php, row 342
-"working %1" => "",
+"working %1" => "z toho pr\xE1ca %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 366
-"The stored state of the streams cannot be read." => "",
+"The stored state of the streams cannot be read." => "Ulo\x9Een\xFD stav pr\xFAdov nie je mo\x9En\xE9 pre\xE8\xEDta\x9D.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 367
-"No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "",
+"No stream has been imported or checked yet. %1 or %2 (Actions, above) fills this list." => "Zatia\xBE nebol importovan\xFD ani skontrolovan\xFD \x9Eiadny pr\xFAd. Zoznam napln\xED tla\xE8idlo %1 alebo %2 v \xE8asti Akcie vy\x9A\x9Aie.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 368, 396
-"Streams" => "",
+"Streams" => "Pr\xFAdy", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Records" => "",
+"Records" => "Z\xE1znamy", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Last recorded" => "",
+"Last recorded" => "Posledn\xFD z\xE1pis", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Source checked" => "",
+"Source checked" => "Kontrola zdroja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 377
-"Data version" => "",
+"Data version" => "Verzia d\xE1t", // ai 2026-10
 
 // src/Import/DetailPage.php, row 390
-"by the run started %1" => "",
+"by the run started %1" => "v behu spustenom %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 395
-"Pages of the streams" => "",
+"Pages of the streams" => "Str\xE1nky pr\xFAdov", // ai 2026-10
 
 // src/Import/DetailPage.php, row 421
-"Page %1 of %2" => "",
+"Page %1 of %2" => "Strana %1 z %2", // ai 2026-10
 
 // src/Import/DetailPage.php, row 507
-"The run is queued. It goes on in the background; reload the page to see how far it got." => "",
+"The run is queued. It goes on in the background; reload the page to see how far it got." => "Beh je zaraden\xFD do frontu. Pokra\xE8uje na pozad\xED; ako \xEFaleko sa dostal, uvid\xEDte po obnoven\xED str\xE1nky.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 508
-"The run goes on - its next step is queued." => "",
+"The run goes on - its next step is queued." => "Beh pokra\xE8uje \x96 jeho \xEFal\x9A\xED krok \xE8ak\xE1 vo fronte.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 509
-"The run is ended. What it imported stays." => "",
+"The run is ended. What it imported stays." => "Beh bol ukon\xE8en\xFD. \xC8o naimportoval, zost\xE1va.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 511
-"No such action." => "",
+"No such action." => "Tak\xE1 akcia neexistuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 512
-"Choose a stream of the source." => "",
+"Choose a stream of the source." => "Vyberte pr\xFAd zdroja.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 513
-"Not started." => "",
+"Not started." => "Nespusten\xE9.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 515
-"Its last step may still be working. Try again in a few minutes." => "",
+"Its last step may still be working. Try again in a few minutes." => "Jeho posledn\xFD krok mo\x9Eno e\x9Ate be\x9E\xED. Sk\xFAste to znova o nieko\xBEko min\xFAt.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 516
-"This import no longer exists in this slice." => "",
+"This import no longer exists in this slice." => "Tento import u\x9E v tomto module neexistuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 517
-"No such run of this import." => "",
+"No such run of this import." => "Tak\xFD beh tohto importu neexistuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 518
-"The run is finished already." => "",
+"The run is finished already." => "Beh je u\x9E dokon\xE8en\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 520
-"The action failed. The log of import failures has its cause." => "",
+"The action failed. The log of import failures has its cause." => "Akcia zlyhala. Pr\xED\xE8inu n\xE1jdete v logu ch\xFDb importu.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "",
+"The last run stopped by an error. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Posledn\xFD beh skon\xE8il chybou. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93. Pl\xE1novan\xE9 spustenie ho ukon\xE8\xED samo, ru\xE8n\xE9 spustenie nie.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 531
-"The last run stopped by an error. Continue it or End it first." => "",
+"The last run stopped by an error. Continue it or End it first." => "Posledn\xFD beh skon\xE8il chybou. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "",
+"No step has worked on the last run for a long time. Continue it or End it first. A planned start ends it on its own; a start by hand does not." => "Na poslednom behu u\x9E dlho nepracoval \x9Eiadny krok. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93. Pl\xE1novan\xE9 spustenie ho ukon\xE8\xED samo, ru\xE8n\xE9 spustenie nie.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 532
-"No step has worked on the last run for a long time. Continue it or End it first." => "",
+"No step has worked on the last run for a long time. Continue it or End it first." => "Na poslednom behu u\x9E dlho nepracoval \x9Eiadny krok. Najprv pri \xF2om zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 533
-"The last step of the previous run is still finishing. Try again in a few minutes." => "",
+"The last step of the previous run is still finishing. Try again in a few minutes." => "Posledn\xFD krok predch\xE1dzaj\xFAceho behu sa e\x9Ate dokon\xE8uje. Sk\xFAste to znova o nieko\xBEko min\xFAt.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 534
-"Its next step is already on its way." => "",
+"Its next step is already on its way." => "Jeho \xEFal\x9A\xED krok je u\x9E na ceste.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 535
-"The last run is still running." => "",
+"The last run is still running." => "Posledn\xFD beh e\x9Ate be\x9E\xED.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 544
-"Only a user who manages the feeding of the slice may run its imports." => "",
+"Only a user who manages the feeding of the slice may run its imports." => "Importy modulu smie sp\xFA\x9A\x9Da\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje jeho v\xFDmenu spr\xE1v.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 547
-"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "",
+"The definition of the import cannot be used - its mapping does not fit the slice or cannot be read (DEFINITION)." => "Defin\xEDciu importu nie je mo\x9En\xE9 pou\x9Ei\x9D \x96 jej mapovanie nezodpoved\xE1 modulu alebo ho nie je mo\x9En\xE9 pre\xE8\xEDta\x9D (DEFINITION).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 550
-"The source has no such stream now." => "",
+"The source has no such stream now." => "Zdroj teraz tak\xFD pr\xFAd nem\xE1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 551
-"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "",
+"The code of the import source failed (SOURCE). The log of import failures has its class and line." => "K\xF3d zdroja importu zlyhal (SOURCE). Triedu a riadok n\xE1jdete v logu ch\xFDb importu.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 552
-"The first row of the file lacks columns the mapping needs." => "",
+"The first row of the file lacks columns the mapping needs." => "Prv\xE9mu riadku s\xFAboru ch\xFDbaj\xFA st\xE5pce, ktor\xE9 mapovanie potrebuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 553
-"The source did not accept the key." => "",
+"The source did not accept the key." => "Zdroj neprijal k\xBE\xFA\xE8.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 554
-"The key of the source is damaged in the configuration." => "",
+"The key of the source is damaged in the configuration." => "K\xBE\xFA\xE8 zdroja je v konfigur\xE1cii po\x9Akoden\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 555
-"The source could not be reached." => "",
+"The source could not be reached." => "K zdroju sa nepodarilo pripoji\x9D.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 556
-"The run is finished; it cannot go on." => "",
+"The run is finished; it cannot go on." => "Beh je dokon\xE8en\xFD; nem\xF4\x9Ee pokra\xE8ova\x9D.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 557
-"The import is switched off." => "",
+"The import is switched off." => "Import je vypnut\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 558
-"This import uses API keys, so only a superadmin may do this." => "",
+"This import uses API keys, so only a superadmin may do this." => "Tento import pou\x9E\xEDva API k\xBE\xFA\xE8e, preto to smie urobi\x9D len superadmin.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 559
-"The import source cannot tell the versions of its streams, so there is no state of it to record." => "",
+"The import source cannot tell the versions of its streams, so there is no state of it to record." => "Zdroj importu nevie ur\xE8i\x9D verzie svojich pr\xFAdov, tak\x9Ee nem\xE1 stav, ktor\xFD by bolo mo\x9En\xE9 zaznamena\x9D.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 560
-"The import source refused: %1" => "",
+"The import source refused: %1" => "Zdroj importu odmietol: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 571
-"The request to the source failed." => "",
+"The request to the source failed." => "Po\x9Eiadavka na zdroj zlyhala.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 572
-"The source is not available now." => "",
+"The source is not available now." => "Zdroj teraz nie je dostupn\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 588
 // src/Import/RunView.php, row 177
-"No import yet" => "",
+"No import yet" => "Zatia\xBE \x9Eiadny import", // ai 2026-10
 
 // src/Import/DetailPage.php, row 589
-"Latest run: %1" => "",
+"Latest run: %1" => "Posledn\xFD beh: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 595
-"Since then: %1" => "",
+"Since then: %1" => "Odvtedy: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 604
-"Source: %1" => "",
+"Source: %1" => "Zdroj: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 604
-"this source is not available" => "",
+"this source is not available" => "tento zdroj nie je dostupn\xFD", // ai 2026-10
 
 // src/Import/DetailPage.php, row 626
-"First item error:" => "",
+"First item error:" => "Prv\xE1 chyba spr\xE1vy:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 653
-"Latest runs" => "",
+"Latest runs" => "Posledn\xE9 behy", // ai 2026-10
 
 // src/Import/DetailPage.php, row 653
-"Outcomes of the latest runs, newest first" => "",
+"Outcomes of the latest runs, newest first" => "V\xFDsledky posledn\xFDch behov, najnov\x9Aie prv\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 654
-"Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "",
+"Newest first. A dashed circle is a run that stored nothing: a check, a dry run or a baseline. A filled square %1 is a run ended before it finished." => "Najnov\x9Aie prv\xE9. \xC8iarkovan\xFD kruh je beh, ktor\xFD ni\xE8 neulo\x9Eil: kontrola zdroja, sk\xFA\x9Aobn\xFD beh alebo zaznamenanie stavu. Pln\xFD \x9Atvorec %1 je beh ukon\xE8en\xFD pred dokon\xE8en\xEDm.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 679
-"The open run" => "",
+"The open run" => "Otvoren\xFD beh", // ai 2026-10
 
 // src/Import/DetailPage.php, row 681
-"Streams done: %1 of %2." => "",
+"Streams done: %1 of %2." => "Hotov\xE9 pr\xFAdy: %1 z %2.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 684
-"Now at: %1." => "",
+"Now at: %1." => "Pr\xE1ve sprac\xFAva: %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 686
-"Last progress: %1." => "",
+"Last progress: %1." => "Posledn\xFD pokrok: %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 689
-"Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "",
+"Nothing more is imported until you act or a planned task starts the import again (that ends this run)." => "Ni\xE8 \xEFal\x9Aie sa neimportuje, k\xFDm nezasiahnete alebo k\xFDm import znova nespust\xED napl\xE1novan\xE1 \xFAloha (t\xFDm sa tento beh ukon\xE8\xED).", // ai 2026-10
 
 // src/Import/DetailPage.php, row 690
-"Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "",
+"Continue goes on from where it stopped once the cause is fixed; End stops it for good and keeps what was imported." => "\x84Pokra\xE8ova\x9D\x93 nadvia\x9Ee tam, kde sa beh zastavil, ke\xEF odstr\xE1nite pr\xED\xE8inu; \x84Ukon\xE8i\x9D\x93 ho definit\xEDvne zastav\xED a ponech\xE1, \xE8o bolo naimportovan\xE9.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 691
-"No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "",
+"No step has worked on it for a long time - check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php). Continue tries it again now; End stops it for good and keeps what was imported. A planned start of the import ends it and starts a new run." => "U\x9E dlho na \xF2om nepracoval \x9Eiadny krok \x96 overte, \x9Ee cron sp\xFA\x9A\x9Da front \xFAloh a \x9Ee jeho kol\xE1 s\xFA na krok dos\x9D dlh\xE9 (TOEXECUTE_ALLOWED_TIME v config.php). \x84Pokra\xE8ova\x9D\x93 to teraz sk\xFAsi znova; \x84Ukon\xE8i\x9D\x93 ho definit\xEDvne zastav\xED a ponech\xE1, \xE8o bolo naimportovan\xE9. Pl\xE1novan\xE9 spustenie importu ho ukon\xE8\xED a za\xE8ne nov\xFD beh.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 692
-"A step is working now." => "",
+"A step is working now." => "Pr\xE1ve pracuje krok.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 694
-"Waiting to try again at %1 after 1 failed try." => "",
+"Waiting to try again at %1 after 1 failed try." => "\xC8ak\xE1 na nov\xFD pokus o %1 po 1 ne\xFAspe\x9Anom pokuse.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 695
-"Waiting to try again at %1 after %2 failed tries." => "",
+"Waiting to try again at %1 after %2 failed tries." => "\xC8ak\xE1 na nov\xFD pokus o %1 po %2 ne\xFAspe\x9An\xFDch pokusoch.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 696
-"Waiting to try again at %1." => "",
+"Waiting to try again at %1." => "\xC8ak\xE1 na nov\xFD pokus o %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 698, 944
-"Its last step may still be working." => "",
+"Its last step may still be working." => "Jeho posledn\xFD krok mo\x9Eno e\x9Ate be\x9E\xED.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 699
-"Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "",
+"Its last step stopped without finishing. The task queue tries it again within %1 minutes; Try now does it at once." => "Jeho posledn\xFD krok sa zastavil pred dokon\xE8en\xEDm. Front \xFAloh ho sk\xFAsi znova do %1 min\xFAt; \x84Sk\xFAsi\x9D hne\xEF\x93 to urob\xED okam\x9Eite.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 708
-"Its next step waits in the task queue until %1." => "",
+"Its next step waits in the task queue until %1." => "Jeho \xEFal\x9A\xED krok \xE8ak\xE1 vo fronte \xFAloh do %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 708
-"Its next step waits in the task queue." => "",
+"Its next step waits in the task queue." => "Jeho \xEFal\x9A\xED krok \xE8ak\xE1 vo fronte \xFAloh.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 726
-"The import is disabled, so no planned task starts it." => "",
+"The import is disabled, so no planned task starts it." => "Import je vypnut\xFD, tak\x9Ee ho \x9Eiadna napl\xE1novan\xE1 \xFAloha nespust\xED.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 732
-"Not planned" => "",
+"Not planned" => "Nenapl\xE1novan\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 733
-"A planned task calls it, but none has a time to start it." => "",
+"A planned task calls it, but none has a time to start it." => "Vol\xE1 ho napl\xE1novan\xE1 \xFAloha, ale \x9Eiadna nem\xE1 nastaven\xFD \xE8as spustenia.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 734
-"It runs only when you start it. To run it on a schedule, add a planned task." => "",
+"It runs only when you start it. To run it on a schedule, add a planned task." => "Be\x9E\xED, len ke\xEF ho spust\xEDte. Na sp\xFA\x9A\x9Danie pod\xBEa pl\xE1nu pridajte napl\xE1novan\xFA \xFAlohu.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 745
-"Written by hand, a planned task starts it with %1." => "",
+"Written by hand, a planned task starts it with %1." => "Ru\xE8ne zap\xEDsan\xE1 napl\xE1novan\xE1 \xFAloha ho spust\xED pomocou %1.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 756
-"Planned tasks need the Forms permission" => "",
+"Planned tasks need the Forms permission" => "\x84Napl\xE1novan\xE9 \xFAlohy\x93 vy\x9Eaduj\xFA pr\xE1vo \x84Formul\xE1re\x93", // ai 2026-10
 
 // src/Import/DetailPage.php, row 760
-"Planned tasks: %1" => "",
+"Planned tasks: %1" => "Napl\xE1novan\xE9 \xFAlohy: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 761
-"Planned tasks: %1, next %2" => "",
+"Planned tasks: %1, next %2" => "Napl\xE1novan\xE9 \xFAlohy: %1, nabud\xFAce %2", // ai 2026-10
 
 // src/Import/DetailPage.php, row 763, 778
-"Schedule" => "",
+"Schedule" => "Napl\xE1nova\x9D", // ai 2026-10
 
 // src/Import/DetailPage.php, row 766
-"(import off)" => "",
+"(import off)" => "(import vypnut\xFD)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 773
-"next %1" => "",
+"next %1" => "nabud\xFAce %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 773
-"no time set" => "",
+"no time set" => "bez nastaven\xE9ho \xE8asu", // ai 2026-10
 
 // src/Import/DetailPage.php, row 774
-"save the task again to let it start the import" => "",
+"save the task again to let it start the import" => "ulo\x9Ete \xFAlohu znova, aby mohla spusti\x9D import", // ai 2026-10
 
 // src/Import/DetailPage.php, row 775
-"queued" => "",
+"queued" => "vo fronte", // ai 2026-10
 
 // src/Import/DetailPage.php, row 775
-"not queued" => "",
+"not queued" => "nie je vo fronte", // ai 2026-10
 
 // src/Import/DetailPage.php, row 793
-"Import %1" => "",
+"Import %1" => "Import %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 803
-"mode set by an expression" => "",
+"mode set by an expression" => "re\x9Eim ur\xE8en\xFD v\xFDrazom", // ai 2026-10
 
 // src/Import/DetailPage.php, row 803
-"unknown mode %1" => "",
+"unknown mode %1" => "nezn\xE1my re\x9Eim %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 826, 833
-"Passed" => "",
+"Passed" => "V poriadku", // ai 2026-10
 
 // src/Import/DetailPage.php, row 826, 833
-"Failed" => "",
+"Failed" => "Zlyhalo", // ai 2026-10
 
 // src/Import/DetailPage.php, row 828
-"Taken from the run list: the stream state holds no newer check result." => "",
+"Taken from the run list: the stream state holds no newer check result." => "Prevzat\xE9 zo zoznamu behov: stav pr\xFAdov neobsahuje nov\x9A\xED v\xFDsledok kontroly.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 831
-"The stored result cannot be read." => "",
+"The stored result cannot be read." => "Ulo\x9Een\xFD v\xFDsledok nie je mo\x9En\xE9 pre\xE8\xEDta\x9D.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 831
-"Never checked" => "",
+"Never checked" => "Nikdy nekontrolovan\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 849
-"The mapping of the import cannot be read; no run starts until it is set again." => "",
+"The mapping of the import cannot be read; no run starts until it is set again." => "Mapovanie importu nie je mo\x9En\xE9 pre\xE8\xEDta\x9D; k\xFDm ho znova nenastav\xEDte, \x9Eiadny beh sa nespust\xED.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 856
-"The mapping does not fit the slice; no run starts until it is fixed:" => "",
+"The mapping does not fit the slice; no run starts until it is fixed:" => "Mapovanie nezodpoved\xE1 modulu; k\xFDm ho neoprav\xEDte, \x9Eiadny beh sa nespust\xED:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 899
-"No stream is known yet - run the import or check the source first." => "",
+"No stream is known yet - run the import or check the source first." => "Zatia\xBE nie je zn\xE1my \x9Eiadny pr\xFAd \x96 najprv spustite import alebo skontrolujte zdroj.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 903
-"One stream" => "",
+"One stream" => "Jeden pr\xFAd", // ai 2026-10
 
 // src/Import/DetailPage.php, row 904
-"Run the stream" => "",
+"Run the stream" => "Spusti\x9D pr\xFAd", // ai 2026-10
 
 // src/Import/DetailPage.php, row 905
-"Dry run of the stream" => "",
+"Dry run of the stream" => "Sk\xFA\x9Aobn\xFD beh pr\xFAdu", // ai 2026-10
 
 // src/Import/DetailPage.php, row 918
-"Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "",
+"Record the versions the source has now, as if they were imported? Streams that do not change afterwards will not be imported." => "Zaznamena\x9D verzie, ktor\xE9 m\xE1 zdroj teraz, ako keby boli naimportovan\xE9? Pr\xFAdy, ktor\xE9 sa potom nezmenia, sa importova\x9D nebud\xFA.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 919
-"Record the current state of the source" => "",
+"Record the current state of the source" => "Zaznamena\x9D aktu\xE1lny stav zdroja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 921
-"Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "",
+"Saves the version each stream has now without importing, so Run changed only then takes just what changes later. Use it only when the source data are already in the slice." => "Ulo\x9E\xED verziu, ktor\xFA m\xE1 ka\x9Ed\xFD pr\xFAd teraz, bez importovania, tak\x9Ee \x84Spusti\x9D len zmenen\xE9\x93 potom vezme len to, \xE8o sa zmen\xED nesk\xF4r. Pou\x9Eite to, len ke\xEF s\xFA d\xE1ta zdroja u\x9E v module.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 937
-"No run is open." => "",
+"No run is open." => "\x8Eiadny beh nie je otvoren\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 943
-"Its step is working now." => "",
+"Its step is working now." => "Jeho krok pr\xE1ve pracuje.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 947
-"Try now" => "",
+"Try now" => "Sk\xFAsi\x9D hne\xEF", // ai 2026-10
 
 // src/Import/DetailPage.php, row 957
-"End the run for good? What it imported stays; the next run starts from the beginning." => "",
+"End the run for good? What it imported stays; the next run starts from the beginning." => "Definit\xEDvne ukon\xE8i\x9D beh? \xC8o naimportoval, zostane; \xEFal\x9A\xED beh za\xE8ne od za\xE8iatku.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1024
-"The first item errors (%1)" => "",
+"The first item errors (%1)" => "Prv\xE9 chyby spr\xE1v (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1025, 1046
-"Job" => "",
+"Job" => "\xDAloha", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1036
-"Skipped - the key came out empty (%1)" => "",
+"Skipped - the key came out empty (%1)" => "Presko\xE8en\xE9 \x96 k\xBE\xFA\xE8 vy\x9Aiel pr\xE1zdny (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1046
-"Source value" => "",
+"Source value" => "Hodnota zo zdroja", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1056
-"The filter kept no item of 1 job." => "",
+"The filter kept no item of 1 job." => "Filter neponechal \x9Eiadnu spr\xE1vu z 1 \xFAlohy.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1056
-"The filter kept no item of %1 jobs." => "",
+"The filter kept no item of %1 jobs." => "Filter neponechal \x9Eiadnu spr\xE1vu z %1 \xFAloh.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1057
-"If those items should be imported, check the filter in Mapping." => "",
+"If those items should be imported, check the filter in Mapping." => "Ak sa tieto spr\xE1vy maj\xFA importova\x9D, skontrolujte filter v \xE8asti \x84Mapovanie\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1066
-"The source went round in 1 stream; the rest of it was skipped." => "",
+"The source went round in 1 stream; the rest of it was skipped." => "Zdroj sa v 1 pr\xFAde zacyklil; jeho zvy\x9Aok bol presko\xE8en\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1066
-"The source went round in %1 streams; the rest of each was skipped." => "",
+"The source went round in %1 streams; the rest of each was skipped." => "Zdroj sa zacyklil v %1 pr\xFAdoch; zvy\x9Aok ka\x9Ed\xE9ho z nich bol presko\xE8en\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1067
-"The source pages wrongly or changed its paging; check the source, then run the import again." => "",
+"The source pages wrongly or changed its paging; check the source, then run the import again." => "Zdroj str\xE1nkuje chybne alebo zmenil str\xE1nkovanie; skontrolujte zdroj a potom import spustite znova.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1082
-"Remarks of the source (%1)" => "",
+"Remarks of the source (%1)" => "Pozn\xE1mky zdroja (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1091
-"Remark" => "",
+"Remark" => "Pozn\xE1mka", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1099
-"The dry run found no item to store." => "",
+"The dry run found no item to store." => "Sk\xFA\x9Aobn\xFD beh nena\x9Aiel \x9Eiadnu spr\xE1vu na ulo\x9Eenie.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1101
-"What the dry run would store - the first %1 items" => "",
+"What the dry run would store - the first %1 items" => "\xC8o by sk\xFA\x9Aobn\xFD beh ulo\x9Eil \x96 prv\xE9 spr\xE1vy (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1123
-"Last try failed:" => "",
+"Last try failed:" => "Posledn\xFD pokus zlyhal:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1123
 "Error:" => "Chyba:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1124
-"At: %1" => "",
+"At: %1" => "Kde: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1126
-"What to do:" => "",
+"What to do:" => "\xC8o robi\x9D:", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1136
-"Check the address of the source in its settings, then Continue or End the run." => "",
+"Check the address of the source in its settings, then Continue or End the run." => "Skontrolujte adresu zdroja v jeho nastaveniach a potom pri behu zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1140
-"Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "",
+"Fix the column mapping or the file so that the missing columns exist, then run Check source again." => "Opravte mapovanie st\xE5pcov alebo s\xFAbor tak, aby ch\xFDbaj\xFAce st\xE5pce existovali, a potom znova spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1141
-"Check the key of the source in its settings, then run Check source." => "",
+"Check the key of the source in its settings, then run Check source." => "Skontrolujte k\xBE\xFA\xE8 zdroja v jeho nastaveniach a potom spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1142
-"Enter the key of the source again in its settings, then run Check source." => "",
+"Enter the key of the source again in its settings, then run Check source." => "Zadajte k\xBE\xFA\xE8 zdroja v jeho nastaveniach znova a potom spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1143
-"The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "",
+"The source could not be reached. Check its address in the settings; if it is right, Continue the run later." => "K zdroju sa nepodarilo pripoji\x9D. Skontrolujte jeho adresu v nastaveniach; ak je spr\xE1vna, zvo\xBEte pri behu nesk\xF4r \x84Pokra\xE8ova\x9D\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1144
-"Correct the settings of the source, then run Check source." => "",
+"Correct the settings of the source, then run Check source." => "Opravte nastavenia zdroja a potom spustite \x84Skontrolova\x9D zdroj\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1145
-"Choose a stream the source still has, then start the import again." => "",
+"Choose a stream the source still has, then start the import again." => "Vyberte pr\xFAd, ktor\xFD zdroj st\xE1le m\xE1, a potom import spustite znova.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1146
-"Check that every mapped field exists in the slice, then start the import again." => "",
+"Check that every mapped field exists in the slice, then start the import again." => "Overte, \x9Ee ka\x9Ed\xE1 mapovan\xE1 polo\x9Eka v module existuje, a potom import spustite znova.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1147
-"Look the failure up in the log of import failures, then Continue or End the run." => "",
+"Look the failure up in the log of import failures, then Continue or End the run." => "Vyh\xBEadajte chybu v logu ch\xFDb importu a potom pri behu zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1161
-"full run" => "",
+"full run" => "\xFApln\xFD beh", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1162
-"one stream (%1)" => "",
+"one stream (%1)" => "jeden pr\xFAd (%1)", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1163
-"%1 streams" => "",
+"%1 streams" => "pr\xFAdy: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1199
-"Baseline only" => "",
+"Baseline only" => "Len zaznamenan\xFD stav", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1199
-"Nothing imported yet. Run changed only takes what changes after this." => "",
+"Nothing imported yet. Run changed only takes what changes after this." => "Zatia\xBE ni\xE8 nenaimportovan\xE9. \x84Spusti\x9D len zmenen\xE9\x93 vezme len to, \xE8o sa zmen\xED potom.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1207, 1208
-"Imported with item errors" => "",
+"Imported with item errors" => "Naimportovan\xE9 s chybami spr\xE1v", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1207
-"1 item error in the run that imported it - see Runs." => "",
+"1 item error in the run that imported it - see Runs." => "1 chyba spr\xE1vy v behu, ktor\xFD ho naimportoval \x96 pozri \x84Behy\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1208
-"%1 item errors in the run that imported it - see Runs." => "",
+"%1 item errors in the run that imported it - see Runs." => "Chyby spr\xE1v (%1) v behu, ktor\xFD ho naimportoval \x96 pozri \x84Behy\x93.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1210
-"Imported" => "",
+"Imported" => "Naimportovan\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1210
-"The source was asked again after the import." => "",
+"The source was asked again after the import." => "Po importe bol zdroj znova dopytovan\xFD.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1210
-"The source has not been asked since." => "",
+"The source has not been asked since." => "Zdroj odvtedy dopytovan\xFD nebol.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1214
-"Checked, not imported yet" => "",
+"Checked, not imported yet" => "Skontrolovan\xE9, zatia\xBE nenaimportovan\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1214
-"Run imports it; Run changed only too, as it has no version to compare." => "",
+"Run imports it; Run changed only too, as it has no version to compare." => "\x84Spusti\x9D\x93 ho naimportuje; \x84Spusti\x9D len zmenen\xE9\x93 tie\x9E, preto\x9Ee nem\xE1 verziu na porovnanie.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1215
-"Not seen yet" => "",
+"Not seen yet" => "Zatia\xBE nezisten\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1215
-"No run has imported or checked it." => "",
+"No run has imported or checked it." => "\x8Eiadny beh ho nenaimportoval ani neskontroloval.", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1228
-"%1 read" => "",
+"%1 read" => "na\xE8\xEDtan\xE9: %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1229
-"%1 new, %2 updated, %3 skipped" => "",
+"%1 new, %2 updated, %3 skipped" => "nov\xFDch %1, aktualizovan\xFDch %2, presko\xE8en\xFDch %3", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1230
-"%1 filtered out" => "",
+"%1 filtered out" => "odfiltrovan\xFDch %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1231
-"dry run - nothing stored" => "",
+"dry run - nothing stored" => "sk\xFA\x9Aobn\xFD beh - ni\xE8 neulo\x9Een\xE9", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1231
-"all streams of the run together" => "",
+"all streams of the run together" => "v\x9Aetky pr\xFAdy behu spolu", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1250
-"None yet - an import records it" => "",
+"None yet - an import records it" => "Zatia\xBE \x9Eiadna - zaznamen\xE1 ju import", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1251
-"None - the source gives no version" => "",
+"None - the source gives no version" => "\x8Eiadna - zdroj verziu neuv\xE1dza", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1304
-"took %1" => "",
+"took %1" => "trvalo %1", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1304
-"took %1, working %2" => "",
+"took %1, working %2" => "trvalo %1, z toho pr\xE1ca %2", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1310
-"%1 s" => "",
+"%1 s" => "%1 s", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1313
-"%1 min %2 s" => "",
+"%1 min %2 s" => "%1 min %2 s", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1313, 1315
-"%1 min" => "",
+// src/Optimize/StateCheckModel.php, row 257
+"%1 min" => "%1 min", // ai 2026-10
 
 // src/Import/DetailPage.php, row 1315
-"%1 h" => "",
+// src/Optimize/StateCheckModel.php, row 258
+"%1 h" => "%1 h", // ai 2026-10
 
 // src/Import/Mapping.php, row 219
-"The slice of the import is not available." => "",
+"The slice of the import is not available." => "Modul importu nie je dostupn\xFD.", // ai 2026-10
 
 // src/Import/Mapping.php, row 220
-"A row of the mapping uses a transformation that does not exist." => "",
+"A row of the mapping uses a transformation that does not exist." => "Riadok mapovania pou\x9E\xEDva transform\xE1ciu, ktor\xE1 neexistuje.", // ai 2026-10
 
 // src/Import/Mapping.php, row 221
-"A row of the mapping has parameters its transformation does not take." => "",
+"A row of the mapping has parameters its transformation does not take." => "Riadok mapovania m\xE1 parametre, ktor\xE9 jeho transform\xE1cia neprij\xEDma.", // ai 2026-10
 
 // src/Import/Mapping.php, row 222
-"The mapping fills a field the slice does not have: %1." => "",
+"The mapping fills a field the slice does not have: %1." => "Mapovanie pln\xED polo\x9Eku, ktor\xFA modul nem\xE1: %1.", // ai 2026-10
 
 // src/Import/Mapping.php, row 222
-"The mapping fills a field the slice does not have." => "",
+"The mapping fills a field the slice does not have." => "Mapovanie pln\xED polo\x9Eku, ktor\xFA modul nem\xE1.", // ai 2026-10
 
 // src/Import/Mapping.php, row 223
-"The mapping fills a field an import may not set." => "",
+"The mapping fills a field an import may not set." => "Mapovanie pln\xED polo\x9Eku, ktor\xFA import nesmie nastavi\x9D.", // ai 2026-10
 
 // src/Import/Mapping.php, row 224
-"Two rows of the mapping fill the same field." => "",
+"Two rows of the mapping fill the same field." => "Dva riadky mapovania plnia t\xFA ist\xFA polo\x9Eku.", // ai 2026-10
 
 // src/Import/Mapping.php, row 225
-"The mapping has no key field, so an item cannot be found again." => "",
+"The mapping has no key field, so an item cannot be found again." => "Mapovanie nem\xE1 k\xBE\xFA\xE8ov\xFA polo\x9Eku, tak\x9Ee spr\xE1vu nemo\x9Eno znova n\xE1js\x9D.", // ai 2026-10
 
 // src/Import/Mapping.php, row 226
-"A key field is not filled by the mapping." => "",
+"A key field is not filled by the mapping." => "Mapovanie nepln\xED k\xBE\xFA\xE8ov\xFA polo\x9Eku.", // ai 2026-10
 
 // src/Import/Mapping.php, row 227
-"The mapping has a problem." => "",
+"The mapping has a problem." => "Mapovanie m\xE1 probl\xE9m.", // ai 2026-10
 
 // src/Import/RunView.php, row 60
-"Finished with item errors" => "",
+"Finished with item errors" => "Dokon\xE8en\xE9 s chybami spr\xE1v", // ai 2026-10
 
 // src/Import/RunView.php, row 64
-"then ended - the settings changed" => "",
+"then ended - the settings changed" => "potom ukon\xE8en\xE9 - zmenilo sa nastavenie", // ai 2026-10
 
 // src/Import/RunView.php, row 65
-"then ended - a planned run started" => "",
+"then ended - a planned run started" => "potom ukon\xE8en\xE9 - spustil sa pl\xE1novan\xFD beh", // ai 2026-10
 
 // src/Import/RunView.php, row 66
-"then ended by hand" => "",
+"then ended by hand" => "potom ukon\xE8en\xE9 ru\xE8ne", // ai 2026-10
 
 // src/Import/RunView.php, row 69
-"Ended - the settings changed" => "",
+"Ended - the settings changed" => "Ukon\xE8en\xE9 - zmenilo sa nastavenie", // ai 2026-10
 
 // src/Import/RunView.php, row 70
-"Ended - a planned run started" => "",
+"Ended - a planned run started" => "Ukon\xE8en\xE9 - spustil sa pl\xE1novan\xFD beh", // ai 2026-10
 
 // src/Import/RunView.php, row 71
-"Ended by hand" => "",
+"Ended by hand" => "Ukon\xE8en\xE9 ru\xE8ne", // ai 2026-10
 
 // src/Import/RunView.php, row 74
-"Stuck \xE2\x80\x94 see State Check" => "",
+"Stuck \xE2\x80\x94 see State Check" => "Zaseknut\xE9 \x97 pozri \x84Kontrola stavu\x93", // ai 2026-10
 
 // src/Import/RunView.php, row 75, 171
-"Running" => "",
+"Running" => "Be\x9E\xED", // ai 2026-10
 
 // src/Import/RunView.php, row 76
-"Waiting to retry" => "",
+"Waiting to retry" => "\xC8ak\xE1 na nov\xFD pokus", // ai 2026-10
 
 // src/Import/RunView.php, row 77
-"Queued" => "",
+"Queued" => "Vo fronte", // ai 2026-10
 
 // src/Import/RunView.php, row 97
-"Ended before reading anything" => "",
+"Ended before reading anything" => "Ukon\xE8en\xE9 sk\xF4r, ne\x9E sa \xE8oko\xBEvek na\xE8\xEDtalo", // ai 2026-10
 
 // src/Import/RunView.php, row 97
-"Stopped before reading anything" => "",
+"Stopped before reading anything" => "Zastaven\xE9 sk\xF4r, ne\x9E sa \xE8oko\xBEvek na\xE8\xEDtalo", // ai 2026-10
 
 // src/Import/RunView.php, row 106
-"The source answered %1." => "",
+"The source answered %1." => "Zdroj odpovedal k\xF3dom %1.", // ai 2026-10
 
 // src/Import/RunView.php, row 109
-"The address of the source could not be resolved (DNS)." => "",
+"The address of the source could not be resolved (DNS)." => "Adresu zdroja nemo\x9Eno prelo\x9Ei\x9D (DNS).", // ai 2026-10
 
 // src/Import/RunView.php, row 110
-"The source did not answer in time." => "",
+"The source did not answer in time." => "Zdroj neodpovedal v\xE8as.", // ai 2026-10
 
 // src/Import/RunView.php, row 111
-"The secure connection to the source failed (TLS)." => "",
+"The secure connection to the source failed (TLS)." => "Zabezpe\xE8en\xE9 spojenie so zdrojom zlyhalo (TLS).", // ai 2026-10
 
 // src/Import/RunView.php, row 112
-"The source refused the connection." => "",
+"The source refused the connection." => "Zdroj odmietol spojenie.", // ai 2026-10
 
 // src/Import/RunView.php, row 113
-"The address of the source is not allowed or not valid." => "",
+"The address of the source is not allowed or not valid." => "Adresa zdroja nie je povolen\xE1 alebo nie je platn\xE1.", // ai 2026-10
 
 // src/Import/RunView.php, row 114
-"The answer of the source is too large." => "",
+"The answer of the source is too large." => "Odpove\xEF zdroja je pr\xEDli\x9A ve\xBEk\xE1.", // ai 2026-10
 
 // src/Import/RunView.php, row 115
-"The source redirected too many times." => "",
+"The source redirected too many times." => "Zdroj presmeroval pr\xEDli\x9A ve\xBEakr\xE1t.", // ai 2026-10
 
 // src/Import/RunView.php, row 127
-"just now" => "",
+// src/Optimize/StateCheckModel.php, row 256
+"just now" => "pr\xE1ve teraz", // ai 2026-10
 
 // src/Import/RunView.php, row 128
-"%1 min ago" => "",
+"%1 min ago" => "pred %1 min", // ai 2026-10
 
 // src/Import/RunView.php, row 129
-"%1 h ago" => "",
+"%1 h ago" => "pred %1 h", // ai 2026-10
 
 // src/Import/RunView.php, row 130
-"1 day ago" => "",
+"1 day ago" => "pred 1 d\xF2om", // ai 2026-10
 
 // src/Import/RunView.php, row 131
-"%1 days ago" => "",
+"%1 days ago" => "pred %1 d\xF2ami", // ai 2026-10
 
 // src/Import/RunView.php, row 159, 162, 165, 169
-"Failing" => "",
+"Failing" => "Zlyh\xE1va", // ai 2026-10
 
 // src/Import/RunView.php, row 159
-"The source of this import is not available, so it cannot run." => "",
+"The source of this import is not available, so it cannot run." => "Zdroj tohto importu nie je dostupn\xFD, tak\x9Ee nem\xF4\x9Ee be\x9Ea\x9D.", // ai 2026-10
 
 // src/Import/RunView.php, row 162
-"The mapping does not fit the slice, so no run can start until it is fixed." => "",
+"The mapping does not fit the slice, so no run can start until it is fixed." => "Mapovanie nezodpoved\xE1 modulu, tak\x9Ee k\xFDm ho neoprav\xEDte, \x9Eiadny beh sa nespust\xED.", // ai 2026-10
 
 // src/Import/RunView.php, row 169
-"A run has made no progress for a long time - cron may not be running its steps." => "",
+"A run has made no progress for a long time - cron may not be running its steps." => "Beh sa u\x9E dlho nepohol - cron mo\x9Eno nesp\xFA\x9A\x9Da jeho kroky.", // ai 2026-10
 
 // src/Import/RunView.php, row 170, 178, 181, 182, 183
-"Needs attention" => "",
+"Needs attention" => "Vy\x9Eaduje pozornos\x9D", // ai 2026-10
 
 // src/Import/RunView.php, row 170
-"A run failed a step and waits to try again." => "",
+"A run failed a step and waits to try again." => "Beh zlyhal v kroku a \xE8ak\xE1 na nov\xFD pokus.", // ai 2026-10
 
 // src/Import/RunView.php, row 171
-"A run is in progress: %1." => "",
+"A run is in progress: %1." => "Beh prebieha: %1.", // ai 2026-10
 
 // src/Import/RunView.php, row 176
-"Never ran" => "",
+"Never ran" => "Nikdy nespusten\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 176
-"No run yet. Run starts the first import." => "",
+"No run yet. Run starts the first import." => "Zatia\xBE \x9Eiadny beh. \x84Spusti\x9D\x93 zah\xE1ji prv\xFD import.", // ai 2026-10
 
 // src/Import/RunView.php, row 177
-"Only source checks or dry runs so far - nothing was imported." => "",
+"Only source checks or dry runs so far - nothing was imported." => "Zatia\xBE len kontroly zdroja alebo sk\xFA\x9Aobn\xE9 behy - ni\xE8 nebolo naimportovan\xE9.", // ai 2026-10
 
 // src/Import/RunView.php, row 179
-"The last import stopped by an error and was then ended, so the data may be incomplete." => "",
+"The last import stopped by an error and was then ended, so the data may be incomplete." => "Posledn\xFD import sa zastavil na chybe a potom bol ukon\xE8en\xFD, tak\x9Ee d\xE1ta m\xF4\x9Eu by\x9D ne\xFApln\xE9.", // ai 2026-10
 
 // src/Import/RunView.php, row 180
-"The last import was ended before it finished, so the data may be incomplete." => "",
+"The last import was ended before it finished, so the data may be incomplete." => "Posledn\xFD import bol ukon\xE8en\xFD pred dokon\xE8en\xEDm, tak\x9Ee d\xE1ta m\xF4\x9Eu by\x9D ne\xFApln\xE9.", // ai 2026-10
 
 // src/Import/RunView.php, row 181
-"The last import finished, but 1 item could not be stored." => "",
+"The last import finished, but 1 item could not be stored." => "Posledn\xFD import dobehol, ale 1 spr\xE1vu sa nepodarilo ulo\x9Ei\x9D.", // ai 2026-10
 
 // src/Import/RunView.php, row 182
-"The last import finished, but %1 items could not be stored." => "",
+"The last import finished, but %1 items could not be stored." => "Posledn\xFD import dobehol, ale niektor\xE9 spr\xE1vy sa nepodarilo ulo\x9Ei\x9D (po\xE8et: %1).", // ai 2026-10
 
 // src/Import/RunView.php, row 183
-"The last full import read nothing - the source may be empty." => "",
+"The last full import read nothing - the source may be empty." => "Posledn\xFD \xFApln\xFD import ni\xE8 nena\xE8\xEDtal - zdroj je mo\x9Eno pr\xE1zdny.", // ai 2026-10
 
 // src/Import/RunView.php, row 184, 185
-"Healthy" => "",
+"Healthy" => "V poriadku", // ai 2026-10
 
 // src/Import/RunView.php, row 184
-"The last import finished without errors; nothing had changed." => "",
+"The last import finished without errors; nothing had changed." => "Posledn\xFD import dobehol bez ch\xFDb; ni\xE8 sa nezmenilo.", // ai 2026-10
 
 // src/Import/RunView.php, row 185
-"The last import finished without errors (%1 read)." => "",
+"The last import finished without errors (%1 read)." => "Posledn\xFD import dobehol bez ch\xFDb (na\xE8\xEDtan\xFDch %1).", // ai 2026-10
 
 // src/Import/RunView.php, row 188
-"Runs only by hand." => "",
+"Runs only by hand." => "Sp\xFA\x9A\x9Da sa len ru\xE8ne.", // ai 2026-10
 
 // src/Import/RunView.php, row 197
-"The last dry run stopped by an error. Nothing more is imported until you act." => "",
+"The last dry run stopped by an error. Nothing more is imported until you act." => "Posledn\xFD sk\xFA\x9Aobn\xFD beh sa zastavil na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 198
-"The last source check stopped by an error. Nothing more is imported until you act." => "",
+"The last source check stopped by an error. Nothing more is imported until you act." => "Posledn\xE1 kontrola zdroja sa zastavila na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 199
-"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "",
+"Recording the state of the source stopped by an error. Nothing more is imported until you act." => "Zaznamenanie stavu zdroja sa zastavilo na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 200
-"The last import stopped by an error. Nothing more is imported until you act." => "",
+"The last import stopped by an error. Nothing more is imported until you act." => "Posledn\xFD import sa zastavil na chybe. K\xFDm nezasiahnete, ni\xE8 \xEFal\x9Aie sa neimportuje.", // ai 2026-10
 
 // src/Import/RunView.php, row 212
-"Source check failed - nothing imported" => "",
+"Source check failed - nothing imported" => "Kontrola zdroja zlyhala - ni\xE8 nenaimportovan\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 213
-"Source check under way" => "",
+"Source check under way" => "Prebieha kontrola zdroja", // ai 2026-10
 
 // src/Import/RunView.php, row 215
-"Source reachable - nothing imported" => "",
+"Source reachable - nothing imported" => "Zdroj je dostupn\xFD - ni\xE8 nenaimportovan\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 217
-"Nothing had changed" => "",
+"Nothing had changed" => "Ni\xE8 sa nezmenilo", // ai 2026-10
 
 // src/Import/RunView.php, row 218
-"Nothing read" => "",
+"Nothing read" => "Ni\xE8 nena\xE8\xEDtan\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 219
-"%1 read, %2 new, %3 changed" => "",
+"%1 read, %2 new, %3 changed" => "Na\xE8\xEDtan\xFDch %1, nov\xFDch %2, zmenen\xFDch %3", // ai 2026-10
 
 // src/Import/RunView.php, row 221
-"%1 (nothing stored)" => "",
+"%1 (nothing stored)" => "%1 (ni\xE8 neulo\x9Een\xE9)", // ai 2026-10
 
 // src/Import/RunView.php, row 227
-"Recorded the state of 1 stream - nothing imported" => "",
+"Recorded the state of 1 stream - nothing imported" => "Zaznamenan\xFD stav 1 pr\xFAdu - ni\xE8 nenaimportovan\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 227
-"Recorded the state of %1 streams - nothing imported" => "",
+"Recorded the state of %1 streams - nothing imported" => "Zaznamenan\xFD stav pr\xFAdov: %1 - ni\xE8 nenaimportovan\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 228
-"%1 without a version" => "",
+"%1 without a version" => "Bez verzie: %1", // ai 2026-10
 
 // src/Import/RunView.php, row 237
-"changed only" => "",
+"changed only" => "len zmenen\xE9", // ai 2026-10
 
 // src/Import/RunView.php, row 238
-"check" => "",
+"check" => "kontrola", // ai 2026-10
 
 // src/Import/RunView.php, row 239
-"recording the state of the source" => "",
+"recording the state of the source" => "zaznamenanie stavu zdroja", // ai 2026-10
 
 // src/Import/RunView.php, row 242
-"dry run" => "",
+"dry run" => "sk\xFA\x9Aobn\xFD beh", // ai 2026-10
 
 // src/Import/RunView.php, row 244
-"by hand" => "",
+"by hand" => "ru\xE8ne", // ai 2026-10
 
 // src/Import/RunView.php, row 245
-"planned" => "",
+"planned" => "pod\xBEa pl\xE1nu", // ai 2026-10
 
 // src/Import/RunView.php, row 246
-"on an event" => "",
+"on an event" => "pri udalosti", // ai 2026-10
 
 // src/Import/RunView.php, row 259
-"Disabled - it does not start" => "",
+"Disabled - it does not start" => "Vypnut\xE9 - nesp\xFA\x9A\x9Da sa", // ai 2026-10
 
 // src/Import/RunView.php, row 268
-"No run yet" => "",
+"No run yet" => "Zatia\xBE \x9Eiadny beh", // ai 2026-10
 
 // src/Import/RunView.php, row 280
-"1 item error" => "",
+"1 item error" => "1 chyba spr\xE1vy", // ai 2026-10
 
 // src/Import/RunView.php, row 281
-"%1 item errors" => "",
+"%1 item errors" => "Chyby spr\xE1v: %1", // ai 2026-10
 
 // src/Import/RunView.php, row 284
-"Last import: %1" => "",
+"Last import: %1" => "Posledn\xFD import: %1", // ai 2026-10
 
 // src/Import/SliceIdSetting.php, row 22
-"No slice ID" => "",
+"No slice ID" => "Ch\xFDba ID modulu", // ai 2026-10
 
 // src/Import/Source/CsvColumnsSetting.php, row 31
-"Expected a JSON object {\"column\": \"field id\"}" => "",
+"Expected a JSON object {\"column\": \"field id\"}" => "O\xE8ak\xE1van\xFD objekt JSON {\"column\": \"field id\"}", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 42
-"CSV file at a URL" => "",
+"CSV file at a URL" => "CSV s\xFAbor na URL", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 47
-"Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "",
+"Imports the rows of a CSV file at a public http(s) address; the settings say which column fills which field." => "Importuje riadky CSV s\xFAboru z verejnej http(s) adresy; nastavenie ur\xE8uje, ktor\xFD st\xE5pec pln\xED ktor\xFA polo\x9Eku.", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 53
-"http or https only, on a public address, without a user name and password" => "",
+"http or https only, on a public address, without a user name and password" => "len http alebo https, na verejnej adrese, bez u\x9E\xEDvate\xBEsk\xE9ho mena a hesla", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 55
 // src/Widget/Widget.php, row 744, 813
 "Columns" => "St\xE5pce", // ai 2026-06
 
 // src/Import/Source/CsvurlSource.php, row 55
-"JSON object: the column name in the first row => the field it fills" => "",
+"JSON object: the column name in the first row => the field it fills" => "Objekt JSON: n\xE1zov st\xE5pca v prvom riadku => polo\x9Eka, ktor\xFA pln\xED", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 56
-"Key column" => "",
+"Key column" => "K\xBE\xFA\xE8ov\xFD st\xE5pec", // ai 2026-10
 
 // src/Import/Source/CsvurlSource.php, row 56
-"The column that identifies the item; it must be one of the columns" => "",
+"The column that identifies the item; it must be one of the columns" => "St\xE5pec, ktor\xFD identifikuje spr\xE1vu; mus\xED by\x9D jedn\xFDm zo st\xE5pcov", // ai 2026-10
 
-// src/Later/ComputedfieldsUpdater.php, row 83
+// src/Later/ComputedfieldsUpdater.php, row 84
 "Planned %1 chunks with %2 items" => "Napl\xE1novan\xFDch %1 d\xE1vok s %2 spr\xE1vami", // ai 2026-06
 
-// src/Later/Toexecute.php, row 362
-"task is no longer in the queue" => "",
+// src/Later/Toexecute.php, row 361
+"task is no longer in the queue" => "\xFAloha u\x9E nie je vo fronte", // ai 2026-10
 
-// src/Later/Toexecute.php, row 366
-"skipped - the task changed meanwhile (reload the list)" => "",
+// src/Later/Toexecute.php, row 365
+"skipped - the task changed meanwhile (reload the list)" => "presko\xE8en\xE9 - \xFAloha sa medzit\xFDm zmenila (obnovte zoznam)", // ai 2026-10
 
-// src/Later/Toexecute.php, row 462
-"the task failed with %1" => "",
+// src/Later/Toexecute.php, row 461
+"the task failed with %1" => "\xFAloha zlyhala s v\xFDnimkou %1", // ai 2026-10
 
 // src/Manager.php, row 430
-"You can not save this object here." => "",
+"You can not save this object here." => "Tento objekt tu nemo\x9Eno ulo\x9Ei\x9D.", // ai 2026-10
 
 // src/Manager.php, row 445
-"The object was not saved - it changed meanwhile. Reload and try again." => "",
+"The object was not saved - it changed meanwhile. Reload and try again." => "Objekt nebol ulo\x9Een\xFD - medzit\xFDm sa zmenil. Obnovte str\xE1nku a sk\xFAste to znova.", // ai 2026-10
 
 // src/Manager.php, row 460
-"This object can not be edited here - it is not an object of this module." => "",
+"This object can not be edited here - it is not an object of this module." => "Tento objekt tu nemo\x9Eno upravova\x9D - nepatr\xED tomuto modulu.", // ai 2026-10
 
 // src/Manager.php, row 481
-"The object was not saved - it is not the object of this form in this module." => "",
+"The object was not saved - it is not the object of this form in this module." => "Objekt nebol ulo\x9Een\xFD - nie je objektom tohto formul\xE1ra v tomto module.", // ai 2026-10
 
 // src/Manager.php, row 606
 "Optional" => "Volite\xBEn\xE9", // ai 2026-06
 
 // src/Manager.php, row 649
-"The row was not saved - it is not the row of this form in this module." => "",
+"The row was not saved - it is not the row of this form in this module." => "Riadok nebol ulo\x9Een\xFD - nie je riadkom tohto formul\xE1ra v tomto module.", // ai 2026-10
 
 // src/Manager.php, row 668
-"You can not save this row here." => "",
+"You can not save this row here." => "Tento riadok tu nemo\x9Eno ulo\x9Ei\x9D.", // ai 2026-10
 
 // src/Manager.php, row 812
 "Searchbar" => "Vyh\xBEad\xE1vacia li\x9Ata", // ai 2026-06
@@ -10051,7 +10135,7 @@ return [
 "Manager ID" => "ID mana\x9E\xE9ra", // ai 2026-06
 
 // src/Manager.php, row 1180
-"The action was not performed - use the button on the page." => "",
+"The action was not performed - use the button on the page." => "Akcia nebola vykonan\xE1 - pou\x9Eite tla\xE8idlo na str\xE1nke.", // ai 2026-10
 
 // src/Manager.php, row 1261
 "Edit id" => "Id pre edit\xE1ciu", // ai 2026-06
@@ -10080,12 +10164,12 @@ return [
 // src/Manageraction/AbstractManageraction.php, row 49
 "Additional URL parameters" => "\xCFal\x9Aie parametre URL", // ai 2026-06
 
-// src/Manageraction/Central_DeleteTrash.php, row 30
+// src/Manageraction/Central_DeleteTrash.php, row 31
 // src/Manageraction/Item_DeleteTrash.php, row 34
 // src/Manageraction/Polls_DeleteTrash.php, row 71
 "Remove (delete from database)" => "Odstr\xE1ni\x9D (vymaza\x9D z datab\xE1zy)", // ai 2026-06
 
-// src/Manageraction/Central_DeleteTrash.php, row 37
+// src/Manageraction/Central_DeleteTrash.php, row 38
 // src/Manageraction/Item_DeleteTrash.php, row 43
 // src/Manageraction/Taskmanager_Execute.php, row 24
 "You do not have permissions to remove items" => "Nem\xE1te pr\xE1vo maza\x9D spr\xE1vy",
@@ -10127,7 +10211,7 @@ return [
 "Update DB (sql_update)" => "Aktualizova\x9D DB (sql_update)", // ai 2026-06
 
 // src/Manageraction/Central_OptimizeType.php, row 49
-"Error: %1" => "",
+"Error: %1" => "Chyba: %1", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 19
 // src/Manageraction/Object_Delete.php, row 17
@@ -10135,7 +10219,7 @@ return [
 "Delete row" => "Vymaza\x9D riadok", // ai 2026-06
 
 // src/Manageraction/Import_Delete.php, row 27
-"Do you really want to delete this import? Its runs, its stream state and its catalog are deleted with it; a running import stops." => "",
+"Do you really want to delete this import? Its runs, its stream state and its catalog are deleted with it; a running import stops." => "Naozaj chcete zmaza\x9D tento import? Spolu s n\xEDm sa zma\x9E\xFA jeho behy, stav pr\xFAdov aj katal\xF3g; be\x9Eiaci import sa zastav\xED.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 38
 // src/Manageraction/Import_Run.php, row 42
@@ -10145,38 +10229,38 @@ return [
 // src/Manageraction/Polls_DeleteTrash.php, row 83
 // src/Manageraction/Polls_MoveItem.php, row 41
 // src/Manageraction/Table_Row_Delete.php, row 40
-"This action does not work on this page." => "",
+"This action does not work on this page." => "T\xE1to akcia na tejto str\xE1nke nefunguje.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 58
-"Some of the selected imports were not deleted." => "",
+"Some of the selected imports were not deleted." => "Niektor\xE9 z vybran\xFDch importov neboli zmazan\xE9.", // ai 2026-10
 
 // src/Manageraction/Import_Delete.php, row 64
 // src/Manageraction/Object_Delete.php, row 51
-"Some of the selected objects were not deleted - they belong to a module you can not change them in." => "",
+"Some of the selected objects were not deleted - they belong to a module you can not change them in." => "Niektor\xE9 z vybran\xFDch objektov neboli zmazan\xE9 - patria modulu, v ktorom ich nem\xF4\x9Eete meni\x9D.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 23
-"Run import" => "",
+"Run import" => "Spusti\x9D import", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 31
-"Run the import now? It stores the items of the source into the slice. The run goes on in the background; the import detail shows its progress." => "",
+"Run the import now? It stores the items of the source into the slice. The run goes on in the background; the import detail shows its progress." => "Spusti\x9D import hne\xEF? Ulo\x9E\xED spr\xE1vy zo zdroja do modulu. Beh pokra\xE8uje na pozad\xED; jeho priebeh ukazuje detail importu.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 47
-"Some of the selected objects were not run - they belong to a module you can not change them in." => "",
+"Some of the selected objects were not run - they belong to a module you can not change them in." => "Niektor\xE9 z vybran\xFDch objektov neboli spusten\xE9 - patria modulu, v ktorom ich nem\xF4\x9Eete meni\x9D.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 89
-"Imports queued to run: %1. The import detail shows their progress." => "",
+"Imports queued to run: %1. The import detail shows their progress." => "Importy zaraden\xE9 na spustenie: %1. Ich priebeh ukazuje detail importu.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 92
-"Imports not started - their last run is still running: %1." => "",
+"Imports not started - their last run is still running: %1." => "Importy nespusten\xE9 - ich posledn\xFD beh e\x9Ate be\x9E\xED: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 95
-"Imports not started - their last run stopped by an error; continue or end it in the import detail: %1." => "",
+"Imports not started - their last run stopped by an error; continue or end it in the import detail: %1." => "Importy nespusten\xE9 - ich posledn\xFD beh sa zastavil na chybe; v detaile importu zvo\xBEte \x84Pokra\xE8ova\x9D\x93 alebo \x84Ukon\xE8i\x9D\x93: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 98
-"Imports not started - the last step of their previous run is still finishing; try again in a few minutes: %1." => "",
+"Imports not started - the last step of their previous run is still finishing; try again in a few minutes: %1." => "Importy nespusten\xE9 - posledn\xFD krok ich predch\xE1dzaj\xFAceho behu sa e\x9Ate dokon\xE8uje; sk\xFAste to znova o nieko\xBEko min\xFAt: %1.", // ai 2026-10
 
 // src/Manageraction/Import_Run.php, row 101
-"Imports not started: %1 (%2). The import detail tells more." => "",
+"Imports not started: %1 (%2). The import detail tells more." => "Importy nespusten\xE9: %1 (%2). Viac povie detail importu.", // ai 2026-10
 
 // src/Manageraction/Item_Duplicate.php, row 23
 "Duplicate Item" => "Duplikova\x9D spr\xE1vu", // ai 2026-06
@@ -10194,13 +10278,13 @@ return [
 "No slice selected" => "Nie je vybran\xFD \x9Eiadny modul", // ai 2026-06
 
 // src/Manageraction/Item_Feed.php, row 50
-"Items can be exported only to a slice." => "",
+"Items can be exported only to a slice." => "Spr\xE1vy mo\x9Eno exportova\x9D len do modulu.", // ai 2026-10
 
 // src/Manageraction/Item_Feed.php, row 52
-"You do not have permission to export items to the slice %1." => "",
+"You do not have permission to export items to the slice %1." => "Nem\xE1te pr\xE1vo exportova\x9D spr\xE1vy do modulu %1.", // ai 2026-10
 
 // src/Manageraction/Item_Feed.php, row 68
-"Some of the selected items were not exported - they are not items of this slice." => "",
+"Some of the selected items were not exported - they are not items of this slice." => "Niektor\xE9 z vybran\xFDch spr\xE1v neboli exportovan\xE9 - nie s\xFA to spr\xE1vy tohto modulu.", // ai 2026-10
 
 // src/Manageraction/Item_Modifycontent.php, row 13
 "Modify content" => "Hromadne zmeni\x9D", // ai 2026-06
@@ -10213,7 +10297,7 @@ return [
 "Move to slice" => "Presun\xFA\x9D do modulu", // ai 2026-06
 
 // src/Manageraction/Item_Move2Slice.php, row 89
-"Items can be moved only to a slice." => "",
+"Items can be moved only to a slice." => "Spr\xE1vy mo\x9Eno presun\xFA\x9D len do modulu.", // ai 2026-10
 
 // src/Manageraction/Item_Move2Slice.php, row 93
 "You do not have permissions to move items" => "Nem\xE1te pr\xE1vo pres\xFAva\x9D spr\xE1vy",
@@ -10241,43 +10325,43 @@ return [
 "Do you really want to delete this row?" => "Naozaj chcete vymaza\x9D tento riadok?", // ai 2026-06
 
 // src/Manageraction/Object_Move2slice.php, row 37
-"Tasks can be moved only to a slice." => "",
+"Tasks can be moved only to a slice." => "\xDAlohy mo\x9Eno presun\xFA\x9D len do modulu.", // ai 2026-10
 
 // src/Manageraction/Object_Move2slice.php, row 41
 "You do not have permissions to move it" => "Nem\xE1te pr\xE1vo na presun", // ai 2026-06
 
 // src/Manageraction/Object_Move2slice.php, row 54
-"Some of the selected objects were not moved - they belong to a module you can not change them in." => "",
+"Some of the selected objects were not moved - they belong to a module you can not change them in." => "Niektor\xE9 z vybran\xFDch objektov neboli presunut\xE9 - patria modulu, v ktorom ich nem\xF4\x9Eete meni\x9D.", // ai 2026-10
 
 // src/Manageraction/Object_Move2slice.php, row 60
-"The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "",
+"The task %1 was not moved - only a user who manages the feeding of the slice may move a task with {import} there." => "\xDAloha %1 nebola presunut\xE1 - \xFAlohu s {import} tam smie presun\xFA\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje v\xFDmenu spr\xE1v modulu.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 20, 27
-"Run now" => "",
+"Run now" => "Spusti\x9D hne\xEF", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 29
-"Run the task now? It may send e-mails or change data." => "",
+"Run the task now? It may send e-mails or change data." => "Spusti\x9D \xFAlohu hne\xEF? M\xF4\x9Ee odosla\x9D e-maily alebo zmeni\x9D d\xE1ta.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 44
-"Some of the selected tasks were not run - they belong to a module you can not change them in." => "",
+"Some of the selected tasks were not run - they belong to a module you can not change them in." => "Niektor\xE9 z vybran\xFDch \xFAloh neboli spusten\xE9 - patria modulu, v ktorom ich nem\xF4\x9Eete meni\x9D.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 54
-"The task %1 was not run - only a user who manages the feeding of the slice may run a task with {import}." => "",
+"The task %1 was not run - only a user who manages the feeding of the slice may run a task with {import}." => "\xDAloha %1 nebola spusten\xE1 - \xFAlohu s {import} smie spusti\x9D len u\x9E\xEDvate\xBE, ktor\xFD spravuje v\xFDmenu spr\xE1v modulu.", // ai 2026-10
 
 // src/Manageraction/Plannedtask_Runnow.php, row 60
-"The task %1 is already waiting in the queue." => "",
+"The task %1 is already waiting in the queue." => "\xDAloha %1 u\x9E \xE8ak\xE1 vo fronte.", // ai 2026-10
 
 // src/Manageraction/Polls_DeleteTrash.php, row 78
 "You do not have permissions to remove polls" => "Nem\xE1te pr\xE1vo odstra\xF2ova\x9D ankety", // ai 2026-06
 
 // src/Manageraction/Polls_DeleteTrash.php, row 97
-"Some of the selected polls were not removed - they belong to another module." => "",
+"Some of the selected polls were not removed - they belong to another module." => "Niektor\xE9 z vybran\xFDch ankiet neboli odstr\xE1nen\xE9 - patria in\xE9mu modulu.", // ai 2026-10
 
 // src/Manageraction/Polls_MoveItem.php, row 47
-"Some of the selected polls were not moved - they belong to another module." => "",
+"Some of the selected polls were not moved - they belong to another module." => "Niektor\xE9 z vybran\xFDch ankiet neboli presunut\xE9 - patria in\xE9mu modulu.", // ai 2026-10
 
 // src/Manageraction/Table_Row_Delete.php, row 54
-"Some of the selected rows were not deleted - they belong to another module." => "",
+"Some of the selected rows were not deleted - they belong to another module." => "Niektor\xE9 z vybran\xFDch riadkov neboli zmazan\xE9 - patria in\xE9mu modulu.", // ai 2026-10
 
 // src/Manageraction/Taskmanager_Delete.php, row 15
 "Remove (cancel task)" => "Odstr\xE1ni\x9D (zru\x9Ai\x9D \xFAlohu)", // ai 2026-06
@@ -10292,7 +10376,7 @@ return [
 "Move view to another slice" => "Presun\xFA\x9D poh\xBEad do in\xE9ho modulu", // ai 2026-06
 
 // src/Manageraction/View_Move2slice.php, row 35
-"Views can be moved only to a slice." => "",
+"Views can be moved only to a slice." => "Poh\xBEady mo\x9Eno presun\xFA\x9D len do modulu.", // ai 2026-10
 
 // src/Manageraction/View_Move2slice.php, row 39
 "You do not have permissions to move views" => "Nem\xE1te pr\xE1vo pres\xFAva\x9D poh\xBEady", // ai 2026-06
@@ -10318,10 +10402,10 @@ return [
 // src/Module/Poll/Menu.php, row 84
 "Designs" => "Vzh\xBEady", // ai 2026-06
 
-// src/Optimize/AbstractOptimize.php, row 174
+// src/Optimize/AbstractOptimize.php, row 176
 "Types" => "Typy", // ai 2026-06
 
-// src/Optimize/AbstractOptimize.php, row 177
+// src/Optimize/AbstractOptimize.php, row 179
 "Result text" => "Text v\xFDsledku", // ai 2026-06
 
 // src/Optimize/AbstractOptimizeById.php, row 42
@@ -10347,6 +10431,24 @@ return [
 
 // src/Optimize/AddComputedTxtFieldTemplate.php, row 10
 "Add computed_txt field template" => "Prida\x9D \x9Aabl\xF3nu polo\x9Eky computed_txt", // ai 2026-06
+
+// src/Optimize/AddContentFieldIndex.php, row 25
+"Index of field values in the content table" => "Index hodn\xF4t polo\x9Eiek v tabu\xBEke content", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 30
+"Adds the field to the text index of the content table, so a value is found in one field without reading the same value of all other fields. On a big database it takes minutes - run it when the traffic is low." => "Prid\xE1 polo\x9Eku do indexu text tabu\xBEky content, tak\x9Ee sa hodnota v jednej polo\x9Eke n\xE1jde bez \xE8\xEDtania tej istej hodnoty vo v\x9Aetk\xFDch ostatn\xFDch polo\x9Ek\xE1ch. Na ve\xBEkej datab\xE1ze to trv\xE1 nieko\xBEko min\xFAt - spustite to v \xE8ase n\xEDzkej n\xE1v\x9Atevnosti.", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 52
+"The content table needs: %1" => "Tabu\xBEka content potrebuje: %1", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 55
+"OK - the index %1 of the content table contains the field" => "OK - index %1 tabu\xBEky content obsahuje polo\x9Eku", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 62
+"The index %1 of the content table already contains the field" => "Index %1 tabu\xBEky content u\x9E polo\x9Eku obsahuje", // ai 2026-10
+
+// src/Optimize/AddContentFieldIndex.php, row 67
+"The index %1 of the content table changed" => "Index %1 tabu\xBEky content bol zmenen\xFD", // ai 2026-10
 
 // src/Optimize/AddCountryFieldTemplate.php, row 10
 "Add country field template" => "Prida\x9D \x9Aabl\xF3nu polo\x9Eky country", // ai 2026-06
@@ -10426,19 +10528,19 @@ return [
 // src/Optimize/AddMandatoryDisplayCount.php, row 10
 // src/Optimize/AddMandatoryId.php, row 10
 // src/Optimize/AddMandatoryShortId.php, row 10
-// src/Optimize/AddMandatoryStatusCode.php, row 11
+// src/Optimize/AddMandatoryStatusCode.php, row 13
 "Fixing missing %1 field definitions in slices" => "Oprava ch\xFDbaj\xFAcich defin\xEDci\xED polo\x9Eky %1 v moduloch", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 17
+// src/Optimize/AddMandatoryStatusCode.php, row 19
 "Adds field definitions for slices, where missing" => "Prid\xE1 defin\xEDcie polo\x9Eiek do modulov, kde ch\xFDbaj\xFA", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 43
+// src/Optimize/AddMandatoryStatusCode.php, row 45
 "Missing %1 field definition in some slices - need to repair" => "V niektor\xFDch moduloch ch\xFDba defin\xEDcia polo\x9Eky %1 - je potrebn\xE9 opravi\x9D", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 52
+// src/Optimize/AddMandatoryStatusCode.php, row 54
 "Fixing missing %1 fields in slices" => "Oprava ch\xFDbaj\xFAcich polo\x9Eiek %1 v moduloch", // ai 2026-06
 
-// src/Optimize/AddMandatoryStatusCode.php, row 65
+// src/Optimize/AddMandatoryStatusCode.php, row 69
 "Mandatory field %1 added to all slices" => "Povinn\xE1 polo\x9Eka %1 pridan\xE1 do v\x9Aetk\xFDch modulov", // ai 2026-06
 
 // src/Optimize/AddMlxctrlFieldTemplate.php, row 10
@@ -10505,7 +10607,7 @@ return [
 "Backup tables" => "Z\xE1lohova\x9D tabu\xBEky", // ai 2026-06
 
 // src/Optimize/BackupTables.php, row 27
-// src/Optimize/RestoreBckTables.php, row 27
+// src/Optimize/RestoreBckTables.php, row 28
 // src/Optimize/UpdateDbStructure.php, row 31
 "[experimental] " => "[experiment\xE1lne] ", // ai 2026-06
 
@@ -10527,16 +10629,16 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 147
 "%1 done." => "%1 hotovo.", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 15
+// src/Optimize/CategorySort2groupBy.php, row 17
 "Convert slice.category_sort to slice.group_by" => "Previes\x9D slice.category_sort na slice.group_by", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 23
+// src/Optimize/CategorySort2groupBy.php, row 25
 "In older version of AA we used just category fields for grouping items. Now it is universal, so boolean category_sort is not enough. We have used the newer group_by field for quite a long time so most probably all your slices are already converted." => "V star\x9A\xEDch verzi\xE1ch AA sme na zoskupovanie spr\xE1v pou\x9E\xEDvali len polo\x9Eky kateg\xF3ri\xED. Teraz je to univerz\xE1lne, tak\x9Ee booleovsk\xE9 category_sort u\x9E nesta\xE8\xED. Nov\x9Aiu polo\x9Eku group_by pou\x9E\xEDvame u\x9E pomerne dlho, tak\x9Ee pravdepodobne s\xFA u\x9E v\x9Aetky va\x9Ae moduly skonvertovan\xE9.", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 34
+// src/Optimize/CategorySort2groupBy.php, row 36
 "%1 slices are not converted" => "Neskonvertovan\xFDch modulov: %1", // ai 2026-06
 
-// src/Optimize/CategorySort2groupBy.php, row 37
+// src/Optimize/CategorySort2groupBy.php, row 39
 "All slices are already converted" => "V\x9Aetky moduly s\xFA u\x9E skonvertovan\xE9", // ai 2026-06
 
 // src/Optimize/ChangeF_h2F_1.php, row 19
@@ -10557,364 +10659,391 @@ return [
 // src/Optimize/ChangeF_t2F__.php, row 27
 "Replaces f_t alias used for code by quicker f__ function" => "Nahrad\xED alias f_t pou\x9E\xEDvan\xFD pre k\xF3d r\xFDchlej\x9Aou funkciou f__", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 19
+// src/Optimize/ChangeModuleId.php, row 20
 "Change current module ID to new one" => "Zmeni\x9D ID aktu\xE1lneho modulu na nov\xE9", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 27
+// src/Optimize/ChangeModuleId.php, row 28
 "Used sometimes if you clone database or copy slices to another database for another client and do not want to use the same slice/site ids. You probably need to do it for all slices and site module.<br>IT CHANGES CURRENT SLICE ID!" => "Pou\x9E\xEDva sa niekedy, ke\xEF klonujete datab\xE1zu alebo kop\xEDrujete moduly do inej datab\xE1zy pre in\xE9ho klienta a nechcete pou\x9Ei\x9D rovnak\xE9 ID modulov/site. Pravdepodobne to budete potrebova\x9D urobi\x9D pre v\x9Aetky moduly aj modul site.<br>MEN\xCD ID AKTU\xC1LNEHO MODULU!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 41
+// src/Optimize/ChangeModuleId.php, row 42
 "Nothing to test here. Just be careful - IT CHANGES CURRENT SLICE ID without asking!" => "Tu nie je \xE8o testova\x9D. Len bu\xEFte opatrn\xED - MEN\xCD ID AKTU\xC1LNEHO MODULU bez op\xFDtania!", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 62
+// src/Optimize/ChangeModuleId.php, row 63
 "Going to change module_id %1 -> %2 (%3 -> %4)" => "Bude zmenen\xE9 module_id %1 -> %2 (%3 -> %4)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 75
+// src/Optimize/ChangeModuleId.php, row 76
 "Changing ID for table %1 (%2)" => "Zmena ID pre tabu\xBEku %1 (%2)", // ai 2026-06
 
-// src/Optimize/ChangeModuleId.php, row 84
+// src/Optimize/ChangeModuleId.php, row 85
 // src/Optimize/Convert2innodb.php, row 89
 "Converted %1 tables" => "Skonvertovan\xFDch tabuliek: %1", // ai 2026-06
 
 // src/Optimize/ChangeQte2Trm.php, row 24
-"Trim text fields" => "",
+"Trim text fields" => "Oreza\x9D textov\xE9 polo\x9Eky", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 29
-"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "",
+"Switches text fields from the insert function \"Text = don't modify\" to \"Trim\", so spaces and new lines around a value are not stored. Fields for code, unique values, copies of passwords and fields whose constants have such spaces keep their setting. Values stored before are not changed." => "Prepne textov\xE9 polo\x9Eky z vkladacej funkcie \"Text = nemeni\x9D\" na \"Oreza\x9D\", tak\x9Ee medzery a nov\xE9 riadky okolo hodnoty sa neukladaj\xFA. Polo\x9Eky pre k\xF3d, jedine\xE8n\xE9 hodnoty, k\xF3pie hesiel a polo\x9Eky, ktor\xFDch hodnoty tak\xE9to medzery obsahuj\xFA, si nastavenie ponechaj\xFA. Sk\xF4r ulo\x9Een\xE9 hodnoty sa nemenia.", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 77
-"%1 text fields switched to Trim" => "",
+"%1 text fields switched to Trim" => "Textov\xE9 polo\x9Eky prepnut\xE9 na \x84Oreza\x9D\x93: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 77
-"%1 text fields to switch to Trim" => "",
+"%1 text fields to switch to Trim" => "Textov\xE9 polo\x9Eky na prepnutie na \x84Oreza\x9D\x93: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 139
-"Field templates" => "",
+"Field templates" => "\x8Aabl\xF3ny polo\x9Eiek", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 142
-"switched to Trim: %1" => "",
+"switched to Trim: %1" => "prepnut\xE9 na \x84Oreza\x9D\x93: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 142
-"to switch to Trim: %1" => "",
+"to switch to Trim: %1" => "na prepnutie na \x84Oreza\x9D\x93: %1", // ai 2026-10
 
 // src/Optimize/ChangeQte2Trm.php, row 145
-"%1 keeps \"Text = don't modify\": %2" => "",
+"%1 keeps \"Text = don't modify\": %2" => "%1 si ponech\xE1va \"Text = nemeni\x9D\": %2", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 24
-"Unsigned {ajax} widget settings" => "",
+"Unsigned {ajax} widget settings" => "Nepodp\xEDsan\xE9 nastavenia widgetov {ajax}", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 29
-"Lists the fields whose {ajax} edits came without a valid signature of their widget type and properties in the last 30 days, so AA used the field's own widget instead." => "",
+"Lists the fields whose {ajax} edits came without a valid signature of their widget type and properties in the last 30 days, so AA used the field's own widget instead." => "Vyp\xED\x9Ae polo\x9Eky, ktor\xFDch \xFApravy cez {ajax} pri\x9Ali za posledn\xFDch 30 dn\xED bez platn\xE9ho podpisu typu a vlastnost\xED widgetu, tak\x9Ee AA pou\x9Eilo vlastn\xFD widget polo\x9Eky.", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 75
-"{ajax} edit of field %1 in slice %2 came without a valid signature" => "",
+"{ajax} edit of field %1 in slice %2 came without a valid signature" => "\xDAprava polo\x9Eky %1 v module %2 cez {ajax} pri\x9Ala bez platn\xE9ho podpisu", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 81
 // src/Optimize/CheckHttp.php, row 62
 // src/Optimize/CheckUploadRefusals.php, row 85
-"Reason" => "",
+"Reason" => "D\xF4vod", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 82
 // src/Optimize/CheckAlertitemRefusals.php, row 91
 // src/Optimize/CheckAnonymousEditRefusals.php, row 89
 // src/Optimize/CheckBlockedRequests.php, row 90
 // src/Optimize/CheckCkeditorUse.php, row 98
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 92
 // src/Optimize/CheckObjectFormRefusals.php, row 102
 // src/Optimize/CheckQueuedClassMissing.php, row 68
-// src/Optimize/CheckSecurityProtections.php, row 99
+// src/Optimize/CheckSecurityProtections.php, row 102
 // src/Optimize/CheckSessionidUse.php, row 101
+// src/Optimize/CheckTrustedProxies.php, row 104
 // src/Optimize/CheckUploadRefusals.php, row 88
 // src/Optimize/CheckUserAliasFunctionLog.php, row 87
-"Days seen" => "",
+"Days seen" => "Dn\xED v\xFDskytu", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 83
 // src/Optimize/CheckAlertitemRefusals.php, row 92
 // src/Optimize/CheckAnonymousEditRefusals.php, row 90
 // src/Optimize/CheckBlockedRequests.php, row 91
 // src/Optimize/CheckCkeditorUse.php, row 99
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 93
 // src/Optimize/CheckObjectFormRefusals.php, row 103
 // src/Optimize/CheckPhpFatals.php, row 65
 // src/Optimize/CheckQueuedClassMissing.php, row 69
-// src/Optimize/CheckSecurityProtections.php, row 100
+// src/Optimize/CheckSecurityProtections.php, row 103
 // src/Optimize/CheckSessionidUse.php, row 102
+// src/Optimize/CheckTrustedProxies.php, row 105
 // src/Optimize/CheckUploadRefusals.php, row 89
 // src/Optimize/CheckUserAliasFunctionLog.php, row 88
-"Last" => "",
+// src/Optimize/StateCheckModel.php, row 270
+"Last" => "Naposledy", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 85
-"The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice." => "",
+"The page sent a widget type or widget properties (5th and 6th parameter of {ajax}) without the signature AA adds since this version, so the field was edited with its own widget. Pages in the page cache stay unsigned until regenerated - flush the cache of the site. If the rows go on after that, someone sends forged requests - or, for a bad signature, the page is in another charset than the slice." => "Str\xE1nka poslala typ alebo vlastnosti widgetu (5. a 6. parameter {ajax}) bez podpisu, ktor\xFD AA od tejto verzie prid\xE1va, tak\x9Ee polo\x9Eka bola upraven\xE1 svoj\xEDm vlastn\xFDm widgetom. Str\xE1nky v cache str\xE1nok zostan\xFA nepodp\xEDsan\xE9, k\xFDm sa nevygeneruj\xFA znova - vypr\xE1zdnite cache webu. Ak riadky prib\xFAdaj\xFA aj potom, niekto posiela podvrhnut\xE9 po\x9Eiadavky - alebo, pri zlom podpise, je str\xE1nka v inom k\xF3dovan\xED ne\x9E modul.", // ai 2026-10
 
 // src/Optimize/CheckAjaxUnsigned.php, row 91
-"No unsigned {ajax} widget settings in the last 30 days" => "",
+"No unsigned {ajax} widget settings in the last 30 days" => "Za posledn\xFDch 30 dn\xED \x9Eiadne nepodp\xEDsan\xE9 nastavenia widgetov {ajax}", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 28
-"Refused alert sends" => "",
+"Refused alert sends" => "Odmietnut\xE9 odoslania cez Zasielanie", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 33
-"Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "",
+"Lists the alert sends of an item refused in the last 30 days because the collection is not related to the item's slice (no filter on the slice, not its reader slice, no common site)." => "Vyp\xED\x9Ae odoslania spr\xE1v cez Zasielanie odmietnut\xE9 za posledn\xFDch 30 dn\xED, preto\x9Ee kolekcia nes\xFAvis\xED s modulom spr\xE1vy (nem\xE1 na\xF2 filter, modul nie je jej modulom \xE8itate\xBEov, nemaj\xFA spolo\xE8n\xFD web).", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 83
-"Alert send of an item of slice %1 through collection %2 was refused" => "",
+"Alert send of an item of slice %1 through collection %2 was refused" => "Odoslanie spr\xE1vy z modulu %1 cez kolekciu %2 bolo odmietnut\xE9", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 94
-"An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection's reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection." => "",
+"An editor of the slice sent an item through a collection that has no filter on the slice, whose reader slice is not the slice and that shares no site with it. If the send is meant, add a filter on the slice to the collection (a real send to the readers needs one anyway) or add the slice and the collection's reader slice to one site. Otherwise fix the send button in the slice templates, or find out who tried to mail the readers of another collection." => "Editor modulu odoslal spr\xE1vu cez kolekciu, ktor\xE1 nem\xE1 filter na tento modul, ktorej modul \xE8itate\xBEov nie je tento modul a ktor\xE1 s n\xEDm nezdie\xBEa \x9Eiadny web. Ak je odoslanie z\xE1mern\xE9, pridajte do kolekcie filter na modul (skuto\xE8n\xE9 rozoslanie \xE8itate\xBEom ho aj tak potrebuje), alebo dajte modul a modul \xE8itate\xBEov kolekcie do jedn\xE9ho webu. Inak opravte tla\xE8idlo odoslania v \x9Aabl\xF3nach modulu, alebo zistite, kto sa pok\xFAsil posla\x9D e-mail \xE8itate\xBEom inej kolekcie.", // ai 2026-10
 
 // src/Optimize/CheckAlertitemRefusals.php, row 100
-"No alert send was refused in the last 30 days" => "",
+"No alert send was refused in the last 30 days" => "Za posledn\xFDch 30 dn\xED nebolo odmietnut\xE9 \x9Eiadne odoslanie cez Zasielanie", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 23
-"Alerts sending" => "",
+"Alerts sending" => "Rozosielanie modulu Zasielanie", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 28
-"Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "",
+"Checks that every frequency readers can subscribe to is really swept, and that no collection is so far behind that the next sweep would skip items instead of mailing them." => "Over\xED, \x9Ee sa ka\x9Ed\xE1 frekvencia, ktor\xFA si \xE8itatelia m\xF4\x9Eu objedna\x9D, naozaj rozosiela a \x9Ee \x9Eiadna kolekcia nie je tak pozadu, \x9Ee by \xEFal\x9Aie rozoslanie spr\xE1vy presko\xE8ilo namiesto ich odoslania.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 73
-"Frequency" => "",
+"Frequency" => "Frekvencia", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 74
-"Last sent" => "",
+"Last sent" => "Naposledy odoslan\xE9", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 75
-"Would skip" => "",
+"Would skip" => "Presko\xE8ilo by", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 75
-"up to %1 days" => "",
+"up to %1 days" => "a\x9E %1 dn\xED", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 83
-"%1 alert collections are so far behind that the next sweep will skip items" => "",
+"%1 alert collections are so far behind that the next sweep will skip items" => "Kolekcie Zasielania (%1) s\xFA tak pozadu, \x9Ee \xEFal\x9Aie rozoslanie presko\xE8\xED spr\xE1vy", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 86
-"A sweep never reaches back more than two of its periods, so everything older is dropped, not mailed. Check that the task queue plans this frequency and decide whether to let the gap go or to send it by hand from the module." => "",
+"A sweep never reaches back more than two of its periods, so everything older is dropped, not mailed. Check that the task queue plans this frequency and decide whether to let the gap go or to send it by hand from the module." => "Rozoslanie nikdy nesiaha \xEFalej ne\x9E dve svoje peri\xF3dy sp\xE4\x9D, tak\x9Ee v\x9Aetko star\x9Aie sa zahod\xED, nie odo\x9Ale. Overte, \x9Ee front \xFAloh t\xFAto frekvenciu pl\xE1nuje, a rozhodnite, \xE8i medzeru o\x9Eeliete, alebo ju odo\x9Alete ru\xE8ne z modulu.", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 97
-"Readers can subscribe to a frequency nothing sweeps: %1" => "",
+"Readers can subscribe to a frequency nothing sweeps: %1" => "\xC8itatelia si m\xF4\x9Eu objedna\x9D frekvenciu, ktor\xFA ni\xE8 nerozosiela: %1", // ai 2026-10
 
 // src/Optimize/CheckAlerts.php, row 99
-"AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "",
+"AlertsSweep::SCHEDULE has no entry for it, so no task is ever planned and those readers get nothing." => "AlertsSweep::SCHEDULE pre \xF2u nem\xE1 z\xE1znam, tak\x9Ee sa nikdy nenapl\xE1nuje \x9Eiadna \xFAloha a t\xEDto \xE8itatelia nedostan\xFA ni\xE8.", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 26
-"Forms without login changing accounts or authors" => "",
+"Forms without login changing accounts or authors" => "Formul\xE1re bez prihl\xE1senia meniace \xFA\xE8ty alebo autorov", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 31
-"Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "",
+"Lists the fields of existing items a form tried to change in the last 30 days with no user logged in, although they hold the flags or the author of the item, the password, 2FA secret or login of a reader, or the slice of the item. The fields were left as stored." => "Vyp\xED\x9Ae polo\x9Eky existuj\xFAcich spr\xE1v, ktor\xE9 sa za posledn\xFDch 30 dn\xED pok\xFAsil zmeni\x9D formul\xE1r bez prihl\xE1sen\xE9ho u\x9E\xEDvate\xBEa, hoci obsahuj\xFA pr\xEDznaky alebo autora spr\xE1vy, heslo, tajn\xFD k\xBE\xFA\xE8 2FA alebo login \xE8itate\xBEa, pr\xEDpadne modul spr\xE1vy. Polo\x9Eky zostali tak, ako boli ulo\x9Een\xE9.", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 70
-"replace" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
+"replace" => "nahradi\x9D", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 70
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
 "add" => "prida\x9D", // ai 2026-06
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 70
-"remove" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 72
+"remove" => "odobra\x9D", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 80
-"A form without login tried to change the field %1 of an item in slice %2 (last %3)" => "",
+"A form without login tried to change the field %1 of an item in slice %2 (last %3)" => "Formul\xE1r bez prihl\xE1senia sa pok\xFAsil zmeni\x9D polo\x9Eku %1 spr\xE1vy v module %2 (naposledy %3)", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 87
-"Item mode" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 90
+"Item mode" => "Re\x9Eim spr\xE1vy", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 88
 // src/Optimize/CheckCron.php, row 68
-"Script" => "",
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 91
+"Script" => "Skript", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 92
-"The field was left as stored, the rest of the item was saved. Either a form of the site sends this field without a login - then the site must let the reader log in before the form is sent - or the request was forged to take over a reader's account or the item." => "",
+"The field was left as stored, the rest of the item was saved. Either a form of the site sends this field without a login - then the site must let the reader log in before the form is sent - or the request was forged to take over a reader's account or the item." => "Polo\x9Eka zostala tak, ako bola ulo\x9Een\xE1, zvy\x9Aok spr\xE1vy sa ulo\x9Eil. Bu\xEF formul\xE1r webu posiela t\xFAto polo\x9Eku bez prihl\xE1senia - potom mus\xED web necha\x9D \xE8itate\xBEa prihl\xE1si\x9D sa, ne\x9E formul\xE1r odo\x9Ale - alebo bola po\x9Eiadavka podvrhnut\xE1, aby prevzala \xFA\xE8et \xE8itate\xBEa alebo spr\xE1vu.", // ai 2026-10
 
 // src/Optimize/CheckAnonymousEditRefusals.php, row 98
-"No form without login tried to change an account or author field in the last 30 days" => "",
+"No form without login tried to change an account or author field in the last 30 days" => "Za posledn\xFDch 30 dn\xED sa \x9Eiadny formul\xE1r bez prihl\xE1senia nepok\xFAsil zmeni\x9D polo\x9Eku \xFA\xE8tu alebo autora", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 42
-"Refused requests to the local network" => "",
+"Refused requests to the local network" => "Odmietnut\xE9 po\x9Eiadavky do lok\xE1lnej siete", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 47
-"Lists the addresses AA refused to fetch in the last 30 days because they lead to the local or private network of the server." => "",
+"Lists the addresses AA refused to fetch in the last 30 days because they lead to the local or private network of the server." => "Vyp\xED\x9Ae adresy, ktor\xE9 AA za posledn\xFDch 30 dn\xED odmietlo stiahnu\x9D, preto\x9Ee ved\xFA do lok\xE1lnej alebo priv\xE1tnej siete servera.", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 83
-"%1 from %2 asked for %3, which was refused" => "",
+"%1 from %2 asked for %3, which was refused" => "%1 z %2 po\x9Eadoval %3, \xE8o bolo odmietnut\xE9", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 87
-"Asked by" => "",
+"Asked by" => "\x8Eiadate\xBE", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 88
-"Client" => "",
+"Client" => "Klient", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 89
-"Host" => "",
+"Host" => "Hostite\xBE", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 93
-"AA fetches only public addresses for forms and templates - otherwise whoever chooses the address reads the internal services of the server. Most often this is a probe. If it is a site of yours, use its public domain name." => "",
+"AA fetches only public addresses for forms and templates - otherwise whoever chooses the address reads the internal services of the server. Most often this is a probe. If it is a site of yours, use its public domain name." => "AA s\x9Dahuje pre formul\xE1re a \x9Aabl\xF3ny len verejn\xE9 adresy - inak by ten, kto adresu zvol\xED, \xE8\xEDtal intern\xE9 slu\x9Eby servera. Naj\xE8astej\x9Aie ide o sondovanie. Ak je to v\xE1\x9A web, pou\x9Eite jeho verejn\xE9 dom\xE9nov\xE9 meno.", // ai 2026-10
 
 // src/Optimize/CheckBlockedRequests.php, row 99
-"No address was refused in the last 30 days" => "",
+"No address was refused in the last 30 days" => "Za posledn\xFDch 30 dn\xED nebola odmietnut\xE1 \x9Eiadna adresa", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 16
-"Central logins" => "",
+"Central logins" => "Pr\xEDstupy Central", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 21
-"Checks that ActionApps Central keeps the logins to its AAs only as encrypted tokens - no passwords or plain tokens in the database." => "",
+"Checks that ActionApps Central keeps the logins to its AAs only as encrypted tokens - no passwords or plain tokens in the database." => "Over\xED, \x9Ee ActionApps Central uchov\xE1va pr\xEDstupy k svojim AA len ako \x9Aifrovan\xE9 tokeny - \x9Eiadne hesl\xE1 ani ne\x9Aifrovan\xE9 tokeny v datab\xE1ze.", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 55
-"Central keeps no password and no plain token" => "",
+"Central keeps no password and no plain token" => "Central neuchov\xE1va \x9Eiadne heslo ani ne\x9Aifrovan\xFD token", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 59
-"Central keeps a password or a plain token of %1 AAs" => "",
+"Central keeps a password or a plain token of %1 AAs" => "Central uchov\xE1va heslo alebo ne\x9Aifrovan\xFD token pre %1 AA", // ai 2026-10
 
 // src/Optimize/CheckCentralCredentials.php, row 62
-"Central never sends them. Press Get Token for that AA on the ActionApps Central page (it overwrites the value)." => "",
+"Central never sends them. Press Get Token for that AA on the ActionApps Central page (it overwrites the value)." => "Central ich nikdy neposiela. Na str\xE1nke ActionApps Central stla\xE8te pri tom AA \x84Z\xEDska\x9D token\x93 (hodnotu prep\xED\x9Ae).", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 41
-"CKEditor 4 use" => "",
+"CKEditor 4 use" => "Pou\x9Eitie CKEditora 4", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 46
-"Lists the pages that loaded the old CKEditor 4 by {require:ckeditor} in the last 30 days. AA edits text with TinyMCE now; CKEditor 4 will be removed once no template asks for it." => "",
+"Lists the pages that loaded the old CKEditor 4 by {require:ckeditor} in the last 30 days. AA edits text with TinyMCE now; CKEditor 4 will be removed once no template asks for it." => "Vyp\xED\x9Ae str\xE1nky, ktor\xE9 za posledn\xFDch 30 dn\xED na\xE8\xEDtali star\xFD CKEditor 4 cez {require:ckeditor}. AA teraz upravuje text pomocou TinyMCE; CKEditor 4 bude odstr\xE1nen\xFD, ke\xEF ho u\x9E \x9Eiadna \x9Aabl\xF3na nebude vy\x9Eadova\x9D.", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 92
-"CKEditor 4 loaded on %1" => "",
+"CKEditor 4 loaded on %1" => "CKEditor 4 na\xE8\xEDtan\xFD: %1", // ai 2026-10
 
 // src/Optimize/CheckCkeditorUse.php, row 101
-"A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "",
+"A template of the page has {require:ckeditor} (and CKEDITOR.replace()). Wrap the textarea in <aa-richtext mode=\"rich\"> with {require:aa-richtext@1} instead - the textarea keeps its name and value, so the form and scripts reading textarea.value work as they are; CKEDITOR.instances[...].getData() becomes the textarea value." => "\x8Aabl\xF3na str\xE1nky obsahuje {require:ckeditor} (a CKEDITOR.replace()). Namiesto toho oba\xBEte textarea do <aa-richtext mode=\"rich\"> s {require:aa-richtext@1} - textarea si ponech\xE1 meno aj hodnotu, tak\x9Ee formul\xE1r aj skripty \xE8\xEDtaj\xFAce textarea.value funguj\xFA bez zmeny; z CKEDITOR.instances[...].getData() sa stane hodnota textarea.", // ai 2026-10
 
-// src/Optimize/CheckCkeditorUse.php, row 107
-"No page loaded CKEditor 4 in the last 30 days" => "",
+// src/Optimize/CheckCkeditorUse.php, row 108
+"No page loaded CKEditor 4 in the last 30 days" => "Za posledn\xFDch 30 dn\xED \x9Eiadna str\xE1nka nena\xE8\xEDtala CKEditor 4", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 16
+"Cookies read past the page cache" => "Cookies \xE8\xEDtan\xE9 mimo cache str\xE1nok", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 21
+"Lists installation PHP files (include/usr_aliasfnc.php, include/custom/, modules/site/sites/) that read cookies directly - cached site pages do not vary on such a cookie." => "Vyp\xED\x9Ae PHP s\xFAbory in\x9Atal\xE1cie (include/usr_aliasfnc.php, include/custom/, modules/site/sites/), ktor\xE9 \xE8\xEDtaj\xFA cookies priamo - str\xE1nky webu z cache sa pod\xBEa takej cookie nel\xED\x9Aia.", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 53
+"%1 reads cookies directly" => "%1 \xE8\xEDta cookies priamo", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 55
+"Lines" => "Riadky", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 56
+"A cached site page does not vary on such a cookie - the variant of the first visitor is served to everyone. Read the cookie with \\AA\\Cache\\PageCache::cookie('name'), in templates {cookie:name}; the page is then cached once per value of that cookie." => "Str\xE1nka webu v cache sa pod\xBEa takej cookie nel\xED\x9Ai - v\x9Aetk\xFDm sa po\x9Ale variant prv\xE9ho n\xE1v\x9Atevn\xEDka. \xC8\xEDtajte cookie cez \\AA\\Cache\\PageCache::cookie('name'), v \x9Aabl\xF3nach {cookie:name}; str\xE1nka sa potom ulo\x9E\xED do cache zvl\xE1\x9A\x9D pre ka\x9Ed\xFA hodnotu tejto cookie.", // ai 2026-10
+
+// src/Optimize/CheckCookieReads.php, row 61
+"No installation file reads cookies directly" => "\x8Eiadny s\xFAbor in\x9Atal\xE1cie ne\xE8\xEDta cookies priamo", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 24
-"Cron table" => "",
+"Cron table" => "Tabu\xBEka cronu", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 29
-"Checks the AA cron table: unreadable schedules, scripts scheduled twice, rows that have not run for twice their period, and AA jobs that belong to the queue." => "",
+"Checks the AA cron table: unreadable schedules, scripts scheduled twice, rows that have not run for twice their period, and AA jobs that belong to the queue." => "Kontroluje tabu\xBEku cronu AA: ne\xE8itate\xBEn\xE9 pl\xE1ny, skripty napl\xE1novan\xE9 dvakr\xE1t, riadky, ktor\xE9 nebe\x9Eali po\xE8as dvojn\xE1sobku svojej peri\xF3dy, a \xFAlohy AA, ktor\xE9 patria do frontu.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 57
-"Cron row %1 (%2) has an unreadable schedule: %3" => "",
+"Cron row %1 (%2) has an unreadable schedule: %3" => "Riadok cronu %1 (%2) m\xE1 ne\xE8itate\xBEn\xFD pl\xE1n: %3", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 57
-"cron.php skips a row it cannot parse, so the script never runs. Allowed are digits, commas, ranges and */step; fix the fields or delete the row." => "",
+"cron.php skips a row it cannot parse, so the script never runs. Allowed are digits, commas, ranges and */step; fix the fields or delete the row." => "cron.php riadok, ktor\xFD nedok\xE1\x9Ee spracova\x9D, presko\xE8\xED, tak\x9Ee skript nikdy nebe\x9E\xED. Povolen\xE9 s\xFA \xE8\xEDslice, \xE8iarky, rozsahy a */krok; opravte polia alebo riadok zma\x9Ete.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 62
-"Job %1 is scheduled %2 times" => "",
+"Job %1 is scheduled %2 times" => "\xDAloha %1 je napl\xE1novan\xE1 %2-kr\xE1t", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 62
-"Usually an old .php3 row next to the .php one, so the script runs twice. Delete the older row." => "",
+"Usually an old .php3 row next to the .php one, so the script runs twice. Delete the older row." => "Zvy\xE8ajne star\xFD riadok .php3 ved\xBEa riadku .php, tak\x9Ee skript be\x9E\xED dvakr\xE1t. Star\x9A\xED riadok zma\x9Ete.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 70
-"Expected every" => "",
+"Expected every" => "O\xE8ak\xE1van\xE9 ka\x9Ed\xFDch", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 72
-"%1 cron rows have not run for longer than twice their period" => "",
+"%1 cron rows have not run for longer than twice their period" => "Riadky cronu, ktor\xE9 nebe\x9Eali dlh\x9Aie ne\x9E dvojn\xE1sobok svojej peri\xF3dy: %1", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 72
-"cron.php runs (see the task queue) but skipped these rows, or their schedule means something else than you expect." => "",
+"cron.php runs (see the task queue) but skipped these rows, or their schedule means something else than you expect." => "cron.php be\x9E\xED (pozri front \xFAloh), ale tieto riadky presko\xE8il, alebo ich pl\xE1n znamen\xE1 nie\xE8o in\xE9, ne\x9E \xE8ak\xE1te.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 77
-"AA jobs are still in the cron table and run twice" => "",
+"AA jobs are still in the cron table and run twice" => "\xDAlohy AA s\xFA st\xE1le v tabu\xBEke cronu a be\x9Eia dvakr\xE1t", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 77
-"Run service/sql_update.php." => "",
+"Run service/sql_update.php." => "Spustite service/sql_update.php.", // ai 2026-10
 
 // src/Optimize/CheckCron.php, row 81
-"%1 cron rows, all readable and running on schedule" => "",
+"%1 cron rows, all readable and running on schedule" => "Riadkov cronu: %1, v\x9Aetky \xE8itate\xBEn\xE9 a be\x9Eia pod\xBEa pl\xE1nu", // ai 2026-10
+
+// src/Optimize/CheckEnvironment.php, row 18
+// src/Optimize/StateCheckModel.php, row 295
+"Environment" => "Prostredie", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 23
-"Shows the AA version, SVN revision, PHP and database versions from the last system status row, and when they last changed." => "",
+"Shows the AA version, SVN revision, PHP and database versions from the last system status row, and when they last changed." => "Zobraz\xED verziu AA, rev\xEDziu SVN, verzie PHP a datab\xE1zy z posledn\xE9ho z\xE1znamu stavu syst\xE9mu a kedy sa naposledy zmenili.", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 45
-"No system status recorded yet; the task queue writes one every 10 minutes" => "",
+"No system status recorded yet; the task queue writes one every 10 minutes" => "Stav syst\xE9mu zatia\xBE nebol zaznamenan\xFD; front \xFAloh ho zapisuje ka\x9Ed\xFDch 10 min\xFAt", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 51
 "SVN" => "",
 
 // src/Optimize/CheckEnvironment.php, row 53
-"Database" => "",
+"Database" => "Datab\xE1za", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 56
-"Unchanged since" => "",
+"Unchanged since" => "Bez zmeny od", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 57
-"Recorded changes" => "",
+"Recorded changes" => "Zaznamenan\xE9 zmeny", // ai 2026-10
 
 // src/Optimize/CheckEnvironment.php, row 66
-"AA %1 (%2), PHP %3, %4; unchanged since %5" => "",
+"AA %1 (%2), PHP %3, %4; unchanged since %5" => "AA %1 (%2), PHP %3, %4; bez zmeny od %5", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 29
-"Outgoing HTTP" => "",
+"Outgoing HTTP" => "Odch\xE1dzaj\xFAce HTTP", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 34
-"Fetches this installation's own address to check that PHP can make HTTP requests at all - {include} of local pages, Central and the link checker all need it." => "",
+"Fetches this installation's own address to check that PHP can make HTTP requests at all - {include} of local pages, Central and the link checker all need it." => "Stiahne vlastn\xFA adresu tejto in\x9Atal\xE1cie a over\xED tak, \x9Ee PHP v\xF4bec dok\xE1\x9Ee posiela\x9D HTTP po\x9Eiadavky - potrebuje to {include} lok\xE1lnych str\xE1nok, Central aj kontrola odkazov.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 61
-"PHP cannot fetch %1" => "",
+"PHP cannot fetch %1" => "PHP nem\xF4\x9Ee stiahnu\x9D %1", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 63
-"Check that this server resolves its own hostname, that outgoing HTTP is not blocked by a firewall, and that PHP has a CA bundle for https. Until this works, {include} of local pages renders nothing and Central cannot reach its installations." => "",
+"Check that this server resolves its own hostname, that outgoing HTTP is not blocked by a firewall, and that PHP has a CA bundle for https. Until this works, {include} of local pages renders nothing and Central cannot reach its installations." => "Overte, \x9Ee tento server preklad\xE1 vlastn\xE9 meno hostite\xBEa, \x9Ee odch\xE1dzaj\xFAce HTTP neblokuje firewall a \x9Ee PHP m\xE1 bal\xEDk CA certifik\xE1tov pre https. K\xFDm to nefunguje, {include} lok\xE1lnych str\xE1nok nevykresl\xED ni\xE8 a Central sa nedostane k svojim in\x9Atal\xE1ci\xE1m.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 71
-"AA_INSTAL_URL redirects to %1" => "",
+"AA_INSTAL_URL redirects to %1" => "AA_INSTAL_URL presmerov\xE1va na %1", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 72
-"Configured" => "",
+"Configured" => "Nastaven\xE9", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 72
-"Answered" => "",
+"Answered" => "Odpove\xEF", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 73
-"Set AA_INSTAL_URL in config.php to the address the server actually serves. Every extra hop is paid on each local request, and a redirect that drops the session cookie breaks included pages." => "",
+"Set AA_INSTAL_URL in config.php to the address the server actually serves. Every extra hop is paid on each local request, and a redirect that drops the session cookie breaks included pages." => "Nastavte AA_INSTAL_URL v config.php na adresu, ktor\xFA server skuto\xE8ne obsluhuje. Ka\x9Ed\xFD presmerovac\xED krok navy\x9Ae sa plat\xED pri ka\x9Edej lok\xE1lnej po\x9Eiadavke a presmerovanie, ktor\xE9 strat\xED session cookie, rozbije vkladan\xE9 str\xE1nky.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 81
-"This installation's own address answers HTTP %1" => "",
-
-// src/Optimize/CheckHttp.php, row 82, 91
-// src/Optimize/CheckSessionidUse.php, row 99
-// src/Optimize/CheckUploadRefusals.php, row 86
-"Address" => "",
+"This installation's own address answers HTTP %1" => "Vlastn\xE1 adresa tejto in\x9Atal\xE1cie vracia HTTP %1", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 82
 // src/Optimize/MissCacheRouting.php, row 98, 129
-"Answer" => "",
+"Answer" => "Odpove\xEF", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 83
-"AA can reach the network, but AA_INSTAL_URL does not lead to this installation. Included local pages will render the error instead of the page." => "",
+"AA can reach the network, but AA_INSTAL_URL does not lead to this installation. Included local pages will render the error instead of the page." => "AA sa do siete dostane, ale AA_INSTAL_URL nevedie na t\xFAto in\x9Atal\xE1ciu. Vkladan\xE9 lok\xE1lne str\xE1nky namiesto obsahu zobrazia chybu.", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 90
-"The server reaches its own address (HTTP %1)" => "",
+"The server reaches its own address (HTTP %1)" => "Server sa dostane na vlastn\xFA adresu (HTTP %1)", // ai 2026-10
 
 // src/Optimize/CheckHttp.php, row 103
 "curl" => "",
 
 // src/Optimize/CheckImportStores.php, row 19
-"Import stream states and catalogs" => "",
+"Import stream states and catalogs" => "Stavy pr\xFAdov a katal\xF3gy importov", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 24
-"Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "",
+"Reads the stored stream versions and catalogs of the imports and lists those that cannot be read." => "Na\xE8\xEDta ulo\x9Een\xE9 verzie pr\xFAdov a katal\xF3gy importov a vyp\xED\x9Ae tie, ktor\xE9 nemo\x9Eno pre\xE8\xEDta\x9D.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 48
 // src/Optimize/CheckImports.php, row 80
-"No import is defined" => "",
+"No import is defined" => "Nie je definovan\xFD \x9Eiadny import", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 60
-"The stream state of an import cannot be read" => "",
+"The stream state of an import cannot be read" => "Stav pr\xFAdov importu nemo\x9Eno pre\xE8\xEDta\x9D", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 60
-"Its versions read as empty, so the next run of changed data imports everything; that run stores the state again." => "",
+"Its versions read as empty, so the next run of changed data imports everything; that run stores the state again." => "Jeho verzie sa na\xE8\xEDtaj\xFA ako pr\xE1zdne, tak\x9Ee \xEFal\x9A\xED beh len zmenen\xFDch d\xE1t naimportuje v\x9Aetko; ten beh stav znova ulo\x9E\xED.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 67
-"The catalog of an import source cannot be read" => "",
+"The catalog of an import source cannot be read" => "Katal\xF3g zdroja importu nemo\x9Eno pre\xE8\xEDta\x9D", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 67
-"It reads as empty, so the import detail lists every stream as missing at the source. Check the source again to fill it anew." => "",
+"It reads as empty, so the import detail lists every stream as missing at the source. Check the source again to fill it anew." => "Na\xE8\xEDta sa ako pr\xE1zdny, tak\x9Ee detail importu vyp\xED\x9Ae ka\x9Ed\xFD pr\xFAd ako ch\xFDbaj\xFAci v zdroji. Spustite znova kontrolu zdroja, t\xFDm sa katal\xF3g znova napln\xED.", // ai 2026-10
 
 // src/Optimize/CheckImportStores.php, row 71
-"The stream states and catalogs of %1 imports can be read" => "",
+"The stream states and catalogs of %1 imports can be read" => "Stavy pr\xFAdov a katal\xF3gy importov (%1) s\xFA \xE8itate\xBEn\xE9", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 40
-"Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "",
+"Lists imports stopped by an error or not moving on, imports that cannot run, damaged keys, failures in the log and records left by deleted imports." => "Vyp\xED\x9Ae importy zastaven\xE9 chybou alebo nepostupuj\xFAce, importy, ktor\xE9 nem\xF4\x9Eu be\x9Ea\x9D, po\x9Akoden\xE9 k\xBE\xFA\xE8e, chyby v logu a z\xE1znamy po zmazan\xFDch importoch.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 80
-"%1 imports, none needs attention" => "",
+"%1 imports, none needs attention" => "Importov: %1, \x9Eiadny nevy\x9Eaduje pozornos\x9D", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 93
-"Removed %1 runs and %2 stream states and catalogs of deleted imports." => "",
+"Removed %1 runs and %2 stream states and catalogs of deleted imports." => "Odstr\xE1nen\xE9 zo zmazan\xFDch importov - behov: %1, stavov pr\xFAdov a katal\xF3gov: %2.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 150
-"An import stopped by an error" => "",
+"An import stopped by an error" => "Import zastaven\xFD chybou", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 150, 287
 // src/Optimize/CheckInstallRuns.php, row 62
@@ -10922,573 +11051,858 @@ return [
 "Error" => "Chyba", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 150
-"Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "",
+"Nothing more is imported until someone acts or a planned task starts the import again (that ends this run). Open the import, see the error, fix its cause and choose Continue - or End, which keeps what was imported." => "Ni\xE8 \xEFal\x9Aie sa neimportuje, k\xFDm niekto nezasiahne alebo k\xFDm import znovu nespust\xED napl\xE1novan\xE1 \xFAloha (t\xFDm sa tento beh ukon\xE8\xED). Otvorte import, pozrite si chybu, odstr\xE1\xF2te jej pr\xED\xE8inu a zvo\xBEte \x84Pokra\xE8ova\x9D\x93 - alebo \x84Ukon\xE8i\x9D\x93, \xE8o ponech\xE1, \xE8o u\x9E bolo naimportovan\xE9.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
-"An import has not moved on for %1 hours" => "",
+"An import has not moved on for %1 hours" => "Import stoj\xED u\x9E %1 h", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
-"Idle since" => "",
+"Idle since" => "Ne\xE8inn\xFD od", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 154
-"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "",
+"No queue step works on it. Check that cron runs the task queue and that its rounds are long enough for a step (TOEXECUTE_ALLOWED_TIME in config.php), then choose Continue on the import. A planned start of the import ends it and starts a new run." => "Nepracuje na \xF2om \x9Eiadny krok fronty. Overte, \x9Ee cron sp\xFA\x9A\x9Da frontu \xFAloh a \x9Ee jej kol\xE1 s\xFA na krok dos\x9D dlh\xE9 (TOEXECUTE_ALLOWED_TIME v config.php), a potom pri importe zvo\xBEte \x84Pokra\xE8ova\x9D\x93. Pl\xE1novan\xE9 spustenie importu ho ukon\xE8\xED a za\xE8ne nov\xFD beh.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 171
-"Imports cannot run: a table does not support transactions" => "",
+"Imports cannot run: a table does not support transactions" => "Importy nem\xF4\x9Eu be\x9Ea\x9D: tabu\xBEka nepodporuje transakcie", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 171
-"Table" => "",
+"Table" => "Tabu\xBEka", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 171
-"Every run is refused. Convert the table to InnoDB or ask the server administrator." => "",
+"Every run is refused. Convert the table to InnoDB or ask the server administrator." => "Ka\x9Ed\xFD beh je odmietnut\xFD. Preve\xEFte tabu\xBEku na InnoDB alebo sa obr\xE1\x9Dte na spr\xE1vcu servera.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 176
-"not found" => "",
+"not found" => "nen\xE1jden\xE9", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 180
-"%1 imports have a source that is not available" => "",
+"%1 imports have a source that is not available" => "Importy so zdrojom, ktor\xFD nie je dostupn\xFD: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 180
-"A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "",
+"A run of such an import stops in error at once. Fix or put back the source file, or delete the import." => "Beh tak\xE9ho importu sa okam\x9Eite zastav\xED na chybe. Opravte alebo vr\xE1\x9Dte s\xFAbor zdroja, alebo import zma\x9Ete.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 197
-"Another record holds the place of the stream state or catalog of an import" => "",
+"Another record holds the place of the stream state or catalog of an import" => "Miesto stavu pr\xFAdov alebo katal\xF3gu importu zaber\xE1 in\xFD z\xE1znam", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 197
-"The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "",
+"The end of each step of its runs fails on it, and deleting the import leaves it. Delete the object at the id of its stream state or catalog." => "Koniec ka\x9Ed\xE9ho kroku jeho behov na \xF2om zlyh\xE1 a zmazanie importu ho ponech\xE1. Zma\x9Ete objekt s id jeho stavu pr\xFAdov alebo katal\xF3gu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 206
-"The last run of an import skipped 1 stream: the source went round" => "",
+"The last run of an import skipped 1 stream: the source went round" => "Posledn\xFD beh importu presko\xE8il 1 pr\xFAd: zdroj sa zacyklil", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 206
-"The last run of an import skipped %1 streams: the source went round" => "",
+"The last run of an import skipped %1 streams: the source went round" => "Posledn\xFD beh importu presko\xE8il pr\xFAdy (%1): zdroj sa zacyklil", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 206
-"The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "",
+"The source handed out the same job again, or more jobs than it allows, so the run skipped the rest of those streams and their data may be missing. The source pages wrongly or changed its paging; check the source, then run the import again. The import detail names the streams." => "Zdroj vydal rovnak\xFA \xFAlohu znovu alebo viac \xFAloh, ne\x9E s\xE1m povo\xBEuje, tak\x9Ee beh presko\xE8il zvy\x9Aok t\xFDchto pr\xFAdov a ich d\xE1ta m\xF4\x9Eu ch\xFDba\x9D. Zdroj str\xE1nkuje chybne alebo zmenil str\xE1nkovanie; skontrolujte zdroj a potom import spustite znovu. Pr\xFAdy uv\xE1dza detail importu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 209
-"The last run of an import had %1 item errors" => "",
+"The last run of an import had %1 item errors" => "Posledn\xFD beh importu mal chyby spr\xE1v: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 209
-"The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "",
+"The other items were stored. The import detail lists the first errors; fix the data or the mapping and run the import again." => "Ostatn\xE9 spr\xE1vy sa ulo\x9Eili. Detail importu vyp\xED\x9Ae prv\xE9 chyby; opravte d\xE1ta alebo mapovanie a import spustite znovu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 213
-"An enabled import has no planned task" => "",
+"An enabled import has no planned task" => "Zapnut\xFD import nem\xE1 napl\xE1novan\xFA \xFAlohu", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 213
-"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "",
+"No planned task of the slice calls {import} with its name or id, so it runs only by hand. Plan a task, or switch Enabled off." => "\x8Eiadna napl\xE1novan\xE1 \xFAloha modulu nevol\xE1 {import} s jeho menom alebo id, tak\x9Ee be\x9E\xED len ru\xE8ne. Napl\xE1nujte \xFAlohu, alebo vypnite vo\xBEbu \x84Zapnut\xE9\x93.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 218
-"%1 imports of one slice have the same name" => "",
+"%1 imports of one slice have the same name" => "Importy jedn\xE9ho modulu s rovnak\xFDm menom: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 218
-"{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "",
+"{import} cannot tell them apart and refuses the name, so a planned task with it fails. Rename all but one." => "{import} ich nedok\xE1\x9Ee rozl\xED\x9Ai\x9D a meno odmietne, tak\x9Ee napl\xE1novan\xE1 \xFAloha s n\xEDm zlyh\xE1. Premenujte v\x9Aetky okrem jedn\xE9ho.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 233
-"The last check of an import source cannot be read" => "",
+"The last check of an import source cannot be read" => "Posledn\xFA kontrolu zdroja importu nemo\x9Eno pre\xE8\xEDta\x9D", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 233
-"Its stored result is damaged. The next check of the source stores it again." => "",
+"Its stored result is damaged. The next check of the source stores it again." => "Jej ulo\x9Een\xFD v\xFDsledok je po\x9Akoden\xFD. \xCFal\x9Aia kontrola zdroja ho ulo\x9E\xED znovu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236
-"The last check of an import source failed" => "",
+"The last check of an import source failed" => "Posledn\xE1 kontrola zdroja importu zlyhala", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236, 238
-"Checked" => "",
+"Checked" => "Skontrolovan\xE9", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 236
-"A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "",
+"A live run stops in error when the source fails its check. The import detail shows what the source said; fix the key or the settings and check the source again." => "Ostr\xFD beh sa zastav\xED na chybe, ke\xEF zdroj neprejde kontrolou. Detail importu ukazuje, \xE8o zdroj odpovedal; opravte k\xBE\xFA\xE8 alebo nastavenia a zdroj znovu skontrolujte.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 238
-"The last check of an import source passed with a remark" => "",
+"The last check of an import source passed with a remark" => "Posledn\xE1 kontrola zdroja importu pre\x9Ala s pozn\xE1mkou", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 238
-"The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "",
+"The import runs, but the source points at something to fix - for example definitions it leaves out. The import detail shows what the source said." => "Import be\x9E\xED, ale zdroj upozor\xF2uje na nie\xE8o na opravu - napr\xEDklad defin\xEDcie, ktor\xE9 vynech\xE1va. Detail importu ukazuje, \xE8o zdroj odpovedal.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 244
-"The catalog of an import source is incomplete" => "",
+"The catalog of an import source is incomplete" => "Katal\xF3g zdroja importu je ne\xFApln\xFD", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 244
-"The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "",
+"The last check did not finish listing the source, so the import detail cannot tell which streams the source no longer has. Check the source again." => "Posledn\xE1 kontrola nedokon\xE8ila v\xFDpis zdroja, tak\x9Ee detail importu nem\xF4\x9Ee ur\xE8i\x9D, ktor\xE9 pr\xFAdy u\x9E zdroj nem\xE1. Skontrolujte zdroj znovu.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 260
-"%1 records of deleted imports are left: runs, stream states, catalogs" => "",
+"%1 records of deleted imports are left: runs, stream states, catalogs" => "Zost\xE1vaj\xFA z\xE1znamy zmazan\xFDch importov (%1): behy, stavy pr\xFAdov, katal\xF3gy", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 262
-"A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "",
+"A step of a deleted import is still working and may store items until its time runs out. Repair deletes the records; the step then writes nothing back." => "Krok zmazan\xE9ho importu e\x9Ate pracuje a m\xF4\x9Ee uklada\x9D spr\xE1vy, k\xFDm mu nevypr\x9A\xED \xE8as. \x84Opravi\x9D\x93 z\xE1znamy zma\x9Ee; krok potom u\x9E ni\xE8 sp\xE4\x9D nezap\xED\x9Ae.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 262
-"Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "",
+"Nothing uses them and nothing else removes them. Repair deletes them with their queued steps." => "Ni\xE8 ich nepou\x9E\xEDva a ni\xE8 in\xE9 ich neodstr\xE1ni. \x84Opravi\x9D\x93 ich zma\x9Ee aj s ich krokmi vo fronte.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"A key in config.php is damaged" => "",
+"A key in config.php is damaged" => "K\xBE\xFA\xE8 v config.php je po\x9Akoden\xFD", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 272
-"The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "",
+"The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php." => "K\xBE\xFA\xE8 obsahuje zalomenie riadku alebo NUL, tak\x9Ee ho \x9Eiadny zdroj importu nesmie pou\x9Ei\x9D. Opravte kon\x9Atantu v config.php.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 291
-"Imports logged %1 failures in the last 7 days" => "",
+"Imports logged %1 failures in the last 7 days" => "Chyby zaznamenan\xE9 importmi za posledn\xFDch 7 dn\xED: %1", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 295
-"A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "",
+"A failed queue step stops its import in error; the other rows are failures outside a step, such as refreshing cached pages after an import was deleted. Only the error class and place, or the code of a refusal, are logged - the message may hold a key." => "Ne\xFAspe\x9An\xFD krok fronty zastav\xED svoj import chybou; ostatn\xE9 riadky s\xFA chyby mimo kroku, napr\xEDklad obnova str\xE1nok v cache po zmazan\xED importu. Zaznamen\xE1va sa len trieda a miesto chyby alebo k\xF3d odmietnutia - spr\xE1va m\xF4\x9Ee obsahova\x9D k\xBE\xFA\xE8.", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 296
-"Failed steps" => "",
+"Failed steps" => "Ne\xFAspe\x9An\xE9 kroky", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 296
-"Other failures" => "",
+"Other failures" => "Ostatn\xE9 chyby", // ai 2026-10
 
 // src/Optimize/CheckImports.php, row 373
-"Import detail" => "",
+"Import detail" => "Detail importu", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 16
-"App transfers" => "",
+"App transfers" => "Prenosy aplik\xE1ci\xED", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 21
-"Warns about app transfers that hang and lists those stopped by an error." => "",
+"Warns about app transfers that hang and lists those stopped by an error." => "Upozorn\xED na prenosy aplik\xE1ci\xED, ktor\xE9 sa zasekli, a vyp\xED\x9Ae tie, ktor\xE9 sa zastavili na chybe.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 55
-"Last progress" => "",
+"Last progress" => "Posledn\xFD pokrok", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 58
-"Items written" => "",
+"Items written" => "Zap\xEDsan\xE9 spr\xE1vy", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 67
-"An app transfer stopped by an error" => "",
+"An app transfer stopped by an error" => "Prenos aplik\xE1cie sa zastavil na chybe", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 68
-"An app transfer has not moved on for %1 hours" => "",
+"An app transfer has not moved on for %1 hours" => "Prenos aplik\xE1cie sa nepohol u\x9E %1 h", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 69
-"An installed app has waited for its finish for %1 hours" => "",
+"An installed app has waited for its finish for %1 hours" => "Nain\x9Atalovan\xE1 aplik\xE1cia \xE8ak\xE1 na dokon\xE8enie u\x9E %1 h", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 74
-"The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written." => "",
+"The new modules hold only part of the items. Check that the task queue of this AA runs; the user who started the transfer opens its progress page and chooses Continue - or End (any superadmin), which keeps what is written." => "Nov\xE9 moduly obsahuj\xFA len \xE8as\x9D spr\xE1v. Overte, \x9Ee fronta \xFAloh tohto AA be\x9E\xED; u\x9E\xEDvate\xBE, ktor\xFD prenos spustil, otvor\xED jeho str\xE1nku priebehu a zvol\xED \x84Pokra\xE8ova\x9D\x93 - alebo \x84Ukon\xE8i\x9D\x93 (ktor\xFDko\xBEvek superadmin), \xE8o ponech\xE1, \xE8o je zap\xEDsan\xE9.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 75
-"The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it." => "",
+"The app is installed and works - only the finish of its run waits for the task queue. Check that the queue of this AA runs; on the progress page Continue finishes it at once, End closes it." => "Aplik\xE1cia je nain\x9Atalovan\xE1 a funguje - len dokon\xE8enie jej behu \xE8ak\xE1 na frontu \xFAloh. Overte, \x9Ee fronta tohto AA be\x9E\xED; na str\xE1nke priebehu \x84Pokra\xE8ova\x9D\x93 beh hne\xEF dokon\xE8\xED, \x84Ukon\xE8i\x9D\x93 ho uzavrie.", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 76
-"Progress page" => "",
+"Progress page" => "Str\xE1nka priebehu", // ai 2026-10
 
 // src/Optimize/CheckInstallRuns.php, row 80
-"No app transfer is stuck" => "",
+"No app transfer is stuck" => "\x8Eiadny prenos aplik\xE1cie neuviazol", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 27
+"Item edits without the edit permission" => "\xDApravy spr\xE1v bez pr\xE1va na \xFApravu", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 32
+"Lists the slices whose existing items were changed in the last 30 days through a form of the site by visitors without login, by readers or by users without the permission to edit the items. Such edits are allowed for now; the list shows which forms rely on them." => "Vyp\xED\x9Ae moduly, ktor\xFDch existuj\xFAce spr\xE1vy za posledn\xFDch 30 dn\xED zmenili cez formul\xE1r webu neprihl\xE1sen\xED n\xE1v\x9Atevn\xEDci, \xE8itatelia alebo u\x9E\xEDvatelia bez pr\xE1va upravova\x9D spr\xE1vy. Tak\xE9to \xFApravy s\xFA zatia\xBE povolen\xE9; zoznam ukazuje, ktor\xE9 formul\xE1re na nich z\xE1visia.", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+"visitor without login" => "neprihl\xE1sen\xFD n\xE1v\x9Atevn\xEDk", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+"reader or author of the item" => "\xE8itate\xBE alebo autor spr\xE1vy", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 71
+"user without permission" => "u\x9E\xEDvate\xBE bez pr\xE1va", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 82
+"Field %1 of items in slice %2 changed by: %3 (last %4)" => "Polo\x9Eku %1 spr\xE1v v module %2 zmenil: %3 (naposledy %4)", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 95
+"A future version will let only users with the permission to edit the item change it. If this is a form of the site, note it - it will need a login or a signed edit link." => "Bud\xFAca verzia dovol\xED meni\x9D spr\xE1vu len u\x9E\xEDvate\xBEom s pr\xE1vom ju upravova\x9D. Ak ide o formul\xE1r webu, pozna\xE8te si to - bude potrebova\x9D prihl\xE1senie alebo podp\xEDsan\xFD odkaz na \xFApravu.", // ai 2026-10
+
+// src/Optimize/CheckItemEditsWithoutPermission.php, row 101
+"No item was changed without the edit permission in the last 30 days" => "Za posledn\xFDch 30 dn\xED nebola \x9Eiadna spr\xE1va zmenen\xE1 bez pr\xE1va na \xFApravu", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 25
+"Login addresses" => "Adresy prihl\xE1sen\xED", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 30
+"Warns when the logins of the last 30 days come from one address, or when an address that was slowed down after failed logins is shared by several users - failed logins are counted per address." => "Upozorn\xED, ke\xEF prihl\xE1senia za posledn\xFDch 30 dn\xED prich\xE1dzaj\xFA z jednej adresy alebo ke\xEF adresu, ktor\xE1 bola po ne\xFAspe\x9An\xFDch prihl\xE1seniach spomalen\xE1, zdie\xBEa viac u\x9E\xEDvate\xBEov - ne\xFAspe\x9An\xE9 prihl\xE1senia sa po\xE8\xEDtaj\xFA pre ka\x9Ed\xFA adresu zvl\xE1\x9A\x9D.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 87
+"Every login of the last 30 days came from one address, %1" => "V\x9Aetky prihl\xE1senia za posledn\xFDch 30 dn\xED pri\x9Ali z jednej adresy, %1", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 88
+"Names" => "Men\xE1", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 89
+"Until then AA sees all visitors as one, and 20 failed logins of anyone, a scanner included, slow down the login of everybody. If it is the address of the only office that uses this AA, nothing needs to change." => "Dovtedy AA vid\xED v\x9Aetk\xFDch n\xE1v\x9Atevn\xEDkov ako jedn\xE9ho a 20 ne\xFAspe\x9An\xFDch prihl\xE1sen\xED kohoko\xBEvek, vr\xE1tane skenera, spomal\xED prihl\xE1senie v\x9Aetk\xFDm. Ak je to adresa jedinej kancel\xE1rie, ktor\xE1 toto AA pou\x9E\xEDva, ni\xE8 netreba meni\x9D.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 100
+"Logins from %1 were slowed down after failed attempts, and %2 users log in from that address" => "Prihl\xE1senia z %1 boli po ne\xFAspe\x9An\xFDch pokusoch spomalen\xE9 a z tejto adresy sa prihlasuj\xFA viacer\xED u\x9E\xEDvatelia (%2)", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 102
+"Their failed logins add up, so all of them wait." => "Ich ne\xFAspe\x9An\xE9 prihl\xE1senia sa s\xE8\xEDtaj\xFA, tak\x9Ee \xE8akaj\xFA v\x9Aetci.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 102
+"If it is the shared address of an office, find the failing logins in the Log (event LOGIN) - often a script or a browser keeps an old password." => "Ak je to spolo\xE8n\xE1 adresa kancel\xE1rie, n\xE1jdite ne\xFAspe\x9An\xE9 prihl\xE1senia v Logu (udalos\x9D LOGIN) - \xE8asto si skript alebo prehliada\xE8 pam\xE4t\xE1 star\xE9 heslo.", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 107
+"Logins come from %1 addresses; no address slowed down after failed logins is shared by several users" => "Prihl\xE1senia prich\xE1dzaj\xFA z adries: %1; \x9Eiadnu adresu spomalen\xFA po ne\xFAspe\x9An\xFDch prihl\xE1seniach nezdie\xBEa viac u\x9E\xEDvate\xBEov", // ai 2026-10
+
+// src/Optimize/CheckLoginAddresses.php, row 112
+"If %1 is a proxy in front of AA, add it to AA_TRUSTED_PROXIES in include/config.php: %2 - AA then counts each visitor by their own address." => "Ak je %1 proxy server pred AA, pridajte ho do AA_TRUSTED_PROXIES v include/config.php: %2 - AA potom po\xE8\xEDta ka\x9Ed\xE9ho n\xE1v\x9Atevn\xEDka pod\xBEa jeho vlastnej adresy.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 30
+"Nightly test" => "No\xE8n\xFD test", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 35
+"What the nightly test (test4update) found in its last run of each check: PHP errors, broken or unescaped output, missing pages, failing Expression Reference examples. Shown only on installations the nightly test reports to." => "\xC8o no\xE8n\xFD test (test4update) na\x9Aiel pri poslednom behu ka\x9Edej kontroly: chyby PHP, po\x9Akoden\xFD alebo neescapovan\xFD v\xFDstup, ch\xFDbaj\xFAce str\xE1nky, zlyh\xE1vaj\xFAce pr\xEDklady z Referencie v\xFDrazov. Zobrazuje sa len v in\x9Atal\xE1ci\xE1ch, ktor\xFDm no\xE8n\xFD test posiela hl\xE1senia.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 87
+"%1: nothing found" => "%1: ni\xE8 nen\xE1jden\xE9", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 89
+"Check" => "Kontrola", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 100
+"Nightly test: %1 checks found nothing" => "No\xE8n\xFD test: kontroly bez zisten\xED: %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 153
+"%1 more pages" => "\xEFal\x9Aie str\xE1nky: %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 156
+"Known issue: %1" => "Zn\xE1my probl\xE9m: %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 156
+"Known issue of the nightly test." => "Zn\xE1my probl\xE9m no\xE8n\xE9ho testu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 189
+"Verified by the next nightly run; to verify now run ./run-tests.sh in aa/doc." => "Over\xED \xEFal\x9A\xED no\xE8n\xFD beh; ak chcete overi\x9D hne\xEF, spustite ./run-tests.sh v aa/doc.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 199
+"Verified by the next nightly run; to verify now run %1 in test4update." => "Over\xED \xEFal\x9A\xED no\xE8n\xFD beh; ak chcete overi\x9D hne\xEF, spustite %1 v test4update.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 200
+"Verified by the next nightly run." => "Over\xED \xEFal\x9A\xED no\xE8n\xFD beh.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 209
+"Unexpanded aliases on public pages" => "Nerozvinut\xE9 aliasy na verejn\xFDch str\xE1nkach", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 209
+"A public page shows an alias such as _#HEADLINE as plain text. The template uses an alias the slice does not define (a typo, or the alias was renamed), so visitors see the code instead of the value. Open the page, find the alias from the evidence and compare it with the aliases on the Fields page of the slice." => "Verejn\xE1 str\xE1nka zobrazuje alias, napr\xEDklad _#HEADLINE, ako oby\xE8ajn\xFD text. \x8Aabl\xF3na pou\x9E\xEDva alias, ktor\xFD modul nedefinuje (preklep alebo bol alias premenovan\xFD), tak\x9Ee n\xE1v\x9Atevn\xEDci vidia k\xF3d namiesto hodnoty. Otvorte str\xE1nku, n\xE1jdite alias z d\xF4kazu a porovnajte ho s aliasmi na str\xE1nke \x84Pole spr\xE1v\x93 modulu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 210
+"Raw item ids in the text of a page" => "Hol\xE9 id spr\xE1v v texte str\xE1nky", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 210
+"A 32-character hexadecimal id appears in the visible text of an Expression Reference page, outside a code sample. Usually a relation field or an expression prints the id instead of the item it points to. Open the page and look for the id from the evidence." => "Vo vidite\xBEnom texte str\xE1nky Referencie v\xFDrazov sa mimo uk\xE1\x9Eky k\xF3du objavuje 32-znakov\xE9 hexadecim\xE1lne id. Zvy\xE8ajne rela\xE8n\xE1 polo\x9Eka alebo v\xFDraz vyp\xED\x9Ae id namiesto spr\xE1vy, na ktor\xFA odkazuje. Otvorte str\xE1nku a h\xBEadajte id z d\xF4kazu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 211
+"Garbled characters (mojibake)" => "Po\x9Akoden\xE9 znaky (mojibake)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 211
+"The page contains sequences like \xC3\x83, \xC3\x85 or \xC3\xA2\xE2\x82\xAC: UTF-8 text decoded as Latin-1 or Windows-1252 on its way. Accented letters and typographic quotes then show as garbage. Open the page and look for such characters; they usually come from one field or one part of a template." => "Str\xE1nka obsahuje sekvencie ako A, A alebo \xE2\x80: text v UTF-8 bol cestou dek\xF3dovan\xFD ako Latin-1 alebo Windows-1252. P\xEDsmen\xE1 s diakritikou a typografick\xE9 \xFAvodzovky sa potom zobrazuj\xFA ako nezmysly. Otvorte str\xE1nku a h\xBEadajte tak\xE9to znaky; zvy\xE8ajne poch\xE1dzaj\xFA z jednej polo\x9Eky alebo jednej \xE8asti \x9Aabl\xF3ny.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 212
+"Double-escaped HTML" => "Dvojito escapovan\xE9 HTML", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 212
+"A value was HTML-escaped twice, so the reader sees the code of a character (an ampersand followed by lt;) instead of the character itself, here the < sign. Open the page and look for such codes in the visible text; the template or the field output escapes a value that was already escaped." => "Hodnota bola HTML-escapovan\xE1 dvakr\xE1t, tak\x9Ee n\xE1v\x9Atevn\xEDk vid\xED k\xF3d znaku (ampersand nasledovan\xFD lt;) namiesto samotn\xE9ho znaku, tu znaku <. Otvorte str\xE1nku a h\xBEadajte tak\xE9to k\xF3dy vo vidite\xBEnom texte; \x9Aabl\xF3na alebo v\xFDstup polo\x9Eky escapuje hodnotu, ktor\xE1 u\x9E bola escapovan\xE1.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 213
+"Expressions printed instead of run" => "V\xFDrazy vyp\xEDsan\xE9 namiesto vykonania", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 213
+"The visible text of an Expression Reference page contains {( outside a code sample: an expression that should have run on the server was printed instead. Open the page and search its text for {(." => "Vidite\xBEn\xFD text str\xE1nky Referencie v\xFDrazov obsahuje mimo uk\xE1\x9Eky k\xF3du {(: v\xFDraz, ktor\xFD sa mal vykona\x9D na serveri, sa namiesto toho vyp\xEDsal. Otvorte str\xE1nku a v jej texte h\xBEadajte {(.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 214
+"PHP errors in page output" => "Chyby PHP vo v\xFDstupe str\xE1nky", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 214
+"The page printed a PHP error, warning or notice with its file and line, or a database error (SQLSTATE). Visitors see the message and the rest of the page may be missing. Open the page; the message names the file and line to fix." => "Str\xE1nka vyp\xEDsala chybu, varovanie alebo upozornenie PHP so s\xFAborom a riadkom alebo chybu datab\xE1zy (SQLSTATE). N\xE1v\x9Atevn\xEDci vidia hl\xE1senie a zvy\x9Aok str\xE1nky m\xF4\x9Ee ch\xFDba\x9D. Otvorte str\xE1nku; hl\xE1senie uv\xE1dza s\xFAbor a riadok, ktor\xFD treba opravi\x9D.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 215
+"Pages not answering 200 OK" => "Str\xE1nky, ktor\xE9 neodpovedaj\xFA 200 OK", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 215
+"The page answered with an error status (404, 500 and the like) or did not answer at all, so the link to it is broken or the script fails. Open the page and look at the status in the Network tab of the browser developer tools." => "Str\xE1nka odpovedala chybov\xFDm stavom (404, 500 a pod.) alebo neodpovedala v\xF4bec, tak\x9Ee odkaz na \xF2u je nefunk\xE8n\xFD alebo skript zlyh\xE1va. Otvorte str\xE1nku a pozrite sa na stav na karte Sie\x9D (Network) vo v\xFDvoj\xE1rskych n\xE1strojoch prehliada\xE8a.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 216
+"Missing page served as a full page (soft 404)" => "Ch\xFDbaj\xFAca str\xE1nka poslan\xE1 ako cel\xE1 str\xE1nka (soft 404)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 216
+"The address answers 404 Not Found but still sends a full page of content. Search engines and link checkers get a mixed answer and the old content stays reachable. Open the address: it should show either a real page with status 200 or a short \"not found\" page." => "Adresa odpoved\xE1 404 Not Found, ale aj tak posiela cel\xFA str\xE1nku obsahu. Vyh\xBEad\xE1va\xE8e a kontroly odkazov dostan\xFA protichodn\xFA odpove\xEF a star\xFD obsah zost\xE1va dostupn\xFD. Otvorte adresu: mala by zobrazi\x9D bu\xEF skuto\xE8n\xFA str\xE1nku so stavom 200, alebo kr\xE1tku str\xE1nku \x84nen\xE1jden\xE9\x93.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 217
+"Characters lost when saving (charset)" => "Znaky straten\xE9 pri ukladan\xED (charset)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 217
+"Characters outside Latin-1 (\xC4\x9B, \xC4\x8D, \xC5\x99, emoji, Chinese) came back as ? after an item was saved: the database columns hold fewer bytes per character than the connection sends. Such text is damaged for good once saved. Save an item with \xC4\x9B\xC5\xA1\xC4\x8D\xC5\x99\xC5\xBE\xC3\xBD\xC3\xA1\xC3\xAD\xC3\xA9 in its text and open it again in the editor." => "Znaky mimo Latin-1 (\xEC, \xE8, \xF8, emoji, \xE8\xEDn\x9Atina) sa po ulo\x9Een\xED spr\xE1vy vr\xE1tili ako ?: st\xE5pce datab\xE1zy uchov\xE1vaj\xFA menej bajtov na znak, ne\x9E posiela spojenie. Tak\xFDto text je po ulo\x9Een\xED natrvalo po\x9Akoden\xFD. Ulo\x9Ete spr\xE1vu s textom \xEC\x9A\xE8\xF8\x9E\xFD\xE1\xED\xE9 a znova ju otvorte v editore.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 218
+"Admin pages cut off before the end" => "Administrat\xEDvne str\xE1nky orezan\xE9 pred koncom", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 218
+"The HTML of the admin page does not end with </body></html>: the script stopped while printing it, usually after a fatal error or a timeout, and the rest of the page (buttons, the footer) is missing. Open the page and scroll to the bottom; look for a PHP fatal error of that page too." => "HTML administrat\xEDvnej str\xE1nky nekon\xE8\xED </body></html>: skript sa pri jej vypisovan\xED zastavil, zvy\xE8ajne po fat\xE1lnej chybe alebo vypr\x9Aan\xED \xE8asu, a zvy\x9Aok str\xE1nky (tla\xE8idl\xE1, p\xE4ta) ch\xFDba. Otvorte str\xE1nku a prejdite na koniec; h\xBEadajte aj fat\xE1lnu chybu PHP tejto str\xE1nky.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 219
+"Missing images, scripts or styles" => "Ch\xFDbaj\xFAce obr\xE1zky, skripty alebo \x9At\xFDly", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 219
+"The page loads a file (an image, a script, a style sheet) that answers with an error status. The page may look broken or a feature may not work. Open the page with the Network tab of the browser developer tools and look for the files named in the evidence." => "Str\xE1nka na\xE8\xEDtava s\xFAbor (obr\xE1zok, skript, \x9At\xFDl), ktor\xFD odpoved\xE1 chybov\xFDm stavom. Str\xE1nka m\xF4\x9Ee vyzera\x9D po\x9Akodene alebo nemus\xED fungova\x9D niektor\xE1 funkcia. Otvorte str\xE1nku s kartou Sie\x9D (Network) vo v\xFDvoj\xE1rskych n\xE1strojoch prehliada\xE8a a h\xBEadajte s\xFAbory uveden\xE9 v d\xF4kaze.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 220
+"Slow admin pages" => "Pomal\xE9 administrat\xEDvne str\xE1nky", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 220
+"The admin page took more than 3 seconds to load during the nightly crawl. Editors wait for it, and a page slow at night is slower by day. Open the page with &debug=150 added to its address to see which queries and functions take the time." => "Na\xE8\xEDtanie administrat\xEDvnej str\xE1nky trvalo pri no\xE8nom prech\xE1dzan\xED viac ako 3 sekundy. Redaktori na \xF2u \xE8akaj\xFA a str\xE1nka pomal\xE1 v noci je cez de\xF2 e\x9Ate pomal\x9Aia. Otvorte str\xE1nku s &debug=150 pridan\xFDm k adrese a uvid\xEDte, ktor\xE9 dotazy a funkcie zaberaj\xFA \xE8as.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 221
+"Admin pages wider than the window" => "Administrat\xEDvne str\xE1nky \x9Air\x9Aie ako okno", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 221
+"In a 1280 px wide window the admin page scrolls sideways: a long value or a wide table does not wrap, and controls on the right are easy to miss. Open the page in a window of that width and look for the horizontal scroll bar." => "V okne \x9Airokom 1280 px sa administrat\xEDvna str\xE1nka pos\xFAva do strany: dlh\xE1 hodnota alebo \x9Airok\xE1 tabu\xBEka sa nezalom\xED a ovl\xE1dacie prvky vpravo sa \xBEahko prehliadnu. Otvorte str\xE1nku v okne tejto \x9A\xEDrky a h\xBEadajte vodorovn\xFD posuvn\xEDk.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 222
+"JavaScript errors" => "Chyby JavaScriptu", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 222
+"A script on the page threw an uncaught error, so the feature it belongs to (a widget, a button, live editing) may not work. Open the page with the browser developer console open and reload; the error from the evidence appears there." => "Skript na str\xE1nke vyhodil nezachyten\xFA chybu, tak\x9Ee funkcia, ku ktorej patr\xED (widget, tla\xE8idlo, \x9Eiv\xE9 \xFApravy), nemus\xED fungova\x9D. Otvorte str\xE1nku s otvorenou v\xFDvoj\xE1rskou konzolou prehliada\xE8a a na\xE8\xEDtajte ju znova; chyba z d\xF4kazu sa tam objav\xED.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 223
+"Errors in the browser console" => "Chyby v konzole prehliada\xE8a", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 223
+"The page logged an error to the browser console, often a failed request or a blocked resource; a feature may fail without a visible sign. Open the browser developer console on the page and reload." => "Str\xE1nka zap\xEDsala chybu do konzoly prehliada\xE8a, \xE8asto ne\xFAspe\x9An\xFA po\x9Eiadavku alebo zablokovan\xFD zdroj; funkcia m\xF4\x9Ee zlyha\x9D bez vidite\xBEn\xE9ho pr\xEDznaku. Otvorte na str\xE1nke v\xFDvoj\xE1rsku konzolu prehliada\xE8a a na\xE8\xEDtajte str\xE1nku znova.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 224
+"Unescaped text in page output (XSS)" => "Neescapovan\xFD text vo v\xFDstupe str\xE1nky (XSS)", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 224
+"A test text with quotes and angle brackets was saved and then printed into the page without HTML escaping. This is a security problem: the value must be printed through safe(). In the page source around the test text, the < and \" signs must appear as HTML entities." => "Testovac\xED text s \xFAvodzovkami a lomen\xFDmi z\xE1tvorkami sa ulo\x9Eil a potom vyp\xEDsal do str\xE1nky bez HTML escapovania. Je to bezpe\xE8nostn\xFD probl\xE9m: hodnota sa mus\xED vypisova\x9D cez safe(). V zdrojovom k\xF3de str\xE1nky okolo testovacieho textu sa znaky < a \" musia objavi\x9D ako HTML entity.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 225
+"Pages the test could not open" => "Str\xE1nky, ktor\xE9 test nedok\xE1zal otvori\x9D", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 225
+"The browser could not open or finish the page: a timeout, a download instead of a page, or a redirect while the page was being checked. Nothing else could be checked there. Open the page and watch whether it loads." => "Prehliada\xE8 nedok\xE1zal str\xE1nku otvori\x9D alebo dokon\xE8i\x9D: vypr\x9Aanie \xE8asu, s\x9Dahovanie s\xFAboru namiesto str\xE1nky alebo presmerovanie po\xE8as kontroly str\xE1nky. Ni\xE8 in\xE9 sa tam nedalo skontrolova\x9D. Otvorte str\xE1nku a sledujte, \xE8i sa na\xE8\xEDta.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 226
+"Admin forms the test could not read" => "Administrat\xEDvne formul\xE1re, ktor\xE9 test nedok\xE1zal pre\xE8\xEDta\x9D", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 226
+"The nightly test did not find the controls it expects on an admin form (a field, the save button, the template slice), or the form did not keep what was sent. Either the form changed or it is broken. Open the form and check that it shows and saves the fields named in the evidence." => "No\xE8n\xFD test nena\x9Aiel na administrat\xEDvnom formul\xE1ri ovl\xE1dacie prvky, ktor\xE9 o\xE8ak\xE1va (polo\x9Eku, tla\xE8idlo ulo\x9Eenia, modul \x9Aabl\xF3ny), alebo formul\xE1r neuchoval, \xE8o sa odoslalo. Formul\xE1r sa bu\xEF zmenil, alebo je po\x9Akoden\xFD. Otvorte formul\xE1r a skontrolujte, \xE8i zobrazuje a uklad\xE1 polo\x9Eky uveden\xE9 v d\xF4kaze.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 227
+"Item edits that did not save" => "\xDApravy spr\xE1v, ktor\xE9 sa neulo\x9Eili", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 227
+"The test changed the headline of an item in the item editor, saved it and read it back, and got a different value. Changes made by editors may be lost. Edit an item, save it and open it again to see whether the change stayed." => "Test zmenil nadpis spr\xE1vy v editore spr\xE1v, ulo\x9Eil ju, znova ju na\xE8\xEDtal a dostal in\xFA hodnotu. Zmeny redaktorov sa m\xF4\x9Eu str\xE1ca\x9D. Upravte spr\xE1vu, ulo\x9Ete ju a znova ju otvorte, aby ste overili, \xE8i zmena zostala.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 228
+"Saved text missing from the public listing" => "Ulo\x9Een\xFD text ch\xFDba vo verejnom v\xFDpise", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 228
+"The text of the test items (abstract and full text) did not show on the public listing of the slice, or not in the abstract paragraph. An alias probably expands to nothing, so visitors see empty places. Open the listing and compare it with the content of the items." => "Text testovac\xEDch spr\xE1v (abstrakt a pln\xFD text) sa nezobrazil vo verejnom v\xFDpise modulu, alebo nie v odseku abstraktu. Alias sa pravdepodobne rozvinie na ni\xE8, tak\x9Ee n\xE1v\x9Atevn\xEDci vidia pr\xE1zdne miesta. Otvorte v\xFDpis a porovnajte ho s obsahom spr\xE1v.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 229
+"Items missing from the public listing" => "Spr\xE1vy ch\xFDbaj\xFAce vo verejnom v\xFDpise", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 229
+"A published test item did not appear on the public listing of its slice, so visitors miss items that should be there. Check the conditions, sorting and item count of the listing; open it and look for the item from the evidence." => "Publikovan\xE1 testovacia spr\xE1va sa neobjavila vo verejnom v\xFDpise svojho modulu, tak\x9Ee n\xE1v\x9Atevn\xEDkom ch\xFDbaj\xFA spr\xE1vy, ktor\xE9 tam maj\xFA by\x9D. Skontrolujte podmienky, zoradenie a po\xE8et spr\xE1v v\xFDpisu; otvorte ho a h\xBEadajte spr\xE1vu z d\xF4kazu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 230
+"Field values that did not save" => "Hodnoty polo\x9Eiek, ktor\xE9 sa neulo\x9Eili", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 230
+"The test wrote a value into a field in the item editor, saved it and read it back, and the field kept its old value or came back empty. Editors may lose what they type into that field. Edit an item, change the field named in the evidence, save it and open it again." => "Test zap\xEDsal hodnotu do polo\x9Eky v editore spr\xE1v, ulo\x9Eil ju, znova ju na\xE8\xEDtal a polo\x9Eka si ponechala star\xFA hodnotu alebo sa vr\xE1tila pr\xE1zdna. Redaktori m\xF4\x9Eu pr\xEDs\x9D o to, \xE8o do tejto polo\x9Eky nap\xED\x9Au. Upravte spr\xE1vu, zme\xF2te polo\x9Eku uveden\xFA v d\xF4kaze, ulo\x9Ete ju a znova ju otvorte.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 231
+"Backslashes lost when saving" => "Sp\xE4tn\xE9 lomky straten\xE9 pri ukladan\xED", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 231
+"A value with backslashes came back with characters missing from its middle, typically because the input went through stripslashes() once too often. Paths, regular expressions and code samples get damaged when saved. Save an item with C:\\temp\\x in a text field and open it again." => "Hodnota so sp\xE4tn\xFDmi lomkami sa vr\xE1tila s ch\xFDbaj\xFAcimi znakmi v strede, zvy\xE8ajne preto, \x9Ee vstup pre\x9Aiel cez stripslashes() raz navy\x9Ae. Cesty, regul\xE1rne v\xFDrazy a uk\xE1\x9Eky k\xF3du sa pri ukladan\xED po\x9Akodia. Ulo\x9Ete spr\xE1vu s C:\\temp\\x v textovej polo\x9Eke a znova ju otvorte.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 232
+"Saved text changed by saving" => "Ulo\x9Een\xFD text zmenen\xFD pri ukladan\xED", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 232
+"The text of a test item came back different from what was saved, not just shorter or with characters lost: an input function, a field filter or the editor rewrote it. Save an item with the text from the evidence and compare it with what the editor shows after saving." => "Text testovacej spr\xE1vy sa vr\xE1til in\xFD, ne\x9E bol ulo\x9Een\xFD, nielen krat\x9A\xED alebo so straten\xFDmi znakmi: prep\xEDsala ho vkladacia funkcia, filter polo\x9Eky alebo editor. Ulo\x9Ete spr\xE1vu s textom z d\xF4kazu a porovnajte ho s t\xFDm, \xE8o editor uk\xE1\x9Ee po ulo\x9Een\xED.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 233
+"Failing Expression Reference examples" => "Zlyh\xE1vaj\xFAce pr\xEDklady z Referencie v\xFDrazov", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 233
+"An example of the Expression Reference gave a different result than the documented one: either the expression changed its behaviour or the example is wrong. Open the test view of the Expression Reference and compare the actual and the expected result of the example from the evidence." => "Pr\xEDklad z Referencie v\xFDrazov dal in\xFD v\xFDsledok, ne\x9E je zdokumentovan\xFD: bu\xEF v\xFDraz zmenil spr\xE1vanie, alebo je pr\xEDklad chybn\xFD. Otvorte testovac\xED poh\xBEad Referencie v\xFDrazov a porovnajte skuto\xE8n\xFD a o\xE8ak\xE1van\xFD v\xFDsledok pr\xEDkladu z d\xF4kazu.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 234
+"Expression Reference examples" => "Pr\xEDklady z Referencie v\xFDrazov", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 234
+"The run of all Expression Reference examples; the totals are in the evidence and each failing example is listed on its own." => "Beh v\x9Aetk\xFDch pr\xEDkladov z Referencie v\xFDrazov; s\xFA\xE8ty s\xFA v d\xF4kaze a ka\x9Ed\xFD zlyh\xE1vaj\xFAci pr\xEDklad je uveden\xFD samostatne.", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 235
+"Nightly check %1" => "No\xE8n\xE1 kontrola %1", // ai 2026-10
+
+// src/Optimize/CheckNightly.php, row 235
+"The nightly test reported this on the pages below. The report of the nightly test (test4update) explains the check." => "No\xE8n\xFD test to hl\xE1sil na str\xE1nkach ni\x9E\x9Aie. Kontrolu vysvet\xBEuje hl\xE1senie no\xE8n\xE9ho testu (test4update).", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 34
-"Refused object forms" => "",
+"Refused object forms" => "Odmietnut\xE9 formul\xE1re objektov", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 39
-"Lists the settings and Manager forms and actions refused in the last 30 days because they posted an object or row of another module, of another type or other than the edited one." => "",
+"Lists the settings and Manager forms and actions refused in the last 30 days because they posted an object or row of another module, of another type or other than the edited one." => "Vyp\xED\x9Ae formul\xE1re nastaven\xED a Mana\x9E\xE9ra a akcie odmietnut\xE9 za posledn\xFDch 30 dn\xED, preto\x9Ee odoslali objekt alebo riadok in\xE9ho modulu, in\xE9ho typu alebo in\xFD ne\x9E upravovan\xFD.", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 88
-"(no such object)" => "",
+"(no such object)" => "(tak\xFD objekt neexistuje)", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 92
-"The Item Manager of %1 tried to export the item %2 of another slice" => "",
+"The Item Manager of %1 tried to export the item %2 of another slice" => "Administr\xE1cia modulu %1 sa pok\xFAsila exportova\x9D spr\xE1vu %2 in\xE9ho modulu", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 92
-"A form of %1 tried to write the object %2" => "",
+"A form of %1 tried to write the object %2" => "Formul\xE1r %1 sa pok\xFAsil zap\xEDsa\x9D objekt %2", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 98
-"Form type" => "",
+"Form type" => "Typ formul\xE1ra", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 99
-"Stored type" => "",
+"Stored type" => "Ulo\x9Een\xFD typ", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 105
-"The export to slice posted an item of another slice (Owner) to copy it out of there; it was not exported. The Item Manager lists only the items of its slice, so unless the item was moved meanwhile, the user edited the request, most likely to read or copy the items of a slice he has no rights to. Find out who the user is." => "",
+"The export to slice posted an item of another slice (Owner) to copy it out of there; it was not exported. The Item Manager lists only the items of its slice, so unless the item was moved meanwhile, the user edited the request, most likely to read or copy the items of a slice he has no rights to. Find out who the user is." => "Export do modulu odoslal spr\xE1vu in\xE9ho modulu (Vlastn\xEDk), aby ju odtia\xBE skop\xEDroval; nebola exportovan\xE1. Administr\xE1cia vypisuje len spr\xE1vy svojho modulu, tak\x9Ee ak spr\xE1va nebola medzit\xFDm presunut\xE1, u\x9E\xEDvate\xBE po\x9Eiadavku upravil, najsk\xF4r aby pre\xE8\xEDtal alebo skop\xEDroval spr\xE1vy modulu, ku ktor\xE9mu nem\xE1 pr\xE1va. Zistite, kto je to u\x9E\xEDvate\xBE.", // ai 2026-10
 
 // src/Optimize/CheckObjectFormRefusals.php, row 105
-"The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is." => "",
+"The form or action posted an object or row other than the one it was opened for, one that belongs to another module (Owner) or one of another type; it was left untouched. The pages post only the edited objects and those of the listed module, so unless the object was moved or deleted meanwhile (an empty owner - it does not exist), the user edited the request, most likely to change the settings of another site or slice. Find out who the user is." => "Formul\xE1r alebo akcia odoslali in\xFD objekt alebo riadok, ne\x9E pre ktor\xFD boli otvoren\xE9, tak\xFD, ktor\xFD patr\xED in\xE9mu modulu (Vlastn\xEDk), alebo in\xE9ho typu; zostal nedotknut\xFD. Str\xE1nky odosielaj\xFA len upravovan\xE9 objekty a objekty vyp\xEDsan\xE9ho modulu, tak\x9Ee ak objekt nebol medzit\xFDm presunut\xFD alebo zmazan\xFD (pr\xE1zdny vlastn\xEDk - neexistuje), u\x9E\xEDvate\xBE po\x9Eiadavku upravil, najsk\xF4r aby zmenil nastavenia in\xE9ho webu alebo modulu. Zistite, kto je to u\x9E\xEDvate\xBE.", // ai 2026-10
 
-// src/Optimize/CheckObjectFormRefusals.php, row 111
-"No object form was refused in the last 30 days" => "",
+// src/Optimize/CheckObjectFormRefusals.php, row 109
+"Export of an item of another slice refused" => "Export spr\xE1vy in\xE9ho modulu odmietnut\xFD", // ai 2026-10
+
+// src/Optimize/CheckObjectFormRefusals.php, row 109
+"Write to an object of another module refused" => "Z\xE1pis do objektu in\xE9ho modulu odmietnut\xFD", // ai 2026-10
+
+// src/Optimize/CheckObjectFormRefusals.php, row 113
+"No object form was refused in the last 30 days" => "Za posledn\xFDch 30 dn\xED nebol odmietnut\xFD \x9Eiadny formul\xE1r objektu", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 24
-"PHP fatal errors" => "",
+"PHP fatal errors" => "Fat\xE1lne chyby PHP", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 29
-"Lists PHP fatal errors logged in the last 7 days by file and line, with counts and whether they appeared after the last deployment. Warns when fatal errors are not logged at all." => "",
+"Lists PHP fatal errors logged in the last 7 days by file and line, with counts and whether they appeared after the last deployment. Warns when fatal errors are not logged at all." => "Vyp\xED\x9Ae fat\xE1lne chyby PHP zaznamenan\xE9 za posledn\xFDch 7 dn\xED pod\xBEa s\xFAboru a riadku, s po\xE8tami a s t\xFDm, \xE8i sa objavili po poslednom nasaden\xED. Upozorn\xED, ke\xEF sa fat\xE1lne chyby v\xF4bec nezaznamen\xE1vaj\xFA.", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 50
-"PHP fatal errors are not logged" => "",
+"PHP fatal errors are not logged" => "Fat\xE1lne chyby PHP sa nezaznamen\xE1vaj\xFA", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 50
-"Add define('AA_LOG_PHP_FATALS', true); to include/config.php. Until then a page that dies leaves no trace here, only in the web server error log." => "",
+"Add define('AA_LOG_PHP_FATALS', true); to include/config.php. Until then a page that dies leaves no trace here, only in the web server error log." => "Pridajte define('AA_LOG_PHP_FATALS', true); do include/config.php. Dovtedy str\xE1nka, ktor\xE1 spadne, nezanech\xE1 stopu tu, len v error logu webov\xE9ho servera.", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 56
-"No PHP fatal errors in the last 7 days" => "",
+"No PHP fatal errors in the last 7 days" => "Za posledn\xFDch 7 dn\xED \x9Eiadne fat\xE1lne chyby PHP", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 66
-"Started after last deployment" => "",
+"Started after last deployment" => "Za\xE8alo po poslednom nasaden\xED", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 70
-"Open page" => "",
+"Open page" => "Otvori\x9D str\xE1nku", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 72
-"PHP fatal error in %1" => "",
+"PHP fatal error in %1" => "Fat\xE1lna chyba PHP v %1", // ai 2026-10
 
 // src/Optimize/CheckPhpFatals.php, row 72
-"Open the file at that line. Every occurrence is a page the visitor never got." => "",
+"Open the file at that line. Every occurrence is a page the visitor never got." => "Otvorte s\xFAbor na tom riadku. Ka\x9Ed\xFD v\xFDskyt je str\xE1nka, ktor\xFA n\xE1v\x9Atevn\xEDk nedostal.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 31
-"Task queue" => "",
+"Task queue" => "Front \xFAloh", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 36
-"Checks that the task queue runs, whether OS cron or only the post-response fallback drives it, how often runs exceed their time limit, and which tasks were given up." => "",
+"Checks that the task queue runs, whether OS cron or only the post-response fallback drives it, how often runs exceed their time limit, and which tasks were given up." => "Over\xED, \x9Ee fronta \xFAloh be\x9E\xED, \xE8i ju poh\xE1\xF2a cron OS, alebo len z\xE1lo\x9En\xE9 sp\xFA\x9A\x9Danie po odoslan\xED odpovede, ako \xE8asto behy prekra\xE8uj\xFA \xE8asov\xFD limit a ktor\xE9 \xFAlohy boli vzdan\xE9.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 66
-"The task queue has never run" => "",
+"The task queue has never run" => "Fronta \xFAloh nikdy nebe\x9Eala", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 66
-"Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback." => "",
+"Mails, alerts and feeds wait in the queue until OS cron calls cron.php or a visit triggers the post-response fallback." => "E-maily, Zasielanie a v\xFDmena spr\xE1v \xE8akaj\xFA vo fronte, k\xFDm cron OS nezavol\xE1 cron.php alebo n\xE1v\x9Ateva nespust\xED z\xE1lo\x9En\xE9 sp\xFA\x9A\x9Danie po odoslan\xED odpovede.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 68
-"The task queue has not run since %1" => "",
+"The task queue has not run since %1" => "Fronta \xFAloh nebe\x9Eala od %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 68
-"Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php)." => "",
+"Mails, alerts and feeds are waiting. Check the system crontab (cron.php every minute) and the post-response fallback (DISABLE_CRON_FALLBACK in config.php)." => "E-maily, Zasielanie a v\xFDmena spr\xE1v \xE8akaj\xFA. Skontrolujte syst\xE9mov\xFD crontab (cron.php ka\x9Ed\xFA min\xFAtu) a z\xE1lo\x9En\xE9 sp\xFA\x9A\x9Danie po odoslan\xED odpovede (DISABLE_CRON_FALLBACK v config.php).", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 75
-"OS cron has not called cron.php since %1; the post-response fallback keeps the queue alive" => "",
+"OS cron has not called cron.php since %1; the post-response fallback keeps the queue alive" => "Cron OS nevolal cron.php od %1; frontu udr\x9Eiava v chode z\xE1lo\x9En\xE9 sp\xFA\x9A\x9Danie po odoslan\xED odpovede", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 75
-"OS cron has never called cron.php; the post-response fallback keeps the queue alive" => "",
+"OS cron has never called cron.php; the post-response fallback keeps the queue alive" => "Cron OS nikdy nevolal cron.php; frontu udr\x9Eiava v chode z\xE1lo\x9En\xE9 sp\xFA\x9A\x9Danie po odoslan\xED odpovede", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 77
-"The fallback only runs after a visit, so mails, alerts and feeds arrive late on a quiet site. Let the system crontab call cron.php every minute." => "",
+"The fallback only runs after a visit, so mails, alerts and feeds arrive late on a quiet site. Let the system crontab call cron.php every minute." => "Z\xE1lo\x9En\xE9 sp\xFA\x9A\x9Danie be\x9E\xED len po n\xE1v\x9Ateve, tak\x9Ee na m\xE1lo nav\x9Atevovanom webe sa e-maily, Zasielanie aj v\xFDmena spr\xE1v oneskoruj\xFA. Nechajte syst\xE9mov\xFD crontab vola\x9D cron.php ka\x9Ed\xFA min\xFAtu.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 89
-"The post-response cron fallback failed %1 times in the last 7 days" => "",
+"The post-response cron fallback failed %1 times in the last 7 days" => "Z\xE1lo\x9En\xE9 sp\xFA\x9A\x9Danie cronu po odoslan\xED odpovede za posledn\xFDch 7 dn\xED zlyhalo (po\xE8et: %1)", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 99
-"Queued tasks failed %1 times in the last 7 days" => "",
+"Queued tasks failed %1 times in the last 7 days" => "\xDAlohy vo fronte za posledn\xFDch 7 dn\xED zlyhali (po\xE8et: %1)", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 99
-"A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords." => "",
+"A failed task runs again after %1 minutes with a lower priority and is given up after repeated failures. A task from a user's queue in the Task Manager is not retried - it waits there until someone runs it again. Only the error class and where it was thrown are logged - the message may hold passwords." => "Ne\xFAspe\x9An\xE1 \xFAloha sa spust\xED znovu po %1 min\xFAtach s ni\x9E\x9Aou prioritou a po opakovan\xFDch chyb\xE1ch ju fronta vzd\xE1. \xDAloha z u\x9E\xEDvate\xBEskej fronty v \x84Spr\xE1vca \xFAloh\x93 sa znovu nesk\xFA\x9Aa - \xE8ak\xE1 tam, k\xFDm ju niekto znovu nespust\xED. Zaznamen\xE1va sa len trieda chyby a miesto, kde vznikla - spr\xE1va m\xF4\x9Ee obsahova\x9D hesl\xE1.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 106
-"%1 of %2 queue runs in the last 7 days exceeded the allowed %3 s (longest %4 s); %5 runs left tasks waiting" => "",
+"%1 of %2 queue runs in the last 7 days exceeded the allowed %3 s (longest %4 s); %5 runs left tasks waiting" => "%1 z %2 behov fronty za posledn\xFDch 7 dn\xED prekro\xE8ilo povolen\xFDch %3 s (najdlh\x9A\xED %4 s); behov, po ktor\xFDch zostali \xE8akaj\xFAce \xFAlohy: %5", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 109
-"Long tasks block everything behind them - imports of dead feeds and mass mails most often. Disable or slow down the feeds listed, or raise TOEXECUTE_ALLOWED_TIME in config.php." => "",
+"Long tasks block everything behind them - imports of dead feeds and mass mails most often. Disable or slow down the feeds listed, or raise TOEXECUTE_ALLOWED_TIME in config.php." => "Dlh\xE9 \xFAlohy blokuj\xFA v\x9Aetko za sebou - naj\xE8astej\x9Aie importy z nefunk\xE8n\xFDch zdrojov a hromadn\xE9 e-maily. Vypnite alebo spoma\xBEte uveden\xE9 zdroje, alebo zv\xFD\x9Ate TOEXECUTE_ALLOWED_TIME v config.php.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 117
-"%1 queued tasks were given up after repeated failures" => "",
+"%1 queued tasks were given up after repeated failures" => "\xDAlohy vo fronte vzdan\xE9 po opakovan\xFDch chyb\xE1ch: %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 117
-"They never run again on their own. Open the Task Manager, see what they are, and delete them or fix the cause." => "",
+"They never run again on their own. Open the Task Manager, see what they are, and delete them or fix the cause." => "Samy u\x9E nikdy nepobe\x9Eia. Otvorte \x84Spr\xE1vca \xFAloh\x93, pozrite sa, \xE8o s\xFA za\xE8, a zma\x9Ete ich alebo odstr\xE1\xF2te pr\xED\xE8inu.", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 121
-"%1 queued tasks have been waiting for more than an hour" => "",
+"%1 queued tasks have been waiting for more than an hour" => "\xDAlohy vo fronte \xE8akaj\xFAce dlh\x9Aie ako hodinu: %1", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 121
-"The queue does not keep up, or these tasks fail and get postponed (their priority sinks with each failure)." => "",
+"The queue does not keep up, or these tasks fail and get postponed (their priority sinks with each failure)." => "Fronta nest\xEDha, alebo tieto \xFAlohy zlyh\xE1vaj\xFA a odkladaj\xFA sa (ich priorita s ka\x9Edou chybou kles\xE1).", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 125
-"Queue ran at %1; %2 runs in the last 7 days, %3 over the time limit" => "",
+"Queue ran at %1; %2 runs in the last 7 days, %3 over the time limit" => "Fronta naposledy be\x9Eala %1; behov za posledn\xFDch 7 dn\xED: %2, z toho nad \xE8asov\xFD limit: %3", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 179
-"Runs (24 h)" => "",
+"Runs (24 h)" => "Behy (24 h)", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 180
-"Average [s]" => "",
+"Average [s]" => "Priemer [s]", // ai 2026-10
 
 // src/Optimize/CheckQueue.php, row 181
-"Longest [s]" => "",
+"Longest [s]" => "Najdlh\x9A\xED [s]", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 23
-"Queued tasks of a missing class" => "",
+"Queued tasks of a missing class" => "\xDAlohy vo fronte s ch\xFDbaj\xFAcou triedou", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 28
-"Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "",
+"Lists the classes of queued tasks that could not run in the last 30 days because this AA does not have the class." => "Vyp\xED\x9Ae triedy \xFAloh vo fronte, ktor\xE9 za posledn\xFDch 30 dn\xED nemohli be\x9Ea\x9D, preto\x9Ee toto AA dan\xFA triedu nem\xE1.", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 62
-"Queued tasks of class %1 cannot run - the class is missing" => "",
+"Queued tasks of class %1 cannot run - the class is missing" => "\xDAlohy vo fronte triedy %1 nem\xF4\x9Eu be\x9Ea\x9D - trieda ch\xFDba", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 67
-"Selector" => "",
+"Selector" => "Selektor", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 71
-"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "",
+"The tasks stay in the queue and are tried again, every minute at first and then less often, up to once an hour; an AA that has the class runs them. If the class is missing after a deploy (files not all copied, an old composer classmap) or this AA is older than another one using the same database, update it. If the feature was removed, delete the tasks in the Task Manager." => "\xDAlohy zost\xE1vaj\xFA vo fronte a sk\xFA\x9Aaj\xFA sa znovu, najprv ka\x9Ed\xFA min\xFAtu, potom menej \xE8asto, najviac raz za hodinu; spust\xED ich AA, ktor\xE9 dan\xFA triedu m\xE1. Ak trieda ch\xFDba po nasaden\xED (neboli skop\xEDrovan\xE9 v\x9Aetky s\xFAbory, star\xFD composer classmap) alebo je toto AA star\x9Aie ako in\xE9, ktor\xE9 pou\x9E\xEDva rovnak\xFA datab\xE1zu, aktualizujte ho. Ak bola funkcia odstr\xE1nen\xE1, zma\x9Ete \xFAlohy v \x84Spr\xE1vca \xFAloh\x93.", // ai 2026-10
 
 // src/Optimize/CheckQueuedClassMissing.php, row 77
-"No queued task with a missing class in the last 30 days" => "",
+"No queued task with a missing class in the last 30 days" => "Za posledn\xFDch 30 dn\xED \x9Eiadna \xFAloha vo fronte s ch\xFDbaj\xFAcou triedou", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 17
-"Required slice settings" => "",
+"Required slice settings" => "Povinn\xE9 nastavenia modulu", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 22
-"Warns about slices whose required settings fields have no value." => "",
+"Warns about slices whose required settings fields have no value." => "Upozorn\xED na moduly, ktor\xFDch povinn\xE9 polo\x9Eky nastaven\xED nemaj\xFA hodnotu.", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 44
-"No slice has a required settings field" => "",
+"No slice has a required settings field" => "\x8Eiadny modul nem\xE1 povinn\xFA polo\x9Eku nastaven\xED", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 67
-"Slice \"%1\" has %2 required settings without a value" => "",
+"Slice \"%1\" has %2 required settings without a value" => "Modul \x84%1\x93 m\xE1 povinn\xE9 nastavenia bez hodnoty: %2", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 70
-"Fill them in on the Setting page of the slice - templates reading them show nothing until then." => "",
+"Fill them in on the Setting page of the slice - templates reading them show nothing until then." => "Vypl\xF2te ich na str\xE1nke \x84Nastavenie\x93 modulu - \x9Aabl\xF3ny, ktor\xE9 ich \xE8\xEDtaj\xFA, dovtedy ni\xE8 nezobrazia.", // ai 2026-10
 
 // src/Optimize/CheckRequiredSettings.php, row 75
-"All %1 required settings fields have a value" => "",
+"All %1 required settings fields have a value" => "V\x9Aetky povinn\xE9 polo\x9Eky nastaven\xED (%1) maj\xFA hodnotu", // ai 2026-10
 
 // src/Optimize/CheckRunner.php, row 57
-"Check %1 failed: %2" => "",
+"Check %1 failed: %2" => "Kontrola %1 zlyhala: %2", // ai 2026-10
 
 // src/Optimize/CheckRunner.php, row 57
-"The check itself is broken; the state it watches is unknown." => "",
+"The check itself is broken; the state it watches is unknown." => "Samotn\xE1 kontrola je chybn\xE1; stav, ktor\xFD str\xE1\x9Ei, nie je zn\xE1my.", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 19
-"Server secret" => "",
+"Server secret" => "Tajn\xFD k\xBE\xFA\xE8 servera", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 24
-"Checks that AA_SECRET is set in config.php - the key for login tokens, mail forms and password reset links." => "",
+"Checks that AA_SECRET is set in config.php - the key for login tokens, mail forms and password reset links." => "Over\xED, \x9Ee je v config.php nastaven\xE9 AA_SECRET - k\xBE\xFA\xE8 pre prihlasovacie tokeny, e-mailov\xE9 formul\xE1re a odkazy na obnovu hesla.", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 50
-"AA_SECRET is set" => "",
+"AA_SECRET is set" => "AA_SECRET je nastaven\xE9", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 52
-"Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET." => "",
+"Add to include/config.php: define('AA_SECRET', '...'); with any long random string, e.g. the output of php -r \"echo bin2hex(random_bytes(32));\". Do it when you update AA, so the Centrals authenticate to this AA again only once. Without AA_SECRET a change of DB_PASSWORD has the same effect as a new secret. Centrals keep the database passwords of their AAs in central_conf - another reason for AA_SECRET." => "Pridajte do include/config.php: define('AA_SECRET', '...'); s \xBEubovo\xBEn\xFDm dlh\xFDm n\xE1hodn\xFDm re\x9Dazcom, napr. v\xFDstupom php -r \"echo bin2hex(random_bytes(32));\". Urobte to pri aktualiz\xE1cii AA, aby sa Centraly k tomuto AA znovu overovali len raz. Bez AA_SECRET m\xE1 zmena DB_PASSWORD rovnak\xFD \xFA\xE8inok ako nov\xFD tajn\xFD k\xBE\xFA\xE8. Centraly uchov\xE1vaj\xFA datab\xE1zov\xE9 hesl\xE1 svojich AA v central_conf - \xEFal\x9A\xED d\xF4vod pre AA_SECRET.", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 54
-"AA_SECRET is shorter than %1 bytes, so it is ignored" => "",
+"AA_SECRET is shorter than %1 bytes, so it is ignored" => "AA_SECRET je krat\x9Aie ako %1 bajtov, preto sa ignoruje", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 57
-"AA_SECRET is not set and the database password is short, so login tokens, mail forms and password reset links could be guessed offline" => "",
+"AA_SECRET is not set and the database password is short, so login tokens, mail forms and password reset links could be guessed offline" => "AA_SECRET nie je nastaven\xE9 a heslo datab\xE1zy je kr\xE1tke, tak\x9Ee prihlasovacie tokeny, e-mailov\xE9 formul\xE1re a odkazy na obnovu hesla by sa dali uh\xE1dnu\x9D offline", // ai 2026-10
 
 // src/Optimize/CheckSecret.php, row 59
-"AA_SECRET is not set - the keys are derived from the database password" => "",
+"AA_SECRET is not set - the keys are derived from the database password" => "AA_SECRET nie je nastaven\xE9 - k\xBE\xFA\xE8e sa odvodzuj\xFA z hesla datab\xE1zy", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 24
-"Security protections" => "",
+"Security protections" => "Bezpe\xE8nostn\xE9 ochrany", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 29
-"Lists the security protections switched off on this install and the unsigned expressions forms sent in the last %1 days." => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 74
-"Protection \"%1\" is switched off" => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 77
-"Protection" => "",
+"Lists the security protections switched off on this install and what they refused in the last %1 days." => "Vyp\xED\x9Ae bezpe\xE8nostn\xE9 ochrany vypnut\xE9 v tejto in\x9Atal\xE1cii a \xE8o ochrany za posledn\xFDch %1 dn\xED odmietli.", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 78
-// src/Security/Settings.php, row 28
-"Switched off" => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 78
-"unknown" => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 79
-"By" => "",
+"Protection \"%1\" is switched off" => "Ochrana \x84%1\x93 je vypnut\xE1", // ai 2026-10
 
 // src/Optimize/CheckSecurityProtections.php, row 81
-"Switch it on again once the older forms are converted." => "",
+"Protection" => "Ochrana", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 92
-"A form on %1 sent an unsigned expression in %2; it was refused" => "",
+// src/Optimize/CheckSecurityProtections.php, row 82
+// src/Security/Settings.php, row 28
+"Switched off" => "Vypnut\xE9", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 92, 93
-"an unknown page" => "",
+// src/Optimize/CheckSecurityProtections.php, row 83
+"By" => "Kto", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 93
-"A form on %1 sent an unsigned expression in %2; it ran because the protection was off" => "",
+// src/Optimize/CheckSecurityProtections.php, row 85
+"Switch it on again once the older forms are converted." => "Zapnite ju znovu, len \xE8o bud\xFA star\x9Aie formul\xE1re preveden\xE9.", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 97
-"Parameter" => "",
+// src/Optimize/CheckSecurityProtections.php, row 88
+"Protection switched off" => "Ochrana vypnut\xE1", // ai 2026-10
 
-// src/Optimize/CheckSecurityProtections.php, row 102
-"If you do not know the page, the request did not come from your forms and nothing needs to change." => "",
-
-// src/Optimize/CheckSecurityProtections.php, row 108
-"All protections are on and no form sent an unsigned expression in the last %1 days" => "",
+// src/Optimize/CheckSecurityProtections.php, row 113
+"All protections are on and none of them refused anything in the last %1 days" => "V\x9Aetky ochrany s\xFA zapnut\xE9 a za posledn\xFDch %1 dn\xED \x9Eiadna ni\xE8 neodmietla", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 45
-"Get_Sessionid use" => "",
+"Get_Sessionid use" => "Pou\x9Eitie Get_Sessionid", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 50
-"Lists who asked for a session id by the Get_Sessionid remote command in the last 30 days - scripts logging in to the admin pages, or external sites using AA_ClientAuth." => "",
+"Lists who asked for a session id by the Get_Sessionid remote command in the last 30 days - scripts logging in to the admin pages, or external sites using AA_ClientAuth." => "Vyp\xED\x9Ae, kto za posledn\xFDch 30 dn\xED po\x9Eiadal o session id vzdialen\xFDm pr\xEDkazom Get_Sessionid - skripty prihlasuj\xFAce sa do administr\xE1cie alebo extern\xE9 weby pou\x9E\xEDvaj\xFAce AA_ClientAuth.", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 77
-"An external site logs its readers in by AA_ClientAuth (free/freepwd)." => "",
+"An external site logs its readers in by AA_ClientAuth (free/freepwd)." => "Extern\xFD web prihlasuje svojich \xE8itate\xBEov cez AA_ClientAuth (free/freepwd).", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 78
-"A username and password login - a script using the admin pages, or an ActionApps Central older than this AA." => "",
+"A username and password login - a script using the admin pages, or an ActionApps Central older than this AA." => "Prihl\xE1senie menom a heslom - skript pou\x9E\xEDvaj\xFAci administr\xE1ciu alebo ActionApps Central star\x9Aia ako toto AA.", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 79
-"An external site resumes its reader sessions by AA_ClientAuth (the AA_Sess cookie, checked on each page view)." => "",
+"An external site resumes its reader sessions by AA_ClientAuth (the AA_Sess cookie, checked on each page view)." => "Extern\xFD web obnovuje rel\xE1cie svojich \xE8itate\xBEov cez AA_ClientAuth (cookie AA_Sess, overovan\xE1 pri ka\x9Edom zobrazen\xED str\xE1nky).", // ai 2026-10
 
 // src/Optimize/CheckSessionidUse.php, row 95
-"Get_Sessionid called from %1 (%2 login)" => "",
+"Get_Sessionid called from %1 (%2 login)" => "Get_Sessionid volan\xE9 z %1 (prihl\xE1senie typu %2)", // ai 2026-10
 
-// src/Optimize/CheckSessionidUse.php, row 110
-"Nobody called Get_Sessionid in the last 30 days" => "",
+// src/Optimize/CheckSessionidUse.php, row 111
+"Nobody called Get_Sessionid in the last 30 days" => "Za posledn\xFDch 30 dn\xED nikto nevolal Get_Sessionid", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 18
-"Site state files" => "",
+"Site state files" => "Stavov\xE9 s\xFAbory webov", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 23
-"Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "",
+"Checks that every site module using a state file (the legacy control file) has that file present and readable in modules/site/sites/." => "Over\xED, \x9Ee ka\x9Ed\xFD modul Site pou\x9E\xEDvaj\xFAci stavov\xFD s\xFAbor (star\xFD riadiaci s\xFAbor) m\xE1 tento s\xFAbor v modules/site/sites/ a \x9Ee je \xE8itate\xBEn\xFD.", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 66
-"Site module \"%1\" has no state file" => "",
+"Site module \"%1\" has no state file" => "Modul Site \x84%1\x93 nem\xE1 stavov\xFD s\xFAbor", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 68
-"Missing file" => "",
+"Missing file" => "Ch\xFDbaj\xFAci s\xFAbor", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 69
-"State file setting" => "",
+"State file setting" => "Nastavenie stavov\xE9ho s\xFAboru", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 71
-"Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "",
+"Every public page of that site answers HTTP 500 (logged as SITE_CONF). Add the file, or fix the \"State file\" setting of the site module." => "Ka\x9Ed\xE1 verejn\xE1 str\xE1nka toho webu odpoved\xE1 HTTP 500 (zaznamenan\xE9 ako SITE_CONF). Pridajte s\xFAbor, alebo opravte nastavenie \x84Stavov\xFD s\xFAbor\x93 modulu Site.", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 72
 // src/Optimize/CheckUniversalAnalytics.php, row 83
-"Site settings" => "",
+"Site settings" => "Nastavenia webu", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 77
-"All %1 site state files are in place" => "",
+"All %1 site state files are in place" => "V\x9Aetky stavov\xE9 s\xFAbory webov (%1) s\xFA na mieste", // ai 2026-10
 
 // src/Optimize/CheckSiteStateFiles.php, row 77
-"No site module uses a state file" => "",
+"No site module uses a state file" => "\x8Eiadny modul Site nepou\x9E\xEDva stavov\xFD s\xFAbor", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 31
+"Reverse proxy" => "Reverzn\xFD proxy server", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 36
+"Checks AA_TRUSTED_PROXIES in config.php and lists proxies outside it that sent requests in the last 30 days - AA takes the visitor address, the domain and https only from a trusted proxy." => "Skontroluje AA_TRUSTED_PROXIES v config.php a vyp\xED\x9Ae proxy servery mimo neho, ktor\xE9 za posledn\xFDch 30 dn\xED poslali po\x9Eiadavky - adresu n\xE1v\x9Atevn\xEDka, dom\xE9nu a https preber\xE1 AA len od d\xF4veryhodn\xE9ho proxy servera.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 69
+"nobody" => "\x9Eiadny", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 76
+"AA_TRUSTED_PROXIES in config.php has entries that are neither an address nor a range: %1" => "AA_TRUSTED_PROXIES v config.php obsahuje z\xE1znamy, ktor\xE9 nie s\xFA ani adresa, ani rozsah: %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 78
+"Write addresses and CIDR ranges, e.g. %1" => "Zap\xED\x9Ate adresy a rozsahy CIDR, napr. %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 85
+"AA_TRUSTED_PROXIES in config.php trusts a range wider than any private network: %1" => "AA_TRUSTED_PROXIES v config.php d\xF4veruje rozsahu \x9Air\x9Aiemu ako ktor\xE1ko\xBEvek priv\xE1tna sie\x9D: %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 87
+"List only the addresses or the network of your proxies, e.g. %1" => "Uve\xEFte len adresy alebo sie\x9D svojich proxy serverov, napr. %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 99
+"Proxy headers came from %1, which is not in AA_TRUSTED_PROXIES, so AA ignored them" => "Hlavi\xE8ky proxy pri\x9Ali z adresy %1, ktor\xE1 nie je v AA_TRUSTED_PROXIES, preto ich AA ignorovalo", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 108
+"If %1 is your proxy, add it to include/config.php: define('AA_TRUSTED_PROXIES', ['%1']); Until then AA sees every visitor with the address of the proxy and builds links with the host name the proxy uses for AA." => "Ak je %1 v\xE1\x9A proxy server, pridajte ho do include/config.php: define('AA_TRUSTED_PROXIES', ['%1']); Dovtedy AA vid\xED ka\x9Ed\xE9ho n\xE1v\x9Atevn\xEDka s adresou proxy servera a vytv\xE1ra odkazy s menom hostite\xBEa, ktor\xE9 proxy server pou\x9E\xEDva pre AA.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 117
+"This page came through the trusted proxy %1" => "T\xE1to str\xE1nka pri\x9Ala cez d\xF4veryhodn\xFD proxy server %1", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 121
+"The proxy %1 does not tell AA the address of the visitor" => "Proxy server %1 neoznamuje AA adresu n\xE1v\x9Atevn\xEDka", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 122
+"Let the proxy send the X-Forwarded-For header with the address of the visitor. Until then AA sees every visitor with one address." => "Nastavte proxy server, aby posielal hlavi\xE8ku X-Forwarded-For s adresou n\xE1v\x9Atevn\xEDka. Dovtedy AA vid\xED v\x9Aetk\xFDch n\xE1v\x9Atevn\xEDkov s jednou adresou.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 129
+"The proxy %1 does not tell AA whether the visitor uses https" => "Proxy server %1 neoznamuje AA, \xE8i n\xE1v\x9Atevn\xEDk pou\x9E\xEDva https", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 130
+"Let the proxy set the X-Forwarded-Proto header - in Apache RequestHeader set X-Forwarded-Proto \"https\" in the https virtual host and \"http\" in the plain one. AA then marks its cookies secure and builds https links." => "Nastavte na proxy serveri hlavi\xE8ku X-Forwarded-Proto - v Apache RequestHeader set X-Forwarded-Proto \"https\" vo virtu\xE1lnom hostite\xBEovi https a \"http\" v oby\xE8ajnom. AA potom ozna\xE8\xED svoje cookies ako secure a vytv\xE1ra odkazy https.", // ai 2026-10
+
+// src/Optimize/CheckTrustedProxies.php, row 135
+"No proxy outside AA_TRUSTED_PROXIES sent requests in the last 30 days" => "Za posledn\xFDch 30 dn\xED neposlal po\x9Eiadavky \x9Eiadny proxy server mimo AA_TRUSTED_PROXIES", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 26
-"Old Google Analytics (Universal Analytics)" => "",
+"Old Google Analytics (Universal Analytics)" => "Star\xFD Google Analytics (Universal Analytics)", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 31
-"Lists the sites and slices whose templates or settings still use a Universal Analytics id (UA-...). Google stopped collecting its data on 1 July 2023, so such code measures no visits." => "",
+"Lists the sites and slices whose templates or settings still use a Universal Analytics id (UA-...). Google stopped collecting its data on 1 July 2023, so such code measures no visits." => "Vyp\xED\x9Ae weby a moduly, ktor\xFDch \x9Aabl\xF3ny alebo nastavenia st\xE1le pou\x9E\xEDvaj\xFA id Universal Analytics (UA-...). Google prestal zbiera\x9D jeho d\xE1ta 1. j\xFAla 2023, tak\x9Ee tak\xFD k\xF3d nemeria \x9Eiadne n\xE1v\x9Atevy.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 110
-"Old id (UA)" => "",
+"Old id (UA)" => "Star\xE9 id (UA)", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 111
-"New id (GA4, Tag Manager)" => "",
+"New id (GA4, Tag Manager)" => "Nov\xE9 id (GA4, Tag Manager)", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 121
-"%1 still uses the old Google Analytics (UA-...) - no visits are measured" => "",
+"%1 still uses the old Google Analytics (UA-...) - no visits are measured" => "%1 st\xE1le pou\x9E\xEDva star\xFD Google Analytics (UA-...) - nemeraj\xFA sa \x9Eiadne n\xE1v\x9Atevy", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 124
-"Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "",
+"Google stopped collecting Universal Analytics data on 1 July 2023. 1. In Google Analytics open Admin > the GA4 property of the site > Data streams > the web stream and copy its Measurement ID (G-...); if the site has no GA4 property, create one. 2. In the places listed: in gtag code write the G-... id instead of the UA-... one (in gtag/js?id= and in gtag('config', ...)) and keep the consent settings; delete the _gaq, ga.js, analytics.js and _gat blocks; where no gtag code is left, paste in the standard GA4 snippet. Replace a UA-... id in the site settings (Google Analytics tracking id) by the G-... id. 3. The next day check GA4 > Reports > Realtime that visits come in." => "Google prestal zbiera\x9D d\xE1ta Universal Analytics 1. j\xFAla 2023. 1. V Google Analytics otvorte Spr\xE1vca > slu\x9Ebu GA4 dan\xE9ho webu > D\xE1tov\xE9 streamy > webov\xFD stream a skop\xEDrujte jeho ID merania (G-...); ak web slu\x9Ebu GA4 nem\xE1, vytvorte ju. 2. Na uveden\xFDch miestach: v k\xF3de gtag nap\xED\x9Ate id G-... namiesto id UA-... (v gtag/js?id= aj v gtag('config', ...)) a ponechajte nastavenia s\xFAhlasu; zma\x9Ete bloky _gaq, ga.js, analytics.js a _gat; kde nezostal \x9Eiadny k\xF3d gtag, vlo\x9Ete \x9Atandardn\xFD fragment GA4. Id UA-... v nastaveniach webu (Merac\xED ID Google Analytics) nahra\xEFte id G-.... 3. Na druh\xFD de\xF2 overte v GA4 > Preh\xBEady > V re\xE1lnom \xE8ase, \x9Ee n\xE1v\x9Atevy prich\xE1dzaj\xFA.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 129
-"%1 still has the old Google Analytics code (UA-...) next to the new one - it can be removed" => "",
+"%1 still has the old Google Analytics code (UA-...) next to the new one - it can be removed" => "%1 m\xE1 ved\xBEa nov\xE9ho k\xF3du st\xE1le star\xFD k\xF3d Google Analytics (UA-...) - mo\x9Eno ho odstr\xE1ni\x9D", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 132
-"The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "",
+"The new code (%1) is there already; the UA-... lines only load a script that measures nothing. Delete the _gaq, ga.js, analytics.js and _gat blocks and gtag('config', 'UA-...'); where the gtag/js?id= address carries the UA-... id, write the G-... id there instead of deleting the line. Clear a UA-... id in the site settings (Google Analytics tracking id) or replace it by the G-... id. A GTM-... container measures only with a GA4 tag inside - check that in Tag Manager. Then check GA4 > Reports > Realtime that visits still come in." => "Nov\xFD k\xF3d (%1) tam u\x9E je; riadky UA-... len na\xE8\xEDtavaj\xFA skript, ktor\xFD ni\xE8 nemeria. Zma\x9Ete bloky _gaq, ga.js, analytics.js a _gat a gtag('config', 'UA-...'); kde adresa gtag/js?id= nesie id UA-..., riadok nema\x9Ete a nap\xED\x9Ate do adresy id G-.... Id UA-... v nastaveniach webu (Merac\xED ID Google Analytics) vyma\x9Ete alebo nahra\xEFte id G-.... Kontajner GTM-... meria, len ke\xEF obsahuje zna\xE8ku GA4 - overte to v Tag Manageri. Potom overte v GA4 > Preh\xBEady > V re\xE1lnom \xE8ase, \x9Ee n\xE1v\x9Atevy st\xE1le prich\xE1dzaj\xFA.", // ai 2026-10
 
 // src/Optimize/CheckUniversalAnalytics.php, row 136
-"No template uses the old Google Analytics (Universal Analytics)" => "",
+"No template uses the old Google Analytics (Universal Analytics)" => "\x8Eiadna \x9Aabl\xF3na nepou\x9E\xEDva star\xFD Google Analytics (Universal Analytics)", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 23
-"Refused uploads" => "",
+"Refused uploads" => "Odmietnut\xE9 nahr\xE1vania", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 28
-"Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "",
+"Lists the uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason, and the slices whose upload directory is not writable." => "Vyp\xED\x9Ae nahr\xE1vania z editora form\xE1tovan\xE9ho textu, ktor\xE9 AA za posledn\xFDch 30 dn\xED odmietlo, pod\xBEa modulu a d\xF4vodu, a moduly, ktor\xFDch adres\xE1r na nahr\xE1vanie nie je zapisovate\xBEn\xFD.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 77
-"Slice %1 cannot store uploads - its directory is not writable" => "",
+"Slice %1 cannot store uploads - its directory is not writable" => "Modul %1 nem\xF4\x9Ee uklada\x9D nahran\xE9 s\xFAbory - jeho adres\xE1r nie je zapisovate\xBEn\xFD", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 78
-"Slice %1 could not store an upload" => "",
+"Slice %1 could not store an upload" => "Modul %1 nemohol ulo\x9Ei\x9D nahran\xFD s\xFAbor", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 79
-"Uploads to slice %1 refused: %2" => "",
+"Uploads to slice %1 refused: %2" => "Nahr\xE1vanie do modulu %1 odmietnut\xE9: %2", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 92
-"PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "",
+"PHP cannot write the upload directory of the slice (IMG_UPLOAD_PATH/<slice id>, or its file manager directory). Fix the owner or the permissions on the server." => "PHP nem\xF4\x9Ee zapisova\x9D do adres\xE1ra na nahr\xE1vanie modulu (IMG_UPLOAD_PATH/<slice id>, alebo do adres\xE1ra jeho spr\xE1vcu s\xFAborov). Opravte vlastn\xEDka alebo opr\xE1vnenia na serveri.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 93
-"An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "",
+"An address uploaded more anonymous images in an hour than AA allows (%1 an address, %2 a slice). A robot, most likely - the address is in the log." => "Jedna adresa nahrala za hodinu viac anonymn\xFDch obr\xE1zkov, ne\x9E AA povo\xBEuje (%1 na adresu, %2 na modul). Najsk\xF4r robot - adresa je v logu.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 94
-"Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "",
+"Somebody tried to upload without the right to: an editor whose login expired (reloading the page helps), or a probe - many days from one address." => "Niekto sa pok\xFAsil nahr\xE1va\x9D bez opr\xE1vnenia: editor, ktor\xE9mu vypr\x9Aalo prihl\xE1senie (pom\xF4\x9Ee obnovi\x9D str\xE1nku), alebo sondovanie - ve\xBEa dn\xED z jednej adresy.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 95
-"Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "",
+"Anonymous visitors may upload images up to %1 MB; editors are limited by upload_max_filesize and post_max_size of PHP." => "Anonymn\xED n\xE1v\x9Atevn\xEDci sm\xFA nahr\xE1va\x9D obr\xE1zky do %1 MB; editorov obmedzuj\xFA upload_max_filesize a post_max_size PHP.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 96
-"The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "",
+"The editor refused a file type, or a file whose content did not match its extension. The allowed types are fixed in AA\\Upload\\UploadPolicy; nothing a browser or PHP would run ever passes." => "Editor odmietol typ s\xFAboru alebo s\xFAbor, ktor\xE9ho obsah nezodpovedal pr\xEDpone. Povolen\xE9 typy s\xFA pevne dan\xE9 v AA\\Upload\\UploadPolicy; ni\xE8, \xE8o by spustil prehliada\xE8 alebo PHP, nikdy neprejde.", // ai 2026-10
 
 // src/Optimize/CheckUploadRefusals.php, row 103
-"No refused uploads in the last 30 days" => "",
+"No refused uploads in the last 30 days" => "Za posledn\xFDch 30 dn\xED \x9Eiadne odmietnut\xE9 nahr\xE1vania", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 24
-"f_u calls on pages" => "",
+"f_u calls on pages" => "Volania f_u na str\xE1nkach", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 29
-"Lists the f_u alias calls of the last 30 days that AA refused (PHP or AA functions, undefined ones) or still made only for compatibility (installation functions without the usr_ prefix), by field and slice." => "",
+"Lists the f_u alias calls of the last 30 days that AA refused (PHP or AA functions, undefined ones) or still made only for compatibility (installation functions without the usr_ prefix), by field and slice." => "Vyp\xED\x9Ae volania aliasov f_u za posledn\xFDch 30 dn\xED, ktor\xE9 AA odmietlo (funkcie PHP alebo AA, nedefinovan\xE9) alebo vykonalo u\x9E len kv\xF4li kompatibilite (funkcie in\x9Atal\xE1cie bez predpony usr_), pod\xBEa polo\x9Eky a modulu.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 76
-"Field settings" => "",
+"Field settings" => "Nastavenie polo\x9Eky", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 80
-"field %1 of slice %2" => "",
+"field %1 of slice %2" => "polo\x9Eka %1 modulu %2", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 91
-"The call is in the definition of the field or in a template using {alias:<field>:f_u:..}." => "",
+"The call is in the definition of the field or in a template using {alias:<field>:f_u:..}." => "Volanie je v defin\xEDcii polo\x9Eky alebo v \x9Aabl\xF3ne pou\x9E\xEDvaj\xFAcej {alias:<field>:f_u:..}.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctionLog.php, row 97
-"Every f_u call of the last 30 days called a usr_* function" => "",
+"Every f_u call of the last 30 days called a usr_* function" => "Ka\x9Ed\xE9 volanie f_u za posledn\xFDch 30 dn\xED volalo funkciu usr_*", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 31
-"f_u functions in field definitions" => "",
+"f_u functions in field definitions" => "Funkcie f_u v defin\xEDci\xE1ch polo\x9Eiek", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 36
-"Lists the field alias definitions using f_u whose function AA does not call (PHP or AA functions, undefined ones) or still calls only for compatibility (installation functions without the usr_ prefix)." => "",
+"Lists the field alias definitions using f_u whose function AA does not call (PHP or AA functions, undefined ones) or still calls only for compatibility (installation functions without the usr_ prefix)." => "Vyp\xED\x9Ae defin\xEDcie aliasov polo\x9Eiek pou\x9E\xEDvaj\xFAce f_u, ktor\xFDch funkciu AA nevol\xE1 (funkcie PHP alebo AA, nedefinovan\xE9) alebo vol\xE1 u\x9E len kv\xF4li kompatibilite (funkcie in\x9Atal\xE1cie bez predpony usr_).", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 89
-"Definition" => "",
+"Definition" => "Defin\xEDcia", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 109
-"All %1 f_u field definitions call usr_* functions" => "",
+"All %1 f_u field definitions call usr_* functions" => "V\x9Aetky defin\xEDcie polo\x9Eiek s f_u (%1) volaj\xFA funkcie usr_*", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 109
-"No field definition uses f_u" => "",
+"No field definition uses f_u" => "\x8Eiadna defin\xEDcia polo\x9Eky nepou\x9E\xEDva f_u", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 131
-"f_u calls %1, an installation function without the usr_ prefix" => "",
+"f_u calls %1, an installation function without the usr_ prefix" => "f_u vol\xE1 %1, funkciu in\x9Atal\xE1cie bez predpony usr_", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 132
-"f_u without a function name" => "",
+"f_u without a function name" => "f_u bez mena funkcie", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 133
-"f_u names %1, which is not defined" => "",
+"f_u names %1, which is not defined" => "f_u uv\xE1dza funkciu %1, ktor\xE1 nie je definovan\xE1", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 134
-"f_u names %1, a PHP function - not called" => "",
+"f_u names %1, a PHP function - not called" => "f_u uv\xE1dza %1, funkciu PHP - nevol\xE1 sa", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 135
-"f_u names %1, a function of AA itself (%2) - not called" => "",
+"f_u names %1, a function of AA itself (%2) - not called" => "f_u uv\xE1dza %1, funkciu samotn\xE9ho AA (%2) - nevol\xE1 sa", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 136
-"f_u names %1, defined outside AA in %2 - not called" => "",
+"f_u names %1, defined outside AA in %2 - not called" => "f_u uv\xE1dza funkciu %1, definovan\xFA mimo AA v %2 - nevol\xE1 sa", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 137
-"f_u call of %1 failed" => "",
+"f_u call of %1 failed" => "Volanie %1 cez f_u zlyhalo", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 138
-"f_u names \"%1\", which is not a function name - not called" => "",
+"f_u names \"%1\", which is not a function name - not called" => "f_u uv\xE1dza \x84%1\x93, \xE8o nie je meno funkcie - nevol\xE1 sa", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 146
-"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "",
+"AA still calls it so that old sites keep working, but f_u is meant for usr_* functions only. Rename the function to usr_%1 (defined in %2) and change the definitions." => "AA ju st\xE1le vol\xE1, aby star\xE9 weby fungovali \xEFalej, ale f_u je ur\xE8en\xE9 len pre funkcie usr_*. Premenujte funkciu na usr_%1 (definovan\xE1 v %2) a zme\xF2te defin\xEDcie.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 147
-"The alias shows nothing (it never did). Remove it or name a usr_* function." => "",
+"The alias shows nothing (it never did). Remove it or name a usr_* function." => "Alias ni\xE8 nezobraz\xED (nikdy nezobrazoval). Odstr\xE1\xF2te ho, alebo uve\xEFte funkciu usr_*.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 148
-"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "",
+"The function is not defined on this admin page. A site may still define it (a site control file, a file only its pages load) - the check \"f_u calls on pages\" says what pages really called; trust that one. If it is not there either, define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Funkcia nie je na tejto str\xE1nke administr\xE1cie definovan\xE1. Web ju napriek tomu m\xF4\x9Ee definova\x9D (riadiaci s\xFAbor webu, s\xFAbor, ktor\xFD na\xE8\xEDtavaj\xFA len jeho str\xE1nky) - \xE8o str\xE1nky skuto\xE8ne volali, hovor\xED kontrola \x84Volania f_u na str\xE1nkach\x93; verte tej. Ak nie je ani tam, definujte usr_%1 v include/usr_aliasfnc.php alebo alias odstr\xE1\xF2te.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 149
-"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "",
+"The page had no such function, the alias showed nothing. Define usr_%1 in include/usr_aliasfnc.php or remove the alias." => "Str\xE1nka tak\xFA funkciu nemala, alias ni\xE8 nezobrazil. Definujte usr_%1 v include/usr_aliasfnc.php alebo alias odstr\xE1\xF2te.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 150
-"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "",
+"Only functions of the installation are called: usr_* ones, ones defined by include/usr_aliasfnc.php (and the files it includes), include/custom/ or modules/site/sites/. Define the function there as usr_%1." => "Volaj\xFA sa len funkcie in\x9Atal\xE1cie: usr_*, funkcie definovan\xE9 v include/usr_aliasfnc.php (a v s\xFAboroch, ktor\xE9 vklad\xE1), include/custom/ alebo modules/site/sites/. Definujte tam funkciu ako usr_%1.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 151
-"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "",
+"The call failed: %1. Either the function does not take what f_u passes (array content, string field id, string parameters) or it failed inside. Until it is fixed the alias shows nothing." => "Volanie zlyhalo: %1. Bu\xEF funkcia neprij\xEDma to, \xE8o f_u odovzd\xE1va (pole obsahu, re\x9Dazec id polo\x9Eky, re\x9Dazec parametrov), alebo zlyhala vo vn\xFAtri. K\xFDm sa to neoprav\xED, alias ni\xE8 nezobraz\xED.", // ai 2026-10
 
 // src/Optimize/CheckUserAliasFunctions.php, row 152
-"The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "",
+"The alias shows nothing: f_u calls only functions of the installation (usr_* in include/usr_aliasfnc.php), never PHP or AA functions. Write a usr_* function that does what is needed, or use an AA expression instead." => "Alias ni\xE8 nezobraz\xED: f_u vol\xE1 len funkcie in\x9Atal\xE1cie (usr_* v include/usr_aliasfnc.php), nikdy funkcie PHP alebo AA. Nap\xED\x9Ate funkciu usr_*, ktor\xE1 urob\xED, \xE8o je potrebn\xE9, alebo namiesto toho pou\x9Eite v\xFDraz AA.", // ai 2026-10
 
 // src/Optimize/ClearPagecache.php, row 13
 "Clear Pagecache" => "Vypr\xE1zdni\x9D pagecache", // ai 2026-06
@@ -11530,10 +11944,10 @@ return [
 "We found %1 tables which need to be converted" => "Na\x9Ali sme %1 tabuliek, ktor\xE9 je potrebn\xE9 konvertova\x9D", // ai 2026-06
 
 // src/Optimize/Convert2innodb.php, row 71
-"Unique numbers (seq) may repeat" => "",
+"Unique numbers (seq) may repeat" => "Jedine\xE8n\xE9 \xE8\xEDsla (seq) sa m\xF4\x9Eu opakova\x9D", // ai 2026-10
 
 // src/Optimize/Convert2innodb.php, row 71
-"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "",
+"Tables %1 do not support transactions, so two items added at the same moment may get the same number. Convert the tables to InnoDB." => "Tabu\xBEky %1 nepodporuj\xFA transakcie, tak\x9Ee dve spr\xE1vy pridan\xE9 v rovnakom okamihu m\xF4\x9Eu dosta\x9D rovnak\xE9 \xE8\xEDslo. Preve\xEFte tabu\xBEky na InnoDB.", // ai 2026-10
 
 // src/Optimize/Convert2innodb.php, row 85
 "Convert table %1 (%2) to InnoDB" => "Konvertova\x9D tabu\xBEku %1 (%2) na InnoDB", // ai 2026-06
@@ -11557,7 +11971,7 @@ return [
 "Please do not forget to change DB_CHARACTER_SET to \"utf8mb4\" and DB_COLLATION_CONNECTION to \"%1\" in your config.php" => "Nezabudnite pros\xEDm zmeni\x9D DB_CHARACTER_SET na \"utf8mb4\" a DB_COLLATION_CONNECTION na \"%1\" vo va\x9Aom config.php", // ai 2026-06
 
 // src/Optimize/Convert2utf8mb4.php, row 136
-"Convert the MyISAM tables %1 to InnoDB first - Optimize \"%2\"." => "",
+"Convert the MyISAM tables %1 to InnoDB first - Optimize \"%2\"." => "Najprv preve\xEFte tabu\xBEky MyISAM %1 na InnoDB - optimaliz\xE1cia \x84%2\x93.", // ai 2026-10
 
 // src/Optimize/ConvertSliceEncoding.php, row 18
 "Convert Slice Encoding to UTF" => "Konvertova\x9D k\xF3dovanie modulu na UTF", // ai 2026-06
@@ -11587,13 +12001,13 @@ return [
 "\"%1\" module is not in %2 encoding. Skipping." => "Modul \"%1\" nie je v k\xF3dovan\xED %2. Preskakujem.", // ai 2026-06
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 17
-"Convert database from 1Byte encoding (latin1, cp1250, ...) to utf8mb4 collation" => "",
+"Convert database from 1Byte encoding (latin1, cp1250, ...) to utf8mb4 collation" => "Previes\x9D datab\xE1zu z 1bajtov\xE9ho k\xF3dovania (latin1, cp1250, ...) na kolaciu utf8mb4", // ai 2026-10
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 25
-"Convert all tables with 1Byte encoded texts (latin1, cp1250, ...) to utf8mb4 and set database default to utf8mb4. Texts keep the characters AA reads from them now." => "",
+"Convert all tables with 1Byte encoded texts (latin1, cp1250, ...) to utf8mb4 and set database default to utf8mb4. Texts keep the characters AA reads from them now." => "Prevedie v\x9Aetky tabu\xBEky s textami v 1bajtovom k\xF3dovan\xED (latin1, cp1250, ...) na utf8mb4 a nastav\xED predvolen\xE9 k\xF3dovanie datab\xE1zy na utf8mb4. Texty si ponechaj\xFA znaky, ktor\xE9 z nich AA \xE8\xEDta teraz.", // ai 2026-10
 
 // src/Optimize/Convertlatin2Utf8Mb4.php, row 43
-"DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "",
+"DB_CHARACTER_SET in config.php is \"%1\". Switch it to \"utf8mb4\" first and check the texts in AA look right - the conversion keeps what AA shows over the utf8mb4 connection." => "DB_CHARACTER_SET v config.php je \x84%1\x93. Najprv ho prepnite na \x84utf8mb4\x93 a overte, \x9Ee texty v AA vyzeraj\xFA spr\xE1vne - prevod zachov\xE1 to, \xE8o AA zobrazuje cez spojenie utf8mb4.", // ai 2026-10
 
 // src/Optimize/CopyContent.php, row 13
 "Copy Content Table" => "Kop\xEDrova\x9D tabu\xBEku content", // ai 2026-06
@@ -11617,34 +12031,34 @@ return [
 "Deleted items to be recreated: %1." => "Vymazan\xE9 spr\xE1vy, ktor\xE9 bud\xFA obnoven\xE9: %1.", // ai 2026-06
 
 // src/Optimize/CreateAppStoreAccount.php, row 14
-"App store account" => "",
+"App store account" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 19
-"Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "",
+"Creates the public account other AAs read the published apps of this AA with (user %1, no rights). Its password is public; the account cannot log in to the administration." => "Vytvor\xED verejn\xFD \xFA\xE8et, ktor\xFDm ostatn\xE9 AA \xE8\xEDtaj\xFA zverejnen\xE9 aplik\xE1cie tohto AA (u\x9E\xEDvate\xBE %1, bez pr\xE1v). Jeho heslo je verejn\xE9; \xFA\xE8et sa nem\xF4\x9Ee prihl\xE1si\x9D do administr\xE1cie.", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 34
-"No app store account - this AA publishes no apps" => "",
+"No app store account - this AA publishes no apps" => "\x8Eiadny \xFA\xE8et katal\xF3gu aplik\xE1ci\xED - toto AA nezverej\xF2uje \x9Eiadne aplik\xE1cie", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 39
-"The user %1 exists, but not with the public password of the app store - rename it, then repair" => "",
+"The user %1 exists, but not with the public password of the app store - rename it, then repair" => "U\x9E\xEDvate\xBE %1 existuje, ale nem\xE1 verejn\xE9 heslo katal\xF3gu aplik\xE1ci\xED - premenujte ho a potom opravte", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 44
-"The app store account %1 has rights or groups - remove them" => "",
+"The app store account %1 has rights or groups - remove them" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED %1 m\xE1 pr\xE1va alebo skupiny - odoberte ich", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 47
-"The app store account is ready" => "",
+"The app store account is ready" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED je pripraven\xFD", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 55
-"Only a superadmin may create the app store account" => "",
+"Only a superadmin may create the app store account" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED smie vytvori\x9D len superadmin", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 67
-"The app store account could not be created" => "",
+"The app store account could not be created" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED sa nepodarilo vytvori\x9D", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 70
-"The app store account %1 is created" => "",
+"The app store account %1 is created" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED %1 bol vytvoren\xFD", // ai 2026-10
 
 // src/Optimize/CreateAppStoreAccount.php, row 77
-"The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "",
+"The app store account needs the users of AA itself (PERM_LIB sql); this AA uses %1 - it can install from a store, not be one" => "\xDA\xE8et katal\xF3gu aplik\xE1ci\xED potrebuje u\x9E\xEDvate\xBEov samotn\xE9ho AA (PERM_LIB sql); toto AA pou\x9E\xEDva %1 - m\xF4\x9Ee z katal\xF3gu in\x9Atalova\x9D, ale samo katal\xF3gom by\x9D nem\xF4\x9Ee", // ai 2026-10
 
 // src/Optimize/CreateUploadDir.php, row 16
 "Create upload directory for current slice" => "Vytvori\x9D adres\xE1r pre nahr\xE1vanie s\xFAborov pre aktu\xE1lny modul", // ai 2026-06
@@ -11661,44 +12075,44 @@ return [
 // src/Optimize/DbBinaryTrailingZeros.php, row 35
 "Replaces binary fields by varbinary and removes trailing zeros. Needed for MySQL > 5.0.17" => "Nahrad\xED binary polia typom varbinary a odstr\xE1ni koncov\xE9 nuly. Potrebn\xE9 pre MySQL > 5.0.17", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 22
+// src/Optimize/DbFeedInconsistency.php, row 23
 "Feeds table inconsistent records" => "Nekonzistentn\xE9 z\xE1znamy v tabu\xBEke feeds", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 30
+// src/Optimize/DbFeedInconsistency.php, row 31
 "Testing if feeds table does not contain relations to non-existent slices (after slice deletion)" => "Testuje, \xE8i tabu\xBEka feeds neobsahuje v\xE4zby na neexistuj\xFAce moduly (po vymazan\xED modulu)", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 47
+// src/Optimize/DbFeedInconsistency.php, row 51
 "Wrong destination slice id: %1 -> %2" => "Chybn\xE9 id cie\xBEov\xE9ho modulu: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 58
+// src/Optimize/DbFeedInconsistency.php, row 65
 "Wrong source slice id: %1 -> %2" => "Chybn\xE9 id zdrojov\xE9ho modulu: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbFeedInconsistency.php, row 63
-// src/Optimize/DbInconsistency.php, row 70
+// src/Optimize/DbFeedInconsistency.php, row 70
+// src/Optimize/DbInconsistency.php, row 78
 "No wrong references found, hurray!" => "Nen\xE1jden\xE9 \x9Eiadne chybn\xE9 odkazy, hur\xE1!", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 20
+// src/Optimize/DbInconsistency.php, row 22
 "Check database consistency" => "Skontrolova\x9D konzistenciu datab\xE1zy", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 28
+// src/Optimize/DbInconsistency.php, row 30
 "Test content table for records without item table reference, test discussion for the same, ..." => "Testuje tabu\xBEku content na z\xE1znamy bez odkazu do tabu\xBEky item, to ist\xE9 pre tabu\xBEku discussion, ...", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 45
+// src/Optimize/DbInconsistency.php, row 47
 "Wrong slice id in item table: %1" => "Chybn\xE9 id modulu v tabu\xBEke item: %1", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 55
+// src/Optimize/DbInconsistency.php, row 60
 "Wrong item id in content table: %1 -> %2" => "Chybn\xE9 id spr\xE1vy v tabu\xBEke content: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 65
+// src/Optimize/DbInconsistency.php, row 73
 "Wrong item id in discussion table: %1 -> %2" => "Chybn\xE9 id spr\xE1vy v tabu\xBEke discussion: %1 -> %2", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 89
+// src/Optimize/DbInconsistency.php, row 96
 "Data for slice id %1 in item table deleted" => "D\xE1ta pre modul s id %1 v tabu\xBEke item vymazan\xE9", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 100
+// src/Optimize/DbInconsistency.php, row 109
 "Data for item id %1 in content table deleted" => "D\xE1ta pre spr\xE1vu s id %1 v tabu\xBEke content vymazan\xE9", // ai 2026-06
 
-// src/Optimize/DbInconsistency.php, row 111
+// src/Optimize/DbInconsistency.php, row 122
 "Data for item id %1 in discussion table deleted" => "D\xE1ta pre spr\xE1vu s id %1 v tabu\xBEke discussion vymazan\xE9", // ai 2026-06
 
 // src/Optimize/DbInconsistencyConstants.php, row 29
@@ -11722,48 +12136,48 @@ return [
 // src/Optimize/DbInconsistencyConstants.php, row 122
 "Deleted %1 constants in %2 (%3) unused constant groups" => "Vymazan\xFDch %1 hodn\xF4t v %2 (%3) nepou\x9Eit\xFDch skupin\xE1ch hodn\xF4t", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 21
+// src/Optimize/DbRelationDups.php, row 23
 "Relation table duplicate records" => "Duplicitn\xE9 z\xE1znamy v tabu\xBEke relation", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 29
+// src/Optimize/DbRelationDups.php, row 31
 "Testing if relation table contains records, where values in both columns are identical (which was a bug fixed in Jan 2006)" => "Testuje, \xE8i tabu\xBEka relation obsahuje z\xE1znamy, kde s\xFA hodnoty v oboch st\xE5pcoch rovnak\xE9 (chyba opraven\xE1 v janu\xE1ri 2006)", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 41
+// src/Optimize/DbRelationDups.php, row 43
 "%1 duplicates found" => "N\xE1jden\xFDch %1 duplik\xE1tov", // ai 2026-06
 
-// src/Optimize/DbRelationDups.php, row 44
-// src/Optimize/FieldDuplicates.php, row 50, 66
+// src/Optimize/DbRelationDups.php, row 46
+// src/Optimize/FieldDuplicates.php, row 51, 65
 "No duplicates found" => "Nen\xE1jden\xE9 \x9Eiadne duplik\xE1ty", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 20
+// src/Optimize/DbRelationStartsxy.php, row 22
 "Slices relation started by x or y records" => "Z\xE1znamy v\xE4zieb modulov za\xE8\xEDnaj\xFAce znakom x alebo y", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 28
+// src/Optimize/DbRelationStartsxy.php, row 30
 "Testing if relations between slices are OK (without x or y chars on the beginning)" => "Testuje, \xE8i s\xFA v\xE4zby medzi modulmi v poriadku (bez znakov x alebo y na za\xE8iatku)", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 40, 56
+// src/Optimize/DbRelationStartsxy.php, row 42, 57
 "%1 bad relation records found" => "N\xE1jden\xFDch %1 chybn\xFDch z\xE1znamov v\xE4zieb", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 43
+// src/Optimize/DbRelationStartsxy.php, row 45
 "No bad relation records found" => "Nen\xE1jden\xE9 \x9Eiadne chybn\xE9 z\xE1znamy v\xE4zieb", // ai 2026-06
 
-// src/Optimize/DbRelationStartsxy.php, row 58
+// src/Optimize/DbRelationStartsxy.php, row 59
 "repair value: %1 with item_id: %2" => "oprava hodnoty: %1 s item_id: %2", // ai 2026-06
 
 // src/Optimize/DebuglogLeftover.php, row 23
-"Find forgotten {debuglog} expressions" => "",
+"Find forgotten {debuglog} expressions" => "N\xE1js\x9D zabudnut\xE9 v\xFDrazy {debuglog}", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 28
-"Lists views, slice/module/site settings, fields, site spots, alias functions and Code slice items which contain {debuglog}, and the DEBUG log rows written in the last 24 hours. Remove the expression once the debugging is over - it logs on every render of the page." => "",
+"Lists views, slice/module/site settings, fields, site spots, alias functions and Code slice items which contain {debuglog}, and the DEBUG log rows written in the last 24 hours. Remove the expression once the debugging is over - it logs on every render of the page." => "Vyp\xED\x9Ae poh\xBEady, nastavenia modulov/webov, polo\x9Eky, miesta na webe, funkcie aliasov a spr\xE1vy modulu K\xF3d, ktor\xE9 obsahuj\xFA {debuglog}, a riadky logu DEBUG zap\xEDsan\xE9 za posledn\xFDch 24 hod\xEDn. Po skon\xE8en\xED ladenia v\xFDraz odstr\xE1\xF2te - zaznamen\xE1va pri ka\x9Edom vykreslen\xED str\xE1nky.", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 60
-"DEBUG rows in the last 24 hours" => "",
+"DEBUG rows in the last 24 hours" => "Riadky DEBUG za posledn\xFDch 24 hod\xEDn", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 62
-"%1 rows, last %2" => "",
+"%1 rows, last %2" => "Riadkov: %1, posledn\xFD %2", // ai 2026-10
 
 // src/Optimize/DebuglogLeftover.php, row 67
-"No {debuglog} found in code points, no DEBUG rows logged in the last 24 hours" => "",
+"No {debuglog} found in code points, no DEBUG rows logged in the last 24 hours" => "\x8Eiadny {debuglog} v k\xF3de, za posledn\xFDch 24 hod\xEDn nezaznamenan\xE9 \x9Eiadne riadky DEBUG", // ai 2026-10
 
 // src/Optimize/DropBackupTables.php, row 20
 "Delete backup tables" => "Vymaza\x9D z\xE1lo\x9En\xE9 tabu\xBEky", // ai 2026-06
@@ -11771,40 +12185,40 @@ return [
 // src/Optimize/DropBackupTables.php, row 28
 "Deletes all the current backup tables (bck_slice, bck_item, ...)." => "Vyma\x9Ee v\x9Aetky aktu\xE1lne z\xE1lo\x9En\xE9 tabu\xBEky (bck_slice, bck_item, ...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 15
+// src/Optimize/FieldDuplicates.php, row 16
 "Fix field definitions duplicates" => "Opravi\x9D duplicitn\xE9 defin\xEDcie polo\x9Eiek", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 23
+// src/Optimize/FieldDuplicates.php, row 24
 "There should be only one slice_id - field_id pair in all slices, but sometimes there are more than one (mainly because of error in former sql_update.php script, where more than one display_count... fields were added)." => "Vo v\x9Aetk\xFDch moduloch by mala existova\x9D len jedna dvojica slice_id - field_id, ale niekedy ich je viac (hlavne kv\xF4li chybe v star\x9Aom skripte sql_update.php, ktor\xFD prid\xE1val viac polo\x9Eiek display_count...).", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 54
+// src/Optimize/FieldDuplicates.php, row 55
 "Duplicate in slice - field: %1 - %2" => "Duplik\xE1t v module - polo\x9Eka: %1 - %2", // ai 2026-06
 
-// src/Optimize/FieldDuplicates.php, row 80
+// src/Optimize/FieldDuplicates.php, row 83
 "Field %2 in slice %1 fixed" => "Polo\x9Eka %2 v module %1 opraven\xE1", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 21
+// src/Optimize/FixContentColumn.php, row 23
 "Set right content column for field" => "Nastavi\x9D spr\xE1vny st\xE5pec obsahu pre polo\x9Eku", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 29
+// src/Optimize/FixContentColumn.php, row 31
 "Set flag FLAG_TEXT_STORED for all content, where field is marked as text field, and reset it for number fields" => "Nastav\xED pr\xEDznak FLAG_TEXT_STORED pre v\x9Aetok obsah, kde je polo\x9Eka ozna\xE8en\xE1 ako textov\xE1, a zru\x9A\xED ho pre \xE8\xEDseln\xE9 polo\x9Eky", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 45
+// src/Optimize/FixContentColumn.php, row 47
 "No problem found, hurray" => "Nen\xE1jden\xFD \x9Eiadny probl\xE9m, hur\xE1", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 54
+// src/Optimize/FixContentColumn.php, row 56
 "slice %1: field_id: %2 item_id: %3" => "modul %1: field_id: %2 item_id: %3", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 57, 80
+// src/Optimize/FixContentColumn.php, row 59, 81
 "and more..." => "a \xEFal\x9Aie...", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 60
+// src/Optimize/FixContentColumn.php, row 62
 "We found %1 inconsistent rows in content table" => "Na\x9Ali sme %1 nekonzistentn\xFDch riadkov v tabu\xBEke content", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 78
+// src/Optimize/FixContentColumn.php, row 79
 "fixed (id-field): %1 - %2 (%3)" => "opraven\xE9 (id-polo\x9Eka): %1 - %2 (%3)", // ai 2026-06
 
-// src/Optimize/FixContentColumn.php, row 83
+// src/Optimize/FixContentColumn.php, row 84
 "We fixed %1 inconsistent rows in content table" => "Opravili sme %1 nekonzistentn\xFDch riadkov v tabu\xBEke content", // ai 2026-06
 
 // src/Optimize/FixDatewidget.php, row 18
@@ -11851,212 +12265,212 @@ return [
 "For programmers only - prints the include/metabase_schema.php content (the expected DB schema, as a readable PHP array) generated from the current database; copy it into the file and commit." => "Len pre program\xE1torov - vyp\xED\x9Ae obsah include/metabase_schema.php (o\xE8ak\xE1van\xFA sch\xE9mu DB ako \xE8itate\xBEn\xE9 PHP pole) vygenerovan\xFD z aktu\xE1lnej datab\xE1zy; skop\xEDrujte ho do s\xFAboru a commitnite.", // ai 2026-06
 
 // src/Optimize/ImgCacheWritable.php, row 17
-"Image cache can store" => "",
+"Image cache can store" => "Cache obr\xE1zkov m\xF4\x9Ee uklada\x9D", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 22
-"Resized images are generated once and kept in the cache directory in IMG_UPLOAD_PATH. Where PHP cannot write there, every request for such an image generates it again." => "",
+"Resized images are generated once and kept in the cache directory in IMG_UPLOAD_PATH. Where PHP cannot write there, every request for such an image generates it again." => "Zmen\x9Aen\xE9 obr\xE1zky sa generuj\xFA raz a uchov\xE1vaj\xFA v adres\xE1ri cache v IMG_UPLOAD_PATH. Kde tam PHP nem\xF4\x9Ee zapisova\x9D, ka\x9Ed\xE1 po\x9Eiadavka na tak\xFD obr\xE1zok ho generuje znovu.", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 50
-"The image cache directory is a symbolic link" => "",
+"The image cache directory is a symbolic link" => "Adres\xE1r cache obr\xE1zkov je symbolick\xFD odkaz", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 50
-"Resized images are stored through it, but AA neither purges old ones there nor writes the routing rule - the cache grows without limit. Replace the link with a directory, or keep it small by other means." => "",
+"Resized images are stored through it, but AA neither purges old ones there nor writes the routing rule - the cache grows without limit. Replace the link with a directory, or keep it small by other means." => "Zmen\x9Aen\xE9 obr\xE1zky sa ukladaj\xFA ceze\xF2, ale AA tam nema\x9Ee star\xE9 ani nezapisuje pravidlo smerovania - cache rastie bez obmedzenia. Nahra\xEFte odkaz adres\xE1rom, alebo ju udr\x9Eujte mal\xFA inak.", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 53
-"The image cache can store resized images" => "",
+"The image cache can store resized images" => "Cache obr\xE1zkov m\xF4\x9Ee uklada\x9D zmen\x9Aen\xE9 obr\xE1zky", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 54
-"The image cache cannot store resized images" => "",
+"The image cache cannot store resized images" => "Cache obr\xE1zkov nem\xF4\x9Ee uklada\x9D zmen\x9Aen\xE9 obr\xE1zky", // ai 2026-10
 
 // src/Optimize/ImgCacheWritable.php, row 54
-"The images show, but each one which is not in the cache yet is generated again on every request - the load and delay of a site without the cache. Let the PHP user write into the directory, or into the upload directory, where AA creates it." => "",
+"The images show, but each one which is not in the cache yet is generated again on every request - the load and delay of a site without the cache. Let the PHP user write into the directory, or into the upload directory, where AA creates it." => "Obr\xE1zky sa zobrazuj\xFA, ale ka\x9Ed\xFD, ktor\xFD e\x9Ate nie je v cache, sa pri ka\x9Edej po\x9Eiadavke generuje znovu - z\xE1\x9Da\x9E a oneskorenie webu bez cache. Povo\xBEte u\x9E\xEDvate\xBEovi PHP z\xE1pis do adres\xE1ra, alebo do adres\xE1ra na nahr\xE1vanie, kde ho AA vytvor\xED.", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 22
-"{img} which measures the image on every page view" => "",
+"{img} which measures the image on every page view" => "{img}, ktor\xFD meria obr\xE1zok pri ka\x9Edom zobrazen\xED str\xE1nky", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 27
-"Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "",
+"Lists the {img} expressions in views, fields, site spots and other code which print the image size, but whose parameters do not tell it - so the resized image is loaded over HTTP on every expansion." => "Vyp\xED\x9Ae v\xFDrazy {img} v poh\xBEadoch, polo\x9Ek\xE1ch, miestach na webe a inom k\xF3de, ktor\xE9 vypisuj\xFA rozmery obr\xE1zka, ale ich parametre ich neur\xE8uj\xFA - tak\x9Ee sa zmen\x9Aen\xFD obr\xE1zok pri ka\x9Edej expanzii na\xE8\xEDtava cez HTTP.", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 54
-"Expression" => "",
+"Expression" => "V\xFDraz", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 60
-"No {img} in the templates measures its image" => "",
+"No {img} in the templates measures its image" => "\x8Eiadny {img} v \x9Aabl\xF3nach nemeria svoj obr\xE1zok", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 64
-"%1 {img} expressions measure the image on every page view" => "",
+"%1 {img} expressions measure the image on every page view" => "V\xFDrazy {img}, ktor\xE9 meraj\xFA obr\xE1zok pri ka\x9Edom zobrazen\xED str\xE1nky: %1", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 67
-"Give both w and h together with zc, iar or far, and leave out parameters which make the size depend on the photo (ar, ra, wp, hp, wl, hl, ws, hs, sx, sy, sw, sh, fltr) - then the size follows from the parameters. Or print just the url (info \"url\" or \"im\") and set the size in the HTML or CSS." => "",
+"Give both w and h together with zc, iar or far, and leave out parameters which make the size depend on the photo (ar, ra, wp, hp, wl, hl, ws, hs, sx, sy, sw, sh, fltr) - then the size follows from the parameters. Or print just the url (info \"url\" or \"im\") and set the size in the HTML or CSS." => "Zadajte w aj h spolu so zc, iar alebo far a vynechajte parametre, kv\xF4li ktor\xFDm rozmer z\xE1vis\xED od fotky (ar, ra, wp, hp, wl, hl, ws, hs, sx, sy, sw, sh, fltr) - potom rozmer vypl\xFDva z parametrov. Alebo vyp\xED\x9Ate len url (info \x84url\x93 alebo \x84im\x93) a rozmer nastavte v HTML alebo CSS.", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 83
-"\"%1\" needs the output format, which only the image tells" => "",
+"\"%1\" needs the output format, which only the image tells" => "\x84%1\x93 potrebuje v\xFDstupn\xFD form\xE1t, ktor\xFD ur\xE8\xED len obr\xE1zok", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 84
-"the parameters are computed - check that every variant tells the size" => "",
+"the parameters are computed - check that every variant tells the size" => "parametre sa po\xE8\xEDtaj\xFA - overte, \x9Ee ka\x9Ed\xE1 varianta ur\xE8uje rozmer", // ai 2026-10
 
 // src/Optimize/ImgMeasuring.php, row 85
-"the parameters do not tell the size" => "",
+"the parameters do not tell the size" => "parametre neur\xE8uj\xFA rozmer", // ai 2026-10
 
-// src/Optimize/ItemDiscussion.php, row 16
+// src/Optimize/ItemDiscussion.php, row 17
 "Delete discussion comments for non-existent items" => "Vymaza\x9D diskusn\xE9 pr\xEDspevky k neexistuj\xFAcim spr\xE1vam", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 36, 54
+// src/Optimize/ItemDiscussion.php, row 40, 58
 "No problems found" => "Nena\x9Ali sa \x9Eiadne probl\xE9my", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 40
+// src/Optimize/ItemDiscussion.php, row 44
 "Problem for item %1 - %2 comments found" => "Probl\xE9m pri spr\xE1ve %1 - n\xE1jden\xFDch %2 pr\xEDspevkov", // ai 2026-06
 
-// src/Optimize/ItemDiscussion.php, row 61
+// src/Optimize/ItemDiscussion.php, row 65
 "%1 problems solved" => "Vyrie\x9Aen\xFDch %1 probl\xE9mov", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 48
+// src/Optimize/LdapPermsToSql.php, row 49
 "Migrate LDAP perms to SQL perms" => "Migrova\x9D LDAP pr\xE1va na SQL pr\xE1va", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 54
+// src/Optimize/LdapPermsToSql.php, row 55
 "Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything." => "Skop\xEDruje v\x9Aetk\xFDch u\x9E\xEDvate\xBEov, skupiny, \xE8lenstv\xE1 a pr\xE1va z LDAP backendu do tabuliek SQL backendu (users, membership, perms) a prep\xED\x9Ae item.posted_by / item.edited_by z LDAP DN tvaru (uid=...,ou=...) na nov\xE9 SQL \xE8\xEDseln\xE9 id. Spustite raz na ka\x9Edej in\x9Atal\xE1cii, potom v konfigur\xE1cii prepnite PERM_LIB na 'sql'. 'Test' je sk\xFA\x9Aobn\xFD beh, ktor\xFD iba \xE8\xEDta. 'Repair' vykon\xE1 migr\xE1ciu a mo\x9Eno ho spusti\x9D opakovane. 'Revert' pou\x9Eije mapovaciu tabu\xBEku na vr\xE1tenie v\x9Aetk\xFDch zmien.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 71
+// src/Optimize/LdapPermsToSql.php, row 72
 "This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'." => "Tento optimaliz\xE1tor be\x9E\xED, len ke\xEF PERM_LIB='ldap'. Aktu\xE1lne PERM_LIB='%1'.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 86
+// src/Optimize/LdapPermsToSql.php, row 87
 "Would create mapping table `%1`" => "Vytvorila by sa mapovacia tabu\xBEka `%1`", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 115
+// src/Optimize/LdapPermsToSql.php, row 116
 "Test failed: %1" => "Test zlyhal: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 118
+// src/Optimize/LdapPermsToSql.php, row 119
 "Test finished (dry run - no changes made)." => "Test dokon\xE8en\xFD (sk\xFA\x9Aobn\xFD beh - \x9Eiadne zmeny neboli vykonan\xE9).", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 134
+// src/Optimize/LdapPermsToSql.php, row 135
 "Repair failed: %1" => "Oprava zlyhala: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 137
+// src/Optimize/LdapPermsToSql.php, row 138
 "Repair finished." => "Oprava dokon\xE8en\xE1.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 153
+// src/Optimize/LdapPermsToSql.php, row 154
 "Revert failed: %1" => "Vr\xE1tenie zlyhalo: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 156
+// src/Optimize/LdapPermsToSql.php, row 157
 "Revert finished." => "Vr\xE1tenie dokon\xE8en\xE9.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 177
+// src/Optimize/LdapPermsToSql.php, row 178
 "LDAP findUsernames failed or returned: %1" => "LDAP findUsernames zlyhalo alebo vr\xE1tilo: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 180
+// src/Optimize/LdapPermsToSql.php, row 181
 "LDAP users found: %1" => "N\xE1jden\xFDch LDAP u\x9E\xEDvate\xBEov: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 196
+// src/Optimize/LdapPermsToSql.php, row 197
 "Skipping user %1 - cannot determine login" => "Preskakujem u\x9E\xEDvate\xBEa %1 - nemo\x9Eno ur\xE8i\x9D login", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 205
+// src/Optimize/LdapPermsToSql.php, row 206
 "User %1 already exists in SQL (id %2), reusing" => "U\x9E\xEDvate\xBE %1 u\x9E v SQL existuje (id %2), pou\x9Eije sa existuj\xFAci", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 219
+// src/Optimize/LdapPermsToSql.php, row 220
 "Would create SQL user: %1 (from %2)" => "Vytvoril by sa SQL u\x9E\xEDvate\xBE: %1 (z %2)", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 227
+// src/Optimize/LdapPermsToSql.php, row 228
 "Failed to create SQL user %1" => "Nepodarilo sa vytvori\x9D SQL u\x9E\xEDvate\xBEa %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 234
+// src/Optimize/LdapPermsToSql.php, row 235
 "Users: created=%1 reused=%2 failed=%3" => "U\x9E\xEDvatelia: vytvoren\xED=%1 znovu pou\x9Eit\xED=%2 zlyhali=%3", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 242
+// src/Optimize/LdapPermsToSql.php, row 243
 "LDAP groups found: %1" => "N\xE1jden\xE9 LDAP skupiny: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 263
+// src/Optimize/LdapPermsToSql.php, row 264
 "Group %1 already exists in SQL (id %2), reusing" => "Skupina %1 u\x9E existuje v SQL (id %2), pou\x9Eije sa existuj\xFAca", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 272
+// src/Optimize/LdapPermsToSql.php, row 273
 "Would create SQL group: %1 (from %2)" => "Vytvorila by sa SQL skupina: %1 (z %2)", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 279
+// src/Optimize/LdapPermsToSql.php, row 280
 "Failed to create SQL group %1" => "Nepodarilo sa vytvori\x9D SQL skupinu %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 286
+// src/Optimize/LdapPermsToSql.php, row 287
 "Groups: created=%1 reused=%2 failed=%3" => "Skupiny: vytvoren\xE9=%1 znovu pou\x9Eit\xE9=%2 zlyhalo=%3", // ai 2026-06
 
 // src/Optimize/LdapPermsToSql.php, row 325
 "Memberships: added=%1 skipped_unmapped=%2" => "\xC8lenstv\xE1: pridan\xE9=%1 presko\xE8en\xE9_nenamapovan\xE9=%2", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 366
+// src/Optimize/LdapPermsToSql.php, row 367
 "Permission rows migrated: %1" => "Migrovan\xFDch riadkov pr\xE1v: %1", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 388
+// src/Optimize/LdapPermsToSql.php, row 389
 "No mapping entries - nothing to rewrite." => "\x8Eiadne z\xE1znamy mapovania - nie je \xE8o prep\xEDsa\x9D.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 407
+// src/Optimize/LdapPermsToSql.php, row 408
 "Rewrite %1.%2: %3 rows" => "Prepis %1.%2: %3 riadkov", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 417
+// src/Optimize/LdapPermsToSql.php, row 418
 "Mapping table is empty - nothing to revert." => "Mapovacia tabu\xBEka je pr\xE1zdna - nie je \xE8o vr\xE1ti\x9D.", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 433
+// src/Optimize/LdapPermsToSql.php, row 434
 "Revert %1.%2: %3 rows" => "Vr\xE1tenie %1.%2: %3 riadkov", // ai 2026-06
 
-// src/Optimize/LdapPermsToSql.php, row 451
+// src/Optimize/LdapPermsToSql.php, row 452
 "Deleted SQL users=%1 groups=%2" => "Vymazan\xFDch SQL u\x9E\xEDvate\xBEov=%1 skup\xEDn=%2", // ai 2026-06
 
 // src/Optimize/MissCacheRouting.php, row 37
-"Image cache routing" => "",
+"Image cache routing" => "Smerovanie cache obr\xE1zkov", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 42
-"Resized images are served as static files; a request for one which is not generated yet has to reach AA. Repair writes the .htaccess which routes it there, the extended State Check asks the web server whether such a request really gets through." => "",
+"Resized images are served as static files; a request for one which is not generated yet has to reach AA. Repair writes the .htaccess which routes it there, the extended State Check asks the web server whether such a request really gets through." => "Zmen\x9Aen\xE9 obr\xE1zky sa serv\xEDruj\xFA ako statick\xE9 s\xFAbory; po\x9Eiadavka na e\x9Ate nevygenerovan\xFD obr\xE1zok sa mus\xED dosta\x9D do AA. \x84Opravi\x9D\x93 zap\xED\x9Ae .htaccess, ktor\xFD ju tam nasmeruje; roz\x9A\xEDren\xE1 Kontrola stavu sa webov\xE9ho servera op\xFDta, \xE8i tak\xE1 po\x9Eiadavka naozaj prejde.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 62
-"%1 is missing" => "",
+"%1 is missing" => "%1 ch\xFDba", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 74
-"AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "",
+"AA_INSTAL_PATH %1 cannot go into a rewrite rule" => "AA_INSTAL_PATH %1 nemo\x9Eno pou\x9Ei\x9D v pravidle rewrite", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 78
 // src/Util/Imgfunc.php, row 252
-"Cannot write %1" => "",
+"Cannot write %1" => "Nemo\x9Eno zap\xEDsa\x9D %1", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 87
-"The image cache is switched off or not configured - {img} uses img.php" => "",
+"The image cache is switched off or not configured - {img} uses img.php" => "Cache obr\xE1zkov je vypnut\xE1 alebo nenastaven\xE1 - {img} pou\x9E\xEDva img.php", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 97
-"Probe" => "",
+"Probe" => "Test", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 98, 129
-"none" => "",
+"none" => "\x9Eiadna", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
 ".htaccess" => "",
 
 // src/Optimize/MissCacheRouting.php, row 99
-"present" => "",
+"present" => "existuje", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
-"missing" => "",
+"missing" => "ch\xFDba", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 99
-"the cache directory is a symbolic link, AA does not write there" => "",
+"the cache directory is a symbolic link, AA does not write there" => "adres\xE1r cache je symbolick\xFD odkaz, AA tam nezapisuje", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 101
-"A request for an image which is not generated yet does not reach AA" => "",
+"A request for an image which is not generated yet does not reach AA" => "Po\x9Eiadavka na e\x9Ate nevygenerovan\xFD obr\xE1zok sa do AA nedostane", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 104
-"A request for an image which is not generated yet reaches AA" => "",
+"A request for an image which is not generated yet reaches AA" => "Po\x9Eiadavka na e\x9Ate nevygenerovan\xFD obr\xE1zok sa do AA dostane", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 105
-"Every image which is not generated yet shows broken. Repair writes the .htaccess into the cache directory (service/sql_update.php does the same); on nginx add the rule from config.php.default to the server configuration." => "",
+"Every image which is not generated yet shows broken. Repair writes the .htaccess into the cache directory (service/sql_update.php does the same); on nginx add the rule from config.php.default to the server configuration." => "Ka\x9Ed\xFD e\x9Ate nevygenerovan\xFD obr\xE1zok sa zobraz\xED po\x9Akoden\xFD. \x84Opravi\x9D\x93 zap\xED\x9Ae .htaccess do adres\xE1ra cache (to ist\xE9 rob\xED service/sql_update.php); na nginx pridajte pravidlo z config.php.default do konfigur\xE1cie servera.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 106
-"The server cannot load its own image url" => "",
+"The server cannot load its own image url" => "Server nem\xF4\x9Ee na\xE8\xEDta\x9D vlastn\xFA url obr\xE1zka", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 106
-"Check that the server resolves and reaches the host of IMG_UPLOAD_URL." => "",
+"Check that the server resolves and reaches the host of IMG_UPLOAD_URL." => "Overte, \x9Ee server prelo\x9E\xED meno hostite\xBEa z IMG_UPLOAD_URL a spoj\xED sa s n\xEDm.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 107
-"The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration." => "",
+"The .htaccess in the cache directory has no effect: AllowOverride does not allow it, the server runs nginx, or it routes to an AA tree which does not answer on this host - Repair then points it at this one. Otherwise add the rule from config.php.default to the server configuration." => "S\xFAbor .htaccess v adres\xE1ri cache nem\xE1 \xFA\xE8inok: AllowOverride ho nepovo\xBEuje, server be\x9E\xED na nginx, alebo .htaccess smeruje do stromu AA, ktor\xFD na tomto hostite\xBEovi neodpoved\xE1 - \x84Opravi\x9D\x93 ho potom nasmeruje na tento. Inak pridajte pravidlo z config.php.default do konfigur\xE1cie servera.", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 128
-"img.php does not answer the server itself" => "",
+"img.php does not answer the server itself" => "img.php neodpoved\xE1 samotn\xE9mu serveru", // ai 2026-10
 
 // src/Optimize/MissCacheRouting.php, row 130
-"Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects." => "",
+"Images which are not in the cache yet cannot be generated. No answer: check that the server resolves and reaches the host of AA_INSTAL_URL. A redirect: set AA_INSTAL_URL to the address it redirects to (https, www) - the generator does not follow redirects." => "Obr\xE1zky, ktor\xE9 e\x9Ate nie s\xFA v cache, nemo\x9Eno vygenerova\x9D. \x8Eiadna odpove\xEF: overte, \x9Ee server prelo\x9E\xED meno hostite\xBEa z AA_INSTAL_URL a spoj\xED sa s n\xEDm. Presmerovanie: nastavte AA_INSTAL_URL na adresu, kam presmer\xFAva (https, www) - gener\xE1tor presmerovania nenasleduje.", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 35
 "Multivalue Duplicates" => "Duplicity v multihodnotov\xFDch polo\x9Ek\xE1ch", // ai 2026-06
@@ -12080,36 +12494,36 @@ return [
 "No duplicates found, hurray!" => "\x8Eiadne duplicity nen\xE1jden\xE9, hur\xE1!", // ai 2026-06
 
 // src/Optimize/MultivalueDuplicates.php, row 123
-"The repair stopped after %1 rows deleted: %2" => "",
+"The repair stopped after %1 rows deleted: %2" => "Oprava sa zastavila po zmazan\xED riadkov (%1): %2", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 123
-"no database transaction could be started" => "",
+"no database transaction could be started" => "nepodarilo sa za\xE8a\x9D datab\xE1zov\xFA transakciu", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 126
-"%1 rows deleted" => "",
+"%1 rows deleted" => "Zmazan\xE9 riadky: %1", // ai 2026-10
 
 // src/Optimize/MultivalueDuplicates.php, row 139
-"The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "",
+"The content table is not InnoDB, so the duplicates cannot be repaired here. Run \"%1\" first." => "Tabu\xBEka content nie je InnoDB, preto tu duplicity nemo\x9Eno opravi\x9D. Najprv spustite \x84%1\x93.", // ai 2026-10
 
-// src/Optimize/ReadersLogin2id.php, row 15
+// src/Optimize/ReadersLogin2id.php, row 16
 "Convert Readers login to reader id" => "Prevod loginov \xE8itate\xBEov na ID \xE8itate\xBEa", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 23
+// src/Optimize/ReadersLogin2id.php, row 24
 "There was a change in Reader management functionality in AA v2.8.1, so readers are not internally identified by their login, but by reader ID (item ID of reader in Reader slice). This is much more powerful - you can create relations just as in normal slice. It works well without any change. The only problem is, if you set any slice to be editable by users from Reader slice. In that case the fields edited_by........ and posted_by........ are filled by reader's login instead of reader id. You can fix it by \"Repair\"." => "Vo verzii AA v2.8.1 do\x9Alo k zmene vo funkcionalite spr\xE1vy \xE8itate\xBEov - \xE8itatelia u\x9E nie s\xFA interne identifikovan\xED svoj\xEDm loginom, ale ID \xE8itate\xBEa (ID spr\xE1vy \xE8itate\xBEa v module \xE8itate\xBEov). To je ove\xBEa mocnej\x9Aie - m\xF4\x9Eete vytv\xE1ra\x9D vz\x9Dahy rovnako ako v be\x9Enom module. V\x9Aetko funguje bez zmeny. Jedin\xFD probl\xE9m nast\xE1va, ak ste nastavili niektor\xFD modul ako editovate\xBEn\xFD u\x9E\xEDvate\xBEmi z modulu \xE8itate\xBEov. V tom pr\xEDpade sa polo\x9Eky edited_by........ a posted_by........ plnia loginom \xE8itate\xBEa namiesto ID \xE8itate\xBEa. Oprav\xEDte to vo\xBEbou \"Repair\".", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 37, 81
+// src/Optimize/ReadersLogin2id.php, row 38, 82
 "Can't test - list of all usernames is not allowed by your permission system (LDAP?)" => "Nie je mo\x9En\xE9 testova\x9D - zoznam v\x9Aetk\xFDch u\x9E\xEDvate\xBEsk\xFDch mien nie je povolen\xFD va\x9A\xEDm syst\xE9mom pr\xE1v (LDAP?)", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 42
+// src/Optimize/ReadersLogin2id.php, row 43
 "%1 login names from reader slice found as records in item.posted_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "N\xE1jden\xFDch %1 loginov z modulu \xE8itate\xBEov v z\xE1znamoch item.posted_by, \xE8o je chybn\xE9 (od AA v2.8.1 tam m\xE1 by\x9D ID \xE8itate\xBEa). \"Repair\" to oprav\xED.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 47
+// src/Optimize/ReadersLogin2id.php, row 48
 "%1 login names from reader slice found as records in item.edited_by which is wrong (There should be reader ID from AA v2.8.1). \"Repair\" will correct it." => "N\xE1jden\xFDch %1 loginov z modulu \xE8itate\xBEov v z\xE1znamoch item.edited_by, \xE8o je chybn\xE9 (od AA v2.8.1 tam m\xE1 by\x9D ID \xE8itate\xBEa). \"Repair\" to oprav\xED.", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 91
+// src/Optimize/ReadersLogin2id.php, row 90
 "Column item.posted_by updated for %1 (id: %2)." => "St\xE5pec item.posted_by aktualizovan\xFD pre %1 (id: %2).", // ai 2026-06
 
-// src/Optimize/ReadersLogin2id.php, row 98
+// src/Optimize/ReadersLogin2id.php, row 96
 "Column item.edited_by updated for %1 (id: %2)." => "St\xE5pec item.edited_by aktualizovan\xFD pre %1 (id: %2).", // ai 2026-06
 
 // src/Optimize/RedefineCoreConstants.php, row 18
@@ -12133,22 +12547,22 @@ return [
 // src/Optimize/RedefineCoreConstants.php, row 81
 "Deleting Code-pages, Language Constants, AA Bins constants and APC-wide categories" => "Mazanie znakov\xFDch s\xE1d (Code-pages), jazykov\xFDch hodn\xF4t, hodn\xF4t schr\xE1nok AA a kateg\xF3ri\xED spolo\xE8n\xFDch pre APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 84
+// src/Optimize/RedefineCoreConstants.php, row 85
 "Recreate Code-pages" => "Znovu vytvori\x9D znakov\xE9 sady (Code-pages)", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 95
+// src/Optimize/RedefineCoreConstants.php, row 96
 "Recreate Languages" => "Znovu vytvori\x9D jazyky", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 143
+// src/Optimize/RedefineCoreConstants.php, row 144
 "Recreate AA Bins" => "Znovu vytvori\x9D schr\xE1nky AA (AA Bins)", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 148
+// src/Optimize/RedefineCoreConstants.php, row 149
 "APC wide categories" => "Kateg\xF3rie spolo\xE8n\xE9 pre APC", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 232
+// src/Optimize/RedefineCoreConstants.php, row 233
 "Make sure, the constants are registered" => "Overi\x9D, \x9Ee s\xFA hodnoty registrovan\xE9", // ai 2026-06
 
-// src/Optimize/RedefineCoreConstants.php, row 240
+// src/Optimize/RedefineCoreConstants.php, row 242
 "Redefine core constants - done." => "Predefinova\x9D z\xE1kladn\xE9 hodnoty - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineFieldTemplates.php, row 43
@@ -12164,16 +12578,16 @@ return [
 // src/Optimize/RedefineSliceNewsTemplates.php, row 57
 "Deleting all fields from \"ActionApps Core\" slice" => "Mazanie v\x9Aetk\xFDch polo\x9Eiek z modulu \"ActionApps Core\"", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 98
+// src/Optimize/RedefineFieldTemplates.php, row 99
 "Make sure slice owner Action Applications System exists and reset to defaults" => "Overi\x9D, \x9Ee vlastn\xEDk modulu Action Applications System existuje, a obnovi\x9D predvolen\xE9 nastavenia", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 101
+// src/Optimize/RedefineFieldTemplates.php, row 102
 "Make sure \"ActionApps Core\" slice exists and reset to defaults" => "Overi\x9D, \x9Ee modul \"ActionApps Core\" existuje, a obnovi\x9D predvolen\xE9 nastavenia", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 105
+// src/Optimize/RedefineFieldTemplates.php, row 106
 "Recreate field definitions" => "Znovu vytvori\x9D defin\xEDcie polo\x9Eiek", // ai 2026-06
 
-// src/Optimize/RedefineFieldTemplates.php, row 195
+// src/Optimize/RedefineFieldTemplates.php, row 197
 "Redefine field defaults - done." => "Predefinovanie predvolen\xFDch hodn\xF4t polo\x9Eiek - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineLinksTemplates.php, row 14
@@ -12189,7 +12603,7 @@ return [
 // src/Optimize/RedefineSiteTemplates.php, row 47
 "Replacing module definition" => "Nahr\xE1dzanie defin\xEDcie modulu", // ai 2026-06
 
-// src/Optimize/RedefineLinksTemplates.php, row 126
+// src/Optimize/RedefineLinksTemplates.php, row 128
 "Links Module template recreation - done." => "Znovuvytvorenie \x9Aabl\xF3ny modulu Links - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSiteTemplates.php, row 13
@@ -12201,7 +12615,7 @@ return [
 // src/Optimize/RedefineSiteTemplates.php, row 36
 "Site Module template should be recreated" => "\x8Aabl\xF3na modulu Site by mala by\x9D znovu vytvoren\xE1", // ai 2026-06
 
-// src/Optimize/RedefineSiteTemplates.php, row 51
+// src/Optimize/RedefineSiteTemplates.php, row 53
 "Site Module template recreation - done." => "Znovuvytvorenie \x9Aabl\xF3ny modulu Site - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSlicReaderTemplates.php, row 15
@@ -12216,13 +12630,13 @@ return [
 // src/Optimize/RedefineSlicReaderTemplates.php, row 58
 "Deleting all fields from \"Reader Management\" slice" => "Mazanie v\x9Aetk\xFDch polo\x9Eiek z modulu \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 61
+// src/Optimize/RedefineSlicReaderTemplates.php, row 62
 "Make sure \"Reader Management\" slice exists and reset to defaults" => "Overi\x9D, \x9Ee modul \"Reader Management\" existuje, a obnovi\x9D predvolen\xE9 nastavenia", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 65
+// src/Optimize/RedefineSlicReaderTemplates.php, row 66
 "Recreate field definitions for \"Reader Management\"" => "Znovu vytvori\x9D defin\xEDcie polo\x9Eiek pre \"Reader Management\"", // ai 2026-06
 
-// src/Optimize/RedefineSlicReaderTemplates.php, row 90
+// src/Optimize/RedefineSlicReaderTemplates.php, row 92
 "Reader Management template slice creation - done." => "Vytvorenie \x9Aabl\xF3nov\xE9ho modulu Reader Management - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSliceNewsTemplates.php, row 15
@@ -12234,13 +12648,13 @@ return [
 // src/Optimize/RedefineSliceNewsTemplates.php, row 41
 "News EN template slice is not defined" => "\x8Aabl\xF3nov\xFD modul News EN nie je definovan\xFD", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 60
+// src/Optimize/RedefineSliceNewsTemplates.php, row 61
 "Make sure \"News EN\" slice exists and reset to defaults" => "Overi\x9D, \x9Ee modul \"News EN\" existuje, a obnovi\x9D predvolen\xE9 nastavenia", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 64
+// src/Optimize/RedefineSliceNewsTemplates.php, row 65
 "Recreate field definitions for \"News EN\"" => "Znovu vytvori\x9D defin\xEDcie polo\x9Eiek pre \"News EN\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNewsTemplates.php, row 97
+// src/Optimize/RedefineSliceNewsTemplates.php, row 99
 "News EN template slice creation - done." => "Vytvorenie \x9Aabl\xF3nov\xE9ho modulu News EN - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 15
@@ -12255,13 +12669,13 @@ return [
 // src/Optimize/RedefineSliceNoticiasTemplates.php, row 58
 "Deleting all fields from \"Noticas - ES\" slice" => "Mazanie v\x9Aetk\xFDch polo\x9Eiek z modulu \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 61
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 62
 "Make sure \"Noticas - ES\" slice exists and reset to defaults" => "Overi\x9D, \x9Ee modul \"Noticas - ES\" existuje, a obnovi\x9D predvolen\xE9 nastavenia", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 65
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 66
 "Recreate field definitions for \"Noticas - ES\"" => "Znovu vytvori\x9D defin\xEDcie polo\x9Eiek pre \"Noticas - ES\"", // ai 2026-06
 
-// src/Optimize/RedefineSliceNoticiasTemplates.php, row 98
+// src/Optimize/RedefineSliceNoticiasTemplates.php, row 100
 "Noticas - ES template slice creation - done." => "Vytvorenie \x9Aabl\xF3nov\xE9ho modulu Noticas - ES - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineViewCalendarTemplates.php, row 10
@@ -12285,10 +12699,10 @@ return [
 // src/Optimize/RedefineViewDiscusTemplates.php, row 58
 "Deleting the view template \"%1\"" => "Mazanie \x9Aabl\xF3ny poh\xBEadu \"%1\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 61
+// src/Optimize/RedefineViewDiscusTemplates.php, row 62
 "Inserting the view \"discus\" template" => "Vkladanie \x9Aabl\xF3ny poh\xBEadu \"discus\"", // ai 2026-06
 
-// src/Optimize/RedefineViewDiscusTemplates.php, row 64
+// src/Optimize/RedefineViewDiscusTemplates.php, row 66
 "view \"%1\" redefinition - done." => "predefinovanie poh\xBEadu \"%1\" - hotovo.", // ai 2026-06
 
 // src/Optimize/RedefineViewFullTemplates.php, row 10
@@ -12310,16 +12724,16 @@ return [
 "Redefine urls template view" => "Predefinova\x9D \x9Aabl\xF3nov\xFD poh\xBEad urls", // ai 2026-06
 
 // src/Optimize/RemoveAaCronEntries.php, row 22
-"Removes the AA jobs from the cron table" => "",
+"Removes the AA jobs from the cron table" => "Odstr\xE1ni \xFAlohy AA z tabu\xBEky cronu", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 27
-"Alerts sending, feeding, link checking, table optimization and the queue run itself are queue tasks since 2026-09 (cron.php runs the queue directly). A cron table row still calling one of those scripts runs the job twice, so it is deleted; your own rows stay." => "",
+"Alerts sending, feeding, link checking, table optimization and the queue run itself are queue tasks since 2026-09 (cron.php runs the queue directly). A cron table row still calling one of those scripts runs the job twice, so it is deleted; your own rows stay." => "Zasielanie, v\xFDmena spr\xE1v, kontrola odkazov, optimaliz\xE1cia tabuliek aj samotn\xFD beh fronty s\xFA od 2026-09 \xFAlohy fronty (cron.php sp\xFA\x9A\x9Da frontu priamo). Riadok tabu\xBEky cronu, ktor\xFD st\xE1le vol\xE1 niektor\xFD z t\xFDchto skriptov, sp\xFA\x9A\x9Da \xFAlohu dvakr\xE1t, preto sa zma\x9Ee; va\x9Ae vlastn\xE9 riadky zostan\xFA.", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 49
-"AA job still in the cron table: %1 %2" => "",
+"AA job still in the cron table: %1 %2" => "\xDAloha AA je st\xE1le v tabu\xBEke cronu: %1 %2", // ai 2026-10
 
 // src/Optimize/RemoveAaCronEntries.php, row 60
-"%1 AA cron rows deleted" => "",
+"%1 AA cron rows deleted" => "Zmazan\xE9 riadky cronu AA: %1", // ai 2026-10
 
 // src/Optimize/RemoveUndefineAlias.php, row 45
 "Remove _#UNDEFINE alias and default help.html for more help text in field" => "Odstr\xE1ni\x9D alias _#UNDEFINE a predvolen\xFD help.html z textu n\xE1povedy polo\x9Eiek", // ai 2026-06
@@ -12360,47 +12774,47 @@ return [
 // src/Optimize/RequiredChecboxes.php, row 70
 "OK - There is no required checkbox field" => "OK - Neexistuje \x9Eiadna povinn\xE1 polo\x9Eka typu za\x9Akrt\xE1vacie pol\xED\xE8ko", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 19
+// src/Optimize/RestoreBckTables.php, row 20
 "Restore data from backup tables" => "Obnovi\x9D d\xE1ta zo z\xE1lo\x9En\xFDch tabuliek", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 27
+// src/Optimize/RestoreBckTables.php, row 28
 "Deletes all the current tables (slice, item, ...) where we have bck_table and renames all backup tables (bck_slice, bck_item, ...) to right names (slice, item, ...)." => "Vyma\x9Ee v\x9Aetky aktu\xE1lne tabu\xBEky (slice, item, ...), ku ktor\xFDm existuje bck_ tabu\xBEka, a premenuje v\x9Aetky z\xE1lo\x9En\xE9 tabu\xBEky (bck_slice, bck_item, ...) na spr\xE1vne men\xE1 (slice, item, ...).", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 39
+// src/Optimize/RestoreBckTables.php, row 40
 "The bck_ tables do not exist (or at least bck_content table)" => "Tabu\xBEky bck_ neexistuj\xFA (alebo aspo\xF2 tabu\xBEka bck_content)", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 58
+// src/Optimize/RestoreBckTables.php, row 59
 "There is no bck_%1 table - %1 not restored." => "Tabu\xBEka bck_%1 neexistuje - %1 nebola obnoven\xE1.", // ai 2026-06
 
-// src/Optimize/RestoreBckTables.php, row 61
+// src/Optimize/RestoreBckTables.php, row 62
 "Replace table bck_%1 -> %1" => "Nahradenie tabu\xBEky bck_%1 -> %1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 44
 "SEO name duplicates" => "Duplicitn\xE9 SEO men\xE1", // ai 2026-06
 
 // src/Optimize/SeoDuplicates.php, row 49
-"Lists items which share one SEO name inside a site module - such items compete for the same URL. Active, pending and expired items are compared; items waiting in the holding bin and in the trash own no URL, so they are not. Which item to rename is the editor's call, so there is no repair." => "",
+"Lists items which share one SEO name inside a site module - such items compete for the same URL. Active, pending and expired items are compared; items waiting in the holding bin and in the trash own no URL, so they are not. Which item to rename is the editor's call, so there is no repair." => "Vyp\xED\x9Ae spr\xE1vy, ktor\xE9 v r\xE1mci modulu Site zdie\xBEaj\xFA jedno SEO meno - tak\xE9 spr\xE1vy s\xFAperia o rovnak\xFA URL. Porovn\xE1vaj\xFA sa aktu\xE1lne, pripraven\xE9 a expirovan\xE9 spr\xE1vy; spr\xE1vy v z\xE1sobn\xEDku a v ko\x9Ai \x9Eiadnu URL nemaj\xFA, preto sa neporovn\xE1vaj\xFA. Ktor\xFA spr\xE1vu premenova\x9D, rozhoduje editor, preto oprava neexistuje.", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 73
-"OK - no duplicate SEO names in any site module" => "",
+"OK - no duplicate SEO names in any site module" => "OK - v \x9Eiadnom module Site nie s\xFA duplicitn\xE9 SEO men\xE1", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 87
-"%1: %2 SEO names are used by more than one item" => "",
+"%1: %2 SEO names are used by more than one item" => "%1: SEO men\xE1 zdie\xBEan\xE9 viacer\xFDmi spr\xE1vami: %2", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 90
-"The site resolves such a URL to whichever item the query returns first, so the visitor may land on the wrong one. Rename all but one of them." => "",
+"The site resolves such a URL to whichever item the query returns first, so the visitor may land on the wrong one. Rename all but one of them." => "Web tak\xFA URL prirad\xED spr\xE1ve, ktor\xFA dotaz vr\xE1ti ako prv\xFA, tak\x9Ee n\xE1v\x9Atevn\xEDk sa m\xF4\x9Ee dosta\x9D na nespr\xE1vnu. Premenujte v\x9Aetky okrem jednej.", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 96
-"No duplicate SEO names in any site module" => "",
+"No duplicate SEO names in any site module" => "V \x9Eiadnom module Site nie s\xFA duplicitn\xE9 SEO men\xE1", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 147
-"SEO name" => "",
+"SEO name" => "SEO meno", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 149
-"Which" => "",
+"Which" => "Ktor\xE9", // ai 2026-10
 
 // src/Optimize/SeoDuplicates.php, row 171
-"... and %1 more" => "",
+"... and %1 more" => "... a \xEFal\x9A\xEDch %1", // ai 2026-10
 
 // src/Optimize/SetExpirydate.php, row 18
 "Set Expiry date to maximum value" => "Nastavi\x9D d\xE1tum expir\xE1cie na maxim\xE1lnu hodnotu", // ai 2026-06
@@ -12414,29 +12828,179 @@ return [
 // src/Optimize/SetExpirydate.php, row 60
 "field default changed for expiry_date..... in %1 /%2 slices: %3)" => "predvolen\xE1 hodnota polo\x9Eky expiry_date..... zmenen\xE1 v %1 /%2 moduloch: %3)", // ai 2026-06
 
+// src/Optimize/StateCheckItem.php, row 73
+"now" => "teraz", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 219
+"Problem" => "Probl\xE9m", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 220
+"Warning" => "Varovanie", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 221
+"Advice" => "Odpor\xFA\xE8anie", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 232
+"Back again" => "Znova sa objavilo", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 233
+"Not verified" => "Neoveren\xE9", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 234, 293
+"Muted" => "Stlmen\xE9", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 259
+"%1 d" => "%1 d", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 260
+"%1 w" => "%1 t", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 261
+"%1 mo" => "%1 mes.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 262
+"%1 y" => "%1 r", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 270
+"Since" => "Od", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 290
+"New findings" => "Nov\xE9 zistenia", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 291
+"Ongoing" => "Pretrv\xE1vaj\xFAce", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 292
+"Not verified now" => "Teraz neoveren\xE9", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 294
+"Passed checks" => "\xDAspe\x9An\xE9 kontroly", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 305
+"Not there at the daily snapshot of %1 (nightly test: at its previous run), or back after it was resolved or had gone." => "Nebolo tu pri dennom sn\xEDmku z %1 (no\xE8n\xFD test: pri jeho predch\xE1dzaj\xFAcom behu), alebo sa vr\xE1tilo po vyrie\x9Aen\xED \xE8i zmiznut\xED.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 306
+"There is no daily snapshot to compare with yet, so every problem found counts as new." => "Zatia\xBE neexistuje denn\xFD sn\xEDmok na porovnanie, preto sa ka\x9Ed\xFD n\xE1jden\xFD probl\xE9m po\xE8\xEDta ako nov\xFD.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 308
+"Already there at the daily snapshot of %1 (nightly test: at its previous run), and still there." => "Bolo tu u\x9E pri dennom sn\xEDmku z %1 (no\xE8n\xFD test: pri jeho predch\xE1dzaj\xFAcom behu) a st\xE1le je.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 309
+"Already there at the previous run of the nightly test, and still there." => "Bolo tu u\x9E pri predch\xE1dzaj\xFAcom behu no\xE8n\xE9ho testu a st\xE1le je.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 311
+"Hidden on purpose: resolved by a note, or a known issue of the nightly test. Each says why." => "Skryt\xE9 z\xE1merne: vyrie\x9Aen\xE9 pozn\xE1mkou alebo zn\xE1my probl\xE9m no\xE8n\xE9ho testu. Pri ka\x9Edom je uveden\xE9 pre\xE8o.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 312
+"Ran now and found nothing." => "Pr\xE1ve prebehli a ni\xE8 nena\x9Ali.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 313
+"What this installation runs on - for reference, nothing to fix." => "Na \xE8om t\xE1to in\x9Atal\xE1cia be\x9E\xED - pre inform\xE1ciu, ni\xE8 netreba opravova\x9D.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"%1 new" => "Nov\xE9: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"Nothing new" => "Ni\xE8 nov\xE9", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"%1 ongoing" => "pretrv\xE1vaj\xFAce: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 374
+"nothing ongoing" => "ni\xE8 nepretrv\xE1va", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 375
+"%1 problems, %2 warnings, %3 recommendations" => "probl\xE9my: %1, varovania: %2, odpor\xFA\xE8ania: %3", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 376
+"%1 checks not verified now" => "kontroly teraz neoveren\xE9: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 376
+"every check verified now" => "v\x9Aetky kontroly teraz overen\xE9", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 377
+"%1 muted" => "stlmen\xE9: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 377
+"nothing muted" => "ni\xE8 nie je stlmen\xE9", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 378
+"%1 checks passed" => "\xFAspe\x9An\xE9 kontroly: %1", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 435
+"After the fix, press Recheck at this item on the State Check page." => "Po oprave stla\xE8te \x84Skontrolova\x9D znova\x93 pri tomto zisten\xED na str\xE1nke \x84Kontrola stavu\x93.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 438, 577
+"As of %1." => "Stav k %1.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 535
+"Marked resolved by %1 until %2." => "U\x9E\xEDvate\xBE %1 ozna\xE8il ako vyrie\x9Aen\xE9 do %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 535
+"Marked resolved by %1 for good." => "U\x9E\xEDvate\xBE %1 ozna\xE8il ako vyrie\x9Aen\xE9 natrvalo.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 576
+"Press Recheck to run this check now." => "Stla\xE8te \x84Skontrolova\x9D znova\x93 a kontrola sa spust\xED hne\xEF.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 585
+"These checks did not run on this load; each row shows the problem as it was last known." => "Tieto kontroly pri tomto na\xE8\xEDtan\xED neprebehli; ka\x9Ed\xFD riadok ukazuje probl\xE9m tak, ako bol naposledy zn\xE1my.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 587
+"Extended checks: as the daily snapshot of %1 found them." => "Roz\x9A\xEDren\xE9 kontroly: tak, ako ich zistil denn\xFD sn\xEDmok z %1.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 591
+"Nightly test: the types missing from its latest full run, as their own last run found them." => "No\xE8n\xFD test: typy, ktor\xE9 ch\xFDbaj\xFA v jeho poslednom \xFAplnom behu, tak, ako ich zistil ich vlastn\xFD posledn\xFD beh.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 592
+"Nightly test: its latest full run is from %1, older than %2 h, so every type shows its own last run." => "No\xE8n\xFD test: jeho posledn\xFD \xFApln\xFD beh je z %1, star\x9A\xED ako %2 h, preto ka\x9Ed\xFD typ ukazuje svoj vlastn\xFD posledn\xFD beh.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 593
+"Nightly test: no full run in the last 40 days, so every type shows its own last run." => "No\xE8n\xFD test: za posledn\xFDch 40 dn\xED \x9Eiadny \xFApln\xFD beh, preto ka\x9Ed\xFD typ ukazuje svoj vlastn\xFD posledn\xFD beh.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 611
+"%1 extended checks did not run now; they passed at the last daily snapshot, %2: %3." => "Roz\x9A\xEDren\xE9 kontroly teraz neprebehli (%1); pri poslednom dennom sn\xEDmku, %2, boli \xFAspe\x9An\xE9: %3.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 612
+"%1 extended checks did not run now, and there is no daily snapshot yet: %2." => "Roz\x9A\xEDren\xE9 kontroly teraz neprebehli (%1) a denn\xFD sn\xEDmok zatia\xBE neexistuje: %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 613
+"%1 slow checks did not run now; they are never part of the daily snapshot: %2." => "Pomal\xE9 kontroly teraz neprebehli (%1); nikdy nie s\xFA s\xFA\xE8as\x9Dou denn\xE9ho sn\xEDmku: %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 614
+"%1 checks of the nightly test found nothing when they last ran: %2." => "Kontroly no\xE8n\xE9ho testu (%1) pri poslednom behu ni\xE8 nena\x9Ali: %2.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 691
+"After the fix, open a finding below and press its Recheck." => "Po oprave otvorte zistenie ni\x9E\x9Aie a stla\xE8te pri \xF2om \x84Skontrolova\x9D znova\x93.", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 708
+"%1 \xE2\x80\x94 %2 findings" => "%1 \x97 zistenia: %2", // ai 2026-10
+
+// src/Optimize/StateCheckModel.php, row 709
+"%1 \xE2\x80\x94 %2 findings, most often on %3" => "%1 \x97 zistenia: %2, naj\xE8astej\x9Aie na %3", // ai 2026-10
+
 // src/Optimize/TrimFieldValues.php, row 39
-"Trim stored values" => "",
+"Trim stored values" => "Oreza\x9D ulo\x9Een\xE9 hodnoty", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 44
-"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "",
+"Trims the values stored before the field got the Trim insert function (see \"%1\") - spaces and new lines around, accents not composed. Repair plans it in the queue: the items are stored again silently, so last edit, computed fields, events and feeding stay untouched; the history records the change. Unique fields are only reported, fields defined in a field slice are not checked." => "Ore\x9Ee hodnoty ulo\x9Een\xE9 predt\xFDm, ne\x9E polo\x9Eka dostala vkladaciu funkciu Oreza\x9D (pozri \x84%1\x93) - medzery a nov\xE9 riadky okolo, nezlo\x9Een\xE9 diakritick\xE9 znamienka. \x84Opravi\x9D\x93 to napl\xE1nuje do fronty: spr\xE1vy sa potichu znovu ulo\x9Eia, tak\x9Ee posledn\xE1 \xFAprava, po\xE8\xEDtan\xE9 polo\x9Eky, udalosti a v\xFDmena spr\xE1v zostan\xFA nedotknut\xE9; hist\xF3ria zmenu zaznamen\xE1. Unik\xE1tne polo\x9Eky sa len vyp\xED\x9Au, polo\x9Eky definovan\xE9 v module polo\x9Eiek sa nekontroluj\xFA.", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 63
-"Time is up - %1 of %2 slices checked. Repair plans all of them." => "",
+"Time is up - %1 of %2 slices checked. Repair plans all of them." => "\xC8as vypr\x9Aal - skontrolovan\xE9 moduly: %1 z %2. \x84Opravi\x9D\x93 napl\xE1nuje v\x9Aetky.", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 68
-"%1 items to trim" => "",
+"%1 items to trim" => "Spr\xE1vy na orezanie: %1", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 80
-"Trimming of %1 slices planned in the queue" => "",
+"Trimming of %1 slices planned in the queue" => "Orezanie modulov napl\xE1novan\xE9 vo fronte: %1", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 91
-"%1 items planned to be trimmed in the queue" => "",
+"%1 items planned to be trimmed in the queue" => "Spr\xE1vy napl\xE1novan\xE9 na orezanie vo fronte: %1", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 129
-"%1 items with a unique value to trim by hand, e.g. %2" => "",
+"%1 items with a unique value to trim by hand, e.g. %2" => "Spr\xE1vy s unik\xE1tnou hodnotou na ru\xE8n\xE9 orezanie: %1, napr. %2", // ai 2026-10
 
 // src/Optimize/TrimFieldValues.php, row 139
-"%1 items to trim, e.g. %2" => "",
+"%1 items to trim, e.g. %2" => "Spr\xE1vy na orezanie: %1, napr. %2", // ai 2026-10
 
 // src/Optimize/UpdateDbStructure.php, row 23
 "Update database structure" => "Aktualizova\x9D \x9Atrukt\xFAru datab\xE1zy", // ai 2026-06
@@ -12477,55 +13041,133 @@ return [
 // src/Optimize/UpdateDbStructure.php, row 141
 "backup old table %1 -> bck_%1 and use new tables instead tmp_%1 -> %1" => "z\xE1lohujem star\xFA tabu\xBEku %1 -> bck_%1 a namiesto nej pou\x9Eijem nov\xE9 tabu\xBEky tmp_%1 -> %1", // ai 2026-06
 
-// src/Security/Protection.php, row 19
-"Forms run only expressions signed by AA" => "",
+// src/Security/LoginThrottle.php, row 156
+"Too many failed login attempts. Try again in %1 min." => "Pr\xEDli\x9A ve\xBEa ne\xFAspe\x9An\xFDch pokusov o prihl\xE1senie. Sk\xFAste to znova o %1 min.", // ai 2026-10
 
-// src/Security/Protection.php, row 27
-"ret_code and ok_url sent to filler.php" => "",
+// src/Security/Protection.php, row 21
+"Forms run only expressions signed by AA" => "Formul\xE1re sp\xFA\x9A\x9Daj\xFA len v\xFDrazy podp\xEDsan\xE9 AA", // ai 2026-10
 
-// src/Security/Protection.php, row 39
-"Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases." => "",
+// src/Security/Protection.php, row 22
+"Values from the URL are text" => "Hodnoty z URL s\xFA text", // ai 2026-10
+
+// src/Security/Protection.php, row 23
+"Repeated failed logins are slowed down" => "Opakovan\xE9 ne\xFAspe\x9An\xE9 prihl\xE1senia sa spoma\xBEuj\xFA", // ai 2026-10
+
+// src/Security/Protection.php, row 31
+"ret_code and ok_url sent to filler.php" => "ret_code a ok_url posielan\xE9 do filler.php", // ai 2026-10
+
+// src/Security/Protection.php, row 32
+"als[] and the state of site pages, taken from the URL" => "als[] a stav str\xE1nok webu, prevzat\xE9 z URL", // ai 2026-10
+
+// src/Security/Protection.php, row 33
+"Logins to the administration and to reader accounts, counted per address of the visitor" => "Prihl\xE1senia do administr\xE1cie a do \xFA\xE8tov \xE8itate\xBEov, po\xE8\xEDtan\xE9 pod\xBEa adresy n\xE1v\x9Atevn\xEDka", // ai 2026-10
+
+// src/Security/Protection.php, row 40
+"How to convert older forms" => "Ako previes\x9D star\x9Aie formul\xE1re", // ai 2026-10
+
+// src/Security/Protection.php, row 41
+"How to convert older links" => "Ako previes\x9D star\x9Aie odkazy", // ai 2026-10
+
+// src/Security/Protection.php, row 42
+"When a script or a whole office is slowed down" => "Ke\xEF je spomalen\xFD skript alebo cel\xE1 kancel\xE1ria", // ai 2026-10
+
+// src/Security/Protection.php, row 54
+"Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases." => "Formul\xE1re, ktor\xE9 AA generuje pomocou {form} alebo {ajax}, a formul\xE1r na pridanie s\xFAvisiacej spr\xE1vy s\xFA podp\xEDsan\xE9 a nepotrebuj\xFA zmenu. Text, _#ALIASES a polo\x9Eky ako {headline........} v ret_code alebo ok_url tie\x9E na\xEFalej funguj\xFA. Ak v\xE1\x9A vlastn\xFD formul\xE1r alebo odkaz posiela in\xFD {expression}, vygenerujte formul\xE1r pomocou {form} alebo {ajax}, alebo v\xFDraz nahra\xEFte aliasmi.", // ai 2026-10
+
+// src/Security/Protection.php, row 55
+"Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it." => "Text, \xE8\xEDsla, id a _#ALIASES v als[] a v stave str\xE1nok webu funguj\xFA \xEFalej; {expression} sa tam zobraz\xED ako text. Nap\xED\x9Ate v\xFDraz do \x9Aabl\xF3ny, ktor\xE1 odkaz vytv\xE1ra, aby sa vykonal tam e\x9Ate pred odoslan\xEDm odkazu, alebo po\x9Alite id a zvy\x9Aok vypo\xE8\xEDtajte na str\xE1nke, ktor\xE1 ho prijme.", // ai 2026-10
+
+// src/Security/Protection.php, row 56
+"After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off." => "Po 20 ne\xFAspe\x9An\xFDch prihl\xE1seniach z jednej adresy za 12 hod\xEDn alebo 5 s jedn\xFDm prihlasovac\xEDm menom \xE8ak\xE1 \xEFal\x9Aie prihl\xE1senie pol min\xFAty a\x9E min\xFAtu, po ka\x9Edom \xEFal\x9Aom ne\xFAspechu dvakr\xE1t dlh\x9Aie, najviac hodinu. \xC8ak\xE1 aj skript, ktor\xFD sa st\xE1le prihlasuje so star\xFDm heslom: n\xE1jdite jeho adresu v Logu (udalos\x9D LOGIN) a dajte mu aktu\xE1lne heslo. Ak sa zd\xE1, \x9Ee v\x9Aetci n\xE1v\x9Atevn\xEDci prich\xE1dzaj\xFA z jednej adresy, AA be\x9E\xED za proxy serverom, ktor\xFD ch\xFDba v AA_TRUSTED_PROXIES - \x84Kontrola stavu\x93 ho uvedie; pridajte ho do config.php namiesto vypnutia tejto ochrany.", // ai 2026-10
+
+// src/Security/Protection.php, row 64
+"Unsigned expression refused" => "Nepodp\xEDsan\xFD v\xFDraz odmietnut\xFD", // ai 2026-10
+
+// src/Security/Protection.php, row 64
+"Unsigned expression ran, protection off" => "Nepodp\xEDsan\xFD v\xFDraz vykonan\xFD, ochrana vypnut\xE1", // ai 2026-10
+
+// src/Security/Protection.php, row 65
+"Expression in a link shown as text" => "V\xFDraz v odkaze zobrazen\xFD ako text", // ai 2026-10
+
+// src/Security/Protection.php, row 65
+"Expression in a link ran, protection off" => "V\xFDraz v odkaze vykonan\xFD, ochrana vypnut\xE1", // ai 2026-10
+
+// src/Security/Protection.php, row 66
+"Logins slowed down" => "Prihl\xE1senia spomalen\xE9", // ai 2026-10
+
+// src/Security/Protection.php, row 66
+"Repeated failed logins, protection off" => "Opakovan\xE9 ne\xFAspe\x9An\xE9 prihl\xE1senia, ochrana vypnut\xE1", // ai 2026-10
+
+// src/Security/Protection.php, row 73
+"an unknown page" => "nezn\xE1mej str\xE1nke", // ai 2026-10
+
+// src/Security/Protection.php, row 76
+"A form on %1 sent an unsigned expression in %2; it was refused" => "Formul\xE1r na %1 poslal nepodp\xEDsan\xFD v\xFDraz v %2; bol odmietnut\xFD", // ai 2026-10
+
+// src/Security/Protection.php, row 77
+"A form on %1 sent an unsigned expression in %2; it ran because the protection was off" => "Formul\xE1r na %1 poslal nepodp\xEDsan\xFD v\xFDraz v %2; vykonal sa, preto\x9Ee ochrana bola vypnut\xE1", // ai 2026-10
+
+// src/Security/Protection.php, row 79
+"A link to %1 sent an expression in %2; it was shown as text" => "Odkaz na %1 poslal v\xFDraz v %2; zobrazil sa ako text", // ai 2026-10
+
+// src/Security/Protection.php, row 80
+"A link to %1 sent an expression in %2; it ran because the protection was off" => "Odkaz na %1 poslal v\xFDraz v %2; vykonal sa, lebo ochrana bola vypnut\xE1", // ai 2026-10
+
+// src/Security/Protection.php, row 82
+"Logins from %1 were slowed down after repeated failures" => "Prihl\xE1senia z %1 boli po opakovan\xFDch ne\xFAspechoch spomalen\xE9", // ai 2026-10
+
+// src/Security/Protection.php, row 83
+"Logins from %1 failed repeatedly; they were not slowed down because the protection was off" => "Prihl\xE1senia z %1 opakovane zlyhali; neboli spomalen\xE9, lebo ochrana bola vypnut\xE1", // ai 2026-10
+
+// src/Security/Protection.php, row 91
+"Parameter" => "Parameter", // ai 2026-10
+
+// src/Security/Protection.php, row 109
+"If you do not know the page, the request did not come from your pages and nothing needs to change." => "Ak str\xE1nku nepozn\xE1te, po\x9Eiadavka nepri\x9Ala z va\x9Aich str\xE1nok a ni\xE8 netreba meni\x9D.", // ai 2026-10
+
+// src/Security/Protection.php, row 110
+"An address you do not know needs nothing: only its own logins are slowed down." => "Pri adrese, ktor\xFA nepozn\xE1te, netreba ni\xE8 robi\x9D: spoma\xBEuj\xFA sa len jej vlastn\xE9 prihl\xE1senia.", // ai 2026-10
 
 // src/Util/ChangesMonitor.php, row 92
 "history (%1)" => "hist\xF3ria (%1)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 335
+// src/Util/ChangesMonitor.php, row 331
 "No recorded changes for this item." => "Pre t\xFAto spr\xE1vu nie s\xFA zaznamenan\xE9 \x9Eiadne zmeny.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 359
+// src/Util/ChangesMonitor.php, row 355
 "1 field changed" => "zmenen\xE1 1 polo\x9Eka", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 359
+// src/Util/ChangesMonitor.php, row 355
 "%1 fields changed" => "zmenen\xFDch polo\x9Eiek: %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 368, 455
+// src/Util/ChangesMonitor.php, row 364, 451
 "Restore" => "Obnovi\x9D", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 382
+// src/Util/ChangesMonitor.php, row 378
 "(this change)" => "(t\xE1to zmena)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 386, 572, 576
+// src/Util/ChangesMonitor.php, row 382, 568, 572
 "Current (live)" => "Aktu\xE1lne (na\x9Eivo)", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 387
+// src/Util/ChangesMonitor.php, row 383
 "Compare to" => "Porovna\x9D s", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 396
+// src/Util/ChangesMonitor.php, row 392
 "change %1 | uid %2 | %3 ns | resource %4" => "zmena %1 | uid %2 | %3 ns | zdroj %4", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 448
+// src/Util/ChangesMonitor.php, row 444
 "View" => "Zobrazi\x9D", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 449
+// src/Util/ChangesMonitor.php, row 445
 "Diff" => "Rozdiel", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 480
+// src/Util/ChangesMonitor.php, row 476
 "seq %1" => "poradie %1", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 487
+// src/Util/ChangesMonitor.php, row 483
 "No change between these versions." => "Medzi t\xFDmito verziami nie je rozdiel.", // ai 2026-06
 
-// src/Util/ChangesMonitor.php, row 570
+// src/Util/ChangesMonitor.php, row 566
 "Original" => "Origin\xE1l", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 80
@@ -12538,95 +13180,95 @@ return [
 "ResampleImage unable to %1" => "ResampleImage: nepodarilo sa zavola\x9D %1", // ai 2026-06
 
 // src/Util/Imgfunc.php, row 215
-"This type of image cannot be uploaded here" => "",
+"This type of image cannot be uploaded here" => "Tento typ obr\xE1zka sem nemo\x9Eno nahra\x9D", // ai 2026-10
 
 // src/Util/Imgfunc.php, row 218
-"The image has too many pixels" => "",
+"The image has too many pixels" => "Obr\xE1zok m\xE1 pr\xEDli\x9A ve\xBEa pixelov", // ai 2026-10
 
 // src/Util/Imgfunc.php, row 222
-"The image cannot be read" => "",
+"The image cannot be read" => "Obr\xE1zok nemo\x9Eno pre\xE8\xEDta\x9D", // ai 2026-10
 
 // src/Util/Note.php, row 47
 "Note" => "Pozn\xE1mka", // ai 2026-06
 
 // src/Util/Note.php, row 52
-"A note on an admin page, a view or a State Check finding" => "",
+"A note on an admin page, a view or a State Check finding" => "Pozn\xE1mka na str\xE1nke administr\xE1cie, v poh\xBEade alebo pri zisten\xED Kontroly stavu", // ai 2026-10
 
 // src/Util/Note.php, row 59
-"Resource" => "",
+"Resource" => "Umiestnenie", // ai 2026-10
 
 // src/Util/Note.php, row 62
-"For" => "",
+"For" => "Pre", // ai 2026-10
 
 // src/Util/Note.php, row 62
-"everyone" => "",
+"everyone" => "v\x9Aetk\xFDch", // ai 2026-10
 
 // src/Util/Note.php, row 62
-"me only" => "",
+"me only" => "len m\xF2a", // ai 2026-10
 
 // src/Util/Note.php, row 64
-"valid" => "",
+"valid" => "platn\xE1", // ai 2026-10
 
 // src/Util/Note.php, row 64
 // src/Util/Notes.php, row 96
-"resolved" => "",
+"resolved" => "vyrie\x9Aen\xE1", // ai 2026-10
 
 // src/Util/Note.php, row 64
 "deleted" => "vymazan\xE9", // ai 2026-06
 
 // src/Util/Note.php, row 65
-"Until" => "",
+"Until" => "Do", // ai 2026-10
 
 // src/Util/Notes.php, row 54
-"Notes on this page" => "",
+"Notes on this page" => "Pozn\xE1mky k tejto str\xE1nke", // ai 2026-10
 
 // src/Util/Notes.php, row 57
-"Add a note to this page" => "",
+"Add a note to this page" => "Prida\x9D pozn\xE1mku k tejto str\xE1nke", // ai 2026-10
 
 // src/Util/Notes.php, row 67
-"Note text (a little HTML is fine)" => "",
+"Note text (a little HTML is fine)" => "Text pozn\xE1mky (trocha HTML nevad\xED)", // ai 2026-10
 
 // src/Util/Notes.php, row 69
-"for everyone" => "",
+"for everyone" => "pre v\x9Aetk\xFDch", // ai 2026-10
 
 // src/Util/Notes.php, row 70, 93
-"only for me" => "",
+"only for me" => "len pre m\xF2a", // ai 2026-10
 
 // src/Util/Notes.php, row 73
-"Add note" => "",
+"Add note" => "Prida\x9D pozn\xE1mku", // ai 2026-10
 
 // src/Util/Notes.php, row 96
-"until %1" => "",
+"until %1" => "do %1", // ai 2026-10
 
 // src/Util/Notes.php, row 96, 116
-"forever" => "",
+"forever" => "nav\x9Edy", // ai 2026-10
 
 // src/Util/Notes.php, row 102
-"Unresolve" => "",
+"Unresolve" => "Znovu otvori\x9D", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"today" => "",
+"today" => "na dnes", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"a week" => "",
+"a week" => "na t\xFD\x9Ede\xF2", // ai 2026-10
 
 // src/Util/Notes.php, row 116
-"a month" => "",
+"a month" => "na mesiac", // ai 2026-10
 
 // src/Util/Notes.php, row 116, 125
-"a date" => "",
+"a date" => "do d\xE1tumu", // ai 2026-10
 
 // src/Util/Notes.php, row 123
-"Hide for" => "",
+"Hide for" => "Skry\x9D", // ai 2026-10
 
 // src/Util/Notes.php, row 126
-"Why (optional)" => "",
+"Why (optional)" => "Pre\xE8o (nepovinn\xE9)", // ai 2026-10
 
 // src/Util/Notes.php, row 128
-"Mark resolved" => "",
+"Mark resolved" => "Ozna\xE8i\x9D ako vyrie\x9Aen\xE9", // ai 2026-10
 
 // src/Util/Notes.php, row 129
-"Resolve" => "",
+"Resolve" => "Vyrie\x9Ai\x9D", // ai 2026-10
 
 // src/Util/Searchfields.php, row 183
 "-- any numeric field --" => "-- \xBEubovo\xBEn\xE1 \xE8\xEDseln\xE1 polo\x9Eka --", // ai 2026-06
@@ -12712,10 +13354,10 @@ return [
 // src/Widget/Widget.php, row 445
 "To save changes click here or outside the field." => "Zmeny ulo\x9E\xEDte kliknut\xEDm sem alebo mimo po\xBEa.", // ai 2026-06
 
-// src/Widget/MngWidget.php, row 32
+// src/Widget/MngWidget.php, row 33
 "Manager" => "Mana\x9E\xE9r", // ai 2026-06
 
-// src/Widget/MngWidget.php, row 38
+// src/Widget/MngWidget.php, row 39
 "Best for galleries and other tabular data which is multivalue and different for each item" => "Najvhodnej\x9Aie pre gal\xE9rie a in\xE9 tabu\xBEkov\xE9 d\xE1ta, ktor\xE9 s\xFA multihodnotov\xE9 a pre ka\x9Ed\xFA spr\xE1vu in\xE9", // ai 2026-06
 
 // src/Widget/MseWidget.php, row 25
@@ -12731,16 +13373,16 @@ return [
 "Password and Change password" => "Heslo a Zmeni\x9D heslo", // ai 2026-06
 
 // src/Widget/RichtextMarkup.php, row 75
-"Loading..." => "",
+"Loading..." => "Na\xE8\xEDtavam...", // ai 2026-10
 
 // src/Widget/RichtextMarkup.php, row 76
-"No files" => "",
+"No files" => "\x8Eiadne s\xFAbory", // ai 2026-10
 
 // src/Widget/RichtextMarkup.php, row 77
-"Uploading..." => "",
+"Uploading..." => "Nahr\xE1vam...", // ai 2026-10
 
 // src/Widget/RichtextMarkup.php, row 78
-"Upload failed" => "",
+"Upload failed" => "Nahranie zlyhalo", // ai 2026-10
 
 // src/Widget/RimWidget.php, row 43
 "Related Item Manager" => "Mana\x9E\xE9r s\xFAvisiacich spr\xE1v", // ai 2026-06
@@ -13076,10 +13718,10 @@ return [
 "The URL of your local web server from where you want to start browsing for a particular URL." => "URL v\xE1\x9Aho lok\xE1lneho webov\xE9ho servera, od ktor\xE9ho chcete za\xE8a\x9D prehliadanie pri v\xFDbere konkr\xE9tnej URL.", // ai 2026-06
 
 // src/Widget/Widget.php, row 903
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/clanky/solarna.shtml", // ai 2026-10
 
 // src/Widget/Widget.php, row 906
-"Ajax inline" => "",
+"Ajax inline" => "Ajax na mieste", // ai 2026-10
 
 // src/Widget/Widget.php, row 906
 "If called as {ajax...} it modifies the visual - inline: old-way (not in window, but inline)" => "Ak je volan\xE9 ako {ajax...}, upravuje vzh\xBEad - inline: postaru (nie v okne, ale priamo v texte)", // ai 2026-06
@@ -13208,7 +13850,7 @@ return [
 "Uses special selectbox widget, which is searchable as substring.<br>Do not rely on current implementation in your possible scripts." => "Pou\x9Eije \x9Apeci\xE1lny selectbox, v ktorom sa d\xE1 vyh\xBEad\xE1va\x9D pod\xBEa podre\x9Dazca.<br>Nespoliehajte sa vo svojich pr\xEDpadn\xFDch skriptoch na aktu\xE1lnu implement\xE1ciu.", // ai 2026-06
 
 // src/Widget/Widget.php, row 973
-"Placeholder" => "",
+"Placeholder" => "Z\xE1stupn\xFD text", // ai 2026-10
 
 // src/Widget/Widget.php, row 973
 "Placeholder for input" => "Placeholder (z\xE1stupn\xFD text) pre vstupn\xE9 pole", // ai 2026-06

@@ -47,7 +47,7 @@ return [
 "Show example params" => "P\xE9ldaparam\xE9terek megjelen\xEDt\xE9se", // ai 2026-06
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Param\xE9terek", // ai 2026-06
@@ -65,19 +65,19 @@ return [
 "URL" => "",
 
 // include/constants_param_wizard.php, row 85
-"E-mail" => "",
+"E-mail" => "E-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 88
 "Number = positive integer number" => "Number = pozit\xEDv eg\xE9sz sz\xE1m", // ai 2026-06
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Megengedett legkisebb \xE9rt\xE9k", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Megengedett legnagyobb \xE9rt\xE9k", // ai 2026-06
@@ -502,7 +502,7 @@ return [
 "text before the link" => "sz\xF6veg a hivatkoz\xE1s el\xF5tt", // ai 2026-06
 
 // include/constants_param_wizard.php, row 512
-"e-mail" => "",
+"e-mail" => "e-mail", // ai 2026-10
 
 // include/constants_param_wizard.php, row 515
 "field/text" => "mez\xF5/sz\xF6veg", // ai 2026-06
@@ -574,7 +574,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "ki\xEDrja a 'blurb'-\xF6t (sz\xF6vegr\xE9szletet) egy m\xE1sik rovatb\xF3l egy egyszer\xFB felt\xE9tel alapj\xE1n.<br>Ha a <i>mez\xF5</i> (vagy a <b>stringToMatch</b> param\xE9terben megadott mez\xF5) az aktu\xE1lis rovatban megegyezik a <b>fieldToMatch</b> tartalm\xE1val a <b>blurbSliceId</b> rovatban, akkor a <b>blurbSliceId</b> rovat <b>fieldToReturn</b> mez\xF5j\xE9nek tartalm\xE1t adja vissza.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Alap\xE9rtelmez\xE9s szerint a <i>mez\xF5</i>.  Megadhat\xF3 mez\xF5 id-k\xE9nt (headline........) VAGY statikus sz\xF6vegk\xE9nt.", // ai 2026-06
@@ -583,7 +583,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "annak a rovatnak a kicsomagolt (unpacked) id-ja, amelyben a blurb sz\xF6veg t\xE1rolva van", // ai 2026-06
@@ -592,7 +592,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "annak a mez\xF5nek az id-ja a <b>blurbSliceId</b> rovatban, amelyben a <b>stringToMatch</b> keresend\xF5", // ai 2026-06
@@ -601,7 +601,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "annak a mez\xF5nek az id-ja a <b>blurbSliceId</b> rovatban, amelyben a blurb sz\xF6veg t\xE1rolva van (ami ki\xEDrand\xF3)", // ai 2026-06

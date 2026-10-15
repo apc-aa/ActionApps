@@ -74,13 +74,13 @@ return [
 "Number = positive integer number" => "Number = nombre entier positif", // ai 2026-06
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Valeur minimale autorisée", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Valeur maximale autorisée", // ai 2026-06
@@ -274,7 +274,7 @@ return [
 "The URL of another page which shows the content of the item. (That page should contain SSI include ../slice.php.). If unfilled, the same page as for item index is used for fulltext (which is obvious behavior)." => "L'URL d'une autre page qui affiche le contenu de l'item. (Cette page doit contenir le SSI include ../slice.php.). Si non renseigné, la même page que pour l'index des items est utilisée pour le texte intégral (ce qui est le comportement habituel).", // ai 2026-06
 
 // include/constants_param_wizard.php, row 291, 419
-"http#://www.ecn.cz/articles/solar.shtml" => "",
+"http#://www.ecn.cz/articles/solar.shtml" => "http#://www.ecn.cz/articles/solaire.shtml", // ai 2026-10
 
 // include/constants_param_wizard.php, row 294
 "text" => "texte", // ai 2026-06
@@ -304,7 +304,7 @@ return [
 "If 1, the session id (AA_Session=...) is not added to url" => "Si 1, l'id de session (AA_Session=...) n'est pas ajouté à l'URL", // ai 2026-06
 
 // include/constants_param_wizard.php, row 320, 324
-"condition" => "",
+"condition" => "condition", // ai 2026-10
 
 // include/constants_param_wizard.php, row 321
 "This is a very powerful function. It may be used as a better replace of some previous functions. If <b>cond_field</b> = <b>condition</b>, prints <b>begin</b> <i>field</i> <b>end</b>, else prints <b>else</b>. If <b>cond_field</b> is not specified, <i>the field</i> is used. Condition may be reversed (negated) by the \"!\" character at the beginning of it." => "C'est une fonction très puissante. Elle peut remplacer avantageusement certaines fonctions précédentes. Si <b>champ de condition</b> = <b>condition</b>, affiche <b>début</b> <i>champ</i> <b>fin</b>, sinon affiche <b>sinon</b>. Si <b>champ de condition</b> n'est pas renseigné, <i>le champ</i> est utilisé. La condition peut être inversée (niée) par le caractère \"!\" placé à son début.", // ai 2026-06
@@ -367,13 +367,13 @@ return [
 "!:height=" => "",
 
 // include/constants_param_wizard.php, row 376
-"date" => "",
+"date" => "date", // ai 2026-10
 
 // include/constants_param_wizard.php, row 377
 "prints date in a user defined format" => "affiche la date dans un format défini par l'utilisateur", // ai 2026-06
 
 // include/constants_param_wizard.php, row 380
-"format" => "",
+"format" => "format", // ai 2026-10
 
 // include/constants_param_wizard.php, row 381
 "PHP-like format - see <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>PHP manual</a>" => "format de type PHP - voir le <a href=\"https://php.net/manual/en/function.date.php\" target=_blank>manuel PHP</a>", // ai 2026-06
@@ -388,7 +388,7 @@ return [
 "_#EDITITEM used on admin page index.php for itemedit url" => "_#EDITITEM est utilisé sur la page d'administration index.php pour l'url itemedit", // ai 2026-06
 
 // include/constants_param_wizard.php, row 392
-"type" => "",
+"type" => "type", // ai 2026-10
 
 // include/constants_param_wizard.php, row 393
 "disc - for editing a discussion<br>itemcount - to output an item count<br>safe - for safe html<br>slice_info - select a field from the slice info<br>edit - URL to edit the item<br>add - URL to add a new item" => "disc - pour modifier une discussion<br>itemcount - pour afficher le nombre d'items<br>safe - pour du html sûr<br>slice_info - sélectionne un champ des informations de la section<br>edit - URL pour modifier l'item<br>add - URL pour ajouter un nouvel item", // ai 2026-06
@@ -445,7 +445,7 @@ return [
 "prints <i>the field</i> as image size (height='xxx' width='yyy') (or other image information) or empty string if can't work out, does not special case URLs from uploads directory, might do later! " => "affiche <i>le champ</i> comme taille d'image (height='xxx' width='yyy') (ou autre information sur l'image), ou une chaîne vide si elle ne peut être déterminée ; ne traite pas spécialement les URL du répertoire uploads, peut-être plus tard !", // ai 2026-06
 
 // include/constants_param_wizard.php, row 454, 830
-"information" => "",
+"information" => "information", // ai 2026-10
 
 // include/constants_param_wizard.php, row 455
 "specifies returned information: <br> - <i>html</i> - (default) - returns image size as HTML attributes (height='xxx' width='yyy')<br> - <i>width</i> - returns width of image in pixels<br> - <i>height</i> - returns height of image in pixels<br> - <i>imgtype</i> - returns flag indicating the type of the image: 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - returns mimetype of the image (like 'image/gif', 'application/x-shockwave-flash', ...)" => "spécifie l'information retournée : <br> - <i>html</i> - (par défaut) - retourne la taille de l'image comme attributs HTML (height='xxx' width='yyy')<br> - <i>width</i> - retourne la largeur de l'image en pixels<br> - <i>height</i> - retourne la hauteur de l'image en pixels<br> - <i>imgtype</i> - retourne un indicateur du type de l'image : 1 = GIF, 2 = JPG, 3 = PNG, 4 = SWF, 5 = PSD, 6 = BMP, 7 = TIFF(ordre d'octets intel), 8 = TIFF(ordre d'octets motorola), 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC, 14 = IFF, 15 = WBMP, 16 = XBM<br> - <i>mime</i> - retourne le type mime de l'image (comme 'image/gif', 'application/x-shockwave-flash', ...)", // ai 2026-06
@@ -707,7 +707,7 @@ return [
 "An old-style function. Prints <i>the field</i> as image width value (\\<img width=...\\>) or erases the width tag. To be used immediately after \"width=\".The f_c function provides a better way of doing this with parameters \":width=\". " => "Une fonction à l'ancienne. Affiche <i>le champ</i> comme valeur de largeur d'image (\\<img width=...\\>) ou supprime l'attribut width. À utiliser immédiatement après \"width=\". La fonction f_c offre une meilleure façon de le faire avec les paramètres \":width=\".", // ai 2026-06
 
 // include/constants_param_wizard.php, row 681
-"transformation" => "",
+"transformation" => "transformation", // ai 2026-10
 
 // include/constants_param_wizard.php, row 682
 "Allows to transform the field value to another value.<br>Usage: <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>If the content <i>the field</i> is equal to <b>content_1</b> the <b>return_value_1</b> is returned. If the content <i>the field</i> is equal to <b>content_2</b> the <b>return_value_2</b> is returned. If <i>the field is not equal to any <b>content_x</b>, <b>default</b> is returned</i>." => "Permet de transformer la valeur du champ en une autre valeur.<br>Usage : <b>content_1</b>:<b>return_value_1</b>:<b>content_2</b>:<b>return_value_2</b>:<b>default</b><br>Si le contenu du <i>champ</i> est égal à <b>content_1</b>, <b>return_value_1</b> est retourné. Si le contenu du <i>champ</i> est égal à <b>content_2</b>, <b>return_value_2</b> est retourné. Si <i>le champ n'est égal à aucun <b>content_x</b>, <b>default</b> est retourné</i>.", // ai 2026-06
@@ -761,7 +761,7 @@ return [
 "AA expression where we can use any AA {expressions}" => "expression AA dans laquelle on peut utiliser n'importe quelles {expressions} AA", // ai 2026-06
 
 // include/constants_param_wizard.php, row 851
-"expression" => "",
+"expression" => "expression", // ai 2026-10
 
 // include/constants_param_wizard.php, row 860
 "Store" => "Enregistrer", // ai 2026-06

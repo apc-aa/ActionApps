@@ -28,48 +28,48 @@ return [
 // modules/site/index.php, row 68
 "Starting spot not found" => "A kezdő spot nem található", // ai 2026-06
 
-// modules/site/index.php, row 157
+// modules/site/index.php, row 151
 "Editor window - site code manager" => "Szerkesztőablak - webhelykód-kezelő", // ai 2026-06
 
-// modules/site/index.php, row 177
+// modules/site/index.php, row 171
 "Add&nbsp;spot" => "Spot&nbsp;hozzáadása", // ai 2026-06
 
-// modules/site/index.php, row 178
+// modules/site/index.php, row 172
 "Add&nbsp;choice" => "Választás&nbsp;hozzáadása", // ai 2026-06
 
-// modules/site/index.php, row 181
+// modules/site/index.php, row 175
 "Move&nbsp;up" => "Mozgatás&nbsp;fel", // ai 2026-06
 
-// modules/site/index.php, row 182
+// modules/site/index.php, row 176
 "Move&nbsp;down" => "Mozgatás&nbsp;le", // ai 2026-06
 
-// modules/site/index.php, row 185
+// modules/site/index.php, row 179
 "Move&nbsp;left" => "Mozgatás&nbsp;balra", // ai 2026-06
 
-// modules/site/index.php, row 186
+// modules/site/index.php, row 180
 "Move&nbsp;right" => "Mozgatás&nbsp;jobbra", // ai 2026-06
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 // modules/site/sitetree.php, row 1008, 1029
 "Delete" => "Törlés", // ai 2026-06
 
-// modules/site/index.php, row 189
+// modules/site/index.php, row 183
 "Are you sure you want to delete the spot?" => "Biztosan törölni szeretné a spotot?", // ai 2026-06
 
-// modules/site/index.php, row 192
+// modules/site/index.php, row 186
 "Enable" => "Engedélyezés", // ai 2026-06
 
-// modules/site/index.php, row 193
+// modules/site/index.php, row 187
 "Disable" => "Letiltás", // ai 2026-06
 
-// modules/site/index.php, row 214
+// modules/site/index.php, row 208
 "Possible system requires - &lcub;require:...&rcub; or &lcub;require:[\"...\",\"...\"]&rcub;" => "Lehetséges rendszer require-ok - &lcub;require:...&rcub; vagy &lcub;require:[\"...\",\"...\"]&rcub;", // ai 2026-06
 
 // modules/site/menu.php, row 47
 "View site" => "Webhely megtekintése", // ai 2026-06
 
 // modules/site/menu.php, row 55
-// modules/site/modedit.php, row 318
+// modules/site/modedit.php, row 298
 "Site" => "Webhely", // ai 2026-06
 
 // modules/site/menu.php, row 80
@@ -81,95 +81,96 @@ return [
 // modules/site/menu.php, row 82
 "Aliases" => "Aliasok", // ai 2026-06
 
-// modules/site/moddelete.php, row 45
+// modules/site/moddelete.php, row 48
 "You don't have permissions to delete a site." => "Nincs jogosultsága webhely törléséhez.", // ai 2026-06
 
-// modules/site/moddelete.php, row 49
+// modules/site/moddelete.php, row 53
+// modules/site/modedit.php, row 212
+"The form has expired; reload the page and try again." => "Az űrlap lejárt; töltse újra az oldalt, és próbálja újra.", // ai 2026-10
+
+// modules/site/moddelete.php, row 56
 "Module not found." => "A modul nem található.", // ai 2026-06
 
-// modules/site/moddelete.php, row 69
+// modules/site/moddelete.php, row 76
 "Slice successfully deleted, tables are optimized" => "A rovat sikeresen törölve, a táblák optimalizálva", // ai 2026-06
 
-// modules/site/modedit.php, row 116
+// modules/site/modedit.php, row 112
 "You do not have permissions to add slice" => "Nincs jogosultsága rovat hozzáadásához", // ai 2026-06
 
-// modules/site/modedit.php, row 121
+// modules/site/modedit.php, row 117
 "You do not have permissions to edit this slice" => "Nincs jogosultsága szerkeszteni ezt a rovatot", // ai 2026-06
 
-// modules/site/modedit.php, row 129
-"The settings and the other fields of this page were not saved." => "",
+// modules/site/modedit.php, row 125
+"The settings and the other fields of this page were not saved." => "A beállítások és az oldal többi mezője nem lett mentve.", // ai 2026-10
 
-// modules/site/modedit.php, row 144
+// modules/site/modedit.php, row 140
 "State file" => "Állapotfájl", // ai 2026-06
 
-// modules/site/modedit.php, row 145, 326
-"Router" => "",
+// modules/site/modedit.php, row 141, 306
+"Router" => "Router", // ai 2026-10
 
-// modules/site/modedit.php, row 146, 340
+// modules/site/modedit.php, row 142, 320
 "Uses modules" => "Használt modulok", // ai 2026-06
 
-// modules/site/modedit.php, row 156
-"You can not use these modules in the site - you have no permission to them: %1" => "",
+// modules/site/modedit.php, row 152
+"You can not use these modules in the site - you have no permission to them: %1" => "Ezeket a modulokat nem használhatja a webhelyen, mert nincs hozzájuk jogosultsága: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 230
-"The form has expired; reload the page and try again." => "",
+// modules/site/modedit.php, row 223
+"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "Az alkalmazástár beállításai nem lettek mentve – a tár addig nem kínálja a webhelyet, amíg ezeket a hibákat ki nem javítják:", // ai 2026-10
 
-// modules/site/modedit.php, row 241
-"The app store settings were not saved - the store cannot give the site until these errors are fixed:" => "",
-
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Add Site" => "Webhely hozzáadása", // ai 2026-06
 
-// modules/site/modedit.php, row 305
+// modules/site/modedit.php, row 285
 "Edit Site" => "Webhely szerkesztése", // ai 2026-06
 
-// modules/site/modedit.php, row 325
+// modules/site/modedit.php, row 305
 "Used Language File" => "Használt nyelvi fájl", // ai 2026-06
 
-// modules/site/modedit.php, row 326
+// modules/site/modedit.php, row 306
 "Use AA_Router_Seo. Otherwise you will use old sitemodule approach with 'control file', which we can't recommend." => "Használja az AA_Router_Seo-t. Ellenkező esetben a site modul régi, 'vezérlőfájlos' megközelítését fogja használni, amit nem ajánlunk.", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "Home or State file" => "Kezdőlap vagy állapotfájl", // ai 2026-06
 
-// modules/site/modedit.php, row 327
+// modules/site/modedit.php, row 307
 "For AA_Router_Seo fill the <b>default url</b> (home) - like <em>/en/home</em> or leave it empty<br><br>For older sites without AA_Router_Seo fill in the name of <b>Site control file</b> - will be placed in /modules/site/sites/ directory. The name you specify will be prefixed by 'site_' prefix, so if you for example name the file as 'apc.php', the site control file will be /modules/site/sites/site_apc.php." => "Az AA_Router_Seo használatához adja meg az <b>alapértelmezett url</b>-t (kezdőlapot) - pl. <em>/en/home</em> -, vagy hagyja üresen<br><br>Az AA_Router_Seo nélküli régebbi webhelyeknél adja meg a <b>webhely vezérlőfájljának</b> nevét - ez a /modules/site/sites/ könyvtárba kerül. A megadott név 'site_' előtagot kap, így ha a fájlt például 'apc.php'-nak nevezi el, a webhely vezérlőfájlja /modules/site/sites/site_apc.php lesz.", // ai 2026-06
 
-// modules/site/modedit.php, row 342
+// modules/site/modedit.php, row 322
 "Additional setting" => "További beállítások", // ai 2026-06
 
-// modules/site/modedit.php, row 347
-"App store" => "",
+// modules/site/modedit.php, row 327
+"App store" => "Alkalmazástár", // ai 2026-10
 
-// modules/site/modedit.php, row 349
-"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "",
+// modules/site/modedit.php, row 329
+"A published site can be installed by any AA from this one - with the slices and Alerts it uses: their templates, fields, views and constants, never the items. Only a superadmin sets this." => "A közzétett webhelyet bármely AA telepítheti erről az AA-ról – az általa használt rovatokkal és Értesítésekkel együtt: azok sablonjaival, mezőivel, nézeteivel és konstansaival, a cikkeket azonban soha. Ezt csak szuperadminisztrátor állíthatja be.", // ai 2026-10
 
-// modules/site/modedit.php, row 353
-"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "",
+// modules/site/modedit.php, row 333
+"The site's modules changed since publishing: %1 - the app store does not give the site until a superadmin approves them." => "A webhely moduljai a közzététel óta megváltoztak: %1 – az alkalmazástár addig nem kínálja a webhelyet, amíg egy szuperadminisztrátor jóvá nem hagyja őket.", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Approve the changed modules: %1" => "",
+// modules/site/modedit.php, row 334
+"Approve the changed modules: %1" => "A megváltozott modulok jóváhagyása: %1", // ai 2026-10
 
-// modules/site/modedit.php, row 354
-"Their templates, fields, views and constants then go to the app store with the site." => "",
+// modules/site/modedit.php, row 334
+"Their templates, fields, views and constants then go to the app store with the site." => "Ezután sablonjaik, mezőik, nézeteik és konstansaik a webhellyel együtt bekerülnek az alkalmazástárba.", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"Publish in the app store" => "",
+// modules/site/modedit.php, row 336
+"Publish in the app store" => "Közzététel az alkalmazástárban", // ai 2026-10
 
-// modules/site/modedit.php, row 356
-"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "",
+// modules/site/modedit.php, row 336
+"The published app has no warnings: every warning of its export is an error. A constant group owned by a slice outside every published site stops it too." => "A közzétett alkalmazásnak nincsenek figyelmeztetései: exportjának minden figyelmeztetése hibának számít. Akkor is leáll, ha egy konstanscsoport olyan rovathoz tartozik, amely egyik közzétett webhelyen sincs.", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"App description" => "",
+// modules/site/modedit.php, row 337
+"App description" => "Az alkalmazás leírása", // ai 2026-10
 
-// modules/site/modedit.php, row 357
-"What the app does, for the list of the app store." => "",
+// modules/site/modedit.php, row 337
+"What the app does, for the list of the app store." => "Mit csinál az alkalmazás – az alkalmazástár listájához.", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"App version" => "",
+// modules/site/modedit.php, row 338
+"App version" => "Az alkalmazás verziója", // ai 2026-10
 
-// modules/site/modedit.php, row 358
-"Like 1.2.0." => "",
+// modules/site/modedit.php, row 338
+"Like 1.2.0." => "Például 1.2.0.", // ai 2026-10
 
 // modules/site/sitetree.php, row 1005
 "Spot&nbsp;variables" => "Spot&nbsp;változói", // ai 2026-06

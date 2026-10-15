@@ -50,7 +50,7 @@ return [
 "Show example params" => "Beispielparameter zeigen", // ai 2026-06
 
 // admin/param_wizard.php, row 296
-"OK" => "",
+"OK" => "OK", // ai 2026-10
 
 // include/constants_param_wizard.php, row 68
 "Parameters" => "Parameter",
@@ -74,13 +74,13 @@ return [
 "Number = positive integer number" => "Number = positive ganze Zahl", // ai 2026-06
 
 // include/constants_param_wizard.php, row 91, 113
-"Min" => "",
+"Min" => "Min", // ai 2026-10
 
 // include/constants_param_wizard.php, row 92, 114
 "Allowed minimum value" => "Zul\xE4ssiger Mindestwert", // ai 2026-06
 
 // include/constants_param_wizard.php, row 97, 119
-"Max" => "",
+"Max" => "Max", // ai 2026-10
 
 // include/constants_param_wizard.php, row 98, 120
 "Allowed maximum value" => "Maximal erlaubter Wert", // ai 2026-06
@@ -577,7 +577,7 @@ return [
 "prints 'blurb' (piece of text) from another slice, based on a simple condition.<br>If <i>the field</i> (or the field specified by <b>stringToMatch</b>) in current slice matches the content of <b>fieldToMatch</b> in <b>blurbSliceId</b>, it returns the content of <b>fieldToReturn</b> in <b>blurbSliceId</b>." => "gibt einen 'Blurb' (Textst\xFCck) aus einer anderen Rubrik aus, basierend auf einer einfachen Bedingung.<br>Wenn <i>das Feld</i> (oder das durch <b>stringToMatch</b> angegebene Feld) in der aktuellen Rubrik mit dem Inhalt von <b>fieldToMatch</b> in <b>blurbSliceId</b> \xFCbereinstimmt, wird der Inhalt von <b>fieldToReturn</b> in <b>blurbSliceId</b> zur\xFCckgegeben.", // ai 2026-06
 
 // include/constants_param_wizard.php, row 579
-"stringToMatch" => "",
+"stringToMatch" => "stringToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 580
 "By default it is <i>the field</i>.  It can be formatted either as the id of a field (headline........) OR as static text." => "Standardm\xE4\xDFig ist es <i>das Feld</i>. Es kann entweder als Feld-ID (headline........) ODER als statischer Text angegeben werden.", // ai 2026-06
@@ -586,7 +586,7 @@ return [
 "category........" => "",
 
 // include/constants_param_wizard.php, row 585
-"blurbSliceId" => "",
+"blurbSliceId" => "blurbSliceId", // ai 2026-10
 
 // include/constants_param_wizard.php, row 586
 "unpacked slice id of the slice where the blurb text is stored" => "entpackte Rubrik-ID der Rubrik, in der der Blurb-Text gespeichert ist", // ai 2026-06
@@ -595,7 +595,7 @@ return [
 "41415f436f72655f4669656c64732e2e" => "",
 
 // include/constants_param_wizard.php, row 591
-"fieldToMatch" => "",
+"fieldToMatch" => "fieldToMatch", // ai 2026-10
 
 // include/constants_param_wizard.php, row 592
 "field id of the field in <b>blurbSliceId</b> where to search for <b>stringToMatch</b>" => "Feld-ID des Feldes in <b>blurbSliceId</b>, in dem nach <b>stringToMatch</b> gesucht wird", // ai 2026-06
@@ -604,7 +604,7 @@ return [
 "headline........" => "",
 
 // include/constants_param_wizard.php, row 597
-"fieldToReturn" => "",
+"fieldToReturn" => "fieldToReturn", // ai 2026-10
 
 // include/constants_param_wizard.php, row 598
 "field id of the field in <b>blurbSliceId</b> where the blurb text is stored (what to print)" => "Feld-ID des Feldes in <b>blurbSliceId</b>, in dem der Blurb-Text gespeichert ist (was ausgegeben wird)", // ai 2026-06
