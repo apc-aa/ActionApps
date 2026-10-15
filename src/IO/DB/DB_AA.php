@@ -314,7 +314,7 @@ final class DB_AA
     }
 
     /** creates cols string for INSERT or UPDATE
-     * @param string[] $varlist
+     * @param array<array{0: string, 1: mixed, 2?: string}> $varlist [column, value, type] - type optional
      * @return string
      */
     protected static function makeCols(array $varlist): string
@@ -323,7 +323,7 @@ final class DB_AA
         $cols  = '';
         foreach ($varlist as $vardef) {
             // $vardef is array(varname, value, type)
-            [$name, $value, $type] = $vardef;
+            [$name, $value, $type] = array_pad($vardef, 3, null);
             $part  = match ($type) {
                 "i" => (int) $value,
                 "l" => xpack_id($value),
