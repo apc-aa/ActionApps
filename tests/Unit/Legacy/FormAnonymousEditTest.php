@@ -67,6 +67,8 @@ namespace Tests\Unit\Legacy {
 
         /** another slice the item could be moved to */
         private const OTHER = 'e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7';
+        /** a slice whose related-item field edits the items of SLICE */
+        private const SOURCE = 'f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7';
 
         private static FakeSlice $slice;
         private static ?string $script_name;
@@ -464,6 +466,29 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(array_map(static fn($f) => ParamImplode([self::SLICE, $editor, $f]), $fields), array_column($rows, 'selector'));
             $this->assertSame(ParamImplode(['u', 'filler.php']), $rows[0]['params']);
             $this->assertStringNotContainsString('new', $rows[0]['selector'] . $rows[0]['params']);
+        }
+
+        public function test_an_editor_of_the_slice_whose_gallery_edits_the_item_is_not_logged(): void
+        {
+            // photos live in a slice the editors of the article slice have no role in; its mng field edits them
+            $source = new FakeSlice(self::SOURCE);
+            $source->setFields(new FakeFields(self::SOURCE, [new AA_Field(['id' => 'relation........', 'input_show_func' => 'mng:#sLiCe-' . self::SLICE, 'text_stored' => 1, 'in_item_tbl' => '', 'input_insert_func' => 'ids', 'input_default' => '', 'html_show' => 0, 'html_default' => 0, 'multiple' => 1])]));
+            RecordingDb::$answer = static fn(string $sql) => match (true) {
+                str_contains($sql, 'FROM item')     => [['usid' => self::SLICE]],
+                str_contains($sql, 'FROM `field`')  => [['sid' => self::SOURCE, 'id' => 'relation........']],
+                str_contains($sql, 'FROM `module`') => [['type' => 'S']],
+                default                             => [],
+            };
+            \AA::Contentcache()->clear();   // the sources of the slice are kept for the request
+            self::login(self::USER, '');
+            $GLOBALS['permission_to']['slice'][self::SOURCE] = 'ak';
+            try {
+                self::grabOne(['u' . self::ITEM => ['full_text_______' => ['new']]]);
+
+                $this->assertSame([], self::noPermLogged());
+            } finally {
+                \AA::Contentcache()->clear();
+            }
         }
 
         public function test_new_items_are_not_logged_as_edits(): void

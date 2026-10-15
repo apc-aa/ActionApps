@@ -220,7 +220,7 @@ if ($update) {
         // On the other hand we use it for marking the field as translatable
         // Honza, 2014-03-24
 
-        /** @var Widget $widget_class */
+        /** @var class-string<Widget> $widget_class */
         $widget_class = Widget::constructClassName($input_show_func_f);
         Qvarsetadd("multiple", "quoted", ($translation ? 2 : 0) + ($widget_class::multiple() ? 1 : 0));
 
@@ -248,6 +248,15 @@ if ($update) {
             }
         }
         $isf     .= ':' . stripslashes($input_show_func_p);
+
+        // editors of this slice may edit the items a related-item field edits (IsItemEditable()), so a
+        // field that starts editing another slice needs an admin who may edit all items there; a field
+        // only pointing there does not count - adding the edit button later has to pass here
+        $edit_target = RelatedItemEditTarget(AA_Object::factory($widget_class, Widget::parseClassProperties($isf)));
+        if (($edit_target !== '') && ($edit_target !== RelatedItemEditTarget(AA_Slice::getOwnModule(AA::$module_id)?->getWidget($fid))) && !IfSlPerm(PS_EDIT_ALL_ITEMS, $edit_target)) {
+            $err['const'] = MsgErr(_m("You can relate only to a slice where you may edit all items"));
+            break;
+        }
 
         // unslashed parts: a packed v<hex> group name holds raw bytes, so the whole string must not be stripslashes()-ed
         Qvarsetadd("input_show_func", "text", $isf);
