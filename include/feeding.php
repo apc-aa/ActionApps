@@ -94,8 +94,10 @@ function GetFieldMapping($from_slice_id, $destination_id): array
 function GetBaseItem(string $item_id): string
 {
     $dest_id = $item_id;
+    $seen    = [];   // a broken relation - an item fed to itself, a loop - would be traced forever
 
-    while ($item_id) {
+    while ($item_id && !isset($seen[$item_id])) {
+        $seen[$item_id] = true;
         $dest_id = $item_id;
         $source_id = DB_AA::select1('source_id', 'SELECT source_id FROM relation', [['destination_id', $dest_id, 'l'], ['flag', REL_FLAG_FEED, 'set']]);
         $item_id = ($source_id !== false) ? unpack_id($source_id) : false;
