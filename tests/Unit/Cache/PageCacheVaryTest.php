@@ -235,7 +235,6 @@ final class PageCacheVaryTest extends TestCase
         'modules/links/menu.php'            => [1, 'admin'],
         'src/Util/UiPrefs.php'              => [7, 'admin'],
         'src/Util/InputVars.php'            => [1, '{qs:} skips a cookie PHP put into $_REQUEST'],
-        'src/Doit/RequestMonitor.php'       => [2, 'logs the request'],
         'filldisc.php'                      => [1, 'form handler, never cached'],
         'filler.php'                        => [1, 'form handler, never cached'],
         'post2shtml.php'                    => [1, 'form handler, never cached'],

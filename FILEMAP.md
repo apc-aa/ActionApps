@@ -417,11 +417,10 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Http/TransportException.php | No answer at all - not a status | Exception | S |
 | Http/ResponseTooLargeException.php | The answer is over the size the caller allowed | Exception | S |
 
-### Doit & Expand
+### Expand
 
 | File | Purpose | Key API | Size |
 |------|---------|---------|------|
-| Doit/RequestMonitor.php | Developer tool for catching REQUEST variables | RequestMonitor | M |
 | Expand/HttpInclude.php | What {include:url:type:headers:body:err} promises a template | HttpInclude::fetch() | S |
 | Expand/InternalExpandInterface.php | Internal expand aliases interface for admin | Interface only | S |
 
