@@ -392,6 +392,33 @@ class Form extends AbstractGrabber
         }
     }
 
+    /** The old-style form of filler.php (v<field> inputs) edits an existing item too: without a login the
+     *  fields of isAccountField() are left out there as well, so the item keeps the stored ones.
+     *  @param array<string, array> $content4id  field id => values, as filler.php stores them
+     *  @return array<string, array>
+     */
+    public static function withoutAccountFields(AA_Slice $slice, array $content4id): array
+    {
+        if (!self::anonymous()) {
+            return $content4id;
+        }
+        foreach (array_keys($content4id) as $field_id) {
+            if (!($field = $slice->getField((string) $field_id)) || !self::isAccountField($slice, $field)) {
+                continue;
+            }
+            unset($content4id[$field_id]);
+            // logged only when the form sent the field: v<hex id>, with a suffix for a password or a date
+            $var = 'v' . unpack_id((string) $field_id);
+            foreach (array_keys($_REQUEST) as $name) {
+                if (str_starts_with((string) $name, $var)) {
+                    self::refused($slice->getId(), (string) $field_id, 'u');
+                    break;
+                }
+            }
+        }
+        return $content4id;
+    }
+
     /** No user is logged in. filler.php opens the session only when the visitor has its cookie, so
      *  $auth may be missing; a logged-in reader is a user.
      */

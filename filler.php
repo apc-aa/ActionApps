@@ -481,6 +481,8 @@ if ($insert) {
     if (!$permok) {
         $result["permissions"] = _m("You are not allowed to update this item.");
     }
+    // after the password check above, which reads the posted password - as in the aa[] forms
+    $content4id = AA\IO\Grabber\Form::withoutAccountFields($slice, $content4id);
 }
 
 // See doc/anonym.html for structure of $result, which is intended

@@ -237,6 +237,31 @@ namespace Tests\Unit\Legacy {
             $this->assertFalse($item->isSet('flags...........'));
         }
 
+        // ------------------------------------------------------------ the old-style form (v<field> inputs)
+
+        public function test_the_old_style_form_leaves_the_account_fields_out(): void
+        {
+            $request  = $_REQUEST;
+            $_REQUEST = ['v' . unpack_id('con_email.......') => 'evil@example.org', 'v' . unpack_id('password........') . 'a' => 'x'];
+            $content  = array_fill_keys(['con_email.......', 'password........', 'flags...........', 'posted_by.......', self::BODY], [['value' => 'v', 'flag' => 0]]);
+            try {
+                $kept = Form::withoutAccountFields(self::$slice, $content);
+            } finally {
+                $_REQUEST = $request;
+            }
+
+            $this->assertSame([self::BODY], array_keys($kept), 'the stored account fields stay');
+            $this->assertSame([ParamImplode([self::SLICE, 'con_email.......']), ParamImplode([self::SLICE, 'password........'])], array_column(self::logged(), 'selector'), 'only the fields the form sent are logged');
+        }
+
+        public function test_the_old_style_form_of_a_logged_in_user_is_unchanged(): void
+        {
+            self::login(self::USER, '');
+            $content = array_fill_keys(['con_email.......', 'password........', self::BODY], [['value' => 'v', 'flag' => 0]]);
+
+            $this->assertSame($content, Form::withoutAccountFields(self::$slice, $content));
+        }
+
         public function test_the_nobody_user_is_anonymous(): void
         {
             // pageOpen('nobody') of filler.php and site.php without a login
