@@ -36,6 +36,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\PagecachePurge;
 use AA\Later\Toexecute;
+use AA\Util\Url;
 use Cvarset;
 use Mobile_Detect;
 
@@ -68,36 +69,8 @@ class PageCache
     private const ALL_COOKIES = "\0all";
     private const FORWARDED   = "\0forwarded";
 
-    /**
-     * Exact-match tracker/analytics parameter and cookie names that must NOT
-     * fragment the page-cache key. Hash-keyed so isset() lookup is O(1).
-     *
-     * Canonical casing only (case-sensitive match). Tracker names have a
-     * well-known canonical form in the wild (lowercase URL params, uppercase
-     * DoubleClick cookies); we intentionally do not lower-case to avoid both
-     * the strtolower() cost per key and the risk of filtering custom
-     * site-specific parameters that happen to share spelling under a
-     * different casing.
-     *
-     * Only universally recognized third-party trackers belong here.
-     * Ambiguous names like 'ref', 'source', 'referrer' are deliberately
-     * excluded so custom site code that uses them keeps working.
-     */
-    private const IGNORED_PARAMS_EXACT = [
-        // Click identifiers
-        'gclid' => 1, 'gbraid' => 1, 'wbraid' => 1, 'dclid' => 1,
-        'fbclid' => 1, 'msclkid' => 1, 'yclid' => 1, 'ttclid' => 1,
-        'twclid' => 1, 'li_fat_id' => 1, 'igshid' => 1,
-        // Email-campaign ids
-        'mc_cid' => 1, 'mc_eid' => 1,
-        // HubSpot URL trackers (HubSpot cookies start with __h and are caught by the `_`-prefix rule below)
-        '_hsenc' => 1, '_hsmi' => 1,
-        // Google DoubleClick cookies — no `_` prefix, missed by the cookie filter
-        'IDE' => 1, 'NID' => 1, '1P_JAR' => 1, 'DSID' => 1,
-    ];
-
-    /** Prefix patterns for ignored params. Only utm_* is in widespread use. */
-    private const IGNORED_PARAMS_PREFIX = ['utm_'];
+    /** Google's ad cookies, which the `_` prefix rule of keyCookies() misses */
+    private const TRACKING_COOKIES = ['IDE' => 1, 'NID' => 1, '1P_JAR' => 1, 'DSID' => 1];
 
     /** AA\Cache\PageCache function
      *  AA\Cache\PageCache class constructor
@@ -115,23 +88,6 @@ class PageCache
     }
 
     /**
-     * Returns true when $name is a known third-party tracker that must not
-     * be part of the page-cache key. Case-sensitive.
-     */
-    public static function isIgnoredParam(string $name): bool
-    {
-        if (isset(self::IGNORED_PARAMS_EXACT[$name])) {
-            return true;
-        }
-        foreach (self::IGNORED_PARAMS_PREFIX as $prefix) {
-            if (str_starts_with($name, $prefix)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Returns $params with all tracker keys removed. Hot-path optimized:
      * empty input short-circuits; if no tracker key is present, returns
      * the input array unchanged (no allocation, no copy).
@@ -142,10 +98,10 @@ class PageCache
             return $params;
         }
         foreach ($params as $k => $v) {
-            if (is_string($k) && self::isIgnoredParam($k)) {
+            if (is_string($k) && Url::isTrackingParam($k)) {
                 $out = [];
                 foreach ($params as $k2 => $v2) {
-                    if (!is_string($k2) || !self::isIgnoredParam($k2)) {
+                    if (!is_string($k2) || !Url::isTrackingParam($k2)) {
                         $out[$k2] = $v2;
                     }
                 }
@@ -174,7 +130,7 @@ class PageCache
         if (!str_contains($qs, '&')) {
             $eq   = strpos($qs, '=');
             $name = ($eq === false) ? $qs : substr($qs, 0, $eq);
-            return self::isIgnoredParam($name) ? '' : $qs;
+            return Url::isTrackingParam($name) ? '' : $qs;
         }
 
         $kept    = [];
@@ -182,7 +138,7 @@ class PageCache
         foreach (explode('&', $qs) as $pair) {
             $eq   = strpos($pair, '=');
             $name = ($eq === false) ? $pair : substr($pair, 0, $eq);
-            if (self::isIgnoredParam($name)) {
+            if (Url::isTrackingParam($name)) {
                 $changed = true;
             } else {
                 $kept[] = $pair;
@@ -276,14 +232,13 @@ class PageCache
         // Skip:
         //   - cookies starting with `_` (Google urchin, GA, FB pixel, HubSpot __h*, …)
         //   - the AA session cookie (must not segment public cache)
-        //   - tracker cookies without underscore prefix (DoubleClick IDE/NID/1P_JAR/DSID)
-        // Direct const isset() instead of isIgnoredParam(): no cookie name uses
-        // the utm_ prefix family, so we save a function call per cookie.
+        //   - tracker cookies without underscore prefix (DoubleClick IDE/NID/1P_JAR/DSID,
+        //     and the URL trackers some tags keep as cookies - li_fat_id, utm_*)
         foreach ($cookies as $key => $val) {
             // Empty-string keys are possible from malformed Cookie headers
             // ("Cookie: =v"); guard $key[0] from emitting an offset warning.
             $key = (string) $key;
-            if ($key === '' || $key[0] === '_' || $key === 'AA_Session' || isset(self::IGNORED_PARAMS_EXACT[$key])) {
+            if ($key === '' || $key[0] === '_' || $key === 'AA_Session' || isset(self::TRACKING_COOKIES[$key]) || Url::isTrackingParam($key)) {
                 continue;
             }
             $ks[$key] = $val;

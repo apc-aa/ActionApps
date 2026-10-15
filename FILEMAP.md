@@ -375,7 +375,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Util/SingletonTrait.php | Singleton pattern trait | SingletonTrait | S |
 | Util/Txt.php | Text formatting utilities | Txt | S |
 | Util/UiPrefs.php | Per-user admin UI preferences (skin + interface language) | UiPrefs | M |
-| Util/Url.php | Facts about the request being served: is it https, lift http urls | Url::isHttps() | S |
+| Util/Url.php | Facts about the request being served (is it https, lift http urls) and web addresses (which query parameters only track the visit) | Url::isHttps(), Url::isTrackingParam() | S |
 
 ### Api (REST front controller)
 

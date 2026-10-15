@@ -72,7 +72,7 @@ if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authe
 //                      - it is in fact all global variables used in view.php
 // Tracker params (utm_*, gclid, fbclid, ...) are stripped from every key source
 // so identical content does not get cached under thousands of campaign-tagged
-// URLs. See PageCache::IGNORED_PARAMS_EXACT / IGNORED_PARAMS_PREFIX for the list.
+// URLs. See AA\Util\Url::isTrackingParam() for the list.
 // Cookies are left out: getVariedPage()/storeVariedPage() add only those the render read, so
 // consent and ad cookies (unique per visitor) do not give everyone a private copy.
 // AA::$debug stands for the aa_debug cookie.
