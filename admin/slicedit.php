@@ -180,7 +180,7 @@ if (is_array($create = $_POST['create'])) {
 $err = [];          // error array (Init - just for initializing variable
 $superadmin  = IsSuperadmin();
 
-$set_template_id = $_POST['template_from_slice'] ? $_POST['template_id2'] : $_POST['template_id'];
+$set_template_id = $template_from_slice ? $template_id2 : $template_id;
 
 $err = SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_submit, $user_login, $user_password1, $user_password2, $user_mail1, $user_mail2, $user_mail3, $user_super, $um_uedit_no_go_url, $selected_user, $posted_groups, $sel_groups, $perm_mod, $new_module, $new_module_role, $add, $update, $owner, $new_owner, $new_owner_email, $name, $slice_url, $slice_type, $upload_url, $priority, $permit_anonymous_post, $permit_anonymous_edit, $permit_offline_fill, $lang_file, $d_listlen, $mlxctrl, $fileman_access, $fileman_dir, $template, $deleted, $flag_allow_expired, $auth_field_group, $mailman_field_lists, $reading_password, $flag_allow_pending, $set_template_id, $wiz, $user_role);
 
@@ -309,14 +309,14 @@ if ($superadmin) {
 if ($slice_id == "") {
     echo "<input type=\"hidden\" name=\"add\" value=\"1\">";        // action
     echo "<input type=\"hidden\" name=\"no_slice_id\" value=\"1\">";  // detects new slice
-    echo "<input type=\"hidden\" name=\"template_id\" value=\"" . $set_template_id . '">';
+    echo "<input type=\"hidden\" name=\"template_id\" value=\"" . safe($set_template_id) . '">';
 
     // fields storing values from wizard
-    echo "<input type=\"hidden\" name=\"wiz[copyviews]\" value='$wiz[copyviews]'>";
-    echo "<input type=\"hidden\" name=\"wiz[constants]\" value='$wiz[constants]'>";
-    echo "<input type=\"hidden\" name=\"wiz[welcome]\" value='$wiz[welcome]'>";
-    echo "<input type=\"hidden\" name=\"user_login\" value='$user_login'>";
-    echo "<input type=\"hidden\" name=\"user_role\" value='$user_role'>";
+    echo "<input type=\"hidden\" name=\"wiz[copyviews]\" value='" . safe($wiz['copyviews'] ?? '') . "'>";
+    echo "<input type=\"hidden\" name=\"wiz[constants]\" value='" . safe($wiz['constants'] ?? '') . "'>";
+    echo "<input type=\"hidden\" name=\"wiz[welcome]\" value='" . safe($wiz['welcome'] ?? '') . "'>";
+    echo "<input type=\"hidden\" name=\"user_login\" value='" . safe($user_login) . "'>";
+    echo "<input type=\"hidden\" name=\"user_role\" value='" . safe($user_role) . "'>";
     // end of fields storing values from wizard
 }
 FrmTabEnd($form_buttons);
