@@ -380,6 +380,8 @@ class Syntax
     protected $operator;
     protected $pre;
     protected $post;
+    /** @var string[]|null quoted values while the expression is nothing but "a" OR "b" ... */
+    protected ?array $or_values = [];
 
     /** operator LIKE, RLIKE a LLIKE */
     protected const RL = [
@@ -524,6 +526,7 @@ class Syntax
                 return $foo;
             }
             $val = " and " . $val . $foo;
+            $this->or_values = null;
         } elseif (($la == SQL_Parser_Constants::TOKEN_TYPE_OPERATOR_OR) || ($la == SQL_Parser_Constants::TOKEN_TYPE_RIGHT_PARENTHESIS) || ($la == SQL_Parser_Constants::TOKEN_TYPE_EOF)) {                // T' -> lambda
             //            echo("Tap-><br>\n");//debug
             $val = "";
@@ -549,6 +552,7 @@ class Syntax
                 return $foo;
             }
             $val = "not ($foo)";
+            $this->or_values = null;
         } elseif (($la == SQL_Parser_Constants::TOKEN_TYPE_LEFT_PARENTHESIS) || ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING)) { // F -> G
             //            echo("F->G<BR>\n");//debug
             if (($val = $this->G()) === "_SYNTAX_ERROR") {
@@ -573,6 +577,7 @@ class Syntax
                 return "_SYNTAX_ERROR";
             }
             $val = SQL_Parser_Constants::SYNTAX_LEFT_PAR;
+            $this->or_values = null;
             if (($foo = $this->E()) === "_SYNTAX_ERROR") {
                 return $foo;
             }
@@ -584,7 +589,11 @@ class Syntax
             $val .= SQL_Parser_Constants::SYNTAX_RIGHT_PAR;
         } elseif ($la == SQL_Parser_Constants::TOKEN_TYPE_STRING) {    // G -> string
             // echo("G->string<BR>\n");//debug
-            $val = DB_AA::quoteIdentifier($this->column) . $this->operator . " '" . $this->pre . $this->tList->getStringValue() . $this->post . "'";
+            $value = $this->tList->getStringValue();
+            $val   = DB_AA::quoteIdentifier($this->column) . $this->operator . " '" . $this->pre . $value . $this->post . "'";
+            if ($this->or_values !== null) {
+                $this->or_values[] = $value;
+            }
             if (($err = $this->tList->match(SQL_Parser_Constants::TOKEN_TYPE_STRING))) {
                 self::lastErr(13, $err);
                 return "_SYNTAX_ERROR";
@@ -594,6 +603,12 @@ class Syntax
             return "_SYNTAX_ERROR";
         }
         return $val;
+    }
+
+    /** After S(): the quoted values when the expression was nothing but "a" OR "b" ..., else null */
+    public function orValues(): ?array
+    {
+        return $this->or_values;
     }
 
     /** B function */

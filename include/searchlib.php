@@ -1052,6 +1052,8 @@ class AA_Dbcondition
     private string $jointype = '';
     private string $joincond = '';
     private bool $matches_missing = false;
+    /** @var string[]|null quoted values of "equals one of" */
+    private ?array $equals_one_of = null;
 
     public function __construct(string $table, $field, $operator, $querystring, string $type = 'text', bool $joined = false)
     {
@@ -1074,6 +1076,7 @@ class AA_Dbcondition
         $this->jointype  = $arr[0];
         $this->joincond  = $arr[1];
         $this->matches_missing = $arr[3] ?? false;
+        $this->equals_one_of   = $arr[4] ?? null;
 
         //  could be id or expression like 49d94e8e3379dc951eac78c2cd0f9f65 OR 78d89ac8dd0de0967a6f50ee5408ccdd OR ae076560dd8674b169e7d493d23ca8f2
         //  an escaped apostrophe inside a literal never starts one
@@ -1102,8 +1105,15 @@ class AA_Dbcondition
         return $this->matches_missing;
     }
 
+    /** the quoted values when the condition is "=" with "a" OR "b" ..., else null */
+    public function equalsOneOf(): ?array
+    {
+        return $this->equals_one_of;
+    }
+
     /**
-     * @return string[]
+     * @return array{0: string, 1: string, 2: string, 3?: bool, 4?: string[]|null} join type, join condition,
+     *         condition, matches an item without the value, the values of "equals one of"
      */
     public function _calculate(): array
     {
@@ -1226,7 +1236,7 @@ class AA_Dbcondition
                     AA::$debug && AA::$dbg->warn("Query syntax error: " . Syntax::lastErrMsg() . ',' . $field . ',' . ',' . $querystring);
                     return ['ALL', '', "1=1"];
                 }
-                return ($ret ? ['INNER', '', "($ret)"] : ['ALL', '', "1=1"]);   // maybe we can change LEFT to INNER
+                return ($ret ? ['INNER', '', "($ret)", false, ($operator === '=') ? $syntax->orValues() : null] : ['ALL', '', "1=1"]);   // maybe we can change LEFT to INNER
             case 'BETWEEN':
                 // unquoted in SQL and public via conds[]: two numbers, or nothing (anything else never worked)
                 $arr = array_map('trim', explode(',', $querystring));
@@ -1986,6 +1996,15 @@ class QueryZidsHelper
 
             if (str_contains($cond_flds, 'all_fields')) {  // we are searching all fields in content table
                 $on = "$tbl.item_id=item.id $addjoincond$langcond";
+            } elseif ($pairs = self::fieldValuePairs($dbcond, $store, $cond_flds)) {
+                // the field only in the pairs: alone in ON it lets MariaDB read all rows of the field
+                // through the field_text index (1 s for a relation field of 1 M rows) instead of
+                // looking the values up (50 ms)
+                $this->select_conds[$tbl] = "(($tbl.field_id, $tbl.text) IN ($pairs))";
+                $on = "$tbl.item_id=item.id$langcond$addjoincond";
+                if (!str_contains($cond_flds, ',')) {
+                    $this->sortable[str_replace("'", "", $cond_flds)] = $tbl;
+                }
             } elseif (str_contains($cond_flds, ',')) {     // $field_count > 1
                 $on = "$tbl.item_id=item.id$langcond AND ($tbl.field_id IN ($cond_flds) $selcondadd)$addjoincond";
             } else {
@@ -1996,6 +2015,22 @@ class QueryZidsHelper
             $this->select_tabs[$tbl] = "$selprefix JOIN content as $tbl ON ($on)";
             $this->semijoins[$tbl]   = [$on, $dbcjointype === 'LEFT' && $dbcond->matchesMissing()];
         }
+    }
+
+    /** "('field', 'value'), ..." for a text field equal to one of several values, else '' */
+    private static function fieldValuePairs(AA_Dbcondition $dbcond, string $store, string $cond_flds): string
+    {
+        $values = $dbcond->equalsOneOf();
+        if (($store !== 'text') || (count($values ?? []) < 2)) {
+            return '';
+        }
+        $pairs = [];
+        foreach (explode(',', $cond_flds) as $fid) {
+            foreach ($values as $value) {
+                $pairs[] = "($fid, '$value')";
+            }
+        }
+        return implode(', ', $pairs);
     }
 
     /** select_tabs, select_conds and DISTINCT; with a LIMIT, content joined only for a condition

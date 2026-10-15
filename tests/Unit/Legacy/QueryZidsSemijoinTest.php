@@ -7,7 +7,8 @@ declare(strict_types=1);
  *
  * Pins: no LIMIT - the SQL is as it was; a join the ORDER BY uses stays a join (and DISTINCT
  * stays); LEFT JOIN conditions keep matching items without the value - by one scalar subquery,
- * not EXISTS ... OR NOT EXISTS, which MariaDB turns into materialized IN subqueries.
+ * not EXISTS ... OR NOT EXISTS, which MariaDB turns into materialized IN subqueries. A list of
+ * values is matched as (field, value) pairs.
  */
 
 namespace {
@@ -211,6 +212,67 @@ namespace Tests\Unit\Legacy {
             $sql = self::sql([['switch.........2' => 1, 'operator' => '==', 'value' => '0']], [], 1);
 
             self::assertStringContainsString("EXISTS (SELECT 1 FROM content AS c0 WHERE c0.item_id=item.id AND (c0.field_id='switch.........2' ) AND (`c0`.`number` = '0'))", $sql);
+        }
+
+        public function test_valueList_fieldOnlyInThePairs(): void
+        {
+            $sql = self::sql([['category.......1' => 1, 'operator' => '=', 'value' => '"x" OR "y"']], [], 0);
+
+            self::assertStringContainsString('INNER JOIN content as c0 ON (c0.item_id=item.id) WHERE', $sql);
+            self::assertStringContainsString("AND (((c0.field_id, c0.text) IN (('category.......1', 'x'), ('category.......1', 'y'))))", $sql);
+        }
+
+        public function test_valueList_limit_existsWithThePairs(): void
+        {
+            $sql = self::sql([['category.......1' => 1, 'operator' => '=', 'value' => 'x OR y']], [], 3);
+
+            self::assertStringContainsString("AND (EXISTS (SELECT 1 FROM content AS c0 WHERE c0.item_id=item.id AND ((c0.field_id, c0.text) IN (('category.......1', 'x'), ('category.......1', 'y')))))", $sql);
+        }
+
+        public function test_valueList_everyFieldWithEveryValue(): void
+        {
+            $sql = self::sql([['headline........' => 1, 'category.......1' => 1, 'operator' => '=', 'value' => 'x OR y']], [], 0);
+
+            self::assertStringContainsString("((c0.field_id, c0.text) IN (('headline........', 'x'), ('headline........', 'y'), ('category.......1', 'x'), ('category.......1', 'y')))", $sql);
+        }
+
+        public function test_valueList_valuesStayEscaped(): void
+        {
+            $sql = self::sql([['category.......1' => 1, 'operator' => '=', 'value' => '"it\'s" OR "x"']], [], 0);
+
+            self::assertStringContainsString("('category.......1', 'it\\'s')", $sql);
+        }
+
+        /** one value, LIKE or more than a list of values: the field stays in ON */
+        #[DataProvider('notValueLists')]
+        public function test_notAValueList_fieldInOn(string $operator, string $value): void
+        {
+            $sql = self::sql([['category.......1' => 1, 'operator' => $operator, 'value' => $value]], [], 0);
+
+            self::assertStringContainsString("ON (c0.item_id=item.id AND (c0.field_id='category.......1' ))", $sql);
+            self::assertStringNotContainsString(' IN ((', $sql);
+        }
+
+        public static function notValueLists(): array
+        {
+            return [
+                'one value'   => ['=', 'x'],
+                'and'         => ['=', 'x AND y'],
+                'implicit and' => ['=', '"x" "y"'],
+                'not'         => ['=', 'x OR -y'],
+                'parentheses' => ['=', '(x OR y)'],
+                'like'        => ['LIKE', 'x OR y'],
+            ];
+        }
+
+        public function test_valueList_selectsTheItemsTheOrDid(): void
+        {
+            $field = 'category.......1';
+            $db    = self::sqlite([[1, $field, null, 'x'], [2, $field, null, 'y'], [3, $field, null, 'z'], [4, 'headline........', null, 'x'], [5, $field, null, 'x'], [5, $field, null, 'y']]);
+            $cond  = [$field => 1, 'operator' => '=', 'value' => 'x OR y'];
+
+            self::assertSame([1, 2, 5], self::selected($db, self::sql([$cond], [], 0)), 'JOIN');
+            self::assertSame([1, 2, 5], self::selected($db, self::sql([$cond], [], 3)), 'subquery');
         }
 
         /** the bin condition carries the current time - replaced, so the SQL can be pinned */
