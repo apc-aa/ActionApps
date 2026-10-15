@@ -73,10 +73,9 @@ class FixContentColumn extends AbstractOptimize
     public function repair(): bool
     {
         $bad_rows = DB_AA::select([], "SELECT content.item_id, content.field_id FROM content INNER JOIN item ON content.item_id=item.id INNER JOIN slice ON item.slice_id=slice.id INNER JOIN field ON field.slice_id=slice.id WHERE content.field_id = field.id AND field.text_stored=1 AND (content.flag & 64) = 0");
-        $db = getDb();
         foreach ($bad_rows as $index => $row) {
-            $SQL = "UPDATE content SET flag = flag | 64 WHERE item_id = '" . quote($row['item_id']) . "' AND field_id = '" . quote($row['field_id']) . "'";
-            $db->query($SQL);
+            $SQL = "UPDATE content SET flag = flag | 64 " . DB_AA::makeWhere([['item_id', $row['item_id'], 'b'], ['field_id', $row['field_id']]]);
+            DB_AA::sql($SQL);
             $this->message(_m('fixed (id-field): %1 - %2 (%3)', [unpack_id($row['item_id']), safe($row['field_id']), safe($SQL)]));
             if ($index == 240) {   // == , not > : once, not for every row past it
                 $this->message(_m('and more...'));
@@ -84,7 +83,6 @@ class FixContentColumn extends AbstractOptimize
         }
         $this->message(_m('We fixed %1 inconsistent rows in content table', [count($bad_rows)]));
         // $this->message(_m('We found %1 inconsistent rows from %2 in pagecache_str2find', array($wrong_count, $row_count)));
-        freeDb($db);
         return true;
     }
 }

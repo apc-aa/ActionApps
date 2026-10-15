@@ -49,17 +49,14 @@ class CategorySort2groupBy extends AbstractOptimize
         $SQL = "SELECT id FROM slice WHERE category_sort>0 AND ((group_by IS NULL) OR (group_by=''))";
         $slices = DB_AA::select('id', $SQL);
         foreach ($slices as $p_slice_id) {
-            $q_slice_id = quote($p_slice_id);
             $cat_field = DB_AA::select1('id', 'SELECT id FROM field', [['id', 'category.......%', 'LIKE'], ['slice_id', $p_slice_id, 'b']]);
             if ($cat_field) {
                 // number 2 represents 'a' - ascending (because gb_direction in number)
-                $SQL = "UPDATE slice SET group_by='" . quote($cat_field) . "', gb_direction=2, gb_header=0 WHERE id='$q_slice_id'";
+                $set = [['group_by', $cat_field, 's'], ['gb_direction', 2, 'i'], ['gb_header', 0, 'i']];
             } else {
-                $SQL = "UPDATE slice SET group_by='', gb_direction=0, gb_header=0 WHERE id='$q_slice_id'";
+                $set = [['group_by', '', 's'], ['gb_direction', 0, 'i'], ['gb_header', 0, 'i']];
             }
-            $db = getDb();
-            $db->query($SQL);   // correct it
-            freeDb($db);
+            DB_AA::update('slice', $set, [['id', $p_slice_id, 'b']]);   // correct it
         }
         // fix all category_sort
         $SQL = "UPDATE slice SET category_sort=0";

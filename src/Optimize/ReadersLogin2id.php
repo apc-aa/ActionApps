@@ -84,18 +84,15 @@ class ReadersLogin2id extends AbstractOptimize
         }
         $posted_by_found = $this->_test_field($readers, 'posted_by');
         $edited_by_found = $this->_test_field($readers, 'edited_by');
-        $db = getDb();
         if (count($posted_by_found)) {
             foreach ($posted_by_found as $r_id => $r_login) {
-                $SQL = "UPDATE item SET posted_by = '$r_id' WHERE posted_by = '$r_login'";
-                $db->query($SQL);
+                DB_AA::update('item', [['posted_by', $r_id, 's']], [['posted_by', $r_login]]);
                 $this->message(_m('Column item.posted_by updated for %1 (id: %2).', [$r_login, $r_id]));
             }
         }
         if (count($edited_by_found)) {
             foreach ($edited_by_found as $r_id => $r_login) {
-                $SQL = "UPDATE item SET edited_by = '$r_id' WHERE edited_by = '$r_login'";
-                $db->query($SQL);
+                DB_AA::update('item', [['edited_by', $r_id, 's']], [['edited_by', $r_login]]);
                 $this->message(_m('Column item.edited_by updated for %1 (id: %2).', [$r_login, $r_id]));
             }
         }

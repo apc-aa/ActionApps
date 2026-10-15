@@ -467,13 +467,13 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize
         $ret = [];
         if ($modules) {
             if ($this->constructSet($this->getTextCols('email'))) {
-                $ret[] = "UPDATE `email` SET " . $this->constructSet($this->getTextCols('email')) . " WHERE " . sqlin('owner_module_id', $modules, true);
+                $ret[] = "UPDATE `email` SET " . $this->constructSet($this->getTextCols('email')) . " " . DB_AA::makeWhere([['owner_module_id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('module'))) {
-                $ret[] = "UPDATE `module` SET " . $this->constructSet($this->getTextCols('module')) . " WHERE " . sqlin('id', $modules, true);
+                $ret[] = "UPDATE `module` SET " . $this->constructSet($this->getTextCols('module')) . " " . DB_AA::makeWhere([['id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('slice_owner'))) {
-                $ret[] = "UPDATE `slice_owner` SET " . $this->constructSet($this->getTextCols('slice_owner')) . " WHERE `id` IN ( SELECT `owner` FROM `module` WHERE " . sqlin('id', $modules, true) . ")";  // unpack_id($module->getProperty('owner'));  // SELECT * FROM `module` LEFT JOIN slice_owner ON module.owner=slice_owner.id;
+                $ret[] = "UPDATE `slice_owner` SET " . $this->constructSet($this->getTextCols('slice_owner')) . " WHERE `id` IN ( SELECT `owner` FROM `module` " . DB_AA::makeWhere([['id', $modules, 'l']]) . ")";  // unpack_id($module->getProperty('owner'));  // SELECT * FROM `module` LEFT JOIN slice_owner ON module.owner=slice_owner.id;
             }
         }
         return $ret;
@@ -488,46 +488,46 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize
         $ret = [];
         if ($modules) {
             if ($this->constructSet($this->getTextCols('item'))) {
-                $ret[] = "UPDATE `item` SET " . $this->constructSet($this->getTextCols('item')) . " WHERE " . sqlin('slice_id', $modules, true);
+                $ret[] = "UPDATE `item` SET " . $this->constructSet($this->getTextCols('item')) . " " . DB_AA::makeWhere([['slice_id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('content'))) {
-                $ret[] = "UPDATE `content` SET " . $this->constructSet($this->getTextCols('content')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
+                $ret[] = "UPDATE `content` SET " . $this->constructSet($this->getTextCols('content')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` " . DB_AA::makeWhere([['slice_id', $modules, 'l']]) . ")";
             }
             if ($this->constructSet($this->getTextCols('view'))) {
-                $ret[] = "UPDATE `view` SET " . $this->constructSet($this->getTextCols('view')) . " WHERE " . sqlin('slice_id', $modules, true);
+                $ret[] = "UPDATE `view` SET " . $this->constructSet($this->getTextCols('view')) . " " . DB_AA::makeWhere([['slice_id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('alerts_filter'))) {
-                $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` WHERE " . sqlin('slice_id', $modules, true) . ")";
+                $ret[] = "UPDATE `alerts_filter` SET " . $this->constructSet($this->getTextCols('alerts_filter')) . " WHERE `vid` IN ( SELECT `id` FROM `view` " . DB_AA::makeWhere([['slice_id', $modules, 'l']]) . ")";
                 // change_record takes too much time to convert - moved outside of the transaction as the last SQL
                 //$ret[] = "UPDATE `change_record` SET " . $this->constructSet($this->getTextCols('change_record')) . " WHERE `change_id` IN ( SELECT `id` FROM `change` WHERE `resource_id` IN ( SELECT LOWER(HEX(`id`)) FROM `item` WHERE " . sqlin('slice_id', $modules, true) . "))";
             }
             if ($this->constructSet($this->getTextCols('constant'))) {
-                $ret[] = "UPDATE `constant` SET " . $this->constructSet($this->getTextCols('constant')) . " WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . ")";
+                $ret[] = "UPDATE `constant` SET " . $this->constructSet($this->getTextCols('constant')) . " WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` " . DB_AA::makeWhere([['slice_id', $modules, 'l']]) . ")";
             }
             if ($this->constructSet($this->getTextCols('discussion'))) {
-                $ret[] = "UPDATE `discussion` SET " . $this->constructSet($this->getTextCols('discussion')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` WHERE " . sqlin('slice_id', $modules, true) . ")";
+                $ret[] = "UPDATE `discussion` SET " . $this->constructSet($this->getTextCols('discussion')) . " WHERE `item_id` IN ( SELECT `id` FROM `item` " . DB_AA::makeWhere([['slice_id', $modules, 'l']]) . ")";
             }
             if ($this->constructSet($this->getTextCols('ef_categories'))) {
-                $ret[] = "UPDATE `ef_categories` SET " . $this->constructSet($this->getTextCols('ef_categories')) . " WHERE `target_category_id` IN ( SELECT `id` FROM `constant` WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` WHERE " . sqlin('slice_id', $modules, true) . "))";
+                $ret[] = "UPDATE `ef_categories` SET " . $this->constructSet($this->getTextCols('ef_categories')) . " WHERE `target_category_id` IN ( SELECT `id` FROM `constant` WHERE `group_id` IN ( SELECT `group_id` FROM `constant_slice` " . DB_AA::makeWhere([['slice_id', $modules, 'l']]) . "))";
             }
             if ($this->constructSet($this->getTextCols('field'))) {
-                $ret[] = "UPDATE `field` SET " . $this->constructSet($this->getTextCols('field')) . " WHERE " . sqlin('slice_id', $modules, true);
+                $ret[] = "UPDATE `field` SET " . $this->constructSet($this->getTextCols('field')) . " " . DB_AA::makeWhere([['slice_id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('slice'))) {
-                $ret[] = "UPDATE `slice` SET " . $this->constructSet($this->getTextCols('slice')) . " WHERE " . sqlin('id', $modules, true);
+                $ret[] = "UPDATE `slice` SET " . $this->constructSet($this->getTextCols('slice')) . " " . DB_AA::makeWhere([['id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('rssfeeds'))) {
-                $ret[] = "UPDATE `rssfeeds` SET " . $this->constructSet($this->getTextCols('rssfeeds')) . " WHERE " . sqlin('slice_id', $modules, true);
+                $ret[] = "UPDATE `rssfeeds` SET " . $this->constructSet($this->getTextCols('rssfeeds')) . " " . DB_AA::makeWhere([['slice_id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('profile'))) {
-                $ret[] = "UPDATE `profile` SET " . $this->constructSet($this->getTextCols('profile')) . " WHERE " . sqlin('slice_id', $modules, true);
+                $ret[] = "UPDATE `profile` SET " . $this->constructSet($this->getTextCols('profile')) . " " . DB_AA::makeWhere([['slice_id', $modules, 'l']]);
             }
             if ($this->constructSet($this->getTextCols('feedmap'))) {
-                $ret[] = "UPDATE `feedmap` SET " . $this->constructSet($this->getTextCols('feedmap')) . " WHERE " . sqlin('to_slice_id', $modules, true);
+                $ret[] = "UPDATE `feedmap` SET " . $this->constructSet($this->getTextCols('feedmap')) . " " . DB_AA::makeWhere([['to_slice_id', $modules, 'l']]);
             }
 
-            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_news_lang.php' WHERE " . sqlin('id', $modules, true);
-            $ret[] = "UPDATE `slice` SET `lang_file` = 'cz-utf8_news_lang.php' WHERE " . sqlin('id', $modules, true);
+            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_news_lang.php' " . DB_AA::makeWhere([['id', $modules, 'l']]);
+            $ret[] = "UPDATE `slice` SET `lang_file` = 'cz-utf8_news_lang.php' " . DB_AA::makeWhere([['id', $modules, 'l']]);
         }
         return $ret;
     }
@@ -541,7 +541,7 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize
         $ret = [];
         if ($modules) {
             $ret[] = "CREATE TEMPORARY TABLE IF NOT EXISTS `tmp_change_id_tmp` (`change_id` varbinary(32) NOT NULL DEFAULT '                                ') ENGINE=InnoDB DEFAULT CHARSET=latin1";
-            $ret[] = "INSERT INTO tmp_change_id_tmp SELECT DISTINCT `change`.`id` FROM `item`,`change` WHERE (LOWER(HEX(`item`.`id`)) = `change`.`resource_id`) AND " . sqlin('item.slice_id', $modules, true);
+            $ret[] = "INSERT INTO tmp_change_id_tmp SELECT DISTINCT `change`.`id` FROM `item`,`change` " . DB_AA::makeWhere([['LOWER(HEX(`item`.`id`))', '`change`.`resource_id`', 'j'], ['item.slice_id', $modules, 'l']]);
             $ret[] = "UPDATE `change_record` INNER JOIN `tmp_change_id_tmp` ON (`change_record`.`change_id` = `tmp_change_id_tmp`.`change_id`) SET " . $this->constructSet($this->getTextCols('change_record'));
             $ret[] = "TRUNCATE `tmp_change_id_tmp`";
         }
@@ -556,8 +556,8 @@ class ConvertSliceEncoding extends AA\Optimize\AbstractOptimize
     {
         $ret = [];
         if ($modules) {
-            $ret[] = "UPDATE `site_spot` SET " . $this->constructSet($this->getTextCols('site_spot')) . " WHERE " . sqlin('site_id', $modules, true);
-            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_site_lang.php' WHERE " . sqlin('id', $modules, true);
+            $ret[] = "UPDATE `site_spot` SET " . $this->constructSet($this->getTextCols('site_spot')) . " " . DB_AA::makeWhere([['site_id', $modules, 'l']]);
+            $ret[] = "UPDATE `module` SET `lang_file` = 'cz-utf8_site_lang.php' " . DB_AA::makeWhere([['id', $modules, 'l']]);
         }
         return $ret;
     }
