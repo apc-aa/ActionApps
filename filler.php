@@ -386,9 +386,12 @@ if (!$my_item_id) {
     $my_item_id = new_id();
     $insert     = true;
 } else {
-    // $db->query("SELECT id FROM item WHERE id='".q_pack_id($my_item_id)."'");
-    // $insert = ! $db->next_record();
-    $insert = ! DB_AA::test('item', [['id', $my_item_id, 'l']]);
+    $item_slice = DB_AA::select1('usid', 'SELECT LOWER(HEX(`slice_id`)) AS usid FROM item', [['id', $my_item_id, 'l']]);
+    $insert     = !$item_slice;
+    // the form's slice decides who may edit - an item of another slice would be rewritten (and moved) by it
+    if (!$insert && ($item_slice !== strtolower($slice->getId()))) {
+        SendErrorPage(["permissions" => _m("You are not allowed to update this item.")]);
+    }
 }
 
 $oldcontent4id = ValidateContent4Id($err_valid, $slice, $insert ? "insert" : "update", $my_item_id, !$notvalidate, $notshown);
