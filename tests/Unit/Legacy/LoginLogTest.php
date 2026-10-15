@@ -131,10 +131,13 @@ namespace Tests\Unit\Legacy {
 
         public function test_a_failed_free_login_is_a_failed_login(): void
         {
+            $_SERVER['REQUEST_URI'] = '/admin/index.php?free=central&freepwd=guess';
             $this->assertFalse((new AA_Auth())->freeLogin('central', 'guess'));
             [[$type, $selector, $params]] = self::logRows();
             $this->assertSame(['LOGIN', 'central'], [$type, $params]);
             $this->assertStringStartsWith(':', $selector);
+            $this->assertStringContainsString('aa.example.org/admin/index.php', $selector);
+            $this->assertStringNotContainsString('guess', $selector, 'the password from the URL stays out of the log');
         }
     }
 }

@@ -147,7 +147,7 @@ class AA_Auth extends Auth
             // crawlers follow the free links, a row each visit would bury the real logins - a row a day shows it is used
             LogOnce::daily('FREE_LOGIN', (string) $username);
         } elseif ($uid) {   // failures are logged by AA_Perm::authenticateUsername(), which counts them
-            AA_Log::write('LOGIN', AA_Log::context($uid), LoginThrottle::stored((string) $username));
+            AA_Log::write('LOGIN', AA_Log::context($uid, false), LoginThrottle::stored((string) $username));
         }
         // a session id known before the login (planted cookie, a shared device) must not become the logged-in one;
         // the free login of init_page.php repeats on every request - a new id each time would break parallel requests

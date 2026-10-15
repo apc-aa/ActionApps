@@ -254,14 +254,17 @@ class AA_Log implements InternalExpandInterface
      *  the reversed Qa selector must fit so its trailing class flag survives. */
     private const SELECTOR_MAX = 255;
 
-    public static function context(?string $selector = null): string
+    /** @param bool $query false leaves the query string out - credentials sent by GET (?freepwd=, a template's
+     *                     {qss:password}) must not end up in the log */
+    public static function context(?string $selector = null, bool $query = true): string
     {
+        $uri = $query ? $_SERVER['REQUEST_URI'] : strtok((string) $_SERVER['REQUEST_URI'], '?');
         // we need to be searchable by selector - so in DB index we use reversed format with Qa at the end
         return self::contextSelector(
             (string) $selector,
             (string) AA::$module_id,
             str_replace(':', '_', $_SERVER['REMOTE_ADDR']),
-            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '' : 'http/') . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '' : 'http/') . "{$_SERVER['HTTP_HOST']}$uri",
         );
     }
 

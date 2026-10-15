@@ -78,7 +78,7 @@ final class LoginThrottle
      */
     public static function failed(string $username, bool $template = false): void
     {
-        AA_Log::write($template ? self::TEMPLATE : 'LOGIN', AA_Log::context(''), self::stored($username));
+        AA_Log::write($template ? self::TEMPLATE : 'LOGIN', AA_Log::context('', false), self::stored($username));
     }
 
     /** The next login of $username is checked at once, from any address; $by_uid is the superadmin who let it in. */
