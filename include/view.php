@@ -484,6 +484,7 @@ class AA_Showview
                     $content_function = 'Links_GetCategoryContent';
                 }
 
+                $zids ??= new zids();   // links view without a category (no cat parameter, no default category)
                 [ $listlen, $list_from ] = $this->getListLength($view, $zids->count());
 
                 $itemview = (new itemview($format, GetAliases4Type($view_info['type'], $als), $zids, $list_from, $listlen))->setContentFunct($content_function);
