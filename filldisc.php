@@ -216,10 +216,6 @@ $cookie->set('d_e_mail', $d_e_mail, 60 * 60 * 24 * 90);   // 90 days
 $cookie->set('d_url_address', $d_url_address, 60 * 60 * 24 * 90);   // 90 days
 $cookie->set('d_url_description', $d_url_description, 60 * 60 * 24 * 90);   // 90 days
 
-// a discussion view printing the body as HTML would run the visitor's markup on the page - it stays text there
-// (test() selects the first column named - the OR group has none)
-$html_view = DB_AA::test('view', [['flag', DISCUS_HTML_FORMAT, 'set'], [null, [[['id', (int) $slice->getProperty('vid'), 'i']], [['slice_id', $slice_id, 'l'], ['type', 'discus']]], 'OR']]);
-
 // All user-supplied values arrive RAW (InputVars::stringPOST / $_REQUEST / $_SERVER) - Metabase
 // escapes them once; never pass pre-slashed values here.
 $discussion = [
@@ -229,9 +225,9 @@ $discussion = [
     'subject'         => $d_subject,
     'author'          => $d_author,
     'e_mail'          => $d_e_mail,
-    'body'            => $html_view ? safe($d_body) : $d_body,
+    'body'            => $d_body,
     'state'           => $d_state,
-    'flag'            => 0,
+    'flag'            => DISCUS_COMMENT_TEXT,   // any discussion view shows the visitor's body as text
     'free1'           => $d_free1,
     // the poster's cookies, but no session id - free2 is shown to the discussion's admins and templates
     'free2'           => $d_free2 ?? var_export(array_filter($_COOKIE, static fn($name) => stripos((string) $name, 'sess') === false, ARRAY_FILTER_USE_KEY), true),

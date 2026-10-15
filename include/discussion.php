@@ -121,8 +121,8 @@ function GetDiscussionContent(?zids $zids, bool $state = true, $html_flag = fals
         $col["d_state........."][0]['value'] = $row['state'];
         setDiscUrls($col, $clean_url, unpack_id($row['item_id']), $d_id);
 
-        // set html flag
-        if ($html_flag) {
+        // set html flag - not for a visitor's comment, whose markup would run on the page
+        if ($html_flag && !((int) $row['flag'] & DISCUS_COMMENT_TEXT)) {
             $col["d_body.........."][0]['flag'] = FLAG_HTML;
         }
         $col["d_checkbox......"][0]['flag'] = FLAG_HTML;
