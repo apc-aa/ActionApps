@@ -93,4 +93,34 @@ final class FatalLoggerTest extends TestCase
         self::assertTrue(mb_check_encoding($r['selector'], 'UTF-8'));
         self::assertStringEndsWith('soubor.php:77', $r['selector']);
     }
+
+    // a message in another encoding (a Latin-2 path in it) used to leave the entry without any message
+    public function testFormatKeepsAMessageThatIsNotUtf8(): void
+    {
+        $r = FatalLogger::format("Failed opening '/www/\xe8esky.php'", '/f.php', 1);
+
+        self::assertStringStartsWith("Failed opening '/www/", $r['params']);
+        self::assertTrue(mb_check_encoding($r['params'], 'UTF-8'));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function wideCharacters(): array
+    {
+        return ['2 bytes' => ['ž'], '3 bytes' => ['€'], '4 bytes' => ['😀']];
+    }
+
+    // a path cut inside a 3- or 4-byte character came out 256-257 bytes long - over the column
+    #[DataProvider('wideCharacters')]
+    public function testFormatCutsAPathOfWideCharactersWithinTheColumn(string $char): void
+    {
+        foreach (range(0, 7) as $pad) {
+            foreach ([1, 12, 123, 12345] as $line) {
+                $file = '/' . str_repeat($char, 200) . '/' . str_repeat('b', $pad) . '.php';
+                $r    = FatalLogger::format('x', $file, $line);
+                self::assertLessThanOrEqual(255, strlen($r['selector']), "pad $pad, line $line");
+                self::assertTrue(mb_check_encoding($r['selector'], 'UTF-8'), "pad $pad, line $line");
+                self::assertStringEndsWith(str_repeat('b', $pad) . ".php:$line", $r['selector']);
+            }
+        }
+    }
 }

@@ -71,10 +71,14 @@ final class FatalLogger
         $suffix   = ':' . $line;
         $selector = $file . $suffix;
         if (strlen($selector) > self::SELECTOR_MAX) {
-            $selector = mb_strcut($file, -(self::SELECTOR_MAX - strlen($suffix) - 1)) . $suffix;
-            $selector = ltrim($selector, '/');
+            // the tail in bytes, minus what is left of a cut character; mb_strcut() would move the
+            // cut back to the start of the character and overshoot the column by up to 3 bytes -
+            // the INSERT then fails and the fatal is not logged at all
+            $tail     = substr($file, -(self::SELECTOR_MAX - strlen($suffix)));
+            $selector = ltrim((string) preg_replace('/^[\x80-\xBF]+/', '', $tail), '/') . $suffix;
         }
-        $params = trim((string) preg_replace('/\s+/u', ' ', $message));
+        // mb_scrub(): preg_replace() with /u gives up on invalid UTF-8 and the message would be lost
+        $params = trim((string) preg_replace('/\s+/u', ' ', mb_scrub($message, 'UTF-8')));
 
         return [
             'selector' => $selector,
