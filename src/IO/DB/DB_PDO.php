@@ -835,10 +835,18 @@ class DB_PDO
         }
     }
 
+    /** The query and the server error show the schema and the request - an anonymous visitor gets a
+     *  plain notice, the event log (halt()) keeps the details.
+     */
     public function haltmsg($msg): void
     {
+        $auth = $GLOBALS['auth'] ?? null;
+        if ((PHP_SAPI !== 'cli') && !AA::$debug && !(is_object($auth) && $auth->is_user())) {
+            echo "<p><b>Database error</b></p>\n";
+            return;
+        }
         printf("<p><b>Database error:</b> %s<br>\n", safe($msg));
-        printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), $this->Errno, $this->Error);
+        printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), safe((string) $this->Errno), safe((string) $this->Error));
         // AA::$dbg->log(AA_Log::backtrack());
     }
 
