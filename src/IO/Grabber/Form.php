@@ -393,7 +393,8 @@ class Form extends AbstractGrabber
     }
 
     /** The old-style form of filler.php (v<field> inputs) edits an existing item too: without a login the
-     *  fields of isAccountField() are left out there as well, so the item keeps the stored ones.
+     *  fields of isAccountField() are left out there as well, so the item keeps the stored ones. That branch
+     *  opens the session only to check a form token - without one a logged-in reader counts as anonymous.
      *  @param array<string, array> $content4id  field id => values, as filler.php stores them
      *  @return array<string, array>
      */
