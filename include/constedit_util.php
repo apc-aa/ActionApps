@@ -400,15 +400,10 @@ function hcStoreChanges(string $group_id, array $changes, bool $propagate_change
 {
     // short_id => unpacked id - only this group's constants, the ancestors come from the form
     $shortIDmap = DB_AA::select(['short_id' => 'id'], 'SELECT short_id, LOWER(HEX(`id`)) AS id FROM `constant`', [['group_id', $group_id]]);
-    $varset = new Cvarset();
 
     foreach ($changes as $change) {
         [$name, $value, $pri, $desc, $new_id, $ancestor_ids] = array_pad($change, 6, '');
-        $varset->clear();
-        $varset->set("name", $name, "text");
-        $varset->set("value", $value, "text");
-        $varset->set("pri", (string) ((int) $pri ?: 1000), "number");
-        $varset->set("description", $desc, "text");
+        $pri = (int) $pri ?: 1000;
 
         if (str_starts_with($new_id, "#")) {
             $id = new_id();
@@ -417,16 +412,13 @@ function hcStoreChanges(string $group_id, array $changes, bool $propagate_change
             foreach (explode(",", $ancestor_ids) as $myid) {
                 $ancestors .= $shortIDmap[$myid] ?? '';
             }
-            $varset->set("id", $id, "unpacked");
-            $varset->set("group_id", $group_id, "text");
-            $varset->set("ancestors", $ancestors, $ancestors === '' ? "text" : "unpacked");
-            $varset->doINSERT('constant');
+            AA::Metabase()->doInsert('constant', ['id' => $id, 'group_id' => $group_id, 'name' => $name, 'value' => $value, 'pri' => $pri, 'ancestors' => $ancestors, 'description' => $desc]);
         } else {
             $where = [['short_id', (int) $new_id, 'i'], ['group_id', $group_id]];
             if ($propagate_changes && ($old = DB_AA::select1('', 'SELECT LOWER(HEX(`id`)) AS id, value FROM `constant`', $where))) {
                 propagateChanges($group_id, $old['id'], $value, $old['value']);
             }
-            DB_AA::sql($varset->makeUPDATE('constant'), $where);
+            DB_AA::update('constant', [['name', $name, 's'], ['value', $value, 's'], ['pri', $pri, 'i'], ['description', $desc, 's']], $where);
         }
     }
 }
@@ -499,7 +491,6 @@ function CopyConstants($slice_id): bool
 
     // max. length of the group_id field
     $max_group_id_len = 16;
-    $q_slice_id       = xpack_id($slice_id);
 
     $group_list = DB_AA::select('name', 'SELECT name FROM constant', [['group_id', 'lt_groupNames']]);
     foreach (DB_AA::select([], 'SELECT id, input_show_func FROM field', [['slice_id', $slice_id, 'l']]) as $row) {
@@ -511,9 +502,7 @@ function CopyConstants($slice_id): bool
             }
         }
     }
-    $db = getDB();
     if (!is_array($group_ids)) {
-        freeDB($db);
         return true;
     }
 
@@ -540,7 +529,6 @@ function CopyConstants($slice_id): bool
             ["id"],                              // id_columns
         )) {
             $err[] = "Could not copy constant group.";
-            freeDB($db);
             return false;
         }
 
@@ -553,17 +541,13 @@ function CopyConstants($slice_id): bool
             ["id"],                              // id_columns
         )) {
             $err[] = "Could not copy constant group.";
-            freeDB($db);
             return false;
         }
 
         // update fields
         foreach ($fields as $field_id => $shf) {
-            if (!$db->query("UPDATE field SET input_show_func = '"
-                . addslashes(str_replace($old_id, $new_id, $shf)) . "'
-                WHERE id='$field_id' AND slice_id=$q_slice_id")) {
+            if (DB_AA::update('field', [['input_show_func', str_replace($old_id, $new_id, $shf), 's']], [['id', $field_id], ['slice_id', $slice_id, 'l']]) === false) {
                 $err[] = "Could not update fields.";
-                freeDB($db);
                 return false;
             }
         }
@@ -629,26 +613,20 @@ function add_constant_group(string $group_id, $constants2import): true|string
     // set in seconds - allows the script to work so long
     MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
-    $varset = new CVarset();
-    $varset->add("group_id", "text", "lt_groupNames");
-    $varset->add("value", "text", $group_id);
-    $varset->add("name", "text", $group_id);
-    $varset->add("id", "unpacked", new_id());
-    $varset->doINSERT("constant");
+    $group_row = ['id' => new_id(), 'group_id' => 'lt_groupNames', 'name' => $group_id, 'value' => $group_id];
 
     $priority_step = 10;
     $priority      = 0;
+    $rows          = [];
     foreach ($constants2import as $constant) {
         $priority = $constant['pri'] ?? $priority + $priority_step;
-        $varset->clear();
-        $varset->add("value", "text", $constant['value']);
-        $varset->add("name", "text", $constant['name']);
-        $varset->add("pri", "number", $priority);
-        $varset->add("class", "text", $constant['class']);
-        $varset->add("id", "unpacked", new_id());
-        $varset->add("group_id", "text", $group_id);
-        $varset->doINSERT("constant");
+        // (string), ?? '': a missing value is stored as '' - Metabase would leave a null column out
+        $rows[] = ['id' => new_id(), 'group_id' => $group_id, 'name' => (string) $constant['name'], 'value' => (string) $constant['value'], 'class' => $constant['class'] ?? '', 'pri' => $priority];
     }
+    DB_AA::transaction(static function () use ($group_row, $rows) {
+        AA::Metabase()->doInsert('constant', $group_row);
+        AA::Metabase()->doInsertMulti('constant', $rows);
+    });
     ConstantsChanged();
     return true;
 }
@@ -781,7 +759,7 @@ function constant_value_replace(string $group_id, string $oldvalue, string $newv
         $items2update[$row['field_id']]->add($row['item_id']);
     }
     foreach ($items2update as $field => $zids) {
-        DB_AA::sql("UPDATE content SET text=" . qquote($newvalue) . " WHERE " . $zids->sqlin('item_id') . " AND field_id=" . qquote($field) . " AND text=" . qquote($oldvalue));
+        DB_AA::update('content', [['text', $newvalue, 's']], [$zids->whereIn('item_id'), ['field_id', $field], ['text', $oldvalue]]);
     }
     return $cnt;
 }
@@ -826,36 +804,27 @@ function refresh_constant_group($group_id, $items): bool
         return false;
     }
 
-    $varset = new CVarset();
-
     $group_name = DB_AA::select1([], 'SELECT * FROM constant', [['group_id', 'lt_groupNames'], ['name', $group_id]]);
-    $db = getDB();
     if (!$group_name) {
         $existed = false;
-        $varset->add("group_id", "text", "lt_groupNames");
-        $varset->add("value", "text", $group_id);
-        $varset->add("name", "text", $group_id);
-        $varset->add("id", "unpacked", new_id());
-        $varset->doINSERT('constant');
+        AA::Metabase()->doInsert('constant', ['id' => new_id(), 'group_id' => 'lt_groupNames', 'name' => $group_id, 'value' => $group_id]);
     } else {
         $existed = true;
+        $db = getDB();
         $db->query("DELETE FROM constant WHERE group_id=" . qquote($group_id));
+        freeDB($db);
     }
 
     $priority = 100;
     if (is_array($items)) {
+        $rows = [];
         foreach ($items as $value => $name) {
-            $varset->clear();
-            $varset->add("value", "text", $value);
-            $varset->add("name", "text", $name);
-            $varset->add("pri", "number", $priority);
+            // (string): a null name is stored as '' - Metabase would leave a null column out
+            $rows[] = ['id' => new_id(), 'group_id' => $group_id, 'name' => (string) $name, 'value' => $value, 'pri' => $priority];
             $priority += 100;
-            $varset->add("id", "unpacked", new_id());
-            $varset->add("group_id", "text", $group_id);
-            $varset->doINSERT('constant');
         }
+        AA::Metabase()->doInsertMulti('constant', $rows);
     }
     ConstantsChanged();
-    freeDB($db);
     return $existed;
 }

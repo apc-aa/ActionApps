@@ -315,9 +315,8 @@ function DeleteNode($tree, $d_content, $d_id): void
     }
     $parent = $d_content[$d_id]["d_parent........"][0]['value'];
 
-    foreach ($tree[$d_id] as $child => $foo) {
-        DB_AA::sql("UPDATE discussion SET parent=" . ($parent == "0" ? "''" : xpack_id($parent)) . " WHERE id=" . xpack_id($child));
-    }
+    // its children move up to its parent
+    DB_AA::update('discussion', [$parent == "0" ? ['parent', '', 's'] : ['parent', $parent, 'l']], [['id', array_keys($tree[$d_id]), 'l']]);
 }
 
 
@@ -349,7 +348,6 @@ function DeleteDiscForItem($item_id, $slice_id, $state = 99999): void
 function updateDiscussionCount($item_id): void
 {
     $all       = $hide = 0;
-    $p_item_id = xpack_id($item_id);
     foreach (DB_AA::select('state', 'SELECT * FROM discussion', [['item_id', $item_id, 'l']]) as $d_state) {
         $all++;
         if ($d_state == '1') {   // hidden comment
@@ -357,10 +355,7 @@ function updateDiscussionCount($item_id): void
         }
     }
 
-    $db  = getDB();
-    $SQL = "UPDATE item SET disc_count='$all', disc_app='" . ($all - $hide) . "' WHERE id=$p_item_id";
-    $db->query($SQL);
-    freeDB($db);
+    DB_AA::update('item', [['disc_count', $all, 'i'], ['disc_app', $all - $hide, 'i']], [['id', $item_id, 'l']]);
 }
 
 // -----------------------------------------------------------------------------------------

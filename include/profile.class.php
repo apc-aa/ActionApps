@@ -292,28 +292,22 @@ class AA_Profile
      */
     public function updateProperty($property, $selector, $value, $id): void
     {
-        $property = quote($property);
-        $selector = quote($selector);
-        $value = quote($value);
-        $SQL = "UPDATE profile SET";
-        $SQL2 = '';
+        if (!$this->module_id || !$this->user_id) {
+            return;
+        }
+        $set = [];
         if ($selector != "") {
-            $SQL2 .= " selector='" . $selector . "'";
+            $set[] = ['selector', (string) $selector, 's'];
         }
         if ($value != "") {
-            if ($SQL2) {
-                $SQL2 .= ", value='" . $value . "'";
-            } else {
-                $SQL2 .= " value='" . $value . "'";
-            }
+            $set[] = ['value', (string) $value, 's'];
         }
-        $SQL .= $SQL2;
-        $SQL .= "WHERE property='$property'";
+        $where = [['property', (string) $property]];
         if ($id) {
-            $SQL .= " AND id='" . $id . "'";
+            $where[] = ['id', (string) $id];
         }
-        $SQL .= " AND slice_id=" . xpack_id($this->module_id);
-        $this->do_sql($SQL, "Can't delete profile");
+        $where[] = ['slice_id', $this->module_id, 'l'];
+        DB_AA::update('profile', $set, $where);
     }
 
     /** do_sql function

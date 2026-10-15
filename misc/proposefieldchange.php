@@ -206,12 +206,7 @@ elseif (AA_V::P('assignment') == 1) {
         $zids = $set->query();
 
         if (!$zids->isEmpty()) {
-            $now  = now();
-
-            $SQL  = "UPDATE item SET status_code = '3', last_edit   = '$now', edited_by   = '" . quote(AuthGetUid() ?: '9999999999') . "'";
-            $SQL .= " WHERE " . $zids->sqlin('id');
-
-            DB_AA::sql($SQL);
+            DB_AA::update('item', [['status_code', 3, 'i'], ['last_edit', now(), 'i'], ['edited_by', AuthGetUid() ?: '9999999999', 's']], [$zids->whereIn('id')]);
         }
 
         $grabber      = new GrabberAssignmentform();

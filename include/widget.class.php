@@ -619,12 +619,8 @@ class AA_Property extends AA_Storable
      */
     private static function _saveRow($property_id, $value, $type, $object_id, $priority = 0): void
     {
-        $varset = new CVarset();
-        $varset->add('object_id', 'text', $object_id);
-        $varset->add('priority', 'number', $priority);
-        $varset->add('property', 'text', $property_id);
-        $varset->add('value', $type, $value);        // Property type - text | int | bool | float | <class_name>
-        $varset->doInsert(self::storageType($type));
+        // (string): a null is stored as ''/0, an array as 'Array'/0 - Metabase would leave a null column out and cast an array to 1
+        AA::Metabase()->doInsert(self::storageType($type), ['object_id' => (string) $object_id, 'priority' => $priority, 'property' => (string) $property_id, 'value' => (string) $value]);
     }
 }
 
