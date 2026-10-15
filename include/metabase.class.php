@@ -637,7 +637,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
 
     /** Prepare Cvarset for given data array (set right types/values/...)
      *
-     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
      * @return Cvarset|null
      */
     public function getVarset4Data(array $data): ?Cvarset
@@ -669,7 +669,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
 
     /** Prepare data for insert (set right types/values/...)
      *
-     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
      * @return array ['colname' => 'value', ...]
      */
     public function getSQLData(array $data): array
@@ -1088,7 +1088,7 @@ class AA_Metabase
      *  For now, the table keys must be provided - we are not able to update multiple records. Could be changed in future
      *  usage: AA::Metabase()->doUpdate(...);
      * @param  string   $tablename table, where to store data
-     * @param  string[] $data[]    data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
      * @param  string|null $nohalt  'nohalt' - do not halt on database error
      * @param  string   $history_key resource id the change is written to the history under ('' = no history)
      * @return bool|int   0|false on error
@@ -1107,7 +1107,7 @@ class AA_Metabase
      * @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      *
      * @param  string       $tablename  - table, where to store data
-     * @param  string[]     $data       - data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data       - data array - all data unpacked. The values are converted to correct ones
      * @param  string|null  $nohalt     'nohalt' - do not halt on database error
      *
      * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
@@ -1136,7 +1136,7 @@ class AA_Metabase
      *  - the packed data are packed automatically, the integer data are typecast to numbers, ...
      * @usage AA::Metabase()->doReplace('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      * @param  string   $tablename - table, where to store data
-     * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data      - data array - all data unpacked. The values are converted to correct ones
      * @param  string   $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
@@ -1153,7 +1153,7 @@ class AA_Metabase
      *                                              ['time'=>time(),'user'=>$uid2, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]]);
      * @see AA_Metabase::doInsert()
      * @param  string     $tablename table, where to store data
-     * @param  string[][] $data[][]  data rows - all data unpacked. The values are converted to correct ones
+     * @param  array<array<string, mixed>> $data  data rows - all data unpacked. The values are converted to correct ones
      * @param  string     $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      * @todo   process it as one SQL insert statement
@@ -1188,7 +1188,7 @@ class AA_Metabase
      *  - the packed keys are packed automatically, the integer data are typecast to numbers, ...
      *  usage: AA::Metabase()->doDelete(...);
      * @param string   $tablename
-     * @param string[] $keydata
+     * @param array<string, mixed> $keydata
      * @param string|null $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
@@ -1203,7 +1203,7 @@ class AA_Metabase
     /** Prepare Cvarset for given data array (set right types/values/...)
      *
      * @param  string   $tablename table to work with
-     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
      * @return Cvarset|null
      */
     private function getVarset4Data(string $tablename, array $data): ?Cvarset
