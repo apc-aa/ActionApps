@@ -613,20 +613,18 @@ function add_constant_group(string $group_id, $constants2import): true|string
     // set in seconds - allows the script to work so long
     MoreTimeLimit(); // set_time_limit to 5 minutes (at least)
 
-    $group_row = ['id' => new_id(), 'group_id' => 'lt_groupNames', 'name' => $group_id, 'value' => $group_id];
+    // the group's own row first, so its short_id stays lower than its members'
+    $rows = [['id' => new_id(), 'group_id' => 'lt_groupNames', 'name' => $group_id, 'value' => $group_id]];
 
     $priority_step = 10;
     $priority      = 0;
-    $rows          = [];
     foreach ($constants2import as $constant) {
         $priority = $constant['pri'] ?? $priority + $priority_step;
         // (string), ?? '': a missing value is stored as '' - Metabase would leave a null column out
         $rows[] = ['id' => new_id(), 'group_id' => $group_id, 'name' => (string) $constant['name'], 'value' => (string) $constant['value'], 'class' => $constant['class'] ?? '', 'pri' => $priority];
     }
-    DB_AA::transaction(static function () use ($group_row, $rows) {
-        AA::Metabase()->doInsert('constant', $group_row);
-        AA::Metabase()->doInsertMulti('constant', $rows);
-    });
+    // more than 1000 rows are more INSERTs
+    DB_AA::transaction(static fn() => AA::Metabase()->doInsertMulti('constant', $rows));
     ConstantsChanged();
     return true;
 }
@@ -804,27 +802,24 @@ function refresh_constant_group($group_id, $items): bool
         return false;
     }
 
-    $group_name = DB_AA::select1([], 'SELECT * FROM constant', [['group_id', 'lt_groupNames'], ['name', $group_id]]);
-    if (!$group_name) {
-        $existed = false;
-        AA::Metabase()->doInsert('constant', ['id' => new_id(), 'group_id' => 'lt_groupNames', 'name' => $group_id, 'value' => $group_id]);
-    } else {
-        $existed = true;
-        $db = getDB();
-        $db->query("DELETE FROM constant WHERE group_id=" . qquote($group_id));
-        freeDB($db);
-    }
+    $existed = (bool) DB_AA::select1([], 'SELECT * FROM constant', [['group_id', 'lt_groupNames'], ['name', $group_id]]);
+    // a new group gets its own row in lt_groupNames, first
+    $rows = $existed ? [] : [['id' => new_id(), 'group_id' => 'lt_groupNames', 'name' => $group_id, 'value' => $group_id]];
 
     $priority = 100;
     if (is_array($items)) {
-        $rows = [];
         foreach ($items as $value => $name) {
             // (string): a null name is stored as '' - Metabase would leave a null column out
             $rows[] = ['id' => new_id(), 'group_id' => $group_id, 'name' => (string) $name, 'value' => $value, 'pri' => $priority];
             $priority += 100;
         }
-        AA::Metabase()->doInsertMulti('constant', $rows);
     }
+    DB_AA::transaction(static function () use ($existed, $group_id, $rows) {
+        if ($existed) {
+            DB_AA::delete('constant', [['group_id', $group_id]]);
+        }
+        AA::Metabase()->doInsertMulti('constant', $rows);
+    });
     ConstantsChanged();
     return $existed;
 }
