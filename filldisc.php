@@ -1,6 +1,7 @@
 <?php
 
 use AA\IO\DB\DB_AA;
+use AA\Optimize\CheckDiscussionRefusals;
 use AA\Util\InputVars;
 use AA\Util\LogOnce;
 
@@ -86,6 +87,7 @@ try {
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
+$url = $url ?: (string) ($_SERVER['HTTP_REFERER'] ?? '');   // a form without url goes back to its page
 
 // Optional discussion fields. Read RAW; escaped by the DB layer at insert (type "text").
 // $d_free2 stays null when absent so the cookie-dump fallback at insert still fires.
@@ -127,7 +129,7 @@ if ($slice->getProperty('flag') & DISCUS_ADD_DISABLED) {
 // only where the slice shows comments - its discussion view (or one set for its fulltext);
 // comments to items of other slices were spam nobody saw
 if (!$slice->getProperty('vid') && !DB_AA::test('view', [['slice_id', $slice_id, 'l'], ['type', 'discus']])) {
-    LogOnce::daily('DISC_DENY', $slice_id, 'no discussion view');
+    LogOnce::daily(CheckDiscussionRefusals::EVENT, $slice_id, 'no discussion view');
     echo _m("New comments disabled.");
     exit;
 }
@@ -214,6 +216,10 @@ $cookie->set('d_e_mail', $d_e_mail, 60 * 60 * 24 * 90);   // 90 days
 $cookie->set('d_url_address', $d_url_address, 60 * 60 * 24 * 90);   // 90 days
 $cookie->set('d_url_description', $d_url_description, 60 * 60 * 24 * 90);   // 90 days
 
+// a discussion view printing the body as HTML would run the visitor's markup on the page - it stays text there
+// (test() selects the first column named - the OR group has none)
+$html_view = DB_AA::test('view', [['flag', DISCUS_HTML_FORMAT, 'set'], [null, [[['id', (int) $slice->getProperty('vid'), 'i']], [['slice_id', $slice_id, 'l'], ['type', 'discus']]], 'OR']]);
+
 // All user-supplied values arrive RAW (InputVars::stringPOST / $_REQUEST / $_SERVER) - Metabase
 // escapes them once; never pass pre-slashed values here.
 $discussion = [
@@ -223,7 +229,7 @@ $discussion = [
     'subject'         => $d_subject,
     'author'          => $d_author,
     'e_mail'          => $d_e_mail,
-    'body'            => $d_body,
+    'body'            => $html_view ? safe($d_body) : $d_body,
     'state'           => $d_state,
     'flag'            => 0,
     'free1'           => $d_free1,
