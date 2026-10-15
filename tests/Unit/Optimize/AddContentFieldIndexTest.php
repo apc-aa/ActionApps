@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 /**
- * AddContentFieldIndex turns the text index into (text, field_id) and drops (field_id, text) once,
- * in one ALTER - on a big database it takes minutes, so a second run must not repeat it.
+ * AddContentFieldIndex brings the content text index to the template's (text(12), field_id) and drops
+ * the field-first index (field_id, text) - whatever the live table has, in one ALTER.
  */
 
 namespace {
@@ -30,6 +30,7 @@ namespace Tests\Unit\Optimize {
     use AA\Optimize\AbstractOptimize;
     use AA\Optimize\AddContentFieldIndex;
     use AA\Optimize\UpdateDbStructure;
+    use PHPUnit\Framework\Attributes\DataProvider;
     use PHPUnit\Framework\TestCase;
     use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
@@ -53,14 +54,24 @@ namespace Tests\Unit\Optimize {
             RecordingDb::reset();
         }
 
-        /** the live content table: whether the text index has field_id and whether field_text exists */
-        private function indexes(bool $text_has_field, bool $field_first): void
+        private const PLAIN_TEXT  = ['text' => [['text', 12]]];
+        private const TEXT_FIELD  = ['text' => [['text', 12], ['field_id', null]]];
+        private const FIELD_FIRST = ['field_text' => [['field_id', null], ['text', 12]]];
+        private const OTHERS      = ['item_id' => [['item_id', null], ['field_id', null], ['text', 16]], 'number' => [['item_id', null], ['number', null]]];
+
+        /** the live content table with these indexes (name => [[column, sub_part], ...]); null = no table */
+        private function liveIndexes(?array $indexes): void
         {
+            $rows = [];
+            foreach ($indexes ?? [] as $name => $columns) {
+                foreach ($columns as $seq => [$column, $sub_part]) {
+                    $rows[] = ['Table' => 'content', 'Non_unique' => 1, 'Key_name' => $name, 'Seq_in_index' => $seq + 1, 'Column_name' => $column, 'Sub_part' => $sub_part];
+                }
+            }
             RecordingDb::$answer = static fn(string $sql): array => match (true) {
-                str_contains($sql, "'field_id'")   => [['cnt' => (int) $text_has_field]],
-                str_contains($sql, "'field_text'") => [['cnt' => (int) $field_first]],
-                str_contains($sql, "'text'")       => [['cnt' => 1]],
-                default                            => [],
+                str_contains($sql, 'information_schema.tables') => ($indexes === null) ? [] : [['table_schema' => 'aa_test']],
+                str_starts_with($sql, 'SHOW INDEX')            => $rows,
+                default                                        => [],
             };
         }
 
@@ -69,49 +80,57 @@ namespace Tests\Unit\Optimize {
             return array_values(array_filter(RecordingDb::$log, static fn($s) => str_starts_with($s, 'ALTER')));
         }
 
-        public function test_repair_plainTextIndex_addsTheFieldInOneAlter(): void
+        public static function liveStates(): array
         {
-            $this->indexes(false, false);
-
-            self::assertFalse((new AddContentFieldIndex())->test());
-            self::assertTrue((new AddContentFieldIndex())->repair());
-            self::assertSame(['ALTER TABLE `content` DROP INDEX `text`, ADD KEY text (`text`(12),`field_id`)'], self::alters());
+            $add = 'ADD KEY text (`text`(12),`field_id`)';
+            return [
+                'plain text(12)'           => [self::PLAIN_TEXT, "DROP INDEX `text`, $add"],
+                'text(12) and field_text'  => [self::PLAIN_TEXT + self::FIELD_FIRST, "DROP INDEX `field_text`, DROP INDEX `text`, $add"],
+                'done, field_text left'    => [self::TEXT_FIELD + self::FIELD_FIRST, 'DROP INDEX `field_text`'],
+                'no text index'            => [[], $add],
+                'only field_text'          => [self::FIELD_FIRST, "DROP INDEX `field_text`, $add"],
+                'text index, other prefix' => [['text' => [['text', 10], ['field_id', null]]], "DROP INDEX `text`, $add"],
+            ];
         }
 
-        public function test_repair_fieldFirstIndex_replacedByTheTextIndex(): void
+        #[DataProvider('liveStates')]
+        public function test_repair_liveIndexes_oneAlterToTheTemplate(array $live, string $changes): void
         {
-            $this->indexes(false, true);
+            $this->liveIndexes($live + self::OTHERS);
 
             self::assertFalse((new AddContentFieldIndex())->test());
             self::assertTrue((new AddContentFieldIndex())->repair());
-            self::assertSame(['ALTER TABLE `content` DROP INDEX `field_text`, DROP INDEX `text`, ADD KEY text (`text`(12),`field_id`)'], self::alters());
+            self::assertSame(["ALTER TABLE `content` $changes"], self::alters());
         }
 
         public function test_repair_done_altersNothing(): void
         {
-            $this->indexes(true, false);
+            // the ALTER takes minutes on a big database - a second run must not repeat it
+            $this->liveIndexes(self::TEXT_FIELD + self::OTHERS);
 
             self::assertTrue((new AddContentFieldIndex())->test());
             self::assertTrue((new AddContentFieldIndex())->repair());
             self::assertSame([], self::alters());
         }
 
+        public function test_repair_noContentTable_leavesItToTheStructureUpdate(): void
+        {
+            // a new install: UpdateDbStructure creates the table with the index afterwards
+            $this->liveIndexes(null);
+
+            self::assertTrue((new AddContentFieldIndex())->repair());
+            self::assertSame([], self::alters());
+            self::assertSame(0, RecordingDb::count('SHOW'));
+        }
+
         public function test_repair_justPrint_altersNothing(): void
         {
             // sql_update.php without "Write to database" only lists the SQL
-            $this->indexes(false, true);
+            $this->liveIndexes(self::PLAIN_TEXT + self::FIELD_FIRST + self::OTHERS);
             AbstractOptimize::justPrint(true);
 
             self::assertTrue((new AddContentFieldIndex())->repair());
             self::assertSame([], self::alters());
-        }
-
-        public function test_revert_backToThePlainTextIndex(): void
-        {
-            $this->indexes(true, false);
-
-            (new AddContentFieldIndex())->revert();
-            self::assertSame(['ALTER TABLE `content` DROP INDEX `text`, ADD KEY `text` (`text`(12))'], self::alters());
         }
 
         public function test_priority_runsBeforeUpdateDbStructure(): void

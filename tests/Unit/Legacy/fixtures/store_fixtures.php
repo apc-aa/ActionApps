@@ -50,7 +50,7 @@ final class RecordingDb extends DB_PDO
      * from it, so a store behaves exactly as against a real, initially empty table.
      */
     public static array $content = [];
-    /** @var null|callable(string): array  rows for SELECTs on OTHER tables (constant, item, ...) */
+    /** @var null|callable(string): array  rows for SELECTs on OTHER tables (constant, item, ...) and for SHOW statements */
     public static $answer = null;
     /** a statement starting with this string throws - simulates a failing write mid-transaction
      *  (with halting off it returns false instead) */
@@ -96,7 +96,7 @@ final class RecordingDb extends DB_PDO
         $this->pos       = 0;
         $this->Record    = [];
         $this->rows      = self::applyToContent($Query_String)
-            ?? ((self::$answer && str_starts_with($Query_String, 'SELECT')) ? (self::$answer)($Query_String) : []);
+            ?? ((self::$answer && preg_match('/^(SELECT|SHOW)\s/', $Query_String)) ? (self::$answer)($Query_String) : []);
         return true;
     }
 

@@ -4,12 +4,13 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA_MbT;
 
 /** Index content (text(12), field_id) - lookups of a value in one field (SEO path, relations, categories)
  *
  *  The old text(12) index cannot tell fields apart: on ekolist.cz the SEO lookup of 'zpravodajstvi'
  *  went through ~300 000 rows of 'Zpravodajství' categories and took 0.7 s on every article page.
- *  The field goes second: with field_id first (the index field_text) MariaDB 10.x reads a whole
+ *  The field goes second: with field_id first (the index field_text) MariaDB 10.6-11.8 reads a whole
  *  field through it for "field = X and text one of a list" - vozejkov.cz news 4.5 s instead of 0.5 s.
  *  It replaces text(12), which is its prefix: about 15 bytes a row more, not a second index.
  */
@@ -42,13 +43,13 @@ class AddContentFieldIndex extends AbstractOptimize
 
     public static function actions(): array
     {
-        return ['test', 'repair', 'revert'];
+        return ['test', 'repair'];
     }
 
     public function test(): bool
     {
-        if (!self::textHasField() || DB_AA::exists_index('content', self::FIELD_FIRST)) {
-            $this->message(_m('The index %1 of the content table does not contain the field', [self::INDEX]));
+        if ($changes = self::changes()) {
+            $this->message(_m('The content table needs: %1', [implode(', ', $changes)]));
             return false;
         }
         $this->message(_m('OK - the index %1 of the content table contains the field', [self::INDEX]));
@@ -57,17 +58,7 @@ class AddContentFieldIndex extends AbstractOptimize
 
     public function repair(): bool
     {
-        $changes = [];
-        if (DB_AA::exists_index('content', self::FIELD_FIRST)) {
-            $changes[] = 'DROP INDEX `' . self::FIELD_FIRST . '`';
-        }
-        if (!self::textHasField()) {
-            if (DB_AA::exists_index('content', self::INDEX)) {
-                $changes[] = 'DROP INDEX `' . self::INDEX . '`';
-            }
-            $changes[] = 'ADD ' . AA::Metabase()->tables['content']->i[self::INDEX]->getCreateSql();
-        }
-        if (!$changes) {
+        if (!$changes = self::changes()) {
             $this->message(_m('The index %1 of the content table already contains the field', [self::INDEX]));
             return true;
         }
@@ -77,18 +68,23 @@ class AddContentFieldIndex extends AbstractOptimize
         return true;
     }
 
-    /** back to the plain text(12) index */
-    public function revert(): bool
+    /** ALTER clauses that bring the live indexes to the template's; none without the table - a new install creates it whole
+     * @return string[]
+     */
+    private static function changes(): array
     {
-        if (self::textHasField()) {
-            $this->query('ALTER TABLE `content` DROP INDEX `' . self::INDEX . '`, ADD KEY `' . self::INDEX . '` (`text`(12))');
+        if (!DB_AA::exists_table('content')) {
+            return [];
         }
-        $this->message(_m('The index %1 of the content table changed', [self::INDEX]));
-        return true;
-    }
-
-    private static function textHasField(): bool
-    {
-        return DB_AA::count('information_schema.statistics', [['table_schema', constant('DB_NAME')], ['table_name', 'content'], ['index_name', self::INDEX], ['column_name', 'field_id']]) > 0;
+        $live    = AA_MbT::factoryFromDb('content')->i;
+        $wanted  = AA::Metabase()->tables['content']->i[self::INDEX]->getCreateSql();
+        $changes = isset($live[self::FIELD_FIRST]) ? ['DROP INDEX `' . self::FIELD_FIRST . '`'] : [];
+        if (!isset($live[self::INDEX]) || ($live[self::INDEX]->getCreateSql() !== $wanted)) {
+            if (isset($live[self::INDEX])) {
+                $changes[] = 'DROP INDEX `' . self::INDEX . '`';
+            }
+            $changes[] = "ADD $wanted";
+        }
+        return $changes;
     }
 }
