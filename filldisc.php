@@ -214,8 +214,9 @@ $discussion = [
     'author'          => $d_author,
     'e_mail'          => $d_e_mail,
     'body'            => $d_body,
-    'state'           => $d_state,
-    'flag'            => $d_flag,
+    // (string): an array from the request is stored as 0, not cast to 1
+    'state'           => (string) $d_state,
+    'flag'            => (string) $d_flag,
     'free1'           => $d_free1,
     // the poster's cookies, but no session id - free2 is shown to the discussion's admins and templates
     'free2'           => $d_free2 ?? var_export(array_filter($_COOKIE, static fn($name) => stripos((string) $name, 'sess') === false, ARRAY_FILTER_USE_KEY), true),
