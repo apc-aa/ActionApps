@@ -92,6 +92,13 @@ namespace Tests\Unit\Legacy {
             self::assertStringContainsString((string) (self::CZ + AA_Value::MAX_INDEX), $deletes[0]);
         }
 
+        public function test_translation_only_content_keeps_its_flag(): void
+        {
+            self::assertSame(FLAG_HTML, (new AA_Value([self::CZ => ['value' => '<b>Ahoj</b>', 'flag' => FLAG_HTML]]))->getFlag());
+            self::assertSame(FLAG_HTML, (new AA_Value([['value' => '<b>Hi</b>', 'flag' => FLAG_HTML]]))->getFlag());
+            self::assertSame(0, (new AA_Value(['one', 'two']))->getFlag());
+        }
+
         public function test_base_value_replaces_the_whole_field(): void
         {
             $deletes = $this->deletes(new AA_Value(['one', 'two']));

@@ -65,7 +65,8 @@ class AA_Value implements IteratorAggregate, ArrayAccess, Countable
     public function __construct($value = null, $flag = null)
     {
         $this->clear()->addValue($value);
-        $this->setFlag(!is_null($flag) ? $flag : ((is_array($value) && is_array($value[0] ?? null)) ? $value[0]['flag'] : 0));
+        $first = is_array($value) ? reset($value) : null;   // a translation-only value has no index 0
+        $this->setFlag(!is_null($flag) ? $flag : (is_array($first) ? ($first['flag'] ?? 0) : 0));
     }
 
     /** For creating value from any value
