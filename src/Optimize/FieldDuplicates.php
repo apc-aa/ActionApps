@@ -4,7 +4,6 @@ namespace AA\Optimize;
 
 use AA;
 use AA\IO\DB\DB_AA;
-use Cvarset;
 
 /** Fix field table duplicate keys */
 class FieldDuplicates extends \AA\Optimize\AbstractOptimize
@@ -60,8 +59,6 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize
 
     public function repair(): bool
     {
-        $varset = new Cvarset();
-        // $varset->setDebug();
 
         $duplicates = $this->_check_table();
         if (!count($duplicates)) {
@@ -79,8 +76,8 @@ class FieldDuplicates extends \AA\Optimize\AbstractOptimize
             // a NULL column is copied as '' (0 in a number column), not left to its DEFAULT
             $row = array_map(static fn($v) => $v ?? '', $dup[2]);
             $row['slice_id'] = bin2hex($row['slice_id']);   // not unpack_id(): it turns a numeric-looking id into '0'
-            DB_AA::transaction(static function () use ($varset, $dup, $row) {
-                $varset->doDeleteWhere('field', "slice_id='" . quote($dup[0]) . "' AND id='" . quote($dup[1]) . "'");
+            DB_AA::transaction(static function () use ($dup, $row) {
+                DB_AA::delete('field', [['slice_id', $dup[0], 'b'], ['id', $dup[1]]]);
                 AA::Metabase()->doInsert('field', $row);
             });
             $this->message(_m('Field %2 in slice %1 fixed', [unpack_id($dup[0]), $dup[1]]));
