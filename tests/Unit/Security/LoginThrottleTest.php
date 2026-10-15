@@ -109,6 +109,18 @@ final class LoginThrottleTest extends TestCase
         $this->assertSame(60, LoginThrottle::wait($rows, 'admin', self::IP, self::NOW), 'still 20 failures from the address');
     }
 
+    public function test_a_template_trying_name_after_name_waits_after_100_but_the_logins_of_the_address_do_not(): void
+    {
+        $rows = [];
+        for ($i = 99; $i >= 0; --$i) {
+            $rows[] = self::row($i, "name$i", self::IP, '', LoginThrottle::TEMPLATE);
+        }
+        $this->assertSame(60, LoginThrottle::wait($rows, 'another', self::IP, self::NOW, true));
+        $this->assertSame(0, LoginThrottle::wait($rows, 'another', self::IP, self::NOW));
+        array_pop($rows);
+        $this->assertSame(0, LoginThrottle::wait($rows, 'another', self::IP, self::NOW, true), '99');
+    }
+
     /** @return array<string, array{int, int}> failures from the address (each of another name) => seconds to wait */
     public static function addressWaits(): array
     {
@@ -162,6 +174,27 @@ final class LoginThrottleTest extends TestCase
     public function test_no_address_is_not_counted(): void
     {
         $this->assertNull((new \ReflectionMethod(LoginThrottle::class, 'needle'))->invoke(null, ''));
+    }
+
+    /** an unknown name and a wrong password of any hash cost answer after the same time */
+    public function test_a_failed_check_is_padded_to_one_second(): void
+    {
+        $this->assertEqualsWithDelta(0.99, LoginThrottle::rest(0, 10_000_000), 1e-9, 'an unknown name, no hash');
+        $this->assertEqualsWithDelta(0.33, LoginThrottle::rest(0, 670_000_000), 1e-9, 'bcrypt cost 14');
+        $this->assertSame(0.0, LoginThrottle::rest(0, 1_500_000_000), 'a slower check is not made slower');
+    }
+
+    public function test_the_pad_sleeps_the_rest_of_the_second_on_the_web_only(): void
+    {
+        $start = hrtime(true);
+        LoginThrottle::pad($start - 950_000_000, 'cgi-fcgi');
+        $slept = (hrtime(true) - $start) / 1e9;
+        $this->assertGreaterThan(0.03, $slept);
+        $this->assertLessThan(0.5, $slept);
+
+        $start = hrtime(true);
+        LoginThrottle::pad($start - 900_000_000, 'cli');
+        $this->assertLessThan(0.05, (hrtime(true) - $start) / 1e9);
     }
 
     public function test_the_stored_name_is_cut_to_the_column_without_splitting_a_character(): void

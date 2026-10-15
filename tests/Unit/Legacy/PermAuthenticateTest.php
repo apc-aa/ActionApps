@@ -117,7 +117,7 @@ namespace Tests\Unit\Legacy {
             $this->assertSame([], self::logRows());
         }
 
-        /** it costs a hash all the same - uncounted, it could keep the server busy without end */
+        /** it holds the server for the padded second all the same - uncounted, it could do so without end */
         public function test_an_empty_password_counts(): void
         {
             $this->assertFalse($this->perm()->authenticateUsername('admin', ''));
@@ -184,20 +184,6 @@ namespace Tests\Unit\Legacy {
             unset($_SERVER['REMOTE_ADDR']);
             $this->assertSame('7', $this->perm()->authenticateUsername('admin', 'pw'));
             $this->assertSame(0, RecordingDb::count('SELECT `time`'));
-        }
-
-        /** a known name costs a hash - an unknown one must not answer at once (stored hashes of another cost still differ) */
-        public function test_an_unknown_name_costs_a_hash_as_well(): void
-        {
-            $perm   = $this->perm();
-            $stored = password_hash('pw', PASSWORD_DEFAULT);
-            $start  = hrtime(true);
-            password_verify('x', $stored);
-            $hash   = hrtime(true) - $start;
-
-            $start = hrtime(true);
-            $perm->authenticateUsername('nobody-of-that-name', 'guess');
-            $this->assertGreaterThan($hash / 3, hrtime(true) - $start);
         }
     }
 }

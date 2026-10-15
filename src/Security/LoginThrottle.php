@@ -30,12 +30,16 @@ final class LoginThrottle
     /** [free failures, first wait, longest wait] in seconds */
     private const SOURCE  = [20, 60, 3600];
     private const ACCOUNT = [5, 30, 900];
+    /** checks a template runs, from one address - stops a template that tries name after name, not a page with wrong example credentials */
+    private const TEMPLATES = [100, 60, 3600];
+    /** a failed check answers this long after it started - above the costliest stored hash (bcrypt cost 14: 0.7 s) */
+    private const FAILURE_SECONDS = 1.0;
 
     /** seconds the refused login of this request has to wait */
     private static int $wait = 0;
 
-    /** false when the login must not be checked now - refuse() then answers */
-    public static function admit(string $username): bool
+    /** false when the login must not be checked now - refuse() then answers; $template see failed() */
+    public static function admit(string $username, bool $template = false): bool
     {
         self::$wait = 0;
         // a login sent by an image, frame or script of another site is no visitor's own - it would let any page
@@ -49,7 +53,7 @@ final class LoginThrottle
         }
         $now  = time();
         $rows = DB_AA::select([], 'SELECT `time`, `type`, `selector`, `params` FROM `log`', [['type', ['LOGIN', self::TEMPLATE]], ['time', $now - self::WINDOW, '>='], ['selector', $needle, 'CONTAIN']], ['time', 'id']);
-        if (($wait = self::wait($rows, $username, $ip, $now)) === 0) {
+        if (($wait = self::wait($rows, $username, $ip, $now, $template)) === 0) {
             return true;
         }
         $allowed = !Settings::isOn(Protection::LoginThrottle);
@@ -63,12 +67,30 @@ final class LoginThrottle
     }
 
     /**
-     * The row admit() counts. Credentials a template passed ({jwtencode}) count only for the name: wrong ones
-     * written in a template would otherwise slow down every visitor who shows the page.
+     * The row admit() counts. Credentials a template passed ({jwtencode}) count for the name, and for the address
+     * only against further template checks: wrong ones written in a template would otherwise slow down the logins
+     * of every visitor who shows the page.
      */
     public static function failed(string $username, bool $template = false): void
     {
         AA_Log::write($template ? self::TEMPLATE : 'LOGIN', AA_Log::context(''), self::stored($username));
+    }
+
+    /**
+     * Waits until the failed check that started at $started (hrtime) has taken FAILURE_SECONDS. Not on the command
+     * line - nobody times it there - and not inside a transaction, whose locks the sleep would hold.
+     */
+    public static function pad(int $started, string $sapi = PHP_SAPI): void
+    {
+        if (($sapi !== 'cli') && !DB_AA::inTransaction() && (($rest = self::rest($started, hrtime(true))) > 0)) {
+            usleep((int) round($rest * 1000000));
+        }
+    }
+
+    /** seconds a failed check that started at $started still has to wait at $now (both hrtime nanoseconds) */
+    public static function rest(int $started, int $now): float
+    {
+        return max(0.0, self::FAILURE_SECONDS - ($now - $started) / 1e9);
     }
 
     /** minutes the login refused in this request has to wait; 0 when none was refused */
@@ -99,12 +121,13 @@ final class LoginThrottle
      * Seconds the login of $username from $ip has to wait at $now; 0 = check it now.
      * @param list<array{time: int|string, type?: string, selector: string, params: ?string}> $rows LOGIN and
      *        TEMPLATE rows, oldest first; rows of other addresses are skipped
+     * @param bool $template a check of credentials a template passed - the address counts its template checks too
      */
-    public static function wait(array $rows, string $username, string $ip, int $now): int
+    public static function wait(array $rows, string $username, string $ip, int $now, bool $template = false): int
     {
         $source  = self::source($ip);
         $name    = self::nameKey($username);
-        $by_source = $by_name = [];
+        $by_source = $by_name = $by_template = [];
         foreach ($rows as $row) {
             [$uid, , $address] = array_pad(ParamExplode((string) $row['selector']), 3, '');
             // a row without a name is no guess (older AA logged even an empty login form)
@@ -120,12 +143,14 @@ final class LoginThrottle
             }
             if (($row['type'] ?? 'LOGIN') !== self::TEMPLATE) {
                 $by_source[] = (int) $row['time'];
+            } else {
+                $by_template[] = (int) $row['time'];
             }
             if ($same_name) {
                 $by_name[] = (int) $row['time'];
             }
         }
-        return max(self::delay($by_source, self::SOURCE, $now), self::delay($by_name, self::ACCOUNT, $now));
+        return max(self::delay($by_source, self::SOURCE, $now), self::delay($by_name, self::ACCOUNT, $now), $template ? self::delay($by_template, self::TEMPLATES, $now) : 0);
     }
 
     /**
