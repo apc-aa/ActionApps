@@ -361,7 +361,7 @@ class FeedUtil
                     $SQL      = "INSERT INTO ef_categories VALUES ('" . quote($category['value']) . "','" . quote($category['name']) . "',
                          " . xpack_id($category['id']) . ",'" . $feed_id . "'," . xpack_id($l_cat_id) . ",'0')";
                     if ($debugfeed >= 8) {
-                        print("\n<br>$SQL");
+                        print("\n<br>" . safe($SQL));   // the category comes from the remote AA
                     }
                     DB_AA::sql($SQL);
                 }
