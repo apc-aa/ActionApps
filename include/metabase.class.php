@@ -104,6 +104,12 @@ class AA_MbC
         return str_contains((string) $this->c[5], 'auto_increment');
     }
 
+    /** true when writing NULL stores what leaving the column out stores */
+    public function defaultsToNull(): bool
+    {
+        return $this->isAutoIncrement() || ($this->c[2] && $this->c[4] === null);
+    }
+
     public function getName()
     {
         return $this->c[0];
@@ -647,10 +653,13 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
                 $iskey = $coldef->isKey();
                 if ($coldef->getFieldType() === 'int') {
                     $varset->add($colname, 'number', (int) $value, $iskey);
-                } elseif (AA_Metabase::isPacked($this->t, $colname)) {
+                } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_ids($value)) {
                     $varset->add($colname, 'unpacked', $value, $iskey);
+                } elseif (AA_Metabase::isPacked($this->t, $colname)) {
+                    // '0' or a shorter id of old data - stored as q_pack_id() did
+                    $varset->add($colname, 'text', pack_id((string) $value), $iskey);
                 } else {
-                    $value = ($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value;
+                    // no substr() to the column length: MySQL (non-strict sql_mode) cuts varchar by characters, not bytes
                     $varset->add($colname, 'text', $value, $iskey);
                 }
             }
@@ -679,14 +688,15 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
                     $ret[$colname] = (int) $value;
                 } elseif ($type === 'float') {
                     $ret[$colname] = (float) $value;
-                } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_ids($value)) {
-                    $ret[$colname] = '0x' . $value;
+                } elseif (AA_Metabase::isPacked($this->t, $colname)) {
+                    $ret[$colname] = is_long_ids($value) ? '0x' . $value : qquote(pack_id((string) $value));
                 } else {
-                    $ret[$colname] = qquote(($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value);
+                    $ret[$colname] = qquote($value);
                 }
             }
             if (!isset($ret[$colname])) {
-                $ret[$colname] = 'NULL';
+                // as if the column were left out of a one-row INSERT - NULL into a NOT NULL column would store 0/'', not its DEFAULT
+                $ret[$colname] = $coldef->defaultsToNull() ? 'NULL' : 'DEFAULT';
             }
         }
         return $ret;
