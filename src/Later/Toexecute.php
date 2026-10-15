@@ -185,22 +185,13 @@ class Toexecute
 
         // The check+insert below is a race when two processes schedule the same
         // selector concurrently (both see "not scheduled", both insert - and the
-        // duplicated task later executes twice). Serialize it with a DB named
-        // lock, held on one connection ($lock_db) so acquire and release pair up.
+        // duplicated task later executes twice). A named lock serializes it.
         // On lock timeout we proceed unlocked (scheduling must not be dropped).
-        $lock_name = 'aa_laterOnce_' . constant('DB_NAME');
-        $db = getDB();
-        $lock_db = $db;   // the lock belongs to this connection, whoever holds it meanwhile
+        // Inside a transaction (an item stored in one schedules AA_Mysqlauth_Maintain
+        // this way) the row becomes visible to others only at the commit, after the
+        // lock is gone - a scheduler elsewhere can still add the same selector meanwhile.
+        $locked = DB_AA::lock('aa_laterOnce', 2);
         try {
-            $lock_db->query('SELECT GET_LOCK(' . $lock_db->quote($lock_name) . ', 2)');
-            // Inside DB_AA::transaction() there is one connection and getDB() refuses to hand it
-            // out twice - the check and insert below need it too (an item stored in a transaction
-            // schedules AA_Mysqlauth_Maintain this way). Give it back meanwhile; the lock stays.
-            // The row becomes visible to others only at commit, after the lock is gone - a
-            // scheduler on another connection can still add the same selector meanwhile.
-            if (DB_AA::inTransaction()) {
-                freeDB($db);
-            }
             $task = self::scheduledTask($selector);
             if (!$task['id']) {
                 $this->later($object, $params, $selector, $priority, $time);
@@ -210,9 +201,8 @@ class Toexecute
                 DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
             }
         } finally {
-            $lock_db->query('SELECT RELEASE_LOCK(' . $lock_db->quote($lock_name) . ')');
-            if ($db) {   // freeDB() above set it to null
-                freeDB($db);
+            if ($locked) {
+                DB_AA::unlock('aa_laterOnce');
             }
         }
     }

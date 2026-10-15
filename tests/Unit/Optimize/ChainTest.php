@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Optimize;
 
+use AA\IO\DB\DB_AA;
+use AA\IO\DB\DB_PDO;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\Chain;
 use AA\Optimize\RedefineFieldTemplates;
@@ -121,6 +123,7 @@ final class ChainTest extends TestCase
     protected function tearDown(): void
     {
         $GLOBALS['spareDBs'] = [];
+        self::lockDb(null);
     }
 
     /** @return list<class-string> */
@@ -258,38 +261,35 @@ final class ChainTest extends TestCase
     {
         RecordingDb::reset();
         RecordingDb::$answer = static fn(string $sql) => str_contains($sql, 'GET_LOCK') ? [['got' => '1', 'holder' => '7']] : [];
-        $GLOBALS['spareDBs'] = [];
+        self::lockDb(new RecordingDb());
 
-        $release = Chain::tryLock('sql_update', $holder, new RecordingDb());
+        $release = Chain::tryLock('sql_update', $holder);
 
         self::assertNotNull($release);
         self::assertSame(["SELECT GET_LOCK('aa_optimize_sql_update_aa_test', 0) AS got, IS_USED_LOCK('aa_optimize_sql_update_aa_test') AS holder"], RecordingDb::$log);
 
         $release();
-        $release();   // the shutdown function calls it again
+        $release();   // a caller may call it again on its way out
 
         self::assertSame(["SELECT RELEASE_LOCK('aa_optimize_sql_update_aa_test')"], array_slice(RecordingDb::$log, 1));
         self::assertSame(RecordingDb::$handles[0], RecordingDb::$handles[1]);
-        self::assertSame([], $GLOBALS['spareDBs'], 'the lock connection never goes to the pool');
     }
 
     public function test_tryLock_held_isNull_andNamesTheHolder(): void
     {
         RecordingDb::reset();
         RecordingDb::$answer = static fn(string $sql) => [['got' => '0', 'holder' => '4711']];
+        self::lockDb(new RecordingDb());
 
-        self::assertNull(Chain::tryLock('sql_update', $holder, new RecordingDb()));
+        self::assertNull(Chain::tryLock('sql_update', $holder));
         self::assertSame(4711, $holder);
         self::assertCount(1, RecordingDb::$log);
         self::assertStringContainsString('4711', Chain::runningMessage('sql_update', $holder));
     }
 
-    public function test_lockConnection_isNotPersistent(): void
+    /** the connection DB_AA takes named locks on */
+    private static function lockDb(?DB_PDO $db): void
     {
-        // a persistent connection outlives a die() in the run - and the lock with it
-        $params = Chain::lockConnectionParams();
-
-        self::assertFalse($params['persistent']);
-        self::assertSame(constant('DB_NAME'), $params['database']);
+        (new \ReflectionProperty(DB_AA::class, 'lock_db'))->setValue(null, $db);
     }
 }
