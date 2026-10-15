@@ -2343,7 +2343,7 @@ function QueryConstantZIDs($group_id, $conds, $sort = null, $restrict_zids = nul
     $order_by_sql = MakeSQLOrderBy(GetConstantFields(), $sort, $foo);
 
     // construct query --------------------------
-    $SQL = "SELECT DISTINCT constant.short_id FROM constant WHERE group_id='$group_id' ";
+    $SQL = 'SELECT DISTINCT constant.short_id FROM constant ' . DB_AA::makeWhere([['group_id', (string) $group_id]]) . ' ';
     $SQL .= $where_sql . $order_by_sql;
 
     if (is_object($restrict_zids)) {
