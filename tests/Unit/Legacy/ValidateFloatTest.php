@@ -65,6 +65,20 @@ namespace Tests\Unit\Legacy {
         }
 
         #[DataProvider('validators')]
+        public function test_a_limit_with_a_decimal_comma_applies(string $class): void
+        {
+            $validator = new $class(['f_min' => '0,5', 'f_max' => '10,5']);
+            $big       = '10,6';
+            $small     = '0.4';
+            $ok        = '10.5';
+
+            $this->assertFalse($validator->validate($big));
+            $this->assertFalse($validator->validate($small));
+            $this->assertTrue($validator->validate($ok));
+            $this->assertEquals(10.5, $validator->sanitize('99'));
+        }
+
+        #[DataProvider('validators')]
         public function test_sanitize_with_empty_limits_keeps_the_number(string $class): void
         {
             $this->assertEquals(3.5, (new $class(['f_min' => '', 'f_max' => '']))->sanitize('3.5'));
