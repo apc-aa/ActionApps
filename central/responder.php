@@ -26,6 +26,7 @@ use AA\Central\AppRequest;
 use AA\Central\AppStore;
 use AA\Central\Package\DbSource;
 use AA\Central\ResponderPolicy;
+use AA\FormArray;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\CheckSessionidUse;
 use AA\Security\LoginThrottle;
@@ -659,7 +660,7 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder
         $this->slice_id = $param['s'];
         $this->field_id = $param['f'];
         $this->item_id  = $param['i'];
-        $this->base_id  = $param['b'];
+        $this->base_id  = (is_string($param['b'] ?? null) && FormArray::isFormId($param['b'])) ? $param['b'] : '';
     }
 
     public function isPerm(): bool
@@ -672,7 +673,7 @@ class AA_Responder_Formatted_By_Widget extends AA_Responder
         $ret   = '';
         $slice = AA_Slice::getOwnModule($this->slice_id);
 
-        if ($slice && ($widget = $slice->getWidget($this->field_id))) {
+        if ($slice && ($this->base_id !== '') && ($widget = $slice->getWidget($this->field_id))) {
             mgettext_bind($slice->getLang(), 'output');
             $ret = $widget->getRelatedItemsHtml(new zids($this->item_id, 'l'), $this->base_id, $this->field_id, $this->slice_id);   //zids $zids, string $base_id, string $sid, string $def_field_id, string $def_slice_id): string {
         }

@@ -91,6 +91,12 @@ class FormArray
         return str_replace([']', '['], ['', $universal ? '_' : '-'], $name);
     }
 
+    /** Can $id be an id built by formName2Id(getName4Form())? The id of a request goes into HTML attributes and JS strings. */
+    public static function isFormId(string $id): bool
+    {
+        return (bool) preg_match('/^[A-Za-z0-9_.~%-]+$/D', $id);   // rawurlencode()d object id, field var, owner id
+    }
+
     /** aa-ud359b5b4e82a6cd9e40750ca6771b077-relation_______4 -> aa[ud359b5b4e82a6cd9e40750ca6771b077][relation_______4]" */
     public static function formId2Name(string $id): string
     {
