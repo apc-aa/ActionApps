@@ -106,8 +106,7 @@ class ChangesMonitor
         $change_id = new_id();
         $record = [
             'id'          => $change_id,
-            // changed to nanotime(), which produces 1 000 000 000 * bigger values, but it should be OK for database
-            // there was problem with now() - some history records had the same time of change (the same second), so the order then could be wrong
+            // nanotime(), not now(): changes within one second keep their order
             'time'        => nanotime(),
             'user'        => AuthGetUid(),
             'type'        => $type,

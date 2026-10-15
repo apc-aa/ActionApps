@@ -87,7 +87,6 @@ if ($cancel) {
 
 $err = [];          // error array (Init - just for initializing variable
 
-$varset      = new CVarset();
 $superadmin  = IsSuperadmin();
 $module_id   = AA::$module_id;
 
@@ -110,7 +109,7 @@ if ($is_add) {
 if ($is_add ? $insert : $update) {
     do {
         if (!$owner) {  // insert new owner
-            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, $varset))) {
+            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err))) {
                 break;
             }
         }

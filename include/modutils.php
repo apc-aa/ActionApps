@@ -38,12 +38,10 @@ const MODULE_DELETE_TOKEN = 'aa-module-delete';
  * @param $new_owner
  * @param $new_owner_email
  * @param $err
- * @param $varset
  * @return false|string - unpacked owner_id or false (on error)
  */
-function CreateNewOwner($new_owner, $new_owner_email, &$err, $varset): false|string
+function CreateNewOwner($new_owner, $new_owner_email, &$err): false|string
 {
-    $varset->clear();
     ValidateInput("new_owner", _m("New Owner"), $new_owner, $err, true, "text");
     ValidateInput("new_owner_email", _m("New Owner's E-mail"), $new_owner_email, $err, true, "email");
 

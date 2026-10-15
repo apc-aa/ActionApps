@@ -97,7 +97,7 @@ if ($is_add) {
 if ($is_add ? $insert : $update) {
     do {
         if (!$owner) {  // insert new owner
-            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err, new CVarset()))) {
+            if (!($owner = CreateNewOwner($new_owner, $new_owner_email, $err))) {
                 break;
             }
         }

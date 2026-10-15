@@ -656,7 +656,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
                 } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_ids($value)) {
                     $varset->add($colname, 'unpacked', $value, $iskey);
                 } elseif (AA_Metabase::isPacked($this->t, $colname)) {
-                    // '0' or a shorter id of old data - stored as q_pack_id() did
+                    // '0' or a shorter id of old data: written as the quoted pack_id() text
                     $varset->add($colname, 'text', pack_id((string) $value), $iskey);
                 } else {
                     // no substr() to the column length: MySQL (non-strict sql_mode) cuts varchar by characters, not bytes

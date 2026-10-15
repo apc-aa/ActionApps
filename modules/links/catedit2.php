@@ -125,9 +125,7 @@ function UnassignBaseCategory($parent, $child): void
             $SQL = "UPDATE links_categories
                        SET path = REPLACE(path, '$oldPath' , '$newPath,$child')
                      WHERE path  LIKE '$oldPath%'";
-            $db = getDB();
-            $db->query($SQL);
-            freeDB($db);
+            DB_AA::sql($SQL);
         } else {
             huhl("Something very strange in UnassignBaseCategory() in catedit2.php");
             exit;

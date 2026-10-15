@@ -9,8 +9,7 @@ use PHPUnit\Framework\TestCase;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
 /**
- * Metabase writes must store what hand-written SQL stored, so that INSERT/UPDATE strings can move
- * to AA::Metabase()->do*() without changing data:
+ * Metabase writes store what hand-written SQL stores:
  *  - a packed column takes any value q_pack_id() took ('0' and shorter ids exist in production data);
  *  - text is not cut in PHP - MySQL in the non-strict sql_mode of DB_PDO cuts varchar by characters;
  *  - doInsertMulti() rows equal the one-row doInsert(): a missing column gets its DEFAULT.

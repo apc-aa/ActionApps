@@ -263,12 +263,6 @@ if ($update) {
         Qvarsetadd("search_pri", "number", $show_in_search ? 100 : 0);   // standard value is 100, zero means no search (no other meaning of this field, I think. HM 2025-04-02)
 
         AA::Metabase()->doUpdate('field', ['id' => $fid, 'slice_id' => AA::$module_id] + $field_data, null, "F" . AA_Fields::createShortId($fid) . '@' . pack_id(AA::$module_id));
-        //        $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
-        //
-        //        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error
-        //            $err["DB"] = MsgErr("Can't change field");
-        //            break;
-        //        }
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
         if (!count($err)) {
