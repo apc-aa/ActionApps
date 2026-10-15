@@ -165,6 +165,15 @@ namespace Tests\Unit\Legacy {
             $this->assertSame(3, RecordingDb::count('SELECT id,slice_id FROM item'));
         }
 
+        /** one supertree serves every {tree} of a request - an item found trashed for one root stays out of the next */
+        public function test_item_trashed_in_an_earlier_load_stays_out_of_a_later_tree(): void
+        {
+            $tree = new AA_Supertree('relation........');
+
+            $this->assertSame(['e'], self::shorts($tree->getIds(self::id('e'))));
+            $this->assertSame(['r', 'a', 'c', 'd', 'c', 'b', 'c'], self::shorts($tree->getIds(self::id('r'))));
+        }
+
         public function test_deleted_root_is_itself_and_is_not_looked_up_again(): void
         {
             $tree = new AA_Supertree('relation........');

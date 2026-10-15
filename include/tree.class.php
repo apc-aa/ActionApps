@@ -32,6 +32,7 @@ use AA\Util\SingletonTrait;
 class AA_Supertree
 {
     protected array $_i = [];        // Array of items
+    protected array $_invalid = [];  // ids found trashed, expired or outside the slices - id => true
     protected $_relation_field;  //
     protected $_sort;     // sort array().
     // Currently works only for Reverse trees. @todo
@@ -51,12 +52,13 @@ class AA_Supertree
      */
     public function load($id): void
     {
-        if (isset($this->_i[$id])) {
+        if (isset($this->_i[$id]) || isset($this->_invalid[$id])) {
             return;
         }
 
         /** items, which are already in trash, or expired, ... */
         $invalid       = [];
+        $loaded        = [];
 
         $new_subitems  = [$id];
         while (1) {
@@ -76,22 +78,23 @@ class AA_Supertree
                 $next  = $this->_compactValue($columns[$this->_relation_field]);
                 $new[] = $next;                  // merged once below - array_merge() in the loop is O(n^2) on a big level
                 $this->_i[$item_id] = $next;
+                $loaded[]           = $item_id;
             }
 
-            $new_subitems = array_diff(array_merge(...$new), array_keys($this->_i));
+            $new_subitems = array_diff(array_merge(...$new), array_keys($this->_i), array_keys($this->_invalid));
             if (count($new_subitems) < 1) {
                 break;
             }
         }
 
-        // an invalid id asked for (a deleted root) is known too - not looked up again on every call
-        foreach ($invalid as $iid) {
-            $this->_i[$iid] ??= [];
-        }
-        // remove all links to invalid items
-        if (count($invalid)) {
-            foreach ($this->_i as $item_id => $next) {
-                $this->_i[$item_id] = array_diff($next, $invalid);
+        // remembered, so a deleted root is not looked up again and a later load() skips them too
+        $this->_invalid += array_fill_keys($invalid, true);
+        // remove the links to invalid items - only items loaded now can point to them (the earlier ones
+        // had every link loaded or found invalid already)
+        if ($this->_invalid) {
+            $invalid_ids = array_keys($this->_invalid);
+            foreach ($loaded as $item_id) {
+                $this->_i[$item_id] = array_diff($this->_i[$item_id], $invalid_ids);
             }
         }
         return;
