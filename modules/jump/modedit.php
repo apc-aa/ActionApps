@@ -154,9 +154,9 @@ if ($edit) {
 FrmTabCaption(_m("Edit module"));
 echo '
      <tr><th>' . _m("Module name") . ':</th>
-        <td><input type=text name="jump_name" size=20 value="' . $jump_name . '"></td></tr>
+        <td><input type=text name="jump_name" size=20 value="' . safe($jump_name) . '"></td></tr>
      <tr><th>' . _m("Jump to") . ' (URL):</th>
-        <td><input type=text name="jump_url" size=60 value="' . $jump_url . '"></td></tr>
+        <td><input type=text name="jump_url" size=60 value="' . safe($jump_url) . '"></td></tr>
      <tr><td colspan=2>' . _m("Type in an AA-relative path, e.g.") . ' <code>admin/se_constant.php?group_id=something</code></td></tr>
      <tr><th>' . _m("Jump to slice") . ":</th>
         <td><select name=dest_id>";
