@@ -84,6 +84,10 @@ class AA_Supertree
             }
         }
 
+        // an invalid id asked for (a deleted root) is known too - not looked up again on every call
+        foreach ($invalid as $iid) {
+            $this->_i[$iid] ??= [];
+        }
         // remove all links to invalid items
         if (count($invalid)) {
             foreach ($this->_i as $item_id => $next) {
@@ -104,24 +108,30 @@ class AA_Supertree
     }
 
     /**
-     * @param     $id
-     * @param int $level
+     * @param          $id
+     * @param int      $level
+     * @param string[] $path  ids above $id - a relation back to one of them (a cycle) is not followed,
+     *                        a branching cycle would otherwise grow 2^100 times
      * @return array
      */
-    public function _subIds($id, $level = 1): array
+    public function _subIds($id, $level = 1, array $path = []): array
     {
         if ($level > 100) {
             // @todo throw error
             return [];
         }
-        $parts = [];
-        foreach ($this->_i[$id] as $down_id) {
-            $parts[] = $this->_subIds($down_id, $level + 1);
+        $path[] = $id;
+        $parts  = [];
+        foreach ($this->_i[$id] ?? [] as $down_id) {
+            if (!in_array($down_id, $path, true)) {
+                $parts[] = $this->_subIds($down_id, $level + 1, $path);
+            }
         }
         return $parts ? array_merge([$id], ...$parts) : [$id];   // merged once - a node with 2 000 children took 4 ms
     }
 
-    public function getMenu($ids, $current_ids, $code, $inner = false, $expanded = false, $exp_button = false): string
+    /** @param string[] $path  ids of the entries above - see _subIds() */
+    public function getMenu($ids, $current_ids, $code, $inner = false, $expanded = false, $exp_button = false, array $path = []): string
     {
         $ret = '';
         $xid = end($current_ids);
@@ -139,7 +149,7 @@ class AA_Supertree
             $inpath = in_array($mid, $current_ids) ? 'inpath' : '';
             if ($expanded || $inpath) {
                 $this->load($mid);
-                $sub  = empty($this->_i[$mid]) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded, $exp_button);
+                $sub  = (empty($this->_i[$mid]) || in_array($mid, $path, true)) ? '' : $this->getMenu($this->_i[$mid], $current_ids, $code, true, $expanded, $exp_button, [...$path, $mid]);
                 $ret .= '  <li id="menu-' . $mid . '" class="' . $inpath . ($mid == $xid ? ' xidmatch' : '') . '">';
                 $ret .= $menu_txt;
                 $ret .= ($exp_button && strlen($sub)) ? '<i class=aa-ico-expand onclick="this.closest(\'li\').classList.toggle(\'inpath\');"></i>' : '' ;
@@ -168,21 +178,25 @@ class AA_Supertree
     }
 
     /**
-     * @param $id
-     * @param $level
+     * @param          $id
+     * @param          $level
+     * @param string[] $path  see _subIds()
      * @return string
      */
-    public function _subTreeString($id, $level): string
+    public function _subTreeString($id, $level, array $path = []): string
     {
         if ($level > 100) {
             // @todo throw error
             return '';
         }
+        $path[]     = $id;
         $treestring = '';
         $delim      = '';
-        foreach ($this->_i[$id] as $down_id) {
-            $treestring .= $delim . $this->_subTreeString($down_id, $level + 1);
-            $delim       = '-';
+        foreach ($this->_i[$id] ?? [] as $down_id) {
+            if (!in_array($down_id, $path, true)) {
+                $treestring .= $delim . $this->_subTreeString($down_id, $level + 1, $path);
+                $delim       = '-';
+            }
         }
         return $id . (empty($treestring) ? '' : "($treestring)");
     }
@@ -373,7 +387,7 @@ class AA_Trees
      * @return
      * @noinspection PhpUnused
      */
-    public static function getTreeString($id, $relation_field, $reverse = false, $sort = null, $slices = null): string
+    public static function getTreeString($id, $relation_field, $reverse = false, $sort = null, $slices = []): string
     {
         return self::getSupertree($relation_field, $reverse, $sort, $slices)->getTreeString($id);
     }
@@ -383,7 +397,7 @@ class AA_Trees
      * @param $id
      * @return array
      */
-    public static function getIds($id, $relation_field, $reverse = false, $sort = null, $slices = null): array
+    public static function getIds($id, $relation_field, $reverse = false, $sort = null, $slices = []): array
     {
         return self::getSupertree($relation_field, $reverse, $sort, $slices)->getIds($id);
     }

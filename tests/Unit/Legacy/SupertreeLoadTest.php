@@ -164,5 +164,14 @@ namespace Tests\Unit\Legacy {
             // levels r / a,b / c,d,e,f - each one item SELECT
             $this->assertSame(3, RecordingDb::count('SELECT id,slice_id FROM item'));
         }
+
+        public function test_deleted_root_is_itself_and_is_not_looked_up_again(): void
+        {
+            $tree = new AA_Supertree('relation........');
+
+            $this->assertSame(['f'], self::shorts($tree->getIds(self::id('f'))));
+            $this->assertSame(self::id('f'), $tree->getTreeString(self::id('f')));
+            $this->assertSame(1, RecordingDb::count('SELECT id,slice_id FROM item'));
+        }
     }
 }

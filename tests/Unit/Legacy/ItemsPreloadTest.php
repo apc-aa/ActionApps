@@ -211,6 +211,26 @@ namespace Tests\Unit\Legacy {
             );
         }
 
+        public function test_expanded_menu_stops_at_a_cycle(): void
+        {
+            $tree = new PresetSupertree('relation........');
+            $tree->preset([self::A => [self::B], self::B => [self::A, self::D], self::D => []]);
+
+            $html = $tree->getMenu([self::A], [], 'headline........', false, true);
+
+            $this->assertSame(
+                "\n<ul>\n"
+                . "  <li id=\"menu-" . self::A . "\" class=\"\">TA\n<ul>\n"
+                . "  <li id=\"menu-" . self::B . "\" class=\"\">TB\n<ul>\n"
+                . "  <li id=\"menu-" . self::A . "\" class=\"\">TA</li>\n"
+                . "  <li id=\"menu-" . self::D . "\" class=\"\">TD</li>\n"
+                . "</ul>\n</li>\n"
+                . "</ul>\n</li>\n"
+                . "</ul>\n",
+                $html,
+            );
+        }
+
         public function test_a_menu_level_costs_one_item_load_not_one_per_entry(): void
         {
             $this->menuTree()->getMenu([self::A, self::B, self::C], [self::B, self::D], 'headline........', false, true);
