@@ -1257,7 +1257,7 @@ class AA_Module_Site extends AA_Module
      */
     public function saveTree(sitetree $tree, bool $clean_unused = false): void
     {
-        DB_AA::update('site', [['structure', serialize($tree)]], [['id',$this->module_id, 'l']]);
+        AA::Metabase()->doUpdate('site', ['id' => $this->module_id, 'structure' => serialize($tree)]);
         if ($clean_unused) {
             $this->cleanTree($tree);
         }

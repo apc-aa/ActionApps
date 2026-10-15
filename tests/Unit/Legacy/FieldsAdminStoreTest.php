@@ -137,8 +137,8 @@ namespace Tests\Unit\Legacy {
 
             $this->assertSame([], $err);
             $this->assertSame([
-                "UPDATE `field` SET  name = 'Titulek \\'x\\'' , input_pri = 10 , required = 1 , input_show = 0 WHERE id = 'headline........' AND slice_id = 0x0123456789abcdef0123456789abcdef",
-                "UPDATE `field` SET  name = 'Popis' , input_pri = 200 , required = 0 , input_show = 1 WHERE id = 'text...........1' AND slice_id = 0x0123456789abcdef0123456789abcdef",
+                "UPDATE `field` SET `name`='Titulek \\'x\\'', `input_pri`='10', `required`='1', `input_show`='0' WHERE id='headline........' AND slice_id=0x0123456789abcdef0123456789abcdef",
+                "UPDATE `field` SET `name`='Popis', `input_pri`='200', `required`='0', `input_show`='1' WHERE id='text...........1' AND slice_id=0x0123456789abcdef0123456789abcdef",
             ], self::writes());
         }
 
@@ -171,7 +171,7 @@ namespace Tests\Unit\Legacy {
             self::store(['text...........7' => 'taken over', 'headline........' => 'Own'], ['text...........7' => '1', 'headline........' => '1']);
 
             $this->assertSame([
-                "UPDATE `field` SET  name = 'Own' , input_pri = 1 , required = 0 , input_show = 0 WHERE id = 'headline........' AND slice_id = 0x0123456789abcdef0123456789abcdef",
+                "UPDATE `field` SET `name`='Own', `input_pri`='1', `required`='0', `input_show`='0' WHERE id='headline........' AND slice_id=0x0123456789abcdef0123456789abcdef",
             ], self::writes());
         }
 
@@ -255,7 +255,7 @@ namespace Tests\Unit\Legacy {
                 'type'          => '',
             ], self::columns($inserted[0], ['alias1', 'alias2', 'feed', 'id', 'input_default', 'input_help', 'input_pri', 'input_show', 'name', 'required', 'slice_id', 'text_stored', 'type']));
             $this->assertContains(
-                "UPDATE `field` SET  name = 'Headline' , input_pri = 5 , required = 0 , input_show = 0 WHERE id = 'headline........' AND slice_id = 0x0123456789abcdef0123456789abcdef",
+                "UPDATE `field` SET `name`='Headline', `input_pri`='5', `required`='0', `input_show`='0' WHERE id='headline........' AND slice_id=0x0123456789abcdef0123456789abcdef",
                 self::writes(),
             );
         }

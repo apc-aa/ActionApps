@@ -146,7 +146,7 @@ namespace Tests\Unit\Legacy {
                 return;
             }
             $this->assertCount(1, $updates);
-            $this->assertMatchesRegularExpression("/^UPDATE `users` SET\\s+password = '\\\$2y\\\$\\d\\d\\\$[.\\/A-Za-z0-9]{53}'\\s+WHERE\\s+id = 7$/", $updates[0]);
+            $this->assertMatchesRegularExpression("/^UPDATE `users` SET `password`='\\\$2y\\\$\\d\\d\\\$[.\\/A-Za-z0-9]{53}' WHERE id='7'$/", $updates[0]);
         }
 
         #[DataProvider('hashes')]

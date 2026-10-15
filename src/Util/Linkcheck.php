@@ -2,6 +2,7 @@
 
 namespace AA\Util;
 
+use AA;
 use AA\Http\Client;
 use AA\Http\ClientInterface;
 use AA\Http\TransportException;
@@ -295,11 +296,12 @@ class Linkcheck
         foreach ($links as $link) {
             $val = $this->check_url((string) $link['url']);
             $val['valid_codes'] = $this->add_check($val, $link['valid_codes']);
-            DB_AA::update('links_links', [
-                ['valid_codes', $val['valid_codes']],
-                ['valid_rank', $this->count_weight($val['valid_codes'])],
-                ['validated', $val['timestamp'], 'i'],
-            ], [['id', $link['id'], 'i']]);
+            AA::Metabase()->doUpdate('links_links', [
+                'id'          => $link['id'],
+                'valid_codes' => $val['valid_codes'],
+                'valid_rank'  => $this->count_weight($val['valid_codes']),
+                'validated'   => $val['timestamp'],
+            ]);
         }
         return count($links);
     }

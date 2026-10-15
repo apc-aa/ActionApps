@@ -546,7 +546,7 @@ function CopyConstants($slice_id): bool
 
         // update fields
         foreach ($fields as $field_id => $shf) {
-            if (DB_AA::update('field', [['input_show_func', str_replace($old_id, $new_id, $shf), 's']], [['id', $field_id], ['slice_id', $slice_id, 'l']]) === false) {
+            if (!AA::Metabase()->doUpdate('field', ['id' => $field_id, 'slice_id' => $slice_id, 'input_show_func' => str_replace($old_id, $new_id, $shf)])) {
                 $err[] = "Could not update fields.";
                 return false;
             }

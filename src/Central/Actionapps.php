@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AA\Central;
 
 use AA;
-use AA\IO\DB\DB_AA;
 use AA\Util\Crypt;
 use AA\Util\LoginToken;
 use AA\Util\Secret;
@@ -188,7 +187,7 @@ class Actionapps
     {
         $id = $this->getId() ?? throw new LogicException('The AA has no central_conf row - the token cannot be saved');
         $this->setAuthToken($jwt);
-        DB_AA::update('central_conf', [['AA_ADMIN_PWD', (string) $this->getValue('AA_ADMIN_PWD'), 's']], [['id', $id, 'i']]);
+        AA::Metabase()->doUpdate('central_conf', ['id' => $id, 'AA_ADMIN_PWD' => (string) $this->getValue('AA_ADMIN_PWD')]);
     }
 
     /** AES-256-GCM of sodium needs the CPU's AES instructions */

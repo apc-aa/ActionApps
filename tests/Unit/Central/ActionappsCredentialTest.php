@@ -207,7 +207,7 @@ final class ActionappsCredentialTest extends TestCase
 
         $updates = CentralConfDb::updates();
         self::assertCount(1, $updates);
-        self::assertMatchesRegularExpression("/^UPDATE `central_conf` SET  AA_ADMIN_PWD = 'v1:[\\w-]+' WHERE id = 12$/", $updates[0]);
+        self::assertMatchesRegularExpression("/^UPDATE `central_conf` SET `AA_ADMIN_PWD`='v1:[\\w-]+' WHERE id='12'$/", $updates[0]);
         self::assertStringNotContainsString(self::TOKEN, $updates[0]);
         self::assertSame(self::TOKEN, self::aa(['AA_ADMIN_PWD' => (string) $aa->getValue('AA_ADMIN_PWD')])->getAuthToken());
     }

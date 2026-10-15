@@ -651,10 +651,7 @@ function initialize_last(): void
         // the same as above, but for rows, which exist but with last=0
         foreach (DB_AA::select([], "SELECT C.id FROM alerts_collection C INNER JOIN
             alerts_collection_howoften CH ON CH.collectionid = C.id", [['last', 0, 'i'], ['howoften', $ho]]) as $row) {
-            DB_AA::update('alerts_collection_howoften', [['last',$init[$ho],'i']], [
-                ['collectionid', $row["id"]],
-                ['howoften', $ho],
-            ]);
+            AA::Metabase()->doUpdate('alerts_collection_howoften', ['collectionid' => $row['id'], 'howoften' => $ho, 'last' => $init[$ho]]);
             // $db2->query("UPDATE alerts_collection_howoften SET last=".$init[$ho]
             //     ." WHERE collectionid=".$db->f("id")." AND howoften='$ho'");
         }

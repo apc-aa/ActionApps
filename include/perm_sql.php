@@ -332,7 +332,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             // AA\Optimize\LdapPermsToSql, upgrade it to bcrypt now that
             // we have the plaintext in hand. Silent and transparent.
             if (str_starts_with((string) $user['password'], '{')) {
-                DB_AA::update('users', [['password', self::generatePasswordHash($password), 's']], [['id', $user['id'], 'i']]);
+                AA::Metabase()->doUpdate('users', ['id' => $user['id'], 'password' => self::generatePasswordHash($password)]);
             }
             return $user['id'];
         }

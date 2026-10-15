@@ -198,7 +198,7 @@ final class CentralActionappsTest extends TestCase
 
         self::collectingWarnings(static fn() => self::aa(['id' => '12', 'AA_HTTP_DOMAIN' => 'https://example.org/', 'AA_BASE_DIR' => 'aa/'])->saveAuthToken('abc'), $warnings);
 
-        $this->assertMatchesRegularExpression("/^UPDATE `central_conf` SET  AA_ADMIN_PWD = 'v1:[\\w-]+' WHERE id = 12$/", CentralConfDb::updates()[0]);
+        $this->assertMatchesRegularExpression("/^UPDATE `central_conf` SET `AA_ADMIN_PWD`='v1:[\\w-]+' WHERE id='12'$/", CentralConfDb::updates()[0]);
         $this->assertSame([], $warnings);
     }
 
