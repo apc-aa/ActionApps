@@ -123,6 +123,7 @@ if ($convertto) {
 //create keystring from values, which exactly identifies resulting content
 $cache_key = get_hash($view_param, PageCache::globalKeyArray(), $GLOBALS['apc_state']['xpage']);
 
+$nocache = (int) ($nocache ?? 0);   // a non-numeric string or an array from the request makes `&` throw a TypeError
 if ($nocache & 2) {  // nocache=2 or nocache=3, ... - second bit set
     AA_Stringexpand::switchCacheOff();
 }

@@ -105,6 +105,7 @@ if ($disc_url) {
 //create keystring from values, which exactly identifies resulting content
 $cache_key = get_hash($view_param, PageCache::globalKeyArray());
 
+$nocache = (int) ($nocache ?? 0);   // a non-numeric string or an array from the request makes `&` throw a TypeError
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // nocache=1 or nocache=3, ... - first bit set
     $cacheentry->processPage(true);
 } else {
