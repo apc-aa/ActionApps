@@ -61,7 +61,6 @@ try {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-$varset      = new Cvarset();
 
 if ($update) {
     do {
@@ -75,21 +74,20 @@ if ($update) {
             break;
         }
 
-        $varset->add("fulltext_format_top", "text", $fulltext_format_top);
-        $varset->add("fulltext_format", "text", $fulltext_format);
-        $varset->add("fulltext_format_bottom", "text", $fulltext_format_bottom);
-        $varset->add("fulltext_remove", "text", $fulltext_remove);
-
         $discus_flag = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', AA::$module_id, 'l']]);
         $discus_flag &= ~ (DISCUS_HTML_FORMAT | DISCUS_ADD_DISABLED); // clear the bits
         $discus_flag |= $discus_htmlf ? DISCUS_HTML_FORMAT : 0;
         $discus_flag |= $discus_disabled ? DISCUS_ADD_DISABLED : 0;
 
-        $varset->add("flag", "number", $discus_flag);
-        $varset->add("vid", "number", $discus_vid);
-        $varset->addkey("id", "unpacked", AA::$module_id);
-
-        if (!$varset->doUpdate('slice', null, AA::$module_id)) {
+        if (!AA::Metabase()->doUpdate('slice', [
+            'id'                     => AA::$module_id,
+            'fulltext_format_top'    => $fulltext_format_top,
+            'fulltext_format'        => $fulltext_format,
+            'fulltext_format_bottom' => $fulltext_format_bottom,
+            'fulltext_remove'        => $fulltext_remove,
+            'flag'                   => $discus_flag,
+            'vid'                    => $discus_vid,
+        ], null, AA::$module_id)) {
             $err["DB"] = MsgErr(_m("Can't change slice settings"));
             break;    // not necessary - we have set the halt_on_error
         }

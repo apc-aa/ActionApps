@@ -96,7 +96,7 @@ function ChangeCatPriority($category_id, $insertedId, $pri, $state, $name): void
 function ChangeCatState($category_id, $insertedId, $state): void
 {
     // General categories have its own priorities
-    DB_AA::sql("UPDATE links_cat_cat SET state='$state' WHERE category_id = $category_id AND what_id = $insertedId");
+    DB_AA::update('links_cat_cat', [['state', (string) $state, 's']], [['category_id', $category_id, 'i'], ['what_id', $insertedId, 'i']]);
 }
 
 // Moves this category to another subtree or delete (if clear and no link to it)
@@ -107,8 +107,6 @@ function UnassignBaseCategory($parent, $child): void
     // get all categories, where this is subcategory
     $parents = DB_AA::select([], 'SELECT category_id, base FROM links_cat_cat', [['what_id', $child, 'i']]);
 
-    $db = getDB();
-
     foreach ($parents as $row) {  // this base category is linked to another
         if ($row['category_id'] == $parent) { // this we unasign => skip it
             continue;
@@ -117,9 +115,7 @@ function UnassignBaseCategory($parent, $child): void
         $newParent = $row['category_id'];
 
         // make first as base
-        $SQL = "UPDATE links_cat_cat SET base='y' WHERE what_id = $child AND category_id = $newParent";
-
-        $db->query($SQL);
+        DB_AA::update('links_cat_cat', [['base', 'y', 's']], [['what_id', $child, 'i'], ['category_id', $newParent, 'i']]);
 
         // we have to change path to this category
         $newPath = GetCategoryPath($newParent);
@@ -129,10 +125,9 @@ function UnassignBaseCategory($parent, $child): void
             $SQL = "UPDATE links_categories
                        SET path = REPLACE(path, '$oldPath' , '$newPath,$child')
                      WHERE path  LIKE '$oldPath%'";
-            $db->query($SQL);
+            DB_AA::sql($SQL);
         } else {
             huhl("Something very strange in UnassignBaseCategory() in catedit2.php");
-            freeDB($db);
             exit;
         }
 
@@ -141,11 +136,9 @@ function UnassignBaseCategory($parent, $child): void
         ChangeCatPermAsIn($child, $newParent);
 
         $r_msg[] = MsgOk(_m('Category reassigned'));
-        freeDB($db);
         return;
     }
 
-    freeDB($db);
     // category is not linked to another => delete if clear
     if (IsCatEmpty($child)) {
         DeleteCategory($child);
@@ -201,7 +194,6 @@ if (IsCatPerm(PS_LINKS_EDIT_CATEGORY, $cpath)) {
 }
 
 $err = [];            // error array (just for initializing variable)
-$varset = new Cvarset();
 
 // Category properties ------------------
 
@@ -213,12 +205,14 @@ ValidateInput("additional", _m('Additional information'), $additional, $r_err, f
 ValidateInput("note", _m('Editor\'s note'), $note, $r_err, false, "text");
 
 if (!$r_err || count($r_err) <= 1) {
-    $varset->add("name", "text", $cat_name);
-    $varset->add("description", "text", $description);
-    $varset->add("additional", "text", $additional);
-    $varset->add("note", "text", $note);
-    $varset->add("nolinks", "text", $nolinks ? 1 : 0);
-    $db->query("UPDATE links_categories SET " . $varset->makeUPDATE() . " WHERE id=$cid");
+    AA::Metabase()->doUpdate('links_categories', [
+        'id'          => $cid,
+        'name'        => $cat_name,
+        'description' => $description,
+        'additional'  => $additional,
+        'note'        => $note,
+        'nolinks'     => $nolinks ? 1 : 0,
+    ]);
     $r_msg[] = MsgOk(_m('Category data changed'));
 } else {
     Session::page_close();

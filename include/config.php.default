@@ -86,6 +86,18 @@ define("AA_ID", "990111222333444555666777888999A9");
  */
 // define('AA_SECRET', '');  // any long random string, e.g. bin2hex(random_bytes(32))
 
+/** Reverse proxies in front of AA - addresses or CIDR ranges. Only from them AA takes
+ *  the visitor's address, the domain and https from X-Forwarded-For/-Host/-Server/-Proto;
+ *  from anyone else these headers are ignored. Without the setting AA trusts a proxy on
+ *  the same machine (127.0.0.1, ::1); [] trusts nobody.
+ *  The proxy must set or append these headers itself, never pass the visitor's on:
+ *  Apache appends X-Forwarded-For/-Host/-Server, but X-Forwarded-Proto it passes on, so
+ *  add RequestHeader set X-Forwarded-Proto "https" to its https virtual host.
+ *  A config.php that picks the database by domain calls \AA\Util\TrustedProxy::applyToRequest()
+ *  first (require_once the class) and then reads $_SERVER['SERVER_NAME'].
+ */
+// define('AA_TRUSTED_PROXIES', ['127.0.0.1', '::1']);
+
 /** Organization name
  *  It should be also world unique - it is important to have it unique mainly
  *  if you plan exchange articles between servers
@@ -220,6 +232,13 @@ define("IMG_UPLOAD_URL", AA_HTTP_DOMAIN."img_upload/");
 
 /** path from server root to image/file directory */
 define("IMG_UPLOAD_PATH", AA_SITE_PATH."img_upload/");
+
+/** img.php looks for images under AA_SITE_PATH. When one AA serves several sites whose files
+ *  live elsewhere, map each AA_HTTP_DOMAIN to that site's document root:
+ *  define('AA_IMG_DOCUMENT_ROOTS', [
+ *      'https://example.org/' => '/var/www/example.org',
+ *  ]);
+ */
 
 /** mkdir perms - AA creates new directory for each slice in image/file upload
 *  directory specified above. Each slice then have its own subdirectory.

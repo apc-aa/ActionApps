@@ -29,7 +29,6 @@
 */
 
 use AA\IO\DB\DB_AA;
-use AA\Util\Hitcounter;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
 use AA\Util\Txt;
@@ -457,6 +456,7 @@ class AA_View
 
         AA::$debug & 2 && AA::$dbg->log("<br>ParseViewParameters - command:", $commands);
 
+        $hits = [];
         $commands->reset();
         while ($command = $commands->current()) {
             $commands->next();
@@ -472,10 +472,11 @@ class AA_View
                     $zids = new zids();
                     $zids->addDirty(($command->getParameter(1) === 'url') ? $x : $command->getParameterArray(1));
 
-                    // This is bizarre code, just incrementing the first item, left as it is
-                    // but questioned on apc-aa-coders - mitra
+                    // x counts just the first item, even when the view shows more of them;
+                    // written once the output is there (AA_Showview, or processPage() in view.php),
+                    // so it gets the real time and cache state
                     if ($command->getCommand() === 'x' && !$zids->isEmpty()) {
-                        Hitcounter::hit($zids->slice(0));
+                        $hits[] = $zids->slice(0);
                     }
                     break;
 
@@ -567,6 +568,7 @@ class AA_View
         $arr['param_conds'] = $param_conds;
         //  $arr['item_ids'] = $item_ids;
         $arr['zids'] = $zids;
+        $arr['hits'] = $hits;   // set always - a set[]=hits-… from the URL must not get here
 
         AA::$debug & 2 && AA::$dbg->log($arr);
         return $arr;

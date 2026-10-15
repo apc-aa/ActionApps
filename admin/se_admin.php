@@ -76,7 +76,6 @@ if (!IfSlPerm(PS_CONFIG)) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-$varset      = new Cvarset();
 
 if ($update) {
     do {
@@ -91,12 +90,14 @@ if ($update) {
             break;
         }
 
-        $varset->add("admin_format_top", "text", $admin_format_top);
-        $varset->add("admin_format", "text", $admin_format);
-        $varset->add("admin_format_bottom", "text", $admin_format_bottom);
-        $varset->add("admin_remove", "text", $admin_remove);
-        $varset->add("admin_noitem_msg", "text", $admin_noitem_msg);
-        if (!$db->query("UPDATE slice SET " . $varset->makeUPDATE() . " WHERE id=" . xpack_id(AA::$module_id))) {
+        if (!AA::Metabase()->doUpdate('slice', [
+            'id'                  => AA::$module_id,
+            'admin_format_top'    => $admin_format_top,
+            'admin_format'        => $admin_format,
+            'admin_format_bottom' => $admin_format_bottom,
+            'admin_remove'        => $admin_remove,
+            'admin_noitem_msg'    => $admin_noitem_msg,
+        ])) {
             $err["DB"] = MsgErr(_m("Can't change slice settings"));
             break;    // not necessary - we have set the halt_on_error
         }

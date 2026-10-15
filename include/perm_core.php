@@ -32,6 +32,7 @@
 //
 
 use AA\IO\DB\DB_AA;
+use AA\Security\LoginThrottle;
 
 const MAX_GROUPS_DEEP   = 16;   // Maximum number of nested groups (user belongs to group1, group1 to group2 ...)
 const MAX_ENTRIES_SHOWN = 10;   // Maximum number of shown users in search for users/groups
@@ -473,15 +474,26 @@ class AA_Perm {
      * @param string $username
      * @param string $password
      * @param string $code2fa
+     * @param bool   $template true when a template passed the credentials ({jwtencode}) - a failure then counts only
+     *                         for the name (LoginThrottle::failed())
      * @return string|false
      */
-    public function authenticateUsername($username, $password, $code2fa=''): false|string
+    public function authenticateUsername($username, $password, $code2fa='', bool $template = false): false|string
     {
+        $username = (string) $username;
+        // the one gate of every password check
+        if (($username === '') || !LoginThrottle::admit($username, $template)) {
+            return false;
+        }
+        $started = hrtime(true);
         foreach ($this->perm_systems as $perm_sys) {
             if ($user_id = $perm_sys->authenticateUsername($username, $password, $code2fa)) {
                 return $user_id;
             }
         }
+        LoginThrottle::failed($username, $template);
+        // an unknown name costs no hash, and stored hashes differ in cost - the time would tell which names exist
+        LoginThrottle::pad($started);
         return false;
     }
 

@@ -249,7 +249,8 @@ class AA_Mysqlauth
 
         foreach ($final_groups as $group) {
             if ($group) {
-                DB_AA::sql("INSERT INTO auth_group (username, `groups`, last_changed) VALUES (" . qquote($username) . "," . qquote($group) . "," . time() . ")");
+                // (string): a missing username is stored as '' - Metabase would leave a null column out
+                AA::Metabase()->doInsert('auth_group', ['username' => (string) $username, 'groups' => $group, 'last_changed' => time()]);
             }
         }
     }

@@ -79,15 +79,11 @@ function ParseIdA($param, &$app): string
 }
 
 $err = [];       // error array (Init - just for initializing variable)
-$catVS       = new Cvarset();
 
 if ($feed_id) { // cross server feeding
     // setting filters from external slice
 
     if ($ext_categs = FeedUtil::GetExternalCategories($feed_id)) {
-        // delete current filters and then insert new
-        DB_AA::delete('ef_categories', [['feed_id', $feed_id]]);
-
         // clear setting of feeding
         // Note all external categories MUST be stored in the ef_categories
         // table even if no feed (we need to have listing of external categs)
@@ -117,17 +113,25 @@ if ($feed_id) { // cross server feeding
             }
         }
 
+        // a 0 / '0' category id is stored as an empty id
+        $rows = [];
         foreach ($ext_categs as $id => $v) {
-            $catVS->clear();
-            $catVS->add("category", "text", $v['value']);
-            $catVS->add("category_name", "text", $v['name']);
-            $catVS->add("category_id", "unpacked", $id);
-            $catVS->add("feed_id", "number", $feed_id);
-            $catVS->add("target_category_id", "unpacked", $v['target_category_id']);
-            $catVS->add("approved", "number", $v['approved']);   // zero = the same category
-            if (!$catVS->doINSERT('ef_categories')) {    // not necessary - we have set the halt_on_error
-                $err["DB"] .= MsgErr("Can't add import from" . $v['name']);
-            }
+            $rows[] = [
+                'category'           => (string) $v['value'],
+                'category_name'      => (string) $v['name'],
+                'category_id'        => $id ?: '',
+                'feed_id'            => $feed_id,
+                'target_category_id' => $v['target_category_id'] ?: '',
+                'approved'           => (int) $v['approved'],
+            ];
+        }
+        // delete current filters and then insert new
+        $stored = DB_AA::transaction(static function () use ($feed_id, $rows) {
+            DB_AA::delete('ef_categories', [['feed_id', $feed_id]]);
+            return AA::Metabase()->doInsertMulti('ef_categories', $rows);
+        });
+        if ($stored === false) {    // not necessary - we have set the halt_on_error
+            $err["DB"] .= MsgErr("Can't add import from feed $feed_id");
         }
     }
 } else { // inner feeding
@@ -135,24 +139,21 @@ if ($feed_id) { // cross server feeding
     // First we DELETE current filters and then INSERT new.
     // We can't use UPDATE because the count of old and new rows can be different.
     // We could UPDATE existing rows and INSERT new, but DELETE/INSERT is simpler.
-    // A transaction would be nice.
+    // 0 / '0' (the same category) is stored as an empty id.
 
-    DB_AA::delete('feeds', [['to_id', AA::$module_id, 'l'], ['from_id', $import_id, 'l']]);
-
+    $feeds = [];
     if ($all) {                                         // all_categories
         $id = ParseIdA($C, $app);
         if ($id == FeedUtil::UNPACKED_AA_THE_SAME_CATE) {           // the same category
             $id = 0;
         }
-        $catVS->clear();
-        $catVS->add("to_id", "unpacked", AA::$module_id);
-        $catVS->add("from_id", "unpacked", $import_id);
-        $catVS->add("all_categories", "number", 1);
-        $catVS->add("to_approved", "number", $app);
-        $catVS->add("to_category_id", "unpacked", $id);   // zero = the same category
-        if (!$catVS->doINSERT('feeds')) {
-            $err["DB"] .= MsgErr("Can't add import from $import_id");
-        }
+        $feeds[] = [
+            'to_id'          => AA::$module_id,
+            'from_id'        => $import_id,
+            'all_categories' => 1,
+            'to_approved'    => (int) $app,
+            'to_category_id' => $id ?: '',
+        ];
     } elseif (isset($_GET['F']) && is_array($_GET['F'])) {            // insert to categories
         foreach ($_GET['F'] as $index => $val) {
             $from_cat = ParseIdA($val, $app);
@@ -160,18 +161,22 @@ if ($feed_id) { // cross server feeding
             if ($to_cat == FeedUtil::UNPACKED_AA_THE_SAME_CATE || $to_cat == "0") { // "0" is from older versions - it could be never "0"
                 $to_cat = $from_cat;
             }
-            $catVS->clear();
-            $catVS->add("to_id", "unpacked", AA::$module_id);
-            $catVS->add("from_id", "unpacked", $import_id);
-            $catVS->add("all_categories", "number", 0);
-            $catVS->add("to_approved", "number", $app);
-            $catVS->add("category_id", "unpacked", $from_cat);
-            $catVS->add("to_category_id", "unpacked", $to_cat);
-            if (!$catVS->doINSERT('feeds')) {
-                $err["DB"] .= MsgErr("Can't add import from $val");
-                break;
-            }
+            $feeds[] = [
+                'to_id'          => AA::$module_id,
+                'from_id'        => $import_id,
+                'all_categories' => 0,
+                'to_approved'    => (int) $app,
+                'category_id'    => $from_cat ?: '',
+                'to_category_id' => $to_cat ?: '',
+            ];
         }
+    }
+    $stored = DB_AA::transaction(static function () use ($import_id, $feeds) {
+        DB_AA::delete('feeds', [['to_id', AA::$module_id, 'l'], ['from_id', $import_id, 'l']]);
+        return AA::Metabase()->doInsertMulti('feeds', $feeds);
+    });
+    if ($stored === false) {    // not necessary - we have set the halt_on_error
+        $err["DB"] .= MsgErr("Can't add import from $import_id");
     }
 }
 

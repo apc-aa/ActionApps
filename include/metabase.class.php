@@ -631,7 +631,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
 
     /** Prepare Cvarset for given data array (set right types/values/...)
      *
-     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
      * @return Cvarset|null
      */
     public function getVarset4Data(array $data): ?Cvarset
@@ -647,10 +647,13 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
                 $iskey = $coldef->isKey();
                 if ($coldef->getFieldType() === 'int') {
                     $varset->add($colname, 'number', (int) $value, $iskey);
-                } elseif (AA_Metabase::isPacked($this->t, $colname)) {
+                } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_ids($value)) {
                     $varset->add($colname, 'unpacked', $value, $iskey);
+                } elseif (AA_Metabase::isPacked($this->t, $colname)) {
+                    // '0' or a shorter id of old data: written as the quoted pack_id() text
+                    $varset->add($colname, 'text', pack_id((string) $value), $iskey);
                 } else {
-                    $value = ($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value;
+                    // no substr() to the column length: MySQL (non-strict sql_mode) cuts varchar by characters, not bytes
                     $varset->add($colname, 'text', $value, $iskey);
                 }
             }
@@ -660,8 +663,8 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
 
     /** Prepare data for insert (set right types/values/...)
      *
-     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
-     * @return array ['colname' => 'value', ...]
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
+     * @return array ['colname' => 'value', ...] - SQL literals of the schema columns $data sets (not null), in schema order
      */
     public function getSQLData(array $data): array
     {
@@ -679,14 +682,11 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
                     $ret[$colname] = (int) $value;
                 } elseif ($type === 'float') {
                     $ret[$colname] = (float) $value;
-                } elseif (AA_Metabase::isPacked($this->t, $colname) && is_long_ids($value)) {
-                    $ret[$colname] = '0x' . $value;
+                } elseif (AA_Metabase::isPacked($this->t, $colname)) {
+                    $ret[$colname] = is_long_ids($value) ? '0x' . $value : qquote(pack_id((string) $value));
                 } else {
-                    $ret[$colname] = qquote(($maxlen = $coldef->getMaxLength()) ? substr($value, 0, $maxlen) : $value);
+                    $ret[$colname] = qquote($value);
                 }
-            }
-            if (!isset($ret[$colname])) {
-                $ret[$colname] = 'NULL';
             }
         }
         return $ret;
@@ -1078,7 +1078,7 @@ class AA_Metabase
      *  For now, the table keys must be provided - we are not able to update multiple records. Could be changed in future
      *  usage: AA::Metabase()->doUpdate(...);
      * @param  string   $tablename table, where to store data
-     * @param  string[] $data[]    data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
      * @param  string|null $nohalt  'nohalt' - do not halt on database error
      * @param  string   $history_key resource id the change is written to the history under ('' = no history)
      * @return bool|int   0|false on error
@@ -1097,7 +1097,7 @@ class AA_Metabase
      * @usage AA::Metabase()->doInsert('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      *
      * @param  string       $tablename  - table, where to store data
-     * @param  string[]     $data       - data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data       - data array - all data unpacked. The values are converted to correct ones
      * @param  string|null  $nohalt     'nohalt' - do not halt on database error
      *
      * @return bool|int   0|false on error, int on success. If INSERT, returns last inserted id or PHP_INT_MAX if not provided
@@ -1126,7 +1126,7 @@ class AA_Metabase
      *  - the packed data are packed automatically, the integer data are typecast to numbers, ...
      * @usage AA::Metabase()->doReplace('log', ['time'=>time(),'user'=>$uid, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]);
      * @param  string   $tablename - table, where to store data
-     * @param  string[] $data      - data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data      - data array - all data unpacked. The values are converted to correct ones
      * @param  string   $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
@@ -1143,42 +1143,38 @@ class AA_Metabase
      *                                              ['time'=>time(),'user'=>$uid2, 'type'=>$event, 'selector'=>$selector, 'params'=>$params]]);
      * @see AA_Metabase::doInsert()
      * @param  string     $tablename table, where to store data
-     * @param  string[][] $data[][]  data rows - all data unpacked. The values are converted to correct ones
-     * @param  string     $nohalt  'nohalt' - do not halt on database error
-     * @return bool|int   0|false on error
-     * @todo   process it as one SQL insert statement
+     * @param  array<array<string, mixed>> $data  data rows - all data unpacked. The values are converted to correct ones
+     * @param  string     $nohalt  unused - an error halts unless the caller switched halting off on the handle (Logs)
+     * @return bool|int   number of inserted rows, false on error
      */
     public function doInsertMulti($tablename, $data, $nohalt = null): bool|int
     {
-        $table = $this->tables[$tablename];
-
-        $chunkSize  = 1000;           // Define chunk size
-        $chunkedData = array_chunk($data, $chunkSize);
-
-        $SQLstart = "INSERT INTO `$tablename` (`" . implode('`,`', $table->getColumnNames()) . '`) VALUES ';
-        $inserded = 0;
-        foreach ($chunkedData as $chunk) {
-            $SQL = $SQLstart;
-            $values = [];
-            foreach ($chunk as $row) {
-                $sanitizedRow = $table->getSQLData($row);
-                $values[]     = "(" . implode(",", array_values($sanitizedRow)) . ")";
+        $table    = $this->tables[$tablename];
+        $inserted = 0;
+        foreach (array_chunk($data, 1000) as $chunk) {
+            $rows = array_map(static fn($row) => $table->getSQLData($row), $chunk);
+            // only the columns the rows set, as doInsert() does: the live table decides the rest - it may lack
+            // a schema column (hit_archive.duration) or have another default. DEFAULT, not NULL, for a row without
+            // one of them: NULL into a NOT NULL column stores 0/'' (and fails in a one-row INSERT)
+            $columns = array_intersect($table->getColumnNames(), array_keys(array_merge(...$rows)));
+            $values  = [];
+            foreach ($rows as $row) {
+                $values[] = '(' . implode(',', array_map(static fn($col) => $row[$col] ?? 'DEFAULT', $columns)) . ')';
             }
-            $SQL      .= implode(', ', $values);
-            $num_rows = DB_AA::sql($SQL);
+            $num_rows = DB_AA::sql("INSERT INTO `$tablename` (" . implode(',', array_map(static fn($col) => "`$col`", $columns)) . ') VALUES ' . implode(', ', $values));
             if ($num_rows === false) {
                 return false;
             }
-            $inserded += $num_rows;
+            $inserted += $num_rows;
         }
-        return $inserded;
+        return $inserted;
     }
 
     /** The best (most safe) low-level approach to delete data in the AA table
      *  - the packed keys are packed automatically, the integer data are typecast to numbers, ...
      *  usage: AA::Metabase()->doDelete(...);
      * @param string   $tablename
-     * @param string[] $keydata
+     * @param array<string, mixed> $keydata
      * @param string|null $nohalt  'nohalt' - do not halt on database error
      * @return bool|int   0|false on error
      */
@@ -1193,7 +1189,7 @@ class AA_Metabase
     /** Prepare Cvarset for given data array (set right types/values/...)
      *
      * @param  string   $tablename table to work with
-     * @param  string[] $data    data array - all data unpacked. The values are converted to correct ones
+     * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
      * @return Cvarset|null
      */
     private function getVarset4Data(string $tablename, array $data): ?Cvarset

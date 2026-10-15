@@ -29,6 +29,7 @@
 //           $d_id
 //           $h
 
+use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
 
 require_once __DIR__ . "/../include/init_page.php";
@@ -72,7 +73,7 @@ if ($mode === "hide" || $mode === "delete" || $mode === "deleteall" || $mode ===
             $h = ($h ? 1 : 0);
             $dcontent[$d_id]["d_state........."][0]['value'] = $h;
 
-            $db->query("UPDATE discussion SET state='$h' WHERE id=" . xpack_id($d_id));
+            DB_AA::update('discussion', [['state', $h, 'i']], [['id', $d_id, 'l']]);
             break;
         case "delete":
             DeleteNode($tree, $dcontent, $d_id);

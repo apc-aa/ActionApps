@@ -34,7 +34,6 @@
 
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
-use AA\Util\Hitcounter;
 
 require_once __DIR__ . "/stringexpand.php";
 
@@ -79,6 +78,9 @@ class itemview
      * Hitcounter::hit() records the correct `cached` flag.
      */
     private ?bool $_was_cached = null;
+
+    /** the random item shown (a banner) - AA_Showview counts its hit after the render */
+    public ?zids $random_hit = null;
 
     /** itemview function
      * @param        $slice_info
@@ -610,7 +612,7 @@ class itemview
         // count hit for random item - it is used for banners, so it is important
         // to count display number
         if ($is_random && $this->zids->count() === 1) {
-            Hitcounter::hit($this->zids);
+            $this->random_hit = $this->zids->slice(0);
         }
 
         switch ($view_type) {

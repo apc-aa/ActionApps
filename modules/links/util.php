@@ -40,7 +40,8 @@ function GetCategoryFromPath(?string $path): string
 /** Assign category to given parent category */
 function Links_AssignCategory($category_id, $insertedId, $pri = 10, $base = 'y', $state = 'visible'): void
 {
-    DB_AA::sql("INSERT INTO links_cat_cat (category_id, what_id, base, state, priority, proposal, proposal_delete) VALUES ($category_id, $insertedId, '$base', '$state',  $pri, 'n', 'n')");
+    // (string): a missing state is stored as '', not as the column DEFAULT
+    AA::Metabase()->doInsert('links_cat_cat', ['category_id' => $category_id, 'what_id' => $insertedId, 'base' => $base, 'state' => (string) $state, 'priority' => $pri, 'proposal' => 'n', 'proposal_delete' => 'n']);
 }
 
 /** Add new category, copies parents permissions
@@ -48,13 +49,14 @@ function Links_AssignCategory($category_id, $insertedId, $pri = 10, $base = 'y',
  */
 function Links_AddCategory($name, $parent, $parentpath): int
 {
-    $db = getDB();
-    $db->query("INSERT INTO links_categories  ( name ) VALUES ('$name')");
-    $res = (int) $db->last_insert_id();
+    $res = DB_AA::transaction(static function () use ($name, $parentpath): int {
+        // (string): a missing name is stored as '', not as NULL
+        $res = (int) AA::Metabase()->doInsert('links_categories', ['name' => (string) $name]);
 
-    // correct path
-    $db->query("UPDATE links_categories set path='$parentpath,$res' WHERE id=$res");
-    freeDB($db);
+        // correct path
+        AA::Metabase()->doUpdate('links_categories', ['id' => $res, 'path' => "$parentpath,$res"]);
+        return $res;
+    });
 
     ChangeCatPermAsIn($res, $parent);
     return $res;
@@ -263,7 +265,7 @@ function Links_GetFolder($type): false|string
  */
 function Links_AssignLink($cat_id, $link_id, $base = 'y', $state = 'visible', $prop = 'n', $prop_del = 'n'): void
 {
-    DB_AA::sql("INSERT INTO links_link_cat (category_id, what_id, base, state, priority, proposal, proposal_delete) VALUES ($cat_id,    $link_id, '$base','$state', 1.0,   '$prop',    '$prop_del')");
+    AA::Metabase()->doInsert('links_link_cat', ['category_id' => $cat_id, 'what_id' => $link_id, 'base' => $base, 'state' => $state, 'priority' => 1.0, 'proposal' => $prop, 'proposal_delete' => $prop_del]);
 }
 
 

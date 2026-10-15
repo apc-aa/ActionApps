@@ -90,9 +90,7 @@ function AlertsSendInstantAlert($item_id, $slice_id): void
             MoreTimeLimit();  // This can take a while
             send_emails("instant", $collection_ids, "", true, $item_id);
             // We must reset moved2active so that the item is not re-sent on update.
-            $db = getDB();
-            $db->query("UPDATE item SET moved2active = 0 WHERE id=" . xpack_id($item_id));
-            freeDB($db);
+            DB_AA::update('item', [['moved2active', 0, 'i']], [['id', $item_id, 'l']]);
         }
     }
 }

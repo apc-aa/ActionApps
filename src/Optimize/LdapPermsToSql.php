@@ -2,6 +2,7 @@
 
 namespace AA\Optimize;
 
+use AA;
 use AA\IO\DB\DB_AA;
 use AA_Permsystem_Ldap;
 use CVarset;
@@ -310,14 +311,13 @@ class LdapPermsToSql extends AbstractOptimize
                     continue;
                 }
                 // idempotent: delete then insert (mirrors perm_sql AddGroupMember)
-                DB_AA::delete('membership', [['groupid', $group_sql_id, 'i'], ['memberid', $member_sql_id, 'i']]);
-                $db = getDb();
-                $varset = new CVarset([
-                    ['groupid',  (int) $group_sql_id],
-                    ['memberid', (int) $member_sql_id],
-                ]);
-                $varset->doInsert('membership');
-                freeDB($db);
+                DB_AA::transaction(static function () use ($group_sql_id, $member_sql_id) {
+                    DB_AA::delete('membership', [['groupid', $group_sql_id, 'i'], ['memberid', $member_sql_id, 'i']]);
+                    AA::Metabase()->doInsert('membership', [
+                        'groupid'  => (string) $group_sql_id,
+                        'memberid' => (string) $member_sql_id,
+                    ]);
+                });
                 self::forgetMembershipMemo();
                 $added++;
             }
@@ -347,18 +347,19 @@ class LdapPermsToSql extends AbstractOptimize
                         continue;
                     }
                     // idempotent: delete+insert (mirrors perm_sql AddPerm)
-                    DB_AA::delete('perms', [
-                        ['object_type', $object_type],
-                        ['objectid',    $oid],
-                        ['userid',      (string) $sql_id],
-                    ]);
-                    $varset = new CVarset([
-                        ['object_type', $object_type],
-                        ['objectid',    $oid],
-                        ['userid',      (string) $sql_id],
-                        ['perm',        (string) $perm],
-                    ]);
-                    $varset->doInsert('perms');
+                    DB_AA::transaction(static function () use ($object_type, $oid, $sql_id, $perm) {
+                        DB_AA::delete('perms', [
+                            ['object_type', $object_type],
+                            ['objectid',    $oid],
+                            ['userid',      (string) $sql_id],
+                        ]);
+                        AA::Metabase()->doInsert('perms', [
+                            'object_type' => $object_type,
+                            'objectid'    => $oid,
+                            'userid'      => (string) $sql_id,
+                            'perm'        => (string) $perm,
+                        ]);
+                    });
                     $total++;
                 }
             }
@@ -467,17 +468,16 @@ class LdapPermsToSql extends AbstractOptimize
     /** Direct SQL insert into the users table (mirrors perm_sql::AddUser). */
     private function sqlInsertUser(string $login, array $info, string $pwd_hash): ?int
     {
-        $varset = new CVarset([
-            ['type',        'User'],
-            ['uid',         $login],
-            ['mail',        is_array($info['mails'] ?? null) ? ($info['mails'][0] ?? '') : ($info['mail'] ?? '')],
-            ['name',        trim(($info['givenname'] ?? '') . ' ' . ($info['sn'] ?? ''))],
-            ['sn',          $info['sn'] ?? ''],
-            ['givenname',   $info['givenname'] ?? ''],
-            ['description', ''],
-            ['password',    $pwd_hash],
+        $id = AA::Metabase()->doInsert('users', [
+            'type'        => 'User',
+            'uid'         => $login,
+            'mail'        => is_array($info['mails'] ?? null) ? ($info['mails'][0] ?? '') : ($info['mail'] ?? ''),
+            'name'        => trim(($info['givenname'] ?? '') . ' ' . ($info['sn'] ?? '')),
+            'sn'          => $info['sn'] ?? '',
+            'givenname'   => $info['givenname'] ?? '',
+            'description' => '',
+            'password'    => $pwd_hash,
         ]);
-        $id = $varset->doInsert('users');
         return $id ? (int) $id : null;
     }
 
@@ -486,17 +486,16 @@ class LdapPermsToSql extends AbstractOptimize
      */
     private function sqlInsertGroup(string $name, string $description): ?int
     {
-        $varset = new CVarset([
-            ['type',        'Group'],
-            ['uid',         ''],
-            ['mail',        ''],
-            ['name',        $name],
-            ['sn',          ''],
-            ['givenname',   ''],
-            ['description', $description],
-            ['password',    'crypt will never return this'],
+        $id = AA::Metabase()->doInsert('users', [
+            'type'        => 'Group',
+            'uid'         => '',
+            'mail'        => '',
+            'name'        => $name,
+            'sn'          => '',
+            'givenname'   => '',
+            'description' => $description,
+            'password'    => 'crypt will never return this',
         ]);
-        $id = $varset->doInsert('users');
         return $id ? (int) $id : null;
     }
 

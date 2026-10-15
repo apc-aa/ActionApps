@@ -2,6 +2,8 @@
 
 namespace AA\Optimize;
 
+use AA\IO\DB\DB_AA;
+use AA\IO\DB\DB_PDO;
 use AA\Util\NamedInterface;
 use AA\Util\ReportTrait;
 use AA_Content;
@@ -222,15 +224,29 @@ abstract class AbstractOptimize implements NamedInterface
         if ($just_print) {
             return true;
         }
+        if (!($ret = $this->queryDb()->query($SQL))) {
+            throw new RuntimeException('db err');  // @todo - better exception text
+        }
+        return $ret;
+    }
+
+    /** Runs $work as ONE transaction (DB_AA::transaction()) on the handle query() uses: one commit
+     *  instead of one per statement, and a failure in the middle leaves the tables as they were.
+     *  No DDL inside (it commits implicitly). In the dry run (justPrint()) $work just runs.
+     * @return mixed whatever $work returned
+     */
+    protected function transaction(callable $work): mixed
+    {
+        return self::justPrint() ? $work() : DB_AA::transaction($work, $this->queryDb());
+    }
+
+    /** the handle of query() and transaction(), kept by the object; errors are reported, not fatal */
+    private function queryDb(): DB_PDO
+    {
         if (!$this->db) {
             $this->db = getDb();
             $this->db->set_halt('report');
         }
-        $db = $this->db;
-
-        if (!($ret = $db->query($SQL))) {
-            throw new RuntimeException('db err');  // @todo - better exception text
-        }
-        return $ret;
+        return $this->db;
     }
 }

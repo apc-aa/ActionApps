@@ -30,12 +30,12 @@
 
 namespace AA\Util;
 
+use AA;
 use AA_Logentry_H;
-use CVarset;
 use zids;
 
 /** used for packing duration to 1B int tttttttcn
- *   - ttttttt - time index (0-63) - 6 bits - logaritmical scale from 0.002s (0) to 80s (63))
+ *   - ttttttt - time index (0-63) - 6 bits - logaritmical scale, 1 = 2 ms, 63 = 80 s; a whole byte 0 = no time stored
  *   - c - cached - 1 bit
  *   - n - not modified - 1 bit
  *
@@ -55,14 +55,50 @@ class AA_Packtime
 
     public function __construct(float $time, bool $cached, bool $not_modified)
     {
-        $this->index        = (new LogarithmIndex(.002, 80, 63))->getIndex($time);
+        $this->index        = self::scale()->getIndex($time);
         $this->cached       = $cached;
         $this->not_modified = $not_modified;
     }
 
+    /** The time index: 1 = 2 ms, 63 = 80 s and more. */
+    public static function scale(): LogarithmIndex
+    {
+        static $scale = null;
+        return $scale ??= new LogarithmIndex(.002, 80, 63);
+    }
+
+    /**
+     * SQL for the seconds of `duration`, to be summed: averaging the indexes gives
+     * the geometric mean, which hides the slow requests that cost the most.
+     */
+    public static function sqlSeconds(): string
+    {
+        return self::scale()->sqlMiddle('`duration` >> 2');
+    }
+
+    /** Seconds a stored duration stands for. */
+    public static function seconds(int $packed): float
+    {
+        static $middles = [];
+        $index = $packed >> 2;
+        return $middles[$index] ??= self::scale()->index2middle($index);
+    }
+
+    /** Stored duration of grouped hits in one cache state (0-3) whose mean time is $seconds. */
+    public static function packMean(float $seconds, int $state): int
+    {
+        return self::pack(self::scale()->nearestIndex($seconds), $state);
+    }
+
     public function getAsInt(): int
     {
-        return $this->index * 4 + ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0);
+        return self::pack($this->index, ($this->cached ? 2 : 0) + ($this->not_modified ? 1 : 0));
+    }
+
+    /** A measured hit never packs to 0, which readers skip as a hit stored without its time. */
+    private static function pack(int $index, int $state): int
+    {
+        return (($state === 0 ? max(1, $index) : $index) << 2) + $state;
     }
 
     public static function factoryFromInt(int $int): static
@@ -117,8 +153,9 @@ class Hitcounter
      *  hit_long_id (for long item ids).
      * @param zids $zids
      * @param bool $cached
+     * @param float|null $duration seconds the shown output took; null = the request so far (a page counts at its end)
      */
-    public static function hit($zids, bool $cached = false, bool $not_modified = false): void
+    public static function hit($zids, bool $cached = false, bool $not_modified = false, ?float $duration = null): void
     {
         if (!is_object($zids) || $zids->isEmpty()) {
             return;
@@ -149,7 +186,7 @@ class Hitcounter
             return;
         }
 
-        $time = timestartdiff();
+        $time = $duration ?? timestartdiff();
         $info = (new AA_Logentry_H([
             "cached"        => $cached,
             "not_modified"  => $not_modified,
@@ -159,17 +196,12 @@ class Hitcounter
             'uri'           => $uri,
         ]))->serializeToString();
 
-        $varset = new CVarset();
-        $varset->add('time', 'number', time());
-        $varset->add('agent', 'text', substr($ua_raw, 0, 255));  // @todo - convert to metabase and check the length using metabase real field length
-        $varset->add('info', 'text', substr($info, 0, 255)); // @todo - convert to metabase and check the length using metabase real field length
+        $row = ['time' => time(), 'agent' => substr($ua_raw, 0, 255), 'info' => substr($info, 0, 255)];
 
         if ($zids->use_short_ids()) {
-            $varset->add('id', 'number', $zids->id());
-            $varset->doInsert('hit_short_id');
+            AA::Metabase()->doInsert('hit_short_id', ['id' => $zids->id()] + $row);
         } else {
-            $varset->add('id', 'unpacked', $zids->longids(0));
-            $varset->doInsert('hit_long_id');
+            AA::Metabase()->doInsert('hit_long_id', ['id' => $zids->longids(0)] + $row);
         }
 
         // no longer necessary to plan it here - we plan the task in toexecute.php which must be called anyway if we want to run tasks

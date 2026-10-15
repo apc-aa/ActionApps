@@ -28,7 +28,7 @@ class Links_Check extends AbstractManageraction
     /** @inheritDoc */
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        DB_AA::sql("UPDATE links_links SET checked = '" . time() . "', checked_by = '" . AuthGetUid() . "' WHERE " . $item_zids->sqlin('id', true));
+        DB_AA::update('links_links', [['checked', time(), 'i'], ['checked_by', AuthGetUid(), 's']], [$item_zids->whereIn('id', true)]);
         return false;                                     // OK - no error
     }
 

@@ -33,8 +33,7 @@ class Links_Move extends \AA\Manageraction\Links_Check
     /** @inheritDoc */
     public function perform(Manager $manager, zids $item_zids, $action_param): string|false
     {
-        $SQL = "UPDATE links_links SET folder = '" . $this->to_bin . "' WHERE " . $item_zids->sqlin('id', true);
-        DB_AA::sql($SQL);
+        DB_AA::update('links_links', [['folder', $this->to_bin, 'i']], [$item_zids->whereIn('id', true)]);
         return false;                                     // OK - no error
     }
 

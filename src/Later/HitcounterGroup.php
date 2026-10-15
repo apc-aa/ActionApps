@@ -5,7 +5,7 @@ namespace AA\Later;
 use AA;
 use AA\IO\DB\DB_AA;
 use AA\Optimize\AddDurationLog;
-use CVarset;
+use AA\Util\AA_Packtime;
 
 /** Groups data in hit_archive table
  *  We store all the hits into the hit_archive table. It is good for counting
@@ -61,16 +61,16 @@ class HitcounterGroup implements LaterInterface
         // possible new approach
         // SELECT id, CONCAT(FROM_UNIXTIME(`time`, '%Y-%m-%d'),' ',`id`) as grp, sum(hits) as sum, count(*) as cnt FROM hit_archive WHERE time < 1250000000 GROUP BY grp HAVING cnt > 1
 
-        $varset = new CVarset();
         $hits = DB_AA::select(['id' => 'sum'], 'SELECT `id`, SUM(`hits`) as sum FROM `hit_archive`', $time_cond, null, ['id']);
-        DB_AA::delete('hit_archive', $time_cond);
+        $rows = [];
         foreach ($hits as $id => $sum) {
-            $varset->clear();
-            $varset->add('id', 'number', $id);
-            $varset->add('hits', 'number', $sum);
-            $varset->add('time', 'number', $begin);
-            $varset->doInsert('hit_archive');
+            $rows[] = ['id' => $id, 'hits' => $sum, 'time' => $begin];
         }
+        // one transaction: a failure after the DELETE would lose the period's hits
+        DB_AA::transaction(static function () use ($time_cond, $rows) {
+            DB_AA::delete('hit_archive', $time_cond);
+            AA::Metabase()->doInsertMulti('hit_archive', $rows);
+        });
     }
 
     /**
@@ -82,19 +82,10 @@ class HitcounterGroup implements LaterInterface
     {
         return DB_AA::select(
             [],
-            'SELECT `id`,
-            AVG(CASE WHEN (`duration` & 3) = 0 THEN `duration` >> 2 END) << 2 AS avg_0,
-            AVG(CASE WHEN (`duration` & 3) = 1 THEN `duration` >> 2 END) << 2 AS avg_1,
-            AVG(CASE WHEN (`duration` & 3) = 2 THEN `duration` >> 2 END) << 2 AS avg_2,
-            AVG(CASE WHEN (`duration` & 3) = 3 THEN `duration` >> 2 END) << 2 AS avg_3,
-            SUM(CASE WHEN (`duration` & 3) = 0 THEN `hits` END) AS sum_0,
-            SUM(CASE WHEN (`duration` & 3) = 1 THEN `hits` END) AS sum_1,
-            SUM(CASE WHEN (`duration` & 3) = 2 THEN `hits` END) AS sum_2,
-            SUM(CASE WHEN (`duration` & 3) = 3 THEN `hits` END) AS sum_3
-            FROM `hit_archive`',
+            'SELECT `id`, IF(`duration` = 0, -1, `duration` & 3) AS `state`, SUM(`hits`) AS `hits`, SUM(`hits` * ' . AA_Packtime::sqlSeconds() . ') AS `seconds` FROM `hit_archive`',
             $time_cond,
             null,
-            ['id'],
+            ['id', 'state'],
         );
     }
 
@@ -108,26 +99,31 @@ class HitcounterGroup implements LaterInterface
     {
         $time_cond = $this->getTimecondition($begin, $step);
 
-        $hits = $this->countHitsDuration($time_cond);
+        $to_insert = self::groupedRows($this->countHitsDuration($time_cond), $begin);
+        DB_AA::transaction(static function () use ($time_cond, $to_insert) {
+            DB_AA::delete('hit_archive', $time_cond);
+            AA::Metabase()->doInsertMulti('hit_archive', $to_insert);
+        });
+    }
 
-        $to_insert = [];
+    /**
+     * One row per item and cache state, standing for the mean time of the grouped hits.
+     * Hits stored without a time (state -1) stay apart with duration 0.
+     *
+     * @param  array $hits  rows of countHitsDuration()
+     * @return list<array{id:int,hits:int,time:int,duration:int}>
+     */
+    public static function groupedRows(array $hits, int $begin): array
+    {
+        $rows = [];
         foreach ($hits as $hit) {
-            if ($hit['sum_0'] > 0) {
-                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_0'], 'time' => $begin, 'duration' => $hit['avg_0']];
-            }
-            if ($hit['sum_1'] > 0) {
-                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_1'], 'time' => $begin, 'duration' => $hit['avg_1'] + 1];
-            }
-            if ($hit['sum_2'] > 0) {
-                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_2'], 'time' => $begin, 'duration' => $hit['avg_2'] + 2];
-            }
-            if ($hit['sum_3'] > 0) {
-                $to_insert[] = ['id' => $hit['id'], 'hits' => $hit['sum_3'], 'time' => $begin, 'duration' => $hit['avg_3'] + 3];
+            $count = (int) $hit['hits'];
+            $state = (int) $hit['state'];
+            if ($count > 0) {
+                $rows[] = ['id' => (int) $hit['id'], 'hits' => $count, 'time' => $begin, 'duration' => $state < 0 ? 0 : AA_Packtime::packMean((float) $hit['seconds'] / $count, $state)];
             }
         }
-        // exit;
-        DB_AA::delete('hit_archive', $time_cond);
-        AA::Metabase()->doInsertMulti('hit_archive', $to_insert);
+        return $rows;
     }
 
     /**

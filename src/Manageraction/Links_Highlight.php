@@ -2,7 +2,7 @@
 
 namespace AA\Manageraction;
 
-use AA\IO\DB\DB_AA;
+use AA;
 use AA\Manager;
 use zids;
 
@@ -32,7 +32,7 @@ class Links_Highlight extends AbstractManageraction
             if (!($aid = Links_GetAsociationId($lid, $r_state['cat_id']))) {
                 continue;    // return _m('Can\'t find link in given category');  // error
             }
-            DB_AA::sql("UPDATE links_link_cat SET state = '" . $this->highlight . "' WHERE a_id = $aid");
+            AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $aid, 'state' => $this->highlight]);
         }
         return false;                                     // OK - no error
     }

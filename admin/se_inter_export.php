@@ -63,7 +63,7 @@ switch ($mode) {
         if (DB_AA::test('ef_permissions', [['slice_id', pack_id(AA::$module_id), 'b'], ['node', stripslashes($r_nodes)], ['user', stripslashes($user_name)]])) {   // duplicity
             $err["DB"].= "Can't add new permission record";
         } else {
-            $db->query("INSERT INTO ef_permissions VALUES('$p_slice_id','$r_nodes','$user_name')");
+            AA::Metabase()->doInsert('ef_permissions', ['slice_id' => AA::$module_id, 'node' => stripslashes($r_nodes), 'user' => stripslashes($user_name)]);
         }
       break;
 }

@@ -23,7 +23,7 @@ use AA\Util\Txt;
 class HitcounterDisplay
 {
     /** Hits a side a period-over-period comparison needs, twice what a single average
-     *  takes: one stored index step is 18.7 %, so five hits a side is a coin flip and
+     *  takes: one stored index step is 18.6 %, so five hits a side is a coin flip and
      *  the cards would claim a move. admin/aa_statistics.php ranks by the same floor,
      *  so a card's click-through lists the items the card showed. */
     public const MIN_HITS_FOR_DIFF = 10;
@@ -59,7 +59,8 @@ class HitcounterDisplay
             $conds[] = ['item.slice_id', $slice_ids, 'l'];
         }
 
-        $sql = 'SELECT
+        $seconds = AA_Packtime::sqlSeconds();
+        $sql     = "SELECT
             LOWER(HEX(`item`.`id`))       AS long_id,
             `hit_archive`.`id`            AS short_id,
             LOWER(HEX(`item`.`slice_id`)) AS slice_id,
@@ -68,15 +69,11 @@ class HitcounterDisplay
             SUM(CASE WHEN `duration` & 3 = 1 THEN `hits` ELSE 0 END) AS h1,
             SUM(CASE WHEN `duration` & 3 = 2 THEN `hits` ELSE 0 END) AS h2,
             SUM(CASE WHEN `duration` & 3 = 3 THEN `hits` ELSE 0 END) AS h3,
-            SUM(CASE WHEN `duration` & 3 = 0 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w0,
-            SUM(CASE WHEN `duration` & 3 = 1 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w1,
-            SUM(CASE WHEN `duration` & 3 = 2 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w2,
-            SUM(CASE WHEN `duration` & 3 = 3 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w3
-        FROM `hit_archive` INNER JOIN `item` ON `hit_archive`.`id` = `item`.`short_id`';
+            SUM(`hits` * $seconds)        AS s
+        FROM `hit_archive` INNER JOIN `item` ON `hit_archive`.`id` = `item`.`short_id`";
 
         $rows = DB_AA::select([], $sql, $conds, ['total_hits-'], ['hit_archive.id'], $limit);
 
-        $timex  = new LogarithmIndex(.002, 80, 63);
         $totals = [];
         foreach ($rows as $r) {
             $hits = (int) $r['total_hits'];
@@ -84,21 +81,12 @@ class HitcounterDisplay
                 continue;
             }
             $bucket_sum = (int) $r['h0'] + (int) $r['h1'] + (int) $r['h2'] + (int) $r['h3'];
-            $ms_x_hits  = 0.0;
-            for ($b = 0; $b < 4; $b++) {
-                $bh = (int) $r["h$b"];
-                $bw = (int) $r["w$b"];
-                if ($bh > 0) {
-                    $avg_ms_bucket = $timex->index2float($bw / $bh) * 1000;
-                    $ms_x_hits     += $avg_ms_bucket * $bh;
-                }
-            }
             $totals[(string) $r['short_id']] = [
                 'hits'       => $hits,
                 'bucket_sum' => $bucket_sum,
                 'cache_hits' => (int) $r['h2'] + (int) $r['h3'],
                 'wasted'     => (int) $r['h1'],
-                'ms_x_hits'  => $ms_x_hits,
+                'ms_x_hits'  => 1000 * (float) $r['s'],
                 'long_id'    => $r['long_id'],
                 'slice_id'   => $r['slice_id'],
             ];
@@ -128,15 +116,13 @@ class HitcounterDisplay
         // it we must not reference it or the query fails. Query the cache/latency buckets only when
         // the column exists - otherwise the cache % and avg-ms figures stay null.
         $do_duration = DB_AA::exists_column('hit_archive', 'duration');
+        $seconds  = $do_duration ? AA_Packtime::sqlSeconds() : '';
         $dur_cols = $do_duration ? ",
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 0 THEN `hits` ELSE 0 END) AS h0,
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 1 THEN `hits` ELSE 0 END) AS h1,
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 2 THEN `hits` ELSE 0 END) AS h2,
             SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 3 THEN `hits` ELSE 0 END) AS h3,
-            SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 0 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w0,
-            SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 1 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w1,
-            SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 2 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w2,
-            SUM(CASE WHEN `duration` <> 0 AND `duration` & 3 = 3 THEN (`duration` >> 2) * `hits` ELSE 0 END) AS w3" : '';
+            SUM(CASE WHEN `duration` <> 0 THEN `hits` * $seconds ELSE 0 END) AS s" : '';
         // $wk/$mo are ints computed here; inlined into the SELECT (no user input).
         $sql = "SELECT
             SUM(`hits`)                                                       AS total_hits,
@@ -155,18 +141,14 @@ class HitcounterDisplay
         $cache_hits = 0;
         $ms_x_hits  = 0.0;
         if ($do_duration) {
-            $timex = new LogarithmIndex(.002, 80, 63);
             for ($b = 0; $b < 4; $b++) {
                 $bh = (int) $r["h$b"];
-                $bw = (int) $r["w$b"];
                 $bucket_sum += $bh;
                 if ($b >= 2) {
                     $cache_hits += $bh;   // buckets 2,3 = served from PageCache
                 }
-                if ($bh > 0) {
-                    $ms_x_hits += $timex->index2float($bw / $bh) * 1000 * $bh;
-                }
             }
+            $ms_x_hits = 1000 * (float) $r['s'];
         }
 
         return [
@@ -660,12 +642,12 @@ class HitcounterDisplay
     }
 
     /**
-     * Average duration of one cache-state bucket in ms, from its hit-weighted mean log index.
+     * Average duration of one cache-state bucket in ms, from its summed seconds (countStats()).
      * Kept numeric — averages and charts compute with it; format only via formatMs().
      */
-    public static function bucketMs(int $count, float $index): float
+    public static function bucketMs(int $count, float $seconds): float
     {
-        return $count ? round(1000 * (new LogarithmIndex(.002, 80, 63))->index2float($index), 1) : 0.0;
+        return $count ? round(1000 * $seconds / $count, 1) : 0.0;
     }
 
     /** ms for the stats table: one decimal, thin no-break space between thousands. */
@@ -677,7 +659,8 @@ class HitcounterDisplay
     /**
      * Per-(day, item) bucketed aggregates from hit_archive.
      * Each entry is [hits, dur_0, count_0, dur_1, count_1, dur_2, count_2, dur_3, count_3]
-     * — bucket index N corresponds to (cached, not_modified) per AA_Packtime encoding.
+     * — bucket index N corresponds to (cached, not_modified) per AA_Packtime encoding;
+     * dur_N is the summed duration in seconds.
      */
     public static function countStats(\zids $s_zids, string $group_string, array $columns, int $from = 0, int $to = 0): array
     {
@@ -712,14 +695,13 @@ class HitcounterDisplay
                 $stat[$day]['all'][0] += $hit_hits;
             }
 
-            if ($do_duration && ($hit_time >= $duration_from)) {
-                $index    = 1 + (2 * ($hit['duration'] & 3));
-                $duration = $hit['duration'] >> 2;
-                // weighted avg: (old_dur * old_count + new_dur * new_count) / total_count
-                $stat[$day][$hit_id][$index]     = ($stat[$day][$hit_id][$index] * $stat[$day][$hit_id][$index + 1] + $duration * $hit_hits) / ($stat[$day][$hit_id][$index + 1] + $hit_hits);
+            if ($do_duration && ($hit_time >= $duration_from) && (int) $hit['duration'] !== 0) {
+                $index   = 1 + (2 * ($hit['duration'] & 3));
+                $seconds = AA_Packtime::seconds((int) $hit['duration']) * $hit_hits;
+                $stat[$day][$hit_id][$index]     += $seconds;
                 $stat[$day][$hit_id][$index + 1] += $hit_hits;
                 if ($do_sum) {
-                    $stat[$day]['all'][$index]     = ($stat[$day]['all'][$index] * $stat[$day]['all'][$index + 1] + $duration * $hit_hits) / ($stat[$day]['all'][$index + 1] + $hit_hits);
+                    $stat[$day]['all'][$index]     += $seconds;
                     $stat[$day]['all'][$index + 1] += $hit_hits;
                 }
             }

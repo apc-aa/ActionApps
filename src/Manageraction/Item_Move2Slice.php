@@ -104,7 +104,7 @@ class Item_Move2Slice extends AbstractManageraction
             return false;     // OK
         }
 
-        DB_AA::sql("UPDATE item SET slice_id = " . xpack_id($dest_slice_id) . " WHERE " . $zids_to_move->sqlin('id'));
+        DB_AA::update('item', [['slice_id', $dest_slice_id, 'l']], [$zids_to_move->whereIn('id')]);
 
         AA::Pagecache()->invalidateFor([$this->slice_id, $dest_slice_id]);  // invalidate old cached values
 

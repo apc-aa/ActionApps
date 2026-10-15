@@ -165,7 +165,6 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
 
     if ($add || $update) {
 
-        $varset     = new CVarset();
         $superadmin = IsSuperadmin();
 
         do {
@@ -178,17 +177,12 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
                 }
 
                 $owner = new_id();
-                $varset->set("id", $owner, "unpacked");
-                $varset->set("name", $new_owner, "text");
-                $varset->set("email", $new_owner_email, "text");
 
                 // create new owner
-                if (!$varset->doINSERT('slice_owner')) {
+                if (!AA::Metabase()->doInsert('slice_owner', ['id' => $owner, 'name' => $new_owner, 'email' => $new_owner_email])) {
                     $err["DB"] .= MsgErr("Can't add slice");
                     break;
                 }
-
-                $varset->clear();
             }
             ValidateInput("name", _m("Title"), $name, $err, true, "text");
             ValidateInput("owner", _m("Owner"), $owner, $err, false, "id");
@@ -223,53 +217,46 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
             $flag_allow_expired = ($flag_allow_expired ? 1 : 0);
 
             if ($update) {
-                $varset->clear();
-                $varset->addkey("id", "unpacked", $slice_id);
-                $varset->add("name", "text", $name);
-                $varset->add("owner", "unpacked", $owner);
-                //echo $owner; exit;  // problem was in VARCHAR of owner field in database. It must be BINARY
-                $varset->add("slice_url", "text", $slice_url);
-                $varset->add("priority", "number", $priority);
+                $module_data = ['id' => $slice_id, 'name' => $name, 'owner' => $owner, 'slice_url' => $slice_url, 'priority' => $priority, 'lang_file' => $lang_file];
                 if ($superadmin) {
-                    $varset->add("deleted", "number", $deleted);
+                    $module_data['deleted'] = $deleted;
                 }
-                $varset->add("lang_file", "text", $lang_file);
 
-                if (!$varset->doUpdate('module', null, $slice_id)) {
+                if (!AA::Metabase()->doUpdate('module', $module_data, null, $slice_id)) {
                     // not necessary - we have set the halt_on_error
                     $err["DB"] = MsgErr("Can't change slice");
                     break;
                 }
 
-                $varset->remove('priority');  // is not in slice table (which is OK)
+                $slice_data = $module_data;
+                unset($slice_data['priority']);  // is not in slice table (which is OK)
 
-                $varset->add("d_listlen", "number", $d_listlen);
+                $slice_data['d_listlen'] = $d_listlen;
                 if ($superadmin) {
-                    $varset->add("template", "number", $template);
+                    $slice_data['template'] = $template;
                 }
-                $varset->add("type", "text", $slice_type);
-                $varset->add("permit_anonymous_post", "number", $permit_anonymous_post);
-                $varset->add("permit_anonymous_edit", "number", $permit_anonymous_edit);
-                $varset->add("permit_offline_fill", "number", $permit_offline_fill);
+                $slice_data['type']                  = $slice_type;
+                $slice_data['permit_anonymous_post'] = $permit_anonymous_post;
+                $slice_data['permit_anonymous_edit'] = $permit_anonymous_edit;
+                $slice_data['permit_offline_fill']   = $permit_offline_fill;
                 // only a superadmin sees these fields, so only their form may change them
                 if ($superadmin) {
-                    $varset->add("fileman_access", "text", $fileman_access);
-                    $varset->add("fileman_dir", "text", $fileman_dir);
+                    $slice_data['fileman_access'] = $fileman_access;
+                    $slice_data['fileman_dir']    = $fileman_dir;
                 }
-                $varset->add("auth_field_group", "text", $auth_field_group);
-                $varset->add("mailman_field_lists", "text", $mailman_field_lists);
-                $varset->add("reading_password", "text", $reading_password);
+                $slice_data['auth_field_group']    = $auth_field_group;
+                $slice_data['mailman_field_lists'] = $mailman_field_lists;
+                $slice_data['reading_password']    = $reading_password;
 
                 $slice_flag = DB_AA::select1('flag', 'SELECT `flag` FROM `slice`', [['id', $slice_id, 'l']]);
                 $slice_flag &= ~(SLICE_ALLOW_EXPIRED_CONTENT | SLICE_ALLOW_PENDING_CONTENT); // clear the bits
                 $slice_flag |= $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
                 $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
-                $varset->add("flag", "number", $slice_flag);
+                $slice_data['flag'] = $slice_flag;
 
-                $varset->add('mlxctrl', "unpacked", $mlxctrl); //store 16bytes packed
+                $slice_data['mlxctrl'] = $mlxctrl; //store 16bytes packed
 
-
-                if (!$varset->doUpdate('slice', null, $slice_id)) {  // not necessary - we have set the halt_on_error
+                if (!AA::Metabase()->doUpdate('slice', $slice_data, null, $slice_id)) {  // not necessary - we have set the halt_on_error
                     $err["DB"] = MsgErr("Can't change slice");
                     break;
                 }
@@ -279,77 +266,82 @@ function SliceEditProcess($slice_id, $user_firstname, $user_surname, $err, $add_
             } else { // insert (add)
 
                 $slice_id = new_id();
-                $varset->set("id", $slice_id, "unpacked");
-                $varset->set("created_by", AuthGetUid(), "text");
-                $varset->set("created_at", now(), "text");
-                $varset->set("name", $name, "text");
-                $varset->set("owner", $owner, "unpacked");
-                $varset->set("slice_url", $slice_url, "text");
-                $varset->set("priority", $priority, "number");
-                $varset->set("deleted", $deleted, "number");
-                $varset->set("lang_file", $lang_file, "text");
-                $varset->set("type", "S", "text");
+                $module_data = [
+                    'id'         => $slice_id,
+                    'created_by' => AuthGetUid(),
+                    'created_at' => now(),
+                    'name'       => $name,
+                    'owner'      => $owner,
+                    'slice_url'  => $slice_url,
+                    'priority'   => $priority,
+                    'deleted'    => $deleted,
+                    'lang_file'  => $lang_file,
+                    'type'       => 'S',
+                ];
 
-                if (!$varset->doINSERT('module')) {
+                if (!AA::Metabase()->doInsert('module', $module_data)) {
                     $err["DB"] .= MsgErr("Can't add slice");
                     break;
                 }
 
                 AA::$module_id = $slice_id;
 
-                $varset->clear();
-
                 // get template data
-                $varset->addArray(SLICE_FIELDS_TEXT, SLICE_FIELDS_NUM);
                 if (!($record = DB_AA::select1('', 'SELECT * FROM slice', [['id', $set_template_id, 'l']]))) {
                     $err["DB"] = MsgErr("Bad template id");
                     break;
                 }
-                $varset->setFromArray($record);
-                $varset->set("id", $slice_id, "unpacked");
-                $varset->set("created_by", AuthGetUid(), "text");
-                $varset->set("created_at", now(), "text");
-                $varset->set("name", $name, "text");
-                $varset->set("owner", $owner, "unpacked");
-                $varset->set("slice_url", $slice_url, "text");
-                $varset->set("type", $slice_type, "text");
-                $varset->set("deleted", $deleted, "number");
-                $varset->set("lang_file", $lang_file, "text");
-                $varset->set("d_listlen", $d_listlen, "number");
-                $varset->set("template", $template, "number");
-                $varset->set("permit_anonymous_post", $permit_anonymous_post, "number");
-                $varset->set("permit_anonymous_edit", $permit_anonymous_edit, "number");
-                $varset->set("permit_offline_fill", $permit_offline_fill, "number");
-                $varset->set("fileman_access", $superadmin ? $fileman_access : '', "text");
-                $varset->set("fileman_dir", $superadmin ? $fileman_dir : '', "text");
-                $varset->add("auth_field_group", "text", $auth_field_group);
-                $varset->add("mailman_field_lists", "text", $mailman_field_lists);
-                $varset->add("reading_password", "text", $reading_password);
-
+                // a NULL of the template is copied as '' (0 in a number column) - Metabase would leave the column NULL
+                $slice_data = [];
+                foreach ([...SLICE_FIELDS_TEXT, ...SLICE_FIELDS_NUM] as $column) {
+                    $slice_data[$column] = $record[$column] ?? '';
+                }
                 $slice_flag  = $flag_allow_expired ? SLICE_ALLOW_EXPIRED_CONTENT : 0;
                 $slice_flag |= $flag_allow_pending ? SLICE_ALLOW_PENDING_CONTENT : 0;
-                $varset->add("flag", "number", $slice_flag);
 
-                //mimo
-                $varset->add('mlxctrl', "text", $mlxctrl);
+                $slice_data = array_merge($slice_data, [
+                    'id'                    => $slice_id,
+                    'created_by'            => AuthGetUid(),
+                    'created_at'            => now(),
+                    'name'                  => $name,
+                    'owner'                 => $owner,
+                    'slice_url'             => $slice_url,
+                    'type'                  => $slice_type,
+                    'deleted'               => $deleted,
+                    'lang_file'             => $lang_file,
+                    'd_listlen'             => $d_listlen,
+                    'template'              => $template,
+                    'permit_anonymous_post' => $permit_anonymous_post,
+                    'permit_anonymous_edit' => $permit_anonymous_edit,
+                    'permit_offline_fill'   => $permit_offline_fill,
+                    'fileman_access'        => $superadmin ? $fileman_access : '',
+                    'fileman_dir'           => $superadmin ? $fileman_dir : '',
+                    'auth_field_group'      => $auth_field_group,
+                    'mailman_field_lists'   => $mailman_field_lists,
+                    'reading_password'      => $reading_password,
+                    'flag'                  => $slice_flag,
+                    'mlxctrl'               => $mlxctrl,
+                ]);
 
                 // create new slice
-                if (!$varset->doINSERT('slice')) {
+                if (!AA::Metabase()->doInsert('slice', $slice_data)) {
                     $err["DB"] .= MsgErr("Can't add slice");
                     break;
                 }
 
-                // copy fields
+                // copy fields - a NULL of the template is copied as '' (0 in a number column)
                 $fields = DB_AA::select([], 'SELECT * FROM field', [['slice_id', $set_template_id, 'l']]);
+                $rows   = [];
                 foreach ($fields as $field) {
-                    $varset->clear();
-                    $varset->addArray(AA_Fields::FIELDS_TEXT, AA_Fields::FIELDS_NUM);
-                    $varset->setFromArray($field);
-                    $varset->set("slice_id", $slice_id, "unpacked");
-                    if (!$varset->doINSERT('field')) {
-                        $err["DB"] .= MsgErr("Can't copy fields");
-                        break;
+                    $row = [];
+                    foreach ([...AA_Fields::FIELDS_TEXT, ...AA_Fields::FIELDS_NUM] as $column) {
+                        $row[$column] = $field[$column] ?? '';
                     }
+                    $row['slice_id'] = $slice_id;
+                    $rows[] = $row;
+                }
+                if ($rows && (AA::Metabase()->doInsertMulti('field', $rows) === false)) {
+                    $err["DB"] .= MsgErr("Can't copy fields");
                 }
 
                 AddPermObject($slice_id, "slice");    // no special permission added - only superuser can access

@@ -9,6 +9,7 @@
 
 namespace AA\IO\Grabber;
 
+use AA\IO\DB\DB_AA;
 use AA\IO\Feed;
 use AA\IO\FeedUtil;
 use AA_Content;
@@ -467,12 +468,8 @@ class AARSS extends AbstractGrabber
     public function finish(): void
     {
         if ($this->feed['feed_type'] == Feed::FEEDTYPE_APC) {
-            $db = getDB();
             //update the newest item
-            $SQL = "UPDATE external_feeds SET newest_item='" . quote($this->aa_rss['channels'][$this->r_slice_id]['timestamp']) . "'
-                     WHERE feed_id='" . quote($this->feed_id) . "'";
-            $db->query($SQL);
-            freeDB($db);
+            DB_AA::update('external_feeds', [['newest_item', (string) $this->aa_rss['channels'][$this->r_slice_id]['timestamp'], 's']], [['feed_id', $this->feed_id]]);
         }
     }
 }

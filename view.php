@@ -110,6 +110,10 @@ if ($filename) {
 }
 
 $view_param = AA_View::parseViewParameters();
+// the x item is the item of this response - processPage() counts it, also when it comes from the cache;
+// '_' because add_vars() of a nested {view.php?…} must not overwrite it (InputVars::isProtectedGlobal())
+$_hits = $view_param['hits'];
+unset($view_param['hits']);
 
 if ($convertfrom) {
     $view_param['convertfrom'] = $convertfrom;
@@ -123,20 +127,21 @@ if ($convertto) {
 //create keystring from values, which exactly identifies resulting content
 $cache_key = get_hash($view_param, PageCache::globalKeyArray(), $GLOBALS['apc_state']['xpage']);
 
+$nocache = (int) ($nocache ?? 0);   // a non-numeric string or an array from the request makes `&` throw a TypeError
 if ($nocache & 2) {  // nocache=2 or nocache=3, ... - second bit set
     AA_Stringexpand::switchCacheOff();
 }
 
 if ($cacheentry = AA::Pagecache()->getPage($cache_key, $nocache & 1)) {   // nocache=1 or nocache=3, ... - first bit set
     AA::$debug & 2 && AA::$dbg->log("view from cache");
-    $cacheentry->processPage(true);
+    $cacheentry->processPage(true, ...$_hits);
 } else {
     AA::$debug & 2 && AA::$dbg->log("view not found in cache");
     $showview     = new AA_Showview($view_param);
     $page_content = $showview->getViewOutput();
     $cache_sids   = AA_Module::getUsedModules();
     $cacheentry = new Cacheentry($page_content, AA::getHeaders());
-    $cacheentry->processPage();
+    $cacheentry->processPage(false, ...$_hits);
 
     if (!$nocache and $cache_sids) {
         $str2find = new CacheStr2find($cache_sids);

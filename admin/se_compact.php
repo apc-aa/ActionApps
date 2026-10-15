@@ -86,7 +86,6 @@ if (!IfSlPerm(PS_COMPACT)) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-$varset      = new Cvarset();
 
 if ( $update ) {
     do {
@@ -107,24 +106,25 @@ if ( $update ) {
             break;
         }
 
-        $varset->add("odd_row_format", "text", $odd_row_format);
-        $varset->add("even_row_format", "text", $even_row_format);
-        $varset->add("group_by","text",$group_by);
-        $varset->add("gb_direction","number",$gb_direction);
-        $varset->add("gb_header","number",$gb_header);
-        $varset->add("category_top", "text", $category_top);
-        $varset->add("category_format", "text", $category_format);
-        $varset->add("category_bottom", "text", $category_bottom);
-        $varset->add("compact_top", "text", $compact_top);
-        $varset->add("compact_bottom", "text", $compact_bottom);
-        $varset->add("compact_remove", "text", $compact_remove);
-        $varset->add("even_odd_differ", "number", $even_odd_differ ? 1 : 0);
-        $varset->add("category_sort", "number", $category_sort ? 1 : 0);
-          // if not filled, store " " - the empty value displays "No item found" for
-          // historical reasons
-        $varset->add("noitem_msg", "text", $noitem_msg ?: " " );
-
-        if ( !$db->query("UPDATE slice SET ". $varset->makeUPDATE() . " WHERE id=".xpack_id(AA::$module_id))) {
+        if ( !AA::Metabase()->doUpdate('slice', [
+            'id'              => AA::$module_id,
+            'odd_row_format'  => $odd_row_format,
+            'even_row_format' => $even_row_format,
+            'group_by'        => $group_by,
+            'gb_direction'    => $gb_direction,
+            'gb_header'       => $gb_header,
+            'category_top'    => $category_top,
+            'category_format' => $category_format,
+            'category_bottom' => $category_bottom,
+            'compact_top'     => $compact_top,
+            'compact_bottom'  => $compact_bottom,
+            'compact_remove'  => $compact_remove,
+            'even_odd_differ' => $even_odd_differ ? 1 : 0,
+            'category_sort'   => $category_sort ? 1 : 0,
+            // if not filled, store " " - the empty value displays "No item found" for
+            // historical reasons
+            'noitem_msg'      => $noitem_msg ?: " ",
+        ])) {
             $err["DB"] = MsgErr( _m("Can't change slice settings") );
             break;   // not necessary - we have set the halt_on_error
         }

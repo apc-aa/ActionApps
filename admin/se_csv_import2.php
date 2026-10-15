@@ -512,30 +512,17 @@ if ( $load ) {
     $importer->loadFromRequest();
 }
 
-/** SaveObjectProperty function
- * @param $obj_id
- * @param $property
- * @param $value
- *
- */
-function SaveObjectProperty($obj_id, $property, $value): void
-{
-    $varset = new CVarset();
-    $varset->add('object_id', 'text', $obj_id);
-    $varset->add('property',  'text', $property);
-    $varset->add('value',     'text', $value);
-    $varset->doInsert('object_text');
-}
-
 // before saving - the setting is stored for the slice the importer names
 $importer->check();
 
 if ( $save ) {
     $obj_id = new_id();
-    SaveObjectProperty($obj_id, 'type',       'AA_Csv_Importer');
-    SaveObjectProperty($obj_id, 'importer',   serialize($importer));
-    SaveObjectProperty($obj_id, 'name',       $save_name);
-    SaveObjectProperty($obj_id, 'owner',      $importer->getSliceId());
+    AA::Metabase()->doInsertMulti('object_text', [
+        ['object_id' => $obj_id, 'property' => 'type',     'value' => 'AA_Csv_Importer'],
+        ['object_id' => $obj_id, 'property' => 'importer', 'value' => serialize($importer)],
+        ['object_id' => $obj_id, 'property' => 'name',     'value' => $save_name],
+        ['object_id' => $obj_id, 'property' => 'owner',    'value' => $importer->getSliceId()],
+    ]);
 }
 
 if ($upload) {

@@ -7,8 +7,7 @@
  *  are downloaded from database, the old ID occurring anywhere in them is changed to the
  *  new one and the fields are uploaded back.
  *
- *  Some texts cannot be described in this easy way, so MAINTAIN_SQL may contain other
- *  SQL commands. You may use the :old_id: and :new_id: strings which will be replaced by the old / new ids.
+ *  The field id columns of feedmap and content are updated by their own statements.
  *
  * PHP version 7.2+
  *
@@ -92,7 +91,6 @@ if (!IfSlPerm(PS_FIELDS)) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-$varset = new Cvarset();
 
 /** ChangefieldID function
  * @param $old_id
@@ -167,54 +165,42 @@ function ChangeFieldID($old_id, $new_id): void
 
     $xslice_id = xpack_id(AA::$module_id);
 
-    define("MAINTAIN_SQL", [
-        "UPDATE feedmap SET to_field_id=':new_id:' WHERE to_field_id=':old_id:' AND to_slice_id = $xslice_id",
-        "UPDATE feedmap SET from_field_id=':new_id:' WHERE from_field_id=':old_id:' AND from_slice_id = $xslice_id",
-    ]);
-
-    $varset = new Cvarset();
-    foreach (MAINTAIN_FIELDS as $table => $settings) {
-        $keyfield = $settings['primary'];
-        if (!$keyfield) {
-            $keyfield = $settings['primary_part'];
-        }
-        $SQL = "SELECT `$keyfield`, `" . implode("`, `", $settings['fields']) . "` FROM `$table`";
-        $rows = DB_AA::select(['id' => []], $SQL, [[$settings['slice_id'], AA::$module_id, 'l']]);
-        if (is_array($rows)) {
-            foreach ($rows as $row) {
-                $varset->clear();
-                foreach ($settings['fields'] as $field) {
-                    $cont = $row[$field];
-                    if (str_contains($cont, $old_id)) {
-                        $cont = str_replace($old_id, $new_id, $cont);
-                        $varset->set($field, $cont, "text");
+    DB_AA::transaction(static function () use ($old_id, $new_id, $xslice_id) {
+        foreach (MAINTAIN_FIELDS as $table => $settings) {
+            $keyfield = $settings['primary'];
+            if (!$keyfield) {
+                $keyfield = $settings['primary_part'];
+            }
+            $SQL = "SELECT `$keyfield`, `" . implode("`, `", $settings['fields']) . "` FROM `$table`";
+            $rows = DB_AA::select(['id' => []], $SQL, [[$settings['slice_id'], AA::$module_id, 'l']]);
+            if (is_array($rows)) {
+                foreach ($rows as $row) {
+                    $varlist = [];
+                    foreach ($settings['fields'] as $field) {
+                        $cont = $row[$field];
+                        if (str_contains($cont, $old_id)) {
+                            $varlist[] = ["`$field`", str_replace($old_id, $new_id, $cont), 's'];
+                        }
                     }
-                }
-                if (!$varset->isEmpty()) {
-                    $SQL = "UPDATE $table SET " . $varset->makeUPDATE();
-                    $SQL .= " WHERE $keyfield = ";
-                    if ($settings['primary_type'] === "text") {
-                        $SQL .= "'" . $row[$keyfield] . "'";
-                    } else {
-                        $SQL .= $row[$keyfield];
+                    if ($varlist) {
+                        $where = [[$keyfield, $row[$keyfield], ($settings['primary_type'] === "text") ? 's' : 'i']];
+                        if ($settings['primary_part']) {
+                            $where[] = [$settings["slice_id"], AA::$module_id, 'l'];
+                        }
+                        DB_AA::update($table, $varlist, $where);
                     }
-                    if ($settings['primary_part']) {
-                        $SQL .= " AND " . $settings["slice_id"] . " = $xslice_id";
-                    }
-                    DB_AA::sql($SQL);
                 }
             }
         }
-    }
 
-    foreach (MAINTAIN_SQL as $sql) {
-        $sql = str_replace([":old_id:", ":new_id:"], [$old_id, $new_id], $sql);
-        DB_AA::sql($sql);
-    }
+        // $old_id and $new_id come addslashes()-ed from the form
+        DB_AA::update('feedmap', [['to_field_id', stripslashes($new_id), 's']], [['to_field_id', stripslashes($old_id)], ['to_slice_id', AA::$module_id, 'l']]);
+        DB_AA::update('feedmap', [['from_field_id', stripslashes($new_id), 's']], [['from_field_id', stripslashes($old_id)], ['from_slice_id', AA::$module_id, 'l']]);
 
-    // replace the field id in table content
-    DB_AA::sql("UPDATE content c INNER JOIN item i ON c.item_id = i.id SET c.field_id = '$new_id' WHERE i.slice_id = $xslice_id AND c.field_id = '$old_id';");
-    // DB_AA::sql("UPDATE `content` SET `field_id`='$new_id' WHERE `item_id` IN (SELECT `id` FROM `item` WHERE `slice_id` = $xslice_id) AND `field_id` = '$old_id'");  // slow
+        // replace the field id in table content
+        DB_AA::sql("UPDATE content c INNER JOIN item i ON c.item_id = i.id SET c.field_id = '$new_id' WHERE i.slice_id = $xslice_id AND c.field_id = '$old_id';");
+        // DB_AA::sql("UPDATE `content` SET `field_id`='$new_id' WHERE `item_id` IN (SELECT `id` FROM `item` WHERE `slice_id` = $xslice_id) AND `field_id` = '$old_id'");  // slow
+    });
 }
 
 $nchanges = 0;

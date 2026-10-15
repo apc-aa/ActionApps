@@ -39,8 +39,8 @@
  *
  */
 
-use AA\Doit\RequestMonitor;
 use AA\IO\DB\DB_AA;
+use AA\Security\LoginThrottle;
 use AA\Util\Langs;
 
 // Request inputs used by this bootstrap. Everything else an including page needs it reads
@@ -50,8 +50,9 @@ use AA\Util\Langs;
 // $require_default_lang) are therefore what their docblock always said they were - messages
 // set by the including page before the require, never request parameters.
 $encap   ??= $_REQUEST['encap'] ?? false;
-$free    ??= $_REQUEST['free'] ?? false;
-$freepwd ??= $_REQUEST['freepwd'] ?? '';   // password for the $free anonymous login below
+// not from cookies: a cookie planted from a sibling domain would log in (or fail) on every page
+$free    ??= $_GET['free'] ?? $_POST['free'] ?? false;
+$freepwd ??= $_GET['freepwd'] ?? $_POST['freepwd'] ?? '';   // password for the $free anonymous login below
 
 if ($encap === "false") {   // used in itemedit for anonymous form
     $encap = false;
@@ -67,9 +68,6 @@ if ($free) {
 
 require_once __DIR__ . "/locauth.php";
 
-(new RequestMonitor())->record();
-
-
 // Save before getting the session stored variables
 // At least it does sanity check.
 //                               AA::$module_id - could be set on new Alerts module - see AlertsModeditAfterInsert()
@@ -82,10 +80,8 @@ pageOpen($nobody ? 'nobody' : '');
 
 // anonymous login
 if ($nobody) {
-    $_POST['username'] = $free;
-    $_POST['password'] = $freepwd;
-    if (!$auth->auth_validatelogin()) {
-        echo _m("Either your username or your password is not valid");
+    if (!$auth->freeLogin(is_string($free) ? $free : '', is_string($freepwd) ? $freepwd : '')) {
+        echo LoginThrottle::refuse() ?? _m("Either your username or your password is not valid");
         exit;
     }
 }

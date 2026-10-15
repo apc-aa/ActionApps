@@ -56,10 +56,12 @@ class RedefineViewDiscusTemplates extends \AA\Optimize\AbstractOptimize
     public function repair(): bool
     {
         $this->message(_m('Deleting the view template "%1"', [$this->_viewType()]));
-        $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='" . $this->_viewType() . "' ");
+        $this->transaction(function () {
+            $this->query("DELETE FROM view WHERE slice_id='AA_Core_Fields..' AND type='" . $this->_viewType() . "' ");
 
-        $this->message(_m('Inserting the view "discus" template'));
-        $this->query($this->_viewDefinition());
+            $this->message(_m('Inserting the view "discus" template'));
+            $this->query($this->_viewDefinition());
+        });
 
         $this->message(_m('view "%1" redefinition - done.', [$this->_viewType()]));
         return true;

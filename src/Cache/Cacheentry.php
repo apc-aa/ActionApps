@@ -57,8 +57,8 @@ class Cacheentry
         $this->t = time();
     }
 
-    /** send headers, print output and count hit */
-    public function processPage(bool $cached = false): void
+    /** send headers, print output and count hit of the page item and of $hits */
+    public function processPage(bool $cached = false, zids ...$hits): void
     {
         $lastModified = $this->t;     // get the last-modified-date of this very file
         $etag = hash('md5', 'x' . $this->c . 'q'); // get a unique hash of this content (etag) (make it not the same as key in db for (maybe paranoid) security reasons)
@@ -84,6 +84,9 @@ class Cacheentry
         }
         if ($this->i) {
             Hitcounter::hit(new zids($this->i, 'l'), $cached, $not_modified);
+        }
+        foreach ($hits as $zids) {
+            Hitcounter::hit($zids, $cached, $not_modified);
         }
     }
 }

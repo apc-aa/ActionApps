@@ -63,17 +63,17 @@ function AddUser($user, $flags = 0): false|string
     if (! AA::$perm->isUsernameFree($user["uid"])) {
         return false;
     }
-    $varset = new CVarset([
-        ['type'       , "User"],
-        ['uid'        , $user["uid"]],
-        ['mail'       , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])],
-        ['name'       , $user["givenname"]." ".$user["sn"]],
-        ['sn'         , $user["sn"]],
-        ['givenname'  , $user["givenname"]],
-        ['description', ''],
-        ['password'   , AA_Permsystem_Sql::generatePasswordHash($user["userpassword"])]
-    ]);
-    return $varset->doInsert('users');  // last_insert_id
+    // (string): a missing value is stored as '' - Metabase would leave a null column out
+    return AA::Metabase()->doInsert('users', [
+        'type'        => "User",
+        'uid'         => (string) $user["uid"],
+        'mail'        => (string) (is_array($user['mail']) ? $user['mail'][0] : $user['mail']),
+        'name'        => $user["givenname"]." ".$user["sn"],
+        'sn'          => (string) $user["sn"],
+        'givenname'   => (string) $user["givenname"],
+        'description' => '',
+        'password'    => AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]),
+    ]);  // last_insert_id
 }
 
 /** DelUser function
@@ -107,18 +107,18 @@ function DelUser($user_id, $flags = 3): bool {
  * @return bool
  */
 function ChangeUser($user, $flags = 0): bool {
-    $varset = new CVarset([
-                                ['mail'     , (is_array($user['mail']) ? $user['mail'][0] : $user['mail'])],
-                                ['name'     , $user["givenname"]." ".$user["sn"]],
-                                ['sn'       , $user["sn"]],
-                                ['givenname', $user["givenname"]]
-        ]
-                          );
+    // (string): a missing value is stored as '' - Metabase would leave a null column out
+    $data = [
+        'id'        => $user["uid"],   // an SQL user id is digits (userIdFormatMatches()), so the int key finds the same row
+        'mail'      => (string) (is_array($user['mail']) ? $user['mail'][0] : $user['mail']),
+        'name'      => $user["givenname"]." ".$user["sn"],
+        'sn'        => (string) $user["sn"],
+        'givenname' => (string) $user["givenname"],
+    ];
     if ($user["userpassword"]) {
-        $varset->add("password", "text", AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]));
+        $data['password'] = AA_Permsystem_Sql::generatePasswordHash($user["userpassword"]);
     }
-    $varset->addkey("id", "text", $user["uid"]);
-    $varset->doUpdate('users', null, $user["uid"]);
+    AA::Metabase()->doUpdate('users', $data, null, $user["uid"]);
     return true;
 }
 
@@ -135,17 +135,16 @@ function ChangeUser($user, $flags = 0): bool {
 function AddGroup($group, $flags = 0): false|string
 {
     // creates new person in permission system
-    $varset = new CVarset([
-        ['type'       , 'Group'],
-                                ['uid'        , ''],
-                                ['mail'       , ''],
-                                ['name'       , $group['name']],
-                                ['sn'         , ''],
-                                ['givenname'  , ''],
-                                ['description', $group['description']],
-                                ['password'   , 'crypt will never return this']
-    ]);
-    return $varset->doInsert('users'); // last_insert_id
+    return AA::Metabase()->doInsert('users', [
+        'type'        => 'Group',
+        'uid'         => '',
+        'mail'        => '',
+        'name'        => (string) $group['name'],
+        'sn'          => '',
+        'givenname'   => '',
+        'description' => (string) $group['description'],
+        'password'    => 'crypt will never return this',
+    ]); // last_insert_id
 }
 
 /** DelGroup function
@@ -201,8 +200,7 @@ function AddGroupMember($group_id, $id, $flags = 0): void
 {
     if ($group_id && $id) {
         DelGroupMember($group_id, $id);
-        $varset = new CVarset([['groupid',$group_id], ['memberid',$id]]);
-        $varset->doInsert('membership');
+        AA::Metabase()->doInsert('membership', ['groupid' => $group_id, 'memberid' => $id]);
         AA_Permsystem_Sql::forgetMembership();
     }
 }
@@ -258,13 +256,8 @@ function DelPermObject($objectID, $objectType, $flags = 0): bool {
 function AddPerm($id, $objectID, $object_type, $perm, $flags = 0): bool
 {
     DelPerm($id, $objectID, $object_type);
-    $varset = new CVarset([
-        ['object_type',$object_type],
-                                ['objectid',$objectID],
-                                ['userid',$id],
-                                ['perm',$perm]
-    ]);
-    return $varset->doInsert('perms');
+    // (string): a null is stored as '' - Metabase would leave the column out (userid defaults to '0')
+    return AA::Metabase()->doInsert('perms', ['object_type' => (string) $object_type, 'objectid' => (string) $objectID, 'userid' => (string) $id, 'perm' => (string) $perm]);
 }
 
 /** DelPerm function

@@ -49,7 +49,7 @@ function Links_DeleteLink($lid)
     }
 
     if (!IsCatPerm(PS_LINKS_DELETE_LINK, $r_state['cat_path'])) { // have I perm to del?
-        DB_AA::sql("UPDATE links_link_cat SET proposal_delete = 'y' WHERE a_id = $aid");      //   delele_proposal too
+        AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $aid, 'proposal_delete' => 'y']);      //   delele_proposal too
         return _m('No permission to delete link from the category - link set as PROPOSAL to DELETE from given category');
     }
 
@@ -59,25 +59,22 @@ function Links_DeleteLink($lid)
         return _m("Can't get association information");
     }
 
-    if ($assignment['base'] === 'y') {    // we have to find another base for the link
-        // no LIMIT 1: rows tie on state, and a LIMIT may let MySQL put another of them first
-        $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['a_id', $aid, '<>']], ['state-'])[0] ?? false;  // visible - highlight - hidden
-        if ($new_base) {
-            if ($new_base['state'] === 'hidden') {
-                $SQL = "UPDATE links_link_cat SET state='visible', base='y' WHERE a_id = " . $new_base['a_id'];
-            } else {
-                $SQL = "UPDATE links_link_cat SET base='y' WHERE a_id = " . $new_base['a_id'];
+    // the new base and the removal together - a link must not end with two bases or none
+    DB_AA::transaction(static function () use ($assignment, $aid) {
+        if ($assignment['base'] === 'y') {    // we have to find another base for the link
+            // no LIMIT 1: rows tie on state, and a LIMIT may let MySQL put another of them first
+            $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['a_id', $aid, '<>']], ['state-'])[0] ?? false;  // visible - highlight - hidden
+            if ($new_base) {                                      // new base
+                if ($new_base['state'] === 'hidden') {
+                    AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $new_base['a_id'], 'state' => 'visible', 'base' => 'y']);
+                } else {
+                    AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $new_base['a_id'], 'base' => 'y']);
+                }
             }
-            $db = getDB();
-            $db->query($SQL);                                 // new base
-            freeDB($db);
         }
-    }
-    // else - no other assignment - we create unused link
-    $SQL = "DELETE FROM links_link_cat WHERE a_id = $aid";
-    $db = getDB();
-    $db->query($SQL);
-    freeDB($db);
+        // else - no other assignment - we create unused link
+        DB_AA::delete('links_link_cat', [['a_id', $aid, 'i']]);
+    });
     return false;                                         // OK - no error
 }
 
@@ -97,9 +94,11 @@ function Links_ApproveLink($param, $lid, $akce_param)
         return _m('No permission to approve link to given category');
     }
 
-    DB_AA::sql("UPDATE links_link_cat SET proposal = 'n' WHERE a_id = $aid");
-    // we have to make all other assignments visible
-    DB_AA::sql("UPDATE links_link_cat SET state='visible', base='n', proposal='y' WHERE category_id = '" . $r_state['cat_id'] . "' AND what_id = $lid AND state = 'hidden'");
+    DB_AA::transaction(static function () use ($aid, $lid, $r_state) {
+        AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $aid, 'proposal' => 'n']);
+        // we have to make all other assignments visible
+        DB_AA::update('links_link_cat', [['state', 'visible', 's'], ['base', 'n', 's'], ['proposal', 'y', 's']], [['category_id', $r_state['cat_id']], ['what_id', $lid, 'i'], ['state', 'hidden']]);
+    });
     return false;                                         // OK - no error
 }
 
@@ -116,7 +115,7 @@ function Links_RefuseLink($param, $lid, $akce_param)
     }
 
     if (!IsCatPerm(PS_LINKS_DELETE_LINK, $r_state['cat_path'])) { // have I perm to DEL?
-        DB_AA::sql("UPDATE links_link_cat SET proposal_delete = 'y' WHERE a_id = $aid");                      //   delele_proposal too
+        AA::Metabase()->doUpdate('links_link_cat', ['a_id' => $aid, 'proposal_delete' => 'y']);                      //   delele_proposal too
         return _m('No permission to delete link from the category - link set as PROPOSAL to DELETE from given category');
     }
 
@@ -126,25 +125,19 @@ function Links_RefuseLink($param, $lid, $akce_param)
         return _m("Can't get association information");
     }
 
-    if ($assignment['base'] === 'y') {            // we have to find new base
-        // no LIMIT 1: rows tie on proposal and state, and a LIMIT may let MySQL put another of them first
-        $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['base', 'n']], ['proposal', 'state'])[0] ?? false;  // true links first
-        if ($new_base) {       // link is linked to another category
-            $SQL = (($new_base['state'] === 'hidden')
-                     ? "UPDATE links_link_cat SET base='y', state='visible'
-                       WHERE a_id=" . $new_base['a_id']
-                     : "UPDATE links_link_cat SET base='y'
-                       WHERE a_id=" . $new_base['a_id']);
-            $db = getDB();
-            $db->query($SQL);
-            freeDB($db);
+    // the new base and the removal together - a link must not end with two bases or none
+    DB_AA::transaction(static function () use ($assignment, $aid) {
+        if ($assignment['base'] === 'y') {            // we have to find new base
+            // no LIMIT 1: rows tie on proposal and state, and a LIMIT may let MySQL put another of them first
+            $new_base = DB_AA::select([], 'SELECT * FROM links_link_cat', [['what_id', $assignment['what_id'], 'i'], ['base', 'n']], ['proposal', 'state'])[0] ?? false;  // true links first
+            if ($new_base) {       // link is linked to another category
+                AA::Metabase()->doUpdate('links_link_cat', ($new_base['state'] === 'hidden')
+                    ? ['a_id' => $new_base['a_id'], 'base' => 'y', 'state' => 'visible']
+                    : ['a_id' => $new_base['a_id'], 'base' => 'y']);
+            }
         }
-    }
-    $db = getDB();
-    $db->query("DELETE FROM links_link_cat WHERE a_id=$aid");  // delete assig.
-    // we have to make all other assignments
-
-    freeDB($db);
+        DB_AA::delete('links_link_cat', [['a_id', $aid, 'i']]);  // delete assig.
+    });
     return false;                                         // OK - no error
 }
 
@@ -166,7 +159,7 @@ function Links_Move2Folder($lid, $folder)
         return _m('No permission to move link');  // error
     }
 
-    DB_AA::sql("UPDATE links_links SET folder='$folder' WHERE id = $lid");
+    DB_AA::update('links_links', [['folder', $folder, 's']], [['id', $lid, 'i']]);
     return false;                                         // OK - no error
 }
 

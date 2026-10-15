@@ -55,12 +55,14 @@ class AddMandatoryStatusCode extends \AA\Optimize\AbstractOptimize
 
         $slices_to_fix = DB_AA::select('sid', "SELECT slice.id as sid FROM slice LEFT JOIN field ON (slice.id=field.slice_id AND field.id='" . $this->_field() . "') WHERE field.id IS NULL");
 
-        foreach ($slices_to_fix as $sid) {
-            if ($sid === 'AA_Core_Fields..') {
-                continue;
+        $this->transaction(function () use ($slices_to_fix) {
+            foreach ($slices_to_fix as $sid) {
+                if ($sid === 'AA_Core_Fields..') {
+                    continue;
+                }
+                $this->query($this->_fieldDefinition($sid));
             }
-            $this->query($this->_fieldDefinition($sid));
-        }
+        });
 
         // UPDATE ALSO AA_Optimize_Redefine_Field_Templates !!!
 

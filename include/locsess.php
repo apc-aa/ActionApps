@@ -42,29 +42,6 @@ use AA\Util\Txt;
 // supress PHP notices
 error_reporting(error_reporting() & ~(E_WARNING | E_NOTICE | E_DEPRECATED | E_STRICT));
 
-// if AA used in proxy mode, we need to correct some internal variables
-if ($_SERVER['HTTP_X_FORWARDED_SERVER']) {
-    $_SERVER['HTTP_HOST']   = $_SERVER['HTTP_X_FORWARDED_HOST'];
-    $_SERVER['SERVER_NAME'] = $_SERVER['HTTP_X_FORWARDED_SERVER'];
-    if ($_SERVER['HTTP_X_FORWARDED_FOR']) {
-        // X-Forwarded-For is a chain "client, proxy1, proxy2, ..." - the first hop is the
-        // original client, which is the address wanted here (behind a proxy REMOTE_ADDR holds
-        // the proxy's own address, which is useless). This is the ONLY assignment to
-        // REMOTE_ADDR in AA and every reader expects a single address: filldisc.php:154 cuts
-        // the /24 subnet with strrpos($ip, '.'), logs.php:191 puts it in a log selector,
-        // phplib.php:384 compares it for session forgery. Copying the raw header used to hand
-        // all of them "1.2.3.4, 5.6.7.8". So take one hop, and only when it parses as an IP -
-        // an unusable header leaves whatever the web server reported.
-        // NOTE: this does not make REMOTE_ADDR trustworthy - both headers come from the client
-        // and there is still no trusted-proxy gate, which is the rest of security audit finding
-        // N3 (2026-09) and a separate change.
-        $forwarded_for = filter_var(trim(explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0]), FILTER_VALIDATE_IP);
-        if ($forwarded_for) {
-            $_SERVER['REMOTE_ADDR'] = $forwarded_for;
-        }
-    }
-}
-
 // should be set in config.php
 if (!defined(AA_INSTAL_PATH)) {
     $url_components = parse_url(AA_INSTAL_URL);
@@ -78,6 +55,9 @@ if (!defined('AA_BASE_PATH')) {
 /* Change this to match your database. */
 require_once __DIR__."/phplib.php";
 require_once __DIR__."/../vendor/autoload.php";
+
+// behind a reverse proxy: the visitor's address, host and scheme from the headers of a trusted proxy
+\AA\Util\TrustedProxy::applyToRequest();
 
 // record fatals / uncaught exceptions as PHP_FATAL rows in the `log` table (config.php opt-in)
 if (defined('AA_LOG_PHP_FATALS') && AA_LOG_PHP_FATALS) {

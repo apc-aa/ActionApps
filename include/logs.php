@@ -55,7 +55,11 @@ ALERTS          howoften                        Start/email sent
 HITCOUNT        type
 ITEM_DEL        item_id
 M_FLDI_VLD      module_id:field_id              msg:url                        // insert form field validation
-LOGIN           module_id:field_id              msg:url                        // insert form field validation
+LOGIN           uid:module_id:ip:uri:Qa         user name as typed             // a login (AA_Auth) or a failed check of a password (empty uid, AA_Perm::authenticateUsername() - LoginThrottle counts them); never deleted
+FREE_LOGIN      user name                                                      // a login of a module's public account (?free=&freepwd=), once a day instead of a LOGIN row per visit (AA_Auth, LogOnce)
+LOGIN_TPL       :module_id:ip:uri:Qa            user name                      // a failed check of credentials a template passed ({jwtencode}, {setsecret}) - LoginThrottle counts it for the name, and for the address only against template checks
+LOGIN_THR       refused|allowed:client IP                                      // a login made to wait after repeated failures (allowed: the protection is off), once a day (AA\Security\LoginThrottle, ProtectionLog)
+LOGIN_CLR       uid:module_id:ip:uri:Qa         user name                      // a superadmin let the name in (Security page): its failures before stop counting, from any address (LoginThrottle::allow())
 STATE_CHK       {CheckClass} | summary          Sc:severity:count:title | Scs:errors:warnings:infos:checks   // daily State Check snapshot (AA\Later\StateCheck)
 NIGHTLY         run | check:spec | page | url   Nrun:… | Nran:… | Nf:… | Ne:…  // the nightly test's findings as State Check shows them: every push writes the whole current state as one set of rows with one time (AA\Optimize\NightlyLog)
 ALIAS_FU        level:slice_id:field_id:function  reason:file                   // f_u not calling a usr_* function, once a day (AA\Util\UserAliasFunction, LogOnce)
@@ -250,14 +254,17 @@ class AA_Log implements InternalExpandInterface
      *  the reversed Qa selector must fit so its trailing class flag survives. */
     private const SELECTOR_MAX = 255;
 
-    public static function context(?string $selector = null): string
+    /** @param bool $query false leaves the query string out - credentials sent by GET (?freepwd=, a template's
+     *                     {qss:password}) must not end up in the log */
+    public static function context(?string $selector = null, bool $query = true): string
     {
+        $uri = $query ? $_SERVER['REQUEST_URI'] : strtok((string) $_SERVER['REQUEST_URI'], '?');
         // we need to be searchable by selector - so in DB index we use reversed format with Qa at the end
         return self::contextSelector(
             (string) $selector,
             (string) AA::$module_id,
             str_replace(':', '_', $_SERVER['REMOTE_ADDR']),
-            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '' : 'http/') . "{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}",
+            (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? '' : 'http/') . "{$_SERVER['HTTP_HOST']}$uri",
         );
     }
 

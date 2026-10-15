@@ -52,54 +52,9 @@ $PHPTHUMB_CONFIG = [];
 
 /** AA change by Honza 14.1.2009 - default setting did not work for sites, where aa is located outside of site path */
 //$PHPTHUMB_CONFIG['document_root'] = realpath((getenv('DOCUMENT_ROOT') && preg_match('#^'.preg_quote(realpath(getenv('DOCUMENT_ROOT'))).'#', realpath(__FILE__))) ? getenv('DOCUMENT_ROOT') : str_replace(dirname(@$_SERVER['PHP_SELF']), '', str_replace(DIRECTORY_SEPARATOR, '/',  __DIR__ )));
-#$PHPTHUMB_CONFIG['document_root'] = AA_SITE_PATH;
 
-# docasny hack pro biom nez se vrati Honza
-#echo AA_HTTP_DOMAIN;
-#exit;
-if (AA_HTTP_DOMAIN === "https://biom.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/biom.cz';
-} elseif (AA_HTTP_DOMAIN === "https://www.romea.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/romea.cz';
-} elseif (AA_HTTP_DOMAIN === "https://360re.ecn.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/360re.ecn.cz';
-} elseif (AA_HTTP_DOMAIN === "https://cii.ecn.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/cii.ecn.cz';
-} elseif (AA_HTTP_DOMAIN === "https://dagmarzarubova.com/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/dagmarzarubova.com';
-} elseif (AA_HTTP_DOMAIN === "https://horseriding-school.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/horseriding-school.cz';
-} elseif (AA_HTTP_DOMAIN === "https://www.penzionchrudim.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/penzionchrudim.cz';
-} elseif (AA_HTTP_DOMAIN === "https://himapanprague.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/himapanprague.cz';
-} elseif (AA_HTTP_DOMAIN === "https://jitkakrejcova.com/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/jitkakrejcova.com';
-} elseif (AA_HTTP_DOMAIN === "https://u-veze.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/u-veze.cz';
-} elseif (AA_HTTP_DOMAIN === "https://reiki-moravcova.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/reiki-moravcova.cz';
-} elseif (AA_HTTP_DOMAIN === "https://prvnigeotermalni.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/prvnigeotermalni.cz';
-} elseif (AA_HTTP_DOMAIN === "https://rin-gen.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/rin-gen.cz';
-} elseif (AA_HTTP_DOMAIN === "https://holkyvamtoudelaj.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/holkyvamtoudelaj.cz';
-} elseif (AA_HTTP_DOMAIN === "https://sasa.obetiznasilneni.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/sasa.obetiznasilneni.cz';
-} elseif (AA_HTTP_DOMAIN === "https://praha-2.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/praha-2.cz';
-} elseif (AA_HTTP_DOMAIN === "https://adamsbeauty.ecn.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/adamsbeauty.ecn.cz';
-} elseif (AA_HTTP_DOMAIN === "https://biofarma.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/biofarma.cz';
-} elseif (AA_HTTP_DOMAIN === "https://www.dataplan.info/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/dataplan.info';
-} elseif (AA_HTTP_DOMAIN === "https://www.mpo-efekt.cz/") {
-    $PHPTHUMB_CONFIG['document_root'] = '/data/www/htdocs/mpo-efekt.cz';
-} else {
-    $PHPTHUMB_CONFIG['document_root'] = AA_SITE_PATH;
-}
+// per-site document roots: AA_IMG_DOCUMENT_ROOTS in config.php
+$PHPTHUMB_CONFIG['document_root'] = (defined('AA_IMG_DOCUMENT_ROOTS') ? AA_IMG_DOCUMENT_ROOTS : [])[AA_HTTP_DOMAIN] ?? AA_SITE_PATH;
 
 
 // * Security configuration

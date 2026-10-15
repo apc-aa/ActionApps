@@ -86,7 +86,6 @@ require_once __DIR__ . "/../include/discussion.php";
 require_once __DIR__ . "/../include/item.php";
 
 $err = [];          // error array (Init - just for initializing variable
-$varset = new Cvarset();
 
 if ($update) {
     //update discussion table
@@ -106,19 +105,18 @@ if ($update) {
 
 
     if (!count($err)) {
-        $varset->add("subject", "text", $subject);
-        $varset->add("author", "text", $author);
-        $varset->add("e_mail", "text", $e_mail);
-        $varset->add("body", "text", $body);
-        $varset->add("date", "text", $date);
-        $varset->add("url_address", "text", $url_address);
-        $varset->add("url_description", "text", $url_description);
-        $varset->add("remote_addr", "text", $remote_addr);
-        $varset->add("free1", "text", $free1);
-        $varset->add("free2", "text", $free2);
-
-        $SQL = "UPDATE discussion SET " . $varset->makeUPDATE() . " WHERE id=" . xpack_id($d_id);
-        $db->query($SQL);
+        DB_AA::update('discussion', [
+            ['subject', $subject, 's'],
+            ['author', $author, 's'],
+            ['e_mail', $e_mail, 's'],
+            ['body', $body, 's'],
+            ['date', $date, 's'],
+            ['url_address', $url_address, 's'],
+            ['url_description', $url_description, 's'],
+            ['remote_addr', $remote_addr, 's'],
+            ['free1', $free1, 's'],
+            ['free2', $free2, 's'],
+        ], [['id', $d_id, 'l']]);
 
         AA::Pagecache()->invalidateFor(AA::$module_id);  // invalidate old cached values
 
