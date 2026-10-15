@@ -2,6 +2,7 @@
 
 use AA\IO\DB\DB_AA;
 use AA\Util\InputVars;
+use AA\Util\LogOnce;
 
 /**
  * filldisc.php - writes a discussion item into the discussion table
@@ -12,8 +13,7 @@ use AA\Util\InputVars;
  *          $d_author
  *          $d_e_mail
  *          $d_body
- *          $d_state
- *          $d_flag
+ *          $d_state            1 = hide the comment until a moderator approves it
  *          $d_free1
  *          $d_free2
  *          $d_url_address
@@ -67,34 +67,35 @@ require_once __DIR__ . "/include/event.class.php";
 require_once __DIR__ . "/include/validate.php";
 
 try {
-    $answer = InputVars::stringPOST('answer', true); // empty
+    // only the item is required - the other fields may be left empty (the spam trap 'answer' must be)
+    $answer = InputVars::stringPOST('answer'); // empty
     // array ( 'HM' => 2, 'ee' => 1, '' => 2, 'rr' => 1, )
-    $d_author = InputVars::stringPOST('d_author', true); // alpha, empty
+    $d_author = InputVars::stringPOST('d_author'); // alpha, empty
     // array ( 'opravené d…' => 2, 'errr' => 1, '' => 1, 'rr' => 1, 'f' => 1, )
-    $d_body = InputVars::stringPOST('d_body', true); // empty
+    $d_body = InputVars::stringPOST('d_body'); // empty
     // array ( 'devel@ecn.cz' => 2, '' => 4, )
-    $d_e_mail = InputVars::stringPOST('d_e_mail', true); // empty
+    $d_e_mail = InputVars::stringPOST('d_e_mail'); // empty
     // array ( '8de4c6fa4e6…' => 6, )
     $d_item_id = InputVars::idPOST('d_item_id', true);
     // array ( '' => 3, 'f0583c0321e…' => 1, 'd40e80bf3bb…' => 2, )
-    $d_parent = InputVars::idPOST('d_parent', true); // empty       // parent id
+    $d_parent = InputVars::idPOST('d_parent'); // empty       // parent id
     // array ( 'opravené d…' => 2, '' => 4, )
-    $d_subject = InputVars::stringPOST('d_subject', true); // empty
+    $d_subject = InputVars::stringPOST('d_subject'); // empty
     // array ( 'http://zpra…' => 6, )
-    $url = InputVars::stringPOST('url', true);
+    $url = InputVars::stringPOST('url');
 } catch (Exception $e) {
     AA_Adminpageutil::pageParameterError($e);
 }
 
-// Optional discussion fields (previously seeded by the register_globals loop). Read RAW;
-// escaped by the DB layer at insert (type "text"). $d_free2 stays null when absent so the
-// cookie-dump fallback at insert still fires.
-$d_state           = $_REQUEST['d_state']           ?? '';
-$d_flag            = $_REQUEST['d_flag']            ?? '';
-$d_free1           = $_REQUEST['d_free1']           ?? '';
-$d_free2           = $_REQUEST['d_free2']           ?? null;
-$d_url_address     = $_REQUEST['d_url_address']     ?? '';
-$d_url_description  = $_REQUEST['d_url_description'] ?? '';
+// Optional discussion fields. Read RAW; escaped by the DB layer at insert (type "text").
+// $d_free2 stays null when absent so the cookie-dump fallback at insert still fires.
+$optional          = static fn(string $name): string => is_string($_REQUEST[$name] ?? null) ? $_REQUEST[$name] : '';
+$d_free1           = $optional('d_free1');
+$d_free2           = isset($_REQUEST['d_free2']) ? $optional('d_free2') : null;
+$d_url_address     = $optional('d_url_address');
+$d_url_description = $optional('d_url_description');
+// a comment is shown (0) or hidden (1) by the moderators; a form may only ask to hide it until approved
+$d_state           = ($optional('d_state') === '1') ? 1 : 0;
 
 $err = [];       // error array (Init - just for initializing variable)
 
@@ -123,6 +124,17 @@ if ($slice->getProperty('flag') & DISCUS_ADD_DISABLED) {
     echo _m("New comments disabled.");
     exit;
 }
+// only where the slice shows comments - its discussion view (or one set for its fulltext);
+// comments to items of other slices were spam nobody saw
+if (!$slice->getProperty('vid') && !DB_AA::test('view', [['slice_id', $slice_id, 'l'], ['type', 'discus']])) {
+    LogOnce::daily('DISC_DENY', $slice_id, 'no discussion view');
+    echo _m("New comments disabled.");
+    exit;
+}
+// a reply belongs to a comment of the same item, else it starts a new thread
+if ($d_parent && !DB_AA::test('discussion', [['id', $d_parent, 'l'], ['item_id', $d_item_id, 'l']])) {
+    $d_parent = '';
+}
 
 // test for spam
 $discussion_fields = [
@@ -132,8 +144,6 @@ $discussion_fields = [
     'd_author'         => 0,
     'd_e_mail'         => 0,
     'd_body'           => 4,
-    'd_state'          => 0,
-    'd_flag'           => 0,
     'd_free1'          => 4,
     'd_free2'          => 4,
     'd_url_address'    => 1,
@@ -165,7 +175,7 @@ if ($ip_banned_slice_id) {
         $set     = new AA_Set($ip_banned_slice_id, new AA_Condition('keywords........', 'NOTNULL', '1'));
         $kw_item = GetFormattedItems($set->query(), $format);
 
-        $teststring = implode('_AA~#^', [$_REQUEST['d_author'], $_REQUEST['d_e_mail'], $_REQUEST['d_body'], $_REQUEST['d_state'], $_REQUEST['d_free1'], $_REQUEST['d_free2'], $_REQUEST['d_url_address'], $_REQUEST['d_url_description']]);
+        $teststring = implode('_AA~#^', [$d_author, $d_e_mail, $d_body, $d_free1, (string) $d_free2, $d_url_address, $d_url_description]);
         foreach ($kw_item as $kw_id => $kw_string) {
             $bad_phrases = array_filter(explode('_AA_DeLiM_', $kw_string));
             foreach ($bad_phrases as $bph) {
@@ -214,9 +224,8 @@ $discussion = [
     'author'          => $d_author,
     'e_mail'          => $d_e_mail,
     'body'            => $d_body,
-    // (string): an array from the request is stored as 0, not cast to 1
-    'state'           => (string) $d_state,
-    'flag'            => (string) $d_flag,
+    'state'           => $d_state,
+    'flag'            => 0,
     'free1'           => $d_free1,
     // the poster's cookies, but no session id - free2 is shown to the discussion's admins and templates
     'free2'           => $d_free2 ?? var_export(array_filter($_COOKIE, static fn($name) => stripos((string) $name, 'sess') === false, ARRAY_FILTER_USE_KEY), true),
