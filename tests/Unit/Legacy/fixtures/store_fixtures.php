@@ -143,8 +143,9 @@ final class RecordingDb extends DB_PDO
         preg_match_all('/\((?:[^()\']|\'(?:[^\'\\\\]|\\\\.)*\')*\)/', $m[2], $tuples);
         $rows = [];
         foreach ($tuples[0] as $tuple) {
-            preg_match_all('/\'(?:[^\'\\\\]|\\\\.)*\'|NULL|0x[0-9a-fA-F]+|-?\d+(?:\.\d+)?/', $tuple, $vals);
-            $rows[] = array_map(self::decode(...), array_combine($cols, $vals[0]));
+            preg_match_all('/\'(?:[^\'\\\\]|\\\\.)*\'|NULL|DEFAULT|0x[0-9a-fA-F]+|-?\d+(?:\.\d+)?/', $tuple, $vals);
+            // DEFAULT = the column left out of this row
+            $rows[] = array_map(self::decode(...), array_filter(array_combine($cols, $vals[0]), static fn($v) => $v !== 'DEFAULT'));
         }
         return $rows;
     }

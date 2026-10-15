@@ -12,7 +12,8 @@ use Tests\Unit\Legacy\Fixtures\RecordingDb;
  * Metabase writes store what hand-written SQL stores:
  *  - a packed column takes any value q_pack_id() took ('0' and shorter ids exist in production data);
  *  - text is not cut in PHP - MySQL in the non-strict sql_mode of DB_PDO cuts varchar by characters;
- *  - doInsertMulti() rows equal the one-row doInsert(): a missing column gets its DEFAULT.
+ *  - doInsertMulti() names the columns doInsert() would: a column no row sets is left out (the live
+ *    table may lack it), a row without a column the others set gets DEFAULT.
  */
 final class MetabaseWriteValuesTest extends TestCase
 {
@@ -69,13 +70,27 @@ final class MetabaseWriteValuesTest extends TestCase
         $this->assertSame("'$name'", $sql['name']);
     }
 
-    public function test_getSQLData_gives_a_missing_or_null_column_its_default(): void
+    public function test_getSQLData_leaves_out_a_missing_or_null_column(): void
     {
-        $sql = \AA::Metabase()->tables['hit_archive']->getSQLData(['id' => 5, 'time' => 7, 'duration' => null]);
+        $sql = \AA::Metabase()->tables['hit_archive']->getSQLData(['hits' => 2, 'id' => 5, 'time' => 7, 'duration' => null, 'foo' => 1]);
 
-        $this->assertSame(['id' => 5, 'time' => 7, 'hits' => 'DEFAULT', 'duration' => 'DEFAULT'], $sql, 'hits is NOT NULL DEFAULT 1');
-        $sql = \AA::Metabase()->tables['relation']->getSQLData(['source_id' => self::ID, 'destination_id' => self::ID]);
-        $this->assertSame('NULL', $sql['flag'], 'DEFAULT NULL - the same');
+        $this->assertSame(['id' => 5, 'time' => 7, 'hits' => 2], $sql, 'schema order, no column outside the schema');
+    }
+
+    public function test_doInsertMulti_names_only_the_columns_the_rows_set(): void
+    {
+        $rows = [['id' => 5, 'hits' => 2, 'time' => 7], ['id' => 6, 'time' => 7]];
+
+        \AA::Metabase()->doInsertMulti('hit_archive', $rows);
+        $this->assertSame([
+            'INSERT INTO `hit_archive` (`id`,`time`,`hits`) VALUES (5,7,2), (6,7,DEFAULT)',
+        ], RecordingDb::$log, 'no `duration` (10 DBs lack it); hits of the second row is NOT NULL DEFAULT 1');
+    }
+
+    public function test_doInsertMulti_without_rows_sends_nothing(): void
+    {
+        $this->assertSame(0, \AA::Metabase()->doInsertMulti('hit_archive', []));
+        $this->assertSame([], RecordingDb::$log);
     }
 
     public function test_doInsertMulti_writes_the_values_doInsert_writes(): void
@@ -93,8 +108,8 @@ final class MetabaseWriteValuesTest extends TestCase
         $this->assertSame([
             "INSERT INTO `constant` (`id`,`group_id`,`name`,`value`,`class`,`pri`,`ancestors`) VALUES (0x$id,'a\\'b\\\\c','Č','1.5','',7,0x$id$id)",
             "INSERT INTO `constant` (`id`,`group_id`,`name`,`value`,`pri`) VALUES (0x$id,'g','n','v',3)",
-            "INSERT INTO `constant` (`id`,`group_id`,`name`,`value`,`class`,`pri`,`ancestors`,`description`,`short_id`) VALUES "
-            . "(0x$id,'a\\'b\\\\c','Č','1.5','',7,0x$id$id,NULL,NULL), (0x$id,'g','n','v',NULL,3,NULL,NULL,NULL)",
+            "INSERT INTO `constant` (`id`,`group_id`,`name`,`value`,`class`,`pri`,`ancestors`) VALUES "
+            . "(0x$id,'a\\'b\\\\c','Č','1.5','',7,0x$id$id), (0x$id,'g','n','v',DEFAULT,3,DEFAULT)",
         ], RecordingDb::$log);
     }
 }

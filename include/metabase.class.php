@@ -104,12 +104,6 @@ class AA_MbC
         return str_contains((string) $this->c[5], 'auto_increment');
     }
 
-    /** true when writing NULL stores what leaving the column out stores */
-    public function defaultsToNull(): bool
-    {
-        return $this->isAutoIncrement() || ($this->c[2] && $this->c[4] === null);
-    }
-
     public function getName()
     {
         return $this->c[0];
@@ -670,7 +664,7 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
     /** Prepare data for insert (set right types/values/...)
      *
      * @param  array<string, mixed> $data    data array - all data unpacked. The values are converted to correct ones
-     * @return array ['colname' => 'value', ...]
+     * @return array ['colname' => 'value', ...] - SQL literals of the schema columns $data sets (not null), in schema order
      */
     public function getSQLData(array $data): array
     {
@@ -693,10 +687,6 @@ class AA_MbT implements IteratorAggregate, ArrayAccess, Countable
                 } else {
                     $ret[$colname] = qquote($value);
                 }
-            }
-            if (!isset($ret[$colname])) {
-                // as if the column were left out of a one-row INSERT - NULL into a NOT NULL column would store 0/'', not its DEFAULT
-                $ret[$colname] = $coldef->defaultsToNull() ? 'NULL' : 'DEFAULT';
             }
         }
         return $ret;
@@ -1154,34 +1144,30 @@ class AA_Metabase
      * @see AA_Metabase::doInsert()
      * @param  string     $tablename table, where to store data
      * @param  array<array<string, mixed>> $data  data rows - all data unpacked. The values are converted to correct ones
-     * @param  string     $nohalt  'nohalt' - do not halt on database error
-     * @return bool|int   0|false on error
-     * @todo   process it as one SQL insert statement
+     * @param  string     $nohalt  unused - an error halts unless the caller switched halting off on the handle (Logs)
+     * @return bool|int   number of inserted rows, false on error
      */
     public function doInsertMulti($tablename, $data, $nohalt = null): bool|int
     {
-        $table = $this->tables[$tablename];
-
-        $chunkSize  = 1000;           // Define chunk size
-        $chunkedData = array_chunk($data, $chunkSize);
-
-        $SQLstart = "INSERT INTO `$tablename` (`" . implode('`,`', $table->getColumnNames()) . '`) VALUES ';
-        $inserded = 0;
-        foreach ($chunkedData as $chunk) {
-            $SQL = $SQLstart;
-            $values = [];
-            foreach ($chunk as $row) {
-                $sanitizedRow = $table->getSQLData($row);
-                $values[]     = "(" . implode(",", array_values($sanitizedRow)) . ")";
+        $table    = $this->tables[$tablename];
+        $inserted = 0;
+        foreach (array_chunk($data, 1000) as $chunk) {
+            $rows = array_map(static fn($row) => $table->getSQLData($row), $chunk);
+            // only the columns the rows set, as doInsert() does: the live table decides the rest - it may lack
+            // a schema column (hit_archive.duration) or have another default. DEFAULT, not NULL, for a row without
+            // one of them: NULL into a NOT NULL column stores 0/'' (and fails in a one-row INSERT)
+            $columns = array_intersect($table->getColumnNames(), array_keys(array_merge(...$rows)));
+            $values  = [];
+            foreach ($rows as $row) {
+                $values[] = '(' . implode(',', array_map(static fn($col) => $row[$col] ?? 'DEFAULT', $columns)) . ')';
             }
-            $SQL      .= implode(', ', $values);
-            $num_rows = DB_AA::sql($SQL);
+            $num_rows = DB_AA::sql("INSERT INTO `$tablename` (" . implode(',', array_map(static fn($col) => "`$col`", $columns)) . ') VALUES ' . implode(', ', $values));
             if ($num_rows === false) {
                 return false;
             }
-            $inserded += $num_rows;
+            $inserted += $num_rows;
         }
-        return $inserded;
+        return $inserted;
     }
 
     /** The best (most safe) low-level approach to delete data in the AA table
