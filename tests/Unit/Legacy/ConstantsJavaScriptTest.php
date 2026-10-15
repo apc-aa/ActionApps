@@ -107,7 +107,7 @@ namespace Tests\Unit\Legacy {
                 self::row('C', 'Cherry', 'cherry', 20, 'Red fruit', 3),
                 self::row('A', 'Apple', 'Apple', 10, null, 1),        // name == value -> '#'
                 self::row('B', 'Banana', 'ban', 10, 'Yellow', 2),
-                self::row('D', '1.0', '1', 30, '', 4),                // loose == on numeric strings -> '#' too
+                self::row('D', '1.0', '1', 30, '', 4),                // '#' would save '1.0' as the value
             ];
         }
 
@@ -171,7 +171,7 @@ namespace Tests\Unit\Legacy {
                 . "new Array('Apple','#',10,'',1,false),"
                 . "new Array('Banana','ban',10,'Yellow',2,false),"
                 . "new Array('Cherry','cherry',20,'Red fruit',3,false),"
-                . "new Array('1.0','#',30,'',4,false))",
+                . "new Array('1.0','1',30,'',4,false))",
                 self::js(self::flatRows()),
             );
         }
@@ -179,7 +179,7 @@ namespace Tests\Unit\Legacy {
         public function test_flat_group_not_admin(): void
         {
             $this->assertSame(
-                "new Array(new Array('Apple','#'),new Array('Banana','ban'),new Array('Cherry','cherry'),new Array('1.0','#'))",
+                "new Array(new Array('Apple','#'),new Array('Banana','ban'),new Array('Cherry','cherry'),new Array('1.0','1'))",
                 self::js(self::flatRows(), false),
             );
         }
