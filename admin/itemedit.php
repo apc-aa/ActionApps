@@ -86,7 +86,7 @@ try {
     // array ( 'aa[n1_4085d…' => 2, 'aa[ua723bc0…' => 2, )-array ( '' => 150, 'aa[n1_4085d…' => 1, 'aa[ua723bc0…' => 2, )
     $openervar = InputVars::stringGETPOST('openervar'); // -
     // a form field name or /rim/<sid>/<fid>/<base_id>; it goes into a script and an AA expression in CloseDialog()
-    if (!preg_match('~^[A-Za-z0-9_.\[\]/-]*$~', $openervar)) {
+    if (!preg_match('~^[A-Za-z0-9_.\[\]/-]*$~D', $openervar)) {
         $openervar = '';
     }
     // array ( 'close_dialog' => 9, )
