@@ -26,6 +26,7 @@ namespace {
 
 namespace Tests\Unit\Later {
 
+    use AA\IO\DB\DB_AA;
     use AA\IO\DB\DB_PDO;
     use AA\Later\BatchStep;
     use AA\Later\Toexecute;
@@ -65,6 +66,8 @@ namespace Tests\Unit\Later {
             self::$ran = [];
             ClockTask::$seen = [];
             ParamsTask::$ran = [];
+            SqliteDb::$locks = [];
+            SqliteDb::$others = [];
             LogOnce::reset();   // one row a day per class - per process, so another test's row would hide this one's
             set_time_limit(0);   // the round size comes from the limit - another test may have left one
             $this->pdo = new PDO('sqlite::memory:');
@@ -610,6 +613,89 @@ namespace Tests\Unit\Later {
             $this->assertSame(16.0, ClockTask::$seen[1][1], 'the outer task is back in its own round');
             $this->assertNull(Toexecute::timeLeft());
         }
+
+        public function test_laterOnce_queues_the_task_under_one_lock(): void
+        {
+            $this->lockable();
+
+            (new Toexecute())->laterOnce(new RecordingTask('once'), [], 'test-once', 100);
+
+            $this->assertQueuedOnceUnderOneLock();
+            // outside a transaction the check and the insert go on another handle: the one holding
+            // the lock stays out of the pool until the lock is released
+            $this->assertNotEmpty(SqliteDb::$others);
+            $this->assertNotContains(SqliteDb::$locks[0][0], SqliteDb::$others, 'the lock connection runs nothing but the lock');
+            $this->assertCount(2, $GLOBALS['spareDBs'], 'both handles are back in the pool');
+        }
+
+        public function test_laterOnce_inside_a_transaction_runs_on_its_one_handle(): void
+        {
+            // an item stored inside DB_AA::transaction() schedules a task from its event handler
+            // (AA_Mysqlauth_Maintain)
+            $this->lockable();
+            $GLOBALS['spareDBs'] = [$this->handle()];
+
+            DB_AA::transaction(static fn() => (new Toexecute())->laterOnce(new RecordingTask('once'), [], 'test-once', 100));
+
+            $this->assertQueuedOnceUnderOneLock();
+            $this->assertCount(1, $GLOBALS['spareDBs'], 'the handle is back in the pool');
+        }
+
+        public function test_laterOnce_releases_the_lock_when_queueing_fails(): void
+        {
+            $this->lockable();
+
+            try {
+                $this->assertLaterOnceThrows();
+            } catch (\Exception) {
+                // expected - only the lock and the handles matter here
+            }
+
+            $this->assertSame(['GET_LOCK', 'RELEASE_LOCK'], array_column(SqliteDb::$locks, 1));
+            $this->assertCount(1, array_unique(array_column(SqliteDb::$locks, 0)));
+            $this->assertCount(2, $GLOBALS['spareDBs'], 'both handles are back in the pool');
+        }
+
+        public function test_laterOnce_inside_a_transaction_releases_the_lock_when_queueing_fails(): void
+        {
+            $this->lockable();
+            $GLOBALS['spareDBs'] = [$this->handle()];
+
+            try {
+                DB_AA::transaction(fn() => $this->assertLaterOnceThrows());
+            } catch (\Throwable) {
+                // the transaction passes the failure on - only the lock and the handle matter here
+            }
+
+            $this->assertSame(['GET_LOCK', 'RELEASE_LOCK'], array_column(SqliteDb::$locks, 1));
+            $this->assertCount(1, $GLOBALS['spareDBs'], 'the handle is back in the pool, once');
+        }
+
+        /** an anonymous class cannot be serialized, so later() throws after the lock is taken */
+        private function assertLaterOnceThrows(): void
+        {
+            try {
+                (new Toexecute())->laterOnce(new class {}, [], 'test-once', 100);
+            } catch (\Exception $e) {
+                $this->assertStringContainsString('Serialization', $e->getMessage());
+                throw $e;
+            }
+            $this->fail('laterOnce() was expected to throw');
+        }
+
+        /** MySQL's named lock, which SQLite does not have */
+        private function lockable(): void
+        {
+            $this->pdo->sqliteCreateFunction('GET_LOCK', static fn(string $name, int $timeout): int => 1, 2);
+            $this->pdo->sqliteCreateFunction('RELEASE_LOCK', static fn(string $name): int => 1, 1);
+        }
+
+        private function assertQueuedOnceUnderOneLock(): void
+        {
+            $this->assertSame(1, (int) $this->pdo->query("SELECT COUNT(*) FROM toexecute WHERE selector = 'test-once'")->fetchColumn());
+            $this->assertSame(['GET_LOCK', 'RELEASE_LOCK'], array_column(SqliteDb::$locks, 1));
+            $this->assertCount(1, array_unique(array_column(SqliteDb::$locks, 0)), 'a named lock belongs to the connection that took it');
+        }
     }
 
     /** records the queue round it runs in */
@@ -655,8 +741,19 @@ namespace Tests\Unit\Later {
      *  value written back to the queue would not unserialize */
     final class SqliteDb extends DB_PDO
     {
+        /** @var list<array{int, string}> [handle, GET_LOCK|RELEASE_LOCK] in the order they ran */
+        public static array $locks = [];
+
+        /** @var list<int> handle of every other statement, in the order they ran */
+        public static array $others = [];
+
         public function query($Query_String): bool
         {
+            if (preg_match('/\b(GET_LOCK|RELEASE_LOCK)\(/', (string) $Query_String, $m)) {
+                self::$locks[] = [spl_object_id($this), $m[1]];
+            } else {
+                self::$others[] = spl_object_id($this);
+            }
             return parent::query(preg_replace_callback("/'((?:[^'\\\\]|\\\\.)*)'/s", static function (array $m): string {
                 $text = preg_replace_callback('/\\\\(.)/s', static fn(array $e): string => ($e[1] === '0') ? "\0" : $e[1], $m[1]);
                 // SQLite ends a statement at a NUL byte - such a literal goes as hex
