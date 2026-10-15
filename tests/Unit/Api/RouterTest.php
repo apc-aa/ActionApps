@@ -43,4 +43,13 @@ final class RouterTest extends TestCase
         self::assertSame(['error' => 'Internal error'], json_decode($body, true));
         self::assertStringContainsString('/var/www/secret', (string) file_get_contents($this->log), 'the admin finds it in the log');
     }
+
+    // Apache decodes the path before the rule copies it into the query: without B,
+    // /api/v1/x%26admin=1 would reach PHP as _path=v1/x plus a GET key admin=1
+    public function test_rewrite_rule_escapes_the_path_it_puts_into_the_query(): void
+    {
+        $htaccess = (string) file_get_contents(dirname(__DIR__, 3) . '/api/.htaccess');
+
+        self::assertMatchesRegularExpression('/^\s*RewriteRule \S+ index\.php\?_path=\$1 \[B,L,QSA\]$/m', $htaccess);
+    }
 }
