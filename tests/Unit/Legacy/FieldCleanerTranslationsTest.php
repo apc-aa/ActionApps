@@ -92,6 +92,14 @@ namespace Tests\Unit\Legacy {
             self::assertStringContainsString((string) (self::CZ + AA_Value::MAX_INDEX), $deletes[0]);
         }
 
+        public function test_two_translations_delete_the_untranslated_value_once(): void
+        {
+            $de = self::CZ + AA_Value::MAX_INDEX;   // the next language
+            $deletes = $this->deletes(new AA_Value([self::CZ => 'Ahoj', $de => 'Hallo']));
+
+            self::assertCount(4, $deletes, implode("\n", $deletes));   // two language ranges, the base range, NULL numbers
+        }
+
         public function test_translation_only_content_keeps_its_flag(): void
         {
             self::assertSame(FLAG_HTML, (new AA_Value([self::CZ => ['value' => '<b>Ahoj</b>', 'flag' => FLAG_HTML]]))->getFlag());
