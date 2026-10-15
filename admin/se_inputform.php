@@ -132,7 +132,7 @@ if (!IfSlPerm(PS_FIELDS)) {
 }
 
 $err = [];          // error array (Init - just for initializing variable
-$varset = new Cvarset();
+$field_data = [];
 
 /** QVaidateInput function
  *
@@ -152,14 +152,14 @@ function QValidateInput($variableName, $inputName, $variable, &$err, $needed, $t
 
 /** Qvarsetadd function
  * @param $varname
- * @param $type
+ * @param $type   'quoted' - the value is addslashes()-ed (stringSlashedPOST), 'number'
  * @param $value
  */
 function Qvarsetadd($varname, $type, $value): void
 {
-    global $varset;
+    global $field_data;
     if ($value !== null) {
-        $varset->add($varname, $type, $value);
+        $field_data[$varname] = ($type === 'quoted') ? stripslashes($value) : $value;
     }
 }
 
@@ -228,9 +228,9 @@ if ($update) {
 
         // the constants are packed in order it could be easily passed
         // to another script
-        $input_show_func_c_real = ($input_show_func_c[0] === 'v') ? pack_id(substr($input_show_func_c, 1)) : $input_show_func_c;
+        $input_show_func_c_real = ($input_show_func_c[0] === 'v') ? pack_id(substr($input_show_func_c, 1)) : stripslashes($input_show_func_c);
         $isf_parameters = $widget_class::getClassProperties();
-        $isf            = $input_show_func_f;
+        $isf            = stripslashes($input_show_func_f);
         if (isset($isf_parameters['const'])) {
             $isf .= ':' . $input_show_func_c_real;
             // if we use relation between slices, then the validation should be 'id'
@@ -247,9 +247,10 @@ if ($update) {
 
             }
         }
-        $isf     .= ':' . $input_show_func_p;
+        $isf     .= ':' . stripslashes($input_show_func_p);
 
-        Qvarsetadd("input_show_func", "quoted", $isf);
+        // unslashed parts: a packed v<hex> group name holds raw bytes, so the whole string must not be stripslashes()-ed
+        Qvarsetadd("input_show_func", "text", $isf);
         Qvarsetadd("input_validate", "quoted", "$input_validate_f:$input_validate_p");
         Qvarsetadd("feed", "quoted", (string) $feed);
 
@@ -261,9 +262,7 @@ if ($update) {
         Qvarsetadd("text_stored", "number", $text_stored);
         Qvarsetadd("search_pri", "number", $show_in_search ? 100 : 0);   // standard value is 100, zero means no search (no other meaning of this field, I think. HM 2025-04-02)
 
-        $varset->addkey('id', 'text', $fid);
-        $varset->addkey('slice_id', 'unpacked', AA::$module_id);
-        $varset->doUpdate('field', null, "F" . AA_Fields::createShortId($fid) . '@' . pack_id(AA::$module_id));
+        AA::Metabase()->doUpdate('field', ['id' => $fid, 'slice_id' => AA::$module_id] + $field_data, null, "F" . AA_Fields::createShortId($fid) . '@' . pack_id(AA::$module_id));
         //        $SQL = "UPDATE field SET ". $varset->makeUPDATE() ." WHERE id='$fid' AND slice_id='$p_slice_id'";
         //
         //        if (!$db->query($SQL)) {  // not necessary - we have set the halt_on_error

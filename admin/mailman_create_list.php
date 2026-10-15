@@ -96,23 +96,16 @@ if ($create_list && $admin_email && $list_name && $admin_password) {
 function add_mailman_list($admin_email, $list_name, $admin_password, $groupid): void
 {
 
-    $db = getDB();
-    $db->query("SELECT * FROM constant WHERE group_id='" . addslashes($groupid) . "' AND name='" . $list_name . "'");
-    if ($db->next_record()) {
+    if (DB_AA::test('constant', [['group_id', $groupid], ['name', $list_name]])) {
         echo _m("Error: This list name is already used.");
-        freeDB($db);
         return;
     }
-    $db->query("SELECT MAX(pri) AS max_pri FROM constant WHERE group_id='" . addslashes($groupid) . "'");
-    $db->next_record();
-    $pri = $db->f("max_pri") + 100;
-    if (! $db->query("INSERT INTO constant (id, group_id, name, value, pri) VALUES (" . xpack_id(new_id()) . ", '" . addslashes($groupid) . "', '$list_name', '$list_name', $pri)")) {
+    $pri = DB_AA::select1('max_pri', 'SELECT MAX(pri) AS max_pri FROM constant', [['group_id', $groupid]]) + 100;
+    if (! AA::Metabase()->doInsert('constant', ['id' => new_id(), 'group_id' => (string) $groupid, 'name' => $list_name, 'value' => $list_name, 'pri' => $pri])) {
         echo "Internal Error with DB.";
-        freeDB($db);
         return;
     }
     ConstantsChanged();
-    freeDB($db);
 
     global $MAILMAN_SYNCHRO_DIR;
     endslash($MAILMAN_SYNCHRO_DIR);
