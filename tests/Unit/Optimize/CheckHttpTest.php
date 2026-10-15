@@ -74,6 +74,59 @@ final class CheckHttpTest extends TestCase
         self::assertSame('status', $finding->key);
     }
 
+    // Apache with no index page and no directory listing answers 403 to the bare AA directory
+    public function test_aDirectoryWithoutAnIndexPageIsFineWhenAFileUnderItAnswers(): void
+    {
+        $http     = new FakeHttp([new Response(403, 'Forbidden'), new Response(200, 'icon', ['content-type' => 'image/x-icon'])]);
+        $findings = (new CheckHttp($http))->findings();
+
+        self::assertSame(Finding::OK, $findings[0]->severity);
+        self::assertStringEndsWith('/images/favicon.ico', $http->calls[1]['url']);
+        self::assertStringContainsString('403', (string) json_encode($findings[0]->evidence), 'the note says what the address itself answered');
+        self::assertStringContainsString('favicon.ico', (string) json_encode($findings[0]->evidence), 'and which address answered 200');
+    }
+
+    public function test_aFileThatDoesNotAnswerEitherLeavesTheWarning(): void
+    {
+        $http     = new FakeHttp([new Response(403, 'Forbidden'), new Response(404, 'not here')]);
+        $findings = (new CheckHttp($http))->findings();
+
+        self::assertSame(Finding::WARNING, $findings[0]->severity);
+        self::assertSame('status', $findings[0]->key);
+        self::assertCount(2, $http->calls, 'the file was asked for');
+    }
+
+    // a front controller that answers every address with a page proves nothing about AA
+    public function test_aPageInsteadOfTheFileLeavesTheWarning(): void
+    {
+        $http = new FakeHttp([new Response(404, 'not here'), new Response(200, '<html>', ['content-type' => 'text/html'])]);
+
+        self::assertSame(Finding::WARNING, (new CheckHttp($http))->findings()[0]->severity);
+    }
+
+    public function test_aFileThatCannotBeFetchedLeavesTheWarning(): void
+    {
+        $http = new class implements \AA\Http\ClientInterface {
+            private int $calls = 0;
+
+            public function request(string $method, string $url, ?string $body = null, array $headers = []): Response
+            {
+                return (++$this->calls === 1) ? new Response(403, 'Forbidden') : throw new TransportException('No answer from ' . $url);
+            }
+        };
+
+        self::assertSame(Finding::WARNING, (new CheckHttp($http))->findings()[0]->severity);
+    }
+
+    // a server error is not a missing index page - the file answering does not excuse it
+    public function test_aServerErrorIsReportedEvenWhenAFileAnswers(): void
+    {
+        $http = new FakeHttp([new Response(500, 'boom'), new Response(200, 'icon', ['content-type' => 'image/x-icon'])]);
+
+        self::assertSame(Finding::WARNING, (new CheckHttp($http))->findings()[0]->severity);
+        self::assertCount(1, $http->calls);
+    }
+
     public function test_itIsAnExtendedCheckBecauseItMakesARealRequest(): void
     {
         self::assertSame([CheckHttp::CHECK_EXTENDED], CheckHttp::types());
