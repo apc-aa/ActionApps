@@ -835,19 +835,26 @@ class DB_PDO
         }
     }
 
-    /** The query and the server error show the schema and the request - an anonymous visitor gets a
-     *  plain notice, the event log (halt()) keeps the details.
+    /** The query and the server error show the schema and the request - only a superadmin and ?debug see
+     *  them (readers of a public site are logged-in users too), the event log (halt()) keeps them.
+     *  The superadmin is read from the permission cache only: asking the database could fail again here.
      */
     public function haltmsg($msg): void
     {
-        $auth = $GLOBALS['auth'] ?? null;
-        if ((PHP_SAPI !== 'cli') && !AA::$debug && !(is_object($auth) && $auth->is_user())) {
+        if ((PHP_SAPI !== 'cli') && !AA::$debug && !self::superadminSeen()) {
             echo "<p><b>Database error</b></p>\n";
             return;
         }
         printf("<p><b>Database error:</b> %s<br>\n", safe($msg));
         printf("<b>%s Error</b>: %s (%s)</p>\n", get_class_name($this), safe((string) $this->Errno), safe((string) $this->Error));
         // AA::$dbg->log(AA_Log::backtrack());
+    }
+
+    /** a superadmin according to the permission cache of this request */
+    private static function superadminSeen(): bool
+    {
+        return defined('AA_ID') && function_exists('AuthGetUid') && !empty($GLOBALS['r_superuser'][AA_ID])
+            && (($GLOBALS['permission_uid'] ?? null) === AuthGetUid());
     }
 
     public function set_halt(string $mode): bool
