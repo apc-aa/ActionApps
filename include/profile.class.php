@@ -229,7 +229,10 @@ class AA_Profile
      */
     public function delUserProfile(): void
     {
-        $this->do_sql("DELETE FROM profile WHERE uid='" . $this->user_id . "' AND slice_id=" . xpack_id($this->module_id), "Can't delete profile");
+        if ($this->module_id && $this->user_id) {
+            // the user id comes from the URL of the Revoke link
+            DB_AA::delete('profile', [['uid', (string) $this->user_id], ['slice_id', $this->module_id, 'l']]);
+        }
     }
 
     /** insertProperty function
