@@ -66,7 +66,8 @@ $err = [];       // error array (Init - just for initializing variable)
 // First we DELETE current fields mapping and then INSERT new.
 $db->query("DELETE FROM feedmap WHERE from_slice_id=$p_from_slice_id AND to_slice_id = '$p_slice_id' ");
 
-// insert into feedmap - one INSERT per row: a left out from_field_id takes the column default, NULL or '' depending on the database
+// insert into feedmap - a row without from_field_id gets the column's default, NULL or '' depending on the database
+$rows = [];
 foreach ($fmap as $to_field_id => $val) {
 
     $feedmap = [
@@ -103,17 +104,13 @@ foreach ($fmap as $to_field_id => $val) {
             break;
     }
     $feedmap['flag'] = $flag;
-
-    if (!AA::Metabase()->doInsert('feedmap', $feedmap)) {
-        $err["DB"] .= MsgErr("Can't add fields mapping");
-    }
+    $rows[] = $feedmap;
 }
 
 // Write external fields, which did not map.
 if ($map_to && is_array($map_to)) {
-    $unmapped = [];
     foreach (array_keys($map_to) as $from_field_id) {
-        $unmapped[] = [
+        $rows[] = [
             'from_slice_id'   => $from_slice_id,
             'to_slice_id'     => AA::$module_id,
             'from_field_id'   => $from_field_id,
@@ -121,9 +118,9 @@ if ($map_to && is_array($map_to)) {
             'flag'            => FEEDMAP_FLAG_EXTMAP,
         ];
     }
-    if (AA::Metabase()->doInsertMulti('feedmap', $unmapped) === false) {
-        $err["DB"] .= MsgErr("Can't add fields mapping");
-    }
+}
+if (AA::Metabase()->doInsertMulti('feedmap', $rows) === false) {
+    $err["DB"] .= MsgErr("Can't add fields mapping");
 }
 
 go_url(StateUrl(self_base() . "se_mapping.php") . "&from_slice_id=" . rawurlencode($from_slice_id) . "&Msg=" . rawurlencode(_m("Fields' mapping update successful")));  // @todo Mssg
