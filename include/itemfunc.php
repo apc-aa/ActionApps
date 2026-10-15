@@ -2021,15 +2021,10 @@ class AA_Field_Writer
         return $this->slice_id;
     }
 
-    /**
-     */
+    /** AA_Slice::getModule() caches the slice per id itself */
     public function getSlice(): ?AA_Slice
     {
-        static $slice = '';
-        if ($slice === '') {
-            $slice = AA_Slice::getModule($this->slice_id);
-        }
-        return $slice;
+        return AA_Slice::getModule($this->slice_id);
     }
 
 

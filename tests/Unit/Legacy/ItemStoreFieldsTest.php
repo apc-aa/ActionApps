@@ -66,9 +66,7 @@ namespace Tests\Unit\Legacy {
         public static function setUpBeforeClass(): void
         {
             require_once __DIR__ . '/fixtures/store_fixtures.php';
-            // AA_Field_Writer::getSlice() memoizes the first slice it sees in a static
-            // local for the rest of the process - so there is exactly one fake slice,
-            // and each test swaps its fields.
+            // one fake slice; each test swaps its fields
             self::$slice = new FakeSlice(self::SLICE);
         }
 
@@ -141,6 +139,18 @@ namespace Tests\Unit\Legacy {
         }
 
         // ------------------------------------------------------------ plain rows
+
+        public function test_each_writer_knows_its_own_slice(): void
+        {
+            $other = new FakeSlice(self::OTHER);
+            try {
+                $this->assertSame(self::$slice, (new AA_Field_Writer(self::SLICE))->getSlice());
+                $this->assertSame($other, (new AA_Field_Writer(self::OTHER))->getSlice(), 'a later writer of another slice (import, feeding, the queue)');
+            } finally {
+                $modules = new \ReflectionProperty(\AA_Module::class, '_modules');
+                $modules->setValue(null, array_diff_key($modules->getValue(), [self::OTHER => true]));
+            }
+        }
 
         public function test_text_field_gets_text_stored_flag_added_and_is_escaped(): void
         {
