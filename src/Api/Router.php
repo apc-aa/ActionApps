@@ -40,7 +40,9 @@ class Router
                 $response->emit();
             }
         } catch (\Throwable $e) {
-            JsonResponse::error(500, 'Internal error', ['detail' => $e->getMessage()])->emit();
+            // the API is public - paths and SQL from the message go to the server log only
+            error_log('AA API ' . $path . ': ' . preg_replace('/[\x00-\x1F\x7F]+/', ' ', get_class($e) . ': ' . $e->getMessage() . ' at ' . $e->getFile() . ':' . $e->getLine()));
+            JsonResponse::error(500, 'Internal error')->emit();
         }
     }
 
