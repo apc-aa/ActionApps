@@ -145,7 +145,7 @@ class MflWidget extends Widget
         $attr_string     = str_replace(['"', '"', "'"], ['&quot;', '&quot;', "\'"], $attr_string);
         $widget_onchange = str_replace(['"', "'"], ['&quot;', "\'"], $widget_onchange);
         if ($inputtype === 'textarea') {
-            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<br><aa-code syntax=&quot;html&quot;><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_onchange></textarea></aa-code>'; document.getElementById('allrows$base_id').append(el); return false;\">$img</a>";
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"const el=document.createElement('div'); el.innerHTML='<br><aa-code syntax=&quot;html&quot;><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_onchange></textarea></aa-code>'; document.getElementById('allrows$base_id').append(el); return false;\">$img</a>";
         } else {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name" . "[mfl][]&quot; value=&quot;&quot; $widget_onchange>'; document.getElementById('allrows$base_id').append(el); return false;\">$img</a>";
         }

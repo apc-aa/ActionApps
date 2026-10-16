@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Widget;
 
 use AA\Widget\MflWidget;
-use AA\Widget\Widget;
 use AA_Content;
 use AA_Property;
 use AA_Value;
@@ -31,9 +30,12 @@ final class MflWidgetTest extends TestCase
         self::assertSame([], self::libs(new MflWidget(['rows' => 1])));
     }
 
-    public function test_requireRun_isNotOverridden(): void
+    public function test_requireRun_noInitScriptAfterRendering(): void
     {
-        self::assertSame(Widget::class, (new ReflectionMethod(MflWidget::class, 'requireRun'))->getDeclaringClass()->getName());
+        $widget = new MflWidget(['rows' => 2, 'row_count' => 1]);
+        self::html($widget, false, ['a']);
+
+        self::assertSame('', (new ReflectionMethod($widget, 'requireRun'))->invoke($widget, null, null));
     }
 
     public function test_getRawHtml_everyTextareaIsInTheCodeEditor(): void

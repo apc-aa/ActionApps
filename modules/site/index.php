@@ -156,7 +156,6 @@ $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION]
 $apage->setForm();
 $apage->printHead($err, $Msg);
 
-
 echo '<div class="aa-site-codemanager">
         <div id="sitetree" class="aa-site-tree">
       <table class="aa-w-full">
