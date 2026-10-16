@@ -1617,13 +1617,15 @@ class AA_Credentials
      */
     public function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd = null): bool
     {
-        if (!$crypted_slice_pwd || $this->_pwd[$crypted_slice_pwd] || $crypted_slice_pwd == $crypted_additional_slice_pwd) {
+        // === - md5 hashes like "0e123..." are equal numbers for ==
+        if (!$crypted_slice_pwd || !empty($this->_pwd[$crypted_slice_pwd]) || $crypted_slice_pwd === $crypted_additional_slice_pwd) {
             return true;
         }
-        if ($GLOBALS['slice_pwd']) {
-            $this->register(self::encrypt($GLOBALS['slice_pwd']));
+        $slice_pwd = $GLOBALS['slice_pwd'] ?? '';
+        if (is_string($slice_pwd) && $slice_pwd) {   // slice_pwd[]= in the URL makes it an array
+            $this->register(self::encrypt($slice_pwd));
         }
-        return (bool) $this->_pwd[$crypted_slice_pwd];
+        return !empty($this->_pwd[$crypted_slice_pwd]);
     }
 
     /** Load reading_password from slice
