@@ -130,4 +130,68 @@ final class LibxmlTest extends TestCase
         self::assertSame('short', Libxml::cut('short', 10));
         self::assertSame('Žl…', Libxml::cut('Žluťoučký', 3));
     }
+
+    public function test_load_commentsCdataAndBom(): void
+    {
+        $dom = Libxml::load("\xEF\xBB\xBF<?xml version=\"1.0\" encoding=\"UTF-8\"?><!-- <!DOCTYPE x> --><a><![CDATA[<!ENTITY b>]]>č</a>");
+
+        self::assertSame('<!ENTITY b>č', $dom->documentElement?->textContent);
+    }
+
+    /** @return array<string, array{string, string}> each row refused by its own check, told apart by the message */
+    public static function refusedByLoad(): array
+    {
+        $laughs = '<!DOCTYPE l [<!ENTITY a "aaaaaaaaaa"><!ENTITY e "&a;&a;&a;&a;&a;&a;&a;&a;">]><l>&e;</l>';
+        return [
+            'empty'                  => ['', 'The answer is empty'],
+            'blank'                  => [" \n", 'The answer is empty'],
+            'invalid utf-8'          => ["<a>\xE8</a>", 'is not UTF-8 text'],
+            'nul'                    => ["<a>\0</a>", 'is not UTF-8 text'],
+            'utf-16'                 => [mb_convert_encoding('<?xml version="1.0" encoding="UTF-16"?><a/>', 'UTF-16'), 'is not UTF-8 text'],
+            'ebcdic hides its <!'    => [(string) iconv('UTF-8', 'IBM500', '<?xml version="1.0" encoding="IBM500"?>' . $laughs), 'is not UTF-8 text'],
+            'billion laughs'         => [$laughs, 'or other markup declarations'],
+            'external entity'        => ['<!DOCTYPE a [<!ENTITY e SYSTEM "file:///etc/passwd">]><a>&e;</a>', 'or other markup declarations'],
+            'html doctype'           => ["<!doctype html>\n<html/>", 'or other markup declarations'],
+            'doctype after comments' => ['<?xml version="1.0"?><!-- a --><?pi <!-- ?>' . "\n" . '<!DOCTYPE a><a>--></a>', 'or other markup declarations'],
+            'declaration after root' => ['<a><!ELEMENT a ANY></a>', 'is not well-formed XML'],
+            'declared utf-7'         => ['<?xml version="1.0" encoding="UTF-7"?>+ADw-a/+AD4-', 'declares encoding "UTF-7"'],
+            'declared latin 2'       => ['<?xml version="1.0" encoding="ISO-8859-2"?><a/>', 'declares encoding "ISO-8859-2"'],
+            'not well-formed'        => ['<a><b></a>', 'is not well-formed XML: line 1'],
+            'undeclared entity'      => ['<a>&e;</a>', 'is not well-formed XML'],
+        ];
+    }
+
+    #[DataProvider('refusedByLoad')]
+    public function test_load_refuses(string $xml, string $message): void
+    {
+        try {
+            Libxml::load($xml, 'The answer');
+            self::fail('UnexpectedValueException expected');
+        } catch (\UnexpectedValueException $e) {
+            self::assertStringContainsString($message, $e->getMessage());
+        }
+        self::assertSame($this->loader, libxml_get_external_entity_loader());
+    }
+
+    /** @return array<string, array{string, string}> what libxml read, past the byte checks */
+    public static function refusedByParse(): array
+    {
+        return [
+            'doctype'       => ['<!DOCTYPE a><a/>', 'must not have a DOCTYPE (DTD, entities)'],
+            'ebcdic dtd'    => [(string) iconv('UTF-8', 'IBM500', '<?xml version="1.0" encoding="IBM500"?><!DOCTYPE a [<!ENTITY e "x">]><a>&e;</a>'), 'must not have a DOCTYPE (DTD, entities)'],
+            'latin 2'       => ['<?xml version="1.0" encoding="ISO-8859-2"?><a/>', 'is in encoding "ISO-8859-2"'],
+        ];
+    }
+
+    // the DOM step on its own: the byte checks of load() would refuse these first
+    #[DataProvider('refusedByParse')]
+    public function test_parse_refusesWhatLibxmlRead(string $xml, string $message): void
+    {
+        try {
+            (new \ReflectionMethod(Libxml::class, 'parse'))->invoke(null, $xml, 'The answer');
+            self::fail('UnexpectedValueException expected');
+        } catch (\UnexpectedValueException $e) {
+            self::assertStringContainsString($message, $e->getMessage());
+        }
+    }
 }

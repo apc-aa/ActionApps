@@ -15,8 +15,9 @@ use XMLReader;
  *     ahead: `a<!---->` x 1M = 330 MB before its 400 000th node) and so are the attributes of each start
  *     tag (libxml allocates them all before it returns the tag);
  *  2. a streaming XMLReader pass: prolog, DOCTYPE/entities, nodes, elements, attributes, depth;
- *  3. the DOM, with nothing loadable from outside. Never use the libxml flags NOENT, DTDLOAD, DTDATTR,
- *     DTDVALID, XINCLUDE, PARSEHUGE, NOBLANKS (a value of only spaces, e.g. view.row_delimiter, would vanish).
+ *  3. the DOM by Libxml::load(), with nothing loadable from outside. Never use the libxml flags NOENT,
+ *     DTDLOAD, DTDATTR, DTDVALID, XINCLUDE, PARSEHUGE, NOBLANKS (a value of only spaces, e.g.
+ *     view.row_delimiter, would vanish).
  *  Messages quote package text - escape them when shown. */
 final class XmlGuard
 {
@@ -60,20 +61,14 @@ final class XmlGuard
         }
         self::checkEncoding(self::declaredEncoding($xml));
         $this->scan($xml);
-        return Libxml::run(function () use ($xml): DOMDocument {
+        Libxml::run(function () use ($xml): void {
             $this->prePass($xml);
-            $dom = new DOMDocument();
-            if (!$dom->loadXML($xml, LIBXML_NONET) || Libxml::errors()) {
-                throw self::rejected('The package is not well-formed XML');
-            }
-            // both would have been refused before; without the checks textContent would expand entities
-            // and another encoding (UTF-7: `+ADw-` = `<`) would make markup the pre-pass did not see
-            if ($dom->doctype !== null) {
-                throw new PackageRejected('A package must not have a DOCTYPE');
-            }
-            self::checkEncoding($dom->xmlEncoding);
-            return $dom;
         });
+        try {
+            return Libxml::load($xml, 'The package');
+        } catch (\UnexpectedValueException $e) {
+            throw new PackageRejected($e->getMessage(), 0, $e);
+        }
     }
 
     /** @param string $xsd the schema itself - schemaValidate(path) would need the entity loader

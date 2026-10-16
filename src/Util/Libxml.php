@@ -41,6 +41,78 @@ final class Libxml
         }
     }
 
+    /**
+     * A DOM of XML from outside, refused unless it is plain UTF-8 without a DTD. The bytes are checked
+     * before libxml sees them: it parses a DTD before anything can look at it, and in an encoding it
+     * detects by itself (UTF-16, EBCDIC) `<!` has other bytes than the check looks for - so only UTF-8
+     * passes, without a NUL (valid UTF-8, but in XML only from UTF-16 of ASCII). Nothing is loaded
+     * from outside (run()).
+     * @param string $what the subject of the messages, like 'The package'
+     * @throws \UnexpectedValueException messages quote the document - escape them when shown
+     */
+    public static function load(string $xml, string $what = 'The XML'): \DOMDocument
+    {
+        if (trim($xml) === '') {
+            throw new \UnexpectedValueException("$what is empty");
+        }
+        if (!mb_check_encoding($xml, 'UTF-8') || str_contains($xml, "\0")) {
+            throw new \UnexpectedValueException("$what is not UTF-8 text");
+        }
+        if (self::declaresInProlog($xml)) {
+            throw new \UnexpectedValueException("$what must not have a DOCTYPE or other markup declarations (DTD, entities)");
+        }
+        $encoding = self::declaredEncoding($xml);
+        if (!self::isUtf8($encoding)) {
+            throw new \UnexpectedValueException("$what declares encoding \"" . self::cut($encoding, 64) . '" - only UTF-8 is read');
+        }
+        return self::parse($xml, $what);
+    }
+
+    /**
+     * `<!` other than a comment before the root element. A DTD can only be there; after the root a
+     * comment or CDATA may hold `<!` as text, and any other `<!` is not well-formed. Comments and
+     * processing instructions end where libxml ends them, at the first `-->` and `?>`.
+     */
+    private static function declaresInProlog(string $xml): bool
+    {
+        $pos = str_starts_with($xml, "\xEF\xBB\xBF") ? 3 : 0;
+        while (true) {
+            $pos += strspn($xml, " \t\r\n", $pos);
+            [$open, $close] = match (true) {
+                substr($xml, $pos, 4) === '<!--' => ['<!--', '-->'],
+                substr($xml, $pos, 2) === '<?'   => ['<?', '?>'],
+                default                          => ['', ''],
+            };
+            if ($open === '') {
+                return substr($xml, $pos, 2) === '<!';
+            }
+            $end = strpos($xml, $close, $pos + strlen($open));
+            if ($end === false) {
+                return false;   // unterminated: not well-formed, libxml refuses it
+            }
+            $pos = $end + strlen($close);
+        }
+    }
+
+    /** The DOM step of load(): its checks look at what libxml read, which the byte checks only predict */
+    private static function parse(string $xml, string $what): \DOMDocument
+    {
+        return self::run(static function () use ($xml, $what): \DOMDocument {
+            $dom = new \DOMDocument();
+            if (!$dom->loadXML($xml, LIBXML_NONET) || self::errors()) {
+                $errors = self::describe(5, 256);
+                throw new \UnexpectedValueException("$what is not well-formed XML" . (($errors === '') ? '' : ": $errors"));
+            }
+            if (!is_null($dom->doctype)) {
+                throw new \UnexpectedValueException("$what must not have a DOCTYPE (DTD, entities)");
+            }
+            if (!self::isUtf8($dom->xmlEncoding)) {
+                throw new \UnexpectedValueException("$what is in encoding \"" . self::cut($dom->xmlEncoding, 64) . '" - only UTF-8 is read');
+            }
+            return $dom;
+        });
+    }
+
     /** @return list<LibXMLError> errors, not warnings */
     public static function errors(): array
     {
