@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Central\Package;
 
+use AA\Util\Libxml;
 use DOMDocument;
-use LibXMLError;
 use XMLReader;
 
 /** Parses an untrusted package safely. All limits hold BEFORE a DOM is built - a DOM of a small file can
@@ -36,9 +36,6 @@ final class XmlGuard
     /** nodes that may precede the root element - a comment may come before a DOCTYPE, so every node counts */
     private const PROLOG = [XMLReader::COMMENT, XMLReader::PI, XMLReader::WHITESPACE, XMLReader::SIGNIFICANT_WHITESPACE];
 
-    /** a DTD may declare entities (billion laughs, external files); an entity reference needs one */
-    private const FORBIDDEN = [XMLReader::DOC_TYPE, XMLReader::ENTITY, XMLReader::ENTITY_REF, XMLReader::NOTATION];
-
     public function __construct(
         private readonly int $maxBytes = self::MAX_BYTES,
         private readonly int $maxElements = self::MAX_ELEMENTS,
@@ -63,10 +60,10 @@ final class XmlGuard
         }
         self::checkEncoding(self::declaredEncoding($xml));
         $this->scan($xml);
-        return self::libxml(function () use ($xml): DOMDocument {
+        return Libxml::run(function () use ($xml): DOMDocument {
             $this->prePass($xml);
             $dom = new DOMDocument();
-            if (!$dom->loadXML($xml, LIBXML_NONET) || self::errors()) {
+            if (!$dom->loadXML($xml, LIBXML_NONET) || Libxml::errors()) {
                 throw self::rejected('The package is not well-formed XML');
             }
             // both would have been refused before; without the checks textContent would expand entities
@@ -83,8 +80,8 @@ final class XmlGuard
      *  @throws PackageRejected */
     public function validate(DOMDocument $dom, string $xsd): void
     {
-        self::libxml(static function () use ($dom, $xsd): void {
-            if (!$dom->schemaValidateSource($xsd) || self::errors()) {
+        Libxml::run(static function () use ($dom, $xsd): void {
+            if (!$dom->schemaValidateSource($xsd) || Libxml::errors()) {
                 throw self::rejected('The package does not match the aa-app schema');
             }
         });
@@ -94,9 +91,9 @@ final class XmlGuard
      *  @throws PackageRejected */
     public function validateXml(string $xml, string $xsd): void
     {
-        self::libxml(function () use ($xml, $xsd): void {
+        Libxml::run(function () use ($xml, $xsd): void {
             $dom = new DOMDocument();
-            if (!$dom->loadXML($xml, LIBXML_NONET) || self::errors()) {
+            if (!$dom->loadXML($xml, LIBXML_NONET) || Libxml::errors()) {
                 throw self::rejected('The package is not well-formed XML');
             }
             $this->validate($dom, $xsd);
@@ -106,30 +103,23 @@ final class XmlGuard
     /** package text for a message */
     public static function quote(string $text, int $bytes = 64): string
     {
-        return strlen($text) > $bytes ? mb_strcut($text, 0, $bytes, 'UTF-8') . '…' : $text;
+        return Libxml::cut($text, $bytes);
     }
 
-    /** encoding="…" of the XML declaration, null = none. The declaration may be megabytes long
-     *  (whitespace): no regex over the whole input. @throws PackageRejected */
+    /** @throws PackageRejected */
     private static function declaredEncoding(string $xml): ?string
     {
-        $start = str_starts_with($xml, "\xEF\xBB\xBF") ? 3 : 0;
-        if (!preg_match('/\G<\?xml\s/', $xml, $m, 0, $start)) {
-            return null;
+        try {
+            return Libxml::declaredEncoding($xml);
+        } catch (\UnexpectedValueException $e) {
+            throw new PackageRejected($e->getMessage(), 0, $e);
         }
-        $end   = strpos($xml, '?>', $start);
-        $found = preg_match('/\sencoding\s*=\s*(["\'])([^"\']*)\1/', substr($xml, $start, $end === false ? null : $end - $start), $m);
-        return match ($found) {
-            1       => $m[2],
-            0       => null,
-            default => throw new PackageRejected('The XML declaration cannot be read'),
-        };
     }
 
     /** @throws PackageRejected */
     private static function checkEncoding(?string $encoding): void
     {
-        if (($encoding !== null) && (strcasecmp($encoding, 'UTF-8') !== 0)) {
+        if (!Libxml::isUtf8($encoding)) {
             throw new PackageRejected('The package declares encoding "' . self::quote($encoding) . '" - a package is UTF-8 only');
         }
     }
@@ -200,7 +190,7 @@ final class XmlGuard
         try {
             while ($reader->read()) {
                 $type = $reader->nodeType;
-                if (in_array($type, self::FORBIDDEN, true)) {
+                if (in_array($type, Libxml::FORBIDDEN, true)) {
                     throw new PackageRejected($type === XMLReader::DOC_TYPE ? 'A package must not have a DOCTYPE (DTD, entities)' : 'A package must not use entities');
                 }
                 if ($type === XMLReader::END_ELEMENT) {
@@ -223,7 +213,7 @@ final class XmlGuard
                     }
                 }
             }
-            if (self::errors()) {
+            if (Libxml::errors()) {
                 throw self::rejected('The package is not well-formed XML');
             }
         } finally {
@@ -231,37 +221,10 @@ final class XmlGuard
         }
     }
 
-    /**
-     * Runs $fn with libxml errors collected and no external entity loadable; restores both.
-     * @template T
-     * @param callable(): T $fn
-     * @return T
-     */
-    private static function libxml(callable $fn): mixed
-    {
-        $internal = libxml_use_internal_errors(true);
-        $loader   = libxml_get_external_entity_loader();
-        libxml_set_external_entity_loader(static fn() => null);
-        libxml_clear_errors();
-        try {
-            return $fn();
-        } finally {
-            libxml_clear_errors();
-            libxml_set_external_entity_loader($loader);
-            libxml_use_internal_errors($internal);
-        }
-    }
-
-    /** @return list<LibXMLError> errors, not warnings */
-    private static function errors(): array
-    {
-        return array_values(array_filter(libxml_get_errors(), static fn(LibXMLError $e): bool => $e->level >= LIBXML_ERR_ERROR));
-    }
-
     /** libxml quotes package text (values, names) in its messages - each one is cut */
     private static function rejected(string $what): PackageRejected
     {
-        $lines = array_map(static fn(LibXMLError $e): string => "line $e->line: " . self::quote(trim($e->message), self::MAX_QUOTE), array_slice(self::errors(), 0, 5));
-        return new PackageRejected($what . ($lines ? ': ' . implode('; ', $lines) : ''));
+        $errors = Libxml::describe(5, self::MAX_QUOTE);
+        return new PackageRejected($what . (($errors === '') ? '' : ': ' . $errors));
     }
 }
