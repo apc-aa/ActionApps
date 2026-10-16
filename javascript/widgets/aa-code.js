@@ -58,6 +58,25 @@ function watchValue(textarea, fn) {
     };
 }
 
+/**
+ * Pages switch fields by textarea.disabled (EnableClick() in the admin) or by a <fieldset disabled> around them.
+ * @param {(disabled: boolean) => void} onChange  called when :disabled of the textarea changes
+ * @return {Function} stops watching
+ */
+function watchDisabled(textarea, onChange) {
+    let disabled = textarea.matches(':disabled');
+    const observer = new MutationObserver(() => {
+        if (textarea.matches(':disabled') !== disabled) {
+            disabled = !disabled;
+            onChange(disabled);
+        }
+    });
+    for (let el = textarea; el; el = el.parentElement?.closest('fieldset')) {
+        observer.observe(el, { attributes: true, attributeFilter: ['disabled'] });
+    }
+    return () => observer.disconnect();
+}
+
 /** forms whose submit the user is starting - only then an invalid editor takes the focus;
  *  checkValidity() from a script shows nothing, as with a native control */
 const submitting = new WeakSet();
@@ -97,7 +116,8 @@ function watchSubmit(form) {
  *    bare textarea;
  *  - a hidden required textarea gets no browser bubble and the submit would just not
  *    happen: the host shows the message and the editor takes the focus;
- *  - focus entering and leaving the host fires focus / blur on the textarea.
+ *  - focus entering and leaving the host fires focus / blur on the textarea;
+ *  - a disabled field is not submitted, so onDisabled switches the editor off too.
  */
 export class TextareaSync {
     #textarea;
@@ -106,14 +126,16 @@ export class TextareaSync {
     #message = null;
     #abort = new AbortController();
     #unwatch = null;
+    #unwatchDisabled = null;
 
     /**
      * @param {HTMLTextAreaElement} textarea
-     * @param {{host?: HTMLElement, onExternal?: (value: string) => boolean, focus?: () => void, focusEvents?: boolean}} [options]
+     * @param {{host?: HTMLElement, onExternal?: (value: string) => boolean, onDisabled?: (disabled: boolean) => void, focus?: () => void, focusEvents?: boolean}} [options]
      *        onExternal returns whether the value came from outside the editor (not its own mirror);
+     *        onDisabled is called with the current state at once and then on every change;
      *        focusEvents: false when the host fires focus / blur itself (an editor in an iframe)
      */
-    constructor(textarea, { host = null, onExternal = null, focus = null, focusEvents = true } = {}) {
+    constructor(textarea, { host = null, onExternal = null, onDisabled = null, focus = null, focusEvents = true } = {}) {
         this.#textarea = textarea;
         this.#host     = host;
         this.#focus    = focus;
@@ -138,6 +160,10 @@ export class TextareaSync {
             this.#unwatch = watchValue(textarea, external);
             // the reset event comes before the form resets its controls
             textarea.form?.addEventListener('reset', () => setTimeout(() => external(textarea.value)), { signal });
+        }
+        if (onDisabled) {
+            onDisabled(textarea.matches(':disabled'));
+            this.#unwatchDisabled = watchDisabled(textarea, onDisabled);
         }
         if (host) {
             watchSubmit(textarea.form);
@@ -187,6 +213,7 @@ export class TextareaSync {
     destroy() {
         this.#abort.abort();
         this.#unwatch?.();
+        this.#unwatchDisabled?.();
         this.clearInvalid();
     }
 
@@ -280,11 +307,18 @@ class AaCodeElement extends HTMLElement {
                 }
                 return true;
             },
+            onDisabled: (disabled) => {
+                this.#editor?.setDisabled(disabled);
+                this.toggleAttribute('disabled', disabled);
+            },
         });
         // "syntax" here, "language" in the bundle (CodeMirror's own term): on
         // multilingual fields "language" would sit next to real cs/en/de codes.
         // The bundle writes every change into the textarea itself.
-        this.#editor = createEditor(this.#textarea, { language: this.getAttribute('syntax') || 'html' });
+        this.#editor = createEditor(this.#textarea, {
+            language: this.getAttribute('syntax') || 'html',
+            disabled: this.hasAttribute('disabled'),
+        });
         this.#textarea.hidden = true;
         // Bare attribute: a custom element owns its own attribute set. Becomes
         // states.add('ready') once :state() is Baseline Widely Available.
@@ -303,6 +337,7 @@ class AaCodeElement extends HTMLElement {
         this.#sync = null;
         this.#textarea = null;
         this.removeAttribute('ready');
+        this.removeAttribute('disabled');
     }
 
     /** Current content. Falls back to the textarea while the bundle is loading. */

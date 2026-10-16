@@ -48,7 +48,9 @@ final class Client implements ClientInterface
      */
     public static function publicOnly(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $transport = null, int $maxBytes = 0): self
     {
-        return new self($timeout, $idle, $agent, $redirects, new NoPrivateNetworkHttpClient($transport ?? HttpClient::create()), $maxBytes);
+        // no proxy: the guard checks the address it resolved itself, a proxy from the server's
+        // environment would look the name up again and could reach the private network
+        return new self($timeout, $idle, $agent, $redirects, (new NoPrivateNetworkHttpClient($transport ?? HttpClient::create()))->withOptions(['no_proxy' => '*']), $maxBytes);
     }
 
     /**

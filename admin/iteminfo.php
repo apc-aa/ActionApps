@@ -34,8 +34,8 @@ if (!$item) {
 }
 
 $sid = $item->getSliceID();
-// Same gate as the editor (itemedit.php): edit-all in the slice, or you are the item's author.
-if (!IfSlPerm(PS_EDIT_ALL_ITEMS, $sid) && $item->getval('posted_by.......') != AuthGetUid()) {
+// the same gate as the editor (itemedit.php)
+if (!IsItemEditable((string) AuthGetUid(), (string) $sid, (string) $item->getval('posted_by.......'))) {
     AA_Adminpageutil::MsgPageMenu(get_admin_url('index.php'), _m("You have no rights to this item."), 'admin');
     exit;
 }

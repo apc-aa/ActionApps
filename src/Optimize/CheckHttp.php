@@ -75,6 +75,18 @@ class CheckHttp extends AbstractOptimize
             )];
         }
 
+        // an Apache with no index page in the AA directory and no directory listing answers
+        // 403 or 404 to the bare address - a file AA ships tells whether it is still AA
+        $file = rtrim($url, '/') . '/images/favicon.ico';
+        if (in_array($answer->status, [403, 404], true) && $this->isImage($file)) {
+            return [new Finding(
+                Finding::OK,
+                _m('The server reaches its own address (HTTP %1)', ['200']),
+                evidence: $this->evidence([_m('Address') => $url, _m('Note') => _m('The address itself answers HTTP %1, %2 answers 200 - usual when the AA directory has no index page and the server lists no directories.', [(string) $answer->status, $file])]),
+                key: 'ok',
+            )];
+        }
+
         if (!$answer->ok()) {
             return [new Finding(
                 Finding::WARNING,
@@ -91,6 +103,17 @@ class CheckHttp extends AbstractOptimize
             evidence: $this->evidence([_m('Address') => $url]),
             key: 'ok',
         )];
+    }
+
+    /** 200 with an image: an AA installation answers there, not a page catching every address */
+    private function isImage(string $url): bool
+    {
+        try {
+            $answer = $this->http()->request('GET', $url);
+        } catch (TransportException) {
+            return false;
+        }
+        return $answer->ok() && str_starts_with($answer->headers['content-type'] ?? '', 'image/');
     }
 
     /**

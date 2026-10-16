@@ -149,8 +149,14 @@ class Actions
             unset($fieldVal, $v);
             $done = false;
 
-            // fill up the output field with default value, if the action does not exist for the output field, or the action is "default"
-            if (!$action || $action['action']->getAction() === "default") {
+            // the posted mapping lists only the fields the form showed (a field added since, or a
+            // POST cut by max_input_vars, has no action) - leave such a field out, so Update keeps its value
+            if (!$action) {
+                continue;
+            }
+
+            // fill up the output field with default value, if the action is "default"
+            if ($action['action']->getAction() === "default") {
                 // case "display_count..." : $v = 0; break;
                 /* Removed - it created data for fields, so it is then updated on Rewrite/Update action, which is not correct
                   switch ($field_id) {

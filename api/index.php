@@ -10,6 +10,7 @@
  * @package Api
  */
 
+use AA\Api\Controller\ExpressionsController;
 use AA\Api\Controller\FilesController;
 use AA\Api\Controller\SpeechController;
 use AA\Api\Controller\TranslateController;
@@ -56,6 +57,10 @@ $router->register('POST', '/v1/files', static function (): JsonResponse {
 
 $router->register('GET', '/v1/files', static function (): JsonResponse {
     return (new FilesController())->list();
+});
+
+$router->register('GET', '/v1/expressions', static function (): JsonResponse {
+    return (new ExpressionsController())->list();
 });
 
 $router->dispatch();

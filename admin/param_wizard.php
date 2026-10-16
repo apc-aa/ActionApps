@@ -59,7 +59,6 @@ try {
     $list = InputVars::stringGET('list', true);
     // array ( 'input_valid…' => 7, 'input_show_…' => 1, )
     $text_param = InputVars::stringGET('text_param', true);
-    $codemirror = InputVars::stringGET('codemirror');
     $cancel = InputVars::boolPOST('cancel');
 } catch (Exception $e) { AA_Adminpageutil::pageParameterError($e); }
 
@@ -165,7 +164,7 @@ if (is_array($desc['params'])) {
         <script>
             function changeFunction(combo) {
                 let page = "<?php echo StateUrl(self_base() . "param_wizard.php") ?>"
-                    + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'&codemirror='$codemirror'" ?>"
+                    + "<?php echo "&list=$list" . "&combo_list='$combo_list'&text_param='$text_param'" ?>"
                     + "&item=" + combo.value;
                 window.location = page;
             }
@@ -176,8 +175,8 @@ if (is_array($desc['params'])) {
                     let val = document.f.elements["param" + i].value;
                     params += val.replace(/:/g, "#:");
                 }
+                // a code editor (<aa-code>) over the field shows the new value by itself
                 window.opener.document.f.elements["<?php echo $text_param ?>"].value = params;
-                <?php if ($codemirror) { echo "window.opener.$codemirror.setValue(params);"; } ?>
             }
             function fillParams(params) {
                 params = params.replace(/#:/g,"#~") + ":";
@@ -195,13 +194,7 @@ if (is_array($desc['params'])) {
                 }
             }
             function readParams() {
-                <?php
-                if ($codemirror) {
-                    echo "fillParams( window.opener.$codemirror.getValue());";
-                } else {
-                    echo "fillParams( window.opener.document.f.elements[\"$text_param\"].value );";
-                }
-                ?>
+                fillParams( window.opener.document.f.elements["<?php echo $text_param ?>"].value );
             }
             function useExample(iExample) {
                 switch(iExample) {

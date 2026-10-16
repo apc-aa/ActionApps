@@ -13,6 +13,9 @@ final class DB_AA
     /** is the transaction's handle currently checked out by getDB()? */
     private static bool $tx_db_out = false;
 
+    /** connection holding the named locks of this request - @see lock() */
+    private static ?DB_PDO $lock_db = null;
+
     /* private: constructor - NO INSTANCES! */
     private function __construct(array $connection) {}
 
@@ -100,6 +103,64 @@ final class DB_AA
         }
         self::$tx_db_out = false;
         return true;
+    }
+
+    /**
+     * Takes a named lock (MySQL GET_LOCK), so that two processes do not run the same
+     * check-then-write at once. Per database: other AAs on the same DB server have their own.
+     *
+     * A lock belongs to the connection that took it, so all locks live on one connection of
+     * their own. It is never persistent: when a fatal error or die() skips unlock(), the end of
+     * the request closes it and frees the lock (a persistent one would keep the lock for the next
+     * request of the PHP process). It is never pooled and never the transaction's, so a lock may
+     * be taken inside transaction() - but what the locked code writes there becomes visible to
+     * other processes only at the commit, which may come after unlock().
+     *
+     * @param int  $wait   seconds to wait for it; 0 = only when it is free now
+     * @param ?int $holder set to the MySQL connection id that holds it, when it was not got
+     * @return bool got it - unlock() it then
+     */
+    public static function lock(string $name, int $wait = 0, ?int &$holder = null): bool
+    {
+        $db   = self::lockDb();
+        $name = self::lockName($name);
+        $db->query("SELECT GET_LOCK($name, $wait) AS got, IS_USED_LOCK($name) AS holder");
+        $got    = $db->next_record() && ((string) $db->f('got') === '1');   // 0 held by another, NULL error
+        $holder = $got ? null : (((int) $db->f('holder')) ?: null);
+        return $got;
+    }
+
+    /** Releases a lock taken by lock() */
+    public static function unlock(string $name): void
+    {
+        self::lockDb()->query('SELECT RELEASE_LOCK(' . self::lockName($name) . ')');
+    }
+
+    private static function lockDb(): DB_PDO
+    {
+        if (!self::$lock_db) {
+            self::$lock_db = new DB_PDO(self::lockConnectionParams());
+            // a failure here (no connection left at max_connections, a server gone) means "not
+            // locked" to the callers - laterOnce() goes on unlocked - not the end of the request
+            self::$lock_db->set_halt('no');
+            // it idles between the locks, and the server's idle timeout (480 s on the ECN DB server)
+            // would close it during a long request - and free a lock it holds
+            self::$lock_db->query('SET SESSION wait_timeout = 28800');
+        }
+        return self::$lock_db;
+    }
+
+    /** config.php settings, but never persistent - see lock() */
+    private static function lockConnectionParams(): array
+    {
+        return ['persistent' => false] + dbConnectionParams();
+    }
+
+    /** The name as an SQL literal: a plain word, so it needs no escaping; MySQL takes 64 characters of it */
+    private static function lockName(string $name): string
+    {
+        $full = (string) preg_replace('/[^\w-]/', '_', $name . '_' . constant('DB_NAME'));
+        return "'" . ((strlen($full) > 64) ? 'aa_' . md5($full) : $full) . "'";
     }
 
     /** just for debug purposes */

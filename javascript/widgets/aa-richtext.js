@@ -36,7 +36,8 @@ let shadowSheet = null;
 const editorSheet = () => {
     if (!shadowSheet) {
         shadowSheet = new CSSStyleSheet();
-        // CKEditor 4 look: gray bar, framed groups, small buttons - two rows at 920 px
+        // CKEditor 4 look: gray bar, framed groups, small buttons - two rows at 920 px; a switched-off
+        // field keeps TinyMCE's grey buttons and dims like <aa-code>
         shadowSheet.replaceSync(`
 :host { display: block; }
 :host .tox.tox-tinymce { margin: 2px; border: 1px solid #b6b6b6; border-radius: 0; }
@@ -44,7 +45,9 @@ const editorSheet = () => {
 :host .tox-tinymce .tox-toolbar-overlord, :host .tox-tinymce .tox-toolbar__primary, :host .tox-tinymce .tox-toolbar { background: transparent; border: 0; }
 :host .tox-tinymce .tox-toolbar__group { margin: 3px 3px 2px 5px; padding: 0 2px; background: linear-gradient(#fff, #e4e4e4); border: 1px solid #b6b6b6; border-radius: 3px; }
 :host .tox-tinymce .tox-tbtn { width: 26px; height: 24px; margin: 1px 0; border-radius: 2px; }
-:host .tox-tinymce .tox-tbtn svg { fill: #474747; transform: scale(.8); }
+:host .tox-tinymce .tox-tbtn svg { transform: scale(.8); }
+:host .tox-tinymce .tox-tbtn:not(:disabled, .tox-tbtn--disabled) svg { fill: #474747; }
+:host .tox-tinymce--disabled .tox-edit-area { opacity: .7; }
 :host .tox-tinymce .tox-tbtn--select, :host .tox-tinymce .tox-split-button .tox-tbtn, :host .tox-tinymce .tox-tbtn:has(.tox-tbtn__select-label) { width: auto; }
 :host .tox-tinymce .tox-tbtn__select-label { font: 12px Arial, sans-serif; }
 :host .tox-tinymce .tox-tbtn--bespoke .tox-tbtn__select-label { width: 4.6em; }
@@ -107,6 +110,11 @@ class AaRichtextElement extends HTMLElement {
                 this.#rich?.api?.load(value);   // a TinyMCE still starting catches up once ready
                 return true;
             },
+            // TinyMCE follows here; the source view's <aa-code> and the plain textarea follow by themselves
+            onDisabled: (disabled) => {
+                this.#rich?.api?.setDisabled(disabled);
+                this.toggleAttribute('disabled', disabled);
+            },
         });
         this.#abort = new AbortController();
         // Reset puts the format radios back without a change event
@@ -121,7 +129,8 @@ class AaRichtextElement extends HTMLElement {
         if (this.#editorAsked) {
             this.#editorAsked = false;
             await this.showEditor();
-        } else {
+        }
+        if (!this.#target) {                    // no editor asked for, or the field is switched off
             await this.#setMode(this.getAttribute('mode') || 'plain');
         }
         this.setAttribute('ready', '');
@@ -140,6 +149,7 @@ class AaRichtextElement extends HTMLElement {
         this.#switches = [];
         this.#links = [];
         this.removeAttribute('ready');
+        this.removeAttribute('disabled');
     }
 
     /** Current content, the editor's pending edit included. */
@@ -176,6 +186,9 @@ class AaRichtextElement extends HTMLElement {
         if (!this.#sync) {
             this.#editorAsked = true;           // a link clicked while the element loads
             return Promise.resolve();
+        }
+        if (this.#textarea.matches(':disabled')) {
+            return Promise.resolve();           // the format switch belongs to the field, which is switched off
         }
         const done = this.#setMode('rich');
         const html = this.getAttribute('switch-html') ?? '1';
@@ -342,6 +355,7 @@ class AaRichtextElement extends HTMLElement {
                     this.#setMode('code');
                 },
                 upload: this.#uploadOptions(),
+                disabled: this.#textarea.matches(':disabled'),
             });
         } catch (e) {
             // the bundle did not load, or TinyMCE refused the page (quirks mode)
@@ -361,6 +375,7 @@ class AaRichtextElement extends HTMLElement {
         if (this.#textarea.value !== start) {
             api.load(this.#textarea.value);     // a script or Reset wrote it while TinyMCE was starting
         }
+        api.setDisabled(this.#textarea.matches(':disabled'));   // the same for switching the field off
     }
 
     /** as a textarea: change before blur */

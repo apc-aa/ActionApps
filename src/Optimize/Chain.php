@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
-use AA\IO\DB\DB_PDO;
+use AA\IO\DB\DB_AA;
 use AA\Util\Txt;
 use AA_Serializable;
 use Throwable;
@@ -53,39 +53,24 @@ final class Chain
 
     /** Named DB lock for running the chain of the type - two runs at once would rebuild the same
      *  tables; Do_Optimize repair and sql_update.php Restore take it too. Per database: other AAs
-     *  on the same DB server run their own.
-     *  A named lock lives as long as its connection, so it is taken on a connection of its own
-     *  which is never persistent and never pooled: when a die() or a fatal error skips the release,
-     *  the end of the script still closes the connection and frees the lock.
-     *  @param ?int         $holder  set to the MySQL connection id holding the lock when it is held
-     *  @param ?DB_PDO      $db      the connection to lock on - for tests
-     *  @return \Closure(): void|null  releases the lock (once - it is also the shutdown function);
-     *                                 null when another run holds it
+     *  on the same DB server run their own. The lock connection is never persistent, so a die()
+     *  or a fatal error that skips the release frees the lock at the end of the script.
+     *  @param ?int $holder  set to the MySQL connection id holding the lock when it is held
+     *  @return \Closure(): void|null  releases the lock (once); null when another run holds it
      */
-    public static function tryLock(string $type, ?int &$holder = null, ?DB_PDO $db = null): ?\Closure
+    public static function tryLock(string $type, ?int &$holder = null): ?\Closure
     {
-        $db   ??= new DB_PDO(self::lockConnectionParams());
-        $name   = qquote(substr('aa_optimize_' . $type . '_' . constant('DB_NAME'), 0, 64));  // MySQL limit
-        $db->query("SELECT GET_LOCK($name, 0) AS got, IS_USED_LOCK($name) AS holder");
-        $got    = $db->next_record();
-        $holder = $got ? (int) $db->f('holder') : null;
-        if (!$got || (string) $db->f('got') !== '1') {   // 0 held, NULL error
+        $name = 'aa_optimize_' . $type;
+        if (!DB_AA::lock($name, 0, $holder)) {
             return null;
         }
-        $release = static function () use (&$db, $name): void {
-            if ($db) {
-                $db->query("SELECT RELEASE_LOCK($name)");
-                $db = null;   // the last reference - closes the connection
+        $held = true;
+        return static function () use (&$held, $name): void {
+            if ($held) {
+                $held = false;
+                DB_AA::unlock($name);
             }
         };
-        register_shutdown_function($release);
-        return $release;
-    }
-
-    /** The lock connection: config.php settings, but never persistent (see tryLock()) */
-    public static function lockConnectionParams(): array
-    {
-        return ['persistent' => false] + dbConnectionParams();
     }
 
     /** "already running" - with the connection id an admin can KILL when the run is gone */

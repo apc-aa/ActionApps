@@ -177,14 +177,14 @@ $headcode = <<<'HTML'
       document.f.gb_header.selectIndex = 0;
       document.f.compact_remove.value = '';
       document.f.even_odd_differ.checked = false;
-      window.cm_top.setValue("");    
-      window.cm_odd.setValue('<article>\n  _#PUB_DATE\n  <h2><a href="_#SEO_URL_">_#HEADLINE</a></h2>\n  <div>_#PUB_DATE | _#PLACE###</div>\n  _#ABSTRACT\n</article>');    
-      window.cm_even.setValue("");   
-      window.cm_bottom.setValue(""); 
-      window.cm_ctop.setValue("");   
-      window.cm_cformat.setValue("<p>_#CATEGORY</p>");
-      window.cm_cbottom.setValue("");
-      window.cm_noitem.setValue("");       
+      document.f.compact_top.value = '';
+      document.f.odd_row_format.value = '<article>\n  _#PUB_DATE\n  <h2><a href="_#SEO_URL_">_#HEADLINE</a></h2>\n  <div>_#PUB_DATE | _#PLACE###</div>\n  _#ABSTRACT\n</article>';
+      document.f.even_row_format.value = '';
+      document.f.compact_bottom.value = '';
+      document.f.category_top.value = '';
+      document.f.category_format.value = '<p>_#CATEGORY</p>';
+      document.f.category_bottom.value = '';
+      document.f.noitem_msg.value = '';
       InitPage()
     }
 
@@ -195,24 +195,11 @@ $headcode = <<<'HTML'
 HTML;
 
 
-$script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_top     = CodeMirror.fromTextArea(document.getElementById("compact_top"), opts);
-   window.cm_odd     = CodeMirror.fromTextArea(document.getElementById("odd_row_format"), opts);
-   window.cm_even    = CodeMirror.fromTextArea(document.getElementById("even_row_format"), opts);
-   window.cm_bottom  = CodeMirror.fromTextArea(document.getElementById("compact_bottom"), opts);
-   window.cm_ctop    = CodeMirror.fromTextArea(document.getElementById("category_top"), opts);
-   window.cm_cformat = CodeMirror.fromTextArea(document.getElementById("category_format"), opts);
-   window.cm_cbottom = CodeMirror.fromTextArea(document.getElementById("category_bottom"), opts);
-   window.cm_noitem  = CodeMirror.fromTextArea(document.getElementById("noitem_msg"), opts);
-   InitPage();
-   ';
-
 $apage = new AA_Adminpageutil('sliceadmin','compact');
 $apage->setTitle(_m("Admin - design Index view"));
 $apage->setSubtitle(_m("Use these boxes ( and the tags listed below ) to control what appears on summary page"));
-$apage->addRequire('codemirror@5');
-$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire('aa-code@1');
+$apage->addRequire('InitPage();', 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
@@ -234,17 +221,17 @@ $lookup_fields = AA_Fields::getFields4Select(AA::$module_id, false, 'name', true
 
 FrmTextarea("compact_top", _m("Top HTML"), $compact_top, 4, 50, false,
     _m("HTML code which appears at the top of slice area")
-    . '<br>' . AA_View::getViewJumpLinks($compact_top), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($compact_top), '', 1, code: true);
 FrmTextarea("odd_row_format", _m("Odd Rows"), $odd_row_format, 6, 50, false,
     _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-    . '<br>' . AA_View::getViewJumpLinks($odd_row_format), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($odd_row_format), '', 1, code: true);
 FrmInputChBox("even_odd_differ", _m("Use different HTML code for even rows"), $even_odd_differ, true, "onclick=\"InitPage()\"");
 FrmTextarea("even_row_format", _m("Even Rows"), $even_row_format, 6, 50, false,
     _m("You can define different code for odd and even rows\n                         <br>first red, second black, for example")
-    . '<br>' . AA_View::getViewJumpLinks($even_row_format), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($even_row_format), '', 1, code: true);
 FrmTextarea("compact_bottom", _m("Bottom HTML"), $compact_bottom, 4, 50, false,
     _m("HTML code which appears at the bottom of slice area")
-    . '<br>' . AA_View::getViewJumpLinks($compact_bottom), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($compact_bottom), '', 1, code: true);
 echo "<tr><th>"._m("Group by")."</th><td>";
 FrmSelectEasy("group_by", $lookup_fields, $group_by);
 echo '<br>';
@@ -263,18 +250,18 @@ echo "<input type=hidden name='category_sort' value='$category_sort'>";
 echo "</td></tr>";
 FrmTextarea("category_top", _m("Category top HTML"), $category_top, 4, 50, false,
     _m("HTML code which appears at the top of slice area")
-    . '<br>' . AA_View::getViewJumpLinks($category_top), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($category_top), '', 1, code: true);
 FrmTextarea("category_format", _m("Category Headline"), $category_format, 6, 50, false,
     _m("Put here the HTML code combined with aliases form bottom of this page\n                     <br>The aliases will be substituted by real values from database when it will be posted to page")
-    . '<br>' . AA_View::getViewJumpLinks($category_format), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($category_format), '', 1, code: true);
 FrmTextarea("category_bottom", _m("Category bottom HTML"), $category_bottom, 4, 50, false,
     _m("HTML code which appears at the bottom of slice area")
-    . '<br>' . AA_View::getViewJumpLinks($category_bottom), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($category_bottom), '', 1, code: true);
 FrmInputText("compact_remove", _m("Remove strings"), $compact_remove, 254, 50, false,
     _m("Removes empty brackets etc. Use ## as delimiter."));
 FrmTextarea("noitem_msg", _m("'No item found' message"), $noitem_msg, 4, 50, false,
     _m("message to show in place of slice.php, if no item matches the query")
-    . '<br>' . AA_View::getViewJumpLinks($category_bottom), '', 1);
+    . '<br>' . AA_View::getViewJumpLinks($category_bottom), '', 1, code: true);
 
 $slice = AA_Slice::getModule(AA::$module_id);
 

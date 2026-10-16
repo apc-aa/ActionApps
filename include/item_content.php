@@ -854,8 +854,13 @@ class ItemContent extends AA_Content
             if (!IsEditable($oldcontent4id ? $oldcontent4id->getFlag($pri_field_id) : 0, $field, $profile) && !$insert) {
                 continue;
             }
+            // the caller decides which item it stores and where - it checked the rights to that one; a posted
+            // id would overwrite another item, also from a slice that only shows its id field
+            if (in_array($pri_field_id, ['id..............', 'slice_id........'], true)) {
+                continue;
+            }
 
-            if ($aacontent4id && $aacontent4id->isSet($pri_field_id) && !in_array($pri_field_id, ['id..............', 'slice_id........'])) {
+            if ($aacontent4id && $aacontent4id->isSet($pri_field_id)) {
                 $this->content[$pri_field_id] = $aacontent4id->getValues($pri_field_id);
                 continue;
             }

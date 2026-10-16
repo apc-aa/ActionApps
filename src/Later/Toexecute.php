@@ -185,13 +185,13 @@ class Toexecute
 
         // The check+insert below is a race when two processes schedule the same
         // selector concurrently (both see "not scheduled", both insert - and the
-        // duplicated task later executes twice). Serialize it with a DB named
-        // lock, held on a dedicated connection so acquire and release pair up.
+        // duplicated task later executes twice). A named lock serializes it.
         // On lock timeout we proceed unlocked (scheduling must not be dropped).
-        $lock_name = 'aa_laterOnce_' . constant('DB_NAME');
-        $db = getDB();
+        // Inside a transaction (an item stored in one schedules AA_Mysqlauth_Maintain
+        // this way) the row becomes visible to others only at the commit, after the
+        // lock is gone - a scheduler elsewhere can still add the same selector meanwhile.
+        $locked = DB_AA::lock('aa_laterOnce', 2);
         try {
-            $db->query('SELECT GET_LOCK(' . $db->quote($lock_name) . ', 2)');
             $task = self::scheduledTask($selector);
             if (!$task['id']) {
                 $this->later($object, $params, $selector, $priority, $time);
@@ -201,8 +201,9 @@ class Toexecute
                 DB_AA::update('toexecute', [['execute_after' => $time]], [['id', $task['id'], 'i']]);
             }
         } finally {
-            $db->query('SELECT RELEASE_LOCK(' . $db->quote($lock_name) . ')');
-            freeDB($db);
+            if ($locked) {
+                DB_AA::unlock('aa_laterOnce');
+            }
         }
     }
 

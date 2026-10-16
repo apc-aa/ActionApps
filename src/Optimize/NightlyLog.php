@@ -63,8 +63,8 @@ final class NightlyLog
     public static function import(array $push, int $now): int
     {
         // two pushes at once would both merge into the same old set, and the later one would
-        // drop the pairs of the other; the lock belongs to the connection, which DB_AA reuses
-        if (!DB_AA::select1('l', "SELECT GET_LOCK('" . self::LOCK . "', 10) AS l")) {
+        // drop the pairs of the other
+        if (!DB_AA::lock(self::LOCK, 10)) {
             throw new RuntimeException('another push of the nightly test is being stored');
         }
         try {
@@ -79,7 +79,7 @@ final class NightlyLog
             }
             return $stored;
         } finally {
-            DB_AA::select1('l', "SELECT RELEASE_LOCK('" . self::LOCK . "') AS l");
+            DB_AA::unlock(self::LOCK);
         }
     }
 

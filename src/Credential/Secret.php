@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace AA\Import\Credential;
+namespace AA\Credential;
 
 use JsonSerializable;
 use LogicException;
@@ -11,20 +11,23 @@ use SensitiveParameter;
 /**
  * A key, a password or a token - wrapped so that it cannot leak by accident.
  *
- * Same contract as AA\Credential\Secret; replaced by it once that class is in main.
+ * No __toString(): a secret never lands in a log line, an error message, a template or a JSON
+ * response just because somebody concatenated it. Reading the real value takes saying so
+ * (reveal()), which is greppable. The value is not a property of the object, so no dump shows
+ * it (var_dump(), var_export(), print_r(), an (array) cast), json_encode() shows stars, and the
+ * constructor parameter is marked sensitive, so PHP keeps it out of stack traces (PHP 8.2).
+ * With no property to look at, == finds any two Secrets equal: compare them only as
+ * hash_equals($a->reveal(), $b->reveal()).
  *
- * No __toString(): a secret never lands in a log, an error message or JSON just because somebody
- * concatenated it; reading it takes reveal(), which is greppable. var_dump() and json_encode()
- * show stars and PHP keeps the constructor parameter out of stack traces.
- *
- * It refuses serialize(): AA hashes memoized call parameters with it (AA::Contentcache()) and
- * sessions and debug dumps use it too - each would write the key out in clear.
+ * It also refuses to be serialized, which matters more than it sounds: AA hashes the parameters
+ * of a memoized call with serialize() (AA::Contentcache()->get_result()), and a session or a
+ * debug dump does the same - a Secret passed along either way would write the key out in clear.
  */
 final class Secret implements JsonSerializable
 {
     /**
-     * Values live outside the object: var_export() and (array) ignore __debugInfo() and would
-     * print a property in clear. Weak keys let a value go with its Secret.
+     * Values live outside the objects: var_export() and an (array) cast ignore __debugInfo() and
+     * would print a property in clear. Weak keys let a value go together with its Secret.
      *
      * @var \WeakMap<self, string>|null
      */
@@ -33,13 +36,16 @@ final class Secret implements JsonSerializable
     public function __construct(#[SensitiveParameter] string $value)
     {
         self::$values ??= new \WeakMap();
+        if (isset(self::$values[$this])) {
+            throw new LogicException('A Secret keeps the value it was made with');
+        }
         self::$values[$this] = $value;
     }
 
     /**
      * The real value. Every call site is a place to check that it cannot end up somewhere public:
-     * pass it only to parameters marked #[\SensitiveParameter] - AA's debug trace prints the
-     * beginning of string arguments.
+     * hand it only to parameters marked #[\SensitiveParameter] - AA's debug trace prints the
+     * beginning of every other string argument (include/debug.class.php).
      */
     public function reveal(): string
     {
@@ -53,7 +59,7 @@ final class Secret implements JsonSerializable
 
     /**
      * What a person may see: enough to tell two long keys apart, nothing of a short one - not
-     * even its length, four characters of a short password are too much of it.
+     * even its length, four characters of a short password are a big part of it.
      */
     public function hint(): string
     {
@@ -63,8 +69,8 @@ final class Secret implements JsonSerializable
     }
 
     /**
-     * A clone cannot reach the original's value without keeping it on the object again, and an
-     * immutable key never needs a copy - pass the same Secret along.
+     * A copy would need its value on the object again, and an immutable key never needs one -
+     * pass the same Secret along.
      */
     public function __clone()
     {

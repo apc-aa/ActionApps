@@ -11,7 +11,8 @@ and AA in the subdirectory `apc-aa/`. Replace these with your own values.
 - **PHP 8.2 or newer**, with these extensions: `ctype`, `curl`, `dom`, `fileinfo`, `gd`, `iconv`,
   `intl`, `mbstring`, `pdo_mysql`, `simplexml`, `sodium`, `xml`, `xsl`, `zlib`.
   Any PHP setup works: PHP-FPM, FastCGI or mod_php.
-- **MariaDB or MySQL** with `utf8mb4` support, and one empty database for AA.
+- **MariaDB 10.0.2 or MySQL 5.7.5** or newer (one connection holds several named locks), and
+  one empty database for AA.
 - **A web server** that runs PHP: Apache 2.4 or nginx.
 - **git 2.28 or newer** and shell access to the server. Composer is not needed, because the
   release branch already includes `vendor/`.

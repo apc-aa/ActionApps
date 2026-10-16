@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace AA\Optimize;
 
 use AA\Import\Catalog;
-use AA\Import\Credential\Store;
+use AA\Credential\Store;
 use AA\Import\Definition;
 use AA\Import\Registry;
 use AA\Import\Run;
@@ -269,7 +269,7 @@ class CheckImports extends AbstractOptimize
      *  @return Finding[] key constants a source cannot send */
     private static function keyFindings(array $constants): array
     {
-        return array_map(static fn(string $name): Finding => new Finding(Finding::ERROR, _m('A key in config.php is damaged'), evidence: [[_m('Constant') => safe($name)]], advice: _m('The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php.'), key: "key:$name"), Store::damagedIn($constants));
+        return array_map(static fn(string $name): Finding => new Finding(Finding::ERROR, _m('A key in config.php is damaged'), evidence: [[_m('Constant') => safe($name)]], advice: _m('The key holds a line break or NUL, so no import source may use it. Fix the constant in config.php.') . ' ' . _m('A JSON key (a Google service account) fits on one line: paste the line that %1 prints.', ['jq -c . key.json']), key: "key:$name"), Store::damagedIn($constants));
     }
 
     /** @return Finding[] failures of import steps and of the imports outside a step, from the log */

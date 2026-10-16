@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace AA\Api\Controller;
 
 use AA\Api\JsonResponse;
+use AA\Api\LoggedInGate;
 use AA\Api\SameHostGate;
 use AA\Http\Client;
 use AA\Http\ClientInterface;
@@ -26,6 +27,7 @@ use AA\Http\TransportException;
 
 class TranslateController
 {
+    use LoggedInGate;
     use SameHostGate;
     /** @param ?ClientInterface $http tests hand in a fake; api/index.php uses new TranslateController() */
     public function __construct(private ?ClientInterface $http = null) {}
@@ -106,13 +108,6 @@ class TranslateController
             $out .= $result['text'];
         }
         return JsonResponse::ok(['text' => $out, 'provider' => static::PROVIDER]);
-    }
-
-    /** Override point for tests; production reads AA's session auth. */
-    protected function isLoggedIn(): bool
-    {
-        $auth = $GLOBALS['auth'] ?? null;
-        return is_object($auth) && method_exists($auth, 'is_user') && $auth->is_user();
     }
 
     /** Accept only "xx"/"xxx" with an optional "-YY"/"-Yyyy" subtag; anything else

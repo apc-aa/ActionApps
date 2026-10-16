@@ -114,17 +114,11 @@ if (AA::$module_id != "") {  // set variables from database
 }
 
 
-$script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("fulltext_format_top"), opts);
-   window.cm_code = CodeMirror.fromTextArea(document.getElementById("fulltext_format"), opts);
-   window.cm_bot  = CodeMirror.fromTextArea(document.getElementById("fulltext_format_bottom"), opts);
-   ';
 $headcode = '<script>
   function Defaults() {
-    window.cm_top.setValue("");
-    window.cm_code.setValue("<h2>_#HEADLINE</h2>\n<div>\n  <em>_#PUB_DATE</em><br>\n  _#FULLTEXT\n</div>");
-    window.cm_bot.setValue("");
+    document.f.fulltext_format_top.value    = "";
+    document.f.fulltext_format.value        = "<h2>_#HEADLINE</h2>\n<div>\n  <em>_#PUB_DATE</em><br>\n  _#FULLTEXT\n</div>";
+    document.f.fulltext_format_bottom.value = "";
     document.f.fulltext_remove.value        = \'\';
   }
 </script>';
@@ -132,8 +126,7 @@ $headcode = '<script>
 $apage = new AA_Adminpageutil('sliceadmin', 'fulltext');
 $apage->setTitle(_m("Admin - design Fulltext view"));
 $apage->setSubtitle(_m("Use these boxes ( with the tags listed below ) to control what appears on full text view of each item"));
-$apage->addRequire('codemirror@5');
-$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire('aa-code@1');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
@@ -167,6 +160,7 @@ FrmTextarea(
     . '<br>' . AA_View::getViewJumpLinks($fulltext_format_top),
     '',
     1,
+    code: true,
 );
 FrmTextarea(
     "fulltext_format",
@@ -179,6 +173,7 @@ FrmTextarea(
     . '<br>' . AA_View::getViewJumpLinks($fulltext_format),
     '',
     1,
+    code: true,
 );
 FrmTextarea(
     "fulltext_format_bottom",
@@ -191,6 +186,7 @@ FrmTextarea(
     . '<br>' . AA_View::getViewJumpLinks($fulltext_format_bottom),
     '',
     1,
+    code: true,
 );
 FrmInputText(
     "fulltext_remove",

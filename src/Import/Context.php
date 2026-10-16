@@ -9,8 +9,8 @@ use AA\Http\ClientInterface;
 use AA\Http\Response;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
-use AA\Import\Credential\Secret;
-use AA\Import\Credential\Store;
+use AA\Credential\Secret;
+use AA\Credential\Store;
 use AA\IO\SourceFailure;
 use AA\IO\SourceRefused;
 use AA\IO\SourceUnavailable;
@@ -21,7 +21,6 @@ use LogicException;
 use SensitiveParameter;
 use Symfony\Component\HttpFoundation\IpUtils;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Component\HttpClient\NoPrivateNetworkHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -71,7 +70,8 @@ final class Context
      */
     private array $secrets = [];
 
-    private ?HttpClientInterface $guarded = null;
+    /** one connection for all requests of the step, under a new guard each time */
+    private ?HttpClientInterface $connection = null;
 
     /** @var array<string, array{code: string, text: string}> the first remarks, by code and text */
     private array $remarks = [];
@@ -240,8 +240,8 @@ final class Context
             throw $this->failure(false, 'Only http(s) addresses are imported', $url, TransportException::ADDRESS);
         }
         $seconds = $this->budget->httpTimeout();
-        $this->guarded ??= new NoPrivateNetworkHttpClient($this->transport ?? HttpClient::create());
-        $client = new Client(timeout: $seconds, idle: min(self::IDLE_SECONDS, $seconds), agent: Client::agent('import'), redirects: $redirects, http: $this->guarded, maxBytes: $this->maxBytes);
+        $this->connection ??= $this->transport ?? HttpClient::create();
+        $client = Client::publicOnly(timeout: $seconds, idle: min(self::IDLE_SECONDS, $seconds), agent: Client::agent('import'), redirects: $redirects, transport: $this->connection, maxBytes: $this->maxBytes);
 
         try {
             $answer = $client->request($method, $url, $body, $headers);
