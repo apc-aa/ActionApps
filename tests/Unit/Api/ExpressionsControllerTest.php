@@ -28,10 +28,13 @@ final class ExpressionsControllerTest extends TestCase
 
     private static function controller(bool $logged_in): ExpressionsController
     {
-        return new class (static fn() => self::CATALOG, $logged_in) extends ExpressionsController {
-            public function __construct(\Closure $catalog, private bool $loggedIn)
+        return new class (self::CATALOG, $logged_in) extends ExpressionsController {
+            /** @param array<string, array<string, mixed>> $commands */
+            public function __construct(private array $commands, private bool $loggedIn) {}
+
+            protected function catalog(): array
             {
-                parent::__construct($catalog);
+                return $this->commands;
             }
 
             protected function isLoggedIn(): bool

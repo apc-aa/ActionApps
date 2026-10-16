@@ -12,21 +12,14 @@ declare(strict_types=1);
 namespace AA\Api\Controller;
 
 use AA\Api\JsonResponse;
+use AA\Api\LoggedInGate;
 use AA\Api\SameHostGate;
 use AA\Stringexpand\Catalog;
-use Closure;
 
 class ExpressionsController
 {
+    use LoggedInGate;
     use SameHostGate;
-
-    private Closure $catalog;
-
-    /** @param ?Closure $catalog tests hand in a fixed list; api/index.php uses Catalog::commands() */
-    public function __construct(?Closure $catalog = null)
-    {
-        $this->catalog = $catalog ?? Catalog::commands(...);
-    }
 
     public function list(): JsonResponse
     {
@@ -36,12 +29,12 @@ class ExpressionsController
         if (!$this->isLoggedIn()) {
             return JsonResponse::error(401, 'Not logged in');
         }
-        return JsonResponse::ok(['commands' => ($this->catalog)()]);
+        return JsonResponse::ok(['commands' => $this->catalog()]);
     }
 
-    protected function isLoggedIn(): bool
+    /** @return array<string, array<string, mixed>> */
+    protected function catalog(): array
     {
-        $auth = $GLOBALS['auth'] ?? null;
-        return is_object($auth) && method_exists($auth, 'is_user') && $auth->is_user();
+        return Catalog::commands();
     }
 }
