@@ -551,6 +551,7 @@ aa-code .cm-aa-hint { max-width: 40em; padding: 3px 6px; font-size: 12px; }
 aa-code .cm-aa-hint b { color: #1a4d8f; }
 aa-code .cm-aa-hint div { margin-top: 2px; color: #555; }
 aa-code[invalid], aa-richtext[invalid] { outline: 2px solid #c00; outline-offset: 1px; }
+aa-code[disabled] .cm-editor { background: #f2f2f2; opacity: .7; }
 .aa-invalid-msg { color: #c00; margin: .25em 0; }
 /* file picker of the rich-text editor */
 .aa-filepicker {

@@ -21,6 +21,9 @@ import { aaSyntax } from './aa-lang.js';
 
 const LANGUAGES = { html, javascript, css };
 
+/** a disabled textarea is not submitted - its editor must not take typing either */
+const editable = disabled => [EditorView.editable.of(!disabled), EditorState.readOnly.of(disabled)];
+
 /**
  * Mounts an editor after `textarea` and keeps the textarea's value in sync.
  *
@@ -28,10 +31,11 @@ const LANGUAGES = { html, javascript, css };
  * and AA_SendWidgetLive/Ajax keep working.
  *
  * @param {HTMLTextAreaElement} textarea
- * @param {{language?: string, onChange?: (value: string) => void}} [options]
+ * @param {{language?: string, disabled?: boolean, onChange?: (value: string) => void}} [options]
  */
-export function createEditor(textarea, { language = 'html', onChange } = {}) {
+export function createEditor(textarea, { language = 'html', disabled = false, onChange } = {}) {
     const languageConf = new Compartment();
+    const editableConf = new Compartment();
 
     const view = new EditorView({
         state: EditorState.create({
@@ -47,6 +51,7 @@ export function createEditor(textarea, { language = 'html', onChange } = {}) {
                 highlightSelectionMatches(),
                 keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap]),
                 languageConf.of((LANGUAGES[language] || LANGUAGES.html)()),
+                editableConf.of(editable(disabled)),
                 aaSyntax(),                   // any field here may hold AA expressions, whatever its language
                 EditorView.lineWrapping,
                 EditorView.contentAttributes.of({ spellcheck: 'true' }),
@@ -70,6 +75,9 @@ export function createEditor(textarea, { language = 'html', onChange } = {}) {
         },
         setLanguage(name) {
             view.dispatch({ effects: languageConf.reconfigure((LANGUAGES[name] || LANGUAGES.html)()) });
+        },
+        setDisabled(off) {
+            view.dispatch({ effects: editableConf.reconfigure(editable(off)) });
         },
         focus: () => view.focus(),
         destroy: () => view.destroy(),
