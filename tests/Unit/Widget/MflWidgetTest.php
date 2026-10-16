@@ -64,6 +64,19 @@ final class MflWidgetTest extends TestCase
         self::assertStringContainsString('<input ', $html);
     }
 
+    public function test_getRawHtml_inputSizeAndLengthFromParams(): void
+    {
+        $plain = self::html(new MflWidget(['rows' => 1, 'row_count' => 1]), false, ['a']);
+
+        self::assertStringContainsString('type="text" maxlength="255" class="aa-w-full"', $plain);
+        self::assertStringNotContainsString('size=', $plain);
+
+        $sized = self::html(new MflWidget(['rows' => 1, 'row_count' => 1, 'width' => 30, 'max_characters' => 40]), false, ['a']);
+
+        self::assertStringContainsString('type="text" size="30" maxlength="40"', $sized);
+        self::assertStringNotContainsString('aa-w-full', $sized);
+    }
+
     /** @param string[] $values */
     private static function html(MflWidget $widget, bool $required, array $values): string
     {

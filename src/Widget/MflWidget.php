@@ -106,13 +106,13 @@ class MflWidget extends Widget
         if ($inputtype === 'textfield') {
             $attrs = ['type' => 'text'];
             $attrs = array_merge($attrs, $aa_property->getValidator()->getHtmlInputAttr());
-            $attrs['size'] = get_if($this->getProperty('width'), $attrs['size']);
+            $attrs['size'] = get_if($this->getProperty('width'), $attrs['size'] ?? null);
             if (!$attrs['size']) {
                 unset($attrs['size']);
             }
-            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'], 255);
-            if (!$attrs['size']) {
-                $attrs['class'] = $attrs['class'] ? $attrs['class'] . ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
+            $attrs['maxlength'] = get_if($this->getProperty('max_characters'), $attrs['maxlength'] ?? null, 255);
+            if (empty($attrs['size'])) {
+                $attrs['class'] = !empty($attrs['class']) ? $attrs['class'] . ' aa-w-full' : 'aa-w-full'; // $attrs['style'] = 'width:95%';
             }
         }
 
