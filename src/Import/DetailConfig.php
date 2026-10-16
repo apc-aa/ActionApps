@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Import;
 
-use AA\Import\Credential\Store;
+use AA\Credential\Store;
 use AA\IO\SourceRefused;
 use AA\Later\BatchFailed;
 use AA\Widget\Widget;

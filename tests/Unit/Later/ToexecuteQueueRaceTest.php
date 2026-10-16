@@ -356,12 +356,12 @@ final class ToexecuteQueueRaceTest extends TestCase
             'the claim must preserve the user-queue parking time instead of leasing it (crashed user tasks must not surface to the cron scan)',
         );
         $this->assertMatchesRegularExpression(
-            '/GET_LOCK/',
+            '/DB_AA::lock\(/',
             $src,
             'laterOnce must serialize its check+insert with a DB named lock (GET_LOCK)',
         );
         $this->assertMatchesRegularExpression(
-            '/RELEASE_LOCK/',
+            '/DB_AA::unlock\(/',
             $src,
             'the DB named lock must be released',
         );

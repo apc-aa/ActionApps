@@ -229,6 +229,20 @@ final class ClientTest extends TestCase
         self::assertSame('page', $client->request('GET', 'https://1.1.1.1/')->body);
     }
 
+    // a proxy from the server's environment would resolve the name again, after the guard checked it
+    public function test_publicOnly_neverGoesThroughAProxy(): void
+    {
+        $options = [];
+        $client  = Client::publicOnly(transport: new MockHttpClient(function (string $method, string $url, array $sent) use (&$options): MockResponse {
+            $options = $sent;
+            return new MockResponse('page');
+        }));
+
+        $client->request('GET', 'https://1.1.1.1/');
+
+        self::assertSame('*', $options['no_proxy'] ?? null);
+    }
+
     // the policy of the client still applies under the guard
     public function test_publicOnly_keepsTheSizeCeiling(): void
     {

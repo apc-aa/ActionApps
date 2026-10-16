@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Import\Credential;
+namespace Tests\Unit\Credential;
 
-use AA\Import\Credential\Secret;
-use AA\Import\Credential\Store;
+use AA\Credential\Secret;
+use AA\Credential\Store;
 use LogicException;
 use PHPUnit\Framework\TestCase;
 
@@ -17,7 +17,7 @@ final class StoreTest extends TestCase
 {
     public static function setUpBeforeClass(): void
     {
-        require_once __DIR__ . '/../../fixtures/util_shims.php';   // _m()
+        require_once __DIR__ . '/../fixtures/util_shims.php';   // _m()
         if (!defined('AA_APIKEY_IMPORTCREDTEST')) {
             define('AA_APIKEY_IMPORTCREDTEST', 'vendor-value-9876');
         }
@@ -98,7 +98,7 @@ final class StoreTest extends TestCase
     public function test_secret_notUnserializable(): void
     {
         $this->expectException(LogicException::class);
-        unserialize('O:27:"AA\\Import\\Credential\\Secret":1:{s:5:"value";s:3:"abc";}');
+        unserialize('O:20:"AA\\Credential\\Secret":1:{s:5:"value";s:3:"abc";}');
     }
 
     public function test_secret_jsonShowsStars(): void
@@ -146,5 +146,17 @@ final class StoreTest extends TestCase
     {
         $this->expectException(LogicException::class);
         clone new Secret('made-up-value-1234');
+    }
+
+    public function test_secret_keepsTheValueItWasMadeWith(): void
+    {
+        $secret = new Secret('made-up-value-1234');
+        try {
+            $secret->__construct('another-value');
+        } catch (LogicException) {
+            // refused - that is the point
+        }
+
+        self::assertSame('made-up-value-1234', $secret->reveal());
     }
 }

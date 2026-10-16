@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Tests\Unit\Cache;
 
 use AA\Cache\PageCache;
-use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * Unit tests for the tracker-stripping logic that keeps third-party
  * marketing parameters (utm_*, gclid, fbclid, ...) and analytics cookies
- * (IDE, NID, ...) out of the page-cache key.
+ * (IDE, NID, ...) out of the page-cache key. Which names are trackers is
+ * AA\Util\Url::isTrackingParam() (tests/Unit/Util/UrlTest.php).
  *
  * All helpers under test are pure; no DB or session is touched. We snapshot
  * & restore the superglobals we mutate so test order is irrelevant.
@@ -49,59 +49,6 @@ final class PageCacheKeyTest extends TestCase
                 $GLOBALS[$k] = $v;
             }
         }
-    }
-
-    // -- isIgnoredParam --------------------------------------------------
-
-    public static function ignoredParamProvider(): array
-    {
-        return [
-            'utm prefix lowercase'    => ['utm_source', true],
-            'utm prefix any suffix'   => ['utm_anything_at_all', true],
-            'gclid exact'             => ['gclid', true],
-            'fbclid exact'            => ['fbclid', true],
-            'mc_cid exact'            => ['mc_cid', true],
-            '_hsenc exact'            => ['_hsenc', true],
-            'IDE exact (DoubleClick)' => ['IDE', true],
-            'NID exact'               => ['NID', true],
-            '1P_JAR exact'            => ['1P_JAR', true],
-        ];
-    }
-
-    #[DataProvider('ignoredParamProvider')]
-    public function test_isIgnoredParam_recognizes_trackers(string $name, bool $expected): void
-    {
-        $this->assertSame($expected, PageCache::isIgnoredParam($name));
-    }
-
-    public static function nonIgnoredParamProvider(): array
-    {
-        return [
-            // case-sensitive: canonical lowercase utm_/gclid only
-            'UTM_SOURCE wrong case'        => ['UTM_SOURCE'],
-            'Gclid wrong case'             => ['Gclid'],
-            'ide wrong case'               => ['ide'],
-            // AA-consumed params must stay
-            'vid'                          => ['vid'],
-            'listlen'                      => ['listlen'],
-            'mlx'                          => ['mlx'],
-            'cmd'                          => ['cmd'],
-            'set'                          => ['set'],
-            // utm without underscore — must NOT match the utm_ prefix
-            'utmsomething (no underscore)' => ['utmsomething'],
-            // ambiguous names deliberately excluded — custom site safety
-            'ref'                          => ['ref'],
-            'source'                       => ['source'],
-            'referrer'                     => ['referrer'],
-            // custom site param that happens to start with similar letters
-            'gclient_custom'               => ['gclient_custom'],
-        ];
-    }
-
-    #[DataProvider('nonIgnoredParamProvider')]
-    public function test_isIgnoredParam_leaves_other_names_alone(string $name): void
-    {
-        $this->assertFalse(PageCache::isIgnoredParam($name));
     }
 
     // -- filterIgnoredParams --------------------------------------------
@@ -203,6 +150,19 @@ final class PageCacheKeyTest extends TestCase
         $this->assertSame($uri, PageCache::normalizeRequestUri($uri));
     }
 
+    public function test_normalizeRequestUri_strips_the_id_google_adds_to_its_results(): void
+    {
+        // every visit from the search results came with its own srsltid - each one a cache miss and a stored copy
+        $this->assertSame('/e-shop/kategorie?page=2', PageCache::normalizeRequestUri('/e-shop/kategorie?srsltid=AfmBOoq1&page=2'));
+        $this->assertSame('/e-shop/kategorie', PageCache::normalizeRequestUri('/e-shop/kategorie?srsltid=AfmBOoq1'));
+    }
+
+    public function test_normalizeRequestUri_keeps_cookie_tracker_names_as_parameters(): void
+    {
+        // IDE, NID, ... are DoubleClick cookies, not URL trackers - a site's own ?NID=5 must change the page
+        $this->assertSame('/clanek?NID=5', PageCache::normalizeRequestUri('/clanek?NID=5'));
+    }
+
     public function test_normalizeRequestUri_strips_trackers_in_query(): void
     {
         $this->assertSame(
@@ -243,6 +203,8 @@ final class PageCacheKeyTest extends TestCase
             'NID'        => 'dc2',       // DoubleClick — newly excluded
             '1P_JAR'     => 'dc3',       // DoubleClick — newly excluded
             'DSID'       => 'dc4',       // DoubleClick — newly excluded
+            'li_fat_id'  => 'li',        // LinkedIn keeps its click id as a cookie — never in key
+            'utm_source' => 'fb',        // a tag that keeps the campaign as a cookie — never in key
             'site_pref'  => 'compact',   // arbitrary custom site cookie — MUST stay
         ];
 
@@ -251,7 +213,7 @@ final class PageCacheKeyTest extends TestCase
         $this->assertSame('cs', $ks['CAA_lang'] ?? null, 'legitimate AA cookie must remain in key');
         $this->assertSame('compact', $ks['Csite_pref'] ?? null, 'custom site cookie must remain in key');
 
-        foreach (['CAA_Session', 'C_ga', 'C_fbp', 'C__hstc', 'CIDE', 'CNID', 'C1P_JAR', 'CDSID'] as $excludedKey) {
+        foreach (['CAA_Session', 'C_ga', 'C_fbp', 'C__hstc', 'CIDE', 'CNID', 'C1P_JAR', 'CDSID', 'Cli_fat_id', 'Cutm_source'] as $excludedKey) {
             $this->assertArrayNotHasKey($excludedKey, $ks, "$excludedKey must not appear in cache key");
         }
     }

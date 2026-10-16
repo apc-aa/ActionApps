@@ -2,10 +2,12 @@
 # through index.php. The original path is passed as ?_path=... because
 # PATH_INFO-style routes (index.php/v1/ping) fail under Apache configs
 # without AcceptPathInfo enabled — ?_path=v1/ping is portable everywhere.
+# B escapes the path before it goes into the query: Apache has already
+# decoded it, so /api/v1/x%26admin=1 would otherwise add a GET key admin=1.
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?_path=$1 [L,QSA]
+    RewriteRule ^(.*)$ index.php?_path=$1 [B,L,QSA]
 </IfModule>
