@@ -1391,7 +1391,7 @@ class AA_Inputfield {
                 $value             = safe($val[$lang_id]['value']);
                 if ( $value === '' && $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
-                    $value = $val[0]['value'];
+                    $value = safe($val[0]['value']);
                 }
 
                 $name2             = $name."[$lang_id]";
@@ -1518,7 +1518,7 @@ class AA_Inputfield {
                 $value             = safe($val[$lang_id]['value']);
                 if ( $value === '' && $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
-                    $value = $val[0]['value'];
+                    $value = safe($val[0]['value']);
                 }
                 $rows              = max($rows, min(floor(substr_count($value,"\n")*1.3), 30));
                 $rows_css          = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
