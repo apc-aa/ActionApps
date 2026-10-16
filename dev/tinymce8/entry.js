@@ -219,15 +219,17 @@ function uploadOptions({ image, imageTypes, file, pick, documentTypes }, onEdit)
  *                              inline: true the element edited in place - only for content the
  *                              page already shows, as the iframe's CSP does not guard it
  * @param {object} [options]    uiLang, inline, height, sourceLabel (the Source button), onEdit (every
- *                              edit), onFocus, onBlur, onSource (the Source button pressed), upload
+ *                              edit), onFocus, onBlur, onSource (the Source button pressed), upload,
+ *                              disabled (the field is switched off - shown, not editable)
  */
-export async function createRichEditor(target, { uiLang, inline = false, height = 300, sourceLabel = 'Source', onEdit, onFocus, onBlur, onSource, upload = null } = {}) {
+export async function createRichEditor(target, { uiLang, inline = false, height = 300, sourceLabel = 'Source', onEdit, onFocus, onBlur, onSource, upload = null, disabled = false } = {}) {
     const language = LANGS[String(uiLang ?? '').slice(0, 2).toLowerCase()];
     const [editor] = await tinymce.init({
         target,
         inline,
         height,
         license_key: 'gpl',
+        disabled,
         // the page's handlers hear focus / blur on the hidden named textarea - that is not leaving the editor
         custom_ui_selector: 'aa-richtext > textarea[hidden]',
         branding: false,
@@ -326,6 +328,7 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         isDirty: () => editor.isDirty(),
         markSaved: () => editor.setDirty(false),
         focus: () => editor.focus(),
+        setDisabled: value => editor.options.set('disabled', value),
         destroy: () => editor.remove(),
     };
 }
