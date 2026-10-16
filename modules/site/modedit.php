@@ -285,10 +285,10 @@ $apage = new AA_Adminpageutil('modadmin', 'main');
 $apage->setTitle($template['W'] ? _m("Add Site") : _m("Edit Site"));
 $apage->addRequire(get_aa_url('/javascript/js_lib.min.js', ['v'=>AA_JS_VERSION], false));
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->addRequire('codemirror@5');
+$apage->addRequire('aa-code@1');
 $apage->setForm();
 
-$object_frm = AA_Module_Site::getModuleObjectForm($module_id);  // must be before printHead - this allows to automatically load codemirror/select2 in the head (printHead is called after $form->getObjectEditHtml)
+$object_frm = AA_Module_Site::getModuleObjectForm($module_id);  // must be before printHead - this allows to automatically load aa-code/select2 in the head (printHead is called after $form->getObjectEditHtml)
 
 $apage->printHead($err, $Msg);
 

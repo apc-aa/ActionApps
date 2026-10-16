@@ -60,12 +60,7 @@ $apage->setTitle(_m("Xxx - main page"));
 
 // possible other imports
 // $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
-// $apage->addRequire('codemirror@5');
-// $script2run = '
-//    var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-//    window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("content"), opts);
-//    ';
-// $apage->addRequire($script2run, 'AA_Req_Load');
+// $apage->addRequire('aa-code@1');   // code editor for FrmTextarea(..., code: true) - templates
 
 $apage->printHead($err);   // never pass Msg from the request here - it is printed unescaped
 

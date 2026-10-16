@@ -20,9 +20,6 @@ use Exception;
 /** Multiple Text Field widget */
 class MflWidget extends Widget
 {
-    /** @var array  list of textareas for CodeMirror creation */
-    protected $ids_4_editor = [];
-
     protected $show_buttons_txt;
     protected $row_count;
     protected $max_characters;
@@ -46,24 +43,10 @@ class MflWidget extends Widget
         return '';
     }
 
-    // inherited from \AA\Widget\Widget
+    /** textareas are in <aa-code>, which upgrades every one itself - added rows too */
     protected function requireLibs($aa_property, $winfo): array
     {
-        return ['codemirror@5'];
-    }
-
-    /** script to run after the page DOM is loaded */
-    protected function requireRun($aa_property, $winfo): string
-    {
-        $ret = '';
-        // are there some textareas not converted to CodeMirror?
-        if ($this->ids_4_editor) {
-            $ret .= "\n  document.querySelectorAll(\"" . implode(',', $this->ids_4_editor) . '").forEach( function(el) { CodeMirror.fromTextArea(el, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });});';
-
-            // clean the list - all textareas are converted
-            $this->ids_4_editor = [];
-        }
-        return $ret;
+        return ((int) $this->getProperty('rows', 1) > 1) ? ['aa-code@1'] : [];
     }
 
     /** returns if the widget handles multivalue or just single value   */
@@ -150,12 +133,7 @@ class MflWidget extends Widget
                 if ($i > 0) {
                     $widget .= '<br>';
                 }
-                $widget .= "<div><textarea $attr_string name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_onchange>$input_value</textarea>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
-                // @todo browser validity check fails with "An invalid form control with name='aa[n1_02c47a4be90355edc4407b5897ddf3c8][text__________31][mfl][0]' is not focusable." if textarea is required - fix it
-                if (!$aa_property->isRequired()) {
-                    // add this textarea to the list for CodeMirror creation
-                    $this->ids_4_editor[] = '#' . $input_id;
-                }
+                $widget .= "<div><aa-code syntax=\"html\"><textarea $attr_string name=\"$input_name\" id=\"$input_id\" rows=\"$rows\" $required $widget_onchange>$input_value</textarea></aa-code>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             } else {
                 $widget .= "<div><input $attr_string name=\"$input_name\" id=\"$input_id\" value=\"$input_value\" $required $widget_onchange>$widget_add2</div>";  // do not insert \n here - javascript for sorting tables sorttable do not work then
             }
@@ -167,7 +145,7 @@ class MflWidget extends Widget
         $attr_string     = str_replace(['"', '"', "'"], ['&quot;', '&quot;', "\'"], $attr_string);
         $widget_onchange = str_replace(['"', "'"], ['&quot;', "\'"], $widget_onchange);
         if ($inputtype === 'textarea') {
-            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<br><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_onchange></textarea>'; document.getElementById('allrows$base_id').append(el); CodeMirror.fromTextArea(el.querySelector('textarea'), { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: &quot;htmlmixed&quot; }); return false;\">$img</a>";
+            $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"const el=document.createElement('div'); el.innerHTML='<br><aa-code syntax=&quot;html&quot;><textarea $attr_string name=&quot;$base_name" . "[mfl][]&quot; rows=&quot;$rows&quot; $widget_onchange></textarea></aa-code>'; document.getElementById('allrows$base_id').append(el); return false;\">$img</a>";
         } else {
             $widget .= "\n<a href=\"javascript:void(0)\" onclick=\"var el=document.createElement('div'); el.innerHTML='<input $attr_string name=&quot;$base_name" . "[mfl][]&quot; value=&quot;&quot; $widget_onchange>'; document.getElementById('allrows$base_id').append(el); return false;\">$img</a>";
         }

@@ -511,6 +511,7 @@ class AA_Inputfield {
     private $input_morehlp;                      // url, where user will jump after (s)he click on '?'
     private $additional;                         // additional code for input (like 'class="chleba")
     private bool $html_rb_show;                  // show HTML/Plaintext radiobutton?
+    private string $code_syntax = 'html';        // language of the code editor (<aa-code>): html, javascript, css
 
     private $valid;                              // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
     // (this function we added in order we can use this class for AA Admin forms as well)
@@ -1387,11 +1388,12 @@ class AA_Inputfield {
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
                 $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
-                $value             = safe($val[$lang_id]['value']);
-                if ( $value === '' && $first) {
+                $raw               = (string) ($val[$lang_id]['value'] ?? '');
+                if ( $raw === '' && $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
-                    $value = $val[0]['value'];
+                    $raw = (string) ($val[0]['value'] ?? '');
                 }
+                $value             = safe($raw);
 
                 $name2             = $name."[$lang_id]";
                 $id2               = $name.'-'.$lang_id;
@@ -1403,7 +1405,7 @@ class AA_Inputfield {
 
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
-                $link  = $this->getPreviewLink($value);
+                $link  = $this->getPreviewLink($raw);
                 $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required && $first) ? " required": ''). $GLOBALS['mlxFormControlExtra']. " value=\"$value\" $triggers>$link";
                 $widg .= "</label>";
                 $first = false;
@@ -1412,8 +1414,9 @@ class AA_Inputfield {
             $widg .= "\n</div>";
 
         } else {
-            $value = is_null($i=array_key_first($val)) ? '' : safe($val[$i]['value']);  // it was 0, but when you switch the field from translated to non-translated, the value is stored in $val[78000000] or so
-            $link  = $this->getPreviewLink($value);
+            $raw   = is_null($i=array_key_first($val)) ? '' : (string) $val[$i]['value'];  // it was 0, but when you switch the field from translated to non-translated, the value is stored in $val[78000000] or so
+            $value = safe($raw);
+            $link  = $this->getPreviewLink($raw);
             $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": ''). $GLOBALS['mlxFormControlExtra']." value=\"$value\" $triggers>$link";
         }
 
@@ -1421,6 +1424,7 @@ class AA_Inputfield {
         $this->helps('plus');
     }
 
+    /** @param string $value raw - a_href() escapes it */
     private function getPreviewLink($value): string {
         $link = '';
         if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
@@ -1517,7 +1521,7 @@ class AA_Inputfield {
                 $value             = safe($val[$lang_id]['value']);
                 if ( $value === '' && $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
-                    $value = $val[0]['value'];
+                    $value = safe($val[0]['value']);
                 }
                 $rows              = max($rows, min(floor(substr_count($value,"\n")*1.3), 30));
                 $rows_css          = $rows*1.3;  // firefox adds extra line, so we specify the height in css as well. Not so important, can be changed later.
@@ -1547,7 +1551,7 @@ class AA_Inputfield {
             if ($richtext) {
                 $widg = RichtextMarkup::wrap($widg, $this->html_flag ? 'code' : 'plain', RichtextMarkup::contextAttrs((string) ($this->use_triggers_4_slice ?: AA::$module_id)) + ['switch-name' => $this->varname . 'html', 'switch-html' => 'h', 'editor' => 'editor']);
             } elseif ($codeview) {
-                $widg = '<aa-code syntax="html">' . $widg . '</aa-code>';
+                $widg = '<aa-code syntax="' . safe($this->code_syntax) . '">' . $widg . '</aa-code>';
             }
         }
         $this->echovar($widg);
@@ -2251,6 +2255,12 @@ class AA_Inputfield {
         $this->html_rb_show = $html_rb_show;
     }
 
+    /** @param string $syntax html | javascript | css - what the code editor highlights */
+    public function setCodeSyntax(string $syntax): void
+    {
+        $this->code_syntax = $syntax;
+    }
+
 }
 
 // ----------------------- Public Form functions ----------
@@ -2462,12 +2472,17 @@ function FrmHidden($name, $val, $safing=true ): void
  * @param bool   $single
  * @param bool   $showrich_href
  * @param int    $maxlength
+ * @param bool|string $code - a template: in the code editor (<aa-code>), which also shows AA syntax;
+ *                            the language as a string ('javascript'), true = HTML
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0): void
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0, bool|string $code=false): void
 {
-    $html  = false;   // it was in parameter, but was never used in the code /honzam 05/15/2004
+    $html  = (bool) $code;   // HTML without the HTML / plain text switch is what AA_Inputfield::textarea() shows in <aa-code>
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    if (is_string($code)) {
+        $input->setCodeSyntax($code);
+    }
     if ($showrich_href) {
         $input->setShowHtmlRadio(true);
     }

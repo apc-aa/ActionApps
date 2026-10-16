@@ -235,6 +235,7 @@ class AaCodeElement extends HTMLElement {
     #textarea = null;
     #sync = null;
     #showing = false;                       // a script's value going into the editor, not typing
+    #disabledWatch = null;
 
     async connectedCallback() {
         if (this.#editor || this.#textarea) {
@@ -284,7 +285,21 @@ class AaCodeElement extends HTMLElement {
         // "syntax" here, "language" in the bundle (CodeMirror's own term): on
         // multilingual fields "language" would sit next to real cs/en/de codes.
         // The bundle writes every change into the textarea itself.
-        this.#editor = createEditor(this.#textarea, { language: this.getAttribute('syntax') || 'html' });
+        const disabled = this.#textarea.matches(':disabled');
+        this.#editor = createEditor(this.#textarea, { language: this.getAttribute('syntax') || 'html', disabled });
+        this.toggleAttribute('disabled', disabled);
+        // pages switch fields on and off by textarea.disabled (EnableClick() in the admin) or by a
+        // <fieldset disabled> around them - a disabled field is not submitted, so no typing into it
+        this.#disabledWatch = new MutationObserver(() => {
+            const now = this.#textarea.matches(':disabled');
+            if (now !== this.hasAttribute('disabled')) {
+                this.#editor?.setDisabled(now);
+                this.toggleAttribute('disabled', now);
+            }
+        });
+        for (let el = this.#textarea; el; el = el.parentElement?.closest('fieldset')) {
+            this.#disabledWatch.observe(el, { attributes: true, attributeFilter: ['disabled'] });
+        }
         this.#textarea.hidden = true;
         // Bare attribute: a custom element owns its own attribute set. Becomes
         // states.add('ready') once :state() is Baseline Widely Available.
@@ -295,14 +310,17 @@ class AaCodeElement extends HTMLElement {
         // matters when <aa-richtext> takes the textarea out first; a removed textarea announces nothing
         this.#sync?.commit();
         this.#sync?.destroy();
+        this.#disabledWatch?.disconnect();
         this.#editor?.destroy();
         if (this.#textarea) {
             this.#textarea.hidden = false;  // <aa-richtext> takes the textarea out again
         }
         this.#editor = null;
         this.#sync = null;
+        this.#disabledWatch = null;
         this.#textarea = null;
         this.removeAttribute('ready');
+        this.removeAttribute('disabled');
     }
 
     /** Current content. Falls back to the textarea while the bundle is loading. */

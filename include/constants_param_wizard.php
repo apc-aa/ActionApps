@@ -61,13 +61,13 @@ use the escape character \ - the wizard will translate the characters. Remember 
  * @param bool $title
  * @return string
  */
-function getParamWizardLink(string $list, string $combo_list, string $text_param, bool $title = false, string $codemirror = ''): string
+function getParamWizardLink(string $list, string $combo_list, string $text_param, bool $title = false): string
 {
     $ret  = "<div class=\"flex aa-paramwiz-link\">";
     if ($title) {
         $ret .= "<label for=\"$text_param\"><strong>" . _m("Parameters") . "</strong></label>";
     }
-    $ret .= "<div class=tabhlp><a class='btn btn-s' href='javascript:CallParamWizard(\"" . get_admin_url('param_wizard.php') . "\",\"$list\",\"$combo_list\",\"$text_param\",\"$codemirror\")'>" . _m("Help: Parameter Wizard") . "</a></div></div>\n";
+    $ret .= "<div class=tabhlp><a class='btn btn-s' href='javascript:CallParamWizard(\"" . get_admin_url('param_wizard.php') . "\",\"$list\",\"$combo_list\",\"$text_param\")'>" . _m("Help: Parameter Wizard") . "</a></div></div>\n";
     return $ret;
 }
 

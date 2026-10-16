@@ -94,11 +94,13 @@
     "cs": "php-cs-fixer check",
     "fix": "php-cs-fixer fix",
     "test": "@php -d opcache.enable_cli=0 vendor/bin/phpunit",
+    "test-js": "node --test tests/js/*.test.mjs",
     "check": [
       "@lint",
       "@cs",
       "@stan",
-      "@test"
+      "@test",
+      "@test-js"
     ]
   },
   "config": {

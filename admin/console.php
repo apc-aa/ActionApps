@@ -58,21 +58,16 @@ if ($refused) {
     $html = false;
 }
 
-$script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_code  = CodeMirror.fromTextArea(document.getElementById("code"), opts);
-   ';
 $apage = new AA_Adminpageutil('aaadmin', 'console');
 $apage->setTitle(_m("ActionApps Console"));
-$apage->addRequire($script2run, 'AA_Req_Load');
-$apage->addRequire('codemirror@5');
+$apage->addRequire('aa-code@1');
 $apage->printHead();
 
 $form_buttons = ["show" => ["type" => "submit", "value" => _m("Show")]];
 
 // ------------------------------------------------------------------------------------------
 FrmTabCaption(_m('Console'), $form_buttons);
-FrmTextarea('code', _m('Code'), $code);
+FrmTextarea('code', _m('Code'), $code, code: true);
 FrmInputChBox('html', _m('HTML output'), $html);
 if ($refused) {
     FrmStaticText(_m('Result'), _m('The form has expired; reload the page and try again.'));

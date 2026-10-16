@@ -149,20 +149,12 @@ if ($addcond || $delcond || $content || $name || $akce || $addvar || $delvar) {
 
 $apage = new AA_Adminpageutil('modadmin', 'codemanager');
 $apage->setTitle(_m("Editor window - site code manager"));
-$apage->addRequire('codemirror@5');
+$apage->addRequire('aa-code@1');
 $apage->addRequire('aa-jslib');   // {htmltoggle in helpbox}
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION], false));
 
-$script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("content"), opts);
-   ';
-$apage->addRequire($script2run, 'AA_Req_Load');
-
 $apage->setForm();
 $apage->printHead($err, $Msg);
-
-// echo "<style>.CodeMirror { min-height: 500px; } </style>";
 
 echo '<div class="aa-site-codemanager">
         <div id="sitetree" class="aa-site-tree">

@@ -141,28 +141,20 @@ $inputform_vids = DB_AA::select(['id' => 'name'], "SELECT id, name FROM view", [
     ['type', 'inputform'],
 ]);
 
-$script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("admin_format_top"), opts);
-   window.cm_code = CodeMirror.fromTextArea(document.getElementById("admin_format"), opts);
-   window.cm_bot  = CodeMirror.fromTextArea(document.getElementById("admin_format_bottom"), opts);
-   window.cm_msg  = CodeMirror.fromTextArea(document.getElementById("admin_noitem_msg"), opts);
-   ';
 $headcode = '<script>
   function Defaults() {
-    window.cm_top.setValue(  "' . DEFAULT_ADMIN_TOP . '");
-    window.cm_code.setValue( "' . DEFAULT_ADMIN_HTML . '");
-    window.cm_bot.setValue(  "' . DEFAULT_ADMIN_BOTTOM . '");
-    window.cm_msg.setValue(  "' . DEFAULT_ADMIN_MSG . '");
+    document.getElementById("admin_format_top").value    = "' . DEFAULT_ADMIN_TOP . '";
+    document.getElementById("admin_format").value        = "' . DEFAULT_ADMIN_HTML . '";
+    document.getElementById("admin_format_bottom").value = "' . DEFAULT_ADMIN_BOTTOM . '";
+    document.getElementById("admin_noitem_msg").value    = "' . DEFAULT_ADMIN_MSG . '";
   }
 </script>
 ';
 
 $apage = new AA_Adminpageutil('sliceadmin', 'config');
 $apage->setTitle(_m("Admin - design Item Manager view"));
-$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->addRequire('codemirror@5');
+$apage->addRequire('aa-code@1');
 $apage->printHead($err, $Msg);
 
 $form_buttons = [
@@ -184,6 +176,7 @@ FrmTextarea(
     . '<br>' . AA_View::getViewJumpLinks($admin_format_top),
     '',
     1,
+    code: true,
 );
 FrmTextarea(
     "admin_format",
@@ -196,6 +189,7 @@ FrmTextarea(
     . '<br>' . AA_View::getViewJumpLinks($admin_format),
     '',
     1,
+    code: true,
 );
 FrmTextarea(
     "admin_format_bottom",
@@ -208,6 +202,7 @@ FrmTextarea(
     . '<br>' . AA_View::getViewJumpLinks($admin_format_bottom),
     '',
     1,
+    code: true,
 );
 FrmInputText(
     "admin_remove",
@@ -229,6 +224,7 @@ FrmTextarea(
     . '<br>' . AA_View::getViewJumpLinks($admin_noitem_msg),
     '',
     1,
+    code: true,
 );
 FrmInputSelect(
     "inputform_sel",

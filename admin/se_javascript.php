@@ -64,21 +64,15 @@ if (AA::$module_id && $update) {
 }
 
 
-$script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_top  = CodeMirror.fromTextArea(document.getElementById("javascript"), opts);
-   ';
-
 $apage = new AA_Adminpageutil('sliceadmin', 'javascript');
 $apage->setTitle(_m("Field Triggers"));
-$apage->addRequire('codemirror@5');
-$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire('aa-code@1');
 $apage->printHead($err, $Msg);
 
 
 
 FrmTabCaption(_m("JavaScript for fields"));
-FrmTextarea("javascript", _m("Code"), $javascript, 4, 60, false, _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."), '', true);
+FrmTextarea("javascript", _m("Code"), $javascript, 4, 60, false, _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."), '', true, code: 'javascript');
 
 $form_buttons =  [
     "update",

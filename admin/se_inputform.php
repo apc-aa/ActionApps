@@ -343,18 +343,6 @@ if (!$update) {      // load defaults
 }
 
 
-$script2run = '
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("alias1_func"), opts);
-   window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("alias2_func"), opts);
-   window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("alias3_func"), opts);
-   window.cm_h1 = CodeMirror.fromTextArea(document.getElementById("alias1_help"), opts);
-   window.cm_h2 = CodeMirror.fromTextArea(document.getElementById("alias2_help"), opts);
-   window.cm_h3 = CodeMirror.fromTextArea(document.getElementById("alias3_help"), opts);
-   window.cm_ih = CodeMirror.fromTextArea(document.getElementById("input_help"), opts);
-   window.cm_ib = CodeMirror.fromTextArea(document.getElementById("input_before"), opts);
-   ';
-
 $headcode = '
 <script>
   function CallConstantEdit(as_new) {
@@ -377,9 +365,7 @@ $headcode = '
   function ResetAlias(number) {
       document.querySelector("input[name=alias"+number+"]").value = "";
       document.querySelector("select[name=alias"+number+"_func_f]").value = "";
-      if (number === 1) { window.cm_a1.setValue(""); }
-      if (number === 2) { window.cm_a2.setValue(""); }
-      if (number === 3) { window.cm_a3.setValue(""); }
+      document.querySelector("textarea[name=alias"+number+"_func]").value = "";
       document.querySelector("textarea[name=alias"+number+"_help]").value = "";
   }
 </script>';
@@ -387,12 +373,11 @@ $headcode = '
 $apage = new AA_Adminpageutil('sliceadmin', ($slice_fields ? 'slice_fields' : 'fields'));
 $apage->setTitle(_m("Admin - configure Fields"));
 $apage->setSubtitle(_m("WARNING: Do not change this setting if you are not sure what you're doing!"));
-$apage->addRequire('codemirror@5');
+$apage->addRequire('aa-code@1');
 $apage->addRequire('aa-jslib');   // just for AA_Message() copy to clipboard
 $apage->addRequire(get_aa_url('javascript/js_lib.min.js', ['v' => AA_JS_VERSION], false));
 
 
-$apage->addRequire($script2run, 'AA_Req_Load');
 $apage->addRequire($headcode, 'AA_Req_Headcode');
 $apage->printHead($err, $Msg);
 
@@ -491,9 +476,9 @@ echo $tab_separator;
 
 FrmInputChBox("html_show", _m("Show 'HTML' / 'plain text' option"), $html_show);
 FrmInputChBox("html_default", _m("'HTML' as default"), $html_default, false, '', 1, false, _m('HTML option means, that the field is printed as filled using {field...........} alias. Plain text means the newlines are converted to &lt;br&gt; etc. HTML is good option for any nontextual data, at least.'));
-FrmTextarea("input_help", _m("Help for this field"), $input_help, 2, 50, false, _m("Shown help for this field"));
+FrmTextarea("input_help", _m("Help for this field"), $input_help, 2, 50, false, _m("Shown help for this field"), code: true);
 FrmInputText("input_morehlp", _m("More help"), $input_morehlp, 254, '', false, _m("Text shown after user click on '?' in input form"));
-FrmTextarea("input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"));
+FrmTextarea("input_before", _m("Before HTML code"), $input_before, 4, 50, false, _m("Code shown in input form before this field"), code: true);
 echo $tab_separator;
 FrmInputChBox("show_in_search", _m("Searchable in AA Item Manager"), $show_in_search, false, '', 1, false, _m('The field is shown in Search box in Item Manager.'));
 FrmStaticText(_m("Feeding mode"), getFrmSelectEasy("feed", inputFeedModes(), $feed), _m("Should the content of this field be copied to another slice if it is fed?"), "", false);
@@ -515,7 +500,7 @@ for ($iAlias = 1; $iAlias <= 3; ++$iAlias) {
     $alias_disable = $alias_name . "_disable";
     $alias_value   = $$alias_name;
     $alias_id_att  = strlen($alias_value) ? "id=\"alias$alias_value\"" : '';
-    $alias_hlp     = getParamWizardLink("FIELD_FUNCTIONS", $alias_func_f, $alias_func, false, 'cm_a' . $iAlias);
+    $alias_hlp     = getParamWizardLink("FIELD_FUNCTIONS", $alias_func_f, $alias_func);
     $disbled_chb   = getFrmChBoxEasy($alias_disable, $$alias_disable, '', 1);
     $aname_row     = "<div class=\"flex f-baseline\">";
     $aname_row    .=  "<div>_#<input name=\"$alias_name\" $alias_id_att type=text size=16 maxlength=8 value=\"$alias_value\" pattern=\"[A-Z0-9_#]{8}\" placeholder=\"" . _m("8 CHARS") . "\" title=\"" . _m("8 UPPERCASE letters or _") . "\"></div>";
@@ -526,8 +511,8 @@ for ($iAlias = 1; $iAlias <= 3; ++$iAlias) {
 
     FrmStaticText(_m("Alias") . " $iAlias", $aname_row, '', "", false);
     FrmInputSelect($alias_func_f, _m("Function"), $func_types, $$alias_func_f, false, $alias_hlp);
-    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?' . $$alias_func)); // added for f_v parameters
-    FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0);
+    FrmTextarea($alias_func, _m("Parameters"), $$alias_func, 8, 60, false, AA_View::getViewJumpLinks('view.php?' . $$alias_func), code: true); // added for f_v parameters
+    FrmTextarea($alias_help, _m("Description"), $$alias_help, 2, 0, code: true);
     if ($iAlias !== 3) {
         echo "\n    \n<tr class='aa-tab-line'><td colspan=2></td></tr>\n";
     }

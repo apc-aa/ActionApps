@@ -1306,7 +1306,7 @@ class AA_Module_Site extends AA_Module
         echo $tree->getCurrentSpotId();
         FrmTabCaption('Edit spot', $form_buttons, true);   // buttons also on top, sticky (itemedit pattern)
         FrmInputText('name', _m("Spot name"), $tree->get('name', $spot_id), 50, 50, true, false, false);
-        FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true);
+        FrmTextarea('content', '', $spot_data['content'], 50, 80, false, AA_View::getViewJumpLinks($spot_data['content']), "", true, code: true);
         FrmTabEnd($form_buttons);
         echo "</form>";
     }
