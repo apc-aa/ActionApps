@@ -432,14 +432,27 @@ final class SdsListTest extends TestCase
     }
 
     // the limit holds also with a client that has none
+    // a small limit: a body over MAX_BYTES would take 40 MB and its copies of the test's memory
     public function test_download_overMaxBytesRefused(): void
     {
+        $fixture = (string) file_get_contents(self::FIXTURE);
+        $to      = $this->dir . '/ovm.xml';
         try {
-            SdsList::download(new FakeHttp([new Response(200, str_repeat(' ', SdsList::MAX_BYTES + 1))]), $this->dir . '/ovm.xml');
+            SdsList::download(new FakeHttp([new Response(200, $fixture)]), $to, SdsList::URL, strlen($fixture) - 1);
             self::fail('ResponseTooLargeException expected');
-        } catch (ResponseTooLargeException) {
+        } catch (ResponseTooLargeException $e) {
+            self::assertStringContainsString('over ' . (strlen($fixture) - 1) . ' bytes', $e->getMessage());
         }
         self::assertSame([], glob($this->dir . '/*'));
+
+        self::assertSame($to, SdsList::download(new FakeHttp([new Response(200, $fixture)]), $to, SdsList::URL, strlen($fixture)), 'up to the limit');
+    }
+
+    public function test_download_limitIsMaxBytesByDefault(): void
+    {
+        $limit = (new \ReflectionMethod(SdsList::class, 'download'))->getParameters()[3];
+
+        self::assertSame(['maxBytes', SdsList::MAX_BYTES], [$limit->getName(), $limit->getDefaultValue()]);
     }
 
     public function test_download_statusOtherThan200Refused(): void

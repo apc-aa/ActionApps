@@ -53,14 +53,15 @@ final class SdsList
      * whole answer is parsed first (0.5 s for 17 MB), so a failed, cut-off or refused download leaves
      * the previous one in place.
      *
-     * @param string $url fixed in code - an address a request or a setting can choose needs a
-     *                    Client::publicOnly() client, or it reads the server's internal network
+     * @param string $url      fixed in code - an address a request or a setting can choose needs a
+     *                         Client::publicOnly() client, or it reads the server's internal network
+     * @param int    $maxBytes for tests and callers with a smaller budget
      * @throws TransportException        no answer at all
-     * @throws ResponseTooLargeException over MAX_BYTES
+     * @throws ResponseTooLargeException over $maxBytes
      * @throws \RuntimeException          an answer other than 200, or the file cannot be written
      * @throws \UnexpectedValueException  the answer is not a whole list with a box (an error page, cut-off XML)
      */
-    public static function download(ClientInterface $http, string $to, string $url = self::URL): string
+    public static function download(ClientInterface $http, string $to, string $url = self::URL, int $maxBytes = self::MAX_BYTES): string
     {
         $answer = $http->request('GET', $url);
         if ($answer->status !== 200) {
@@ -68,8 +69,8 @@ final class SdsList
             throw new \RuntimeException(rtrim("The list of data boxes did not download: HTTP {$answer->status}$where " . $answer->excerpt()));
         }
         // the client may have no limit of its own
-        if (strlen($answer->body) > self::MAX_BYTES) {
-            throw new ResponseTooLargeException('The list of data boxes is over ' . self::MAX_BYTES . ' bytes');
+        if (strlen($answer->body) > $maxBytes) {
+            throw new ResponseTooLargeException("The list of data boxes is over $maxBytes bytes");
         }
         // a name of its own, created exclusively next to $to (so the rename is atomic): another
         // download, or a link planted under a fixed name, cannot get between the write and the rename
