@@ -2462,10 +2462,11 @@ function FrmHidden($name, $val, $safing=true ): void
  * @param bool   $single
  * @param bool   $showrich_href
  * @param int    $maxlength
+ * @param bool   $code - a template: in the code editor (<aa-code>), which also shows AA syntax
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0): void
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0, bool $code=false): void
 {
-    $html  = false;   // it was in parameter, but was never used in the code /honzam 05/15/2004
+    $html  = $code;   // HTML without the HTML / plain text switch is what AA_Inputfield::textarea() shows in <aa-code>
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
     if ($showrich_href) {

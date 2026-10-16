@@ -221,18 +221,9 @@ foreach (DB_AA::select([], $SQL, [['slice_id', AA::$module_id, 'l']]) as $row) {
 //   IV) write the form  (HTML output)
 ////////////////////////////////////////////////////////////////////
 
-$script2run = ' 
-   var opts = { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" };
-   window.cm_a1 = CodeMirror.fromTextArea(document.getElementById("notify_holding_item_b"), opts);
-   window.cm_a2 = CodeMirror.fromTextArea(document.getElementById("notify_holding_item_edit_b"), opts);
-   window.cm_a3 = CodeMirror.fromTextArea(document.getElementById("notify_active_item_b"), opts);
-   window.cm_a4 = CodeMirror.fromTextArea(document.getElementById("notify_active_item_edit_b"), opts);
-   ';
-
 $apage = new AA_Adminpageutil('sliceadmin', 'notify');
 $apage->setTitle(_m("Email Notifications of Events"));
-$apage->addRequire('codemirror@5');
-$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire('aa-code@1');
 $apage->printHead($err, $Msg);
 
 
@@ -249,22 +240,22 @@ $help = _m('E-mail is sent only if body is not empty.<br>You can use this for se
 echo "<tr><td colspan=\"2\">" . _m("<h4>New Item in Holding Bin</h4> People can be notified by email when an item is created and put into the Holding Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
 FrmTextarea("notify_holding_item_e", _m("Email addresses, one per line"), $notify_holding_item_e, 3);
 FrmTextarea("notify_holding_item_s", _m("Subject of the Email message"), $notify_holding_item_s, 2);
-FrmTextarea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 6, 60, false, $help);
+FrmTextarea("notify_holding_item_b", _m("Body of the Email message"), $notify_holding_item_b, 6, 60, false, $help, code: true);
 
 echo "<tr><td colspan=\"2\">" . _m("<h4>Item Changed in Holding Bin</h4>  People can be notified by email when an item in the Holding Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
 FrmTextarea("notify_holding_item_edit_e", _m("Email addresses, one per line"), $notify_holding_item_edit_e, 3);
 FrmTextarea("notify_holding_item_edit_s", _m("Subject of the Email message"), $notify_holding_item_edit_s, 2);
-FrmTextarea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 6, 60, false, $help);
+FrmTextarea("notify_holding_item_edit_b", _m("Body of the Email message"), $notify_holding_item_edit_b, 6, 60, false, $help, code: true);
 
 echo "<tr><td colspan=\"2\">" . _m("<h4>New Item in Approved Bin</h4>  People can be notified by email when an item is created and put into the Approved Bin.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
 FrmTextarea("notify_active_item_e", _m("Email addresses, one per line"), $notify_active_item_e, 3);
 FrmTextarea("notify_active_item_s", _m("Subject of the Email message"), $notify_active_item_s, 2);
-FrmTextarea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 6, 60, false, $help);
+FrmTextarea("notify_active_item_b", _m("Body of the Email message"), $notify_active_item_b, 6, 60, false, $help, code: true);
 
 echo "<tr><td colspan=\"2\">" . _m("<h4>Item Changed in Approved Bin</h4>  People can be notified by email when an item in the Approved Bin is modified.  If you want to make use of this feature, enter the recipients email address below.  In the following fields, you can customize the format of the email they will receive.") . "</td></tr>";
 FrmTextarea("notify_active_item_edit_e", _m("Email addresses, one per line"), $notify_active_item_edit_e, 3);
 FrmTextarea("notify_active_item_edit_s", _m("Subject of the Email message"), $notify_active_item_edit_s, 2);
-FrmTextarea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 6, 60, false, $help);
+FrmTextarea("notify_active_item_edit_b", _m("Body of the Email message"), $notify_active_item_edit_b, 6, 60, false, $help, code: true);
 
 FrmTabEnd($form_buttons);
 

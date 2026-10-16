@@ -138,8 +138,8 @@ function show_digest_filters(): void
         <input type=\"radio\" name=\"aditional\" value=\"0\" "
         .($group ? "" : "checked")."> ".
         _m("No. Use this sort[]:")."</b>
-        <textarea name=\"aditional3\" cols=\"50\" rows=".get_row_count($sort, 50, 4).">"
-        .safe($sort)."</textarea>
+        <aa-code syntax=\"html\"><textarea name=\"aditional3\" cols=\"50\" rows=".get_row_count($sort, 50, 4).">"
+        .safe($sort)."</textarea></aa-code>
         </td>
     </tr>";
 
@@ -151,7 +151,7 @@ function show_digest_filters(): void
         $rowdesc = ($irow < $rows) ? $data[$irow]['description'] : '';
         $rowcond = ($irow < $rows) ? $data[$irow]['conds'] : '';
         FrmInputText("filters[$rowid][description]", _m("Alerts Selection") . " " . ($irow + 1) . " " . _m("Description"), $rowdesc, 100, 50);
-        FrmTextarea("filters[$rowid][conds]", "conds[]", $rowcond, get_row_count($rowcond, 50, 4), 50, false, "", "https://apc-aa.sourceforge.net/faq/#215");
+        FrmTextarea("filters[$rowid][conds]", "conds[]", $rowcond, get_row_count($rowcond, 50, 4), 50, false, "", "https://apc-aa.sourceforge.net/faq/#215", code: true);
     }
     FrmStaticText("", _m("If you need more selections, use 'Update' and on next Edit two empty boxes appear."));
 }
@@ -470,12 +470,6 @@ switch ( $view_type ) {
         break;
 }
 
-$script2run = <<<'EOT'
-   $('textarea').each(function(index, elem){
-      CodeMirror.fromTextArea(elem, { lineWrapping:true, matchBrackets: true, matchTags: true, viewportMargin: 10000, mode: "htmlmixed" });
-   });
-EOT;
-
 $apage = new AA_Adminpageutil($mainmenu, $submenu);
 
 $apage->setTitle(_m("Admin - design View"));
@@ -483,9 +477,7 @@ if ($view_field_names["even_odd_differ"]) {
     $apage->addRequire('InitPage();', 'AA_Req_Load');
 }
 $apage->addRequire($headcode, 'AA_Req_Headcode');
-$apage->addRequire('jquery');  // for $ used in $script2run
-$apage->addRequire('codemirror@5');
-$apage->addRequire($script2run, 'AA_Req_Load');
+$apage->addRequire('aa-code@1');
 $apage->printHead($err, $Msg);
 
 $form_buttons              = ['update'];
@@ -536,8 +528,8 @@ foreach ($view_field_names as $k => $v) {
         case "field":   FrmInputText($k, $label, $value, 254, 50, false, $help); break;
         case "field50": FrmInputText($k, $label, $value, 50, 50, true, $help); break;   // for name
         case "vid":     FrmInputText($k, $label . " - <a href=\"$view_url\" title=\"" . _m('show this view') . "\">$view_id</a>", $value, 15, 15, false, $help, '', false, '', '[a-z][a-z_0-9]+'); break;
-        case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, '', 1); break;
-        case "areabig": FrmTextarea($k, $label, $value, 15, 80, false, $help, '', 1); break;
+        case "area":    FrmTextarea($k, $label, $value, 4, 50, false, $help, '', 1, code: true); break;
+        case "areabig": FrmTextarea($k, $label, $value, 15, 80, false, $help, '', 1, code: true); break;
         case "seltype": FrmInputSelect($k, $label, $view_type_info['modification'], $value, false, $help); break;
         case "selfld":  FrmInputSelect($k, $label, $lookup_fields, $value, false, $help); break;
         case "selgrp":  FrmInputSelect($k, $label, $lookup_groups, $value, false, $help); break;
