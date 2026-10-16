@@ -64,6 +64,29 @@ final class ClientTest extends TestCase
         self::assertSame([0.5, 0.25], $seen);
     }
 
+    // libcurl would send a POST again on a kept-alive connection the server closed unanswered
+    #[DataProvider('reuse')]
+    public function test_construct_connectionReuse(bool $reuse, array $expected): void
+    {
+        $seen   = null;
+        $client = new Client(reuse: $reuse, http: new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen = $options['extra']['curl'] ?? [];
+            return new MockResponse('{}');
+        }));
+
+        $client->request('POST', 'https://example.org/x', 'a');
+
+        self::assertSame($expected, $seen);
+    }
+
+    public static function reuse(): array
+    {
+        return [
+            'kept by default' => [true, []],
+            'forbidden'       => [false, [\CURLOPT_FRESH_CONNECT => true, \CURLOPT_FORBID_REUSE => true]],
+        ];
+    }
+
     public function test_noAnswerAtAllIsAnExceptionWorthRetrying(): void
     {
         $client = new Client(http: new MockHttpClient(static fn(): MockResponse => new MockResponse('', ['error' => 'Connection refused'])));

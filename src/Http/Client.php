@@ -64,8 +64,12 @@ final class Client implements ClientInterface
      * @param int $redirects how many 3xx hops to follow; 0 means the 3xx itself is the answer
      * @param int $maxBytes  largest body accepted, 0 = no limit; over it ResponseTooLargeException,
      *                       decided by Content-Length when sent, else while the body arrives
+     * @param bool $reuse    false: a new connection for every request, closed after it. libcurl
+     *                       sends a request again by itself when a kept-alive connection turns out
+     *                       closed before the answer - a POST that did its work does it twice. The
+     *                       NativeHttpClient Symfony takes without the curl extension never reuses one
      */
-    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0)
+    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0, bool $reuse = true)
     {
         $options = [
             'max_duration'  => $timeout,
@@ -73,6 +77,9 @@ final class Client implements ClientInterface
             'max_redirects' => $redirects,
             'headers'       => ['User-Agent' => $agent === '' ? self::agent() : $agent],
         ];
+        if (!$reuse && \defined('CURLOPT_FRESH_CONNECT')) {
+            $options['extra']['curl'] = [\CURLOPT_FRESH_CONNECT => true, \CURLOPT_FORBID_REUSE => true];
+        }
         // the policy is AA's, not the transport's: a caller who hands us a client - a test with a
         // mock, later a throttled or SSRF-guarded one - still gets our timeouts and redirect rule
         $this->http = is_null($http) ? HttpClient::create($options) : $http->withOptions($options);
