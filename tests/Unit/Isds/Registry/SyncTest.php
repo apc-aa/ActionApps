@@ -16,6 +16,9 @@ use AA_Metabase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use PHPUnit\Framework\TestCase;
+use AA\Http\Response;
+use Tests\Unit\Fixtures\FakeHttp;
+use Tests\Unit\Isds\Registry\Fixtures\DownloadSync;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
@@ -45,18 +48,32 @@ final class SyncTest extends TestCase
     /** @var list<Box> */
     private static array $boxes = [];
 
+    /** a directory of the test's own, '' = none - other runs on the machine share the default one */
+    private string $scratch = '';
+
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../../fixtures/util_shims.php';             // the constants of config.php
         require_once __DIR__ . '/../../Legacy/fixtures/store_fixtures.php';    // the legacy boot, no DB
         require_once __DIR__ . '/fixtures/RecordingSync.php';
+        require_once __DIR__ . '/fixtures/DownloadSync.php';
         require_once __DIR__ . '/fixtures/PropertySlice.php';
+        require_once __DIR__ . '/../../fixtures/FakeHttp.php';
         self::$boxes = iterator_to_array(SdsList::fromXml(self::FIXTURE), false);
+    }
+
+    /** the lock and the attempts of the downloads */
+    protected function setUp(): void
+    {
+        DownloadSync::reset();
     }
 
     /** the process-wide state the tests through the real storeItem() set */
     protected function tearDown(): void
     {
+        if ($this->scratch !== '') {
+            self::removeTree($this->scratch);
+        }
         RecordingDb::reset();
         $GLOBALS['spareDBs'] = [];
         PropertySlice::forget(self::REAL_SLICE);
@@ -189,13 +206,28 @@ final class SyncTest extends TestCase
             4 => self::item('Praha', '', '', self::CITY),                      // new by name, ticked by hand
             5 => self::item('Plzeň', '', '', self::CITY),                      // not ticked
         ]);
-        $ticked = [self::id(4) => '48ia97h', self::id(1) => ' A7KBRRN', self::id(2) => '7c6by6u', self::id(3) => 'eerak7a'];
+        $ticked = [self::id(4) => self::tick('48ia97h'), self::id(1) => self::tick('a7kbrrn'), self::id(2) => self::tick('7c6by6u', 'x2pbqzq'), self::id(3) => self::tick('eerak7a', 'eerak7a')];
 
         $result = Sync::toWrite($report, $ticked);
 
         self::assertSame([self::id(1), self::id(2), self::id(4)], array_column($result['rows'], 'itemId'), 'in report order');
         self::assertSame(['a7kbrrn', '7c6by6u', '48ia97h'], array_column($result['rows'], 'newDs'));
-        self::assertSame([], $result['stale'], 'Cerhenice has the box already');
+        self::assertSame([[], 0], [$result['stale'], $result['left']], 'Cerhenice has the box already');
+    }
+
+    // a hash of the box stored, as the statuses compare it: a browser posts a line break as CR LF
+    public function test_tickValue_theBoxOfferedAndAHashOfTheBoxStored(): void
+    {
+        $report = self::report([
+            1 => self::item('Brno', '44992785', '', self::CITY),
+            2 => self::item('Liberec', '00262978', ' X2pbqzq ', self::CITY),
+            3 => self::item('Cerhenice', '00235300', "ab\ncd|ef", self::CITY),
+        ]);
+        $values = array_map(Sync::tickValue(...), $report->rows);
+
+        self::assertSame([self::tick('a7kbrrn'), self::tick('7c6by6u', 'x2pbqzq'), self::tick('eerak7a', "ab\ncd|ef")], $values);
+        self::assertMatchesRegularExpression('/^eerak7a\|[0-9a-f]{12}$/', $values[2], 'no text of the item in the form');
+        self::assertSame([self::id(1), self::id(2), self::id(3)], array_column(Sync::toWrite($report, array_combine([self::id(1), self::id(2), self::id(3)], $values))['rows'], 'itemId'));
     }
 
     // another editor changed the item, or a new register another box, between the view and the submit
@@ -206,35 +238,264 @@ final class SyncTest extends TestCase
             2 => self::item('Liberec', '00262978', '', self::CITY),
             3 => self::item('Adamov', '', '', self::CITY),                     // ambiguous now
             4 => self::item('Nikde', '', '', self::CITY),                      // unmatched now
+            5 => self::item('Cerhenice', '00235300', 'abcdefg', self::CITY),   // another editor typed a box
         ]);
         $ticked = [
-            self::id(1)  => 'x2pbqzq',      // the person saw another box
-            self::id(2)  => '7c6by6u',
-            self::id(3)  => 'q7bb677',
-            self::id(4)  => 'abcdefg',
-            self::id(99) => 'abcdefg',      // the item is gone or of another type now
-            'no-item'    => 'abcdefg',
-            self::id(98) => ['abcdefg'],
+            self::id(1)  => self::tick('x2pbqzq'),     // the person saw another box
+            self::id(2)  => self::tick('7c6by6u'),
+            self::id(3)  => self::tick('q7bb677'),
+            self::id(4)  => self::tick('abcdefg'),
+            self::id(5)  => self::tick('eerak7a'),     // the item had no box when the person looked
+            self::id(99) => self::tick('abcdefg'),     // the item is gone or of another type now
+            'no-item'    => self::tick('abcdefg'),
         ];
 
         $result = Sync::toWrite($report, $ticked);
 
         self::assertSame([self::id(2)], array_column($result['rows'], 'itemId'));
-        self::assertSame([self::id(1), self::id(3), self::id(4), self::id(99)], $result['stale']);
+        self::assertSame([self::id(1), self::id(3), self::id(4), self::id(5), self::id(99)], $result['stale']);
     }
 
-    public function test_toWrite_atMostCap(): void
+    /** @return array<string, array{mixed}> */
+    public static function noTicks(): array
+    {
+        $none = self::tick('');
+        return [
+            'no stored part'     => ['a7kbrrn'],
+            'capitals'           => ['A7KBRRN' . $none],
+            'spaces'             => [' a7kbrrn' . $none],
+            'too short'          => ['a7kbrr' . $none],
+            'markup'             => ['<b>a7k' . $none],
+            'empty box'          => [$none],
+            'no hash'            => ['a7kbrrn|'],
+            'the stored text'    => ['a7kbrrn|x2pbqzq'],
+            'hash in capitals'   => ['a7kbrrn' . strtoupper($none)],
+            'hash too long'      => ['a7kbrrn' . $none . '0'],
+            'an array'           => [['a7kbrrn' . $none]],
+            'a number'           => [7],
+        ];
+    }
+
+    // what no page posts is no tick: neither written nor said to have changed
+    #[DataProvider('noTicks')]
+    public function test_toWrite_onlyWellFormedTicks(mixed $value): void
+    {
+        $report = self::report([1 => self::item('Brno', '44992785', '', self::CITY)]);
+
+        self::assertSame(['rows' => [], 'stale' => [], 'left' => 0], Sync::toWrite($report, [self::id(1) => $value]));
+    }
+
+    public function test_toWrite_atMostCapTheRestLeft(): void
     {
         $report = self::report([
             1 => self::item('Brno', '44992785', '', self::CITY),
             2 => self::item('Liberec', '00262978', '', self::CITY),
             3 => self::item('Cerhenice', '00235300', '', self::CITY),
         ]);
-        $all = [self::id(3) => 'eerak7a', self::id(2) => '7c6by6u', self::id(1) => 'a7kbrrn'];
+        $all = [self::id(3) => self::tick('eerak7a'), self::id(2) => self::tick('7c6by6u'), self::id(1) => self::tick('a7kbrrn')];
 
         self::assertSame([self::id(1), self::id(2)], array_column(Sync::toWrite($report, $all, 2)['rows'], 'itemId'));
-        self::assertSame(['rows' => [], 'stale' => []], Sync::toWrite($report, $all, 0), 'the rest is not stale');
+        self::assertSame(['rows' => [], 'stale' => [], 'left' => 3], Sync::toWrite($report, $all, 0), 'the rest is not stale, but left');
         self::assertCount(3, Sync::toWrite($report, $all)['rows']);
+    }
+
+    public function test_registerStamp_changesWithTheRegisterAndTheSettings(): void
+    {
+        $config = Config::fromValues(self::SLICE, ['name_field' => self::NAME, 'ds_field' => self::DS]);
+        $other  = Config::fromValues(self::SLICE, ['name_field' => self::NAME, 'ds_field' => self::DS, 'ico_field' => self::ICO]);
+        $info   = ['mtime' => 1760000000, 'size' => 17000000];
+
+        $stamp = Sync::registerStamp($info, $config);
+
+        self::assertSame($stamp, Sync::registerStamp($info, Config::fromValues(self::SLICE, $config->values())));
+        self::assertNotSame($stamp, Sync::registerStamp(['mtime' => 1760000001] + $info, $config));
+        self::assertNotSame($stamp, Sync::registerStamp(['size' => 17000001] + $info, $config));
+        self::assertNotSame($stamp, Sync::registerStamp($info, $other));
+        self::assertSame('', Sync::registerStamp(null, $config), 'no register');
+    }
+
+    public function test_registerFile_inTheUploadDirectoryOfTheInstall(): void
+    {
+        self::assertSame(IMG_UPLOAD_PATH . AA_ID . '/' . Sync::REGISTER_FILE, Sync::registerFile());
+    }
+
+    public function test_registerInfo_looksWithoutCreatingTheDirectory(): void
+    {
+        $dir  = $this->scratch() . '/upload/aa';
+        $file = "$dir/register.xml";
+
+        self::assertNull(Sync::registerInfo($file));
+        self::assertDirectoryDoesNotExist(dirname($dir), 'only a download creates it');
+        mkdir($dir, 0o700, true);
+        self::assertNull(Sync::registerInfo($file));
+        file_put_contents($file, '12345');
+        touch($file, 1760000000);
+        self::assertSame(['mtime' => 1760000000, 'size' => 5], Sync::registerInfo($file));
+    }
+
+    /** @return array<string, array{string, string}> the directory PHP may not search, the register's */
+    public static function hiddenRegisters(): array
+    {
+        return [
+            'its own directory'      => ['upload/aa', 'upload/aa'],
+            'a directory above'      => ['upload', 'upload/aa'],
+            'above a missing one'    => ['upload', 'upload/aa/missing'],
+        ];
+    }
+
+    // a register PHP cannot see is no register not downloaded yet: the share of the upload directory
+    // can lack the PHP user's group
+    #[DataProvider('hiddenRegisters')]
+    public function test_registerInfo_aDirectoryPhpCannotSearchNamed(string $hidden, string $register): void
+    {
+        if (!function_exists('posix_geteuid') || (posix_geteuid() === 0)) {
+            self::markTestSkipped('root searches every directory');
+        }
+        $root = $this->scratch();
+        mkdir("$root/upload/aa", 0o700, true);
+        file_put_contents("$root/upload/aa/register.xml", '12345');
+        chmod("$root/$hidden", 0o600);
+
+        try {
+            Sync::registerInfo("$root/$register/register.xml");
+            self::fail('a register PHP cannot see passed for none');
+        } catch (\RuntimeException $e) {
+            self::assertStringContainsString("$root/$hidden ", $e->getMessage());
+        }
+    }
+
+    // ------------------------------------------------------------ download
+
+    public function test_download_firstOneAllowed(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        $http = self::registerHttp();
+
+        $done = DownloadSync::download($http, 1760000000, $file);
+
+        self::assertSame(['status' => Sync::DOWNLOADED, 'last' => 0], $done);
+        self::assertCount(1, $http->calls);
+        self::assertFileEquals(self::FIXTURE, $file);
+        self::assertSame([[1760000000], 1, 1], [DownloadSync::$attempts, DownloadSync::$locks, DownloadSync::$unlocks]);
+    }
+
+    // another server, or another click, is downloading it
+    public function test_download_refusedWithoutTheLock(): void
+    {
+        DownloadSync::$free = false;
+        $http = self::registerHttp();
+
+        self::assertSame(['status' => Sync::RUNNING, 'last' => 0], DownloadSync::download($http, 1760000000, $this->scratch() . '/register.xml'));
+        self::assertSame([[], [], 0], [$http->calls, DownloadSync::$attempts, DownloadSync::$unlocks], 'no fetch, no attempt, nothing to unlock');
+    }
+
+    // no connection for the lock: "running" would hold every download back for good
+    public function test_download_failsWhenTheDatabaseGivesNoLock(): void
+    {
+        DownloadSync::$free   = false;
+        DownloadSync::$holder = null;
+        $http = self::registerHttp();
+
+        try {
+            DownloadSync::download($http, 1760000000, $this->scratch() . '/register.xml');
+            self::fail('no lock passed for a running download');
+        } catch (\RuntimeException $e) {
+            self::assertStringContainsString('no lock', $e->getMessage());
+        }
+        self::assertSame([[], [], 0], [$http->calls, DownloadSync::$attempts, DownloadSync::$unlocks]);
+    }
+
+    // every click costs the operator 17 MB, a failing one too
+    public function test_download_notAgainSoonAfterAnAttempt(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        $http = new FakeHttp([new Response(503, 'busy')]);
+
+        try {
+            DownloadSync::download($http, 1760000000, $file);
+            self::fail('a failed download passed');
+        } catch (\RuntimeException) {
+        }
+        $again = DownloadSync::download($http, 1760000000 + Sync::MIN_DOWNLOAD_AGE - 1, $file);
+
+        self::assertSame(['status' => Sync::RECENT, 'last' => 1760000000], $again);
+        self::assertCount(1, $http->calls, 'no second fetch');
+        self::assertSame([[1760000000], 2, 2], [DownloadSync::$attempts, DownloadSync::$locks, DownloadSync::$unlocks], 'the attempt recorded before it failed, the lock released after it');
+        self::assertFileDoesNotExist($file);
+
+        $http = self::registerHttp();
+        self::assertSame(Sync::DOWNLOADED, DownloadSync::download($http, 1760000000 + Sync::MIN_DOWNLOAD_AGE, $file)['status']);
+        self::assertCount(1, $http->calls);
+    }
+
+    // the register's own time counts too: a copy of the file from another server, or an install
+    // that does not log the attempts
+    public function test_download_notSoonAfterTheRegistersTime(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        file_put_contents($file, 'x');
+        touch($file, 1760000000);
+        $http = self::registerHttp();
+
+        self::assertSame(['status' => Sync::RECENT, 'last' => 1760000000], DownloadSync::download($http, 1760000000 + 60, $file));
+        self::assertSame([[], []], [$http->calls, DownloadSync::$attempts]);
+    }
+
+    // the clock of another server, a copied mtime: a time ahead of now would block until then
+    public function test_download_aTimeAheadOfNowIgnored(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        DownloadSync::$attempts = [1760000000 + 86400];
+        file_put_contents($file, 'x');
+        touch($file, 1760000000 + 365 * 86400);
+        $http = self::registerHttp();
+
+        self::assertSame(['status' => Sync::DOWNLOADED, 'last' => 0], DownloadSync::download($http, 1760000000, $file));
+        self::assertCount(1, $http->calls);
+    }
+
+    /** @return array<string, array{string, int, string}> the register's directory, the mode of 'up', the cause */
+    public static function unusableDirectories(): array
+    {
+        return [
+            'not writable'          => ['up/aa', 0o500, 'PHP cannot write into the directory of the register of data boxes @/up/aa'],
+            'missing'               => ['up/aa', 0o700, 'PHP cannot create the directory @/up/aa for the register of data boxes in @/up'],
+            'parent not searchable' => ['up/aa', 0o600, 'PHP cannot look into the directory @/up on the way'],
+        ];
+    }
+
+    // a directory PHP cannot write into fails before 17 MB are fetched, naming the cause
+    #[DataProvider('unusableDirectories')]
+    public function test_download_unusableDirectoryFailsBeforeTheFetch(string $dir, int $mode, string $cause): void
+    {
+        if (!function_exists('posix_geteuid') || (posix_geteuid() === 0)) {
+            self::markTestSkipped('root writes into every directory');
+        }
+        $root = $this->scratch();
+        mkdir("$root/up");
+        if ($mode === 0o500) {
+            mkdir("$root/$dir");
+            chmod("$root/$dir", $mode);
+        } else {
+            chmod("$root/up", $mode);
+        }
+        $http = self::registerHttp();
+
+        try {
+            DownloadSync::download($http, 1760000000, "$root/$dir/register.xml");
+            self::fail('downloaded into a directory PHP cannot write into');
+        } catch (\RuntimeException $e) {
+            self::assertStringContainsString(str_replace('@', $root, $cause), $e->getMessage());
+        }
+        self::assertSame([[], [], 0], [$http->calls, DownloadSync::$attempts, DownloadSync::$locks], 'no fetch, no attempt, no lock');
+    }
+
+    public function test_isOld_afterOldDays(): void
+    {
+        $info = ['mtime' => 1760000000, 'size' => 1];
+
+        self::assertFalse(Sync::isOld($info, 1760000000 + Sync::OLD_DAYS * 86400));
+        self::assertTrue(Sync::isOld($info, 1760000000 + Sync::OLD_DAYS * 86400 + 1));
     }
 
     public function test_write_onlyTheDataBoxField(): void
@@ -356,13 +617,14 @@ final class SyncTest extends TestCase
         }
     }
 
-    public function test_write_refusesARowWithoutABox(): void
+    // a row without a box would clear the field
+    public function test_write_onlyWritableRows(): void
     {
-        $sync   = self::sync([1 => self::item('Nikde', '', 'abcdefg', self::CITY)]);
+        $sync   = self::sync([1 => self::item('Nikde', '', 'abcdefg', self::CITY), 2 => self::item('Cerhenice', '00235300', 'eerak7a', self::CITY)]);
         $report = $sync->report(self::$boxes);
 
-        $this->expectException(\InvalidArgumentException::class);
-        $sync->write($report->rows);
+        self::assertSame(['written' => 0, 'failed' => []], $sync->write($report->rows));
+        self::assertSame([[], 0], [$sync->stored, $sync->invalidated]);
     }
 
     /**
@@ -491,13 +753,13 @@ final class SyncTest extends TestCase
     }
 
     /**
-     * toWrite()['rows'] of the items ticked with the box the report shows them.
+     * toWrite()['rows'] of the items ticked as the report shows them.
      * @param list<string> $ids
      * @return list<MatchRow>
      */
     private static function rows(MatchReport $report, array $ids): array
     {
-        $seen = array_column(array_map(static fn(MatchRow $row): array => [(string) $row->itemId, $row->newDs], $report->rows), 1, 0);
+        $seen = array_column(array_map(static fn(MatchRow $row): array => [(string) $row->itemId, Sync::tickValue($row)], $report->rows), 1, 0);
         return Sync::toWrite($report, array_intersect_key($seen, array_flip($ids)))['rows'];
     }
 
@@ -512,6 +774,36 @@ final class SyncTest extends TestCase
     {
         $values = [self::NAME => $name, self::ICO => $ico, self::DS => $ds, self::TYPE => $type];
         return array_map(static fn(string $v): array => [['value' => $v, 'flag' => 0]], array_filter($values, static fn(string $v): bool => $v !== ''));
+    }
+
+    /** a checkbox value as tickValue() makes it: the box offered, a hash of the box the item had */
+    private static function tick(string $box, string $stored = ''): string
+    {
+        return $box . '|' . substr(md5(strtolower(trim($stored))), 0, 12);
+    }
+
+    /** answers with the register of the fixture */
+    private static function registerHttp(): FakeHttp
+    {
+        return new FakeHttp([new Response(200, (string) file_get_contents(self::FIXTURE))]);
+    }
+
+    private function scratch(): string
+    {
+        $this->scratch = sys_get_temp_dir() . '/isds-sync-' . bin2hex(random_bytes(6));
+        mkdir($this->scratch, 0o700);
+        return $this->scratch;
+    }
+
+    private static function removeTree(string $dir): void
+    {
+        @chmod($dir, 0o700);
+        foreach (scandir($dir) ?: [] as $name) {
+            if (($name !== '.') && ($name !== '..')) {
+                is_dir("$dir/$name") && !is_link("$dir/$name") ? self::removeTree("$dir/$name") : @unlink("$dir/$name");
+            }
+        }
+        @rmdir($dir);
     }
 
     /** a long id with a letter, so PHP never makes it an int key */

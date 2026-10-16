@@ -35,7 +35,7 @@ final class MatcherTest extends TestCase
     {
         $row = self::one(['name' => 'Brno', 'ico' => '44992785', 'ds' => 'x2pbqzq', 'type' => 'city']);
 
-        self::assertEquals(new MatchRow('i', 'Brno', 'city', 'x2pbqzq', self::$fixture['a7kbrrn'], MatchRow::BY_ICO, MatchRow::CHANGED), $row);
+        self::assertEquals(new MatchRow('i', 'Brno', 'city', 'x2pbqzq', self::$fixture['a7kbrrn'], MatchRow::BY_ICO, MatchRow::CHANGED, [], false, '44992785'), $row);
         self::assertSame(['a7kbrrn', 'Statutární město Brno'], [$row->newDs, $row->boxName]);
     }
 
@@ -69,6 +69,7 @@ final class MatcherTest extends TestCase
         self::assertSame(MatchRow::UNMATCHED, self::one(['name' => 'Praha 10'] + $school)->status);
         $row = self::one(['name' => 'Plzeň'] + $school);
         self::assertSame(['6iybfxn', MatchRow::BY_NAME, true], [$row->newDs, $row->method, $row->icoMismatch]);
+        self::assertSame('05282446', $row->ico, 'the item\'s IČO, which the page shows next to the box\'s');
     }
 
     /** @return array<string, array{string}> */
@@ -105,6 +106,7 @@ final class MatcherTest extends TestCase
         $row = self::one(['name' => 'Běchovice', 'ico' => $ico, 'type' => self::DISTRICT]);
 
         self::assertSame(['erdb3s9', MatchRow::BY_ICO, false], [$row->newDs, $row->method, $row->icoMismatch]);
+        self::assertSame($ico, $row->ico, 'as typed');
     }
 
     // subtype 10 also holds "Mateřská škola …, Praha 10"; the district's subordinate box shares its IČO
@@ -386,6 +388,7 @@ final class MatcherTest extends TestCase
         self::assertSame(['eerak7a', '', '', '6iybfxn', 'bgxbr7u'], array_column($report->rows, 'newDs'));
         self::assertSame([MatchRow::BY_ICO, '', '', MatchRow::BY_NAME, MatchRow::BY_NAME], array_column($report->rows, 'method'));
         self::assertSame(['', '', '', '', ''], array_column($report->rows, 'type'));
+        self::assertSame(['235300', '', '', '', ''], array_column($report->rows, 'ico'));
         self::assertFalse($report->rows[3]->icoMismatch, 'true is no IČO "1"');
     }
 

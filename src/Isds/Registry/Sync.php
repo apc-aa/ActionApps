@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds\Registry;
 
 use AA\Http\ClientInterface;
+use AA\IO\DB\DB_AA;
 use AA_Set;
 use AA_Value;
 use Files;
@@ -13,13 +14,13 @@ use zids;
 
 /**
  * Pairs the items of one slice with the register of data boxes and writes the boxes a person ticked
- * into the items' data box field - that field only. The page and the State Check both read through
- * report(), so they count alike.
+ * into the items' data box field - that field only. The page and the State Check both read the rows
+ * through report().
  *
  * It reads the items past the slice's reading password. Call it only from the slice's admin page,
  * after checking PS_EDIT_ALL_ITEMS (write() changes items for whoever runs it), and from the State
  * Check - never from a template command, a view, the API or any other public entry. State Check
- * findings and their mail give counts (MatchReport::statusCounts()), never item names.
+ * findings and their mail give counts, never item names.
  * Item values and messages go out raw (see MatchReport) - escape them (safe()).
  */
 class Sync
@@ -31,8 +32,33 @@ class Sync
     /** rows one write() takes - each is a storeItem() of its own; the rest waits for the next submit */
     public const MAX_WRITE = 500;
 
+    /** days; an older register is worth downloading again - authorities get new boxes and merge */
+    public const OLD_DAYS = 7;
+
+    /** seconds since the last download or attempt before another one - each is 17 MB from the operator,
+     *  a failing one too */
+    public const MIN_DOWNLOAD_AGE = 600;
+
+    /** download() fetched the register */
+    public const DOWNLOADED = 'downloaded';
+
+    /** download() found another download running */
+    public const RUNNING = 'running';
+
+    /** download() found the last download or attempt younger than MIN_DOWNLOAD_AGE */
+    public const RECENT = 'recent';
+
+    /** AA log type of the download attempts and of what failed with the register */
+    public const LOG_EVENT = 'ISDS_REG';
+
+    /** DB_AA::lock() of the downloads - one at a time for all servers of the database */
+    private const DOWNLOAD_LOCK = 'isds-register-download';
+
     /** items GetItemContent() reads at once */
     private const CHUNK = 500;
+
+    /** storedHash() */
+    private const HASH = '/^[0-9a-f]{12}\z/';
 
     /**
      * As "Modify items" with "Silent" ticked: only the field is written - no events (an ITEM_UPDATED
@@ -49,47 +75,144 @@ class Sync
     public function __construct(private readonly Config $config) {}
 
     /**
-     * @throws \RuntimeException the upload directory cannot be created
+     * Where the register is, in the directory of Files::aadestinationDir() - without creating it: only
+     * download() does, a page or a check that only looks leaves no directory behind.
+     * @throws \RuntimeException the install has no upload directory (IMG_UPLOAD_PATH)
      */
     public static function registerFile(): string
     {
-        $dir = Files::aadestinationDir();
-        if ($dir === false) {
-            throw new \RuntimeException(Files::lastErrMsg());
+        $base = defined('IMG_UPLOAD_PATH') ? (string) constant('IMG_UPLOAD_PATH') : '';
+        if ($base === '') {
+            throw new \RuntimeException('IMG_UPLOAD_PATH is not set in config.php, so there is no directory for the register of data boxes');
         }
-        return $dir . '/' . self::REGISTER_FILE;
+        return $base . constant('AA_ID') . '/' . self::REGISTER_FILE;
     }
 
     /**
-     * Downloads the register into registerFile(); a failed download keeps the previous file.
-     * @return string the file
-     * @throws \RuntimeException see SdsList::download()
+     * The time and size of the downloaded register; null when there is none yet. The only look at the
+     * file: everything that tells its age or compares it asks here.
+     * @param ?string $file registerFile() when null
+     * @return ?array{mtime: int, size: int}
+     * @throws \RuntimeException no upload directory, or one PHP cannot look into - the message names it
      */
-    public static function download(?ClientInterface $http = null): string
+    public static function registerInfo(?string $file = null): ?array
     {
-        return SdsList::download($http ?? SdsList::client(), self::registerFile());
-    }
-
-    /**
-     * The time and size of the register, so a new download changes it; '' when there is none yet. A
-     * page sends it with its form and refuses the submit when the register changed since the person
-     * looked at the rows.
-     */
-    public static function registerStamp(): string
-    {
-        $file = self::registerFile();
-        clearstatcache(true, $file);
+        $file ??= self::registerFile();
+        clearstatcache();
         $stat = @stat($file);
-        return ($stat === false) ? '' : $stat['mtime'] . '-' . $stat['size'];
+        if ($stat !== false) {
+            return ['mtime' => (int) $stat['mtime'], 'size' => (int) $stat['size']];
+        }
+        // a missing file is no register yet - unless a directory on the way, which PHP may not search,
+        // hides it: then the nearest one PHP sees is that directory
+        $dir = self::nearestDir(dirname($file));
+        if (!self::searchable($dir)) {
+            throw new \RuntimeException("PHP cannot look into the directory $dir on the way to the register of data boxes");
+        }
+        return null;
+    }
+
+    /** the register is older than OLD_DAYS
+     *  @param array{mtime: int, size: int} $info registerInfo() */
+    public static function isOld(array $info, int $now): bool
+    {
+        return ($now - $info['mtime']) > self::OLD_DAYS * 86400;
     }
 
     /**
-     * The boxes of the downloaded register; iterate them before changing anything (SdsList::fromXml()).
-     * @return \Generator<int, Box>
+     * What a page sends with its form and compares on the submit: the time and size of the register -
+     * a new download changes them - and the settings, which decide the rows. The submit is refused when
+     * either changed since the person looked at the rows; '' when there is no register.
+     * @param ?array{mtime: int, size: int} $info registerInfo()
      */
-    public static function registerBoxes(): \Generator
+    public static function registerStamp(?array $info, Config $config): string
     {
-        return SdsList::fromXml(self::registerFile());
+        return ($info === null) ? '' : $info['mtime'] . '-' . $info['size'] . '-' . md5(serialize($config->values()));
+    }
+
+    /**
+     * Downloads the register into registerFile(), creating its directory, unless another download is
+     * running or the last download or attempt is younger than MIN_DOWNLOAD_AGE. A failed download
+     * keeps the previous file and still counts as an attempt.
+     * @param ?string $file registerFile() when null; another file only in an existing directory, which
+     *                      is not created
+     * @return array{status: string, last: int} status DOWNLOADED, RUNNING or RECENT; last: for RECENT
+     *                                          the time of the last download or attempt, else 0
+     * @throws \RuntimeException the directory cannot be created or written to, or the database gives no
+     *                           lock - nothing is fetched; see also SdsList::download()
+     */
+    public static function download(?ClientInterface $http = null, ?int $now = null, ?string $file = null): array
+    {
+        if ($file === null) {
+            $file  = self::registerFile();
+            $ready = (@Files::aadestinationDir() !== false);
+        } else {
+            $ready = @is_dir(dirname($file));
+        }
+        $dir = dirname($file);
+        clearstatcache();
+        if (!$ready || !@is_writable($dir) || !self::searchable($dir)) {
+            throw new \RuntimeException(self::unusableDir($dir));
+        }
+        if (!static::lockDownload($holder)) {
+            // no holder: no lock at all (no connection) - "running" would hold every download back
+            if ($holder === null) {
+                throw new \RuntimeException('The database gave no lock for the download of the register of data boxes');
+            }
+            return ['status' => self::RUNNING, 'last' => 0];
+        }
+        try {
+            $now ??= time();
+            // a time ahead of now (the clock of another server, a copied mtime) would block for as long
+            $times = [static::lastAttempt($now), self::registerInfo($file)['mtime'] ?? 0];
+            $last  = max([0, ...array_filter($times, static fn(int $t): bool => $t <= $now)]);
+            if (($last > 0) && (($now - $last) < self::MIN_DOWNLOAD_AGE)) {
+                return ['status' => self::RECENT, 'last' => $last];
+            }
+            static::recordAttempt();
+            SdsList::download($http ?? SdsList::client(), $file);
+            return ['status' => self::DOWNLOADED, 'last' => 0];
+        } finally {
+            static::unlockDownload();
+        }
+    }
+
+    /** why PHP cannot download into $dir, naming the directory that is the cause */
+    private static function unusableDir(string $dir): string
+    {
+        $seen = self::nearestDir($dir);
+        return match (true) {
+            !self::searchable($seen) => "PHP cannot look into the directory $seen on the way to the register of data boxes",
+            $seen !== $dir           => "PHP cannot create the directory $dir for the register of data boxes in $seen",
+            default                  => "PHP cannot write into the directory of the register of data boxes $dir",
+        };
+    }
+
+    /** $path, or the nearest directory above it PHP sees - an open_basedir without the upload path
+     *  must not warn at every step */
+    private static function nearestDir(string $path): string
+    {
+        while (!@file_exists($path) && (dirname($path) !== $path)) {
+            $path = dirname($path);
+        }
+        return $path;
+    }
+
+    private static function searchable(string $dir): bool
+    {
+        return @is_dir($dir) && @is_executable($dir);
+    }
+
+    /**
+     * The boxes of the downloaded register, all read: damage anywhere in the file throws here, not
+     * in the middle of a report, where it would pass for a fault of the settings. The 17 MB of XML
+     * are some 8 MB of boxes.
+     * @return list<Box>
+     * @throws \RuntimeException see SdsList::fromXml()
+     */
+    public static function registerBoxes(): array
+    {
+        return iterator_to_array(SdsList::fromXml(self::registerFile()), false);
     }
 
     /**
@@ -166,7 +289,7 @@ class Sync
         $shared = $report->sharedBoxes();
         $ticked = [];
         foreach ($report->rows as $row) {
-            if (self::writable($row) && ($row->method === MatchRow::BY_ICO) && !$row->icoMismatch && !isset($shared[$row->newDs])) {
+            if ($row->writable() && ($row->method === MatchRow::BY_ICO) && !$row->icoMismatch && !isset($shared[$row->newDs])) {
                 $ticked[] = (string) $row->itemId;
             }
         }
@@ -174,63 +297,78 @@ class Sync
     }
 
     /**
+     * The value of a row's checkbox: the box offered and a hash of the box the item had, as the person
+     * saw them - one value, so the form adds no input per row (max_input_vars). A hash, as a browser
+     * posts a line break of the item's text as CR LF, and the item's text stays out of the form.
+     */
+    public static function tickValue(MatchRow $row): string
+    {
+        return $row->newDs . '|' . self::storedHash($row->oldDs);
+    }
+
+    /**
      * The rows to write for the boxes a person ticked: those whose row in this request's report()
-     * still offers the very box the person saw, as a new or changed one - another editor may have
-     * changed the item, or the register its box, since. The box written is the register's (the row's);
-     * the posted one only has to equal it. At most $cap rows, in report order.
-     * @param array<array-key, mixed> $ticked item id => the box id the person saw, as a form posts it
-     * @return array{rows: list<MatchRow>, stale: list<string>} stale: the ticked items whose row offers
-     *         another box or none now, or which are gone - a page says they changed meanwhile. A ticked
-     *         item in neither list has the box already, waits for the next submit beyond $cap, or is
-     *         no tick: its posted box is no text, or '' for a row that still has no box (unmatched,
-     *         ambiguous).
+     * still offers the very box the person saw, to an item that still has the box the person saw -
+     * another editor may have changed the item, or the register its box, since. The box written is the
+     * register's (the row's); the posted one only has to equal it. At most $cap rows, in report order.
+     * @param array<array-key, mixed> $ticked item id => tickValue() of its row, as a form posts it
+     * @return array{rows: list<MatchRow>, stale: list<string>, left: int} stale: the ticked items whose
+     *         row offers another box or none now, whose item has another box now, or which are gone -
+     *         a page says they changed meanwhile; left: ticked rows beyond $cap, for the next submit. A
+     *         ticked item in none of them has the box already, or is no tick: its posted value is no
+     *         text, or not a box id of Box::ID and a hash as tickValue() makes it.
      */
     public static function toWrite(MatchReport $report, array $ticked, int $cap = self::MAX_WRITE): array
     {
         $seen = [];
-        foreach ($ticked as $id => $box) {
-            if (is_string($box)) {
-                $seen[(string) $id] = strtolower(trim($box));
+        foreach ($ticked as $id => $value) {
+            $parts = is_string($value) ? explode('|', $value, 2) : [];
+            if ((count($parts) === 2) && (preg_match(Box::ID, $parts[0]) === 1) && (preg_match(self::HASH, $parts[1]) === 1)) {
+                $seen[(string) $id] = $parts;
             }
         }
         $rows  = [];
         $stale = [];
+        $left  = 0;
         foreach ($report->rows as $row) {
             $id = (string) $row->itemId;
             if (!isset($seen[$id])) {
                 continue;
             }
-            if ($row->newDs !== $seen[$id]) {
+            if (($row->newDs !== $seen[$id][0]) || (self::storedHash($row->oldDs) !== $seen[$id][1])) {
                 $stale[] = $id;
-            } elseif (self::writable($row) && (count($rows) < $cap)) {
-                $rows[] = $row;
+            } elseif ($row->writable()) {
+                if (count($rows) < $cap) {
+                    $rows[] = $row;
+                } else {
+                    ++$left;
+                }
             }
             unset($seen[$id]);
         }
         // items no longer paired: deleted, of another type now; what is no item id is no tick
         $gone = array_filter(array_map('strval', array_keys($seen)), 'is_long_id');
-        return ['rows' => $rows, 'stale' => [...$stale, ...$gone]];
+        return ['rows' => $rows, 'stale' => [...$stale, ...$gone], 'left' => $left];
     }
 
     /**
-     * Writes the box of each row into the item's data box field, nothing else. An exception from
-     * storeItem() ends the run with the rows before it written.
+     * Writes the box of each writable() row into the item's data box field, nothing else; other rows
+     * are skipped. An exception from storeItem() ends the run with the rows before it written.
      * @param list<MatchRow> $rows toWrite()['rows'] of this object's report()
      * @return array{written: int, failed: array<string, string>} failed: item id => message, translated
      *                                                            (_m()) and raw - escape it (safe())
      * @throws \RuntimeException see checkSettings() - nothing is written
-     * @throws \InvalidArgumentException a row without a box, or of an item items() did not read - nothing is written
+     * @throws \InvalidArgumentException a row of an item items() did not read - nothing is written
      */
     public function write(array $rows): array
     {
         $this->checkSettings();
+        // a row without a box would clear the field, a same one write nothing new
+        $rows = array_filter($rows, static fn(MatchRow $row): bool => $row->writable());
         foreach ($rows as $row) {
             if (!isset($this->loaded[(string) $row->itemId])) {
                 // storeItem() would move another slice's item into this one
                 throw new \InvalidArgumentException('Only items the report has read are written');
-            }
-            if ($row->box === null) {
-                throw new \InvalidArgumentException('A row without a box would clear the field');
             }
         }
         $this->allowReading();
@@ -256,6 +394,33 @@ class Sync
             }
         }
         return ['written' => $written, 'failed' => $failed];
+    }
+
+    /**
+     * @param ?int $holder when not got: the connection that holds it, null = no lock at all (DB_AA::lock())
+     * @return bool got it - unlockDownload() then
+     */
+    protected static function lockDownload(?int &$holder = null): bool
+    {
+        return DB_AA::lock(self::DOWNLOAD_LOCK, 0, $holder);
+    }
+
+    protected static function unlockDownload(): void
+    {
+        DB_AA::unlock(self::DOWNLOAD_LOCK);
+    }
+
+    /** the newest download attempt up to $now that is younger than MIN_DOWNLOAD_AGE, 0 = none */
+    protected static function lastAttempt(int $now): int
+    {
+        $where = [['type', self::LOG_EVENT], ['time', $now - self::MIN_DOWNLOAD_AGE, '>'], ['time', $now, '<='], ['selector', 'download']];
+        return (int) DB_AA::select1('last', 'SELECT MAX(`time`) AS last FROM `log`', $where);
+    }
+
+    /** before the download, as a failing one counts too; only an edit of AA_Log::isLogable() drops it */
+    protected static function recordAttempt(): void
+    {
+        \AA_Log::write(self::LOG_EVENT, 'download', (string) constant('AA_ID'));
     }
 
     /** @return list<string> long ids of the slice's active items, by name */
@@ -328,8 +493,9 @@ class Sync
         }
     }
 
-    private static function writable(MatchRow $row): bool
+    /** a stored box as the statuses compare it, hashed; the hash of none too */
+    private static function storedHash(string $ds): string
     {
-        return ($row->box !== null) && in_array($row->status, [MatchRow::NEW, MatchRow::CHANGED], true);
+        return substr(md5(strtolower(trim($ds))), 0, 12);
     }
 }

@@ -52,6 +52,8 @@ final readonly class MatchRow
      *                               register does not know the item's IČO (another country's, outdated),
      *                               or knows it as another kind of box (a school, a region, a court,
      *                               Praha's IČO on a Praha district)
+     * @param string    $ico         the item's IČO as typed, raw - escape it (safe()) when shown;
+     *                               $icoMismatch compares it with the box's once both are normalised
      */
     public function __construct(
         public int|string $itemId,
@@ -63,8 +65,29 @@ final readonly class MatchRow
         public string $status,
         public array $candidates = [],
         public bool $icoMismatch = false,
+        public string $ico = '',
     ) {
         $this->newDs   = $box->id ?? '';
         $this->boxName = $box->name ?? '';
+    }
+
+    /** a person may write its box: a page offers a checkbox exactly for these, Sync::toWrite() and
+     *  Sync::write() take no other */
+    public function writable(): bool
+    {
+        return ($this->box !== null) && in_array($this->status, [self::NEW, self::CHANGED], true);
+    }
+
+    /** the word for a status a page filters by and the State Check counts with */
+    public static function statusLabel(string $status): string
+    {
+        return match ($status) {
+            self::NEW       => _m('New'),
+            self::CHANGED   => _m('Changed'),
+            self::SAME      => _m('Same'),
+            self::UNMATCHED => _m('Not found'),
+            self::AMBIGUOUS => _m('Several candidates'),
+            default         => safe($status),
+        };
     }
 }

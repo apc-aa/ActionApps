@@ -83,7 +83,8 @@ final class Matcher
             $item = is_array($item) ? $item : [];
             $name = self::text($item['name'] ?? '');
             $type = self::text($item['type'] ?? '');
-            $ico  = self::ico(self::text($item['ico'] ?? ''));
+            $typed_ico = self::text($item['ico'] ?? '');
+            $ico  = self::ico($typed_ico);
             $pool = isset($this->districtTypes[$type]) ? self::DISTRICT : self::MUNICIPALITY;
             // an IČO the register does not know, or another kind of box's (a school's, the city's
             // for a district), is left to the name, which a person checks
@@ -94,7 +95,7 @@ final class Matcher
                 $found  = self::byName($name, $pool, $by_name[$pool]);
                 $method = MatchRow::BY_NAME;
             }
-            $rows[] = self::row($item_id, $name, $type, self::text($item['ds'] ?? ''), $ico, $found, $method);
+            $rows[] = self::row($item_id, $name, $type, self::text($item['ds'] ?? ''), $ico, $typed_ico, $found, $method);
         }
         return new MatchReport($rows);
     }
@@ -129,8 +130,12 @@ final class Matcher
         return array_values(array_filter($index[self::key($part)] ?? [], $in_city));
     }
 
-    /** @param list<Box> $found */
-    private static function row(int|string $item_id, string $name, string $type, string $old_ds, string $ico, array $found, string $method): MatchRow
+    /**
+     * @param string    $ico       normalised (ico()), compared with the box's
+     * @param string    $typed_ico as the item has it, for the page to show
+     * @param list<Box> $found
+     */
+    private static function row(int|string $item_id, string $name, string $type, string $old_ds, string $ico, string $typed_ico, array $found, string $method): MatchRow
     {
         $box    = (count($found) === 1) ? $found[0] : null;
         $old    = strtolower(trim($old_ds));
@@ -143,7 +148,7 @@ final class Matcher
         };
         $candidates = ($status === MatchRow::AMBIGUOUS) ? $found : [];
         $mismatch   = ($box !== null) && ($ico !== '') && ($box->ico !== '') && (self::ico($box->ico) !== $ico);
-        return new MatchRow($item_id, $name, $type, $old_ds, $box, $found ? $method : '', $status, $candidates, $mismatch);
+        return new MatchRow($item_id, $name, $type, $old_ds, $box, $found ? $method : '', $status, $candidates, $mismatch, $typed_ico);
     }
 
     /** an item value as text; anything else is '' - one broken value must not stop the whole run */

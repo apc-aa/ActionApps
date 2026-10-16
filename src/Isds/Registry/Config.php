@@ -77,7 +77,8 @@ final class Config extends AA_Object
     }
 
     /**
-     * The records of all slices. A slice deleted since keeps none - its owned objects go with it.
+     * The records of all slices. A slice in the trash keeps its record until it is purged - skip it
+     * with AA_Slice::isStoredSlice() where that matters.
      * @return list<self>
      */
     public static function all(): array
@@ -131,12 +132,8 @@ final class Config extends AA_Object
                 }
             } elseif ($field === null) {
                 $errors[] = _m('The slice has no field %1', [$typed]);
-            } elseif ($field->isProtected()) {
-                // a password or a 2FA secret would show on the page, or be overwritten
-                $errors[] = _m('The field %1 is protected - it is neither shown nor written here', [$typed]);
-            } elseif (($property === 'ds_field') && ($field->storageTable() !== 'content')) {
-                // a column of the item table (status_code, publish_date, ...) would take the box id
-                $errors[] = _m('The data box cannot be written to %1, a column of the item table', [$typed]);
+            } elseif (($refusal = self::fieldRefusal($property, $field)) !== null) {
+                $errors[] = $refusal;
             }
         }
         $ds = $v['ds_field'];
@@ -152,6 +149,23 @@ final class Config extends AA_Object
             $errors[] = _m('The types of city districts must be among the types to pair too: %1', [implode(', ', $unpaired)]);
         }
         return $errors;
+    }
+
+    /**
+     * Why setting $property may not name $field - translated, quoting the field id raw (escape it with
+     * safe()); null = it may. A form offers only the fields this allows.
+     */
+    public static function fieldRefusal(string $property, AA_Field $field): ?string
+    {
+        if ($field->isProtected()) {
+            // a password or a 2FA secret would show on the page, or be overwritten
+            return _m('The field %1 is protected - it is neither shown nor written here', [$field->getId()]);
+        }
+        if (($property === 'ds_field') && ($field->storageTable() !== 'content')) {
+            // a column of the item table (status_code, publish_date, ...) would take the box id
+            return _m('The data box cannot be written to %1, a column of the item table', [$field->getId()]);
+        }
+        return null;
     }
 
     /**
