@@ -483,7 +483,7 @@ $apage->printHead($err, $Msg);
 $form_buttons              = ['update'];
 if ($view_id) {
     $form_buttons['cancel2']   = ['value'=>_m('Show History'), "url"=> ChangesMonitor::getHistoryUrl("V.".$view_id)];
-    $form_buttons['asnew'] = ['js'=> '$(\'input[name=&quot;view_id&quot;]\').val(\'\'); $(\'input[name=&quot;update&quot;]\').click();', 'value'=>_m('Save as new')];
+    $form_buttons['asnew'] = ['js'=> 'document.querySelector(\'input[name=&quot;view_id&quot;]\').value=\'\'; document.querySelector(\'input[name=&quot;update&quot;]\').click();', 'value'=>_m('Save as new')];
 }
 $form_buttons['cancel']    = ["url"=>"se_views.php"];
 $form_buttons['view_id']   = ['value'=> $view_id];
