@@ -17,6 +17,7 @@ import { search, searchKeymap, highlightSelectionMatches } from '@codemirror/sea
 import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
 import { css } from '@codemirror/lang-css';
+import { aaSyntax } from './aa-lang.js';
 
 const LANGUAGES = { html, javascript, css };
 
@@ -46,6 +47,7 @@ export function createEditor(textarea, { language = 'html', onChange } = {}) {
                 highlightSelectionMatches(),
                 keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap]),
                 languageConf.of((LANGUAGES[language] || LANGUAGES.html)()),
+                aaSyntax(),                   // any field here may hold AA expressions, whatever its language
                 EditorView.lineWrapping,
                 EditorView.contentAttributes.of({ spellcheck: 'true' }),
                 EditorView.updateListener.of((update) => {

@@ -1,7 +1,9 @@
 #!/bin/bash
 #
-# Rebuilds javascript/codemirror6.min.js from entry.js.
-# Run only when upgrading CodeMirror - the output is committed to git.
+# Rebuilds javascript/codemirror6.min.js from entry.js and the AA syntax files next to it.
+# Run after changing them or upgrading CodeMirror - the output is committed to git.
+# package-lock.json pins the packages CodeMirror pulls in, so a rebuild changes only what
+# was edited; delete it to take newer ones.
 #
 # npm install deliberately happens OUTSIDE the working copy: this tree is rsynced
 # to the live aadev server with --delete and has no exclude for node_modules, so a
@@ -14,11 +16,17 @@ out="$src/../../javascript/codemirror6.min.js"
 work="$(mktemp -d -t aa-cm6-build.XXXXXX)"
 trap 'rm -rf "$work"' EXIT
 
-cp "$src/package.json" "$src/entry.js" "$work/"
+cp "$src/package.json" "$src"/*.js "$work/"
 cd "$work"
 
 echo "installing pinned CodeMirror packages in $work ..."
-npm install --no-audit --no-fund --silent
+if [ -f "$src/package-lock.json" ]; then
+    cp "$src/package-lock.json" "$work/"
+    npm ci --no-audit --no-fund --silent
+else
+    npm install --no-audit --no-fund --silent
+    cp package-lock.json "$src/"
+fi
 
 mkdir -p "$(dirname "$out")"
 npx --no-install esbuild entry.js \
