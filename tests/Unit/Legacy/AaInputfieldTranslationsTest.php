@@ -24,12 +24,21 @@ final class AaInputfieldTranslationsTest extends TestCase
         $GLOBALS['mlxFormControlExtra'] ??= '';     // set by the MLX form code on a real page
     }
 
-    private static function field(): AA_Inputfield
+    /** @param string|array<int, array{value: string}> $value */
+    private static function field(string|array $value = self::PLANTED, bool $translated = true): AA_Inputfield
     {
-        $input = new AA_Inputfield(self::PLANTED, false, 'normal', 'v', 'V');
-        // a slice with languages sets it from the field definition
-        (new ReflectionProperty(AA_Inputfield::class, 'translations'))->setValue($input, ['cz', 'en']);
+        $input = new AA_Inputfield($value, false, 'normal', 'v', 'V');
+        if ($translated) {
+            // a slice with languages sets it from the field definition
+            (new ReflectionProperty(AA_Inputfield::class, 'translations'))->setValue($input, ['cz', 'en']);
+        }
         return $input;
+    }
+
+    private static function inputText(AA_Inputfield $input): string
+    {
+        $input->inputText();
+        return $input->get_result();
     }
 
     public function test_textarea_untranslatedValueIsEscaped(): void
@@ -44,11 +53,36 @@ final class AaInputfieldTranslationsTest extends TestCase
 
     public function test_inputText_untranslatedValueIsEscaped(): void
     {
-        $input = self::field();
-        $input->inputText();
-        $html = $input->get_result();
+        $html = self::inputText(self::field());
 
         self::assertStringContainsString('value="&lt;/textarea&gt;&lt;script&gt;alert(1)&lt;/script&gt;&quot;&gt;&lt;b&gt;"', $html);
         self::assertStringNotContainsString('<script>', $html);
+    }
+
+    public function test_inputText_onlyTheFirstLanguageFallsBack(): void
+    {
+        $html = self::inputText(self::field('old'));
+
+        self::assertStringContainsString('id="v-78000000" name="v[78000000]"', $html);
+        self::assertSame(1, substr_count($html, 'value="old"'), 'en stays empty');
+    }
+
+    public function test_inputText_aSetTranslationWins(): void
+    {
+        $html = self::inputText(self::field([0 => ['value' => 'old'], 78000000 => ['value' => 'nový']]));
+
+        self::assertStringContainsString('value="nový"', $html);
+        self::assertStringNotContainsString('value="old"', $html);
+    }
+
+    /** the link next to a URL field opens the URL typed, & and all */
+    public function test_inputText_previewLinkIsEscapedOnce(): void
+    {
+        $url = 'https://example.org/?a=1&b=2';
+        foreach ([true, false] as $translated) {
+            $html = self::inputText(self::field($url, $translated));
+            self::assertStringContainsString('value="https://example.org/?a=1&amp;b=2"', $html);
+            self::assertStringContainsString('<a href="https://example.org/?a=1&amp;b=2"', $html);
+        }
     }
 }

@@ -1388,11 +1388,12 @@ class AA_Inputfield {
             $widg = "<div class=\"aa-langdiv\">";
             foreach($this->translations as $lang) {
                 $lang_id           = Langs::getLangName2Num($lang);  // converts two letter lang code into number used for translation fields (cz -> 78000000, en -> 118000000, ...)
-                $value             = safe($val[$lang_id]['value']);
-                if ( $value === '' && $first) {
+                $raw               = (string) ($val[$lang_id]['value'] ?? '');
+                if ( $raw === '' && $first) {
                     // if the translation is not set try to use standard value (possibly filled before we set the translations for the field)
-                    $value = safe($val[0]['value']);
+                    $raw = (string) ($val[0]['value'] ?? '');
                 }
+                $value             = safe($raw);
 
                 $name2             = $name."[$lang_id]";
                 $id2               = $name.'-'.$lang_id;
@@ -1404,7 +1405,7 @@ class AA_Inputfield {
 
                 $widg .= "<label class=\"aa-langtrans aa-lang-$lang\" id=\"part$id2\" ".($first ? '' : ' style="display:none;"')."><strong class=\"aa-langtrans-label\">$lang</strong>";
 
-                $link  = $this->getPreviewLink($value);
+                $link  = $this->getPreviewLink($raw);
                 $widg .= "<input id=\"$id2\" name=\"$name2\" $attr_string ". (($this->required && $first) ? " required": ''). $GLOBALS['mlxFormControlExtra']. " value=\"$value\" $triggers>$link";
                 $widg .= "</label>";
                 $first = false;
@@ -1413,8 +1414,9 @@ class AA_Inputfield {
             $widg .= "\n</div>";
 
         } else {
-            $value = is_null($i=array_key_first($val)) ? '' : safe($val[$i]['value']);  // it was 0, but when you switch the field from translated to non-translated, the value is stored in $val[78000000] or so
-            $link  = $this->getPreviewLink($value);
+            $raw   = is_null($i=array_key_first($val)) ? '' : (string) $val[$i]['value'];  // it was 0, but when you switch the field from translated to non-translated, the value is stored in $val[78000000] or so
+            $value = safe($raw);
+            $link  = $this->getPreviewLink($raw);
             $widg =  "<input name=\"$name\" $attr_string ". ($this->required ? " required": ''). $GLOBALS['mlxFormControlExtra']." value=\"$value\" $triggers>$link";
         }
 
@@ -1422,6 +1424,7 @@ class AA_Inputfield {
         $this->helps('plus');
     }
 
+    /** @param string $value raw - a_href() escapes it */
     private function getPreviewLink($value): string {
         $link = '';
         if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
