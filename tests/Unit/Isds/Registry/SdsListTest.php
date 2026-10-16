@@ -61,7 +61,7 @@ final class SdsListTest extends TestCase
 
     public function test_fromXml_cityHasAllFields(): void
     {
-        self::assertEquals(new Box('a7kbrrn', '44992785', '44992785', 'Statutární město Brno', 'OVM', 10, true, false), $this->fixtureBoxes()['a7kbrrn']);
+        self::assertEquals(new Box('a7kbrrn', '44992785', '44992785', 'Statutární město Brno', 'OVM', 10, true, false, 'Brno'), $this->fixtureBoxes()['a7kbrrn']);
     }
 
     // city districts of Brno, Ostrava and Liberec have no IČO of their own, only the authority id
@@ -75,11 +75,29 @@ final class SdsListTest extends TestCase
         self::assertTrue($district->isMaster);
     }
 
+    // the name of an Ostrava district leaves the city out, the address has it
+    public function test_fromXml_cityOfTheAddress(): void
+    {
+        $boxes = $this->fixtureBoxes();
+
+        self::assertSame('Městský obvod Hošťálkovice', $boxes['g47bft8']->name);
+        self::assertSame('Ostrava', $boxes['g47bft8']->city);
+        self::assertSame('Praha 9', $boxes['erdb3s9']->city, 'Praha\'s districts have the postal district');
+    }
+
+    public function test_fromXml_cityTrimmedAndOnlyFromTheAddress(): void
+    {
+        $file = $this->write(self::list(self::box('aaaaaa1', '<address><city> Opava </city><district>Komárov</district></address>')
+            . self::box('aaaaaa2', '<city>Brno</city><address><street>Hlavní</street></address>')));
+
+        self::assertSame(['Opava', ''], array_column(self::boxes($file), 'city'));
+    }
+
     public function test_fromXml_subordinateBoxes(): void
     {
         $boxes = $this->fixtureBoxes();
 
-        self::assertEquals(new Box('r7skvpf', '00063941', '', 'MČ Praha 10 - DS pro zveřejňování (Městská část Praha 10)', 'OVM', 13, false, false), $boxes['r7skvpf']);
+        self::assertEquals(new Box('r7skvpf', '00063941', '', 'MČ Praha 10 - DS pro zveřejňování (Městská část Praha 10)', 'OVM', 13, false, false, ''), $boxes['r7skvpf']);
         self::assertFalse($boxes['scedv36']->isMaster);
         self::assertSame('44992785', $boxes['scedv36']->ico, 'the city police shares the city\'s IČO');
         self::assertFalse($boxes['qebd4jz']->isMaster, 'subtype 10 can be subordinate too');
@@ -101,7 +119,7 @@ final class SdsListTest extends TestCase
 
     public function test_fromXml_notaryIsSubtype15(): void
     {
-        self::assertEquals(new Box('3th5n6b', '70673683', '70673683', 'Adam Jaroslav - notář', 'OVM', 15, true, false), $this->fixtureBoxes()['3th5n6b']);
+        self::assertEquals(new Box('3th5n6b', '70673683', '70673683', 'Adam Jaroslav - notář', 'OVM', 15, true, false, 'Český Krumlov'), $this->fixtureBoxes()['3th5n6b']);
     }
 
     public function test_fromXml_personNameWhenNoTradeName(): void
@@ -239,6 +257,8 @@ final class SdsListTest extends TestCase
             'empty ico, ico'    => [self::box('aaaaaa1', '<ico/><ico>1</ico>'), '<ico> twice'],
             'element in the id' => ['<box><id>abc<b>zz</b>defg</id></box>', 'inside <id>'],
             'element in a name' => [self::box('aaaaaa1', '<name><tradeName>A<x:b xmlns:x="urn:x"/>B</tradeName></name>'), 'inside <name/tradeName>'],
+            'city twice'        => [self::box('aaaaaa1', '<address><city>Brno</city><city>Opava</city></address>'), '<address/city> twice'],
+            'element in a city' => [self::box('aaaaaa1', '<address><city>Brno<b/>střed</city></address>'), 'inside <address/city>'],
         ];
     }
 

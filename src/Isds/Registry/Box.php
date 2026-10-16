@@ -10,6 +10,9 @@ namespace AA\Isds\Registry;
  */
 final readonly class Box
 {
+    /** every id in the 2026 file matches; the id becomes a recipient address, so another shape is refused */
+    public const ID = '/^[a-z0-9]{7}\z/';
+
     /**
      * @param string $ico      as in the file, leading zeros kept; '' e.g. for city districts and state
      *                         offices, which have only $idOvm
@@ -21,6 +24,10 @@ final readonly class Box
      * @param bool   $isMaster false for a box under another one - a city police, a branch office -
      *                         and when the file does not say
      * @param bool   $pdz      accepts commercial (paid) messages
+     * @param string $city     the city of the box's address - the city of a district the name leaves
+     *                         out ("Městský obvod Hrabová" is in Ostrava); Praha's districts have the
+     *                         postal district ("Praha 9")
+     * @throws \InvalidArgumentException an id of another shape, wherever the box comes from
      */
     public function __construct(
         public string $id,
@@ -31,5 +38,10 @@ final readonly class Box
         public int $subtype,
         public bool $isMaster,
         public bool $pdz,
-    ) {}
+        public string $city = '',
+    ) {
+        if (preg_match(self::ID, $id) !== 1) {
+            throw new \InvalidArgumentException('A data box id is 7 small letters or digits');
+        }
+    }
 }

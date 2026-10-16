@@ -25,16 +25,13 @@ final class SdsList
     /** decoded bytes; the file had 17 MB in 10/2026, and Client holds the whole body in memory */
     public const MAX_BYTES = 40 * 1024 * 1024;
 
-    /** every id in the 2026 file matches; the id becomes a recipient address, so another shape means the format changed */
-    private const ID = '/^[a-z0-9]{7}$/';
-
     private const NS = 'http://seznam.gov.cz/ovm/datafile/seznam_ds/v1';
 
     /** paths inside <box> that a Box is made of, each with its empty value */
     private const FIELDS = [
         'id' => '', 'type' => '', 'subtype' => '', 'ico' => '', 'idOVM' => '', 'pdz' => '',
         'name/tradeName' => '', 'name/person/firstName' => '', 'name/person/lastName' => '',
-        'hierarchy/isMaster' => '',
+        'hierarchy/isMaster' => '', 'address/city' => '',
     ];
 
     private const TEXT = [XMLReader::TEXT, XMLReader::CDATA, XMLReader::WHITESPACE, XMLReader::SIGNIFICANT_WHITESPACE];
@@ -262,7 +259,8 @@ final class SdsList
     private static function box(array $values): Box
     {
         $v = array_map(trim(...), $values);
-        if (preg_match(self::ID, $v['id']) !== 1) {
+        // checked before Box would refuse it too: here another shape means the format changed
+        if (preg_match(Box::ID, $v['id']) !== 1) {
             throw new \UnexpectedValueException('The list of data boxes has a box with the id "' . Libxml::cut($v['id'], self::QUOTE) . '", not 7 small letters or digits');
         }
         $name = ($v['name/tradeName'] !== '') ? $v['name/tradeName'] : trim($v['name/person/firstName'] . ' ' . $v['name/person/lastName']);
@@ -275,6 +273,7 @@ final class SdsList
             ctype_digit($v['subtype']) ? (int) $v['subtype'] : 0,
             self::bool($v['hierarchy/isMaster']),
             self::bool($v['pdz']),
+            $v['address/city'],
         );
     }
 
