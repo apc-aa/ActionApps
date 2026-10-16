@@ -929,8 +929,8 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
             $item_fields[] = 'short_id';
         }
 
-        // we need slice_id for each item, if we have to count with slice permissions
-        if (!$ignore_reading_password && !in_array('slice_id', $item_fields)) {
+        // every item gets u_slice_id...... below - and the reading password is checked per slice
+        if (!in_array('slice_id', $item_fields)) {
             $item_fields[] = 'slice_id';
         }
 
