@@ -110,3 +110,33 @@ export function contextAt(text, pos) {
     }
     return { name: text.slice(name.from, name.to).toLowerCase(), from: open.from, param: open.seps.length - 1 };
 }
+
+const SUBSCRIPT = '₀₁₂₃₄₅₆₇₈₉';
+const numbered = (name, n) => name + [...String(n)].map(d => SUBSCRIPT[d]).join('');
+
+/**
+ * The parameters of a command for the hint, the one at the cursor current. A repeated group shows
+ * once, numbered - the one the cursor is in; where a group may start, the parameter after the
+ * groups may stand there instead ({ifeq:x:a:A:else}), so both are current.
+ * @param {{params: string[], repeat?: string[], tail?: string[]}} cmd  from the catalog (AA\Stringexpand\Catalog)
+ * @param {number} param  of contextAt(); -1 = in the name
+ * @return {{text: string, current: boolean}[]}  joined by ":" in the hint
+ */
+export function signature(cmd, param) {
+    const parts = cmd.params.map((text, i) => ({ text, current: i === param }));
+    const repeat = cmd.repeat ?? [];
+    if (!repeat.length) {
+        return parts;
+    }
+    const k     = param - cmd.params.length;
+    const group = (k > 0) ? Math.floor(k / repeat.length) : 0;
+    const at    = (k >= 0) ? (k % repeat.length) : -1;
+    if (group > 0) {
+        parts.push({ text: '…', current: false });
+    }
+    repeat.forEach((name, i) => parts.push({ text: numbered(name, group + 1), current: i === at }));
+    parts.push({ text: '…', current: false });
+    const either = (group > 0) && (at === 0);
+    (cmd.tail ?? []).forEach((text, i) => parts.push({ text, current: either && (i === 0) }));
+    return parts;
+}
