@@ -139,6 +139,76 @@ class AA_Perm_Resource {
     }
 }
 
+/** May this user change a stored item? Rights in the item's own slice decide, not the module a
+ *  request names. Images and attachments live in related slices the editors often have no role in,
+ *  so a right in a slice whose related-item field points to the item's slice counts too. An author
+ *  (PS_EDIT_SELF_ITEMS) changes only the items they posted.
+ *
+ * @param string        $uid       the logged-in user - CheckPerms() keeps the rights of one user only
+ * @param string        $slice_id  the slice the item really lives in
+ * @param string        $posted_by posted_by....... of the item
+ * @param string[]|null $sources   slices pointing to $slice_id; null = look them up (RelatedSourceSlices())
+ */
+function IsItemEditable(string $uid, string $slice_id, string $posted_by, ?array $sources = null): bool
+{
+    $own = ($posted_by !== '') && ($posted_by === $uid);
+    $may = static fn(string $sid): bool => CheckPerms($uid, 'slice', $sid, PS_EDIT_ALL_ITEMS) || ($own && CheckPerms($uid, 'slice', $sid, PS_EDIT_SELF_ITEMS));
+    if ($may($slice_id)) {
+        return true;
+    }
+    // the sources cost a scan of all field definitions - only when the rights here do not suffice
+    foreach ($sources ?? RelatedSourceSlices($slice_id) as $sid) {
+        if ($may($sid)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/** IsItemEditable() for the current user and a stored item; false for an id no item has */
+function IsStoredItemEditable(string $item_id): bool
+{
+    $item = new ItemContent();
+    $item->setByItemID(new zids($item_id, 'l'), true);   // posted_by must not come back masked by the slice's read password
+    return $item->getItemID() && IsItemEditable((string) AuthGetUid(), (string) $item->getSliceID(), (string) $item->getValue('posted_by.......'));
+}
+
+/** The slice whose items a widget's own buttons edit - the rim "edit" button, the mng gallery - or ''.
+ *  Only these: iso opens its popups on the related slice itself, where init_page.php already wants a
+ *  role, and checkboxes or a select only choose items. Exact classes, subclasses may not edit. */
+function RelatedItemEditTarget(?AA\Widget\Widget $widget): string
+{
+    $edits = match ($widget ? get_class($widget) : '') {
+        AA\Widget\RimWidget::class => str_contains((string) $widget->getProperty('show_buttons', 'MRND'), 'E'),
+        AA\Widget\MngWidget::class => true,
+        default                    => false,
+    };
+    return $edits ? $widget->getConstSlice() : '';
+}
+
+/** Active slices whose related-item fields edit the items of $slice_id (RelatedItemEditTarget())
+ *  @return string[] */
+function RelatedSourceSlices(string $slice_id): array
+{
+    return is_long_id($slice_id) ? AA::Contentcache()->get_result('RelatedSourceSlicesFromDb', [$slice_id]) : [];
+}
+
+/** @return string[] */
+function RelatedSourceSlicesFromDb(string $slice_id): array
+{
+    $sources = [];
+    foreach (DB_AA::select([], 'SELECT LOWER(HEX(`slice_id`)) AS sid, `id` FROM `field`', [['input_show_func', '#sLiCe-' . $slice_id, 'CONTAIN']]) as $row) {
+        $sid = $row['sid'];
+        if (isset($sources[$sid]) || !AA_Slice::isStoredSlice($sid)) {
+            continue;
+        }
+        if (RelatedItemEditTarget(AA_Slice::getOwnModule($sid)?->getWidget($row['id'])) === $slice_id) {
+            $sources[$sid] = $sid;
+        }
+    }
+    return array_values($sources);
+}
+
 /**  Check, if specified $perm is in $perms list
  *
  * @param $perms
@@ -168,8 +238,9 @@ function CheckPerms( $user_id, $objType, $objID, $perm): bool
     }
 
     return match ($objType) {
-        "aa"    => IsPerm($permission_to["aa"][$objID], $perm),
-        "slice" => IsPerm(AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID], $permission_to["aa"][AA_ID]), $perm),
+        // '' not null: most users have no entry for the whole AA, and null ends in str_replace() (deprecated)
+        "aa"    => IsPerm($permission_to["aa"][$objID] ?? '', $perm),
+        "slice" => IsPerm(AA_Perm::joinSliceAndAAPerm($permission_to["slice"][$objID] ?? '', $permission_to["aa"][AA_ID] ?? ''), $perm),
         default => false,
     };
 }

@@ -370,12 +370,11 @@ class Form extends AbstractGrabber
         if (self::anonymous()) {
             return 'anonymous';
         }
-        $uid = AuthGetUid();
-        if (IfSlPerm(PS_EDIT_ALL_ITEMS, $slice_id)) {
-            return '';
-        }
+        $uid = (string) AuthGetUid();
         $own = ($uid === $stored->getItemID()) || ($uid === (string) $stored->getValue('posted_by.......'));
-        if ($own && IfSlPerm(PS_EDIT_SELF_ITEMS, $slice_id)) {
+        // the editor's rule, so editors of a gallery's own slice (mng) are not listed; a reader's
+        // own record counts as theirs, like an item they posted
+        if (IsItemEditable($uid, $slice_id, $own ? $uid : '')) {
             return '';
         }
         return $own ? 'own' : 'user';

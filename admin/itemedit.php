@@ -229,7 +229,13 @@ if ($id) {
 
     $content4id = new ItemContent($id);
     $slice_id   = $content4id->getSliceID();
-    // we need just slice_id of current item - we can unset the content4id
+    // init_page.php checks the module named in the request (or the user's first one - the related-item
+    // "edit" button names none), not the slice this item lives in. An "add" link carries an item id
+    // only to name its slice; it stores a new item, so init_page's check is the one that counts.
+    if (!$add && !IsStoredItemEditable($id)) {
+        MsgPage(MsgErr(_m("Error: You have no rights to edit item.")));
+        exit;
+    }
 
 } else {
     $content4id = new ItemContent();
@@ -313,6 +319,13 @@ if (($insert || $update) && count($fields)) {
         }
     }
 
+    // mlxid names the item of the MLX control slice listing the translations; MLX::update() stores
+    // into it and moves it to the control slice, so an item of another slice would be overwritten.
+    // An id no item has is let through - a lost control record must not block saving the item.
+    if ($lang_control && $mlxid && (!is_long_id((string) $mlxid) || !in_array(AA_Slice::getSliceIdFromItemId((string) $mlxid), ['', $lang_control], true))) {
+        $err['mlx'] = MsgErr(_m("Error: You have no rights to edit item."));
+    }
+
     if (!count($err)) {
 
         // mimo change
@@ -367,16 +380,6 @@ if ($edit) {
     }
 
     $content4id = new ItemContent($content[$id]);
-
-    // authors have only permission to edit their own items
-    $perm_edit_all  = IfSlPerm(PS_EDIT_ALL_ITEMS);
-    $item_user = $content4id->getValue('posted_by.......');
-    $real_user = AuthGetUid();
-    if (!$perm_edit_all && $item_user != $real_user) {
-        $err["DB"] = MsgErr(_m("Error: You have no rights to edit item."));
-        MsgPage($err);
-        exit;
-    }
 } elseif (!is_object($content4id)) {  // form is submitted
     // we need the $content4id to be object (for getForm, at least)
     $content4id = new ItemContent();
