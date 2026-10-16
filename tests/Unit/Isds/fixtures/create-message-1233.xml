@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- CreateMessage refused, a box that accepts only paid messages: the status of the example in WS_manipulace_s_datovymi_zpravami.pdf 2.2 -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Body>
+    <p:CreateMessageResponse xmlns:p="http://isds.czechpoint.cz/v20">
+      <p:dmStatus>
+        <p:dmStatusCode>1233</p:dmStatusCode>
+        <p:dmStatusMessage>Odesilatel ani příjemce datové zprávy není OVM a zpráva je označena jako nekomerční.</p:dmStatusMessage>
+      </p:dmStatus>
+    </p:CreateMessageResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

@@ -40,8 +40,21 @@ final readonly class Box
         public bool $pdz,
         public string $city = '',
     ) {
+        if (self::normalizeId($id) !== $id) {
+            throw new \InvalidArgumentException('A data box id is 7 small letters or digits');
+        }
+    }
+
+    /**
+     * A box id as people type it - with spaces around, in capitals - as ISDS knows it
+     * @throws \InvalidArgumentException not a box id even then
+     */
+    public static function normalizeId(string $id): string
+    {
+        $id = strtolower(trim($id));
         if (preg_match(self::ID, $id) !== 1) {
             throw new \InvalidArgumentException('A data box id is 7 small letters or digits');
         }
+        return $id;
     }
 }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- the request ClientTest::message() must become: the envelope of the example in WS_manipulace_s_datovymi_zpravami.pdf
+     2.1.3 with this message's values - every element of gMessageEnvelopeSub in the XSD's order, the empty ones nil,
+     no dmOVM, no dmPublishOwnID, no dmType -->
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:isds="http://isds.czechpoint.cz/v20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <soap:Body>
+    <isds:CreateMessage>
+      <isds:dmEnvelope>
+        <isds:dmSenderOrgUnit xsi:nil="true"/>
+        <isds:dmSenderOrgUnitNum xsi:nil="true"/>
+        <isds:dbIDRecipient>kv62bqf</isds:dbIDRecipient>
+        <isds:dmRecipientOrgUnit xsi:nil="true"/>
+        <isds:dmRecipientOrgUnitNum xsi:nil="true"/>
+        <isds:dmToHands>starosta</isds:dmToHands>
+        <isds:dmAnnotation>Pozvánka na setkání Zdravých měst</isds:dmAnnotation>
+        <isds:dmRecipientRefNumber xsi:nil="true"/>
+        <isds:dmSenderRefNumber>a1b2-c3d4</isds:dmSenderRefNumber>
+        <isds:dmRecipientIdent xsi:nil="true"/>
+        <isds:dmSenderIdent xsi:nil="true"/>
+        <isds:dmLegalTitleLaw xsi:nil="true"/>
+        <isds:dmLegalTitleYear xsi:nil="true"/>
+        <isds:dmLegalTitleSect xsi:nil="true"/>
+        <isds:dmLegalTitlePar xsi:nil="true"/>
+        <isds:dmLegalTitlePoint xsi:nil="true"/>
+        <isds:dmPersonalDelivery>false</isds:dmPersonalDelivery>
+        <isds:dmAllowSubstDelivery xsi:nil="true"/>
+      </isds:dmEnvelope>
+      <isds:dmFiles>
+        <isds:dmFile dmMimeType="text/html" dmFileMetaType="main" dmFileDescr="Dopis.html">
+          <isds:dmEncodedContent>PHA+RG9icsO9IGRlbjwvcD4=</isds:dmEncodedContent>
+        </isds:dmFile>
+        <isds:dmFile dmMimeType="application/pdf" dmFileMetaType="enclosure" dmFileDescr="Příloha č. 1.pdf">
+          <isds:dmEncodedContent>JVBERi0xLjQgdGVzdA==</isds:dmEncodedContent>
+        </isds:dmFile>
+      </isds:dmFiles>
+    </isds:CreateMessage>
+  </soap:Body>
+</soap:Envelope>

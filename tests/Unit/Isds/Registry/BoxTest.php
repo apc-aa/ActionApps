@@ -28,4 +28,22 @@ final class BoxTest extends TestCase
     {
         self::assertSame('a7kbrrn', (new Box('a7kbrrn', '', '', 'Obec', 'OVM', 10, true, false))->id);
     }
+
+    public function test_normalizeId_trimsAndLowers(): void
+    {
+        self::assertSame('a7kbrrn', Box::normalizeId(" A7KBrrn\n"));
+    }
+
+    #[DataProvider('notIds')]
+    public function test_normalizeId_refuses(string $id): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        Box::normalizeId($id);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function notIds(): array
+    {
+        return ['empty' => [''], 'six' => ['aaaaaa'], 'eight' => ['aaaaaaa1'], 'dash' => ['aaa-aa1'], 'inner space' => ['aaa aa1'], 'accent' => ['aaaaaaž']];
+    }
 }

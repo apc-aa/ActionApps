@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WS_souvisejici_s_pristupem_do_ISDS.pdf 1.7; the example's namespace v30, element GetUserInfoFromLoginResponse
+     and closing tag of adDistrict corrected to the WSDL (v20, GetUserInfoFromLogin2Response), the user made
+     a delegated person with the rights 4+8+16 -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Body>
+    <p:GetUserInfoFromLogin2Response xmlns:p="http://isds.czechpoint.cz/v20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <p:dbUserInfo>
+        <p:aifoIsds>false</p:aifoIsds>
+        <p:pnGivenNames>Jan Petr</p:pnGivenNames>
+        <p:pnLastName>Šmída</p:pnLastName>
+        <p:adCode>54879887</p:adCode>
+        <p:adCity>Náchod</p:adCity>
+        <p:adDistrict>Staré Město</p:adDistrict>
+        <p:adStreet>Pražská</p:adStreet>
+        <p:adNumberInStreet xsi:nil="true"/>
+        <p:adNumberInMunicipality>139</p:adNumberInMunicipality>
+        <p:adZipCode>54900</p:adZipCode>
+        <p:adState>CZ</p:adState>
+        <p:biDate>1967-01-07</p:biDate>
+        <p:isdsID>DS_wexphsydx</p:isdsID>
+        <p:userType>ENTRUSTED_USER</p:userType>
+        <p:userPrivils>28</p:userPrivils>
+        <p:ic xsi:nil="true"/>
+        <p:firmName xsi:nil="true"/>
+        <p:caStreet>Korunní 123</p:caStreet>
+        <p:caCity>Praha 2</p:caCity>
+        <p:caZipCode>12000</p:caZipCode>
+        <p:caState>CZ</p:caState>
+      </p:dbUserInfo>
+      <p:dbStatus>
+        <p:dbStatusCode>0000</p:dbStatusCode>
+        <p:dbStatusMessage>Provedeno úspěšně.</p:dbStatusMessage>
+      </p:dbStatus>
+    </p:GetUserInfoFromLogin2Response>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

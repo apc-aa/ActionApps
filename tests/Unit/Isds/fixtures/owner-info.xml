@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- GetOwnerInfoFromLogin2 of a legal person's box: no example in the documentation, built after tDbOwnerInfoExt2
+     in dbTypes.xsd with the box and address of the examples in WS_manipulace_s_datovymi_zpravami.pdf -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Body>
+    <p:GetOwnerInfoFromLogin2Response xmlns:p="http://isds.czechpoint.cz/v20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <p:dbOwnerInfo>
+        <p:dbID>kv62bqf</p:dbID>
+        <p:aifoIsds xsi:nil="true"/>
+        <p:dbType>PO</p:dbType>
+        <p:ic>12345678</p:ic>
+        <p:pnGivenNames xsi:nil="true"/>
+        <p:pnLastName xsi:nil="true"/>
+        <p:firmName>testovací PO</p:firmName>
+        <p:biDate xsi:nil="true"/>
+        <p:biCity xsi:nil="true"/>
+        <p:biCounty xsi:nil="true"/>
+        <p:biState xsi:nil="true"/>
+        <p:adCode xsi:nil="true"/>
+        <p:adCity>Praha</p:adCity>
+        <p:adDistrict xsi:nil="true"/>
+        <p:adStreet>Dlouhá</p:adStreet>
+        <p:adNumberInStreet>1</p:adNumberInStreet>
+        <p:adNumberInMunicipality xsi:nil="true"/>
+        <p:adZipCode>12300</p:adZipCode>
+        <p:adState>CZ</p:adState>
+        <p:nationality>CZ</p:nationality>
+        <p:dbIdOVM xsi:nil="true"/>
+        <p:dbState>1</p:dbState>
+        <p:dbOpenAddressing>false</p:dbOpenAddressing>
+        <p:dbUpperID xsi:nil="true"/>
+      </p:dbOwnerInfo>
+      <p:dbStatus>
+        <p:dbStatusCode>0000</p:dbStatusCode>
+        <p:dbStatusMessage>Provedeno úspěšně.</p:dbStatusMessage>
+      </p:dbStatus>
+    </p:GetOwnerInfoFromLogin2Response>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

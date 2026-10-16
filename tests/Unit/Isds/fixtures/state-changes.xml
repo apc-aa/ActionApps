@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- WS_manipulace_s_datovymi_zpravami.pdf 2.9.3: one message delivered to the box, then accepted by a login -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Body>
+    <q:GetMessageStateChangesResponse xmlns:q="http://isds.czechpoint.cz/v20" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+      <q:dmRecords>
+        <q:dmRecord>
+          <q:dmID>169100</q:dmID>
+          <q:dmEventTime>2010-10-11T11:18:17.308+02:00</q:dmEventTime>
+          <q:dmMessageStatus>4</q:dmMessageStatus>
+        </q:dmRecord>
+        <q:dmRecord>
+          <q:dmID>169100</q:dmID>
+          <q:dmEventTime>2010-10-11T11:18:23.249+02:00</q:dmEventTime>
+          <q:dmMessageStatus>6</q:dmMessageStatus>
+        </q:dmRecord>
+      </q:dmRecords>
+      <q:dmStatus>
+        <q:dmStatusCode>0000</q:dmStatusCode>
+        <q:dmStatusMessage>Provedeno úspěšně.</q:dmStatusMessage>
+      </q:dmStatus>
+    </q:GetMessageStateChangesResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
