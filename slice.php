@@ -92,6 +92,7 @@ https://www.apc.org/
 
 
 use AA\IO\DB\DB_AA;
+use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
 use AA\Util\InputVars;
 
@@ -259,7 +260,7 @@ $slice      = AA_Slice::getModule($slice_id);
 $slice_info = GetModuleInfo($slice_id, 'S');       // get slice info
 
 if (!$slice_info || $slice_info['deleted'] > 0) {
-    ExitPage(_m("Invalid slice number or slice was deleted") . " (ID: $slice_id)");
+    ExitPage(_m("Invalid slice number or slice was deleted") . ' (ID: ' . safe($slice_id) . ')');
 }
 if ($slice_info['d_listlen'] == 0) {
     ExitPage(_m("slice.php output forbidden for this slice"));
@@ -535,7 +536,14 @@ if ($mlxslice = MLXSlice($slice)) {
     $mlxView->preQueryZIDs($mlxslice, $conds);
 }
 
-$zids = QueryZids(($slices ?: [$slice_id]), $conds, $sort, "ACTIVE", $neverAllItems, null, $defaultCondsOperator);
+// the main slice passed its checks above, slices[] may name more; narrowed into a local list - the session keeps slices[]
+$listed_slices = $slices ? ViewSlices::forRequest()->slices('slice.php', strtolower($slice_id), (array) $slices) : [];
+if ($slices && !$listed_slices) {
+    $zids = new zids();              // nothing left of slices[] - an empty listing, not the main slice alone
+    $GLOBALS['QueryIDsCount'] = 0;   // _#ID_COUNT
+} else {
+    $zids = QueryZids(($listed_slices ?: [$slice_id]), $conds, $sort, "ACTIVE", $neverAllItems, null, $defaultCondsOperator);
+}
 
 if ($mlxslice) {
     $mlxView->postQueryZIDs($zids, $mlxslice, $slice_id);
