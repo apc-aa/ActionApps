@@ -4633,7 +4633,7 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
  *    ($condition=_#.{8} (exactly) - like '_#HEADLINE')
  */
 class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercachenotrim {
-    public const PARAMS = ['condition', 'text', 'else_text'];
+    public const PARAMS = [['condition', 'text'], 'else_text'];
     /** Do not trim all parameters (maybe we can?) */
 
     /** expand function
@@ -4652,7 +4652,7 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercachenotrim {
 
 /** The same as {ifset:..} but it ignores all the HTML comments in the condition */
 class AA_Stringexpand_Iftext extends AA_Stringexpand_Nevercachenotrim {
-    public const PARAMS = ['condition', 'text', 'else_text'];
+    public const PARAMS = [['condition', 'text'], 'else_text'];
     /** Do not trim all parameters (maybe we can?) */
 
     /** expand function

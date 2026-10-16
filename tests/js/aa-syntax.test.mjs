@@ -16,7 +16,7 @@ for (const { input, spans } of cases.scan) {
     });
 }
 
-for (const { input, name, param } of cases.contexts) {
+for (const { input, name, param, start } of cases.contexts) {
     test(`contextAt ${JSON.stringify(input)}`, () => {
         const pos = input.indexOf('|');
         const text = input.slice(0, pos) + input.slice(pos + 1);
@@ -25,6 +25,9 @@ for (const { input, name, param } of cases.contexts) {
             assert.equal(ctx, null);
         } else {
             assert.deepEqual({ name: ctx?.name, param: ctx?.param }, { name, param });
+        }
+        if (start !== undefined) {
+            assert.equal(ctx?.start, start);
         }
     });
 }

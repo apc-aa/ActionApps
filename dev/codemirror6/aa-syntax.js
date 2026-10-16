@@ -12,8 +12,7 @@ const OPEN  = 123;  // {
 const CLOSE = 125;  // }
 const COLON = 58;   // :
 
-const NAME_START = /[A-Za-z_]/;
-const NAME_CHAR  = /[A-Za-z0-9_]/;
+const NAME = /^[A-Za-z_]\w*$/;
 
 /** "{#" is a comment; "{" before a space, newline or tab is text - CSS and JavaScript blocks */
 function kindOf(text, from) {
@@ -28,16 +27,10 @@ function quotedColon(text, i) {
     return (text[i - 1] === '#') || (text.startsWith('//', i + 1) && (text.endsWith('tp', i) || text.endsWith('tps', i)));
 }
 
-/** the command name right after "{", up to `end` at most */
-function nameAt(text, from, end) {
-    let i = from + 1;
-    if (!NAME_START.test(text[i] ?? '')) {
-        return null;
-    }
-    while ((i < end) && NAME_CHAR.test(text[i])) {
-        i++;
-    }
-    return { from: from + 1, to: i };
+/** the command name: all after "{" up to the first ":" (or `end`), null when that is no name */
+function nameOf(text, open, end) {
+    const to = open.seps[0] ?? end;
+    return NAME.test(text.slice(open.from + 1, to)) ? { from: open.from + 1, to } : null;
 }
 
 /**
@@ -81,9 +74,7 @@ export function scan(text) {
         const kind = kindOf(text, open.from);
         const span = { from: open.from, to, kind, name: null, seps: [] };
         if (kind === 'expr') {
-            const end  = open.seps[0] ?? (to - 1);
-            const name = nameAt(text, open.from, end);
-            span.name = (name?.to === end) ? name : null;
+            span.name = nameOf(text, open, to - 1);
             span.seps = open.seps;
         }
         spans.push(span);
@@ -95,7 +86,8 @@ export function scan(text) {
  * The innermost expression open at `pos` - typed without its "}" yet, too.
  * @param {string} text
  * @param {number} pos
- * @return {?{name: string, from: number, param: number}} name lower-cased; param -1 = in the name;
+ * @return {?{name: string, from: number, param: number, start: number}} name lower-cased; param -1 = in
+ *         the name; start: where the parameter (or the name) begins;
  *         null in a comment, in text braces and in an expression without a command name
  */
 export function contextAt(text, pos) {
@@ -103,12 +95,11 @@ export function contextAt(text, pos) {
     if (!open || open.poisoned || (kindOf(text, open.from) !== 'expr')) {
         return null;
     }
-    const end  = open.seps[0] ?? pos;
-    const name = nameAt(text, open.from, end);
-    if (name?.to !== end) {
+    const name = nameOf(text, open, pos);
+    if (!name) {
         return null;
     }
-    return { name: text.slice(name.from, name.to).toLowerCase(), from: open.from, param: open.seps.length - 1 };
+    return { name: text.slice(name.from, name.to).toLowerCase(), from: open.from, param: open.seps.length - 1, start: (open.seps.at(-1) ?? open.from) + 1 };
 }
 
 const SUBSCRIPT = '₀₁₂₃₄₅₆₇₈₉';

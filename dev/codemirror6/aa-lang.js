@@ -39,20 +39,28 @@ const comments = ViewPlugin.fromClass(class {
 const CATALOG_URL = new URL('../api/index.php?_path=v1/expressions', import.meta.url);
 
 /** @type {?Map<string, {params: string[], repeat?: string[], tail?: string[], desc: string, deprecated?: true}>}
- *  the commands, once loaded - empty when they cannot be (not logged in) */
+ *  the commands, once loaded */
 let commands = null;
 let loading  = null;
+let warned   = false;
 
-/** Once per page, on the first need: most editors are never asked for a hint. */
+/** an expired session or a lost connection may come back - but not a request on every key */
+const RETRY_MS = 60000;
+
+/** Once per page, on the first need: most editors are never asked for a hint.
+ *  @return {Promise<?Map>} null when the catalog cannot be had now (not logged in) */
 function loadCommands() {
     loading ??= fetch(CATALOG_URL, { headers: { Accept: 'application/json' } })
         .then(r => (r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))))
-        .then(json => new Map(Object.entries(json.commands ?? {})))
+        .then(json => (commands = new Map(Object.entries(json.commands ?? {}))))
         .catch((e) => {
-            console.warn('aa-code: no hints for AA expressions -', e.message);
-            return new Map();
-        })
-        .then(map => (commands = map));
+            if (!warned) {
+                console.warn('aa-code: no hints for AA expressions -', e.message);
+                warned = true;
+            }
+            setTimeout(() => { loading = null; }, RETRY_MS);
+            return null;
+        });
     return loading;
 }
 
@@ -80,20 +88,28 @@ function applyCommand(name, cmd) {
 
 let options = null;
 
-/** "{" and a letter; a bare "{" or "{_" only on Ctrl+Space - "{_#ALIAS" is typed far more often than "{_:" */
+/**
+ * "{" and a letter; a bare "{" or "{_" only on Ctrl+Space - "{_#ALIAS" is typed far more often than "{_:".
+ * Names starting with what is typed, not CodeMirror's fuzzy match: in CSS and JavaScript ("a{color",
+ * "){return") a loose match would keep the list open and Enter would take a command instead of a newline.
+ */
 async function aaCompletions(context) {
     const word = context.matchBefore(/\{(?:[A-Za-z_]\w*)?$/);
     if (!word || (!context.explicit && !/^\{[A-Za-z]/.test(word.text))) {
         return null;
     }
     const all = await loadCommands();
+    if (!all) {
+        return null;
+    }
     options ??= [...all].filter(([, cmd]) => !cmd.deprecated).map(([name, cmd]) => ({
         label:  name,
         detail: signature(cmd, -1).map(p => p.text).join(':'),
         info:   cmd.desc || undefined,
         apply:  applyCommand(name, cmd),
     }));
-    return { from: word.from + 1, options, validFor: /^\w*$/ };
+    const typed = word.text.slice(1).toLowerCase();
+    return { from: word.from + 1, options: options.filter(o => o.label.startsWith(typed)), filter: false };
 }
 
 const commandsLoaded = StateEffect.define();
@@ -115,15 +131,22 @@ function hintDom({ name, param, cmd }) {
 }
 
 function hintTooltip(state, focused, previous) {
+    // the catalog not loaded (yet): hintLoader looks for the parameter itself
+    if (!commands?.size) {
+        return null;
+    }
     const sel = state.selection.main;
     const ctx = (focused && sel.empty) ? paramAt(state, sel.head) : null;
-    const cmd = ctx ? commands?.get(ctx.name) : null;
+    const cmd = ctx ? commands.get(ctx.name) : null;
     if (!cmd) {
         return null;
     }
-    const key = `${ctx.from}:${ctx.name}:${ctx.param}`;
+    // at the parameter, or at the line typed in when the parameter starts above it - CodeMirror hides
+    // a tooltip whose place is scrolled away, and long {switch:...} blocks span many lines
+    const pos = Math.max(ctx.start, state.doc.lineAt(sel.head).from);
+    const key = `${pos}:${ctx.name}:${ctx.param}`;
     // typing within one parameter keeps the tooltip - a new one on each key would flicker
-    return (previous?.key === key) ? previous : { key, pos: ctx.from, above: true, create: () => hintDom({ ...ctx, cmd }) };
+    return (previous?.key === key) ? previous : { key, pos, above: true, create: () => hintDom({ ...ctx, cmd }) };
 }
 
 /** the hint shows in the focused editor only - several fields of a page may hold expressions */
@@ -144,10 +167,7 @@ const hint = StateField.define({
 
 /** loads the catalog when the cursor first stands in a parameter, and shows the hint then */
 const hintLoader = ViewPlugin.fromClass(class {
-    constructor(view) {
-        this.view    = view;
-        this.waiting = false;
-    }
+    waiting = false;    // one dispatch per editor - the fetch itself is shared anyway
 
     update(update) {
         if (commands || this.waiting || !(update.docChanged || update.selectionSet)) {
@@ -155,12 +175,15 @@ const hintLoader = ViewPlugin.fromClass(class {
         }
         if (paramAt(update.state, update.state.selection.main.head)) {
             this.waiting = true;
-            loadCommands().then(() => this.view?.dispatch({ effects: commandsLoaded.of(null) }));
+            loadCommands().then((loaded) => {
+                if (loaded) {
+                    // a view destroyed meanwhile ignores the dispatch
+                    update.view.dispatch({ effects: commandsLoaded.of(null) });
+                } else {
+                    this.waiting = false;   // loadCommands() says when to ask the server again
+                }
+            });
         }
-    }
-
-    destroy() {
-        this.view = null;
     }
 });
 

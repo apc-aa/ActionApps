@@ -1,5 +1,5 @@
 {
-    "about": "How AA reads {...} in templates. spans: [kind, from, to, name, seps] from scan() of dev/codemirror6/aa-syntax.js; output: what AA::Un() returns (StringexpandSyntaxCasesTest checks it on the real expander). contexts: | marks the cursor for contextAt().",
+    "about": "How AA reads {...} in templates. spans: [kind, from, to, name, seps] from scan() of dev/codemirror6/aa-syntax.js; output: what AA::Un() returns (StringexpandSyntaxCasesTest checks it on the real expander). contexts: | marks the cursor for contextAt(); start - where the parameter begins.",
     "scan": [
         {"input": "a{# x}b", "spans": [["comment", 1, 6]], "output": "ab"},
         {"input": "a{#\n  multi\n  line\n}b", "spans": [["comment", 1, 20]], "output": "ab"},
@@ -18,6 +18,7 @@
         {"input": "a{ color: red }b", "spans": [["literal", 1, 15]], "output": "a{ color: red }b"},
         {"input": "{\n  margin: 0\n}", "spans": [["literal", 0, 15]], "output": "{\n  margin: 0\n}"},
         {"input": "{IFSET:1:yes}", "spans": [["expr", 0, 13, "IFSET", [6, 8]]], "output": "yes"},
+        {"input": "{ifset::a:x:b:c}", "spans": [["expr", 0, 16, "ifset", [6, 7, 9, 11, 13]]], "output": "b"},
         {"input": "{ifeq:a:a:http://x.cz:no}", "spans": [["expr", 0, 25, "ifeq", [5, 7, 9, 21]]], "output": "http://x.cz"},
         {"input": "{ifeq:a:a:https://x.cz/p:no}", "spans": [["expr", 0, 28, "ifeq", [5, 7, 9, 24]]], "output": "https://x.cz/p"},
         {"input": "{ifeq:a:a:mailto:x:no}", "spans": [["expr", 0, 22, "ifeq", [5, 7, 9, 16, 18]]], "output": "mailto"},
@@ -33,14 +34,14 @@
         {"input": "{now}", "spans": [["expr", 0, 5, "now", []]]}
     ],
     "contexts": [
-        {"input": "{ifset:a:b|", "name": "ifset", "param": 1},
+        {"input": "{ifset:a:b|", "name": "ifset", "param": 1, "start": 9},
         {"input": "{ifset:|}", "name": "ifset", "param": 0},
-        {"input": "{ifs|", "name": "ifs", "param": -1},
+        {"input": "{ifs|", "name": "ifs", "param": -1, "start": 1},
         {"input": "{ifset|:x}", "name": "ifset", "param": -1},
         {"input": "{IFSET:a:|", "name": "ifset", "param": 1},
-        {"input": "{ifset:{ifeq:x:|}}", "name": "ifeq", "param": 1},
+        {"input": "{ifset:{ifeq:x:|}}", "name": "ifeq", "param": 1, "start": 15},
         {"input": "{ifset:a:{-x:y}:|", "name": "ifset", "param": 2},
-        {"input": "{ifeq:a:http://x|", "name": "ifeq", "param": 1},
+        {"input": "{ifeq:a:http://x|", "name": "ifeq", "param": 1, "start": 8},
         {"input": "{# {ifset:|", "name": "ifset", "param": 0},
         {"input": "{ifset:a}|", "name": null},
         {"input": "{ |", "name": null},

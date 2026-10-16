@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Stringexpand;
 
+use AA\Util\Txt;
+use AA_Components;
 use ReflectionClass;
 
 /**
@@ -17,9 +19,6 @@ final class Catalog
 {
     /** the files declaring the commands, relative to the AA directory */
     public const SOURCES = ['include/stringexpand.php', 'modules/polls/include/stringexpand.php', 'modules/site/router.class.php'];
-
-    /** bases the commands extend, not commands */
-    private const BASES = ['AA_Stringexpand_Nevercache', 'AA_Stringexpand_Nevercachenotrim'];
 
     /** a tooltip line, not a manual */
     private const DESC_MAX = 160;
@@ -37,14 +36,12 @@ final class Catalog
             $files[] = realpath($file);
         }
         $ret = [];
-        foreach (get_declared_classes() as $name) {
-            if (!str_starts_with($name, 'AA_Stringexpand_') || in_array($name, self::BASES, true)) {
-                continue;
-            }
+        foreach (AA_Components::getClassNames('AA_Stringexpand_') as $command => $name) {
             $class = new ReflectionClass($name);
-            // only the shipped ones - not a stand-in a test or a custom file declared
-            if (in_array(realpath((string) $class->getFileName()), $files, true)) {
-                $ret[strtolower(substr($name, strlen('AA_Stringexpand_')))] = self::command($class);
+            // only the shipped ones - not a stand-in a test or a custom file declared; a class without
+            // its own expand() is a base the commands extend (Nevercache), not a command
+            if (in_array(realpath((string) $class->getFileName()), $files, true) && ($class->getMethod('expand')->class !== 'AA_Stringexpand')) {
+                $ret[$command] = self::command($class);
             }
         }
         ksort($ret);
@@ -126,7 +123,7 @@ final class Catalog
         if (preg_match('/^.*?\.(?=\s|$)/u', $text, $m)) {
             $text = $m[0];
         }
-        return (mb_strlen($text) > self::DESC_MAX) ? mb_substr($text, 0, self::DESC_MAX - 1) . '…' : $text;
+        return Txt::shorten($text, self::DESC_MAX);
     }
 
     /** "{xseo:1} - what it does" gives "what it does"; an example without one gives '' */
