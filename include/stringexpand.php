@@ -217,6 +217,7 @@ class AA_Stringexpand_Jsonarray extends AA_Stringexpand_Nevercachenotrim {
  *  params text must be in utf8
  */
 class AA_Stringexpand_Jsonasoc extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = [['key', 'value']];
     /** Do not trim all parameters ($delimiter could be space) */
 
     /**
@@ -256,8 +257,12 @@ class AA_Stringexpand_Colonescape extends AA_Stringexpand_Nevercachenotrim {
     }
 }
 
-/** include file, first parameter is filename, second is hints on where to find it */
+/** {switch:<condition>:<pattern1>:<text1>[:<pattern2>:<text2>...][:<default>]} - the text of the first
+ *  pattern (a regular expression; an empty one matches always) the condition matches, else the default;
+ *  _#1 in the text stands for the condition
+ */
 class AA_Stringexpand_Switch extends AA_Stringexpand_Nevercache {
+    public const PARAMS = ['condition', ['pattern', 'text'], 'default'];
 
     /** redefine parseParam - we can't use the standard function - there is problem with:
      *  {switch({text............}).:OK} if the text.. contain ')' - we do not know, where the parameters are separated
@@ -488,6 +493,7 @@ class AA_Stringexpand_Userinfo extends AA_Stringexpand {
  *  @param $parameters - field id and other modifiers to the field
  */
 class AA_Stringexpand_Inputvar extends AA_Stringexpand_Nevercache {
+    public const PARAMS = ['field_id', 'part', 'param'];
     // Never cached (extends AA_Stringexpand_Nevercache)
     // cache is used by expand function itself
     /** expand function
@@ -690,6 +696,7 @@ class AA_Stringexpand_Var extends AA_Stringexpand_Nevercachenotrim {
  *  @param $part_name - name of the part (like 'Related Articles').
  */
 class AA_Stringexpand_Formbreak extends AA_Stringexpand {
+    public const PARAMS = [['part_name']];
 
     /** additionalCacheParam function
      * @param array $params parameters passed to expand (caching could be parameter sensitive).
@@ -4626,6 +4633,7 @@ class AA_Stringexpand_Sequence extends AA_Stringexpand_Nevercache {
  *    ($condition=_#.{8} (exactly) - like '_#HEADLINE')
  */
 class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['condition', 'text', 'else_text'];
     /** Do not trim all parameters (maybe we can?) */
 
     /** expand function
@@ -4644,6 +4652,7 @@ class AA_Stringexpand_Ifset extends AA_Stringexpand_Nevercachenotrim {
 
 /** The same as {ifset:..} but it ignores all the HTML comments in the condition */
 class AA_Stringexpand_Iftext extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['condition', 'text', 'else_text'];
     /** Do not trim all parameters (maybe we can?) */
 
     /** expand function
@@ -4682,6 +4691,7 @@ class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercachenotrim {
  * Example: {ifbit:{bitset..........}:31:1+2+4+8+16 set (_#2):15:1+2+4+8 set (_#2):12:4+8 set (_#2):0}  // multiple conditions - returns the first matching - "4+8 set (12)" for number 13 in {bitset..........}
  */
 class AA_Stringexpand_Ifbit extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['bitset', ['bit', 'text'], 'else_text'];
 
     /** expand function
      * @param $condition
@@ -4703,6 +4713,7 @@ class AA_Stringexpand_Ifbit extends AA_Stringexpand_Nevercachenotrim {
  *  Example: {ifeq:{xlang}:en:English:cz:Czech:Unknown language}
  */
 class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['etalon', ['option', 'text'], 'else_text'];
     /** Do not trim all parameters (the $text parameter at least could contain space) */
 
     /** expand function
@@ -4743,6 +4754,7 @@ class AA_Stringexpand_Ifeq extends AA_Stringexpand_Nevercachenotrim {
  *  Comparison is always numeric (also for security reasons)
  */
 class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['value', 'operator', ['compare', 'text'], 'else_text'];
     /** Do not trim all parameters (maybe we can?) */
 
     /** expand function
@@ -4831,6 +4843,7 @@ class AA_Stringexpand_Ifeqfield extends AA_Stringexpand {
  *  Example: {Ifin:de,ru,cz,pl,en:en:English:cz:Czech:Unknown language}
  */
 class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['haystack', ['needle', 'text'], 'else_text'];
     /** Do not trim all parameters (maybe we can?) */
 
     /** expand function
@@ -4878,6 +4891,7 @@ class AA_Stringexpand_Ifin extends AA_Stringexpand_Nevercachenotrim {
  *  Example: {ifintersect:{_#P_RIGHTS}:{_#MY_ROLES}:Access granted:Access denied}
  */
 class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
+    public const PARAMS = ['set1', ['set2', 'text'], 'else_text'];
 
     /** expand function
      *
@@ -4900,6 +4914,7 @@ class AA_Stringexpand_Ifintersect extends AA_Stringexpand_Nevercache {
  *   tests:  longid | shortid | mail | signed | number | positive
  */
 class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
+    public const PARAMS = ['haystack', ['test', 'text'], 'else_text'];
 
     /** expand function
      *
@@ -4940,6 +4955,7 @@ class AA_Stringexpand_Iftype extends AA_Stringexpand_Nevercache {
  *  Example: {join:, :{_#YEAR____}:{_#SIZE____}:{_#SOURCE___}}
  */
 class AA_Stringexpand_Join extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['delimiter', ['value']];
     /** Do not trim all parameters ($delimiter could be space) */
 
     /** expand function
@@ -5495,6 +5511,7 @@ class AA_Stringexpand_Editable extends AA_Stringexpand_Nevercache {
  *
  */
 class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
+    public const PARAMS = ['template_item_id', ['field_id', 'value']];
     // Never cached (extends AA_Stringexpand_Nevercache)
     // It works with database, so it should always look in the database
 
@@ -5625,6 +5642,7 @@ class AA_Stringexpand_Newitem extends AA_Stringexpand_Nevercache {
  * @see  AA_Stringexpand_Newitem
  */
 class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
+    public const PARAMS = ['existing_id', 'template_item_id', ['field_id', 'value']];
     // Never cached (extends AA_Stringexpand_Nevercache)
     // It works with database, so it should always look in the database
 
@@ -5663,6 +5681,7 @@ class AA_Stringexpand_Ensureitem extends AA_Stringexpand_Nevercache {
  *
  */
 class AA_Stringexpand_Updateitem extends AA_Stringexpand_Newitem {
+    public const PARAMS = ['item_id', ['field_id', 'value']];
     // Never cached (extends AA_Stringexpand_Nevercache)
     // It works with database, so it should always look in the database
 
@@ -6314,6 +6333,7 @@ class AA_Stringexpand_Dictionary extends AA_Stringexpand {
  *  {import:prices:changed}
  */
 class AA_Stringexpand_Import extends AA_Stringexpand_Nevercache {
+    public const PARAMS = ['import', 'mode'];
     /** stands for the arguments of {import(..)} - only {import:..} reaches an import */
     private const NOT_COLON = "\x00(";
     public const PREFIX = 'imp:';
@@ -7913,6 +7933,10 @@ class AA_Tools {
 
 /**
  * Class AA_Stringexpand
+ *
+ * The class docblock and the parameter names of expand() are the hints of the code editor
+ * (AA\Stringexpand\Catalog). A command taking any number of parameters names them in
+ * const PARAMS = ['etalon', ['option', 'text'], 'else_text'] - the inner list repeats.
  */
 class AA_Stringexpand {
 
@@ -9339,6 +9363,7 @@ if (defined('STRINGEXPAND_INC')) {
  *          - add field "do not execute if..."
  */
 class AA_Stringexpand__ extends AA_Stringexpand {
+    public const PARAMS = ['shortcut', ['param']];
 
     /** Do not trim all parameters */
     protected static function doTrimParams(): bool { return false; }
@@ -11118,6 +11143,7 @@ class AA_Stringexpand_Partdiv extends AA_Stringexpand {
  *         {tr:found _#1 items:5} - you can use parameters _#1, _#2...
  */
 class AA_Stringexpand_Tr extends AA_Stringexpand {
+    public const PARAMS = ['text', ['param']];
 
     /** expand function
      * @param $text
