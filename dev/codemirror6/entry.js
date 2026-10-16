@@ -32,6 +32,9 @@ const editable = disabled => [EditorView.editable.of(!disabled), EditorState.rea
  *
  * @param {HTMLTextAreaElement} textarea
  * @param {{language?: string, disabled?: boolean, onChange?: (value: string) => void}} [options]
+ * @return {{dom: HTMLElement, getValue: () => string, setValue: (value: string) => void,
+ *           setLanguage: (name: string) => void, setDisabled: (disabled: boolean) => void,
+ *           focus: () => void, destroy: () => void}}
  */
 export function createEditor(textarea, { language = 'html', disabled = false, onChange } = {}) {
     const languageConf = new Compartment();
@@ -76,8 +79,8 @@ export function createEditor(textarea, { language = 'html', disabled = false, on
         setLanguage(name) {
             view.dispatch({ effects: languageConf.reconfigure((LANGUAGES[name] || LANGUAGES.html)()) });
         },
-        setDisabled(off) {
-            view.dispatch({ effects: editableConf.reconfigure(editable(off)) });
+        setDisabled(disabled) {
+            view.dispatch({ effects: editableConf.reconfigure(editable(disabled)) });
         },
         focus: () => view.focus(),
         destroy: () => view.destroy(),

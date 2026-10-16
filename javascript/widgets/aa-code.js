@@ -285,14 +285,21 @@ class AaCodeElement extends HTMLElement {
         // "syntax" here, "language" in the bundle (CodeMirror's own term): on
         // multilingual fields "language" would sit next to real cs/en/de codes.
         // The bundle writes every change into the textarea itself.
-        this.#editor = createEditor(this.#textarea, { language: this.getAttribute('syntax') || 'html', disabled: this.#textarea.disabled });
-        this.toggleAttribute('disabled', this.#textarea.disabled);
-        // pages switch fields on and off by textarea.disabled (EnableClick() in the admin)
+        const disabled = this.#textarea.matches(':disabled');
+        this.#editor = createEditor(this.#textarea, { language: this.getAttribute('syntax') || 'html', disabled });
+        this.toggleAttribute('disabled', disabled);
+        // pages switch fields on and off by textarea.disabled (EnableClick() in the admin) or by a
+        // <fieldset disabled> around them - a disabled field is not submitted, so no typing into it
         this.#disabledWatch = new MutationObserver(() => {
-            this.#editor?.setDisabled(this.#textarea.disabled);
-            this.toggleAttribute('disabled', this.#textarea.disabled);
+            const now = this.#textarea.matches(':disabled');
+            if (now !== this.hasAttribute('disabled')) {
+                this.#editor?.setDisabled(now);
+                this.toggleAttribute('disabled', now);
+            }
         });
-        this.#disabledWatch.observe(this.#textarea, { attributes: true, attributeFilter: ['disabled'] });
+        for (let el = this.#textarea; el; el = el.parentElement?.closest('fieldset')) {
+            this.#disabledWatch.observe(el, { attributes: true, attributeFilter: ['disabled'] });
+        }
         this.#textarea.hidden = true;
         // Bare attribute: a custom element owns its own attribute set. Becomes
         // states.add('ready') once :state() is Baseline Widely Available.
