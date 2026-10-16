@@ -44,4 +44,11 @@ final class FrmTextareaTest extends TestCase
         self::assertMatchesRegularExpression('~<aa-code syntax="html"><textarea id="odd_row_format" name="odd_row_format"[^>]*>&lt;b&gt;\{# x\}&lt;/b&gt;</textarea>\s*</aa-code>~', $html);
         self::assertStringNotContainsString('type="radio"', $html, 'no HTML / plain text switch - a template is HTML');
     }
+
+    public function test_frmTextarea_codeLanguage_isTheEditorsSyntax(): void
+    {
+        $html = self::render(static fn() => FrmTextarea('javascript', 'Code', 'if (a < b) {}', 4, 60, code: 'javascript'));
+        self::assertStringContainsString('<aa-code syntax="javascript"><textarea id="javascript" name="javascript"', $html);
+        self::assertStringContainsString('if (a &lt; b) {}</textarea>', $html);
+    }
 }

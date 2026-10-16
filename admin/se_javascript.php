@@ -72,7 +72,7 @@ $apage->printHead($err, $Msg);
 
 
 FrmTabCaption(_m("JavaScript for fields"));
-FrmTextarea("javascript", _m("Code"), $javascript, 4, 60, false, _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."), '', true, code: true);
+FrmTextarea("javascript", _m("Code"), $javascript, 4, 60, false, _m("Enter code in the JavaScript language. It will be included in the Add / Edit item page (itemedit.php)."), '', true, code: 'javascript');
 
 $form_buttons =  [
     "update",

@@ -511,6 +511,7 @@ class AA_Inputfield {
     private $input_morehlp;                      // url, where user will jump after (s)he click on '?'
     private $additional;                         // additional code for input (like 'class="chleba")
     private bool $html_rb_show;                  // show HTML/Plaintext radiobutton?
+    private string $code_syntax = 'html';        // language of the code editor (<aa-code>): html, javascript, css
 
     private $valid;                              // string validation function used - could be 'number' or 'number:0:9999' - in order og getClassProperties of AA_Validate_Number
     // (this function we added in order we can use this class for AA Admin forms as well)
@@ -1547,7 +1548,7 @@ class AA_Inputfield {
             if ($richtext) {
                 $widg = RichtextMarkup::wrap($widg, $this->html_flag ? 'code' : 'plain', RichtextMarkup::contextAttrs((string) ($this->use_triggers_4_slice ?: AA::$module_id)) + ['switch-name' => $this->varname . 'html', 'switch-html' => 'h', 'editor' => 'editor']);
             } elseif ($codeview) {
-                $widg = '<aa-code syntax="html">' . $widg . '</aa-code>';
+                $widg = '<aa-code syntax="' . safe($this->code_syntax) . '">' . $widg . '</aa-code>';
             }
         }
         $this->echovar($widg);
@@ -2251,6 +2252,12 @@ class AA_Inputfield {
         $this->html_rb_show = $html_rb_show;
     }
 
+    /** @param string $syntax html | javascript | css - what the code editor highlights */
+    public function setCodeSyntax(string $syntax): void
+    {
+        $this->code_syntax = $syntax;
+    }
+
 }
 
 // ----------------------- Public Form functions ----------
@@ -2462,13 +2469,17 @@ function FrmHidden($name, $val, $safing=true ): void
  * @param bool   $single
  * @param bool   $showrich_href
  * @param int    $maxlength
- * @param bool   $code - a template: in the code editor (<aa-code>), which also shows AA syntax
+ * @param bool|string $code - a template: in the code editor (<aa-code>), which also shows AA syntax;
+ *                            the language as a string ('javascript'), true = HTML
  */
-function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0, bool $code=false): void
+function FrmTextarea($name, $txt, $val, $rows=4, $cols=60, $needed=false, $hlp="", $morehlp="", $single=false, $showrich_href=false, $maxlength=0, bool|string $code=false): void
 {
-    $html  = $code;   // HTML without the HTML / plain text switch is what AA_Inputfield::textarea() shows in <aa-code>
+    $html  = (bool) $code;   // HTML without the HTML / plain text switch is what AA_Inputfield::textarea() shows in <aa-code>
     $add   = false;   // in parameter, but never filled. Honza 24.4.2013
     $input = new AA_Inputfield($val, $html, 'normal', $name, $txt, $add, $needed, $hlp, $morehlp);
+    if (is_string($code)) {
+        $input->setCodeSyntax($code);
+    }
     if ($showrich_href) {
         $input->setShowHtmlRadio(true);
     }
