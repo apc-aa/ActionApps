@@ -172,16 +172,14 @@ final class ClientTest extends TestCase
     public static function requests(): array
     {
         $test = 'https://ws1.datovka-test.gov.cz/DS/';
-        $prod = 'https://ws1.datovka.gov.cz/DS/';
         return [
             'send, test'       => ['CreateMessage', 'dmBaseTypes.xsd', 'create-message-ok.xml', Account::TEST, $test . 'dz', static fn(Client $c) => $c->createMessage(self::message())],
-            'send, production' => ['CreateMessage', 'dmBaseTypes.xsd', 'create-message-ok.xml', Account::PRODUCTION, $prod . 'dz', static fn(Client $c) => $c->createMessage(self::message())],
             'send, flags set'  => ['CreateMessage', 'dmBaseTypes.xsd', 'create-message-ok.xml', Account::TEST, $test . 'dz', static fn(Client $c) => $c->createMessage(new Message('kv62bqf', 'Věc', [new File('a.pdf', 'application/pdf', File::MAIN, 'x')], personalDelivery: true, allowSubstDelivery: false))],
             'state changes'    => ['GetMessageStateChanges', 'dmBaseTypes.xsd', 'state-changes.xml', Account::TEST, $test . 'dx', static fn(Client $c) => $c->stateChanges(self::FROM, self::TO)],
             'sent messages'    => ['GetListOfSentMessages', 'dmBaseTypes.xsd', 'sent-messages.xml', Account::TEST, $test . 'dx', static fn(Client $c) => $c->sentMessages(self::FROM, self::TO, 1001, 500)],
             'check box'        => ['CheckDataBox', 'dbTypes.xsd', 'check-data-box.xml', Account::TEST, $test . 'df', static fn(Client $c) => $c->checkDataBox('kv62bqf')],
             'user'             => ['GetUserInfoFromLogin2', 'dbTypes.xsd', 'user-info.xml', Account::TEST, $test . 'DsManage', static fn(Client $c) => $c->userInfo()],
-            'password'         => ['GetPasswordInfo', 'dbTypes.xsd', 'password-info.xml', Account::PRODUCTION, $prod . 'DsManage', static fn(Client $c) => $c->passwordExpiry()],
+            'password'         => ['GetPasswordInfo', 'dbTypes.xsd', 'password-info.xml', Account::TEST, $test . 'DsManage', static fn(Client $c) => $c->passwordExpiry()],
             'owner'            => ['GetOwnerInfoFromLogin2', 'dbTypes.xsd', 'owner-info.xml', Account::TEST, $test . 'DsManage', static fn(Client $c) => $c->ownerBox()],
         ];
     }

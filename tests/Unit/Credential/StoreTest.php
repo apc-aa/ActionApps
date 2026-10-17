@@ -88,6 +88,93 @@ final class StoreTest extends TestCase
         self::assertSame('vendor-value-9876', Store::resolve('importcredtest', 'password')?->reveal(), 'no own key for the context - the vendor key');
     }
 
+    // a key of one account must never be the vendor's shared key
+    public function test_resolveExact_noVendorFallback(): void
+    {
+        self::assertSame('login-value-1234', Store::resolveExact('importcredtest', 'login')?->reveal());
+        self::assertNull(Store::resolveExact('importcredtest', 'password'));
+        self::assertNull(Store::resolveExact('importcrednosuch', 'login'));
+        self::assertNull(Store::resolveExact('', 'login'));
+    }
+
+    public function test_resolveExact_fromConstants(): void
+    {
+        $constants = ['AA_APIKEY_ACME_A_LOGIN' => 'a-login', 'AA_APIKEY_ACME' => 'vendor', 'AA_APIKEY_ACME_A_PIN' => 1234, 'AA_APIKEY_ACME_A_EMPTY' => '', 'AA_APIKEY_ACME_A_LIST' => ['x']];
+
+        self::assertSame('a-login', Store::resolveExact('acme', 'a.login', $constants)?->reveal());
+        self::assertSame('1234', Store::resolveExact('acme', 'a_pin', $constants)?->reveal());
+        self::assertNull(Store::resolveExact('acme', 'a_password', $constants));
+        self::assertNull(Store::resolveExact('acme', 'a_empty', $constants));
+        self::assertNull(Store::resolveExact('acme', 'a_list', $constants));
+        self::assertNull(Store::resolveExact('importcredtest', 'login', $constants), 'only the constants given');
+    }
+
+    public function test_resolveExact_lineBreakRefusedWithoutValue(): void
+    {
+        try {
+            Store::resolveExact('acme', 'a_login', ['AA_APIKEY_ACME_A_LOGIN' => "broken-value-55\nX: 1"]);
+            self::fail('UnexpectedValueException expected');
+        } catch (\UnexpectedValueException $e) {
+            self::assertSame('AA_APIKEY_ACME_A_LOGIN holds a line break or NUL - fix it in the configuration', $e->getMessage());
+        }
+    }
+
+    // without a context names() spells the vendor's own key - which is not the one asked for
+    public function test_resolveExact_noContextNoKey(): void
+    {
+        $constants = ['AA_APIKEY_ACME' => 'vendor-value', 'AA_APIKEY_ACME_' => 'odd'];
+
+        foreach (['', '_', '  ', '-.'] as $context) {
+            self::assertNull(Store::resolveExact('acme', $context, $constants), "context '$context'");
+        }
+        self::assertNull(Store::resolveExact('importcredtest', ''));
+    }
+
+    /** the constants hold every key of config.php - a trace with the arguments must show none */
+    public function test_resolveExact_constantsNotInTrace(): void
+    {
+        $ignore = (string) ini_get('zend.exception_ignore_args');
+        ini_set('zend.exception_ignore_args', '0');
+        try {
+            Store::resolveExact('acme', 'a_login', ['AA_APIKEY_ACME_A_LOGIN' => "x\n", 'DB_PASSWORD' => 'db-value-never-in-a-trace']);
+            self::fail('UnexpectedValueException expected');
+        } catch (\UnexpectedValueException $e) {
+            $frames = array_filter($e->getTrace(), static fn(array $f): bool => ($f['class'] ?? '') === Store::class);
+            $trace  = print_r($frames, true);
+            self::assertStringContainsString('a_login', $trace, 'the trace keeps arguments');
+            self::assertStringNotContainsString('db-value', $trace);
+        } finally {
+            ini_set('zend.exception_ignore_args', $ignore);
+        }
+    }
+
+    public function test_contextsIn_namesOfOneVendorInAnyCase(): void
+    {
+        $constants = ['AA_APIKEY_ISDS' => 'a', 'AA_APIKEY_ISDS_NSZM_LOGIN' => 'b', 'AA_APIKEY_IsDs_x' => 'c', 'aa_apikey_isds' => 'd', 'AA_APIKEY_ISDSTEST_NSZM_LOGIN' => 'e', 'AA_APIKEY_CSU' => 'f', 'ISDS_LOGIN' => 'g'];
+
+        self::assertSame(['AA_APIKEY_ISDS' => '', 'AA_APIKEY_ISDS_NSZM_LOGIN' => 'NSZM_LOGIN', 'AA_APIKEY_IsDs_x' => 'x', 'aa_apikey_isds' => ''], Store::contextsIn('isds', $constants));
+        self::assertSame(['AA_APIKEY_ISDSTEST_NSZM_LOGIN' => 'NSZM_LOGIN'], Store::contextsIn('IsdsTest', $constants));
+    }
+
+    // the contexts of a vendor of two words would be read wrongly
+    public function test_contextsIn_refusesVendorOfMoreWords(): void
+    {
+        foreach (['isds-registry', 'isds_registry', '', '-'] as $vendor) {
+            try {
+                Store::contextsIn($vendor, []);
+                self::fail("'$vendor' refused expected");
+            } catch (\InvalidArgumentException) {
+                self::addToAssertionCount(1);
+            }
+        }
+    }
+
+    public function test_userConstants_holdsDefinedOnes(): void
+    {
+        self::assertSame('login-value-1234', Store::userConstants()['AA_APIKEY_IMPORTCREDTEST_LOGIN'] ?? null);
+        self::assertArrayNotHasKey('E_ALL', Store::userConstants());
+    }
+
     public function test_secret_notSerializable(): void
     {
         // serialize() is how AA hashes memoized calls and stores sessions - the value would land there in clear

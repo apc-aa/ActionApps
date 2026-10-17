@@ -19,19 +19,38 @@ final class AccountTest extends TestCase
     }
 
     #[DataProvider('urls')]
-    public function test_url_byEnvironment(string $environment, string $service, string $expected): void
+    public function test_url_byService(string $service, string $expected): void
     {
-        self::assertSame($expected, self::account($environment)->url($service));
+        self::assertSame($expected, self::account()->url($service));
     }
 
     public static function urls(): array
     {
         return [
-            'test, messages'     => [Account::TEST, 'dz', 'https://ws1.datovka-test.gov.cz/DS/dz'],
-            'test, account'      => [Account::TEST, 'DsManage', 'https://ws1.datovka-test.gov.cz/DS/DsManage'],
-            'production, info'   => [Account::PRODUCTION, 'dx', 'https://ws1.datovka.gov.cz/DS/dx'],
-            'production, search' => [Account::PRODUCTION, 'df', 'https://ws1.datovka.gov.cz/DS/df'],
+            'messages' => ['dz', 'https://ws1.datovka-test.gov.cz/DS/dz'],
+            'info'     => ['dx', 'https://ws1.datovka-test.gov.cz/DS/dx'],
+            'search'   => ['df', 'https://ws1.datovka-test.gov.cz/DS/df'],
+            'account'  => ['DsManage', 'https://ws1.datovka-test.gov.cz/DS/DsManage'],
         ];
+    }
+
+    // a typo in a URL cannot take a test account to production
+    public function test_hosts_testIsNotProduction(): void
+    {
+        $hosts = (new \ReflectionClass(Account::class))->getConstant('HOSTS');
+
+        self::assertSame([Account::TEST => 'https://ws1.datovka-test.gov.cz', Account::PRODUCTION => 'https://ws1.datovka.gov.cz'], $hosts);
+    }
+
+    // production lets an application in with a certificate only, never with a password given to a server
+    public function test_construct_refusesProduction(): void
+    {
+        try {
+            self::account(Account::PRODUCTION);
+            self::fail('InvalidArgumentException expected');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('certificate', $e->getMessage());
+        }
     }
 
     #[DataProvider('notEnvironments')]
@@ -94,7 +113,7 @@ final class AccountTest extends TestCase
 
     public function test_password_notInDumps(): void
     {
-        $account = self::account(Account::PRODUCTION);
+        $account = self::account();
         ob_start();
         var_dump($account);
         $dumps = [(string) ob_get_clean(), print_r($account, true), var_export($account, true), (string) json_encode($account), print_r((array) $account, true)];
@@ -115,8 +134,9 @@ final class AccountTest extends TestCase
             self::fail('InvalidArgumentException expected');
         } catch (\InvalidArgumentException $e) {
             $args = print_r($e->getTrace()[0]['args'] ?? [], true);
-            self::assertStringContainsString('user01', $args, 'the trace keeps arguments');
+            self::assertStringContainsString('staging', $args, 'the trace keeps arguments');
             self::assertStringNotContainsString(self::PASSWORD, $e->getMessage() . $args);
+            self::assertStringNotContainsString('user01', $args, 'the login is sensitive too');
         } finally {
             ini_set('zend.exception_ignore_args', $ignore);
         }

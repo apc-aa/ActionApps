@@ -10,6 +10,8 @@ use AA\Credential\Secret;
  * Who logs in to ISDS and where: the environment decides the host, so a test account can never
  * reach production by a typo in a URL. The password is revealed only to check it in the
  * constructor and to build headers().
+ * Production lets an application in with a certificate only, never with a password given to a
+ * server - so this name-and-password account is refused there.
  */
 final class Account
 {
@@ -23,13 +25,16 @@ final class Account
     ];
 
     /**
-     * @throws \InvalidArgumentException an unknown environment, an empty login or one with a colon, a
-     *                                   password ISDS never accepts
+     * @throws \InvalidArgumentException an unknown environment, production, an empty login or one with
+     *                                   a colon, a password ISDS never accepts
      */
-    public function __construct(public readonly string $environment, public readonly string $login, private readonly Secret $password)
+    public function __construct(public readonly string $environment, #[\SensitiveParameter] public readonly string $login, private readonly Secret $password)
     {
         if (!isset(self::HOSTS[$environment])) {
             throw new \InvalidArgumentException('An ISDS environment is "' . self::TEST . '" or "' . self::PRODUCTION . '"');
+        }
+        if ($environment === self::PRODUCTION) {
+            throw new \InvalidArgumentException('Production ISDS lets an application in with a certificate only, and AA cannot log in with one yet');
         }
         // basic auth splits the pair at the first colon
         if (($login === '') || str_contains($login, ':')) {
