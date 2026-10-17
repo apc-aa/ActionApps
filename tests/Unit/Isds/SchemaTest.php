@@ -64,6 +64,7 @@ final class SchemaTest extends TestCase
         'BOX_FOREIGN'             => 'foreign',
         'BOX_INACTIVE'            => 'inactive',
         'BOX_DUPLICATE'           => 'duplicate',
+        'BOX_ICO'                 => 'ico',
         'EVENT_QUEUED'            => 'queued',
         'EVENT_SENDING'           => 'sending',
         'EVENT_SUBMITTED'         => 'submitted',

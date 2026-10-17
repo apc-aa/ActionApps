@@ -7,18 +7,22 @@ namespace Tests\Unit\Isds;
 use AA\Isds\Recipient;
 use AA\Isds\RecipientFilter;
 use AA\Isds\Registry\Config;
+use AA\Isds\Registry\RegisterIndex;
+use AA\Isds\Registry\UnusableRegisterException;
 use AA\Isds\Schema;
 use AA\Isds\Setup;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Isds\Fixtures\FakeRecipients;
+use Tests\Unit\Isds\Fixtures\FakeRegisterIndex;
 use Tests\Unit\Isds\Fixtures\Sending;
 
 require_once __DIR__ . '/fixtures/Sending.php';
 
 /**
  * Recipients = (type ∩ membership) ∪ include − exclude, each data box once; a bad box skips the
- * recipient with its reason, never stops the rest. Only items of the source slice are read.
+ * recipient with its reason, never stops the rest. Only items of the source slice are read. A box
+ * the register of data boxes has not, or has for another IČO than the item's, is foreign.
  */
 final class RecipientsTest extends TestCase
 {
@@ -36,6 +40,7 @@ final class RecipientsTest extends TestCase
         require_once __DIR__ . '/../fixtures/util_shims.php';
         require_once __DIR__ . '/../Legacy/fixtures/store_fixtures.php';
         require_once __DIR__ . '/fixtures/FakeRecipients.php';
+        require_once __DIR__ . '/fixtures/FakeRegisterIndex.php';
     }
 
     protected function setUp(): void
@@ -67,18 +72,19 @@ final class RecipientsTest extends TestCase
 
     private static function config(string $typeField = Sending::TYPE): Config
     {
-        return Config::fromValues(Sending::SOURCE, ['name_field' => Sending::NAME, 'ds_field' => Sending::DS, 'type_field' => $typeField]);
+        return Config::fromValues(Sending::SOURCE, ['name_field' => Sending::NAME, 'ico_field' => Sending::ICO, 'ds_field' => Sending::DS, 'type_field' => $typeField]);
     }
 
     /**
      * @param array<string, mixed> $over
+     * @param ?RegisterIndex       $register null = one with every box, none with an IČO
      * @return list<Recipient>
      */
-    private static function resolve(FakeRecipients $source, array $over = [], ?Setup $page = null): array
+    private static function resolve(FakeRecipients $source, array $over = [], ?Setup $page = null, ?RegisterIndex $register = null): array
     {
         $page ??= Sending::page();
 
-        return $source->resolve($page, RecipientFilter::fromJson(Sending::filter($over), $page), self::config());
+        return $source->resolve($page, RecipientFilter::fromJson(Sending::filter($over), $page), self::config(), $register ?? FakeRegisterIndex::permissive());
     }
 
     /**
@@ -238,6 +244,190 @@ final class RecipientsTest extends TestCase
     {
         $this->expectException(\RuntimeException::class);
 
-        self::source()->resolve(Sending::page(), RecipientFilter::default(Sending::page()), self::config(''));
+        self::source()->resolve(Sending::page(), RecipientFilter::default(Sending::page()), self::config(''), FakeRegisterIndex::permissive());
+    }
+
+    // ------------------------------------------------------------ the register of data boxes
+
+    /**
+     * The register with the boxes of Adamov, Benešov and Děčín - not of Cheb
+     * @param array<string, array{string, string}> $boxes box id => IČO and official name, over these
+     */
+    private static function register(array $boxes = []): FakeRegisterIndex
+    {
+        return new FakeRegisterIndex(RegisterIndex::OK, $boxes + [
+            'ada1234' => ['00283924', 'Město Adamov'],
+            'ben1234' => ['00231401', 'Město Benešov'],
+            'dec1234' => ['00261238', 'Statutární město Děčín'],
+        ]);
+    }
+
+    /**
+     * @param list<Recipient> $recipients
+     * @return list<array{string, string, string}> name, reason and official name of each
+     */
+    private static function checked(array $recipients): array
+    {
+        return array_map(static fn(Recipient $r): array => [$r->name, $r->reason, $r->official], $recipients);
+    }
+
+    public function test_resolve_marksBoxOutsideRegisterForeign(): void
+    {
+        $recipients = self::resolve(self::source(), register: self::register());
+
+        self::assertSame([
+            ['Adamov', '', 'Město Adamov'],
+            ['Benešov', '', 'Město Benešov'],
+            ['Cheb', Schema::BOX_FOREIGN, ''],
+        ], self::checked($recipients));
+        self::assertSame(['che1234', true], [$recipients[2]->box, $recipients[2]->boxValid()], 'a foreign box is a box');
+    }
+
+    public function test_resolve_otherIcoForeign(): void
+    {
+        $source     = self::source([self::ADAMOV => ['fields' => [Sending::ICO => '00231401']], self::BENESOV => ['fields' => [Sending::ICO => "\u{A0}231 401 "]]]);
+        $recipients = self::resolve($source, register: self::register());
+
+        self::assertSame(['Adamov', Schema::BOX_FOREIGN, 'Město Adamov'], self::checked($recipients)[0], 'the register names whose box it is');
+        self::assertSame('00231401', $recipients[0]->ico);
+        self::assertSame(['Benešov', '', 'Město Benešov'], self::checked($recipients)[1], 'the same IČO without leading zeros, with spaces');
+        self::assertSame('00231401', $recipients[1]->ico);
+    }
+
+    /** @return array<string, array{string, string}> the IČO of the item, of the register */
+    public static function missingIco(): array
+    {
+        return [
+            'none in the item'       => ['', '00283924'],
+            'spaces in the item'     => ['  ', '00283924'],
+            'a no-break space'       => ["\u{A0}", '00283924'],
+            'zero-width characters'  => ["\u{200B}\u{FEFF}", '00283924'],
+            'none in either'         => ['', ''],
+            'no IČO in the register' => ['', RegisterIndex::BAD_ICO],
+        ];
+    }
+
+    // an item without an IČO is checked by the box alone
+    #[DataProvider('missingIco')]
+    public function test_resolve_keepsMissingIco(string $ico, string $registerIco): void
+    {
+        $recipients = self::resolve(self::source([self::ADAMOV => ['fields' => [Sending::ICO => $ico]]]), register: self::register(['ada1234' => [$registerIco, 'Město Adamov']]));
+
+        self::assertSame(['Adamov', '', 'Město Adamov'], self::checked($recipients)[0]);
+        self::assertSame('', $recipients[0]->ico);
+    }
+
+    /** @return array<string, array{string}> the IČO the register has for the box */
+    public static function boxWithoutIco(): array
+    {
+        return [
+            'none'       => [''],
+            'not an IČO' => [RegisterIndex::BAD_ICO],
+        ];
+    }
+
+    // a box without an IČO - an office, an archive, a district of Brno - is no item's that has one
+    #[DataProvider('boxWithoutIco')]
+    public function test_resolve_boxWithoutIcoForeignToItemWithIco(string $registerIco): void
+    {
+        $recipients = self::resolve(self::source([self::ADAMOV => ['fields' => [Sending::ICO => '00283924']]]), register: self::register(['ada1234' => [$registerIco, 'Archiv']]));
+
+        self::assertSame(['Adamov', Schema::BOX_FOREIGN, 'Archiv'], self::checked($recipients)[0]);
+    }
+
+    /** @return array<string, array{string, string}> the IČO the register has for the box, the item's */
+    public static function icoThatIsNone(): array
+    {
+        return [
+            'letters, no IČO in the register' => ['', 'Adamov'],
+            'the mark of a bad IČO in both'   => [RegisterIndex::BAD_ICO, RegisterIndex::BAD_ICO],
+            'nine digits'                     => ['00283924', '123456789'],
+        ];
+    }
+
+    // the preview points at the field to fix - the IČO, not the box - and never matches it to the register
+    #[DataProvider('icoThatIsNone')]
+    public function test_resolve_icoFieldThatIsNoIco(string $registerIco, string $ico): void
+    {
+        $register   = self::register(['ada1234' => [$registerIco, 'Město Adamov']]);
+        $recipients = self::resolve(self::source([self::ADAMOV => ['fields' => [Sending::ICO => " $ico "]]]), register: $register);
+
+        self::assertSame([['Adamov', Schema::BOX_ICO, ''], $ico, true], [self::checked($recipients)[0], $recipients[0]->ico, $recipients[0]->boxValid()]);
+        self::assertSame([['ben1234', 'che1234']], $register->lookups, 'its box is not looked up');
+    }
+
+    // the first by name with a box keeps it - unless the box is not its own
+    public function test_resolve_foreignLeavesTheBoxToItsOwner(): void
+    {
+        $source = self::source([
+            self::ADAMOV => ['fields' => [Sending::ICO => '00231401']],
+            self::DECIN  => ['fields' => [Sending::TYPE => 'mesto', Sending::DS => 'ada1234', Sending::ICO => '283924']],
+        ]);
+
+        self::assertSame([
+            ['Adamov', Schema::BOX_FOREIGN, 'Město Adamov'],
+            ['Benešov', '', 'Město Benešov'],
+            ['Děčín', '', 'Město Adamov'],
+            ['Cheb', Schema::BOX_FOREIGN, ''],
+        ], self::checked(self::resolve($source, register: self::register())));
+    }
+
+    // an item without an IČO first by name - a forged one, maybe - leaves the box to the item the register gives it
+    public function test_resolve_duplicateKeptByTheItemWhoseIcoTheRegisterGives(): void
+    {
+        $source = self::source([
+            self::ADAMOV => ['fields' => [Sending::DS => 'dec1234']],
+            self::DECIN  => ['fields' => [Sending::TYPE => 'mesto', Sending::ICO => '261238']],
+        ]);
+
+        self::assertSame([
+            ['Adamov', Schema::BOX_DUPLICATE, 'Statutární město Děčín'],
+            ['Benešov', '', 'Město Benešov'],
+            ['Děčín', '', 'Statutární město Děčín'],
+            ['Cheb', Schema::BOX_FOREIGN, ''],
+        ], self::checked(self::resolve($source, register: self::register())));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function unusableRegister(): array
+    {
+        return [
+            'missing'    => [RegisterIndex::MISSING],
+            'unreadable' => [RegisterIndex::UNREADABLE],
+        ];
+    }
+
+    #[DataProvider('unusableRegister')]
+    public function test_resolve_unusableRegisterRefusedUpFront(string $state): void
+    {
+        try {
+            self::resolve(self::source(), register: new FakeRegisterIndex($state));
+            self::fail('recipients told without the register');
+        } catch (UnusableRegisterException $e) {
+            self::assertSame("The register of data boxes is $state", $e->getMessage());
+        }
+        self::assertSame([[], []], [FakeRecipients::$searches, FakeRecipients::$read], 'nothing searched or read');
+    }
+
+    public function test_resolve_oneLookupForAllBoxes(): void
+    {
+        $source   = self::source([
+            self::BENESOV => ['fields' => [Sending::DS => '']],
+            self::CHEB    => ['fields' => [Sending::DS => 'ADA1234']],
+            self::DECIN   => ['fields' => [Sending::DS => 'dec 1234']],
+            self::STRED   => ['fields' => [Sending::DS => 'str1234']],
+        ]);
+        $over     = ['include' => [self::DECIN, self::STRED]];
+        $register = self::register();
+
+        $preview = self::resolve($source, $over, register: $register);
+        self::assertSame([['ada1234', 'str1234']], $register->lookups, 'each box once, none that is no box');
+        self::assertSame([
+            ['Adamov', '', 'Město Adamov'],
+            ['Benešov', Schema::BOX_MISSING, ''],
+            ['Brno-střed', Schema::BOX_FOREIGN, ''],
+            ['Děčín', Schema::BOX_FORMAT, ''],
+            ['Cheb', Schema::BOX_DUPLICATE, 'Město Adamov'],
+        ], self::checked($preview));
     }
 }

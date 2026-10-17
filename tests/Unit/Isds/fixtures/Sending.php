@@ -25,6 +25,7 @@ final class Sending
     public const TYPE   = 'switch.........1';
     public const DS     = 'text..........11';
     public const MEMBER = 'switch.........9';                      // tells a member
+    public const ICO    = 'text...........2';                      // the IČO, when the settings name it
 
     /** @return array<string, string> a test account of include/config.php bound to the site and the pair */
     public static function bound(string $site = self::SITE, string $pair = self::CAMPAIGN . ',' . self::MESSAGE): array

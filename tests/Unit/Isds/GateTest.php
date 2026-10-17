@@ -8,6 +8,7 @@ use AA;
 use AA\Isds\Access;
 use AA\Isds\Account;
 use AA\Isds\Gate;
+use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Util\FormToken;
@@ -21,6 +22,7 @@ use ReflectionProperty;
 use Tests\Unit\Isds\Fixtures\FakeGate;
 use Tests\Unit\Isds\Fixtures\FakePerms;
 use Tests\Unit\Isds\Fixtures\FakeRecipients;
+use Tests\Unit\Isds\Fixtures\FakeRegisterIndex;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
 use Tests\Unit\Isds\Fixtures\Sending;
 
@@ -64,6 +66,7 @@ final class GateTest extends TestCase
         require_once __DIR__ . '/fixtures/FakePerms.php';
         require_once __DIR__ . '/fixtures/FakeGate.php';
         require_once __DIR__ . '/fixtures/FakeRecipients.php';
+        require_once __DIR__ . '/fixtures/FakeRegisterIndex.php';
         class_exists(\AA_Stringexpand_Jsonasoc::class);   // stringexpand.php: aa_json_decode()
         if (!defined('CACHE_TTL')) {
             define('CACHE_TTL', 600);                       // AA::Pagecache()
@@ -412,10 +415,12 @@ final class GateTest extends TestCase
      * The gate with the territory of the source slice: Benešov has no box, Děčín the box of Adamov
      * @param array<string, string|array{slice: string, active: bool, filter: string}> $campaigns item id => the
      *        filter of an active item of the campaign slice, or what stored() gives
+     * @param ?RegisterIndex $register null = one with every box of the territory, none with an IČO
      */
-    private static function recipientGate(array $campaigns): FakeGate
+    private static function recipientGate(array $campaigns, ?RegisterIndex $register = null): FakeGate
     {
         $gate            = self::gate();
+        $gate->index     = $register ?? new FakeRegisterIndex(RegisterIndex::OK, ['ada1234' => ['', 'Město Adamov'], 'che1234' => ['', 'Město Cheb'], 'brn1234' => ['', 'Statutární město Brno']]);
         $gate->campaigns = array_map(static fn(string|array $c): array => is_string($c) ? ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => $c] : $c, $campaigns);
         $gate->resolver  = new FakeRecipients([
             self::ADAMOV  => Sending::item('Adamov', 'mesto', '1', 'ada1234'),
@@ -494,5 +499,86 @@ final class GateTest extends TestCase
         self::assertSame(['', '', ''], self::counts($gate, self::ITEM));
         self::assertSame([[self::SITE . ':' . self::CAMPAIGN . ':' . self::ITEM, $problem]], $gate->recipientsLogged);
         self::assertSame([], $gate->logged, 'not a problem of the settings');
+    }
+
+    // ------------------------------------------------------------ the register of data boxes
+
+    /** @return array<string, array{string}> */
+    public static function registerStates(): array
+    {
+        return [
+            'ok'         => [RegisterIndex::OK],
+            'old'        => [RegisterIndex::OLD],
+            'missing'    => [RegisterIndex::MISSING],
+            'unreadable' => [RegisterIndex::UNREADABLE],
+        ];
+    }
+
+    // looked at once a request, by the preview and register() alike, items stored meanwhile or not; a
+    // new request looks again
+    public function test_registerIndex_oneARequest(): void
+    {
+        $gate  = new class extends Gate {
+            public function index(): RegisterIndex
+            {
+                return $this->registerIndex();
+            }
+        };
+        $index = $gate->index();
+
+        self::assertSame($index, $gate->index());
+        AA::Contentcache()->clear_soft();
+        self::assertSame($index, $gate->index(), 'an item stored');
+        AA::Contentcache()->clear();
+        self::assertNotSame($index, $gate->index());
+    }
+
+    #[DataProvider('registerStates')]
+    public function test_register_states(string $state): void
+    {
+        $gate        = self::gate();
+        $gate->index = new FakeRegisterIndex($state);
+
+        self::assertSame($state, self::inside($gate, static fn(): string => $gate->register()));
+        self::assertSame('', $gate->register(), 'outside');
+    }
+
+    /** @return array<string, array{string}> */
+    public static function unusableRegister(): array
+    {
+        return [
+            'missing'    => [RegisterIndex::MISSING],
+            'unreadable' => [RegisterIndex::UNREADABLE],
+        ];
+    }
+
+    // no count is true unchecked - {datovkabulk:register} tells the page why, and it is no fault of the campaign
+    #[DataProvider('unusableRegister')]
+    public function test_recipients_withoutRegisterIsEmpty(string $state): void
+    {
+        $register = new FakeRegisterIndex($state);
+        $gate     = self::recipientGate([self::ITEM => Sending::filter()], $register);
+
+        self::assertSame(['', '', ''], self::counts($gate, self::ITEM));
+        self::assertSame([[], [], []], [FakeRecipients::$read, $register->lookups, $gate->recipientsLogged], 'nothing resolved, nothing logged');
+    }
+
+    // the index replaced while the request reads it, and not made again
+    public function test_recipients_registerFailingWhileReadIsNoFaultOfTheCampaign(): void
+    {
+        $gate = self::recipientGate([self::ITEM => Sending::filter()], new FakeRegisterIndex(RegisterIndex::OK, [], true));
+
+        self::assertSame(['', RegisterIndex::UNREADABLE], self::inside($gate, static fn(): array => [$gate->recipients(self::ITEM, 'count'), $gate->register()]));
+        self::assertSame([], $gate->recipientsLogged);
+    }
+
+    // downloaded over a week ago: the page warns, yet counts against it
+    public function test_recipients_oldRegisterStillCounts(): void
+    {
+        $register = new FakeRegisterIndex(RegisterIndex::OLD, ['ada1234' => ['', 'Město Adamov'], 'brn1234' => ['', 'Statutární město Brno']]);
+        $gate     = self::recipientGate([self::ITEM => Sending::filter(['types' => ['mesto', 'mestocast']])], $register);
+
+        // Benešov has no box, Děčín shares the box of Adamov, the box of Cheb is outside the register
+        self::assertSame(['2', '3', self::ADAMOV . '-' . self::BRNO], self::counts($gate, self::ITEM));
     }
 }

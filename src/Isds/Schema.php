@@ -139,17 +139,25 @@ final class Schema
     ];
 
     // ERROR_CODE of a skipped message
+    /** the item has no data box */
     public const BOX_MISSING   = 'missing';
+    /** the data box field holds no box id */
     public const BOX_FORMAT    = 'format';
+    /** the register of data boxes has not the box, or has it for another IČO than the item's */
     public const BOX_FOREIGN   = 'foreign';
+    /** ISDS reports the box as not active (CheckDataBox) */
     public const BOX_INACTIVE  = 'inactive';
+    /** another item gets the letter to the same box */
     public const BOX_DUPLICATE = 'duplicate';
+    /** the IČO field holds something else than an IČO, so the box cannot be checked against it */
+    public const BOX_ICO       = 'ico';
     public const BOX_PROBLEMS  = [
         self::BOX_MISSING,
         self::BOX_FORMAT,
         self::BOX_FOREIGN,
         self::BOX_INACTIVE,
         self::BOX_DUPLICATE,
+        self::BOX_ICO,
     ];
 
     // `kind` of an entry in MESSAGE_EVENTS. The timeline cannot be derived from the times alone: they miss

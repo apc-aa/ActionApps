@@ -93,6 +93,12 @@ class RegisterIndex
     /** @var array<string, string> RECORD as last read */
     private array $record = self::RECORD;
 
+    /** the index as read once its hash matched the record's - the bytes this object answers from */
+    private string $checkedText = '';
+
+    /** the record's index sha256 $checkedText matched; '' = nothing checked yet */
+    private string $checkedSha = '';
+
     /** @param ?string $register the register; Sync::registerFile() when null */
     public function __construct(?string $register = null)
     {
@@ -115,13 +121,22 @@ class RegisterIndex
     }
 
     /**
+     * The state() is OK or OLD: recipients can be checked against the register; else nobody can tell
+     * them. A lookup() that finds the index replaced and cannot make it again turns it false.
+     */
+    public function usable(): bool
+    {
+        return in_array($this->state(), [self::OK, self::OLD], true);
+    }
+
+    /**
      * Why a sending cannot use the register now, the index checked whole; '' = it can, or there is none
      * (MISSING). Raw, it may name a path - escape it (safe()).
      */
     public function problem(): string
     {
         try {
-            if (in_array($this->state(), [self::OK, self::OLD], true)) {
+            if ($this->usable()) {
                 $this->lookup([]);
             }
         } catch (\RuntimeException) {
@@ -136,21 +151,21 @@ class RegisterIndex
      * @return array<array-key, array{id: string, ico: string, name: string}> by box id - PHP makes an id
      *         of digits only an int key, so take the id from the row; ico as Box::normalizeIco() gives
      *         it, '' = none, BAD_ICO = no IČO in the register
-     * @throws \RuntimeException the state() is neither OK nor OLD, or the index is not the recorded one
-     *                           and cannot be made again
+     * @throws UnusableRegisterException the state() is neither OK nor OLD, or the index is not the
+     *                                    recorded one and cannot be made again
      */
     public function lookup(array $boxes): array
     {
-        if (!in_array($this->state(), [self::OK, self::OLD], true)) {
-            throw new \RuntimeException("The register of data boxes is $this->state: $this->problem");
+        if (!$this->usable()) {
+            throw new UnusableRegisterException("The register of data boxes is $this->state: $this->problem");
         }
         $wanted = array_fill_keys($boxes, true);
-        // replaced since state() read it: made again, unless the register was replaced too
+        // replaced since state() made it: made again, unless the register was replaced too
         $found = $this->scan($wanted) ?? ($this->rebuild() ? $this->scan($wanted) : null);
         if ($found === null) {
             $this->state     = self::UNREADABLE;
             $this->problem   = $this->problem ?: "The index of the register of data boxes is not the one AA made: $this->index";
-            throw new \RuntimeException($this->problem);
+            throw new UnusableRegisterException($this->problem);
         }
         return $found;
     }
@@ -266,32 +281,33 @@ class RegisterIndex
     }
 
     /**
-     * Reads the index, keeping the boxes of $wanted.
+     * The boxes of $wanted in the index; the index is read and hashed once per object, and only the
+     * bytes that matched the record are parsed.
      * @param array<array-key, true> $wanted
      * @return ?array<array-key, array{id: string, ico: string, name: string}> null: not the index the
      *                                                                         record vouches for
      */
     private function scan(array $wanted): ?array
     {
-        if ($this->record['index'] === '') {
-            return null;
-        }
-        try {
-            $text = SafeFile::read($this->index, $this->maxIndex());
-        } catch (\RuntimeException) {
-            return null;
-        }
+        $sha    = $this->record['index'];
         $header = self::header($this->record['xml']);
-        if (!str_starts_with($text, $header) || !hash_equals($this->record['index'], hash('sha256', $text))) {
+        if (($sha === '') || (($this->checkedSha !== $sha) && !$this->check($sha))) {
             return null;
+        }
+        $text = $this->checkedText;
+        if (!str_starts_with($text, $header)) {
+            return null;
+        }
+        if ($wanted === []) {
+            return [];
         }
         $found = [];
         $end   = strlen($text);
         for ($at = strlen($header); $at < $end; $at = $next + 1) {
+            // check() refuses a text whose last line has no end, so this never triggers
             $next = strpos($text, "\n", $at);
-            // no end of the line, or longer than any line make() writes
-            if (($next === false) || (($next - $at) >= self::MAX_LINE)) {
-                return null;
+            if ($next === false) {
+                break;
             }
             $parts = explode("\t", substr($text, $at, $next - $at), 3);
             if (isset($wanted[$parts[0]], $parts[2])) {
@@ -299,6 +315,23 @@ class RegisterIndex
             }
         }
         return $found;
+    }
+
+    /** Reads the index and keeps it when it is the one the record's $sha vouches for, undamaged. */
+    private function check(string $sha): bool
+    {
+        try {
+            $text = SafeFile::read($this->index, $this->maxIndex());
+        } catch (\RuntimeException) {
+            return false;
+        }
+        // a line without its end, or longer than any make() writes, is damage
+        if (!hash_equals($sha, hash('sha256', $text)) || !str_ends_with($text, "\n") || (preg_match('/(?:\A|\n)[^\n]{' . self::MAX_LINE . '}/', $text) !== 0)) {
+            return false;
+        }
+        $this->checkedSha  = $sha;
+        $this->checkedText = $text;
+        return true;
     }
 
     /**
@@ -315,8 +348,14 @@ class RegisterIndex
         } catch (\RuntimeException $e) {
             return $e->getMessage();
         }
-        $this->record['index'] = hash('sha256', $text);
-        $this->writeRecord(['index' => $this->record['index']]);
+        $sha = hash('sha256', $text);
+        try {
+            $this->writeRecord(['index' => $sha]);
+        } catch (\RuntimeException $e) {
+            // nothing vouches for an index without its hash in the record
+            return 'The index of the register of data boxes is made, but its hash cannot be recorded: ' . $e->getMessage();
+        }
+        $this->record['index'] = $sha;
         return '';
     }
 
@@ -347,7 +386,12 @@ class RegisterIndex
     {
         self::$failed[$this->index . '|' . $this->record['xml']] = $error;
         $this->problem = $error;
-        $this->writeRecord(['failed' => time(), 'failed_of' => $this->record['xml'], 'failure' => mb_strcut($error, 0, 500)]);
+        try {
+            $this->writeRecord(['failed' => time(), 'failed_of' => $this->record['xml'], 'failure' => mb_strcut($error, 0, 500)]);
+        } catch (\RuntimeException $e) {
+            // this process holds back all the same; other requests try again
+            $error .= ' - not recorded: ' . $e->getMessage();
+        }
         $this->log($error);
         return false;
     }

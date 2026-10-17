@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds\Registry;
 
 use AA\Isds\Registry\RegisterIndex;
+use AA\Isds\Registry\UnusableRegisterException;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Fixtures\Alarm;
@@ -234,8 +235,8 @@ final class RegisterIndexTest extends TestCase
         self::assertSame(2, LockedRegisterIndex::$locks);
     }
 
-    // replaced after state() read it: lookup() checks the header and the hash on its own handle
-    public function test_lookup_indexReplacedAfterStateMadeAgain(): void
+    // replaced after state() checked it: lookup() answers from the very bytes that were checked
+    public function test_lookup_indexReplacedAfterStateReadsTheCheckedOne(): void
     {
         $index = $this->fixtureIndex();
         self::assertSame(RegisterIndex::OK, $index->state());
@@ -243,12 +244,16 @@ final class RegisterIndexTest extends TestCase
         file_put_contents($this->index, "aa-isds-register-index-1 " . str_repeat('0', 64) . "\nabcdefg\t\tPodvržený úřad\n");
 
         self::assertSame(['eerak7a'], array_keys($index->lookup(['abcdefg', 'eerak7a'])));
-        self::assertSame(2, LockedRegisterIndex::$locks);
+        self::assertSame('', $index->problem());
+        self::assertSame(1, LockedRegisterIndex::$locks, 'nothing made again');
     }
 
+    // state() made the index, so lookup() reads it - another one by then, under a forged register
     public function test_lookup_forgedIndexAndRegisterThrows(): void
     {
-        $index = $this->fixtureIndex();
+        $this->fixtureIndex();
+        unlink($this->index);
+        $index = new LockedRegisterIndex($this->register);
         self::assertSame(RegisterIndex::OK, $index->state());
         $this->writeRegister(['abcdefg' => ['00063703', 'Podvržený úřad']]);
         file_put_contents($this->index, 'garbage');
@@ -256,10 +261,39 @@ final class RegisterIndexTest extends TestCase
         try {
             $index->lookup(['abcdefg']);
             self::fail('a forged index passed');
-        } catch (\RuntimeException $e) {
+        } catch (UnusableRegisterException $e) {
             self::assertSame(self::CHANGED, $e->getMessage());
         }
         self::assertSame(RegisterIndex::UNREADABLE, $index->state(), 'the state says so from then on');
+    }
+
+    // the index and the hash are read and computed once for state() and every lookup()
+    public function test_lookup_readsTheIndexOnce(): void
+    {
+        $index = $this->fixtureIndex();
+        self::assertSame(RegisterIndex::OK, $index->state());
+        unlink($this->index);
+
+        self::assertSame(['eerak7a'], array_keys($index->lookup(['eerak7a'])));
+        self::assertSame(['x2pbqzq'], array_keys($index->lookup(['x2pbqzq'])));
+        self::assertSame(1, LockedRegisterIndex::$locks, 'nothing made again');
+    }
+
+    // a failed write of the record ends like any failure to make the index - never in the page
+    public function test_state_indexHashNotRecordedIsUnreadable(): void
+    {
+        copy(self::FIXTURE, $this->register);
+        LockedRegisterIndex::$free = false;
+        LockedRegisterIndex::download($this->register);
+        LockedRegisterIndex::$free       = true;
+        LockedRegisterIndex::$writeFails = new \RuntimeException('Lost connection to the database');
+        $index                           = new LockedRegisterIndex($this->register);
+
+        self::assertSame([RegisterIndex::UNREADABLE, false], [$index->state(), $index->usable()]);
+        self::assertSame('The index of the register of data boxes is made, but its hash cannot be recorded: Lost connection to the database', $index->problem());
+        self::assertSame([$index->problem() . ' - not recorded: Lost connection to the database'], LockedRegisterIndex::$logged);
+        self::assertSame(RegisterIndex::UNREADABLE, (new LockedRegisterIndex($this->register))->state(), 'held back in this process');
+        self::assertSame([2, 1], [LockedRegisterIndex::$locks, count(LockedRegisterIndex::$logged)]);
     }
 
     // another request makes it for longer than the wait, or the database gives no lock
@@ -471,6 +505,21 @@ final class RegisterIndexTest extends TestCase
 
         self::assertSame(['eerak7a'], array_keys($index->lookup(['abcdefg', 'eerak7a'])));
         self::assertSame(2, LockedRegisterIndex::$locks);
+    }
+
+    // cut short after its last box: damage, made again
+    public function test_state_lastLineWithoutItsEndMadeAgain(): void
+    {
+        $this->fixtureIndex();
+        $cut = rtrim((string) file_get_contents($this->index), "\n");
+        file_put_contents($this->index, $cut);
+        LockedRegisterIndex::$record['index'] = hash('sha256', $cut);
+
+        $index = new LockedRegisterIndex($this->register);
+
+        self::assertSame(['eerak7a'], array_keys($index->lookup(['eerak7a'])));
+        self::assertSame(2, LockedRegisterIndex::$locks);
+        self::assertStringEndsWith("\n", (string) file_get_contents($this->index));
     }
 
     // an index someone keeps writing to would never end: it is read only up to the size make() may
