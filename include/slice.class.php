@@ -1192,6 +1192,15 @@ class AA_Module_Site extends AA_Module
         return $out;
     }
 
+    /** the site whose page getSite() renders now - responder.php and others set AA::$site_id too, but render no page */
+    private static ?string $rendering_page = null;
+
+    /** id of the site whose own page is being rendered now; null in view.php, a widget, cron */
+    public static function renderingPage(): ?string
+    {
+        return self::$rendering_page;
+    }
+
     public function getSite($apc_state)
     {
         if (is_null($tree = $this->getTree())) {   // new sitetree();
@@ -1208,10 +1217,16 @@ class AA_Module_Site extends AA_Module
             exit;
         }
 
-        $out = self::spotsOutput($this->module_id, $show_ids, $apc_state['item']);
+        $outer_page = self::$rendering_page;    // a spot may render a page of another site
+        self::$rendering_page = strtolower($this->module_id);
+        try {
+            $out = self::spotsOutput($this->module_id, $show_ids, $apc_state['item']);
 
-        // trim remove whitespaces from start and end (mainly the start - it is better to start right with the code)
-        return trim(AA::Stringexpander()->postprocess($out));
+            // trim remove whitespaces from start and end (mainly the start - it is better to start right with the code)
+            return trim(AA::Stringexpander()->postprocess($out));
+        } finally {
+            self::$rendering_page = $outer_page;
+        }
     }
 
     /** Name of the legacy control file ('example.php3' -> 'site_example.php3'), '' when unset.
