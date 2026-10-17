@@ -106,6 +106,15 @@ final class TransportExceptionTest extends TestCase
             'refused'           => [new \RuntimeException('Failed to connect to 1.1.1.1 port 443: Connection refused'), TransportException::REFUSED],
             'reset'             => [new \RuntimeException('Recv failure: Connection reset by peer'), TransportException::REFUSED],
             'something else'    => [new \RuntimeException('Weird failure'), ''],
+            // this server's own certificate, before the handshake: nothing left
+            'curl, weak key'          => [new \RuntimeException('Could not load PEM client certificate from /etc/aa/c.pem, OpenSSL error error:0A00018F:SSL routines::ee key too small, (no key found, wrong passphrase, or wrong file format?) for "https://ws1c.datovka.gov.cz/cert/DS/dz".'), TransportException::CLIENT_CERTIFICATE],
+            'curl, key file'          => [new \RuntimeException("unable to set private key file: '/etc/aa/c.key' type PEM"), TransportException::CLIENT_CERTIFICATE],
+            'curl, no key'            => [new \RuntimeException('unable to use client certificate (no key found or wrong pass phrase?)'), TransportException::CLIENT_CERTIFICATE],
+            'curl, another key'       => [new \RuntimeException('Private key does not match the certificate public key'), TransportException::CLIENT_CERTIFICATE],
+            'curl error 58'           => [new \RuntimeException('Problem with the local SSL certificate'), TransportException::CLIENT_CERTIFICATE],
+            'php streams, chain'      => [new \RuntimeException("fopen(): Unable to set local cert chain file `/etc/aa/c.pem'; Check that your cafile/capath settings include details of your certificate and its issuer"), TransportException::CLIENT_CERTIFICATE],
+            'php streams, key file'   => [new \RuntimeException("fopen(): Unable to set private key file `/etc/aa/c.key'"), TransportException::CLIENT_CERTIFICATE],
+            'the server certificate'  => [new \RuntimeException('SSL certificate problem: unable to get local issuer certificate'), TransportException::TLS],
             'deeper in a chain' => [new \RuntimeException('wrapped', 0, new \RuntimeException('Could not resolve host: x')), TransportException::DNS],
             // the URL in quotes is the source's (a redirect picks it): its words say nothing of the failure
             'refused, timeout in the URL'   => [new \RuntimeException('Failed to connect to 1.1.1.1 port 443: Connection refused for "https://1.1.1.1/data?timeout=30".'), TransportException::REFUSED],

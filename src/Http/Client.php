@@ -68,14 +68,18 @@ final class Client implements ClientInterface
      *                       sends a request again by itself when a kept-alive connection turns out
      *                       closed before the answer - a POST that did its work does it twice. The
      *                       NativeHttpClient Symfony takes without the curl extension never reuses one
+     * @param ?ClientCertificate $certificate shown to the server in every TLS handshake
      */
-    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0, bool $reuse = true)
+    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0, bool $reuse = true, private readonly ?ClientCertificate $certificate = null)
     {
         $options = [
             'max_duration'  => $timeout,
             'timeout'       => $idle,
             'max_redirects' => $redirects,
             'headers'       => ['User-Agent' => $agent === '' ? self::agent() : $agent],
+            // the library's defaults, set again: a client handed in cannot have them switched off
+            'verify_peer'   => true,
+            'verify_host'   => true,
         ];
         if (!$reuse && \defined('CURLOPT_FRESH_CONNECT')) {
             $options['extra']['curl'] = [\CURLOPT_FRESH_CONNECT => true, \CURLOPT_FORBID_REUSE => true];
@@ -92,7 +96,7 @@ final class Client implements ClientInterface
      */
     public function request(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): Response
     {
-        $options = ['headers' => $headers];
+        $options = ['headers' => $headers] + $this->certificateOptions();
         if (!is_null($body)) {
             $options['body'] = $body;
         }
@@ -114,6 +118,24 @@ final class Client implements ClientInterface
         }
 
         return new Response($status, $content, $out, $redirect);
+    }
+
+    /**
+     * Per request, not among the options the library's client keeps: a dump of this client would
+     * show the passphrase there.
+     * @return array<string, string>
+     */
+    private function certificateOptions(): array
+    {
+        if (is_null($this->certificate)) {
+            return [];
+        }
+        $options = ['local_cert' => $this->certificate->certificate, 'passphrase' => $this->certificate->passphrase()];
+        if ($this->certificate->key !== '') {
+            $options['local_pk'] = $this->certificate->key;
+        }
+
+        return $options;
     }
 
     /**

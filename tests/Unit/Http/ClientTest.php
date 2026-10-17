@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http;
 
+use AA\Credential\Secret;
 use AA\Http\Client;
+use AA\Http\ClientCertificate;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -271,6 +273,73 @@ final class ClientTest extends TestCase
     {
         $this->expectException(ResponseTooLargeException::class);
         Client::publicOnly(transport: new MockHttpClient(new MockResponse(str_repeat('x', 11))), maxBytes: 10)->request('GET', 'https://1.1.1.1/');
+    }
+
+    /** @param array{?string, ?string, ?string} $expected local_cert, local_pk, passphrase */
+    #[DataProvider('certificates')]
+    public function test_request_clientCertificate(?ClientCertificate $certificate, array $expected): void
+    {
+        $seen   = null;
+        $client = new Client(certificate: $certificate, http: new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen = [$options['local_cert'] ?? null, $options['local_pk'] ?? null, $options['passphrase'] ?? null];
+            return new MockResponse('{}');
+        }));
+
+        $client->request('POST', 'https://example.org/x', 'a');
+
+        self::assertSame($expected, $seen);
+    }
+
+    public static function certificates(): array
+    {
+        return [
+            'none'              => [null, [null, null, null]],
+            // never null: OpenSSL would ask for it on stdin
+            'key in the file'   => [new ClientCertificate('/etc/aa/client.pem'), ['/etc/aa/client.pem', null, '']],
+            'key apart'         => [new ClientCertificate('/etc/aa/client.pem', '/etc/aa/client.key'), ['/etc/aa/client.pem', '/etc/aa/client.key', '']],
+            'encrypted key'     => [new ClientCertificate('/etc/aa/client.pem', '/etc/aa/client.key', new Secret('Pass-phrase')), ['/etc/aa/client.pem', '/etc/aa/client.key', 'Pass-phrase']],
+            'empty passphrase'  => [new ClientCertificate('/etc/aa/client.pem', passphrase: new Secret('')), ['/etc/aa/client.pem', null, '']],
+        ];
+    }
+
+    // a certificate adds to the policy, it never loosens it
+    // the certificate is added to the request, the rest stays: the answer limit, TLS checks, fresh connections, no redirects
+    public function test_request_certificateKeepsThePolicy(): void
+    {
+        $seen   = [];
+        $client = new Client(maxBytes: 10, reuse: false, certificate: new ClientCertificate('/etc/aa/client.pem'), http: new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen = $options;
+            return new MockResponse(str_repeat('x', 11));
+        }));
+
+        try {
+            $client->request('POST', 'https://example.org/x', 'a');
+            self::fail('ResponseTooLargeException expected');
+        } catch (ResponseTooLargeException) {
+        }
+        self::assertTrue($seen['verify_peer'] ?? null);
+        self::assertTrue($seen['verify_host'] ?? null);
+        self::assertSame([\CURLOPT_FRESH_CONNECT => true, \CURLOPT_FORBID_REUSE => true], $seen['extra']['curl'] ?? null);
+        self::assertSame(0, $seen['max_redirects'] ?? null);
+    }
+
+    public function test_request_passphraseNeverShown(): void
+    {
+        $passphrase = 'Pass-phrase-never-shown';
+        $client     = new Client(certificate: new ClientCertificate('/etc/aa/client.pem', passphrase: new Secret($passphrase)), http: new MockHttpClient(
+            static fn(): MockResponse => new MockResponse('', ['error' => 'could not load PEM client certificate from /etc/aa/client.pem']),
+        ));
+        ob_start();
+        var_dump($client);
+        $dumps = (string) ob_get_clean() . print_r($client, true) . var_export($client, true);
+        try {
+            $client->request('GET', 'https://example.org/x');
+            self::fail('TransportException expected');
+        } catch (TransportException $e) {
+            $dumps .= $e->getMessage() . ($e->getPrevious()?->getMessage() ?? '');
+        }
+
+        self::assertStringNotContainsString($passphrase, $dumps);
     }
 
     public function test_theExcerptIsShortEnoughForALogLine(): void

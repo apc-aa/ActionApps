@@ -14,10 +14,12 @@ final class TransportException extends RuntimeException
     public const TLS     = 'tls';
     public const REFUSED = 'refused';
     public const ADDRESS = 'address';
+    /** this server could not load its own client certificate or key: nothing left it */
+    public const CLIENT_CERTIFICATE = 'client-certificate';
 
     /**
-     * Why no answer came: ADDRESS (malformedAddress()), DNS, TIMEOUT, TLS, REFUSED, or '' when the
-     * library does not tell. Read from the causes only - this exception's own text carries the URL.
+     * Why no answer came: ADDRESS (malformedAddress()), DNS, TIMEOUT, CLIENT_CERTIFICATE, TLS, REFUSED,
+     * or '' when the library does not tell. Read from the causes only - this exception's own text carries the URL.
      * curl reports the cause as text alone (no error number reaches us), so it is matched against
      * fixed phrases: without the quoted URL, which a redirect lets the source choose, and in an order
      * where a host name (curl names it unquoted) cannot pass for a phrase of another kind.
@@ -37,6 +39,8 @@ final class TransportException extends RuntimeException
         }
         $text = implode(' ', $texts);
         return match (true) {
+            // curl and PHP's own streams, before the first byte of the handshake
+            preg_match('/could not load \w+ client certificate|unable to (?:set|use) (?:client certificate|private key|local cert chain)|private key does not match|problem with the local (?:ssl )?certificate/i', $text) === 1 => self::CLIENT_CERTIFICATE,
             preg_match('/\btimed out\b|\btimeout (?:was )?reached\b|\bconnection timeout\b|\bmax duration\b/i', $text) === 1          => self::TIMEOUT,
             preg_match('/could not resolve host|getaddrinfo (?:for|failed)|php_network_getaddresses|name or service not known/i', $text) === 1 => self::DNS,
             preg_match('/connection refused|connection reset|failed to connect|could(?:n\'t| not) connect/i', $text) === 1       => self::REFUSED,
