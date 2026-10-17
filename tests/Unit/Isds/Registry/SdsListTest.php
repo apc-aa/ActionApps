@@ -11,6 +11,7 @@ use AA\Isds\Registry\SdsList;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Fixtures\FakeHttp;
+use Tests\Unit\Fixtures\ScriptedFile;
 
 /**
  * The fixture is 31 real boxes cut byte for byte from the 2026 file: the cities, city districts
@@ -27,6 +28,8 @@ final class SdsListTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../../fixtures/FakeHttp.php';
+        require_once __DIR__ . '/../../fixtures/ScriptedFile.php';
+        ScriptedFile::register();
     }
 
     protected function setUp(): void
@@ -325,21 +328,20 @@ final class SdsListTest extends TestCase
         self::boxes($file);
     }
 
-    // XMLReader would decode %41 to A and read another file
-    public function test_fromXml_percentInThePathRefused(): void
+    // the file is read as a file, not as a URL that would decode %41 to A
+    public function test_fromXml_percentInThePathReadAsItIs(): void
     {
         file_put_contents($this->dir . '/aA.xml', self::list(self::box('aaaaaa1', '')));
+        file_put_contents($this->dir . '/a%41.xml', self::list(self::box('aaaaaa2', '')));
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage("must not contain '%'");
-        SdsList::fromXml($this->dir . '/a%41.xml');
+        self::assertSame(['aaaaaa2'], array_map(static fn(Box $box): string => $box->id, self::boxes($this->dir . '/a%41.xml')));
     }
 
     // unreadable, not a bad list - and before the first box is asked for
     public function test_fromXml_missingFileRefusedAtTheCall(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Cannot read the list of data boxes');
+        $this->expectExceptionMessage('Cannot read ' . $this->dir . '/none.xml');
         SdsList::fromXml($this->dir . '/none.xml');
     }
 
@@ -366,18 +368,48 @@ final class SdsListTest extends TestCase
         }
     }
 
+    // a file swapped between the hash and the parse would let unchecked boxes through, so the bytes
+    // parsed are the bytes hashed: one open, whatever a second one would serve
+    public function test_fromVerifiedFile_parsesTheBytesItHashed(): void
+    {
+        $genuine = self::list(self::box('aaaaaa1', ''));
+        ScriptedFile::$content = static fn(int $open): string => ($open === 1) ? $genuine : self::list(self::box('aaaaaa2', ''));
+        try {
+            $boxes = SdsList::fromVerifiedFile(ScriptedFile::SCHEME . '://list.xml', hash('sha256', $genuine));
+
+            self::assertNotNull($boxes);
+            self::assertSame(['aaaaaa1'], array_map(static fn(Box $box): string => $box->id, iterator_to_array($boxes, false)));
+            self::assertSame(1, ScriptedFile::$opens);
+        } finally {
+            ScriptedFile::reset();
+        }
+    }
+
+    public function test_fromVerifiedFile_otherBytesNotParsed(): void
+    {
+        $file = $this->write(self::list(self::box('aaaaaa1', '')));
+
+        self::assertNull(SdsList::fromVerifiedFile($file, hash('sha256', self::list(self::box('aaaaaa2', '')))));
+    }
+
     public function test_download_writesTheList(): void
     {
         $http = new FakeHttp([new Response(200, (string) file_get_contents(self::FIXTURE))]);
         $to   = $this->dir . '/ovm.xml';
 
-        self::assertSame($to, SdsList::download($http, $to));
+        $umask = umask(0o002);  // as the upload directory's group-writable setup has it
+        try {
+            $written = SdsList::download($http, $to);
+        } finally {
+            umask($umask);
+        }
 
+        self::assertSame(['sha256' => hash_file('sha256', self::FIXTURE), 'size' => filesize(self::FIXTURE)], $written, 'of the bytes written');
         self::assertSame([['GET', SdsList::URL]], array_map(static fn(array $c): array => [$c['method'], $c['url']], $http->calls));
         self::assertCount(31, self::boxes($to));
         self::assertSame([$to], glob($this->dir . '/*'), 'no temporary file left');
         clearstatcache();
-        self::assertSame(0o666 & ~umask(), fileperms($to) & 0o777, 'not the 0600 of tempnam()');
+        self::assertSame(0o666 & ~0o002, fileperms($to) & 0o777, 'as the umask has it, as other files PHP writes there');
     }
 
     // a link planted under a predictable name must not be written through
@@ -403,7 +435,7 @@ final class SdsListTest extends TestCase
         SdsList::download(new FakeHttp([new Response(302, '', [], 'https://www.datovka.gov.cz/elsewhere')]), $this->dir . '/ovm.xml');
     }
 
-    // tempnam() falls back to the system temp directory - that file must not stay there
+    // nothing goes to the system temp directory instead, as tempnam() would put it
     public function test_download_missingDirectoryRefused(): void
     {
         $name = 'sdslist-' . bin2hex(random_bytes(6)) . '.xml';
@@ -414,7 +446,7 @@ final class SdsListTest extends TestCase
         } catch (\RuntimeException $e) {
             self::assertStringContainsString('missing or not writable', $e->getMessage());
         }
-        self::assertSame([], glob(sys_get_temp_dir() . '/' . $name . '*'));
+        self::assertSame([], glob(sys_get_temp_dir() . '/{,.}' . $name . '*', GLOB_BRACE));
     }
 
     public function test_download_renameFailureRemovesTheTemporaryFile(): void
@@ -445,7 +477,7 @@ final class SdsListTest extends TestCase
         }
         self::assertSame([], glob($this->dir . '/*'));
 
-        self::assertSame($to, SdsList::download(new FakeHttp([new Response(200, $fixture)]), $to, SdsList::URL, strlen($fixture)), 'up to the limit');
+        self::assertSame(strlen($fixture), SdsList::download(new FakeHttp([new Response(200, $fixture)]), $to, SdsList::URL, strlen($fixture))['size'], 'up to the limit');
     }
 
     public function test_download_limitIsMaxBytesByDefault(): void

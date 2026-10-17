@@ -131,9 +131,9 @@ class Sync
     }
 
     /**
-     * Downloads the register into registerFile(), creating its directory, unless another download is
-     * running or the last download or attempt is younger than MIN_DOWNLOAD_AGE. A failed download
-     * keeps the previous file and still counts as an attempt.
+     * Downloads the register into registerFile(), creating its directory, and records it for its
+     * RegisterIndex, unless another download is running or the last download or attempt is younger
+     * than MIN_DOWNLOAD_AGE. A failed download keeps the previous file and still counts as an attempt.
      * @param ?string $file registerFile() when null; another file only in an existing directory, which
      *                      is not created
      * @return array{status: string, last: int} status DOWNLOADED, RUNNING or RECENT; last: for RECENT
@@ -170,7 +170,8 @@ class Sync
                 return ['status' => self::RECENT, 'last' => $last];
             }
             static::recordAttempt();
-            SdsList::download($http ?? SdsList::client(), $file);
+            $written = SdsList::download($http ?? SdsList::client(), $file);
+            static::index($file)->downloaded($written['sha256'], $written['size']);
             return ['status' => self::DOWNLOADED, 'last' => 0];
         } finally {
             static::unlockDownload();
@@ -409,6 +410,11 @@ class Sync
     protected static function unlockDownload(): void
     {
         DB_AA::unlock(self::DOWNLOAD_LOCK);
+    }
+
+    protected static function index(string $file): RegisterIndex
+    {
+        return new RegisterIndex($file);
     }
 
     /** the newest download attempt up to $now that is younger than MIN_DOWNLOAD_AGE, 0 = none */

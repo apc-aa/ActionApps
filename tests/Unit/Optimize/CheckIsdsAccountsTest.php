@@ -148,6 +148,32 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertNoSecret($findings);
     }
 
+    // a mass sending checks its recipients in the register and sends nothing without it
+    public function test_findings_registerNotDownloaded(): void
+    {
+        $check = self::check(self::account());
+        $check->registerMissing = true;
+
+        $findings = $check->findings();
+
+        self::assertSame([Finding::WARNING], self::severities($findings));
+        self::assertSame('register:test:NSZM', $findings[0]->key);
+        self::assertSame('ISDS account AA_APIKEY_ISDSTEST_NSZM cannot send a mass sending: the register of data boxes has not been downloaded', $findings[0]->title);
+        self::assertSame(1, $check->registerLooks, 'one look for all accounts');
+
+        // no slices, nothing it sends for
+        $constants = self::account();
+        unset($constants['AA_APIKEY_ISDSTEST_NSZM_SLICES']);
+        $bare = self::check($constants);
+        $bare->registerMissing = true;
+        self::assertSame(['account:test:NSZM'], self::keys($bare->findings()));
+
+        $none = self::check(['AA_ID' => 'y']);
+        $none->registerMissing = true;
+        self::assertSame([Finding::OK], self::severities($none->findings()));
+        self::assertSame(0, $none->registerLooks, 'no account, no look');
+    }
+
     public function test_findings_straysNamed(): void
     {
         $findings = self::check(self::account() + ['AA_APIKEY_ISDSTEST_LOGIN' => 'stray-value-1', 'AA_APIKEY_ISDSTEST_Nszm_PASSWORD' => 'stray-value-2'])->findings();

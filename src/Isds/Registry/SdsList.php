@@ -9,6 +9,7 @@ use AA\Http\ClientInterface;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException;
 use AA\Util\Libxml;
+use AA\Util\SafeFile;
 use XMLReader;
 
 /**
@@ -39,9 +40,6 @@ final class SdsList
     /** bytes of outside text in a message */
     private const QUOTE = 200;
 
-    /** bytes scan() reads at a time */
-    private const SCAN_CHUNK = 1024 * 1024;
-
     /** for this one fixed address, so the size limit stays next to MAX_BYTES */
     public static function client(): Client
     {
@@ -49,9 +47,9 @@ final class SdsList
     }
 
     /**
-     * Downloads the list into $to and returns $to. The file is replaced only by a complete list: the
-     * whole answer is parsed first (0.5 s for 17 MB), so a failed, cut-off or refused download leaves
-     * the previous one in place.
+     * Downloads the list into $to. The file is replaced only by a complete list: the whole answer is
+     * parsed first (0.5 s for 17 MB), so a failed, cut-off or refused download leaves the previous one
+     * in place.
      *
      * @param string $url      fixed in code - an address a request or a setting can choose needs a
      *                         Client::publicOnly() client, or it reads the server's internal network
@@ -60,8 +58,10 @@ final class SdsList
      * @throws ResponseTooLargeException over $maxBytes
      * @throws \RuntimeException          an answer other than 200, or the file cannot be written
      * @throws \UnexpectedValueException  the answer is not a whole list with a box (an error page, cut-off XML)
+     * @return array{sha256: string, size: int} of the bytes written - hashed here, as the file may be
+     *                                          replaced as soon as it is in place
      */
-    public static function download(ClientInterface $http, string $to, string $url = self::URL, int $maxBytes = self::MAX_BYTES): string
+    public static function download(ClientInterface $http, string $to, string $url = self::URL, int $maxBytes = self::MAX_BYTES): array
     {
         $answer = $http->request('GET', $url);
         if ($answer->status !== 200) {
@@ -72,53 +72,50 @@ final class SdsList
         if (strlen($answer->body) > $maxBytes) {
             throw new ResponseTooLargeException("The list of data boxes is over $maxBytes bytes");
         }
-        // a name of its own, created exclusively next to $to (so the rename is atomic): another
-        // download, or a link planted under a fixed name, cannot get between the write and the rename
-        $dir = dirname($to);
-        error_clear_last();
-        $part = @tempnam($dir, basename($to) . '.');
-        if ($part === false) {
-            throw new \RuntimeException("Cannot create a file in $dir" . self::lastError());
-        }
-        if (dirname($part) !== realpath($dir)) {
-            @unlink($part);     // tempnam() falls back to the system temp directory
-            throw new \RuntimeException("Cannot create a file in $dir - it is missing or not writable");
-        }
-        try {
-            error_clear_last();
-            if (@file_put_contents($part, $answer->body) !== strlen($answer->body)) {
-                throw new \RuntimeException("Cannot write $part" . self::lastError());
-            }
-            if (iterator_count(self::fromXml($part)) === 0) {
+        SafeFile::replace($to, static function () use ($answer): string {
+            if (iterator_count(self::fromString($answer->body)) === 0) {
                 throw new \UnexpectedValueException('The downloaded list of data boxes has no box');
             }
-            // tempnam() makes it 0600 and rename() keeps that - a reader under another uid would fail
-            @chmod($part, 0o666 & ~umask());
-            error_clear_last();
-            if (!@rename($part, $to)) {
-                throw new \RuntimeException("Cannot replace $to" . self::lastError());
-            }
-        } catch (\Throwable $e) {
-            @unlink($part);
-            throw $e;
-        }
-        return $to;
+            return $answer->body;
+        });
+        return ['sha256' => hash('sha256', $answer->body), 'size' => strlen($answer->body)];
     }
 
     /**
-     * The boxes in file order. A missing file or another document (an HTML error page) throws
-     * at the call; damage deeper in the file only when the iteration reaches it, after some
-     * boxes were already returned - so collect them all before changing anything.
+     * The boxes of the file in $path, in file order - see fromString(). The file is read whole, once.
+     * @throws \RuntimeException the file cannot be read, or is no regular file of at most MAX_BYTES
+     * @return \Generator<int, Box>
+     */
+    public static function fromXml(string $path): \Generator
+    {
+        return self::fromString(SafeFile::read($path, self::MAX_BYTES));
+    }
+
+    /**
+     * The boxes of the file in $path when its bytes hash to $sha256, parsed from those very bytes: a
+     * file put in its place after the read is never parsed.
+     * @return ?\Generator<int, Box> null: the file is another one; see fromString()
+     * @throws \RuntimeException the file cannot be read, or is no regular file of at most MAX_BYTES
+     */
+    public static function fromVerifiedFile(string $path, string $sha256): ?\Generator
+    {
+        $xml = SafeFile::read($path, self::MAX_BYTES);
+        return hash_equals($sha256, hash('sha256', $xml)) ? self::fromString($xml) : null;
+    }
+
+    /**
+     * The boxes of the list in $xml, in file order. Another document (an HTML error page) throws at the
+     * call; damage deeper in the file only when the iteration reaches it, after some boxes were already
+     * returned - so collect them all before changing anything.
      *
-     * @throws \RuntimeException         the file cannot be read
      * @throws \UnexpectedValueException not the list, not UTF-8, malformed XML, a DOCTYPE, comment,
      *                                   CDATA or processing instruction, a box with an id of another
      *                                   shape, with a field twice or an element inside a field
      * @return \Generator<int, Box>
      */
-    public static function fromXml(string $path): \Generator
+    public static function fromString(string $xml): \Generator
     {
-        return self::boxes(self::reader($path));
+        return self::boxes(self::reader($xml));
     }
 
     /**
@@ -138,26 +135,18 @@ final class SdsList
     }
 
     /**
-     * A reader standing on the root element, which is checked - only the start of the file is read.
-     * @throws \RuntimeException
+     * A reader standing on the root element, which is checked - only the start of the list is parsed.
      * @throws \UnexpectedValueException
      */
-    private static function reader(string $path): XMLReader
+    private static function reader(string $xml): XMLReader
     {
-        // XMLReader takes the path as a URL and decodes %41 to A - it would read another file
-        if (str_contains($path, '%')) {
-            throw new \RuntimeException("The path of the list of data boxes must not contain '%': $path");
-        }
-        if (!is_file($path) || !is_readable($path)) {
-            throw new \RuntimeException("Cannot read the list of data boxes $path");
-        }
-        self::scan($path);
-        return Libxml::run(static function () use ($path): XMLReader {
+        self::scan($xml);
+        return Libxml::run(static function () use ($xml): XMLReader {
             // LIBXML_NONET and none of the flags Libxml warns of: they keep entities unloaded and
             // unexpanded; the DOCTYPE nodes refused below are only a further line behind scan()
-            $reader = XMLReader::open($path, null, LIBXML_NONET);
+            $reader = XMLReader::XML($xml, null, LIBXML_NONET);
             if (!($reader instanceof XMLReader)) {
-                throw new \RuntimeException("Cannot read the list of data boxes $path");
+                throw new \UnexpectedValueException('The list of data boxes cannot be parsed');
             }
             try {
                 self::root($reader);
@@ -306,35 +295,24 @@ final class SdsList
      * them (a million empty comments in one box took 290 MB outside memory_limit), and parses a DTD
      * before it returns the DOCTYPE. Runs of attributes are left to libxml's own lookup limit
      * (10 MB of one tag, about 300 MB at worst while that tag is parsed).
-     * @throws \RuntimeException
      * @throws \UnexpectedValueException
      */
-    private static function scan(string $path): void
+    private static function scan(string $xml): void
     {
-        error_clear_last();
-        $file = @fopen($path, 'rb');
-        if ($file === false) {
-            throw new \RuntimeException("Cannot read the list of data boxes $path" . self::lastError());
+        // XMLReader::XML() throws a ValueError on an empty string
+        if ($xml === '') {
+            throw new \UnexpectedValueException('The file is not the list of data boxes, it has no element');
         }
-        try {
-            $tail = '';
-            for ($first = true; ($chunk = fread($file, self::SCAN_CHUNK)) !== false && ($chunk !== ''); $first = false) {
-                // UTF-16 and UTF-32 have a NUL in every ASCII character
-                if (str_contains($chunk, "\0")) {
-                    throw new \UnexpectedValueException('The list of data boxes is not UTF-8 text');
-                }
-                $text = $tail . $chunk;
-                $from = $first ? self::prolog($text) : 0;
-                foreach (['<!', '<?'] as $markup) {
-                    $at = strpos($text, $markup, $from);
-                    if ($at !== false) {
-                        throw new \UnexpectedValueException('The list of data boxes has "' . mb_strcut($text, $at, 16, 'UTF-8') . '" - <! or <? markup, which it never has');
-                    }
-                }
-                $tail = substr($text, -1);  // a '<' at the end pairs with the first byte of the next chunk
+        // UTF-16 and UTF-32 have a NUL in every ASCII character
+        if (str_contains($xml, "\0")) {
+            throw new \UnexpectedValueException('The list of data boxes is not UTF-8 text');
+        }
+        $from = self::prolog($xml);
+        foreach (['<!', '<?'] as $markup) {
+            $at = strpos($xml, $markup, $from);
+            if ($at !== false) {
+                throw new \UnexpectedValueException('The list of data boxes has "' . mb_strcut($xml, $at, 16, 'UTF-8') . '" - <! or <? markup, which it never has');
             }
-        } finally {
-            fclose($file);
         }
     }
 
@@ -353,12 +331,5 @@ final class SdsList
             throw new \UnexpectedValueException('The list of data boxes declares encoding "' . Libxml::cut($encoding, self::QUOTE) . '" - it is UTF-8');
         }
         return preg_match('/\G<\?xml\s[^>]*\?>/', $text, $declaration, 0, $bom) ? $bom + strlen($declaration[0]) : 0;
-    }
-
-    /** what PHP said about the failed file operation, for the message */
-    private static function lastError(): string
-    {
-        $error = error_get_last()['message'] ?? '';
-        return ($error === '') ? '' : ' - ' . $error;
     }
 }

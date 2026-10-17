@@ -11,6 +11,7 @@ use AA\Isds\Accounts;
 use AA\Isds\Binding;
 use AA\Isds\ConfigException;
 use AA\Isds\Gate;
+use AA\Isds\Registry\Sync;
 use AA\Isds\SliceProblem;
 use AA\Isds\SliceRules;
 use AA\Util\LogOnce;
@@ -22,7 +23,8 @@ use AA_Module;
  * the constants AA does not read, whether the site and the slices each account is bound to are ready
  * (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
  * settings of the sending were not ready and the campaigns whose recipients could not be told (Gate logs
- * both). Constant names and file names only, never a key or a passphrase. No network: CheckIsds logs in.
+ * both), and whether the register of data boxes was downloaded. Constant names and file names only,
+ * never a key or a passphrase. No network: CheckIsds logs in.
  */
 class CheckIsdsAccounts extends AbstractOptimize
 {
@@ -72,7 +74,8 @@ class CheckIsdsAccounts extends AbstractOptimize
         if (!$bindings && !$strays) {
             return $pages ?: [new Finding(Finding::OK, _m('No ISDS account is set up in include/config.php'))];
         }
-        $findings = [];
+        $findings   = [];
+        $noRegister = $bindings && $this->registerMissing();
         foreach ($bindings as $binding) {
             if (!$binding->usable()) {
                 $findings[] = self::accountFinding($binding);
@@ -81,6 +84,9 @@ class CheckIsdsAccounts extends AbstractOptimize
             $finding = self::slicesFinding($binding, $rules);
             if ($finding !== null) {
                 $findings[] = $finding;
+            }
+            if ($noRegister && ($binding->campaignSlice !== '')) {
+                $findings[] = self::registerFinding($binding, $rules);
             }
         }
         if ($strays) {
@@ -362,7 +368,29 @@ class CheckIsdsAccounts extends AbstractOptimize
         );
     }
 
+    /** a mass sending checks its recipients in the register and sends nothing without it */
+    private static function registerFinding(Binding $binding, SliceRules $rules): Finding
+    {
+        return new Finding(
+            Finding::WARNING,
+            _m('ISDS account %1 cannot send a mass sending: the register of data boxes has not been downloaded', [Accounts::prefix($binding->environment, $binding->name)]),
+            advice: _m('Download the register on the page Data boxes from the register of the slice the campaigns take their recipients from.'),
+            key: "register:{$binding->environment}:{$binding->name}",
+            place: $rules->name($binding->campaignSlice),
+        );
+    }
+
     // ------------------------------------------------------------ what tests replace
+
+    /** no register downloaded - one stat; a directory PHP cannot look into is CheckIsdsRegistry's */
+    protected function registerMissing(): bool
+    {
+        try {
+            return Sync::registerInfo() === null;
+        } catch (\RuntimeException) {
+            return false;
+        }
+    }
 
     /** @return array<string, mixed> as Store::userConstants() */
     protected function constants(): array

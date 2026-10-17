@@ -26,6 +26,11 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
     /** @var list<array<string, ?string>> LogOnce::recent() rows of the campaigns whose recipients were not told */
     public array $campaigns = [];
 
+    /** no register of data boxes downloaded */
+    public bool $registerMissing = false;
+
+    public int $registerLooks = 0;
+
     public function __construct(public FakeSliceRules $rules) {}
 
     protected function constants(): array
@@ -56,5 +61,11 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
     protected function unresolvedCampaigns(): array
     {
         return $this->campaigns;
+    }
+
+    protected function registerMissing(): bool
+    {
+        ++$this->registerLooks;
+        return $this->registerMissing;
     }
 }

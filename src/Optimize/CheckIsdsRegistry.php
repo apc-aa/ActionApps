@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Isds\Accounts;
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Isds\Registry\MatchRow;
 use AA\Isds\Registry\Page;
+use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\Sync;
 
 /**
@@ -15,7 +17,8 @@ use AA\Isds\Registry\Sync;
  * data box, or another one than the register finds by their IČO. Reading every item of those slices and
  * the 17 MB register takes seconds, so this runs on request and in the daily snapshot. It downloads
  * nothing - the slice's page does - and its findings give counts only: the State Check mail would carry
- * item names.
+ * item names. With an ISDS account it checks the index a mass sending reads (RegisterIndex), making it
+ * when there is none.
  */
 class CheckIsdsRegistry extends AbstractOptimize
 {
@@ -67,8 +70,14 @@ class CheckIsdsRegistry extends AbstractOptimize
             return [new Finding(Finding::INFO, _m('The register of data boxes has not been downloaded'), advice: $download . ' ' . _m('The items are compared with it.'), links: $pages, key: 'register')];
         }
         $findings = [];
+        // a mass sending checks its recipients in it
+        $sends = $this->hasIsdsAccount();
         if (Sync::isOld($info, $this->now())) {
-            $findings[] = new Finding(Finding::INFO, _m('The downloaded register of data boxes is older than %1 days', [Sync::OLD_DAYS]), evidence: [[_m('Downloaded') => date('Y-m-d H:i', $info['mtime'])]], advice: _m('Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge.'), links: $pages, key: 'register');
+            $findings[] = new Finding($sends ? Finding::WARNING : Finding::INFO, _m('The downloaded register of data boxes is older than %1 days', [Sync::OLD_DAYS]), evidence: [[_m('Downloaded') => date('Y-m-d H:i', $info['mtime'])]], advice: _m('Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge.'), links: $pages, key: 'register');
+        }
+        $problem = $sends ? $this->indexProblem() : '';
+        if ($problem !== '') {
+            $findings[] = new Finding(Finding::WARNING, _m('A mass sending cannot use the register of data boxes'), evidence: [[_m('Problem') => safe($problem)]], advice: _m('Fix what the evidence names, or download the register again on the page Data boxes from the register of a paired slice. Until then a mass sending neither counts its recipients nor sends. The AA log (type %1) keeps what failed.', [Sync::LOG_EVENT]), links: $pages, key: 'register-index');
         }
         try {
             // once for all slices; a register that cannot be read is no fault of their settings
@@ -164,6 +173,18 @@ class CheckIsdsRegistry extends AbstractOptimize
     protected function newSync(Config $config): Sync
     {
         return new Sync($config);
+    }
+
+    /** include/config.php sets up an ISDS account, usable or not - only constants are read */
+    protected function hasIsdsAccount(): bool
+    {
+        return Accounts::bindings() !== [];
+    }
+
+    /** see RegisterIndex::problem() - it makes the index when it has to */
+    protected function indexProblem(): string
+    {
+        return (new RegisterIndex())->problem();
     }
 
     /**

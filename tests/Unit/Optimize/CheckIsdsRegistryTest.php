@@ -89,6 +89,50 @@ final class CheckIsdsRegistryTest extends TestCase
         self::assertSame(0, $check->registerReads, 'nothing to compare with');
     }
 
+    // CheckIsdsAccounts warns of it every day, for each account
+    public function test_registerMissing_infoWithAnIsdsAccountToo(): void
+    {
+        $check = self::check([self::SLICE => self::allFine()]);
+        $check->register    = null;
+        $check->isdsAccount = true;
+
+        self::assertSame([Finding::INFO], self::severities($check->findings()));
+        self::assertSame(0, $check->indexChecks);
+    }
+
+    // a mass sending checks its recipients in it
+    public function test_registerOld_warningWithAnIsdsAccount(): void
+    {
+        $check = self::check([self::SLICE => self::allFine()]);
+        $check->register    = ['mtime' => 1760000000, 'size' => 17000000];
+        $check->now         = 1760000000 + 8 * 86400;
+        $check->isdsAccount = true;
+
+        $findings = $check->findings();
+
+        self::assertSame([Finding::WARNING], self::severities($findings));
+        self::assertSame('register', $findings[0]->key);
+    }
+
+    // the index is made or checked only where a mass sending may read it
+    public function test_indexProblem_warningWithAnIsdsAccount(): void
+    {
+        $check = self::check([self::SLICE => self::allFine()]);
+        $check->indexProblem = 'The register of data boxes is not the one AA downloaded <b>- download it again</b>';
+
+        self::assertSame([Finding::OK], self::severities($check->findings()));
+        self::assertSame(0, $check->indexChecks);
+
+        $check->isdsAccount = true;
+        $findings = $check->findings();
+
+        self::assertSame([Finding::WARNING], self::severities($findings));
+        self::assertSame('register-index', $findings[0]->key);
+        self::assertSame(safe($check->indexProblem), $findings[0]->evidence[0][_m('Problem')]);
+        $check->indexProblem = '';
+        self::assertSame([Finding::OK], self::severities($check->findings()));
+    }
+
     // two paired slices of one name: each link says which one it opens
     public function test_registerMissing_linksToSlicesOfOneNameTellThemApart(): void
     {

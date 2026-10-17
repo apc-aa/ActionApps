@@ -36,6 +36,14 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
 
     public int $registerReads = 0;
 
+    /** whether include/config.php sets up an ISDS account */
+    public bool $isdsAccount = false;
+
+    /** RegisterIndex::problem() */
+    public string $indexProblem = '';
+
+    public int $indexChecks = 0;
+
     protected function allConfigs(): array
     {
         return $this->configs;
@@ -49,6 +57,17 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
     protected function newSync(Config $config): Sync
     {
         return $this->syncs[$config->sliceId()] ?? throw new \LogicException('Set the sync of the slice');
+    }
+
+    protected function hasIsdsAccount(): bool
+    {
+        return $this->isdsAccount;
+    }
+
+    protected function indexProblem(): string
+    {
+        ++$this->indexChecks;
+        return $this->indexProblem;
     }
 
     protected function registerInfo(): ?array

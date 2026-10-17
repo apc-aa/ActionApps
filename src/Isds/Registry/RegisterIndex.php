@@ -1,0 +1,359 @@
+<?php
+
+declare(strict_types=1);
+
+namespace AA\Isds\Registry;
+
+use AA\IO\DB\DB_AA;
+use AA\Util\SafeFile;
+
+/**
+ * The boxes of the downloaded register (Sync::registerFile()) in a file next to it, a line each - id,
+ * IČO, name - so a page asking for some boxes need not parse the 17 MB of XML (half a second).
+ *
+ * Both files lie in the upload directory, which the web server serves and other PHP users of the
+ * server may write into. Only the hashes RegisterRecord keeps in the install's database make them the
+ * register this AA downloaded and the index it made of it: another register is not indexed until it
+ * is downloaded again, another index is made again.
+ *
+ * Names are raw text of an outside file - escape them (safe()) when shown.
+ */
+class RegisterIndex
+{
+    public const FILE = 'isds-seznam-ds-ovm.idx';
+
+    /** state(): the register and its index are ready */
+    public const OK = 'ok';
+
+    /** state(): ready, but the register was downloaded more than Sync::OLD_DAYS ago */
+    public const OLD = 'old';
+
+    /** state(): no register has been downloaded */
+    public const MISSING = 'missing';
+
+    /** state(): the register or its index cannot be used in this request - problem() says why */
+    public const UNREADABLE = 'unreadable';
+
+    /** the IČO of a box whose IČO in the register is no IČO - it equals no item's */
+    public const BAD_ICO = '?';
+
+    /**
+     * RegisterRecord, '' = unset: sha256, size and time of the downloaded register; sha256 of its
+     * index; time, register sha256 and message of the last failed attempt to make the index
+     */
+    public const RECORD = ['xml' => '', 'size' => '', 'time' => '', 'index' => '', 'failed' => '', 'failed_of' => '', 'failure' => ''];
+
+    /** the format; the register's sha256 follows */
+    private const HEADER = 'aa-isds-register-index-1';
+
+    private const LOCK = 'isds-register-index';
+
+    /** seconds a request waits for another one making the index, which takes about half a second */
+    private const LOCK_WAIT = 3;
+
+    /** seconds a failed attempt holds the next ones back - each parses 17 MB */
+    private const RETRY = 600;
+
+    /** bytes of a name in the index - an official name is a line of text; a longer one is cut */
+    private const MAX_NAME = 1000;
+
+    /** bytes of a line of the index: id, IČO, MAX_NAME and the separators fit; a longer one is damage */
+    private const MAX_LINE = 1024;
+
+    /** bytes of the index - some 1 MB per 17 MB of register; scan() reads no more, as a file someone
+     *  keeps writing to would never end, so make() writes no more either */
+    private const MAX_INDEX = 8 * 1024 * 1024;
+
+    private const CHANGED = 'The register of data boxes is not the one AA downloaded - download it again';
+
+    /** @var array<string, string> index path and register sha256 => why this process could not make it */
+    private static array $failed = [];
+
+    /** null = the install has no upload directory */
+    private readonly ?string $register;
+
+    private readonly string $index;
+
+    private ?string $state = null;
+
+    private string $problem = '';
+
+    /** @var array<string, string> RECORD as last read */
+    private array $record = self::RECORD;
+
+    /** @param ?string $register the register; Sync::registerFile() when null */
+    public function __construct(?string $register = null)
+    {
+        try {
+            $register ??= Sync::registerFile();
+        } catch (\RuntimeException $e) {
+            $this->problem = $e->getMessage();
+        }
+        $this->register = $register;
+        $this->index    = ($register === null) ? '' : dirname($register) . '/' . self::FILE;
+    }
+
+    /**
+     * OK, OLD, MISSING or UNREADABLE; first makes the index when there is none of the recorded register.
+     * Looks once per object.
+     */
+    public function state(): string
+    {
+        return $this->state ??= $this->look();
+    }
+
+    /**
+     * Why a sending cannot use the register now, the index checked whole; '' = it can, or there is none
+     * (MISSING). Raw, it may name a path - escape it (safe()).
+     */
+    public function problem(): string
+    {
+        try {
+            if (in_array($this->state(), [self::OK, self::OLD], true)) {
+                $this->lookup([]);
+            }
+        } catch (\RuntimeException) {
+            // lookup() has set the problem
+        }
+        return $this->problem;
+    }
+
+    /**
+     * The boxes of $boxes the register has, in one pass over the index - ask for all of them at once.
+     * @param list<string> $boxes ids as ISDS knows them (Box::normalizeId())
+     * @return array<array-key, array{id: string, ico: string, name: string}> by box id - PHP makes an id
+     *         of digits only an int key, so take the id from the row; ico as Box::normalizeIco() gives
+     *         it, '' = none, BAD_ICO = no IČO in the register
+     * @throws \RuntimeException the state() is neither OK nor OLD, or the index is not the recorded one
+     *                           and cannot be made again
+     */
+    public function lookup(array $boxes): array
+    {
+        if (!in_array($this->state(), [self::OK, self::OLD], true)) {
+            throw new \RuntimeException("The register of data boxes is $this->state: $this->problem");
+        }
+        $wanted = array_fill_keys($boxes, true);
+        // replaced since state() read it: made again, unless the register was replaced too
+        $found = $this->scan($wanted) ?? ($this->rebuild() ? $this->scan($wanted) : null);
+        if ($found === null) {
+            $this->state     = self::UNREADABLE;
+            $this->problem   = $this->problem ?: "The index of the register of data boxes is not the one AA made: $this->index";
+            throw new \RuntimeException($this->problem);
+        }
+        return $found;
+    }
+
+    /**
+     * Records the register Sync::download() has just put in place and makes its index. Never throws:
+     * the register is in place, so a failure is logged and left to the first page that needs the index.
+     */
+    public function downloaded(string $sha256, int $size): void
+    {
+        try {
+            $this->writeRecord(['xml' => $sha256, 'size' => $size, 'time' => time(), 'index' => '', 'failed' => '', 'failed_of' => '', 'failure' => '']);
+            // without the lock another request is making it
+            if ($this->lock()) {
+                try {
+                    $this->record = $this->readRecord() + self::RECORD;
+                    $error        = $this->make();
+                    if ($error !== '') {
+                        $this->failed($error);
+                    }
+                } finally {
+                    $this->unlock();
+                }
+            }
+        } catch (\Throwable $e) {
+            $this->log($e->getMessage());
+        }
+    }
+
+    private function look(): string
+    {
+        if ($this->register === null) {
+            return self::UNREADABLE;
+        }
+        try {
+            $info = Sync::registerInfo($this->register);
+        } catch (\RuntimeException $e) {
+            // a directory PHP cannot look into - GlusterFS refuses it at times
+            $this->problem = $e->getMessage();
+            return self::UNREADABLE;
+        }
+        if ($info === null) {
+            return self::MISSING;
+        }
+        $this->record = $this->readRecord() + self::RECORD;
+        if ($this->record['xml'] === '') {
+            // downloaded by an older AA, or put there by hand
+            $this->problem = self::CHANGED;
+            return self::UNREADABLE;
+        }
+        if (($this->scan([]) === null) && !$this->rebuild()) {
+            return self::UNREADABLE;
+        }
+        return Sync::isOld(['mtime' => (int) $this->record['time'], 'size' => 0], time()) ? self::OLD : self::OK;
+    }
+
+    /** One request at a time parses the register; the others wait for it, or give up for this request. */
+    private function rebuild(): bool
+    {
+        $key    = $this->index . '|' . $this->record['xml'];
+        $recent = ($this->record['failed_of'] === $this->record['xml']) && ((time() - (int) $this->record['failed']) < self::RETRY);
+        if (isset(self::$failed[$key]) || $recent) {
+            $this->problem = self::$failed[$key] ?? $this->record['failure'];
+            return false;
+        }
+        if (!$this->lock()) {
+            $this->problem = self::$failed[$key] = 'Another request is making the index of the register of data boxes';
+            return false;
+        }
+        try {
+            // the request this one waited for may have made it, or a download replaced the register
+            $this->record = $this->readRecord() + self::RECORD;
+            if ($this->scan([]) !== null) {
+                return true;
+            }
+            $error = $this->make();
+            return ($error === '') || $this->failed($error);
+        } finally {
+            $this->unlock();
+        }
+    }
+
+    /**
+     * Reads the index, keeping the boxes of $wanted.
+     * @param array<array-key, true> $wanted
+     * @return ?array<array-key, array{id: string, ico: string, name: string}> null: not the index the
+     *                                                                         record vouches for
+     */
+    private function scan(array $wanted): ?array
+    {
+        if ($this->record['index'] === '') {
+            return null;
+        }
+        try {
+            $text = SafeFile::read($this->index, $this->maxIndex());
+        } catch (\RuntimeException) {
+            return null;
+        }
+        $header = self::header($this->record['xml']);
+        if (!str_starts_with($text, $header) || !hash_equals($this->record['index'], hash('sha256', $text))) {
+            return null;
+        }
+        $found = [];
+        $end   = strlen($text);
+        for ($at = strlen($header); $at < $end; $at = $next + 1) {
+            $next = strpos($text, "\n", $at);
+            // no end of the line, or longer than any line make() writes
+            if (($next === false) || (($next - $at) >= self::MAX_LINE)) {
+                return null;
+            }
+            $parts = explode("\t", substr($text, $at, $next - $at), 3);
+            if (isset($wanted[$parts[0]], $parts[2])) {
+                $found[$parts[0]] ??= ['id' => $parts[0], 'ico' => $parts[1], 'name' => $parts[2]];
+            }
+        }
+        return $found;
+    }
+
+    /**
+     * Writes the index of the recorded register and records its hash; the caller holds the lock.
+     * @return string why it failed, '' = made
+     */
+    private function make(): string
+    {
+        $text = '';
+        try {
+            SafeFile::replace($this->index, function () use (&$text): string {
+                return $text = $this->text();
+            });
+        } catch (\RuntimeException $e) {
+            return $e->getMessage();
+        }
+        $this->record['index'] = hash('sha256', $text);
+        $this->writeRecord(['index' => $this->record['index']]);
+        return '';
+    }
+
+    /**
+     * The index of the recorded register, parsed from the very bytes that were hashed
+     * @throws \RuntimeException
+     */
+    private function text(): string
+    {
+        $boxes = $this->boxes((string) $this->register, $this->record['xml']) ?? throw new \RuntimeException(self::CHANGED);
+        $text  = self::header($this->record['xml']);
+        foreach ($boxes as $box) {
+            $ico   = ($box->ico === '') ? '' : (Box::normalizeIco($box->ico) ?: self::BAD_ICO);
+            $name  = mb_strcut((string) preg_replace('/[\t\r\n]+/', ' ', $box->name), 0, self::MAX_NAME, 'UTF-8');
+            $text .= $box->id . "\t" . $ico . "\t" . $name . "\n";
+        }
+        if (strlen($text) > $this->maxIndex()) {
+            throw new \RuntimeException(sprintf('The register of data boxes is unusually large: its index would have %d bytes, AA reads at most %d', strlen($text), $this->maxIndex()));
+        }
+        return $text;
+    }
+
+    /**
+     * Remembers why the index could not be made - in this process, and in the record for RETRY
+     * seconds, so pages that poll do not each parse 17 MB - and logs it; the caller holds the lock.
+     */
+    private function failed(string $error): bool
+    {
+        self::$failed[$this->index . '|' . $this->record['xml']] = $error;
+        $this->problem = $error;
+        $this->writeRecord(['failed' => time(), 'failed_of' => $this->record['xml'], 'failure' => mb_strcut($error, 0, 500)]);
+        $this->log($error);
+        return false;
+    }
+
+    private static function header(string $sha256): string
+    {
+        return self::HEADER . " $sha256\n";
+    }
+
+    // ------------------------------------------------------------ what tests replace
+
+    /** @return array<string, string> RegisterRecord::read() */
+    protected function readRecord(): array
+    {
+        return RegisterRecord::read();
+    }
+
+    /** @param array<string, string|int> $values */
+    protected function writeRecord(array $values): void
+    {
+        RegisterRecord::write($values);
+    }
+
+    protected function log(string $message): void
+    {
+        \AA_Log::write(Sync::LOG_EVENT, 'index', $message);
+    }
+
+    protected function maxIndex(): int
+    {
+        return self::MAX_INDEX;
+    }
+
+    /** @return bool got it - unlock() then; false also when the database gives no lock */
+    protected function lock(): bool
+    {
+        return DB_AA::lock(self::LOCK, self::LOCK_WAIT);
+    }
+
+    protected function unlock(): void
+    {
+        DB_AA::unlock(self::LOCK);
+    }
+
+    /**
+     * @return ?iterable<Box> SdsList::fromVerifiedFile()
+     * @throws \RuntimeException
+     */
+    protected function boxes(string $register, string $sha256): ?iterable
+    {
+        return SdsList::fromVerifiedFile($register, $sha256);
+    }
+}

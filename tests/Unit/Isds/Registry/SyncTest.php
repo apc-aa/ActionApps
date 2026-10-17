@@ -8,6 +8,7 @@ use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Isds\Registry\MatchReport;
 use AA\Isds\Registry\MatchRow;
+use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\SdsList;
 use AA\Isds\Registry\Sync;
 use AA_Credentials;
@@ -19,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use AA\Http\Response;
 use Tests\Unit\Fixtures\FakeHttp;
 use Tests\Unit\Isds\Registry\Fixtures\DownloadSync;
+use Tests\Unit\Isds\Registry\Fixtures\LockedRegisterIndex;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
@@ -57,6 +59,7 @@ final class SyncTest extends TestCase
         require_once __DIR__ . '/../../Legacy/fixtures/store_fixtures.php';    // the legacy boot, no DB
         require_once __DIR__ . '/fixtures/RecordingSync.php';
         require_once __DIR__ . '/fixtures/DownloadSync.php';
+        require_once __DIR__ . '/fixtures/LockedRegisterIndex.php';
         require_once __DIR__ . '/fixtures/PropertySlice.php';
         require_once __DIR__ . '/../../fixtures/FakeHttp.php';
         if (!defined('CACHE_TTL')) {
@@ -381,6 +384,33 @@ final class SyncTest extends TestCase
         self::assertCount(1, $http->calls);
         self::assertFileEquals(self::FIXTURE, $file);
         self::assertSame([[1760000000], 1, 1], [DownloadSync::$attempts, DownloadSync::$locks, DownloadSync::$unlocks]);
+    }
+
+    // the hash of what was downloaded vouches for the file; and no page has to parse the 17 MB
+    public function test_download_recordsTheRegisterAndWritesItsIndex(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+
+        DownloadSync::download(self::registerHttp(), 1760000000, $file);
+
+        self::assertSame([hash_file('sha256', self::FIXTURE), (string) filesize(self::FIXTURE)], [LockedRegisterIndex::$record['xml'], LockedRegisterIndex::$record['size']]);
+        $index = new LockedRegisterIndex($file);
+        self::assertSame(RegisterIndex::OK, $index->state());
+        self::assertSame([1, 1], [LockedRegisterIndex::$locks, LockedRegisterIndex::$unlocks], 'made under the lock, no page makes it again');
+        self::assertArrayHasKey('eerak7a', $index->lookup(['eerak7a']));
+    }
+
+    // the register is in place: the download succeeded, the failure is logged
+    public function test_download_failedIndexWriteStillDownloaded(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        mkdir($this->scratch . '/' . RegisterIndex::FILE);   // rename() cannot put a file over a directory
+
+        self::assertSame(['status' => Sync::DOWNLOADED, 'last' => 0], DownloadSync::download(self::registerHttp(), 1760000000, $file));
+
+        self::assertFileEquals(self::FIXTURE, $file);
+        self::assertCount(1, LockedRegisterIndex::$logged);
+        self::assertSame(RegisterIndex::UNREADABLE, (new LockedRegisterIndex($file))->state());
     }
 
     // another server, or another click, is downloading it
