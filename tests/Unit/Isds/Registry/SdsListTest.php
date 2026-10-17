@@ -50,7 +50,7 @@ final class SdsListTest extends TestCase
         rmdir($this->dir);
     }
 
-    public function test_fromXml_fixtureInFileOrder(): void
+    public function test_fromVerifiedFile_fixtureInFileOrder(): void
     {
         $ids = array_column(self::boxes(self::FIXTURE), 'id');
 
@@ -62,13 +62,13 @@ final class SdsListTest extends TestCase
         ], $ids);
     }
 
-    public function test_fromXml_cityHasAllFields(): void
+    public function test_fromVerifiedFile_cityHasAllFields(): void
     {
         self::assertEquals(new Box('a7kbrrn', '44992785', '44992785', 'Statutární město Brno', 'OVM', 10, true, false, 'Brno'), $this->fixtureBoxes()['a7kbrrn']);
     }
 
     // city districts of Brno, Ostrava and Liberec have no IČO of their own, only the authority id
-    public function test_fromXml_cityDistrictWithoutIco(): void
+    public function test_fromVerifiedFile_cityDistrictWithoutIco(): void
     {
         $district = $this->fixtureBoxes()['qykbwe7'];
 
@@ -79,7 +79,7 @@ final class SdsListTest extends TestCase
     }
 
     // the name of an Ostrava district leaves the city out, the address has it
-    public function test_fromXml_cityOfTheAddress(): void
+    public function test_fromVerifiedFile_cityOfTheAddress(): void
     {
         $boxes = $this->fixtureBoxes();
 
@@ -88,7 +88,7 @@ final class SdsListTest extends TestCase
         self::assertSame('Praha 9', $boxes['erdb3s9']->city, 'Praha\'s districts have the postal district');
     }
 
-    public function test_fromXml_cityTrimmedAndOnlyFromTheAddress(): void
+    public function test_fromVerifiedFile_cityTrimmedAndOnlyFromTheAddress(): void
     {
         $file = $this->write(self::list(self::box('aaaaaa1', '<address><city> Opava </city><district>Komárov</district></address>')
             . self::box('aaaaaa2', '<city>Brno</city><address><street>Hlavní</street></address>')));
@@ -96,7 +96,7 @@ final class SdsListTest extends TestCase
         self::assertSame(['Opava', ''], array_column(self::boxes($file), 'city'));
     }
 
-    public function test_fromXml_subordinateBoxes(): void
+    public function test_fromVerifiedFile_subordinateBoxes(): void
     {
         $boxes = $this->fixtureBoxes();
 
@@ -107,12 +107,12 @@ final class SdsListTest extends TestCase
         self::assertSame(10, $boxes['qebd4jz']->subtype);
     }
 
-    public function test_fromXml_icoKeepsLeadingZeros(): void
+    public function test_fromVerifiedFile_icoKeepsLeadingZeros(): void
     {
         self::assertSame('00240044', $this->fixtureBoxes()['erdb3s9']->ico);
     }
 
-    public function test_fromXml_entitiesDecoded(): void
+    public function test_fromVerifiedFile_entitiesDecoded(): void
     {
         $boxes = $this->fixtureBoxes();
 
@@ -120,19 +120,19 @@ final class SdsListTest extends TestCase
         self::assertSame("Soukromá základní škola Acorn's & John's school s.r.o.", $boxes['3bmucqz']->name);
     }
 
-    public function test_fromXml_notaryIsSubtype15(): void
+    public function test_fromVerifiedFile_notaryIsSubtype15(): void
     {
         self::assertEquals(new Box('3th5n6b', '70673683', '70673683', 'Adam Jaroslav - notář', 'OVM', 15, true, false, 'Český Krumlov'), $this->fixtureBoxes()['3th5n6b']);
     }
 
-    public function test_fromXml_personNameWhenNoTradeName(): void
+    public function test_fromVerifiedFile_personNameWhenNoTradeName(): void
     {
         $file = $this->write(self::list(self::box('jana001', '<name><person><firstName> Jana </firstName><lastName>Nováková</lastName></person><tradeName>  </tradeName></name>')));
 
         self::assertSame('Jana Nováková', self::boxes($file)[0]->name);
     }
 
-    public function test_fromXml_valuesTrimmedEmptyElementsAndBooleans(): void
+    public function test_fromVerifiedFile_valuesTrimmedEmptyElementsAndBooleans(): void
     {
         $file = $this->write(self::list(
             self::box(' aaaaaa1 ', '<subtype> 16 </subtype><ico/><idOVM> 123 </idOVM><pdz>true</pdz><hierarchy><isMaster>1</isMaster></hierarchy>')
@@ -145,7 +145,7 @@ final class SdsListTest extends TestCase
         ], self::boxes($file));
     }
 
-    public function test_fromXml_onlyBoxesInTheListCount(): void
+    public function test_fromVerifiedFile_onlyBoxesInTheListCount(): void
     {
         $file = $this->write(self::list(self::box('aaaaaa1', '') . '<other><box><id>nested</id></box></other>'));
 
@@ -169,14 +169,14 @@ final class SdsListTest extends TestCase
 
     // the id becomes a recipient address: another shape means the format changed, not a box to skip
     #[DataProvider('otherIds')]
-    public function test_fromXml_boxWithAnotherIdRefusesTheList(string $box): void
+    public function test_fromVerifiedFile_boxWithAnotherIdRefusesTheList(string $box): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('with the id');
         self::boxes($this->write(self::list(self::box('aaaaaa1', '') . $box)));
     }
 
-    public function test_fromXml_longIdCutInTheMessage(): void
+    public function test_fromVerifiedFile_longIdCutInTheMessage(): void
     {
         try {
             self::boxes($this->write(self::list(self::box(str_repeat('a', 5000), ''))));
@@ -187,7 +187,7 @@ final class SdsListTest extends TestCase
         }
     }
 
-    public function test_fromXml_emptyList(): void
+    public function test_fromVerifiedFile_emptyList(): void
     {
         self::assertSame([], self::boxes($this->write(self::list(''))));
     }
@@ -216,7 +216,7 @@ final class SdsListTest extends TestCase
     }
 
     #[DataProvider('notTheList')]
-    public function test_fromXml_notTheListRefused(string $xml): void
+    public function test_fromVerifiedFile_notTheListRefused(string $xml): void
     {
         $this->expectException(\UnexpectedValueException::class);
         self::boxes($this->write($xml));
@@ -240,14 +240,14 @@ final class SdsListTest extends TestCase
 
     // libxml would decode another encoding and find markup the scan of the bytes did not see
     #[DataProvider('notUtf8')]
-    public function test_fromXml_notUtf8Refused(string $xml): void
+    public function test_fromVerifiedFile_notUtf8Refused(string $xml): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('UTF-8');
         self::boxes($this->write($xml));
     }
 
-    public function test_fromXml_utf8BomAccepted(): void
+    public function test_fromVerifiedFile_utf8BomAccepted(): void
     {
         self::assertSame(['aaaaaa1'], array_column(self::boxes($this->write("\xEF\xBB\xBF" . self::list(self::box('aaaaaa1', '')))), 'id'));
     }
@@ -267,14 +267,14 @@ final class SdsListTest extends TestCase
 
     // the texts of a field are joined, so these would make one value of two
     #[DataProvider('mergedFields')]
-    public function test_fromXml_fieldsThatWouldMergeRefused(string $box, string $message): void
+    public function test_fromVerifiedFile_fieldsThatWouldMergeRefused(string $box, string $message): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage($message);
         self::boxes($this->write(self::list($box)));
     }
 
-    public function test_fromXml_damageReportsTheLine(): void
+    public function test_fromVerifiedFile_damageReportsTheLine(): void
     {
         $fixture = (string) file_get_contents(self::FIXTURE);
         $file    = $this->write(str_replace('<id>xx3bzck</id>', '<id>xx3bzck</i>', $fixture));
@@ -286,7 +286,7 @@ final class SdsListTest extends TestCase
     }
 
     // nothing outside the file may reach a box or a message: the DOCTYPE is refused before libxml reads the file
-    public function test_fromXml_externalEntityNotLoaded(): void
+    public function test_fromVerifiedFile_externalEntityNotLoaded(): void
     {
         file_put_contents($this->dir . '/secret.txt', 'SECRET-MARKER');
         $xml = '<?xml version="1.0"?><!DOCTYPE list [<!ENTITY x SYSTEM "file://' . $this->dir . '/secret.txt">]>'
@@ -302,7 +302,7 @@ final class SdsListTest extends TestCase
     }
 
     // libxml reads the start of the first box with the root; an error there must not be cleared with it
-    public function test_fromXml_errorFoundWithTheRootRefused(): void
+    public function test_fromVerifiedFile_errorFoundWithTheRootRefused(): void
     {
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('Namespace prefix x');
@@ -318,7 +318,7 @@ final class SdsListTest extends TestCase
     // libxml builds a run of comments before it returns the first one, so they are refused unread -
     // also when the 1 MB chunks of the scan split the "<!" or "<?"
     #[DataProvider('markup')]
-    public function test_fromXml_markupAcrossTheScanChunkRefused(string $markup): void
+    public function test_fromVerifiedFile_markupAcrossTheScanChunkRefused(string $markup): void
     {
         $head = '<?xml version="1.0" encoding="UTF-8"?>' . self::ROOT . '<box><id>aaaaaa1</id><ico>';
         $file = $this->write($head . str_repeat('a', 1024 * 1024 - 1 - strlen($head)) . $markup . '1</ico></box></list>');
@@ -329,7 +329,7 @@ final class SdsListTest extends TestCase
     }
 
     // the file is read as a file, not as a URL that would decode %41 to A
-    public function test_fromXml_percentInThePathReadAsItIs(): void
+    public function test_fromVerifiedFile_percentInThePathReadAsItIs(): void
     {
         file_put_contents($this->dir . '/aA.xml', self::list(self::box('aaaaaa1', '')));
         file_put_contents($this->dir . '/a%41.xml', self::list(self::box('aaaaaa2', '')));
@@ -338,21 +338,21 @@ final class SdsListTest extends TestCase
     }
 
     // unreadable, not a bad list - and before the first box is asked for
-    public function test_fromXml_missingFileRefusedAtTheCall(): void
+    public function test_fromVerifiedFile_missingFileRefusedAtTheCall(): void
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Cannot read ' . $this->dir . '/none.xml');
-        SdsList::fromXml($this->dir . '/none.xml');
+        SdsList::fromVerifiedFile($this->dir . '/none.xml', str_repeat('0', 64));
     }
 
     // the caller's own XML code between two boxes, and after a failure, runs with its own libxml
     // settings and finds no errors left from the list
-    public function test_fromXml_libxmlStateRestored(): void
+    public function test_fromVerifiedFile_libxmlStateRestored(): void
     {
         $before = libxml_use_internal_errors(false);
         $loader = libxml_get_external_entity_loader();
         try {
-            foreach (SdsList::fromXml(self::FIXTURE) as $box) {
+            foreach (SdsList::fromVerifiedFile(self::FIXTURE, (string) hash_file('sha256', self::FIXTURE)) ?? self::fail('the fixture is the one hashed') as $box) {
                 self::assertFalse(libxml_use_internal_errors());
                 self::assertSame($loader, libxml_get_external_entity_loader());
             }
@@ -390,6 +390,16 @@ final class SdsListTest extends TestCase
         $file = $this->write(self::list(self::box('aaaaaa1', '')));
 
         self::assertNull(SdsList::fromVerifiedFile($file, hash('sha256', self::list(self::box('aaaaaa2', '')))));
+    }
+
+    // a directory, or a link to one, in its place counts as another file, not as a failed read
+    public function test_fromVerifiedFile_noRegularFileIsAnotherFile(): void
+    {
+        mkdir($this->dir . '/list.xml');
+        symlink($this->dir, $this->dir . '/link.xml');
+
+        self::assertNull(SdsList::fromVerifiedFile($this->dir . '/list.xml', str_repeat('0', 64)));
+        self::assertNull(SdsList::fromVerifiedFile($this->dir . '/link.xml', str_repeat('0', 64)));
     }
 
     public function test_download_writesTheList(): void
@@ -535,10 +545,10 @@ final class SdsListTest extends TestCase
         return array_column(self::boxes(self::FIXTURE), null, 'id');
     }
 
-    /** @return list<Box> */
+    /** @return list<Box> the boxes of $file, read as the downloaded register is */
     private static function boxes(string $file): array
     {
-        return iterator_to_array(SdsList::fromXml($file), false);
+        return iterator_to_array(SdsList::fromVerifiedFile($file, (string) hash_file('sha256', $file)) ?? self::fail('the file is the one hashed'), false);
     }
 
     private function write(string $xml): string

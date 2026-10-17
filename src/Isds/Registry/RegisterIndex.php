@@ -34,6 +34,20 @@ class RegisterIndex
     /** state(): the register or its index cannot be used in this request - problem() says why */
     public const UNREADABLE = 'unreadable';
 
+    /** info(): the register this AA downloaded, as far as a look at the file tells */
+    public const RECORDED = 'recorded';
+
+    /** info(): a register AA has no record of downloading - an older AA downloaded it, or it was put
+     *  there by hand */
+    public const UNRECORDED = 'unrecorded';
+
+    /** info(): the register this AA downloaded is gone, or another file lies in its place - which only
+     *  reading it tells (Sync::registerBoxes()) */
+    public const REPLACED = 'replaced';
+
+    /** problem(): the register is not the one the record vouches for */
+    public const CHANGED = 'The register of data boxes is not the one AA downloaded - download it again';
+
     /** the IČO of a box whose IČO in the register is no IČO - it equals no item's */
     public const BAD_ICO = '?';
 
@@ -63,8 +77,6 @@ class RegisterIndex
     /** bytes of the index - some 1 MB per 17 MB of register; scan() reads no more, as a file someone
      *  keeps writing to would never end, so make() writes no more either */
     private const MAX_INDEX = 8 * 1024 * 1024;
-
-    private const CHANGED = 'The register of data boxes is not the one AA downloaded - download it again';
 
     /** @var array<string, string> index path and register sha256 => why this process could not make it */
     private static array $failed = [];
@@ -144,17 +156,54 @@ class RegisterIndex
     }
 
     /**
-     * Records the register Sync::download() has just put in place and makes its index. Never throws:
-     * the register is in place, so a failure is logged and left to the first page that needs the index.
+     * The register as the record vouches for it, from a look at the file and a read of the record - not
+     * of the register's bytes, which Sync::registerBoxes() checks. null when nothing was downloaded.
+     * @return ?array{state: string, time: int, size: int, sha256: string} state RECORDED, UNRECORDED or
+     *         REPLACED; time, size and sha256 of the recorded download, 0 and '' when UNRECORDED
+     * @throws \RuntimeException no upload directory, or one PHP cannot look into - the message names it
+     */
+    public function info(): ?array
+    {
+        if ($this->register === null) {
+            throw new \RuntimeException($this->problem);
+        }
+        $exists       = Sync::registerExists($this->register);
+        $this->record = $this->recorded();
+        $recorded     = ($this->record['xml'] !== '');
+        if (!$exists && !$recorded) {
+            return null;
+        }
+        return [
+            'state'  => $recorded ? ($exists ? self::RECORDED : self::REPLACED) : self::UNRECORDED,
+            'time'   => (int) $this->record['time'],
+            'size'   => (int) $this->record['size'],
+            'sha256' => $this->record['xml'],
+        ];
+    }
+
+    /** @return array<string, string> RECORD as stored now, past what state() read */
+    public function recorded(): array
+    {
+        return $this->readRecord() + self::RECORD;
+    }
+
+    /**
+     * Records the register Sync::download() has just put in place and makes its index. A failure to
+     * make the index is logged and left to the first page that needs it.
+     * @throws UnrecordedException the record cannot be written
      */
     public function downloaded(string $sha256, int $size): void
     {
         try {
             $this->writeRecord(['xml' => $sha256, 'size' => $size, 'time' => time(), 'index' => '', 'failed' => '', 'failed_of' => '', 'failure' => '']);
+        } catch (\RuntimeException $e) {
+            throw new UnrecordedException('The register of data boxes is downloaded, but its record cannot be written: ' . $e->getMessage(), 0, $e);
+        }
+        try {
             // without the lock another request is making it
             if ($this->lock()) {
                 try {
-                    $this->record = $this->readRecord() + self::RECORD;
+                    $this->record = $this->recorded();
                     $error        = $this->make();
                     if ($error !== '') {
                         $this->failed($error);
@@ -170,29 +219,24 @@ class RegisterIndex
 
     private function look(): string
     {
-        if ($this->register === null) {
-            return self::UNREADABLE;
-        }
         try {
-            $info = Sync::registerInfo($this->register);
+            $info = $this->info();
         } catch (\RuntimeException $e) {
-            // a directory PHP cannot look into - GlusterFS refuses it at times
+            // no upload directory, or one PHP cannot look into - GlusterFS refuses it at times
             $this->problem = $e->getMessage();
             return self::UNREADABLE;
         }
         if ($info === null) {
             return self::MISSING;
         }
-        $this->record = $this->readRecord() + self::RECORD;
-        if ($this->record['xml'] === '') {
-            // downloaded by an older AA, or put there by hand
+        if ($info['state'] !== self::RECORDED) {
             $this->problem = self::CHANGED;
             return self::UNREADABLE;
         }
         if (($this->scan([]) === null) && !$this->rebuild()) {
             return self::UNREADABLE;
         }
-        return Sync::isOld(['mtime' => (int) $this->record['time'], 'size' => 0], time()) ? self::OLD : self::OK;
+        return Sync::isOld($info['time'], time()) ? self::OLD : self::OK;
     }
 
     /** One request at a time parses the register; the others wait for it, or give up for this request. */
@@ -210,7 +254,7 @@ class RegisterIndex
         }
         try {
             // the request this one waited for may have made it, or a download replaced the register
-            $this->record = $this->readRecord() + self::RECORD;
+            $this->record = $this->recorded();
             if ($this->scan([]) !== null) {
                 return true;
             }

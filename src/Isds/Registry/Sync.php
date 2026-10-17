@@ -89,19 +89,17 @@ class Sync
     }
 
     /**
-     * The time and size of the downloaded register; null when there is none yet. The only look at the
-     * file: everything that tells its age or compares it asks here.
+     * Whether a file lies at the register's path - the only look at it. Not at its time or size: any PHP
+     * user of the server may set them, so registerInfo() takes the recorded ones.
      * @param ?string $file registerFile() when null
-     * @return ?array{mtime: int, size: int}
      * @throws \RuntimeException no upload directory, or one PHP cannot look into - the message names it
      */
-    public static function registerInfo(?string $file = null): ?array
+    public static function registerExists(?string $file = null): bool
     {
         $file ??= self::registerFile();
         clearstatcache();
-        $stat = @stat($file);
-        if ($stat !== false) {
-            return ['mtime' => (int) $stat['mtime'], 'size' => (int) $stat['size']];
+        if (@stat($file) !== false) {
+            return true;
         }
         // a missing file is no register yet - unless a directory on the way, which PHP may not search,
         // hides it: then the nearest one PHP sees is that directory
@@ -109,37 +107,49 @@ class Sync
         if (!self::searchable($dir)) {
             throw new \RuntimeException("PHP cannot look into the directory $dir on the way to the register of data boxes");
         }
-        return null;
-    }
-
-    /** the register is older than OLD_DAYS
-     *  @param array{mtime: int, size: int} $info registerInfo() */
-    public static function isOld(array $info, int $now): bool
-    {
-        return ($now - $info['mtime']) > self::OLD_DAYS * 86400;
+        return false;
     }
 
     /**
-     * What a page sends with its form and compares on the submit: the time and size of the register -
-     * a new download changes them - and the settings, which decide the rows. The submit is refused when
-     * either changed since the person looked at the rows; '' when there is no register.
-     * @param ?array{mtime: int, size: int} $info registerInfo()
+     * The downloaded register as its record vouches for it - see RegisterIndex::info()
+     * @param ?string $file registerFile() when null
+     * @return ?array{state: string, time: int, size: int, sha256: string}
+     * @throws \RuntimeException see RegisterIndex::info()
      */
-    public static function registerStamp(?array $info, Config $config): string
+    public static function registerInfo(?string $file = null): ?array
     {
-        return ($info === null) ? '' : $info['mtime'] . '-' . $info['size'] . '-' . md5(serialize($config->values()));
+        return static::index($file ?? self::registerFile())->info();
+    }
+
+    /** a register downloaded at $downloaded (registerInfo()) is older than OLD_DAYS */
+    public static function isOld(int $downloaded, int $now): bool
+    {
+        return ($now - $downloaded) > self::OLD_DAYS * 86400;
+    }
+
+    /**
+     * What a page sends with its form and compares on the submit: the sha256 of the register - a
+     * download of another one changes it - and the settings, which decide the rows. The submit is
+     * refused when either changed since the person looked at the rows.
+     * @param string $sha256 registerInfo()'s
+     */
+    public static function registerStamp(string $sha256, Config $config): string
+    {
+        return $sha256 . '-' . md5(serialize($config->values()));
     }
 
     /**
      * Downloads the register into registerFile(), creating its directory, and records it for its
-     * RegisterIndex, unless another download is running or the last download or attempt is younger
-     * than MIN_DOWNLOAD_AGE. A failed download keeps the previous file and still counts as an attempt.
+     * RegisterIndex, unless another download is running or the last recorded download or attempt is
+     * younger than MIN_DOWNLOAD_AGE. A failed download keeps the previous file and still counts as an
+     * attempt.
      * @param ?string $file registerFile() when null; another file only in an existing directory, which
      *                      is not created
      * @return array{status: string, last: int} status DOWNLOADED, RUNNING or RECENT; last: for RECENT
      *                                          the time of the last download or attempt, else 0
      * @throws \RuntimeException the directory cannot be created or written to, or the database gives no
      *                           lock - nothing is fetched; see also SdsList::download()
+     * @throws UnrecordedException the register is fetched and in place, but not recorded
      */
     public static function download(?ClientInterface $http = null, ?int $now = null, ?string $file = null): array
     {
@@ -163,15 +173,17 @@ class Sync
         }
         try {
             $now ??= time();
-            // a time ahead of now (the clock of another server, a copied mtime) would block for as long
-            $times = [static::lastAttempt($now), self::registerInfo($file)['mtime'] ?? 0];
+            $index = static::index($file);
+            // the recorded time, not the file's, which any PHP user of the server may set; a time ahead
+            // of now (the clock of another server) would block for as long
+            $times = [static::lastAttempt($now), (int) $index->recorded()['time']];
             $last  = max([0, ...array_filter($times, static fn(int $t): bool => $t <= $now)]);
             if (($last > 0) && (($now - $last) < self::MIN_DOWNLOAD_AGE)) {
                 return ['status' => self::RECENT, 'last' => $last];
             }
             static::recordAttempt();
             $written = SdsList::download($http ?? SdsList::client(), $file);
-            static::index($file)->downloaded($written['sha256'], $written['size']);
+            $index->downloaded($written['sha256'], $written['size']);
             return ['status' => self::DOWNLOADED, 'last' => 0];
         } finally {
             static::unlockDownload();
@@ -205,15 +217,17 @@ class Sync
     }
 
     /**
-     * The boxes of the downloaded register, all read: damage anywhere in the file throws here, not
-     * in the middle of a report, where it would pass for a fault of the settings. The 17 MB of XML
-     * are some 8 MB of boxes.
-     * @return list<Box>
-     * @throws \RuntimeException see SdsList::fromXml()
+     * The boxes of the downloaded register when it is the one with $sha256 (registerInfo()), all read:
+     * damage anywhere in the file throws here, not in the middle of a report, where it would pass for a
+     * fault of the settings. The 17 MB of XML are some 8 MB of boxes.
+     * @param ?string $file registerFile() when null
+     * @return ?list<Box> null: another file lies in its place - download it again
+     * @throws \RuntimeException see SdsList::fromVerifiedFile()
      */
-    public static function registerBoxes(): array
+    public static function registerBoxes(string $sha256, ?string $file = null): ?array
     {
-        return iterator_to_array(SdsList::fromXml(self::registerFile()), false);
+        $boxes = SdsList::fromVerifiedFile($file ?? self::registerFile(), $sha256);
+        return ($boxes === null) ? null : iterator_to_array($boxes, false);
     }
 
     /**

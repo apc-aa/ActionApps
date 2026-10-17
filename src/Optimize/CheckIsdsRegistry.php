@@ -69,25 +69,39 @@ class CheckIsdsRegistry extends AbstractOptimize
         if ($info === null) {
             return [new Finding(Finding::INFO, _m('The register of data boxes has not been downloaded'), advice: $download . ' ' . _m('The items are compared with it.'), links: $pages, key: 'register')];
         }
-        $findings = [];
         // a mass sending checks its recipients in it
-        $sends = $this->hasIsdsAccount();
-        if (Sync::isOld($info, $this->now())) {
-            $findings[] = new Finding($sends ? Finding::WARNING : Finding::INFO, _m('The downloaded register of data boxes is older than %1 days', [Sync::OLD_DAYS]), evidence: [[_m('Downloaded') => date('Y-m-d H:i', $info['mtime'])]], advice: _m('Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge.'), links: $pages, key: 'register');
+        $sends    = $this->hasIsdsAccount();
+        $unusable = static fn(string $state, bool $noSending): Finding => new Finding(
+            Finding::WARNING,
+            Page::unusableText($state),
+            advice: _m('Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register.') . ($noSending ? ' ' . _m('A mass sending cannot use the register either.') : ''),
+            links: $pages,
+            key: 'register-changed',
+        );
+        // a mass sending reads only the index of a register the record vouches for, and only while it is there
+        if ($info['state'] !== RegisterIndex::RECORDED) {
+            return [$unusable($info['state'], $sends)];
         }
+        $age = Sync::isOld($info['time'], $this->now()) ? [new Finding($sends ? Finding::WARNING : Finding::INFO, _m('The downloaded register of data boxes is older than %1 days', [Sync::OLD_DAYS]), evidence: [[_m('Downloaded') => date('Y-m-d H:i', $info['time'])]], advice: _m('Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge.'), links: $pages, key: 'register')] : [];
         $problem = $sends ? $this->indexProblem() : '';
-        if ($problem !== '') {
-            $findings[] = new Finding(Finding::WARNING, _m('A mass sending cannot use the register of data boxes'), evidence: [[_m('Problem') => safe($problem)]], advice: _m('Fix what the evidence names, or download the register again on the page Data boxes from the register of a paired slice. Until then a mass sending neither counts its recipients nor sends. The AA log (type %1) keeps what failed.', [Sync::LOG_EVENT]), links: $pages, key: 'register-index');
-        }
+        $index   = ($problem === '') ? [] : [new Finding(Finding::WARNING, _m('A mass sending cannot use the register of data boxes'), evidence: [[_m('Problem') => safe($problem)]], advice: _m('Fix what the evidence names, or download the register again on the page Data boxes from the register of a paired slice. Until then a mass sending neither counts its recipients nor sends. The AA log (type %1) keeps what failed.', [Sync::LOG_EVENT]), links: $pages, key: 'register-index')];
         try {
             // once for all slices; a register that cannot be read is no fault of their settings
-            $boxes = $this->registerBoxes();
+            $boxes = $this->registerBoxes($info['sha256']);
         } catch (\RuntimeException $e) {
             $advice = ($e instanceof \UnexpectedValueException)
                 ? _m('The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it.')
                 : _m('The copy of the register cannot be read: check the directory and the permissions named in the evidence.');
-            return [...$findings, new Finding(Finding::WARNING, _m('The downloaded register of data boxes cannot be read'), evidence: [[_m('Error') => safe($e->getMessage())]], advice: $advice, links: $pages, key: 'register-unreadable')];
+            return [...$age, ...$index, new Finding(Finding::WARNING, _m('The downloaded register of data boxes cannot be read'), evidence: [[_m('Error') => safe($e->getMessage())]], advice: $advice, links: $pages, key: 'register-unreadable')];
         }
+        if ($boxes === null) {
+            // the age of a register that cannot be used is moot. An index made of the downloaded
+            // register still serves a mass sending; one that cannot be made of this file fails for the
+            // same cause - any other failure keeps its own finding and evidence
+            $same = ($problem === RegisterIndex::CHANGED);
+            return [...($same ? [] : $index), $unusable(RegisterIndex::REPLACED, $same)];
+        }
+        $findings = [...$age, ...$index];
         foreach ($configs as $config) {
             $finding = $this->sliceFinding($config, $boxes, $names[$config->sliceId()]);
             if ($finding !== null) {
@@ -188,7 +202,7 @@ class CheckIsdsRegistry extends AbstractOptimize
     }
 
     /**
-     * @return ?array{mtime: int, size: int}
+     * @return ?array{state: string, time: int, size: int, sha256: string}
      * @throws \RuntimeException see Sync::registerInfo()
      */
     protected function registerInfo(): ?array
@@ -197,12 +211,12 @@ class CheckIsdsRegistry extends AbstractOptimize
     }
 
     /**
-     * @return list<Box>
+     * @return ?list<Box> see Sync::registerBoxes()
      * @throws \RuntimeException see Sync::registerBoxes()
      */
-    protected function registerBoxes(): array
+    protected function registerBoxes(string $sha256): ?array
     {
-        return Sync::registerBoxes();
+        return Sync::registerBoxes($sha256);
     }
 
     protected function sliceName(string $sliceId): string

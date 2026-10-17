@@ -6,12 +6,14 @@ namespace Tests\Unit\Optimize;
 
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
+use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\SdsList;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\CheckIsdsRegistry;
 use AA\Optimize\Finding;
 use AA_Field;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Isds\Registry\Fixtures\LockedRegisterIndex;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
 use Tests\Unit\Optimize\Fixtures\RecordingIsdsCheck;
@@ -42,13 +44,29 @@ final class CheckIsdsRegistryTest extends TestCase
     /** @var list<Box> */
     private static array $boxes = [];
 
+    /** a directory of the test's own for a register file, '' = none */
+    private string $dir = '';
+
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';
         require_once __DIR__ . '/../Legacy/fixtures/store_fixtures.php';
         require_once __DIR__ . '/../Isds/Registry/fixtures/RecordingSync.php';
         require_once __DIR__ . '/fixtures/RecordingIsdsCheck.php';
-        self::$boxes = iterator_to_array(SdsList::fromXml(self::FIXTURE), false);
+        self::$boxes = iterator_to_array(SdsList::fromString((string) file_get_contents(self::FIXTURE)), false);
+    }
+
+    protected function setUp(): void
+    {
+        LockedRegisterIndex::reset();
+    }
+
+    protected function tearDown(): void
+    {
+        if ($this->dir !== '') {
+            array_map('unlink', array_map(fn(string $name): string => "$this->dir/$name", array_diff((array) scandir($this->dir), ['.', '..'])));
+            rmdir($this->dir);
+        }
     }
 
     public function test_extendedOnly(): void
@@ -104,7 +122,7 @@ final class CheckIsdsRegistryTest extends TestCase
     public function test_registerOld_warningWithAnIsdsAccount(): void
     {
         $check = self::check([self::SLICE => self::allFine()]);
-        $check->register    = ['mtime' => 1760000000, 'size' => 17000000];
+        $check->register    = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
         $check->now         = 1760000000 + 8 * 86400;
         $check->isdsAccount = true;
 
@@ -163,7 +181,7 @@ final class CheckIsdsRegistryTest extends TestCase
     public function test_registerOld_infoAndTheCountsStill(): void
     {
         $check = self::check([self::SLICE => self::needsWork()]);
-        $check->register = ['mtime' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000];
+        $check->register = ['state' => RegisterIndex::RECORDED, 'time' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
         $check->now      = (int) mktime(10, 0, 0, 10, 23, 2026);
         self::assertSame([Finding::WARNING], self::severities($check->findings()), 'not older than 7 days yet');
 
@@ -189,6 +207,89 @@ final class CheckIsdsRegistryTest extends TestCase
 
         $check->boxes = new \RuntimeException('Cannot read the list of data boxes /srv/aa/x.xml');
         self::assertStringContainsString('check the directory and the permissions', $check->findings()[0]->advice);
+    }
+
+    // another PHP user of the server put another register in place of the downloaded one: the items
+    // are not compared with it; the index made of the downloaded one still serves a mass sending; the
+    // age of a register that cannot be used does not matter
+    public function test_registerSwapped_oneWarningInsteadOfTheCounts(): void
+    {
+        $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
+        $check->isdsAccount = true;
+        self::assertSame([self::SLICE], self::keys($check->findings()), 'the downloaded register compares as before');
+
+        LockedRegisterIndex::swap((string) $check->file);
+        LockedRegisterIndex::$record['time'] = (string) ($check->now - 30 * 86400);
+        $findings = $check->findings();
+
+        self::assertSame(['register-changed'], self::keys($findings));
+        self::assertSame(Finding::WARNING, $findings[0]->severity);
+        self::assertSame('The register of data boxes is not the one AA downloaded', $findings[0]->title);
+        self::assertStringContainsString('Download the register again on the page Data boxes from the register of a paired slice.', $findings[0]->advice);
+        self::assertStringNotContainsString('mass sending', $findings[0]->advice);
+        self::assertCount(1, $findings[0]->links);
+    }
+
+    // the index cannot be made of another file either: the same cause, one finding
+    public function test_registerSwappedWithoutAnIndex_oneWarningThatNamesTheSending(): void
+    {
+        $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
+        $check->isdsAccount = true;
+        LockedRegisterIndex::swap((string) $check->file);
+        unlink(dirname((string) $check->file) . '/' . RegisterIndex::FILE);
+
+        $findings = $check->findings();
+
+        self::assertSame(['register-changed'], self::keys($findings));
+        self::assertStringContainsString('A mass sending cannot use the register either.', $findings[0]->advice);
+        self::assertSame(1, $check->indexChecks, 'the index was checked');
+    }
+
+    // an index that failed for another cause - a directory PHP cannot write into - keeps its finding
+    // and its evidence: downloading the register again does not fix it
+    public function test_registerSwappedAndTheIndexFailedOtherwise_twoFindings(): void
+    {
+        $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
+        $check->isdsAccount = true;
+        LockedRegisterIndex::swap((string) $check->file);
+        unlink(dirname((string) $check->file) . '/' . RegisterIndex::FILE);
+        $failure = 'Cannot create a file in /srv/aa/img_upload/abc - it is missing or not writable';
+        LockedRegisterIndex::$record = ['failed' => (string) time(), 'failed_of' => LockedRegisterIndex::$record['xml'], 'failure' => $failure] + LockedRegisterIndex::$record;
+
+        $findings = $check->findings();
+
+        self::assertSame(['register-index', 'register-changed'], self::keys($findings));
+        self::assertSame(safe($failure), $findings[0]->evidence[0][_m('Problem')]);
+        self::assertStringNotContainsString('mass sending', $findings[1]->advice, 'the finding of the index says so');
+    }
+
+    // downloaded by an older AA, or put there by hand: nothing vouches for it, nothing is read
+    public function test_registerNotRecorded_oneWarningInsteadOfTheCounts(): void
+    {
+        $check = $this->checkOverFile([self::SLICE => self::needsWork()], recorded: false);
+        $check->isdsAccount = true;
+        $check->now = 1760000000 + 365 * 86400;
+
+        $findings = $check->findings();
+
+        self::assertSame(['register-changed'], self::keys($findings), 'no age finding, no second one of the index');
+        self::assertSame('AA has no record of downloading this copy of the register', $findings[0]->title);
+        self::assertStringContainsString('A mass sending cannot use the register either.', $findings[0]->advice);
+        self::assertSame([0, 0], [$check->registerReads, $check->indexChecks]);
+        $check->isdsAccount = false;
+        self::assertStringNotContainsString('mass sending', $check->findings()[0]->advice);
+    }
+
+    // the downloaded register was deleted: a warning, so a deletion does not silently stop the comparison
+    public function test_recordedRegisterGone_warningNotInfo(): void
+    {
+        $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
+        unlink((string) $check->file);
+
+        $findings = $check->findings();
+
+        self::assertSame(['register-changed'], self::keys($findings));
+        self::assertSame('The register of data boxes is not the one AA downloaded', $findings[0]->title);
     }
 
     public function test_settingsNoLongerFit_warningNamesTheField(): void
@@ -268,6 +369,18 @@ final class CheckIsdsRegistryTest extends TestCase
         return $check;
     }
 
+    /** the check over the fixture register in a file, downloaded - recorded and indexed - when $recorded
+     *  @param array<string, array<string, mixed>> $slices see check() */
+    private function checkOverFile(array $slices, bool $recorded = true): RecordingIsdsCheck
+    {
+        $this->dir = sys_get_temp_dir() . '/isds-check-' . bin2hex(random_bytes(6));
+        mkdir($this->dir, 0o700);
+        $check       = self::check($slices);
+        $check->file = $this->dir . '/register.xml';
+        LockedRegisterIndex::genuine($check->file, $recorded);
+        return $check;
+    }
+
     /** @return array<string, array<string, mixed>> */
     private static function needsWork(): array
     {
@@ -306,6 +419,12 @@ final class CheckIsdsRegistryTest extends TestCase
     {
         $values = [self::NAME => $name, self::ICO => $ico, self::DS => $ds];
         return array_map(static fn(string $v): array => [['value' => $v, 'flag' => 0]], array_filter($values, static fn(string $v): bool => $v !== ''));
+    }
+
+    /** @param Finding[] $findings @return list<string> */
+    private static function keys(array $findings): array
+    {
+        return array_map(static fn(Finding $f): string => $f->key, array_values($findings));
     }
 
     /** @param Finding[] $findings @return list<string> */

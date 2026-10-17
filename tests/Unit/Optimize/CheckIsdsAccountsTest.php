@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Optimize;
 
+use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\SliceRules;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\CheckIsdsAccounts;
@@ -152,7 +153,7 @@ final class CheckIsdsAccountsTest extends TestCase
     public function test_findings_registerNotDownloaded(): void
     {
         $check = self::check(self::account());
-        $check->registerMissing = true;
+        $check->register = null;
 
         $findings = $check->findings();
 
@@ -165,13 +166,32 @@ final class CheckIsdsAccountsTest extends TestCase
         $constants = self::account();
         unset($constants['AA_APIKEY_ISDSTEST_NSZM_SLICES']);
         $bare = self::check($constants);
-        $bare->registerMissing = true;
+        $bare->register = null;
         self::assertSame(['account:test:NSZM'], self::keys($bare->findings()));
 
         $none = self::check(['AA_ID' => 'y']);
-        $none->registerMissing = true;
+        $none->register = null;
         self::assertSame([Finding::OK], self::severities($none->findings()));
         self::assertSame(0, $none->registerLooks, 'no account, no look');
+    }
+
+    // only a register the record vouches for serves a mass sending; the finding names the problem in
+    // the words of the page of the register
+    public function test_findings_registerOnlyAsTheRecordVouchesForIt(): void
+    {
+        $check = self::check(self::account());
+        self::assertNotContains('register:test:NSZM', self::keys($check->findings()), 'the recorded one');
+
+        $check->register = ['state' => RegisterIndex::UNRECORDED, 'time' => 0, 'size' => 0, 'sha256' => ''];
+        $finding = $check->findings()[0];
+        self::assertSame(['register:test:NSZM', 'ISDS account AA_APIKEY_ISDSTEST_NSZM cannot send a mass sending'], [$finding->key, $finding->title]);
+        self::assertSame([['Problem' => 'AA has no record of downloading this copy of the register']], $finding->evidence);
+
+        $check->register = ['state' => RegisterIndex::REPLACED, 'time' => 1790841600, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
+        self::assertSame([['Problem' => 'The register of data boxes is not the one AA downloaded']], $check->findings()[0]->evidence);
+
+        $check->register = new \RuntimeException('PHP cannot look into the directory /srv/aa/img_upload');
+        self::assertNotContains('register:test:NSZM', self::keys($check->findings()), 'CheckIsdsRegistry names the directory');
     }
 
     public function test_findings_straysNamed(): void

@@ -8,12 +8,15 @@ use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Isds\Registry\MatchRow;
 use AA\Isds\Registry\Page;
+use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\SdsList;
 use AA\Isds\Registry\Sync;
+use AA\Isds\Registry\UnrecordedException;
 use AA\Util\FormToken;
 use AA_Field;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Isds\Registry\Fixtures\LockedRegisterIndex;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingPage;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
@@ -42,8 +45,17 @@ final class PageTest extends TestCase
 
     private const POST = ['REQUEST_METHOD' => 'POST'];
 
+    /** why a register cannot be used, as the page shows it */
+    private const CHANGED    = '<p><strong>The register of data boxes is not the one AA downloaded</strong></p>';
+    private const UNRECORDED = '<p><strong>AA has no record of downloading this copy of the register</strong></p>';
+
+    private const AGAIN = '<p>Download the register again.</p>';
+
     /** @var list<Box> */
     private static array $boxes = [];
+
+    /** a directory of the test's own for a register file, '' = none */
+    private string $dir = '';
 
     public static function setUpBeforeClass(): void
     {
@@ -52,7 +64,7 @@ final class PageTest extends TestCase
         require_once __DIR__ . '/fixtures/RecordingSync.php';
         require_once __DIR__ . '/fixtures/RecordingPage.php';
         require_once __DIR__ . '/fixtures/PropertySlice.php';
-        self::$boxes = iterator_to_array(SdsList::fromXml(self::FIXTURE), false);
+        self::$boxes = iterator_to_array(SdsList::fromString((string) file_get_contents(self::FIXTURE)), false);
     }
 
     protected function setUp(): void
@@ -60,10 +72,15 @@ final class PageTest extends TestCase
         session_id('isds-page-test');
         $_SESSION = [];
         new PropertySlice(self::SLICE, self::fields(), []);
+        LockedRegisterIndex::reset();
     }
 
     protected function tearDown(): void
     {
+        if ($this->dir !== '') {
+            array_map('unlink', array_map(fn(string $name): string => "$this->dir/$name", array_diff((array) scandir($this->dir), ['.', '..'])));
+            rmdir($this->dir);
+        }
         $_SESSION = [];
         session_id('');
         PropertySlice::forget(self::SLICE);
@@ -173,8 +190,8 @@ final class PageTest extends TestCase
         $page = self::page(self::items());
         $post = self::write($page, [self::id(1) => 'a7kbrrn|']);
 
-        $page->register = ['mtime' => 1760009999, 'size' => 17000001];
-        self::assertSame(['code' => 'view_changed'], $page->handle($post, self::POST), 'downloaded again');
+        $page->register = ['state' => RegisterIndex::RECORDED, 'time' => 1760009999, 'size' => 17000001, 'sha256' => str_repeat('b', 64)];
+        self::assertSame(['code' => 'view_changed'], $page->handle($post, self::POST), 'another register downloaded');
         self::assertSame(['code' => 'view_changed'], $page->handle(['stamp' => [self::stamp($page)]] + $post, self::POST));
         $settings = Config::fromValues(self::SLICE, ['types' => [self::CITY]] + self::configValues());
         self::assertSame(['code' => 'view_changed'], $page->handle(self::write($page, [self::id(1) => 'a7kbrrn|'], $settings), self::POST), 'settings saved since');
@@ -200,8 +217,47 @@ final class PageTest extends TestCase
         self::assertSame([], $page->sync->stored);
         $html = Page::outcomeHtml($outcome ?? []);
         self::assertStringContainsString('The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type ISDS_REG).', $html);
-        self::assertStringNotContainsString('Download it again', $html, 'the directory may be the cause');
+        self::assertStringNotContainsString('Download the register again', $html, 'the directory may be the cause');
         self::assertStringNotContainsString('/srv', $html);
+    }
+
+    // another register put in place after the person looked at the rows, a deleted one, or one that no
+    // record vouches for
+    public function test_write_onlyFromTheRecordedRegister(): void
+    {
+        $page = $this->pageOverFile();
+        $post = self::write($page, [self::id(1) => 'a7kbrrn|']);
+
+        LockedRegisterIndex::swap((string) $page->file);
+        $outcome = $page->handle($post, self::POST);
+
+        self::assertSame(['code' => 'register_unusable', 'state' => RegisterIndex::REPLACED], $outcome);
+        self::assertSame([], $page->sync?->stored);
+        self::assertStringContainsString(self::CHANGED . '<p>Nothing was written. Download the register again.</p>', Page::outcomeHtml($outcome ?? []));
+
+        unlink((string) $page->file);
+        self::assertSame(['code' => 'register_unusable', 'state' => RegisterIndex::REPLACED], $page->handle($post, self::POST), 'gone');
+        self::assertSame([], $page->logged, 'nothing failed to read: there is nothing to read');
+
+        LockedRegisterIndex::genuine((string) $page->file, recorded: false);
+        self::assertSame('written', $page->handle($post, self::POST)['code'] ?? null, 'the downloaded one writes');
+
+        LockedRegisterIndex::$record = [];
+        $outcome = $page->handle(self::write($page, [self::id(1) => 'a7kbrrn|']), self::POST);
+        self::assertSame(['code' => 'register_unusable', 'state' => RegisterIndex::UNRECORDED], $outcome, 'nothing vouches for it');
+        self::assertStringContainsString(self::UNRECORDED . '<p>Nothing was written. Download the register again.</p>', Page::outcomeHtml($outcome ?? []));
+        self::assertCount(1, $page->sync?->stored ?? []);
+    }
+
+    // a download that ended between the look and the read replaced the register the person saw
+    public function test_write_downloadMeanwhileChangedTheView(): void
+    {
+        $page = $this->pageOverFile();
+        $post = self::write($page, [self::id(1) => 'a7kbrrn|']);
+        $page->beforeRead = self::downloadAnother($page);
+
+        self::assertSame(['code' => 'view_changed'], $page->handle($post, self::POST));
+        self::assertSame([], $page->sync?->stored);
     }
 
     // the rest stays ticked in the report for the next write
@@ -389,7 +445,7 @@ final class PageTest extends TestCase
     public function test_html_registerAgeByTheCalendar(): void
     {
         $page = self::page(self::items());
-        $page->register = ['mtime' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000];
+        $page->register = ['state' => RegisterIndex::RECORDED, 'time' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
 
         $page->now = (int) mktime(23, 59, 0, 10, 16, 2026);
         self::assertStringContainsString('Downloaded: 2026-10-16 10:00 (today). Size: 16.2 MB.', $page->html());
@@ -417,7 +473,7 @@ final class PageTest extends TestCase
         self::assertSame([['look', 'PHP cannot look into the directory /srv/aa/img_upload']], $page->logged);
         self::assertStringContainsString('value="download"', $html, 'downloading again is the way out');
 
-        $page->register = ['mtime' => 1760000000, 'size' => 17000000];
+        $page->register = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
         $page->boxes    = new \RuntimeException('/srv/aa/img_upload/x.xml: not well-formed');
         $html = $page->html();
 
@@ -437,7 +493,91 @@ final class PageTest extends TestCase
         self::assertStringNotContainsString('aa-table-simple aa-isds-report', $html);
     }
 
+    // another PHP user of the server put another register in place of the downloaded one: no box of
+    // it is offered, let alone ticked in advance - the download is
+    public function test_html_registerSwappedAfterTheDownloadOffersNoBoxes(): void
+    {
+        $page = $this->pageOverFile();
+        self::assertSame([true, true], self::checkboxes($page->html())['Brno'] ?? null, 'the downloaded register pairs as before');
+
+        LockedRegisterIndex::swap((string) $page->file);
+        $html = $page->html();
+
+        self::assertSame([], self::checkboxes($html));
+        self::assertStringNotContainsString('abcdefg', $html);
+        self::assertSame(1, substr_count($html, self::CHANGED . self::AGAIN));
+        self::assertStringContainsString('value="download"', $html);
+    }
+
+    // the downloaded register was deleted: the page says so, so a deletion does not silently stop the
+    // comparison
+    public function test_html_recordedRegisterGoneSaysSo(): void
+    {
+        $page = $this->pageOverFile();
+        unlink((string) $page->file);
+
+        $html = $page->html();
+
+        self::assertStringContainsString(self::CHANGED . self::AGAIN, $html);
+        self::assertStringNotContainsString('has not been downloaded', $html);
+        self::assertStringNotContainsString('cannot be read', $html);
+        self::assertSame([], $page->logged, 'nothing failed to read: there is nothing to read');
+        self::assertStringContainsString('value="download"', $html);
+    }
+
+    // downloaded by an older AA, or put there by hand: nothing vouches for it, yet no one tampered with it
+    public function test_html_registerWithoutARecordOffersNoBoxes(): void
+    {
+        $page = $this->pageOverFile(recorded: false);
+
+        $html = $page->html();
+
+        self::assertSame([], self::checkboxes($html));
+        self::assertStringContainsString(self::UNRECORDED . self::AGAIN, $html);
+        self::assertStringNotContainsString('Downloaded:', $html, 'no time to show');
+        self::assertStringContainsString('value="download"', $html);
+    }
+
+    // who may not download it learns whom to ask
+    public function test_html_unusableRegisterWithoutTheRightToDownload(): void
+    {
+        $html = $this->pageOverFile(recorded: false, mayWrite: false)->html();
+
+        self::assertStringContainsString(self::UNRECORDED . '<p>Ask someone who manages the settings to download the register again.</p>', $html);
+        self::assertStringNotContainsString('value="download"', $html);
+    }
+
+    // a download that ended between the look and the read: the page shows the new register, no error
+    public function test_html_downloadMeanwhileShown(): void
+    {
+        $page = $this->pageOverFile();
+        $page->beforeRead = self::downloadAnother($page);
+
+        $html = $page->html();
+
+        self::assertStringNotContainsString('not the one AA downloaded', $html);
+        self::assertStringContainsString('aria-label="Write the data box abcdefg into Brno" checked="checked"', $html);
+        self::assertStringContainsString('name="stamp" value="' . self::stamp($page) . '"', $html, 'the stamp of that one');
+    }
+
     // ------------------------------------------------------------ download
+
+    // the new file is in place but nothing vouches for it, so the page does not claim that the previous
+    // one stays in use; the message may quote the database
+    public function test_download_unrecordedSaysSo(): void
+    {
+        $page = self::page(self::items());
+        $page->downloadFails = new UnrecordedException('Lock wait <b>timeout</b>');
+
+        $outcome = $page->handle(self::post('download'), self::POST);
+
+        self::assertSame(['code' => 'download_unrecorded'], $outcome);
+        self::assertSame([['download', 'Lock wait <b>timeout</b>']], $page->logged);
+        $html = Page::outcomeHtml($outcome ?? []);
+        self::assertStringContainsString('The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds.', $html);
+        self::assertStringNotContainsString('previous one', $html);
+        self::assertStringNotContainsString('timeout', $html);
+    }
 
     // the message may quote the operator's server
     public function test_download_failureKeepsThePreviousRegister(): void
@@ -655,7 +795,27 @@ final class PageTest extends TestCase
     /** the stamp of the page's register and of $seen, the settings the person saw */
     private static function stamp(RecordingPage $page, ?Config $seen = null): string
     {
-        return Sync::registerStamp(is_array($page->register) ? $page->register : null, $seen ?? self::config());
+        return Sync::registerStamp($page->registerInfo()['sha256'] ?? '', $seen ?? self::config());
+    }
+
+    /** the page over the fixture register in a file, downloaded - recorded and indexed - when $recorded */
+    private function pageOverFile(bool $recorded = true, bool $mayWrite = true): RecordingPage
+    {
+        $this->dir = sys_get_temp_dir() . '/isds-page-' . bin2hex(random_bytes(6));
+        mkdir($this->dir, 0o700);
+        $page       = self::page(self::items(), $mayWrite);
+        $page->file = $this->dir . '/register.xml';
+        LockedRegisterIndex::genuine($page->file, $recorded);
+        return $page;
+    }
+
+    /** another request downloads another register into the page's file */
+    private static function downloadAnother(RecordingPage $page): \Closure
+    {
+        return static function () use ($page): void {
+            LockedRegisterIndex::swap((string) $page->file);
+            LockedRegisterIndex::download((string) $page->file);
+        };
     }
 
     /** @return array<int, array<string, mixed>> one item of each kind of row, in the slice's order */

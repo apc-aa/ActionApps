@@ -25,7 +25,8 @@ final class SafeFile
      * in its place would block the open, a device would never end. It may grow later: read() reads at
      * most $maxBytes.
      * @return resource
-     * @throws \RuntimeException
+     * @throws \UnexpectedValueException something else than such a file lies at $path
+     * @throws \RuntimeException          PHP cannot open $path
      */
     public static function open(string $path, int $maxBytes)
     {
@@ -38,7 +39,7 @@ final class SafeFile
         $stat = fstat($file);
         if (($stat === false) || (($stat['mode'] & self::S_IFMT) !== self::S_IFREG) || ($stat['size'] > $maxBytes)) {
             fclose($file);
-            throw new \RuntimeException("$path is not a regular file of at most $maxBytes bytes");
+            throw new \UnexpectedValueException("$path is not a regular file of at most $maxBytes bytes");
         }
         stream_set_blocking($file, true);
         return $file;
@@ -47,7 +48,8 @@ final class SafeFile
     /**
      * The whole of $path, read once through one handle: it returns at most $maxBytes, reading at most a
      * chunk more to tell a longer file
-     * @throws \RuntimeException
+     * @throws \UnexpectedValueException see open(); also a file that grew past $maxBytes
+     * @throws \RuntimeException          see open(); also a failed read
      */
     public static function read(string $path, int $maxBytes): string
     {
@@ -58,9 +60,12 @@ final class SafeFile
         } finally {
             fclose($file);
         }
+        if ($bytes === false) {
+            throw new \RuntimeException("Cannot read $path");
+        }
         // it may have grown since fstat()
-        if (($bytes === false) || (strlen($bytes) > $maxBytes)) {
-            throw new \RuntimeException("Cannot read $path whole, at most $maxBytes bytes");
+        if (strlen($bytes) > $maxBytes) {
+            throw new \UnexpectedValueException("Cannot read $path whole, at most $maxBytes bytes");
         }
         return $bytes;
     }

@@ -59,7 +59,8 @@ final class SdsList
      * @throws \RuntimeException          an answer other than 200, or the file cannot be written
      * @throws \UnexpectedValueException  the answer is not a whole list with a box (an error page, cut-off XML)
      * @return array{sha256: string, size: int} of the bytes written - hashed here, as the file may be
-     *                                          replaced as soon as it is in place
+     *                                          replaced as soon as it is in place; before it is, so the
+     *                                          caller records it with the least delay
      */
     public static function download(ClientInterface $http, string $to, string $url = self::URL, int $maxBytes = self::MAX_BYTES): array
     {
@@ -72,34 +73,30 @@ final class SdsList
         if (strlen($answer->body) > $maxBytes) {
             throw new ResponseTooLargeException("The list of data boxes is over $maxBytes bytes");
         }
+        $written = ['sha256' => hash('sha256', $answer->body), 'size' => strlen($answer->body)];
         SafeFile::replace($to, static function () use ($answer): string {
             if (iterator_count(self::fromString($answer->body)) === 0) {
                 throw new \UnexpectedValueException('The downloaded list of data boxes has no box');
             }
             return $answer->body;
         });
-        return ['sha256' => hash('sha256', $answer->body), 'size' => strlen($answer->body)];
-    }
-
-    /**
-     * The boxes of the file in $path, in file order - see fromString(). The file is read whole, once.
-     * @throws \RuntimeException the file cannot be read, or is no regular file of at most MAX_BYTES
-     * @return \Generator<int, Box>
-     */
-    public static function fromXml(string $path): \Generator
-    {
-        return self::fromString(SafeFile::read($path, self::MAX_BYTES));
+        return $written;
     }
 
     /**
      * The boxes of the file in $path when its bytes hash to $sha256, parsed from those very bytes: a
      * file put in its place after the read is never parsed.
-     * @return ?\Generator<int, Box> null: the file is another one; see fromString()
-     * @throws \RuntimeException the file cannot be read, or is no regular file of at most MAX_BYTES
+     * @return ?\Generator<int, Box> null: another file, or no regular file of at most MAX_BYTES, which
+     *                               the one hashed was; see fromString()
+     * @throws \RuntimeException PHP cannot read the file
      */
     public static function fromVerifiedFile(string $path, string $sha256): ?\Generator
     {
-        $xml = SafeFile::read($path, self::MAX_BYTES);
+        try {
+            $xml = SafeFile::read($path, self::MAX_BYTES);
+        } catch (\UnexpectedValueException) {
+            return null;
+        }
         return hash_equals($sha256, hash('sha256', $xml)) ? self::fromString($xml) : null;
     }
 

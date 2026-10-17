@@ -9,8 +9,9 @@ use AA\Isds\Registry\Sync;
 
 require_once __DIR__ . '/LockedRegisterIndex.php';
 
-/** Sync::download() with the lock, the log of attempts and the index's record kept here instead of in
- *  the database. Static as download() is - reset() before each test. */
+/** Sync's static parts with the download lock and the log of attempts kept here, and the register's
+ *  record in LockedRegisterIndex, instead of in the database. Static as they are - reset() before each
+ *  test. */
 final class DownloadSync extends Sync
 {
     /** whether lockDownload() gets the lock */

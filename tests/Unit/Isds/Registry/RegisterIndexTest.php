@@ -144,6 +144,18 @@ final class RegisterIndexTest extends TestCase
         $index->lookup(['abcdefg']);
     }
 
+    // the downloaded register was deleted: it cannot be used, and the problem says to download it again
+    public function test_state_recordedRegisterGoneIsUnreadable(): void
+    {
+        $this->fixtureIndex();
+        unlink($this->register);
+
+        $index = new LockedRegisterIndex($this->register);
+
+        self::assertSame(RegisterIndex::UNREADABLE, $index->state());
+        self::assertSame(self::CHANGED, $index->problem());
+    }
+
     // the time of the download counts, not the file's - another server may have another clock
     public function test_state_oldRegister(): void
     {
@@ -416,7 +428,8 @@ final class RegisterIndexTest extends TestCase
         return ['FIFO' => ['fifo'], 'device' => ['/dev/zero'], 'directory' => ['dir']];
     }
 
-    // a FIFO would block the open, a device never end - with the index lock held
+    // a FIFO would block the open, a device never end - with the index lock held; whatever lies there,
+    // it is not the register AA downloaded
     #[DataProvider('notFiles')]
     public function test_state_registerThatIsNoFileRefusedAtOnce(string $what): void
     {
@@ -428,7 +441,7 @@ final class RegisterIndexTest extends TestCase
         $index = new LockedRegisterIndex($this->register);
 
         self::assertSame(RegisterIndex::UNREADABLE, Alarm::within(2, $index->state(...)));
-        self::assertStringContainsString('is not a regular file', $index->problem());
+        self::assertSame(self::CHANGED, $index->problem());
     }
 
     #[DataProvider('notFiles')]

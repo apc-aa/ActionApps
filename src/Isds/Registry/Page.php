@@ -135,12 +135,23 @@ class Page
             $info       = null;
             $unreadable = true;
         }
+        // read before the register section is made: the read may find another file, or a new download
+        $boxes      = null;
+        $readFailed = false;
+        if ($this->mayWrite && ($this->config !== null) && ($info !== null) && ($info['state'] === RegisterIndex::RECORDED)) {
+            try {
+                [$info, $boxes] = $this->readRegister($info);
+            } catch (\RuntimeException $e) {
+                $this->logFailure('read', $e);
+                $readFailed = true;
+            }
+        }
         $refused = (($outcome['code'] ?? '') === 'settings_refused');
 
         return '<p class="aa-isds-intro">' . _m('This page finds the data box of each item in the public register of data boxes and writes it into the item. Only the rows you tick are written, and only the data box field changes. A box found by IČO is ticked in advance; a box found by name is a suggestion only, so compare the names and tick it yourself.') . '</p>'
             . self::outcomeHtml($outcome, $this->now())
             . $this->registerHtml($info, $unreadable)
-            . $this->reportHtml($status, $info)
+            . $this->reportHtml($status, $info, $boxes, $readFailed)
             // only a refused save keeps its values
             . $this->settingsHtml($refused ? ($outcome['values'] ?? null) : null, $refused);
     }
@@ -220,6 +231,9 @@ class Page
         }
         try {
             $done = $this->download();
+        } catch (UnrecordedException $e) {
+            $this->logFailure('download', $e);
+            return ['code' => 'download_unrecorded'];
         } catch (\RuntimeException $e) {
             $this->logFailure('download', $e);
             return ['code' => 'download_failed'];
@@ -250,14 +264,23 @@ class Page
             return ['code' => 'register_unreadable'];
         }
         // the rows were matched against the register and the settings the person saw
-        if (($info === null) || !is_string($stamp) || !hash_equals(Sync::registerStamp($info, $this->config), $stamp)) {
+        if (($info === null) || !is_string($stamp) || !hash_equals(Sync::registerStamp($info['sha256'], $this->config), $stamp)) {
             return ['code' => 'view_changed'];
         }
+        if ($info['state'] !== RegisterIndex::RECORDED) {
+            return ['code' => 'register_unusable', 'state' => $info['state']];
+        }
         try {
-            $boxes = $this->registerBoxes();
+            [$now, $boxes] = $this->readRegister($info);
         } catch (\RuntimeException $e) {
             $this->logFailure('read', $e);
             return ['code' => 'register_unreadable'];
+        }
+        if ($now['sha256'] !== $info['sha256']) {
+            return ['code' => 'view_changed'];
+        }
+        if ($boxes === null) {
+            return ['code' => 'register_unusable', 'state' => $now['state']];
         }
         $sync = $this->newSync($this->config);
         try {
@@ -305,8 +328,10 @@ class Page
             'download_recent'     => $info(self::recentHtml($outcome['time'], $now ?? time())),
             'download_running'    => $info(_m('The register is being downloaded right now. Reload the page in a minute.')),
             'download_failed'     => $err(_m('The register did not download; the previous one stays in use. Try again later. An administrator finds the details in the AA log (type %1).', $log)),
+            'download_unrecorded' => $err(_m('The register was downloaded, but AA could not record the download, so the register cannot be used until a download succeeds. Try again later. An administrator finds the details in the AA log (type %1).', $log)),
             'view_changed'        => $err(_m('The register or the settings of the pairing have changed since you looked at the rows, so nothing was written. Check the rows below again and write them.')),
             'register_unreadable' => $err(_m('The copy of the register cannot be read, so nothing was written. An administrator finds the details in the AA log (type %1).', $log)),
+            'register_unusable'   => $err(self::unusableHtml((string) ($outcome['state'] ?? ''), _m('Nothing was written. Download the register again.'))),
             'no_settings'         => $err(_m('Choose the fields of the pairing first.')),
             'misfit'              => $err(_m('The settings of the pairing no longer fit the fields of the slice, so nothing was written: %1', [safe($outcome['message'])])),
             'write_stopped'       => $err(_m('Writing stopped with an error. The rows written before it stay written; the report below shows the items as they are now. An administrator finds the details in the AA log (type %1).', $log)),
@@ -353,7 +378,7 @@ class Page
 
     // ------------------------------------------------------------ register
 
-    /** @param ?array{mtime: int, size: int} $info registerInfo() */
+    /** @param ?array{state: string, time: int, size: int, sha256: string} $info registerInfo() */
     private function registerHtml(?array $info, bool $unreadable): string
     {
         $downloads = $this->mayWrite && ($this->config !== null);
@@ -361,9 +386,11 @@ class Page
             $html = '<div class="aa-err">' . _m('The copy of the register cannot be read. An administrator finds the details in the AA log (type %1).', [Sync::LOG_EVENT]) . '</div>';
         } elseif ($info === null) {
             $html = '<p>' . ($downloads ? _m('The register has not been downloaded yet. Download it to see the report.') : _m('The register has not been downloaded yet.')) . '</p>';
+        } elseif ($info['state'] !== RegisterIndex::RECORDED) {
+            $html = '<div class="aa-err">' . self::unusableHtml($info['state'], $downloads ? _m('Download the register again.') : _m('Ask someone who manages the settings to download the register again.')) . '</div>';
         } else {
-            $html = '<p>' . $this->downloadedText($info['mtime']) . ' ' . _m('Size: %1 MB.', [number_format($info['size'] / 1048576, 1)]) . '</p>';
-            if (Sync::isOld($info, $this->now())) {
+            $html = '<p>' . $this->downloadedText($info['time']) . ' ' . _m('Size: %1 MB.', [number_format($info['size'] / 1048576, 1)]) . '</p>';
+            if (Sync::isOld($info['time'], $this->now())) {
                 $html .= '<p class="aa-info">' . _m('The register is older than %1 days. Download it again before writing: authorities get new boxes and merge.', [Sync::OLD_DAYS]) . '</p>';
             }
         }
@@ -374,42 +401,80 @@ class Page
         return self::section('register', _m('Register of data boxes'), $html);
     }
 
+    /**
+     * Why a register of RegisterIndex::info() state UNRECORDED or REPLACED cannot be used, without a full
+     * stop - a title of the State Check too
+     */
+    public static function unusableText(string $state): string
+    {
+        // a register an older AA downloaded is not tampered with
+        return ($state === RegisterIndex::UNRECORDED) ? _m('AA has no record of downloading this copy of the register') : _m('The register of data boxes is not the one AA downloaded');
+    }
+
+    /** unusableText() and what to do, each a block of its own - a translation ends them as it may */
+    private static function unusableHtml(string $state, string $todo): string
+    {
+        return '<p><strong>' . self::unusableText($state) . '</strong></p><p>' . $todo . '</p>';
+    }
+
     /** today and yesterday by the calendar of the server, not by 24 hours */
-    private function downloadedText(int $mtime): string
+    private function downloadedText(int $time): string
     {
         $now  = $this->now();
-        $when = date('Y-m-d H:i', $mtime);
-        return match (date('Y-m-d', $mtime)) {
+        $when = date('Y-m-d H:i', $time);
+        return match (date('Y-m-d', $time)) {
             date('Y-m-d', $now)                                => _m('Downloaded: %1 (today).', [$when]),
             date('Y-m-d', strtotime('yesterday', $now) ?: 0)   => _m('Downloaded: %1 (yesterday).', [$when]),
             default                                            => _m('Downloaded: %1.', [$when]),
         };
     }
 
+    /**
+     * The boxes of the register $info describes, read once, and the info as it is after the read:
+     * REPLACED when another file lies in its place. A download between the look and the read changed
+     * the record too - its register is read then.
+     * @param array{state: string, time: int, size: int, sha256: string} $info registerInfo(), RECORDED
+     * @return array{array{state: string, time: int, size: int, sha256: string}, ?list<Box>}
+     * @throws \RuntimeException see registerBoxes() and registerInfo()
+     */
+    private function readRegister(array $info): array
+    {
+        $boxes = $this->registerBoxes($info['sha256']);
+        $now   = ($boxes === null) ? $this->registerInfo() : null;
+        if (($now !== null) && ($now['sha256'] !== $info['sha256'])) {
+            $info  = $now;
+            $boxes = ($now['state'] === RegisterIndex::RECORDED) ? $this->registerBoxes($now['sha256']) : null;
+        }
+        if (($boxes === null) && ($info['state'] === RegisterIndex::RECORDED)) {
+            $info['state'] = RegisterIndex::REPLACED;
+        }
+        return [$info, $boxes];
+    }
+
     // ------------------------------------------------------------ report
 
-    /** @param ?array{mtime: int, size: int} $info registerInfo() */
-    private function reportHtml(string $status, ?array $info): string
+    /**
+     * No report without the boxes of the register: no settings, no right to write, or no register this
+     * AA downloaded (registerHtml() says so)
+     * @param ?array{state: string, time: int, size: int, sha256: string} $info  registerInfo()
+     * @param ?list<Box>                                                  $boxes readRegister()'s
+     */
+    private function reportHtml(string $status, ?array $info, ?array $boxes, bool $readFailed): string
     {
-        $body = $this->reportBodyHtml($status, $info);
+        $body = match (true) {
+            $readFailed                           => '<div class="aa-err">' . _m('The copy of the register cannot be read. An administrator finds the details in the AA log (type %1).', [Sync::LOG_EVENT]) . '</div>',
+            ($info === null) || ($boxes === null) => '',
+            default                               => $this->reportBodyHtml($status, $info['sha256'], $boxes),
+        };
         return ($body === '') ? '' : self::section('report', _m('Items and their data boxes'), $body);
     }
 
-    /**
-     * '' = no report: no settings, no right to write, or no register
-     * @param ?array{mtime: int, size: int} $info registerInfo()
-     */
-    private function reportBodyHtml(string $status, ?array $info): string
+    /** @param list<Box> $boxes of the register with $sha256 */
+    private function reportBodyHtml(string $status, string $sha256, array $boxes): string
     {
         $config = $this->config;
-        if (($config === null) || !$this->mayWrite || ($info === null)) {
+        if ($config === null) {
             return '';
-        }
-        try {
-            $boxes = $this->registerBoxes();
-        } catch (\RuntimeException $e) {
-            $this->logFailure('read', $e);
-            return '<div class="aa-err">' . _m('The copy of the register cannot be read. An administrator finds the details in the AA log (type %1).', [Sync::LOG_EVENT]) . '</div>';
         }
         try {
             $report = $this->newSync($config)->report($boxes);
@@ -456,7 +521,7 @@ class Page
         }
         return $html . $this->form('write', $table
             . '<p><button type="submit" class="btn-primary">' . _m('Write the ticked data boxes') . '</button> '
-            . '<span class="aa-isds-note">' . _m('Writes only the data box field of the ticked items. Their history records the change.') . '</span></p>', ['stamp' => Sync::registerStamp($info, $config), 'status' => $status]);
+            . '<span class="aa-isds-note">' . _m('Writes only the data box field of the ticked items. Their history records the change.') . '</span></p>', ['stamp' => Sync::registerStamp($sha256, $config), 'status' => $status]);
     }
 
     /** links that show the rows of one status, with their counts */
@@ -634,16 +699,16 @@ class Page
     }
 
     /**
-     * @return list<Box>
+     * @return ?list<Box> see Sync::registerBoxes()
      * @throws \RuntimeException see Sync::registerBoxes()
      */
-    protected function registerBoxes(): array
+    protected function registerBoxes(string $sha256): ?array
     {
-        return Sync::registerBoxes();
+        return Sync::registerBoxes($sha256);
     }
 
     /**
-     * @return ?array{mtime: int, size: int}
+     * @return ?array{state: string, time: int, size: int, sha256: string}
      * @throws \RuntimeException see Sync::registerInfo()
      */
     protected function registerInfo(): ?array

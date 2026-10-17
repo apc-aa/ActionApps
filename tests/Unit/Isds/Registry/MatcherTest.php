@@ -27,7 +27,7 @@ final class MatcherTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
-        self::$fixture = array_column(iterator_to_array(SdsList::fromXml(self::FIXTURE), false), null, 'id');
+        self::$fixture = array_column(iterator_to_array(SdsList::fromString((string) file_get_contents(self::FIXTURE)), false), null, 'id');
     }
 
     // the region's box was stored for the city; the IČO finds the city's own
@@ -401,7 +401,7 @@ final class MatcherTest extends TestCase
 
     public function test_match_registerReadOnce(): void
     {
-        $report = self::report(['a' => ['name' => 'Plzeň'], 'b' => ['ico' => '00235300']], SdsList::fromXml(self::FIXTURE));
+        $report = self::report(['a' => ['name' => 'Plzeň'], 'b' => ['ico' => '00235300']], SdsList::fromString((string) file_get_contents(self::FIXTURE)));
 
         self::assertSame(['6iybfxn', 'eerak7a'], array_column($report->rows, 'newDs'));
     }

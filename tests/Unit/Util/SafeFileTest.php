@@ -139,8 +139,20 @@ final class SafeFileTest extends TestCase
         file_put_contents($this->path, str_repeat('a', 3 * 1024 * 1024));
 
         self::assertSame(3 * 1024 * 1024, strlen(SafeFile::read($this->path, 3 * 1024 * 1024)));
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\UnexpectedValueException::class);
         SafeFile::read($this->path, 3 * 1024 * 1024 - 1);
+    }
+
+    // a file PHP cannot open is a failed read, not another file: the exception type tells them apart
+    public function test_open_failureIsNoOtherFile(): void
+    {
+        try {
+            SafeFile::open($this->dir . '/none.xml', 1024);
+            self::fail('a missing file opened');
+        } catch (\RuntimeException $e) {
+            self::assertNotInstanceOf(\UnexpectedValueException::class, $e);
+            self::assertStringContainsString('Cannot read ' . $this->dir . '/none.xml', $e->getMessage());
+        }
     }
 
     /** @return array<string, array{string}> */
@@ -159,7 +171,7 @@ final class SafeFileTest extends TestCase
             default => symlink($what, $this->path),
         };
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('is not a regular file');
         Alarm::within(2, fn() => SafeFile::open($this->path, 1024));
     }
@@ -173,7 +185,7 @@ final class SafeFileTest extends TestCase
         try {
             SafeFile::read('scripted://list.xml', 1024 * 1024);
             self::fail('read past the limit');
-        } catch (\RuntimeException $e) {
+        } catch (\UnexpectedValueException $e) {
             self::assertStringContainsString('at most 1048576 bytes', $e->getMessage());
         } finally {
             $served = ScriptedFile::$served;

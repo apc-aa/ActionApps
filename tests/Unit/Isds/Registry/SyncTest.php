@@ -11,6 +11,7 @@ use AA\Isds\Registry\MatchRow;
 use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\SdsList;
 use AA\Isds\Registry\Sync;
+use AA\Isds\Registry\UnrecordedException;
 use AA_Credentials;
 use AA_Field;
 use AA_Metabase;
@@ -65,7 +66,7 @@ final class SyncTest extends TestCase
         if (!defined('CACHE_TTL')) {
             define('CACHE_TTL', 600);                                           // AA::Pagecache()
         }
-        self::$boxes = iterator_to_array(SdsList::fromXml(self::FIXTURE), false);
+        self::$boxes = iterator_to_array(SdsList::fromString((string) file_get_contents(self::FIXTURE)), false);
     }
 
     /** the lock and the attempts of the downloads */
@@ -310,15 +311,13 @@ final class SyncTest extends TestCase
     {
         $config = Config::fromValues(self::SLICE, ['name_field' => self::NAME, 'ds_field' => self::DS]);
         $other  = Config::fromValues(self::SLICE, ['name_field' => self::NAME, 'ds_field' => self::DS, 'ico_field' => self::ICO]);
-        $info   = ['mtime' => 1760000000, 'size' => 17000000];
+        $sha256 = str_repeat('a', 64);
 
-        $stamp = Sync::registerStamp($info, $config);
+        $stamp = Sync::registerStamp($sha256, $config);
 
-        self::assertSame($stamp, Sync::registerStamp($info, Config::fromValues(self::SLICE, $config->values())));
-        self::assertNotSame($stamp, Sync::registerStamp(['mtime' => 1760000001] + $info, $config));
-        self::assertNotSame($stamp, Sync::registerStamp(['size' => 17000001] + $info, $config));
-        self::assertNotSame($stamp, Sync::registerStamp($info, $other));
-        self::assertSame('', Sync::registerStamp(null, $config), 'no register');
+        self::assertSame($stamp, Sync::registerStamp($sha256, Config::fromValues(self::SLICE, $config->values())));
+        self::assertNotSame($stamp, Sync::registerStamp(str_repeat('b', 64), $config), 'another register');
+        self::assertNotSame($stamp, Sync::registerStamp($sha256, $other));
     }
 
     public function test_registerFile_inTheUploadDirectoryOfTheInstall(): void
@@ -326,18 +325,48 @@ final class SyncTest extends TestCase
         self::assertSame(IMG_UPLOAD_PATH . AA_ID . '/' . Sync::REGISTER_FILE, Sync::registerFile());
     }
 
-    public function test_registerInfo_looksWithoutCreatingTheDirectory(): void
+    public function test_registerExists_looksWithoutCreatingTheDirectory(): void
     {
         $dir  = $this->scratch() . '/upload/aa';
         $file = "$dir/register.xml";
 
-        self::assertNull(Sync::registerInfo($file));
+        self::assertFalse(Sync::registerExists($file));
         self::assertDirectoryDoesNotExist(dirname($dir), 'only a download creates it');
         mkdir($dir, 0o700, true);
-        self::assertNull(Sync::registerInfo($file));
+        self::assertFalse(Sync::registerExists($file));
         file_put_contents($file, '12345');
-        touch($file, 1760000000);
-        self::assertSame(['mtime' => 1760000000, 'size' => 5], Sync::registerInfo($file));
+        self::assertTrue(Sync::registerExists($file));
+    }
+
+    // any PHP user of the server may set the file's time and size; the record keeps the download's
+    public function test_registerInfo_theRecordedDownloadNotTheFile(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        self::assertNull(DownloadSync::registerInfo($file), 'nothing downloaded');
+
+        LockedRegisterIndex::$record = ['xml' => str_repeat('a', 64), 'size' => '17000000', 'time' => '1760000000'];
+        $recorded = ['time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
+        self::assertSame(['state' => RegisterIndex::REPLACED] + $recorded, DownloadSync::registerInfo($file), 'gone is no register not downloaded');
+        file_put_contents($file, '12345');
+        touch($file, 1790000000);
+        self::assertSame(['state' => RegisterIndex::RECORDED] + $recorded, DownloadSync::registerInfo($file));
+        LockedRegisterIndex::$record = [];
+        self::assertSame(['state' => RegisterIndex::UNRECORDED, 'time' => 0, 'size' => 0, 'sha256' => ''], DownloadSync::registerInfo($file), 'nothing vouches for it');
+    }
+
+    // the boxes a page pre-ticks come only from the register the record vouches for
+    public function test_registerBoxes_onlyTheRecordedRegister(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        LockedRegisterIndex::genuine($file);
+        $sha256 = (string) hash_file('sha256', self::FIXTURE);
+
+        self::assertEquals(self::$boxes, Sync::registerBoxes($sha256, $file));
+        LockedRegisterIndex::swap($file);
+        self::assertNull(Sync::registerBoxes($sha256, $file), 'another file in its place');
+        unlink($file);
+        mkdir($file);
+        self::assertNull(Sync::registerBoxes($sha256, $file), 'no file in its place');
     }
 
     /** @return array<string, array{string, string}> the directory PHP may not search, the register's */
@@ -353,7 +382,7 @@ final class SyncTest extends TestCase
     // a register PHP cannot see is no register not downloaded yet: the share of the upload directory
     // can lack the PHP user's group
     #[DataProvider('hiddenRegisters')]
-    public function test_registerInfo_aDirectoryPhpCannotSearchNamed(string $hidden, string $register): void
+    public function test_registerExists_aDirectoryPhpCannotSearchNamed(string $hidden, string $register): void
     {
         if (!function_exists('posix_geteuid') || (posix_geteuid() === 0)) {
             self::markTestSkipped('root searches every directory');
@@ -364,7 +393,7 @@ final class SyncTest extends TestCase
         chmod("$root/$hidden", 0o600);
 
         try {
-            Sync::registerInfo("$root/$register/register.xml");
+            Sync::registerExists("$root/$register/register.xml");
             self::fail('a register PHP cannot see passed for none');
         } catch (\RuntimeException $e) {
             self::assertStringContainsString("$root/$hidden ", $e->getMessage());
@@ -411,6 +440,23 @@ final class SyncTest extends TestCase
         self::assertFileEquals(self::FIXTURE, $file);
         self::assertCount(1, LockedRegisterIndex::$logged);
         self::assertSame(RegisterIndex::UNREADABLE, (new LockedRegisterIndex($file))->state());
+    }
+
+    // a register no record vouches for cannot be used: a type of its own tells the page to say so
+    public function test_download_failsWhenTheRecordCannotBeWritten(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        LockedRegisterIndex::$writeFails = new \RuntimeException('Lock wait timeout');
+
+        try {
+            DownloadSync::download(self::registerHttp(), 1760000000, $file);
+            self::fail('a download without its record passed');
+        } catch (UnrecordedException $e) {
+            self::assertStringEndsWith(': Lock wait timeout', $e->getMessage());
+        }
+        self::assertFileEquals(self::FIXTURE, $file, 'in place, so the previous one is not in use');
+        self::assertSame([[1760000000], 1], [DownloadSync::$attempts, DownloadSync::$unlocks], 'an attempt, the lock released');
+        self::assertSame([0, []], [LockedRegisterIndex::$locks, LockedRegisterIndex::$logged], 'no index made of it');
     }
 
     // another server, or another click, is downloading it
@@ -462,26 +508,38 @@ final class SyncTest extends TestCase
         self::assertCount(1, $http->calls);
     }
 
-    // the register's own time counts too: a copy of the file from another server, or an install
-    // that does not log the attempts
-    public function test_download_notSoonAfterTheRegistersTime(): void
+    // the recorded download counts too: an install that does not log the attempts; not the file's
+    // time, however old
+    public function test_download_notSoonAfterTheRecordedDownload(): void
     {
         $file = $this->scratch() . '/register.xml';
         file_put_contents($file, 'x');
-        touch($file, 1760000000);
+        touch($file, 1760000000 - 30 * 86400);
+        LockedRegisterIndex::$record['time'] = '1760000000';
         $http = self::registerHttp();
 
         self::assertSame(['status' => Sync::RECENT, 'last' => 1760000000], DownloadSync::download($http, 1760000000 + 60, $file));
         self::assertSame([[], []], [$http->calls, DownloadSync::$attempts]);
     }
 
-    // the clock of another server, a copied mtime: a time ahead of now would block until then
+    // any PHP user of the server may touch the file: that holds no download back
+    public function test_download_touchedFileHoldsNothingBack(): void
+    {
+        $file = $this->scratch() . '/register.xml';
+        file_put_contents($file, 'x');
+        touch($file, 1760000000 - 60);
+        $http = self::registerHttp();
+
+        self::assertSame(['status' => Sync::DOWNLOADED, 'last' => 0], DownloadSync::download($http, 1760000000, $file));
+        self::assertCount(1, $http->calls);
+    }
+
+    // the clock of another server: a time ahead of now would block until then
     public function test_download_aTimeAheadOfNowIgnored(): void
     {
         $file = $this->scratch() . '/register.xml';
         DownloadSync::$attempts = [1760000000 + 86400];
-        file_put_contents($file, 'x');
-        touch($file, 1760000000 + 365 * 86400);
+        LockedRegisterIndex::$record['time'] = (string) (1760000000 + 365 * 86400);
         $http = self::registerHttp();
 
         self::assertSame(['status' => Sync::DOWNLOADED, 'last' => 0], DownloadSync::download($http, 1760000000, $file));
@@ -526,10 +584,8 @@ final class SyncTest extends TestCase
 
     public function test_isOld_afterOldDays(): void
     {
-        $info = ['mtime' => 1760000000, 'size' => 1];
-
-        self::assertFalse(Sync::isOld($info, 1760000000 + Sync::OLD_DAYS * 86400));
-        self::assertTrue(Sync::isOld($info, 1760000000 + Sync::OLD_DAYS * 86400 + 1));
+        self::assertFalse(Sync::isOld(1760000000, 1760000000 + Sync::OLD_DAYS * 86400));
+        self::assertTrue(Sync::isOld(1760000000, 1760000000 + Sync::OLD_DAYS * 86400 + 1));
     }
 
     public function test_write_onlyTheDataBoxField(): void
