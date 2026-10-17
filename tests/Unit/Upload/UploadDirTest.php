@@ -6,6 +6,8 @@ namespace Tests\Unit\Upload;
 
 use AA\Upload\UploadDir;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Fixtures\Alarm;
 
@@ -127,8 +129,7 @@ final class UploadDirTest extends TestCase
         file_put_contents("$this->root/outside/secret.pdf", self::PDF);
         symlink("$this->root/outside/secret.pdf", "$this->dir/a.pdf");
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->uploads()->read(self::URL . '/a.pdf', 1000);
+        $this->assertNotUploaded(self::URL . '/a.pdf');
     }
 
     public function test_read_refusesLinkedDirectoryOutside(): void
@@ -136,17 +137,122 @@ final class UploadDirTest extends TestCase
         file_put_contents("$this->root/outside/secret.pdf", self::PDF);
         symlink("$this->root/outside", "$this->dir/sub");
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->uploads()->read(self::URL . '/sub/secret.pdf', 1000);
+        $this->assertNotUploaded(self::URL . '/sub/secret.pdf');
     }
 
-    // the upload directory itself may live on another volume, linked into the web tree
+    // "abc/" is the prefix to keep, not "abc"
+    public function test_read_refusesSiblingWithTheSamePrefix(): void
+    {
+        mkdir("$this->root/upload/abcd");
+        file_put_contents("$this->root/upload/abcd/secret.pdf", self::PDF);
+        symlink("$this->root/upload/abcd", "$this->dir/sub");
+
+        $this->assertNotUploaded(self::URL . '/sub/secret.pdf');
+    }
+
+    // the upload directory, the parent of the slice directory, may live on another volume, linked into the web tree
     public function test_read_followsLinkedUploadDirectory(): void
     {
-        file_put_contents("$this->root/outside/a.pdf", self::PDF);
-        symlink("$this->root/outside", "$this->root/upload/linked");
+        mkdir("$this->root/outside/abc/sub", 0o777, true);
+        file_put_contents("$this->root/outside/abc/sub/a.pdf", self::PDF);
+        symlink("$this->root/outside", "$this->root/linked");
 
-        self::assertSame(self::PDF, (new UploadDir(self::URL, "$this->root/upload/linked"))->read(self::URL . '/a.pdf', 1000));
+        self::assertSame(self::PDF, (new UploadDir(self::URL, "$this->root/linked/abc"))->read(self::URL . '/sub/a.pdf', 1000));
+    }
+
+    // the slice directory is an entry of the upload directory, which other users of the server may write
+    #[DataProvider('linkedSliceDirectories')]
+    public function test_read_refusesLinkedSliceDirectory(bool $existed): void
+    {
+        file_put_contents("$this->root/outside/secret.pdf", self::PDF);
+        if ($existed) {
+            rename($this->dir, "$this->dir.moved");
+        } else {
+            rmdir($this->dir);
+        }
+        symlink("$this->root/outside", $this->dir);
+
+        $this->assertLinkedSliceDirectory(self::URL . '/secret.pdf');
+    }
+
+    public static function linkedSliceDirectories(): array
+    {
+        return [
+            'renamed for a link'   => [true],
+            'missing, made a link' => [false],
+        ];
+    }
+
+    // PHP's own rename() empties the cache of resolved paths, so the link comes from another process
+    public function test_read_refusesSliceDirectoryLinkedSinceAnEarlierRead(): void
+    {
+        if (!function_exists('pcntl_fork') || !function_exists('posix_kill')) {
+            self::markTestSkipped('pcntl or posix is not loaded');
+        }
+        file_put_contents("$this->dir/a.pdf", self::PDF);
+        file_put_contents("$this->root/outside/secret.pdf", self::PDF);
+        self::assertSame(self::PDF, $this->uploads()->read(self::URL . '/a.pdf', 1000));
+
+        $pid = pcntl_fork();
+        self::assertNotSame(-1, $pid, 'fork failed');
+        if ($pid === 0) {
+            try {
+                rename($this->dir, "$this->dir.moved");
+                symlink("$this->root/outside", $this->dir);
+            } finally {
+                // no shutdown of PHPUnit in the copy of this process, whatever happened
+                posix_kill(posix_getpid(), SIGKILL);
+            }
+        }
+        pcntl_waitpid($pid, $status);
+        self::assertTrue(is_link($this->dir), 'the other process made no link');
+
+        $this->assertLinkedSliceDirectory(self::URL . '/secret.pdf');
+    }
+
+    // open_basedir hides /proc/self/fd unless it names it; then even a file of the directory stays unread
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function test_read_refusesWithoutProcSelfFd(): void
+    {
+        file_put_contents("$this->dir/a.pdf", self::PDF);
+        $vendor = dirname((new \ReflectionClass(\Composer\Autoload\ClassLoader::class))->getFileName() ?: '', 2);
+        ini_set('open_basedir', implode(PATH_SEPARATOR, [sys_get_temp_dir(), dirname(__DIR__, 3), realpath($vendor) ?: $vendor]));
+        self::assertFalse(UploadDir::kernelPaths(), '/proc/self/fd is still listed');
+
+        try {
+            $this->uploads()->read(self::URL . '/a.pdf', 1000);
+            self::fail('a file read without /proc/self/fd');
+        } catch (\RuntimeException $e) {
+            // the whole message: no disk path, no bytes
+            self::assertSame('AA cannot check attachment files on this server. Ask the server administrator to add /proc/self/fd to open_basedir.', $e->getMessage());
+        }
+    }
+
+    /** refused like any file outside the directory: the message names neither the disk nor the bytes */
+    private function assertNotUploaded(string $url): void
+    {
+        try {
+            $this->uploads()->read($url, 1000);
+            self::fail('a file outside the directory read');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString("$url is not a file uploaded to", $e->getMessage());
+            self::assertStringNotContainsString($this->root, $e->getMessage());
+            self::assertStringNotContainsString('%PDF', $e->getMessage());
+        }
+    }
+
+    /** refused with the reason, which the editor could not tell from the URL - no disk path, no bytes */
+    private function assertLinkedSliceDirectory(string $url): void
+    {
+        try {
+            $this->uploads()->read($url, 1000);
+            self::fail('a file outside the directory read');
+        } catch (\RuntimeException $e) {
+            self::assertStringStartsWith('The upload directory of this slice is a link;', $e->getMessage());
+            self::assertStringNotContainsString($this->root, $e->getMessage());
+            self::assertStringNotContainsString('%PDF', $e->getMessage());
+        }
     }
 
     public function test_read_missingFile(): void
@@ -251,22 +357,24 @@ final class UploadDirTest extends TestCase
         self::assertFalse($this->openedPath("$this->root/fd"));
     }
 
-    // read() then resolves the path again
+    // read() then refuses the file
     public function test_openedPath_nullWithoutProc(): void
     {
         self::assertNull($this->openedPath("$this->root/no-proc"));
     }
 
-    // a file holding more than fstat() says - /proc reports 0 bytes, like a file grown since
+    // a file holding more than fstat() says - /proc reports 0 bytes, like a file grown since;
+    // /proc/<pid>, as /proc/self is a link and a linked directory holds no file
     public function test_read_refusesMoreThanTheSizeSaid(): void
     {
-        if (!is_readable('/proc/self/status')) {
+        $dir = '/proc/' . getmypid();
+        if (!is_readable("$dir/status")) {
             self::markTestSkipped('no /proc');
         }
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('changed while it was read');
-        (new UploadDir(self::URL, '/proc/self'))->read(self::URL . '/status', 1000);
+        (new UploadDir(self::URL, $dir))->read(self::URL . '/status', 1000);
     }
 
     public function test_name_decodedFileName(): void
@@ -292,6 +400,8 @@ final class UploadDirTest extends TestCase
         return [
             'no directory'   => [self::URL, ''],
             'root'           => [self::URL, '/'],
+            'ends with .'    => [self::URL, '/tmp/abc/.'],
+            'ends with ..'   => [self::URL, '/tmp/abc/../'],
             'no url'         => ['', '/tmp'],
             'no host'        => ['/img_upload/abc', '/tmp'],
             'no scheme'      => ['example.org/img_upload', '/tmp'],

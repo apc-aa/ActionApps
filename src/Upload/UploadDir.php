@@ -7,10 +7,16 @@ namespace AA\Upload;
 use AA\Util\SafeFile;
 
 /**
- * The upload directory of a slice, read by the URLs AA stores for its files - the one way to turn
- * such a URL back into the bytes on the disk. Nothing is ever fetched from the web: a URL must name a
- * file below the directory's URL, on its host and port, and the file must resolve below the
- * directory, links included. Exception messages quote the URL - escape them when shown.
+ * The slice directory - where a slice keeps its uploaded files - read by the URLs AA stores for them:
+ * the one way to turn such a URL back into the bytes on the disk. Nothing is ever fetched from the
+ * web: a URL must name a file below the directory's URL, on its host and port, and the opened file
+ * must lie below the slice directory, links included - as the kernel's own path of the handle
+ * (/proc/self/fd) says; where PHP cannot list /proc/self/fd, nothing is read. The slice directory
+ * itself must be no link: it is an entry of the upload directory (IMG_UPLOAD_PATH), which other users
+ * of the server may write. That parent is trusted and may be a link, to another volume say; for a
+ * File Manager slice (FILEMAN_BASE_DIR/<fileman_dir>/items) it is <fileman_dir>, itself an entry of
+ * FILEMAN_BASE_DIR - trusted only where no other user writes there. Exception messages quote the
+ * URL - escape them when shown.
  */
 final readonly class UploadDir
 {
@@ -43,6 +49,10 @@ final readonly class UploadDir
         $this->dir  = rtrim(trim($dir), '/');
         if ($this->dir === '') {
             throw new \InvalidArgumentException('The upload directory is not set');
+        }
+        // the check resolves the parent and keeps the last name as written: "." or ".." would refuse every file
+        if (in_array(basename($this->dir), ['.', '..'], true)) {
+            throw new \InvalidArgumentException('The upload directory must not end with "." or ".."');
         }
     }
 
@@ -88,17 +98,24 @@ final readonly class UploadDir
     /**
      * The bytes of the file $url names. Opened first, then checked where the opened file lies: by
      * the kernel's own path of the handle (/proc/self/fd), which a link swapped in at any moment
-     * cannot fake. Where /proc/self/fd cannot be listed (no /proc, or open_basedir without
-     * /proc/self/fd) the path is resolved again and must still be the opened file; a directory
-     * swapped with a link during that check can pass there. A hard link to a file elsewhere counts
-     * as a file of the directory.
+     * cannot fake. Without /proc/self/fd (no /proc, or open_basedir without it - see kernelPaths())
+     * nothing is read: a path resolved again may lead elsewhere than the open did. A hard link to a
+     * file elsewhere counts as a file of the directory.
      * @throws \InvalidArgumentException not a file of this directory, or larger than $maxBytes
-     * @throws \RuntimeException the file does not exist or cannot be read
+     * @throws \RuntimeException the file does not exist or cannot be read, the slice directory is a
+     *                           link, or PHP cannot list /proc/self/fd
      */
     public function read(string $url, int $maxBytes): string
     {
         $relative = $this->relative($url) ?? throw new \InvalidArgumentException("$url is not a file uploaded to $this->url");
-        $path     = "$this->dir/$relative";
+        if (!self::kernelPaths()) {
+            throw new \RuntimeException('AA cannot check attachment files on this server. Ask the server administrator to add /proc/self/fd to open_basedir.');
+        }
+        $path = "$this->dir/$relative";
+        // realpath() answers from a per-process cache of resolved paths (120 s), lstat() from its last
+        // call: only the parent is resolved, and clearing its entry drops the last lstat too, which
+        // isFile() relies on
+        clearstatcache(true, dirname($this->dir));
         try {
             $fh = SafeFile::open($path);
         } catch (\RuntimeException) {
@@ -107,17 +124,17 @@ final readonly class UploadDir
         }
         try {
             $opened = fstat($fh) ?: throw new \RuntimeException("The file $url cannot be read");
-            // realpath() answers from a per-process cache for up to 120 s - a link planted since would pass
-            clearstatcache(true);
-            $root = @realpath($this->dir);
-            if ($root === false) {
-                throw new \RuntimeException("The file $url cannot be read");
-            }
-            $real = self::openedPath($opened) ?? @realpath($path);
-            if (($real === false) || !str_starts_with($real, "$root/") || !self::isFile($real, $opened)) {
+            $root   = $this->root() ?? throw new \RuntimeException("The file $url cannot be read");
+            // listed when probed, not now (open_basedir tightened since): refused, not left unchecked
+            $real   = self::openedPath($opened) ?? false;
+            if (($real === false) || !str_starts_with($real, $root) || !self::isFile($real, $opened)) {
                 // deleted since it was opened: no path is left, /proc names it "... (deleted)"
                 if ((fstat($fh)['nlink'] ?? 1) === 0) {
                     throw new \RuntimeException("The file $url cannot be read");
+                }
+                // a slice directory moved away behind a link refuses every file: say why, for the administrator
+                if (is_link($this->dir)) {
+                    throw new \RuntimeException('The upload directory of this slice is a link; AA reads attachments only from a real directory. Ask the administrator to replace the link with the directory.');
                 }
                 throw new \InvalidArgumentException("$url is not a file uploaded to $this->url");
             }
@@ -162,6 +179,28 @@ final readonly class UploadDir
             return null;
         }
         return $relative;
+    }
+
+    /**
+     * PHP may list /proc/self/fd here: only the kernel's own path of a handle tells read() where an
+     * opened file lies, so it reads nothing otherwise. open_basedir hides it unless it names
+     * /proc/self/fd. Decided once per request.
+     */
+    public static function kernelPaths(): bool
+    {
+        static $listed = null;
+        return $listed ??= (@scandir('/proc/self/fd') !== false);
+    }
+
+    /**
+     * Where the files of the slice directory lie, with a slash at the end; null when the upload
+     * directory cannot be resolved. Only that parent is resolved: a link put in place of the slice
+     * directory would carry the check anywhere.
+     */
+    private function root(): ?string
+    {
+        $real = @realpath(dirname($this->dir));
+        return ($real === false) ? null : rtrim($real, '/') . '/' . basename($this->dir) . '/';
     }
 
     /**
