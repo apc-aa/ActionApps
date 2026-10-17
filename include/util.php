@@ -1599,6 +1599,10 @@ class AA_Credentials
 
     protected $_pwd = [];     // Array of all known slice passwords (md5 for better security)
 
+    /** @var array<string, true> slices the server opened for this request (openForRequest()) - by id, not by password:
+     *  another slice with the same password stays closed and getAsToken() has nothing to carry */
+    protected $_request_slices = [];
+
     /** main method for checking the slice_pwd
      * @param string $slice_id
      * @param string $crypted_additional_slice_pwd
@@ -1606,6 +1610,9 @@ class AA_Credentials
      */
     public function checkSlice($slice_id, $crypted_additional_slice_pwd = null): bool
     {
+        if (!empty($this->_request_slices[strtolower((string) $slice_id)])) {
+            return true;
+        }
         // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
         return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id, 'reading_password'), $crypted_additional_slice_pwd);
     }
@@ -1633,7 +1640,16 @@ class AA_Credentials
      */
     public function loadFromSlice($slice_id): void
     {
-        $this->register(AA_Slice::getModuleProperty($slice_id, 'reading_password'));  // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
+        $this->register(AA_Slice::getModuleProperty($slice_id, 'reading_password'));
+    }
+
+    /** Opens the slice to this request only, after the server's own check allowed it ({datovkabulk:page}).
+     *  No {ajax} on the page carries it to a next request, and a page showing the slice must not be served
+     *  from the page cache to someone the check would refuse. */
+    public function openForRequest(string $slice_id): void
+    {
+        $this->_request_slices[strtolower($slice_id)] = true;
+        AA::Pagecache()->switchCacheNostore();
     }
 
     public function register($crypted_slice_pwd): void
@@ -1643,7 +1659,7 @@ class AA_Credentials
         }
     }
 
-    /** we are sending collected slice passwords to {ajax...} */
+    /** we are sending collected slice passwords to {ajax...} - never the slices openForRequest() opened */
     public function getAsToken(): string
     {
         return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)], 'slice-pwd');

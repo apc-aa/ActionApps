@@ -900,7 +900,7 @@ class AA_Slice extends AA_Module
     public function get_dynamic_setting_content($ignore_reading_password = false): ?ItemContent
     {
         if (!$ignore_reading_password) {
-            if (!AA_Credentials::singleton()->checkCryptedPassword($this->getProperty('reading_password'))) {   // $this->getProperty('reading_password') is encrypted
+            if (!AA_Credentials::singleton()->checkSlice($this->module_id)) {
                 if ($GLOBALS['errcheck'] || $GLOBALS['debug']) {
                     huhe(_m("Error: Missing Reading Password"));
                 }
