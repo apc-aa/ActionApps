@@ -17,7 +17,7 @@ final readonly class File
     public const MAX_NAME = 255;
 
     /** ZIP and ASiC, by MIME type and extension (WS_manipulace_s_datovymi_zpravami.pdf 3) */
-    private const CONTAINER_TYPES      = ['application/zip', 'application/x-zip-compressed', 'application/vnd.etsi.asic-e+zip', 'application/vnd.etsi.asic-s+zip'];
+    private const CONTAINER_TYPES      = ['application/zip', 'application/x-compressed', 'application/x-zip-compressed', 'application/vnd.etsi.asic-e+zip', 'application/vnd.etsi.asic-s+zip'];
     private const CONTAINER_EXTENSIONS = ['zip', 'asice', 'asics', 'sce', 'scs'];
 
     /** shown to the recipient as the file name, with its extension */

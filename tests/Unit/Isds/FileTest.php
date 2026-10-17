@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA\Isds\AttachmentPolicy;
 use AA\Isds\File;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -40,12 +41,24 @@ final class FileTest extends TestCase
         return [
             'zip by type'          => ['a.bin', 'application/zip', true],
             'zip by windows type'  => ['a.bin', 'application/x-zip-compressed', true],
+            'zip by x-compressed'  => ['a.bin', 'application/x-compressed', true],
             'asic by type'         => ['a.bin', 'application/vnd.etsi.asic-e+zip', true],
             'zip by extension'     => ['a.ZIP', 'application/octet-stream', true],
             'asic-s by extension'  => ['a.asics', 'application/octet-stream', true],
             'pdf'                  => ['a.pdf', 'application/pdf', false],
             'zip only in the name' => ['zip.pdf', 'application/pdf', false],
         ];
+    }
+
+    /** a container by its name is one by every type ISDS lists for that name, and the other way round */
+    public function test_isContainer_agreesWithIsdsList(): void
+    {
+        foreach (AttachmentPolicy::TYPES as $extension => $types) {
+            $byName = (new File("a.$extension", 'application/octet-stream', File::ENCLOSURE, 'x'))->isContainer();
+            foreach ($types as $type) {
+                self::assertSame($byName, (new File('a.bin', $type, File::ENCLOSURE, 'x'))->isContainer(), "$extension $type");
+            }
+        }
     }
 
     #[DataProvider('refused')]
