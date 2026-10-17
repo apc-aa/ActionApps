@@ -99,6 +99,11 @@ final class Schema
         self::MESSAGE_ACCEPTED_AT,
     ];
 
+    // field => the value its default (input_default) must give: a campaign added in the admin starts as a
+    // draft, never as one being sent. The server writes every field of a message itself.
+    public const CAMPAIGN_DEFAULTS = [self::CAMPAIGN_STATE => self::CAMPAIGN_STATE_DRAFT];
+    public const MESSAGE_DEFAULTS  = [];
+
     // only a draft may change; from queued on the sending is a record and a change goes to a copy
     public const CAMPAIGN_STATE_DRAFT   = 'draft';
     public const CAMPAIGN_STATE_QUEUED  = 'queued';

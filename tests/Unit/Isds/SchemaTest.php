@@ -100,6 +100,15 @@ final class SchemaTest extends TestCase
         return array_filter(self::constants($prefix), fn($name) => !str_starts_with($name, $prefix . 'STATE_'), ARRAY_FILTER_USE_KEY);
     }
 
+    // a default names a field of its slice and a state the slice knows
+    public function test_defaults_fieldsAndStatesOfTheirSlice(): void
+    {
+        self::assertSame([Schema::CAMPAIGN_STATE => Schema::CAMPAIGN_STATE_DRAFT], Schema::CAMPAIGN_DEFAULTS);
+        self::assertSame([], array_diff(array_keys(Schema::CAMPAIGN_DEFAULTS), Schema::CAMPAIGN_FIELDS));
+        self::assertSame([], array_diff(Schema::CAMPAIGN_DEFAULTS, Schema::CAMPAIGN_STATES));
+        self::assertSame([], Schema::MESSAGE_DEFAULTS);
+    }
+
     public function test_constants_haveTheirValues(): void
     {
         $all = array_filter((new \ReflectionClass(Schema::class))->getConstants(), fn($value) => !is_array($value));
