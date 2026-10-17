@@ -31,7 +31,7 @@ class ScriptedBatchRun extends BatchRun
     /** @var array<string, mixed> what finalCheck() reports */
     public static array $finalReport = [];
     public static ?\Throwable $afterCloseThrows = null;
-    /** @var ?\Closure(): void runs inside finalCheck() - a test looks at the run there */
+    /** @var ?\Closure(self): void runs inside finalCheck() on the run - a test looks at the run there */
     public static ?\Closure $onFinalCheck = null;
     /** @var ?\Closure(BatchStepResult): (array|BatchStepResult|null) what onRetriesExhausted() answers - a position
      *  goes on via withPosition(); null = the core's own */
@@ -156,7 +156,7 @@ class ScriptedBatchRun extends BatchRun
     {
         $this->log('finalCheck');
         if (self::$onFinalCheck) {
-            (self::$onFinalCheck)();
+            (self::$onFinalCheck)($this);
         }
         return self::$finalReport;
     }
@@ -230,6 +230,28 @@ class ScriptedBatchRun extends BatchRun
     public function secret(): ?string
     {
         return $this->unseal();
+    }
+
+    /** beforeAction() and recordResult(), as the user's own work() calls them
+     *  @param \Closure(self): bool $write */
+    public function callBeforeAction(\Closure $write, int $reserve): bool
+    {
+        return $this->beforeAction($write, $reserve);
+    }
+
+    /** @param \Closure(self): bool $write */
+    public function callRecordResult(\Closure $write): ?bool
+    {
+        return $this->recordResult($write);
+    }
+
+    /** the own property; $value changes it first - the test's closures cannot reach it */
+    public function note(?string $value = null): string
+    {
+        if ($value !== null) {
+            $this->note = $value;
+        }
+        return (string) $this->note;
     }
 
     protected static function sealPurpose(): string

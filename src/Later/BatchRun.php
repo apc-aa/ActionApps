@@ -108,6 +108,10 @@ abstract class BatchRun extends AA_Object
      *  it was read in: the lock ends with that transaction, this flag does not */
     private bool $locked = false;
 
+    /** the token claim() gave the step this instance works for - a run read by get() carries the stored
+     *  token too, but no claim */
+    private string $claimed = '';
+
     /** set while a step queues its own row again: when the queue refuses the row, later() runs the step
      *  at once, and that step would queue it again, without end */
     private static bool $requeueing = false;
@@ -673,6 +677,84 @@ abstract class BatchRun extends AA_Object
         return ($held !== null) && $held->holds((string) $this->lease_tok) && ((int) $held->lease > static::now());
     }
 
+    /** Records, before the step acts, that it starts an action it cannot take back: a step that dies
+     *  acting leaves the trace, and no step repeats the action. Only while the run is active, this
+     *  step's claim owns it and its lease outlasts $reserve seconds - the longest the action takes, so
+     *  no one claims the run meanwhile.
+     *  @param \Closure(static): bool $write sets own properties (text) of the run it gets; false = write
+     *         none of them - yet it undoes nothing else $write did. So $write only sets them, and as it
+     *         runs under the run's row lock it is short: no I/O, no action, no core method.
+     *  @return bool true = written, act now; false = nothing written (nor changed), do not act
+     *  @throws \LogicException outside the step's claim, in a transaction, or when $write changed a core
+     *                          property or stored no text - nothing is written then
+     *  @throws \InvalidArgumentException for a negative $reserve */
+    final protected function beforeAction(\Closure $write, int $reserve): bool
+    {
+        if ($reserve < 0) {
+            throw new \InvalidArgumentException('The time an action takes is not negative');
+        }
+        return (bool) $this->checkpoint($write, $reserve)?->holds($this->claimed);
+    }
+
+    /** Records what the step did - also into a run ended or put in error meanwhile, which keep its lease.
+     *  @param \Closure(static): bool $write as for beforeAction()
+     *  @return ?bool null = not recorded: Continue or another claim took the run, it is gone, or $write
+     *                said false or changed nothing; false = recorded, but the run is no longer active -
+     *                the step stops; true = recorded, the step may go on
+     *  @throws \LogicException as beforeAction() */
+    final protected function recordResult(\Closure $write): ?bool
+    {
+        return $this->checkpoint($write, null)?->holds($this->claimed);
+    }
+
+    /** $write on the run locked while this step's claim owns it ($reserve: active, lease long enough);
+     *  the own properties it changed are written at once and given to $this. Never in a transaction:
+     *  there the record would commit only with it, after the action.
+     *  @param \Closure(static): bool $write
+     *  @return ?self the run as written, null = nothing written (refused, vetoed or unchanged) */
+    private function checkpoint(\Closure $write, ?int $reserve): ?self
+    {
+        $claim = $this->claimed;
+        if (($claim === '') || DB_AA::inTransaction() || $this->stepInTransaction()) {
+            throw new \LogicException('A batch run records only from the step that claimed it, outside any transaction');
+        }
+        $own   = self::ownProperties();
+        $props = array_keys(static::getClassProperties());
+        $state = static fn(self $run): array => ['aa_id' => $run->getId(), 'aa_owner' => $run->getOwnerId()]
+            + array_combine($props, array_map(static fn(string $p): mixed => $run->$p, $props));
+        $run   = $this->whileLocked(static function (self $run) use ($write, $reserve, $claim, $own, $state): bool {
+            $may = ($reserve === null) ? $run->ownsToken($claim) : ($run->holds($claim) && ((int) $run->lease - $run::now() > $reserve));
+            if (!$may) {
+                return false;
+            }
+            $before  = $state($run);
+            $wrote   = $write($run);
+            $changed = array_keys(array_filter($state($run), static fn(mixed $value, string $p): bool => $value !== $before[$p], ARRAY_FILTER_USE_BOTH));
+            // also on a veto: a core method has written already, only the exception rolls it back
+            if (array_diff($changed, $own)) {
+                throw new \LogicException('A step records only own properties of the run');
+            }
+            if (!$wrote || !$changed) {
+                return false;
+            }
+            foreach ($changed as $property) {
+                // as start() takes them: what $this keeps is what a read gives back
+                $run->$property = is_int($run->$property) ? (string) $run->$property : $run->$property;
+                if (!is_string($run->$property)) {
+                    throw new \LogicException("Batch run property $property is text");
+                }
+            }
+            $run->update($changed);
+            return true;
+        });
+        if ($run) {
+            foreach ($own as $property) {
+                $this->$property = $run->$property;
+            }
+        }
+        return $run;
+    }
+
     /** a step may still be working - also in an ended run, so a new run of the subject waits for it */
     final public function hasLiveLease(int $now): bool
     {
@@ -929,8 +1011,8 @@ abstract class BatchRun extends AA_Object
         }
     }
 
-    /** @return list<string> the user's own properties - read() reads object_text only, and an aa_*
-     *                       or locked property would overwrite the object's own */
+    /** @return list<string> the user's own properties - read() reads object_text only, and an aa_*,
+     *                       locked or claimed property would overwrite the object's own */
     private static function ownProperties(): array
     {
         $own = [];
@@ -940,8 +1022,8 @@ abstract class BatchRun extends AA_Object
                 continue;
             }
             // object_text.property is varbinary(16)
-            if (str_starts_with($id, 'aa_') || ($id === 'locked') || (strlen($id) > 16) || (AA_Property::storageType($property->getType()) !== 'object_text')) {
-                throw new \LogicException("Batch run property $id must be text, at most 16 bytes and named neither aa_* nor locked");
+            if (str_starts_with($id, 'aa_') || in_array($id, ['locked', 'claimed'], true) || (strlen($id) > 16) || (AA_Property::storageType($property->getType()) !== 'object_text')) {
+                throw new \LogicException("Batch run property $id must be text, at most 16 bytes and named neither aa_* nor locked nor claimed");
             }
             $own[] = $id;
         }
@@ -1040,6 +1122,7 @@ abstract class BatchRun extends AA_Object
         // as leaseUntil(), with the overrun read before the lock, where its failure can still be shown
         $this->lease     = (string) ($now + (int) ceil($budget->secondsLeft()) + $overrun);
         $this->lease_tok = bin2hex(random_bytes(16));
+        $this->claimed   = $this->lease_tok;
         $this->update(['lease', 'lease_tok', 'failures']);
         return $died ? 'died' : ($revived ? 'revived' : 'claimed');
     }
@@ -1102,7 +1185,11 @@ abstract class BatchRun extends AA_Object
             return 'error ' . $run->error_code;
         }
         // the final phase may ask the source - only after the end of the step is committed
-        return ($run->closing === '1') ? $run->finalPhase() : ('step ' . $run->step());
+        if ($run->closing === '1') {
+            $run->claimed = $this->claimed;     // the same step goes on there, on the run read anew
+            return $run->finalPhase();
+        }
+        return 'step ' . $run->step();
     }
 
     /** work() and the end of the step in one transaction while the step holds its lease.
@@ -1328,18 +1415,22 @@ abstract class BatchRun extends AA_Object
     }
 
     /** $write on the run locked in a transaction of its own
-     *  @param \Closure(self): bool $write false = nothing to write
+     *  @param \Closure(static): bool $write false = nothing to write
      *  @return ?self the locked run when $write wrote */
     private function whileLocked(\Closure $write): ?self
     {
-        $run = DB_AA::transaction(function () use ($write): ?self {
-            $run = self::lockForUpdate($this->getId());
-            return ($run && $write($run)) ? $run : null;
-        });
-        if ($run) {
-            $run->locked = false;       // committed - the lock is gone
+        $locked = null;
+        try {
+            return DB_AA::transaction(function () use ($write, &$locked): ?self {
+                $locked = self::lockForUpdate($this->getId());
+                return ($locked && $write($locked)) ? $locked : null;
+            });
+        } finally {
+            // the lock ended with the transaction, however it ended - $write may have kept the instance
+            if ($locked) {
+                $locked->locked = false;
+            }
         }
-        return $run;
     }
 
     /** whileLocked() only while the step with $token still owns the run
@@ -1381,7 +1472,7 @@ abstract class BatchRun extends AA_Object
         if (($state === static::states()->ended) && ($token !== '')) {
             $this->whileLocked(static function (self $run) use ($token, $result): bool {
                 // only its own: another token may be a step still storing items, which counts its own
-                if (($run->state() !== $run::states()->ended) || !hash_equals((string) $run->lease_tok, $token)) {
+                if (($run->state() !== $run::states()->ended) || !$run->ownsToken($token)) {
                     return false;
                 }
                 $run->lease     = '';
@@ -1452,7 +1543,13 @@ abstract class BatchRun extends AA_Object
      *  lease may still write as long as no other step claimed the run - that one would have a new token. */
     private function holds(#[\SensitiveParameter] string $token): bool
     {
-        return ($this->state === static::states()->active) && ($token !== '') && hash_equals((string) $this->lease_tok, $token);
+        return ($this->state === static::states()->active) && $this->ownsToken($token);
+    }
+
+    /** $token is the lease's - whatever the state: an ended run keeps the token of a step still working */
+    private function ownsToken(#[\SensitiveParameter] string $token): bool
+    {
+        return ($token !== '') && hash_equals((string) $this->lease_tok, $token);
     }
 
     private function moveTo(string $to): void

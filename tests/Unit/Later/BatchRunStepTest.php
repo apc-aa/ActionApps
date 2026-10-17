@@ -120,6 +120,7 @@ namespace Tests\Unit\Later {
                 'stored as a number'          => ['count', 'int'],
                 'named as the object\'s own' => ['aa_owner', 'text'],
                 'named as the lock flag'      => ['locked', 'text'],
+                'named as the step\'s claim'  => ['claimed', 'text'],
                 'longer than the column'      => ['seventeen_bytes__', 'text'],
             ];
         }

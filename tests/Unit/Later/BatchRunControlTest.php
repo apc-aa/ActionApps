@@ -35,12 +35,6 @@ final class BatchRunControlTest extends TestCase
 
     private const SECRET = 'tok-Zq8vW2pLx9Rb4Kc7';
 
-    /** $do on the run locked in a transaction, as the users of the core change it */
-    private static function locked(string $id, \Closure $do): mixed
-    {
-        return DB_AA::transaction(static fn() => $do(ScriptedBatchRun::lockForUpdate($id) ?? throw new LogicException('No run')));
-    }
-
     private static function fresh(string $id): ScriptedBatchRun
     {
         return ScriptedBatchRun::get($id) ?? throw new LogicException('No run');
@@ -50,13 +44,6 @@ final class BatchRunControlTest extends TestCase
     private static function queued(): array
     {
         return array_map(static fn(array $row): string => self::stepOf($row)->expected, self::queue());
-    }
-
-    /** a run whose step works right now: a live lease and its token */
-    private static function leased(string $id): void
-    {
-        self::storedSet($id, 'lease', (string) (self::NOW + 100));
-        self::storedSet($id, 'lease_tok', 'working-step');
     }
 
     /** the arguments in the trace of $e, but of PHPUnit's own frames - they hold the whole test run */

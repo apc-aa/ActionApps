@@ -93,6 +93,19 @@ namespace Tests\Unit\Later\Fixtures {
             TableDb::$tables['object_text'][] = ['id' => 999, 'object_id' => $id, 'property' => $property, 'priority' => 0, 'value' => $value, 'flag' => null];
         }
 
+        /** $do on the run locked in a transaction, as the users of the core change it */
+        private static function locked(string $id, \Closure $do): mixed
+        {
+            return DB_AA::transaction(static fn() => $do(ScriptedBatchRun::lockForUpdate($id) ?? throw new LogicException('No run')));
+        }
+
+        /** a run whose step works right now: a live lease and its token */
+        private static function leased(string $id): void
+        {
+            self::storedSet($id, 'lease', (string) (self::NOW + 100));
+            self::storedSet($id, 'lease_tok', 'working-step');
+        }
+
         /** @return list<array<string, mixed>> the queue rows */
         private static function queue(): array
         {
