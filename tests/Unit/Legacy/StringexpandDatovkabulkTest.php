@@ -88,7 +88,24 @@ namespace Tests\Unit\Legacy {
 
         public function test_subcommands_outsideTheUiGiveNothing(): void
         {
-            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:delete}{datovkabulk}'));
+            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:delete}{datovkabulk}'));
+        }
+
+        public function test_recipients_campaignAndQuestionToTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function recipients(string $campaign, string $what): string
+                        {
+                            return "$campaign|$what";
+                        }
+                    };
+                }
+            };
+
+            self::assertSame('ca00000000000000000000000000000b|ids', $command->expand('recipients', 'ca00000000000000000000000000000b', 'ids'));
         }
     }
 }

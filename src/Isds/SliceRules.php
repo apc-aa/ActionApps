@@ -95,9 +95,10 @@ class SliceRules
     }
 
     /**
-     * The slice the recipients come from: the site uses it, its settings of data boxes (Registry\Config)
-     * name the field of the type of an item and pair each type offered. Of a slice the site does not
-     * use it tells only that - the template may name a slice of another site.
+     * The slice the recipients come from: the site uses it, it has no reading password, its settings of
+     * data boxes (Registry\Config) fit its fields, name the field of the type of an item and pair each
+     * type offered. Of a slice the site does not use it tells only that - the template may name a slice
+     * of another site.
      * @param list<string> $types       the item types the page offers
      * @param string       $memberField the field that tells a member; '' = none
      * @return list<SliceProblem> none when ready
@@ -116,14 +117,27 @@ class SliceRules
         if (is_null($slice)) {
             return [$this->absent($sourceSlice, $id)];
         }
-        $name   = $this->name($id);
+        $name = $this->name($id);
+        // the page reads the recipients with the passwords of the request, which never open this slice
+        if ($slice->getProperty('reading_password')) {
+            $problems[] = new SliceProblem(_m('Slice "%1" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice', [$name]), $id, self::SLICE_PAGE);
+        }
         $config = $this->registryConfig($id);
         if (is_null($config)) {
             $problems[] = new SliceProblem(_m('Slice "%1" has no settings of data boxes - set its fields on its page Data boxes from the register', [$name]), $id, self::REGISTRY_PAGE);
-        } elseif ($config->typeField() === '') {
-            $problems[] = new SliceProblem(_m('Slice "%1": choose the Type field in its settings of data boxes - recipients are chosen by type', [$name]), $id, self::REGISTRY_PAGE);
-        } elseif ($config->types() && ($unpaired = array_values(array_diff($types, $config->types())))) {
-            $problems[] = new SliceProblem(_m('Slice "%1" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3', [$name, implode(', ', $unpaired), implode(', ', $config->types())]), $id, self::REGISTRY_PAGE);
+        } else {
+            // the fields may have changed since the settings were saved; the type checks wait for them, so
+            // one cause gives one message (no type field, yet types listed)
+            $errors = Config::errors($config->values(), $slice->getFields());
+            if ($errors) {
+                foreach ($errors as $error) {
+                    $problems[] = new SliceProblem(_m('Slice "%1", its settings of data boxes: %2', [$name, $error]), $id, self::REGISTRY_PAGE);
+                }
+            } elseif ($config->typeField() === '') {
+                $problems[] = new SliceProblem(_m('Slice "%1": choose the Type field in its settings of data boxes - recipients are chosen by type', [$name]), $id, self::REGISTRY_PAGE);
+            } elseif ($config->types() && ($unpaired = array_values(array_diff($types, $config->types())))) {
+                $problems[] = new SliceProblem(_m('Slice "%1" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3', [$name, implode(', ', $unpaired), implode(', ', $config->types())]), $id, self::REGISTRY_PAGE);
+            }
         }
         if ($memberField !== '') {
             $field = $slice->getField($memberField);
@@ -349,7 +363,7 @@ class SliceRules
     }
 
     /** the settings of data boxes of the slice */
-    protected function registryConfig(string $slice): ?Config
+    public function registryConfig(string $slice): ?Config
     {
         return Config::forSlice($slice);
     }

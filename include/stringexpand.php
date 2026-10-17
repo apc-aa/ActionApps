@@ -10607,6 +10607,12 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:env}    - test | production, as include/config.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:result} - what the posted action did
+ *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted
+ *        anew: how many get the letter, how many are skipped for their data box, the dash-separated ids of who gets
+ *        it (for {view}); a queued or sent campaign keeps its count from then in the campaign. '' on any error, and
+ *        ids '' for no recipients - {view} with no ids lists the whole slice, so guard it (not with _#1 - AA
+ *        expands the inner command first; so the inner {view} still runs once over the slice, the guard only
+ *        hides it): {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
@@ -10615,12 +10621,13 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
     {
         $gate = $this->gate();
         return match ((string)$subcommand) {
-            'page'   => $gate->page((string)$settings, (string)$ui, (string)$refusal, fn(string $text): string => AA::Un($text, '', $this->item, true, $this->itemview)),
-            'fields' => $gate->fields((string)$settings, (string)$ui),
-            'env'    => $gate->env(),
-            'sender' => $gate->sender(),
-            'result' => $gate->result(),
-            default  => '',
+            'page'       => $gate->page((string)$settings, (string)$ui, (string)$refusal, fn(string $text): string => AA::Un($text, '', $this->item, true, $this->itemview)),
+            'fields'     => $gate->fields((string)$settings, (string)$ui),
+            'env'        => $gate->env(),
+            'sender'     => $gate->sender(),
+            'result'     => $gate->result(),
+            'recipients' => $gate->recipients((string)$settings, (string)$ui),
+            default      => '',
         };
     }
 

@@ -484,6 +484,27 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertSame(['page:' . self::SITE . ':' . self::CAMPAIGN], self::keys($check->findings()));
     }
 
+    // a campaign whose stored filter the page no longer offers - the page showed no recipients for it
+    public function test_findings_campaignCannotTellItsRecipients(): void
+    {
+        $check            = self::check([]);
+        $selector         = self::SITE . ':' . self::CAMPAIGN . ':ca00000000000000000000000000000b';
+        $check->campaigns = [
+            ['selector' => $selector, 'days' => '2', 'first' => '1790700000', 'last' => '1790800000', 'params' => 'The page does not offer the types <b>kraj</b>'],
+            ['selector' => 'x', 'days' => '1', 'first' => '1790800000', 'last' => '1790800000', 'params' => ''],
+        ];
+
+        $findings = $check->findings();
+
+        self::assertSame(['recipients:' . $selector, 'recipients:x'], self::keys($findings));
+        $finding = $findings[0];
+        self::assertSame([Finding::WARNING, 'A campaign of a mass sending on site Terminal cannot tell its recipients', 2, 1790700000, 1790800000, 'Terminal'], [$finding->severity, $finding->title, $finding->count, $finding->since, $finding->last, $finding->place]);
+        self::assertSame(['Campaign slice' => 'ISDS campaigns', 'Campaign' => 'ca00000000000000000000000000000b', 'Problem' => 'The page does not offer the types &lt;b&gt;kraj&lt;/b&gt;', 'Days seen' => '2', 'Last' => date('Y-m-d', 1790800000)], $finding->evidence[0]);
+        self::assertStringContainsString('save its recipients again', $finding->advice);
+        self::assertStringContainsString('srchbr_value%5B1%5D=ISDS_RCPT', $finding->links['Log rows']);
+        self::assertSame(['-', '-'], [$findings[1]->evidence[0]['Campaign slice'], $findings[1]->evidence[0]['Campaign']], 'a selector of another shape');
+    }
+
     // ------------------------------------------------------------ helpers
 
     /**

@@ -20,9 +20,9 @@ use AA_Module;
 /**
  * The ISDS accounts include/config.php sets up (AA\Isds\Accounts): what to fix in their constants,
  * the constants AA does not read, whether the site and the slices each account is bound to are ready
- * (SliceRules - the rules the page that sends applies), the files of a certificate, and the pages whose
- * settings of the sending were not ready (Gate logs them). Constant names and file names only, never a
- * key or a passphrase. No network: CheckIsds logs in.
+ * (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
+ * settings of the sending were not ready and the campaigns whose recipients could not be told (Gate logs
+ * both). Constant names and file names only, never a key or a passphrase. No network: CheckIsds logs in.
  */
 class CheckIsdsAccounts extends AbstractOptimize
 {
@@ -32,9 +32,9 @@ class CheckIsdsAccounts extends AbstractOptimize
     /** fewer are an error: registering a new certificate takes days */
     private const CERTIFICATE_ERROR_DAYS = 7;
 
-    /** a page not ready that long ago is likely fixed - Gate logs it once a day while it is not */
-    private const SETUP_WINDOW_SECONDS = 7 * 86400;
-    private const SETUP_ROWS           = 50;
+    /** a page or a campaign logged that long ago is likely fixed - Gate logs it once a day while it is not */
+    private const LOG_WINDOW_SECONDS = 7 * 86400;
+    private const LOG_ROWS           = 50;
 
     public static function name(): string
     {
@@ -43,7 +43,7 @@ class CheckIsdsAccounts extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Checks the ISDS accounts include/config.php sets up for sending to data boxes: their constants, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready in the last week.');
+        return _m('Checks the ISDS accounts include/config.php sets up for sending to data boxes: their constants, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, or whose campaigns could not tell their recipients, in the last week.');
     }
 
     public static function types(): array
@@ -68,7 +68,7 @@ class CheckIsdsAccounts extends AbstractOptimize
         $bindings  = Accounts::bindings($constants);
         $strays    = Accounts::strays($constants);
         $rules     = $this->sliceRules();
-        $pages     = $this->pageFindings($rules);
+        $pages     = [...$this->pageFindings($rules), ...$this->recipientFindings($rules)];
         if (!$bindings && !$strays) {
             return $pages ?: [new Finding(Finding::OK, _m('No ISDS account is set up in include/config.php'))];
         }
@@ -127,6 +127,41 @@ class CheckIsdsAccounts extends AbstractOptimize
                     : _m('Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(Gate::LOG_EVENT, $selector)] + ($readersOnly ? [SliceRules::pageLabel(SliceRules::SITE_PAGE) => AA_Module::getModuleUrl($site, SliceRules::SITE_PAGE)] : []),
                 key: "page:$selector",
+                last: (int) $row['last'],
+                place: $siteName,
+            );
+        }
+
+        return $findings;
+    }
+
+    /**
+     * Campaigns whose stored recipient filter, or source slice, the page could not use - it showed no
+     * recipients for them.
+     * @return list<Finding>
+     */
+    private function recipientFindings(SliceRules $rules): array
+    {
+        $findings = [];
+        foreach ($this->unresolvedCampaigns() as $row) {
+            $selector                  = (string) $row['selector'];
+            [$site, $slice, $campaign] = array_pad(explode(':', $selector, 3), 3, '-');
+            $siteName                  = is_long_id($site) ? $rules->name($site) : $site;
+            $findings[]                = new Finding(
+                Finding::WARNING,
+                _m('A campaign of a mass sending on site %1 cannot tell its recipients', [$siteName]),
+                count: (int) $row['days'],
+                since: (int) $row['first'],
+                evidence: [[
+                    _m('Campaign slice') => safe(is_long_id($slice) ? $rules->name($slice) : $slice),
+                    _m('Campaign')       => safe($campaign),
+                    _m('Problem')        => safe((string) $row['params']),
+                    _m('Days seen')      => (string) (int) $row['days'],
+                    _m('Last')           => date('Y-m-d', (int) $row['last']),
+                ]],
+                advice: _m('The recipient filter stored in the campaign no longer fits the settings of the page - a type was removed from types, or member_field was dropped. Open the campaign on the page and save its recipients again. When the problem names the settings of data boxes, set them on the page Data boxes from the register of the source slice.'),
+                links: [_m('Log rows') => AA_Log::getAdminUrl(Gate::RECIPIENTS_EVENT, $selector)],
+                key: "recipients:$selector",
                 last: (int) $row['last'],
                 place: $siteName,
             );
@@ -348,7 +383,13 @@ class CheckIsdsAccounts extends AbstractOptimize
     /** @return list<array<string, ?string>> LogOnce::recent() rows of Gate::LOG_EVENT */
     protected function notReadyPages(): array
     {
-        return LogOnce::recent(Gate::LOG_EVENT, $this->now() - self::SETUP_WINDOW_SECONDS, self::SETUP_ROWS);
+        return LogOnce::recent(Gate::LOG_EVENT, $this->now() - self::LOG_WINDOW_SECONDS, self::LOG_ROWS);
+    }
+
+    /** @return list<array<string, ?string>> LogOnce::recent() rows of Gate::RECIPIENTS_EVENT */
+    protected function unresolvedCampaigns(): array
+    {
+        return LogOnce::recent(Gate::RECIPIENTS_EVENT, $this->now() - self::LOG_WINDOW_SECONDS, self::LOG_ROWS);
     }
 
     /** the PHP_SAPI of the requests that read the key: apache2handler is PHP inside the web server */

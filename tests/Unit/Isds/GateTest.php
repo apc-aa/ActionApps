@@ -20,6 +20,7 @@ use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use Tests\Unit\Isds\Fixtures\FakeGate;
 use Tests\Unit\Isds\Fixtures\FakePerms;
+use Tests\Unit\Isds\Fixtures\FakeRecipients;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
 use Tests\Unit\Isds\Fixtures\Sending;
 
@@ -42,6 +43,14 @@ final class GateTest extends TestCase
     private const ITEM     = 'ca00000000000000000000000000000b';   // a campaign - an item of the campaign slice
     private const UI       = '<form>{view:history}</form>';
     private const REFUSAL  = '<p>Only the office sends letters.</p>';
+    private const LETTER   = 'be00000000000000000000000000000d';   // a message - an item of the message slice
+
+    // items of the source slice
+    private const ADAMOV  = 'a0000000000000000000000000000001';
+    private const BENESOV = 'b0000000000000000000000000000002';
+    private const CHEB    = 'c0000000000000000000000000000003';
+    private const DECIN   = 'd0000000000000000000000000000004';
+    private const BRNO    = 'e0000000000000000000000000000005';
 
     /** @var list<string> the UI each expansion got */
     private array $expanded = [];
@@ -54,6 +63,7 @@ final class GateTest extends TestCase
         require_once __DIR__ . '/fixtures/FakeSliceRules.php';
         require_once __DIR__ . '/fixtures/FakePerms.php';
         require_once __DIR__ . '/fixtures/FakeGate.php';
+        require_once __DIR__ . '/fixtures/FakeRecipients.php';
         class_exists(\AA_Stringexpand_Jsonasoc::class);   // stringexpand.php: aa_json_decode()
         if (!defined('CACHE_TTL')) {
             define('CACHE_TTL', 600);                       // AA::Pagecache()
@@ -63,6 +73,7 @@ final class GateTest extends TestCase
     /** the office: readers in a set the campaign slice grants the editor's role */
     protected function setUp(): void
     {
+        FakeRecipients::forget();
         FakePerms::install([Sending::SET => [self::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']]], [self::READER => [Sending::READERS, Sending::SET]]);
     }
 
@@ -79,15 +90,18 @@ final class GateTest extends TestCase
             }
         }, AA_Credentials::singleton(), AA_Credentials::class)();
         (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
+        AA::Contentcache()->clear();
+        FakeRecipients::forget();
         Gate::report('');
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_id('');
         }
     }
 
+    /** cities and districts offered, cities chosen at first, members in Sending::MEMBER */
     private static function settings(): string
     {
-        return (string) json_encode(['campaign_slice' => self::CAMPAIGN, 'message_slice' => self::MESSAGE, 'source_slice' => self::SOURCE, 'types' => ['mesto' => 'Cities']]);
+        return (string) json_encode(['campaign_slice' => self::CAMPAIGN, 'message_slice' => self::MESSAGE, 'source_slice' => self::SOURCE, 'types' => ['mesto' => 'Cities', 'mestocast' => 'City districts'], 'default_types' => ['mesto'], 'member_field' => Sending::MEMBER]);
     }
 
     /** the slices of SITE, each closed by a password of its own; include/config.php binds them to SITE */
@@ -389,5 +403,95 @@ final class GateTest extends TestCase
         self::assertStringNotContainsString('Where to fix it', $out, 'no page fixes a template');
         self::assertSame([[self::SITE . ':-', 'Set campaign_slice to the id of a slice - 32 hexadecimal digits']], $gate->logged);
         $this->assertLocked();
+    }
+
+    // ------------------------------------------------------------ recipients
+
+    /**
+     * The gate with the territory of the source slice: Benešov has no box, Děčín the box of Adamov
+     * @param array<string, string|array{slice: string, active: bool, filter: string}> $campaigns item id => the
+     *        filter of an active item of the campaign slice, or what stored() gives
+     */
+    private static function recipientGate(array $campaigns): FakeGate
+    {
+        $gate            = self::gate();
+        $gate->campaigns = array_map(static fn(string|array $c): array => is_string($c) ? ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => $c] : $c, $campaigns);
+        $gate->resolver  = new FakeRecipients([
+            self::ADAMOV  => Sending::item('Adamov', 'mesto', '1', 'ada1234'),
+            self::BENESOV => Sending::item('Benešov', 'mesto', '1', ''),
+            self::CHEB    => Sending::item('Cheb', 'mesto', '0', 'che1234'),
+            self::DECIN   => Sending::item('Děčín', 'mestocast', '0', 'ADA1234'),
+            self::BRNO    => Sending::item('Brno', 'mestocast', '1', 'brn1234'),
+        ]);
+
+        return $gate;
+    }
+
+    /** @return list<string> what the UI gets for the campaign: count, skipped, ids */
+    private static function counts(FakeGate $gate, string $campaign): array
+    {
+        return self::inside($gate, static fn(): array => [$gate->recipients($campaign, 'count'), $gate->recipients($campaign, 'skipped'), $gate->recipients($campaign, 'ids')]);
+    }
+
+    // members of the cities plus two districts: Benešov has no box, Děčín shares the box of Adamov
+    public function test_recipients_byTheStoredFilter(): void
+    {
+        $gate = self::recipientGate([self::ITEM => Sending::filter(['membership' => 'members', 'include' => [self::BRNO, strtoupper(self::DECIN)]])]);
+
+        self::assertSame(['2', '2', self::ADAMOV . '-' . self::BRNO], self::counts($gate, strtoupper(self::ITEM)));
+        self::assertCount(1, FakeRecipients::$read, 'the three answers of one page resolve once');
+        self::assertSame('', $gate->recipients(self::ITEM, 'count'), 'outside the UI');
+    }
+
+    public function test_recipients_defaultFilterWhenNoneStored(): void
+    {
+        self::assertSame(['2', '1', self::ADAMOV . '-' . self::CHEB], self::counts(self::recipientGate([self::ITEM => " \n"]), self::ITEM));
+    }
+
+    /** @return array<string, array{string, string, array<string, string|array{slice: string, active: bool, filter: string}>}> */
+    public static function notACampaign(): array
+    {
+        $stored = [self::ITEM => ''];
+
+        return [
+            'not an id'              => ['12" onclick="x', 'count', $stored],
+            'no such item'           => [self::ITEM, 'count', []],
+            'an item of messages'    => [self::LETTER, 'count', [self::LETTER => ['slice' => self::MESSAGE, 'active' => true, 'filter' => '']]],
+            'an item of the source'  => [self::ADAMOV, 'count', [self::ADAMOV => ['slice' => self::SOURCE, 'active' => true, 'filter' => '']]],
+            'a campaign in a bin'    => [self::ITEM, 'count', [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '']]],
+            // a read without the password masks the status code too - the item is in no bin
+            'a campaign read masked' => [self::ITEM, 'count', [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => 'Error: Missing Reading Password']]],
+            'unknown question'       => [self::ITEM, 'all', $stored],
+        ];
+    }
+
+    /** @param array<string, string|array{slice: string, active: bool, filter: string}> $campaigns */
+    #[DataProvider('notACampaign')]
+    public function test_recipients_notACampaignOfThePage(string $campaign, string $what, array $campaigns): void
+    {
+        $gate = self::recipientGate($campaigns);
+
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->recipients($campaign, $what)));
+        self::assertSame([[], []], [FakeRecipients::$read, $gate->recipientsLogged]);
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function brokenFilter(): array
+    {
+        return [
+            'type not offered' => [Sending::filter(['types' => ['kraj']]), 'The page does not offer the types kraj'],
+            'broken JSON'      => ['{"types":', 'The recipient filter is a JSON object of types, membership, include, exclude'],
+        ];
+    }
+
+    // nothing for the page, the reason once to the log - the three answers share one failure
+    #[DataProvider('brokenFilter')]
+    public function test_recipients_brokenFilterLogged(string $filter, string $problem): void
+    {
+        $gate = self::recipientGate([self::ITEM => $filter]);
+
+        self::assertSame(['', '', ''], self::counts($gate, self::ITEM));
+        self::assertSame([[self::SITE . ':' . self::CAMPAIGN . ':' . self::ITEM, $problem]], $gate->recipientsLogged);
+        self::assertSame([], $gate->logged, 'not a problem of the settings');
     }
 }

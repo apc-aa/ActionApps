@@ -9,7 +9,8 @@ use AA\Optimize\CheckIsdsAccounts;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
 
 /** CheckIsdsAccounts over the constants in $constants, the slice rules in $rules and the log rows in
- *  $pages instead of include/config.php and the database, at the time $now, under the PHP SAPI $sapi. */
+ *  $pages and $campaigns instead of include/config.php and the database, at the time $now, under the PHP
+ *  SAPI $sapi. */
 final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
 {
     /** @var array<string, mixed> as Store::userConstants() */
@@ -21,6 +22,9 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
 
     /** @var list<array<string, ?string>> LogOnce::recent() rows of the pages not ready */
     public array $pages = [];
+
+    /** @var list<array<string, ?string>> LogOnce::recent() rows of the campaigns whose recipients were not told */
+    public array $campaigns = [];
 
     public function __construct(public FakeSliceRules $rules) {}
 
@@ -47,5 +51,10 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
     protected function notReadyPages(): array
     {
         return $this->pages;
+    }
+
+    protected function unresolvedCampaigns(): array
+    {
+        return $this->campaigns;
     }
 }

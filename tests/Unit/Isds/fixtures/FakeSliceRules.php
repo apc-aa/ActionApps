@@ -12,6 +12,8 @@ use AA_Slice;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
 
+require_once __DIR__ . '/Sending.php';
+
 /**
  * SliceRules over the sites, slices and relations set here instead of the database. ready() sets up
  * a site using a campaign and a message slice that pass every rule; a test then breaks one thing.
@@ -59,14 +61,14 @@ final class FakeSliceRules extends SliceRules
 
     /**
      * The site uses a slice of recipients, paired with data boxes by the types mesto and mestocast,
-     * members in switch.........9.
+     * members in Sending::MEMBER.
      */
     public function withSource(string $site, string $source): self
     {
         $this->related[$site][] = $source;
-        $this->slices[$source]  = self::fieldsSlice($source, ['headline........' => 'qte', 'switch.........9' => 'qte', 'password........' => 'pwd']);
+        $this->slices[$source]  = self::fieldsSlice($source, [Sending::NAME => 'qte', Sending::TYPE => 'qte', Sending::DS => 'qte', Sending::MEMBER => 'qte', 'password........' => 'pwd']);
         $this->names           += [$source => 'Territory'];
-        $this->configs[$source] = Config::fromValues($source, ['name_field' => 'headline........', 'ds_field' => 'text..........11', 'type_field' => 'switch.........1', 'types' => ['mesto', 'mestocast']]);
+        $this->configs[$source] = Config::fromValues($source, ['name_field' => Sending::NAME, 'ds_field' => Sending::DS, 'type_field' => Sending::TYPE, 'types' => ['mesto', 'mestocast']]);
 
         return $this;
     }
@@ -158,7 +160,7 @@ final class FakeSliceRules extends SliceRules
         return $this->permModes[$site] ?? '';
     }
 
-    protected function registryConfig(string $slice): ?Config
+    public function registryConfig(string $slice): ?Config
     {
         return $this->configs[$slice] ?? null;
     }

@@ -7,7 +7,9 @@ namespace AA\Isds;
 use AA\Util\FormToken;
 use AA\Util\LogOnce;
 use AA_Credentials;
+use AA_Items;
 use AA_Module_Site;
+use zids;
 
 /**
  * {datovkabulk:page:<settings>:{(<UI>)}:<refusal>} - the page of a mass sending. Opens the two slices
@@ -15,7 +17,8 @@ use AA_Module_Site;
  * with settings Setup accepts for that site; only then expands the UI the template deferred. Everyone
  * else gets the refusal, the UI stays unexpanded and the slices stay closed. Once opened, the slices
  * stay readable to the rest of the request, never to a next one through the token of an {ajax}.
- * Inside the UI the other subcommands give the settings and the fields of a form, outside of it nothing.
+ * Inside the UI the other subcommands give the settings, the fields of a form and the recipients,
+ * outside of it nothing.
  *
  * What the template must keep in mind:
  * - What the request read of the two slices before the gate stays masked - AA_Items and {view} cache
@@ -28,6 +31,9 @@ class Gate
 {
     /** log.type: settings of a page that are not ready, once a day */
     public const LOG_EVENT = 'ISDS_SETUP';
+
+    /** log.type: a campaign whose recipients cannot be told - its stored filter or the source slice is broken, once a day */
+    public const RECIPIENTS_EVENT = 'ISDS_RCPT';
 
     /** the actions a form may name - its token binds the action and the campaign */
     public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'verify', 'fixbox'];
@@ -110,6 +116,39 @@ class Gate
         return is_null(self::$open) ? '' : safe(self::$result);
     }
 
+    /**
+     * The recipients of an active campaign of the page by its stored filter, counted anew on each
+     * request: count - how many get the letter, skipped - how many are left out for their box, ids -
+     * the items that get it, dash-separated for {view} and {ids}. It counts a queued or sent campaign
+     * anew too; its count when it was queued is stored in the campaign (Schema::CAMPAIGN_RECIPIENTS).
+     * '' for another item or question, and on any error. ids is '' for no recipients too, and {view}
+     * with no ids lists the whole slice - guard it:
+     *     {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
+     * (not _#1 - AA expands the inner command first). The guard hides the output only: the inner {view}
+     * still runs once over the whole slice.
+     * @param string $campaign long id of an active item of the campaign slice
+     */
+    public function recipients(string $campaign, string $what): string
+    {
+        $setup = self::$open;
+        $id    = ModuleId::normalize($campaign);
+        if (is_null($setup) || is_null($id) || !in_array($what, ['count', 'skipped', 'ids'], true)) {
+            return '';
+        }
+        // once a request for the three answers, a failure too; a closure cannot key the cache itself
+        $recipients = \AA::Contentcache()->_get_result(get_hash(self::class . '::recipients', $setup, $id), fn(): ?array => $this->campaignRecipients($setup, $id), [], self::class . '>recipients');
+        if (is_null($recipients)) {
+            return '';
+        }
+        $sendable = array_filter($recipients, static fn(Recipient $r): bool => $r->sendable());
+
+        return match ($what) {
+            'count'   => (string) count($sendable),
+            'skipped' => (string) (count($recipients) - count($sendable)),
+            default   => implode('-', array_map(static fn(Recipient $r): string => $r->itemId, $sendable)),
+        };
+    }
+
     /** the action of this request tells what it did - plain text */
     public static function report(string $text): void
     {
@@ -130,6 +169,30 @@ class Gate
 
         return '<div class="aa-isds-setup" role="alert"><p>' . safe(_m('The mass sending on this page is not ready - fix this first:')) . "</p><ul>$items</ul>"
             . (($links === '') ? '' : '<p>' . safe(_m('Where to fix it:')) . "</p><ul>$links</ul>") . '</div>';
+    }
+
+    /**
+     * @return ?list<Recipient> null = not an active campaign of the page, or its recipients cannot be told (logged)
+     */
+    private function campaignRecipients(Setup $setup, string $id): ?array
+    {
+        // the id comes from the page: only an active item of the page's campaign slice tells a filter
+        $stored = $this->stored($id);
+        if (is_null($stored) || ($stored['slice'] !== $setup->campaignSlice) || !$stored['active']) {
+            return null;
+        }
+        try {
+            // a campaign stored without a filter only previews the default audience; sending must refuse
+            // it, never widen it to the default, so the fallback stays here, not in fromJson()
+            $filter = (trim($stored['filter']) === '') ? RecipientFilter::default($setup) : RecipientFilter::fromJson($stored['filter'], $setup);
+            $config = $this->rules()->registryConfig($setup->sourceSlice) ?? throw new \RuntimeException('The source slice has no settings of data boxes');
+
+            return $this->resolver()->resolve($setup, $filter, $config);
+        } catch (\InvalidArgumentException|\RuntimeException $e) {
+            $this->log("$setup->site:$setup->campaignSlice:$id", $e->getMessage(), self::RECIPIENTS_EVENT);
+
+            return null;
+        }
     }
 
     // ------------------------------------------------------------ what tests replace
@@ -162,11 +225,28 @@ class Gate
     }
 
     /**
-     * @param string $selector site:campaign slice, '-' for none
-     * @param string $problem  the first one - the rest the page tells who may fix them
+     * The item through the item cache of the request: its slice, whether it is in the active bin, and
+     * the recipient filter it stores
+     * @return ?array{slice: string, active: bool, filter: string} null = no such item
      */
-    protected function log(string $selector, string $problem): void
+    protected function stored(string $id): ?array
     {
-        LogOnce::daily(self::LOG_EVENT, $selector, $problem);
+        $item = AA_Items::getItem(new zids($id, 'l'));
+
+        return $item ? ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'filter' => (string) $item->getval(Schema::CAMPAIGN_FILTER)] : null;
+    }
+
+    protected function resolver(): Recipients
+    {
+        return new Recipients();
+    }
+
+    /**
+     * @param string $selector site:campaign slice, '-' for none; of RECIPIENTS_EVENT site:campaign slice:campaign
+     * @param string $problem  the first one - the rest the page tells who may fix them; of RECIPIENTS_EVENT what failed
+     */
+    protected function log(string $selector, string $problem, string $event = self::LOG_EVENT): void
+    {
+        LogOnce::daily($event, $selector, $problem);
     }
 }

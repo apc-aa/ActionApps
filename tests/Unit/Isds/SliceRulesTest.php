@@ -414,6 +414,9 @@ final class SliceRulesTest extends TestCase
 
         $rules->configs[self::SOURCE] = Config::fromValues(self::SOURCE, ['name_field' => 'headline........', 'ds_field' => 'text..........11']);
         self::assertSame(['Slice "Territory": choose the Type field in its settings of data boxes - recipients are chosen by type'], self::texts($rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], '')));
+
+        $rules->configs[self::SOURCE] = Config::fromValues(self::SOURCE, ['name_field' => 'headline........', 'ds_field' => 'text..........11', 'types' => ['mesto']]);
+        self::assertSame(['Slice "Territory", its settings of data boxes: The lists of types need the type field'], self::texts($rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], '')), 'one cause, one message');
     }
 
     public function test_sourceProblems_memberField(): void
@@ -422,6 +425,27 @@ final class SliceRulesTest extends TestCase
 
         self::assertEquals([new SliceProblem('Slice "Territory" has no field number.........1 - name the field that tells a member', self::SOURCE, SliceRules::FIELDS_PAGE)], $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], 'number.........1'));
         self::assertSame(['The field password........ of slice "Territory" is protected - name the field that tells a member'], self::texts($rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], 'password........')));
+    }
+
+    // the page reads the recipients with the passwords of the request - it never opens the source
+    public function test_sourceProblems_readingPassword(): void
+    {
+        $rules                       = self::withSource();
+        $rules->slices[self::SOURCE] = FakeSliceRules::fieldsSlice(self::SOURCE, [Sending::NAME => 'qte', Sending::TYPE => 'qte', Sending::DS => 'qte'], ['reading_password' => md5('read')]);
+
+        self::assertEquals([new SliceProblem('Slice "Territory" has a reading password, so the page cannot read the recipients - remove Password for Reading in the settings of the slice, or name a public slice', self::SOURCE, SliceRules::SLICE_PAGE)], $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], ''));
+    }
+
+    // the fields may change after the settings of data boxes were saved
+    public function test_sourceProblems_settingsNoLongerFitTheFields(): void
+    {
+        $rules                        = self::withSource();
+        $rules->configs[self::SOURCE] = Config::fromValues(self::SOURCE, ['name_field' => 'password........', 'ds_field' => 'text..........12', 'type_field' => Sending::TYPE]);
+
+        self::assertEquals([
+            new SliceProblem('Slice "Territory", its settings of data boxes: The field password........ is protected - it is neither shown nor written here', self::SOURCE, SliceRules::REGISTRY_PAGE),
+            new SliceProblem('Slice "Territory", its settings of data boxes: The slice has no field text..........12', self::SOURCE, SliceRules::REGISTRY_PAGE),
+        ], $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], ''));
     }
 
     public function test_pageLabel_everyPageOfAProblem(): void
