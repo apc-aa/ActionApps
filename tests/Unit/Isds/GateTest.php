@@ -257,6 +257,7 @@ final class GateTest extends TestCase
 
     public function test_subcommands_escaped(): void
     {
+        self::rules();      // opening asks the slices for their reading password - never the database
         $gate = new class (FakePerms::login(self::READER)) extends Gate {
             public function __construct(private Access $login) {}
 

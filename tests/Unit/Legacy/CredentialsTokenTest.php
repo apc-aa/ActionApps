@@ -7,13 +7,17 @@ namespace Tests\Unit\Legacy;
 use AA;
 use AA\Cache\PageCache;
 use AA_Credentials;
+use AA_Item;
+use AA_Items;
 use AA_Module;
 use AA_Slice;
 use AA_Stringexpand_Encrypt;
 use Closure;
 use ItemContent;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
+use zids;
 
 /**
  * The reading passwords a request knows, and the token {ajax} and AJAX widgets carry them in to
@@ -25,6 +29,7 @@ final class CredentialsTokenTest extends TestCase
     private const OTHER  = 'c7ed0000000000000000000000000002';
     private const OPEN   = 'c7ed0000000000000000000000000003';
     private const TWIN   = 'c7ed0000000000000000000000000004';   // the same password as LOCKED
+    private const ITEM   = 'c7ed00000000000000000000000000a1';
 
     /** @var list<string> slices this test put into AA_Module's cache */
     private array $fake_slices = [];
@@ -68,6 +73,8 @@ final class CredentialsTokenTest extends TestCase
         }, null, AA_Module::class)();
         self::forgetAll();
         (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
+        AA_Items::singleton()->doInvalidate();
+        AA::Contentcache()->clear_soft();
     }
 
     /** a next request knows nothing of what this one learnt */
@@ -227,5 +234,152 @@ final class CredentialsTokenTest extends TestCase
     private function noStore(): bool
     {
         return (new ReflectionProperty(PageCache::class, 'cache_nostore'))->getValue(AA::Pagecache());
+    }
+
+    /** an item of the slice and a {view} over it in the request's caches, as a read would leave them */
+    private function readIntoCaches(): void
+    {
+        AA_Items::singleton()->_store(new AA_Item(['short_id........' => [['value' => 7]], 'unpacked_id.....' => [['value' => self::ITEM]]], []));
+        AA::Contentcache()->set('view-of-the-slice', 'what the read saw');
+    }
+
+    /** @return array{bool, bool} whether the item and the {view} are still cached */
+    private function cachedRead(): array
+    {
+        return [
+            !is_null(AA_Items::singleton()->_getFromCache(new zids(self::ITEM, 'l'))),
+            AA::Contentcache()->get('view-of-the-slice') !== false,
+        ];
+    }
+
+    /** the gate opens both slices of a sending at once */
+    public function test_openForRequest_opens_both_slices_in_one_call(): void
+    {
+        AA_Credentials::singleton()->openForRequest(self::LOCKED, self::OTHER);
+
+        $this->assertTrue(AA_Credentials::singleton()->checkSlice(self::LOCKED));
+        $this->assertTrue(AA_Credentials::singleton()->checkSlice(self::OTHER));
+    }
+
+    /** whatever was read before without the password would stay masked for the rest of the request */
+    public function test_openForRequest_forgets_items_read_masked(): void
+    {
+        $this->readIntoCaches();
+
+        AA_Credentials::singleton()->openForRequest(self::LOCKED);
+
+        $this->assertSame([false, false], $this->cachedRead());
+    }
+
+    /** a slice the request could read already reads the same - its reads stay ({datovkabulk} once a request) */
+    public function test_openForRequest_keeps_reads_of_a_readable_slice(): void
+    {
+        AA_Credentials::singleton()->loadFromSlice(self::LOCKED);
+        $this->readIntoCaches();
+
+        AA_Credentials::singleton()->openForRequest(self::LOCKED, self::OPEN);
+
+        $this->assertSame([true, true], $this->cachedRead());
+    }
+
+    /** a second gate on the page finds the slices open; its page stays out of the page cache as well */
+    public function test_openForRequest_already_open_keeps_reads_and_the_page_out_of_the_cache(): void
+    {
+        AA_Credentials::singleton()->openForRequest(self::LOCKED);
+        $this->readIntoCaches();
+        (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
+        $this->assertFalse($this->noStore());
+
+        AA_Credentials::singleton()->openForRequest(strtoupper(self::LOCKED));
+
+        $this->assertSame([true, true], $this->cachedRead());
+        $this->assertTrue($this->noStore());
+    }
+
+    #[DataProvider('notSliceIds')]
+    public function test_openForRequest_refuses_what_is_no_slice_id(string $id): void
+    {
+        try {
+            AA_Credentials::singleton()->openForRequest(self::LOCKED, $id);
+            $this->fail('InvalidArgumentException expected');
+        } catch (\InvalidArgumentException) {
+            $this->assertFalse(AA_Credentials::singleton()->checkSlice(self::LOCKED), 'nothing is opened');
+        }
+    }
+
+    /** @return array<string, array{string}> */
+    public static function notSliceIds(): array
+    {
+        return [
+            'empty'       => [''],
+            'short'       => [substr(self::OTHER, 1)],
+            'long'        => [self::OTHER . '0'],
+            'packed'      => [(string) hex2bin(self::OTHER)],
+            'not hex'     => ['g' . substr(self::OTHER, 1)],
+            'space after' => [self::OTHER . ' '],
+        ];
+    }
+
+    /** a queue runs more tasks in one process - the next task must find the slice closed */
+    public function test_withSlicesOpen_opens_for_the_callback_only(): void
+    {
+        $inside = AA_Credentials::singleton()->withSlicesOpen([self::LOCKED], static fn(): bool => AA_Credentials::singleton()->checkSlice(self::LOCKED));
+
+        $this->assertTrue($inside);
+        $this->assertFalse(AA_Credentials::singleton()->checkSlice(self::LOCKED));
+        $this->assertNull(AA_Slice::getModule(self::LOCKED)->get_dynamic_setting_content());
+    }
+
+    public function test_withSlicesOpen_forgets_items_read_while_open(): void
+    {
+        AA_Credentials::singleton()->withSlicesOpen([self::LOCKED], fn() => $this->readIntoCaches());
+
+        $this->assertSame([false, false], $this->cachedRead());
+    }
+
+    public function test_withSlicesOpen_closes_after_an_exception(): void
+    {
+        try {
+            AA_Credentials::singleton()->withSlicesOpen([self::LOCKED], static fn() => throw new \RuntimeException('the task failed'));
+            $this->fail('the exception is passed on');
+        } catch (\RuntimeException $e) {
+            $this->assertSame('the task failed', $e->getMessage());
+        }
+
+        $this->assertFalse(AA_Credentials::singleton()->checkSlice(self::LOCKED));
+    }
+
+    /** the gate opened it for the page; a sending queued from that page leaves it open and its reads too */
+    public function test_withSlicesOpen_keeps_slice_opened_before(): void
+    {
+        AA_Credentials::singleton()->openForRequest(self::LOCKED);
+        $this->readIntoCaches();
+
+        AA_Credentials::singleton()->withSlicesOpen([strtoupper(self::LOCKED)], static fn() => null);
+
+        $this->assertTrue(AA_Credentials::singleton()->checkSlice(self::LOCKED));
+        $this->assertSame([true, true], $this->cachedRead());
+    }
+
+    public function test_withSlicesOpen_keeps_other_slices_open(): void
+    {
+        AA_Credentials::singleton()->openForRequest(self::OTHER);
+
+        AA_Credentials::singleton()->withSlicesOpen([self::LOCKED], static fn() => null);
+
+        $this->assertFalse(AA_Credentials::singleton()->checkSlice(self::LOCKED));
+        $this->assertTrue(AA_Credentials::singleton()->checkSlice(self::OTHER));
+    }
+
+    /** closing resets the open set only - what the request knows the password of reads as before */
+    public function test_withSlicesOpen_keeps_loaded_passwords(): void
+    {
+        AA_Credentials::singleton()->loadFromSlice(self::LOCKED);
+
+        AA_Credentials::singleton()->withSlicesOpen([self::LOCKED], fn() => $this->readIntoCaches());
+
+        $this->assertTrue(AA_Credentials::singleton()->checkSlice(self::LOCKED));
+        $this->assertSame([true, true], $this->cachedRead(), 'read the same way before and after');
+        $this->assertSame([AA_Credentials::encrypt('ct-locked')], $this->carried(AA_Credentials::singleton()->getAsToken()));
     }
 }

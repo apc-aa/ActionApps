@@ -10601,7 +10601,10 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        for a user who may edit all items of the campaign slice (a reader through a set of readers), else <no right>.
  *        Put the whole UI inside {(...)}: it stays unexpanded until the gate opens - not wrapped, it expands
  *        before the gate decides. {(...)} ends at the first ")}", so keep that out of the UI (inline JavaScript).
- *        Nothing before the gate may read the two slices, and the page must not be the page of their item.
+ *        Nothing before the gate should read the two slices: items and {view}s are read again after it, but {define},
+ *        {array}, {table}, {dictionary} and the item of an enclosing {item} or {view} row keep what they read masked.
+ *        Even inside the gate {dictionary} may serve a copy an earlier request stored in the page cache. Nor may the
+ *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
  *        no campaign id only to save a new campaign
  *    {datovkabulk:env}    - test | production, as include/config.php binds the slices

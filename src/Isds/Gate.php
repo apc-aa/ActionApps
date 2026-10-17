@@ -21,9 +21,11 @@ use zids;
  * outside of it nothing.
  *
  * What the template must keep in mind:
- * - What the request read of the two slices before the gate stays masked - AA_Items and {view} cache
- *   their results without the password - so nothing before the gate may read them. Nor may the page
- *   be the page of an item of the two slices: site.php reads the routed item before any spot.
+ * - Nothing before the gate should read the two slices: items and {view}s read before it are read
+ *   again after it, but {define}, {array}, {table}, {dictionary} and the item of an enclosing {item}
+ *   or {view} row keep what they read masked. Even inside the gate {dictionary} may serve a copy an
+ *   earlier request stored in the page cache. Nor may the page be the page of an item of the two
+ *   slices: site.php reads the routed item before any spot.
  * - A UI not wrapped in {(...)} is expanded before the gate decides - and once more by it.
  * - {(...)} ends at the first ")}" - a ")}" in the UI (inline JavaScript) ends the deferral early.
  */
@@ -64,8 +66,7 @@ class Gate
         if (!$access->may($setup->campaignSlice)) {
             return $refusal;
         }
-        AA_Credentials::singleton()->openForRequest($setup->campaignSlice);
-        AA_Credentials::singleton()->openForRequest($setup->messageSlice);
+        AA_Credentials::singleton()->openForRequest($setup->campaignSlice, $setup->messageSlice);
         $outer      = self::$open;
         self::$open = $setup;
         try {
