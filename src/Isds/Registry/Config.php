@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds\Registry;
 
 use AA\IO\DB\DB_AA;
+use AA\Isds\ModuleId;
 use AA_Field;
 use AA_Fields;
 use AA_Object;
@@ -68,11 +69,11 @@ final class Config extends AA_Object
     /** the stored record of the slice, null when there is none */
     public static function forSlice(string $sliceId): ?self
     {
-        if (!is_long_id($sliceId)) {
+        $sliceId = ModuleId::normalize($sliceId);
+        if (is_null($sliceId)) {
             return null;
         }
-        $sliceId = strtolower($sliceId);
-        $config  = AA_Object::load(self::idFor($sliceId), self::class);
+        $config = AA_Object::load(self::idFor($sliceId), self::class);
         return (($config instanceof self) && ($config->getOwnerId() === $sliceId)) ? $config : null;
     }
 
@@ -102,10 +103,7 @@ final class Config extends AA_Object
      */
     public static function fromValues(string $sliceId, array $values): self
     {
-        if (!is_long_id($sliceId)) {
-            throw new \InvalidArgumentException('A slice id is 32 hexadecimal digits');
-        }
-        $sliceId = strtolower($sliceId);
+        $sliceId = ModuleId::normalize($sliceId) ?? throw new \InvalidArgumentException('A slice id is 32 hexadecimal digits');
         $config  = new self(self::normalize($values));
         $config->setNew(self::idFor($sliceId), $sliceId);
         return $config;
