@@ -43,6 +43,12 @@ final class AccountsTest extends TestCase
     }
 
     /** @return array<string, string> a production account as an admin might try: with a name and a password */
+    /** an id the way UUIDs are written: 8-4-4-4-12 */
+    private static function dashed(string $id): string
+    {
+        return implode('-', [substr($id, 0, 8), substr($id, 8, 4), substr($id, 12, 4), substr($id, 16, 4), substr($id, 20)]);
+    }
+
     private static function productionAccount(string $name = 'NSZM', ?string $slices = self::PAIR, ?string $site = self::SITE, ?string $password = self::PROD_PASSWORD): array
     {
         return array_filter([
@@ -53,10 +59,25 @@ final class AccountsTest extends TestCase
         ], static fn(?string $v): bool => !is_null($v));
     }
 
+    /**
+     * @param array<string, ?string> $kinds kind => value of the account NSZM; null leaves one out
+     * @return array<string, string> the account with its site and slices
+     */
+    private static function withKinds(string $environment, array $kinds): array
+    {
+        $prefix    = Accounts::prefix($environment, 'NSZM');
+        $constants = ["{$prefix}_SITE" => self::SITE, "{$prefix}_SLICES" => self::PAIR];
+        foreach (array_filter($kinds, static fn(?string $v): bool => !is_null($v)) as $kind => $value) {
+            $constants["{$prefix}_$kind"] = $value;
+        }
+
+        return $constants;
+    }
+
     /** the only refusal a template author gets: about the site and slices asked for, nothing about the accounts there are */
     private static function refusalText(string $site = self::SITE, string $campaign = self::CAMPAIGN, string $message = self::MESSAGE): string
     {
-        return "No usable ISDS account in include/config.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, set AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE to '$site', AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES to '$campaign,$message' (the campaign slice first), AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN and AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD; the State Check lists the accounts and their problems";
+        return "No usable ISDS account in include/config.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, set AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE to '$site', AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES to '$campaign,$message' (the campaign slice first), AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN and AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD; a production account logs in with a certificate (AA_APIKEY_ISDS_<ACCOUNT>_CERT) instead. The State Check lists the accounts and their problems";
     }
 
     private static function assertRefused(array $constants, string $environment = '', string $site = self::SITE, string $campaign = self::CAMPAIGN, string $message = self::MESSAGE): void
@@ -131,9 +152,8 @@ final class AccountsTest extends TestCase
     }
 
     /**
-     * A production account that may be meant for the site or the slices, even a broken one, keeps ''
-     * from test - unless no SITE or SLICES constant of it is there, not even an empty or unreadable
-     * one: then it is bound to nothing and does not.
+     * Any production account, even a broken one, keeps '' from test - unless the site and slice ids
+     * readable in it are all of others. A forgotten SITE and SLICES proves nothing.
      */
     #[DataProvider('productionNearby')]
     public function test_forSlices_noneAskedNeverTestInPlaceOfProduction(array $production, bool $refused): void
@@ -161,9 +181,35 @@ final class AccountsTest extends TestCase
             'empty site and slices'           => [self::productionAccount(slices: '', site: ''), true],
             'unreadable slices, another site' => [self::productionAccount(slices: 'x', site: self::SITE2), false],
             'unreadable site, other slices'   => [self::productionAccount(slices: self::PAIR2, site: 'x'), false],
-            'a login, no site, no slices'     => [self::productionAccount(slices: null, site: null), false],
-            'test written as ISDS_TEST'       => [['AA_APIKEY_ISDS_TEST_LOGIN' => self::LOGIN, 'AA_APIKEY_ISDS_TEST_PASSWORD' => self::PROD_PASSWORD], false],
-            'a vendor of two words'           => [['AA_APIKEY_ISDS_REGISTRY_LOGIN' => 'registry-login'], false],
+            'a login, no site, no slices'     => [self::productionAccount(slices: null, site: null), true],
+            'a certificate only'              => [['AA_APIKEY_ISDS_NSZM_CERT' => '/etc/aa/nszm.pem'], true],
+            'a certificate, other slices'     => [['AA_APIKEY_ISDS_NSZM_CERT' => '/etc/aa/nszm.pem', 'AA_APIKEY_ISDS_NSZM_SLICES' => self::PAIR2], false],
+            'test written as ISDS_TEST'       => [['AA_APIKEY_ISDS_TEST_LOGIN' => self::LOGIN, 'AA_APIKEY_ISDS_TEST_PASSWORD' => self::PROD_PASSWORD], true],
+            'a vendor of two words'           => [['AA_APIKEY_ISDS_REGISTRY_LOGIN' => 'registry-login'], true],
+            // a list broken by one bad part still names its slices
+            'our pair and a third slice'      => [self::productionAccount(slices: self::PAIR . ',' . self::CAMPAIGN2, site: self::SITE2), true],
+            'our campaign slice alone'        => [self::productionAccount(slices: self::CAMPAIGN, site: self::SITE2), true],
+            'our message slice with a typo'   => [self::productionAccount(slices: self::PAIR . 'x', site: self::SITE2), true],
+            'our pair by a semicolon'         => [self::productionAccount(slices: self::CAMPAIGN . ';' . self::MESSAGE, site: self::SITE2), true],
+            'our pair by a space'             => [self::productionAccount(slices: self::CAMPAIGN . ' ' . self::MESSAGE, site: self::SITE2), true],
+            'our site and a bad part'         => [self::productionAccount(slices: self::PAIR2, site: self::SITE . ',x'), true],
+            // a run of hex digits is read whole: no id of others is cut out of a typo
+            'a digit before our site'         => [self::productionAccount(slices: null, site: 'a' . self::SITE), true],
+            'a digit before each slice'       => [self::productionAccount(slices: '0' . self::CAMPAIGN . ',0' . self::MESSAGE, site: null), true],
+            'our pair glued, a digit before'  => [self::productionAccount(slices: 'f' . self::MESSAGE . self::CAMPAIGN, site: self::SITE2), true],
+            'our pair glued'                  => [self::productionAccount(slices: self::CAMPAIGN . self::MESSAGE, site: self::SITE2), true],
+            'our ids in capitals'             => [self::productionAccount(slices: strtoupper(self::PAIR), site: self::SITE2), true],
+            'ids of others glued'             => [self::productionAccount(slices: self::CAMPAIGN2 . self::MESSAGE2, site: self::SITE2), false],
+            'our slice glued after another'   => [self::productionAccount(slices: self::CAMPAIGN2 . self::MESSAGE, site: self::SITE2), true],
+            'a digit before a slice of others' => [self::productionAccount(slices: '1' . self::CAMPAIGN2 . ',' . self::MESSAGE2, site: self::SITE2), true],
+            // a word that is no id may be one of ours with a typo; short words are not
+            'our site with dashes'            => [self::productionAccount(slices: self::PAIR2, site: self::dashed(self::SITE)), true],
+            'a site of others with dashes'    => [self::productionAccount(slices: self::PAIR2, site: self::dashed(self::SITE2)), true],
+            'our slice a digit short'         => [self::productionAccount(slices: substr(self::CAMPAIGN, 0, 31) . ',' . self::MESSAGE2, site: self::SITE2), true],
+            'our slice with o for 0'          => [self::productionAccount(slices: str_replace('0', 'o', self::CAMPAIGN) . ',' . self::MESSAGE2, site: self::SITE2), true],
+            'a word of 16 letters'            => [self::productionAccount(slices: self::PAIR2 . ',abcdefghijklmnop', site: self::SITE2), true],
+            'a word of 15 letters'            => [self::productionAccount(slices: self::PAIR2 . ',abcdefghijklmno', site: self::SITE2), false],
+            'short hex words beside others'   => [self::productionAccount(slices: self::PAIR2, site: self::SITE2 . ' # cafe beef dead'), false],
         ];
     }
 
@@ -172,14 +218,13 @@ final class AccountsTest extends TestCase
     {
         $binding = self::binding(['AA_APIKEY_ISDS_TEST_LOGIN' => self::LOGIN, 'AA_APIKEY_ISDS_TEST_PASSWORD' => self::PROD_PASSWORD], 'TEST');
 
-        self::assertSame([Account::PRODUCTION, [], '', '', false], [$binding->environment, $binding->sites, $binding->campaignSlice, $binding->messageSlice, $binding->targeted]);
+        self::assertSame([Account::PRODUCTION, [], '', ''], [$binding->environment, $binding->sites, $binding->campaignSlice, $binding->messageSlice]);
         self::assertSame([
             'Set AA_APIKEY_ISDS_TEST_SITE in config.php to the id of the site the account sends for - more sites separated by commas',
             'Set AA_APIKEY_ISDS_TEST_SLICES in config.php to the ids of the campaign slice and the message slice the account sends for, separated by a comma',
-            'The production account TEST cannot be used: production ISDS lets an application in with a certificate only, and AA cannot log in with one yet',
-            'Remove AA_APIKEY_ISDS_TEST_PASSWORD from config.php - AA never logs in to production ISDS with a password',
+            'Set AA_APIKEY_ISDS_TEST_CERT in config.php to the file of the certificate - production ISDS lets an application in with a certificate only',
+            'Remove AA_APIKEY_ISDS_TEST_LOGIN and AA_APIKEY_ISDS_TEST_PASSWORD from config.php - AA never logs in to production ISDS with a name and a password',
         ], $binding->problems);
-        self::assertTrue(self::binding(self::productionAccount(slices: null, site: 'x'))->targeted);
     }
 
     /** slice ids are public: the site, which the caller passes, decides */
@@ -316,26 +361,163 @@ final class AccountsTest extends TestCase
 
     /** a production password does not belong in config.php at all - even a damaged or an empty one */
     #[DataProvider('productionPasswords')]
-    public function test_bindings_productionNeverWithPassword(?string $password, bool $remove): void
+    public function test_bindings_productionNeverWithPassword(?string $password, string $remove): void
     {
         $constants = self::productionAccount(password: $password);
         $binding   = self::binding($constants);
 
-        $problems = ['The production account NSZM cannot be used: production ISDS lets an application in with a certificate only, and AA cannot log in with one yet'];
-        if ($remove) {
-            $problems[] = 'Remove AA_APIKEY_ISDS_NSZM_PASSWORD from config.php - AA never logs in to production ISDS with a password';
-        }
+        $problems = [
+            'Set AA_APIKEY_ISDS_NSZM_CERT in config.php to the file of the certificate - production ISDS lets an application in with a certificate only',
+            "Remove $remove from config.php - AA never logs in to production ISDS with a name and a password",
+        ];
         self::assertSame([Account::PRODUCTION, [self::SITE], self::CAMPAIGN, self::MESSAGE, $problems], [$binding->environment, $binding->sites, $binding->campaignSlice, $binding->messageSlice, $binding->problems]);
         self::assertRefused($constants, Account::PRODUCTION);
     }
 
     public static function productionPasswords(): array
     {
+        $both = 'AA_APIKEY_ISDS_NSZM_LOGIN and AA_APIKEY_ISDS_NSZM_PASSWORD';
         return [
-            'none'     => [null, false],
-            'password' => [self::PROD_PASSWORD, true],
-            'damaged'  => [self::PROD_PASSWORD . "\n", true],
-            'empty'    => ['', true],
+            'login only' => [null, 'AA_APIKEY_ISDS_NSZM_LOGIN'],
+            'password'   => [self::PROD_PASSWORD, $both],
+            'damaged'    => [self::PROD_PASSWORD . "\n", $both],
+            'empty'      => ['', $both],
+        ];
+    }
+
+    /**
+     * What is set decides the login: BOX a hosted filing service, CERT a system certificate, else a name
+     * and a password - in test only. A mix is a problem that says what to remove or add, never a guess.
+     * @param array<string, string> $set    kind => value of the account NSZM, besides its site and slices
+     * @param list<string>          $problems
+     */
+    #[DataProvider('logins')]
+    public function test_bindings_kindOfLogin(string $environment, array $set, string $kind, array $problems): void
+    {
+        $constants = self::withKinds($environment, $set);
+        $binding   = self::binding($constants);
+
+        self::assertSame([$kind, $problems], [$binding->kind, $binding->problems]);
+        if ($problems) {
+            self::assertRefused($constants, $environment);
+        } else {
+            $account = Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, $environment, $constants);
+            self::assertSame([$environment, $kind], [$account->environment, $account->kind]);
+        }
+    }
+
+    public static function logins(): array
+    {
+        $pem  = '/etc/aa/isds.pem';
+        $mix  = ' from config.php - an account with a certificate logs in without a name and a password';
+        $cert = static fn(string $vendor, string $of): string => "Set AA_APIKEY_{$vendor}_NSZM_CERT in config.php to the PEM file of the certificate $of - a full path outside the directory of AA";
+        return [
+            'name and password, test'       => [Account::TEST, [Accounts::LOGIN => self::LOGIN, Accounts::PASSWORD => self::PASSWORD], Account::BASIC, []],
+            'name and password, production' => [Account::PRODUCTION, [Accounts::LOGIN => self::LOGIN, Accounts::PASSWORD => self::PROD_PASSWORD], Account::BASIC, [
+                'Set AA_APIKEY_ISDS_NSZM_CERT in config.php to the file of the certificate - production ISDS lets an application in with a certificate only',
+                'Remove AA_APIKEY_ISDS_NSZM_LOGIN and AA_APIKEY_ISDS_NSZM_PASSWORD from config.php - AA never logs in to production ISDS with a name and a password',
+            ]],
+            'certificate, test'             => [Account::TEST, [Accounts::CERT => $pem], Account::CERT, []],
+            'certificate, production'       => [Account::PRODUCTION, [Accounts::CERT => $pem], Account::CERT, []],
+            'with its key and passphrase'   => [Account::PRODUCTION, [Accounts::CERT => $pem, Accounts::KEY => '/etc/aa/isds.key', Accounts::PASSPHRASE => 'Pass-phrase'], Account::CERT, []],
+            'hosted'                        => [Account::PRODUCTION, [Accounts::BOX => ' KV62BQF ', Accounts::CERT => $pem], Account::HOSTED, []],
+            'hosted, test'                  => [Account::TEST, [Accounts::BOX => 'dj7j6mk', Accounts::CERT => $pem], Account::HOSTED, []],
+            'a box without certificate'     => [Account::PRODUCTION, [Accounts::BOX => 'kv62bqf'], Account::HOSTED, [$cert('ISDS', 'of the hosting service')]],
+            'an empty certificate'          => [Account::PRODUCTION, [Accounts::CERT => ''], Account::CERT, [$cert('ISDS', 'ISDS registered for the data box')]],
+            'an empty box'                  => [Account::PRODUCTION, [Accounts::BOX => '', Accounts::CERT => $pem], Account::HOSTED, ['Set AA_APIKEY_ISDS_NSZM_BOX in config.php to the id of the data box the account sends from']],
+            'not a box'                     => [Account::PRODUCTION, [Accounts::BOX => 'kv62bq', Accounts::CERT => $pem], Account::HOSTED, ['AA_APIKEY_ISDS_NSZM_BOX is not the id of a data box - 7 letters or digits']],
+            'damaged certificate'           => [Account::PRODUCTION, [Accounts::CERT => "$pem\n"], Account::CERT, ['AA_APIKEY_ISDS_NSZM_CERT holds a line break or NUL - fix it in the configuration']],
+            'certificate and a login'       => [Account::TEST, [Accounts::CERT => $pem, Accounts::LOGIN => self::LOGIN], Account::CERT, ['Remove AA_APIKEY_ISDSTEST_NSZM_LOGIN' . $mix]],
+            'certificate and a password'    => [Account::PRODUCTION, [Accounts::CERT => $pem, Accounts::PASSWORD => self::PROD_PASSWORD], Account::CERT, ['Remove AA_APIKEY_ISDS_NSZM_PASSWORD' . $mix]],
+            'hosted, name and password'     => [Account::TEST, [Accounts::BOX => 'kv62bqf', Accounts::CERT => $pem, Accounts::LOGIN => self::LOGIN, Accounts::PASSWORD => ''], Account::HOSTED, ['Remove AA_APIKEY_ISDSTEST_NSZM_LOGIN and AA_APIKEY_ISDSTEST_NSZM_PASSWORD' . $mix]],
+            'a key without certificate'     => [Account::TEST, [Accounts::LOGIN => self::LOGIN, Accounts::PASSWORD => self::PASSWORD, Accounts::KEY => '/etc/aa/isds.key'], Account::BASIC, [
+                'Set AA_APIKEY_ISDSTEST_NSZM_CERT in config.php, or remove AA_APIKEY_ISDSTEST_NSZM_KEY - they belong to a certificate',
+            ]],
+            'a passphrase alone'            => [Account::TEST, [Accounts::PASSPHRASE => 'Pass-phrase'], Account::BASIC, [
+                'Set AA_APIKEY_ISDSTEST_NSZM_CERT in config.php, or remove AA_APIKEY_ISDSTEST_NSZM_PASSPHRASE - they belong to a certificate',
+                'Set AA_APIKEY_ISDSTEST_NSZM_LOGIN and AA_APIKEY_ISDSTEST_NSZM_PASSWORD in config.php - the account logs in with a name and a password',
+            ]],
+        ];
+    }
+
+    // production is meant where it is bound, the files as config.php names them
+    public function test_forSlices_certificateAccount(): void
+    {
+        $constants = self::testAccount() + self::withKinds(Account::PRODUCTION, [Accounts::CERT => ' nszm.pem ', Accounts::KEY => ' /etc/aa-isds/nszm.key', Accounts::PASSPHRASE => 'Pass-phrase-never-shown'])
+            + ['AA_BASE_PATH' => '/srv/aa/'];
+
+        $account = Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $constants);
+
+        self::assertSame([Account::PRODUCTION, Account::CERT, 'https://ws1c.datovka.gov.cz/cert/DS/dz', []], [$account->environment, $account->kind, $account->url('dz'), $account->headers()]);
+        self::assertSame(['/srv/aa/config/certs/nszm.pem', '/etc/aa-isds/nszm.key', 'Pass-phrase-never-shown'], [$account->certificate?->certificate, $account->certificate?->key, $account->certificate?->passphrase()]);
+        self::assertSame(self::LOGIN, Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, Account::TEST, $constants)->login, 'test asked, test given');
+    }
+
+    // the directory PHP happens to run in is no base for a relative path
+    public function test_bindings_relativePathWithoutBase(): void
+    {
+        $binding = self::binding(self::withKinds(Account::PRODUCTION, [Accounts::CERT => 'nszm.pem']));
+
+        self::assertSame(['Give AA_APIKEY_ISDS_NSZM_CERT in config.php a full path - AA_BASE_PATH, where a relative one starts, is not defined'], $binding->problems);
+    }
+
+    // the hosted filing service names the box it sends from, with an empty password
+    public function test_forSlices_hostedAccount(): void
+    {
+        $account = Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, '', self::withKinds(Account::PRODUCTION, [Accounts::CERT => '/etc/aa/ecn.pem', Accounts::BOX => 'KV62BQF']));
+
+        self::assertSame([Account::HOSTED, 'kv62bqf', 'https://ws1c.datovka.gov.cz/hspis/DS/dz'], [$account->kind, $account->login, $account->url('dz')]);
+        self::assertSame(['Authorization' => 'Basic ' . base64_encode('kv62bqf:')], $account->headers());
+        self::assertSame('/etc/aa/ecn.pem', $account->certificate?->keyFile());
+    }
+
+    // State Check checks the files of an account it cannot use yet
+    public function test_certificate_ofAnyBinding(): void
+    {
+        $constants = self::withKinds(Account::PRODUCTION, [Accounts::CERT => '/etc/aa/nszm.pem']);
+        unset($constants['AA_APIKEY_ISDS_NSZM_SITE']);
+
+        self::assertFalse(self::binding($constants)->usable());
+        self::assertSame('/etc/aa/nszm.pem', Accounts::certificate(self::binding($constants), $constants)?->certificate);
+        self::assertNull(Accounts::certificate(self::binding(self::testAccount()), self::testAccount()));
+    }
+
+    /**
+     * A production constant AA does not read - a typo in the name of the account or of the constant -
+     * keeps '' from test, unless the ids in it, or in the account of its name, are all of others.
+     * @param array<string, string> $production
+     */
+    #[DataProvider('productionStrays')]
+    public function test_forSlices_productionStrayNeverTestInItsPlace(array $production, bool $refused): void
+    {
+        $constants = self::testAccount() + $production;
+
+        if ($refused) {
+            self::assertRefused($constants);
+        } else {
+            self::assertSame(Account::TEST, Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $constants)->environment);
+        }
+        self::assertSame(self::LOGIN, Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, Account::TEST, $constants)->login, 'asking for test is always fine');
+    }
+
+    public static function productionStrays(): array
+    {
+        $elsewhere = self::withKinds(Account::PRODUCTION, [Accounts::CERT => '/etc/aa/nszm.pem']);
+        $elsewhere = ['AA_APIKEY_ISDS_NSZM_SITE' => self::SITE2, 'AA_APIKEY_ISDS_NSZM_SLICES' => self::PAIR2] + $elsewhere;
+        return [
+            'the account in small letters'        => [['AA_APIKEY_ISDS_Nszm_SLICES' => self::PAIR, 'AA_APIKEY_ISDS_Nszm_CERT' => 'nszm.pem'], true],
+            'its slices are others'               => [['AA_APIKEY_ISDS_Nszm_SLICES' => self::PAIR2, 'AA_APIKEY_ISDS_Nszm_CERT' => 'nszm.pem'], false],
+            'SITES for SITE'                      => [['AA_APIKEY_ISDS_NSZM_SITES' => self::SITE, 'AA_APIKEY_ISDS_NSZM_CERT' => 'nszm.pem'], true],
+            'SITES of another site, no slices'    => [['AA_APIKEY_ISDS_NSZM_SITES' => self::SITE2, 'AA_APIKEY_ISDS_NSZM_CERT' => 'nszm.pem'], false],
+            'only a certificate'                  => [['AA_APIKEY_ISDS_Nszm_CERT' => 'nszm.pem'], true],
+            'a certificate, the site of others'   => [['AA_APIKEY_ISDS_Nszm_CERT' => 'nszm.pem', 'AA_APIKEY_ISDS_nszm_SITE' => self::SITE2], false],
+            'a typo, the account bound elsewhere' => [['AA_APIKEY_ISDS_NSZM_CRET' => 'nszm.pem'] + $elsewhere, false],
+            'a typo, an account of no ids'        => [['AA_APIKEY_ISDS_NSZM_CRET' => 'nszm.pem', 'AA_APIKEY_ISDS_NSZM_CERT' => 'nszm.pem'], true],
+            'no account at all'                   => [['AA_APIKEY_ISDS_LOGIN' => self::LOGIN], true],
+            'the vendor alone'                    => [['AA_APIKEY_ISDS' => 'x'], true],
+            'damaged ids of others'               => [['AA_APIKEY_ISDS_Nszm_SLICES' => self::PAIR2 . "\n"], false],
+            'ids of others and a bad part'        => [['AA_APIKEY_ISDS_Nszm_SLICES' => self::PAIR2 . ',x'], false],
+            'our pair and a bad part'             => [['AA_APIKEY_ISDS_Nszm_SLICES' => self::PAIR . ',x', 'AA_APIKEY_ISDS_Nszm_SITE' => self::SITE2], true],
         ];
     }
 
@@ -403,7 +585,9 @@ final class AccountsTest extends TestCase
         self::assertSame('AA_APIKEY_ISDSTEST_NSZM', Accounts::prefix(Account::TEST, 'NSZM'));
         self::assertSame('AA_APIKEY_ISDS_', Accounts::prefix(Account::PRODUCTION, ''));
         self::assertSame('AA_APIKEY_ISDS_NSZM_LOGIN', Accounts::constant(Account::PRODUCTION, 'NSZM', Accounts::LOGIN));
-        self::assertSame(['AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD'], Accounts::constants(Account::TEST, Accounts::PLACEHOLDER));
+        self::assertSame(['AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD'], Accounts::constants(Account::TEST, Accounts::PLACEHOLDER, Account::BASIC));
+        self::assertSame(['AA_APIKEY_ISDS_NSZM_SITE', 'AA_APIKEY_ISDS_NSZM_SLICES', 'AA_APIKEY_ISDS_NSZM_BOX', 'AA_APIKEY_ISDS_NSZM_CERT', 'AA_APIKEY_ISDS_NSZM_KEY', 'AA_APIKEY_ISDS_NSZM_PASSPHRASE'], Accounts::constants(Account::PRODUCTION, 'NSZM', Account::HOSTED));
+        self::assertCount(8, Accounts::constants(Account::TEST, Accounts::PLACEHOLDER), 'of any login');
     }
 
     public function test_strays_whatIsNoAccount(): void

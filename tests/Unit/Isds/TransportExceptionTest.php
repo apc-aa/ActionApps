@@ -37,6 +37,7 @@ final class TransportExceptionTest extends TestCase
             'refused'           => [$runtime('Failed to connect to ws1.datovka-test.gov.cz port 443 after 3 ms: Connection refused'), true],
             'connect timeout'   => [$runtime('Connection timed out after 10001 milliseconds'), true],
             'certificate'       => [$runtime('SSL certificate problem: unable to get local issuer certificate'), true],
+            'our certificate'   => [$runtime('Could not load PEM client certificate from /etc/aa-isds/nszm.pem, OpenSSL error error:0A00018F:SSL routines::ee key too small'), false],
             'idle timeout'      => [new TimeoutException('Idle timeout reached for ' . self::URL . '.'), true],
             'reset'             => [$runtime('Recv failure: Connection reset by peer'), true],
             'empty reply'       => [$runtime('Empty reply from server'), true],

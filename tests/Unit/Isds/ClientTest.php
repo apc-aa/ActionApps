@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds;
 
 use AA\Credential\Secret;
+use AA\Http\ClientCertificate;
 use AA\Http\ClientInterface;
 use AA\Http\Response;
 use AA\Http\ResponseTooLargeException;
@@ -13,6 +14,7 @@ use AA\Isds\Account;
 use AA\Isds\AddressBlockedException;
 use AA\Isds\AuthException;
 use AA\Isds\Client;
+use AA\Isds\ConfigException;
 use AA\Isds\File;
 use AA\Isds\IsdsException;
 use AA\Isds\LoginLatch;
@@ -31,6 +33,7 @@ use Symfony\Component\HttpClient\Exception\TimeoutException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Tests\Unit\Fixtures\Certificates;
 use Tests\Unit\Fixtures\FakeHttp;
 use Tests\Unit\Isds\Fixtures\MemoryLatch;
 
@@ -55,11 +58,53 @@ final class ClientTest extends TestCase
         'DownloadAttachment', 'ConfirmDelivery',
     ];
 
+    private const PASSPHRASE = 'Pass-phrase-never-shown';
+
+    /** the certificates of this run, made in setUpBeforeClass() */
+    private static string $dir = '';
+
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';     // the constants Secret::key() derives from
         require_once __DIR__ . '/../fixtures/FakeHttp.php';
+        require_once __DIR__ . '/../fixtures/Certificates.php';
         require_once __DIR__ . '/fixtures/MemoryLatch.php';
+        self::$dir           = Certificates::directory();
+        [$certificate, $key] = Certificates::make();
+        Certificates::file(self::$dir, 'cert.pem', $certificate);
+        Certificates::file(self::$dir, 'both.pem', $certificate . $key);
+        Certificates::file(self::$dir, 'encrypted.key', Certificates::encrypted($key, self::PASSPHRASE));
+        Certificates::file(self::$dir, 'other.key', Certificates::make('Another', 43)[1]);
+        Certificates::file(self::$dir, 'garbage.pem', 'not a certificate');
+        Certificates::file(self::$dir, 'locked.pem', $certificate . $key, 0o000);
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        Certificates::remove(self::$dir);
+    }
+
+    /** an account of the certificate and the key in files of this run */
+    private static function certificateAccount(string $certificate, string $key = '', string $passphrase = '', string $environment = Account::PRODUCTION, string $box = 'kv62bqf'): Account
+    {
+        $file = static fn(string $name): string => ($name === '') ? '' : self::$dir . "/$name";
+
+        return Account::withCertificate($environment, new ClientCertificate($file($certificate), $file($key), new Secret($passphrase)), $box);
+    }
+
+    /**
+     * A transport answering every request with $xml; the HTTP client works on a copy of it, so the
+     * requests are counted in $seen, not by getRequestsCount()
+     * @param ?list<array<string, mixed>> $seen the URL and the options of every request
+     */
+    private static function transport(string $xml, int $status = 200, ?array &$seen = null): MockHttpClient
+    {
+        $seen = [];
+
+        return new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen, $xml, $status): MockResponse {
+            $seen[] = ['url' => $url] + $options;
+            return new MockResponse($xml, ['http_code' => $status]);
+        });
     }
 
     private static function fixture(string $name): string
@@ -650,6 +695,169 @@ final class ClientTest extends TestCase
         $client->ownerBox();
 
         self::assertSame([['DsManage', 30.0, 30.0], ['dz', 300.0, 300.0], ['DsManage', 30.0, 30.0]], $seen);
+    }
+
+    // the certificate reaches the connection; Basic auth only where the kind of login asks for it
+    #[DataProvider('certificateLogins')]
+    public function test_call_certificateLogin(string $environment, string $box): void
+    {
+        $account = self::certificateAccount('cert.pem', 'encrypted.key', self::PASSPHRASE, $environment, $box);
+        $client  = new Client($account, transport: self::transport(self::fixture('owner-info.xml'), seen: $seen), latch: new MemoryLatch());
+
+        self::assertSame('kv62bqf', $client->ownerBox());
+
+        $authorization = array_map(static fn(string $value): string => "Authorization: $value", array_values($account->headers()));
+        self::assertSame(
+            [$account->url('DsManage'), self::$dir . '/cert.pem', self::$dir . '/encrypted.key', self::PASSPHRASE, $authorization],
+            [$seen[0]['url'], $seen[0]['local_cert'] ?? null, $seen[0]['local_pk'] ?? null, $seen[0]['passphrase'] ?? null, array_values(preg_grep('/^Authorization:/i', $seen[0]['headers'] ?? []))],
+        );
+        self::assertSame($box !== '', $authorization !== [], 'a hosted filing service names the box');
+    }
+
+    public static function certificateLogins(): array
+    {
+        return [
+            'system, test'       => [Account::TEST, ''],
+            'system, production' => [Account::PRODUCTION, ''],
+            'hosted, test'       => [Account::TEST, 'kv62bqf'],
+            'hosted, production' => [Account::PRODUCTION, 'kv62bqf'],
+        ];
+    }
+
+    // inside the TLS handshake it would fail like the network: "the message may have left"
+    #[DataProvider('unusableCertificates')]
+    public function test_call_unusableCertificateSendsNothing(string $certificate, string $key, string $passphrase, string $expected): void
+    {
+        if (($certificate === 'locked.pem') && function_exists('posix_geteuid') && (posix_geteuid() === 0)) {
+            self::markTestSkipped('root reads any file');
+        }
+        $transport = self::transport(self::fixture('create-message-ok.xml'), seen: $seen);
+        $latch     = new MemoryLatch();
+        $client    = new Client(self::certificateAccount($certificate, $key, $passphrase), transport: $transport, latch: $latch);
+
+        try {
+            $client->createMessage(self::message());
+            self::fail('ConfigException expected');
+        } catch (ConfigException $e) {
+            self::assertStringStartsWith($expected, $e->getMessage());
+            self::assertStringContainsString('nothing was sent', $e->getMessage());
+            self::assertStringNotContainsString(self::$dir, $e->getMessage(), 'a template may show it');
+        }
+        self::assertSame([[], []], [$seen, $latch->rows]);
+    }
+
+    public static function unusableCertificates(): array
+    {
+        return [
+            'no certificate'     => ['none.pem', 'encrypted.key', self::PASSPHRASE, 'PHP cannot read the certificate'],
+            'unreadable'         => ['locked.pem', '', '', 'PHP cannot read the certificate'],
+            'no key'             => ['cert.pem', 'none.key', '', 'PHP cannot read the private key'],
+            'not a certificate'  => ['garbage.pem', 'encrypted.key', self::PASSPHRASE, 'The certificate file of the ISDS account holds no certificate'],
+            'another passphrase' => ['cert.pem', 'encrypted.key', 'Another-pass-phrase', 'The private key of the ISDS account does not open'],
+            'no passphrase'      => ['cert.pem', 'encrypted.key', '', 'The private key of the ISDS account does not open'],
+            'another key'        => ['cert.pem', 'other.key', '', 'The private key of the ISDS account does not belong to its certificate'],
+        ];
+    }
+
+    // a certificate the TLS library still refuses fails before the handshake; its error names the file
+    #[DataProvider('certificatesNotLoaded')]
+    public function test_call_certificateNotLoadedSendsNothing(string $error): void
+    {
+        $latch  = new MemoryLatch();
+        $client = new Client(self::certificateAccount('both.pem'), transport: new MockHttpClient(new MockResponse('', ['error' => $error])), latch: $latch);
+
+        try {
+            $client->createMessage(self::message());
+            self::fail('ConfigException expected');
+        } catch (ConfigException $e) {
+            self::assertSame('This server could not use the certificate of the ISDS account for the connection - nothing was sent; the State Check tells more', $e->getMessage());
+        }
+        self::assertSame([], $latch->rows);
+    }
+
+    public static function certificatesNotLoaded(): array
+    {
+        return [
+            'curl, a weak key'         => ['Could not load PEM client certificate from /etc/aa-isds/nszm.pem, OpenSSL error error:0A00018F:SSL routines::ee key too small, (no key found, wrong passphrase, or wrong file format?)'],
+            'curl, the key file'       => ["unable to set private key file: '/etc/aa-isds/nszm.key' type PEM"],
+            'php streams, the chain'   => ["fopen(): Unable to set local cert chain file `/etc/aa-isds/nszm.pem'; Check that your cafile/capath settings include details of your certificate and its issuer"],
+            'php streams, the key'     => ["fopen(): Unable to set private key file `/etc/aa-isds/nszm.key'"],
+        ];
+    }
+
+    // a person asks again, but the certificate cannot work: nothing to try, the refusal stays
+    public function test_forgetRefusal_unusableCertificateKeepsTheRefusal(): void
+    {
+        $latch = new MemoryLatch();
+        try {
+            (new Client(self::certificateAccount('cert.pem', 'encrypted.key', self::PASSPHRASE), transport: self::transport(self::fixture('unauthorized.html'), 401), latch: $latch))->ownerBox();
+            self::fail('AuthException expected');
+        } catch (AuthException) {
+        }
+        $rows   = $latch->rows;
+        $client = new Client(self::certificateAccount('cert.pem', 'encrypted.key', 'Another-pass-phrase'), transport: self::transport(self::fixture('owner-info.xml')), latch: $latch);
+
+        try {
+            $client->forgetRefusal();
+            self::fail('ConfigException expected');
+        } catch (ConfigException) {
+        }
+        self::assertSame($rows, $latch->rows);
+        self::assertNotNull($latch->refusedAt(self::certificateAccount('cert.pem', 'encrypted.key', self::PASSPHRASE)));
+    }
+
+    // the HTTP client of AA is what sends the certificate - a test client would skip it unnoticed
+    public function test_construct_refusesAClientForACertificate(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        new Client(self::certificateAccount('both.pem'), self::answering(self::fixture('owner-info.xml')));
+    }
+
+    // a refused certificate is not tried again, whatever else changes in its files; a new one is
+    public function test_call_refusedCertificateUntilANewOne(): void
+    {
+        $dir   = Certificates::directory();
+        $latch = new MemoryLatch();
+        [$certificate, $key] = Certificates::make();
+        Certificates::file($dir, 'live.pem', $certificate);
+        Certificates::file($dir, 'live.key', Certificates::encrypted($key, self::PASSPHRASE));
+        // every run reads the files anew
+        $run = static function (string $passphrase, MockHttpClient $transport, MemoryLatch $latch) use ($dir): string {
+            $account = Account::withCertificate(Account::PRODUCTION, new ClientCertificate("$dir/live.pem", "$dir/live.key", new Secret($passphrase)), 'kv62bqf');
+            return (new Client($account, transport: $transport, latch: $latch))->ownerBox();
+        };
+        try {
+            try {
+                $run(self::PASSPHRASE, self::transport(self::fixture('unauthorized.html'), 401), $latch);
+                self::fail('AuthException expected');
+            } catch (AuthException) {
+            }
+            $changes = [
+                'a new passphrase' => static fn(): string => Certificates::file($dir, 'live.key', Certificates::encrypted($key, 'Another-pass-phrase')),
+                'a chain after it, other line ends' => static fn(): string => Certificates::file($dir, 'live.pem', str_replace("\n", "\r\n", $certificate . Certificates::make('Another', 43)[0])),
+            ];
+            foreach ($changes as $change => $apply) {
+                $apply();
+                $transport = self::transport(self::fixture('owner-info.xml'), seen: $seen);
+                try {
+                    $run('Another-pass-phrase', $transport, $latch = $latch->nextRun());
+                    self::fail("AuthException expected after $change");
+                } catch (AuthException $e) {
+                    self::assertStringContainsString('AA does not try it again until the certificate changes', $e->getMessage());
+                }
+                self::assertSame([], $seen, $change);
+            }
+
+            [$certificate, $key] = Certificates::make('AA test', 44);
+            Certificates::file($dir, 'live.pem', $certificate);
+            Certificates::file($dir, 'live.key', $key);
+            $transport = self::transport(self::fixture('owner-info.xml'), seen: $seen);
+
+            self::assertSame('kv62bqf', $run('', $transport, $latch->nextRun()));
+            self::assertCount(1, $seen);
+        } finally {
+            Certificates::remove($dir);
+        }
     }
 
     // ISDS blocks a login after failures, and the address of the server on suspicion

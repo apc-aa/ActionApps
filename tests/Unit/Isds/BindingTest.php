@@ -15,7 +15,7 @@ final class BindingTest extends TestCase
     // Accounts never asks for an empty pair; a broken binding must not match one anyway
     public function test_binds_brokenSlicesNothing(): void
     {
-        $binding = new Binding('NSZM', Account::TEST, [self::SITE], '', '', ['Set AA_APIKEY_ISDSTEST_NSZM_SLICES'], true);
+        $binding = new Binding('NSZM', Account::TEST, [self::SITE], '', '', ['Set AA_APIKEY_ISDSTEST_NSZM_SLICES'], Account::BASIC);
 
         self::assertFalse($binding->binds(self::SITE, '', ''));
         self::assertFalse($binding->usable());

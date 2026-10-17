@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\Http\Client as HttpClient;
+use AA\Http\ClientCertificate;
 use AA\Http\ClientInterface;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException as HttpTransportException;
@@ -14,7 +15,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 /**
  * The ISDS web services AA calls: send a message, follow what happened to sent ones, check a box,
  * read the account. Times are unix seconds. An answer that cannot be read whole is a
- * TransportException, never a shorter list.
+ * TransportException, never a shorter list. A certificate that cannot work - unreadable, locked,
+ * not of its key, out of its validity - is a ConfigException before anything is sent.
  */
 final class Client
 {
@@ -62,18 +64,42 @@ final class Client
     private const TIMEOUTS = ['CreateMessage' => 300];
     private const TIMEOUT  = 30;
 
+    /**
+     * What a certificate cannot do, said without its files: a template may show the text, the State
+     * Check names the files (ClientCertificate::problem())
+     */
+    private const CERTIFICATE_PROBLEMS = [
+        ClientCertificate::UNREADABLE        => 'PHP cannot read the certificate of the ISDS account',
+        ClientCertificate::KEY_UNREADABLE    => 'PHP cannot read the private key of the ISDS account',
+        ClientCertificate::NO_OPENSSL        => 'PHP has no openssl extension, which a login with a certificate needs',
+        ClientCertificate::NOT_A_CERTIFICATE => 'The certificate file of the ISDS account holds no certificate',
+        ClientCertificate::KEY_LOCKED        => 'The private key of the ISDS account does not open: it is missing, or the passphrase does not fit',
+        ClientCertificate::KEY_MISMATCH      => 'The private key of the ISDS account does not belong to its certificate',
+        ClientCertificate::WEAK_KEY          => 'The private key of the ISDS account is too short for a secure connection',
+        ClientCertificate::NOT_YET_VALID     => 'The certificate of the ISDS account is not valid yet',
+        ClientCertificate::EXPIRED           => 'The certificate of the ISDS account has expired',
+    ];
+
     /** @var array<int, ClientInterface> seconds => the HTTP client under that limit */
     private array $clients = [];
+
+    /** the certificate passed ClientCertificate::problem() */
+    private bool $certificateChecked = false;
 
     private readonly LoginLatch $latch;
 
     /**
      * @param ?ClientInterface     $http      answers every operation as it is, under no limit of this client - for tests
+     *                                        of a name and a password: it would skip the certificate
      * @param ?HttpClientInterface $transport the connection under the limits of http(); another one for tests only
      * @param ?LoginLatch          $latch     the refused logins; share one among the clients of a run
+     * @throws \InvalidArgumentException $http for an account with a certificate
      */
     public function __construct(private readonly Account $account, private readonly ?ClientInterface $http = null, private readonly ?HttpClientInterface $transport = null, ?LoginLatch $latch = null)
     {
+        if (!is_null($http) && !is_null($account->certificate)) {
+            throw new \InvalidArgumentException('A login with a certificate goes through the HTTP client of AA, which sends the certificate - give a transport, not a client');
+        }
         $this->latch = $latch ?? new LoginLatch();
     }
 
@@ -81,9 +107,12 @@ final class Client
      * Lets a login ISDS refused, or the blocked address of the server, try once more - only when a
      * person asks for it, never by itself: every refused attempt extends the block.
      * @return bool a refusal or a block was forgotten
+     * @throws ConfigException the certificate cannot work - there is nothing to try
      */
     public function forgetRefusal(): bool
     {
+        $this->checkCertificate();
+
         return $this->latch->forget($this->account);
     }
 
@@ -92,6 +121,7 @@ final class Client
      * it again: true means look it up among the sent messages (by Message::$senderRef) first.
      * @throws IsdsException as itself refused, e.g. 1233 to a box that accepts only paid messages;
      *                       AuthException, UnavailableException, TransportException see above
+     * @throws ConfigException           the certificate cannot work - nothing is sent
      */
     public function createMessage(Message $message): SendResult
     {
@@ -106,6 +136,7 @@ final class Client
      * NO_BOX when there is no such box
      * @throws \InvalidArgumentException not a box id - nothing is sent
      * @throws IsdsException             no state read
+     * @throws ConfigException           the certificate cannot work - nothing is sent
      */
     public function checkDataBox(string $box): int
     {
@@ -134,6 +165,7 @@ final class Client
      * @return list<StateChange>
      * @throws \InvalidArgumentException the window ends before it starts - nothing is sent
      * @throws IsdsException             no list read
+     * @throws ConfigException           the certificate cannot work - nothing is sent
      */
     public function stateChanges(int $from, int $to): array
     {
@@ -162,6 +194,7 @@ final class Client
      * @return list<SentMessage>
      * @throws \InvalidArgumentException a window, offset or limit out of range - nothing is sent
      * @throws IsdsException             no list read
+     * @throws ConfigException           the certificate cannot work - nothing is sent
      */
     public function sentMessages(int $from, int $to, int $offset = 1, int $limit = self::MAX_LIST): array
     {
@@ -195,7 +228,8 @@ final class Client
 
     /**
      * The logged-in user (GetUserInfoFromLogin2)
-     * @throws IsdsException 2102 for a login with a system certificate, or no user read
+     * @throws IsdsException 2102 for a login with a certificate, or no user read
+     * @throws ConfigException the certificate cannot work - nothing is sent
      */
     public function userInfo(): UserInfo
     {
@@ -213,6 +247,7 @@ final class Client
      * (WS_souvisejici_s_pristupem_do_ISDS.pdf 1.8) or left out, which dbTypes.xsd allows
      * (tGetPasswInfoOutput, minOccurs="0" nillable="true").
      * @throws IsdsException e.g. TransportException for an empty element or one that is no date
+     * @throws ConfigException the certificate cannot work - nothing is sent
      */
     public function passwordExpiry(): ?int
     {
@@ -223,6 +258,7 @@ final class Client
     /**
      * The id of the data box the account logs in to (GetOwnerInfoFromLogin2)
      * @throws IsdsException no id read
+     * @throws ConfigException the certificate cannot work - nothing is sent
      */
     public function ownerBox(): string
     {
@@ -271,15 +307,18 @@ final class Client
      * Never a login ISDS refused before, nor from an address it blocked (LoginLatch); a refusal or a
      * block now latches it.
      * @param \DOMElement $operation of Soap::request() - nothing else may hold its document
+     * @throws ConfigException the certificate cannot work - nothing was sent
      */
     private function call(\DOMElement $operation): Answer
     {
         $op = (string) $operation->localName;
+        $this->checkCertificate();
         if (!is_null($blocked = $this->latch->blockedAt($this->account->environment))) {
             throw new AddressBlockedException('ISDS blocked logins from the address of this server at ' . date('Y-m-d H:i', $blocked) . ' - AA tries again ' . LoginLatch::BLOCK_HOURS . ' hours later, or when an administrator checks it again on the State Check page');
         }
         if (!is_null($refused = $this->latch->refusedAt($this->account))) {
-            throw new AuthException('ISDS refused this login at ' . date('Y-m-d H:i', $refused) . ' - AA does not try it again until the login or the password changes, or an administrator checks it again on the State Check page');
+            $changes = ($this->account->kind === Account::BASIC) ? 'the login or the password changes' : 'the certificate changes';
+            throw new AuthException('ISDS refused this login at ' . date('Y-m-d H:i', $refused) . " - AA does not try it again until $changes, or an administrator checks it again on the State Check page");
         }
         $xml = Soap::envelope($operation);
         // the DOM of a message is as large as its XML, which is all the request needs
@@ -288,6 +327,10 @@ final class Client
         try {
             $response = $this->http($op)->request('POST', $this->account->url(self::OPERATIONS[$op]), $xml, ['Content-Type' => 'text/xml; charset=utf-8', 'SOAPAction' => '""'] + $this->account->headers());
         } catch (HttpTransportException $e) {
+            // e.g. a key the TLS library finds too weak; its text names the file
+            if ($e->kind() === HttpTransportException::CLIENT_CERTIFICATE) {
+                throw new ConfigException('This server could not use the certificate of the ISDS account for the connection - nothing was sent; the State Check tells more', 0, $e);
+            }
             throw TransportException::fromHttp($e, $redact);
         } catch (ResponseTooLargeException $e) {
             throw TransportException::uncertain("The answer of ISDS to $op is too large", '', $e);
@@ -320,21 +363,39 @@ final class Client
         }
         $timeout = self::TIMEOUTS[$op] ?? self::TIMEOUT;
 
-        return $this->clients[$timeout] ??= self::limited($timeout, $this->transport);
+        return $this->clients[$timeout] ??= self::limited($timeout, $this->transport, $this->account->certificate);
     }
 
     /**
      * The HTTP client for ISDS: a list of 1000 sent messages (~2 MB) has to fit the answer limit.
      * Never a reused connection: see TransportException::fromHttp().
      */
-    private static function limited(int $timeout, ?HttpClientInterface $transport): ClientInterface
+    private static function limited(int $timeout, ?HttpClientInterface $transport, ?ClientCertificate $certificate): ClientInterface
     {
         if ($timeout <= 0) {
             // 0 is no limit at all to the HTTP library
             throw new \LogicException('An ISDS call needs a time limit');
         }
 
-        return new HttpClient(timeout: $timeout, idle: $timeout, http: $transport, maxBytes: 8 * 1024 * 1024, reuse: false);
+        return new HttpClient(timeout: $timeout, idle: $timeout, http: $transport, maxBytes: 8 * 1024 * 1024, reuse: false, certificate: $certificate);
+    }
+
+    /**
+     * Once per client, before its first request: inside the TLS handshake a certificate that cannot
+     * work fails like the network - a message that never left would count as maybe sent, and the curl
+     * error would carry the path of the key.
+     * @throws ConfigException
+     */
+    private function checkCertificate(): void
+    {
+        if ($this->certificateChecked || is_null($this->account->certificate)) {
+            return;
+        }
+        $problem = $this->account->certificate->problem();
+        if (!is_null($problem)) {
+            throw new ConfigException((self::CERTIFICATE_PROBLEMS[$problem] ?? 'The certificate of the ISDS account cannot be used') . ' - nothing was sent; the State Check tells more');
+        }
+        $this->certificateChecked = true;
     }
 
     /** a text of ISDS for an exception message, without the login or the password */

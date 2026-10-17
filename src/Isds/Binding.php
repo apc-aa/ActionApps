@@ -17,7 +17,7 @@ final class Binding
      * @param string       $campaignSlice unpacked id in small letters; '' when the slices are missing or broken
      * @param string       $messageSlice  as $campaignSlice
      * @param list<string> $problems      what to fix in config.php, naming the constants; [] = usable
-     * @param bool         $targeted      a SITE or SLICES constant is there, even an empty or unreadable one
+     * @param string       $kind          the login the constants mean: Account::BASIC, CERT or HOSTED
      */
     public function __construct(
         public readonly string $name,
@@ -26,7 +26,7 @@ final class Binding
         public readonly string $campaignSlice,
         public readonly string $messageSlice,
         public readonly array $problems,
-        public readonly bool $targeted,
+        public readonly string $kind,
     ) {}
 
     public function usable(): bool

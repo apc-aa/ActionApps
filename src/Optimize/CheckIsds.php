@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace AA\Optimize;
 
 use AA\Credential\Store;
+use AA\Http\TransportException as HttpTransportException;
 use AA\Isds\Account;
 use AA\Isds\Accounts;
 use AA\Isds\AddressBlockedException;
 use AA\Isds\AuthException;
 use AA\Isds\Binding;
 use AA\Isds\Client;
+use AA\Isds\ConfigException;
 use AA\Isds\IsdsException;
 use AA\Isds\LoginLatch;
 use AA\Isds\TransportException;
@@ -19,8 +21,9 @@ use AA\Isds\UserInfo;
 use AA\Later\Toexecute;
 
 /**
- * Logs in to ISDS with each usable account of include/config.php: the data box it sends from, the
- * rights of its user and when its password expires. Read-only operations of the ISDS client only.
+ * Logs in to ISDS with each usable account of include/config.php: the data box it sends from and, for
+ * a name and a password, the rights of its user and when its password expires. Read-only operations of
+ * the ISDS client only.
  * The accounts that cannot be used, CheckIsdsAccounts names - they are not tried here. A login ISDS
  * refused is tried again only by a person here (Recheck, Run extended checks), never by the daily run;
  * an address ISDS blocked, by a person or once after LoginLatch::BLOCK_HOURS.
@@ -46,7 +49,7 @@ class CheckIsds extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Logs in to ISDS with each usable account of include/config.php and checks the data box it sends from, the rights of its user and when its password expires.');
+        return _m('Logs in to ISDS with each usable account of include/config.php and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires.');
     }
 
     public static function types(): array
@@ -79,35 +82,43 @@ class CheckIsds extends AbstractOptimize
         $stopped  = [];
         $notTried = [];
         foreach ($usable as $binding) {
-            $label = Accounts::prefix($binding->environment, $binding->name);
-            // one host per environment: the next account would wait out the limit too, or extend the block
-            if (isset($stopped[$binding->environment])) {
-                $notTried[$binding->environment][] = $label;
+            $label   = Accounts::prefix($binding->environment, $binding->name);
+            $account = Accounts::account($binding, $constants);
+            // a block of the address holds for the environment; no answer, for the host - a name and a
+            // password log in on ws1, a certificate on ws1c
+            $host = $binding->environment . ':' . parse_url($account->url('DsManage'), PHP_URL_HOST);
+            if (isset($stopped[$binding->environment]) || isset($stopped[$host])) {
+                $notTried[isset($stopped[$binding->environment]) ? $binding->environment : $host][] = $label;
                 continue;
             }
-            $account = Accounts::account($binding, $constants);
-            $client  = $this->client($account, $latch);
-            if ($retry) {
-                $client->forgetRefusal();
+            $client = $this->client($account, $latch);
+            try {
+                if ($retry) {
+                    $client->forgetRefusal();
+                }
+                [$box, $problems, $stop] = $this->tryAccount($binding, $account, $client);
+            } catch (ConfigException $e) {
+                // nothing was sent
+                $findings[] = self::certificateFinding($binding, $label, $e);
+                continue;
             }
-            [$box, $problems, $stop] = $this->tryAccount($binding, $account, $client);
             array_push($findings, ...$problems);
             if ($stop) {
-                $stopped[$binding->environment] = $stop;
+                $stopped[($stop instanceof AddressBlockedException) ? $binding->environment : $host] = $stop;
             }
             if ($box !== '') {
                 $boxes[] = "$label ($box)";
             }
         }
-        foreach ($notTried as $environment => $labels) {
-            $blocked    = $stopped[$environment] instanceof AddressBlockedException;
+        foreach ($notTried as $where => $labels) {
+            $blocked    = $stopped[$where] instanceof AddressBlockedException;
             $findings[] = new Finding(
                 Finding::INFO,
                 $blocked
                     ? _m('ISDS accounts not tried, as ISDS blocked the address of this server: %1', [implode(', ', $labels)])
                     : _m('ISDS accounts not tried, as ISDS did not answer: %1', [implode(', ', $labels)]),
                 advice: $blocked ? _m('Wait - each attempt from this server extends the block.') : _m('Check again later.'),
-                key: "not-tried:$environment",
+                key: "not-tried:$where",
             );
         }
 
@@ -115,34 +126,68 @@ class CheckIsds extends AbstractOptimize
     }
 
     /**
+     * A certificate that cannot work. What ClientCertificate::problem() finds, CheckIsdsAccounts names
+     * with its files - a note here. What only the TLS library of this server refuses (a key under its
+     * policy, a weak certificate in the chain, an old signature) nobody else reports: an error, with
+     * the reason of OpenSSL. Its text holds no path; the page is for superadmins only.
+     */
+    private static function certificateFinding(Binding $binding, string $label, ConfigException $e): Finding
+    {
+        $where = "{$binding->environment}:{$binding->name}";
+        $tls   = $e->getPrevious();
+        if (!($tls instanceof HttpTransportException) || ($tls->kind() !== HttpTransportException::CLIENT_CERTIFICATE)) {
+            return new Finding(Finding::INFO, _m('ISDS account %1 not tried, as its certificate cannot be used', [$label]), evidence: [[_m('Problem') => safe($e->getMessage())]], advice: _m('The check of ISDS accounts tells more.'), key: "certificate-unusable:$where");
+        }
+        // the last error code of OpenSSL: a path before it may hold "routines::" too; curl cuts its text
+        // at 256 bytes, then Symfony adds ' for "URL"'
+        $reason = '';
+        if (preg_match_all('/error:[0-9A-F]{8}:[^:]*routines::(.*?)(?=,|\sfor\s+"|$)/m', $tls->getMessage(), $m) > 0) {
+            $reason = trim((string) end($m[1]));
+        }
+
+        return new Finding(
+            Finding::ERROR,
+            _m('The TLS library of this server refuses the certificate of ISDS account %1', [$label]),
+            evidence: [array_filter([_m('Reason of OpenSSL') => safe($reason), _m('Problem') => safe($e->getMessage())])],
+            advice: _m('OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in include/config.php.'),
+            key: "certificate-refused:$where",
+        );
+    }
+
+    /**
      * The box first - every kind of login may ask for it. The rights and the expiry concern a login
-     * with a name and a password, the only one Account knows: a system certificate has the rights 159
-     * and no password, ISDS answers 2102 to both questions. A refused login or no answer ends the
-     * account; an answer AA cannot read, or a refused question, is that question's finding.
+     * with a name and a password only: a certificate has the rights 159 and no password, ISDS answers
+     * 2102 to both questions - the list of operations of the client keeps it from the received
+     * messages. A refused login or no answer ends the account; an answer AA cannot read, or a refused
+     * question, is that question's finding.
      * @return array{string, list<Finding>, ?IsdsException} the data box, '' when not read; the
-     *                                                     findings; what stops the other accounts of the environment
+     *                                                     findings; what stops the other accounts of the host
+     * @throws ConfigException the certificate cannot be used - nothing was sent
      */
     private function tryAccount(Binding $binding, Account $account, Client $client): array
     {
         $box      = '';
         $findings = [];
+        $label    = Accounts::prefix($binding->environment, $binding->name);
+        $key      = "{$binding->environment}:{$binding->name}";
         try {
             $box = $client->ownerBox();
         } catch (IsdsException $e) {
             $findings[] = $this->failure($binding, $account, $e);
             // a refused account would refuse the questions too; an answer AA cannot read tells nothing of them
             if (!($e instanceof TransportException) || !$e->answered()) {
-                return ['', $findings, self::environmentStop($e)];
+                return ['', $findings, self::hostStop($e)];
             }
         }
-        $label    = Accounts::prefix($binding->environment, $binding->name);
-        $key      = "{$binding->environment}:{$binding->name}";
+        if ($account->kind !== Account::BASIC) {
+            return [$box, $findings, null];
+        }
         $evidence = static fn(IsdsException $e): array => [[_m('ISDS') => safe($e->getMessage())]];
         try {
             array_push($findings, ...$this->rightsFindings($label, $key, $client->userInfo()));
         } catch (IsdsException $e) {
             if (self::stops($e)) {
-                return [$box, [...$findings, $this->failure($binding, $account, $e)], self::environmentStop($e)];
+                return [$box, [...$findings, $this->failure($binding, $account, $e)], self::hostStop($e)];
             }
             $findings[] = new Finding(Finding::WARNING, _m('ISDS did not tell the rights of the user of account %1', [$label]), evidence: $evidence($e), advice: self::rightsAdvice(), key: "rights-unknown:$key");
         }
@@ -158,7 +203,7 @@ class CheckIsds extends AbstractOptimize
             }
         } catch (IsdsException $e) {
             if (self::stops($e)) {
-                return [$box, [...$findings, $this->failure($binding, $account, $e)], self::environmentStop($e)];
+                return [$box, [...$findings, $this->failure($binding, $account, $e)], self::hostStop($e)];
             }
             $findings[] = new Finding(Finding::WARNING, _m('ISDS did not tell when the password of account %1 expires', [$label]), evidence: $evidence($e), advice: _m('Check the password of the user in the ISDS portal.'), key: "expiry-unknown:$key");
         }
@@ -224,7 +269,7 @@ class CheckIsds extends AbstractOptimize
                 Finding::ERROR,
                 'auth',
                 _m('ISDS refused the login of account %1', [$label]),
-                _m('Check %1 and %2 in include/config.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more.', [Accounts::constant($binding->environment, $binding->name, Accounts::LOGIN), Accounts::constant($binding->environment, $binding->name, Accounts::PASSWORD)]),
+                self::refusedAdvice($binding, $account),
             ],
             $e instanceof UnavailableException => [Finding::WARNING, 'busy', _m('ISDS asked account %1 to come back later', [$label]), _m('ISDS is in an outage or busy. Check again later.')],
             ($e instanceof TransportException) && !$e->answered() => [
@@ -242,14 +287,28 @@ class CheckIsds extends AbstractOptimize
         return new Finding($severity, $title, evidence: [[_m('ISDS') => safe($e->getMessage())]], advice: $advice, key: $key);
     }
 
+    private static function refusedAdvice(Binding $binding, Account $account): string
+    {
+        $constant = static fn(string $kind): string => Accounts::constant($binding->environment, $binding->name, $kind);
+
+        return match ($account->kind) {
+            Account::CERT   => _m('Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more.', [$constant(Accounts::CERT)]),
+            Account::HOSTED => _m('Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more.', [$account->login, $constant(Accounts::CERT)]),
+            default         => _m('Check %1 and %2 in include/config.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more.', [$constant(Accounts::LOGIN), $constant(Accounts::PASSWORD)]),
+        };
+    }
+
     /** a refused login, or no answer: asking more would only extend the block, or wait out the limit again */
     private static function stops(IsdsException $e): bool
     {
         return ($e instanceof AuthException) || self::unanswered($e);
     }
 
-    /** the other accounts of the environment would extend the block of the address, or wait out the limit again */
-    private static function environmentStop(IsdsException $e): ?IsdsException
+    /**
+     * The other accounts would extend the block of the address - of the environment -, or wait out the
+     * limit of the host again
+     */
+    private static function hostStop(IsdsException $e): ?IsdsException
     {
         return (($e instanceof AddressBlockedException) || self::unanswered($e)) ? $e : null;
     }

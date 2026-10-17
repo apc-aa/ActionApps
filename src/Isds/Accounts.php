@@ -6,28 +6,41 @@ namespace AA\Isds;
 
 use AA\Credential\Secret;
 use AA\Credential\Store;
+use AA\Http\ClientCertificate;
+use AA\Isds\Registry\Box;
 
 /**
  * The ISDS accounts include/config.php sets up. Each sends only for the sites and the one pair of
  * slices - campaigns and their messages - the server's administrator bound it to:
- *     define('AA_APIKEY_ISDSTEST_NSZM_SITE',     '<site module id>');   // more sites: separated by commas
- *     define('AA_APIKEY_ISDSTEST_NSZM_SLICES',   '<campaign slice id>,<message slice id>');
- *     define('AA_APIKEY_ISDSTEST_NSZM_LOGIN',    '...');
- *     define('AA_APIKEY_ISDSTEST_NSZM_PASSWORD', '...');
+ *     define('AA_APIKEY_ISDS_NSZM_SITE',   '<site module id>');   // more sites: separated by commas
+ *     define('AA_APIKEY_ISDS_NSZM_SLICES', '<campaign slice id>,<message slice id>');
+ *     define('AA_APIKEY_ISDS_NSZM_CERT',   '/etc/aa-isds/nszm.pem');   // outside the directory of AA
+ *     define('AA_APIKEY_ISDS_NSZM_BOX',    '<data box id>');           // only for a hosted filing service
  * The key vendor is the environment (isds = production, isdstest = test), NSZM names the account: one
  * word of capital letters and digits. Slice ids are public, so they alone choose no account: the
  * caller passes the site as well, and an account is used only where the site and both slices match.
- * A slice belongs to one account of an environment. Production is refused until AA can log in with
- * a certificate (Account).
+ * A slice belongs to one account of an environment.
+ * What is set decides the login (Account): BOX - a hosted filing service, with the certificate of the
+ * service; CERT - a system certificate of the data box; otherwise LOGIN and PASSWORD, in the test
+ * environment only. CERT holds the key too unless KEY names a file of its own; PASSPHRASE opens an
+ * encrypted key. A relative path starts in CERT_DIR of AA, which the web server serves - a key belongs
+ * outside it.
  *
- * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, targeted: bool}
+ * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string}
  */
 final class Accounts
 {
-    public const SITE     = 'SITE';
-    public const SLICES   = 'SLICES';
-    public const LOGIN    = 'LOGIN';
-    public const PASSWORD = 'PASSWORD';
+    public const SITE       = 'SITE';
+    public const SLICES     = 'SLICES';
+    public const LOGIN      = 'LOGIN';
+    public const PASSWORD   = 'PASSWORD';
+    public const CERT       = 'CERT';
+    public const KEY        = 'KEY';
+    public const PASSPHRASE = 'PASSPHRASE';
+    public const BOX        = 'BOX';
+
+    /** where a relative path of CERT and KEY starts in the installation; git ignores the files there */
+    public const CERT_DIR = 'config/certs/';
 
     /** the account in advice that shows how to name the constants */
     public const PLACEHOLDER = '<ACCOUNT>';
@@ -36,15 +49,16 @@ final class Accounts
     public const VENDORS = [Account::PRODUCTION => 'isds', Account::TEST => 'isdstest'];
 
     /** an account of one word: AA_APIKEY_ISDS_TEST_NSZM_SLICES cannot pass for a test account */
-    private const KEY = '/^([A-Z0-9]+)_(' . self::SITE . '|' . self::SLICES . '|' . self::LOGIN . '|' . self::PASSWORD . ')\z/';
+    private const NAME = '/^([A-Z0-9]+)_(' . self::SITE . '|' . self::SLICES . '|' . self::LOGIN . '|' . self::PASSWORD . '|'
+        . self::CERT . '|' . self::KEY . '|' . self::PASSPHRASE . '|' . self::BOX . ')\z/';
 
     /**
      * The account bound to the site and the pair of slices.
      *
      * @param string $site        the site module the page belongs to (AA::$site_id), never a value from the template
-     * @param string $environment '' = production when a production account may be meant for the site or the
-     *                            slices, else test; 'test' or 'production' = that one only (a template narrows
-     *                            to test, a queued run asks for the environment it was queued in)
+     * @param string $environment '' = test only when every production constant provably concerns other sites
+     *                            or slices, else production; 'test' or 'production' = that one only (a template
+     *                            narrows to test, a queued run asks for the environment it was queued in)
      * @param array<string, mixed>|null $constants name => value, as Store::userConstants(); null = those
      * @throws ConfigException no usable account is bound - the message tells how to bind one and nothing
      *                         about the accounts there are: whoever writes the template reads it
@@ -61,13 +75,7 @@ final class Accounts
         $bindings = self::bindings($constants ??= Store::userConstants());
         if ($environment === '') {
             // never test in place of production: a run sent to the test ISDS reaches nobody
-            $environment = Account::TEST;
-            foreach ($bindings as $b) {
-                if (($b->environment === Account::PRODUCTION) && self::concerns($b, $site, $campaignSlice, $messageSlice)) {
-                    $environment = Account::PRODUCTION;
-                    break;
-                }
-            }
+            $environment = self::productionMeant($constants, $site, $campaignSlice, $messageSlice) ? Account::PRODUCTION : Account::TEST;
         }
         $binding = null;
         foreach ($bindings as $b) {
@@ -80,7 +88,7 @@ final class Accounts
             throw new ConfigException(self::refusal($site, $campaignSlice, $messageSlice));
         }
 
-        return self::login($binding->environment, $binding->name, $constants);
+        return self::login($binding->environment, $binding->name, $binding->kind, $constants);
     }
 
     /**
@@ -95,7 +103,18 @@ final class Accounts
             throw new ConfigException('Fix the constants of ' . self::prefix($binding->environment, $binding->name) . ' in config.php first: ' . implode('; ', $binding->problems));
         }
 
-        return self::login($binding->environment, $binding->name, $constants ?? Store::userConstants());
+        return self::login($binding->environment, $binding->name, $binding->kind, $constants ?? Store::userConstants());
+    }
+
+    /**
+     * The certificate CERT, KEY and PASSPHRASE of a binding name, usable or not - for State Check to
+     * check the files. Null for a name and a password, or without CERT.
+     * @param array<string, mixed>|null $constants as forSlices()
+     * @throws ConfigException a line break or NUL in one of them
+     */
+    public static function certificate(Binding $binding, #[\SensitiveParameter] ?array $constants = null): ?ClientCertificate
+    {
+        return self::certificateOf($binding->environment, $binding->name, $constants ?? Store::userConstants());
     }
 
     /**
@@ -117,7 +136,7 @@ final class Accounts
         $shared   = self::shared($found);
         $bindings = [];
         foreach ($found as $i => $f) {
-            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['targeted']);
+            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['kind']);
         }
 
         return $bindings;
@@ -149,7 +168,7 @@ final class Accounts
             $accounts[$environment] = [];
             foreach (Store::contextsIn($vendor, $constants) as $name => $context) {
                 // Store reads a constant only as it spells it - in another case it is a stray
-                if ((preg_match(self::KEY, $context, $m) === 1) && ($name === self::constant($environment, $m[1], $m[2]))) {
+                if ((preg_match(self::NAME, $context, $m) === 1) && ($name === self::constant($environment, $m[1], $m[2]))) {
                     $accounts[$environment][$m[1]][] = $m[2];
                 } else {
                     $strays[] = $name;
@@ -181,22 +200,61 @@ final class Accounts
         } catch (ConfigException $e) {
             $problems[] = $e->getMessage();
         }
-        if ($environment === Account::PRODUCTION) {
-            $problems[] = "The production account $name cannot be used: production ISDS lets an application in with a certificate only, and AA cannot log in with one yet";
-            if (in_array(self::PASSWORD, $kinds, true)) {
-                $problems[] = 'Remove ' . self::constant($environment, $name, self::PASSWORD) . ' from config.php - AA never logs in to production ISDS with a password';
-            }
-        } else {
+        $kind  = self::kind($kinds);
+        $mixed = self::mixed($environment, $name, $kind, $kinds);
+        array_push($problems, ...$mixed);
+        // production with a name and a password has said all there is: set the certificate
+        if (($environment !== Account::PRODUCTION) || ($kind !== Account::BASIC)) {
             try {
-                self::login($environment, $name, $constants);
+                self::login($environment, $name, $kind, $constants);
             } catch (ConfigException $e) {
                 $problems[] = $e->getMessage();
             }
         }
 
-        $targeted = array_intersect([self::SITE, self::SLICES], $kinds) !== [];
+        return ['name' => $name, 'environment' => $environment, 'sites' => $sites, 'slices' => $slices, 'problems' => $problems, 'kind' => $kind];
+    }
 
-        return ['name' => $name, 'environment' => $environment, 'sites' => $sites, 'slices' => $slices, 'problems' => $problems, 'targeted' => $targeted];
+    /**
+     * The login the constants there are mean, even empty ones: BOX a hosted filing service, CERT a
+     * system certificate, otherwise a name and a password.
+     * @param list<string> $kinds
+     */
+    private static function kind(array $kinds): string
+    {
+        return match (true) {
+            in_array(self::BOX, $kinds, true)  => Account::HOSTED,
+            in_array(self::CERT, $kinds, true) => Account::CERT,
+            default                            => Account::BASIC,
+        };
+    }
+
+    /**
+     * Constants of another login than the one kind() chose - which one is meant is not guessed - and
+     * production without a certificate.
+     * @param list<string> $kinds
+     * @return list<string>
+     */
+    private static function mixed(string $environment, string $name, string $kind, array $kinds): array
+    {
+        $names    = fn(string ...$of): string => implode(' and ', array_map(fn(string $k): string => self::constant($environment, $name, $k), $of));
+        $named    = array_values(array_intersect([self::LOGIN, self::PASSWORD], $kinds));
+        $orphans  = array_values(array_intersect([self::KEY, self::PASSPHRASE], $kinds));
+        $problems = [];
+        if ($kind !== Account::BASIC) {
+            if ($named) {
+                $problems[] = 'Remove ' . $names(...$named) . ' from config.php - an account with a certificate logs in without a name and a password';
+            }
+        } elseif ($environment === Account::PRODUCTION) {
+            $problems[] = 'Set ' . $names(self::CERT) . ' in config.php to the file of the certificate - production ISDS lets an application in with a certificate only';
+            if ($named) {
+                $problems[] = 'Remove ' . $names(...$named) . ' from config.php - AA never logs in to production ISDS with a name and a password';
+            }
+        } elseif ($orphans) {
+            $problems[] = 'Set ' . $names(self::CERT) . ' in config.php, or remove ' . $names(...$orphans) . ' - they belong to a certificate';
+        }
+
+        return $problems;
     }
 
     /**
@@ -264,11 +322,19 @@ final class Accounts
     }
 
     /**
+     * @param string $kind Account::BASIC, CERT or HOSTED, as kind() chose
      * @param array<string, mixed> $constants
      * @throws ConfigException
      */
-    private static function login(string $environment, string $name, #[\SensitiveParameter] array $constants): Account
+    private static function login(string $environment, string $name, string $kind, #[\SensitiveParameter] array $constants): Account
     {
+        if ($kind !== Account::BASIC) {
+            $certificate = self::certificateOf($environment, $name, $constants)
+                ?? throw new ConfigException('Set ' . self::constant($environment, $name, self::CERT) . ' in config.php to the PEM file of the certificate '
+                    . (($kind === Account::HOSTED) ? 'of the hosting service' : 'ISDS registered for the data box') . ' - a full path outside the directory of AA');
+
+            return Account::withCertificate($environment, $certificate, ($kind === Account::HOSTED) ? self::box($environment, $name, $constants) : '');
+        }
         $login    = self::key($environment, $name, self::LOGIN, $constants);
         $password = self::key($environment, $name, self::PASSWORD, $constants);
         if (is_null($login) || is_null($password)) {
@@ -290,17 +356,103 @@ final class Accounts
     }
 
     /**
-     * Whether a binding may be meant for the site or the slices. One whose site and slices cannot be
-     * read may be - if a SITE or SLICES constant is there, even an empty or unreadable one; without
-     * either (a stray AA_APIKEY_ISDS_TEST_LOGIN) it is bound to nothing.
+     * The data box a hosted filing service sends from - no secret, ISDS answers name it.
+     * @param array<string, mixed> $constants
+     * @throws ConfigException
      */
-    private static function concerns(Binding $b, string $site, string $campaignSlice, string $messageSlice): bool
+    private static function box(string $environment, string $name, #[\SensitiveParameter] array $constants): string
     {
-        $slices = array_filter([$b->campaignSlice, $b->messageSlice]);
+        $constant = self::constant($environment, $name, self::BOX);
+        $box      = self::key($environment, $name, self::BOX, $constants)
+            ?? throw new ConfigException("Set $constant in config.php to the id of the data box the account sends from");
+        try {
+            return Box::normalizeId($box->reveal());
+        } catch (\InvalidArgumentException $e) {
+            throw new ConfigException("$constant is not the id of a data box - 7 letters or digits", 0, $e);
+        }
+    }
 
-        return in_array($site, $b->sites, true)
-            || (array_intersect($slices, [$campaignSlice, $messageSlice]) !== [])
-            || ($b->targeted && ($b->sites === []) && ($slices === []));
+    /**
+     * CERT, with KEY and PASSPHRASE when set; null without CERT.
+     * @param array<string, mixed> $constants
+     * @throws ConfigException
+     */
+    private static function certificateOf(string $environment, string $name, #[\SensitiveParameter] array $constants): ?ClientCertificate
+    {
+        $certificate = self::key($environment, $name, self::CERT, $constants);
+        if (is_null($certificate)) {
+            return null;
+        }
+        $key = self::key($environment, $name, self::KEY, $constants);
+
+        return new ClientCertificate(
+            self::path($certificate->reveal(), self::constant($environment, $name, self::CERT), $constants),
+            is_null($key) ? '' : self::path($key->reveal(), self::constant($environment, $name, self::KEY), $constants),
+            self::key($environment, $name, self::PASSPHRASE, $constants) ?? new Secret(''),
+        );
+    }
+
+    /**
+     * A file config.php names: a relative path starts in CERT_DIR of the installation.
+     * @param array<string, mixed> $constants AA_BASE_PATH among them, as locsess.php defines it
+     * @throws ConfigException a relative path without AA_BASE_PATH - the directory PHP runs in is no base
+     */
+    private static function path(string $path, string $constant, #[\SensitiveParameter] array $constants): string
+    {
+        $path = trim($path);
+        if (str_starts_with($path, '/')) {
+            return $path;
+        }
+        $base = $constants['AA_BASE_PATH'] ?? null;
+        if (!is_string($base) || ($base === '')) {
+            throw new ConfigException("Give $constant in config.php a full path - AA_BASE_PATH, where a relative one starts, is not defined");
+        }
+
+        return rtrim($base, '/') . '/' . self::CERT_DIR . $path;
+    }
+
+    /**
+     * Whether a production account may be meant for the site or the slices. Every production account
+     * may be - bound, broken, or constants AA does not read for a typo in the name of the account or of
+     * the constant - unless the site and slice ids in it are all of others. Ids are taken wherever they
+     * stand in a SITE or SLICE constant: a list broken by one bad part still names its sites and slices,
+     * ids glued together are read apart, and a word of 16 or more letters, digits and dashes that is no
+     * id may be one of ours with a typo (AA reads no id with dashes).
+     * A forgotten SITE and SLICES proves nothing, and the test ISDS reaches nobody.
+     * @param array<string, mixed> $constants
+     */
+    private static function productionMeant(#[\SensitiveParameter] array $constants, string $site, string $campaignSlice, string $messageSlice): bool
+    {
+        $accounts = [];
+        $doubtful = [];
+        foreach (Store::contextsIn(self::VENDORS[Account::PRODUCTION], $constants) as $name => $context) {
+            // the account without the last word: Nszm_SLICES and NSZM_SITES belong to NSZM
+            $cut                = strrpos($context, '_');
+            $account            = strtoupper(($cut === false) ? '' : substr($context, 0, $cut));
+            $word               = strtoupper(($cut === false) ? $context : substr($context, $cut + 1));
+            $accounts[$account] ??= [];
+            // ids only, never a key: only the SITE and SLICE constants are read
+            if (str_starts_with($word, self::SITE) || str_starts_with($word, 'SLICE')) {
+                $value = $constants[$name] ?? '';
+                preg_match_all('/[0-9a-z-]+/i', is_scalar($value) ? (string) $value : '', $tokens);
+                foreach ($tokens[0] as $token) {
+                    if (((strlen($token) % 32) === 0) && ctype_xdigit($token)) {
+                        // ids glued together are read apart
+                        array_push($accounts[$account], ...str_split(strtolower($token), 32));
+                    } elseif (strlen($token) >= 16) {
+                        // an id with dashes, a digit too few or many, o for 0: maybe ours
+                        $doubtful[$account] = true;
+                    }
+                }
+            }
+        }
+        foreach ($accounts as $account => $ids) {
+            if (($ids === []) || isset($doubtful[$account]) || (array_intersect($ids, [$site, $campaignSlice, $messageSlice]) !== [])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** how to bind an account - nothing about the accounts there are, the State Check lists them */
@@ -310,7 +462,7 @@ final class Accounts
 
         return 'No usable ISDS account in include/config.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, set '
             . $constant(self::SITE) . " to '$site', " . $constant(self::SLICES) . " to '$campaignSlice,$messageSlice' (the campaign slice first), "
-            . $constant(self::LOGIN) . ' and ' . $constant(self::PASSWORD) . '; the State Check lists the accounts and their problems';
+            . $constant(self::LOGIN) . ' and ' . $constant(self::PASSWORD) . '; a production account logs in with a certificate (' . self::constant(Account::PRODUCTION, self::PLACEHOLDER, self::CERT) . ') instead. The State Check lists the accounts and their problems';
     }
 
     /**
@@ -352,16 +504,30 @@ final class Accounts
 
     /**
      * @param string $account an account, or PLACEHOLDER in advice
-     * @param string $kind    SITE, SLICES, LOGIN or PASSWORD
+     * @param string $kind    SITE, SLICES, LOGIN, PASSWORD, CERT, KEY, PASSPHRASE or BOX
      */
     public static function constant(string $environment, string $account, string $kind): string
     {
         return self::prefix($environment, $account) . "_$kind";
     }
 
-    /** @return list<string> the constants that set up an account, in the order config.php shows them */
-    public static function constants(string $environment, string $account): array
+    /**
+     * @param ?string $login Account::BASIC, CERT or HOSTED; null = of any login. Production never lists
+     *                       LOGIN and PASSWORD: it lets an application in with a certificate only
+     * @return list<string> the constants that set up an account, in the order config.php shows them
+     */
+    public static function constants(string $environment, string $account, ?string $login = null): array
     {
-        return array_map(static fn(string $kind): string => self::constant($environment, $account, $kind), [self::SITE, self::SLICES, self::LOGIN, self::PASSWORD]);
+        if (($environment === Account::PRODUCTION) && in_array($login, [null, Account::BASIC], true)) {
+            $login = Account::HOSTED;
+        }
+        $kinds = match ($login) {
+            Account::BASIC  => [self::LOGIN, self::PASSWORD],
+            Account::CERT   => [self::CERT, self::KEY, self::PASSPHRASE],
+            Account::HOSTED => [self::BOX, self::CERT, self::KEY, self::PASSPHRASE],
+            default         => [self::LOGIN, self::PASSWORD, self::BOX, self::CERT, self::KEY, self::PASSPHRASE],
+        };
+
+        return array_map(static fn(string $kind): string => self::constant($environment, $account, $kind), [self::SITE, self::SLICES, ...$kinds]);
     }
 }

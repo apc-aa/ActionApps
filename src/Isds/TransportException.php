@@ -40,7 +40,7 @@ final class TransportException extends IsdsException
      */
     public static function fromHttp(HttpTransportException $e, ?\Closure $redact = null): self
     {
-        $sent = !in_array($e->kind(), [HttpTransportException::ADDRESS, HttpTransportException::DNS], true);
+        $sent = !in_array($e->kind(), [HttpTransportException::ADDRESS, HttpTransportException::DNS, HttpTransportException::CLIENT_CERTIFICATE], true);
         $text = 'ISDS gave no answer: ' . $e->getMessage();
         return new self(is_null($redact) ? $text : $redact($text), $sent, '', $e, answered: false);
     }

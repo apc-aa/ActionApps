@@ -15,6 +15,7 @@ use AA\Optimize\Finding;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Exception\TimeoutException;
+use Tests\Unit\Fixtures\Certificates;
 use Tests\Unit\Fixtures\FakeHttp;
 use Tests\Unit\Optimize\Fixtures\ScriptedIsdsCheck;
 
@@ -30,6 +31,12 @@ final class CheckIsdsTest extends TestCase
     private const CAMPAIGN = 'cafe0000000000000000000000000001';
     private const MESSAGE  = 'beef0000000000000000000000000002';
 
+    /** two more accounts, each with slices of its own */
+    private const SITE2   = '51de0000000000000000000000000002';
+    private const SLICES2 = 'cafe0000000000000000000000000003,beef0000000000000000000000000004';
+    private const SITE3   = '51de0000000000000000000000000005';
+    private const SLICES3 = 'cafe0000000000000000000000000006,beef0000000000000000000000000007';
+
     private const LOGIN    = 'nszm01login';
     private const PASSWORD = 'Test-Pa55-never-shown';
 
@@ -38,12 +45,28 @@ final class CheckIsdsTest extends TestCase
 
     private const DAY = 86400;
 
+    private const PASSPHRASE = 'Pass-phrase-never-shown';
+
+    /** the certificates of this run, made in setUpBeforeClass() */
+    private static string $dir = '';
+
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';
         require_once __DIR__ . '/../fixtures/FakeHttp.php';
+        require_once __DIR__ . '/../fixtures/Certificates.php';
         require_once __DIR__ . '/../Isds/fixtures/MemoryLatch.php';
         require_once __DIR__ . '/fixtures/ScriptedIsdsCheck.php';
+        self::$dir           = Certificates::directory();
+        [$certificate, $key] = Certificates::make();
+        Certificates::file(self::$dir, 'both.pem', $certificate . $key);
+        Certificates::file(self::$dir, 'cert.pem', $certificate);
+        Certificates::file(self::$dir, 'encrypted.key', Certificates::encrypted($key, self::PASSPHRASE));
+    }
+
+    public static function tearDownAfterClass(): void
+    {
+        Certificates::remove(self::$dir);
     }
 
     public function test_types_extendedOnly(): void
@@ -205,7 +228,7 @@ final class CheckIsdsTest extends TestCase
 
         $findings = $check->findings();
 
-        self::assertSame(['busy:test:ECN', 'not-tried:test'], self::keys($findings));
+        self::assertSame(['busy:test:ECN', 'not-tried:test:ws1.datovka-test.gov.cz'], self::keys($findings));
         self::assertSame([Finding::WARNING, Finding::INFO], self::severities($findings));
         self::assertSame('ISDS asked account AA_APIKEY_ISDSTEST_ECN to come back later', $findings[0]->title);
         self::assertSame('ISDS accounts not tried, as ISDS did not answer: AA_APIKEY_ISDSTEST_NSZM', $findings[1]->title);
@@ -334,7 +357,141 @@ final class CheckIsdsTest extends TestCase
         self::assertSame(['GetOwnerInfoFromLogin2', 'GetUserInfoFromLogin2'], self::operations($check));
     }
 
+    /**
+     * A certificate has the rights 159 and no password: ISDS answers 2102 to both questions, and the
+     * list of operations of the client keeps it from the received messages - no warning about rights
+     */
+    #[DataProvider('certificateLogins')]
+    public function test_findings_certificateLoginAsksTheBoxOnly(string $box): void
+    {
+        $check = self::check(self::certificateAccount($box), self::answers('owner-info.xml', 'user-info.xml', 'password-info.xml'));
+
+        $findings = $check->findings();
+
+        self::assertSame([Finding::OK], self::severities($findings));
+        self::assertSame('ISDS accounts log in to their data boxes: AA_APIKEY_ISDS_NSZM (kv62bqf)', $findings[0]->title);
+        self::assertSame(['GetOwnerInfoFromLogin2'], self::operations($check));
+    }
+
+    public static function certificateLogins(): array
+    {
+        return ['system certificate' => [''], 'hosted filing service' => ['kv62bqf']];
+    }
+
+    #[DataProvider('certificateLogins')]
+    public function test_findings_refusedCertificateAdvice(string $box): void
+    {
+        $finding = self::check(self::certificateAccount($box), self::refusing())->findings()[0];
+
+        self::assertSame('auth:production:NSZM', $finding->key);
+        self::assertStringContainsString('certificate AA_APIKEY_ISDS_NSZM_CERT names', $finding->advice);
+        self::assertStringNotContainsString('_PASSWORD', $finding->advice);
+        if ($box !== '') {
+            self::assertStringContainsString("the data box $box allows the hosting service", $finding->advice);
+        }
+    }
+
+    /**
+     * Nothing is sent without a certificate that works, and CheckIsdsAccounts names the files: here it
+     * is a note that stops no other account
+     * @param array<string, string> $files
+     */
+    #[DataProvider('unusableCertificates')]
+    public function test_findings_unusableCertificateNotTried(array $files, string $problem): void
+    {
+        $check = self::check(self::certificateAccount(name: 'ECN', files: $files) + self::certificateAccount(site: self::SITE2, slices: self::SLICES2), self::answers('owner-info.xml'));
+
+        $findings = $check->findings();
+
+        self::assertSame(['certificate-unusable:production:ECN'], self::keys($findings));
+        self::assertSame([Finding::INFO], self::severities($findings));
+        self::assertStringStartsWith($problem, $findings[0]->evidence[0]['Problem']);
+        self::assertSame(['GetOwnerInfoFromLogin2'], self::operations($check), 'the other account is tried');
+        self::assertNoSecret($findings, [self::PASSPHRASE, self::$dir]);
+    }
+
+    public static function unusableCertificates(): array
+    {
+        return [
+            'no file'            => [['CERT' => 'none.pem'], 'PHP cannot read the certificate'],
+            'another passphrase' => [['CERT' => 'cert.pem', 'KEY' => 'encrypted.key', 'PASSPHRASE' => 'Another-pass-phrase'], 'The private key of the ISDS account does not open'],
+        ];
+    }
+
+    /**
+     * What only the TLS library of this server refuses - a key under its policy, a weak certificate in
+     * the chain - no other check sees: an error with the reason of OpenSSL, never the path
+     * @param array<string, string> $evidence
+     */
+    #[DataProvider('refusedByTls')]
+    public function test_findings_certificateRefusedByTls(string $error, array $evidence): void
+    {
+        $http = new class ($error) implements ClientInterface {
+            public function __construct(private readonly string $error) {}
+
+            public function request(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): Response
+            {
+                throw new HttpTransportException($this->error);
+            }
+        };
+
+        $findings = self::check(self::certificateAccount(), $http)->findings();
+
+        self::assertSame(['certificate-refused:production:NSZM'], self::keys($findings));
+        self::assertSame([Finding::ERROR], self::severities($findings));
+        self::assertSame('The TLS library of this server refuses the certificate of ISDS account AA_APIKEY_ISDS_NSZM', $findings[0]->title);
+        self::assertSame([$evidence + ['Problem' => 'This server could not use the certificate of the ISDS account for the connection - nothing was sent; the State Check tells more']], $findings[0]->evidence);
+        self::assertNoSecret($findings, ['/etc/aa-isds']);
+    }
+
+    public static function refusedByTls(): array
+    {
+        return [
+            'curl'        => ['Could not load PEM client certificate from /etc/aa-isds/nszm.pem, OpenSSL error error:0A00018F:SSL routines::ee key too small, (no key found, wrong passphrase, or wrong file format?)', ['Reason of OpenSSL' => 'ee key too small']],
+            'php streams' => ["fopen(): Unable to set local cert chain file `/etc/aa-isds/nszm.pem'; Check that your cafile/capath settings include details of your certificate and its issuer", []],
+            // the last code of OpenSSL, not a path that looks like one
+            'a code in the path'     => ['Could not load PEM client certificate from /etc/aa-isds/error:0A00018F:SSL routines::nszm.pem, OpenSSL error error:0A00018F:SSL routines::ee key too small, (no key found, wrong passphrase, or wrong file format?)', ['Reason of OpenSSL' => 'ee key too small']],
+            'routines:: in a path cut by curl' => ['Could not load PEM client certificate from /etc/aa-isds/routines::' . str_repeat('d/', 110) . ' for "https://ws1c.datovka.gov.cz/cert/DS/DsManage".', []],
+            // curl cuts its text at 256 bytes, then Symfony adds the URL
+            'cut by curl' => ['Could not load PEM client certificate from /etc/aa-isds/' . str_repeat('d/', 70) . 'nszm.pem, OpenSSL error error:0A00018F:SSL routines::ca key too smal for "https://ws1c.datovka.gov.cz/cert/DS/DsManage".', ['Reason of OpenSSL' => 'ca key too smal']],
+            'cut right after the code' => ['Could not load PEM client certificate from /etc/aa-isds/' . str_repeat('d/', 85) . 'nszm.pem, OpenSSL error error:0A00018F:SSL routines:: for "https://ws1c.datovka.gov.cz/cert/DS/DsManage".', []],
+            'markup in the reason' => ['Could not load PEM client certificate, OpenSSL error error:0A00018F:SSL routines::key <b>weak</b>', ['Reason of OpenSSL' => 'key &lt;b&gt;weak&lt;/b&gt;']],
+        ];
+    }
+
+    // a name and a password log in on ws1, a certificate on ws1c: one host without an answer stops only its accounts
+    public function test_findings_noAnswerStopsTheHost(): void
+    {
+        $constants = self::account('ECN', site: self::SITE2, slices: self::SLICES2)
+            + self::certificateAccount(name: 'MPSV', environment: 'ISDSTEST', site: self::SITE3, slices: self::SLICES3)
+            + self::account();
+        $check = self::check($constants, new FakeHttp([new Response(503, 'Service Unavailable'), new Response(200, self::fixture('owner-info.xml'))]));
+
+        $findings = $check->findings();
+
+        self::assertSame(['busy:test:ECN', 'not-tried:test:ws1.datovka-test.gov.cz'], self::keys($findings));
+        self::assertSame('ISDS accounts not tried, as ISDS did not answer: AA_APIKEY_ISDSTEST_NSZM', $findings[1]->title);
+        self::assertSame(['GetOwnerInfoFromLogin2', 'GetOwnerInfoFromLogin2'], self::operations($check), 'the certificate is tried');
+    }
+
     // ------------------------------------------------------------ helpers
+
+    /**
+     * @param string                $box   the data box of a hosted filing service; '' = a system certificate
+     * @param array<string, string> $files CERT and KEY name files of this run; PASSPHRASE as it is
+     * @return array<string, string> the constants of an account with a certificate
+     */
+    private static function certificateAccount(string $box = '', string $name = 'NSZM', array $files = ['CERT' => 'both.pem'], string $environment = 'ISDS', string $site = self::SITE, string $slices = self::CAMPAIGN . ',' . self::MESSAGE): array
+    {
+        $constants = ["AA_APIKEY_{$environment}_{$name}_SITE" => $site, "AA_APIKEY_{$environment}_{$name}_SLICES" => $slices];
+        foreach ($files + ['BOX' => $box] as $part => $value) {
+            if ($value !== '') {
+                $constants["AA_APIKEY_{$environment}_{$name}_$part"] = in_array($part, ['CERT', 'KEY'], true) ? self::$dir . "/$value" : $value;
+            }
+        }
+
+        return $constants;
+    }
 
     /** @param array<string, string> $constants */
     private static function check(array $constants, ?ClientInterface $http = null): ScriptedIsdsCheck
