@@ -21,14 +21,14 @@ final class SafeFile
     private const STRAY = 3600;
 
     /**
-     * $path opened for reading when it is a regular file of at most $maxBytes at the open - a FIFO put
-     * in its place would block the open, a device would never end. It may grow later: read() reads at
-     * most $maxBytes.
+     * $path opened for reading when it is a regular file - a FIFO put in its place would block the read
+     * (the open returns at once), a device would never end. Anything more to check about it, check
+     * through the handle (fstat()): the path may lead elsewhere by then.
      * @return resource
-     * @throws \UnexpectedValueException something else than such a file lies at $path
+     * @throws \UnexpectedValueException something else than a regular file lies at $path
      * @throws \RuntimeException          PHP cannot open $path
      */
-    public static function open(string $path, int $maxBytes)
+    public static function open(string $path)
     {
         error_clear_last();
         // 'n': a FIFO without a writer returns at once instead of blocking the open
@@ -37,25 +37,29 @@ final class SafeFile
             throw new \RuntimeException("Cannot read $path" . self::lastError());
         }
         $stat = fstat($file);
-        if (($stat === false) || (($stat['mode'] & self::S_IFMT) !== self::S_IFREG) || ($stat['size'] > $maxBytes)) {
+        if (($stat === false) || (($stat['mode'] & self::S_IFMT) !== self::S_IFREG)) {
             fclose($file);
-            throw new \UnexpectedValueException("$path is not a regular file of at most $maxBytes bytes");
+            throw new \UnexpectedValueException("$path is not a regular file");
         }
         stream_set_blocking($file, true);
+        stream_set_chunk_size($file, 1 << 20);  // a read of 8 KB is a network round trip on GlusterFS
         return $file;
     }
 
     /**
-     * The whole of $path, read once through one handle: it returns at most $maxBytes, reading at most a
-     * chunk more to tell a longer file
-     * @throws \UnexpectedValueException see open(); also a file that grew past $maxBytes
+     * The whole of $path, read once through one handle when it is a regular file of at most $maxBytes at
+     * the open. It may grow later: it returns at most $maxBytes, reading at most a chunk more to tell.
+     * @throws \UnexpectedValueException see open(); also a file larger than $maxBytes
      * @throws \RuntimeException          see open(); also a failed read
      */
     public static function read(string $path, int $maxBytes): string
     {
-        $file = self::open($path, $maxBytes);
+        $file = self::open($path);
         try {
-            stream_set_chunk_size($file, 1 << 20);  // a read of 8 KB is a network round trip on GlusterFS
+            $stat = fstat($file);
+            if (($stat === false) || ($stat['size'] > $maxBytes)) {
+                throw new \UnexpectedValueException("$path is not a regular file of at most $maxBytes bytes");
+            }
             $bytes = stream_get_contents($file, $maxBytes + 1);
         } finally {
             fclose($file);

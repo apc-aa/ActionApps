@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Upload;
 
+use AA\Util\SafeFile;
+
 /**
  * The upload directory of a slice, read by the URLs AA stores for its files - the one way to turn
  * such a URL back into the bytes on the disk. Nothing is ever fetched from the web: a URL must name a
@@ -12,8 +14,6 @@ namespace AA\Upload;
  */
 final readonly class UploadDir
 {
-    private const S_IFMT  = 0o170000;
-    private const S_IFREG = 0o100000;
     private const DEFAULT_PORTS = ['http' => 80, 'https' => 443];
 
     /** the directory's URL, for messages */
@@ -99,17 +99,14 @@ final readonly class UploadDir
     {
         $relative = $this->relative($url) ?? throw new \InvalidArgumentException("$url is not a file uploaded to $this->url");
         $path     = "$this->dir/$relative";
-        // a FIFO would block the request: is_file() first, and 'n' (O_NONBLOCK) for one swapped in since;
-        // @: under open_basedir the warnings name disk paths
-        $fh = @is_file($path) ? @fopen($path, 'rbn') : false;
-        if ($fh === false) {
+        try {
+            $fh = SafeFile::open($path);
+        } catch (\RuntimeException) {
+            // also a FIFO, a device or a directory; a message of our own, SafeFile's name disk paths
             throw new \RuntimeException("The file $url does not exist or cannot be read");
         }
         try {
-            $opened = fstat($fh);
-            if (!is_array($opened) || (($opened['mode'] & self::S_IFMT) !== self::S_IFREG)) {
-                throw new \RuntimeException("The file $url cannot be read");
-            }
+            $opened = fstat($fh) ?: throw new \RuntimeException("The file $url cannot be read");
             // realpath() answers from a per-process cache for up to 120 s - a link planted since would pass
             clearstatcache(true);
             $root = @realpath($this->dir);

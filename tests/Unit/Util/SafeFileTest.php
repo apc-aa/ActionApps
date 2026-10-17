@@ -147,7 +147,7 @@ final class SafeFileTest extends TestCase
     public function test_open_failureIsNoOtherFile(): void
     {
         try {
-            SafeFile::open($this->dir . '/none.xml', 1024);
+            SafeFile::open($this->dir . '/none.xml');
             self::fail('a missing file opened');
         } catch (\RuntimeException $e) {
             self::assertNotInstanceOf(\UnexpectedValueException::class, $e);
@@ -173,7 +173,24 @@ final class SafeFileTest extends TestCase
 
         $this->expectException(\UnexpectedValueException::class);
         $this->expectExceptionMessage('is not a regular file');
-        Alarm::within(2, fn() => SafeFile::open($this->path, 1024));
+        Alarm::within(2, fn() => SafeFile::open($this->path));
+    }
+
+    // refused by the size fstat() tells, before a byte is read
+    public function test_read_refusesALargerFileUnread(): void
+    {
+        ScriptedFile::$content = static fn(): string => str_repeat('a', 10);
+
+        try {
+            SafeFile::read('scripted://x', 5);
+            self::fail('a larger file read');
+        } catch (\UnexpectedValueException $e) {
+            self::assertStringContainsString('is not a regular file of at most 5 bytes', $e->getMessage());
+        } finally {
+            $served = ScriptedFile::$served;
+            ScriptedFile::reset();
+        }
+        self::assertSame(0, $served);
     }
 
     // fstat() told 10 bytes at the open; someone keeps writing to it

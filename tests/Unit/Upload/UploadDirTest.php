@@ -7,11 +7,17 @@ namespace Tests\Unit\Upload;
 use AA\Upload\UploadDir;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Fixtures\Alarm;
 
 final class UploadDirTest extends TestCase
 {
     private const URL = 'https://Example.org/img_upload/abc';
     private const PDF = "%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n";
+
+    public static function setUpBeforeClass(): void
+    {
+        require_once __DIR__ . '/../fixtures/Alarm.php';
+    }
 
     private string $root = '';
     private string $dir  = '';
@@ -149,6 +155,24 @@ final class UploadDirTest extends TestCase
         $this->uploads()->read(self::URL . '/missing.pdf', 1000);
     }
 
+    // PHP refused the open (EACCES, as on GlusterFS): the message is shown to the editor, never the disk path
+    public function test_read_unreadableFileWithoutDiskPath(): void
+    {
+        if (!function_exists('posix_geteuid') || (posix_geteuid() === 0)) {
+            self::markTestSkipped('root reads every file');
+        }
+        file_put_contents("$this->dir/a.pdf", self::PDF);
+        chmod("$this->dir/a.pdf", 0);
+
+        try {
+            $this->uploads()->read(self::URL . '/a.pdf', 1000);
+            self::fail('an unreadable file read');
+        } catch (\RuntimeException $e) {
+            self::assertStringContainsString(self::URL . '/a.pdf', $e->getMessage());
+            self::assertStringNotContainsString($this->root, $e->getMessage());
+        }
+    }
+
     public function test_read_directoryIsNoFile(): void
     {
         mkdir("$this->dir/x.pdf");
@@ -188,7 +212,7 @@ final class UploadDirTest extends TestCase
         posix_mkfifo("$this->dir/a.pdf", 0o600);
 
         $this->expectException(\RuntimeException::class);
-        $this->uploads()->read(self::URL . '/a.pdf', 1000);
+        Alarm::within(2, fn() => $this->uploads()->read(self::URL . '/a.pdf', 1000));
     }
 
     /** openedPath() with $fds in place of /proc/self/fd */
