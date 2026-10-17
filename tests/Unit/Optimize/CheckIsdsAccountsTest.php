@@ -427,8 +427,8 @@ final class CheckIsdsAccountsTest extends TestCase
         $finding = $check->findings()[0];
 
         self::assertSame([
-            ['Problem' => 'Site &quot;Terminal&quot; does not use slice &quot;ISDS campaigns&quot; - add the slice to Uses modules in the settings of the site'],
-            ['Problem' => 'Site &quot;Terminal&quot; does not use slice &quot;ISDS messages&quot; - add the slice to Uses modules in the settings of the site'],
+            ['Problem' => 'Site &quot;Terminal&quot; does not use slice ' . self::CAMPAIGN . ' - add the slice to Uses modules in the settings of the site'],
+            ['Problem' => 'Site &quot;Terminal&quot; does not use slice ' . self::MESSAGE . ' - add the slice to Uses modules in the settings of the site'],
             ['Problem' => 'Slice &quot;ISDS messages&quot; lacks fields of a message slice: switch.........1'],
         ], $finding->evidence);
         self::assertSame(['Site settings: Terminal', 'Fields: ISDS messages'], array_keys($finding->links));
@@ -438,6 +438,50 @@ final class CheckIsdsAccountsTest extends TestCase
         $links = $check->findings()[0]->links;
         self::assertSame(['Site settings: Terminal (51de0000)', 'Site settings: Terminal (5e7e0000)', 'Fields: ISDS messages'], array_keys($links));
         self::assertStringContainsString('change_id=' . self::SITE, $links['Site settings: Terminal (51de0000)']);
+    }
+
+    /** a page of SITE logged by AA\Isds\Gate, as LogOnce::recent() gives it */
+    private static function notReadyPage(string $campaign = self::CAMPAIGN): array
+    {
+        return ['selector' => self::SITE . ':' . $campaign, 'days' => '3', 'first' => '1790600000', 'last' => '1790800000', 'params' => 'Slice "ISDS <b>campaigns</b>" has no reading password'];
+    }
+
+    public function test_findings_pageNotReady(): void
+    {
+        $check        = self::check(self::account());
+        $check->pages = [self::notReadyPage(), self::notReadyPage('-')];
+
+        $findings = $check->findings();
+
+        self::assertSame([Finding::WARNING, Finding::WARNING], self::severities($findings), 'the accounts are ready - the pages only');
+        $finding = $findings[0];
+        self::assertSame('A page of site Terminal has a mass sending whose settings are not ready', $finding->title);
+        self::assertSame(['page:' . self::SITE . ':' . self::CAMPAIGN, 3, 1790600000, 1790800000, 'Terminal'], [$finding->key, $finding->count, $finding->since, $finding->last, $finding->place]);
+        self::assertSame(['Campaign slice' => 'ISDS campaigns', 'Problem' => 'Slice &quot;ISDS &lt;b&gt;campaigns&lt;/b&gt;&quot; has no reading password', 'Days seen' => '3', 'Last' => date('Y-m-d', 1790800000)], $finding->evidence[0]);
+        self::assertStringContainsString('srchbr_value%5B1%5D=ISDS_SETUP', $finding->links['Log rows']);
+        self::assertSame('-', $findings[1]->evidence[0]['Campaign slice'], 'settings naming no campaign slice');
+    }
+
+    // nobody may fix it on the page there - the administrator switches the site
+    public function test_findings_pageNotReadyOnASiteOnlyReadersLogInto(): void
+    {
+        $check                              = self::check(self::account());
+        $check->pages                       = [self::notReadyPage()];
+        $check->rules->permModes[self::SITE] = '2';
+
+        $finding = array_values(array_filter($check->findings(), static fn(Finding $f): bool => str_starts_with($f->key, 'page:')))[0];
+
+        self::assertStringStartsWith('Site "Terminal" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix', $finding->advice);
+        self::assertSame(['Log rows', 'Site settings'], array_keys($finding->links));
+        self::assertStringContainsString(SliceRules::SITE_PAGE . '?change_id=' . self::SITE, $finding->links['Site settings']);
+    }
+
+    public function test_findings_pageNotReadyWithoutAnAccount(): void
+    {
+        $check        = self::check([]);
+        $check->pages = [self::notReadyPage()];
+
+        self::assertSame(['page:' . self::SITE . ':' . self::CAMPAIGN], self::keys($check->findings()));
     }
 
     // ------------------------------------------------------------ helpers

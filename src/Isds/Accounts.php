@@ -55,7 +55,7 @@ final class Accounts
     /**
      * The account bound to the site and the pair of slices.
      *
-     * @param string $site        the site module the page belongs to (AA::$site_id), never a value from the template
+     * @param string $site        the site whose own page is rendered (AA_Module_Site::renderingPage()), never a value from the template
      * @param string $environment '' = test only when every production constant provably concerns other sites
      *                            or slices, else production; 'test' or 'production' = that one only (a template
      *                            narrows to test, a queued run asks for the environment it was queued in)

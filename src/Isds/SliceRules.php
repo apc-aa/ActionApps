@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\IO\DB\DB_AA;
+use AA\Isds\Registry\Config;
 use AA_Field;
 use AA_Generator;
 use AA_Generator_Txt;
@@ -24,11 +25,12 @@ class SliceRules
     public const CLOSED = ['d_listlen', 'permit_anonymous_post', 'permit_anonymous_edit'];
 
     // the admin pages that fix a problem
-    public const SLICE_PAGE   = 'admin/slicedit.php';
-    public const FIELDS_PAGE  = 'admin/se_fields.php';
-    public const FEEDING_PAGE = 'admin/se_import.php';
-    public const NOTIFY_PAGE  = 'admin/se_notify.php';
-    public const SITE_PAGE    = 'modules/site/modedit.php';
+    public const SLICE_PAGE    = 'admin/slicedit.php';
+    public const FIELDS_PAGE   = 'admin/se_fields.php';
+    public const FEEDING_PAGE  = 'admin/se_import.php';
+    public const NOTIFY_PAGE   = 'admin/se_notify.php';
+    public const SITE_PAGE     = 'modules/site/modedit.php';
+    public const REGISTRY_PAGE = 'admin/se_isds_registry.php';
 
     /** where else the items of a slice may go, see outlets() */
     public const OUTLETS = ['feeds_out', 'feeds_in', 'export', 'notify'];
@@ -53,9 +55,7 @@ class SliceRules
             $id    = ModuleId::normalize($typed);
             $slice = is_null($id) ? null : $this->slice($id);
             if (is_null($id) || is_null($slice)) {
-                $problems[] = (!is_null($id) && $this->inTrash($id))
-                    ? new SliceProblem(_m('Slice "%1" is in the trash - restore it from the trash, or name another slice', [$this->name($id)]))
-                    : new SliceProblem(_m('There is no slice %1', [$typed]));
+                $problems[] = $this->absent($typed, $id);
                 continue;
             }
             $fields[$campaign ? 'campaign' : 'message'] = [$id, iterator_to_array($slice->getFields())];
@@ -66,7 +66,7 @@ class SliceRules
     }
 
     /**
-     * The site uses both slices. Once for each site of the pair.
+     * The site uses both slices and lets AA tell who may send. Once for each site of the pair.
      * @return list<SliceProblem> none when ready
      */
     public function siteProblems(string $site, string $campaignSlice, string $messageSlice): array
@@ -77,20 +77,136 @@ class SliceRules
                 ? new SliceProblem(_m('Site "%1" is in the trash - restore it from the trash, or name another site', [$this->name($id)]))
                 : new SliceProblem(_m('There is no site %1', [$site]))];
         }
-        // a slice that is not there is a problem of the slices
-        $slices   = array_filter(array_unique([ModuleId::normalize($campaignSlice), ModuleId::normalize($messageSlice)]), fn(?string $slice): bool => !is_null($slice) && !is_null($this->slice($slice)));
         $problems = [];
-        foreach (array_diff($slices, $this->relatedModules($id)) as $slice) {
-            $problems[] = new SliceProblem(_m('Site "%1" does not use slice "%2" - add the slice to Uses modules in the settings of the site', [$this->name($id), $this->name($slice)]), $id, self::SITE_PAGE);
+        if ($this->onlyReadersLogIn($id)) {
+            $problems[] = new SliceProblem(_m('Site "%1" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to "%2" in the settings of the site', [$this->name($id), _m('AA + all Reader Management slices in AA (old behavior)')]), $id, self::SITE_PAGE);
+        }
+        // whether a slice the site does not use is there at all is none of the template's business; one in
+        // the trash is a problem of the slices - the site cannot use it
+        $slices = array_filter(array_unique([ModuleId::normalize($campaignSlice), ModuleId::normalize($messageSlice)]), fn(?string $slice): bool => !is_null($slice) && !$this->inTrash($slice));
+
+        return [...$problems, ...$this->unused($id, array_values($slices))];
+    }
+
+    /** site.php leaves AA only the logins of the site's readers then, and nobody has a right there - nor may fix the page */
+    public function onlyReadersLogIn(string $site): bool
+    {
+        return in_array($this->sitePermMode($site), ['1', '2'], true);
+    }
+
+    /**
+     * The slice the recipients come from: the site uses it, its settings of data boxes (Registry\Config)
+     * name the field of the type of an item and pair each type offered. Of a slice the site does not
+     * use it tells only that - the template may name a slice of another site.
+     * @param list<string> $types       the item types the page offers
+     * @param string       $memberField the field that tells a member; '' = none
+     * @return list<SliceProblem> none when ready
+     */
+    public function sourceProblems(string $site, string $sourceSlice, array $types, string $memberField): array
+    {
+        $id = ModuleId::normalize($sourceSlice);
+        if (is_null($id)) {
+            return [$this->absent($sourceSlice, $id)];
+        }
+        $problems = $this->unused((string) ModuleId::normalize($site), [$id]);
+        if ($problems) {
+            return $problems;
+        }
+        $slice = $this->slice($id);
+        if (is_null($slice)) {
+            return [$this->absent($sourceSlice, $id)];
+        }
+        $name   = $this->name($id);
+        $config = $this->registryConfig($id);
+        if (is_null($config)) {
+            $problems[] = new SliceProblem(_m('Slice "%1" has no settings of data boxes - set its fields on its page Data boxes from the register', [$name]), $id, self::REGISTRY_PAGE);
+        } elseif ($config->typeField() === '') {
+            $problems[] = new SliceProblem(_m('Slice "%1": choose the Type field in its settings of data boxes - recipients are chosen by type', [$name]), $id, self::REGISTRY_PAGE);
+        } elseif ($config->types() && ($unpaired = array_values(array_diff($types, $config->types())))) {
+            $problems[] = new SliceProblem(_m('Slice "%1" pairs no items of the types %2 with data boxes - offer only its Types to pair: %3', [$name, implode(', ', $unpaired), implode(', ', $config->types())]), $id, self::REGISTRY_PAGE);
+        }
+        if ($memberField !== '') {
+            $field = $slice->getField($memberField);
+            if (is_null($field)) {
+                $problems[] = new SliceProblem(_m('Slice "%1" has no field %2 - name the field that tells a member', [$name, $memberField]), $id, self::FIELDS_PAGE);
+            } elseif ($field->isProtected()) {
+                $problems[] = new SliceProblem(_m('The field %1 of slice "%2" is protected - name the field that tells a member', [$memberField, $name]), $id, self::FIELDS_PAGE);
+            }
         }
 
         return $problems;
+    }
+
+    /** the label of a page that fixes a problem (SliceProblem::$page) */
+    public static function pageLabel(string $page): string
+    {
+        return match ($page) {
+            self::SLICE_PAGE    => _m('Slice settings'),
+            self::FIELDS_PAGE   => _m('Fields'),
+            self::FEEDING_PAGE  => _m('Inner Node Feeding'),
+            self::NOTIFY_PAGE   => _m('Email Notification'),
+            self::SITE_PAGE     => _m('Site settings'),
+            self::REGISTRY_PAGE => _m('Data boxes from the register'),
+            default             => $page,
+        };
+    }
+
+    /**
+     * The pages that fix the problems, one link for each page of each module. Two modules of one name
+     * are told apart by the start of their ids.
+     * @param list<SliceProblem> $problems
+     * @return array<string, string> label => url
+     */
+    public function links(array $problems): array
+    {
+        $names = [];
+        foreach ($problems as $problem) {
+            if (($problem->module !== '') && ($problem->page !== '')) {
+                $names[$problem->module] ??= $this->name($problem->module);
+            }
+        }
+        $counts = array_count_values($names);
+        $links  = [];
+        foreach ($problems as $problem) {
+            if (!isset($names[$problem->module]) || ($problem->page === '')) {
+                continue;
+            }
+            $name = $names[$problem->module];
+            if ($counts[$name] > 1) {
+                $name .= ' (' . substr($problem->module, 0, 8) . ')';
+            }
+            $links[self::pageLabel($problem->page) . ': ' . $name] = AA_Module::getModuleUrl($problem->module, $problem->page);
+        }
+
+        return $links;
     }
 
     /** the name of the module, raw - without the marks of one in the trash; the id when it has none */
     public function name(string $id): string
     {
         return (string) AA_Module::getModuleProperty($id, 'name') ?: $id;
+    }
+
+    /** a slice that is not there, or is in the trash */
+    private function absent(string $typed, ?string $id): SliceProblem
+    {
+        return (!is_null($id) && $this->inTrash($id))
+            ? new SliceProblem(_m('Slice "%1" is in the trash - restore it from the trash, or name another slice', [$this->name($id)]))
+            : new SliceProblem(_m('There is no slice %1', [$typed]));
+    }
+
+    /**
+     * @param list<string> $slices ids in small letters
+     * @return list<SliceProblem> a slice the site does not use - by its id: its name is none of the site's business
+     */
+    private function unused(string $site, array $slices): array
+    {
+        $problems = [];
+        foreach (array_diff($slices, $this->relatedModules($site)) as $slice) {
+            $problems[] = new SliceProblem(_m('Site "%1" does not use slice %2 - add the slice to Uses modules in the settings of the site', [$this->name($site), $slice]), $site, self::SITE_PAGE);
+        }
+
+        return $problems;
     }
 
     /** @return list<SliceProblem> */
@@ -224,6 +340,18 @@ class SliceRules
     protected function relatedModules(string $site): array
     {
         return array_values(AA_Module_Site::getRelatedModules([$site]));
+    }
+
+    /** User login databases of the site: '1' or '2' = only its Reader Management slices log in on its pages */
+    protected function sitePermMode(string $site): string
+    {
+        return (string) AA_Module_Site::getModuleProperty($site, 'perm_mode');
+    }
+
+    /** the settings of data boxes of the slice */
+    protected function registryConfig(string $slice): ?Config
+    {
+        return Config::forSlice($slice);
     }
 
     /**

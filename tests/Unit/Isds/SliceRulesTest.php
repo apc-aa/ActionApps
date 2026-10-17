@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA\Isds\Registry\Config;
 use AA\Isds\Schema;
 use AA\Isds\SliceProblem;
 use AA\Isds\SliceRules;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
+use Tests\Unit\Isds\Fixtures\Sending;
 use Tests\Unit\Legacy\Fixtures\RecordingDb;
+
+// data providers read its ids before setUpBeforeClass()
+require_once __DIR__ . '/fixtures/Sending.php';
 
 /**
  * The rules a site and the two slices of a mass sending must pass - one problem per thing to fix,
@@ -18,10 +23,13 @@ use Tests\Unit\Legacy\Fixtures\RecordingDb;
  */
 final class SliceRulesTest extends TestCase
 {
-    private const SITE     = '51de0000000000000000000000000001';
-    private const SITE2    = '51de0000000000000000000000000002';
-    private const CAMPAIGN = 'cafe0000000000000000000000000001';
-    private const MESSAGE  = 'beef0000000000000000000000000002';
+    private const SITE     = Sending::SITE;
+    private const SITE2    = Sending::SITE2;
+    private const CAMPAIGN = Sending::CAMPAIGN;
+    private const MESSAGE  = Sending::MESSAGE;
+    private const SOURCE   = Sending::SOURCE;
+    private const OTHER    = Sending::OTHER;
+    private const MEMBER   = Sending::MEMBER;
 
     public static function setUpBeforeClass(): void
     {
@@ -251,21 +259,87 @@ final class SliceRulesTest extends TestCase
         $rules->related[self::SITE] = [];
 
         self::assertEquals([
-            new SliceProblem('Site "Terminal" does not use slice "ISDS campaigns" - add the slice to Uses modules in the settings of the site', self::SITE, SliceRules::SITE_PAGE),
-            new SliceProblem('Site "Terminal" does not use slice "ISDS messages" - add the slice to Uses modules in the settings of the site', self::SITE, SliceRules::SITE_PAGE),
-        ], $rules->siteProblems(self::SITE, self::CAMPAIGN, self::MESSAGE));
+            new SliceProblem('Site "Terminal" does not use slice ' . self::CAMPAIGN . ' - add the slice to Uses modules in the settings of the site', self::SITE, SliceRules::SITE_PAGE),
+            new SliceProblem('Site "Terminal" does not use slice ' . self::MESSAGE . ' - add the slice to Uses modules in the settings of the site', self::SITE, SliceRules::SITE_PAGE),
+        ], $rules->siteProblems(self::SITE, self::CAMPAIGN, self::MESSAGE), 'by the id - the name of a slice of another site is none of its business');
         self::assertCount(1, $rules->siteProblems(self::SITE, self::CAMPAIGN, strtoupper(self::CAMPAIGN)), 'one slice named twice');
     }
 
-    // a slice that is not there is a problem of the slices, not of the site
-    public function test_siteProblems_missingSliceNotAsUnused(): void
+    // the same whether the slice is there or not - a template may not learn which ids exist
+    public function test_siteProblems_missingSliceAsUnused(): void
+    {
+        $rules = self::ready();
+        $rules->related[self::SITE] = [self::CAMPAIGN];
+        $there = $rules->siteProblems(self::SITE, self::CAMPAIGN, self::MESSAGE);
+        unset($rules->slices[self::MESSAGE], $rules->names[self::MESSAGE]);
+
+        self::assertEquals([new SliceProblem('Site "Terminal" does not use slice ' . self::MESSAGE . ' - add the slice to Uses modules in the settings of the site', self::SITE, SliceRules::SITE_PAGE)], $there);
+        self::assertEquals($there, $rules->siteProblems(self::SITE, self::CAMPAIGN, self::MESSAGE));
+        self::assertSame([], $rules->siteProblems(self::SITE, self::CAMPAIGN, 'x'), 'no id: a problem of the settings');
+    }
+
+    // the site cannot use a slice in the trash - the slices tell to restore it
+    public function test_siteProblems_sliceInTheTrashLeftToTheSlices(): void
     {
         $rules = self::ready();
         unset($rules->slices[self::MESSAGE]);
+        $rules->trash               = [self::MESSAGE];
         $rules->related[self::SITE] = [self::CAMPAIGN];
 
         self::assertSame([], $rules->siteProblems(self::SITE, self::CAMPAIGN, self::MESSAGE));
-        self::assertSame([], $rules->siteProblems(self::SITE, self::CAMPAIGN, 'x'));
+    }
+
+    /** @return array<string, array{string, bool}> */
+    public static function permModes(): array
+    {
+        return [
+            'not set'                     => ['', false],
+            'first Reader Management'     => ['1', true],
+            'all its Reader Management'   => ['2', true],
+            'AA + all Reader Management'  => ['3', false],
+        ];
+    }
+
+    // site.php leaves AA only the logins of readers there, and nobody gets a right
+    #[DataProvider('permModes')]
+    public function test_siteProblems_onlyReadersLogIn(string $mode, bool $problem): void
+    {
+        $rules = self::ready();
+        $rules->permModes[self::SITE] = $mode;
+
+        self::assertEquals($problem ? [
+            new SliceProblem('Site "Terminal" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to "AA + all Reader Management slices in AA (old behavior)" in the settings of the site', self::SITE, SliceRules::SITE_PAGE),
+        ] : [], $rules->siteProblems(self::SITE, self::CAMPAIGN, self::MESSAGE));
+    }
+
+    public function test_siteProblems_onlyReadersLogInAndASliceNotUsed(): void
+    {
+        $rules = self::ready();
+        $rules->permModes[self::SITE] = '2';
+        $rules->related[self::SITE]   = [self::CAMPAIGN];
+
+        self::assertSame([
+            'Site "Terminal" lets only readers of its Reader Management slices log in, so nobody gets the right to send - set User login databases to "AA + all Reader Management slices in AA (old behavior)" in the settings of the site',
+            'Site "Terminal" does not use slice ' . self::MESSAGE . ' - add the slice to Uses modules in the settings of the site',
+        ], self::texts($rules->siteProblems(self::SITE, self::CAMPAIGN, self::MESSAGE)));
+    }
+
+    public function test_links_onePerPageOfAModule(): void
+    {
+        $rules = self::ready();
+        $rules->names[self::OTHER] = 'Terminal';
+        $links = $rules->links([
+            new SliceProblem('a', self::CAMPAIGN, SliceRules::SLICE_PAGE),
+            new SliceProblem('b', self::CAMPAIGN, SliceRules::SLICE_PAGE),
+            new SliceProblem('c', self::CAMPAIGN, SliceRules::FIELDS_PAGE),
+            new SliceProblem('d', self::SITE, SliceRules::SITE_PAGE),
+            new SliceProblem('e', self::OTHER, SliceRules::SITE_PAGE),
+            new SliceProblem('no page', self::MESSAGE),
+            new SliceProblem('no module'),
+        ]);
+
+        self::assertSame(['Slice settings: ISDS campaigns', 'Fields: ISDS campaigns', 'Site settings: Terminal (51de0000)', 'Site settings: Terminal (0e4e0000)'], array_keys($links));
+        self::assertStringContainsString('change_id=' . self::CAMPAIGN, $links['Fields: ISDS campaigns']);
     }
 
     // the statements themselves - FakeSliceRules answers in their place everywhere else
@@ -297,9 +371,75 @@ final class SliceRulesTest extends TestCase
         ], $log, 'the second time from the cache');
     }
 
+    public function test_sourceProblems_readyHasNone(): void
+    {
+        self::assertSame([], self::withSource()->sourceProblems(self::SITE, self::SOURCE, ['mesto', 'mestocast'], self::MEMBER));
+        self::assertSame([], self::withSource()->sourceProblems(self::SITE, self::SOURCE, ['mesto'], ''), 'without members');
+    }
+
+    // of a slice of another site only that it is not the site's - not its name, settings nor fields
+    public function test_sourceProblems_notUsedBySite(): void
+    {
+        $rules = self::withSource();
+        $rules->related[self::SITE] = [self::CAMPAIGN, self::MESSAGE];
+        $rules->configs             = [];
+        $unused                     = [new SliceProblem('Site "Terminal" does not use slice ' . self::SOURCE . ' - add the slice to Uses modules in the settings of the site', self::SITE, SliceRules::SITE_PAGE)];
+
+        self::assertEquals($unused, $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto', 'kraj'], 'number.........1'));
+        $rules->trash = [self::SOURCE];
+        unset($rules->slices[self::SOURCE]);
+        self::assertEquals($unused, $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], ''), 'nor that it is in the trash');
+        unset($rules->names[self::SOURCE]);
+        $rules->trash = [];
+        self::assertEquals($unused, $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], ''), 'nor whether it is there');
+        self::assertSame(['There is no slice x'], self::texts($rules->sourceProblems(self::SITE, 'x', ['mesto'], '')));
+    }
+
+    public function test_sourceProblems_noSettingsOfDataBoxes(): void
+    {
+        $rules = self::withSource();
+        $rules->configs = [];
+
+        self::assertEquals([new SliceProblem('Slice "Territory" has no settings of data boxes - set its fields on its page Data boxes from the register', self::SOURCE, SliceRules::REGISTRY_PAGE)], $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], ''));
+    }
+
+    public function test_sourceProblems_types(): void
+    {
+        $rules = self::withSource();
+
+        self::assertSame(['Slice "Territory" pairs no items of the types kraj, obec with data boxes - offer only its Types to pair: mesto, mestocast'], self::texts($rules->sourceProblems(self::SITE, self::SOURCE, ['mesto', 'kraj', 'obec'], '')));
+
+        $rules->configs[self::SOURCE] = Config::fromValues(self::SOURCE, ['name_field' => 'headline........', 'ds_field' => 'text..........11', 'type_field' => 'switch.........1']);
+        self::assertSame([], $rules->sourceProblems(self::SITE, self::SOURCE, ['kraj'], ''), 'pairs all types');
+
+        $rules->configs[self::SOURCE] = Config::fromValues(self::SOURCE, ['name_field' => 'headline........', 'ds_field' => 'text..........11']);
+        self::assertSame(['Slice "Territory": choose the Type field in its settings of data boxes - recipients are chosen by type'], self::texts($rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], '')));
+    }
+
+    public function test_sourceProblems_memberField(): void
+    {
+        $rules = self::withSource();
+
+        self::assertEquals([new SliceProblem('Slice "Territory" has no field number.........1 - name the field that tells a member', self::SOURCE, SliceRules::FIELDS_PAGE)], $rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], 'number.........1'));
+        self::assertSame(['The field password........ of slice "Territory" is protected - name the field that tells a member'], self::texts($rules->sourceProblems(self::SITE, self::SOURCE, ['mesto'], 'password........')));
+    }
+
+    public function test_pageLabel_everyPageOfAProblem(): void
+    {
+        foreach ([SliceRules::SLICE_PAGE, SliceRules::FIELDS_PAGE, SliceRules::FEEDING_PAGE, SliceRules::NOTIFY_PAGE, SliceRules::SITE_PAGE, SliceRules::REGISTRY_PAGE] as $page) {
+            self::assertNotSame($page, SliceRules::pageLabel($page));
+        }
+        self::assertSame('admin/other.php', SliceRules::pageLabel('admin/other.php'));
+    }
+
     private static function ready(): FakeSliceRules
     {
         return FakeSliceRules::ready(self::SITE, self::CAMPAIGN, self::MESSAGE);
+    }
+
+    private static function withSource(): FakeSliceRules
+    {
+        return self::ready()->withSource(self::SITE, self::SOURCE);
     }
 
     /**

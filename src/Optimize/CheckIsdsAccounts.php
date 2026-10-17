@@ -10,15 +10,19 @@ use AA\Isds\Account;
 use AA\Isds\Accounts;
 use AA\Isds\Binding;
 use AA\Isds\ConfigException;
+use AA\Isds\Gate;
 use AA\Isds\SliceProblem;
 use AA\Isds\SliceRules;
+use AA\Util\LogOnce;
+use AA_Log;
 use AA_Module;
 
 /**
  * The ISDS accounts include/config.php sets up (AA\Isds\Accounts): what to fix in their constants,
  * the constants AA does not read, whether the site and the slices each account is bound to are ready
- * (SliceRules - the rules the page that sends applies), and the files of a certificate. Constant names
- * and file names only, never a key or a passphrase. No network: CheckIsds logs in.
+ * (SliceRules - the rules the page that sends applies), the files of a certificate, and the pages whose
+ * settings of the sending were not ready (Gate logs them). Constant names and file names only, never a
+ * key or a passphrase. No network: CheckIsds logs in.
  */
 class CheckIsdsAccounts extends AbstractOptimize
 {
@@ -28,6 +32,10 @@ class CheckIsdsAccounts extends AbstractOptimize
     /** fewer are an error: registering a new certificate takes days */
     private const CERTIFICATE_ERROR_DAYS = 7;
 
+    /** a page not ready that long ago is likely fixed - Gate logs it once a day while it is not */
+    private const SETUP_WINDOW_SECONDS = 7 * 86400;
+    private const SETUP_ROWS           = 50;
+
     public static function name(): string
     {
         return _m('ISDS accounts');
@@ -35,7 +43,7 @@ class CheckIsdsAccounts extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Checks the ISDS accounts include/config.php sets up for sending to data boxes: their constants, the files of their certificates, and the site and slices each account sends for.');
+        return _m('Checks the ISDS accounts include/config.php sets up for sending to data boxes: their constants, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready in the last week.');
     }
 
     public static function types(): array
@@ -59,10 +67,11 @@ class CheckIsdsAccounts extends AbstractOptimize
         $constants = $this->constants();
         $bindings  = Accounts::bindings($constants);
         $strays    = Accounts::strays($constants);
+        $rules     = $this->sliceRules();
+        $pages     = $this->pageFindings($rules);
         if (!$bindings && !$strays) {
-            return [new Finding(Finding::OK, _m('No ISDS account is set up in include/config.php'))];
+            return $pages ?: [new Finding(Finding::OK, _m('No ISDS account is set up in include/config.php'))];
         }
-        $rules    = $this->sliceRules();
         $findings = [];
         foreach ($bindings as $binding) {
             if (!$binding->usable()) {
@@ -85,7 +94,45 @@ class CheckIsdsAccounts extends AbstractOptimize
             );
         }
 
-        return $findings ?: [new Finding(Finding::OK, _m('ISDS accounts ready to send: %1', [implode(', ', array_map(static fn(Binding $b): string => Accounts::prefix($b->environment, $b->name), $bindings))]))];
+        return [...$findings, ...$pages] ?: [new Finding(Finding::OK, _m('ISDS accounts ready to send: %1', [implode(', ', array_map(static fn(Binding $b): string => Accounts::prefix($b->environment, $b->name), $bindings))]))];
+    }
+
+    /**
+     * Pages of a mass sending whose settings were not ready, with the first problem - all of them the
+     * page tells to a user who may fix them.
+     * @return list<Finding>
+     */
+    private function pageFindings(SliceRules $rules): array
+    {
+        $findings = [];
+        foreach ($this->notReadyPages() as $row) {
+            $selector          = (string) $row['selector'];
+            [$site, $campaign] = array_pad(explode(':', $selector, 2), 2, '-');
+            $siteName          = is_long_id($site) ? $rules->name($site) : $site;
+            // nobody has a right on such a site, so nobody sees on the page what to fix
+            $readersOnly       = is_long_id($site) && $rules->onlyReadersLogIn($site);
+            $findings[]        = new Finding(
+                Finding::WARNING,
+                _m('A page of site %1 has a mass sending whose settings are not ready', [$siteName]),
+                count: (int) $row['days'],
+                since: (int) $row['first'],
+                evidence: [[
+                    _m('Campaign slice') => safe(is_long_id($campaign) ? $rules->name($campaign) : $campaign),
+                    _m('Problem')        => safe((string) $row['params']),
+                    _m('Days seen')      => (string) (int) $row['days'],
+                    _m('Last')           => date('Y-m-d', (int) $row['last']),
+                ]],
+                advice: $readersOnly
+                    ? _m('Site "%1" lets only readers of its Reader Management slices log in, so nobody may send there, nor see on the page what to fix - set User login databases to "%2" in the settings of the site, then open the page again.', [$siteName, _m('AA + all Reader Management slices in AA (old behavior)')])
+                    : _m('Open the page as a user who may edit all items of the campaign slice, or the code of the site: it lists all that is to fix in the settings of {datovkabulk:page}, with the pages that fix it.'),
+                links: [_m('Log rows') => AA_Log::getAdminUrl(Gate::LOG_EVENT, $selector)] + ($readersOnly ? [SliceRules::pageLabel(SliceRules::SITE_PAGE) => AA_Module::getModuleUrl($site, SliceRules::SITE_PAGE)] : []),
+                key: "page:$selector",
+                last: (int) $row['last'],
+                place: $siteName,
+            );
+        }
+
+        return $findings;
     }
 
     /** the account's own constants hold the problem */
@@ -274,52 +321,10 @@ class CheckIsdsAccounts extends AbstractOptimize
             count: count($problems),
             evidence: array_map(static fn(SliceProblem $problem): array => [_m('Problem') => safe($problem->text)], $problems),
             advice: _m('Fix what the evidence names before sending from these slices.'),
-            links: self::links($problems, $rules),
+            links: $rules->links($problems),
             key: "slices:{$binding->environment}:{$binding->name}",
             place: $rules->name($binding->campaignSlice),
         );
-    }
-
-    /**
-     * The pages that fix the problems, one link for each page of each module. Two modules of one name
-     * are told apart by the start of their ids.
-     * @param list<SliceProblem> $problems
-     * @return array<string, string> label => url
-     */
-    private static function links(array $problems, SliceRules $rules): array
-    {
-        $names = [];
-        foreach ($problems as $problem) {
-            if (($problem->module !== '') && ($problem->page !== '')) {
-                $names[$problem->module] ??= $rules->name($problem->module);
-            }
-        }
-        $counts = array_count_values($names);
-        $links  = [];
-        foreach ($problems as $problem) {
-            if (!isset($names[$problem->module]) || ($problem->page === '')) {
-                continue;
-            }
-            $name = $names[$problem->module];
-            if ($counts[$name] > 1) {
-                $name .= ' (' . substr($problem->module, 0, 8) . ')';
-            }
-            $links[self::pageLabel($problem->page) . ': ' . $name] = AA_Module::getModuleUrl($problem->module, $problem->page);
-        }
-
-        return $links;
-    }
-
-    private static function pageLabel(string $page): string
-    {
-        return match ($page) {
-            SliceRules::SLICE_PAGE   => _m('Slice settings'),
-            SliceRules::FIELDS_PAGE  => _m('Fields'),
-            SliceRules::FEEDING_PAGE => _m('Inner Node Feeding'),
-            SliceRules::NOTIFY_PAGE  => _m('Email Notification'),
-            SliceRules::SITE_PAGE    => _m('Site settings'),
-            default                  => $page,
-        };
     }
 
     // ------------------------------------------------------------ what tests replace
@@ -338,6 +343,12 @@ class CheckIsdsAccounts extends AbstractOptimize
     protected function now(): int
     {
         return time();
+    }
+
+    /** @return list<array<string, ?string>> LogOnce::recent() rows of Gate::LOG_EVENT */
+    protected function notReadyPages(): array
+    {
+        return LogOnce::recent(Gate::LOG_EVENT, $this->now() - self::SETUP_WINDOW_SECONDS, self::SETUP_ROWS);
     }
 
     /** the PHP_SAPI of the requests that read the key: apache2handler is PHP inside the web server */

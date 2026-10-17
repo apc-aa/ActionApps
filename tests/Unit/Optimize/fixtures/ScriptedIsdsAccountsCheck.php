@@ -8,8 +8,8 @@ use AA\Isds\SliceRules;
 use AA\Optimize\CheckIsdsAccounts;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
 
-/** CheckIsdsAccounts over the constants in $constants and the slice rules in $rules instead of
- *  include/config.php and the database, at the time $now, under the PHP SAPI $sapi. */
+/** CheckIsdsAccounts over the constants in $constants, the slice rules in $rules and the log rows in
+ *  $pages instead of include/config.php and the database, at the time $now, under the PHP SAPI $sapi. */
 final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
 {
     /** @var array<string, mixed> as Store::userConstants() */
@@ -18,6 +18,9 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
     public int $now = 1790841600;
 
     public string $sapi = 'cgi-fcgi';
+
+    /** @var list<array<string, ?string>> LogOnce::recent() rows of the pages not ready */
+    public array $pages = [];
 
     public function __construct(public FakeSliceRules $rules) {}
 
@@ -39,5 +42,10 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
     protected function sapi(): string
     {
         return $this->sapi;
+    }
+
+    protected function notReadyPages(): array
+    {
+        return $this->pages;
     }
 }

@@ -80,6 +80,7 @@ IMPORT_ERR      Import_{definition_id}          #id Class file:line            /
 IMPORT_BL       Import_{definition_id}          #id run_id user                // a baseline of an import started: versions recorded without importing (AA\Import\Service::start())
 ISDS_REG        download                        AA_ID                          // an attempt to download the register of data boxes - the next one waits 10 minutes (AA\Isds\Registry\Sync::download())
 ISDS_REG        look|read|download|write: message  slice_id                    // the register of data boxes could not be looked at, read or downloaded, or writing its boxes stopped; the page tells the editor only that, the message may name a server path - once a day (AA\Isds\Registry\Page, LogOnce)
+ISDS_SETUP      site_id:campaign_slice_id|-     the first problem              // {datovkabulk:page} on a page of the site with settings not ready - the page tells all of them only to a user who may fix them, once a day; State Check lists them (AA\Isds\Gate, LogOnce, CheckIsdsAccounts)
 AA_WARN
 */
 

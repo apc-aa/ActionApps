@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds\Fixtures;
 
+use AA\Isds\Registry\Config;
 use AA\Isds\Schema;
 use AA\Isds\SliceRules;
 use AA_Field;
@@ -36,6 +37,12 @@ final class FakeSliceRules extends SliceRules
     /** @var array<string, list<string>> slice id => its outlets there are (SliceRules::OUTLETS) */
     public array $outlets = [];
 
+    /** @var array<string, Config> slice id => its settings of data boxes */
+    public array $configs = [];
+
+    /** @var array<string, string> site => its User login databases (perm_mode) */
+    public array $permModes = [];
+
     /** @var list<string> ids PropertySlice registered process-wide */
     private static array $registered = [];
 
@@ -48,6 +55,20 @@ final class FakeSliceRules extends SliceRules
         $rules->names   = [$site => 'Terminal', $campaign => 'ISDS campaigns', $message => 'ISDS messages'];
 
         return $rules;
+    }
+
+    /**
+     * The site uses a slice of recipients, paired with data boxes by the types mesto and mestocast,
+     * members in switch.........9.
+     */
+    public function withSource(string $site, string $source): self
+    {
+        $this->related[$site][] = $source;
+        $this->slices[$source]  = self::fieldsSlice($source, ['headline........' => 'qte', 'switch.........9' => 'qte', 'password........' => 'pwd']);
+        $this->names           += [$source => 'Territory'];
+        $this->configs[$source] = Config::fromValues($source, ['name_field' => 'headline........', 'ds_field' => 'text..........11', 'type_field' => 'switch.........1', 'types' => ['mesto', 'mestocast']]);
+
+        return $this;
     }
 
     /**
@@ -82,6 +103,22 @@ final class FakeSliceRules extends SliceRules
         return new PropertySlice($id, new FakeFields($id, $fields), $props + $closed);
     }
 
+    /**
+     * A slice of text fields - a slice of recipients.
+     * @param array<string, string> $fields field id => its insert function (pwd: a password)
+     * @param array<string, mixed>  $props  slice settings (type)
+     */
+    public static function fieldsSlice(string $id, array $fields, array $props = []): PropertySlice
+    {
+        $objects = [];
+        foreach ($fields as $field => $insert) {
+            $objects[] = new AA_Field(['id' => $field, 'name' => $field, 'slice_id' => '', 'in_item_tbl' => '', 'text_stored' => 1, 'input_default' => 'txt:', 'input_show_func' => 'fld', 'input_insert_func' => $insert, 'content_edit' => 0, 'html_default' => 0, 'multiple' => 0]);
+        }
+        self::$registered[] = $id;
+
+        return new PropertySlice($id, new FakeFields($id, $objects), $props);
+    }
+
     /** the module registry is process-wide */
     public static function forget(): void
     {
@@ -114,6 +151,16 @@ final class FakeSliceRules extends SliceRules
     protected function relatedModules(string $site): array
     {
         return $this->related[$site] ?? [];
+    }
+
+    protected function sitePermMode(string $site): string
+    {
+        return $this->permModes[$site] ?? '';
+    }
+
+    protected function registryConfig(string $slice): ?Config
+    {
+        return $this->configs[$slice] ?? null;
     }
 
     protected function outlets(string $slice): array

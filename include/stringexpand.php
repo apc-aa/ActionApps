@@ -10596,6 +10596,40 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
     }
 }
 
+/** Mass sending by data box (ISDS) from include/config.php - opens its slices to who may send, on a page of the site
+ *    {datovkabulk:page:<settings>:{(<UI>)}:<no right>} - the settings as {jsonasoc:...} (AA\Isds\Setup); the UI only
+ *        for a user who may edit all items of the campaign slice (a reader through a set of readers), else <no right>.
+ *        Put the whole UI inside {(...)}: it stays unexpanded until the gate opens - not wrapped, it expands
+ *        before the gate decides. {(...)} ends at the first ")}", so keep that out of the UI (inline JavaScript).
+ *        Nothing before the gate may read the two slices, and the page must not be the page of their item.
+ *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
+ *        no campaign id only to save a new campaign
+ *    {datovkabulk:env}    - test | production, as include/config.php binds the slices
+ *    {datovkabulk:sender} - the data box it sends from, when AA knows it
+ *    {datovkabulk:result} - what the posted action did
+ *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
+ */
+class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
+
+    function expand($subcommand='', $settings='', $ui='', $refusal=''): string
+    {
+        $gate = $this->gate();
+        return match ((string)$subcommand) {
+            'page'   => $gate->page((string)$settings, (string)$ui, (string)$refusal, fn(string $text): string => AA::Un($text, '', $this->item, true, $this->itemview)),
+            'fields' => $gate->fields((string)$settings, (string)$ui),
+            'env'    => $gate->env(),
+            'sender' => $gate->sender(),
+            'result' => $gate->result(),
+            default  => '',
+        };
+    }
+
+    protected function gate(): \AA\Isds\Gate
+    {
+        return new \AA\Isds\Gate();
+    }
+}
+
 /** Rotates on one place in the page different contents (divs) with specified interval
  *  {rotator:<item-ids>:<html-code>:<interval>:<speed>:<effect>:<li-code>}
  *  {rotator:{ids:a24657bf895242c762607714dd91ed1e}:_#FOTO_S__<div>_#HEADLINE</div>}
