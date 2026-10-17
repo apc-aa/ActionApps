@@ -10,9 +10,12 @@ use AA\Http\Response;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException as HttpTransportException;
 use AA\Isds\Account;
+use AA\Isds\AddressBlockedException;
+use AA\Isds\AuthException;
 use AA\Isds\Client;
 use AA\Isds\File;
 use AA\Isds\IsdsException;
+use AA\Isds\LoginLatch;
 use AA\Isds\Message;
 use AA\Isds\SendResult;
 use AA\Isds\SentMessage;
@@ -27,7 +30,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Exception\TimeoutException;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Tests\Unit\Fixtures\FakeHttp;
+use Tests\Unit\Isds\Fixtures\MemoryLatch;
 
 final class ClientTest extends TestCase
 {
@@ -52,7 +57,9 @@ final class ClientTest extends TestCase
 
     public static function setUpBeforeClass(): void
     {
+        require_once __DIR__ . '/../fixtures/util_shims.php';     // the constants Secret::key() derives from
         require_once __DIR__ . '/../fixtures/FakeHttp.php';
+        require_once __DIR__ . '/fixtures/MemoryLatch.php';
     }
 
     private static function fixture(string $name): string
@@ -65,9 +72,10 @@ final class ClientTest extends TestCase
         return new FakeHttp([new Response($status, $xml)]);
     }
 
-    private static function client(ClientInterface $http, string $environment = Account::TEST): Client
+    /** a latch of its own unless one is given: a refusal must not latch another test */
+    private static function client(?ClientInterface $http = null, string $environment = Account::TEST, ?LoginLatch $latch = null, ?HttpClientInterface $transport = null, string $password = self::PASSWORD, string $login = self::LOGIN): Client
     {
-        return new Client(new Account($environment, self::LOGIN, new Secret(self::PASSWORD)), $http);
+        return new Client(new Account($environment, $login, new Secret($password)), $http, $transport, $latch ?? new MemoryLatch());
     }
 
     /** @param \Closure(): \Throwable $failure made inside request(), so that its trace has the request's arguments */
@@ -439,11 +447,21 @@ final class ClientTest extends TestCase
         self::assertEquals(new UserInfo(28, 'ENTRUSTED_USER'), self::client(self::answering(self::fixture('user-info.xml')))->userInfo());
     }
 
-    public function test_userInfo_noPrivilegesAreNone(): void
+    // left out or nil (dbTypes.xsd): not known - "no rights" would be a wrong answer
+    public function test_userInfo_noPrivilegesAreUnknown(): void
     {
-        $xml = self::changed('user-info.xml', '~<p:userPrivils>28</p:userPrivils>~', '');
+        foreach (['', '<p:userPrivils xsi:nil="true"/>'] as $replacement) {
+            $xml = self::changed('user-info.xml', '~<p:userPrivils>28</p:userPrivils>~', $replacement);
 
-        self::assertEquals(new UserInfo(0, 'ENTRUSTED_USER'), self::client(self::answering($xml))->userInfo());
+            self::assertEquals(new UserInfo(null, 'ENTRUSTED_USER'), self::client(self::answering($xml))->userInfo());
+        }
+    }
+
+    // the right each operation needs, from WS_manipulace_s_datovymi_zpravami.pdf 1.4; a change has to change this test
+    public function test_rights_ofEveryOperation(): void
+    {
+        self::assertSame(array_keys(Client::OPERATIONS), array_keys(Client::RIGHTS));
+        self::assertSame([4, 8, 8, 16, 0, 0, 0], array_values(Client::RIGHTS));
     }
 
     #[DataProvider('badUsers')]
@@ -595,22 +613,333 @@ final class ClientTest extends TestCase
         ];
     }
 
-    // a reused connection could send a message twice; a 20 MB upload is silent until its end
-    public function test_http_freshConnectionsAndLimits(): void
+    // a reused connection could send a message twice; a list of 1000 sent messages fits the answer limit
+    public function test_call_freshConnectionsAndSizeLimit(): void
     {
-        $limit = 8 * 1024 * 1024;
-        $seen  = [];
-        $http  = Client::http(new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen, $limit): MockResponse {
-            $seen[] = [$options['max_duration'], $options['timeout'], $options['extra']['curl'] ?? []];
-            return new MockResponse(str_repeat('x', $limit + count($seen) - 1));     // the limit, then one byte over
+        $limit  = 8 * 1024 * 1024;
+        $answer = self::fixture('owner-info.xml');
+        $answer .= '<!--' . str_repeat('x', $limit - strlen($answer) - 7) . '-->';
+        $seen   = [];
+        $client = self::client(transport: new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen, $answer): MockResponse {
+            $seen[] = $options['extra']['curl'] ?? [];
+            return new MockResponse($answer . str_repeat(' ', count($seen) - 1));     // the limit, then one byte over
         }));
 
-        self::assertSame($limit, strlen($http->request('POST', 'https://ws1.datovka-test.gov.cz/DS/dz', 'x')->body));
+        self::assertSame('kv62bqf', $client->ownerBox());
         try {
-            $http->request('POST', 'https://ws1.datovka-test.gov.cz/DS/dz', 'x');
-            self::fail('ResponseTooLargeException expected');
-        } catch (ResponseTooLargeException) {
-            self::assertSame([300.0, 300.0, [\CURLOPT_FRESH_CONNECT => true, \CURLOPT_FORBID_REUSE => true]], $seen[0]);
+            $client->ownerBox();
+            self::fail('TransportException expected');
+        } catch (TransportException $e) {
+            self::assertStringContainsString('too large', $e->getMessage());
+        }
+        self::assertSame([\CURLOPT_FRESH_CONNECT => true, \CURLOPT_FORBID_REUSE => true], $seen[0]);
+    }
+
+    // a 20 MB upload is silent until its end; nothing else may hold a run for minutes
+    public function test_call_timeLimitByOperation(): void
+    {
+        $seen      = [];
+        $transport = new MockHttpClient(static function (string $method, string $url, array $options) use (&$seen): MockResponse {
+            $seen[] = [basename($url), $options['max_duration'], $options['timeout']];
+            return new MockResponse(self::fixture(str_ends_with($url, '/dz') ? 'create-message-ok.xml' : 'owner-info.xml'));
+        });
+        $client = self::client(transport: $transport);
+
+        $client->ownerBox();
+        $client->createMessage(self::message());
+        $client->ownerBox();
+
+        self::assertSame([['DsManage', 30.0, 30.0], ['dz', 300.0, 300.0], ['DsManage', 30.0, 30.0]], $seen);
+    }
+
+    // ISDS blocks a login after failures, and the address of the server on suspicion
+    public function test_call_refusedLoginNotTriedAgain(): void
+    {
+        $latch = new MemoryLatch();
+        $http  = self::answering(self::fixture('unauthorized.html'), 401);
+
+        try {
+            self::client($http, latch: $latch)->ownerBox();
+            self::fail('AuthException expected');
+        } catch (AuthException $e) {
+            self::assertStringContainsString('Login blocked until', $e->getMessage());
+        }
+        foreach ([$latch, $latch->nextRun()] as $run) {
+            try {
+                self::client($http, latch: $run)->userInfo();
+                self::fail('AuthException expected');
+            } catch (AuthException $e) {
+                self::assertSame('ISDS refused this login at ' . date('Y-m-d H:i', $latch->now) . ' - AA does not try it again until the login or the password changes, or an administrator checks it again on the State Check page', $e->getMessage());
+                self::assertFalse($e->mayHaveBeenSent());
+            }
+        }
+        self::assertCount(1, $http->calls, 'no request after the refusal');
+        self::assertSame([LoginLatch::REFUSED], array_column($latch->rows, 'params'));
+    }
+
+    public function test_call_newPasswordTriedAgain(): void
+    {
+        $latch = new MemoryLatch();
+        $http  = self::answering(self::fixture('unauthorized.html'), 401);
+        try {
+            self::client($http, latch: $latch)->ownerBox();
+        } catch (AuthException) {
+        }
+        $http = self::answering(self::fixture('owner-info.xml'));
+
+        self::assertSame('kv62bqf', self::client($http, latch: $latch->nextRun(), password: 'Another-Pa55')->ownerBox());
+        self::assertCount(1, $http->calls);
+    }
+
+    // a person asks once more; a second account of the same login in that run does not
+    public function test_forgetRefusal_onceByAPerson(): void
+    {
+        $earlier = new MemoryLatch();
+        try {
+            self::client(self::answering(self::fixture('unauthorized.html'), 401), latch: $earlier)->ownerBox();
+        } catch (AuthException) {
+        }
+        $run    = $earlier->nextRun();
+        $http   = self::answering(self::fixture('unauthorized.html'), 401);
+        $client = self::client($http, latch: $run);
+
+        self::assertTrue($client->forgetRefusal());
+        try {
+            $client->ownerBox();
+            self::fail('AuthException expected');
+        } catch (AuthException $e) {
+            self::assertStringContainsString('HTTP 401', $e->getMessage(), 'asked ISDS');
+        }
+        $other = self::client($http, latch: $run);
+        self::assertFalse($other->forgetRefusal(), 'refused in this run');
+        try {
+            $other->ownerBox();
+        } catch (AuthException) {
+        }
+        self::assertCount(1, $http->calls);
+        self::assertSame([LoginLatch::REFUSED, LoginLatch::REFUSED], array_column($run->rows, 'params'));
+        self::assertFalse(self::client($http, latch: new MemoryLatch())->forgetRefusal(), 'nothing to forget');
+    }
+
+    /** @return array<string, array{\Closure(): ClientInterface, bool}> */
+    public static function answersToARetry(): array
+    {
+        $refused = static fn(): string => strtr(self::fixture('owner-info.xml'), ['0000' => '2011']);
+        return [
+            'the box'             => [static fn() => self::answering(self::fixture('owner-info.xml')), true],
+            'refused by a status' => [static fn() => self::answering($refused()), true],
+            'no answer'           => [static fn() => self::failing(static fn() => new HttpTransportException('No answer', 0, new TimeoutException('Idle timeout reached'))), false],
+            'come back later'     => [static fn() => self::answering('Service Unavailable', 503), false],
+            'unreadable'          => [static fn() => self::answering('<html>a gateway</html>'), false],
+        ];
+    }
+
+    /**
+     * A retry the daily run may build on only when ISDS took the login - a person's try that got no
+     * answer must leave the latch for the next run
+     * @param \Closure(): ClientInterface $http
+     */
+    #[DataProvider('answersToARetry')]
+    public function test_forgetRefusal_writtenOnceISDSTookTheLogin(\Closure $http, bool $took): void
+    {
+        $earlier = new MemoryLatch();
+        try {
+            self::client(self::answering(self::fixture('unauthorized.html'), 401), latch: $earlier)->ownerBox();
+        } catch (AuthException) {
+        }
+        $run    = $earlier->nextRun();
+        $client = self::client($http(), latch: $run);
+        self::assertTrue($client->forgetRefusal());
+
+        try {
+            $client->ownerBox();
+        } catch (IsdsException) {
+        }
+
+        self::assertSame($took ? [LoginLatch::REFUSED, LoginLatch::FORGOTTEN] : [LoginLatch::REFUSED], array_column($run->rows, 'params'));
+        self::assertSame(!$took, !is_null($run->nextRun()->refusedAt(new Account(Account::TEST, self::LOGIN, new Secret(self::PASSWORD)))));
+    }
+
+    // the address of the server: every account of the environment waits, the login is not latched
+    public function test_call_blockedAddressLatchesTheEnvironment(): void
+    {
+        $latch = new MemoryLatch();
+        $http  = self::answering(self::fixture('address-blocked.html'), 401);
+
+        try {
+            self::client($http, latch: $latch)->ownerBox();
+            self::fail('AddressBlockedException expected');
+        } catch (AddressBlockedException $e) {
+            self::assertStringStartsWith('ISDS blocked logins from the address of this server (HTTP 401): ', $e->getMessage());
+        }
+        self::assertSame([['selector' => 'blocked:test', 'params' => LoginLatch::BLOCKED, 'time' => $latch->now]], $latch->rows);
+
+        foreach ([$latch, $latch->nextRun(LoginLatch::BLOCK_HOURS * 3600 - 1)] as $run) {
+            try {
+                self::client($http, latch: $run, login: 'other01')->userInfo();
+                self::fail('AddressBlockedException expected');
+            } catch (AddressBlockedException $e) {
+                self::assertSame('ISDS blocked logins from the address of this server at ' . date('Y-m-d H:i', $latch->now) . ' - AA tries again ' . LoginLatch::BLOCK_HOURS . ' hours later, or when an administrator checks it again on the State Check page', $e->getMessage());
+            }
+        }
+        self::assertCount(1, $http->calls, 'no request while it stands');
+
+        $later = $latch->nextRun(LoginLatch::BLOCK_HOURS * 3600);
+        foreach (['one try', 'blocked again'] as $case) {
+            try {
+                self::client($http, latch: $later)->ownerBox();
+            } catch (AddressBlockedException) {
+            }
+        }
+        self::assertCount(2, $http->calls);
+        self::assertSame([LoginLatch::BLOCKED, LoginLatch::BLOCKED], array_column($later->rows, 'params'));
+        self::assertNull($later->refusedAt(new Account(Account::TEST, self::LOGIN, new Secret(self::PASSWORD))));
+    }
+
+    public function test_forgetRefusal_theBlockedAddress(): void
+    {
+        $earlier = new MemoryLatch();
+        try {
+            self::client(self::answering(self::fixture('address-blocked.html'), 401), latch: $earlier)->ownerBox();
+        } catch (AddressBlockedException) {
+        }
+        $run    = $earlier->nextRun();
+        $client = self::client(self::answering(self::fixture('owner-info.xml')), latch: $run, login: 'other01');
+
+        self::assertTrue($client->forgetRefusal());
+        self::assertSame('kv62bqf', $client->ownerBox());
+        self::assertSame([LoginLatch::BLOCKED, LoginLatch::FORGOTTEN], array_column($run->rows, 'params'));
+    }
+
+    // a cut through the login would leave its start, an entity spells it in other letters
+    public function test_call_errorTextsWithoutTheSecrets(): void
+    {
+        $login = 'qx7Login';
+        // ISDS texts are cut at 300 bytes: this one cuts the login after its fifth letter
+        $pair  = base64_encode("$login:" . self::PASSWORD);
+        $fault = str_replace('Validation error:', str_repeat('x', 295) . strtoupper($login) . ' ' . self::PASSWORD . " $pair", self::fixture('fault.xml'));
+        $html  = str_replace('Login blocked until', 'User ' . implode('', array_map(static fn(string $c): string => '&#' . ord($c) . ';', str_split($login))) . ' blocked until', self::fixture('unauthorized.html'));
+        $owner = str_replace('<p:dbID>kv62bqf</p:dbID>', "<p:dbID>$login</p:dbID>", self::fixture('owner-info.xml'));
+
+        foreach (['cut through the login' => [$fault, 500], 'in entities' => [$html, 401], 'as a value' => [$owner, 200]] as $case => [$body, $status]) {
+            try {
+                self::client(self::answering($body, $status), login: $login)->ownerBox();
+                self::fail("IsdsException expected: $case");
+            } catch (IsdsException $e) {
+                self::assertStringContainsString('***', $e->getMessage(), $case);
+                foreach ([substr($login, 0, 3), substr(self::PASSWORD, 0, 4), substr($pair, 0, 6)] as $start) {
+                    self::assertStringNotContainsStringIgnoringCase($start, $e->getMessage(), $case);
+                }
+            }
+        }
+    }
+
+    // quote() makes one space of two, and the excerpt of a long page cuts it: neither may come before redaction
+    public function test_call_secretsSpacedOrSplitByTheExcerpt(): void
+    {
+        $password = 'Qz8  spaced-Pass';
+        $fault    = str_replace('Validation error:', "Bad credentials $password:", self::fixture('fault.xml'));
+        $entities = implode('', array_map(static fn(string $c): string => '&#' . ord($c) . ';', str_split('Qz8Wk4Lm3Pv8')));
+        // the excerpt reads 4096 bytes; the cut falls in the entities, after the fifth letter
+        $head = '<html><body>' . str_repeat('<i></i>', 500);
+        $page = $head . str_repeat(' ', 4096 - strlen($head) - 6 * 5) . $entities . '</body></html>';
+
+        foreach (['spaced, in a fault' => [$fault, 500, $password], 'split by the cut' => [$page, 401, 'Qz8Wk4Lm3Pv8']] as $case => [$body, $status, $secret]) {
+            try {
+                self::client(self::answering($body, $status), password: $secret)->ownerBox();
+                self::fail("IsdsException expected: $case");
+            } catch (IsdsException $e) {
+                self::assertStringNotContainsString('Qz8', $e->getMessage(), $case);
+            }
+        }
+    }
+
+    /** @return array<string, array{string, string, string}> a page, the login, the password */
+    public static function cutSecrets(): array
+    {
+        $password = 'Qz8Wx7Lm3Pv8Rt5Yu2Io1PasW0rd';
+        $entities = static fn(string $text): string => implode('', array_map(static fn(string $c): string => '&#' . ord($c) . ';', str_split($text)));
+        // 20 letters, then the 21st zero-padded: the excerpt's cut falls 300 bytes into its padding
+        $padded = $entities(substr($password, 0, 20)) . '&#' . str_repeat('0', 400) . ord($password[20]) . ';' . $entities(substr($password, 21));
+        $before = strlen($entities(substr($password, 0, 20))) + 300;
+        // longer than the tail any login of a dozen letters needs
+        $login = str_repeat('Qz8', 100);
+        // a login shorter than *** makes the redacted body the longer one: 3616 bytes, 4216 redacted
+        $short = '<p><script>' . str_repeat('Q7 ', 600) . '</script>' . str_repeat(' ', 1646) . $entities($password);
+
+        return [
+            'a zero-padded entity'     => [self::page($padded, $before), self::LOGIN, $password],
+            'a long login'             => [self::page($login, 290), $login, self::PASSWORD],
+            'a login shorter than ***' => [$short, 'Q7', $password],
+        ];
+    }
+
+    // the redacted body decides whether the excerpt was cut: here only the raw one is over it
+    public function test_call_excerptOfABodyShorterOnceRedacted(): void
+    {
+        $page = '<p>' . self::PASSWORD . str_repeat(' ', 4097 - 3 - strlen(self::PASSWORD) - 9) . ' END-MARK';
+        try {
+            self::client(self::answering($page, 401))->ownerBox();
+            self::fail('AuthException expected');
+        } catch (AuthException $e) {
+            self::assertStringContainsString('*** END-MARK', $e->getMessage());
+        }
+    }
+
+    /** a 401 page longer than the excerpt, $secret starting $before bytes ahead of its cut */
+    private static function page(string $secret, int $before): string
+    {
+        return '<p>x' . str_repeat(' ', 4096 - 4 - $before) . $secret . str_repeat(' tail', 50);
+    }
+
+    // decoded, a secret the cut split leaves its start at the end of the text - all of it is dropped
+    #[DataProvider('cutSecrets')]
+    public function test_call_secretSplitByTheExcerpt(string $page, string $login, string $password): void
+    {
+        try {
+            self::client(self::answering($page, 401), password: $password, login: $login)->ownerBox();
+            self::fail('AuthException expected');
+        } catch (AuthException $e) {
+            self::assertStringNotContainsString('Qz8', $e->getMessage());
+        }
+    }
+
+    /** @return array<string, array{string, string}> a password, an error page that repeats it as it is */
+    public static function markupPasswords(): array
+    {
+        return [
+            'with a tag'       => ['Ab1<x>Secret99', '<p>Your password Ab1<x>Secret99 is wrong</p>'],
+            'with an entity'   => ['Ab&lt;cdef12', '<p>Your password Ab&lt;cdef12 is wrong</p>'],
+        ];
+    }
+
+    // stripped of tags or decoded, such a password is no longer the text redact() looks for
+    #[DataProvider('markupPasswords')]
+    public function test_call_passwordOfMarkupRedactedAsItCame(string $password, string $page): void
+    {
+        foreach ([401, 500] as $status) {
+            try {
+                self::client(self::answering($page, $status), password: $password)->ownerBox();
+                self::fail("IsdsException expected: HTTP $status");
+            } catch (IsdsException $e) {
+                self::assertStringContainsString('Your password *** is wrong', $e->getMessage(), "HTTP $status");
+            }
+        }
+    }
+
+    // the code is the part after the last colon - of the redacted code, not of the password
+    public function test_call_faultCodeWithoutAPasswordOfAColon(): void
+    {
+        $password = 'abc:defghXYZ12';
+        $fault    = str_replace('SOAP-ENV:Client', "SOAP-ENV:$password", self::fixture('fault.xml'));
+        foreach ([500, 400] as $status) {
+            try {
+                self::client(self::answering($fault, $status), password: $password)->ownerBox();
+                self::fail("IsdsException expected: HTTP $status");
+            } catch (IsdsException $e) {
+                self::assertSame('***', $e->isdsCode(), "HTTP $status");
+                self::assertStringNotContainsString('defgh', $e->getMessage(), "HTTP $status");
+            }
         }
     }
 }

@@ -34,24 +34,57 @@ final class Client
         'GetPasswordInfo'        => 'DsManage',    // db_access.wsdl
     ];
 
+    /**
+     * The right of the user each operation needs (UserInfo, WS_manipulace_s_datovymi_zpravami.pdf 1.4);
+     * 0 = none, the account questions
+     */
+    public const RIGHTS = [
+        'CreateMessage'          => UserInfo::CREATE_DM,
+        'GetMessageStateChanges' => UserInfo::VIEW_INFO,
+        'GetListOfSentMessages'  => UserInfo::VIEW_INFO,
+        'CheckDataBox'           => UserInfo::SEARCH_DB,
+        'GetUserInfoFromLogin2'  => 0,
+        'GetOwnerInfoFromLogin2' => 0,
+        'GetPasswordInfo'        => 0,
+    ];
+
     /** checkDataBox(): ISDS has no box of that id */
     public const NO_BOX = -1;
 
-    /** records of one sentMessages() call. ISDS gives more on request, the answer size limit of http() fits this */
+    /** records of one sentMessages() call. ISDS gives more on request, the answer size limit of limited() fits this */
     public const MAX_LIST = 1000;
 
-    public function __construct(private readonly Account $account, private readonly ClientInterface $http) {}
+    /**
+     * Seconds of a call: a 20 MB message (27 MB of base64) has to get up on a slow line with no answer
+     * until the last byte, so the idle limit is the whole time; the rest answers in seconds, and a
+     * dead ISDS must not hold the sending or the State Check for minutes.
+     */
+    private const TIMEOUTS = ['CreateMessage' => 300];
+    private const TIMEOUT  = 30;
+
+    /** @var array<int, ClientInterface> seconds => the HTTP client under that limit */
+    private array $clients = [];
+
+    private readonly LoginLatch $latch;
 
     /**
-     * The HTTP client for ISDS: a 20 MB message (27 MB of base64) has to get up in time - on a slow
-     * line with no answer until the last byte, so the idle limit is the whole time - and a list of
-     * 1000 sent messages (~2 MB) has to fit the answer limit. Never a reused connection: see
-     * TransportException::fromHttp().
-     * @param ?HttpClientInterface $transport the connection under these limits; another one for tests only
+     * @param ?ClientInterface     $http      answers every operation as it is, under no limit of this client - for tests
+     * @param ?HttpClientInterface $transport the connection under the limits of http(); another one for tests only
+     * @param ?LoginLatch          $latch     the refused logins; share one among the clients of a run
      */
-    public static function http(?HttpClientInterface $transport = null): ClientInterface
+    public function __construct(private readonly Account $account, private readonly ?ClientInterface $http = null, private readonly ?HttpClientInterface $transport = null, ?LoginLatch $latch = null)
     {
-        return new HttpClient(timeout: 300, idle: 300, http: $transport, maxBytes: 8 * 1024 * 1024, reuse: false);
+        $this->latch = $latch ?? new LoginLatch();
+    }
+
+    /**
+     * Lets a login ISDS refused, or the blocked address of the server, try once more - only when a
+     * person asks for it, never by itself: every refused attempt extends the block.
+     * @return bool a refusal or a block was forgotten
+     */
+    public function forgetRefusal(): bool
+    {
+        return $this->latch->forget($this->account);
     }
 
     /**
@@ -64,7 +97,7 @@ final class Client
     {
         $answer = $this->call(self::messageRequest($message));
         $id     = $answer->value('isds:dmID');
-        return new SendResult(self::messageId($id, 'ISDS accepted the message, but'), $answer->code, $answer->text);
+        return new SendResult($this->messageId($id, 'ISDS accepted the message, but'), $answer->code, $answer->text);
     }
 
     /**
@@ -87,7 +120,7 @@ final class Client
         $state = $answer->value('isds:dbState');
         // 0 or none is an error of ISDS (2.3)
         if (!in_array($state, ['1', '2', '3', '4', '5'], true)) {
-            throw TransportException::uncertain('ISDS answered the state of a data box "' . Soap::quote((string) $state, 32) . '"');
+            throw TransportException::uncertain('ISDS answered the state of a data box "' . $this->quote((string) $state, 32) . '"');
         }
         return (int) $state;
     }
@@ -108,11 +141,11 @@ final class Client
         $answer  = $this->call(Soap::request('GetMessageStateChanges', ['dmFromTime' => Soap::dateTime($from), 'dmToTime' => Soap::dateTime($to)]));
         $changes = [];
         foreach ($answer->elements('isds:dmRecords/isds:dmRecord') as $record) {
-            $id = self::messageId($answer->value('isds:dmID', $record), 'ISDS answered a state change, but');
+            $id = $this->messageId($answer->value('isds:dmID', $record), 'ISDS answered a state change, but');
             $changes[] = new StateChange(
                 $id,
-                self::number($answer->value('isds:dmMessageStatus', $record), "the state of message $id"),
-                Soap::timestamp($answer->value('isds:dmEventTime', $record) ?? ''),
+                $this->number($answer->value('isds:dmMessageStatus', $record), "the state of message $id"),
+                Soap::timestamp($answer->value('isds:dmEventTime', $record) ?? '', $this->account->redact(...)),
             );
         }
         return $changes;
@@ -147,14 +180,14 @@ final class Client
         $messages = [];
         foreach ($answer->elements('isds:dmRecords/isds:dmRecord') as $record) {
             // a record skipped could be the very message a caller looks for
-            $id = self::messageId($answer->value('isds:dmID', $record), 'ISDS listed a sent message, but');
+            $id = $this->messageId($answer->value('isds:dmID', $record), 'ISDS listed a sent message, but');
             $messages[] = new SentMessage(
                 $id,
-                self::number($answer->value('isds:dmMessageStatus', $record), "the state of message $id"),
+                $this->number($answer->value('isds:dmMessageStatus', $record), "the state of message $id"),
                 $answer->value('isds:dmSenderRefNumber', $record) ?? '',
-                self::boxId($answer->value('isds:dbIDRecipient', $record), "the recipient of message $id"),
-                self::time($answer->value('isds:dmDeliveryTime', $record)),
-                self::time($answer->value('isds:dmAcceptanceTime', $record)),
+                $this->boxId($answer->value('isds:dbIDRecipient', $record), "the recipient of message $id"),
+                $this->time($answer->value('isds:dmDeliveryTime', $record)),
+                $this->time($answer->value('isds:dmAcceptanceTime', $record)),
             );
         }
         return $messages;
@@ -171,7 +204,8 @@ final class Client
             throw TransportException::uncertain('ISDS answered without the user');
         }
         $privileges = $answer->value('isds:dbUserInfo/isds:userPrivils');
-        return new UserInfo(is_null($privileges) ? 0 : self::number($privileges, 'the privileges'), $answer->value('isds:dbUserInfo/isds:userType') ?? '');
+        // nil or left out (dbTypes.xsd): the rights are not known, which is no "none"
+        return new UserInfo(is_null($privileges) ? null : $this->number($privileges, 'the privileges'), $answer->value('isds:dbUserInfo/isds:userType') ?? '');
     }
 
     /**
@@ -183,7 +217,7 @@ final class Client
     public function passwordExpiry(): ?int
     {
         $expiry = $this->call(Soap::request('GetPasswordInfo', ['dbDummy' => '']))->value('isds:pswExpDate');
-        return is_null($expiry) ? null : Soap::timestamp($expiry);
+        return is_null($expiry) ? null : Soap::timestamp($expiry, $this->account->redact(...));
     }
 
     /**
@@ -192,7 +226,7 @@ final class Client
      */
     public function ownerBox(): string
     {
-        return self::boxId($this->call(Soap::request('GetOwnerInfoFromLogin2', ['dbDummy' => '']))->value('isds:dbOwnerInfo/isds:dbID'), 'the data box of the login');
+        return $this->boxId($this->call(Soap::request('GetOwnerInfoFromLogin2', ['dbDummy' => '']))->value('isds:dbOwnerInfo/isds:dbID'), 'the data box of the login');
     }
 
     /**
@@ -233,48 +267,107 @@ final class Client
         return $operation;
     }
 
-    /** @param \DOMElement $operation of Soap::request() - nothing else may hold its document */
+    /**
+     * Never a login ISDS refused before, nor from an address it blocked (LoginLatch); a refusal or a
+     * block now latches it.
+     * @param \DOMElement $operation of Soap::request() - nothing else may hold its document
+     */
     private function call(\DOMElement $operation): Answer
     {
-        $op  = (string) $operation->localName;
+        $op = (string) $operation->localName;
+        if (!is_null($blocked = $this->latch->blockedAt($this->account->environment))) {
+            throw new AddressBlockedException('ISDS blocked logins from the address of this server at ' . date('Y-m-d H:i', $blocked) . ' - AA tries again ' . LoginLatch::BLOCK_HOURS . ' hours later, or when an administrator checks it again on the State Check page');
+        }
+        if (!is_null($refused = $this->latch->refusedAt($this->account))) {
+            throw new AuthException('ISDS refused this login at ' . date('Y-m-d H:i', $refused) . ' - AA does not try it again until the login or the password changes, or an administrator checks it again on the State Check page');
+        }
         $xml = Soap::envelope($operation);
         // the DOM of a message is as large as its XML, which is all the request needs
         unset($operation);
+        $redact = $this->account->redact(...);
         try {
-            $response = $this->http->request('POST', $this->account->url(self::OPERATIONS[$op]), $xml, ['Content-Type' => 'text/xml; charset=utf-8', 'SOAPAction' => '""'] + $this->account->headers());
+            $response = $this->http($op)->request('POST', $this->account->url(self::OPERATIONS[$op]), $xml, ['Content-Type' => 'text/xml; charset=utf-8', 'SOAPAction' => '""'] + $this->account->headers());
         } catch (HttpTransportException $e) {
-            throw TransportException::fromHttp($e);
+            throw TransportException::fromHttp($e, $redact);
         } catch (ResponseTooLargeException $e) {
             throw TransportException::uncertain("The answer of ISDS to $op is too large", '', $e);
         }
-        return Soap::answer($response, $op);
+        try {
+            $answer = Soap::answer($response, $op, $redact, $this->account->longestSecret());
+        } catch (AddressBlockedException $e) {
+            // the address, not the login: a fingerprint latched here would outlast the block
+            $this->latch->block($this->account->environment);
+            throw $e;
+        } catch (AuthException $e) {
+            $this->latch->refuse($this->account);
+            throw $e;
+        } catch (IsdsException $e) {
+            // a status of ISDS: it took the login; a gateway or an unreadable answer does not tell
+            if (!($e instanceof TransportException) && !($e instanceof UnavailableException)) {
+                $this->latch->accepted($this->account);
+            }
+            throw $e;
+        }
+        $this->latch->accepted($this->account);
+
+        return $answer;
+    }
+
+    private function http(string $op): ClientInterface
+    {
+        if (!is_null($this->http)) {
+            return $this->http;
+        }
+        $timeout = self::TIMEOUTS[$op] ?? self::TIMEOUT;
+
+        return $this->clients[$timeout] ??= self::limited($timeout, $this->transport);
+    }
+
+    /**
+     * The HTTP client for ISDS: a list of 1000 sent messages (~2 MB) has to fit the answer limit.
+     * Never a reused connection: see TransportException::fromHttp().
+     */
+    private static function limited(int $timeout, ?HttpClientInterface $transport): ClientInterface
+    {
+        if ($timeout <= 0) {
+            // 0 is no limit at all to the HTTP library
+            throw new \LogicException('An ISDS call needs a time limit');
+        }
+
+        return new HttpClient(timeout: $timeout, idle: $timeout, http: $transport, maxBytes: 8 * 1024 * 1024, reuse: false);
+    }
+
+    /** a text of ISDS for an exception message, without the login or the password */
+    private function quote(string $text, int $bytes): string
+    {
+        return Soap::quote($this->account->redact($text), $bytes);
     }
 
     /**
      * dmID: at most 20 characters (tIdDm in dmBaseTypes.xsd), digits - ISDS numbers messages from a
      * sequence (WS_manipulace_s_datovymi_zpravami.pdf 2.1.3)
      */
-    private static function messageId(?string $id, string $context): string
+    private function messageId(?string $id, string $context): string
     {
         if (preg_match('/^\d{1,20}\z/', (string) $id) !== 1) {
-            throw TransportException::uncertain(is_null($id) ? "$context did not say the message id" : "$context answered the message id \"" . Soap::quote($id, 32) . '"');
+            throw TransportException::uncertain(is_null($id) ? "$context did not say the message id" : "$context answered the message id \"" . $this->quote($id, 32) . '"');
         }
         return (string) $id;
     }
 
-    private static function boxId(?string $id, string $what): string
+    private function boxId(?string $id, string $what): string
     {
         try {
             return Box::normalizeId((string) $id);
         } catch (\InvalidArgumentException $e) {
-            throw TransportException::uncertain("ISDS answered $what \"" . Soap::quote((string) $id, 32) . '"', '', $e);
+            throw TransportException::uncertain("ISDS answered $what \"" . $this->quote((string) $id, 32) . '"', '', $e);
         }
     }
 
-    private static function number(?string $value, string $what): int
+    private function number(?string $value, string $what): int
     {
         if (preg_match('/^\d{1,9}\z/', (string) $value) !== 1) {
-            throw TransportException::uncertain("ISDS answered $what \"" . Soap::quote((string) $value, 32) . '"');
+            throw TransportException::uncertain("ISDS answered $what \"" . $this->quote((string) $value, 32) . '"');
         }
         return (int) $value;
     }
@@ -291,8 +384,8 @@ final class Client
         return ($value === '') ? null : $value;
     }
 
-    private static function time(?string $value): ?int
+    private function time(?string $value): ?int
     {
-        return (($value === null) || ($value === '')) ? null : Soap::timestamp($value);
+        return (($value === null) || ($value === '')) ? null : Soap::timestamp($value, $this->account->redact(...));
     }
 }

@@ -14,7 +14,7 @@ use AA\Http\TransportException as HttpTransportException;
  */
 final class TransportException extends IsdsException
 {
-    public function __construct(string $message, private readonly bool $mayHaveBeenSent, string $isdsCode = '', ?\Throwable $previous = null)
+    public function __construct(string $message, private readonly bool $mayHaveBeenSent, string $isdsCode = '', ?\Throwable $previous = null, private readonly bool $answered = true)
     {
         parent::__construct($message, $isdsCode, $previous);
     }
@@ -24,17 +24,25 @@ final class TransportException extends IsdsException
         return $this->mayHaveBeenSent;
     }
 
+    /** an answer came, unreadable or not what was asked; false = no answer, ISDS may be down */
+    public function answered(): bool
+    {
+        return $this->answered;
+    }
+
     /**
      * Not sent only when the request cannot have left: a malformed address, a name that did not
      * resolve. A timeout, a reset or a TLS error may come after ISDS got the request, and a needless
      * lookup costs less than a letter delivered twice. This holds only because the client never
-     * reuses a connection (Client::http()): libcurl sends a request again by itself on a kept-alive
+     * reuses a connection (Client::limited()): libcurl sends a request again by itself on a kept-alive
      * connection the server closed, and then reports just the second attempt.
+     * @param ?\Closure(string): string $redact as Soap::answer()
      */
-    public static function fromHttp(HttpTransportException $e): self
+    public static function fromHttp(HttpTransportException $e, ?\Closure $redact = null): self
     {
         $sent = !in_array($e->kind(), [HttpTransportException::ADDRESS, HttpTransportException::DNS], true);
-        return new self('ISDS gave no answer: ' . $e->getMessage(), $sent, '', $e);
+        $text = 'ISDS gave no answer: ' . $e->getMessage();
+        return new self(is_null($redact) ? $text : $redact($text), $sent, '', $e, answered: false);
     }
 
     /** an answer came, but it does not say whether the work was done */

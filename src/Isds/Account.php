@@ -58,6 +58,40 @@ final class Account
     }
 
     /**
+     * $text without the login, the password and the pair the Authorization header carries - for the
+     * text of an error, before it is cut: a cut through a login would leave its start.
+     */
+    public function redact(string $text): string
+    {
+        return str_ireplace($this->secrets(), '***', $text);
+    }
+
+    /** bytes of the longest text redact() takes out */
+    public function longestSecret(): int
+    {
+        return strlen($this->secrets()[0]);
+    }
+
+    /** @return list<string> what redact() takes out, the longest first: the password may hold the login */
+    private function secrets(): array
+    {
+        $password = $this->password->reveal();
+        $secrets  = [base64_encode($this->login . ':' . $password), $password, $this->login];
+        usort($secrets, static fn(string $a, string $b): int => strlen($b) <=> strlen($a));
+
+        return $secrets;
+    }
+
+    /**
+     * Tells this login and password apart from others without keeping them: keyed, as an 8-character
+     * password could be guessed from a plain hash of it.
+     */
+    public function fingerprint(#[\SensitiveParameter] string $key): string
+    {
+        return hash_hmac('sha256', $this->environment . "\0" . $this->login . "\0" . $this->password->reveal(), $key);
+    }
+
+    /**
      * 8 to 64 characters: letters a-z A-Z, digits, a space and ASCII signs (WS_souvisejici_s_pristupem_
      * do_ISDS.pdf 1.9). Any printable ASCII passes - a password set under older rules may hold a sign
      * the list leaves out.

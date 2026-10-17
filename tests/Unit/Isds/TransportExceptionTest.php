@@ -21,6 +21,7 @@ final class TransportExceptionTest extends TestCase
         $e    = TransportException::fromHttp($http);
 
         self::assertSame($sent, $e->mayHaveBeenSent());
+        self::assertFalse($e->answered());
         self::assertSame('', $e->isdsCode());
         self::assertSame($http, $e->getPrevious());
         self::assertStringStartsWith('ISDS gave no answer: ', $e->getMessage());
@@ -48,6 +49,6 @@ final class TransportExceptionTest extends TestCase
         $previous = new \UnexpectedValueException('not XML');
         $e        = TransportException::uncertain('ISDS answered something else', '9200', $previous);
 
-        self::assertSame([true, '9200', $previous], [$e->mayHaveBeenSent(), $e->isdsCode(), $e->getPrevious()]);
+        self::assertSame([true, true, '9200', $previous], [$e->mayHaveBeenSent(), $e->answered(), $e->isdsCode(), $e->getPrevious()]);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds;
 
 use AA\Http\Response;
+use AA\Isds\AddressBlockedException;
 use AA\Isds\AuthException;
 use AA\Isds\IsdsException;
 use AA\Isds\Soap;
@@ -178,6 +179,40 @@ final class SoapTest extends TestCase
         } catch (AuthException $e) {
             self::assertStringContainsString('Login blocked until: 13:04:39', $e->getMessage());
             self::assertStringNotContainsString('<', $e->getMessage());
+        }
+    }
+
+    /** @return array<string, array{string, class-string}> */
+    public static function pages401(): array
+    {
+        $page = static fn(string $said): string => '<html><body><h1>Authentication required!</h1><p>This server could not verify that you are authorized to access the URL "/DS/df".</p>'
+            . "<p>$said</p><p>In case you are allowed to request the document, please check your user-id and password and try again.</p></body></html>";
+        return [
+            'as documented'       => [self::fixture('address-blocked.html'), AddressBlockedException::class],
+            'in capitals'         => [$page('BEZPECNOSTNI MECHANISMUS ISDS NEUMOZNIL PRIHLASENI.'), AddressBlockedException::class],
+            'over lines'          => [$page("Bezpecnostni\n\t mechanismus ISDS\r\nneumoznil prihlaseni."), AddressBlockedException::class],
+            'with diacritics'     => [$page('Bezpečnostní mechanismus ISDS neumožnil přihlášení.'), AddressBlockedException::class],
+            'in CP1250'           => [$page("Bezpe\xE8nostn\xED mechanismus ISDS neumo\x9Enil p\xF8ihl\xE1\x9Aen\xED."), AddressBlockedException::class],
+            'in entities'         => [$page('Bezpe&#269;nostn&iacute; mechanismus ISDS neumo&#382;nil p&#345;ihl&aacute;&scaron;en&iacute;.'), AddressBlockedException::class],
+            'by &nbsp;'           => [$page('Bezpecnostni&nbsp;mechanismus&nbsp;ISDS&nbsp;neumoznil&nbsp;prihlaseni.'), AddressBlockedException::class],
+            'by a no-break space' => [$page("Bezpecnostni\u{00A0}mechanismus ISDS neumoznil prihlaseni."), AddressBlockedException::class],
+            'with a tag inside'   => [$page('Bezpecnostni mechanismus <b>ISDS</b> neumoznil prihlaseni.'), AddressBlockedException::class],
+            // UTF-8 still, though the cut splits the two bytes of a ž
+            'cut in a letter'     => [str_pad('<p>Bezpečnostní mechanismus ISDS neumožnil přihlášení.</p><p>', 4095, 'x') . str_repeat('ž', 100), AddressBlockedException::class],
+            'the login blocked'   => [self::fixture('unauthorized.html'), AuthException::class],
+            'past the first 4 KB' => [$page(str_repeat('<i></i>', 600) . 'Bezpecnostni mechanismus ISDS neumoznil prihlaseni.'), AuthException::class],
+        ];
+    }
+
+    // the address of the server, not the login: ISDS may write it in other letters, a proxy re-encode it
+    #[DataProvider('pages401')]
+    public function test_answer_401BlockedAddressInAnyLetters(string $body, string $class): void
+    {
+        try {
+            Soap::answer(new Response(401, $body), 'GetOwnerInfoFromLogin2');
+            self::fail('AuthException expected');
+        } catch (AuthException $e) {
+            self::assertSame($class, $e::class);
         }
     }
 

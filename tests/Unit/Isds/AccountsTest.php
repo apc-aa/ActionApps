@@ -375,6 +375,37 @@ final class AccountsTest extends TestCase
     }
 
     /** the vendor and the account come from the constant names as Store spells them, nothing else */
+    public function test_account_ofAUsableBinding(): void
+    {
+        $constants = self::testAccount();
+
+        $account = Accounts::account(self::binding($constants), $constants);
+
+        self::assertSame([Account::TEST, self::LOGIN], [$account->environment, $account->login]);
+        self::assertSame(['Authorization' => 'Basic ' . base64_encode(self::LOGIN . ':' . self::PASSWORD)], $account->headers());
+    }
+
+    // a binding without its site or slices is not one to send with
+    public function test_account_refusesAnUnusableBinding(): void
+    {
+        $constants = self::testAccount(site: null);
+        try {
+            Accounts::account(self::binding($constants), $constants);
+            self::fail('ConfigException expected');
+        } catch (ConfigException $e) {
+            self::assertStringContainsString('AA_APIKEY_ISDSTEST_NSZM_SITE', $e->getMessage());
+            self::assertStringNotContainsString(self::PASSWORD, $e->getMessage());
+        }
+    }
+
+    public function test_constants_namesOfAnAccount(): void
+    {
+        self::assertSame('AA_APIKEY_ISDSTEST_NSZM', Accounts::prefix(Account::TEST, 'NSZM'));
+        self::assertSame('AA_APIKEY_ISDS_', Accounts::prefix(Account::PRODUCTION, ''));
+        self::assertSame('AA_APIKEY_ISDS_NSZM_LOGIN', Accounts::constant(Account::PRODUCTION, 'NSZM', Accounts::LOGIN));
+        self::assertSame(['AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN', 'AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD'], Accounts::constants(Account::TEST, Accounts::PLACEHOLDER));
+    }
+
     public function test_strays_whatIsNoAccount(): void
     {
         $constants = [

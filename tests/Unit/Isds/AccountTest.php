@@ -111,6 +111,29 @@ final class AccountTest extends TestCase
         self::assertSame(['Authorization' => 'Basic ' . base64_encode('user01:' . self::PASSWORD)], self::account()->headers());
     }
 
+    public function test_redact_loginPasswordAndPair(): void
+    {
+        $pair = base64_encode('user01:' . self::PASSWORD);
+
+        self::assertSame('*** no *** in ***, ***; user0', self::account()->redact('USER01 no ' . self::PASSWORD . " in $pair, user01; user0"));
+    }
+
+    // the longest first: the password may hold the login
+    public function test_redact_passwordHoldingTheLogin(): void
+    {
+        self::assertSame('a *** b', self::account(password: 'user01-secret')->redact('a user01-secret b'));
+    }
+
+    public function test_fingerprint_keyedAndOfAllThree(): void
+    {
+        $fingerprint = self::account()->fingerprint('key');
+
+        self::assertSame(hash_hmac('sha256', "test\0user01\0" . self::PASSWORD, 'key'), $fingerprint);
+        self::assertNotSame($fingerprint, self::account()->fingerprint('other key'));
+        self::assertNotSame($fingerprint, self::account(password: 'Another-Pa55')->fingerprint('key'));
+        self::assertNotSame($fingerprint, self::account(login: 'user02')->fingerprint('key'));
+    }
+
     public function test_password_notInDumps(): void
     {
         $account = self::account();

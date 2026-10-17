@@ -29,6 +29,9 @@ final class Accounts
     public const LOGIN    = 'LOGIN';
     public const PASSWORD = 'PASSWORD';
 
+    /** the account in advice that shows how to name the constants */
+    public const PLACEHOLDER = '<ACCOUNT>';
+
     /** the key vendor of each environment */
     public const VENDORS = [Account::PRODUCTION => 'isds', Account::TEST => 'isdstest'];
 
@@ -78,6 +81,21 @@ final class Accounts
         }
 
         return self::login($binding->environment, $binding->name, $constants);
+    }
+
+    /**
+     * The account of a binding, for a caller that goes through bindings() - State Check. A template
+     * asks forSlices(), which checks the site and the slices first.
+     * @param array<string, mixed>|null $constants as forSlices()
+     * @throws ConfigException the binding is not usable - its problems say why
+     */
+    public static function account(Binding $binding, #[\SensitiveParameter] ?array $constants = null): Account
+    {
+        if (!$binding->usable()) {
+            throw new ConfigException('Fix the constants of ' . self::prefix($binding->environment, $binding->name) . ' in config.php first: ' . implode('; ', $binding->problems));
+        }
+
+        return self::login($binding->environment, $binding->name, $constants ?? Store::userConstants());
     }
 
     /**
@@ -288,7 +306,7 @@ final class Accounts
     /** how to bind an account - nothing about the accounts there are, the State Check lists them */
     private static function refusal(string $site, string $campaignSlice, string $messageSlice): string
     {
-        $constant = static fn(string $kind): string => self::constant(Account::TEST, '<ACCOUNT>', $kind);
+        $constant = static fn(string $kind): string => self::constant(Account::TEST, self::PLACEHOLDER, $kind);
 
         return 'No usable ISDS account in include/config.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, set '
             . $constant(self::SITE) . " to '$site', " . $constant(self::SLICES) . " to '$campaignSlice,$messageSlice' (the campaign slice first), "
@@ -326,9 +344,24 @@ final class Accounts
         return $ids;
     }
 
-    /** @param string $account an account, or <ACCOUNT> in advice */
-    private static function constant(string $environment, string $account, string $kind): string
+    /** the start the constants of an account share: AA_APIKEY_ISDSTEST_NSZM; '' account = of all accounts */
+    public static function prefix(string $environment, string $account): string
     {
-        return Store::names(self::VENDORS[$environment])[0] . "_{$account}_{$kind}";
+        return Store::names(self::VENDORS[$environment])[0] . "_$account";
+    }
+
+    /**
+     * @param string $account an account, or PLACEHOLDER in advice
+     * @param string $kind    SITE, SLICES, LOGIN or PASSWORD
+     */
+    public static function constant(string $environment, string $account, string $kind): string
+    {
+        return self::prefix($environment, $account) . "_$kind";
+    }
+
+    /** @return list<string> the constants that set up an account, in the order config.php shows them */
+    public static function constants(string $environment, string $account): array
+    {
+        return array_map(static fn(string $kind): string => self::constant($environment, $account, $kind), [self::SITE, self::SLICES, self::LOGIN, self::PASSWORD]);
     }
 }
