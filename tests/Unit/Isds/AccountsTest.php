@@ -80,14 +80,21 @@ final class AccountsTest extends TestCase
         return "No usable ISDS account in include/config.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, set AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE to '$site', AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES to '$campaign,$message' (the campaign slice first), AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN and AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD; a production account logs in with a certificate (AA_APIKEY_ISDS_<ACCOUNT>_CERT) instead. The State Check lists the accounts and their problems";
     }
 
+    /** forSlices() and binding() refuse alike */
     private static function assertRefused(array $constants, string $environment = '', string $site = self::SITE, string $campaign = self::CAMPAIGN, string $message = self::MESSAGE): void
     {
-        try {
-            Accounts::forSlices($site, $campaign, $message, $environment, $constants);
-            self::fail('ConfigException expected');
-        } catch (ConfigException $e) {
-            self::assertSame(self::refusalText(strtolower($site), strtolower($campaign), strtolower($message)), $e->getMessage());
-            self::assertNull($e->getPrevious());
+        $calls = [
+            'forSlices' => static fn() => Accounts::forSlices($site, $campaign, $message, $environment, $constants),
+            'binding'   => static fn() => Accounts::binding($site, $campaign, $message, $environment, $constants),
+        ];
+        foreach ($calls as $name => $call) {
+            try {
+                $call();
+                self::fail("$name: ConfigException expected");
+            } catch (ConfigException $e) {
+                self::assertSame(self::refusalText(strtolower($site), strtolower($campaign), strtolower($message)), $e->getMessage(), $name);
+                self::assertNull($e->getPrevious(), $name);
+            }
         }
     }
 
@@ -211,6 +218,19 @@ final class AccountsTest extends TestCase
             'a word of 15 letters'            => [self::productionAccount(slices: self::PAIR2 . ',abcdefghijklmno', site: self::SITE2), false],
             'short hex words beside others'   => [self::productionAccount(slices: self::PAIR2, site: self::SITE2 . ' # cafe beef dead'), false],
         ];
+    }
+
+    /** each site and pair its binding; production where it is bound, with the login its constants mean */
+    public function test_binding_eachSiteAndPairItsAccount(): void
+    {
+        $two  = self::testAccount('A', login: 'login-a') + self::testAccount('B', self::PAIR2, 'login-b', site: self::SITE2);
+        $both = self::testAccount() + self::withKinds(Account::PRODUCTION, [Accounts::CERT => '/etc/aa/nszm.pem']);
+        $row  = static fn(Binding $b): array => [$b->name, $b->environment, $b->kind];
+
+        self::assertSame(['A', Account::TEST, Account::BASIC], $row(Accounts::binding(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $two)));
+        self::assertSame(['B', Account::TEST, Account::BASIC], $row(Accounts::binding(self::SITE2, self::CAMPAIGN2, self::MESSAGE2, '', $two)));
+        self::assertSame(['NSZM', Account::PRODUCTION, Account::CERT], $row(Accounts::binding(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $both)));
+        self::assertSame(['NSZM', Account::TEST, Account::BASIC], $row(Accounts::binding(self::SITE, self::CAMPAIGN, self::MESSAGE, Account::TEST, $both)));
     }
 
     /** bound to nothing, yet State Check lists it */
@@ -671,7 +691,7 @@ final class AccountsTest extends TestCase
         $constants = self::testAccount() + ['DB_PASSWORD' => $dbPassword];
         $calls     = [
             'refused, constants given' => static fn() => Accounts::forSlices(self::SITE2, self::CAMPAIGN, self::MESSAGE, '', $constants),
-            'refused, defined ones'    => static fn() => Accounts::forSlices(self::SITE2, self::CAMPAIGN, self::MESSAGE),
+            'refused, defined ones'    => static fn() => Accounts::forSlices(self::SITE2, self::CAMPAIGN, self::MESSAGE, ''),
             'environment, given'       => static fn() => Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, 'staging', $constants),
             'environment, defined'     => static fn() => Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, 'staging'),
         ];
@@ -715,7 +735,7 @@ final class AccountsTest extends TestCase
             }
         }
 
-        self::assertSame('real-login', Accounts::forSlices($site, $campaign, $message)->login);
+        self::assertSame('real-login', Accounts::forSlices($site, $campaign, $message, '')->login);
         $names = array_map(static fn(Binding $b): string => $b->name, Accounts::bindings());
         self::assertContains('ACCOUNTSTESTREAL', $names);
         self::assertNotContains('AA_APIKEY_ISDSTEST_ACCOUNTSTESTREAL_SLICES', Accounts::strays());

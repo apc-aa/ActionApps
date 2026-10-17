@@ -55,6 +55,20 @@ final class Accounts
     /**
      * The account bound to the site and the pair of slices.
      *
+     * @param array<string, mixed>|null $constants as binding()
+     * @throws ConfigException as binding()
+     * @throws \InvalidArgumentException as binding()
+     */
+    public static function forSlices(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?array $constants = null): Account
+    {
+        $constants ??= Store::userConstants();
+
+        return self::account(self::binding($site, $campaignSlice, $messageSlice, $environment, $constants), $constants);
+    }
+
+    /**
+     * The usable binding of the site and the pair of slices; account() gives its login.
+     *
      * @param string $site        the site whose own page is rendered (AA_Module_Site::renderingPage()), never a value from the template
      * @param string $environment '' = test only when every production constant provably concerns other sites
      *                            or slices, else production; 'test' or 'production' = that one only (a template
@@ -64,7 +78,7 @@ final class Accounts
      *                         about the accounts there are: whoever writes the template reads it
      * @throws \InvalidArgumentException an id that is not one, an unknown environment
      */
-    public static function forSlices(string $site, string $campaignSlice, string $messageSlice, string $environment = '', #[\SensitiveParameter] ?array $constants = null): Account
+    public static function binding(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?array $constants = null): Binding
     {
         $site          = ModuleId::normalize($site) ?? throw new \InvalidArgumentException('A site id is 32 hexadecimal digits');
         $campaignSlice = ModuleId::normalize($campaignSlice) ?? throw new \InvalidArgumentException('A slice id is 32 hexadecimal digits');
@@ -77,24 +91,23 @@ final class Accounts
             // never test in place of production: a run sent to the test ISDS reaches nobody
             $environment = self::productionMeant($constants, $site, $campaignSlice, $messageSlice) ? Account::PRODUCTION : Account::TEST;
         }
-        $binding = null;
-        foreach ($bindings as $b) {
-            if (($b->environment === $environment) && $b->binds($site, $campaignSlice, $messageSlice)) {
-                $binding = $b;
+        foreach ($bindings as $binding) {
+            if (($binding->environment === $environment) && $binding->binds($site, $campaignSlice, $messageSlice)) {
+                if ($binding->usable()) {
+                    return $binding;
+                }
                 break;
             }
         }
-        if (is_null($binding) || !$binding->usable()) {
-            throw new ConfigException(self::refusal($site, $campaignSlice, $messageSlice));
-        }
 
-        return self::login($binding->environment, $binding->name, $binding->kind, $constants);
+        throw new ConfigException(self::refusal($site, $campaignSlice, $messageSlice));
     }
 
     /**
-     * The account of a binding, for a caller that goes through bindings() - State Check. A template
-     * asks forSlices(), which checks the site and the slices first.
-     * @param array<string, mixed>|null $constants as forSlices()
+     * The account of a binding binding() or bindings() returned in this request - the constants may
+     * change between requests. A queued run asks binding() again with the environment it stored,
+     * never ''.
+     * @param array<string, mixed>|null $constants as binding()
      * @throws ConfigException the binding is not usable - its problems say why
      */
     public static function account(Binding $binding, #[\SensitiveParameter] ?array $constants = null): Account
@@ -109,7 +122,7 @@ final class Accounts
     /**
      * The certificate CERT, KEY and PASSPHRASE of a binding name, usable or not - for State Check to
      * check the files. Null for a name and a password, or without CERT.
-     * @param array<string, mixed>|null $constants as forSlices()
+     * @param array<string, mixed>|null $constants as binding()
      * @throws ConfigException a line break or NUL in one of them
      */
     public static function certificate(Binding $binding, #[\SensitiveParameter] ?array $constants = null): ?ClientCertificate
@@ -121,7 +134,7 @@ final class Accounts
      * Every account config.php sets up, usable or not, with what is wrong - for State Check, which
      * only a superadmin sees. No key is in them.
      *
-     * @param array<string, mixed>|null $constants as forSlices()
+     * @param array<string, mixed>|null $constants as binding()
      * @return list<Binding> production first, by name
      */
     public static function bindings(#[\SensitiveParameter] ?array $constants = null): array
@@ -146,7 +159,7 @@ final class Accounts
      * The constants of the ISDS vendors that are no account's key, so AA never reads them: a key
      * without an account (AA_APIKEY_ISDSTEST_LOGIN), a misspelt kind, a name in small letters.
      *
-     * @param array<string, mixed>|null $constants as forSlices()
+     * @param array<string, mixed>|null $constants as binding()
      * @return list<string> constant names
      */
     public static function strays(#[\SensitiveParameter] ?array $constants = null): array

@@ -6,7 +6,7 @@ namespace AA\Isds;
 
 /**
  * One ISDS account of include/config.php, the sites it sends for and its pair of slices (Accounts) -
- * for State Check: names and ids only, no key.
+ * names and ids only, no key.
  */
 final class Binding
 {

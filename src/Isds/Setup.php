@@ -85,7 +85,7 @@ final readonly class Setup
      * a template of any site may name any slice.
      * @param string                    $settings  the JSON object of the template
      * @param string                    $site      the site whose page is rendered - never a value of the template
-     * @param array<string, mixed>|null $constants as Accounts::forSlices()
+     * @param array<string, mixed>|null $constants as Accounts::binding()
      * @throws SetupException what to fix
      * @throws \InvalidArgumentException $site is no id
      */
