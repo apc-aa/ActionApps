@@ -200,17 +200,22 @@ class Imgfunc
     }
 
     /**
-     * Writes $src again as a new image of the same type, at most $max_px on the longer side.
+     * Writes $src again as a new image, at most $max_px on the longer side.
      * Decoding and encoding drops EXIF (the GPS position of a phone photo) and anything
      * hidden after the image data - what an anonymous upload must not keep.
      *
+     * @param bool $portable write what every viewer shows - JPEG, or PNG when the image has
+     *                       transparency - and take GIF too; otherwise the type of $src
      * @return ?string null on success, otherwise the error
      */
-    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS): ?string
+    public static function reencode(string $src, string $dest, int $max_px, int $max_pixels = self::REENCODE_MAX_PIXELS, bool $portable = false): ?string
     {
         $info  = @getimagesize($src);
         $type  = is_array($info) ? (int) $info[2] : 0;
         $types = self::avifSupported() ? [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP, IMAGETYPE_AVIF] : [IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP];
+        if ($portable) {
+            $types[] = IMAGETYPE_GIF;
+        }
         if (!is_array($info) || !in_array($type, $types, true)) {
             return _m('This type of image cannot be uploaded here');
         }
@@ -221,19 +226,6 @@ class Imgfunc
         if (!$img) {
             return _m('The image cannot be read');
         }
-        // the rotation of a phone photo lives in EXIF, which is about to be dropped
-        if (($type === IMAGETYPE_JPEG) && function_exists('exif_read_data')) {
-            $exif    = @exif_read_data($src);
-            $rotated = match ((int) (is_array($exif) ? ($exif['Orientation'] ?? 1) : 1)) {
-                3       => imagerotate($img, 180, 0),
-                6       => imagerotate($img, -90, 0),
-                8       => imagerotate($img, 90, 0),
-                default => $img,
-            };
-            if ($rotated) {
-                $img = $rotated;
-            }
-        }
         $w     = imagesx($img);
         $h     = imagesy($img);
         $scale = min(1, $max_px / max($w, $h));
@@ -243,13 +235,65 @@ class Imgfunc
             imagesavealpha($out, true);
         }
         imagecopyresampled($out, $img, 0, 0, 0, 0, imagesx($out), imagesy($out), $w, $h);
-        $ok = match ($type) {
+        unset($img);
+        // the rotation of a phone photo lives in EXIF, which is about to be dropped; turned after
+        // scaling, so a 16 Mpx photo is not held twice
+        if (($type === IMAGETYPE_JPEG) && function_exists('exif_read_data')) {
+            $exif    = @exif_read_data($src);
+            $rotated = match ((int) (is_array($exif) ? ($exif['Orientation'] ?? 1) : 1)) {
+                3       => imagerotate($out, 180, 0),
+                6       => imagerotate($out, -90, 0),
+                8       => imagerotate($out, 90, 0),
+                default => $out,
+            };
+            if ($rotated) {
+                $out = $rotated;
+            }
+        }
+        $as = match (true) {
+            !$portable                  => $type,
+            $type === IMAGETYPE_JPEG    => IMAGETYPE_JPEG,
+            self::hasTransparency($out) => IMAGETYPE_PNG,
+            default                     => IMAGETYPE_JPEG,
+        };
+        if (($as === IMAGETYPE_JPEG) && ($type !== IMAGETYPE_JPEG)) {
+            $out = self::onWhite($out);
+        }
+        $ok = match ($as) {
             IMAGETYPE_JPEG => imagejpeg($out, $dest, 85),
             IMAGETYPE_PNG  => imagepng($out, $dest),
             IMAGETYPE_AVIF => imageavif($out, $dest),
             default        => imagewebp($out, $dest, 85),
         };
         return $ok ? null : _m('Cannot write %1', [$dest]);
+    }
+
+    /**
+     * Any transparent part, judged from a 32 px copy: the averaging hides a few transparent pixels,
+     * which then turn white - as they look on a white page anyway.
+     */
+    private static function hasTransparency(\GdImage $img): bool
+    {
+        $small = imagecreatetruecolor(min(32, imagesx($img)), min(32, imagesy($img)));
+        imagealphablending($small, false);
+        imagecopyresampled($small, $img, 0, 0, 0, 0, imagesx($small), imagesy($small), imagesx($img), imagesy($img));
+        for ($x = 0; $x < imagesx($small); $x++) {
+            for ($y = 0; $y < imagesy($small); $y++) {
+                if (((imagecolorat($small, $x, $y) >> 24) & 0x7F) > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** JPEG has no transparency: what was see-through becomes white, not black */
+    private static function onWhite(\GdImage $img): \GdImage
+    {
+        $flat = imagecreatetruecolor(imagesx($img), imagesy($img));
+        imagefill($flat, 0, 0, (int) imagecolorallocate($flat, 255, 255, 255));
+        imagecopy($flat, $img, 0, 0, 0, 0, imagesx($img), imagesy($img));
+        return $flat;
     }
 
     public static function printSupportedTypes(): void
