@@ -59,6 +59,9 @@ final class SyncTest extends TestCase
         require_once __DIR__ . '/fixtures/DownloadSync.php';
         require_once __DIR__ . '/fixtures/PropertySlice.php';
         require_once __DIR__ . '/../../fixtures/FakeHttp.php';
+        if (!defined('CACHE_TTL')) {
+            define('CACHE_TTL', 600);                                           // AA::Pagecache()
+        }
         self::$boxes = iterator_to_array(SdsList::fromXml(self::FIXTURE), false);
     }
 
@@ -78,6 +81,7 @@ final class SyncTest extends TestCase
         $GLOBALS['spareDBs'] = [];
         PropertySlice::forget(self::REAL_SLICE);
         (new \ReflectionProperty(AA_Credentials::class, 'instance'))->setValue(null, null);    // the slice passwords it knows
+        (new \ReflectionProperty(\AA::class, 'pagecache'))->setValue(null, null);              // opening a slice keeps the page out of it
     }
 
     public function test_itemsFrom_firstValueOfTheConfiguredFields(): void
@@ -662,6 +666,16 @@ final class SyncTest extends TestCase
         $changes = RecordingDb::inserts('change_record');
         self::assertSame([self::DS], array_values(array_unique(array_column($changes, 'selector'))), print_r($changes, true));
         self::assertSame(['x2pbqzq'], array_column($changes, 'value'), 'the old value');
+    }
+
+    /** a password the request learnt would ride in the token of an {ajax} to later requests */
+    #[WithoutErrorHandler]      // the full legacy storeItem() trips notices on unset keys
+    public function test_write_opensTheSliceForTheWritingOnly(): void
+    {
+        $this->storeForReal(['historylog' => '0', 'reading_password' => AA_Credentials::encrypt('secret')]);
+
+        self::assertFalse(AA_Credentials::singleton()->checkSlice(self::REAL_SLICE));
+        self::assertSame(['spwd' => []], \AA_Stringexpand_Encrypt::decrypt_time_token(AA_Credentials::singleton()->getAsToken(), 'slice-pwd'));
     }
 
     /**

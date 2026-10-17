@@ -371,23 +371,24 @@ class Sync
                 throw new \InvalidArgumentException('Only items the report has read are written');
             }
         }
-        $this->allowReading();
         $written = 0;
         $failed  = [];
         try {
-            foreach ($rows as $row) {
-                $item_id = (string) $row->itemId;
-                $content = new ItemContent();
-                $content->setSliceID($this->config->sliceId());
-                $content->setItemID($item_id);
-                $content->setAaValue($this->config->dsField(), new AA_Value($row->newDs));
-                ItemContent::lastErr(0, '');    // storeItem() leaves the message of an earlier failure
-                if ($this->store($content, self::STORE_MODE, ItemContent::FLAG_JUST_STORE)) {
-                    ++$written;
-                } else {
-                    $failed[$item_id] = ItemContent::lastErrMsg() ?: _m('The item was not stored');
+            $this->whileReadable(function () use ($rows, &$written, &$failed): void {
+                foreach ($rows as $row) {
+                    $item_id = (string) $row->itemId;
+                    $content = new ItemContent();
+                    $content->setSliceID($this->config->sliceId());
+                    $content->setItemID($item_id);
+                    $content->setAaValue($this->config->dsField(), new AA_Value($row->newDs));
+                    ItemContent::lastErr(0, '');    // storeItem() leaves the message of an earlier failure
+                    if ($this->store($content, self::STORE_MODE, ItemContent::FLAG_JUST_STORE)) {
+                        ++$written;
+                    } else {
+                        $failed[$item_id] = ItemContent::lastErrMsg() ?: _m('The item was not stored');
+                    }
                 }
-            }
+            });
         } finally {
             if ($written > 0) {
                 $this->invalidate();
@@ -466,11 +467,13 @@ class Sync
     /**
      * storeItem() reads the item before the update with the reading password of the request: without
      * the slice's one every field reads as "Missing Reading Password" and the history records them
-     * all as changed.
+     * all as changed. Open for $write only - a password the request learnt would ride in the token of
+     * an {ajax} to later requests.
+     * @param \Closure(): void $write
      */
-    protected function allowReading(): void
+    protected function whileReadable(\Closure $write): void
     {
-        \AA_Credentials::singleton()->loadFromSlice($this->config->sliceId());
+        \AA_Credentials::singleton()->withSlicesOpen([$this->config->sliceId()], $write);
     }
 
     /** @return array{name: string, ico: string, ds: string, type: string} the configured field ids, '' = none */

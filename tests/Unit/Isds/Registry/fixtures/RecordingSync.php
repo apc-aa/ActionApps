@@ -74,11 +74,13 @@ class RecordingSync extends Sync
         return $this->fields ?? throw new \LogicException('Set the fields of the slice');
     }
 
-    protected function allowReading(): void
+    protected function whileReadable(\Closure $write): void
     {
         ++$this->readingAllowed;
         if ($this->realStore) {
-            parent::allowReading();
+            parent::whileReadable($write);
+        } else {
+            $write();
         }
     }
 }
