@@ -67,7 +67,7 @@ final class Matcher
                 if ($count === 0) {
                     continue;
                 }
-                $ico = self::ico($box->ico);
+                $ico = Box::normalizeIco($box->ico);
                 if ($ico !== '') {
                     $by_ico[$pool][$ico][$box->id] = $box;
                 }
@@ -84,7 +84,7 @@ final class Matcher
             $name = self::text($item['name'] ?? '');
             $type = self::text($item['type'] ?? '');
             $typed_ico = self::text($item['ico'] ?? '');
-            $ico  = self::ico($typed_ico);
+            $ico  = Box::normalizeIco($typed_ico);
             $pool = isset($this->districtTypes[$type]) ? self::DISTRICT : self::MUNICIPALITY;
             // an IČO the register does not know, or another kind of box's (a school's, the city's
             // for a district), is left to the name, which a person checks
@@ -131,7 +131,7 @@ final class Matcher
     }
 
     /**
-     * @param string    $ico       normalised (ico()), compared with the box's
+     * @param string    $ico       normalised (Box::normalizeIco()), compared with the box's
      * @param string    $typed_ico as the item has it, for the page to show
      * @param list<Box> $found
      */
@@ -147,7 +147,7 @@ final class Matcher
             default           => MatchRow::CHANGED,
         };
         $candidates = ($status === MatchRow::AMBIGUOUS) ? $found : [];
-        $mismatch   = ($box !== null) && ($ico !== '') && ($box->ico !== '') && (self::ico($box->ico) !== $ico);
+        $mismatch   = ($box !== null) && ($ico !== '') && ($box->ico !== '') && (Box::normalizeIco($box->ico) !== $ico);
         return new MatchRow($item_id, $name, $type, $old_ds, $box, $found ? $method : '', $status, $candidates, $mismatch, $typed_ico);
     }
 
@@ -155,14 +155,6 @@ final class Matcher
     private static function text(mixed $value): string
     {
         return (is_string($value) || is_int($value) || is_float($value) || ($value instanceof \Stringable)) ? (string) $value : '';
-    }
-
-    /** 8 digits, or '' for anything else - items keep IČO without leading zeros or with spaces */
-    private static function ico(string $ico): string
-    {
-        // \s with /u covers no-break spaces; null (not UTF-8) becomes '', no IČO
-        $ico = (string) preg_replace('/\s+/u', '', $ico);
-        return (preg_match('/^[0-9]{1,8}\z/', $ico) === 1) ? str_pad($ico, 8, '0', STR_PAD_LEFT) : '';
     }
 
     /**

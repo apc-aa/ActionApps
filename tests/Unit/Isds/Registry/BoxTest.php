@@ -46,4 +46,30 @@ final class BoxTest extends TestCase
     {
         return ['empty' => [''], 'six' => ['aaaaaa'], 'eight' => ['aaaaaaa1'], 'dash' => ['aaa-aa1'], 'inner space' => ['aaa aa1'], 'accent' => ['aaaaaaž']];
     }
+
+    #[DataProvider('icos')]
+    public function test_normalizeIco(string $ico, string $expected): void
+    {
+        self::assertSame($expected, Box::normalizeIco($ico));
+    }
+
+    /** @return array<string, array{string, string}> */
+    public static function icos(): array
+    {
+        return [
+            'eight digits'          => ['00240044', '00240044'],
+            'without leading zeros' => ['240044', '00240044'],
+            'one digit'             => ['7', '00000007'],
+            'spaces around'         => [" 00240044\t", '00240044'],
+            'inner space'           => ['002 40044', '00240044'],
+            'no-break space'        => ["00240044\u{A0}", '00240044'],
+            'empty'                 => ['', ''],
+            'only spaces'           => ['  ', ''],
+            'nine digits'           => ['000235300', ''],
+            'letters'               => ['CZ00235300', ''],
+            'sign'                  => ['-235300', ''],
+            'not UTF-8'             => ["0023\xFF5300", ''],
+            'line end inside'       => ["0023\n5300", '00235300'],
+        ];
+    }
 }

@@ -57,4 +57,12 @@ final readonly class Box
         }
         return $id;
     }
+
+    /** An IČO as items keep it - without leading zeros, with spaces - as 8 digits; '' for anything else */
+    public static function normalizeIco(string $ico): string
+    {
+        // \s with /u covers no-break spaces; null (not UTF-8) becomes '', no IČO
+        $ico = (string) preg_replace('/\s+/u', '', $ico);
+        return (preg_match('/^[0-9]{1,8}\z/', $ico) === 1) ? str_pad($ico, 8, '0', STR_PAD_LEFT) : '';
+    }
 }
