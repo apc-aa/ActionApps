@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/src/Isds/Registry/**UnusableRegisterException.php**, /tests/Unit/Isds/Registry/**RegisterIndexTest.php**, /tests/Unit/Isds/fixtures/**FakeRegisterIndex.php**  
+The register of data boxes could not be used in a request, so a mass sending told no recipients and sent nothing; the test of the index of the register (isds-seznam-ds-ovm.idx next to the downloaded register, which RegisterIndex made and read) and the stand-in register of the sending tests.  
+_A mass sending no longer checks the boxes of its recipients against the register: it takes each box from the source slice as it stands. RegisterIndex keeps only the record of the download, which the page Data boxes from the register uses; an isds-seznam-ds-ovm.idx left in the upload directory is read by nothing and may be deleted. Removed 2026-10-19 - honzam_
+
 /src/Import/Credential/**Secret.php**, **Store.php**, /tests/Unit/Import/Credential/**StoreTest.php**  
 Keys of import sources: AA_APIKEY_* constants from config.php, wrapped in a Secret that cannot leak by accident; a key with a line break refused.  
 _Moved, not dropped: the same classes are now AA\Credential\Secret and AA\Credential\Store (src/Credential/, tests/Unit/Credential/StoreTest.php), one key store for every part of AA. Removed 2026-10-16 - honzam_

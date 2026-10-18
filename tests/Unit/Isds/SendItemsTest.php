@@ -82,7 +82,6 @@ final class SendItemsTest extends TestCase
             'fields' => [
                 'status_code.....'          => '1',
                 Schema::MESSAGE_NAME        => 'Statutární město Brno',
-                Schema::MESSAGE_OFFICIAL    => 'Statutární město Brno',
                 Schema::MESSAGE_BOX         => 'a7kbrrn',
                 Schema::MESSAGE_ENVIRONMENT => 'test',
                 Schema::MESSAGE_SENDER_BOX  => 'kv62bqf',
@@ -101,10 +100,10 @@ final class SendItemsTest extends TestCase
                 Schema::MESSAGE_STATE  => Schema::MESSAGE_STATE_QUEUED,
                 Schema::MESSAGE_EVENTS => '[{"at":1790841600,"kind":"queued"}]',
             ]],
-            'skipped'   => [Schema::BOX_FOREIGN, [
+            'skipped'   => [Schema::BOX_DUPLICATE, [
                 Schema::MESSAGE_STATE      => Schema::MESSAGE_STATE_SKIPPED,
-                Schema::MESSAGE_EVENTS     => '[{"at":1790841600,"kind":"skipped","code":"foreign"}]',
-                Schema::MESSAGE_ERROR_CODE => Schema::BOX_FOREIGN,
+                Schema::MESSAGE_EVENTS     => '[{"at":1790841600,"kind":"skipped","code":"duplicate"}]',
+                Schema::MESSAGE_ERROR_CODE => Schema::BOX_DUPLICATE,
             ]],
         ];
     }
@@ -139,7 +138,7 @@ final class SendItemsTest extends TestCase
     {
         return [
             'to send' => ['', Schema::MESSAGE_STATE_STOPPED, ['kind' => 'stopped']],
-            'skipped' => [Schema::BOX_KIND, Schema::MESSAGE_STATE_SKIPPED, ['kind' => 'skipped', 'code' => 'kind']],
+            'skipped' => [Schema::BOX_DUPLICATE, Schema::MESSAGE_STATE_SKIPPED, ['kind' => 'skipped', 'code' => 'duplicate']],
         ];
     }
 
@@ -770,7 +769,7 @@ final class SendItemsTest extends TestCase
     /** @return array<string, string> a frozen recipient as Snapshot::recipients() gives it */
     private static function row(string $reason = ''): array
     {
-        return ['msg' => self::MSG, 'src' => self::SRC, 'box' => 'a7kbrrn', 'name' => 'Statutární město Brno', 'official' => 'Statutární město Brno', 'reason' => $reason];
+        return ['msg' => self::MSG, 'src' => self::SRC, 'box' => 'a7kbrrn', 'name' => 'Statutární město Brno', 'reason' => $reason];
     }
 
     /** the items with the message of row() created */

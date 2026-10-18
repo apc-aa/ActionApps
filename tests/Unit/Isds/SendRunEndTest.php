@@ -315,7 +315,7 @@ final class SendRunEndTest extends TestCase
 
     public function test_finalCheck_counts_skipped_as_done(): void
     {
-        $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'skips' => '{"2":"inactive"}', 'cursor' => '3'], self::LOOK, [1 => Schema::BOX_FOREIGN]);
+        $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'skips' => '{"2":"inactive"}', 'cursor' => '3'], self::LOOK, [1 => Schema::BOX_DUPLICATE]);
         self::assertSame('done', self::runQueued());
         self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 2, 'stopped' => 0], json_decode(self::stored($id)['report'], true));
         self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
@@ -332,7 +332,7 @@ final class SendRunEndTest extends TestCase
             'failed'    => '{"2":"1233"}',
             'skips'     => '{"3":"inactive"}',
             'cursor'    => '4',
-        ], ['i' => 4, 'p' => 'send'], [5 => Schema::BOX_FOREIGN]);
+        ], ['i' => 4, 'p' => 'send'], [5 => Schema::BOX_DUPLICATE]);
         foreach ([0 => Schema::MESSAGE_STATE_QUEUED, 1 => Schema::MESSAGE_STATE_UNCERTAIN, 2 => Schema::MESSAGE_STATE_FAILED, 4 => Schema::MESSAGE_STATE_SENT] as $i => $state) {
             self::items()->stored[self::message($id, $i)]['fields'][Schema::MESSAGE_STATE] = $state;
         }
@@ -684,7 +684,7 @@ final class SendRunEndTest extends TestCase
     // the stop left nothing unsent - the last recipient was skipped for its reason: given up, the sending shows done
     public function test_abandon_with_nothing_stopped_shows_done(): void
     {
-        self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send'], [2 => Schema::BOX_FOREIGN]);
+        self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send'], [2 => Schema::BOX_DUPLICATE]);
         TestSendRun::$constants = [];
         self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
         self::runQueued();

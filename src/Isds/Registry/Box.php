@@ -62,8 +62,8 @@ final readonly class Box
     }
 
     /**
-     * A main box of an authority: no part of one, no person or company acting as one. It narrows where
-     * a letter may go - it does not prove the box is the one an item means.
+     * A main box of an authority: no part of one, no person or company acting as one. It narrows the
+     * boxes the pairing offers - it does not prove the box is the one an item means.
      */
     public static function isAuthoritysOwn(int $subtype, bool $isMaster): bool
     {

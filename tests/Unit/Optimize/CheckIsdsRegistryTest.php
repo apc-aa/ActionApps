@@ -96,7 +96,6 @@ final class CheckIsdsRegistryTest extends TestCase
         $check->bindings    = [self::binding('NSZM', [self::SITE, self::SITE2]), self::binding('OBCE', [self::SITE2])];
         $check->siteModules = [self::SITE => [self::CAMPAIGN, self::SLICE], self::SITE2 => [self::CAMPAIGN, self::SLICE2, self::SLICE3]];
         $check->names       = [self::SITE2 => 'Terminál <b>2</b>'];
-        $check->isdsAccount = true;
 
         $findings = $check->findings();
 
@@ -120,14 +119,13 @@ final class CheckIsdsRegistryTest extends TestCase
         $check = self::check([]);
         $check->bindings    = [self::binding('NSZM', [self::SITE])];
         $check->siteModules = [self::SITE => [self::CAMPAIGN, self::SLICE]];
-        $check->isdsAccount = true;
         $check->register    = new \RuntimeException('PHP cannot look into the directory /srv/aa/img_upload/abc');
 
         $findings = $check->findings();
 
         self::assertSame(['unpaired'], self::keys($findings));
         self::assertSame(1, $findings[0]->count);
-        self::assertSame([0, 0], [$check->registerReads, $check->indexChecks]);
+        self::assertSame(0, $check->registerReads);
     }
 
     // CheckIsdsAccounts reports each as an error
@@ -135,7 +133,6 @@ final class CheckIsdsRegistryTest extends TestCase
     {
         $check = self::check([]);
         $check->siteModules = [self::SITE => [self::CAMPAIGN]];
-        $check->isdsAccount = true;
         $without = [
             'no sites'      => new Binding('NSZM', Account::TEST, [], self::CAMPAIGN, str_repeat('4f', 16), ['A broken constant'], Account::BASIC),
             'no slices'     => new Binding('NSZM', Account::TEST, [self::SITE], '', '', ['A broken constant'], Account::BASIC),
@@ -175,48 +172,22 @@ final class CheckIsdsRegistryTest extends TestCase
         self::assertSame(0, $check->registerReads, 'nothing to compare with');
     }
 
-    // CheckIsdsAccounts warns of it every day, for each account
-    public function test_registerMissing_infoWithAnIsdsAccountToo(): void
+    // a mass sending does not read the register: an ISDS account makes none of its findings worse
+    public function test_registerMissingOrOld_infoWithAnIsdsAccountToo(): void
     {
         $check = self::check([self::SLICE => self::allFine()]);
+        $check->bindings    = [self::binding('NSZM', [self::SITE])];
+        $check->siteModules = [self::SITE => [self::CAMPAIGN, self::SLICE]];
         $check->register    = null;
-        $check->isdsAccount = true;
 
         self::assertSame([Finding::INFO], self::severities($check->findings()));
-        self::assertSame(0, $check->indexChecks);
-    }
 
-    // a mass sending checks its recipients in it
-    public function test_registerOld_warningWithAnIsdsAccount(): void
-    {
-        $check = self::check([self::SLICE => self::allFine()]);
-        $check->register    = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
-        $check->now         = 1760000000 + 8 * 86400;
-        $check->isdsAccount = true;
+        $check->register = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
+        $check->now      = 1760000000 + 8 * 86400;
+        $findings        = $check->findings();
 
-        $findings = $check->findings();
-
-        self::assertSame([Finding::WARNING], self::severities($findings));
+        self::assertSame([Finding::INFO], self::severities($findings));
         self::assertSame('register', $findings[0]->key);
-    }
-
-    // the index is made or checked only where a mass sending may read it
-    public function test_indexProblem_warningWithAnIsdsAccount(): void
-    {
-        $check = self::check([self::SLICE => self::allFine()]);
-        $check->indexProblem = 'The register of data boxes is not the one AA downloaded <b>- download it again</b>';
-
-        self::assertSame([Finding::OK], self::severities($check->findings()));
-        self::assertSame(0, $check->indexChecks);
-
-        $check->isdsAccount = true;
-        $findings = $check->findings();
-
-        self::assertSame([Finding::WARNING], self::severities($findings));
-        self::assertSame('register-index', $findings[0]->key);
-        self::assertSame(safe($check->indexProblem), $findings[0]->evidence[0][_m('Problem')]);
-        $check->indexProblem = '';
-        self::assertSame([Finding::OK], self::severities($check->findings()));
     }
 
     // two paired slices of one name: each link says which one it opens
@@ -278,12 +249,10 @@ final class CheckIsdsRegistryTest extends TestCase
     }
 
     // another PHP user of the server put another register in place of the downloaded one: the items
-    // are not compared with it; the index made of the downloaded one still serves a mass sending; the
-    // age of a register that cannot be used does not matter
+    // are not compared with it; the age of a register that cannot be used does not matter
     public function test_registerSwapped_oneWarningInsteadOfTheCounts(): void
     {
         $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
-        $check->isdsAccount = true;
         self::assertSame([self::SLICE], self::keys($check->findings()), 'the downloaded register compares as before');
 
         LockedRegisterIndex::swap((string) $check->file);
@@ -294,58 +263,20 @@ final class CheckIsdsRegistryTest extends TestCase
         self::assertSame(Finding::WARNING, $findings[0]->severity);
         self::assertSame('The register of data boxes is not the one AA downloaded', $findings[0]->title);
         self::assertStringContainsString('Download the register again on the page Data boxes from the register of a paired slice.', $findings[0]->advice);
-        self::assertStringNotContainsString('mass sending', $findings[0]->advice);
         self::assertCount(1, $findings[0]->links);
-    }
-
-    // the index cannot be made of another file either: the same cause, one finding
-    public function test_registerSwappedWithoutAnIndex_oneWarningThatNamesTheSending(): void
-    {
-        $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
-        $check->isdsAccount = true;
-        LockedRegisterIndex::swap((string) $check->file);
-        unlink(dirname((string) $check->file) . '/' . RegisterIndex::FILE);
-
-        $findings = $check->findings();
-
-        self::assertSame(['register-changed'], self::keys($findings));
-        self::assertStringContainsString('A mass sending cannot use the register either.', $findings[0]->advice);
-        self::assertSame(1, $check->indexChecks, 'the index was checked');
-    }
-
-    // an index that failed for another cause - a directory PHP cannot write into - keeps its finding
-    // and its evidence: downloading the register again does not fix it
-    public function test_registerSwappedAndTheIndexFailedOtherwise_twoFindings(): void
-    {
-        $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
-        $check->isdsAccount = true;
-        LockedRegisterIndex::swap((string) $check->file);
-        unlink(dirname((string) $check->file) . '/' . RegisterIndex::FILE);
-        $failure = 'Cannot create a file in /srv/aa/img_upload/abc - it is missing or not writable';
-        LockedRegisterIndex::$record = ['failed' => (string) time(), 'failed_of' => LockedRegisterIndex::$record['xml'], 'failure' => $failure] + LockedRegisterIndex::$record;
-
-        $findings = $check->findings();
-
-        self::assertSame(['register-index', 'register-changed'], self::keys($findings));
-        self::assertSame(safe($failure), $findings[0]->evidence[0][_m('Problem')]);
-        self::assertStringNotContainsString('mass sending', $findings[1]->advice, 'the finding of the index says so');
     }
 
     // downloaded by an older AA, or put there by hand: nothing vouches for it, nothing is read
     public function test_registerNotRecorded_oneWarningInsteadOfTheCounts(): void
     {
         $check = $this->checkOverFile([self::SLICE => self::needsWork()], recorded: false);
-        $check->isdsAccount = true;
         $check->now = 1760000000 + 365 * 86400;
 
         $findings = $check->findings();
 
-        self::assertSame(['register-changed'], self::keys($findings), 'no age finding, no second one of the index');
+        self::assertSame(['register-changed'], self::keys($findings), 'no age finding');
         self::assertSame('AA has no record of downloading this copy of the register', $findings[0]->title);
-        self::assertStringContainsString('A mass sending cannot use the register either.', $findings[0]->advice);
-        self::assertSame([0, 0], [$check->registerReads, $check->indexChecks]);
-        $check->isdsAccount = false;
-        self::assertStringNotContainsString('mass sending', $check->findings()[0]->advice);
+        self::assertSame(0, $check->registerReads);
     }
 
     // the downloaded register was deleted: a warning, so a deletion does not silently stop the comparison
@@ -443,7 +374,7 @@ final class CheckIsdsRegistryTest extends TestCase
         return $check;
     }
 
-    /** the check over the fixture register in a file, downloaded - recorded and indexed - when $recorded
+    /** the check over the fixture register in a file, downloaded - recorded - when $recorded
      *  @param array<string, array<string, mixed>> $slices see check() */
     private function checkOverFile(array $slices, bool $recorded = true): RecordingIsdsCheck
     {

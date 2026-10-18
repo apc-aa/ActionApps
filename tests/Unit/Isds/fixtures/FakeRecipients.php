@@ -22,6 +22,9 @@ final class FakeRecipients extends Recipients
     /** @var list<list<string>> the ids of each content() */
     public static array $read = [];
 
+    /** @var list<list<string>> the fields of each content() */
+    public static array $fieldsRead = [];
+
     /**
      * @param array<string, array{slice: string, active?: bool, fields: array<string, string|list<string>>}> $items
      *        item id => its slice, whether it is active (default yes) and its field values; Sending::item()
@@ -31,8 +34,9 @@ final class FakeRecipients extends Recipients
 
     public static function forget(): void
     {
-        self::$searches = [];
-        self::$read     = [];
+        self::$searches   = [];
+        self::$read       = [];
+        self::$fieldsRead = [];
     }
 
     protected function search(string $slice, array $conds, ?array $restrict = null): array
@@ -61,8 +65,9 @@ final class FakeRecipients extends Recipients
 
     protected function content(array $ids, array $fields): array
     {
-        self::$read[] = $ids;
-        $content      = [];
+        self::$read[]       = $ids;
+        self::$fieldsRead[] = $fields;
+        $content            = [];
         foreach ($ids as $id) {
             foreach (array_intersect_key($this->items[$id]['fields'] ?? [], array_flip($fields)) as $field => $values) {
                 $content[$id][$field] = array_map(static fn(string $v): array => ['value' => $v], (array) $values);

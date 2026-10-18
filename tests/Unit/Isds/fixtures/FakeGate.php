@@ -7,15 +7,14 @@ namespace Tests\Unit\Isds\Fixtures;
 use AA\Isds\Access;
 use AA\Isds\Gate;
 use AA\Isds\Recipients;
-use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Isds\SliceRules;
 
 /**
  * The gate on a page given here: the site rendered, the slices (FakeSliceRules), the accounts of
- * include/config.php, the login (Access over the rights of FakePerms), the campaigns, the recipients
- * and the register of data boxes. The slices open in the real AA_Credentials.
+ * include/config.php, the login (Access over the rights of FakePerms), the campaigns and the recipients.
+ * The slices open in the real AA_Credentials.
  */
 final class FakeGate extends Gate
 {
@@ -31,8 +30,6 @@ final class FakeGate extends Gate
     public array $campaigns = [];
 
     public ?Recipients $resolver = null;
-
-    public ?RegisterIndex $index = null;
 
     /**
      * @param ?string               $site      the site whose page is rendered; null = no site page (view.php, cron)
@@ -87,10 +84,5 @@ final class FakeGate extends Gate
     protected function resolver(): Recipients
     {
         return $this->resolver ?? throw new \LogicException('The test gives no recipients');
-    }
-
-    protected function registerIndex(): RegisterIndex
-    {
-        return $this->index ?? throw new \LogicException('The test gives no register');
     }
 }

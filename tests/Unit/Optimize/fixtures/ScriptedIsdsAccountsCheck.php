@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Optimize\Fixtures;
 
-use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\SliceRules;
 use AA\Optimize\CheckIsdsAccounts;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
@@ -28,13 +27,6 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
 
     /** @var list<array<string, ?string>> LogOnce::recent() rows of the campaigns whose recipients were not told */
     public array $campaigns = [];
-
-    /** @var array{state: string, time: int, size: int, sha256: string}|\RuntimeException|null the
-     *  register of data boxes; null = none downloaded; the exception is thrown as by a directory PHP may
-     *  not look into */
-    public array|\RuntimeException|null $register = ['state' => RegisterIndex::RECORDED, 'time' => 1790841600, 'size' => 17000000, 'sha256' => '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'];
-
-    public int $registerLooks = 0;
 
     public function __construct(public FakeSliceRules $rules) {}
 
@@ -71,14 +63,5 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
     protected function unresolvedCampaigns(): array
     {
         return $this->campaigns;
-    }
-
-    protected function registerInfo(): ?array
-    {
-        ++$this->registerLooks;
-        if ($this->register instanceof \RuntimeException) {
-            throw $this->register;
-        }
-        return $this->register;
     }
 }

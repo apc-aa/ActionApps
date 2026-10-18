@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Isds;
 
-use AA\Isds\Registry\RegisterIndex;
-use AA\Isds\Registry\UnusableRegisterException;
 use AA\Util\FormToken;
 use AA\Util\LogOnce;
 use AA_Credentials;
@@ -19,8 +17,8 @@ use zids;
  * with settings Setup accepts for that site; only then expands the UI the template deferred. Everyone
  * else gets the refusal, the UI stays unexpanded and the slices stay closed. Once opened, the slices
  * stay readable to the rest of the request, never to a next one through the token of an {ajax}.
- * Inside the UI the other subcommands give the settings, the fields of a form, the recipients and the
- * state of the register of data boxes, outside of it nothing.
+ * Inside the UI the other subcommands give the settings, the fields of a form and the recipients,
+ * outside of it nothing.
  *
  * What the template must keep in mind:
  * - Nothing before the gate should read the two slices: items and {view}s read before it are read
@@ -121,13 +119,11 @@ class Gate
 
     /**
      * The recipients of an active campaign of the page by its stored filter, counted anew on each
-     * request: count - how many get the letter, skipped - how many are left out for their box (none,
-     * not a box id, an IČO that is none, foreign to the register of data boxes, not of a kind a letter
-     * may go to, a duplicate), ids - the items that get it, dash-separated for {view} and {ids}. It
-     * counts a queued or sent campaign anew too; its count when it was queued is stored in the campaign
-     * (Schema::CAMPAIGN_RECIPIENTS). '' for another item or question, on any error, and while the
-     * register is missing or unreadable - register() tells it, as no count is true unchecked. ids is ''
-     * for no recipients too, and {view} with no ids lists the whole slice - guard it:
+     * request: count - how many get the letter, skipped - how many are left out for their box, ids -
+     * the items that get it, dash-separated for {view} and {ids}. It counts a queued or sent campaign
+     * anew too; its count when it was queued is stored in the campaign (Schema::CAMPAIGN_RECIPIENTS).
+     * '' for another item or question, and on any error. ids is '' for no recipients too, and {view}
+     * with no ids lists the whole slice - guard it:
      *     {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
      * (not _#1 - AA expands the inner command first). The guard hides the output only: the inner {view}
      * still runs once over the whole slice.
@@ -152,17 +148,6 @@ class Gate
             'skipped' => (string) (count($recipients) - count($sendable)),
             default   => implode('-', array_map(static fn(Recipient $r): string => $r->itemId, $sendable)),
         };
-    }
-
-    /**
-     * The register of data boxes the recipients are checked against, RegisterIndex::state(): ok, old
-     * (downloaded over Registry\Sync::OLD_DAYS ago - it still counts, warn), missing (nothing can be
-     * sent until an administrator downloads it) or unreadable (not now: a download is due, or the
-     * server cannot read it at the moment). Without ok or old no recipients are told. '' outside the UI.
-     */
-    public function register(): string
-    {
-        return is_null(self::$open) ? '' : $this->registerIndex()->state();
     }
 
     /** the action of this request tells what it did - plain text */
@@ -203,10 +188,7 @@ class Gate
             $filter = (trim($stored['filter']) === '') ? RecipientFilter::default($setup) : RecipientFilter::fromJson($stored['filter'], $setup);
             $config = $this->rules()->registryConfig($setup->sourceSlice) ?? throw new \RuntimeException('The source slice has no settings of data boxes');
 
-            return $this->resolver()->resolve($setup, $filter, $config, $this->registerIndex());
-        } catch (UnusableRegisterException) {
-            // no count is true unchecked, and it is no fault of the campaign: register() tells the page why
-            return null;
+            return $this->resolver()->resolve($setup, $filter, $config);
         } catch (\InvalidArgumentException|\RuntimeException $e) {
             $this->log("$setup->site:$setup->campaignSlice:$id", $e->getMessage(), self::RECIPIENTS_EVENT);
 
@@ -258,13 +240,6 @@ class Gate
     protected function resolver(): Recipients
     {
         return new Recipients();
-    }
-
-    /** one a request: it looks at the register once, and everything counted in the request sees one state */
-    protected function registerIndex(): RegisterIndex
-    {
-        // a closure cannot key the cache itself; stable, as storing an item (clear_soft()) changes no register
-        return \AA::Contentcache()->_get_result(get_hash(RegisterIndex::class), static fn(): RegisterIndex => new RegisterIndex(), [], RegisterIndex::class, true);
     }
 
     /**

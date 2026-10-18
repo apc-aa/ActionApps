@@ -29,7 +29,6 @@ final class SnapshotTest extends TestCase
     use BatchRunTables;
 
     private const CAMPAIGN = 'cafe0000000000000000000000000001';
-    private const REGISTER = ['sha256' => 'ab12', 'time' => 1_760_000_000];
     private const BODY     = '<p>Vážení, zveme Vás</p>';
 
     /** @param int $bytes of the attachment - no two of its rows alike, so a swap of them shows */
@@ -45,9 +44,9 @@ final class SnapshotTest extends TestCase
     private static function saved(int $bytes = 1000): Snapshot
     {
         $snapshot = Snapshot::of(self::letter($bytes), [
-            new Recipient('a0000000000000000000000000000001', 'Adamov', 'ada1234', '', '00283001', 'Město Adamov'),
+            new Recipient('a0000000000000000000000000000001', 'Adamov', 'ada1234', ''),
             new Recipient('b0000000000000000000000000000002', "Bene\xC5ov", '', Schema::BOX_MISSING),
-        ], self::REGISTER, self::CAMPAIGN);
+        ], self::CAMPAIGN);
         $snapshot->save();
         return $snapshot;
     }
@@ -74,7 +73,7 @@ final class SnapshotTest extends TestCase
         $loaded = Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN);
 
         $rows = $loaded->recipients();
-        self::assertSame(['a0000000000000000000000000000001', 'ada1234', 'Adamov', 'Město Adamov', ''], [$rows[0]['src'], $rows[0]['box'], $rows[0]['name'], $rows[0]['official'], $rows[0]['reason']]);
+        self::assertSame(['a0000000000000000000000000000001', 'ada1234', 'Adamov', ''], [$rows[0]['src'], $rows[0]['box'], $rows[0]['name'], $rows[0]['reason']]);
         self::assertSame(["Bene\u{FFFD}ov", Schema::BOX_MISSING], [$rows[1]['name'], $rows[1]['reason']], 'a broken name does not stop the sending');
         self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $rows[0]['msg']);
         self::assertNotSame($rows[0]['msg'], $rows[1]['msg']);
@@ -105,7 +104,7 @@ final class SnapshotTest extends TestCase
     {
         foreach ([strtoupper(self::CAMPAIGN), substr(self::CAMPAIGN, 1), ''] as $campaign) {
             try {
-                Snapshot::of(self::letter(), [], self::REGISTER, $campaign);
+                Snapshot::of(self::letter(), [], $campaign);
                 self::fail("owner $campaign taken");
             } catch (\InvalidArgumentException) {
                 self::addToAssertionCount(1);
@@ -271,10 +270,10 @@ final class SnapshotTest extends TestCase
         return [
             'row no list'     => ['["x"]'],
             'row too short'   => ['[["a","b"]]'],
-            'a list in a row' => ['[[["x"],"b","c","d","e","f"]]'],
-            'rows by name'    => ['{"k":["a","b","c","d","e","f"]}'],
-            'a number in a row' => ['[[1,"b","c","d","e","f"]]'],
-            'a row by name'   => ['[{"a":"a","b":"b","c":"c","d":"d","e":"e","f":"f"}]'],
+            'a list in a row' => ['[[["x"],"b","c","d","e"]]'],
+            'rows by name'    => ['{"k":["a","b","c","d","e"]}'],
+            'a number in a row' => ['[[1,"b","c","d","e"]]'],
+            'a row by name'   => ['[{"a":"a","b":"b","c":"c","d":"d","e":"e"}]'],
         ];
     }
 
@@ -286,8 +285,8 @@ final class SnapshotTest extends TestCase
         $manifest = json_decode($saved->manifest(), true);
 
         self::assertMatchesRegularExpression('/^[\x20-\x7E]+$/', $saved->manifest());
-        self::assertSame(['annotation', 'to_hands', 'files', 'rcpt', 'register'], array_keys($manifest));
-        self::assertSame(['Pozvánka', 'starosta', 2, self::REGISTER], [$manifest['annotation'], $manifest['to_hands'], $manifest['rcpt']['n'], $manifest['register']]);
+        self::assertSame(['annotation', 'to_hands', 'files', 'rcpt'], array_keys($manifest));
+        self::assertSame(['Pozvánka', 'starosta', 2], [$manifest['annotation'], $manifest['to_hands'], $manifest['rcpt']['n']]);
         self::assertSame(['name', 'mime', 'meta', 'size', 'xxh128'], array_keys($manifest['files'][1]));
         self::assertSame(['Příloha č. 1.pdf', 'application/pdf', File::ENCLOSURE], [$manifest['files'][1]['name'], $manifest['files'][1]['mime'], $manifest['files'][1]['meta']]);
         foreach (['zveme', base64_encode(self::BODY), '%PDF', 'Adamov', 'ada1234'] as $content) {
@@ -323,7 +322,7 @@ final class SnapshotTest extends TestCase
     #[DataProvider('failures')]
     public function test_save_leavesNothingWhenItFails(bool $inRun): void
     {
-        $snapshot = Snapshot::of(self::letter(Snapshot::CHUNK + 1), [], self::REGISTER, self::CAMPAIGN);
+        $snapshot = Snapshot::of(self::letter(Snapshot::CHUNK + 1), [], self::CAMPAIGN);
         TableDb::$fail = $inRun ? null : static fn(string $sql): bool => str_starts_with($sql, 'INSERT') && str_contains($sql, "'files'") && str_contains($sql, ',2,');
         $failure       = null;
         try {
@@ -348,20 +347,20 @@ final class SnapshotTest extends TestCase
     // the longest list of() freezes is one read() takes; a byte more is never frozen
     public function test_of_freezesListOfAPartExactly(): void
     {
-        $short    = json_encode([['00000000000000000000000000000000', 'a0000000000000000000000000000001', 'ada1234', '', '', '']]);
+        $short    = json_encode([['00000000000000000000000000000000', 'a0000000000000000000000000000001', 'ada1234', '', '']]);
         $name     = str_repeat('x', Message::MAX_BYTES - strlen($short));
-        $snapshot = Snapshot::of(self::letter(), [new Recipient('a0000000000000000000000000000001', $name, 'ada1234', '')], self::REGISTER, self::CAMPAIGN);
+        $snapshot = Snapshot::of(self::letter(), [new Recipient('a0000000000000000000000000000001', $name, 'ada1234', '')], self::CAMPAIGN);
 
         self::assertSame(Message::MAX_BYTES, json_decode($snapshot->manifest(), true)['rcpt']['size']);
         unset($snapshot);
         $this->expectException(\InvalidArgumentException::class);
-        Snapshot::of(self::letter(), [new Recipient('a0000000000000000000000000000001', $name . 'x', 'ada1234', '')], self::REGISTER, self::CAMPAIGN);
+        Snapshot::of(self::letter(), [new Recipient('a0000000000000000000000000000001', $name . 'x', 'ada1234', '')], self::CAMPAIGN);
     }
 
     // what sending the files takes in memory is known before they are read
     public function test_filesSize_sumsTheFilesOfTheManifest(): void
     {
-        self::assertSame(strlen(self::BODY) + 5000, Snapshot::filesSize(Snapshot::of(self::letter(5000), [], self::REGISTER, self::CAMPAIGN)->manifest()));
+        self::assertSame(strlen(self::BODY) + 5000, Snapshot::filesSize(Snapshot::of(self::letter(5000), [], self::CAMPAIGN)->manifest()));
     }
 
     public function test_filesSize_takesTheFilesOfOneMessage(): void

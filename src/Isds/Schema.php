@@ -35,7 +35,6 @@ final class Schema
     public const MESSAGE_CAMPAIGN     = 'relation........';
     public const MESSAGE_RECIPIENT    = 'relation.......1';
     public const MESSAGE_BOX          = 'text...........1';
-    public const MESSAGE_OFFICIAL     = 'text...........2';
     public const MESSAGE_TEST         = 'switch.........1';
     public const MESSAGE_ENVIRONMENT  = 'text...........9';
     public const MESSAGE_SENDER_BOX   = 'text..........10';
@@ -73,7 +72,6 @@ final class Schema
         self::MESSAGE_CAMPAIGN,
         self::MESSAGE_RECIPIENT,
         self::MESSAGE_BOX,
-        self::MESSAGE_OFFICIAL,
         self::MESSAGE_TEST,
         self::MESSAGE_ENVIRONMENT,
         self::MESSAGE_SENDER_BOX,
@@ -143,25 +141,15 @@ final class Schema
     public const BOX_MISSING   = 'missing';
     /** the data box field holds no box id */
     public const BOX_FORMAT    = 'format';
-    /** the register of data boxes has not the box, or has it for another IČO than the item's */
-    public const BOX_FOREIGN   = 'foreign';
     /** ISDS reports the box as not active (CheckDataBox) */
     public const BOX_INACTIVE  = 'inactive';
     /** another item gets the letter to the same box */
     public const BOX_DUPLICATE = 'duplicate';
-    /** the IČO field holds something else than an IČO, so the box cannot be checked against it */
-    public const BOX_ICO       = 'ico';
-    /** the register has the box, but not of a kind a letter may go to: a part of an authority, a person
-     *  or company acting as one, or an authority that is no municipality or city district by its name */
-    public const BOX_KIND      = 'kind';
     public const BOX_PROBLEMS  = [
         self::BOX_MISSING,
         self::BOX_FORMAT,
-        self::BOX_FOREIGN,
         self::BOX_INACTIVE,
         self::BOX_DUPLICATE,
-        self::BOX_ICO,
-        self::BOX_KIND,
     ];
 
     /** ERROR_CODE of a failed message the list of sent ones did not hold when it should have: never

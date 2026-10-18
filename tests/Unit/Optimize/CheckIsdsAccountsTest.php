@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Optimize;
 
-use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\SliceRules;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\CheckIsdsAccounts;
@@ -147,51 +146,6 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertSame(['account:test:NSZM'], self::keys($findings));
         self::assertStringContainsString('Set AA_APIKEY_ISDSTEST_NSZM_SLICES in config.php', $findings[0]->evidence[0]['Problem']);
         self::assertNoSecret($findings);
-    }
-
-    // a mass sending checks its recipients in the register and sends nothing without it
-    public function test_findings_registerNotDownloaded(): void
-    {
-        $check = self::check(self::account());
-        $check->register = null;
-
-        $findings = $check->findings();
-
-        self::assertSame([Finding::WARNING], self::severities($findings));
-        self::assertSame('register:test:NSZM', $findings[0]->key);
-        self::assertSame('ISDS account AA_APIKEY_ISDSTEST_NSZM cannot send a mass sending: the register of data boxes has not been downloaded', $findings[0]->title);
-        self::assertSame(1, $check->registerLooks, 'one look for all accounts');
-
-        // no slices, nothing it sends for
-        $constants = self::account();
-        unset($constants['AA_APIKEY_ISDSTEST_NSZM_SLICES']);
-        $bare = self::check($constants);
-        $bare->register = null;
-        self::assertSame(['account:test:NSZM'], self::keys($bare->findings()));
-
-        $none = self::check(['AA_ID' => 'y']);
-        $none->register = null;
-        self::assertSame([Finding::OK], self::severities($none->findings()));
-        self::assertSame(0, $none->registerLooks, 'no account, no look');
-    }
-
-    // only a register the record vouches for serves a mass sending; the finding names the problem in
-    // the words of the page of the register
-    public function test_findings_registerOnlyAsTheRecordVouchesForIt(): void
-    {
-        $check = self::check(self::account());
-        self::assertNotContains('register:test:NSZM', self::keys($check->findings()), 'the recorded one');
-
-        $check->register = ['state' => RegisterIndex::UNRECORDED, 'time' => 0, 'size' => 0, 'sha256' => ''];
-        $finding = $check->findings()[0];
-        self::assertSame(['register:test:NSZM', 'ISDS account AA_APIKEY_ISDSTEST_NSZM cannot send a mass sending'], [$finding->key, $finding->title]);
-        self::assertSame([['Problem' => 'AA has no record of downloading this copy of the register']], $finding->evidence);
-
-        $check->register = ['state' => RegisterIndex::REPLACED, 'time' => 1790841600, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
-        self::assertSame([['Problem' => 'The register of data boxes is not the one AA downloaded']], $check->findings()[0]->evidence);
-
-        $check->register = new \RuntimeException('PHP cannot look into the directory /srv/aa/img_upload');
-        self::assertNotContains('register:test:NSZM', self::keys($check->findings()), 'CheckIsdsRegistry names the directory');
     }
 
     // UploadDir reads no attachment where PHP cannot list /proc/self/fd

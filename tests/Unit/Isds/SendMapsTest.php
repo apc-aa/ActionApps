@@ -65,7 +65,7 @@ final class SendMapsTest extends TestCase
     #[DataProvider('tallies')]
     public function test_tally_eachRecipientOnce(SendMaps $maps, array $expected): void
     {
-        $rows = array_map(static fn(string $reason): array => ['reason' => $reason], ['', '', '', '', 'foreign', '']);
+        $rows = array_map(static fn(string $reason): array => ['reason' => $reason], ['', '', '', '', 'duplicate', '']);
 
         self::assertSame($expected, $maps->tally($rows));
     }

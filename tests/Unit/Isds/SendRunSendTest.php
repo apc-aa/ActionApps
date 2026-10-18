@@ -126,7 +126,7 @@ final class SendRunSendTest extends TestCase
 
     public function test_work_moves_to_look_when_all_tried(): void
     {
-        $id   = self::queued(4, reasons: [2 => Schema::BOX_FOREIGN, 3 => Schema::BOX_KIND]);
+        $id   = self::queued(4, reasons: [2 => Schema::BOX_MISSING, 3 => Schema::BOX_DUPLICATE]);
         $isds = self::isds();
 
         self::assertSame('step 1', self::runQueued());
@@ -470,7 +470,7 @@ final class SendRunSendTest extends TestCase
 
     public function test_work_skips_frozen_reasons_without_calls(): void
     {
-        $id   = self::queued(4, reasons: [0 => Schema::BOX_FOREIGN, 2 => Schema::BOX_MISSING]);
+        $id   = self::queued(4, reasons: [0 => Schema::BOX_FORMAT, 2 => Schema::BOX_MISSING]);
         $isds = self::isds();
 
         self::runQueued();

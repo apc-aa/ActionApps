@@ -25,14 +25,14 @@ final class RegisterRecordTest extends TestCase
 
     public function test_write_firstSavesTheRecordThenOnlyTheFields(): void
     {
-        RegisterRecord::write(['xml' => 'aa11', 'size' => 17000000, 'time' => 1760000000]);
+        RegisterRecord::write(['xml' => 'aa11', 'size' => 17000000]);
         $stored = self::stored(self::id());
         self::assertSame([RegisterRecord::class, AA_ID], [$stored['aa_type'] ?? null, $stored['aa_owner'] ?? null], 'owned by the install');
         $typeRow = array_values(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => ($r['object_id'] === self::id()) && ($r['property'] === 'aa_type')))[0]['id'];
 
-        RegisterRecord::write(['index' => 'bb22', 'nonsense' => 'x']);
+        RegisterRecord::write(['time' => 1760000000, 'nonsense' => 'x']);
 
-        self::assertSame(['xml' => 'aa11', 'size' => '17000000', 'time' => '1760000000', 'index' => 'bb22'] + RegisterIndex::RECORD, RegisterRecord::read());
+        self::assertSame(['xml' => 'aa11', 'size' => '17000000', 'time' => '1760000000'], RegisterRecord::read());
         $again = array_values(array_filter(TableDb::rows('object_text'), static fn(array $r): bool => ($r['object_id'] === self::id()) && ($r['property'] === 'aa_type')))[0]['id'];
         self::assertSame($typeRow, $again, 'a later write changes only its fields');
         self::assertArrayNotHasKey('nonsense', self::stored(self::id()));
@@ -57,10 +57,10 @@ final class RegisterRecordTest extends TestCase
     {
         RegisterRecord::write(['xml' => 'aa11']);
         TableDb::$log  = [];
-        TableDb::$fail = static fn(string $sql): bool => str_starts_with($sql, 'INSERT') && str_contains($sql, "'failure'");
+        TableDb::$fail = static fn(string $sql): bool => str_starts_with($sql, 'INSERT') && str_contains($sql, "'time'");
         try {
-            RegisterRecord::write(['failed' => 5, 'failure' => 'no']);
-            self::fail('the write of failure fails');
+            RegisterRecord::write(['size' => 17000000, 'time' => 1760000000]);
+            self::fail('the write of time fails');
         } catch (\Throwable) {
             TableDb::$fail = null;
         }

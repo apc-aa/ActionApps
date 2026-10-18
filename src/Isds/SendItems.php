@@ -93,7 +93,6 @@ class SendItems
         $fields  = [
             'status_code.....'          => \SC_ACTIVE,
             Schema::MESSAGE_NAME        => $row['name'],
-            Schema::MESSAGE_OFFICIAL    => $row['official'],
             Schema::MESSAGE_BOX         => $row['box'],
             Schema::MESSAGE_ENVIRONMENT => $environment,
             Schema::MESSAGE_SENDER_BOX  => $senderBox,

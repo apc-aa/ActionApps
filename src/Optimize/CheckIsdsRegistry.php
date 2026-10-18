@@ -21,8 +21,7 @@ use AA_Module_Site;
  * data box, or another one than the register finds by their IČO. Reading every item of those slices and
  * the 17 MB register takes seconds, so this runs on request and in the daily snapshot. It downloads
  * nothing - the slice's page does - and its findings give counts only: the State Check mail would carry
- * item names. With an ISDS account it checks the index a mass sending reads (RegisterIndex), making it
- * when there is none, and names the accounts whose sites use no paired slice to take recipients from.
+ * item names. It also names the ISDS accounts whose sites use no paired slice to take recipients from.
  */
 class CheckIsdsRegistry extends AbstractOptimize
 {
@@ -122,22 +121,17 @@ class CheckIsdsRegistry extends AbstractOptimize
         if ($info === null) {
             return [new Finding(Finding::INFO, _m('The register of data boxes has not been downloaded'), advice: $download . ' ' . _m('The items are compared with it.'), links: $pages, key: 'register')];
         }
-        // a mass sending checks its recipients in it
-        $sends    = $this->hasIsdsAccount();
-        $unusable = static fn(string $state, bool $noSending): Finding => new Finding(
+        $unusable = static fn(string $state): Finding => new Finding(
             Finding::WARNING,
             Page::unusableText($state),
-            advice: _m('Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register.') . ($noSending ? ' ' . _m('A mass sending cannot use the register either.') : ''),
+            advice: _m('Download the register again on the page Data boxes from the register of a paired slice. Until then the items are not compared with the register.'),
             links: $pages,
             key: 'register-changed',
         );
-        // a mass sending reads only the index of a register the record vouches for, and only while it is there
         if ($info['state'] !== RegisterIndex::RECORDED) {
-            return [$unusable($info['state'], $sends)];
+            return [$unusable($info['state'])];
         }
-        $age = Sync::isOld($info['time'], $this->now()) ? [new Finding($sends ? Finding::WARNING : Finding::INFO, _m('The downloaded register of data boxes is older than %1 days', [Sync::OLD_DAYS]), evidence: [[_m('Downloaded') => date('Y-m-d H:i', $info['time'])]], advice: _m('Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge.'), links: $pages, key: 'register')] : [];
-        $problem = $sends ? $this->indexProblem() : '';
-        $index   = ($problem === '') ? [] : [new Finding(Finding::WARNING, _m('A mass sending cannot use the register of data boxes'), evidence: [[_m('Problem') => safe($problem)]], advice: _m('Fix what the evidence names, or download the register again on the page Data boxes from the register of a paired slice. Until then a mass sending neither counts its recipients nor sends. The AA log (type %1) keeps what failed.', [Sync::LOG_EVENT]), links: $pages, key: 'register-index')];
+        $age = Sync::isOld($info['time'], $this->now()) ? [new Finding(Finding::INFO, _m('The downloaded register of data boxes is older than %1 days', [Sync::OLD_DAYS]), evidence: [[_m('Downloaded') => date('Y-m-d H:i', $info['time'])]], advice: _m('Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge.'), links: $pages, key: 'register')] : [];
         try {
             // once for all slices; a register that cannot be read is no fault of their settings
             $boxes = $this->registerBoxes($info['sha256']);
@@ -145,16 +139,13 @@ class CheckIsdsRegistry extends AbstractOptimize
             $advice = ($e instanceof \UnexpectedValueException)
                 ? _m('The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it.')
                 : _m('The copy of the register cannot be read: check the directory and the permissions named in the evidence.');
-            return [...$age, ...$index, new Finding(Finding::WARNING, _m('The downloaded register of data boxes cannot be read'), evidence: [[_m('Error') => safe($e->getMessage())]], advice: $advice, links: $pages, key: 'register-unreadable')];
+            return [...$age, new Finding(Finding::WARNING, _m('The downloaded register of data boxes cannot be read'), evidence: [[_m('Error') => safe($e->getMessage())]], advice: $advice, links: $pages, key: 'register-unreadable')];
         }
         if ($boxes === null) {
-            // the age of a register that cannot be used is moot. An index made of the downloaded
-            // register still serves a mass sending; one that cannot be made of this file fails for the
-            // same cause - any other failure keeps its own finding and evidence
-            $same = ($problem === RegisterIndex::CHANGED);
-            return [...($same ? [] : $index), $unusable(RegisterIndex::REPLACED, $same)];
+            // the age of a register that cannot be used is moot
+            return [$unusable(RegisterIndex::REPLACED)];
         }
-        $findings = [...$age, ...$index];
+        $findings = $age;
         foreach ($configs as $config) {
             $finding = $this->sliceFinding($config, $boxes, $names[$config->sliceId()]);
             if ($finding !== null) {
@@ -242,12 +233,6 @@ class CheckIsdsRegistry extends AbstractOptimize
         return new Sync($config);
     }
 
-    /** include/config.php sets up an ISDS account, usable or not - only constants are read */
-    protected function hasIsdsAccount(): bool
-    {
-        return $this->bindings() !== [];
-    }
-
     /** @return list<Binding> */
     protected function bindings(): array
     {
@@ -267,12 +252,6 @@ class CheckIsdsRegistry extends AbstractOptimize
     protected function siteModules(array $sites): array
     {
         return AA_Module_Site::getRelatedModules($sites);
-    }
-
-    /** see RegisterIndex::problem() - it makes the index when it has to */
-    protected function indexProblem(): string
-    {
-        return (new RegisterIndex())->problem();
     }
 
     /**

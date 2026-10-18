@@ -95,17 +95,17 @@ final class SendRunPrepTest extends TestCase
     /**
      * A run as queueing a campaign leaves it, its snapshot saved with it
      * @param array<string, string> $props own properties over the queued ones
-     * @param int $n recipients, the first one skipped as foreign
+     * @param int $n recipients, the first one skipped without a box
      */
     private static function queued(array $position = ['p' => 'prep', 'i' => 0], array $props = [], int $n = 3): string
     {
         return DB_AA::transaction(static function () use ($position, $props, $n): string {
             $letter     = new Letter('Pozvánka', [new File('Dopis.html', 'text/html', File::MAIN, '<p>Vážení</p>')], 'starosta');
-            $recipients = [new Recipient(self::src(1), 'Adamov', 'ada1234', Schema::BOX_FOREIGN)];
+            $recipients = [new Recipient(self::src(1), 'Adamov', '', Schema::BOX_MISSING)];
             for ($i = 2; $i <= $n; ++$i) {
-                $recipients[] = new Recipient(self::src($i), "Obec $i", sprintf('b%06d', $i), '', '', "Obec $i");
+                $recipients[] = new Recipient(self::src($i), "Obec $i", sprintf('b%06d', $i), '');
             }
-            $snapshot = Snapshot::of($letter, $recipients, ['sha256' => 'ab12', 'time' => 1_760_000_000], self::CAMPAIGN_ITEM);
+            $snapshot = Snapshot::of($letter, $recipients, self::CAMPAIGN_ITEM);
             $snapshot->save();
             return TestSendRun::start($props + [
                 'subject'    => self::CAMPAIGN_ITEM,
@@ -207,7 +207,7 @@ final class SendRunPrepTest extends TestCase
         $messages = self::messages($id);
         self::assertSame($messages, $items->written('insert_if_new'), 'in the order frozen');
         self::assertSame([Schema::MESSAGE_STATE_SKIPPED, Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_QUEUED], array_map(static fn(string $m): string => $items->field($m, Schema::MESSAGE_STATE), $messages));
-        self::assertSame([Schema::BOX_FOREIGN, Account::TEST, self::SENDER, self::src(1)], [
+        self::assertSame([Schema::BOX_MISSING, Account::TEST, self::SENDER, self::src(1)], [
             $items->field($messages[0], Schema::MESSAGE_ERROR_CODE), $items->field($messages[0], Schema::MESSAGE_ENVIRONMENT),
             $items->field($messages[0], Schema::MESSAGE_SENDER_BOX), $items->field($messages[0], Schema::MESSAGE_RECIPIENT),
         ]);

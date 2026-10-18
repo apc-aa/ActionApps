@@ -97,9 +97,9 @@ trait SendRunCase
         $id  = DB_AA::transaction(static function () use ($n, $reasons, $props, $position, $letter, $now): string {
             $recipients = [];
             for ($i = 0; $i < $n; ++$i) {
-                $recipients[] = new Recipient(sprintf('b%031x', $i), "Obec $i", self::box($i), $reasons[$i] ?? '', '', "Obec $i");
+                $recipients[] = new Recipient(sprintf('b%031x', $i), "Obec $i", self::box($i), $reasons[$i] ?? '');
             }
-            $snapshot = Snapshot::of($letter ?? self::letter(), $recipients, ['sha256' => 'ab12', 'time' => 1_760_000_000], self::CAMPAIGN_ITEM);
+            $snapshot = Snapshot::of($letter ?? self::letter(), $recipients, self::CAMPAIGN_ITEM);
             $snapshot->save();
             return TestSendRun::start($props + [
                 'subject'    => self::CAMPAIGN_ITEM,

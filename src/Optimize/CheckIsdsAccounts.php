@@ -11,9 +11,6 @@ use AA\Isds\Accounts;
 use AA\Isds\Binding;
 use AA\Isds\ConfigException;
 use AA\Isds\Gate;
-use AA\Isds\Registry\Page;
-use AA\Isds\Registry\RegisterIndex;
-use AA\Isds\Registry\Sync;
 use AA\Isds\SliceProblem;
 use AA\Isds\SliceRules;
 use AA\Upload\UploadDir;
@@ -26,9 +23,8 @@ use AA_Module;
  * the constants AA does not read, whether the site and the slices each account is bound to are ready
  * (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
  * settings of the sending were not ready and the campaigns whose recipients could not be told (Gate logs
- * both), whether the register of data boxes was downloaded, and whether PHP may list /proc/self/fd,
- * without which a mass sending attaches no files. Constant names and file names only, never a key or
- * a passphrase. No network: CheckIsds logs in.
+ * both), and whether PHP may list /proc/self/fd, without which a mass sending attaches no files.
+ * Constant names and file names only, never a key or a passphrase. No network: CheckIsds logs in.
  */
 class CheckIsdsAccounts extends AbstractOptimize
 {
@@ -79,7 +75,6 @@ class CheckIsdsAccounts extends AbstractOptimize
             return $pages ?: [new Finding(Finding::OK, _m('No ISDS account is set up in include/config.php'))];
         }
         $findings   = [];
-        $register   = $bindings ? $this->registerState() : RegisterIndex::RECORDED;
         $kernel     = $this->kernelPaths();
         foreach ($bindings as $binding) {
             if (!$binding->usable()) {
@@ -89,9 +84,6 @@ class CheckIsdsAccounts extends AbstractOptimize
             $finding = self::slicesFinding($binding, $rules);
             if ($finding !== null) {
                 $findings[] = $finding;
-            }
-            if (($register !== RegisterIndex::RECORDED) && ($binding->campaignSlice !== '')) {
-                $findings[] = self::registerFinding($binding, $rules, $register);
             }
             if (!$kernel && ($binding->campaignSlice !== '')) {
                 $findings[] = new Finding(
@@ -382,51 +374,7 @@ class CheckIsdsAccounts extends AbstractOptimize
         );
     }
 
-    /**
-     * A mass sending checks its recipients in the register and sends nothing without it
-     * @param string $state registerState(), not RECORDED
-     */
-    private static function registerFinding(Binding $binding, SliceRules $rules, string $state): Finding
-    {
-        $account = Accounts::prefix($binding->environment, $binding->name);
-        $missing = ($state === RegisterIndex::MISSING);
-        return new Finding(
-            Finding::WARNING,
-            $missing
-                ? _m('ISDS account %1 cannot send a mass sending: the register of data boxes has not been downloaded', [$account])
-                : _m('ISDS account %1 cannot send a mass sending', [$account]),
-            // the words the page of the register and CheckIsdsRegistry use
-            evidence: $missing ? [] : [[_m('Problem') => safe(Page::unusableText($state))]],
-            advice: _m('Download the register on the page Data boxes from the register of the slice the campaigns take their recipients from.'),
-            key: "register:{$binding->environment}:{$binding->name}",
-            place: $rules->name($binding->campaignSlice),
-        );
-    }
-
-    /**
-     * RegisterIndex::info()'s state, MISSING when nothing was downloaded; RECORDED also when PHP cannot
-     * look into the directory, which is CheckIsdsRegistry's
-     */
-    private function registerState(): string
-    {
-        try {
-            return $this->registerInfo()['state'] ?? RegisterIndex::MISSING;
-        } catch (\RuntimeException) {
-            return RegisterIndex::RECORDED;
-        }
-    }
-
     // ------------------------------------------------------------ what tests replace
-
-    /**
-     * One stat and the record
-     * @return ?array{state: string, time: int, size: int, sha256: string}
-     * @throws \RuntimeException see Sync::registerInfo()
-     */
-    protected function registerInfo(): ?array
-    {
-        return Sync::registerInfo();
-    }
 
     /** @return array<string, mixed> as Store::userConstants() */
     protected function constants(): array

@@ -798,7 +798,7 @@ final class PageTest extends TestCase
         return Sync::registerStamp($page->registerInfo()['sha256'] ?? '', $seen ?? self::config());
     }
 
-    /** the page over the fixture register in a file, downloaded - recorded and indexed - when $recorded */
+    /** the page over the fixture register in a file, downloaded - recorded - when $recorded */
     private function pageOverFile(bool $recorded = true, bool $mayWrite = true): RecordingPage
     {
         $this->dir = sys_get_temp_dir() . '/isds-page-' . bin2hex(random_bytes(6));

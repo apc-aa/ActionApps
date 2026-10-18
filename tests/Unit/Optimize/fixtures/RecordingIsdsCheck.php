@@ -11,7 +11,6 @@ use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\Sync;
 use AA\Optimize\CheckIsdsRegistry;
 use Tests\Unit\Isds\Registry\Fixtures\DownloadSync;
-use Tests\Unit\Isds\Registry\Fixtures\LockedRegisterIndex;
 
 require_once __DIR__ . '/../../Isds/Registry/fixtures/DownloadSync.php';
 
@@ -36,8 +35,8 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
      *  register downloaded; the exception is thrown as by a directory PHP may not look into */
     public array|\RuntimeException|null $register = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'];
 
-    /** a register read as Sync reads the downloaded one, its index made by LockedRegisterIndex, in
-     *  place of $register, $boxes and $indexProblem */
+    /** a register read as Sync reads the downloaded one, its record in LockedRegisterIndex, in place
+     *  of $register and $boxes */
     public ?string $file = null;
 
     public int $now = 1760000000 + 3600;
@@ -46,14 +45,6 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
     public array $names = [];
 
     public int $registerReads = 0;
-
-    /** whether include/config.php sets up an ISDS account */
-    public bool $isdsAccount = false;
-
-    /** RegisterIndex::problem() */
-    public string $indexProblem = '';
-
-    public int $indexChecks = 0;
 
     /** @var list<Binding> the ISDS accounts of include/config.php */
     public array $bindings = [];
@@ -76,11 +67,6 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
         return $this->syncs[$config->sliceId()] ?? throw new \LogicException('Set the sync of the slice');
     }
 
-    protected function hasIsdsAccount(): bool
-    {
-        return $this->isdsAccount;
-    }
-
     protected function bindings(): array
     {
         return $this->bindings;
@@ -94,12 +80,6 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
     protected function siteModules(array $sites): array
     {
         return array_merge(...array_map(fn(string $site): array => $this->siteModules[$site] ?? [], $sites));
-    }
-
-    protected function indexProblem(): string
-    {
-        ++$this->indexChecks;
-        return ($this->file !== null) ? (new LockedRegisterIndex($this->file))->problem() : $this->indexProblem;
     }
 
     protected function registerInfo(): ?array

@@ -95,8 +95,7 @@ final class Matcher
     /**
      * The main box of a municipality or a city district: an authority's own (Box::isAuthoritysOwn())
      * whose register name starts with such a legal form. Its pool and the folded name without the form
-     * - "Městská část Praha 1" is [DISTRICT, 'praha 1']; null for any other box. A campaign letter goes
-     * only to such a box too, so a change here changes who gets one.
+     * - "Městská část Praha 1" is [DISTRICT, 'praha 1']; null for any other box.
      * @return ?array{string, string}
      */
     public static function municipalBox(int $subtype, bool $isMaster, string $name): ?array

@@ -36,7 +36,7 @@ final class CheckIsdsRunItemsTest extends TestCase
 
     public function test_findings_itemsShowTheRecord_ok(): void
     {
-        $id = self::queued(6, ['dm_ids' => '{"0":"901"}', 'failed' => '{"1":"1233"}', 'uncertain' => '{"2":' . (self::NOW - 60) . '}', 'skips' => '{"3":"inactive"}', 'cursor' => '4'], reasons: [5 => Schema::BOX_FOREIGN]);
+        $id = self::queued(6, ['dm_ids' => '{"0":"901"}', 'failed' => '{"1":"1233"}', 'uncertain' => '{"2":' . (self::NOW - 60) . '}', 'skips' => '{"3":"inactive"}', 'cursor' => '4'], reasons: [5 => Schema::BOX_DUPLICATE]);
         self::itemsAre($id, [Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_FAILED, Schema::MESSAGE_STATE_UNCERTAIN, Schema::MESSAGE_STATE_SKIPPED, Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_SKIPPED]);
 
         self::assertSame([Finding::OK], self::severities((new TestIsdsRunItemsCheck())->findings()));

@@ -9,19 +9,15 @@ use AA_Object;
 use AA_Property;
 
 /**
- * What RegisterIndex vouches for the files in the upload directory with (RegisterIndex::RECORD), kept
- * in the install's database, which other PHP users of the server cannot write into. One record per
- * install, as Security\Settings.
+ * What RegisterIndex vouches for the register in the upload directory with (RegisterIndex::RECORD),
+ * kept in the install's database, which other PHP users of the server cannot write into. One record
+ * per install, as Security\Settings.
  */
 final class RegisterRecord extends AA_Object
 {
     protected $xml = '';
     protected $size = '';
     protected $time = '';
-    protected $index = '';
-    protected $failed = '';
-    protected $failed_of = '';
-    protected $failure = '';
 
     public static function getClassProperties(): array
     {

@@ -25,8 +25,8 @@ final class Snapshot extends AA_Object
     /** BatchFailed reason: a part is missing, or not what was frozen */
     public const CHANGED = 'CONTENT_CHANGED';
 
-    /** a frozen recipient: its message item to be, the source item, the box, the names, why skipped */
-    public const ROW = ['msg', 'src', 'box', 'name', 'official', 'reason'];
+    /** a frozen recipient: its message item to be, the source item, the box, the name, why skipped */
+    public const ROW = ['msg', 'src', 'box', 'name', 'reason'];
 
     /** bytes of a part read() takes: no file is larger, and the size in a manifest is bounded */
     private const MAX_PART = Message::MAX_BYTES;
@@ -51,18 +51,17 @@ final class Snapshot extends AA_Object
 
     /**
      * A new snapshot, to be saved in the transaction that starts the run
-     * @param array<Recipient>                $recipients as Recipients::resolve() gave them, skipped ones too
-     * @param array{sha256: string, time: int} $register   of the register they were checked against (RegisterIndex::info())
-     * @param string                           $campaign   the long id of the campaign item, the owner - in small letters, as BatchRun::start() takes the run's subject
+     * @param array<Recipient> $recipients as Recipients::resolve() gave them, skipped ones too
+     * @param string           $campaign   the long id of the campaign item, the owner - in small letters, as BatchRun::start() takes the run's subject
      * @throws \InvalidArgumentException the recipients take more than read() takes, or $campaign is no long id
      */
-    public static function of(Letter $letter, array $recipients, array $register, string $campaign): self
+    public static function of(Letter $letter, array $recipients, string $campaign): self
     {
         // read() compares the owner with the run's subject: another spelling would fail every step
         if (!preg_match('/^[0-9a-f]{32}\z/', $campaign)) {
             throw new \InvalidArgumentException('The owner of a snapshot is the long id of a campaign');
         }
-        $rows = array_map(static fn(Recipient $r): array => [new_id(), $r->itemId, $r->box, $r->name, $r->official, $r->reason], array_values($recipients));
+        $rows = array_map(static fn(Recipient $r): array => [new_id(), $r->itemId, $r->box, $r->name, $r->reason], array_values($recipients));
         // names are raw item text: a broken one must not stop the sending
         $json = json_encode($rows, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
         if (strlen($json) > self::MAX_PART) {
@@ -81,7 +80,6 @@ final class Snapshot extends AA_Object
             'to_hands'   => $letter->toHands,
             'files'      => $files,
             'rcpt'       => ['n' => count($rows)] + self::stamp($json),
-            'register'   => ['sha256' => (string) $register['sha256'], 'time' => (int) $register['time']],
         ], JSON_THROW_ON_ERROR);
         return $snapshot;
     }

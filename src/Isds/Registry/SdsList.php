@@ -87,7 +87,7 @@ final class SdsList
             if ($boxes === 0) {
                 throw new \UnexpectedValueException('The downloaded list of data boxes has no box');
             }
-            // a renamed subtype, hierarchy or name would skip every recipient of a sending, unnoticed
+            // a renamed subtype, hierarchy or name would leave the pairing without a box, unnoticed
             if (!$municipal) {
                 throw new \UnexpectedValueException('The downloaded list of data boxes has no main box of a municipality or a city district - the format of the list changed');
             }

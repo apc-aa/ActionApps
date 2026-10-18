@@ -184,7 +184,7 @@ final class SliceRulesTest extends TestCase
     public static function changingInserts(): array
     {
         return [
-            'file named by a template' => [false, Schema::MESSAGE_OFFICIAL, 'fil:'],
+            'file named by a template' => [false, Schema::MESSAGE_BOX, 'fil:'],
             'ids off a relation'       => [false, Schema::MESSAGE_ENVIRONMENT, 'ids'],
             'Boolean off the test'     => [false, Schema::MESSAGE_STATE, 'boo'],
             'status of the item'       => [false, 'status_code.....', 'uid'],

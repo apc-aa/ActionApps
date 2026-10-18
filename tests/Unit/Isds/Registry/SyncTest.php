@@ -415,31 +415,15 @@ final class SyncTest extends TestCase
         self::assertSame([[1760000000], 1, 1], [DownloadSync::$attempts, DownloadSync::$locks, DownloadSync::$unlocks]);
     }
 
-    // the hash of what was downloaded vouches for the file; and no page has to parse the 17 MB
-    public function test_download_recordsTheRegisterAndWritesItsIndex(): void
+    // the hash of what was downloaded vouches for the file
+    public function test_download_recordsTheRegister(): void
     {
         $file = $this->scratch() . '/register.xml';
 
         DownloadSync::download(self::registerHttp(), 1760000000, $file);
 
         self::assertSame([hash_file('sha256', self::FIXTURE), (string) filesize(self::FIXTURE)], [LockedRegisterIndex::$record['xml'], LockedRegisterIndex::$record['size']]);
-        $index = new LockedRegisterIndex($file);
-        self::assertSame(RegisterIndex::OK, $index->state());
-        self::assertSame([1, 1], [LockedRegisterIndex::$locks, LockedRegisterIndex::$unlocks], 'made under the lock, no page makes it again');
-        self::assertArrayHasKey('eerak7a', $index->lookup(['eerak7a']));
-    }
-
-    // the register is in place: the download succeeded, the failure is logged
-    public function test_download_failedIndexWriteStillDownloaded(): void
-    {
-        $file = $this->scratch() . '/register.xml';
-        mkdir($this->scratch . '/' . RegisterIndex::FILE);   // rename() cannot put a file over a directory
-
-        self::assertSame(['status' => Sync::DOWNLOADED, 'last' => 0], DownloadSync::download(self::registerHttp(), 1760000000, $file));
-
-        self::assertFileEquals(self::FIXTURE, $file);
-        self::assertCount(1, LockedRegisterIndex::$logged);
-        self::assertSame(RegisterIndex::UNREADABLE, (new LockedRegisterIndex($file))->state());
+        self::assertSame(RegisterIndex::RECORDED, DownloadSync::registerInfo($file)['state'] ?? null);
     }
 
     // a register no record vouches for cannot be used: a type of its own tells the page to say so
@@ -456,7 +440,6 @@ final class SyncTest extends TestCase
         }
         self::assertFileEquals(self::FIXTURE, $file, 'in place, so the previous one is not in use');
         self::assertSame([[1760000000], 1], [DownloadSync::$attempts, DownloadSync::$unlocks], 'an attempt, the lock released');
-        self::assertSame([0, []], [LockedRegisterIndex::$locks, LockedRegisterIndex::$logged], 'no index made of it');
     }
 
     // another server, or another click, is downloading it
