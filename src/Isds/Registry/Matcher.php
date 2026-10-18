@@ -13,8 +13,8 @@ use ConvertCharset;
  */
 final class Matcher
 {
-    private const DISTRICT     = 'district';
-    private const MUNICIPALITY = 'municipality';
+    public const DISTRICT     = 'district';
+    public const MUNICIPALITY = 'municipality';
 
     /** bytes; the register's names end at 255, and fold()'s trailing-junk pattern is quadratic (50 000 dots before a letter: 28 s without the PCRE JIT) */
     private const MAX_NAME = 255;
@@ -55,23 +55,18 @@ final class Matcher
         $by_name = [self::DISTRICT => [], self::MUNICIPALITY => []];
         foreach ($boxes as $box) {
             // subordinate boxes (a city police, a school under the city) share the city's IČO
-            if (!Box::isAuthoritysOwn($box->subtype, $box->isMaster)) {
+            $form = self::municipalBox($box->subtype, $box->isMaster, $box->name);
+            if (is_null($form)) {
                 continue;
             }
-            $folded = self::fold($box->name);
-            foreach (self::PREFIXES as $pool => $prefix) {
-                $own = (string) preg_replace($prefix, '', $folded, 1, $count);
-                if ($count === 0) {
-                    continue;
-                }
-                $ico = Box::normalizeIco($box->ico);
-                if ($ico !== '') {
-                    $by_ico[$pool][$ico][$box->id] = $box;
-                }
-                $key = self::key($own);
-                if ($key !== '') {
-                    $by_name[$pool][$key][$box->id] = $box;
-                }
+            [$pool, $own] = $form;
+            $ico = Box::normalizeIco($box->ico);
+            if ($ico !== '') {
+                $by_ico[$pool][$ico][$box->id] = $box;
+            }
+            $key = self::key($own);
+            if ($key !== '') {
+                $by_name[$pool][$key][$box->id] = $box;
             }
         }
 
@@ -95,6 +90,29 @@ final class Matcher
             $rows[] = self::row($item_id, $name, $type, self::text($item['ds'] ?? ''), $ico, $typed_ico, $found, $method);
         }
         return new MatchReport($rows);
+    }
+
+    /**
+     * The main box of a municipality or a city district: an authority's own (Box::isAuthoritysOwn())
+     * whose register name starts with such a legal form. Its pool and the folded name without the form
+     * - "Městská část Praha 1" is [DISTRICT, 'praha 1']; null for any other box. A campaign letter goes
+     * only to such a box too, so a change here changes who gets one.
+     * @return ?array{string, string}
+     */
+    public static function municipalBox(int $subtype, bool $isMaster, string $name): ?array
+    {
+        if (!Box::isAuthoritysOwn($subtype, $isMaster)) {
+            return null;
+        }
+        $folded = self::fold($name);
+        // the forms differ in the first word: one matches at most
+        foreach (self::PREFIXES as $pool => $prefix) {
+            $own = (string) preg_replace($prefix, '', $folded, 1, $count);
+            if ($count > 0) {
+                return [$pool, $own];
+            }
+        }
+        return null;
     }
 
     /**

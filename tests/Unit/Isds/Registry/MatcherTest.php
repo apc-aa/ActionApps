@@ -249,6 +249,55 @@ final class MatcherTest extends TestCase
         self::assertSame('obecalb', self::one(['name' => 'Albrechtice', 'type' => 'city'], $boxes)->newDs);
     }
 
+    /** @return array<string, array{string, ?array{string, string}}> the name of an authority's own main box, its pool and the rest; null = no municipality's */
+    public static function registerNames(): array
+    {
+        return [
+            'obec'                    => ['Obec Dolní Lhota', [Matcher::MUNICIPALITY, 'dolni lhota']],
+            'město'                   => ['Město Cheb', [Matcher::MUNICIPALITY, 'cheb']],
+            'městys'                  => ['Městys Bobrová', [Matcher::MUNICIPALITY, 'bobrova']],
+            'statutory city'          => ['Statutární město Brno', [Matcher::MUNICIPALITY, 'brno']],
+            'capital city'            => ['Hlavní město Praha', [Matcher::MUNICIPALITY, 'praha']],
+            'city district'           => ['Městská část Praha 1', [Matcher::DISTRICT, 'praha 1']],
+            'city ward'               => ['Městský obvod Ostrava-Jih', [Matcher::DISTRICT, 'ostrava-jih']],
+            'no-break and two spaces' => ["Městský\u{A0}obvod  Slezská\u{A0}Ostrava", [Matcher::DISTRICT, 'slezska ostrava']],
+            'capitals, trailing dot'  => ['MĚSTYS BOBROVÁ.', [Matcher::MUNICIPALITY, 'bobrova']],
+            'company archive'         => ['Archiv společnosti Škoda Auto, a.s.', null],
+            'school'                  => ['Mensa gymnázium, o.p.s.', null],
+            'state office'            => ['Finanční úřad pro Jihomoravský kraj', null],
+            'region'                  => ['Kraj Vysočina', null],
+            'a word like the form'    => ['Obecní knihovna Lhota', null],
+            'the form later'          => ['Základní škola Město Touškov', null],
+            'a district form later'   => ['Kulturní dům Městský obvod Poruba', null],
+            'a district form glued'   => ['Městská částečná správa Lhota', null],
+            'no name'                 => ['', null],
+        ];
+    }
+
+    /** @param ?array{string, string} $form */
+    #[DataProvider('registerNames')]
+    public function test_municipalBox_byName(string $name, ?array $form): void
+    {
+        self::assertSame($form, Matcher::municipalBox(Box::AUTHORITY, true, $name));
+    }
+
+    /** @return array<string, array{int, bool}> the subtype of the box, whether it is a main box */
+    public static function notAnAuthoritysOwnBox(): array
+    {
+        return [
+            'a part of a city'                 => [13, false],
+            'a company acting as an authority' => [16, true],
+            'subtype 10 under another box'     => [Box::AUTHORITY, false],
+        ];
+    }
+
+    // a municipality's name does not make any box its own
+    #[DataProvider('notAnAuthoritysOwnBox')]
+    public function test_municipalBox_notAnAuthoritysOwnBox(int $subtype, bool $isMaster): void
+    {
+        self::assertNull(Matcher::municipalBox($subtype, $isMaster, 'Obec Dolní Lhota'));
+    }
+
     public function test_match_sameNameIsAmbiguous(): void
     {
         $row = self::one(['name' => 'Adamov', 'ds' => 'xx3bzck', 'type' => 'city']);

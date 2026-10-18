@@ -6,6 +6,7 @@ namespace AA\Isds;
 
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
+use AA\Isds\Registry\Matcher;
 use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\UnusableRegisterException;
 use AA_Set;
@@ -31,7 +32,8 @@ class Recipients
      * request.
      * @param Config        $config   the settings of data boxes of the source slice
      * @param RegisterIndex $register a box it has not, or has for another IČO than the item's, is foreign;
-     *                                one of another kind than an authority's main box is skipped too
+     *                                one that is not the main box of a municipality or a city district
+     *                                (Matcher::municipalBox()) is skipped too
      * @return list<Recipient>
      * @throws UnusableRegisterException the register cannot be used, up front or while read
      * @throws \RuntimeException         the settings name no type field
@@ -140,8 +142,9 @@ class Recipients
                 $own    = !is_null($row) && (($r->ico === '') || ($r->ico === $row['ico']));
                 $reason = match (true) {
                     !$own => Schema::BOX_FOREIGN,
-                    // a letter goes only to an authority's main box
-                    !Box::isAuthoritysOwn($row['subtype'], $row['master']) => Schema::BOX_KIND,
+                    // only to the main box of a municipality or a city district: an item's box and IČO can be
+                    // rewritten, and no stranger holds such a box
+                    is_null(Matcher::municipalBox($row['subtype'], $row['master'], $row['name'])) => Schema::BOX_KIND,
                     default => '',
                 };
                 $recipients[$i] = $r->with($reason, $row['name'] ?? '');

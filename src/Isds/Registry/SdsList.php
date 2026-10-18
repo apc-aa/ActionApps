@@ -58,7 +58,8 @@ final class SdsList
      * @throws ResponseTooLargeException over $maxBytes
      * @throws \RuntimeException          an answer other than 200, or the file cannot be written
      * @throws \UnexpectedValueException  the answer is not a whole list with a box (an error page, cut-off XML),
-     *                                    or no box is an authority's main one (Box::isAuthoritysOwn())
+     *                                    or none is the main box of a municipality or a city district
+     *                                    (Matcher::municipalBox())
      * @return array{sha256: string, size: int} of the bytes written - hashed here, as the file may be
      *                                          replaced as soon as it is in place; before it is, so the
      *                                          caller records it with the least delay
@@ -76,17 +77,19 @@ final class SdsList
         }
         $written = ['sha256' => hash('sha256', $answer->body), 'size' => strlen($answer->body)];
         SafeFile::replace($to, static function () use ($answer): string {
-            $boxes = $authorities = 0;
+            $boxes     = 0;
+            $municipal = false;
             foreach (self::fromString($answer->body) as $box) {
                 ++$boxes;
-                $authorities += (int) Box::isAuthoritysOwn($box->subtype, $box->isMaster);
+                // || folds names only until the first hit
+                $municipal = $municipal || !is_null(Matcher::municipalBox($box->subtype, $box->isMaster, $box->name));
             }
             if ($boxes === 0) {
                 throw new \UnexpectedValueException('The downloaded list of data boxes has no box');
             }
-            // a renamed subtype or hierarchy would skip every recipient of a sending, unnoticed
-            if ($authorities === 0) {
-                throw new \UnexpectedValueException('The downloaded list of data boxes has no main box of an authority - the format of the list changed');
+            // a renamed subtype, hierarchy or name would skip every recipient of a sending, unnoticed
+            if (!$municipal) {
+                throw new \UnexpectedValueException('The downloaded list of data boxes has no main box of a municipality or a city district - the format of the list changed');
             }
             return $answer->body;
         });

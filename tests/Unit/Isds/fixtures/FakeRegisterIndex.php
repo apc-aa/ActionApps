@@ -14,6 +14,9 @@ use AA\Isds\Registry\UnusableRegisterException;
  */
 final class FakeRegisterIndex extends RegisterIndex
 {
+    /** the official name of every box of permissive() */
+    public const NAME = 'Obec Lhota';
+
     /** @var list<list<string>> the boxes of each lookup() */
     public array $lookups = [];
 
@@ -21,7 +24,7 @@ final class FakeRegisterIndex extends RegisterIndex
      * @param string $given the state()
      * @param ?array<string, array{0: string, 1: string, 2?: int, 3?: bool}> $boxes box id => its IČO as lookup() gives
      *        it ('' none, BAD_ICO), its official name, subtype and master flag - an authority's own box when left out;
-     *        null = every box asked for, such a box without IČO and name
+     *        null = every box asked for, such a box without IČO, named NAME
      * @param bool $breaks lookup() finds the index replaced and cannot make it again - the state turns UNREADABLE
      */
     public function __construct(private string $given = self::OK, private ?array $boxes = [], private bool $breaks = false)
@@ -29,7 +32,7 @@ final class FakeRegisterIndex extends RegisterIndex
         parent::__construct('/nonexistent/register.xml');
     }
 
-    /** a register that has every box, an authority's own, none with an IČO - for what is not about the register */
+    /** a register that has every box, a municipality's own, none with an IČO - for what is not about the register */
     public static function permissive(): self
     {
         return new self(self::OK, null);
@@ -51,7 +54,7 @@ final class FakeRegisterIndex extends RegisterIndex
         }
         $found = [];
         foreach ($boxes as $box) {
-            [$ico, $name, $subtype, $master] = (is_null($this->boxes) ? ['', ''] : ($this->boxes[$box] ?? [null, null])) + [2 => Box::AUTHORITY, 3 => true];
+            [$ico, $name, $subtype, $master] = (is_null($this->boxes) ? ['', self::NAME] : ($this->boxes[$box] ?? [null, null])) + [2 => Box::AUTHORITY, 3 => true];
             if (!is_null($ico)) {
                 $found[$box] = ['id' => $box, 'ico' => $ico, 'subtype' => $subtype, 'master' => $master, 'name' => (string) $name];
             }

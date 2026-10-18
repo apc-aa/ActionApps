@@ -517,13 +517,14 @@ final class SdsListTest extends TestCase
         $changed = 'the format of the list changed';
 
         return [
-            'error page'                  => ['<html><body>Údržba</body></html>'],
-            'cut off'                     => [substr((string) file_get_contents(self::FIXTURE), 0, 5000)],
-            'no box'                      => [self::list('')],
-            'no box id'                   => [self::list(self::box('', ''))],
+            'error page'                    => ['<html><body>Údržba</body></html>'],
+            'cut off'                       => [substr((string) file_get_contents(self::FIXTURE), 0, 5000)],
+            'no box'                        => [self::list('')],
+            'no box id'                     => [self::list(self::box('', ''))],
             // a sending would skip every recipient
-            'no main box of an authority' => [self::list(self::box('abcdefg', '<subtype>16</subtype><hierarchy><isMaster>true</isMaster></hierarchy>') . self::box('bcdefgh', '<subtype>10</subtype><hierarchy><isMaster>false</isMaster></hierarchy>')), $changed],
-            'subtype renamed'             => [self::list(self::box('abcdefg', '<subType>10</subType><hierarchy><isMaster>true</isMaster></hierarchy>')), $changed],
+            'no main box of an authority'   => [self::list(self::box('abcdefg', '<subtype>16</subtype><hierarchy><isMaster>true</isMaster></hierarchy>') . self::box('bcdefgh', '<subtype>10</subtype><hierarchy><isMaster>false</isMaster></hierarchy>')), $changed],
+            'no main box of a municipality' => [self::list(self::box('abcdefg', '<subtype>10</subtype><name><tradeName>Mensa gymnázium, o.p.s.</tradeName></name><hierarchy><isMaster>true</isMaster></hierarchy>')), $changed],
+            'subtype renamed'               => [self::list(self::box('abcdefg', '<subType>10</subType><hierarchy><isMaster>true</isMaster></hierarchy>')), $changed],
         ];
     }
 

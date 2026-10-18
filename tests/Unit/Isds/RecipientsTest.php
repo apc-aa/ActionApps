@@ -23,8 +23,8 @@ require_once __DIR__ . '/fixtures/Sending.php';
 /**
  * Recipients = (type ∩ membership) ∪ include − exclude, each data box once; a bad box skips the
  * recipient with its reason, never stops the rest. Only items of the source slice are read. A box
- * the register of data boxes has not, or has for another IČO than the item's, is foreign; one of
- * another kind than an authority's main box is skipped too.
+ * the register of data boxes has not, or has for another IČO than the item's, is foreign; one that is
+ * not the main box of a municipality or a city district is skipped too.
  */
 final class RecipientsTest extends TestCase
 {
@@ -79,7 +79,7 @@ final class RecipientsTest extends TestCase
 
     /**
      * @param array<string, mixed> $over
-     * @param ?RegisterIndex       $register null = one with every box, none with an IČO
+     * @param ?RegisterIndex       $register null = one with every box a municipality's, none with an IČO
      * @return list<Recipient>
      */
     private static function resolve(FakeRecipients $source, array $over = [], ?Setup $page = null, ?RegisterIndex $register = null): array
@@ -150,8 +150,8 @@ final class RecipientsTest extends TestCase
     public function test_resolve_recipientValues(): void
     {
         self::assertEquals([
-            new Recipient(self::STRED, 'Brno-střed', 'str1234', ''),
-            new Recipient(self::DECIN, 'Děčín', 'dec1234', ''),
+            new Recipient(self::STRED, 'Brno-střed', 'str1234', '', '', FakeRegisterIndex::NAME),
+            new Recipient(self::DECIN, 'Děčín', 'dec1234', '', '', FakeRegisterIndex::NAME),
         ], self::resolve(self::source(), ['types' => ['mestostatut', 'mestocast']]));
     }
 
@@ -412,11 +412,33 @@ final class RecipientsTest extends TestCase
             self::CHEB    => ['fields' => [Sending::DS => 'ada1234', Sending::ICO => '00231401']],
         ]);
 
+        // named as the city's own box, so only the kind of box skips it
+        $name = 'Město Adamov, městská policie';
         self::assertSame([
-            ['Adamov', Schema::BOX_KIND, 'Městská policie Adamov'],
-            ['Benešov', Schema::BOX_KIND, 'Městská policie Adamov'],
-            ['Cheb', Schema::BOX_FOREIGN, 'Městská policie Adamov'],
-        ], self::checked(self::resolve($source, register: self::register(['ada1234' => ['00283924', 'Městská policie Adamov', $subtype, $master]]))), 'no keeper, so no duplicate; another IČO is foreign first');
+            ['Adamov', Schema::BOX_KIND, $name],
+            ['Benešov', Schema::BOX_KIND, $name],
+            ['Cheb', Schema::BOX_FOREIGN, $name],
+        ], self::checked(self::resolve($source, register: self::register(['ada1234' => ['00283924', $name, $subtype, $master]]))), 'no keeper, so no duplicate; another IČO is foreign first');
+    }
+
+    /** @return array<string, array{string, string}> the official name of an authority's own main box, the reason */
+    public static function officialNames(): array
+    {
+        return [
+            'a municipality' => ['Obec Dolní Lhota', ''],
+            'a school'       => ['Mensa gymnázium, o.p.s.', Schema::BOX_KIND],
+            'a region'       => ['Kraj Vysočina', Schema::BOX_KIND],
+        ];
+    }
+
+    // a forged item cannot send the letter to a school or a region either - only to the main box of a
+    // municipality or a city district
+    #[DataProvider('officialNames')]
+    public function test_resolve_onlyMunicipalBoxSendable(string $official, string $reason): void
+    {
+        $register = self::register(['ada1234' => ['00283924', $official]]);
+
+        self::assertSame(['Adamov', $reason, $official], self::checked(self::resolve(self::source(), register: $register))[0]);
     }
 
     /** @return array<string, array{string}> the item's IČO */

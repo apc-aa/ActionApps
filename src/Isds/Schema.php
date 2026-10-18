@@ -151,8 +151,8 @@ final class Schema
     public const BOX_DUPLICATE = 'duplicate';
     /** the IČO field holds something else than an IČO, so the box cannot be checked against it */
     public const BOX_ICO       = 'ico';
-    /** the register has the box, but not of a kind a letter may go to: a part of an authority, or a
-     *  person or company acting as one */
+    /** the register has the box, but not of a kind a letter may go to: a part of an authority, a person
+     *  or company acting as one, or an authority that is no municipality or city district by its name */
     public const BOX_KIND      = 'kind';
     public const BOX_PROBLEMS  = [
         self::BOX_MISSING,
