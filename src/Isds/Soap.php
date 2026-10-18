@@ -28,8 +28,8 @@ final class Soap
     /** too many parallel or repeated calls - come back later (1.9.1, 1.9.2) */
     private const BUSY = ['3008', '3009'];
 
-    /** bytes of an ISDS text quoted in an exception message */
-    private const QUOTE = 300;
+    /** bytes of an ISDS text quoted in an exception message; quote() adds '…' to a cut one */
+    public const QUOTE = 300;
 
     /** bytes of a body excerpt() reads - its start tells what it is */
     private const EXCERPT = 4096;

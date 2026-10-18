@@ -183,6 +183,7 @@ final class Schema
     /** dmMessageStatus 8 - the recipient's box was closed; even a delivered message (4, 5) can end here */
     public const EVENT_UNDELIVERABLE  = 'undeliverable';
     public const EVENT_FAILED         = 'failed';
+    /** may have been sent: no answer, one that does not say what ISDS did, or an error AA does not know */
     public const EVENT_TIMEOUT        = 'timeout';
     public const EVENT_LOOKUP_MISSING = 'lookup-missing';
     public const EVENT_LOOKUP_FOUND   = 'lookup-found';
