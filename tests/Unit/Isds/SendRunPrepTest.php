@@ -119,6 +119,7 @@ final class SendRunPrepTest extends TestCase
                 'sender_box' => self::SENDER,
                 'camp_slice' => Sending::CAMPAIGN,
                 'msg_slice'  => Sending::MESSAGE,
+                'camp_short' => '7',
                 'snapshot'   => (string) $snapshot->getId(),
                 'manifest'   => $snapshot->manifest(),
                 'cursor'     => '0',
@@ -639,7 +640,8 @@ final class SendRunPrepTest extends TestCase
     // a new password of the same box: a login of its own, checked once against ISDS
     public function test_work_accepts_new_fingerprint_of_same_box(): void
     {
-        $id                     = self::queued(self::SEND, ['acct_id' => 'of the old password', 'owner_at' => (string) (self::NOW - 60)]);
+        // the only recipient skipped: ISDS is asked nothing but whose the login is
+        $id                     = self::queued(self::SEND, ['acct_id' => 'of the old password', 'owner_at' => (string) (self::NOW - 60)], 1);
         TestSendRun::$constants = Sending::bound();
         $http                   = self::ownerIs();
 
@@ -664,7 +666,7 @@ final class SendRunPrepTest extends TestCase
     #[DataProvider('ownerChecks')]
     public function test_work_asks_owner_box_once_an_hour(string $ownerAt, int $calls): void
     {
-        $id                     = self::queued(self::SEND, ['owner_at' => $ownerAt]);
+        $id                     = self::queued(self::SEND, ['owner_at' => $ownerAt], 1);
         TestSendRun::$constants = Sending::bound();
         $http                   = self::ownerIs();
 
@@ -745,10 +747,10 @@ final class SendRunPrepTest extends TestCase
         self::assertSame(['i' => 0, 'p' => 'send', 's' => self::NOW - 60, 'u' => self::NOW + $wait, 'w' => $waits + 1], self::position($id));
     }
 
-    /** @return array<string, array{int, int}> */
+    /** @return array<string, array{int, int}> SendPaceTest has the rest */
     public static function pauses(): array
     {
-        return ['the second' => [1, 60], 'the third' => [2, 120], 'the fifth' => [4, 480], 'the sixth' => [5, 600], 'the tenth' => [9, 600]];
+        return ['the tenth' => [9, 600]];
     }
 
     #[DataProvider('longPauses')]
@@ -761,10 +763,10 @@ final class SendRunPrepTest extends TestCase
         self::assertSame($ends, self::runQueued());
     }
 
-    /** @return array<string, array{int, string}> */
+    /** @return array<string, array{int, string}> SendPaceTest has the rest */
     public static function longPauses(): array
     {
-        return ['six hours' => [6 * 3600, 'step 1'], 'a second more' => [6 * 3600 + 1, 'error ISDS_UNAVAILABLE']];
+        return ['a second more than six hours' => [6 * 3600 + 1, 'error ISDS_UNAVAILABLE']];
     }
 
     public function test_positionOnResume_resets_pause(): void
@@ -794,24 +796,41 @@ final class SendRunPrepTest extends TestCase
         return [
             'paused'         => [['p' => 'send', 'i' => 0, 'w' => 1, 'u' => self::NOW + 30, 's' => self::NOW], 0, 30],
             'pause over'     => [['p' => 'send', 'i' => 0, 'w' => 1, 'u' => self::NOW - 5, 's' => self::NOW], 0, 1],
+            'no pause ends so far ahead' => [['p' => 'send', 'i' => 0, 'w' => 1, 'u' => self::NOW + 86_400, 's' => self::NOW], 0, 1],
             'not paused'     => [self::SEND, 0, 1],
             'second failure' => [self::SEND, 2, 120],
         ];
     }
 
-    // a step may wait for CreateMessage as long as the client lets it - cut short, it is taken for dead
+    // a send step may wait for CreateMessage as long as the client lets it - cut short, it is taken for dead
     public function test_overrun_outlasts_create_message(): void
     {
-        $id    = self::queued();
-        $lease = 0;
-        self::items()->onWrite = static function () use ($id, &$lease): void {
+        $id = self::queued(self::SEND);
+
+        self::assertGreaterThan(Client::TIMEOUT + Client::CREATE_TIMEOUT, (int) TestSendRun::get($id)?->overrunOf(), 'the check of a box and the request');
+    }
+
+    // the other phases ask ISDS nothing: a step of theirs that died must not hold Continue back for minutes
+    #[DataProvider('phasesWithoutIsds')]
+    public function test_overrun_of_a_step_without_isds_is_short(array $position): void
+    {
+        $id                      = self::queued($position);
+        $overrun                 = (int) TestSendRun::get($id)?->overrunOf();
+        $lease                   = 0;
+        TestSendRun::$beforeWork = static function () use ($id, &$lease): void {
             $lease = (int) self::stored($id)['lease'];
         };
 
         self::runQueued();
 
-        self::assertSame(Client::CREATE_TIMEOUT + 60, TestSendRun::get($id)?->overrunOf());
-        self::assertGreaterThanOrEqual(self::NOW + Client::CREATE_TIMEOUT + 60, $lease, 'the lease of the step counts it');
+        self::assertLessThan(Client::CREATE_TIMEOUT, $overrun);
+        self::assertGreaterThanOrEqual(self::NOW + $overrun, $lease, 'the lease of the step counts it');
+    }
+
+    /** @return array<string, array{array<string, int|string>}> */
+    public static function phasesWithoutIsds(): array
+    {
+        return ['prep' => [['p' => 'prep', 'i' => 0]], 'look' => [['p' => 'look', 'i' => 0]], 'no phase, as prep' => [[]]];
     }
 
     // ------------------------------------------------------------ the run among others

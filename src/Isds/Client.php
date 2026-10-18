@@ -52,6 +52,9 @@ final class Client
 
     /** checkDataBox(): ISDS has no box of that id */
     public const NO_BOX = -1;
+    /** checkDataBox(): ISDS answered without the state of the box - 0 or none is its own error (2.3),
+     *  and a state it never documented says no more */
+    public const NO_STATE = 0;
 
     /** records of one sentMessages() call. ISDS gives more on request, the answer size limit of limited() fits this */
     public const MAX_LIST = 1000;
@@ -63,9 +66,10 @@ final class Client
      */
     public const CREATE_TIMEOUT = 300;
 
-    /** seconds of a call: the rest answers in seconds, and a dead ISDS must not hold the sending or the State Check for minutes */
+    /** seconds of every other call: they answer in seconds, and a dead ISDS must not hold the sending or the State Check for minutes */
+    public const TIMEOUT = 30;
+
     private const TIMEOUTS = ['CreateMessage' => self::CREATE_TIMEOUT];
-    private const TIMEOUT  = 30;
 
     /**
      * What a certificate cannot do, said without its files: a template may show the text, the State
@@ -136,7 +140,7 @@ final class Client
     /**
      * The state of a data box (CheckDataBox): 1 accepts messages; 2 made inaccessible for a while, 3
      * not yet accessible, 4 inaccessible for good, 5 deleted (WS_vyhledavani_datovych_schranek.pdf 2.3);
-     * NO_BOX when there is no such box
+     * NO_BOX when there is no such box, NO_STATE when ISDS did not say
      * @throws \InvalidArgumentException not a box id - nothing is sent
      * @throws IsdsException             no state read
      * @throws ConfigException           the certificate cannot work - nothing is sent
@@ -152,11 +156,7 @@ final class Client
             throw $e;
         }
         $state = $answer->value('isds:dbState');
-        // 0 or none is an error of ISDS (2.3)
-        if (!in_array($state, ['1', '2', '3', '4', '5'], true)) {
-            throw TransportException::uncertain('ISDS answered the state of a data box "' . $this->quote((string) $state, 32) . '"');
-        }
-        return (int) $state;
+        return in_array($state, ['1', '2', '3', '4', '5'], true) ? (int) $state : self::NO_STATE;
     }
 
     /**

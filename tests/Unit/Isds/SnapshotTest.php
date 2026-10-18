@@ -334,6 +334,41 @@ final class SnapshotTest extends TestCase
         Snapshot::of(self::letter(), [new Recipient('a0000000000000000000000000000001', $name . 'x', 'ada1234', '')], self::REGISTER, self::CAMPAIGN);
     }
 
+    // what sending the files takes in memory is known before they are read
+    public function test_filesSize_sumsTheFilesOfTheManifest(): void
+    {
+        self::assertSame(strlen(self::BODY) + 5000, Snapshot::filesSize(Snapshot::of(self::letter(5000), [], self::REGISTER, self::CAMPAIGN)->manifest()));
+    }
+
+    public function test_filesSize_takesTheFilesOfOneMessage(): void
+    {
+        $files = array_fill(0, Message::MAX_FILES, ['size' => intdiv(Message::MAX_BYTES, Message::MAX_FILES)]);
+
+        self::assertSame(Message::MAX_BYTES, Snapshot::filesSize((string) json_encode(['files' => $files])));
+    }
+
+    #[DataProvider('sizeShapes')]
+    public function test_filesSize_manifestOfAnotherShapeIsChanged(string $manifest): void
+    {
+        self::assertChanged(static fn() => Snapshot::filesSize($manifest));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function sizeShapes(): array
+    {
+        return [
+            'not JSON'       => ['{"files":'],
+            'no files'       => ['{"rcpt":{}}'],
+            'file no object' => ['{"files":["x"]}'],
+            'size a text'    => ['{"files":[{"size":"5"}]}'],
+            'negative size'  => ['{"files":[{"size":-1}]}'],
+            'huge size'      => ['{"files":[{"size":' . (2 ** 60) . '}]}'],
+            // each file one a message could carry, together more than one message
+            'more files'     => [(string) json_encode(['files' => array_fill(0, Message::MAX_FILES + 1, ['size' => 1])])],
+            'more bytes'     => [(string) json_encode(['files' => array_fill(0, 2, ['size' => intdiv(Message::MAX_BYTES, 2) + 1])])],
+        ];
+    }
+
     // one read() holds no rows: saving it would wipe what went out
     public function test_save_refusesReadSnapshot(): void
     {

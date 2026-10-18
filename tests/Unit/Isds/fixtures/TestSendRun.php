@@ -12,7 +12,7 @@ use AA\Isds\SendRun;
 use AA\Isds\SliceRules;
 use AA\Later\BatchBudget;
 
-/** SendRun on the test's clock, include/config.php, ISDS answers and items in memory */
+/** SendRun on the test's clock, include/config.php, memory_limit, ISDS answers and items in memory */
 class TestSendRun extends SendRun
 {
     public static ?int $now = null;
@@ -29,6 +29,13 @@ class TestSendRun extends SendRun
     public static ?\Closure $beforeWork = null;
     /** the rules a step asks of the slices; null = the slices pass them */
     public static ?SliceRules $rules = null;
+    /** memory_limit in bytes, -1 = none; whether it may be raised, to what a step raised it and what it put back */
+    public static int $memoryLimit     = -1;
+    public static bool $mayRaise       = false;
+    public static ?int $raisedTo       = null;
+    public static ?string $restoredTo  = null;
+    /** what invalidate() throws; null = it invalidates */
+    public static ?\Throwable $invalidateFails = null;
 
     public static function reset(): void
     {
@@ -40,6 +47,11 @@ class TestSendRun extends SendRun
         self::$invalidated = 0;
         self::$beforeWork  = null;
         self::$rules       = null;
+        self::$memoryLimit = -1;
+        self::$mayRaise    = false;
+        self::$raisedTo    = null;
+        self::$restoredTo  = null;
+        self::$invalidateFails = null;
     }
 
     public function retryDelayOf(int $failures): int
@@ -50,6 +62,12 @@ class TestSendRun extends SendRun
     public function overrunOf(): int
     {
         return $this->overrun();
+    }
+
+    /** the real restoreMemoryLimit(), which the steps here do not run */
+    public function restoreMemoryLimitOf(string $limit): void
+    {
+        parent::restoreMemoryLimit($limit);
     }
 
     protected static function now(): int
@@ -95,8 +113,27 @@ class TestSendRun extends SendRun
         return self::$items ?? throw new \LogicException('No items');
     }
 
+    protected function memoryLimit(): int
+    {
+        return self::$memoryLimit;
+    }
+
+    protected function raiseMemoryLimit(int $bytes): ?string
+    {
+        self::$raisedTo = $bytes;
+        return self::$mayRaise ? (string) self::$memoryLimit : null;
+    }
+
+    protected function restoreMemoryLimit(string $limit): void
+    {
+        self::$restoredTo = $limit;
+    }
+
     protected function invalidate(): void
     {
         ++self::$invalidated;
+        if (self::$invalidateFails) {
+            throw self::$invalidateFails;
+        }
     }
 }

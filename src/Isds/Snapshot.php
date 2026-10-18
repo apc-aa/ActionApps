@@ -162,6 +162,29 @@ final class Snapshot extends AA_Object
         return $snapshot;
     }
 
+    /**
+     * Bytes of the files $manifest lists, known before they are read - at most those of one message,
+     * as of() writes them: memory_limit is raised by what this says, and a manifest edited to list more
+     * would raise it without bound
+     * @throws BatchFailed CHANGED for a manifest of another shape
+     */
+    public static function filesSize(string $manifest): int
+    {
+        $m     = json_decode($manifest, true);
+        $files = is_array($m) ? ($m['files'] ?? null) : null;
+        if (!is_array($files) || (count($files) > Message::MAX_FILES)) {
+            throw self::changed('manifest');
+        }
+        $bytes = 0;
+        foreach ($files as $file) {
+            $bytes += self::sizeOf($file, 'manifest');
+            if ($bytes > Message::MAX_BYTES) {
+                throw self::changed('manifest');
+            }
+        }
+        return $bytes;
+    }
+
     /** a snapshot of $id is stored */
     public static function exists(string $id): bool
     {
@@ -226,14 +249,10 @@ final class Snapshot extends AA_Object
      */
     private static function part(array &$rows, int &$at, array $stamp, string $what): string
     {
-        $size = $stamp['size'] ?? null;
-        if (!is_int($size) || ($size < 0) || ($size > self::MAX_PART)) {
-            throw self::changed($what);
-        }
+        $size  = self::sizeOf($stamp, $what);
         $bytes = '';
         for ($end = $at + intdiv($size + self::CHUNK - 1, self::CHUNK); $at < $end; ++$at) {
-            // a missing row makes the part short of its size
-            $chunk = base64_decode($rows[$at] ?? '', true);
+            $chunk = base64_decode($rows[$at] ?? throw self::changed($what), true);
             if ($chunk === false) {
                 throw self::changed($what);
             }
@@ -244,6 +263,16 @@ final class Snapshot extends AA_Object
             throw self::changed($what);
         }
         return $bytes;
+    }
+
+    /**
+     * The size of a stamp of the manifest, as of() writes it
+     * @throws BatchFailed CHANGED
+     */
+    private static function sizeOf(mixed $stamp, string $what): int
+    {
+        $size = is_array($stamp) ? ($stamp['size'] ?? null) : null;
+        return (is_int($size) && ($size >= 0) && ($size <= self::MAX_PART)) ? $size : throw self::changed($what);
     }
 
     private static function changed(string $what): BatchFailed

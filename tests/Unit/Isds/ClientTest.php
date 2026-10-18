@@ -337,11 +337,13 @@ final class ClientTest extends TestCase
         return ['accessible' => ['1', 1], 'deleted' => ['5', 5]];
     }
 
-    // 0 or none is an error of ISDS (WS_vyhledavani_datovych_schranek.pdf 2.3)
+    // 0 or none is an error of ISDS (WS_vyhledavani_datovych_schranek.pdf 2.3): an answer about the box, which it could not give
     #[DataProvider('badBoxStates')]
-    public function test_checkDataBox_badStateIsUncertain(string $replacement): void
+    public function test_checkDataBox_noStateWhenIsdsDoesNotSay(string $replacement): void
     {
-        self::assertUncertain(self::changed('check-data-box.xml', '~<p:dbState>1</p:dbState>~', $replacement), static fn(Client $c) => $c->checkDataBox('kv62bqf'));
+        $http = self::answering(self::changed('check-data-box.xml', '~<p:dbState>1</p:dbState>~', $replacement));
+
+        self::assertSame(Client::NO_STATE, self::client($http)->checkDataBox('kv62bqf'));
     }
 
     public static function badBoxStates(): array
