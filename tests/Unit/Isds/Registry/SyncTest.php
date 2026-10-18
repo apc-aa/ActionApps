@@ -608,7 +608,8 @@ final class SyncTest extends TestCase
             self::assertSame($id, $content['unpacked_id.....'][0]['value']);
             self::assertSame(self::SLICE, unpack_id($content['slice_id........'][0]['value']));
         }
-        // events off: ITEM_UPDATED would send a mail per item
+        // events off: ITEM_UPDATED would send a mail per item; silent: no computed field runs its template
+        // while the slice is open (a source slice has them - seo, com, co2 on NSZM)
         self::assertSame(['update_silent', [false, false, false, false]], [$sync->stored[0]['mode'], $sync->stored[0]['flags']]);
         self::assertSame(1, $sync->invalidated, 'the page cache once for all rows');
         self::assertSame(1, $sync->readingAllowed, 'storeItem() reads the old content with the reading password');

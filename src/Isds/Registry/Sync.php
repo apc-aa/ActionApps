@@ -64,7 +64,8 @@ class Sync
      * As "Modify items" with "Silent" ticked: only the field is written - no events (an ITEM_UPDATED
      * mail per item), no feeding, no last_edit, no computed fields; the history and the item log
      * still record the change and who made it, unless the slice keeps no history. The page cache is
-     * invalidated once, after all rows.
+     * invalidated once, after all rows. Without computed fields no template of the slice (com, co2,
+     * seo) runs while whileReadable() holds it open, so nothing it reads stays in the caches.
      */
     private const STORE_MODE = 'update_silent';
 

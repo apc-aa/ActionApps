@@ -5,12 +5,16 @@ declare(strict_types=1);
 namespace AA\Optimize;
 
 use AA\Isds\Accounts;
+use AA\Isds\Binding;
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Isds\Registry\MatchRow;
 use AA\Isds\Registry\Page;
 use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\Sync;
+use AA\Isds\SliceRules;
+use AA_Module;
+use AA_Module_Site;
 
 /**
  * Items of the slices paired with the register of data boxes (admin/se_isds_registry.php) that have no
@@ -18,7 +22,7 @@ use AA\Isds\Registry\Sync;
  * the 17 MB register takes seconds, so this runs on request and in the daily snapshot. It downloads
  * nothing - the slice's page does - and its findings give counts only: the State Check mail would carry
  * item names. With an ISDS account it checks the index a mass sending reads (RegisterIndex), making it
- * when there is none.
+ * when there is none, and names the accounts whose sites use no paired slice to take recipients from.
  */
 class CheckIsdsRegistry extends AbstractOptimize
 {
@@ -29,7 +33,7 @@ class CheckIsdsRegistry extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it.');
+        return _m('Compares the data boxes of the items with the downloaded register of data boxes, in the slices that pair their items with it, and names the ISDS accounts whose sites use no such slice.');
     }
 
     public static function types(): array
@@ -50,10 +54,59 @@ class CheckIsdsRegistry extends AbstractOptimize
     /** @return Finding[] */
     public function findings(): array
     {
-        $configs = array_values(array_filter($this->allConfigs(), fn(Config $config): bool => $this->isStoredSlice($config->sliceId())));
+        $configs  = array_values(array_filter($this->allConfigs(), fn(Config $config): bool => $this->isStoredSlice($config->sliceId())));
+        $unpaired = $this->unpaired($configs);
         if (!$configs) {
-            return [new Finding(Finding::OK, _m('No slice pairs its items with the register of data boxes'))];
+            // nothing to compare, and no page to download the register on
+            return $unpaired ?: [new Finding(Finding::OK, _m('No slice pairs its items with the register of data boxes'))];
         }
+        $findings = [...$unpaired, ...$this->registerFindings($configs)];
+        return $findings ?: [new Finding(Finding::OK, _m('Paired slices whose items have the data boxes of the register: %1', [count($configs)]))];
+    }
+
+    /**
+     * The sites of ISDS accounts that use no paired slice: a mass sending takes the names, types and
+     * boxes of its recipients from a slice the site of its page uses, by the slice's settings of data
+     * boxes (SliceRules::sourceProblems())
+     * @param list<Config> $configs
+     * @return list<Finding>
+     */
+    private function unpaired(array $configs): array
+    {
+        $paired   = array_map(static fn(Config $config): string => $config->sliceId(), $configs);
+        $evidence = [];
+        $links    = [];
+        foreach ($this->bindings() as $binding) {
+            // a binding without its slices is an error of CheckIsdsAccounts, as is an id that is no site
+            if ($binding->campaignSlice === '') {
+                continue;
+            }
+            foreach ($binding->sites as $site) {
+                if (!$this->isSite($site) || array_intersect($paired, $this->siteModules([$site]))) {
+                    continue;
+                }
+                $name       = $this->sliceName($site);
+                $evidence[] = [_m('ISDS account') => safe(Accounts::prefix($binding->environment, $binding->name)), _m('Site') => safe($name)];
+                $links[SliceRules::pageLabel(SliceRules::SITE_PAGE) . ': ' . $name] = AA_Module::getModuleUrl($site, SliceRules::SITE_PAGE);
+            }
+        }
+        return $evidence ? [new Finding(
+            Finding::WARNING,
+            _m('Sites of ISDS accounts use no slice with settings of data boxes, so a mass sending cannot take its recipients'),
+            count: count($evidence),
+            evidence: $evidence,
+            advice: _m('Open the page Data boxes from the register in the settings of the slice the campaigns take their recipients from - a public slice the site uses, see Uses modules in the settings of the site - and choose the fields of its items there: the name, the type and the data box a mass sending sends to.'),
+            links: $links,
+            key: 'unpaired',
+        )] : [];
+    }
+
+    /**
+     * @param list<Config> $configs at least one
+     * @return list<Finding>
+     */
+    private function registerFindings(array $configs): array
+    {
         $names = $this->sliceLabels($configs);
         $pages = [];
         foreach ($configs as $config) {
@@ -108,7 +161,7 @@ class CheckIsdsRegistry extends AbstractOptimize
                 $findings[] = $finding;
             }
         }
-        return $findings ?: [new Finding(Finding::OK, _m('Paired slices whose items have the data boxes of the register: %1', [count($configs)]))];
+        return $findings;
     }
 
     /**
@@ -192,7 +245,28 @@ class CheckIsdsRegistry extends AbstractOptimize
     /** include/config.php sets up an ISDS account, usable or not - only constants are read */
     protected function hasIsdsAccount(): bool
     {
-        return Accounts::bindings() !== [];
+        return $this->bindings() !== [];
+    }
+
+    /** @return list<Binding> */
+    protected function bindings(): array
+    {
+        return Accounts::bindings();
+    }
+
+    /** a site module out of the trash */
+    protected function isSite(string $id): bool
+    {
+        return (bool) AA_Module_Site::getOwnModule($id)?->isValid();
+    }
+
+    /**
+     * @param list<string> $sites
+     * @return array<string> the modules the sites use, out of the trash
+     */
+    protected function siteModules(array $sites): array
+    {
+        return AA_Module_Site::getRelatedModules($sites);
     }
 
     /** see RegisterIndex::problem() - it makes the index when it has to */
@@ -219,6 +293,7 @@ class CheckIsdsRegistry extends AbstractOptimize
         return Sync::registerBoxes($sha256);
     }
 
+    /** the name of the module - a site's too */
     protected function sliceName(string $sliceId): string
     {
         return \AA_Slice::getModuleName($sliceId) ?: $sliceId;

@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Optimize;
 
+use AA\Isds\Account;
+use AA\Isds\Accounts;
+use AA\Isds\Binding;
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\SdsList;
+use AA\Isds\SliceRules;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\CheckIsdsRegistry;
 use AA\Optimize\Finding;
@@ -31,6 +35,10 @@ final class CheckIsdsRegistryTest extends TestCase
     private const SLICE  = '8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d8d';
     private const SLICE2 = '9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e9e';
     private const SLICE3 = 'afafafafafafafafafafafafafafafaf';
+
+    private const SITE     = '1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c';
+    private const SITE2    = '2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d2d';
+    private const CAMPAIGN = '3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e3e';
 
     private const NAME = 'headline........';
     private const ICO  = 'text...........1';
@@ -77,6 +85,66 @@ final class CheckIsdsRegistryTest extends TestCase
     public function test_noPairedSlice_ok(): void
     {
         self::assertSame([Finding::OK], self::severities((new RecordingIsdsCheck())->findings()));
+    }
+
+    // a mass sending takes the names, types and boxes of its recipients from a paired slice the site of
+    // its page uses: each site counts, a paired slice of the account's other site does not help
+    public function test_sitesThatUseNoPairedSlice_warningNamesEach(): void
+    {
+        $check = self::check([self::SLICE => self::allFine(), self::SLICE2 => self::allFine()]);
+        $check->trashed     = [self::SLICE2];
+        $check->bindings    = [self::binding('NSZM', [self::SITE, self::SITE2]), self::binding('OBCE', [self::SITE2])];
+        $check->siteModules = [self::SITE => [self::CAMPAIGN, self::SLICE], self::SITE2 => [self::CAMPAIGN, self::SLICE2, self::SLICE3]];
+        $check->names       = [self::SITE2 => 'Terminál <b>2</b>'];
+        $check->isdsAccount = true;
+
+        $findings = $check->findings();
+
+        self::assertSame(['unpaired'], self::keys($findings));
+        self::assertSame(Finding::WARNING, $findings[0]->severity);
+        self::assertSame(2, $findings[0]->count);
+        $site2 = safe('Terminál <b>2</b>');
+        self::assertSame([
+            [_m('ISDS account') => Accounts::prefix(Account::TEST, 'NSZM'), _m('Site') => $site2],
+            [_m('ISDS account') => Accounts::prefix(Account::TEST, 'OBCE'), _m('Site') => $site2],
+        ], $findings[0]->evidence, 'the site with a paired slice is not listed');
+        self::assertSame(['Site settings: Terminál <b>2</b>'], array_keys($findings[0]->links));
+        self::assertStringContainsString(SliceRules::SITE_PAGE . '?change_id=' . self::SITE2, $findings[0]->links['Site settings: Terminál <b>2</b>']);
+        $check->siteModules[self::SITE2][] = self::SLICE;
+        self::assertSame([Finding::OK], self::severities($check->findings()));
+    }
+
+    // nothing to compare, no page to download the register on: only what to pair
+    public function test_noPairedSliceWithAnAccount_onlyThatWarning(): void
+    {
+        $check = self::check([]);
+        $check->bindings    = [self::binding('NSZM', [self::SITE])];
+        $check->siteModules = [self::SITE => [self::CAMPAIGN, self::SLICE]];
+        $check->isdsAccount = true;
+        $check->register    = new \RuntimeException('PHP cannot look into the directory /srv/aa/img_upload/abc');
+
+        $findings = $check->findings();
+
+        self::assertSame(['unpaired'], self::keys($findings));
+        self::assertSame(1, $findings[0]->count);
+        self::assertSame([0, 0], [$check->registerReads, $check->indexChecks]);
+    }
+
+    // CheckIsdsAccounts reports each as an error
+    public function test_bindingWithoutSitesOrSlicesOrWithNoSite_ok(): void
+    {
+        $check = self::check([]);
+        $check->siteModules = [self::SITE => [self::CAMPAIGN]];
+        $check->isdsAccount = true;
+        $without = [
+            'no sites'      => new Binding('NSZM', Account::TEST, [], self::CAMPAIGN, str_repeat('4f', 16), ['A broken constant'], Account::BASIC),
+            'no slices'     => new Binding('NSZM', Account::TEST, [self::SITE], '', '', ['A broken constant'], Account::BASIC),
+            'not a site'    => self::binding('NSZM', [self::SLICE]),
+        ];
+        foreach ($without as $case => $binding) {
+            $check->bindings = [$binding];
+            self::assertSame([Finding::OK], self::severities($check->findings()), $case);
+        }
     }
 
     // a slice in the trash keeps its settings until it is purged
@@ -352,6 +420,12 @@ final class CheckIsdsRegistryTest extends TestCase
     }
 
     // ------------------------------------------------------------ helpers
+
+    /** @param list<string> $sites */
+    private static function binding(string $name, array $sites): Binding
+    {
+        return new Binding($name, Account::TEST, $sites, self::CAMPAIGN, str_repeat('4f', 16), [], Account::BASIC);
+    }
 
     /** @param array<string, array<string, mixed>> $slices slice id => item id => content */
     private static function check(array $slices): RecordingIsdsCheck

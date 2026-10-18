@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Optimize\Fixtures;
 
+use AA\Isds\Binding;
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Isds\Registry\RegisterIndex;
@@ -54,6 +55,12 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
 
     public int $indexChecks = 0;
 
+    /** @var list<Binding> the ISDS accounts of include/config.php */
+    public array $bindings = [];
+
+    /** @var array<string, list<string>> site id => the modules it uses; an id not here is no site */
+    public array $siteModules = [];
+
     protected function allConfigs(): array
     {
         return $this->configs;
@@ -72,6 +79,21 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
     protected function hasIsdsAccount(): bool
     {
         return $this->isdsAccount;
+    }
+
+    protected function bindings(): array
+    {
+        return $this->bindings;
+    }
+
+    protected function isSite(string $id): bool
+    {
+        return isset($this->siteModules[$id]);
+    }
+
+    protected function siteModules(array $sites): array
+    {
+        return array_merge(...array_map(fn(string $site): array => $this->siteModules[$site] ?? [], $sites));
     }
 
     protected function indexProblem(): string
