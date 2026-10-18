@@ -66,6 +66,7 @@ final class SchemaTest extends TestCase
         'BOX_DUPLICATE'           => 'duplicate',
         'BOX_ICO'                 => 'ico',
         'BOX_KIND'                => 'kind',
+        'NOT_FOUND'               => 'notfound',
         'EVENT_QUEUED'            => 'queued',
         'EVENT_SENDING'           => 'sending',
         'EVENT_SUBMITTED'         => 'submitted',

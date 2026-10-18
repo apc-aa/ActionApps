@@ -185,6 +185,17 @@ final class Snapshot extends AA_Object
         return $bytes;
     }
 
+    /**
+     * Recipients $manifest lists, frozen skipped ones too - known without reading them
+     * @throws BatchFailed CHANGED for a manifest of another shape
+     */
+    public static function recipientCount(string $manifest): int
+    {
+        $m = json_decode($manifest, true);
+        $n = (is_array($m) && is_array($m['rcpt'] ?? null)) ? ($m['rcpt']['n'] ?? null) : null;
+        return is_int($n) ? $n : throw self::changed('manifest');
+    }
+
     /** a snapshot of $id is stored */
     public static function exists(string $id): bool
     {
@@ -195,6 +206,17 @@ final class Snapshot extends AA_Object
     public function recipients(): array
     {
         return $this->recipients;
+    }
+
+    /**
+     * The subject frozen, read from the manifest without the files: the lookup of a message takes it
+     * @throws BatchFailed CHANGED for a manifest without it
+     */
+    public function annotation(): string
+    {
+        $m = json_decode($this->manifest, true);
+        $annotation = is_array($m) ? ($m['annotation'] ?? null) : null;
+        return is_string($annotation) ? $annotation : throw self::changed('manifest');
     }
 
     /** @throws \LogicException read without the files */

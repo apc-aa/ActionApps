@@ -47,7 +47,8 @@ final readonly class Message
     {
         $this->recipient  = Box::normalizeId($recipient);
         $this->annotation = Text::check('The subject', $annotation, self::MAX_ANNOTATION);
-        if ($this->annotation === '') {
+        // ISDS keeps none of it: the message would be listed without a subject
+        if (Text::isdsKey($this->annotation) === '') {
             throw new \InvalidArgumentException('The subject is empty');
         }
         $this->senderRef = Text::check('The reference number', $senderRef, self::MAX_REF, ascii: true);

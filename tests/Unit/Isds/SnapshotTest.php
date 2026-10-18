@@ -295,6 +295,30 @@ final class SnapshotTest extends TestCase
         }
     }
 
+    // a lookup needs the subject, not the files
+    public function test_annotation_readWithoutFiles(): void
+    {
+        $saved = self::saved();
+
+        self::assertSame('Pozvánka', Snapshot::read((string) $saved->getId(), $saved->manifest(), false, self::CAMPAIGN)->annotation());
+    }
+
+    public function test_recipientCount_fromTheManifest(): void
+    {
+        self::assertSame(2, Snapshot::recipientCount(self::saved()->manifest()));
+        self::assertChanged(static fn() => Snapshot::recipientCount('{"rcpt":{"n":"2"}}'));
+    }
+
+    public function test_annotation_manifestWithoutItIsChanged(): void
+    {
+        $saved    = self::saved();
+        $manifest = json_decode($saved->manifest(), true);
+        unset($manifest['annotation']);
+        $read = Snapshot::read((string) $saved->getId(), (string) json_encode($manifest), false, self::CAMPAIGN);
+
+        self::assertChanged(static fn() => $read->annotation());
+    }
+
     // saved in the transaction that starts the run, or failing half-way on its own: no orphan rows
     #[DataProvider('failures')]
     public function test_save_leavesNothingWhenItFails(bool $inRun): void

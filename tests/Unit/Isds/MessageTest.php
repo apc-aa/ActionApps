@@ -75,6 +75,13 @@ final class MessageTest extends TestCase
         ];
     }
 
+    // ISDS replaces or drops each of them (1.3.5): the message would be listed without a subject
+    public function test_construct_refusesSubjectIsdsKeepsNothingOf(): void
+    {
+        $this->expectExceptionMessage('The subject is empty');
+        new Message('kv62bqf', "\u{00A0}\u{200B}\u{00AD}\u{202F}", [self::main()]);
+    }
+
     public function test_construct_acceptsLongestTexts(): void
     {
         $message = new Message('kv62bqf', str_repeat('ř', Message::MAX_ANNOTATION), [self::main()], str_repeat('1', Message::MAX_REF), str_repeat('ž', Message::MAX_TO_HANDS));

@@ -188,9 +188,10 @@ final class Client
 
     /**
      * Messages sent between $from and $to in every state, newest first (GetListOfSentMessages). ISDS
-     * selects them by the time they reached the recipient's box (dmDeliveryTime, WS_manipulace_s_
-     * datovymi_zpravami.pdf 2.9.2): a message still in state 1 or 2 - the antivirus check takes up to
-     * 240 s - is not listed yet.
+     * selects and sorts them by the time they reached the recipient's box (dmDeliveryTime, WS_manipulace_s_
+     * datovymi_zpravami.pdf 2.9.2); one the antivirus check refused (state 3) by the time it was
+     * submitted. A message in state 1 or 2 - waiting for its time stamp or the antivirus check, at most
+     * 240 s - has no delivery time yet: it may be listed anywhere, or not at all.
      * @param int $offset the first record, from 1
      * @param int $limit  1 to MAX_LIST; more is refused, not cut - a caller paging until it gets fewer
      *                    records than it asked for would stop too early
@@ -224,6 +225,7 @@ final class Client
                 $this->boxId($answer->value('isds:dbIDRecipient', $record), "the recipient of message $id"),
                 $this->time($answer->value('isds:dmDeliveryTime', $record)),
                 $this->time($answer->value('isds:dmAcceptanceTime', $record)),
+                $answer->value('isds:dmAnnotation', $record) ?? '',
             );
         }
         return $messages;

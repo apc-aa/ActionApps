@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds\Fixtures;
 
 use AA\Http\ClientInterface;
+use AA\IO\DB\DB_AA;
 use AA\Isds\Account;
 use AA\Isds\Client;
 use AA\Isds\SendItems;
@@ -12,7 +13,7 @@ use AA\Isds\SendRun;
 use AA\Isds\SliceRules;
 use AA\Later\BatchBudget;
 
-/** SendRun on the test's clock, include/config.php, memory_limit, ISDS answers and items in memory */
+/** SendRun on the test's clock, include/config.php, memory_limit, ISDS answers, items in memory and the campaign locks */
 class TestSendRun extends SendRun
 {
     public static ?int $now = null;
@@ -36,6 +37,12 @@ class TestSendRun extends SendRun
     public static ?string $restoredTo  = null;
     /** what invalidate() throws; null = it invalidates */
     public static ?\Throwable $invalidateFails = null;
+    /** @var list<string> campaigns whose lock another process holds */
+    public static array $lockedByOthers = [];
+    /** @var list<string> each lock and unlock of a campaign, and whether a transaction was open then */
+    public static array $lockLog = [];
+    /** @var ?\Closure(): void runs when a campaign lock is taken - what changed while a request waited for it */
+    public static ?\Closure $onLock = null;
 
     public static function reset(): void
     {
@@ -52,6 +59,9 @@ class TestSendRun extends SendRun
         self::$raisedTo    = null;
         self::$restoredTo  = null;
         self::$invalidateFails = null;
+        self::$lockedByOthers  = [];
+        self::$lockLog         = [];
+        self::$onLock          = null;
     }
 
     public function retryDelayOf(int $failures): int
@@ -127,6 +137,20 @@ class TestSendRun extends SendRun
     protected function restoreMemoryLimit(string $limit): void
     {
         self::$restoredTo = $limit;
+    }
+
+    protected static function lockCampaign(string $campaign): bool
+    {
+        self::$lockLog[] = "lock $campaign" . (DB_AA::inTransaction() ? ' in a transaction' : '');
+        if (self::$onLock) {
+            (self::$onLock)();
+        }
+        return !in_array($campaign, self::$lockedByOthers, true);
+    }
+
+    protected static function unlockCampaign(string $campaign): void
+    {
+        self::$lockLog[] = "unlock $campaign" . (DB_AA::inTransaction() ? ' in a transaction' : '');
     }
 
     protected function invalidate(): void

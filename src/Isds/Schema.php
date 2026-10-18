@@ -164,6 +164,10 @@ final class Schema
         self::BOX_KIND,
     ];
 
+    /** ERROR_CODE of a failed message the list of sent ones did not hold when it should have: never
+     *  delivered, a person sends it again; a plain word, as the states, for a view condition */
+    public const NOT_FOUND = 'notfound';
+
     // `kind` of an entry in MESSAGE_EVENTS. The timeline cannot be derived from the times alone: they miss
     // the time stamp, a timeout and a lookup. dmMessageStatus 7, 9 and 10 change MESSAGE_DM_STATUS only.
     public const EVENT_QUEUED         = 'queued';

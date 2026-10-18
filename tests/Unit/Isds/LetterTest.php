@@ -136,6 +136,7 @@ final class LetterTest extends TestCase
     {
         return [
             'no subject'           => [[Schema::CAMPAIGN_SUBJECT => ' '], 'The subject is empty'],
+            'invisible subject'    => [[Schema::CAMPAIGN_SUBJECT => "\u{200B}\u{2061}"], 'The subject is empty'],
             'long subject'         => [[Schema::CAMPAIGN_SUBJECT => str_repeat('ř', Message::MAX_ANNOTATION + 1)], 'The subject is longer'],
             'long to hands'        => [[Schema::CAMPAIGN_TO_HANDS => str_repeat('ž', Message::MAX_TO_HANDS + 1)], 'To hands is longer'],
             'no body'              => [[Schema::CAMPAIGN_BODY => '<p> </p>'], 'The letter is empty'],

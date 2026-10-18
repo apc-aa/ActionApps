@@ -10,6 +10,7 @@ use AA\Isds\Outcome;
 use AA\Isds\Schema;
 use AA\Isds\SendItems;
 use AA\Isds\SendResult;
+use AA\Isds\SentMessage;
 use AA\Isds\Soap;
 use AA\Isds\TransportException;
 use AA_Credentials;
@@ -121,6 +122,27 @@ final class SendItemsTest extends TestCase
         self::assertSame(['insert_if_new', 'insert_if_new'], array_column($items->writes, 'mode'));
     }
 
+    // a stop before prep made the item: it shows the recipient was never tried; a skipped one stays skipped
+    #[DataProvider('stopped')]
+    public function test_create_stoppedNeverTried(string $reason, string $state, array $entry): void
+    {
+        $items = self::items();
+
+        self::assertTrue($items->create(self::row($reason), 'test', 'kv62bqf', self::AT, true));
+
+        self::assertSame($state, $items->stored[self::MSG]['fields'][Schema::MESSAGE_STATE]);
+        self::assertSame([['at' => self::AT] + $entry], self::timeline($items));
+        self::assertOnlySchema($items);
+    }
+
+    public static function stopped(): array
+    {
+        return [
+            'to send' => ['', Schema::MESSAGE_STATE_STOPPED, ['kind' => 'stopped']],
+            'skipped' => [Schema::BOX_KIND, Schema::MESSAGE_STATE_SKIPPED, ['kind' => 'skipped', 'code' => 'kind']],
+        ];
+    }
+
     public function test_create_unknownReasonRefused(): void
     {
         $items = self::items();
@@ -192,6 +214,54 @@ final class SendItemsTest extends TestCase
         );
         self::assertSame([['update', ItemContent::FLAG_JUST_STORE], ['update', ItemContent::FLAG_JUST_STORE]], array_map(static fn(array $w): array => [$w['mode'], $w['flags']], array_slice($items->writes, 1)));
         self::assertOnlySchema($items);
+    }
+
+    // a stop or a lookup repeated after its step died adds no second entry
+    public function test_mark_onceWritesNoSecondEntry(): void
+    {
+        $items = self::created();
+
+        self::assertTrue($items->mark(self::MSG, Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED, self::AT + 10, once: true));
+        self::assertTrue($items->mark(self::MSG, Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED, self::AT + 20, once: true));
+
+        self::assertSame([['at' => self::AT, 'kind' => 'queued'], ['at' => self::AT + 10, 'kind' => 'stopped']], self::timeline($items));
+        self::assertCount(2, $items->writes, 'the create and one mark');
+        self::assertFalse($items->mark('a0000000000000000000000000000009', Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED, self::AT, once: true), 'no such item');
+    }
+
+    // sent since it was tried - ISDS took it within CreateMessage; the list tells its delivery
+    public function test_markFound_sentSinceTriedWithDelivery(): void
+    {
+        $items = self::created();
+        $sent  = new SentMessage('1835603', 4, '1234-1', 'a7kbrrn', self::AT + 300, null, 'Pozvánka');
+
+        self::assertTrue($items->markFound(self::MSG, $sent, self::AT + 5, self::AT + 900));
+        self::assertTrue($items->markFound(self::MSG, $sent, self::AT + 5, self::AT + 1800));
+
+        $fields = $items->stored[self::MSG]['fields'];
+        self::assertSame(
+            [Schema::MESSAGE_STATE_SENT, '1835603', (string) (self::AT + 5), (string) (self::AT + 300), '4', ''],
+            [$fields[Schema::MESSAGE_STATE], $fields[Schema::MESSAGE_DM_ID], $fields[Schema::MESSAGE_SENT_AT], $fields[Schema::MESSAGE_DELIVERED_AT], $fields[Schema::MESSAGE_DM_STATUS], $fields[Schema::MESSAGE_ACCEPTED_AT] ?? ''],
+        );
+        self::assertSame(['at' => self::AT + 900, 'kind' => 'lookup-found', 'dmID' => '1835603'], self::timeline($items)[1]);
+        self::assertCount(2, $items->writes, 'found once');
+        self::assertOnlySchema($items);
+    }
+
+    // the antivirus check refused it (or took over 240 s): listed among the sent, never delivered
+    public function test_markFound_refusedByAntivirusFails(): void
+    {
+        $items = self::created();
+        $sent  = new SentMessage('1835603', SentMessage::AV_REFUSED, '1234-1', 'a7kbrrn', null, null, 'Pozvánka');
+
+        self::assertTrue($items->markFound(self::MSG, $sent, self::AT + 5, self::AT + 900));
+
+        $fields = $items->stored[self::MSG]['fields'];
+        self::assertSame(
+            [Schema::MESSAGE_STATE_FAILED, '3', '1835603', '3', (string) (self::AT + 5), ''],
+            [$fields[Schema::MESSAGE_STATE], $fields[Schema::MESSAGE_ERROR_CODE], $fields[Schema::MESSAGE_DM_ID], $fields[Schema::MESSAGE_DM_STATUS], $fields[Schema::MESSAGE_SENT_AT], $fields[Schema::MESSAGE_DELIVERED_AT] ?? ''],
+        );
+        self::assertSame(['at' => self::AT + 900, 'kind' => Schema::EVENT_AV, 'dmID' => '1835603', 'code' => '3'], self::timeline($items)[1]);
     }
 
     // the time ISDS took the message; a delivery or a lookup found later keeps it
@@ -620,6 +690,22 @@ final class SendItemsTest extends TestCase
     public static function notStates(): array
     {
         return ['draft' => [Schema::CAMPAIGN_STATE_DRAFT], 'a message state' => [Schema::MESSAGE_STATE_SENT]];
+    }
+
+    // the final step repeated, or a run given up closed twice, keeps the time the sending finished
+    public function test_campaign_onceKeepsStateShown(): void
+    {
+        $items = self::items();
+        $items->campaign(Schema::CAMPAIGN_STATE_DONE, [Schema::CAMPAIGN_FINISHED_AT => self::AT]);
+
+        self::assertTrue($items->campaign(Schema::CAMPAIGN_STATE_DONE, [Schema::CAMPAIGN_FINISHED_AT => self::AT + 60], once: true));
+        self::assertTrue($items->campaign(Schema::CAMPAIGN_STATE_STOPPED, [Schema::CAMPAIGN_FINISHED_AT => self::AT + 120], once: true));
+
+        self::assertCount(2, $items->writes);
+        self::assertSame([Schema::CAMPAIGN_STATE_STOPPED, (string) (self::AT + 120)], [
+            $items->stored[self::CAMPAIGN]['fields'][Schema::CAMPAIGN_STATE],
+            $items->stored[self::CAMPAIGN]['fields'][Schema::CAMPAIGN_FINISHED_AT],
+        ], 'another state is written');
     }
 
     public function test_campaign_goneWritesNothing(): void

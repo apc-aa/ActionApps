@@ -5,45 +5,27 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds;
 
 use AA;
-use AA\Credential\Secret;
 use AA\Http\Response;
 use AA\Http\TransportException as HttpTransportException;
 use AA\IO\DB\DB_AA;
-use AA\Isds\Account;
 use AA\Isds\Client;
-use AA\Isds\File;
 use AA\Isds\IsdsException;
-use AA\Isds\Letter;
 use AA\Isds\Outcome;
-use AA\Isds\Recipient;
 use AA\Isds\Schema;
 use AA\Isds\SendPace;
 use AA\Isds\SendRun;
 use AA\Isds\Snapshot;
-use AA_Credentials;
-use AA_Perm;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
 use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
-use Tests\Unit\Isds\Fixtures\FakePerms;
-use Tests\Unit\Isds\Fixtures\MemorySendItems;
 use Tests\Unit\Isds\Fixtures\ScriptedIsds;
+use Tests\Unit\Isds\Fixtures\SendRunCase;
 use Tests\Unit\Isds\Fixtures\Sending;
 use Tests\Unit\Isds\Fixtures\TestSendRun;
-use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
-use Tests\Unit\Later\Fixtures\BatchRunTables;
-use Tests\Unit\Legacy\Fixtures\FakeFields;
 
-// the in-memory object_text and toexecute, the config constants; the fixtures extend classes of AA
-require_once __DIR__ . '/../Later/Fixtures/BatchRunTables.php';
-require_once __DIR__ . '/fixtures/Sending.php';
-require_once __DIR__ . '/fixtures/MemorySendItems.php';
-require_once __DIR__ . '/fixtures/MemoryLatch.php';
-require_once __DIR__ . '/fixtures/TestSendRun.php';
-require_once __DIR__ . '/fixtures/FakePerms.php';
-require_once __DIR__ . '/fixtures/ScriptedIsds.php';
+require_once __DIR__ . '/fixtures/SendRunCase.php';
 
 /**
  * The run of a mass sending sending its messages: one at a time, what may be on its way recorded
@@ -52,162 +34,13 @@ require_once __DIR__ . '/fixtures/ScriptedIsds.php';
  */
 final class SendRunSendTest extends TestCase
 {
-    use BatchRunTables {
-        setUpBeforeClass as private tablesSetUpBeforeClass;
-        setUp as private tablesSetUp;
-        tearDown as private tablesTearDown;
-    }
+    use SendRunCase;
 
-    private const CAMPAIGN_ITEM = 'ca000000000000000000000000000c01';
-    private const SENDER        = 'kv62bqf';
-    /** the short id of the campaign: its messages are referenced 4711-1, 4711-2, ... */
-    private const SHORT = '4711';
-    /** positions, their keys sorted as position() gives them */
-    private const SEND = ['i' => 0, 'p' => 'send'];
     /** an attachment of a megabyte, what a step needs memory for */
     private const PDF = '%PDF';
     private const MB  = 1024 * 1024;
     /** a memory_limit no test comes near */
     private const HIGH = '4G';
-    private const LOOK = ['i' => 0, 'p' => 'look'];
-
-    public static function setUpBeforeClass(): void
-    {
-        self::tablesSetUpBeforeClass();
-        require_once __DIR__ . '/Registry/fixtures/PropertySlice.php';
-        if (!defined('CACHE_TTL')) {
-            define('CACHE_TTL', 600);      // AA::Pagecache(), which opening a slice keeps the page out of
-        }
-    }
-
-    protected function setUp(): void
-    {
-        $this->tablesSetUp();
-        TestSendRun::reset();
-        TestSendRun::$now       = self::NOW;
-        TestSendRun::$items     = new MemorySendItems(self::CAMPAIGN_ITEM);
-        TestSendRun::$constants = Sending::bound();
-        foreach ([Sending::CAMPAIGN, Sending::MESSAGE] as $slice) {
-            new PropertySlice($slice, new FakeFields($slice, []), ['reading_password' => md5('read')]);
-        }
-    }
-
-    protected function tearDown(): void
-    {
-        TestSendRun::reset();
-        FakePerms::uninstall();
-        PropertySlice::forget(Sending::CAMPAIGN);
-        PropertySlice::forget(Sending::MESSAGE);
-        (new \ReflectionProperty(AA_Credentials::class, 'instance'))->setValue(null, null);
-        (new \ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
-        $this->tablesTearDown();
-    }
-
-    /**
-     * A run queued to send to $n recipients, past prep: their message items made, ISDS asked whose the
-     * login is a moment ago
-     * @param array<int, string>                $reasons  index => the Schema::BOX_PROBLEMS a recipient was frozen skipped for
-     * @param array<string, string>             $props    own properties over the queued ones
-     * @param array<string, int|string>         $position
-     */
-    private static function queued(int $n = 3, array $reasons = [], array $props = [], array $position = self::SEND, ?Letter $letter = null): string
-    {
-        $now = (int) TestSendRun::$now;
-        $id  = DB_AA::transaction(static function () use ($n, $reasons, $props, $position, $letter, $now): string {
-            $recipients = [];
-            for ($i = 0; $i < $n; ++$i) {
-                $recipients[] = new Recipient(sprintf('b%031x', $i), "Obec $i", self::box($i), $reasons[$i] ?? '', '', "Obec $i");
-            }
-            $snapshot = Snapshot::of($letter ?? self::letter(), $recipients, ['sha256' => 'ab12', 'time' => 1_760_000_000], self::CAMPAIGN_ITEM);
-            $snapshot->save();
-            return TestSendRun::start($props + [
-                'subject'    => self::CAMPAIGN_ITEM,
-                'user'       => Sending::USER,
-                'position'   => $position,
-                'site'       => Sending::SITE,
-                'env'        => Account::TEST,
-                'account'    => 'NSZM',
-                'kind'       => Account::BASIC,
-                'acct_id'    => self::fingerprint(),
-                'sender_box' => self::SENDER,
-                'camp_slice' => Sending::CAMPAIGN,
-                'msg_slice'  => Sending::MESSAGE,
-                'camp_short' => self::SHORT,
-                'snapshot'   => (string) $snapshot->getId(),
-                'manifest'   => $snapshot->manifest(),
-                'cursor'     => '0',
-                'owner_at'   => (string) $now,
-                'camp_state' => Schema::CAMPAIGN_STATE_SENDING,
-            ])->getId();
-        });
-        foreach (self::rows($id) as $row) {
-            self::items()->create($row, Account::TEST, self::SENDER, $now);
-        }
-        self::items()->writes = [];
-        return $id;
-    }
-
-    private static function letter(string $attachment = ''): Letter
-    {
-        $files = [new File('Dopis.html', 'text/html', File::MAIN, '<p>Vážení</p>')];
-        if ($attachment !== '') {
-            $files[] = new File('Priloha.pdf', 'application/pdf', File::ENCLOSURE, $attachment);
-        }
-        return new Letter('Pozvánka', $files, 'starosta');
-    }
-
-    private static function box(int $i): string
-    {
-        return sprintf('b%06d', $i);
-    }
-
-    /** of the account Sending::bound() sets up, as the code that queues the run computes it */
-    private static function fingerprint(): string
-    {
-        return TestSendRun::fingerprintOf(new Account(Account::TEST, 'nszm01login', new Secret('Test-Pa55-never-shown')));
-    }
-
-    private static function items(): MemorySendItems
-    {
-        return TestSendRun::$items ?? throw new \LogicException('No items');
-    }
-
-    /** @return list<array<string, string>> the recipients frozen in the run's snapshot */
-    private static function rows(string $id): array
-    {
-        $stored = self::stored($id);
-        return Snapshot::read($stored['snapshot'], $stored['manifest'], false, self::CAMPAIGN_ITEM)->recipients();
-    }
-
-    private static function message(string $id, int $i): string
-    {
-        return self::rows($id)[$i]['msg'];
-    }
-
-    /** @return array<string, int|string> the stored position, its keys sorted */
-    private static function position(string $id): array
-    {
-        $position = json_decode(self::stored($id)['position'], true);
-        ksort($position);
-        return $position;
-    }
-
-    /** @return array<int, int|string> index => what the record's map $name says of it */
-    private static function map(string $id, string $name): array
-    {
-        return json_decode(self::stored($id)[$name] ?? '', true) ?? [];
-    }
-
-    private static function state(string $id, int $i): string
-    {
-        return self::items()->field(self::message($id, $i), Schema::MESSAGE_STATE);
-    }
-
-    /** @return list<string> the kinds of the timeline of message $i */
-    private static function kinds(string $id, int $i): array
-    {
-        return array_column(json_decode(self::items()->field(self::message($id, $i), Schema::MESSAGE_EVENTS), true), 'kind');
-    }
 
     /** a part of the run's snapshot as another process damaged it */
     private static function damage(string $id, string $part): void
@@ -223,41 +56,10 @@ final class SendRunSendTest extends TestCase
 
     // ------------------------------------------------------------ what ISDS answers
 
-    /**
-     * ISDS for a step: every box active, every message accepted, numbered 1001, 1002, ... unless the
-     * scripts say else
-     * @param list<Response|\Throwable|\Closure(): Response> $create
-     * @param list<Response|\Throwable|\Closure(): Response> $check
-     */
-    private static function isds(array $create = [], array $check = []): ScriptedIsds
-    {
-        $next = 1001;
-        $made = static function () use (&$next): Response {
-            return self::created((string) $next++);
-        };
-        return TestSendRun::$http = new ScriptedIsds(['CheckDataBox' => $check ?: [self::boxIs(1)], 'CreateMessage' => $create ?: [$made]]);
-    }
-
-    private static function fixture(string $name): string
-    {
-        return (string) file_get_contents(__DIR__ . "/fixtures/$name");
-    }
-
-    /** CheckDataBox: the box is in $state, 1 accepting messages */
-    private static function boxIs(int $state): Response
-    {
-        return new Response(200, str_replace('<p:dbState>1<', "<p:dbState>$state<", self::fixture('check-data-box.xml')));
-    }
-
     /** CheckDataBox: ISDS refused it, or has no such box */
     private static function boxRefused(string $status): Response
     {
         return new Response(200, (string) preg_replace('~<p:dbState>1</p:dbState>(.*)0000~s', '${1}' . $status, self::fixture('check-data-box.xml')));
-    }
-
-    private static function created(string $dmId): Response
-    {
-        return new Response(200, str_replace('<p:dmID>1835603<', "<p:dmID>$dmId<", self::fixture('create-message-ok.xml')));
     }
 
     private static function refused(string $status = '1233'): Response
@@ -324,7 +126,7 @@ final class SendRunSendTest extends TestCase
 
     public function test_work_moves_to_look_when_all_tried(): void
     {
-        $id   = self::queued(4, [2 => Schema::BOX_FOREIGN, 3 => Schema::BOX_KIND]);
+        $id   = self::queued(4, reasons: [2 => Schema::BOX_FOREIGN, 3 => Schema::BOX_KIND]);
         $isds = self::isds();
 
         self::assertSame('step 1', self::runQueued());
@@ -342,7 +144,7 @@ final class SendRunSendTest extends TestCase
     public function test_work_never_sends_twice_after_dying_mid_request(): void
     {
         // message 0 went before; the position is at message 1, which the step now sends
-        $id   = self::queued(3, [], ['cursor' => '1', 'dm_ids' => '{"0":"999"}'], ['p' => 'send', 'i' => 1]);
+        $id   = self::queued(3, ['cursor' => '1', 'dm_ids' => '{"0":"999"}'], ['p' => 'send', 'i' => 1]);
         $died = null;
         self::isds([static function () use (&$died): Response {
             // ISDS takes the message, and the process dies before it hears so
@@ -368,7 +170,6 @@ final class SendRunSendTest extends TestCase
     #[DataProvider('afterUncertain')]
     public function test_work_never_resends_uncertain(bool $resumed, bool $requeued): void
     {
-        FakePerms::install([Sending::USER => [Sending::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']]]);
         $id   = self::queued(3);
         $isds = self::isds([self::created('1001'), self::noAnswer(), self::created('1003')]);
         self::runQueued();
@@ -669,7 +470,7 @@ final class SendRunSendTest extends TestCase
 
     public function test_work_skips_frozen_reasons_without_calls(): void
     {
-        $id   = self::queued(4, [0 => Schema::BOX_FOREIGN, 2 => Schema::BOX_MISSING]);
+        $id   = self::queued(4, reasons: [0 => Schema::BOX_FOREIGN, 2 => Schema::BOX_MISSING]);
         $isds = self::isds();
 
         self::runQueued();
@@ -797,7 +598,6 @@ final class SendRunSendTest extends TestCase
 
     public function test_positionOnResume_resets_pause(): void
     {
-        FakePerms::install([Sending::USER => [Sending::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']]]);
         $id = self::queued(3);
         self::isds([self::created('1001'), self::noAnswer()], [self::boxIs(1), self::boxIs(1), new Response(503, '')]);
         self::runQueued();
@@ -844,7 +644,7 @@ final class SendRunSendTest extends TestCase
     #[DataProvider('pauseEnds')]
     public function test_work_waits_no_longer_than_any_pause(int $ahead, int $sent): void
     {
-        $id   = self::queued(2, [], [], ['i' => 0, 'p' => 'send', 's' => self::NOW, 'u' => self::NOW + $ahead, 'w' => 1]);
+        $id   = self::queued(2, position: ['i' => 0, 'p' => 'send', 's' => self::NOW, 'u' => self::NOW + $ahead, 'w' => 1]);
         $isds = self::isds();
 
         self::runQueued();
@@ -875,7 +675,7 @@ final class SendRunSendTest extends TestCase
         TestSendRun::$now = self::prague('2030-03-22 00:30:00');
         // ISDS is not asked anything, not even whose the login is
         // a pause before it does not shorten the wait
-        $id   = self::queued(2, [], ['owner_at' => ''], ['p' => 'send', 'i' => 0, 'u' => (int) TestSendRun::$now - 5]);
+        $id   = self::queued(2, ['owner_at' => ''], ['p' => 'send', 'i' => 0, 'u' => (int) TestSendRun::$now - 5]);
         $isds = TestSendRun::$http = new ScriptedIsds([
             'GetOwnerInfoFromLogin2' => [new Response(200, self::fixture('owner-info.xml'))],
             'CheckDataBox'           => [self::boxIs(1)],
@@ -932,7 +732,7 @@ final class SendRunSendTest extends TestCase
     #[DataProvider('refusalStreaks')]
     public function test_work_trips_breaker_on_same_refusal(string $streak, int $tried): void
     {
-        $id   = self::queued(7, [], ['streak' => $streak]);
+        $id   = self::queued(7, ['streak' => $streak]);
         $isds = self::isds([self::refused('1233')]);
 
         self::assertSame('error ' . SendRun::REFUSED, self::runQueued());
@@ -1004,7 +804,7 @@ final class SendRunSendTest extends TestCase
         self::assertSame(($op === 'CheckDataBox') ? ['CheckDataBox'] : ['CheckDataBox', 'CreateMessage'], $isds->ops(), 'nothing more asked');
         self::assertSame(['', '0', [], []], [self::stored($id)['inflight'], self::stored($id)['cursor'], self::map($id, 'uncertain'), self::map($id, 'failed')], 'to be sent after Continue');
         self::assertSame(Schema::MESSAGE_STATE_QUEUED, self::state($id, 0));
-        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, $code], [self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_STATE), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
+        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, $code], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
     }
 
     // the run errs, the campaign must not go on showing it sending - by the code, never the text of the failure
@@ -1024,7 +824,7 @@ final class SendRunSendTest extends TestCase
 
         self::assertSame('error INTERNAL', self::runQueued());
 
-        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, 'INTERNAL'], [self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_STATE), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
+        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, 'INTERNAL'], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
     }
 
     // a campaign item that cannot be written does not hide why the run stopped
@@ -1042,12 +842,12 @@ final class SendRunSendTest extends TestCase
     // a step that died left a message in flight, and its record cannot take it: the campaign shows the error too
     public function test_work_shows_failure_settling_the_message_in_flight(): void
     {
-        $id   = self::queued(2, [], ['inflight' => '0', 'inflight_at' => (string) self::NOW, 'uncertain' => '{broken']);
+        $id   = self::queued(2, ['inflight' => '0', 'inflight_at' => (string) self::NOW, 'uncertain' => '{broken']);
         $isds = self::isds();
 
         self::assertSame('error INTERNAL', self::runQueued());
 
-        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, 'INTERNAL'], [self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_STATE), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
+        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, 'INTERNAL'], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
         self::assertSame([[], '0'], [$isds->ops(), self::stored($id)['inflight']], 'nothing asked, the message still in flight for the next step');
     }
 
@@ -1085,7 +885,7 @@ final class SendRunSendTest extends TestCase
     #[DataProvider('memoryLimits')]
     public function test_work_raises_memory_limit_for_the_files(int $limit, bool $raised): void
     {
-        self::queued(1, [], [], self::SEND, self::letter(str_repeat(self::PDF, 250_000)));
+        self::queued(1, letter: self::letter(str_repeat(self::PDF, 250_000)));
         $isds                     = self::isds();
         TestSendRun::$memoryLimit = $limit;
         TestSendRun::$mayRaise    = true;
@@ -1114,7 +914,7 @@ final class SendRunSendTest extends TestCase
 
     public function test_work_refuses_without_memory(): void
     {
-        $id                       = self::queued(1, [], [], self::SEND, self::letter(str_repeat(self::PDF, 250_000)));
+        $id                       = self::queued(1, letter: self::letter(str_repeat(self::PDF, 250_000)));
         $isds                     = self::isds();
         TestSendRun::$memoryLimit = self::MB;
         TableDb::$log             = [];
@@ -1128,7 +928,7 @@ final class SendRunSendTest extends TestCase
 
     public function test_work_gives_back_memory_limit_when_failing(): void
     {
-        $id = self::queued(1, [], [], self::SEND, self::letter(str_repeat(self::PDF, 250_000)));
+        $id = self::queued(1, letter: self::letter(str_repeat(self::PDF, 250_000)));
         self::damage($id, 'files');
         self::isds();
         TestSendRun::$memoryLimit = self::MB;
@@ -1142,7 +942,7 @@ final class SendRunSendTest extends TestCase
     // invalidate() may fail too: the next task of the process gets its memory_limit all the same
     public function test_work_gives_back_memory_limit_when_invalidate_fails(): void
     {
-        self::queued(1, [], [], self::SEND, self::letter(str_repeat(self::PDF, 250_000)));
+        self::queued(1, letter: self::letter(str_repeat(self::PDF, 250_000)));
         self::isds();
         TestSendRun::$memoryLimit     = self::MB;
         TestSendRun::$mayRaise        = true;
@@ -1151,7 +951,7 @@ final class SendRunSendTest extends TestCase
         self::assertSame('error INTERNAL', self::runQueued());
 
         self::assertSame((string) self::MB, TestSendRun::$restoredTo);
-        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, 'INTERNAL'], [self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_STATE), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
+        self::assertSame([Schema::CAMPAIGN_STATE_ERROR, 'INTERNAL'], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
         $campaign = array_column(array_filter(self::items()->writes, static fn(array $write): bool => $write['id'] === strtolower(self::CAMPAIGN_ITEM)), 'open');
         self::assertSame([Sending::CAMPAIGN => true, Sending::MESSAGE => true], end($campaign), 'its error written with the slices open');
     }
@@ -1276,7 +1076,7 @@ final class SendRunSendTest extends TestCase
 
     public function test_work_loads_files_once_per_step(): void
     {
-        self::queued(3, [], [], self::SEND, self::letter('%PDF-1.4'));
+        self::queued(3, letter: self::letter('%PDF-1.4'));
         $isds         = self::isds();
         TableDb::$log = [];
 

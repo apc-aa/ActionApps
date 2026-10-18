@@ -39,4 +39,14 @@ final class Text
         }
         return $value;
     }
+
+    /**
+     * $value without any space and without what ISDS replaces or drops, so that a text sent equals the
+     * one listed. U+202F is listed both ways in 1.3.5, so neither the replaced characters nor the
+     * spaces they become can count.
+     */
+    public static function isdsKey(string $value): string
+    {
+        return (string) preg_replace('/[\s\x{A0}\x{AD}\x{200B}-\x{200F}\x{2028}-\x{202F}\x{2061}-\x{206F}]/u', '', $value);
+    }
 }

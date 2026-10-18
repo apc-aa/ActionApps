@@ -428,9 +428,9 @@ final class ClientTest extends TestCase
         $messages = self::client($http)->sentMessages(self::FROM, self::TO);
 
         self::assertEquals([
-            new SentMessage('78021', 6, '', 'jyg3h5s', 1270028470, 1270456811),
-            new SentMessage('77725', 5, 'banka_2011_09_15_123', 'qcssvxh', 1269443246, 1270303646),
-            new SentMessage('77726', 4, '', 'qcssvxh', 1269443246, null),
+            new SentMessage('78021', 6, '', 'jyg3h5s', 1270028470, 1270456811, 'zkušební zpráva'),
+            new SentMessage('77725', 5, 'banka_2011_09_15_123', 'qcssvxh', 1269443246, 1270303646, 'testovací xml'),
+            new SentMessage('77726', 4, '', 'qcssvxh', 1269443246, null, 'zpráva čeká na přihlášení'),
         ], $messages);
         self::assertSame([
             'dmFromTime'         => '2026-10-01T08:00:00Z',

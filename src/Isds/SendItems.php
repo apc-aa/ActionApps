@@ -69,10 +69,12 @@ class SendItems
      * it is repeated harmlessly
      * @param array<string, string> $row         Snapshot::recipients() row
      * @param string                $environment Account::TEST or Account::PRODUCTION
+     * @param bool                  $stopped     the sending stopped before the recipient was tried; one
+     *                                           skipped by its reason stays skipped
      * @return bool created now; false = it is there already
      * @throws \RuntimeException not stored
      */
-    public function create(array $row, string $environment, string $senderBox, int $at): bool
+    public function create(array $row, string $environment, string $senderBox, int $at, bool $stopped = false): bool
     {
         $reason = $row['reason'];
         if (($reason !== '') && !in_array($reason, Schema::BOX_PROBLEMS, true)) {
@@ -82,7 +84,12 @@ class SendItems
             throw new \InvalidArgumentException('An ISDS environment is Account::TEST or Account::PRODUCTION');
         }
         $skipped = ($reason !== '');
-        $event   = ['at' => $at, 'kind' => $skipped ? Schema::EVENT_SKIPPED : Schema::EVENT_QUEUED] + ($skipped ? ['code' => $reason] : []);
+        [$state, $kind] = match (true) {
+            $skipped => [Schema::MESSAGE_STATE_SKIPPED, Schema::EVENT_SKIPPED],
+            $stopped => [Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED],
+            default  => [Schema::MESSAGE_STATE_QUEUED, Schema::EVENT_QUEUED],
+        };
+        $event   = ['at' => $at, 'kind' => $kind] + ($skipped ? ['code' => $reason] : []);
         $fields  = [
             'status_code.....'          => \SC_ACTIVE,
             Schema::MESSAGE_NAME        => $row['name'],
@@ -94,7 +101,7 @@ class SendItems
             Schema::MESSAGE_RECIPIENT   => $row['src'],
             // a view leaving test messages out (test = 0) would miss a message without the number
             Schema::MESSAGE_TEST        => 0,
-            Schema::MESSAGE_STATE       => $skipped ? Schema::MESSAGE_STATE_SKIPPED : Schema::MESSAGE_STATE_QUEUED,
+            Schema::MESSAGE_STATE       => $state,
             Schema::MESSAGE_EVENTS      => self::appended('', $event),
         ] + ($skipped ? [Schema::MESSAGE_ERROR_CODE => $reason] : []);
         return $this->whileOpen($this->messageSlice, function () use ($row, $fields): bool {
@@ -114,16 +121,18 @@ class SendItems
      * @param string $dmId      digits, as ISDS numbers messages
      * @param string $code      CODE; one of Schema::BOX_PROBLEMS for a skipped message. ISDS's own codes go only through markOutcome()
      * @param string $senderRef CODE letters, at most Message::MAX_REF
+     * @param bool   $once      nothing written when the item shows $state already: a stop or a lookup
+     *                          repeated after its step died adds no second entry
      * @return bool false = no such message item, deleted by hand - nothing written
      * @throws \RuntimeException not stored
      */
-    public function mark(string $msg, string $state, string $event, int $at, string $dmId = '', string $code = '', string $senderRef = ''): bool
+    public function mark(string $msg, string $state, string $event, int $at, string $dmId = '', string $code = '', string $senderRef = '', bool $once = false): bool
     {
         if ((preg_match('/^\d{0,20}\z/', $dmId) !== 1) || (preg_match(self::CODE, $code) !== 1)
             || (preg_match(self::CODE, $senderRef) !== 1) || (strlen($senderRef) > Message::MAX_REF)) {
             throw new \InvalidArgumentException('A message id, a code and a reference are words, never a text');
         }
-        return $this->write($msg, $state, $event, $at, $dmId, $code, '', $senderRef);
+        return $this->write($msg, $state, $event, $at, $dmId, $code, '', $senderRef, once: $once);
     }
 
     /** mark() with what Outcome::of() made of an attempt, its text too */
@@ -133,14 +142,35 @@ class SendItems
     }
 
     /**
+     * A message of unknown fate the list of sent ones holds: sent when it was tried - ISDS took it
+     * within that request -, delivered as the list says; failed for good, its status the code, when
+     * the antivirus check refused it. Once, as mark() $once.
+     * @param int $triedAt the time of the attempt the record keeps
+     */
+    public function markFound(string $msg, SentMessage $sent, int $triedAt, int $at): bool
+    {
+        $refused  = ($sent->status === SentMessage::AV_REFUSED);
+        $delivery = [
+            Schema::MESSAGE_DM_STATUS    => $sent->status,
+            Schema::MESSAGE_SENT_AT      => $triedAt,
+            Schema::MESSAGE_DELIVERED_AT => $sent->deliveredAt,
+            Schema::MESSAGE_ACCEPTED_AT  => $sent->acceptedAt,
+        ];
+        [$state, $event, $code] = $refused ? [Schema::MESSAGE_STATE_FAILED, Schema::EVENT_AV, (string) $sent->status] : [Schema::MESSAGE_STATE_SENT, Schema::EVENT_LOOKUP_FOUND, ''];
+        return $this->write($msg, $state, $event, $at, $sent->dmId, $code, '', '', array_filter($delivery, is_int(...)), true);
+    }
+
+    /**
      * The state of the campaign, and fields of CAMPAIGN_OWN. An error goes only as the run's code,
      * translated when shown: an exception's text may carry the path of a key. Any other state clears it.
      * @param array<string, string|int> $fields CAMPAIGN_OWN field => value; CAMPAIGN_ERROR_TEXT with the
      *                                          state error, and only with it
+     * @param bool                      $once   nothing written when the campaign shows $state already:
+     *                                          an end repeated keeps the time it finished
      * @return bool false = the campaign item is gone - nothing written
      * @throws \RuntimeException not stored
      */
-    public function campaign(string $state, array $fields = []): bool
+    public function campaign(string $state, array $fields = [], bool $once = false): bool
     {
         // a draft is what the sending started from; it never goes back to one
         if (($state === Schema::CAMPAIGN_STATE_DRAFT) || !in_array($state, Schema::CAMPAIGN_STATES, true)) {
@@ -154,9 +184,13 @@ class SendItems
             throw new \InvalidArgumentException('The error state takes a code of BatchFailed::CODE, and no other state takes one');
         }
         $fields = [Schema::CAMPAIGN_STATE => $state, Schema::CAMPAIGN_ERROR_TEXT => $error] + $fields;
-        return $this->whileOpen($this->campaignSlice, function () use ($fields): bool {
-            if (is_null($this->read($this->campaignSlice, $this->campaign, Schema::CAMPAIGN_STATE))) {
+        return $this->whileOpen($this->campaignSlice, function () use ($fields, $state, $once): bool {
+            $shown = $this->read($this->campaignSlice, $this->campaign, Schema::CAMPAIGN_STATE);
+            if (is_null($shown)) {
                 return false;
+            }
+            if ($once && ($shown === $state)) {
+                return true;
             }
             if (!$this->save($this->campaignSlice, $this->campaign, $fields, 'update', self::CAMPAIGN_FLAGS)) {
                 throw new \RuntimeException("Campaign item $this->campaign not stored, error " . ItemContent::lastErr());
@@ -191,8 +225,9 @@ class SendItems
     /**
      * The error fields hold the error of this state, cleared by one that is no problem; the timeline
      * keeps the earlier ones. $dmId and $senderRef left '' keep what the item has.
+     * @param array<string, int> $more further fields of Schema
      */
-    private function write(string $msg, string $state, string $event, int $at, string $dmId, string $code, string $text, string $senderRef): bool
+    private function write(string $msg, string $state, string $event, int $at, string $dmId, string $code, string $text, string $senderRef, array $more = [], bool $once = false): bool
     {
         if (!in_array($state, Schema::MESSAGE_STATES, true) || !in_array($event, Schema::EVENT_KINDS, true)) {
             throw new \InvalidArgumentException('A message takes a state of Schema::MESSAGE_STATES and an event of Schema::EVENT_KINDS');
@@ -210,12 +245,15 @@ class SendItems
             Schema::MESSAGE_STATE      => $state,
             Schema::MESSAGE_ERROR_CODE => $problem ? $code : '',
             Schema::MESSAGE_ERROR_TEXT => $problem ? $text : '',
-        ] + self::given([Schema::MESSAGE_DM_ID => $dmId, Schema::MESSAGE_SENDER_REF => $senderRef]);
+        ] + self::given([Schema::MESSAGE_DM_ID => $dmId, Schema::MESSAGE_SENDER_REF => $senderRef]) + $more;
         // when ISDS took it; a later lookup or delivery does not move it
         if ($event === Schema::EVENT_SUBMITTED) {
             $fields[Schema::MESSAGE_SENT_AT] = $at;
         }
-        return $this->whileOpen($this->messageSlice, function () use ($msg, $entry, $fields): bool {
+        return $this->whileOpen($this->messageSlice, function () use ($msg, $entry, $fields, $state, $once): bool {
+            if ($once && ($this->read($this->messageSlice, $msg, Schema::MESSAGE_STATE) === $state)) {
+                return true;
+            }
             $events = $this->read($this->messageSlice, $msg, Schema::MESSAGE_EVENTS);
             if (is_null($events)) {
                 return false;

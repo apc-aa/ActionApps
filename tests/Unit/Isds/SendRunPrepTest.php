@@ -830,7 +830,7 @@ final class SendRunPrepTest extends TestCase
     /** @return array<string, array{array<string, int|string>}> */
     public static function phasesWithoutIsds(): array
     {
-        return ['prep' => [['p' => 'prep', 'i' => 0]], 'look' => [['p' => 'look', 'i' => 0]], 'no phase, as prep' => [[]]];
+        return ['prep' => [['p' => 'prep', 'i' => 0]], 'stop' => [['p' => 'stop', 'i' => 0]], 'no phase, as prep' => [[]]];
     }
 
     // ------------------------------------------------------------ the run among others
