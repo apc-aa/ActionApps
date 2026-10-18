@@ -57,11 +57,14 @@ final class Client
     public const MAX_LIST = 1000;
 
     /**
-     * Seconds of a call: a 20 MB message (27 MB of base64) has to get up on a slow line with no answer
-     * until the last byte, so the idle limit is the whole time; the rest answers in seconds, and a
-     * dead ISDS must not hold the sending or the State Check for minutes.
+     * Seconds of createMessage(): a 20 MB message (27 MB of base64) has to get up on a slow line with
+     * no answer until the last byte, so the idle limit is the whole time. A sending waits this long
+     * before it takes a step for dead - a call cut short could have delivered the message.
      */
-    private const TIMEOUTS = ['CreateMessage' => 300];
+    public const CREATE_TIMEOUT = 300;
+
+    /** seconds of a call: the rest answers in seconds, and a dead ISDS must not hold the sending or the State Check for minutes */
+    private const TIMEOUTS = ['CreateMessage' => self::CREATE_TIMEOUT];
     private const TIMEOUT  = 30;
 
     /**

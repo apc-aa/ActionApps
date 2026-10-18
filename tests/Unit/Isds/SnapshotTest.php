@@ -71,7 +71,7 @@ final class SnapshotTest extends TestCase
     public function test_read_givesBackWhatWasFrozen(): void
     {
         $saved  = self::saved();
-        $loaded = Snapshot::read((string) $saved->getId(), $saved->manifest(), true);
+        $loaded = Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN);
 
         $rows = $loaded->recipients();
         self::assertSame(['a0000000000000000000000000000001', 'ada1234', 'Adamov', 'Město Adamov', ''], [$rows[0]['src'], $rows[0]['box'], $rows[0]['name'], $rows[0]['official'], $rows[0]['reason']]);
@@ -86,6 +86,38 @@ final class SnapshotTest extends TestCase
         self::assertSame(self::CAMPAIGN, self::stored((string) $saved->getId())['aa_owner']);
     }
 
+    // a run's record that names the snapshot of another campaign reads none of it
+    #[DataProvider('parts')]
+    public function test_read_snapshotOfAnotherCampaignIsChanged(bool $files): void
+    {
+        $saved = self::saved();
+
+        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), $files, 'cafe0000000000000000000000000002'));
+        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), $files, ''));
+
+        // one of two owners is no owner
+        TableDb::$tables['object_text'][] = ['id' => 999, 'object_id' => (string) $saved->getId(), 'property' => 'aa_owner', 'priority' => 1, 'value' => 'cafe0000000000000000000000000002', 'flag' => null];
+        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), $files, self::CAMPAIGN));
+    }
+
+    // the run's subject is a long id in small letters; an owner spelt otherwise would fail every step
+    public function test_of_ownerIsALongIdInSmallLetters(): void
+    {
+        foreach ([strtoupper(self::CAMPAIGN), substr(self::CAMPAIGN, 1), ''] as $campaign) {
+            try {
+                Snapshot::of(self::letter(), [], self::REGISTER, $campaign);
+                self::fail("owner $campaign taken");
+            } catch (\InvalidArgumentException) {
+                self::addToAssertionCount(1);
+            }
+        }
+    }
+
+    public static function parts(): array
+    {
+        return ['with the files' => [true], 'the recipients only' => [false]];
+    }
+
     // object_text.value is text: base64 rows of 512 KiB at most, a file over several in order
     public function test_save_rowsOfAtMost512KiB(): void
     {
@@ -97,7 +129,7 @@ final class SnapshotTest extends TestCase
             self::assertLessThanOrEqual(512 * 1024, strlen((string) $row['value']));
             self::assertMatchesRegularExpression('~^[A-Za-z0-9+/=]*$~', (string) $row['value']);
         }
-        self::assertEquals(self::letter(Snapshot::CHUNK * 2 + 1), Snapshot::read((string) $saved->getId(), $saved->manifest(), true)->letter());
+        self::assertEquals(self::letter(Snapshot::CHUNK * 2 + 1), Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN)->letter());
     }
 
     // the priority orders the rows, not the order the database returns them in
@@ -106,11 +138,11 @@ final class SnapshotTest extends TestCase
         $saved = self::saved(Snapshot::CHUNK * 2 + 1);
         TableDb::$tables['object_text'] = array_reverse(TableDb::rows('object_text'));
 
-        self::assertEquals(self::letter(Snapshot::CHUNK * 2 + 1), Snapshot::read((string) $saved->getId(), $saved->manifest(), true)->letter());
+        self::assertEquals(self::letter(Snapshot::CHUNK * 2 + 1), Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN)->letter());
 
         [$a, $b] = array_slice(self::rowsOf((string) $saved->getId(), 'files'), 0, 2);
         [TableDb::$tables['object_text'][$a]['priority'], TableDb::$tables['object_text'][$b]['priority']] = [TableDb::$tables['object_text'][$b]['priority'], TableDb::$tables['object_text'][$a]['priority']];
-        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), true));
+        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN));
     }
 
     #[DataProvider('damages')]
@@ -120,7 +152,7 @@ final class SnapshotTest extends TestCase
         $key   = self::rowsOf((string) $saved->getId(), $property)[1] ?? self::rowsOf((string) $saved->getId(), $property)[0];
         $damage($key);
 
-        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), true));
+        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN));
     }
 
     public static function damages(): array
@@ -153,7 +185,7 @@ final class SnapshotTest extends TestCase
         }
         TableDb::$log = [];
 
-        $loaded = Snapshot::read((string) $saved->getId(), $saved->manifest(), false);
+        $loaded = Snapshot::read((string) $saved->getId(), $saved->manifest(), false, self::CAMPAIGN);
 
         self::assertCount(2, $loaded->recipients());
         self::assertStringNotContainsString("'files'", implode("\n", TableDb::$log));
@@ -170,7 +202,7 @@ final class SnapshotTest extends TestCase
         $twin  = ['value' => base64_encode('other')] + TableDb::$tables['object_text'][$key];
         $first ? array_unshift(TableDb::$tables['object_text'], $twin) : (TableDb::$tables['object_text'][] = $twin);
 
-        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), true));
+        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN));
     }
 
     public static function modes(): array
@@ -185,7 +217,7 @@ final class SnapshotTest extends TestCase
         $saved    = self::saved();
         $manifest = $reshape(json_decode($saved->manifest(), true));
 
-        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), is_string($manifest) ? $manifest : json_encode($manifest), true));
+        self::assertChanged(static fn() => Snapshot::read((string) $saved->getId(), is_string($manifest) ? $manifest : json_encode($manifest), true, self::CAMPAIGN));
     }
 
     public static function shapes(): array
@@ -231,7 +263,7 @@ final class SnapshotTest extends TestCase
         $manifest         = json_decode($saved->manifest(), true);
         $manifest['rcpt'] = ['n' => 1, 'size' => strlen($json), 'xxh128' => hash('xxh128', $json)];
 
-        self::assertChanged(static fn() => Snapshot::read($id, json_encode($manifest), false));
+        self::assertChanged(static fn() => Snapshot::read($id, json_encode($manifest), false, self::CAMPAIGN));
     }
 
     public static function lists(): array
@@ -308,6 +340,6 @@ final class SnapshotTest extends TestCase
         $saved = self::saved();
 
         $this->expectException(\LogicException::class);
-        Snapshot::read((string) $saved->getId(), $saved->manifest(), true)->save();
+        Snapshot::read((string) $saved->getId(), $saved->manifest(), true, self::CAMPAIGN)->save();
     }
 }

@@ -154,6 +154,87 @@ final class SliceRulesTest extends TestCase
         self::assertEquals([new SliceProblem($text, self::MESSAGE, $page)], $rules->sliceProblems(self::CAMPAIGN, self::MESSAGE));
     }
 
+    /** @return array<string, array{string}> */
+    public static function templatedInserts(): array
+    {
+        return ['computed' => ['com:{headline........}'], 'computed on insert or update' => ['co2:{headline........}:{headline........}::'], 'SEO name' => ['seo:_#HEADLINE']];
+    }
+
+    // a sending stores its items with the slice open: no template may run then
+    #[DataProvider('templatedInserts')]
+    public function test_sliceProblems_fieldComputedByTemplate(string $insert): void
+    {
+        $rules = self::ready();
+        $rules->slices[self::MESSAGE] = FakeSliceRules::sliceOf(self::MESSAGE, false, inserts: [Schema::MESSAGE_BOX => $insert, Schema::MESSAGE_NAME => $insert]);
+        $fields                       = implode(', ', array_intersect(Schema::MESSAGE_FIELDS, [Schema::MESSAGE_BOX, Schema::MESSAGE_NAME]));
+
+        self::assertEquals([new SliceProblem("Slice \"ISDS messages\" computes the fields $fields by a template whenever an item is stored - set their Insert to \"Text = don't modify\" in the settings of each field", self::MESSAGE, SliceRules::FIELDS_PAGE)], $rules->sliceProblems(self::CAMPAIGN, self::MESSAGE));
+    }
+
+    // a template runs at every store, whichever fields it stores
+    public function test_sliceProblems_campaignFieldComputedByTemplate(): void
+    {
+        $rules = self::ready();
+        $rules->slices[self::CAMPAIGN] = FakeSliceRules::sliceOf(self::CAMPAIGN, true, inserts: [Schema::CAMPAIGN_BODY => 'com:{headline........}']);
+
+        self::assertEquals([new SliceProblem('Slice "ISDS campaigns" computes the fields ' . Schema::CAMPAIGN_BODY . " by a template whenever an item is stored - set their Insert to \"Text = don't modify\" in the settings of each field", self::CAMPAIGN, SliceRules::FIELDS_PAGE)], $rules->sliceProblems(self::CAMPAIGN, self::MESSAGE));
+    }
+
+    /** @return array<string, array{bool, string, string}> */
+    public static function changingInserts(): array
+    {
+        return [
+            'file named by a template' => [false, Schema::MESSAGE_OFFICIAL, 'fil:'],
+            'ids off a relation'       => [false, Schema::MESSAGE_ENVIRONMENT, 'ids'],
+            'Boolean off the test'     => [false, Schema::MESSAGE_STATE, 'boo'],
+            'status of the item'       => [false, 'status_code.....', 'uid'],
+            'nothing stored'           => [false, Schema::MESSAGE_EVENTS, 'nul'],
+            'no function'              => [false, Schema::MESSAGE_STATE, ''],
+            'user id'                  => [true, Schema::CAMPAIGN_STATE, 'uid'],
+            'unique'                   => [true, Schema::CAMPAIGN_ERROR_TEXT, 'unq'],
+        ];
+    }
+
+    // what the sending stores comes back as it went in, and runs no template on the way
+    #[DataProvider('changingInserts')]
+    public function test_sliceProblems_storedFieldChangesTheValue(bool $campaign, string $field, string $insert): void
+    {
+        $rules = self::ready();
+        [$slice, $name] = $campaign ? [self::CAMPAIGN, 'ISDS campaigns'] : [self::MESSAGE, 'ISDS messages'];
+        $rules->slices[$slice] = FakeSliceRules::sliceOf($slice, $campaign, inserts: [$field => $insert]);
+
+        self::assertEquals([new SliceProblem("Slice \"$name\" may change what the sending stores in the fields $field - set their Insert to \"Text = don't modify\" in the settings of each field", $slice, SliceRules::FIELDS_PAGE)], $rules->sliceProblems(self::CAMPAIGN, self::MESSAGE));
+    }
+
+    // Trim (Optimize ChangeQte2Trm), the typed plain ones, Item IDs on the relations, Boolean on the test,
+    // presets without adding to constants - and adding to them on a field the sending does not store; no status_code
+    public function test_sliceProblems_plainStoredFieldsAreFine(): void
+    {
+        $rules = self::ready();
+        $rules->slices[self::CAMPAIGN] = FakeSliceRules::sliceOf(self::CAMPAIGN, true, inserts: [Schema::CAMPAIGN_STATE => 'trm:', Schema::CAMPAIGN_STARTED_AT => 'dte', Schema::CAMPAIGN_RECIPIENTS => 'num'], shows: [Schema::CAMPAIGN_STATE => 'pre:states:20:20:0:1:0::0', Schema::CAMPAIGN_SUBJECT => 'pre:subjects:20:20:0:1:0::1']);
+        $rules->slices[self::MESSAGE]  = FakeSliceRules::sliceOf(self::MESSAGE, false, without: ['status_code.....'], inserts: [Schema::MESSAGE_CAMPAIGN => 'ids', Schema::MESSAGE_RECIPIENT => 'ids:', Schema::MESSAGE_TEST => 'boo'], shows: [Schema::MESSAGE_BOX => 'pre:boxes:20:20']);
+
+        self::assertSame([], $rules->sliceProblems(self::CAMPAIGN, self::MESSAGE));
+    }
+
+    // a group of constants has no reading password
+    public function test_sliceProblems_storedFieldAddedToConstants(): void
+    {
+        $rules = self::ready();
+        $rules->slices[self::MESSAGE] = FakeSliceRules::sliceOf(self::MESSAGE, false, shows: [Schema::MESSAGE_BOX => 'pre:boxes:20:20:0:1:0::1', Schema::MESSAGE_CAMPAIGN => 'sel:boxes:::::::1']);
+
+        self::assertEquals([new SliceProblem('Slice "ISDS messages" adds what the sending stores in the fields ' . Schema::MESSAGE_BOX . ' to constants - turn off "Add to Constant" in the settings of each field', self::MESSAGE, SliceRules::FIELDS_PAGE)], $rules->sliceProblems(self::CAMPAIGN, self::MESSAGE));
+    }
+
+    // other insert functions run only on the fields an item stores - a sending never stores the files of a campaign
+    public function test_sliceProblems_otherInsertsAreFine(): void
+    {
+        $rules = self::ready();
+        $rules->slices[self::CAMPAIGN] = FakeSliceRules::sliceOf(self::CAMPAIGN, true, inserts: [Schema::CAMPAIGN_FILES => 'fil:{id..............}', Schema::CAMPAIGN_STARTED_AT => 'dte', Schema::CAMPAIGN_RECIPIENTS => 'num']);
+
+        self::assertSame([], $rules->sliceProblems(self::CAMPAIGN, self::MESSAGE));
+    }
+
     public function test_sliceProblems_missingFieldsOnly(): void
     {
         $rules = self::ready();

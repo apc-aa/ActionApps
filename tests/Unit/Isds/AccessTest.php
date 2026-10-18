@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA\Isds\Access;
 use AA_Perm;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -122,5 +123,18 @@ final class AccessTest extends TestCase
         self::assertTrue(FakePerms::login('coder')->mayFix(Sending::SITE, Sending::OTHER));
         self::assertFalse(FakePerms::login('coder')->may(Sending::CAMPAIGN), 'fixing is not sending');
         self::assertFalse(FakePerms::login('17x')->mayFix(Sending::SITE, Sending::CAMPAIGN));
+    }
+
+    // a batch run asks it for whoever lists, continues or ends the run - there is no session to ask
+    public function test_userMay_judgesTheUserGiven(): void
+    {
+        FakePerms::install([Sending::USER => [Sending::CAMPAIGN => self::role('EDITOR')], 'nobody' => [Sending::CAMPAIGN => self::role('EDITOR')]], [], ['admin' => self::role('SUPER')]);
+
+        self::assertTrue(Access::userMay(Sending::USER, Sending::CAMPAIGN));
+        self::assertFalse(Access::userMay(Sending::READER, Sending::CAMPAIGN));
+        self::assertFalse(Access::userMay('nobody', Sending::CAMPAIGN), 'not logged in, whatever it was granted');
+        self::assertFalse(Access::userMay('', Sending::CAMPAIGN));
+        self::assertTrue(Access::userMay('admin', Sending::CAMPAIGN), 'a superadmin may anything');
+        self::assertFalse(Access::userMay('admin', ''), 'no campaign slice, nothing to send - even for a superadmin');
     }
 }

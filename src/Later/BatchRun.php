@@ -677,6 +677,15 @@ abstract class BatchRun extends AA_Object
         return ($held !== null) && $held->holds((string) $this->lease_tok) && ((int) $held->lease > static::now());
     }
 
+    /** The step working now still owns the run: active, and neither Continue nor another step took it
+     *  since its claim - read from the record. Not the lease's time: a write that only shows how the
+     *  run goes may come late, never from a step another one replaced. */
+    final protected function ownsRun(): bool
+    {
+        $held = self::get($this->getId());
+        return ($held !== null) && $held->holds($this->claimed);
+    }
+
     /** Records, before the step acts, that it starts an action it cannot take back: a step that dies
      *  acting leaves the trace, and no step repeats the action. Only while the run is active, this
      *  step's claim owns it and its lease outlasts $reserve seconds - the longest the action takes, so

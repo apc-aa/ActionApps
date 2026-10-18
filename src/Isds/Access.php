@@ -20,23 +20,35 @@ class Access
 {
     public function loggedIn(): bool
     {
-        return !in_array($this->uid(), ['', 'nobody'], true);
+        return self::isLogin($this->uid());
     }
 
     public function may(string $campaignSlice): bool
     {
-        return $this->has($campaignSlice, PS_EDIT_ALL_ITEMS);
+        return self::userMay($this->uid(), $campaignSlice);
+    }
+
+    /** may() for a $uid the caller gives - a batch run asks it for whoever lists, continues or ends the run, with no session at hand */
+    public static function userMay(string $uid, string $campaignSlice): bool
+    {
+        return self::has($uid, $campaignSlice, PS_EDIT_ALL_ITEMS);
     }
 
     /** a user who could fix the settings of the page: one who may send, or edit the code of the site */
     public function mayFix(string $site, string $campaignSlice): bool
     {
-        return $this->may($campaignSlice) || $this->has($site, PS_MODW_EDIT_CODE);
+        return $this->may($campaignSlice) || self::has($this->uid(), $site, PS_MODW_EDIT_CODE);
     }
 
-    private function has(string $module, string $perm): bool
+    private static function has(string $uid, string $module, string $perm): bool
     {
-        return ($module !== '') && $this->loggedIn() && AA::$perm->hasSlicePerm($this->uid(), $module, $perm);
+        return ($module !== '') && self::isLogin($uid) && AA::$perm->hasSlicePerm($uid, $module, $perm);
+    }
+
+    /** '' and nobody are no login, whatever rights the storage gives them */
+    private static function isLogin(string $uid): bool
+    {
+        return !in_array($uid, ['', 'nobody'], true);
     }
 
     // ------------------------------------------------------------ what tests replace

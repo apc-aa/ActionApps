@@ -74,25 +74,29 @@ final class FakeSliceRules extends SliceRules
     }
 
     /**
-     * A slice with the fields of Schema, closed by a reading password, unless the arguments say else.
+     * A slice with the fields of Schema and status_code of the item table, closed by a reading password,
+     * unless the arguments say else.
      * @param array<string, mixed> $props   slice settings over the closed ones
      * @param list<string>         $without fields left out
      * @param list<string>         $asText  number fields stored as text
+     * @param array<string, string> $inserts field => its insert function, qte for the others (num for status_code)
+     * @param array<string, string> $shows   field => its input type, fld for the others
      */
-    public static function sliceOf(string $id, bool $campaign, array $props = [], array $without = [], array $asText = [], string $stateDefault = 'txt:draft'): PropertySlice
+    public static function sliceOf(string $id, bool $campaign, array $props = [], array $without = [], array $asText = [], string $stateDefault = 'txt:draft', array $inserts = [], array $shows = []): PropertySlice
     {
         $fields = [];
-        foreach (array_diff($campaign ? Schema::CAMPAIGN_FIELDS : Schema::MESSAGE_FIELDS, $without) as $field) {
-            $number   = in_array($field, $campaign ? Schema::CAMPAIGN_NUMBER_FIELDS : Schema::MESSAGE_NUMBER_FIELDS, true) && !in_array($field, $asText, true);
+        foreach (array_diff([...($campaign ? Schema::CAMPAIGN_FIELDS : Schema::MESSAGE_FIELDS), 'status_code.....'], $without) as $field) {
+            $status   = ($field === 'status_code.....');
+            $number   = $status || (in_array($field, $campaign ? Schema::CAMPAIGN_NUMBER_FIELDS : Schema::MESSAGE_NUMBER_FIELDS, true) && !in_array($field, $asText, true));
             $fields[] = new AA_Field([
                 'id'                => $field,
                 'name'              => $field,
                 'slice_id'          => '',
-                'in_item_tbl'       => '',
+                'in_item_tbl'       => $status ? 'status_code' : '',
                 'text_stored'       => $number ? 0 : 1,
                 'input_default'     => ($campaign && ($field === Schema::CAMPAIGN_STATE)) ? $stateDefault : 'txt:',
-                'input_show_func'   => 'fld',
-                'input_insert_func' => 'qte',
+                'input_show_func'   => $shows[$field] ?? 'fld',
+                'input_insert_func' => $inserts[$field] ?? ($status ? 'num' : 'qte'),
                 'content_edit'      => 0,
                 'html_default'      => 0,
                 'multiple'          => 0,

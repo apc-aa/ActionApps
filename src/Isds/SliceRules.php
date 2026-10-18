@@ -16,8 +16,9 @@ use AA_Slice;
 /**
  * What the site and the two slices of a mass sending must be before AA opens the slices for it: the
  * site uses both slices, each slice keeps its items behind a reading password, lets nobody in
- * another way and sends no copy of them anywhere, and has the fields of Schema. State Check and the
- * page that sends ask the same rules, so a slice the page refuses is one State Check names.
+ * another way, sends no copy of them anywhere, computes no field by a template, and has the fields
+ * of Schema, which keep what the sending stores in them. State Check, the page that sends and
+ * every step of a sending ask the same rules, so a slice the page refuses is one State Check names.
  */
 class SliceRules
 {
@@ -31,6 +32,21 @@ class SliceRules
     public const NOTIFY_PAGE   = 'admin/se_notify.php';
     public const SITE_PAGE     = 'modules/site/modedit.php';
     public const REGISTRY_PAGE = 'admin/se_isds_registry.php';
+
+    /** insert functions storeItem() computes from a template on every store (ItemContent::updateComputedFields()) */
+    private const TEMPLATED = ['seo', 'com', 'co2'];
+
+    /** insert functions that store the value as given - Trim too, as Optimize ChangeQte2Trm sets text fields to it */
+    private const PLAIN = ['qte', 'trm', 'dte', 'num'];
+
+    /**
+     * insert functions that keep the values of some fields only: Item IDs takes a leading t, x, y or z for
+     * an instruction (t stores a new tag item), and no item id starts with one; Boolean stores any text as 1
+     */
+    private const ONLY_IN = ['ids' => [Schema::MESSAGE_CAMPAIGN, Schema::MESSAGE_RECIPIENT], 'boo' => [Schema::MESSAGE_TEST]];
+
+    /** the field of the item table SendItems::create() stores besides those of Schema */
+    private const STATUS = 'status_code.....';
 
     /** where else the items of a slice may go, see outlets() */
     public const OUTLETS = ['feeds_out', 'feeds_in', 'export', 'notify'];
@@ -58,8 +74,9 @@ class SliceRules
                 $problems[] = $this->absent($typed, $id);
                 continue;
             }
-            $fields[$campaign ? 'campaign' : 'message'] = [$id, iterator_to_array($slice->getFields())];
-            array_push($problems, ...$this->closure($id, $slice), ...$this->outletProblems($id));
+            $own = iterator_to_array($slice->getFields());
+            $fields[$campaign ? 'campaign' : 'message'] = [$id, $own];
+            array_push($problems, ...$this->closure($id, $slice), ...$this->outletProblems($id), ...$this->templated($id, $own));
         }
 
         return [...$problems, ...$this->schema($fields['campaign'] ?? null, $fields['message'] ?? null)];
@@ -271,6 +288,22 @@ class SliceRules
     }
 
     /**
+     * A sending stores its items with the slice open: a template of a computed field could leave what
+     * it read of the slice ({define}, {view}) in the caches of the process for the next queued task.
+     * @param array<string, AA_Field> $fields
+     * @return list<SliceProblem>
+     */
+    private function templated(string $id, array $fields): array
+    {
+        $computed = array_keys(array_filter($fields, static fn(AA_Field $field): bool => in_array(ParseFnc((string) $field->getProperty('input_insert_func'))['fnc'], self::TEMPLATED, true)));
+        if (!$computed) {
+            return [];
+        }
+
+        return [new SliceProblem(_m('Slice "%1" computes the fields %2 by a template whenever an item is stored - set their Insert to "%3" in the settings of each field', [$this->name($id), implode(', ', $computed), _m("Text = don't modify")]), $id, self::FIELDS_PAGE)];
+    }
+
+    /**
      * Missing fields first; the storage and the defaults only of a slice that has all fields of its
      * role - another slice would get advice for fields it should not have.
      * @param ?array{string, array<string, AA_Field>} $campaign the slice id and its fields; null = not there
@@ -310,6 +343,46 @@ class SliceRules
                     $problems[] = new SliceProblem(_m('Slice "%1": set the Default of the field %2 to %3', [$name, $field, "txt:$value"]), $id, self::FIELDS_PAGE);
                 }
             }
+            array_push($problems, ...$this->stored($id, $fields, $isCampaign));
+        }
+
+        return $problems;
+    }
+
+    /**
+     * The fields a sending stores keep what it gives them: another insert function may run a template
+     * (fil names an uploaded file by one) or store items of its own (Item IDs of a tag widget), and
+     * Add to Constant copies the values into a group of constants, which no reading password covers.
+     * @param array<string, AA_Field> $fields
+     * @return list<SliceProblem>
+     */
+    private function stored(string $id, array $fields, bool $campaign): array
+    {
+        $changing = [];
+        $adding   = [];
+        foreach ($campaign ? [Schema::CAMPAIGN_STATE, ...SendItems::CAMPAIGN_OWN] : [...Schema::MESSAGE_FIELDS, self::STATUS] as $field) {
+            // schema() checked the fields of Schema are there; a slice without status_code stores none
+            if (!isset($fields[$field])) {
+                continue;
+            }
+            $insert = ParseFnc((string) $fields[$field]->getProperty('input_insert_func'))['fnc'];
+            // templated() names those already
+            if (!in_array($insert, [...self::PLAIN, ...self::TEMPLATED], true) && !in_array($field, self::ONLY_IN[$insert] ?? [], true)) {
+                $changing[] = $field;
+            }
+            // Add to Constant is the eighth parameter, as AA_Inserter::execute() reads it
+            $show = ParseFnc((string) $fields[$field]->getProperty('input_show_func'));
+            if (($show['fnc'] === 'pre') && (explode(':', $show['param'])[7] ?? '')) {
+                $adding[] = $field;
+            }
+        }
+        $name     = $this->name($id);
+        $problems = [];
+        if ($changing) {
+            $problems[] = new SliceProblem(_m('Slice "%1" may change what the sending stores in the fields %2 - set their Insert to "%3" in the settings of each field', [$name, implode(', ', $changing), _m("Text = don't modify")]), $id, self::FIELDS_PAGE);
+        }
+        if ($adding) {
+            $problems[] = new SliceProblem(_m('Slice "%1" adds what the sending stores in the fields %2 to constants - turn off "%3" in the settings of each field', [$name, implode(', ', $adding), _m('Add to Constant')]), $id, self::FIELDS_PAGE);
         }
 
         return $problems;

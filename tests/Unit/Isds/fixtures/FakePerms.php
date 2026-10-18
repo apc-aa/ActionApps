@@ -12,7 +12,8 @@ use AA_Permsystem;
 /**
  * AA::$perm over the rights given here, joined as perm_sql.php joins them (getJoinedPerms()): the
  * grants of a login's groups - the reader slice and the sets of readers - add up, and the login's own
- * grant on a slice replaces them there. Rights on slices only. Change $grants to take a right away.
+ * grant on a slice replaces them there. Rights on slices, and the AA-wide ones of $aa (a superadmin).
+ * Change $grants to take a right away.
  */
 final class FakePerms extends AA_Permsystem
 {
@@ -22,17 +23,19 @@ final class FakePerms extends AA_Permsystem
     /**
      * @param array<string, array<string, string>> $grants subject (a login, a group) => slice => letters or a role id
      * @param array<string, list<string>>          $groups login => the groups it is a member of
+     * @param array<string, string>                $aa     login => letters or a role id over all of AA
      */
-    public function __construct(public array $grants = [], public array $groups = []) {}
+    public function __construct(public array $grants = [], public array $groups = [], public array $aa = []) {}
 
     /**
      * @param array<string, array<string, string>> $grants
      * @param array<string, list<string>>          $groups
+     * @param array<string, string>                $aa
      */
-    public static function install(array $grants, array $groups = []): self
+    public static function install(array $grants, array $groups = [], array $aa = []): self
     {
         self::$saved = self::$saved ?: [AA::$perm];
-        $fake        = new self($grants, $groups);
+        $fake        = new self($grants, $groups, $aa);
         $perm        = new AA_Perm([]);
         (new \ReflectionProperty(AA_Perm::class, 'perm_systems'))->setValue($perm, ['fake' => $fake]);
         AA::$perm = $perm;
@@ -73,6 +76,9 @@ final class FakePerms extends AA_Permsystem
 
     public function getJoinedPerms($uid, $objectType, $groups = []): array
     {
+        if ($objectType === 'aa') {
+            return isset($this->aa[$uid]) ? [AA_ID => $this->aa[$uid]] : [];
+        }
         if ($objectType !== 'slice') {
             return [];
         }

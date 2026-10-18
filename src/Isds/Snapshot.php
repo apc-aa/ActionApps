@@ -53,11 +53,15 @@ final class Snapshot extends AA_Object
      * A new snapshot, to be saved in the transaction that starts the run
      * @param array<Recipient>                $recipients as Recipients::resolve() gave them, skipped ones too
      * @param array{sha256: string, time: int} $register   of the register they were checked against (RegisterIndex::info())
-     * @param string                           $campaign   the long id of the campaign item, the owner
-     * @throws \InvalidArgumentException the recipients take more than read() takes
+     * @param string                           $campaign   the long id of the campaign item, the owner - in small letters, as BatchRun::start() takes the run's subject
+     * @throws \InvalidArgumentException the recipients take more than read() takes, or $campaign is no long id
      */
     public static function of(Letter $letter, array $recipients, array $register, string $campaign): self
     {
+        // read() compares the owner with the run's subject: another spelling would fail every step
+        if (!preg_match('/^[0-9a-f]{32}\z/', $campaign)) {
+            throw new \InvalidArgumentException('The owner of a snapshot is the long id of a campaign');
+        }
         $rows = array_map(static fn(Recipient $r): array => [new_id(), $r->itemId, $r->box, $r->name, $r->official, $r->reason], array_values($recipients));
         // names are raw item text: a broken one must not stop the sending
         $json = json_encode($rows, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
@@ -103,19 +107,20 @@ final class Snapshot extends AA_Object
     }
 
     /**
-     * The snapshot $id, checked against $manifest. Not AA_Object::load(): it caches per process.
+     * The snapshot $id of the campaign $owner, checked against $manifest. Not AA_Object::load(): it
+     * caches per process.
      * @param bool $files the letter and the attachments too - only sending needs them
      * @throws BatchFailed CHANGED
      */
-    public static function read(string $id, string $manifest, bool $files): self
+    public static function read(string $id, string $manifest, bool $files, string $owner): self
     {
         $m = json_decode($manifest, true);
         if (!is_array($m) || !is_array($m['rcpt'] ?? null) || !is_array($m['files'] ?? null)) {
             throw self::changed('manifest');
         }
         $parts = $files ? ['rcpt', 'files'] : ['rcpt'];
-        $rows  = array_fill_keys($parts, []);
-        foreach (DB_AA::select([], 'SELECT property, priority, value FROM `object_text`', [['object_id', $id], ['property', $parts]]) as $row) {
+        $rows  = array_fill_keys([...$parts, 'aa_owner'], []);
+        foreach (DB_AA::select([], 'SELECT property, priority, value FROM `object_text`', [['object_id', $id], ['property', [...$parts, 'aa_owner']]]) as $row) {
             $priority = (int) $row['priority'];
             // which of two rows of one place counted would depend on the order the database returns them in
             if (isset($rows[$row['property']][$priority])) {
@@ -123,6 +128,11 @@ final class Snapshot extends AA_Object
             }
             $rows[$row['property']][$priority] = (string) $row['value'];
         }
+        // a record pointing at the snapshot of another campaign sends nothing of it
+        if (array_values($rows['aa_owner']) !== [$owner]) {
+            throw self::changed('owner');
+        }
+        unset($rows['aa_owner']);
         $snapshot = new self();
         $snapshot->setNew($id, '');
         $snapshot->manifest = $manifest;
