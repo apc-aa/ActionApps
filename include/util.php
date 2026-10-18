@@ -984,19 +984,25 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
 
     if (!$ignore_reading_password) {
         $credentials = AA_Credentials::singleton();
+        $closed      = [];
         foreach (array_keys($slices) as $unpack_slice_id) {
             if (!$credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
-                // it should be rare
-
-                // mark all items from this slice as unpermitted
-                $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
-                foreach ($content as $unpack_id => $c4id) {
-                    $unpermitted[$unpack_id] = true;
-                    foreach (array_keys($c4id) as $fid) {
-                        // at least id and slice_id should be correct.............. for AA_Items::getItems()
-                        if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
-                            $content[$unpack_id][$fid] = $ERR_VALUE;
-                        }
+                $closed[$unpack_slice_id] = true;   // it should be rare
+            }
+        }
+        if ($closed) {
+            // mark the items of these slices as unpermitted - and any item of a slice not known
+            $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
+            foreach ($content as $unpack_id => $c4id) {
+                $sid = $c4id['u_slice_id......'][0]['value'] ?? null;
+                if (($sid !== null) && !isset($closed[$sid])) {
+                    continue;
+                }
+                $unpermitted[$unpack_id] = true;
+                foreach (array_keys($c4id) as $fid) {
+                    // at least id and slice_id should be correct.............. for AA_Items::getItems()
+                    if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
+                        $content[$unpack_id][$fid] = $ERR_VALUE;
                     }
                 }
             }
