@@ -39,6 +39,8 @@ final readonly class Setup
      * @param string                   $environment  Account::TEST or Account::PRODUCTION, as include/config.php binds it
      * @param string                   $senderBox    the box a hosted filing service sends from; '' = ISDS tells it
      *                                               when asked, which a page never does
+     * @param string                   $letterhead   plain text above every letter, one line a row - the sender,
+     *                                               an address; HTML in it shows as written
      */
     private function __construct(
         public string $site,

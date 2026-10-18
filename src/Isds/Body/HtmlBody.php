@@ -32,6 +32,14 @@ final class HtmlBody
     /** the longer side of an image - a page is narrower */
     private const IMAGE_PX = 1600;
 
+    /** "<" of a letter: libxml builds its tree outside memory_limit, some 180 B a tag (5 M <br> took
+     *  0.9 GB); a letter has a few hundred */
+    private const MAX_TAGS = 200_000;
+
+    /** what is no visible text: spaces and the invisible characters editors leave - format characters
+     *  (zero-width space, BOM, soft hyphen, word joiner), the Hangul fillers and the blank Braille cell */
+    private const INVISIBLE = '\s\x{A0}\p{Cf}\x{115F}\x{1160}\x{3164}\x{FFA0}\x{2800}';
+
     private const FORBIDDEN = ['<object', '<iframe', '<script'];
 
     private const ALIGN  = ['left', 'right', 'center', 'justify'];
@@ -166,9 +174,9 @@ final class HtmlBody
      * @throws \InvalidArgumentException see document()
      * @throws \RuntimeException an image among the uploads cannot be read
      */
-    public function render(string $subject, string $body, bool $html = true): File
+    public function render(string $subject, string $body, bool $html = true, string $letterhead = ''): File
     {
-        $document = $this->document($subject, $body, $html);
+        $document = $this->document($subject, $body, $html, $letterhead);
         foreach (self::FORBIDDEN as $tag) {
             // every "<" of the letter is escaped, so only a bug here could write one
             if (stripos($document, $tag) !== false) {
@@ -180,19 +188,22 @@ final class HtmlBody
 
     /**
      * The whole HTML document of the letter
-     * @param bool $html false: $body is plain text - a blank line parts paragraphs, a line end breaks a line
+     * @param bool   $html       false: $body is plain text - a blank line parts paragraphs, a line end breaks a line
+     * @param string $letterhead plain text above the body, in the same way - the sender, an address
      * @throws \InvalidArgumentException not UTF-8, cut off by libxml, empty, larger than a message may be, or
      *                                   of too many pixels; a message may quote the letter - escape it when shown
      * @throws \RuntimeException an image among the uploads cannot be read; the message names it
      */
-    public function document(string $subject, string $body, bool $html = true): string
+    public function document(string $subject, string $body, bool $html = true, string $letterhead = ''): string
     {
-        // before anything copies or splits it
-        if (strlen($body) > Message::MAX_BYTES) {
+        // before anything copies or splits them
+        if (strlen($letterhead) + strlen($body) > Message::MAX_BYTES) {
             throw new \InvalidArgumentException('The letter is larger than a data message may be');
         }
-        if (!mb_check_encoding($body, 'UTF-8') || str_contains($body, "\0")) {
-            throw new \InvalidArgumentException('The letter is not UTF-8 text');
+        foreach (['The letterhead' => $letterhead, 'The letter' => $body] as $what => $text) {
+            if (!mb_check_encoding($text, 'UTF-8') || str_contains($text, "\0")) {
+                throw new \InvalidArgumentException("$what is not UTF-8 text");
+            }
         }
         $title            = Text::check('The subject', $subject, Message::MAX_ANNOTATION);
         $this->out        = '';
@@ -202,6 +213,11 @@ final class HtmlBody
         $this->images     = [];
         $this->omitted    = [];
         $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . "</style>\n</head>\n<body>\n");
+        if (trim($letterhead) !== '') {
+            $this->children(self::parse(self::plainText($letterhead)));
+            // a letterhead alone is no letter
+            $this->visible = false;
+        }
         $this->children(self::parse($html ? $body : self::plainText($body)));
         if (!$this->visible) {
             throw new \InvalidArgumentException('The letter is empty');
@@ -229,6 +245,9 @@ final class HtmlBody
         // ">" there is nothing left anyway. *+ and \z: without PCRE JIT, which AA switches off, [^>]*> would
         // search the rest of the letter for ">" from every "</body", minutes for a few MB
         $html = (string) preg_replace('~</(?:body|html)\b[^>]*+(?:>|\z)~i', '', self::windows1252($html));
+        if (substr_count($html, '<') > self::MAX_TAGS) {
+            throw new \InvalidArgumentException('The letter has more than ' . self::MAX_TAGS . ' tags or lines - attach a long table as a file');
+        }
         return Libxml::run(static function () use ($html): \DOMElement {
             $dom = new \DOMDocument();
             // the charset first: a <meta> in the letter declaring another one comes too late
@@ -249,14 +268,29 @@ final class HtmlBody
         });
     }
 
-    /** plain text as HTML: a blank line parts paragraphs, a line end breaks a line */
+    /**
+     * plain text as HTML: a blank line parts paragraphs, a line end breaks a line
+     * @throws \InvalidArgumentException as HTML, larger than a message may be; or PCRE gave up on it
+     */
     private static function plainText(string $text): string
     {
-        $html = '';
-        foreach (preg_split('~\R\s*\R~u', trim($text)) ?: [] as $block) {
-            $html .= '<p>' . str_replace("\n", "<br>\n", self::escape((string) preg_replace('~\R~u', "\n", trim($block)))) . "</p>\n";
+        // a line end becomes <br>\n or </p>\n<p>: refused before they are built
+        if (8 + 4 * (int) preg_match_all('~\R~u', $text) + self::escapedLength($text) > Message::MAX_BYTES) {
+            throw new \InvalidArgumentException('The letter is larger than a data message may be');
+        }
+        $html   = '';
+        $blocks = preg_split('~\R\s*\R~u', trim($text));
+        foreach (($blocks === false) ? self::pcreFailed() : $blocks as $block) {
+            $lines = preg_replace('~\R~u', "\n", trim($block)) ?? self::pcreFailed();
+            $html .= '<p>' . str_replace("\n", "<br>\n", self::escape($lines)) . "</p>\n";
         }
         return $html;
+    }
+
+    /** a text PCRE cannot split - a run of a million spaces - would vanish from the letter without a word */
+    private static function pcreFailed(): never
+    {
+        throw new \InvalidArgumentException('The text of the letter cannot be split into lines: ' . preg_last_error_msg());
     }
 
     /** &#128;-&#159; as browsers read them: the Windows-1252 characters Word writes there („ “ –), not control characters */
@@ -272,7 +306,11 @@ final class HtmlBody
     private function node(\DOMNode $node): void
     {
         if ($node instanceof \DOMText) {
-            $this->visible = $this->visible || (preg_match('/[^\s\x{A0}]/u', $node->data) === 1);
+            $this->visible = $this->visible || (preg_match('/[^' . self::INVISIBLE . ']/u', $node->data) === 1);
+            // a text node of up to 10 MB may escape to 60
+            if (strlen($this->out) + self::escapedLength($node->data) > Message::MAX_BYTES) {
+                throw new \InvalidArgumentException('The letter is larger than a data message may be');
+            }
             $this->append(self::escape($node->data));
         } elseif ($node instanceof \DOMElement) {
             $this->element($node);
@@ -525,6 +563,12 @@ final class HtmlBody
     private static function short(string $url): string
     {
         return mb_strimwidth($url, 0, 80, '…', 'UTF-8');
+    }
+
+    /** strlen(escape($text)), without building it: up to 6 bytes of one (' is &#039;) */
+    private static function escapedLength(string $text): int
+    {
+        return strlen($text) + 5 * (substr_count($text, '"') + substr_count($text, "'")) + 4 * substr_count($text, '&') + 3 * (substr_count($text, '<') + substr_count($text, '>'));
     }
 
     /** like safe(), but &#039; for an apostrophe: the HTML 4 viewers of some filing systems show &apos; as it is */

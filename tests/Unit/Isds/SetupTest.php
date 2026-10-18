@@ -58,7 +58,7 @@ final class SetupTest extends TestCase
             'default_types'  => ['mesto'],
             'member_field'   => Sending::MEMBER,
             'test_box'       => [' DJ7J6MK '],
-            'letterhead'     => '<p>NSZM</p>',
+            'letterhead'     => "Národní síť Zdravých měst ČR\nPalackého 1, Praha",
         ];
     }
 
@@ -102,7 +102,7 @@ final class SetupTest extends TestCase
         self::assertSame(Setup::DEFAULT_RECIPIENTS, $setup->maxRecipients);
         self::assertSame(Account::TEST, $setup->environment);
         self::assertSame('', $setup->senderBox, 'a name and a password do not tell the box');
-        self::assertSame('<p>NSZM</p>', $setup->letterhead);
+        self::assertSame("Národní síť Zdravých měst ČR\nPalackého 1, Praha", $setup->letterhead);
     }
 
     public function test_fromTemplate_idsInCapitals(): void
@@ -117,13 +117,13 @@ final class SetupTest extends TestCase
     {
         $settings = AA::Un('{jsonasoc:campaign_slice:' . self::CAMPAIGN . ':message_slice:' . self::MESSAGE . ':source_slice:' . self::SOURCE
             . ':types:{jsonasoc:mesto:Cities:mestocast:City districts}:default_types:["mesto","mestocast"]:member_field::test_box:["dj7j6mk","abc1234"]'
-            . ':max_recipients::environment:test:letterhead:<p>NSZM</p>}');
+            . ':max_recipients::environment:test:letterhead:NSZM ČR}');
         $setup    = self::build($settings);
 
         self::assertSame(['mesto' => 'Cities', 'mestocast' => 'City districts'], $setup->types);
         self::assertSame(['mesto', 'mestocast'], $setup->defaultTypes);
         self::assertSame(['dj7j6mk', 'abc1234'], $setup->testBoxes);
-        self::assertSame(['', Setup::DEFAULT_RECIPIENTS, '<p>NSZM</p>'], [$setup->memberField, $setup->maxRecipients, $setup->letterhead], 'an empty value is no value');
+        self::assertSame(['', Setup::DEFAULT_RECIPIENTS, 'NSZM ČR'], [$setup->memberField, $setup->maxRecipients, $setup->letterhead], 'an empty value is no value');
     }
 
     public function test_fromTemplate_nestedAsJsonText(): void

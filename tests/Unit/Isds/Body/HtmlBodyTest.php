@@ -68,9 +68,9 @@ final class HtmlBodyTest extends TestCase
     }
 
     /** what the letter keeps of $body, between <body> and </body> */
-    private static function body(string $body, ?HtmlBody $letter = null, bool $html = true): string
+    private static function body(string $body, ?HtmlBody $letter = null, bool $html = true, string $letterhead = ''): string
     {
-        $document = ($letter ?? new HtmlBody())->document('Pozvánka', $body, $html);
+        $document = ($letter ?? new HtmlBody())->document('Pozvánka', $body, $html, $letterhead);
         $start    = strpos($document, "<body>\n") + strlen("<body>\n");
         return substr($document, $start, strrpos($document, "\n</body>") - $start);
     }
@@ -128,6 +128,126 @@ final class HtmlBodyTest extends TestCase
         return ['HTML' => [true], 'plain text' => [false]];
     }
 
+    // lines of text above the body in either of its formats, escaped
+    #[DataProvider('modes')]
+    public function test_document_letterheadAboveTheBody(bool $html): void
+    {
+        self::assertSame(
+            "<p>Zdravá města &amp; &lt;b&gt;obce&lt;/b&gt;<br>\nPalackého 1</p>\n<p>Vážení</p>" . ($html ? '' : "\n"),
+            self::body($html ? '<p>Vážení</p>' : 'Vážení', null, $html, " Zdravá města & <b>obce</b>\nPalackého 1\n"),
+        );
+    }
+
+    #[DataProvider('empty')]
+    public function test_document_letterheadAloneIsNoLetter(string $html): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('empty');
+        (new HtmlBody())->document('Pozvánka', $html, true, "Zdravá města\nPalackého 1");
+    }
+
+    #[DataProvider('notUtf8Letterheads')]
+    public function test_document_refusesLetterheadNotUtf8(string $letterhead): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The letterhead is not UTF-8 text');
+        (new HtmlBody())->document('Pozvánka', '<p>Vážení</p>', true, $letterhead);
+    }
+
+    public static function notUtf8Letterheads(): array
+    {
+        return ['latin 1' => ["Zdrav\xE1 m\xECsta"], 'NUL' => ["NSZM\0"]];
+    }
+
+    // checked before the UTF-8 of the body, so the letterhead counts in the size
+    public function test_document_refusesLetterheadAndLetterOverMessageSize(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('larger than a data message may be');
+        (new HtmlBody())->document('Pozvánka', "\xE9", false, str_repeat('b', Message::MAX_BYTES));
+    }
+
+    // libxml builds its tree outside memory_limit: 20 MB of tags or of lines would take gigabytes
+    #[DataProvider('tagged')]
+    public function test_document_refusesTooManyTags(string $body, bool $html, string $letterhead): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('tags or lines');
+        (new HtmlBody())->document('Pozvánka', $body, $html, $letterhead);
+    }
+
+    public static function tagged(): array
+    {
+        $lines = str_repeat("a\n", 200_001);
+        return [
+            'HTML'       => [str_repeat('<br>', 200_000) . '<p>a</p>', true, ''],
+            'plain text' => [$lines, false, ''],
+            'letterhead' => ['<p>a</p>', true, $lines],
+        ];
+    }
+
+    public function test_document_takesTagsUpToTheBound(): void
+    {
+        self::assertStringEndsWith('<br><p>a</p>', self::body(str_repeat('<br>', 199_998) . '<p>a</p>'));
+    }
+
+    // what escape() and the line ends would make of it is refused before it is built: at most one copy of
+    // the text, never the 6 times larger HTML
+    #[DataProvider('growing')]
+    public function test_document_refusesWhatGrowsPastMessageSize(string $text, string $place): void
+    {
+        memory_reset_peak_usage();
+        $before = memory_get_usage();
+        try {
+            match ($place) {
+                'letterhead' => (new HtmlBody())->document('Pozvánka', '<p>a</p>', true, $text),
+                'body'       => (new HtmlBody())->document('Pozvánka', $text, false),
+                'HTML'       => (new HtmlBody())->document('Pozvánka', $text),
+            };
+            self::fail('accepted');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('larger than a data message may be', $e->getMessage());
+        }
+        self::assertLessThan(2 * strlen($text), memory_get_peak_usage() - $before);
+    }
+
+    public static function growing(): array
+    {
+        $over = static fn(string $what, int $grows): string => str_repeat($what, intdiv(Message::MAX_BYTES, $grows) + 1);
+        return [
+            'quotes in the body'           => [$over('"', 6), 'body'],
+            'apostrophes in the body'      => [$over("'", 6), 'body'],
+            'ampersands in the body'       => [$over('&', 5), 'body'],
+            'angle brackets in the body'   => [$over('<', 4), 'body'],
+            'line ends in the body'        => [$over("a\n", 3), 'body'],
+            'line tabulations in the body' => [$over("a\v", 3), 'body'],
+            'quotes in the letterhead'     => [$over('"', 6), 'letterhead'],
+            'line ends in the letterhead'  => [$over("a\n", 3), 'letterhead'],
+            'quotes in a text of HTML'     => ['<p>' . $over('"', 6) . '</p>', 'HTML'],
+        ];
+    }
+
+    // a text PCRE gives up on must not vanish from the letter
+    #[DataProvider('places')]
+    public function test_document_refusesTextPcreCannotSplit(bool $letterhead): void
+    {
+        $text  = "a\n" . str_repeat(' ', 10_000) . 'b';
+        $limit = (string) ini_get('pcre.backtrack_limit');
+        ini_set('pcre.backtrack_limit', '100');
+        try {
+            $this->expectException(\InvalidArgumentException::class);
+            $this->expectExceptionMessage('cannot be split');
+            $letterhead ? (new HtmlBody())->document('Pozvánka', '<p>a</p>', true, $text) : (new HtmlBody())->document('Pozvánka', $text, false);
+        } finally {
+            ini_set('pcre.backtrack_limit', $limit);
+        }
+    }
+
+    public static function places(): array
+    {
+        return ['letterhead' => [true], 'body' => [false]];
+    }
+
     public function test_document_refusesSubjectOverLimit(): void
     {
         $this->expectException(\InvalidArgumentException::class);
@@ -150,6 +270,13 @@ final class HtmlBodyTest extends TestCase
             'empty paragraphs'  => ['<p>&nbsp;</p><p> </p><br>'],
             'only a script'     => ['<script>alert(1)</script>'],
             'only a web image'  => ['<p><img src="https://example.org/logo.png"></p>'],
+            // what rich-text editors leave behind, invisible
+            'zero-width space'  => ["<p>\u{200B}</p>"],
+            'byte order mark'   => ["\u{FEFF}"],
+            'soft hyphen'       => ['<p>&shy;</p>'],
+            'word joiner'       => ["\u{2060}\u{2060}"],
+            'Hangul filler'     => ["\u{3164}"],
+            'blank Braille'     => ["\u{2800}"],
         ];
     }
 
