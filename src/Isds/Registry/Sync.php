@@ -112,14 +112,14 @@ class Sync
     }
 
     /**
-     * The downloaded register as its record vouches for it - see RegisterIndex::info()
+     * The downloaded register as its record vouches for it - see DownloadedRegister::info()
      * @param ?string $file registerFile() when null
      * @return ?array{state: string, time: int, size: int, sha256: string}
-     * @throws \RuntimeException see RegisterIndex::info()
+     * @throws \RuntimeException see DownloadedRegister::info()
      */
     public static function registerInfo(?string $file = null): ?array
     {
-        return static::index($file ?? self::registerFile())->info();
+        return static::downloadedRegister($file ?? self::registerFile())->info();
     }
 
     /** a register downloaded at $downloaded (registerInfo()) is older than OLD_DAYS */
@@ -140,9 +140,9 @@ class Sync
     }
 
     /**
-     * Downloads the register into registerFile(), creating its directory, and records it for its
-     * RegisterIndex, unless another download is running or the last recorded download or attempt is
-     * younger than MIN_DOWNLOAD_AGE. A failed download keeps the previous file and still counts as an
+     * Downloads the register into registerFile(), creating its directory, and records the download
+     * (DownloadedRegister), unless another download is running or the last recorded download or attempt
+     * is younger than MIN_DOWNLOAD_AGE. A failed download keeps the previous file and still counts as an
      * attempt.
      * @param ?string $file registerFile() when null; another file only in an existing directory, which
      *                      is not created
@@ -174,17 +174,17 @@ class Sync
         }
         try {
             $now ??= time();
-            $index = static::index($file);
+            $register = static::downloadedRegister($file);
             // the recorded time, not the file's, which any PHP user of the server may set; a time ahead
             // of now (the clock of another server) would block for as long
-            $times = [static::lastAttempt($now), (int) $index->recorded()['time']];
+            $times = [static::lastAttempt($now), (int) $register->recorded()['time']];
             $last  = max([0, ...array_filter($times, static fn(int $t): bool => $t <= $now)]);
             if (($last > 0) && (($now - $last) < self::MIN_DOWNLOAD_AGE)) {
                 return ['status' => self::RECENT, 'last' => $last];
             }
             static::recordAttempt();
             $written = SdsList::download($http ?? SdsList::client(), $file);
-            $index->downloaded($written['sha256'], $written['size']);
+            $register->downloaded($written['sha256'], $written['size']);
             return ['status' => self::DOWNLOADED, 'last' => 0];
         } finally {
             static::unlockDownload();
@@ -427,9 +427,9 @@ class Sync
         DB_AA::unlock(self::DOWNLOAD_LOCK);
     }
 
-    protected static function index(string $file): RegisterIndex
+    protected static function downloadedRegister(string $file): DownloadedRegister
     {
-        return new RegisterIndex($file);
+        return new DownloadedRegister($file);
     }
 
     /** the newest download attempt up to $now that is younger than MIN_DOWNLOAD_AGE, 0 = none */

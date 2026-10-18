@@ -8,9 +8,9 @@ use AA\Isds\Accounts;
 use AA\Isds\Binding;
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\MatchRow;
 use AA\Isds\Registry\Page;
-use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\Sync;
 use AA\Isds\SliceRules;
 use AA_Module;
@@ -128,7 +128,7 @@ class CheckIsdsRegistry extends AbstractOptimize
             links: $pages,
             key: 'register-changed',
         );
-        if ($info['state'] !== RegisterIndex::RECORDED) {
+        if ($info['state'] !== DownloadedRegister::RECORDED) {
             return [$unusable($info['state'])];
         }
         $age = Sync::isOld($info['time'], $this->now()) ? [new Finding(Finding::INFO, _m('The downloaded register of data boxes is older than %1 days', [Sync::OLD_DAYS]), evidence: [[_m('Downloaded') => date('Y-m-d H:i', $info['time'])]], advice: _m('Download it again on the page Data boxes from the register of a paired slice: authorities get new boxes and merge.'), links: $pages, key: 'register')] : [];
@@ -143,7 +143,7 @@ class CheckIsdsRegistry extends AbstractOptimize
         }
         if ($boxes === null) {
             // the age of a register that cannot be used is moot
-            return [$unusable(RegisterIndex::REPLACED)];
+            return [$unusable(DownloadedRegister::REPLACED)];
         }
         $findings = $age;
         foreach ($configs as $config) {

@@ -138,7 +138,7 @@ class Page
         // read before the register section is made: the read may find another file, or a new download
         $boxes      = null;
         $readFailed = false;
-        if ($this->mayWrite && ($this->config !== null) && ($info !== null) && ($info['state'] === RegisterIndex::RECORDED)) {
+        if ($this->mayWrite && ($this->config !== null) && ($info !== null) && ($info['state'] === DownloadedRegister::RECORDED)) {
             try {
                 [$info, $boxes] = $this->readRegister($info);
             } catch (\RuntimeException $e) {
@@ -267,7 +267,7 @@ class Page
         if (($info === null) || !is_string($stamp) || !hash_equals(Sync::registerStamp($info['sha256'], $this->config), $stamp)) {
             return ['code' => 'view_changed'];
         }
-        if ($info['state'] !== RegisterIndex::RECORDED) {
+        if ($info['state'] !== DownloadedRegister::RECORDED) {
             return ['code' => 'register_unusable', 'state' => $info['state']];
         }
         try {
@@ -386,7 +386,7 @@ class Page
             $html = '<div class="aa-err">' . _m('The copy of the register cannot be read. An administrator finds the details in the AA log (type %1).', [Sync::LOG_EVENT]) . '</div>';
         } elseif ($info === null) {
             $html = '<p>' . ($downloads ? _m('The register has not been downloaded yet. Download it to see the report.') : _m('The register has not been downloaded yet.')) . '</p>';
-        } elseif ($info['state'] !== RegisterIndex::RECORDED) {
+        } elseif ($info['state'] !== DownloadedRegister::RECORDED) {
             $html = '<div class="aa-err">' . self::unusableHtml($info['state'], $downloads ? _m('Download the register again.') : _m('Ask someone who manages the settings to download the register again.')) . '</div>';
         } else {
             $html = '<p>' . $this->downloadedText($info['time']) . ' ' . _m('Size: %1 MB.', [number_format($info['size'] / 1048576, 1)]) . '</p>';
@@ -402,13 +402,13 @@ class Page
     }
 
     /**
-     * Why a register of RegisterIndex::info() state UNRECORDED or REPLACED cannot be used, without a full
-     * stop - a title of the State Check too
+     * Why a register of DownloadedRegister::info() state UNRECORDED or REPLACED cannot be used, without a
+     * full stop - a title of the State Check too
      */
     public static function unusableText(string $state): string
     {
         // a register an older AA downloaded is not tampered with
-        return ($state === RegisterIndex::UNRECORDED) ? _m('AA has no record of downloading this copy of the register') : _m('The register of data boxes is not the one AA downloaded');
+        return ($state === DownloadedRegister::UNRECORDED) ? _m('AA has no record of downloading this copy of the register') : _m('The register of data boxes is not the one AA downloaded');
     }
 
     /** unusableText() and what to do, each a block of its own - a translation ends them as it may */
@@ -443,10 +443,10 @@ class Page
         $now   = ($boxes === null) ? $this->registerInfo() : null;
         if (($now !== null) && ($now['sha256'] !== $info['sha256'])) {
             $info  = $now;
-            $boxes = ($now['state'] === RegisterIndex::RECORDED) ? $this->registerBoxes($now['sha256']) : null;
+            $boxes = ($now['state'] === DownloadedRegister::RECORDED) ? $this->registerBoxes($now['sha256']) : null;
         }
-        if (($boxes === null) && ($info['state'] === RegisterIndex::RECORDED)) {
-            $info['state'] = RegisterIndex::REPLACED;
+        if (($boxes === null) && ($info['state'] === DownloadedRegister::RECORDED)) {
+            $info['state'] = DownloadedRegister::REPLACED;
         }
         return [$info, $boxes];
     }

@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace AA\Isds\Registry;
 
 /**
- * The record of the downloaded register (Sync::registerFile()): the sha256, size and time of the
- * download, kept by RegisterRecord in the install's database. The register lies in the upload
- * directory, which the web server serves and other PHP users of the server may write into: only bytes
- * that hash to the recorded sha256 are the register this AA downloaded (Sync::registerBoxes()).
+ * The downloaded register (Sync::registerFile()) as its record vouches for it: the sha256, size and
+ * time of the download, kept by RegisterRecord in the install's database. The register lies in the
+ * upload directory, which the web server serves and other PHP users of the server may write into:
+ * only bytes that hash to the recorded sha256 are the register this AA downloaded
+ * (Sync::registerBoxes()).
  */
-class RegisterIndex
+class DownloadedRegister
 {
     /** info(): the register this AA downloaded, as far as a look at the file tells */
     public const RECORDED = 'recorded';

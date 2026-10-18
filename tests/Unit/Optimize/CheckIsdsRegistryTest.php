@@ -9,7 +9,7 @@ use AA\Isds\Accounts;
 use AA\Isds\Binding;
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
-use AA\Isds\Registry\RegisterIndex;
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\SdsList;
 use AA\Isds\SliceRules;
 use AA\Optimize\AbstractOptimize;
@@ -17,7 +17,7 @@ use AA\Optimize\CheckIsdsRegistry;
 use AA\Optimize\Finding;
 use AA_Field;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Isds\Registry\Fixtures\LockedRegisterIndex;
+use Tests\Unit\Isds\Registry\Fixtures\MemoryDownloadedRegister;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
 use Tests\Unit\Optimize\Fixtures\RecordingIsdsCheck;
@@ -66,7 +66,7 @@ final class CheckIsdsRegistryTest extends TestCase
 
     protected function setUp(): void
     {
-        LockedRegisterIndex::reset();
+        MemoryDownloadedRegister::reset();
     }
 
     protected function tearDown(): void
@@ -182,7 +182,7 @@ final class CheckIsdsRegistryTest extends TestCase
 
         self::assertSame([Finding::INFO], self::severities($check->findings()));
 
-        $check->register = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
+        $check->register = ['state' => DownloadedRegister::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
         $check->now      = 1760000000 + 8 * 86400;
         $findings        = $check->findings();
 
@@ -220,7 +220,7 @@ final class CheckIsdsRegistryTest extends TestCase
     public function test_registerOld_infoAndTheCountsStill(): void
     {
         $check = self::check([self::SLICE => self::needsWork()]);
-        $check->register = ['state' => RegisterIndex::RECORDED, 'time' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
+        $check->register = ['state' => DownloadedRegister::RECORDED, 'time' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
         $check->now      = (int) mktime(10, 0, 0, 10, 23, 2026);
         self::assertSame([Finding::WARNING], self::severities($check->findings()), 'not older than 7 days yet');
 
@@ -255,8 +255,8 @@ final class CheckIsdsRegistryTest extends TestCase
         $check = $this->checkOverFile([self::SLICE => self::needsWork()]);
         self::assertSame([self::SLICE], self::keys($check->findings()), 'the downloaded register compares as before');
 
-        LockedRegisterIndex::swap((string) $check->file);
-        LockedRegisterIndex::$record['time'] = (string) ($check->now - 30 * 86400);
+        MemoryDownloadedRegister::swap((string) $check->file);
+        MemoryDownloadedRegister::$record['time'] = (string) ($check->now - 30 * 86400);
         $findings = $check->findings();
 
         self::assertSame(['register-changed'], self::keys($findings));
@@ -382,7 +382,7 @@ final class CheckIsdsRegistryTest extends TestCase
         mkdir($this->dir, 0o700);
         $check       = self::check($slices);
         $check->file = $this->dir . '/register.xml';
-        LockedRegisterIndex::genuine($check->file, $recorded);
+        MemoryDownloadedRegister::genuine($check->file, $recorded);
         return $check;
     }
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds\Registry;
 
-use AA\Isds\Registry\RegisterIndex;
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\RegisterRecord;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
@@ -20,7 +20,7 @@ final class RegisterRecordTest extends TestCase
 
     public function test_read_noRecordIsEmpty(): void
     {
-        self::assertSame(RegisterIndex::RECORD, RegisterRecord::read());
+        self::assertSame(DownloadedRegister::RECORD, RegisterRecord::read());
     }
 
     public function test_write_firstSavesTheRecordThenOnlyTheFields(): void
@@ -48,7 +48,7 @@ final class RegisterRecordTest extends TestCase
         RegisterRecord::write([]);
 
         self::assertSame([], TableDb::$log, 'not a statement');
-        self::assertSame(['xml' => 'aa11'] + RegisterIndex::RECORD, RegisterRecord::read());
+        self::assertSame(['xml' => 'aa11'] + DownloadedRegister::RECORD, RegisterRecord::read());
         self::assertSame(RegisterRecord::class, self::stored(self::id())['aa_type'] ?? null);
     }
 
@@ -66,7 +66,7 @@ final class RegisterRecordTest extends TestCase
         }
 
         self::assertSame('BEGIN', TableDb::$log[0]);
-        self::assertSame(['xml' => 'aa11'] + RegisterIndex::RECORD, RegisterRecord::read(), 'the half-written change rolled back');
+        self::assertSame(['xml' => 'aa11'] + DownloadedRegister::RECORD, RegisterRecord::read(), 'the half-written change rolled back');
     }
 
     private static function id(): string

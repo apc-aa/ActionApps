@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds\Registry\Fixtures;
 
-use AA\Isds\Registry\RegisterIndex;
+use AA\Isds\Registry\DownloadedRegister;
 
-/** RegisterIndex with its record kept here instead of in the database. Static, as the record is the
- *  install's - reset() before each test. */
-final class LockedRegisterIndex extends RegisterIndex
+/** DownloadedRegister with its record kept here instead of in the database. Static, as the record is
+ *  the install's - reset() before each test. */
+final class MemoryDownloadedRegister extends DownloadedRegister
 {
     /** the 31 real boxes of the SdsList fixture */
     public const REGISTER = __DIR__ . '/seznam_ds_ovm-sample.xml';

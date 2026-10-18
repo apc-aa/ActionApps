@@ -6,9 +6,9 @@ namespace Tests\Unit\Isds\Registry;
 
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\MatchReport;
 use AA\Isds\Registry\MatchRow;
-use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\SdsList;
 use AA\Isds\Registry\Sync;
 use AA\Isds\Registry\UnrecordedException;
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 use AA\Http\Response;
 use Tests\Unit\Fixtures\FakeHttp;
 use Tests\Unit\Isds\Registry\Fixtures\DownloadSync;
-use Tests\Unit\Isds\Registry\Fixtures\LockedRegisterIndex;
+use Tests\Unit\Isds\Registry\Fixtures\MemoryDownloadedRegister;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
@@ -60,7 +60,7 @@ final class SyncTest extends TestCase
         require_once __DIR__ . '/../../Legacy/fixtures/store_fixtures.php';    // the legacy boot, no DB
         require_once __DIR__ . '/fixtures/RecordingSync.php';
         require_once __DIR__ . '/fixtures/DownloadSync.php';
-        require_once __DIR__ . '/fixtures/LockedRegisterIndex.php';
+        require_once __DIR__ . '/fixtures/MemoryDownloadedRegister.php';
         require_once __DIR__ . '/fixtures/PropertySlice.php';
         require_once __DIR__ . '/../../fixtures/FakeHttp.php';
         if (!defined('CACHE_TTL')) {
@@ -344,25 +344,25 @@ final class SyncTest extends TestCase
         $file = $this->scratch() . '/register.xml';
         self::assertNull(DownloadSync::registerInfo($file), 'nothing downloaded');
 
-        LockedRegisterIndex::$record = ['xml' => str_repeat('a', 64), 'size' => '17000000', 'time' => '1760000000'];
+        MemoryDownloadedRegister::$record = ['xml' => str_repeat('a', 64), 'size' => '17000000', 'time' => '1760000000'];
         $recorded = ['time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
-        self::assertSame(['state' => RegisterIndex::REPLACED] + $recorded, DownloadSync::registerInfo($file), 'gone is no register not downloaded');
+        self::assertSame(['state' => DownloadedRegister::REPLACED] + $recorded, DownloadSync::registerInfo($file), 'gone is no register not downloaded');
         file_put_contents($file, '12345');
         touch($file, 1790000000);
-        self::assertSame(['state' => RegisterIndex::RECORDED] + $recorded, DownloadSync::registerInfo($file));
-        LockedRegisterIndex::$record = [];
-        self::assertSame(['state' => RegisterIndex::UNRECORDED, 'time' => 0, 'size' => 0, 'sha256' => ''], DownloadSync::registerInfo($file), 'nothing vouches for it');
+        self::assertSame(['state' => DownloadedRegister::RECORDED] + $recorded, DownloadSync::registerInfo($file));
+        MemoryDownloadedRegister::$record = [];
+        self::assertSame(['state' => DownloadedRegister::UNRECORDED, 'time' => 0, 'size' => 0, 'sha256' => ''], DownloadSync::registerInfo($file), 'nothing vouches for it');
     }
 
     // the boxes a page pre-ticks come only from the register the record vouches for
     public function test_registerBoxes_onlyTheRecordedRegister(): void
     {
         $file = $this->scratch() . '/register.xml';
-        LockedRegisterIndex::genuine($file);
+        MemoryDownloadedRegister::genuine($file);
         $sha256 = (string) hash_file('sha256', self::FIXTURE);
 
         self::assertEquals(self::$boxes, Sync::registerBoxes($sha256, $file));
-        LockedRegisterIndex::swap($file);
+        MemoryDownloadedRegister::swap($file);
         self::assertNull(Sync::registerBoxes($sha256, $file), 'another file in its place');
         unlink($file);
         mkdir($file);
@@ -422,15 +422,15 @@ final class SyncTest extends TestCase
 
         DownloadSync::download(self::registerHttp(), 1760000000, $file);
 
-        self::assertSame([hash_file('sha256', self::FIXTURE), (string) filesize(self::FIXTURE)], [LockedRegisterIndex::$record['xml'], LockedRegisterIndex::$record['size']]);
-        self::assertSame(RegisterIndex::RECORDED, DownloadSync::registerInfo($file)['state'] ?? null);
+        self::assertSame([hash_file('sha256', self::FIXTURE), (string) filesize(self::FIXTURE)], [MemoryDownloadedRegister::$record['xml'], MemoryDownloadedRegister::$record['size']]);
+        self::assertSame(DownloadedRegister::RECORDED, DownloadSync::registerInfo($file)['state'] ?? null);
     }
 
     // a register no record vouches for cannot be used: a type of its own tells the page to say so
     public function test_download_failsWhenTheRecordCannotBeWritten(): void
     {
         $file = $this->scratch() . '/register.xml';
-        LockedRegisterIndex::$writeFails = new \RuntimeException('Lock wait timeout');
+        MemoryDownloadedRegister::$writeFails = new \RuntimeException('Lock wait timeout');
 
         try {
             DownloadSync::download(self::registerHttp(), 1760000000, $file);
@@ -498,7 +498,7 @@ final class SyncTest extends TestCase
         $file = $this->scratch() . '/register.xml';
         file_put_contents($file, 'x');
         touch($file, 1760000000 - 30 * 86400);
-        LockedRegisterIndex::$record['time'] = '1760000000';
+        MemoryDownloadedRegister::$record['time'] = '1760000000';
         $http = self::registerHttp();
 
         self::assertSame(['status' => Sync::RECENT, 'last' => 1760000000], DownloadSync::download($http, 1760000000 + 60, $file));
@@ -522,7 +522,7 @@ final class SyncTest extends TestCase
     {
         $file = $this->scratch() . '/register.xml';
         DownloadSync::$attempts = [1760000000 + 86400];
-        LockedRegisterIndex::$record['time'] = (string) (1760000000 + 365 * 86400);
+        MemoryDownloadedRegister::$record['time'] = (string) (1760000000 + 365 * 86400);
         $http = self::registerHttp();
 
         self::assertSame(['status' => Sync::DOWNLOADED, 'last' => 0], DownloadSync::download($http, 1760000000, $file));

@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/src/Isds/Registry/**RegisterIndex.php**, /tests/Unit/Isds/Registry/fixtures/**LockedRegisterIndex.php**  
+The record of the downloaded register of data boxes (sha256, size and time of the download), and the same with the record kept in memory, for the tests.  
+_Renamed, not dropped: with the index of the register gone, the class keeps only the record of the download and is now AA\Isds\Registry\DownloadedRegister (src/Isds/Registry/DownloadedRegister.php), its stand-in for the tests MemoryDownloadedRegister (tests/Unit/Isds/Registry/fixtures/MemoryDownloadedRegister.php). Removed 2026-10-19 - honzam_
+
 /src/Isds/Registry/**UnusableRegisterException.php**, /tests/Unit/Isds/Registry/**RegisterIndexTest.php**, /tests/Unit/Isds/fixtures/**FakeRegisterIndex.php**  
 The register of data boxes could not be used in a request, so a mass sending told no recipients and sent nothing; the test of the index of the register (isds-seznam-ds-ovm.idx next to the downloaded register, which RegisterIndex made and read) and the stand-in register of the sending tests.  
 _A mass sending no longer checks the boxes of its recipients against the register: it takes each box from the source slice as it stands. RegisterIndex keeps only the record of the download, which the page Data boxes from the register uses; an isds-seznam-ds-ovm.idx left in the upload directory is read by nothing and may be deleted. Removed 2026-10-19 - honzam_

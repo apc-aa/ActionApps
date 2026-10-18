@@ -6,9 +6,9 @@ namespace Tests\Unit\Isds\Registry;
 
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\MatchRow;
 use AA\Isds\Registry\Page;
-use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\SdsList;
 use AA\Isds\Registry\Sync;
 use AA\Isds\Registry\UnrecordedException;
@@ -16,7 +16,7 @@ use AA\Util\FormToken;
 use AA_Field;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
-use Tests\Unit\Isds\Registry\Fixtures\LockedRegisterIndex;
+use Tests\Unit\Isds\Registry\Fixtures\MemoryDownloadedRegister;
 use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingPage;
 use Tests\Unit\Isds\Registry\Fixtures\RecordingSync;
@@ -72,7 +72,7 @@ final class PageTest extends TestCase
         session_id('isds-page-test');
         $_SESSION = [];
         new PropertySlice(self::SLICE, self::fields(), []);
-        LockedRegisterIndex::reset();
+        MemoryDownloadedRegister::reset();
     }
 
     protected function tearDown(): void
@@ -190,7 +190,7 @@ final class PageTest extends TestCase
         $page = self::page(self::items());
         $post = self::write($page, [self::id(1) => 'a7kbrrn|']);
 
-        $page->register = ['state' => RegisterIndex::RECORDED, 'time' => 1760009999, 'size' => 17000001, 'sha256' => str_repeat('b', 64)];
+        $page->register = ['state' => DownloadedRegister::RECORDED, 'time' => 1760009999, 'size' => 17000001, 'sha256' => str_repeat('b', 64)];
         self::assertSame(['code' => 'view_changed'], $page->handle($post, self::POST), 'another register downloaded');
         self::assertSame(['code' => 'view_changed'], $page->handle(['stamp' => [self::stamp($page)]] + $post, self::POST));
         $settings = Config::fromValues(self::SLICE, ['types' => [self::CITY]] + self::configValues());
@@ -228,23 +228,23 @@ final class PageTest extends TestCase
         $page = $this->pageOverFile();
         $post = self::write($page, [self::id(1) => 'a7kbrrn|']);
 
-        LockedRegisterIndex::swap((string) $page->file);
+        MemoryDownloadedRegister::swap((string) $page->file);
         $outcome = $page->handle($post, self::POST);
 
-        self::assertSame(['code' => 'register_unusable', 'state' => RegisterIndex::REPLACED], $outcome);
+        self::assertSame(['code' => 'register_unusable', 'state' => DownloadedRegister::REPLACED], $outcome);
         self::assertSame([], $page->sync?->stored);
         self::assertStringContainsString(self::CHANGED . '<p>Nothing was written. Download the register again.</p>', Page::outcomeHtml($outcome ?? []));
 
         unlink((string) $page->file);
-        self::assertSame(['code' => 'register_unusable', 'state' => RegisterIndex::REPLACED], $page->handle($post, self::POST), 'gone');
+        self::assertSame(['code' => 'register_unusable', 'state' => DownloadedRegister::REPLACED], $page->handle($post, self::POST), 'gone');
         self::assertSame([], $page->logged, 'nothing failed to read: there is nothing to read');
 
-        LockedRegisterIndex::genuine((string) $page->file, recorded: false);
+        MemoryDownloadedRegister::genuine((string) $page->file, recorded: false);
         self::assertSame('written', $page->handle($post, self::POST)['code'] ?? null, 'the downloaded one writes');
 
-        LockedRegisterIndex::$record = [];
+        MemoryDownloadedRegister::$record = [];
         $outcome = $page->handle(self::write($page, [self::id(1) => 'a7kbrrn|']), self::POST);
-        self::assertSame(['code' => 'register_unusable', 'state' => RegisterIndex::UNRECORDED], $outcome, 'nothing vouches for it');
+        self::assertSame(['code' => 'register_unusable', 'state' => DownloadedRegister::UNRECORDED], $outcome, 'nothing vouches for it');
         self::assertStringContainsString(self::UNRECORDED . '<p>Nothing was written. Download the register again.</p>', Page::outcomeHtml($outcome ?? []));
         self::assertCount(1, $page->sync?->stored ?? []);
     }
@@ -445,7 +445,7 @@ final class PageTest extends TestCase
     public function test_html_registerAgeByTheCalendar(): void
     {
         $page = self::page(self::items());
-        $page->register = ['state' => RegisterIndex::RECORDED, 'time' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
+        $page->register = ['state' => DownloadedRegister::RECORDED, 'time' => (int) mktime(10, 0, 0, 10, 16, 2026), 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
 
         $page->now = (int) mktime(23, 59, 0, 10, 16, 2026);
         self::assertStringContainsString('Downloaded: 2026-10-16 10:00 (today). Size: 16.2 MB.', $page->html());
@@ -473,7 +473,7 @@ final class PageTest extends TestCase
         self::assertSame([['look', 'PHP cannot look into the directory /srv/aa/img_upload']], $page->logged);
         self::assertStringContainsString('value="download"', $html, 'downloading again is the way out');
 
-        $page->register = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
+        $page->register = ['state' => DownloadedRegister::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => str_repeat('a', 64)];
         $page->boxes    = new \RuntimeException('/srv/aa/img_upload/x.xml: not well-formed');
         $html = $page->html();
 
@@ -500,7 +500,7 @@ final class PageTest extends TestCase
         $page = $this->pageOverFile();
         self::assertSame([true, true], self::checkboxes($page->html())['Brno'] ?? null, 'the downloaded register pairs as before');
 
-        LockedRegisterIndex::swap((string) $page->file);
+        MemoryDownloadedRegister::swap((string) $page->file);
         $html = $page->html();
 
         self::assertSame([], self::checkboxes($html));
@@ -805,7 +805,7 @@ final class PageTest extends TestCase
         mkdir($this->dir, 0o700);
         $page       = self::page(self::items(), $mayWrite);
         $page->file = $this->dir . '/register.xml';
-        LockedRegisterIndex::genuine($page->file, $recorded);
+        MemoryDownloadedRegister::genuine($page->file, $recorded);
         return $page;
     }
 
@@ -813,8 +813,8 @@ final class PageTest extends TestCase
     private static function downloadAnother(RecordingPage $page): \Closure
     {
         return static function () use ($page): void {
-            LockedRegisterIndex::swap((string) $page->file);
-            LockedRegisterIndex::download((string) $page->file);
+            MemoryDownloadedRegister::swap((string) $page->file);
+            MemoryDownloadedRegister::download((string) $page->file);
         };
     }
 

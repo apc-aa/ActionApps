@@ -6,15 +6,15 @@ namespace Tests\Unit\Isds\Registry\Fixtures;
 
 use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\Page;
-use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\Sync;
 
 require_once __DIR__ . '/DownloadSync.php';
 
 /** Page over $sync and the boxes in $boxes instead of the downloaded register - or over the register
- *  in $file and its record in LockedRegisterIndex; downloads, saves of the settings and log entries are
- *  only recorded. */
+ *  in $file and its record in MemoryDownloadedRegister; downloads, saves of the settings and log entries
+ *  are only recorded. */
 class RecordingPage extends Page
 {
     public ?RecordingSync $sync = null;
@@ -24,7 +24,7 @@ class RecordingPage extends Page
 
     /** @var array{state: string, time: int, size: int, sha256: string}|\RuntimeException|null null = no
      *  register downloaded; the exception is thrown as by a directory PHP may not look into */
-    public array|\RuntimeException|null $register = ['state' => RegisterIndex::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'];
+    public array|\RuntimeException|null $register = ['state' => DownloadedRegister::RECORDED, 'time' => 1760000000, 'size' => 17000000, 'sha256' => '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'];
 
     /** a register read as Sync reads the downloaded one, in place of $register and $boxes */
     public ?string $file = null;

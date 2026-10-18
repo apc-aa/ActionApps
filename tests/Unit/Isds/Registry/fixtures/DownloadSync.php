@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds\Registry\Fixtures;
 
-use AA\Isds\Registry\RegisterIndex;
+use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\Sync;
 
-require_once __DIR__ . '/LockedRegisterIndex.php';
+require_once __DIR__ . '/MemoryDownloadedRegister.php';
 
 /** Sync's static parts with the download lock and the log of attempts kept here, and the register's
- *  record in LockedRegisterIndex, instead of in the database. Static as they are - reset() before each
- *  test. */
+ *  record in MemoryDownloadedRegister, instead of in the database. Static as they are - reset() before
+ *  each test. */
 final class DownloadSync extends Sync
 {
     /** whether lockDownload() gets the lock */
@@ -38,7 +38,7 @@ final class DownloadSync extends Sync
         self::$unlocks  = 0;
         self::$attempts = [];
         self::$now      = 0;
-        LockedRegisterIndex::reset();
+        MemoryDownloadedRegister::reset();
     }
 
     protected static function lockDownload(?int &$holder = null): bool
@@ -66,8 +66,8 @@ final class DownloadSync extends Sync
         self::$attempts[] = self::$now;
     }
 
-    protected static function index(string $file): RegisterIndex
+    protected static function downloadedRegister(string $file): DownloadedRegister
     {
-        return new LockedRegisterIndex($file);
+        return new MemoryDownloadedRegister($file);
     }
 }
