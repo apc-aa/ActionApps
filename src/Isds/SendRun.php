@@ -52,6 +52,12 @@ class SendRun extends BatchRun
     public const ALL_SENT = 'ALL_SENT';
     /** stop() of a run in error with nothing left to stop: given up, its note */
     public const ABANDONED = 'ABANDONED';
+    /** the states of a run: queued or working, stopped by an error, done, given up (BatchRun::end()) */
+    public const SENDING = 'sending';
+    public const ERROR   = 'error';
+    public const DONE    = 'done';
+    public const ENDED   = 'stopped';
+
     /** the error BatchRun gives a failure it does not know */
     private const INTERNAL = 'INTERNAL';
 
@@ -267,7 +273,7 @@ class SendRun extends BatchRun
 
     protected static function states(): BatchStates
     {
-        return new BatchStates('sending', 'error', 'done', 'stopped');
+        return new BatchStates(self::SENDING, self::ERROR, self::DONE, self::ENDED);
     }
 
     public function selector(): string
@@ -511,7 +517,7 @@ class SendRun extends BatchRun
         } elseif ($state !== 1) {
             return $this->skipInactive($k, $row['msg'], $at);
         }
-        $message = new Message($row['box'], $letter->annotation, $letter->files, $this->camp_short . '-' . ($k + 1), $letter->toHands);
+        $message = new Message($row['box'], $letter->annotation, $letter->files, $this->senderRef($k), $letter->toHands);
         $now     = static::now();
         $stopped = false;
         $going   = $this->beforeAction(static function (self $run) use ($k, $now, &$stopped): bool {
@@ -618,9 +624,25 @@ class SendRun extends BatchRun
     }
 
     /** what the record keeps of each recipient, as this instance read or wrote it */
-    private function maps(): SendMaps
+    public function maps(): SendMaps
     {
         return new SendMaps((string) $this->dm_ids, (string) $this->uncertain, (string) $this->failed, (string) $this->skips, (string) $this->inflight, (int) $this->inflight_at);
+    }
+
+    /** the reference of the message to recipient $k - ISDS lists it, a person finds the message by it */
+    public function senderRef(int $k): string
+    {
+        return $this->camp_short . '-' . ($k + 1);
+    }
+
+    /**
+     * The frozen recipients, without the files
+     * @return list<array<string, string>> Snapshot::recipients()
+     * @throws BatchFailed Snapshot::CHANGED
+     */
+    public function recipients(): array
+    {
+        return $this->snapshot(false)->recipients();
     }
 
     /**
@@ -721,7 +743,7 @@ class SendRun extends BatchRun
         }
         $wanted = [];
         foreach ($open as $k => $triedAt) {
-            $wanted[$k] = ['ref' => $this->camp_short . '-' . ($k + 1), 'box' => $rows[$k]['box'], 'at' => $triedAt];
+            $wanted[$k] = ['ref' => $this->senderRef($k), 'box' => $rows[$k]['box'], 'at' => $triedAt];
         }
         // a further page only while the budget lasts: overrun() covers the last one
         $lookup = $this->ask(fn(): Lookup => Lookup::resolve($client->sentMessages(...), $wanted, $snapshot->annotation(), static::now(), (array) ($from[self::READING] ?? []), static fn(): bool => !$budget->spent()));

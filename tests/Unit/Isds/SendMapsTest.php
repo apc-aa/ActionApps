@@ -52,6 +52,15 @@ final class SendMapsTest extends TestCase
         self::assertSame([1 => 1700], (new SendMaps('', '{"1":"1700"}', '', '', '1', 1800))->unsettled());
     }
 
+    // what each item must show: by the map that says most, the message in flight uncertain
+    public function test_fates_ofEveryDecidedRecipient(): void
+    {
+        $maps = new SendMaps('{"0":"901","1":"902"}', '{"1":1700,"2":1710,"3":1720}', '{"1":"1233","3":"notfound"}', '{"4":"inactive"}', '5', 1800);
+
+        self::assertSame([0 => 'sent', 1 => 'sent', 3 => 'failed', 2 => 'uncertain', 5 => 'uncertain', 4 => 'skipped'], $maps->fates());
+        self::assertSame([], (new SendMaps())->fates());
+    }
+
     /** @param array{sent: int, failed: int, uncertain: int, skipped: int, stopped: int} $expected */
     #[DataProvider('tallies')]
     public function test_tally_eachRecipientOnce(SendMaps $maps, array $expected): void

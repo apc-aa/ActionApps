@@ -575,10 +575,10 @@ abstract class BatchRun extends AA_Object
     }
 
     /** The run's error with its detail, or while it is active the failure of its last try - for a
-     *  progressError() that shows them. Read back as stored and then shown: a value of no allowed
-     *  shape is dropped, not passed on.
+     *  progressError() or State Check that shows them. Read back as stored and then shown: a value of no
+     *  allowed shape is dropped, not passed on.
      *  @return ?array{code: string, where: string, detail: string} */
-    final protected function lastFailure(): ?array
+    final public function lastFailure(): ?array
     {
         $detail = BatchFailed::isDetail((string) $this->error_detail) ? (string) $this->error_detail : '';
         if ((string) $this->error_code !== '') {
@@ -872,6 +872,16 @@ abstract class BatchRun extends AA_Object
         return self::getAll(array_slice(array_keys(self::recordsOfSubject($subject)), 0, max(0, $limit)));
     }
 
+    /** Every run of this class as records - no run read, however many there are - for State Check,
+     *  no rights checked.
+     *  @param list<string> $props
+     *  @return array<string, array<string, string>> id => aa_type and $props
+     *  @throws \InvalidArgumentException $props name the sealed secret */
+    final public static function recordsOfAll(array $props): array
+    {
+        return self::records('aa_type', static::class, $props);
+    }
+
     /** The runs of $subject, newest first, as records - no run read, however many there are.
      *  @param list<string> $props further properties to read
      *  @return array<string, array<string, string>> id => started, finished and $props */
@@ -901,12 +911,17 @@ abstract class BatchRun extends AA_Object
     }
 
     /** The runs of this class whose $property is $value (or one of them), with the values of $props:
-     *  one query for the ids, one for the values - not a read per run.
+     *  one query for the ids, one for the values - not a read per run. The sealed secret is no record's:
+     *  only its run unseals it, for its own steps.
      *  @param string|list<string> $value
      *  @param list<string> $props
-     *  @return array<string, array<string, string>> id => property => value */
+     *  @return array<string, array<string, string>> id => property => value
+     *  @throws \InvalidArgumentException $property or $props name the sealed secret */
     private static function records(string $property, string|array $value, array $props): array
     {
+        if (in_array('sealed', [$property, ...$props], true)) {
+            throw new \InvalidArgumentException('The sealed secret of a batch run is read by its run only');
+        }
         $ids = array_values(array_unique(array_map('strval', DB_AA::select('object_id', 'SELECT object_id FROM `object_text`', [['property', $property], ['value', $value]]))));
         if (!$ids) {
             return [];

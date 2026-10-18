@@ -71,6 +71,25 @@ final readonly class SendMaps
     }
 
     /**
+     * The state the item of each recipient the record has the fate of must show, by the map that says
+     * most; a message of unknown fate - in flight too - is uncertain
+     * @return array<array-key, string> index => Schema::MESSAGE_STATE_*
+     */
+    public function fates(): array
+    {
+        $fates = [];
+        foreach ([
+            Schema::MESSAGE_STATE_SENT      => self::entries($this->dmIds),
+            Schema::MESSAGE_STATE_FAILED    => self::entries($this->failed),
+            Schema::MESSAGE_STATE_UNCERTAIN => $this->unsettled(),
+            Schema::MESSAGE_STATE_SKIPPED   => self::entries($this->skips),
+        ] as $state => $map) {
+            $fates += array_fill_keys(array_keys($map), $state);
+        }
+        return $fates;
+    }
+
+    /**
      * What became of each recipient
      * @param list<array<string, string>> $rows Snapshot::recipients()
      * @return array{sent: int, failed: int, uncertain: int, skipped: int, stopped: int}
