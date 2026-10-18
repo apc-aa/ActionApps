@@ -6,6 +6,7 @@ namespace Tests\Unit\Isds;
 
 use AA\Isds\Recipient;
 use AA\Isds\RecipientFilter;
+use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Isds\Registry\RegisterIndex;
 use AA\Isds\Registry\UnusableRegisterException;
@@ -22,7 +23,8 @@ require_once __DIR__ . '/fixtures/Sending.php';
 /**
  * Recipients = (type ∩ membership) ∪ include − exclude, each data box once; a bad box skips the
  * recipient with its reason, never stops the rest. Only items of the source slice are read. A box
- * the register of data boxes has not, or has for another IČO than the item's, is foreign.
+ * the register of data boxes has not, or has for another IČO than the item's, is foreign; one of
+ * another kind than an authority's main box is skipped too.
  */
 final class RecipientsTest extends TestCase
 {
@@ -251,7 +253,8 @@ final class RecipientsTest extends TestCase
 
     /**
      * The register with the boxes of Adamov, Benešov and Děčín - not of Cheb
-     * @param array<string, array{string, string}> $boxes box id => IČO and official name, over these
+     * @param array<string, array{0: string, 1: string, 2?: int, 3?: bool}> $boxes box id => IČO, official name,
+     *        subtype and master flag (an authority's own box when left out), over these
      */
     private static function register(array $boxes = []): FakeRegisterIndex
     {
@@ -386,6 +389,51 @@ final class RecipientsTest extends TestCase
             ['Děčín', '', 'Statutární město Děčín'],
             ['Cheb', Schema::BOX_FOREIGN, ''],
         ], self::checked(self::resolve($source, register: self::register())));
+    }
+
+    /** @return array<string, array{int, bool}> the subtype of the box in the register, whether it is a main box */
+    public static function notAnAuthoritysOwnBox(): array
+    {
+        return [
+            'a part of a city, with its IČO'   => [13, false],
+            'a company acting as an authority' => [16, true],
+            'a notary'                         => [15, true],
+            'subtype 10 under another box'     => [Box::AUTHORITY, false],
+        ];
+    }
+
+    // a forged item cannot send the letter to a part of an authority, nor to a person or company acting as one
+    #[DataProvider('notAnAuthoritysOwnBox')]
+    public function test_resolve_boxNotAnAuthoritysOwnSkipped(int $subtype, bool $master): void
+    {
+        $source = self::source([
+            self::ADAMOV  => ['fields' => [Sending::ICO => '00283924']],
+            self::BENESOV => ['fields' => [Sending::DS => 'ada1234']],
+            self::CHEB    => ['fields' => [Sending::DS => 'ada1234', Sending::ICO => '00231401']],
+        ]);
+
+        self::assertSame([
+            ['Adamov', Schema::BOX_KIND, 'Městská policie Adamov'],
+            ['Benešov', Schema::BOX_KIND, 'Městská policie Adamov'],
+            ['Cheb', Schema::BOX_FOREIGN, 'Městská policie Adamov'],
+        ], self::checked(self::resolve($source, register: self::register(['ada1234' => ['00283924', 'Městská policie Adamov', $subtype, $master]]))), 'no keeper, so no duplicate; another IČO is foreign first');
+    }
+
+    /** @return array<string, array{string}> the item's IČO */
+    public static function authoritysOwnBox(): array
+    {
+        return [
+            'the register\'s IČO' => ['283924'],
+            'none'                => [''],
+        ];
+    }
+
+    #[DataProvider('authoritysOwnBox')]
+    public function test_resolve_authoritysOwnBoxSendable(string $ico): void
+    {
+        $register = self::register(['ada1234' => ['00283924', 'Město Adamov', Box::AUTHORITY, true]]);
+
+        self::assertSame(['Adamov', '', 'Město Adamov'], self::checked(self::resolve(self::source([self::ADAMOV => ['fields' => [Sending::ICO => $ico]]]), register: $register))[0]);
     }
 
     /** @return array<string, array{string}> */

@@ -511,20 +511,25 @@ final class SdsListTest extends TestCase
         self::assertSame([], glob($this->dir . '/*'));
     }
 
-    /** @return array<string, array{string}> */
+    /** @return array<string, array{0: string, 1?: string}> the answer, a part of the message */
     public static function notAWholeList(): array
     {
+        $changed = 'the format of the list changed';
+
         return [
-            'error page' => ['<html><body>Údržba</body></html>'],
-            'cut off'    => [substr((string) file_get_contents(self::FIXTURE), 0, 5000)],
-            'no box'     => [self::list('')],
-            'no box id'  => [self::list(self::box('', ''))],
+            'error page'                  => ['<html><body>Údržba</body></html>'],
+            'cut off'                     => [substr((string) file_get_contents(self::FIXTURE), 0, 5000)],
+            'no box'                      => [self::list('')],
+            'no box id'                   => [self::list(self::box('', ''))],
+            // a sending would skip every recipient
+            'no main box of an authority' => [self::list(self::box('abcdefg', '<subtype>16</subtype><hierarchy><isMaster>true</isMaster></hierarchy>') . self::box('bcdefgh', '<subtype>10</subtype><hierarchy><isMaster>false</isMaster></hierarchy>')), $changed],
+            'subtype renamed'             => [self::list(self::box('abcdefg', '<subType>10</subType><hierarchy><isMaster>true</isMaster></hierarchy>')), $changed],
         ];
     }
 
     // a 200 that is not the whole list must not replace the last good one
     #[DataProvider('notAWholeList')]
-    public function test_download_notAWholeListKeepsThePreviousFile(string $body): void
+    public function test_download_notAWholeListKeepsThePreviousFile(string $body, string $why = ''): void
     {
         $to = $this->dir . '/ovm.xml';
         file_put_contents($to, 'previous');
@@ -532,7 +537,8 @@ final class SdsListTest extends TestCase
         try {
             SdsList::download(new FakeHttp([new Response(200, $body)]), $to);
             self::fail('UnexpectedValueException expected');
-        } catch (\UnexpectedValueException) {
+        } catch (\UnexpectedValueException $e) {
+            self::assertStringContainsString($why, $e->getMessage());
         }
 
         self::assertSame('previous', file_get_contents($to));

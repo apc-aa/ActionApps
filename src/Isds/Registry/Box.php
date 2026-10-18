@@ -13,6 +13,9 @@ final readonly class Box
     /** every id in the 2026 file matches; the id becomes a recipient address, so another shape is refused */
     public const ID = '/^[a-z0-9]{7}\z/';
 
+    /** $subtype of an authority's box - schools, company archives and state offices too, not only municipalities */
+    public const AUTHORITY = 10;
+
     /**
      * @param string $ico      as in the file, leading zeros kept; '' e.g. for city districts and state
      *                         offices, which have only $idOvm
@@ -56,6 +59,15 @@ final readonly class Box
             throw new \InvalidArgumentException('A data box id is 7 small letters or digits');
         }
         return $id;
+    }
+
+    /**
+     * A main box of an authority: no part of one, no person or company acting as one. It narrows where
+     * a letter may go - it does not prove the box is the one an item means.
+     */
+    public static function isAuthoritysOwn(int $subtype, bool $isMaster): bool
+    {
+        return ($subtype === self::AUTHORITY) && $isMaster;
     }
 
     /** An IČO as items keep it - without leading zeros, with spaces - as 8 digits; '' for anything else */

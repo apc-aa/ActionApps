@@ -151,6 +151,9 @@ final class Schema
     public const BOX_DUPLICATE = 'duplicate';
     /** the IČO field holds something else than an IČO, so the box cannot be checked against it */
     public const BOX_ICO       = 'ico';
+    /** the register has the box, but not of a kind a letter may go to: a part of an authority, or a
+     *  person or company acting as one */
+    public const BOX_KIND      = 'kind';
     public const BOX_PROBLEMS  = [
         self::BOX_MISSING,
         self::BOX_FORMAT,
@@ -158,6 +161,7 @@ final class Schema
         self::BOX_INACTIVE,
         self::BOX_DUPLICATE,
         self::BOX_ICO,
+        self::BOX_KIND,
     ];
 
     // `kind` of an entry in MESSAGE_EVENTS. The timeline cannot be derived from the times alone: they miss

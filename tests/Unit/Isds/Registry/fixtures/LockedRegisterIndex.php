@@ -41,6 +41,9 @@ final class LockedRegisterIndex extends RegisterIndex
     /** bytes of the index at most; null = RegisterIndex's own */
     public static ?int $maxIndex = null;
 
+    /** bytes a line stays under; null = RegisterIndex's own */
+    public static ?int $maxLine = null;
+
     public static function reset(): void
     {
         self::$record       = [];
@@ -53,6 +56,7 @@ final class LockedRegisterIndex extends RegisterIndex
         self::$whileWaiting = null;
         self::$afterRead    = null;
         self::$maxIndex     = null;
+        self::$maxLine      = null;
     }
 
     /** records $file as Sync::download() records the register it downloaded, and makes its index */
@@ -76,7 +80,7 @@ final class LockedRegisterIndex extends RegisterIndex
         file_put_contents($file, str_replace('<id>a7kbrrn</id>', '<id>abcdefg</id>', (string) file_get_contents(self::REGISTER)));
     }
 
-    /** the index lines written: id, IČO, name */
+    /** the index lines written: id, IČO, subtype, master flag, name */
     public static function indexed(string $file): string
     {
         return implode('', array_slice((array) file(dirname($file) . '/' . self::FILE), 1));
@@ -106,6 +110,11 @@ final class LockedRegisterIndex extends RegisterIndex
     protected function maxIndex(): int
     {
         return self::$maxIndex ?? parent::maxIndex();
+    }
+
+    protected function maxLine(): int
+    {
+        return self::$maxLine ?? parent::maxLine();
     }
 
     protected function lock(): bool

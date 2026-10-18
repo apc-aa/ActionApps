@@ -47,6 +47,25 @@ final class BoxTest extends TestCase
         return ['empty' => [''], 'six' => ['aaaaaa'], 'eight' => ['aaaaaaa1'], 'dash' => ['aaa-aa1'], 'inner space' => ['aaa aa1'], 'accent' => ['aaaaaaž']];
     }
 
+    /** @return array<string, array{int, bool, bool}> subtype, master flag, an authority's own */
+    public static function kinds(): array
+    {
+        return [
+            'an authority'              => [Box::AUTHORITY, true, true],
+            'a box under an authority'  => [Box::AUTHORITY, false, false],
+            'a part of an authority'    => [13, false, false],
+            'a notary'                  => [15, true, false],
+            'a company acting as one'   => [16, true, false],
+            'subtype missing in a file' => [0, true, false],
+        ];
+    }
+
+    #[DataProvider('kinds')]
+    public function test_isAuthoritysOwn(int $subtype, bool $isMaster, bool $expected): void
+    {
+        self::assertSame($expected, Box::isAuthoritysOwn($subtype, $isMaster));
+    }
+
     #[DataProvider('icos')]
     public function test_normalizeIco(string $ico, string $expected): void
     {

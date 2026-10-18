@@ -30,7 +30,8 @@ class Recipients
      * count a user confirms and the count sent must both come from here, with the register of the
      * request.
      * @param Config        $config   the settings of data boxes of the source slice
-     * @param RegisterIndex $register a box it has not, or has for another IČO than the item's, is foreign
+     * @param RegisterIndex $register a box it has not, or has for another IČO than the item's, is foreign;
+     *                                one of another kind than an authority's main box is skipped too
      * @return list<Recipient>
      * @throws UnusableRegisterException the register cannot be used, up front or while read
      * @throws \RuntimeException         the settings name no type field
@@ -136,8 +137,14 @@ class Recipients
                 // an item that carries an IČO must match the register, so a box without one - offices,
                 // archives, the districts of every statutory city but Prague - is foreign to such an item;
                 // an item without an IČO is checked only for its box being in the register
-                $own            = !is_null($row) && (($r->ico === '') || ($r->ico === $row['ico']));
-                $recipients[$i] = $r->with($own ? '' : Schema::BOX_FOREIGN, $row['name'] ?? '');
+                $own    = !is_null($row) && (($r->ico === '') || ($r->ico === $row['ico']));
+                $reason = match (true) {
+                    !$own => Schema::BOX_FOREIGN,
+                    // a letter goes only to an authority's main box
+                    !Box::isAuthoritysOwn($row['subtype'], $row['master']) => Schema::BOX_KIND,
+                    default => '',
+                };
+                $recipients[$i] = $r->with($reason, $row['name'] ?? '');
             }
         }
 

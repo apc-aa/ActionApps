@@ -122,12 +122,12 @@ class Gate
     /**
      * The recipients of an active campaign of the page by its stored filter, counted anew on each
      * request: count - how many get the letter, skipped - how many are left out for their box (none,
-     * not a box id, an IČO that is none, foreign to the register of data boxes, a duplicate), ids - the
-     * items that get it, dash-separated for {view} and {ids}. It counts a queued or sent campaign anew
-     * too; its count when it was queued is stored in the campaign (Schema::CAMPAIGN_RECIPIENTS). '' for
-     * another item or question, on any error, and while the register is missing or unreadable -
-     * register() tells it, as no count is true unchecked. ids is '' for no recipients too, and {view}
-     * with no ids lists the whole slice - guard it:
+     * not a box id, an IČO that is none, foreign to the register of data boxes, not of a kind a letter
+     * may go to, a duplicate), ids - the items that get it, dash-separated for {view} and {ids}. It
+     * counts a queued or sent campaign anew too; its count when it was queued is stored in the campaign
+     * (Schema::CAMPAIGN_RECIPIENTS). '' for another item or question, on any error, and while the
+     * register is missing or unreadable - register() tells it, as no count is true unchecked. ids is ''
+     * for no recipients too, and {view} with no ids lists the whole slice - guard it:
      *     {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
      * (not _#1 - AA expands the inner command first). The guard hides the output only: the inner {view}
      * still runs once over the whole slice.

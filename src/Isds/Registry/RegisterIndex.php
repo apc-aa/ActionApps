@@ -9,7 +9,8 @@ use AA\Util\SafeFile;
 
 /**
  * The boxes of the downloaded register (Sync::registerFile()) in a file next to it, a line each - id,
- * IČO, name - so a page asking for some boxes need not parse the 17 MB of XML (half a second).
+ * IČO, subtype, master flag, name - so a page asking for some boxes need not parse the 17 MB of XML
+ * (half a second).
  *
  * Both files lie in the upload directory, which the web server serves and other PHP users of the
  * server may write into. Only the hashes RegisterRecord keeps in the install's database make them the
@@ -57,8 +58,9 @@ class RegisterIndex
      */
     public const RECORD = ['xml' => '', 'size' => '', 'time' => '', 'index' => '', 'failed' => '', 'failed_of' => '', 'failure' => ''];
 
-    /** the format; the register's sha256 follows */
-    private const HEADER = 'aa-isds-register-index-1';
+    /** names the format of the lines - change it with them: an index under another header is made
+     *  again; the register's sha256 follows */
+    private const HEADER = 'aa-isds-register-index-2';
 
     private const LOCK = 'isds-register-index';
 
@@ -71,8 +73,9 @@ class RegisterIndex
     /** bytes of a name in the index - an official name is a line of text; a longer one is cut */
     private const MAX_NAME = 1000;
 
-    /** bytes of a line of the index: id, IČO, MAX_NAME and the separators fit; a longer one is damage */
-    private const MAX_LINE = 1024;
+    /** bytes a line of the index stays under: id 7, IČO 8, subtype 19 at most (an int), flag 1,
+     *  MAX_NAME and 4 tabs make 1039; a longer one is damage */
+    private const MAX_LINE = 1040;
 
     /** bytes of the index - some 1 MB per 17 MB of register; scan() reads no more, as a file someone
      *  keeps writing to would never end, so make() writes no more either */
@@ -148,9 +151,10 @@ class RegisterIndex
     /**
      * The boxes of $boxes the register has, in one pass over the index - ask for all of them at once.
      * @param list<string> $boxes ids as ISDS knows them (Box::normalizeId())
-     * @return array<array-key, array{id: string, ico: string, name: string}> by box id - PHP makes an id
-     *         of digits only an int key, so take the id from the row; ico as Box::normalizeIco() gives
-     *         it, '' = none, BAD_ICO = no IČO in the register
+     * @return array<array-key, array{id: string, ico: string, subtype: int, master: bool, name: string}>
+     *         by box id - PHP makes an id of digits only an int key, so take the id from the row; ico as
+     *         Box::normalizeIco() gives it, '' = none, BAD_ICO = no IČO in the register; subtype and
+     *         master as Box::$subtype and Box::$isMaster
      * @throws UnusableRegisterException the state() is neither OK nor OLD, or the index is not the
      *                                    recorded one and cannot be made again
      */
@@ -284,8 +288,8 @@ class RegisterIndex
      * The boxes of $wanted in the index; the index is read and hashed once per object, and only the
      * bytes that matched the record are parsed.
      * @param array<array-key, true> $wanted
-     * @return ?array<array-key, array{id: string, ico: string, name: string}> null: not the index the
-     *                                                                         record vouches for
+     * @return ?array<array-key, array{id: string, ico: string, subtype: int, master: bool, name: string}>
+     *         null: not the index the record vouches for
      */
     private function scan(array $wanted): ?array
     {
@@ -309,9 +313,9 @@ class RegisterIndex
             if ($next === false) {
                 break;
             }
-            $parts = explode("\t", substr($text, $at, $next - $at), 3);
-            if (isset($wanted[$parts[0]], $parts[2])) {
-                $found[$parts[0]] ??= ['id' => $parts[0], 'ico' => $parts[1], 'name' => $parts[2]];
+            $parts = explode("\t", substr($text, $at, $next - $at), 5);
+            if (isset($wanted[$parts[0]], $parts[4])) {
+                $found[$parts[0]] ??= ['id' => $parts[0], 'ico' => $parts[1], 'subtype' => (int) $parts[2], 'master' => ($parts[3] === '1'), 'name' => $parts[4]];
             }
         }
         return $found;
@@ -326,7 +330,7 @@ class RegisterIndex
             return false;
         }
         // a line without its end, or longer than any make() writes, is damage
-        if (!hash_equals($sha, hash('sha256', $text)) || !str_ends_with($text, "\n") || (preg_match('/(?:\A|\n)[^\n]{' . self::MAX_LINE . '}/', $text) !== 0)) {
+        if (!hash_equals($sha, hash('sha256', $text)) || !str_ends_with($text, "\n") || (preg_match('/(?:\A|\n)[^\n]{' . $this->maxLine() . '}/', $text) !== 0)) {
             return false;
         }
         $this->checkedSha  = $sha;
@@ -370,7 +374,12 @@ class RegisterIndex
         foreach ($boxes as $box) {
             $ico   = ($box->ico === '') ? '' : (Box::normalizeIco($box->ico) ?: self::BAD_ICO);
             $name  = mb_strcut((string) preg_replace('/[\t\r\n]+/', ' ', $box->name), 0, self::MAX_NAME, 'UTF-8');
-            $text .= $box->id . "\t" . $ico . "\t" . $name . "\n";
+            $line  = $box->id . "\t" . $ico . "\t" . $box->subtype . "\t" . ($box->isMaster ? '1' : '0') . "\t" . $name . "\n";
+            // check() would refuse it on every request; refused here, it is logged once and held back
+            if (strlen($line) > $this->maxLine()) {
+                throw new \RuntimeException(sprintf('The register of data boxes has the box %s, whose line in the index would have %d bytes - AA reads lines of %d at most', $box->id, strlen($line) - 1, $this->maxLine() - 1));
+            }
+            $text .= $line;
         }
         if (strlen($text) > $this->maxIndex()) {
             throw new \RuntimeException(sprintf('The register of data boxes is unusually large: its index would have %d bytes, AA reads at most %d', strlen($text), $this->maxIndex()));
@@ -423,6 +432,11 @@ class RegisterIndex
     protected function maxIndex(): int
     {
         return self::MAX_INDEX;
+    }
+
+    protected function maxLine(): int
+    {
+        return self::MAX_LINE;
     }
 
     /** @return bool got it - unlock() then; false also when the database gives no lock */

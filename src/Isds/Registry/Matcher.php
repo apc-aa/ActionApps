@@ -16,9 +16,6 @@ final class Matcher
     private const DISTRICT     = 'district';
     private const MUNICIPALITY = 'municipality';
 
-    /** Box::$subtype of an authority */
-    private const AUTHORITY = 10;
-
     /** bytes; the register's names end at 255, and fold()'s trailing-junk pattern is quadratic (50 000 dots before a letter: 28 s without the PCRE JIT) */
     private const MAX_NAME = 255;
 
@@ -58,7 +55,7 @@ final class Matcher
         $by_name = [self::DISTRICT => [], self::MUNICIPALITY => []];
         foreach ($boxes as $box) {
             // subordinate boxes (a city police, a school under the city) share the city's IČO
-            if (($box->subtype !== self::AUTHORITY) || !$box->isMaster) {
+            if (!Box::isAuthoritysOwn($box->subtype, $box->isMaster)) {
                 continue;
             }
             $folded = self::fold($box->name);

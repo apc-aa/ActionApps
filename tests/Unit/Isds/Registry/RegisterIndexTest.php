@@ -63,15 +63,29 @@ final class RegisterIndexTest extends TestCase
         $found = $index->lookup(['eerak7a', 'zzzzzzz', 'x2pbqzq', '27hmz4e', 'eerak7a']);
 
         self::assertSame([
-            '27hmz4e' => ['id' => '27hmz4e', 'ico' => '', 'name' => 'Celní úřad v Praze'],
-            'x2pbqzq' => ['id' => 'x2pbqzq', 'ico' => '70888337', 'name' => 'Jihomoravský kraj'],
-            'eerak7a' => ['id' => 'eerak7a', 'ico' => '00235300', 'name' => 'Městys Cerhenice'],
+            '27hmz4e' => ['id' => '27hmz4e', 'ico' => '', 'subtype' => 10, 'master' => true, 'name' => 'Celní úřad v Praze'],
+            'x2pbqzq' => ['id' => 'x2pbqzq', 'ico' => '70888337', 'subtype' => 10, 'master' => true, 'name' => 'Jihomoravský kraj'],
+            'eerak7a' => ['id' => 'eerak7a', 'ico' => '00235300', 'subtype' => 10, 'master' => true, 'name' => 'Městys Cerhenice'],
         ], $found, 'in the order of the register');
         self::assertSame(RegisterIndex::OK, $index->state());
         self::assertSame([], $index->lookup([]));
         self::assertSame('', $index->problem());
         self::assertCount(31 + 1, (array) file($this->index), 'a line per box and the header');
         self::assertSame([1, 1], [LockedRegisterIndex::$locks, LockedRegisterIndex::$unlocks], 'made once, at the download');
+    }
+
+    // a part of an authority shares its IČO, persons and companies act as one: the index tells them apart
+    public function test_lookup_carriesSubtypeAndMaster(): void
+    {
+        $found = $this->fixtureIndex()->lookup(['8iedd6n', 'eerak7a', 'mqhmhtu', 'qebd4jz', '3th5n6b']);
+
+        self::assertSame([
+            '8iedd6n' => [16, true],
+            'eerak7a' => [10, true],
+            'mqhmhtu' => [13, false],
+            'qebd4jz' => [10, false],
+            '3th5n6b' => [15, true],
+        ], array_map(static fn(array $row): array => [$row['subtype'], $row['master']], $found));
     }
 
     // as items keep the IČO; an IČO that is none must not pass for a missing one
@@ -87,12 +101,12 @@ final class RegisterIndexTest extends TestCase
         $found = (new LockedRegisterIndex($this->register))->lookup(['abcdefg', 'bcdefgh', 'cdefghi']);
 
         self::assertSame([
-            'abcdefg' => ['id' => 'abcdefg', 'ico' => '00063703', 'name' => 'Obec Horní Dolní Lhota'],
-            'bcdefgh' => ['id' => 'bcdefgh', 'ico' => '', 'name' => 'Městská část Praha 9'],
-            'cdefghi' => ['id' => 'cdefghi', 'ico' => RegisterIndex::BAD_ICO, 'name' => 'Úřad'],
+            'abcdefg' => ['id' => 'abcdefg', 'ico' => '00063703', 'subtype' => 0, 'master' => false, 'name' => 'Obec Horní Dolní Lhota'],
+            'bcdefgh' => ['id' => 'bcdefgh', 'ico' => '', 'subtype' => 0, 'master' => false, 'name' => 'Městská část Praha 9'],
+            'cdefghi' => ['id' => 'cdefghi', 'ico' => RegisterIndex::BAD_ICO, 'subtype' => 0, 'master' => false, 'name' => 'Úřad'],
         ], $found);
         foreach (array_slice((array) file($this->index, FILE_IGNORE_NEW_LINES), 1) as $line) {
-            self::assertCount(3, explode("\t", (string) $line));
+            self::assertCount(5, explode("\t", (string) $line));
         }
     }
 
@@ -107,6 +121,18 @@ final class RegisterIndexTest extends TestCase
         self::assertSame('x' . str_repeat('Ř', 499), $found['abcdefg']['name']);
     }
 
+    // the longest line make() can write is no damage
+    public function test_lookup_longestLineRead(): void
+    {
+        $this->writeRegister(['abcdefg' => ['63703', str_repeat('x', 1001), str_repeat('9', 20)]]);
+        LockedRegisterIndex::download($this->register);
+
+        $found = (new LockedRegisterIndex($this->register))->lookup(['abcdefg']);
+
+        self::assertSame([PHP_INT_MAX, 1000], [$found['abcdefg']['subtype'], strlen($found['abcdefg']['name'])]);
+        self::assertSame(1, LockedRegisterIndex::$locks, 'not made again');
+    }
+
     // PHP makes such a key an int; the row keeps the id as text
     public function test_lookup_digitOnlyIdKeepsItsIdInTheRow(): void
     {
@@ -115,7 +141,7 @@ final class RegisterIndexTest extends TestCase
 
         $found = (new LockedRegisterIndex($this->register))->lookup(['1234567']);
 
-        self::assertSame([['id' => '1234567', 'ico' => '00063703', 'name' => 'Obec']], array_values($found));
+        self::assertSame([['id' => '1234567', 'ico' => '00063703', 'subtype' => 0, 'master' => false, 'name' => 'Obec']], array_values($found));
         self::assertSame('1234567', $found[1234567]['id']);
     }
 
@@ -226,7 +252,7 @@ final class RegisterIndexTest extends TestCase
     {
         $this->fixtureIndex();
         $header = (string) strtok((string) file_get_contents($this->index), "\n");
-        file_put_contents($this->index, "$header\nabcdefg\t00063703\tPodvržený úřad\n");
+        file_put_contents($this->index, "$header\nabcdefg\t00063703\t10\t1\tPodvržený úřad\n");
 
         $index = new LockedRegisterIndex($this->register);
 
@@ -235,13 +261,28 @@ final class RegisterIndexTest extends TestCase
         self::assertSame(2, LockedRegisterIndex::$locks);
     }
 
+    // an index the previous AA made, its hash recorded: made again, never read as one of today's format
+    public function test_state_indexOfAnOlderFormatMadeAgain(): void
+    {
+        $this->fixtureIndex();
+        $old = 'aa-isds-register-index-1 ' . LockedRegisterIndex::$record['xml'] . "\nmqhmhtu\t00235300\tSpráva domů a bytů Cerhenice\n";
+        file_put_contents($this->index, $old);
+        LockedRegisterIndex::$record['index'] = hash('sha256', $old);
+
+        $found = (new LockedRegisterIndex($this->register))->lookup(['mqhmhtu']);
+
+        self::assertSame([13, false], [$found['mqhmhtu']['subtype'], $found['mqhmhtu']['master']]);
+        self::assertSame(2, LockedRegisterIndex::$locks);
+        self::assertStringStartsWith(self::header(LockedRegisterIndex::$record['xml']), (string) file_get_contents($this->index));
+    }
+
     // replaced after state() checked it: lookup() answers from the very bytes that were checked
     public function test_lookup_indexReplacedAfterStateReadsTheCheckedOne(): void
     {
         $index = $this->fixtureIndex();
         self::assertSame(RegisterIndex::OK, $index->state());
 
-        file_put_contents($this->index, "aa-isds-register-index-1 " . str_repeat('0', 64) . "\nabcdefg\t\tPodvržený úřad\n");
+        file_put_contents($this->index, self::header(str_repeat('0', 64)) . "abcdefg\t\t10\t1\tPodvržený úřad\n");
 
         self::assertSame(['eerak7a'], array_keys($index->lookup(['abcdefg', 'eerak7a'])));
         self::assertSame('', $index->problem());
@@ -355,6 +396,21 @@ final class RegisterIndexTest extends TestCase
         $index = new LockedRegisterIndex($this->register);
         self::assertSame(RegisterIndex::UNREADABLE, $index->state());
         self::assertSame(LockedRegisterIndex::$logged[0], $index->problem());
+        self::assertSame(1, LockedRegisterIndex::$locks, 'no second attempt');
+    }
+
+    // check() would refuse it on every request, each parsing the register again
+    public function test_write_lineLongerThanCheckReadsRefused(): void
+    {
+        $this->writeRegister(['abcdefg' => ['63703', 'Obec'], 'bcdefgh' => ['', str_repeat('x', 20)]]);
+        LockedRegisterIndex::$maxLine = 33;
+
+        LockedRegisterIndex::download($this->register);
+
+        self::assertSame(['The register of data boxes has the box bcdefgh, whose line in the index would have 33 bytes - AA reads lines of 32 at most'], LockedRegisterIndex::$logged);
+        self::assertSame(['register.xml'], $this->files());
+        $index = new LockedRegisterIndex($this->register);
+        self::assertSame([RegisterIndex::UNREADABLE, LockedRegisterIndex::$logged[0]], [$index->state(), $index->problem()]);
         self::assertSame(1, LockedRegisterIndex::$locks, 'no second attempt');
     }
 
@@ -497,7 +553,7 @@ final class RegisterIndexTest extends TestCase
     {
         $this->fixtureIndex();
         $text = (string) file_get_contents($this->index);
-        $long = substr($text, 0, (int) strpos($text, "\n") + 1) . 'abcdefg' . "\t\t" . str_repeat('x', 2000) . "\n";
+        $long = substr($text, 0, (int) strpos($text, "\n") + 1) . 'abcdefg' . "\t\t10\t1\t" . str_repeat('x', 2000) . "\n";
         file_put_contents($this->index, $long);
         LockedRegisterIndex::$record['index'] = hash('sha256', $long);
 
@@ -528,8 +584,8 @@ final class RegisterIndexTest extends TestCase
     {
         $cap = (int) (new \ReflectionClassConstant(RegisterIndex::class, 'MAX_INDEX'))->getValue();
         LockedRegisterIndex::$record = ['xml' => hash('sha256', 'register'), 'time' => time(), 'index' => hash('sha256', 'index')];
-        ScriptedFile::$content = static fn(int $open): string => 'aa-isds-register-index-1 ' . hash('sha256', 'register') . "\n";
-        ScriptedFile::$growth  = "abcdefg\t\tx\n";
+        ScriptedFile::$content = static fn(int $open): string => self::header(hash('sha256', 'register'));
+        ScriptedFile::$growth  = "abcdefg\t\t10\t1\tx\n";
         try {
             $index = new LockedRegisterIndex(ScriptedFile::SCHEME . '://register/register.xml');
 
@@ -565,12 +621,13 @@ final class RegisterIndexTest extends TestCase
         return new LockedRegisterIndex($this->register);
     }
 
-    /** @param array<string, array{string, string}> $boxes id => IČO and name, as XML text */
+    /** @param array<string, array{0: string, 1: string, 2?: string}> $boxes id => IČO, name and subtype, as XML text */
     private function writeRegister(array $boxes): void
     {
         $xml = '';
-        foreach ($boxes as $id => [$ico, $name]) {
-            $xml .= "<box><id>$id</id><ico>$ico</ico><name><tradeName>$name</tradeName></name></box>";
+        foreach ($boxes as $id => $box) {
+            [$ico, $name, $subtype] = $box + [2 => ''];
+            $xml .= "<box><id>$id</id><subtype>$subtype</subtype><ico>$ico</ico><name><tradeName>$name</tradeName></name></box>";
         }
         file_put_contents($this->register, '<?xml version="1.0" encoding="UTF-8"?><list xmlns="http://seznam.gov.cz/ovm/datafile/seznam_ds/v1">' . $xml . '</list>');
     }
@@ -583,6 +640,12 @@ final class RegisterIndexTest extends TestCase
             'dir'   => mkdir($path),
             default => symlink($what, $path),
         };
+    }
+
+    /** the first line of an index of today's format */
+    private static function header(string $registerSha): string
+    {
+        return (string) (new \ReflectionMethod(RegisterIndex::class, 'header'))->invoke(null, $registerSha);
     }
 
     /** what one PHP process remembers is gone, as in the next request */
