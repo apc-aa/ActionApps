@@ -3102,6 +3102,9 @@ h1:has(+form[name="inputform"]) {
         padding: 0;
         box-sizing: border-box;
     }
+    form[name="inputform"] {
+        margin-right: 0; /* no content padding here to bleed into */
+    }
     .expanded .aa-formgroup-inline .aa-sbrow-and, .aa-orderrow-label, .aa-form-label {
         width: 100%;
     }
