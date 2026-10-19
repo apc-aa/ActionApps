@@ -255,6 +255,9 @@ if ($module->getProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
 
     $uri          = (strlen($_SERVER['REQUEST_URI']) > 1) ? $_SERVER['REQUEST_URI'] : $_SERVER['REDIRECT_URL'];
     $apc_state    = $router->parse($uri);
+    if ($router->rejected() || ($module->getProperty('check_xseo') && !$router->xseoPathPublished())) {
+        Die404(($module->getProperty('page404') == '3') ? $module->getProperty('page404_code') : null);  // calls exit
+    }
     $lang_file    = substr_replace($lang_file, $apc_state['xlang'], 0, 2);
 
     // count hit for current page - deferred after the page is sent to user

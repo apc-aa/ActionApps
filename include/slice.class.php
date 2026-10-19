@@ -1336,7 +1336,8 @@ class AA_Module_Site extends AA_Module
         if ($this->_getSpecificTableProperty('flag') == 1) {    // 1 - Use AA_Router_Seo
             // home can contain some logic like: {ifin:{server:SERVER_NAME}:czechweb.cz:/cz/home:/en/home}
             $home       = AA::Un(trim($this->_getSpecificTableProperty('state_file'))) ?: '/' . substr($this->_getModuleTableProperty('lang_file'), 0, 2) . '/';
-            return AA_Router::singleton('AA_Router_Seo', self::getRelatedModules([$this->module_id]), $home, $this->_getModuleObjectProperty('web_languages'));
+            $rules      = ['xcat' => $this->_getModuleObjectProperty('xcat_pattern'), 'xflag' => $this->_getModuleObjectProperty('xflag_pattern')];
+            return AA_Router::singleton('AA_Router_Seo', self::getRelatedModules([$this->module_id]), $home, $this->_getModuleObjectProperty('web_languages'), $rules);
         }
         return null;
     }
@@ -1581,6 +1582,9 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     protected $translate_slice;
     protected $add_aliases;
     protected $web_languages;
+    protected $xcat_pattern;
+    protected $xflag_pattern;
+    protected $check_xseo;
     protected $page404;
     protected $page404_code;
     protected $sitemap_alias;
@@ -1610,7 +1614,7 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
     /** check, if the $prop is the property of this object */
     public static function isProperty($prop): bool
     {
-        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', ...self::APP_PROPERTIES]);
+        return in_array($prop, ['translate_slice', 'add_aliases', 'web_languages', 'xcat_pattern', 'xflag_pattern', 'check_xseo', 'page404', 'page404_code', 'sitemap_alias', 'perm_alias', 'loginpage_code', 'perm_mode', 'ga_id', 'alternate_url', ...self::APP_PROPERTIES]);
     }
 
     /** allows storing object in database
@@ -1623,6 +1627,9 @@ class AA_Modulesettings_Site extends AA_AbstractModulesettings
             'translate_slice' => new AA_Property('translate_slice', _m("Slice with translations"), 'string', false, true, ['enum', static fn() => AA_Module::getUserModules('S')], false, _m("the slice used for {tr:text...} translations (the slice needs to have just headline........ field set as 'Allow translation')")),
             'add_aliases'     => new AA_Property('add_aliases', _m("Additional aliases"), 'string', true, true, ['enum',   static fn() => AA_Module::getUserModules('W')], false, _m('Select sitemodule, where we have to look for additional {_:...} aliases')),
             'web_languages'   => new AA_Property('web_languages', _m("Languages on website"), 'string', true, true, ['regexp', ['pattern' => '/^[a-z]{2}$/','maxlength' => 2]], false, _m('List all languages for which you want to use sitemodule - en, es, cz, ..<br>Please <b>do it</b>, even if you are using 1 language. <br>It is quite necessary if you want to call sitemodule newer way from Apache:<br> RewriteEngine on<br> RewriteRule ^$ /apc-aa/modules/site/site.php [L,QSA]<br> RewriteCond %{REQUEST_FILENAME} !-f<br> RewriteCond %{REQUEST_FILENAME} !-d<br> RewriteRule ^ /apc-aa/modules/site/site.php [L,QSA]<br>')),
+            'xcat_pattern'    => new AA_Property('xcat_pattern', _m("Allowed {xcat} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xcat} part of the URL (/cz-<b>bioplyn</b>/...) must match as a whole, otherwise the page answers 404. Like: [a-z0-9-]*<br>Empty - any value without "=".')),
+            'xflag_pattern'   => new AA_Property('xflag_pattern', _m("Allowed {xflag} values"), 'string', false, true, ['pattern', ['maxlength' => 255]], false, _m('Regular expression the {xflag} part of the URL (/cz<b>t</b>/...) must match as a whole, otherwise the page answers 404. Like: t|p<br>Empty - any value without "=".')),
+            'check_xseo'      => new AA_Property('check_xseo', _m("Check the page path"), 'string', false, true, ['enum', ['' => _m('No'), '1' => _m('Yes')]], false, _m('Answer 404 when any part of the path ({xseo1}, {xseo2}, ...) is not a published item, so /cz/nonsense/about-us does not show the about-us page. It answers 404 also when "Page not Found" is set to "Do not care".')),
             'page404'         => new AA_Property('page404', _m("Page not Found (404)"), 'string', false, true, ['enum',   [1 => _m('Do not care'),2 => _m('Send standard 404 page, when {xid} is empty'),3 => _m('Send code below')]], false, _m('When first option "Do not care" is selected (old behavior), you should test unfilled {xid} in your sitemodule yourself')),
             'page404_code'    => new AA_Property('page404_code', _m("HTML code for \"Page not Found\" (404)"), 'text', false, true),
             'sitemap_alias'   => new AA_Property('sitemap_alias', _m("sitemap.xml alias"), 'string', false, true, '', false, _m('The sitemap.xml will be generated from all slices (in order above) where the specified alias (say _#SMAP_URL) exists. The alias should generate full url of the item in each slice. For private/hidden items it should generate empty string in order the URL is not shown.')),
