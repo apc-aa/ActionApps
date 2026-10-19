@@ -152,6 +152,25 @@ class SendRun extends BatchRun
         return $props;
     }
 
+    /**
+     * A new run of $campaign, in the caller's transaction: its snapshot saved, prep from the first
+     * frozen recipient, nothing tried yet
+     * @param array<string, string> $props the own properties of the account, the slices and camp_short
+     * @throws BatchFailed BatchRun::NO_TRANSACTION as start()
+     */
+    public static function begin(string $campaign, string $uid, Snapshot $snapshot, array $props): static
+    {
+        $snapshot->save();
+        return static::start($props + [
+            'subject'  => $campaign,
+            'user'     => $uid,
+            'position' => ['p' => self::PREP, 'i' => 0],
+            'snapshot' => (string) $snapshot->getId(),
+            'manifest' => $snapshot->manifest(),
+            'cursor'   => '0',
+        ]);
+    }
+
     /** a run of $campaign was started, whatever became of it - a campaign is sent once */
     public static function existsFor(string $campaign): bool
     {
@@ -253,7 +272,7 @@ class SendRun extends BatchRun
             return 'WRONG_STATE';
         }
         if (!(static::get((string) $id)?->mayControl($uid) ?? false)) {
-            return 'FORBIDDEN';
+            return self::FORBIDDEN;
         }
         if (!static::lockCampaign($campaign)) {
             return self::BUSY;
@@ -261,7 +280,7 @@ class SendRun extends BatchRun
         try {
             return DB_AA::transaction(static function () use ($id, $uid, $do): string {
                 $run = static::lockForUpdate((string) $id) ?? throw new BatchFailed('WRONG_STATE');
-                return $run->mayControl($uid) ? $do($run) : 'FORBIDDEN';
+                return $run->mayControl($uid) ? $do($run) : self::FORBIDDEN;
             });
         } catch (BatchFailed $e) {
             return $e->reason;
@@ -745,7 +764,7 @@ class SendRun extends BatchRun
             $wanted[$k] = ['ref' => $this->senderRef($k), 'box' => $rows[$k]['box'], 'at' => $triedAt];
         }
         // a further page only while the budget lasts: overrun() covers the last one
-        $lookup = $this->ask(fn(): Lookup => Lookup::resolve($client->sentMessages(...), $wanted, $snapshot->annotation(), static::now(), (array) ($from[self::READING] ?? []), static fn(): bool => !$budget->spent()));
+        $lookup = self::ask(fn(): Lookup => Lookup::resolve($client->sentMessages(...), $wanted, $snapshot->annotation(), static::now(), (array) ($from[self::READING] ?? []), static fn(): bool => !$budget->spent()));
         if (is_null($lookup)) {
             return $this->paused($from, Outcome::UNAVAILABLE);
         }
@@ -1009,7 +1028,7 @@ class SendRun extends BatchRun
         if (($fingerprint === $this->acct_id) && ((string) $this->owner_at !== '') && ($now - (int) $this->owner_at < self::OWNER_EVERY)) {
             return $client;
         }
-        $box = $this->ask($client->ownerBox(...));
+        $box = self::ask($client->ownerBox(...));
         if (is_null($box)) {
             return Outcome::UNAVAILABLE;
         }
@@ -1025,14 +1044,15 @@ class SendRun extends BatchRun
     }
 
     /**
-     * $ask of ISDS - a question, nothing sent - its failures as the run takes them
+     * $ask of ISDS - a question, nothing sent - its failures as the run takes them; queueing a run
+     * asks whose the login is through it too, so both refuse alike
      * @template T
      * @param \Closure(): T $ask
      * @return ?T null = ISDS did not answer: the run pauses
      * @throws BatchFailed Outcome's code of a login ISDS refused or a configuration that cannot work;
      *                     REFUSED with the status of any other refusal
      */
-    private function ask(\Closure $ask): mixed
+    public static function ask(\Closure $ask): mixed
     {
         try {
             return $ask();

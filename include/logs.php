@@ -84,6 +84,7 @@ ISDS_SETUP      site_id:campaign_slice_id|-     the first problem              /
 ISDS_RCPT       site_id:campaign_slice_id:campaign_id  what failed           // {datovkabulk:recipients} could not tell the recipients of a campaign - its stored filter is not one the page offers, or the source slice lost its settings of data boxes; the page gets '', once a day; State Check lists them (AA\Isds\Gate, LogOnce, CheckIsdsAccounts)
 ISDS_FILE       the problem - keys, never values  [unread|broken|accounts]:AA_INSTAL_URL  // a problem of misc/datovka/datovka_conf.php a request met - each site may run PHP as a user of its own; the failure of the problem that kept AA from the file or its accounts, and the site, once a day (AA\Isds\DatovkaConf::logProblems(), LogOnce, CheckIsdsConf)
 ISDS_INST       known:id|unknown                installation id                // misc/datovka/service.php refused an answer of ISDS whose token names an installation instances does not list - known: a message of this database has the token, a row per id a day; unknown: foreign or made up, the first of the day; nothing while the file cannot be used (DatovkaConf::logRefusedAnswer(), LogOnce, CheckIsdsConf)
+ISDS_SEND       queued:campaign_id              uid:run_id                     // a mass sending to data boxes queued by the user: its run started, the campaign frozen and queued (AA\Isds\SendQueue)
 AA_WARN
 */
 
