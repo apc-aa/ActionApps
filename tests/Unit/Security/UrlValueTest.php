@@ -11,7 +11,8 @@ use PHPUnit\Framework\TestCase;
 /**
  * Values a page takes from its URL (als[NAME], site state) run as text and _#ALIASES. Links built
  * by templates carry text, numbers and ids, sometimes _#ALIASES; those run as before. (A value with
- * {...} goes to Settings, which needs the database - checked on a live install.)
+ * {...} goes to Settings and the log, which need the database - ViewNoitemTest runs that path over
+ * the recording stand-in.)
  */
 final class UrlValueTest extends TestCase
 {
@@ -35,6 +36,13 @@ final class UrlValueTest extends TestCase
             'alias'   => ['_#HEADLINE'],
             'empty'   => [''],
         ];
+    }
+
+    /** a value expanded as a whole (noitem) is text, its HTML and _#ALIASES too */
+    public function test_template_showsAValueWithoutBracesAsText(): void
+    {
+        self::assertSame('&lt;b&gt;_&#35;HEADLINE&lt;/b&gt;', UrlValue::template('set[32]=noitem-', '<b>_#HEADLINE</b>'));
+        self::assertSame('', UrlValue::template('set[32]=noitem-', ''));
     }
 
     /** a refused value keeps no brace and no quote mark a later command could turn into one */

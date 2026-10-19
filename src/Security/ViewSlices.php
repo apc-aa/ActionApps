@@ -33,10 +33,10 @@ use zids;
  * sorting by one, reaches a protected slice through a related public one; discussions (discus views);
  * the banners the URL chose stay on the view for its later calls in the request (AA_View keeps them,
  * setBannerParam()), so a template call of the same view decides those its first call did not draw only
- * during the rows of that first call; the hit of a refused x- item; noitem from the URL, expanded as a
- * template; ?debug without a permission; the template commands - {view}, {view.php?...}, {ids},
- * {count} - which are trusted, also when a template builds an inner view per item from URL values
- * (als[], cmd[]=x-<vid>-url).
+ * during the rows of that first call; the hit of a refused x- item; an {expression} in noitem from the
+ * URL while Protection::UrlValuesAsText is off (AA\Security\UrlValue); ?debug without a permission;
+ * the template commands - {view}, {view.php?...}, {ids}, {count} - which are trusted, also when a
+ * template builds an inner view per item from URL values (als[], cmd[]=x-<vid>-url).
  */
 final class ViewSlices
 {

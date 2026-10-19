@@ -29,7 +29,7 @@ enum Protection: string
     {
         return match ($this) {
             self::SignedExpressions => _m('ret_code and ok_url sent to filler.php'),
-            self::UrlValuesAsText   => _m('als[] and the state of site pages, taken from the URL'),
+            self::UrlValuesAsText   => _m('als[], noitem of views and the state of site pages, taken from the URL'),
             self::LoginThrottle     => _m('Logins to the administration and to reader accounts, counted per address of the visitor'),
         };
     }
@@ -52,7 +52,8 @@ enum Protection: string
     {
         return match ($this) {
             self::SignedExpressions => _m('Forms that AA generates with {form} or {ajax}, and the form for adding a related item, are signed and need no change. Text, _#ALIASES and fields such as {headline........} in ret_code or ok_url keep working as well. If your own form or link sends another {expression} there, generate the form with {form} or {ajax}, or replace the expression with aliases.'),
-            self::UrlValuesAsText   => _m('Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it.'),
+            self::UrlValuesAsText   => _m('Text, numbers, ids and _#ALIASES in als[] and in the state of site pages keep working; an {expression} there is shown as text. Write the expression in the template that builds the link, so it runs there before the link is sent, or pass an id and compute the rest in the page that receives it.')
+                . ' ' . _m('A noitem text in a link to a view (set[...]=noitem-...) is shown as text, HTML and _#ALIASES included. Put the text into the "No item found" message of the view, or show the view from a template with {view.php?...}, where noitem works as before. Switching this protection off lets only a noitem with an {expression} run as before.'),
             self::LoginThrottle     => _m('After 20 failed logins from one address in 12 hours, or 5 with one user name, the next login waits half a minute to a minute, twice as long after each further failure, at most an hour. A script that keeps logging in with an old password waits too: find its address in the Log (event LOGIN) and give it the current password. If every visitor seems to come from one address, AA runs behind a proxy missing in AA_TRUSTED_PROXIES - State Check names it; add it in config.php rather than switching this protection off.'),
         };
     }

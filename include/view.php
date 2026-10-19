@@ -28,6 +28,7 @@
  *
 */
 
+use AA\Security\UrlValue;
 use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
 use AA\Util\Langs;
@@ -330,6 +331,20 @@ class AA_Showview
         $this->hits = [];
     }
 
+    /** the text shown when the view finds nothing - noitem given to the view, else the view's own message; both
+     *  are templates, except a noitem from the URL, shown as text (AA\Security\UrlValue::template()) */
+    protected function noitemMsg(AA_View $view): string
+    {
+        if (isset($this->_view_param['noitem'])) {
+            $noitem = $this->_view_param['noitem'];
+            // the log names the view - every view of view.php is the same page
+            return $this->from_request ? UrlValue::template('set[' . $view->getId() . ']=noitem-', $noitem) : $noitem;
+        }
+        return (strlen((string) $view->f('noitem_msg')) > 0)
+            ? str_replace('<!--Vacuum-->', '', $view->f('noitem_msg'))
+            : ('<div>' . _m('No item found') . '</div>');
+    }
+
     private function viewOutput(float $dbgtime): string
     {
         if (!($view = AA_Views::getView($this->_view_param["vid"]))) {
@@ -390,10 +405,6 @@ class AA_Showview
             AA::$lang    = strtolower(substr($view->getLang(), 0, 2));   // actual language - two letter shortcut cz / es / en
             AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }
-
-        $noitem_msg = ($this->_view_param["noitem"] ?? (((strlen($view->f('noitem_msg')) > 0))
-                ? str_replace('<!--Vacuum-->', '', $view->f('noitem_msg'))
-                : ("<div>" . _m("No item found") . "</div>")));
 
         if ($this->_view_param["banner"]) {
             $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"], $this->from_request));  // if banner set format
@@ -504,7 +515,7 @@ class AA_Showview
                 $itemview->parameter('start_cat', $this->_view_param['start_cat']);
 
                 if (!isset($zids) || $zids->isEmpty()) {
-                    $ret = $itemview->unaliasWithScroller($noitem_msg);
+                    $ret = $itemview->unaliasWithScroller($this->noitemMsg($view));   // only when shown - a noitem from the URL may write a log row
                     break;
                 }
 
@@ -533,7 +544,7 @@ class AA_Showview
                         break;
                     }
                 }
-                $ret      = AA::Un($noitem_msg);
+                $ret      = AA::Un($this->noitemMsg($view));
                 break;
             case 'seetoo':
             case 'calendar':
@@ -641,7 +652,7 @@ class AA_Showview
                 if ($zids2->count() > (ctype_digit((string) $list_from) ? (int) $list_from : 0)) { // $list_from could be 'random:number.........1' ...
                     $ret = $itemview->get_output(($view_info['type'] === 'calendar') ? 'calendar' : 'view');
                 } else {
-                    $ret = $itemview->unaliasWithScroller($noitem_msg);
+                    $ret = $itemview->unaliasWithScroller($this->noitemMsg($view));
                 }
 
                 if ($view_info['type'] === 'list' && $view->f('scroller') == 2 && $GLOBALS['apc_state']['router']) {
