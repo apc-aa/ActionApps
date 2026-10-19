@@ -18,7 +18,7 @@ test('pairs every span of the shared cases, from both ends', () => {
 /** the text with the brace at `pos` and its pair in [] */
 function show(text, pos) {
     const pair = pairedBrace(text, pos);
-    return [...text].map((c, i) => (((i === pos) || (i === pair)) ? `[${c}]` : c)).join('');
+    return text.split('').map((c, i) => (((i === pos) || (i === pair)) ? `[${c}]` : c)).join('');
 }
 
 const LDJSON = '<script type="application/ld+json">{"a": 1,\n {ifset:{item:{xid}:_#HEAD_FOT}:{-\n  "image": [ "_#1" ],\n }}\n}</script>';
@@ -45,4 +45,5 @@ test('no pair', () => {
     assert.equal(pairedBrace('a}', 1), -1);
     assert.equal(pairedBrace('{x}}', 3), -1);
     assert.equal(show('}{a}', 1), '}[{]a[}]');
+    assert.equal(pairedBrace('{a}', 1), -1);
 });

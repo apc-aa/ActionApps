@@ -212,7 +212,7 @@ const hintLoader = ViewPlugin.fromClass(class {
 export function aaSyntax() {
     return [
         comments,
-        bracketMatching({ renderMatch: renderBracketMatch }),
+        bracketMatching({ renderMatch: renderBracketMatch }),   // CodeMirror 5's matchBrackets + matchTags
         // instead of the language's own completion: HTML tags were never offered here
         autocompletion({ override: [aaCompletions], icons: false }),
         hint,

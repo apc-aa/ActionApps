@@ -103,13 +103,17 @@ export function contextAt(text, pos) {
 }
 
 /**
- * The brace paired with the one at `pos`, as the expander pairs them.
+ * The brace paired with the one at `pos`, by the brace stack the expander pairs with - an empty {}
+ * pairs too, though the expressions around it then stay unexpanded (see walk()).
  * @param {string} text
- * @param {number} pos  of a "{" or "}"
- * @return {number} -1 when it has no pair
+ * @param {number} pos
+ * @return {number} -1 when it has no pair or `pos` is no brace
  */
 export function pairedBrace(text, pos) {
     const own = text.charCodeAt(pos);
+    if ((own !== OPEN) && (own !== CLOSE)) {
+        return -1;
+    }
     const dir = (own === OPEN) ? 1 : -1;
     let depth = 0;
     for (let i = pos; (i >= 0) && (i < text.length); i += dir) {

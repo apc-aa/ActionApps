@@ -12,7 +12,7 @@
 import { EditorView, keymap, drawSelection, dropCursor } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-import { bracketMatching, indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import { indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { search, searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
@@ -49,7 +49,6 @@ export function createEditor(textarea, { language = 'html', disabled = false, on
                 dropCursor(),
                 indentOnInput(),
                 syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-                bracketMatching(),            // CodeMirror 5's matchBrackets + matchTags
                 search(),
                 highlightSelectionMatches(),
                 keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap]),
