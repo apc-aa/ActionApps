@@ -148,28 +148,6 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertNoSecret($findings);
     }
 
-    // UploadDir reads no attachment where PHP cannot list /proc/self/fd
-    public function test_findings_attachmentsWithoutKernelPaths(): void
-    {
-        $check              = self::check(self::account());
-        $check->kernelPaths = false;
-
-        $findings = $check->findings();
-
-        self::assertSame([Finding::WARNING], self::severities($findings));
-        self::assertSame('kernel-paths:test:NSZM', $findings[0]->key);
-        self::assertSame('Mass sending from ISDS account AA_APIKEY_ISDSTEST_NSZM cannot attach files until /proc/self/fd is added to open_basedir', $findings[0]->title);
-        self::assertStringContainsString('the PHP that sends, on the web or in cron, needs the same', $findings[0]->advice);
-        self::assertNoSecret($findings);
-
-        // no slices, no mass sending
-        $constants = self::account();
-        unset($constants['AA_APIKEY_ISDSTEST_NSZM_SLICES']);
-        $bare              = self::check($constants);
-        $bare->kernelPaths = false;
-        self::assertSame(['account:test:NSZM'], self::keys($bare->findings()));
-    }
-
     public function test_findings_straysNamed(): void
     {
         $findings = self::check(self::account() + ['AA_APIKEY_ISDSTEST_LOGIN' => 'stray-value-1', 'AA_APIKEY_ISDSTEST_Nszm_PASSWORD' => 'stray-value-2'])->findings();

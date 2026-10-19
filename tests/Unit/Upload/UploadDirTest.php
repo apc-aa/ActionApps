@@ -183,8 +183,77 @@ final class UploadDirTest extends TestCase
         ];
     }
 
-    // PHP's own rename() empties the cache of resolved paths, so the link comes from another process
     public function test_read_refusesSliceDirectoryLinkedSinceAnEarlierRead(): void
+    {
+        $this->linkSliceDirectorySinceAnEarlierRead();
+
+        $this->assertLinkedSliceDirectory(self::URL . '/secret.pdf');
+    }
+
+    // open_basedir hides /proc/self/fd unless it names it: read() then resolves the path instead
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function test_read_withoutProcSelfFd_bytesOfTheFile(): void
+    {
+        file_put_contents("$this->dir/a.pdf", self::PDF);
+        mkdir("$this->root/outside/abc/sub", 0o777, true);
+        file_put_contents("$this->root/outside/abc/sub/b.pdf", self::PDF);
+        symlink("$this->root/outside", "$this->root/linked");
+        self::hideProcSelfFd();
+
+        self::assertSame(self::PDF, $this->uploads()->read(self::URL . '/a.pdf', 1000));
+        self::assertSame(self::PDF, (new UploadDir(self::URL, "$this->root/linked/abc"))->read(self::URL . '/sub/b.pdf', 1000));
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function test_read_withoutProcSelfFd_refusesLinksOut(): void
+    {
+        file_put_contents("$this->root/outside/secret.pdf", self::PDF);
+        symlink("$this->root/outside/secret.pdf", "$this->dir/a.pdf");
+        symlink("$this->root/outside", "$this->dir/sub");
+        self::hideProcSelfFd();
+
+        $this->assertNotUploaded(self::URL . '/a.pdf');
+        $this->assertNotUploaded(self::URL . '/sub/secret.pdf');
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function test_read_withoutProcSelfFd_refusesLinkedSliceDirectory(): void
+    {
+        file_put_contents("$this->root/outside/secret.pdf", self::PDF);
+        rename($this->dir, "$this->dir.moved");
+        symlink("$this->root/outside", $this->dir);
+        self::hideProcSelfFd();
+
+        $this->assertLinkedSliceDirectory(self::URL . '/secret.pdf');
+    }
+
+    // the directories the earlier read resolved are cached, the slice directory among them
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function test_read_withoutProcSelfFd_refusesSliceDirectoryLinkedSinceAnEarlierRead(): void
+    {
+        self::hideProcSelfFd();
+        $this->linkSliceDirectorySinceAnEarlierRead();
+
+        $this->assertLinkedSliceDirectory(self::URL . '/secret.pdf');
+    }
+
+    /** open_basedir without /proc/self/fd, which stays for the rest of the process: only in a separate one */
+    private static function hideProcSelfFd(): void
+    {
+        $vendor = dirname((new \ReflectionClass(\Composer\Autoload\ClassLoader::class))->getFileName() ?: '', 2);
+        ini_set('open_basedir', implode(PATH_SEPARATOR, [sys_get_temp_dir(), dirname(__DIR__, 3), realpath($vendor) ?: $vendor]));
+        self::assertFalse(@scandir('/proc/self/fd'), '/proc/self/fd is still listed');
+    }
+
+    /**
+     * a.pdf read, then the slice directory replaced by a link to outside/, which holds secret.pdf.
+     * PHP's own rename() empties the cache of resolved paths, so the link comes from another process.
+     */
+    private function linkSliceDirectorySinceAnEarlierRead(): void
     {
         if (!function_exists('pcntl_fork') || !function_exists('posix_kill')) {
             self::markTestSkipped('pcntl or posix is not loaded');
@@ -206,27 +275,6 @@ final class UploadDirTest extends TestCase
         }
         pcntl_waitpid($pid, $status);
         self::assertTrue(is_link($this->dir), 'the other process made no link');
-
-        $this->assertLinkedSliceDirectory(self::URL . '/secret.pdf');
-    }
-
-    // open_basedir hides /proc/self/fd unless it names it; then even a file of the directory stays unread
-    #[RunInSeparateProcess]
-    #[PreserveGlobalState(false)]
-    public function test_read_refusesWithoutProcSelfFd(): void
-    {
-        file_put_contents("$this->dir/a.pdf", self::PDF);
-        $vendor = dirname((new \ReflectionClass(\Composer\Autoload\ClassLoader::class))->getFileName() ?: '', 2);
-        ini_set('open_basedir', implode(PATH_SEPARATOR, [sys_get_temp_dir(), dirname(__DIR__, 3), realpath($vendor) ?: $vendor]));
-        self::assertFalse(UploadDir::kernelPaths(), '/proc/self/fd is still listed');
-
-        try {
-            $this->uploads()->read(self::URL . '/a.pdf', 1000);
-            self::fail('a file read without /proc/self/fd');
-        } catch (\RuntimeException $e) {
-            // the whole message: no disk path, no bytes
-            self::assertSame('AA cannot check attachment files on this server. Ask the server administrator to add /proc/self/fd to open_basedir.', $e->getMessage());
-        }
     }
 
     /** refused like any file outside the directory: the message names neither the disk nor the bytes */

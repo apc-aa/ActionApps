@@ -13,7 +13,6 @@ use AA\Isds\ConfigException;
 use AA\Isds\Gate;
 use AA\Isds\SliceProblem;
 use AA\Isds\SliceRules;
-use AA\Upload\UploadDir;
 use AA\Util\LogOnce;
 use AA_Log;
 use AA_Module;
@@ -23,8 +22,7 @@ use AA_Module;
  * the constants AA does not read, whether the site and the slices each account is bound to are ready
  * (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
  * settings of the sending were not ready and the campaigns whose recipients could not be told (Gate logs
- * both), and whether PHP may list /proc/self/fd, without which a mass sending attaches no files.
- * Constant names and file names only, never a key or a passphrase. No network: CheckIsds logs in.
+ * both). Constant names and file names only, never a key or a passphrase. No network: CheckIsds logs in.
  */
 class CheckIsdsAccounts extends AbstractOptimize
 {
@@ -74,8 +72,7 @@ class CheckIsdsAccounts extends AbstractOptimize
         if (!$bindings && !$strays) {
             return $pages ?: [new Finding(Finding::OK, _m('No ISDS account is set up in include/config.php'))];
         }
-        $findings   = [];
-        $kernel     = $this->kernelPaths();
+        $findings = [];
         foreach ($bindings as $binding) {
             if (!$binding->usable()) {
                 $findings[] = self::accountFinding($binding);
@@ -84,15 +81,6 @@ class CheckIsdsAccounts extends AbstractOptimize
             $finding = self::slicesFinding($binding, $rules);
             if ($finding !== null) {
                 $findings[] = $finding;
-            }
-            if (!$kernel && ($binding->campaignSlice !== '')) {
-                $findings[] = new Finding(
-                    Finding::WARNING,
-                    _m('Mass sending from ISDS account %1 cannot attach files until /proc/self/fd is added to open_basedir', [Accounts::prefix($binding->environment, $binding->name)]),
-                    advice: _m('Add /proc/self/fd to open_basedir for this site. This check sees the PHP it runs in - the PHP that sends, on the web or in cron, needs the same.'),
-                    key: "kernel-paths:{$binding->environment}:{$binding->name}",
-                    place: $rules->name($binding->campaignSlice),
-                );
             }
         }
         if ($strays) {
@@ -402,12 +390,6 @@ class CheckIsdsAccounts extends AbstractOptimize
     protected function unresolvedCampaigns(): array
     {
         return LogOnce::recent(Gate::RECIPIENTS_EVENT, $this->now() - self::LOG_WINDOW_SECONDS, self::LOG_ROWS);
-    }
-
-    /** UploadDir::kernelPaths() as the PHP running this check sees it */
-    protected function kernelPaths(): bool
-    {
-        return UploadDir::kernelPaths();
     }
 
     /** the PHP_SAPI of the requests that read the key: apache2handler is PHP inside the web server */
