@@ -122,15 +122,25 @@ class Datovka extends AA_Object
 
     public static function getFromToken(string $appToken): ?Datovka
     {
-        $datovka_id                  = $appToken;
-        $system_id                   = $datovka_id % 10000;
-        $zids = self::querySet('Datovka', new AA_Set(null, new AA_Condition('datovka_id', '==', $datovka_id)));
+        $zids = self::ofToken($appToken);
         if ($zids->count() !== 1) {
             echo 'Datovka not found';
             return null;
         }
         /** @var Datovka */
         return self::load($zids->id(), 'Datovka');
+    }
+
+    /** a message of this database has the token - service.php tells an installation missing in instances from a foreign token */
+    public static function storedHere(string $appToken): bool
+    {
+        return self::ofToken($appToken)->count() > 0;
+    }
+
+    /** the stored messages of the token */
+    private static function ofToken(string $appToken): zids
+    {
+        return self::querySet('Datovka', new AA_Set(null, new AA_Condition('datovka_id', '==', $appToken)));
     }
 
 

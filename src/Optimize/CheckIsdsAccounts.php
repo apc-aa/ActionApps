@@ -23,7 +23,8 @@ use AA_Module;
  * ready (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
  * settings of the sending were not ready and the campaigns whose recipients could not be told (Gate logs
  * both). Only the accounts of the sites of this database (Accounts::here()). Names of settings and files
- * only, never a password, a key or a passphrase. No network: CheckIsds logs in.
+ * only, never a password, a key or a passphrase. No network: CheckIsds logs in. The file itself -
+ * whether AA can use it, its keys outside the accounts, its permissions and copies - CheckIsdsConf checks.
  */
 class CheckIsdsAccounts extends AbstractOptimize
 {
@@ -74,7 +75,8 @@ class CheckIsdsAccounts extends AbstractOptimize
         $rules    = $this->sliceRules();
         $pages    = [...$this->pageFindings($rules), ...$this->recipientFindings($rules)];
         if (!$bindings && !$strays) {
-            return $pages ?: [new Finding(Finding::OK, _m('No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database'))];
+            // a file AA cannot use has no account read: no OK then
+            return [...$pages, ...CheckIsdsConf::notChecked($conf)] ?: [new Finding(Finding::OK, _m('No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database'))];
         }
         $findings = [];
         foreach ($bindings as $binding) {

@@ -27,6 +27,9 @@ final class ScriptedIsdsCheck extends CheckIsds
     /** @var array<array-key, mixed> as DATOVKA_CONF['accounts'] */
     public array $accounts = [];
 
+    /** the whole settings instead of $accounts - a file AA cannot use */
+    public ?DatovkaConf $conf = null;
+
     /** @var ?list<string> the sites and slices of this database; null = all */
     public ?array $here = null;
 
@@ -46,7 +49,7 @@ final class ScriptedIsdsCheck extends CheckIsds
 
     protected function conf(): DatovkaConf
     {
-        return Sending::conf($this->accounts);
+        return $this->conf ?? Sending::conf($this->accounts);
     }
 
     protected function modulesHere(array $ids): array

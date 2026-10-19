@@ -115,6 +115,26 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertSame('No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database', $findings[0]->title);
     }
 
+    /** a file AA cannot use has no account read - no OK, CheckIsdsConf tells what to fix */
+    #[DataProvider('fileAaCannotUse')]
+    public function test_findings_fileAaCannotUseIsNoOk(bool $broken): void
+    {
+        $check        = self::check([]);
+        $check->conf  = Sending::fileConf($broken);
+        $check->pages = [self::notReadyPage()];
+
+        $findings = $check->findings();
+
+        self::assertSame(['page:' . self::SITE . ':' . self::CAMPAIGN, 'file'], self::keys($findings));
+        self::assertSame([Finding::INFO, 'ISDS accounts not checked: AA cannot use the accounts of misc/datovka/datovka_conf.php', 'The check "ISDS settings file" tells what to fix.'], [$findings[1]->severity, $findings[1]->title, $findings[1]->advice]);
+    }
+
+    /** @return array<string, array{bool}> */
+    public static function fileAaCannotUse(): array
+    {
+        return ['unreadable' => [false], 'broken' => [true]];
+    }
+
     /**
      * One tree serves several databases: each deals with the accounts of its sites. An account of no
      * site read is a fault of the file, named in each - its files and slices only in the database of its

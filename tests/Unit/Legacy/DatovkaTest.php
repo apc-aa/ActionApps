@@ -8,6 +8,8 @@ use AA\Isds\DatovkaConf;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Legacy\Fixtures\FakeStore;
+use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
 /**
  * The client behind {datovka} (misc/datovka/datovka.php) and its settings (AA\Isds\DatovkaConf): which
@@ -276,5 +278,31 @@ final class DatovkaTest extends TestCase
         $_GET = ['appToken' => '491032843380007'];
 
         $this->assertFalse(\RecordingDatovka::possiblyRedirectToAa($_GET['appToken']));
+    }
+
+    /**
+     * Of a refused answer service.php logs the installation id only when a message of this database has
+     * the token - one query, and a made-up token matches no row
+     */
+    public function test_storedHere_onlyTokenOfAMessageOfThisDatabase(): void
+    {
+        // the warnings are locsess.php missing the web request and config of a real install
+        set_error_handler(static fn() => true, E_WARNING | E_DEPRECATED);
+        try {
+            require_once __DIR__ . '/fixtures/object_form_fixtures.php';
+        } finally {
+            restore_error_handler();
+        }
+        require_once dirname(__DIR__, 3) . '/misc/datovka/datovka.php';
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+        FakeStore::install([
+            'a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1' => ['b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1', 'Datovka', ['datovka_id' => '491032843381001']],
+            'c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1c1' => ['b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1b1', 'AnotherClass', ['datovka_id' => '491032843381002']],
+        ]);
+
+        $this->assertTrue(\Datovka::storedHere('491032843381001'));
+        $this->assertCount(1, RecordingDb::$log, 'one query');
+        $this->assertFalse(\Datovka::storedHere('491032843381003'));
+        $this->assertFalse(\Datovka::storedHere('491032843381002'), 'an object of another class');
     }
 }

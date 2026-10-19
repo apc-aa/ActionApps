@@ -324,6 +324,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/CheckImports.php | State Check: imports stopped, stuck, unable to run, damaged keys, leftovers | CheckImports | M |
 | Optimize/CheckImportStores.php | State Check: unreadable import stream states and catalogs | CheckImportStores | S |
 | Optimize/CheckInstallRuns.php | State Check: hanging or failed app transfers | CheckInstallRuns | S |
+| Optimize/CheckIsdsConf.php | State Check: misc/datovka/datovka_conf.php unreadable or broken, settings left out or not read, keys written twice, permissions, copies; problems other sites met and unknown installations, logged | CheckIsdsConf::notChecked() | S |
 | Optimize/CheckObjectFormRefusals.php | State Check: settings/Manager forms refused for posting a foreign object | CheckObjectFormRefusals | S |
 | Optimize/CheckPhpFatals.php | State Check: PHP fatal errors of the last 7 days by file and line | CheckPhpFatals | S |
 | Optimize/CheckQueuedClassMissing.php | State Check: queued tasks of a class this AA does not have | CheckQueuedClassMissing | S |

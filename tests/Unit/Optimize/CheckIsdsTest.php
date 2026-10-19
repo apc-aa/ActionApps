@@ -101,6 +101,26 @@ final class CheckIsdsTest extends TestCase
         self::assertSame([], self::operations($check));
     }
 
+    /** a file AA cannot use has no account read - nothing tried, but no OK */
+    #[DataProvider('fileAaCannotUse')]
+    public function test_findings_fileAaCannotUseIsNoOk(bool $broken): void
+    {
+        $check       = self::check([]);
+        $check->conf = Sending::fileConf($broken);
+
+        $findings = $check->findings();
+
+        self::assertSame([Finding::INFO], self::severities($findings));
+        self::assertSame(['file', 'ISDS accounts not checked: AA cannot use the accounts of misc/datovka/datovka_conf.php'], [$findings[0]->key, $findings[0]->title]);
+        self::assertSame([], self::operations($check));
+    }
+
+    /** @return array<string, array{bool}> */
+    public static function fileAaCannotUse(): array
+    {
+        return ['unreadable' => [false], 'broken' => [true]];
+    }
+
     public function test_findings_loginOkNamesTheBox(): void
     {
         $check = self::check(self::account(), self::answers('owner-info.xml', 'user-info.xml', 'password-info-nil.xml'));

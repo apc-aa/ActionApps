@@ -96,10 +96,13 @@ final class DatovkaConfTest extends TestCase
         }
     }
 
-    /** @param string $failure '', 'unreadable' or 'broken' */
+    /** @param string $failure '', 'unreadable', 'broken' or 'accounts' - broken in the accounts only */
     private function assertFailure(string $failure, DatovkaConf $conf): void
     {
-        $this->assertSame([$failure === 'unreadable', $failure === 'broken'], [$conf->unreadable(), $conf->broken()]);
+        $this->assertSame(
+            [$failure === 'unreadable', in_array($failure, ['broken', 'accounts'], true), in_array($failure, ['unreadable', 'broken'], true)],
+            [$conf->unreadable(), $conf->broken(), $conf->lost()],
+        );
     }
 
     public function test_ats_addressesOfIsds(): void
@@ -151,7 +154,21 @@ final class DatovkaConfTest extends TestCase
         ]);
 
         $this->assertSame(["DATOVKA_CONF['test']['atsid']", "DATOVKA_CONF['instance']", 'DATOVKA_CONF[7]'], $conf->strays());
+        $this->assertSame(["DATOVKA_CONF['test']['url_login']", "DATOVKA_CONF['test']['wsdl_SetConcept']"], $conf->ignored(), 'of an older file - ATS gives them');
         $this->assertSame([], $conf->problems());
+    }
+
+    /** an installation holds url only; one left out names its problem, not its keys */
+    public function test_fromArray_strayKeysOfAnInstallation(): void
+    {
+        $conf = DatovkaConf::fromArray(['instances' => [
+            1000 => ['url' => 'https://example.org/aa/', 'name' => self::SECRET, 'NSZM' => ['password' => self::SECRET]],
+            1001 => ['url' => 'http://example.org/aa/', 'note' => self::SECRET],
+        ]]);
+
+        $this->assertSame(["DATOVKA_CONF['instances'][1000]['name']", "DATOVKA_CONF['instances'][1000]['NSZM']"], $conf->strays());
+        $this->assertCount(1, $conf->problems());
+        $this->assertShowsNoValue([...$conf->strays(), ...$conf->problems()]);
     }
 
     /** @return iterable<string, array{array<mixed>, string}> */
@@ -193,7 +210,151 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertSame(["DATOVKA_CONF['accounts'] is not an array - AA has no ISDS account"], $conf->problems());
         $this->assertSame([[], 'a1b2c3d4e5f60718'], [$conf->accounts(), $conf->ats('test')['atsId']], 'the rest is read');
-        $this->assertFailure('broken', $conf);
+        $this->assertFailure('accounts', $conf);
+    }
+
+    // the problem that keeps AA from the file comes first
+    public function test_fromArray_accountsNotAnArrayFirst(): void
+    {
+        $conf = DatovkaConf::fromArray(['test' => ['cert' => 7], 'accounts' => self::SECRET]);
+
+        $this->assertSame(["DATOVKA_CONF['accounts'] is not an array - AA has no ISDS account", "DATOVKA_CONF['test']['cert'] is not a string - AA leaves it out"], $conf->problems());
+    }
+
+    /**
+     * Each problem is logged with the problem as the selector - keys only; the params tell the one that
+     * kept AA from the file or its accounts, and the site, so the State Check of another site can tell it.
+     */
+    public function test_logProblems_logsEachProblemWithItsSite(): void
+    {
+        $conf = DatovkaConf::fromArray(['test' => ['cert' => [self::SECRET]], 'accounts' => self::SECRET, 'instances' => [0 => ['url' => self::SECRET]]]);
+        $log  = [];
+
+        $this->assertSame($conf, $conf->logProblems(static function (string $event, string $selector, array $params) use (&$log): bool {
+            $log[] = [$event, $selector, $params];
+
+            return true;
+        }, 'https://example.org/aa/'));
+
+        $this->assertSame([
+            ['ISDS_FILE', "DATOVKA_CONF['accounts'] is not an array - AA has no ISDS account", ['accounts', 'https://example.org/aa/']],
+            ['ISDS_FILE', "DATOVKA_CONF['test']['cert'] is not a string - AA leaves it out", ['', 'https://example.org/aa/']],
+            ['ISDS_FILE', $conf->problems()[2], ['', 'https://example.org/aa/']],
+        ], $log);
+        $this->assertShowsNoValue([...array_column($log, 1), ...array_merge(...array_column($log, 2))]);
+    }
+
+    public function test_logProblems_unreadableTellsSo(): void
+    {
+        symlink("$this->dir/gone.php", "$this->dir/datovka_conf.php");
+        $log = [];
+
+        DatovkaConf::fromFile("$this->dir/datovka_conf.php")->logProblems(static function (string $event, string $selector, array $params) use (&$log): bool {
+            $log[] = [$event, $selector, $params];
+
+            return true;
+        }, '');
+
+        $this->assertSame([['ISDS_FILE', self::UNREACHABLE, ['unread', '']]], $log);
+    }
+
+    // a query each: a file of many problems logs the first ones
+    public function test_logProblems_atMostTen(): void
+    {
+        $count = 0;
+        $log   = static function () use (&$count): bool {
+            return (bool) ++$count;
+        };
+
+        DatovkaConf::fromArray(['instances' => array_fill(10001, 12, ['url' => ''])])->logProblems($log, '');
+        DatovkaConf::fromArray(['instances' => [1000 => ['url' => 'https://example.org/aa/']]])->logProblems($log, '');
+
+        $this->assertSame(10, $count);
+    }
+
+    /**
+     * The token of a message of this database: an installation missing in instances, by its id; any other
+     * token under one selector. Nothing while AA cannot use the file - it lists no installation then.
+     */
+    public function test_logRefusedAnswer_knownTokenByItsId(): void
+    {
+        $log    = [];
+        $logger = static function (string ...$row) use (&$log): bool {
+            $log[] = $row;
+
+            return true;
+        };
+        $asked = 0;
+        $conf  = DatovkaConf::fromArray(['instances' => [1000 => ['url' => 'https://example.org/aa/']]]);
+
+        $conf->logRefusedAnswer(1001, static fn(): bool => true, $logger);
+        $conf->logRefusedAnswer(7, static fn(): bool => false, $logger);
+        DatovkaConf::fromArray(['accounts' => 'x'])->logRefusedAnswer(1002, static fn(): bool => true, $logger);
+        symlink("$this->dir/gone.php", "$this->dir/link.php");
+        foreach ([DatovkaConf::fromFile($this->file("<?php\nconst DATOVKA_CONF = [\n")), DatovkaConf::fromFile("$this->dir/link.php")] as $lost) {
+            $lost->logRefusedAnswer(1003, static function () use (&$asked): bool {
+                return (bool) ++$asked;
+            }, $logger);
+        }
+
+        $this->assertSame([['ISDS_INST', 'known:1001', '1001'], ['ISDS_INST', 'unknown', '7'], ['ISDS_INST', 'known:1002', '1002']], $log, 'the accounts aside, instances are read');
+        $this->assertSame(0, $asked, 'no database query for a file AA cannot use');
+    }
+
+    /** @return iterable<string, array{string, list<list<string>>}> */
+    public static function twice(): iterable
+    {
+        $file = static fn(string $body): string => "<?php\nconst DATOVKA_CONF = [\n$body\n];\n";
+
+        yield 'an account' => [$file("'accounts' => [\n    'NSZM' => ['sites' => ['a']],\n    'ECN' => [],\n    'NSZM' => ['sites' => ['b']],\n],"), [['accounts', 'NSZM']]];
+        yield 'in either quotes' => [$file("'accounts' => ['NSZM' => [], \"NSZM\" => []],"), [['accounts', 'NSZM']]];
+        yield 'in the long syntax' => ["<?php\nconst DATOVKA_CONF = array(\n'accounts' => array('NSZM' => array(), 'NSZM' => array()),\n);\n", [['accounts', 'NSZM']]];
+        yield 'defined' => ["<?php\ndefined('DATOVKA_CONF') || define('DATOVKA_CONF', ['accounts' => ['NSZM' => [], 'NSZM' => []]]);\n", [['accounts', 'NSZM']]];
+        yield 'any name, as written' => [$file("'accounts' => ['nszm' => [], 'nszm' => []],"), [['accounts', 'nszm']]];
+        yield 'commented out' => [$file("'accounts' => [\n    // 'NSZM' => [],\n    # 'NSZM' => [],\n    /* 'NSZM' => [], */\n    'NSZM' => [],\n],"), []];
+        yield 'deeper' => [$file("'accounts' => ['NSZM' => ['sites' => ['a'], 'NSZM' => [], 'x' => ['NSZM' => 1, 'NSZM' => 2]]],"), []];
+        yield 'a value, not a key' => [$file("'accounts' => ['NSZM' => ['note' => 'NSZM', 'other' => 'NSZM']],"), []];
+        yield 'inside texts' => [$file("'accounts' => [\n    'NSZM' => ['note' => <<<TXT\n        'NSZM' => [\n        TXT, 'n' => <<<'TXT'\n        'NSZM' => [\n        TXT, 'm' => \"{\$x} 'NSZM' => [\"],\n    'ECN' => [], 'ECN' => [],\n],"), [['accounts', 'ECN']]];
+        yield 'with a backslash' => [$file("'accounts' => ['N\\SZM' => [], 'N\\SZM' => []],"), []];
+        yield 'a key of the file' => [$file("'accounts' => [],\n'instances' => [],\n'accounts' => ['NSZM' => []],"), [['accounts']]];
+        yield 'both accounts' => [$file("'accounts' => ['NSZM' => []],\n'accounts' => ['NSZM' => []],"), [['accounts'], ['accounts', 'NSZM']]];
+        yield 'a key AA does not read' => [$file("'note' => 1, 'note' => 2, 7 => 1, 7 => 2,"), []];
+        yield 'another array' => ["<?php\n\$a = ['accounts' => ['NSZM' => 1, 'NSZM' => 2]];\nconst DATOVKA_CONF = ['accounts' => ['NSZM' => []]];\n", []];
+        yield 'after the array' => ["<?php\nconst DATOVKA_CONF = ['accounts' => ['NSZM' => []]];\n\$a = ['NSZM' => 1, 'NSZM' => 2];\n", []];
+        yield 'no valid PHP' => [$file("'accounts' => ['NSZM' => [] 'NSZM' => [],"), []];
+        yield 'no valid PHP further on' => [$file("'accounts' => ['NSZM' => [], 'NSZM' => []],\n'test' => ['cert' => ,"), [['accounts', 'NSZM']]];
+        yield 'after a comment' => [$file("'accounts' => [\n 'NSZM' => [],\n // production\n 'NSZM' => [],\n],"), [['accounts', 'NSZM']]];
+        yield 'a list of names' => [$file("'accounts' => ['NSZM', 'NSZM'],"), []];
+        yield 'an array where the constant is only asked about' => ["<?php\nif (!defined('DATOVKA_CONF')) {\n    \$z = ['accounts' => ['NSZM' => 1, 'NSZM' => 2]];\n}\n", []];
+        yield 'defined in double quotes' => ["<?php\ndefine(\"DATOVKA_CONF\", ['accounts' => ['NSZM' => [], 'NSZM' => []]]);\n", [['accounts', 'NSZM']]];
+        yield 'after an attribute' => ["<?php\n#[Pure]\nfunction f(): void {}\nconst DATOVKA_CONF = ['accounts' => ['NSZM' => [], 'NSZM' => []]];\n", [['accounts', 'NSZM']]];
+        yield 'an attribute inside' => ["<?php\ndefine('DATOVKA_CONF', ['x' => #[Pure] fn() => 1, 'accounts' => ['NSZM' => [], 'NSZM' => []]]);\n", [['accounts', 'NSZM']]];
+        yield 'another constant first' => ["<?php\nconst OTHER = ['accounts' => ['NSZM' => 1, 'NSZM' => 2]];\ndefine('OTHER2', ['accounts' => ['NSZM' => 1, 'NSZM' => 2]]);\nconst DATOVKA_CONF = ['accounts' => ['ECN' => []]];\n", []];
+        yield 'the name as a key' => ["<?php\n\$a = ['DATOVKA_CONF' => ['accounts' => ['NSZM' => 1, 'NSZM' => 2]]];\n", []];
+        yield 'the name inside' => [$file("'note' => ['DATOVKA_CONF', ['x']],\n'accounts' => ['NSZM' => [], 'NSZM' => []],"), [['accounts', 'NSZM']]];
+    }
+
+    /** @param list<list<string>> $paths */
+    #[DataProvider('twice')]
+    public function test_repeated_keysWrittenTwice(string $php, array $paths): void
+    {
+        $this->assertSame($paths, DatovkaConf::repeated($this->file($php)));
+    }
+
+    public function test_repeated_nothingToRead(): void
+    {
+        $this->assertSame([], DatovkaConf::repeated("$this->dir/datovka_conf.php"));
+        $this->assertSame([], DatovkaConf::repeated($this->dir));
+    }
+
+    // a basic check cannot afford the tokens of a long file: not looked at, and the caller knows
+    public function test_repeated_longFileNotLookedAt(): void
+    {
+        $body = "'accounts' => ['NSZM' => [], 'NSZM' => []],\n";
+        $php  = "<?php\nconst DATOVKA_CONF = [\n$body];\n";
+
+        $this->assertSame([['accounts', 'NSZM']], DatovkaConf::repeated($this->file(str_pad($php, DatovkaConf::MAX_BYTES, ' '))));
+        $this->assertNull(DatovkaConf::repeated($this->file(str_pad($php, DatovkaConf::MAX_BYTES + 1, ' '))));
     }
 
     public function test_fromArray_rightPartsOfWrongOnesKept(): void
@@ -271,7 +432,8 @@ final class DatovkaConfTest extends TestCase
         };
         $this->assertSame([['sites' => ['y']], ['z'], ['w'], ['sites' => ['v']], $block], array_map($revealed, $conf->loose()), 'arrays only, as written - url_login holds a text');
         $this->assertSame([1001 => 'https://example.net/aa/'], $conf->instances());
-        $this->assertSame(["DATOVKA_CONF['test']['ECN']", "DATOVKA_CONF['standard']['PROD']", "DATOVKA_CONF['NSZM']", "DATOVKA_CONF['note']"], $conf->strays());
+        $this->assertSame(["DATOVKA_CONF['test']['ECN']", "DATOVKA_CONF['test']['url_login']", "DATOVKA_CONF['standard']['PROD']", "DATOVKA_CONF['instances'][1001]['NSZM']", "DATOVKA_CONF['NSZM']", "DATOVKA_CONF['note']"], $conf->strays(), 'url_login holds no address');
+        $this->assertSame([], $conf->ignored());
         $this->assertInstanceOf(Secret::class, $conf->loose()[4]['environment']);
 
         ob_start();
@@ -317,6 +479,15 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame(['misc/datovka/datovka_conf.php is not valid PHP (line 3) - AA runs as if the file were not there'], $conf->problems());
+        $this->assertFailure('broken', $conf);
+    }
+
+    /** an anonymous class is named with the file and the line of the code after a NUL - neither may reach the log */
+    public function test_fromFile_anonymousErrorNamedByItsParent(): void
+    {
+        $conf = DatovkaConf::fromFile($this->file("<?php\nthrow new class ('" . self::SECRET . "') extends \\RuntimeException {};\n"));
+
+        $this->assertSame(['misc/datovka/datovka_conf.php stops with RuntimeException@anonymous - AA runs as if the file were not there'], $conf->problems());
         $this->assertFailure('broken', $conf);
     }
 
@@ -451,6 +622,7 @@ final class DatovkaConfTest extends TestCase
         $this->assertSame(self::root() . 'config/certs/ats.crt', $conf->ats('standard')['cert']);
         $this->assertSame([], $conf->problems());
         $this->assertSame([], $conf->strays());
+        $this->assertCount(6, $conf->ignored());
         $this->assertSame([], $conf->accounts());
         $this->assertFailure('', $conf);
     }

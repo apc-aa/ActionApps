@@ -84,7 +84,8 @@ final readonly class Setup
     /**
      * The settings of the template, when the slices, the site and datovka_conf.php are ready for them.
      * Of a slice the site does not use, or datovka_conf.php does not bind to it, it tells only that:
-     * a template of any site may name any slice.
+     * a template of any site may name any slice. Of a datovka_conf.php AA cannot use, only that it
+     * cannot be read now.
      * @param string       $settings the JSON object of the template
      * @param string       $site     the site whose page is rendered - never a value of the template
      * @param ?DatovkaConf $conf     as Accounts::binding()
@@ -132,11 +133,17 @@ final readonly class Setup
         $account = null;
         if (($campaign !== '') && ($message !== '')) {
             $siteProblems = $rules->siteProblems($site, $campaign, $message);
-            try {
-                $account = Accounts::forSlices($site, $campaign, $message, ($environment === Account::TEST) ? Account::TEST : '', $conf);
-            } catch (ConfigException $e) {
-                // says how to bind an account, nothing of the accounts there are
-                $problems[] = new SliceProblem($e->getMessage());
+            $conf ??= DatovkaConf::load();
+            if ($conf->unreadable() || $conf->broken()) {
+                // no advice to bind an account that may be there: what is wrong only the State Check tells
+                $problems[] = new SliceProblem(_m('The settings of data boxes cannot be read now - ask the administrator of the server'));
+            } else {
+                try {
+                    $account = Accounts::forSlices($site, $campaign, $message, ($environment === Account::TEST) ? Account::TEST : '', $conf);
+                } catch (ConfigException $e) {
+                    // says how to bind an account, nothing of the accounts there are
+                    $problems[] = new SliceProblem($e->getMessage());
+                }
             }
             // the slices themselves only once they are the site's, bound to it - of others the template learns nothing
             $slicesKnown = !$siteProblems && !is_null($account);

@@ -25,9 +25,10 @@ use AA\Later\Toexecute;
  * database (Accounts::here() - each database keeps its own log of refused logins): the data box it sends
  * from and, for a name and a password, the rights of its user and when its password expires. Read-only
  * operations of the ISDS client only.
- * The accounts that cannot be used, CheckIsdsAccounts names - they are not tried here. A login ISDS
- * refused is tried again only by a person here (Recheck, Run extended checks), never by the daily run;
- * an address ISDS blocked, by a person or once after LoginLatch::BLOCK_HOURS.
+ * The accounts that cannot be used, CheckIsdsAccounts names, and a file AA cannot use, CheckIsdsConf -
+ * they are not tried here. A login ISDS refused is tried again only by a person here (Recheck, Run
+ * extended checks), never by the daily run; an address ISDS blocked, by a person or once after
+ * LoginLatch::BLOCK_HOURS.
  */
 class CheckIsds extends AbstractOptimize
 {
@@ -75,7 +76,7 @@ class CheckIsds extends AbstractOptimize
         $bindings = Accounts::bindings($conf);
         $usable   = array_values(array_filter(Accounts::here($bindings, $this->modulesHere(Accounts::moduleIds($bindings))), static fn(Binding $b): bool => $b->usable()));
         if (!$usable) {
-            return [new Finding(Finding::OK, _m('No usable ISDS account to log in with'))];
+            return CheckIsdsConf::notChecked($conf) ?: [new Finding(Finding::OK, _m('No usable ISDS account to log in with'))];
         }
         $latch    = $this->latch();
         $retry    = !$this->unattended();

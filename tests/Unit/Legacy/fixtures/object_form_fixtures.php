@@ -78,7 +78,7 @@ namespace Tests\Unit\Legacy\Fixtures {
     final class FakeStore
     {
         /**
-         * @param array<string, array{0: string, 1: string}>  $objects  object id => [aa_owner, aa_type]
+         * @param array<string, array{0: string, 1: string, 2?: array<string, string>}>  $objects  object id => [aa_owner, aa_type, property => value]
          * @param array<string, list<array<string, mixed>>>  $tables   table => rows, ids unpacked
          */
         public static function install(array $objects, array $tables = []): void
@@ -150,16 +150,24 @@ namespace Tests\Unit\Legacy\Fixtures {
             return $ret;
         }
 
-        /** the look-ups of objects: by id, owner and class (querySet), their properties (load) */
+        /** the look-ups of objects: by id, owner, class and the value of a property (querySet), their properties (load) */
         private static function objects(string $sql, array $objects): array
         {
             if (str_contains($sql, 'objectid')) {                   // AA_Object::querySet()
                 preg_match("/t0\\.value='([^']*)'/", $sql, $type);
                 $ids    = self::idsOf($sql, 't0.object_id');
                 $owners = self::idsOf($sql, 't1.value');
-                $rows   = [];
-                foreach ($objects as $id => [$owner, $class]) {
-                    if (($class === stripslashes($type[1] ?? '')) && (($ids === null) || in_array($id, $ids, true)) && (($owners === null) || in_array($owner, $owners, true))) {
+                // "LEFT JOIN object_integer as i0 ON (... AND i0.property = 'x')" with "i0"."value" = ... in WHERE
+                preg_match_all("/ as (\\w+) ON \\(\\1\\.object_id=t0\\.object_id AND \\1\\.property = '(\\w+)'\\)/", $sql, $joins, PREG_SET_ORDER);
+                $values = [];
+                foreach ($joins as [, $alias, $property]) {
+                    $values[$property] = self::idsOf(preg_replace("/([`\"]?)$alias\\1\\.\\1value\\1/", "$alias.value", $sql), "$alias.value");
+                }
+                $rows = [];
+                foreach ($objects as $id => $object) {
+                    [$owner, $class] = $object;
+                    $matches         = array_filter($values, static fn(?array $wanted, string $property): bool => ($wanted === null) || in_array($object[2][$property] ?? null, $wanted, true), ARRAY_FILTER_USE_BOTH);
+                    if (($class === stripslashes($type[1] ?? '')) && (($ids === null) || in_array($id, $ids, true)) && (($owners === null) || in_array($owner, $owners, true)) && (count($matches) === count($values))) {
                         $rows[] = ['objectid' => $id];
                     }
                 }

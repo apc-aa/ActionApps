@@ -336,6 +336,22 @@ final class SetupTest extends TestCase
         ], self::problems(['message_slice' => self::OTHER] + self::settings(), rules: $rules));
     }
 
+    /**
+     * A file AA cannot use: no advice to bind an account that may well be there, nothing of the file -
+     * whoever writes the template reads it
+     */
+    #[DataProvider('fileAaCannotUse')]
+    public function test_fromTemplate_fileAaCannotUseTellsNoMore(bool $broken): void
+    {
+        self::assertSame(['The settings of data boxes cannot be read now - ask the administrator of the server'], self::problems(self::settings(), conf: Sending::fileConf($broken)));
+    }
+
+    /** @return array<string, array{bool}> */
+    public static function fileAaCannotUse(): array
+    {
+        return ['unreadable' => [false], 'broken' => [true]];
+    }
+
     // the slices of the site, bound to it: now everything about them
     public function test_fromTemplate_openSliceOfTheSite(): void
     {
