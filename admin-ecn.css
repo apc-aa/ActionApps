@@ -3097,7 +3097,7 @@ h1:has(+form[name="inputform"]) {
         margin: 0;
     }
     .aa-ui-content {
-        width: calc(100vw - 20px);
+        width: calc(100% - 20px); /* not 100vw: it includes the scrollbar */
         margin: 0 20px;
         padding: 0;
         box-sizing: border-box;
