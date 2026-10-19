@@ -178,9 +178,15 @@ final class LibxmlTest extends TestCase
     {
         return [
             'doctype'       => ['<!DOCTYPE a><a/>', 'must not have a DOCTYPE (DTD, entities)'],
-            'ebcdic dtd'    => [(string) iconv('UTF-8', 'IBM500', '<?xml version="1.0" encoding="IBM500"?><!DOCTYPE a [<!ENTITY e "x">]><a>&e;</a>'), 'must not have a DOCTYPE (DTD, entities)'],
+            'ebcdic dtd'    => [(string) iconv('UTF-8', 'IBM500', '<?xml version="1.0" encoding="IBM500"?><!DOCTYPE a [<!ENTITY e "x">]><a>&e;</a>'), self::readsEbcdic() ? 'must not have a DOCTYPE (DTD, entities)' : 'is not well-formed XML'],
             'latin 2'       => ['<?xml version="1.0" encoding="ISO-8859-2"?><a/>', 'is in encoding "ISO-8859-2"'],
         ];
+    }
+
+    // libxml 2.9 (Ubuntu 24.04, where CI runs) misreads "<!" in IBM500 and refuses the document as malformed before any DOCTYPE check
+    private static function readsEbcdic(): bool
+    {
+        return Libxml::run(static fn(): bool => (new DOMDocument())->loadXML((string) iconv('UTF-8', 'IBM500', '<?xml version="1.0" encoding="IBM500"?><!DOCTYPE a><a/>')));
     }
 
     // the DOM step on its own: the byte checks of load() would refuse these first
