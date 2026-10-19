@@ -20,7 +20,7 @@ use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
 
-// the in-memory object_text and toexecute, the config constants; the fixtures extend classes of AA
+// the in-memory object_text and toexecute, datovka_conf.php; the fixtures extend classes of AA
 require_once __DIR__ . '/../../Later/Fixtures/BatchRunTables.php';
 require_once __DIR__ . '/Sending.php';
 require_once __DIR__ . '/MemorySendItems.php';
@@ -63,9 +63,9 @@ trait SendRunCase
     {
         $this->tablesSetUp();
         TestSendRun::reset();
-        TestSendRun::$now       = self::NOW;
-        TestSendRun::$items     = new MemorySendItems(self::CAMPAIGN_ITEM);
-        TestSendRun::$constants = Sending::bound();
+        TestSendRun::$now   = self::NOW;
+        TestSendRun::$items = new MemorySendItems(self::CAMPAIGN_ITEM);
+        TestSendRun::$conf  = Sending::bound();
         foreach ([Sending::CAMPAIGN, Sending::MESSAGE] as $slice) {
             new PropertySlice($slice, new FakeFields($slice, []), ['reading_password' => md5('read')]);
         }

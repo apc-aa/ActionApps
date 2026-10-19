@@ -104,8 +104,8 @@ final class CheckIsdsRegistryTest extends TestCase
         self::assertSame(2, $findings[0]->count);
         $site2 = safe('Terminál <b>2</b>');
         self::assertSame([
-            [_m('ISDS account') => Accounts::prefix(Account::TEST, 'NSZM'), _m('Site') => $site2],
-            [_m('ISDS account') => Accounts::prefix(Account::TEST, 'OBCE'), _m('Site') => $site2],
+            [_m('ISDS account') => Accounts::label(Account::TEST, 'NSZM'), _m('Site') => $site2],
+            [_m('ISDS account') => Accounts::label(Account::TEST, 'OBCE'), _m('Site') => $site2],
         ], $findings[0]->evidence, 'the site with a paired slice is not listed');
         self::assertSame(['Site settings: Terminál <b>2</b>'], array_keys($findings[0]->links));
         self::assertStringContainsString(SliceRules::SITE_PAGE . '?change_id=' . self::SITE2, $findings[0]->links['Site settings: Terminál <b>2</b>']);
@@ -134,8 +134,8 @@ final class CheckIsdsRegistryTest extends TestCase
         $check = self::check([]);
         $check->siteModules = [self::SITE => [self::CAMPAIGN]];
         $without = [
-            'no sites'      => new Binding('NSZM', Account::TEST, [], self::CAMPAIGN, str_repeat('4f', 16), ['A broken constant'], Account::BASIC),
-            'no slices'     => new Binding('NSZM', Account::TEST, [self::SITE], '', '', ['A broken constant'], Account::BASIC),
+            'no sites'      => new Binding('NSZM', Account::TEST, [], self::CAMPAIGN, str_repeat('4f', 16), ['A broken setting'], Account::BASIC),
+            'no slices'     => new Binding('NSZM', Account::TEST, [self::SITE], '', '', ['A broken setting'], Account::BASIC),
             'not a site'    => self::binding('NSZM', [self::SLICE]),
         ];
         foreach ($without as $case => $binding) {

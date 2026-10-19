@@ -1,10 +1,10 @@
 <?php
 
-// Data-box settings of this installation of AA, for {datovka}.
+// Data-box settings of this installation of AA, for {datovka} and for mass sending ({datovkabulk}).
 //
 // Copy this file to datovka_conf.php in this directory and fill in your own values. git ignores
 // datovka_conf.php, so updates of AA never change it. AA works without it too: then there is no atsId,
-// and this installation keeps every answer from ISDS for itself.
+// this installation keeps every answer from ISDS for itself, and it has no account for mass sending.
 //
 // - Give datovka_conf.php the same owner, group and mode as include/config.php.
 // - Keep copies (backups, older versions) only outside the web tree. The web server may send a copy such
@@ -25,6 +25,33 @@
 //         1000 => ['url' => 'https://www.example.org/apc-aa/'],
 //         1001 => ['url' => 'https://other.example.net/apc-aa/'],
 //     ],
+//
+// 'accounts' - the ISDS accounts of mass sending. Name each by one word of capital letters and digits,
+// the first a letter. An account sends only for its sites and its pair of slices, the campaign slice
+// first; a slice belongs to one account. environment is 'test' or 'production'. auth says how it logs
+// in: 'basic' - login and password, in the test environment only; 'cert' - cert, the system certificate
+// of the data box; 'hosted' - box and cert, the certificate of a hosted filing service the data box
+// allowed. key names the private key when cert does not hold it, passphrase opens an encrypted key.
+// The State Check (ISDS accounts) tells what to fix. For example:
+//
+//     'accounts' => [
+//         'ECNTEST' => [
+//             'environment' => 'test',
+//             'auth'        => 'basic',
+//             'sites'       => ['<site id>'],
+//             'slices'      => ['<campaign slice id>', '<message slice id>'],
+//             'login'       => '<login>',
+//             'password'    => '<password>',
+//         ],
+//         'NSZM' => [
+//             'environment' => 'production',
+//             'auth'        => 'hosted',
+//             'sites'       => ['<site id>'],
+//             'slices'      => ['<campaign slice id>', '<message slice id>'],
+//             'box'         => '<data box id>',
+//             'cert'        => '/etc/aa-isds/hosting.pem',
+//         ],
+//     ],
 
 const DATOVKA_CONF = [
     'instances' => [],
@@ -36,4 +63,5 @@ const DATOVKA_CONF = [
         'cert'  => '',
         'atsId' => '',
     ],
+    'accounts'  => [],
 ];

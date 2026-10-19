@@ -131,9 +131,9 @@ final class SendRunEndTest extends TestCase
 
     public function test_look_checks_the_account(): void
     {
-        $id                     = self::queued(2, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '2'], self::LOOK);
-        $isds                   = self::isds();
-        TestSendRun::$constants = [];
+        $id                = self::queued(2, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '2'], self::LOOK);
+        $isds              = self::isds();
+        TestSendRun::$conf = null;
 
         self::assertSame('error ' . SendRun::ACCOUNT_CHANGED, self::runQueued());
 
@@ -144,8 +144,8 @@ final class SendRunEndTest extends TestCase
     // nothing to look up: no account, no ISDS
     public function test_look_ends_without_isds_when_nothing_uncertain(): void
     {
-        $id                     = self::queued(2, ['dm_ids' => '{"0":"901"}', 'failed' => '{"1":"1233"}', 'cursor' => '2'], self::LOOK);
-        TestSendRun::$constants = [];
+        $id                = self::queued(2, ['dm_ids' => '{"0":"901"}', 'failed' => '{"1":"1233"}', 'cursor' => '2'], self::LOOK);
+        TestSendRun::$conf = null;
 
         self::assertSame('done', self::runQueued());
 
@@ -163,6 +163,32 @@ final class SendRunEndTest extends TestCase
         self::assertSame(['i' => 0, 'p' => 'look', 's' => self::NOW, 'u' => self::NOW + 30, 'w' => 1], self::position($id));
         self::assertSame('ISDS_UNAVAILABLE', self::stored($id)['retry_code']);
         self::assertSame([1 => self::NOW - 200], self::map($id, 'uncertain'));
+    }
+
+    // a file PHP cannot read now and then: the look up waits as for ISDS, and asks ISDS nothing
+    public function test_look_pauses_while_the_file_cannot_be_read(): void
+    {
+        $id                = self::queued(2, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '2'], self::LOOK);
+        $isds              = self::isds();
+        TestSendRun::$conf = Sending::fileConf(broken: false);
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame(['i' => 0, 'p' => 'look', 's' => self::NOW, 'u' => self::NOW + 30, 'w' => 1], self::position($id));
+        self::assertSame('ISDS_CONFIG', self::stored($id)['retry_code']);
+        self::assertSame([], $isds->ops());
+        self::assertSame([1 => self::NOW - 200], self::map($id, 'uncertain'));
+    }
+
+    public function test_look_fails_after_six_hours_without_the_file(): void
+    {
+        self::queued(2, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '2'], ['i' => 0, 'p' => 'look', 'w' => 9, 'u' => self::NOW, 's' => self::NOW - 6 * 3600 - 1]);
+        $isds              = self::isds();
+        TestSendRun::$conf = Sending::fileConf(broken: false);
+
+        self::assertSame('error ISDS_CONFIG', self::runQueued());
+
+        self::assertSame([], $isds->ops());
     }
 
     // a step run before its wait is over - Execute in the queue manager - asks ISDS nothing
@@ -396,8 +422,8 @@ final class SendRunEndTest extends TestCase
 
     public function test_stop_of_run_failed_on_account_cancels_items(): void
     {
-        $id                     = self::queued(3, ['dm_ids' => '{"0":"901"}', 'cursor' => '1'], ['i' => 1, 'p' => 'send']);
-        TestSendRun::$constants = [];
+        $id                = self::queued(3, ['dm_ids' => '{"0":"901"}', 'cursor' => '1'], ['i' => 1, 'p' => 'send']);
+        TestSendRun::$conf = null;
         self::assertSame('error ' . SendRun::ACCOUNT_CHANGED, self::runQueued());
 
         self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
@@ -637,8 +663,8 @@ final class SendRunEndTest extends TestCase
     // the account went away: the run cannot look up what may have gone - a person gives it up
     public function test_second_stop_abandons_failed_run(): void
     {
-        $id                     = self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send']);
-        TestSendRun::$constants = [];
+        $id                = self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send']);
+        TestSendRun::$conf = null;
         self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
         self::runQueued();
         self::assertSame('error ' . SendRun::ACCOUNT_CHANGED, self::runQueued());
@@ -673,7 +699,7 @@ final class SendRunEndTest extends TestCase
     {
         return [
             'the account gone' => [static function (): void {
-                TestSendRun::$constants = [];
+                TestSendRun::$conf = null;
             }, SendRun::ACCOUNT_CHANGED],
             'the list refused' => [static function (): void {
                 self::isds(list: [new Response(200, str_replace('<q:dmStatusCode>0000<', '<q:dmStatusCode>1214<', self::fixture('sent-messages.xml')))]);
@@ -685,7 +711,7 @@ final class SendRunEndTest extends TestCase
     public function test_abandon_with_nothing_stopped_shows_done(): void
     {
         self::queued(3, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 100) . '}', 'cursor' => '2'], ['i' => 2, 'p' => 'send'], [2 => Schema::BOX_DUPLICATE]);
-        TestSendRun::$constants = [];
+        TestSendRun::$conf = null;
         self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
         self::runQueued();
         self::assertSame('error ' . SendRun::ACCOUNT_CHANGED, self::runQueued());

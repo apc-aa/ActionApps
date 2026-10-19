@@ -8,19 +8,20 @@ use AA\Http\ClientInterface;
 use AA\IO\DB\DB_AA;
 use AA\Isds\Account;
 use AA\Isds\Client;
+use AA\Isds\DatovkaConf;
 use AA\Isds\SendItems;
 use AA\Isds\SendRun;
 use AA\Isds\SliceRules;
 use AA\Later\BatchBudget;
 
-/** SendRun on the test's clock, include/config.php, memory_limit, ISDS answers, items in memory and the campaign locks */
+/** SendRun on the test's clock, datovka_conf.php, memory_limit, ISDS answers, items in memory and the campaign locks */
 class TestSendRun extends SendRun
 {
     public static ?int $now = null;
     /** the clock of the step's budget; null = $now, so the budget is never spent */
     public static ?float $microNow = null;
-    /** @var array<string, mixed> the constants of include/config.php */
-    public static array $constants = [];
+    /** the settings of datovka_conf.php; null = no account */
+    public static ?DatovkaConf $conf = null;
     /** answers every call to ISDS; null = a call fails the test */
     public static ?ClientInterface $http = null;
     public static ?MemorySendItems $items = null;
@@ -48,7 +49,7 @@ class TestSendRun extends SendRun
     {
         self::$now         = null;
         self::$microNow    = null;
-        self::$constants   = [];
+        self::$conf        = null;
         self::$http        = null;
         self::$items       = null;
         self::$invalidated = 0;
@@ -98,9 +99,9 @@ class TestSendRun extends SendRun
         return parent::fetch($from, $budget);
     }
 
-    protected function constants(): array
+    protected function conf(): DatovkaConf
     {
-        return self::$constants;
+        return self::$conf ?? DatovkaConf::fromArray([]);
     }
 
     protected function client(Account $account): Client

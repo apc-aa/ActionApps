@@ -8,16 +8,20 @@ use AA\Isds\SliceRules;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\CheckIsdsAccounts;
 use AA\Optimize\Finding;
+use AA\Util\Txt;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Fixtures\Certificates;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
+use Tests\Unit\Isds\Fixtures\Sending;
 use Tests\Unit\Optimize\Fixtures\ScriptedIsdsAccountsCheck;
 
+require_once __DIR__ . '/../Isds/fixtures/Sending.php';
+
 /**
- * CheckIsdsAccounts: the ISDS accounts of config.php with what to fix in their constants - named,
- * never their values - and whether their site and slices pass SliceRules. The constants are passed
- * in, the slices come from FakeSliceRules.
+ * CheckIsdsAccounts: the ISDS accounts of datovka_conf.php with what to fix in their settings - named,
+ * never their values - and whether their site and slices pass SliceRules. The accounts are passed in,
+ * the slices come from FakeSliceRules.
  */
 final class CheckIsdsAccountsTest extends TestCase
 {
@@ -33,7 +37,7 @@ final class CheckIsdsAccountsTest extends TestCase
     private const DAY = 86400;
 
     /**
-     * The files of this run, made in setUpBeforeClass(): $root/aa is AA_BASE_PATH of the tests ($inside),
+     * The files of this run, made in setUpBeforeClass(): $root/aa is the directory of AA of the tests ($inside),
      * $root/aa-keys a directory beside it ($outside), $root/aa-link and $root/alias links to $root/aa
      */
     private static string $root = '';
@@ -105,10 +109,61 @@ final class CheckIsdsAccountsTest extends TestCase
 
     public function test_findings_noAccountIsOk(): void
     {
-        $findings = self::check(['AA_APIKEY_CSU' => 'x', 'AA_ID' => 'y'])->findings();
+        $findings = self::check([])->findings();
 
         self::assertSame([Finding::OK], self::severities($findings));
-        self::assertSame('No ISDS account is set up in include/config.php', $findings[0]->title);
+        self::assertSame('No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database', $findings[0]->title);
+    }
+
+    /**
+     * One tree serves several databases: each deals with the accounts of its sites. An account of no
+     * site read is a fault of the file, named in each - its files and slices only in the database of its
+     * slices. The message slice is not ready, so a check of the slices shows.
+     * @param list<string> $here     the sites and slices of this database
+     * @param list<string> $findings keys, or the title of an OK
+     */
+    #[DataProvider('databases')]
+    public function test_findings_accountsOfThisDatabase(array $accounts, array $here, array $findings): void
+    {
+        $check                               = self::check($accounts);
+        $check->here                         = $here;
+        $check->rules->slices[self::MESSAGE] = FakeSliceRules::sliceOf(self::MESSAGE, false, ['reading_password' => '']);
+
+        $found = $check->findings();
+
+        self::assertSame($findings, array_map(static fn(Finding $f): string => ($f->severity === Finding::OK) ? $f->title : $f->key, $found));
+        self::assertNoSecret($found, ['short-1']);
+        self::assertCount(1, $check->asked, 'one query for all accounts');
+    }
+
+    // the sites of all accounts and the slices of those of no site read, in one query
+    public function test_findings_asksTheDatabaseOnce(): void
+    {
+        $other              = ['cafe0000000000000000000000000005', 'beef0000000000000000000000000006'];
+        $accounts           = self::account(['sites' => null]) + ['ECN' => Sending::account(self::SITE2, $other, ['sites' => 'x'])] + ['ABC' => Sending::account(self::SITE2, ['cafe0000000000000000000000000007', 'beef0000000000000000000000000008'])];
+        $check              = self::check($accounts);
+        $check->here        = [];
+
+        self::assertSame(['account:test:ECN', 'account:test:NSZM'], self::keys($check->findings()));
+        self::assertSame([[self::SITE2, ...$other, self::CAMPAIGN, self::MESSAGE]], $check->asked);
+    }
+
+    public static function databases(): array
+    {
+        $broken = self::account(['password' => 'short-1']);
+        $both   = ['account:test:NSZM', 'slices:test:NSZM'];
+        $none   = 'No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database';
+        return [
+            'an account of this database'          => [$broken, [self::SITE], $both],
+            'an account of another'                => [$broken, [self::SITE2, self::CAMPAIGN], [$none]],
+            'two sites, one of this database'      => [self::account(['sites' => [self::SITE2, self::SITE], 'password' => 'short-1']), [self::SITE], $both],
+            'a usable account of this database'    => [self::account(), [self::SITE], ['slices:test:NSZM']],
+            'no site read, slices of another'      => [self::account(['sites' => null]), [self::SITE2], ['account:test:NSZM']],
+            'sites no list, slices of another'     => [self::account(['sites' => self::SITE]), [], ['account:test:NSZM']],
+            'no site read, slices of this one'     => [self::account(['sites' => null]), [self::CAMPAIGN], $both],
+            'certificate of an account of another' => [self::certificateAccount(['cert' => 'none.pem']), [self::SITE2], [$none]],
+            'certificate of no site read'          => [['NSZM' => ['sites' => null] + self::certificateAccount(['cert' => 'none.pem'])['NSZM']], [self::SITE2], ['account:production:NSZM']],
+        ];
     }
 
     public function test_findings_readyIsOk(): void
@@ -116,95 +171,116 @@ final class CheckIsdsAccountsTest extends TestCase
         $findings = self::check(self::account())->findings();
 
         self::assertSame([Finding::OK], self::severities($findings));
-        self::assertSame('ISDS accounts ready to send: AA_APIKEY_ISDSTEST_NSZM', $findings[0]->title);
+        self::assertSame('ISDS accounts ready to send: NSZM (test)', $findings[0]->title);
     }
 
-    public function test_findings_brokenAccountNamesTheConstantsNeverTheValues(): void
+    public function test_findings_brokenAccountNamesTheSettingsNeverTheValues(): void
     {
-        $findings = self::check(self::account(password: 'short-1'))->findings();
+        $findings = self::check(self::account(['password' => 'short-1']))->findings();
 
         self::assertSame([Finding::ERROR], self::severities($findings), 'the slices are fine');
         $finding = $findings[0];
-        self::assertSame('ISDS account AA_APIKEY_ISDSTEST_NSZM cannot be used', $finding->title);
+        self::assertSame('ISDS account NSZM (test) cannot be used', $finding->title);
         self::assertSame('account:test:NSZM', $finding->key);
-        self::assertStringContainsString('AA_APIKEY_ISDSTEST_NSZM_PASSWORD', $finding->evidence[0]['Problem']);
-        self::assertStringContainsString('AA_APIKEY_ISDSTEST_NSZM_SITE, AA_APIKEY_ISDSTEST_NSZM_SLICES, AA_APIKEY_ISDSTEST_NSZM_LOGIN, AA_APIKEY_ISDSTEST_NSZM_PASSWORD', $finding->advice);
+        self::assertStringContainsString(self::setting('password'), $finding->evidence[0]['Problem']);
+        self::assertStringContainsString("The account is DATOVKA_CONF['accounts']['NSZM'], with the keys environment, auth, sites, slices, login, password.", $finding->advice);
         self::assertNoSecret($findings, ['short-1']);
     }
 
     // without its site the slices are still checked; without its slices there is nothing to check
     public function test_findings_accountWithoutSiteOrSlices(): void
     {
-        $check = self::check(self::account(site: null));
+        $check = self::check(self::account(['sites' => null]));
         $check->rules->slices[self::MESSAGE] = FakeSliceRules::sliceOf(self::MESSAGE, false, ['reading_password' => '']);
 
         self::assertSame(['account:test:NSZM', 'slices:test:NSZM'], self::keys($check->findings()));
 
-        $constants = self::account();
-        unset($constants['AA_APIKEY_ISDSTEST_NSZM_SLICES']);
-        $findings = self::check($constants)->findings();
+        $accounts = self::account();
+        unset($accounts['NSZM']['slices']);
+        $findings = self::check($accounts)->findings();
         self::assertSame(['account:test:NSZM'], self::keys($findings));
-        self::assertStringContainsString('Set AA_APIKEY_ISDSTEST_NSZM_SLICES in config.php', $findings[0]->evidence[0]['Problem']);
+        self::assertStringStartsWith('Set ' . self::setting('slices') . ' to ', $findings[0]->evidence[0]['Problem']);
         self::assertNoSecret($findings);
+    }
+
+    /**
+     * A misspelt key of an account of another database is for that one to show; an account of a name AA
+     * does not read, or of no site read, is a fault of the file, shown in each.
+     */
+    public function test_findings_straysOfThisDatabase(): void
+    {
+        $accounts            = ['NSZM' => Sending::account(self::SITE2, [self::CAMPAIGN, self::MESSAGE], ['pasword' => 'stray-value-1'])];
+        $accounts['ECN']     = Sending::account(self::SITE, ['cafe0000000000000000000000000005', 'beef0000000000000000000000000006'], ['sites' => null, 'cret' => 'stray-value-2']);
+        $accounts['Nszm']    = ['password' => 'stray-value-3'];
+        $check               = self::check($accounts);
+        $check->here         = [self::SITE];
+
+        $findings = $check->findings();
+
+        self::assertSame(['account:test:ECN', 'strays'], self::keys($findings));
+        self::assertSame([['Setting' => Txt::safe("DATOVKA_CONF['accounts']['ECN']['cret']")], ['Setting' => Txt::safe("DATOVKA_CONF['accounts']['Nszm']")]], $findings[1]->evidence);
+        self::assertNoSecret($findings, ['stray-value-1', 'stray-value-2', 'stray-value-3']);
     }
 
     public function test_findings_straysNamed(): void
     {
-        $findings = self::check(self::account() + ['AA_APIKEY_ISDSTEST_LOGIN' => 'stray-value-1', 'AA_APIKEY_ISDSTEST_Nszm_PASSWORD' => 'stray-value-2'])->findings();
+        $accounts                    = self::account();
+        $accounts['NSZM']['pasword'] = 'stray-value-1';
+        $accounts['Nszm']            = ['password' => 'stray-value-2'];
+
+        $findings = self::check($accounts)->findings();
 
         self::assertSame([Finding::WARNING], self::severities($findings));
         $finding = $findings[0];
-        self::assertSame('include/config.php has ISDS constants AA does not read: 2', $finding->title);
+        self::assertSame('misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: 2', $finding->title);
         self::assertSame([2, 'strays'], [$finding->count, $finding->key]);
-        self::assertSame([['Constant' => 'AA_APIKEY_ISDSTEST_LOGIN'], ['Constant' => 'AA_APIKEY_ISDSTEST_Nszm_PASSWORD']], $finding->evidence);
-        self::assertStringContainsString('AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE, AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES, AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN, AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD', $finding->advice);
-        self::assertStringContainsString('production ones start with AA_APIKEY_ISDS_.', $finding->advice);
+        self::assertSame([['Setting' => self::setting('pasword')], ['Setting' => Txt::safe("DATOVKA_CONF['accounts']['Nszm']")]], $finding->evidence);
+        self::assertStringContainsString('AA reads only the keys environment, auth, sites, slices, login, password, box, cert, key, passphrase.', $finding->advice);
         self::assertNoSecret($findings, ['stray-value-1', 'stray-value-2']);
     }
 
     // production lets an application in with a certificate only
     public function test_findings_productionWithNameAndPassword(): void
     {
-        $check = self::check(self::account(environment: 'ISDS'));
+        $check = self::check(self::account(['environment' => 'production']));
         $check->rules->slices[self::CAMPAIGN] = FakeSliceRules::sliceOf(self::CAMPAIGN, true, ['reading_password' => '']);
 
         $findings = $check->findings();
 
         self::assertSame([Finding::ERROR, Finding::ERROR], self::severities($findings));
-        self::assertSame('ISDS account AA_APIKEY_ISDS_NSZM cannot be used', $findings[0]->title);
+        self::assertSame('ISDS account NSZM (production) cannot be used', $findings[0]->title);
         self::assertSame(['account:production:NSZM', 'slices:production:NSZM'], self::keys($findings));
-        self::assertStringContainsString('Set AA_APIKEY_ISDS_NSZM_CERT', implode(' ', array_column($findings[0]->evidence, 'Problem')));
-        self::assertStringContainsString('Remove AA_APIKEY_ISDS_NSZM_LOGIN and AA_APIKEY_ISDS_NSZM_PASSWORD', implode(' ', array_column($findings[0]->evidence, 'Problem')));
-        self::assertStringContainsString('AA_APIKEY_ISDS_NSZM_CERT', $findings[0]->advice, 'the constants it needs');
-        self::assertStringNotContainsString('_LOGIN', $findings[0]->advice);
+        self::assertSame([['Problem' => Txt::safe("Set DATOVKA_CONF['accounts']['NSZM']['auth'] to 'cert' or 'hosted' and remove DATOVKA_CONF['accounts']['NSZM']['login'] and DATOVKA_CONF['accounts']['NSZM']['password'] - AA never logs in to production ISDS with a name and a password")]], $findings[0]->evidence);
+        self::assertStringContainsString('with the keys environment, auth, sites, slices, box, cert, key, passphrase.', $findings[0]->advice, 'the keys it needs');
+        self::assertStringNotContainsString('login', $findings[0]->advice);
         self::assertNoSecret($findings);
     }
 
-    /** @param array<string, string> $set CERT, KEY, BOX, PASSPHRASE */
+    /** @param array<string, string> $set cert, key, box, passphrase */
     #[DataProvider('readyCertificates')]
     public function test_findings_certificateReady(array $set, string $where = 'outside'): void
     {
         $findings = self::check(self::certificateAccount($set, $where))->findings();
 
         self::assertSame([Finding::OK], self::severities($findings));
-        self::assertSame('ISDS accounts ready to send: AA_APIKEY_ISDS_NSZM', $findings[0]->title);
+        self::assertSame('ISDS accounts ready to send: NSZM (production)', $findings[0]->title);
     }
 
     public static function readyCertificates(): array
     {
         return [
-            'one file'                        => [['CERT' => 'both.pem']],
-            'hosted'                          => [['CERT' => 'both.pem', 'BOX' => 'kv62bqf']],
-            'a certificate anyone reads, the key apart' => [['CERT' => 'cert.pem', 'KEY' => 'key.pem']],
-            'encrypted key'                   => [['CERT' => 'cert.pem', 'KEY' => 'encrypted.key', 'PASSPHRASE' => self::PASSPHRASE]],
-            'in the directory of AA'          => [['CERT' => 'both.pem'], 'inside'],
+            'one file'                        => [['cert' => 'both.pem']],
+            'hosted'                          => [['cert' => 'both.pem', 'box' => 'kv62bqf']],
+            'a certificate anyone reads, the key apart' => [['cert' => 'cert.pem', 'key' => 'key.pem']],
+            'encrypted key'                   => [['cert' => 'cert.pem', 'key' => 'encrypted.key', 'passphrase' => self::PASSPHRASE]],
+            'in the directory of AA'          => [['cert' => 'both.pem'], 'inside'],
         ];
     }
 
     /**
      * What PHP finds in the files: one finding per thing to fix, the files named - never the key or
      * the passphrase
-     * @param array<string, string> $set  CERT, KEY, PASSPHRASE: files outside the directory of AA
+     * @param array<string, string> $set  cert, key, passphrase: files outside the directory of AA
      * @param list<string>          $keys
      */
     #[DataProvider('certificateProblems')]
@@ -222,48 +298,48 @@ final class CheckIsdsAccountsTest extends TestCase
     {
         $invalid = ['certificate-invalid:production:NSZM'];
         return [
-            'no such file'           => [['CERT' => 'none.pem'], ['certificate-file:production:NSZM'], 'AA_APIKEY_ISDS_NSZM_CERT'],
-            'no such key file'       => [['CERT' => 'cert.pem', 'KEY' => 'none.key'], ['certificate-file:production:NSZM'], 'none.key'],
-            'a key others may read in the certificate file' => [['CERT' => 'other.pem', 'KEY' => 'key.pem'], ['certificate-access:production:NSZM'], 'AA_APIKEY_ISDS_NSZM_CERT'],
-            'a key others may read apart' => [['CERT' => 'cert.pem', 'KEY' => 'other.pem'], ['certificate-access:production:NSZM'], 'AA_APIKEY_ISDS_NSZM_KEY'],
-            'a key others may read, no other file' => [['CERT' => 'other.pem', 'KEY' => 'none.key'], ['certificate-access:production:NSZM', 'certificate-file:production:NSZM'], 'other.pem'],
-            'not a certificate'      => [['CERT' => 'garbage.pem', 'KEY' => 'key.pem'], $invalid, 'AA_APIKEY_ISDS_NSZM_CERT names a file with no PEM certificate'],
-            'no key'                 => [['CERT' => 'cert.pem'], $invalid, 'The private key in AA_APIKEY_ISDS_NSZM_CERT does not open'],
-            'another key'            => [['CERT' => 'cert.pem', 'KEY' => 'another.key'], $invalid, 'does not belong to the certificate'],
-            'a weak key'             => [['CERT' => 'weak.pem'], $invalid, 'The private key is shorter than 2048 bits'],
-            'a huge file'            => [['CERT' => 'huge.pem'], $invalid, 'AA_APIKEY_ISDS_NSZM_CERT names a file with no PEM certificate'],
-            'a key beyond 1 MiB'     => [['CERT' => 'late.pem'], $invalid, 'AA_APIKEY_ISDS_NSZM_CERT names a file with no PEM certificate'],
-            'no passphrase'          => [['CERT' => 'cert.pem', 'KEY' => 'encrypted.key'], $invalid, 'AA_APIKEY_ISDS_NSZM_PASSPHRASE does not fit'],
-            'another passphrase'     => [['CERT' => 'cert.pem', 'KEY' => 'encrypted.key', 'PASSPHRASE' => 'Another-pass-phrase'], $invalid, 'AA_APIKEY_ISDS_NSZM_PASSPHRASE does not fit'],
-            'damaged constant'       => [['CERT' => "both.pem\n"], ['account:production:NSZM'], 'AA_APIKEY_ISDS_NSZM_CERT holds a line break'],
+            'no such file'           => [['cert' => 'none.pem'], ['certificate-file:production:NSZM'], self::setting('cert')],
+            'no such key file'       => [['cert' => 'cert.pem', 'key' => 'none.key'], ['certificate-file:production:NSZM'], 'none.key'],
+            'a key others may read in the certificate file' => [['cert' => 'other.pem', 'key' => 'key.pem'], ['certificate-access:production:NSZM'], self::setting('cert')],
+            'a key others may read apart' => [['cert' => 'cert.pem', 'key' => 'other.pem'], ['certificate-access:production:NSZM'], self::setting('key')],
+            'a key others may read, no other file' => [['cert' => 'other.pem', 'key' => 'none.key'], ['certificate-access:production:NSZM', 'certificate-file:production:NSZM'], 'other.pem'],
+            'not a certificate'      => [['cert' => 'garbage.pem', 'key' => 'key.pem'], $invalid, self::setting('cert') . ' names a file with no PEM certificate'],
+            'no key'                 => [['cert' => 'cert.pem'], $invalid, 'The private key in ' . self::setting('cert') . ' does not open'],
+            'another key'            => [['cert' => 'cert.pem', 'key' => 'another.key'], $invalid, 'does not belong to the certificate'],
+            'a weak key'             => [['cert' => 'weak.pem'], $invalid, 'The private key is shorter than 2048 bits'],
+            'a huge file'            => [['cert' => 'huge.pem'], $invalid, self::setting('cert') . ' names a file with no PEM certificate'],
+            'a key beyond 1 MiB'     => [['cert' => 'late.pem'], $invalid, self::setting('cert') . ' names a file with no PEM certificate'],
+            'no passphrase'          => [['cert' => 'cert.pem', 'key' => 'encrypted.key'], $invalid, self::setting('passphrase') . ' does not fit'],
+            'another passphrase'     => [['cert' => 'cert.pem', 'key' => 'encrypted.key', 'passphrase' => 'Another-pass-phrase'], $invalid, self::setting('passphrase') . ' does not fit'],
+            'damaged setting'        => [['cert' => "both.pem\n"], ['account:production:NSZM'], self::setting('cert') . ' holds a line break'],
         ];
     }
 
     /**
      * Inside the directory of AA the web server may serve a key the group may read; outside, only other
      * users must not read it. Inside is decided on the path as written and as resolved, with the links
-     * the web server follows.
-     * @param string $cert  the file, under $root
-     * @param string $base  AA_BASE_PATH under $root; '' = not defined
-     * @param string $title '' = no finding
+     * the web server follows - and on the directory of AA as config.php writes it and as PHP resolved it.
+     * @param string       $cert  the file, under $root
+     * @param list<string> $bases the directory of AA under $root; none = not known
+     * @param string       $title '' = no finding
      */
     #[DataProvider('keyAccess')]
-    public function test_findings_privateKeyAccess(string $cert, string $base, string $title, string $mode = ''): void
+    public function test_findings_privateKeyAccess(string $cert, array $bases, string $title, string $mode = ''): void
     {
-        $constants = ['AA_APIKEY_ISDS_NSZM_CERT' => self::$root . "/$cert", 'AA_BASE_PATH' => self::$root . "/$base"] + self::certificateAccount([]);
-        if ($base === '') {
-            unset($constants['AA_BASE_PATH']);
-        }
+        $accounts                 = self::certificateAccount([]);
+        $accounts['NSZM']['cert'] = self::$root . "/$cert";
+        $check                    = self::check($accounts);
+        $check->bases             = array_map(static fn(string $base): string => self::$root . "/$base", $bases);
 
-        $findings = self::check($constants)->findings();
+        $findings = $check->findings();
 
         if ($title === '') {
             self::assertSame([Finding::OK], self::severities($findings));
             return;
         }
         self::assertSame(['certificate-access:production:NSZM'], self::keys($findings));
-        self::assertSame("$title AA_APIKEY_ISDS_NSZM", $findings[0]->title);
-        self::assertSame([['Constant' => 'AA_APIKEY_ISDS_NSZM_CERT', 'File' => self::$root . "/$cert", 'Permissions' => $mode]], $findings[0]->evidence);
+        self::assertSame("$title NSZM (production)", $findings[0]->title);
+        self::assertSame([['Setting' => self::setting('cert'), 'File' => self::$root . "/$cert", 'Permissions' => $mode]], $findings[0]->evidence);
     }
 
     public static function keyAccess(): array
@@ -271,20 +347,24 @@ final class CheckIsdsAccountsTest extends TestCase
         $served = 'The web server may serve the private key of ISDS account';
         $others = 'Other users of the server may read the private key of ISDS account';
         return [
-            'outside, the owner only'         => ['aa-keys/both.pem', 'aa', ''],
-            'beside, the group'               => ['aa-keys/group.pem', 'aa', ''],
-            'outside, others'                 => ['aa-keys/other.pem', 'aa', $others, '0604'],
-            'inside, the owner only'          => ['aa/both.pem', 'aa', ''],
-            'inside, the group'               => ['aa/group.pem', 'aa', $served, '0640'],
-            'inside, others'                  => ['aa/other.pem', 'aa', $served, '0604'],
-            'a link inside to a key outside'  => ['aa/link.pem', 'aa', $served, '0640'],
-            'a link outside to a key inside'  => ['aa-keys/in.pem', 'aa', $served, '0640'],
-            'a link inside, by a linked path' => ['alias/link.pem', 'aa', $served, '0640'],
-            'up and out by ..'                => ['aa/../aa-keys/group.pem', 'aa', ''],
-            'a linked base'                   => ['aa/group.pem', 'aa-link', $served, '0640'],
-            'a link out of the linked base'   => ['aa-link/keys/group.pem', 'aa-link', $served, '0640'],
-            'the same, the base with ..'      => ['aa-link/keys/group.pem', 'aa-keys/../aa-link', $served, '0640'],
-            'no base, the group'              => ['aa-keys/group.pem', '', $served, '0640'],
+            'outside, the owner only'         => ['aa-keys/both.pem', ['aa'], ''],
+            'beside, the group'               => ['aa-keys/group.pem', ['aa'], ''],
+            'outside, others'                 => ['aa-keys/other.pem', ['aa'], $others, '0604'],
+            'inside, the owner only'          => ['aa/both.pem', ['aa'], ''],
+            'inside, the group'               => ['aa/group.pem', ['aa'], $served, '0640'],
+            'inside, others'                  => ['aa/other.pem', ['aa'], $served, '0604'],
+            'a link inside to a key outside'  => ['aa/link.pem', ['aa'], $served, '0640'],
+            'a link outside to a key inside'  => ['aa-keys/in.pem', ['aa'], $served, '0640'],
+            'a link inside, by a linked path' => ['alias/link.pem', ['aa'], $served, '0640'],
+            'up and out by ..'                => ['aa/../aa-keys/group.pem', ['aa'], ''],
+            'a linked base'                   => ['aa/group.pem', ['aa-link'], $served, '0640'],
+            'a link out of the linked base'   => ['aa-link/keys/group.pem', ['aa-link'], $served, '0640'],
+            'the same, the base with ..'      => ['aa-link/keys/group.pem', ['aa-keys/../aa-link'], $served, '0640'],
+            // config.php names the tree by a link, PHP knows it resolved: the web server serves the link too
+            'a link out of the written base'  => ['aa-link/keys/group.pem', ['aa-link', 'aa'], $served, '0640'],
+            'the same, the written base second' => ['aa-link/keys/group.pem', ['aa', 'aa-link'], $served, '0640'],
+            'the same, the resolved base only' => ['aa-link/keys/group.pem', ['aa'], ''],
+            'no base, the group'              => ['aa-keys/group.pem', [], $served, '0640'],
         ];
     }
 
@@ -292,7 +372,7 @@ final class CheckIsdsAccountsTest extends TestCase
     #[DataProvider('webServerModule')]
     public function test_findings_keyOfPhpInsideTheWebServer(string $where, bool $served): void
     {
-        $check       = self::check(self::certificateAccount(['CERT' => 'both.pem'], $where));
+        $check       = self::check(self::certificateAccount(['cert' => 'both.pem'], $where));
         $check->sapi = 'apache2handler';
 
         $findings = $check->findings();
@@ -302,7 +382,7 @@ final class CheckIsdsAccountsTest extends TestCase
             return;
         }
         self::assertSame(['certificate-access:production:NSZM'], self::keys($findings));
-        self::assertSame('The web server may serve the private key of ISDS account AA_APIKEY_ISDS_NSZM', $findings[0]->title);
+        self::assertSame('The web server may serve the private key of ISDS account NSZM (production)', $findings[0]->title);
         self::assertStringContainsString('Move the file outside the directory of AA', $findings[0]->advice);
     }
 
@@ -320,7 +400,9 @@ final class CheckIsdsAccountsTest extends TestCase
         $dir = Certificates::directory();
         posix_mkfifo("$dir/fifo.pem", 0o604);
         try {
-            $findings = self::check(['AA_APIKEY_ISDS_NSZM_CERT' => "$dir/fifo.pem"] + self::certificateAccount([]))->findings();
+            $accounts                 = self::certificateAccount([]);
+            $accounts['NSZM']['cert'] = "$dir/fifo.pem";
+            $findings                 = self::check($accounts)->findings();
         } finally {
             Certificates::remove($dir);
         }
@@ -335,7 +417,7 @@ final class CheckIsdsAccountsTest extends TestCase
             self::markTestSkipped('root reads any file');
         }
 
-        $findings = self::check(self::certificateAccount(['CERT' => 'locked.pem']))->findings();
+        $findings = self::check(self::certificateAccount(['cert' => 'locked.pem']))->findings();
 
         self::assertSame(['certificate-file:production:NSZM'], self::keys($findings));
         self::assertStringContainsString('open_basedir', $findings[0]->advice);
@@ -343,7 +425,7 @@ final class CheckIsdsAccountsTest extends TestCase
 
     public function test_findings_certificateNotValidYet(): void
     {
-        $check      = self::check(self::certificateAccount(['CERT' => 'both.pem']));
+        $check      = self::check(self::certificateAccount(['cert' => 'both.pem']));
         $check->now = self::$from - 1;
 
         $findings = $check->findings();
@@ -356,7 +438,7 @@ final class CheckIsdsAccountsTest extends TestCase
     #[DataProvider('expiries')]
     public function test_findings_certificateExpiry(int $left, ?string $severity, string $title): void
     {
-        $check      = self::check(self::certificateAccount(['CERT' => 'both.pem']));
+        $check      = self::check(self::certificateAccount(['cert' => 'both.pem']));
         $check->now = self::$until - $left;
 
         $findings = $check->findings();
@@ -374,13 +456,13 @@ final class CheckIsdsAccountsTest extends TestCase
 
     public static function expiries(): array
     {
-        $expires = 'The certificate of ISDS account AA_APIKEY_ISDS_NSZM expires on %s';
+        $expires = 'The certificate of ISDS account NSZM (production) expires on %s';
         return [
             '30 days'          => [30 * self::DAY, null, ''],
             'under 30 days'    => [30 * self::DAY - 1, Finding::WARNING, $expires],
             '7 days'           => [7 * self::DAY, Finding::WARNING, $expires],
             'under 7 days'     => [7 * self::DAY - 1, Finding::ERROR, $expires],
-            'expired'          => [-1, Finding::ERROR, 'The certificate of ISDS account AA_APIKEY_ISDS_NSZM expired on %s'],
+            'expired'          => [-1, Finding::ERROR, 'The certificate of ISDS account NSZM (production) expired on %s'],
         ];
     }
 
@@ -395,7 +477,7 @@ final class CheckIsdsAccountsTest extends TestCase
 
         self::assertSame([Finding::ERROR], self::severities($findings));
         $finding = $findings[0];
-        self::assertSame('The slices of ISDS account AA_APIKEY_ISDSTEST_NSZM are not ready for sending', $finding->title);
+        self::assertSame('The slices of ISDS account NSZM (test) are not ready for sending', $finding->title);
         self::assertSame(['slices:test:NSZM', 2, 'Rozesílky <b>NSZM</b>'], [$finding->key, $finding->count, $finding->place]);
         self::assertSame(safe('Slice "Rozesílky <b>NSZM</b>" has no reading password - fill in Password for Reading in the settings of the slice'), $finding->evidence[0]['Problem']);
         self::assertSame('Fix what the evidence names before sending from these slices.', $finding->advice);
@@ -406,7 +488,7 @@ final class CheckIsdsAccountsTest extends TestCase
 
     public function test_findings_openSliceOfAnUnusableAccount(): void
     {
-        $check = self::check(self::account(login: null));
+        $check = self::check(self::account(['login' => null]));
         $check->rules->slices[self::MESSAGE] = FakeSliceRules::sliceOf(self::MESSAGE, false, ['permit_anonymous_post' => '1']);
 
         $findings = $check->findings();
@@ -419,7 +501,7 @@ final class CheckIsdsAccountsTest extends TestCase
     // a slice's own problem once, a site's for each site; two sites of one name told apart
     public function test_findings_twoSitesOfOneName(): void
     {
-        $check = self::check(self::account(site: self::SITE . ',' . self::SITE2));
+        $check = self::check(self::account(['sites' => [self::SITE, self::SITE2]]));
         $check->rules->sites[]              = self::SITE2;
         $check->rules->names[self::SITE2]   = 'Terminal';
         $check->rules->slices[self::MESSAGE] = FakeSliceRules::sliceOf(self::MESSAGE, false, without: ['switch.........1']);
@@ -508,18 +590,18 @@ final class CheckIsdsAccountsTest extends TestCase
     // ------------------------------------------------------------ helpers
 
     /**
-     * @param array<string, string> $set   CERT and KEY name files in $where, PASSPHRASE and BOX are as they are
+     * @param array<string, string> $set   cert and key name files in $where, passphrase and box are as they are
      * @param string                $where 'inside' or 'outside' the directory of AA
-     * @return array<string, string> a production account with a certificate
+     * @return array<string, array<string, mixed>> a production account with a certificate, as DATOVKA_CONF['accounts']
      */
     private static function certificateAccount(array $set, string $where = 'outside'): array
     {
-        $constants = ['AA_BASE_PATH' => self::$inside, 'AA_APIKEY_ISDS_NSZM_SITE' => self::SITE, 'AA_APIKEY_ISDS_NSZM_SLICES' => self::CAMPAIGN . ',' . self::MESSAGE];
-        foreach ($set as $kind => $value) {
-            $constants["AA_APIKEY_ISDS_NSZM_$kind"] = in_array($kind, ['CERT', 'KEY'], true) ? self::dir($where) . "/$value" : $value;
+        $account = ['environment' => 'production', 'auth' => isset($set['box']) ? 'hosted' : 'cert', 'sites' => [self::SITE], 'slices' => [self::CAMPAIGN, self::MESSAGE]];
+        foreach ($set as $key => $value) {
+            $account[$key] = in_array($key, ['cert', 'key'], true) ? self::dir($where) . "/$value" : $value;
         }
 
-        return $constants;
+        return ['NSZM' => $account];
     }
 
     private static function dir(string $where): string
@@ -527,25 +609,30 @@ final class CheckIsdsAccountsTest extends TestCase
         return ($where === 'inside') ? self::$inside : self::$outside;
     }
 
-    /** @param array<string, string> $constants */
-    private static function check(array $constants): ScriptedIsdsAccountsCheck
+    /** @param array<array-key, mixed> $accounts as DATOVKA_CONF['accounts'] */
+    private static function check(array $accounts): ScriptedIsdsAccountsCheck
     {
-        $check            = new ScriptedIsdsAccountsCheck(FakeSliceRules::ready(self::SITE, self::CAMPAIGN, self::MESSAGE));
-        $check->constants = $constants;
-        $check->now       = self::$from + self::DAY;
+        $check           = new ScriptedIsdsAccountsCheck(FakeSliceRules::ready(self::SITE, self::CAMPAIGN, self::MESSAGE));
+        $check->accounts = $accounts;
+        $check->bases    = [self::$inside];
+        $check->now      = self::$from + self::DAY;
 
         return $check;
     }
 
-    /** @return array<string, string> the constants of an account; null leaves one out */
-    private static function account(?string $site = self::SITE, ?string $login = self::LOGIN, ?string $password = self::PASSWORD, string $environment = 'ISDSTEST'): array
+    /**
+     * @param array<string, mixed> $over keys to set instead; null leaves one out
+     * @return array<string, array<string, mixed>> the test account NSZM of SITE, as DATOVKA_CONF['accounts']
+     */
+    private static function account(array $over = []): array
     {
-        return array_filter([
-            "AA_APIKEY_{$environment}_NSZM_SITE"     => $site,
-            "AA_APIKEY_{$environment}_NSZM_SLICES"   => self::CAMPAIGN . ',' . self::MESSAGE,
-            "AA_APIKEY_{$environment}_NSZM_LOGIN"    => $login,
-            "AA_APIKEY_{$environment}_NSZM_PASSWORD" => $password,
-        ], static fn(?string $v): bool => !is_null($v));
+        return ['NSZM' => Sending::account(self::SITE, [self::CAMPAIGN, self::MESSAGE], $over)];
+    }
+
+    /** a key of the account NSZM as the evidence shows it */
+    private static function setting(string $key): string
+    {
+        return Txt::safe("DATOVKA_CONF['accounts']['NSZM']['$key']");
     }
 
     /**

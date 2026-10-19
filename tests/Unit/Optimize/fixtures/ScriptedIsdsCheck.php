@@ -8,19 +8,27 @@ use AA\Http\ClientInterface;
 use AA\Http\TransportException;
 use AA\Isds\Account;
 use AA\Isds\Client;
+use AA\Isds\DatovkaConf;
 use AA\Isds\LoginLatch;
 use AA\Optimize\CheckIsds;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Tests\Unit\Fixtures\FakeHttp;
 use Tests\Unit\Isds\Fixtures\MemoryLatch;
+use Tests\Unit\Isds\Fixtures\Sending;
 
-/** CheckIsds over the constants in $constants, the answers of $http and the refusals in $latch
- *  instead of include/config.php, ISDS and the AA log. Unattended - the daily run - unless told. */
+require_once __DIR__ . '/../../Isds/fixtures/Sending.php';
+
+/** CheckIsds over the accounts in $accounts, the answers of $http and the refusals in $latch
+ *  instead of datovka_conf.php, ISDS and the AA log, with the modules $here in this database. Unattended
+ *  - the daily run - unless told. */
 final class ScriptedIsdsCheck extends CheckIsds
 {
-    /** @var array<string, mixed> as Store::userConstants() */
-    public array $constants = [];
+    /** @var array<array-key, mixed> as DATOVKA_CONF['accounts'] */
+    public array $accounts = [];
+
+    /** @var ?list<string> the sites and slices of this database; null = all */
+    public ?array $here = null;
 
     public ClientInterface $http;
 
@@ -36,9 +44,14 @@ final class ScriptedIsdsCheck extends CheckIsds
         $this->latch = new MemoryLatch();
     }
 
-    protected function constants(): array
+    protected function conf(): DatovkaConf
     {
-        return $this->constants;
+        return Sending::conf($this->accounts);
+    }
+
+    protected function modulesHere(array $ids): array
+    {
+        return is_null($this->here) ? $ids : array_values(array_intersect($ids, $this->here));
     }
 
     protected function latch(): LoginLatch

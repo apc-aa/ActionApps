@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds\Fixtures;
 
 use AA\Isds\Access;
+use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
 use AA\Isds\Recipients;
 use AA\Isds\Setup;
@@ -13,7 +14,7 @@ use AA\Isds\SliceRules;
 
 /**
  * The gate on a page given here: the site rendered, the slices (FakeSliceRules), the accounts of
- * include/config.php, the login (Access over the rights of FakePerms), the campaigns and the recipients.
+ * datovka_conf.php, the login (Access over the rights of FakePerms), the campaigns and the recipients.
  * The slices open in the real AA_Credentials.
  */
 final class FakeGate extends Gate
@@ -32,13 +33,12 @@ final class FakeGate extends Gate
     public ?Recipients $resolver = null;
 
     /**
-     * @param ?string               $site      the site whose page is rendered; null = no site page (view.php, cron)
-     * @param array<string, string> $constants as Store::userConstants()
+     * @param ?string $site the site whose page is rendered; null = no site page (view.php, cron)
      */
     public function __construct(
         private ?string $site,
         private FakeSliceRules $rules,
-        private array $constants,
+        private DatovkaConf $conf,
         private Access $access,
     ) {}
 
@@ -54,7 +54,7 @@ final class FakeGate extends Gate
 
     protected function setup(string $settings, string $site): Setup|SetupException
     {
-        return Setup::checked($settings, $site, $this->rules, $this->constants);
+        return Setup::checked($settings, $site, $this->rules, $this->conf);
     }
 
     protected function rules(): SliceRules

@@ -17,11 +17,14 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\Exception\TimeoutException;
 use Tests\Unit\Fixtures\Certificates;
 use Tests\Unit\Fixtures\FakeHttp;
+use Tests\Unit\Isds\Fixtures\Sending;
 use Tests\Unit\Optimize\Fixtures\ScriptedIsdsCheck;
+
+require_once __DIR__ . '/../Isds/fixtures/Sending.php';
 
 /**
  * CheckIsds: logs in with each usable test account - the box, the rights of the user, the expiry of
- * the password; a refused login is an error that names the constants, never the login or the
+ * the password; a refused login is an error that names the settings, never the login or the
  * password, and the daily run never tries it again. ISDS answers from the fixtures of the client's
  * tests; the refusals live in a MemoryLatch.
  */
@@ -33,9 +36,9 @@ final class CheckIsdsTest extends TestCase
 
     /** two more accounts, each with slices of its own */
     private const SITE2   = '51de0000000000000000000000000002';
-    private const SLICES2 = 'cafe0000000000000000000000000003,beef0000000000000000000000000004';
+    private const SLICES2 = ['cafe0000000000000000000000000003', 'beef0000000000000000000000000004'];
     private const SITE3   = '51de0000000000000000000000000005';
-    private const SLICES3 = 'cafe0000000000000000000000000006,beef0000000000000000000000000007';
+    private const SLICES3 = ['cafe0000000000000000000000000006', 'beef0000000000000000000000000007'];
 
     private const LOGIN    = 'nszm01login';
     private const PASSWORD = 'Test-Pa55-never-shown';
@@ -74,22 +77,22 @@ final class CheckIsdsTest extends TestCase
         self::assertSame([AbstractOptimize::CHECK_EXTENDED], CheckIsds::types());
     }
 
-    /** @return array<string, array{array<string, string>}> */
+    /** @return array<string, array{array<string, array<string, mixed>>}> */
     public static function nothingToTry(): array
     {
         return [
             'no account'     => [[]],
             'half set'       => [self::account(password: null)],
             // production lets an application in with a certificate only; CheckIsdsAccounts warns
-            'production'     => [['AA_APIKEY_ISDS_NSZM_SITE' => self::SITE, 'AA_APIKEY_ISDS_NSZM_SLICES' => self::CAMPAIGN . ',' . self::MESSAGE]],
+            'production'     => [['NSZM' => ['environment' => 'production', 'auth' => 'cert', 'sites' => [self::SITE], 'slices' => [self::CAMPAIGN, self::MESSAGE]]]],
         ];
     }
 
-    /** @param array<string, string> $constants */
+    /** @param array<string, array<string, mixed>> $accounts */
     #[DataProvider('nothingToTry')]
-    public function test_findings_nothingToTryIsOk(array $constants): void
+    public function test_findings_nothingToTryIsOk(array $accounts): void
     {
-        $check = self::check($constants);
+        $check = self::check($accounts);
 
         $findings = $check->findings();
 
@@ -105,11 +108,40 @@ final class CheckIsdsTest extends TestCase
         $findings = $check->findings();
 
         self::assertSame([Finding::OK], self::severities($findings));
-        self::assertSame('ISDS accounts log in to their data boxes: AA_APIKEY_ISDSTEST_NSZM (kv62bqf)', $findings[0]->title);
+        self::assertSame('ISDS accounts log in to their data boxes: NSZM (test): kv62bqf', $findings[0]->title);
         self::assertSame(['GetOwnerInfoFromLogin2', 'GetUserInfoFromLogin2', 'GetPasswordInfo'], self::operations($check));
     }
 
-    public function test_findings_loginRefusedNamesTheConstantsOnly(): void
+    /**
+     * One tree serves several databases, each with its own log of refused logins: a database logs in
+     * only with the accounts of its sites - a wrong password would be tried from each of them.
+     * @param list<string> $here       the sites of this database
+     * @param list<string> $operations
+     */
+    #[DataProvider('databases')]
+    public function test_findings_logsInForSitesOfThisDatabaseOnly(array $accounts, array $here, string $title, array $operations): void
+    {
+        $check       = self::check($accounts, self::answers('owner-info.xml', 'user-info.xml', 'password-info-nil.xml'));
+        $check->here = $here;
+
+        $findings = $check->findings();
+
+        self::assertSame([$title], array_map(static fn(Finding $f): string => $f->title, $findings));
+        self::assertSame($operations, self::operations($check));
+    }
+
+    public static function databases(): array
+    {
+        $login = ['GetOwnerInfoFromLogin2', 'GetUserInfoFromLogin2', 'GetPasswordInfo'];
+        return [
+            'an account of this database'     => [self::account(), [self::SITE], 'ISDS accounts log in to their data boxes: NSZM (test): kv62bqf', $login],
+            'an account of another'           => [self::account(), [self::SITE2, self::CAMPAIGN], 'No usable ISDS account to log in with', []],
+            'two sites, one of this database' => [['NSZM' => Sending::account(self::SITE, [self::CAMPAIGN, self::MESSAGE], ['sites' => [self::SITE2, self::SITE]])], [self::SITE], 'ISDS accounts log in to their data boxes: NSZM (test): kv62bqf', $login],
+            'one account of each'             => [self::account() + self::account('ECN', site: self::SITE2, slices: self::SLICES2), [self::SITE2], 'ISDS accounts log in to their data boxes: ECN (test): kv62bqf', $login],
+        ];
+    }
+
+    public function test_findings_loginRefusedNamesTheSettingsOnly(): void
     {
         $check = self::check(self::account(), self::refusing());
 
@@ -117,10 +149,10 @@ final class CheckIsdsTest extends TestCase
 
         self::assertSame([Finding::ERROR], self::severities($findings));
         $finding = $findings[0];
-        self::assertSame('ISDS refused the login of account AA_APIKEY_ISDSTEST_NSZM', $finding->title);
+        self::assertSame('ISDS refused the login of account NSZM (test)', $finding->title);
         self::assertSame('auth:test:NSZM', $finding->key);
         self::assertStringContainsString('Login blocked until', $finding->evidence[0]['ISDS']);
-        self::assertStringContainsString('Check AA_APIKEY_ISDSTEST_NSZM_LOGIN and AA_APIKEY_ISDSTEST_NSZM_PASSWORD in include/config.php', $finding->advice);
+        self::assertStringContainsString("Check DATOVKA_CONF['accounts']['NSZM']['login'] and DATOVKA_CONF['accounts']['NSZM']['password'] in misc/datovka/datovka_conf.php", $finding->advice);
         self::assertStringContainsString('Run extended checks or Recheck here tries it once more.', $finding->advice);
         self::assertSame(['GetOwnerInfoFromLogin2'], self::operations($check), 'nothing more after a refused login');
         self::assertNoSecret($findings);
@@ -144,8 +176,8 @@ final class CheckIsdsTest extends TestCase
     // a person checks again: one try, not one per account of that login
     public function test_findings_explicitRunTriesOnce(): void
     {
-        $constants = self::account() + self::account('ECN', site: '51de0000000000000000000000000002', slices: 'cafe0000000000000000000000000003,beef0000000000000000000000000004');
-        $check     = self::check($constants, self::refusing());
+        $accounts = self::account() + self::account('ECN', site: self::SITE2, slices: self::SLICES2);
+        $check    = self::check($accounts, self::refusing());
         $check->findings();
         self::assertCount(1, self::operations($check), 'the second account of the login is not tried either');
 
@@ -167,7 +199,7 @@ final class CheckIsdsTest extends TestCase
     // the server's address, not the logins: the other accounts would only extend the block
     public function test_findings_blockedAddressStopsTheEnvironment(): void
     {
-        $check = self::check(self::account() + self::account('ECN', site: '51de0000000000000000000000000002', slices: 'cafe0000000000000000000000000003,beef0000000000000000000000000004'), self::blocking());
+        $check = self::check(self::account() + self::account('ECN', site: self::SITE2, slices: self::SLICES2), self::blocking());
 
         $findings = $check->findings();
 
@@ -175,8 +207,8 @@ final class CheckIsdsTest extends TestCase
         self::assertSame([Finding::ERROR, Finding::INFO], self::severities($findings));
         self::assertSame('ISDS blocked logins from the address of this server', $findings[0]->title);
         self::assertStringContainsString('Wait: each attempt extends the block. AA tries once more by itself 24 hours later', $findings[0]->advice);
-        self::assertStringNotContainsString('AA_APIKEY_', $findings[0]->advice);
-        self::assertSame('ISDS accounts not tried, as ISDS blocked the address of this server: AA_APIKEY_ISDSTEST_NSZM', $findings[1]->title);
+        self::assertStringNotContainsString('DATOVKA_CONF', $findings[0]->advice);
+        self::assertSame('ISDS accounts not tried, as ISDS blocked the address of this server: NSZM (test)', $findings[1]->title);
         self::assertSame('Wait - each attempt from this server extends the block.', $findings[1]->advice);
         self::assertCount(1, self::operations($check));
         self::assertSame(['blocked:test'], array_column($check->latch->rows, 'selector'), 'no login latched');
@@ -195,9 +227,9 @@ final class CheckIsdsTest extends TestCase
     // an answer AA cannot read is that question's problem: ISDS answers, the next question is asked
     public function test_findings_unreadableAnswerStopsNothing(): void
     {
-        $constants = self::account('ECN', site: '51de0000000000000000000000000002', slices: 'cafe0000000000000000000000000003,beef0000000000000000000000000004') + self::account();
+        $accounts  = self::account('ECN', site: self::SITE2, slices: self::SLICES2) + self::account();
         $badRights = str_replace('<p:userPrivils>28</p:userPrivils>', '<p:userPrivils>x</p:userPrivils>', self::fixture('user-info.xml'));
-        $check     = self::check($constants, new FakeHttp(array_map(static fn(string $body): Response => new Response(200, $body), [
+        $check     = self::check($accounts, new FakeHttp(array_map(static fn(string $body): Response => new Response(200, $body), [
             '<html>a gateway</html>', self::fixture('user-info.xml'), self::fixture('password-info-nil.xml'),
             self::fixture('owner-info.xml'), $badRights, self::fixture('password-info-nil.xml'),
         ])));
@@ -205,7 +237,7 @@ final class CheckIsdsTest extends TestCase
         $findings = $check->findings();
 
         self::assertSame(['unreadable:test:ECN', 'rights-unknown:test:NSZM'], self::keys($findings));
-        self::assertSame('ISDS gave account AA_APIKEY_ISDSTEST_ECN an answer AA cannot read', $findings[0]->title);
+        self::assertSame('ISDS gave account ECN (test) an answer AA cannot read', $findings[0]->title);
         self::assertCount(6, self::operations($check));
     }
 
@@ -224,14 +256,14 @@ final class CheckIsdsTest extends TestCase
     // one host per environment: the next account would wait out the limit too
     public function test_findings_unavailableStopsTheRun(): void
     {
-        $check = self::check(self::account() + self::account('ECN', site: '51de0000000000000000000000000002', slices: 'cafe0000000000000000000000000003,beef0000000000000000000000000004'), new FakeHttp([new Response(503, 'Service Unavailable')]));
+        $check = self::check(self::account() + self::account('ECN', site: self::SITE2, slices: self::SLICES2), new FakeHttp([new Response(503, 'Service Unavailable')]));
 
         $findings = $check->findings();
 
         self::assertSame(['busy:test:ECN', 'not-tried:test:ws1.datovka-test.gov.cz'], self::keys($findings));
         self::assertSame([Finding::WARNING, Finding::INFO], self::severities($findings));
-        self::assertSame('ISDS asked account AA_APIKEY_ISDSTEST_ECN to come back later', $findings[0]->title);
-        self::assertSame('ISDS accounts not tried, as ISDS did not answer: AA_APIKEY_ISDSTEST_NSZM', $findings[1]->title);
+        self::assertSame('ISDS asked account ECN (test) to come back later', $findings[0]->title);
+        self::assertSame('ISDS accounts not tried, as ISDS did not answer: NSZM (test)', $findings[1]->title);
         self::assertSame('Check again later.', $findings[1]->advice);
         self::assertCount(1, self::operations($check));
     }
@@ -249,7 +281,7 @@ final class CheckIsdsTest extends TestCase
 
         self::assertSame(['transport:test:NSZM'], self::keys($findings));
         self::assertSame([Finding::WARNING], self::severities($findings));
-        self::assertSame('ISDS gave account AA_APIKEY_ISDSTEST_NSZM no answer', $findings[0]->title);
+        self::assertSame('ISDS gave account NSZM (test) no answer', $findings[0]->title);
         self::assertStringContainsString('ws1.datovka-test.gov.cz', $findings[0]->advice);
         self::assertNoSecret($findings);
     }
@@ -294,11 +326,11 @@ final class CheckIsdsTest extends TestCase
 
         $findings = $check->findings();
 
-        self::assertSame('The user of ISDS account AA_APIKEY_ISDSTEST_NSZM lacks the rights 4 (send messages), 8 (lists of messages and delivery info)', $findings[0]->title);
+        self::assertSame('The user of ISDS account NSZM (test) lacks the rights 4 (send messages), 8 (lists of messages and delivery info)', $findings[0]->title);
         self::assertStringContainsString('without them ISDS refuses CreateMessage, GetMessageStateChanges, GetListOfSentMessages', $findings[0]->advice);
-        self::assertSame('The user of ISDS account AA_APIKEY_ISDSTEST_NSZM lacks the rights 16 (search for data boxes)', $findings[1]->title);
+        self::assertSame('The user of ISDS account NSZM (test) lacks the rights 16 (search for data boxes)', $findings[1]->title);
         self::assertStringContainsString('without them ISDS refuses CheckDataBox', $findings[1]->advice);
-        self::assertSame('The user of ISDS account AA_APIKEY_ISDSTEST_NSZM has rights AA must not have: 1 (read received messages), 2 (read received messages to own hands), 32 (manage the data box)', $findings[2]->title);
+        self::assertSame('The user of ISDS account NSZM (test) has rights AA must not have: 1 (read received messages), 2 (read received messages to own hands), 32 (manage the data box)', $findings[2]->title);
         self::assertStringContainsString('only the rights 4 (send messages), 8 (lists of messages and delivery info), 16 (search for data boxes)', $findings[2]->advice);
         self::assertSame([['Rights' => '35', 'User type' => 'ENTRUSTED_USER']], $findings[0]->evidence);
     }
@@ -327,8 +359,8 @@ final class CheckIsdsTest extends TestCase
         $findings    = $check->findings();
 
         self::assertSame(['expiry:test:NSZM'], self::keys($findings));
-        self::assertSame('The password of ISDS account AA_APIKEY_ISDSTEST_NSZM expires on ' . date('Y-m-d', self::EXPIRY), $findings[0]->title);
-        self::assertStringContainsString('AA_APIKEY_ISDSTEST_NSZM_PASSWORD', $findings[0]->advice);
+        self::assertSame('The password of ISDS account NSZM (test) expires on ' . date('Y-m-d', self::EXPIRY), $findings[0]->title);
+        self::assertStringContainsString("DATOVKA_CONF['accounts']['NSZM']['password']", $findings[0]->advice);
         self::assertNoSecret($findings);
     }
 
@@ -369,7 +401,7 @@ final class CheckIsdsTest extends TestCase
         $findings = $check->findings();
 
         self::assertSame([Finding::OK], self::severities($findings));
-        self::assertSame('ISDS accounts log in to their data boxes: AA_APIKEY_ISDS_NSZM (kv62bqf)', $findings[0]->title);
+        self::assertSame('ISDS accounts log in to their data boxes: NSZM (production): kv62bqf', $findings[0]->title);
         self::assertSame(['GetOwnerInfoFromLogin2'], self::operations($check));
     }
 
@@ -384,8 +416,8 @@ final class CheckIsdsTest extends TestCase
         $finding = self::check(self::certificateAccount($box), self::refusing())->findings()[0];
 
         self::assertSame('auth:production:NSZM', $finding->key);
-        self::assertStringContainsString('certificate AA_APIKEY_ISDS_NSZM_CERT names', $finding->advice);
-        self::assertStringNotContainsString('_PASSWORD', $finding->advice);
+        self::assertStringContainsString("certificate DATOVKA_CONF['accounts']['NSZM']['cert'] names", $finding->advice);
+        self::assertStringNotContainsString("['password']", $finding->advice);
         if ($box !== '') {
             self::assertStringContainsString("the data box $box allows the hosting service", $finding->advice);
         }
@@ -413,8 +445,8 @@ final class CheckIsdsTest extends TestCase
     public static function unusableCertificates(): array
     {
         return [
-            'no file'            => [['CERT' => 'none.pem'], 'PHP cannot read the certificate'],
-            'another passphrase' => [['CERT' => 'cert.pem', 'KEY' => 'encrypted.key', 'PASSPHRASE' => 'Another-pass-phrase'], 'The private key of the ISDS account does not open'],
+            'no file'            => [['cert' => 'none.pem'], 'PHP cannot read the certificate'],
+            'another passphrase' => [['cert' => 'cert.pem', 'key' => 'encrypted.key', 'passphrase' => 'Another-pass-phrase'], 'The private key of the ISDS account does not open'],
         ];
     }
 
@@ -439,7 +471,7 @@ final class CheckIsdsTest extends TestCase
 
         self::assertSame(['certificate-refused:production:NSZM'], self::keys($findings));
         self::assertSame([Finding::ERROR], self::severities($findings));
-        self::assertSame('The TLS library of this server refuses the certificate of ISDS account AA_APIKEY_ISDS_NSZM', $findings[0]->title);
+        self::assertSame('The TLS library of this server refuses the certificate of ISDS account NSZM (production)', $findings[0]->title);
         self::assertSame([$evidence + ['Problem' => 'This server could not use the certificate of the ISDS account for the connection - nothing was sent; the State Check tells more']], $findings[0]->evidence);
         self::assertNoSecret($findings, ['/etc/aa-isds']);
     }
@@ -462,42 +494,43 @@ final class CheckIsdsTest extends TestCase
     // a name and a password log in on ws1, a certificate on ws1c: one host without an answer stops only its accounts
     public function test_findings_noAnswerStopsTheHost(): void
     {
-        $constants = self::account('ECN', site: self::SITE2, slices: self::SLICES2)
-            + self::certificateAccount(name: 'MPSV', environment: 'ISDSTEST', site: self::SITE3, slices: self::SLICES3)
+        $accounts = self::account('ECN', site: self::SITE2, slices: self::SLICES2)
+            + self::certificateAccount(name: 'MPSV', environment: 'test', site: self::SITE3, slices: self::SLICES3)
             + self::account();
-        $check = self::check($constants, new FakeHttp([new Response(503, 'Service Unavailable'), new Response(200, self::fixture('owner-info.xml'))]));
+        $check = self::check($accounts, new FakeHttp([new Response(503, 'Service Unavailable'), new Response(200, self::fixture('owner-info.xml'))]));
 
         $findings = $check->findings();
 
         self::assertSame(['busy:test:ECN', 'not-tried:test:ws1.datovka-test.gov.cz'], self::keys($findings));
-        self::assertSame('ISDS accounts not tried, as ISDS did not answer: AA_APIKEY_ISDSTEST_NSZM', $findings[1]->title);
+        self::assertSame('ISDS accounts not tried, as ISDS did not answer: NSZM (test)', $findings[1]->title);
         self::assertSame(['GetOwnerInfoFromLogin2', 'GetOwnerInfoFromLogin2'], self::operations($check), 'the certificate is tried');
     }
 
     // ------------------------------------------------------------ helpers
 
     /**
-     * @param string                $box   the data box of a hosted filing service; '' = a system certificate
-     * @param array<string, string> $files CERT and KEY name files of this run; PASSPHRASE as it is
-     * @return array<string, string> the constants of an account with a certificate
+     * @param string                $box    the data box of a hosted filing service; '' = a system certificate
+     * @param array<string, string> $files  cert and key name files of this run; passphrase as it is
+     * @param list<string>          $slices
+     * @return array<string, array<string, mixed>> an account with a certificate, as DATOVKA_CONF['accounts']
      */
-    private static function certificateAccount(string $box = '', string $name = 'NSZM', array $files = ['CERT' => 'both.pem'], string $environment = 'ISDS', string $site = self::SITE, string $slices = self::CAMPAIGN . ',' . self::MESSAGE): array
+    private static function certificateAccount(string $box = '', string $name = 'NSZM', array $files = ['cert' => 'both.pem'], string $environment = 'production', string $site = self::SITE, array $slices = [self::CAMPAIGN, self::MESSAGE]): array
     {
-        $constants = ["AA_APIKEY_{$environment}_{$name}_SITE" => $site, "AA_APIKEY_{$environment}_{$name}_SLICES" => $slices];
-        foreach ($files + ['BOX' => $box] as $part => $value) {
+        $account = ['environment' => $environment, 'auth' => ($box === '') ? 'cert' : 'hosted', 'sites' => [$site], 'slices' => $slices];
+        foreach ($files + ['box' => $box] as $key => $value) {
             if ($value !== '') {
-                $constants["AA_APIKEY_{$environment}_{$name}_$part"] = in_array($part, ['CERT', 'KEY'], true) ? self::$dir . "/$value" : $value;
+                $account[$key] = in_array($key, ['cert', 'key'], true) ? self::$dir . "/$value" : $value;
             }
         }
 
-        return $constants;
+        return [$name => $account];
     }
 
-    /** @param array<string, string> $constants */
-    private static function check(array $constants, ?ClientInterface $http = null): ScriptedIsdsCheck
+    /** @param array<string, array<string, mixed>> $accounts as DATOVKA_CONF['accounts'] */
+    private static function check(array $accounts, ?ClientInterface $http = null): ScriptedIsdsCheck
     {
-        $check            = new ScriptedIsdsCheck();
-        $check->constants = $constants;
+        $check           = new ScriptedIsdsCheck();
+        $check->accounts = $accounts;
         if ($http) {
             $check->http = $http;
         }
@@ -505,15 +538,13 @@ final class CheckIsdsTest extends TestCase
         return $check;
     }
 
-    /** @return array<string, string> the constants of a test account; null leaves one out */
-    private static function account(string $name = 'NSZM', ?string $password = self::PASSWORD, string $site = self::SITE, string $slices = self::CAMPAIGN . ',' . self::MESSAGE): array
+    /**
+     * @param list<string> $slices
+     * @return array<string, array<string, mixed>> a test account, as DATOVKA_CONF['accounts']; a null password left out
+     */
+    private static function account(string $name = 'NSZM', ?string $password = self::PASSWORD, string $site = self::SITE, array $slices = [self::CAMPAIGN, self::MESSAGE]): array
     {
-        return array_filter([
-            "AA_APIKEY_ISDSTEST_{$name}_SITE"     => $site,
-            "AA_APIKEY_ISDSTEST_{$name}_SLICES"   => $slices,
-            "AA_APIKEY_ISDSTEST_{$name}_LOGIN"    => self::LOGIN,
-            "AA_APIKEY_ISDSTEST_{$name}_PASSWORD" => $password,
-        ], static fn(?string $v): bool => !is_null($v));
+        return [$name => Sending::account($site, $slices, ['password' => $password])];
     }
 
     /** fixtures in the order asked; the last one repeats */

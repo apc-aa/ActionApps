@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA\Credential\Secret;
 use AA\Isds\DatovkaConf;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\PreserveGlobalState;
@@ -95,6 +96,12 @@ final class DatovkaConfTest extends TestCase
         }
     }
 
+    /** @param string $failure '', 'unreadable' or 'broken' */
+    private function assertFailure(string $failure, DatovkaConf $conf): void
+    {
+        $this->assertSame([$failure === 'unreadable', $failure === 'broken'], [$conf->unreadable(), $conf->broken()]);
+    }
+
     public function test_ats_addressesOfIsds(): void
     {
         $test       = DatovkaConf::fromArray([])->ats('test');
@@ -175,6 +182,18 @@ final class DatovkaConfTest extends TestCase
         $this->assertStringStartsWith($where, $conf->problems()[0]);
         $this->assertShowsNoValue($conf->problems());
         $this->assertDefaults($conf);
+        $this->assertSame([], $conf->accounts());
+        $this->assertFailure('', $conf);
+    }
+
+    // a run sending with an account fails on the settings, as on a file that is no valid PHP - no sender went away
+    public function test_fromArray_accountsNotAnArrayIsBroken(): void
+    {
+        $conf = DatovkaConf::fromArray(['accounts' => self::SECRET, 'test' => ['atsId' => 'a1b2c3d4e5f60718']]);
+
+        $this->assertSame(["DATOVKA_CONF['accounts'] is not an array - AA has no ISDS account"], $conf->problems());
+        $this->assertSame([[], 'a1b2c3d4e5f60718'], [$conf->accounts(), $conf->ats('test')['atsId']], 'the rest is read');
+        $this->assertFailure('broken', $conf);
     }
 
     public function test_fromArray_rightPartsOfWrongOnesKept(): void
@@ -190,6 +209,97 @@ final class DatovkaConfTest extends TestCase
         $this->assertCount(2, $conf->problems());
     }
 
+    /**
+     * Accounts reads the accounts and names what is wrong in them. Only what AA reads as it is shows in a
+     * dump: a password never, under a misspelt key neither, nor an account written as a text.
+     */
+    public function test_accounts_asWrittenSecretsHidden(): void
+    {
+        $accounts = [
+            'NSZM'  => ['environment' => 'test', 'auth' => 'basic', 'sites' => ['x'], 'login' => 'nszm-login', 'password' => self::SECRET, 'pasword' => self::SECRET . '-3', 'Password' => self::SECRET . '-4', 'heslo' => ['old' => self::SECRET . '-5', 6 => 7]],
+            'PROD'  => ['environment' => 'production', 'auth' => 'cert', 'cert' => 'nszm.pem', 'key' => 'nszm.key', 'box' => 'kv62bqf', 'slices' => ['y'], 'passphrase' => self::SECRET . '-2'],
+            'NUM'   => ['password' => 12345678, 'passphrase' => [self::SECRET]],
+            'NONE'  => ['password' => null, 'note' => null],
+            'nszm'  => self::SECRET . '-6',
+            7       => [],
+            // what AA reads as a text or a list of texts is as written only when it is one
+            'LIST'  => ['login' => ['nszm01', self::SECRET . '-7'], 'cert' => (object) ['p' => self::SECRET . '-8'], 'sites' => ['x', 'password' => self::SECRET . '-9', [self::SECRET . '-10']], 'slices' => 7, 'box' => true],
+            'BARE'  => ['sites' => self::SECRET . '-11', 'password' => [self::SECRET . '-12']],
+        ];
+
+        $conf = DatovkaConf::fromArray(['accounts' => $accounts]);
+        $read = $conf->accounts();
+
+        $this->assertSame(['NSZM', 'PROD', 'NUM', 'NONE', 'nszm', 7, 'LIST', 'BARE'], array_keys($read));
+        $this->assertSame(['environment', 'auth', 'sites', 'login', 'password', 'pasword', 'Password', 'heslo'], array_keys($read['NSZM']));
+        $this->assertSame(['environment' => 'test', 'auth' => 'basic', 'sites' => ['x'], 'login' => 'nszm-login'], array_slice($read['NSZM'], 0, 4), 'read as they are');
+        $this->assertSame(['environment' => 'production', 'auth' => 'cert', 'cert' => 'nszm.pem', 'key' => 'nszm.key', 'box' => 'kv62bqf', 'slices' => ['y']], array_slice($read['PROD'], 0, 6), 'read as they are');
+        $revealed = static fn(mixed $value): mixed => ($value instanceof Secret) ? $value->reveal() : $value;
+        $this->assertSame([self::SECRET, self::SECRET . '-3', self::SECRET . '-4', self::SECRET . '-2', self::SECRET . '-6'], array_map($revealed, [$read['NSZM']['password'], $read['NSZM']['pasword'], $read['NSZM']['Password'], $read['PROD']['passphrase'], $read['nszm']]));
+        $this->assertSame(['old' => self::SECRET . '-5', 6 => '7'], array_map($revealed, $read['NSZM']['heslo']), 'at any depth');
+        $this->assertSame([false, [self::SECRET]], [$read['NUM']['password'], array_map($revealed, $read['NUM']['passphrase'])], 'no text: Accounts asks for quotes');
+        $this->assertSame([self::SECRET . '-11', [self::SECRET . '-12']], [$revealed($read['BARE']['sites']), array_map($revealed, $read['BARE']['password'])], 'a list where a text belongs, a text where a list belongs');
+        $this->assertSame(['password' => null, 'note' => null], $read['NONE']);
+        $this->assertSame([], $read[7]);
+        $this->assertSame([['nszm01', self::SECRET . '-7'], '', 'x', self::SECRET . '-9', [self::SECRET . '-10'], '7', '1'], [array_map($revealed, $read['LIST']['login']), $revealed($read['LIST']['cert']), $read['LIST']['sites'][0], $revealed($read['LIST']['sites']['password']), array_map($revealed, $read['LIST']['sites'][1]), $revealed($read['LIST']['slices']), $revealed($read['LIST']['box'])]);
+        // only the file and its accounts are AA's business here: Accounts::strays() names the misspelt keys
+        $this->assertSame([[], [], []], [$conf->problems(), $conf->strays(), $conf->loose()]);
+
+        ob_start();
+        var_dump($conf);
+        $dumps = ob_get_clean() . print_r($conf, true) . var_export($conf, true) . json_encode($conf->accounts());
+        $this->assertStringContainsString('nszm-login', $dumps, 'the dumps show the accounts');
+        $this->assertStringNotContainsString(self::SECRET, $dumps);
+    }
+
+    /** an account a bracket out of its place: at the top, in test or standard - its texts hidden, Accounts looks for ids in it */
+    public function test_loose_arraysUnderKeysAaDoesNotKnow(): void
+    {
+        $block = ['environment' => 'production', 'sites' => ['x'], 'password' => self::SECRET, 'nested' => ['n' => self::SECRET . '-2']];
+        $conf  = DatovkaConf::fromArray([
+            'NSZM'      => $block,
+            'note'      => self::SECRET . '-3',
+            'test'      => ['atsId' => '', 'ECN' => ['sites' => ['y']], 'url_login' => ['z']],
+            'standard'  => ['PROD' => 'production'],
+            'accounts'  => [],
+            // an installation holds the text url only
+            'instances' => ['ABC' => ['w'], 0 => ['url' => 'https://example.org/aa/'], 1000 => ['url' => 'http://example.org/aa/'], 1001 => ['url' => 'https://example.net/aa/', 'NSZM' => ['sites' => ['v']]]],
+        ]);
+
+        $revealed = static function (mixed $value) use (&$revealed): mixed {
+            return is_array($value) ? array_map($revealed, $value) : (($value instanceof Secret) ? $value->reveal() : $value);
+        };
+        $this->assertSame([['sites' => ['y']], ['z'], ['w'], ['sites' => ['v']], $block], array_map($revealed, $conf->loose()), 'arrays only, as written - url_login holds a text');
+        $this->assertSame([1001 => 'https://example.net/aa/'], $conf->instances());
+        $this->assertSame(["DATOVKA_CONF['test']['ECN']", "DATOVKA_CONF['standard']['PROD']", "DATOVKA_CONF['NSZM']", "DATOVKA_CONF['note']"], $conf->strays());
+        $this->assertInstanceOf(Secret::class, $conf->loose()[4]['environment']);
+
+        ob_start();
+        var_dump($conf);
+        $dumps = ob_get_clean() . print_r($conf, true) . var_export($conf, true);
+        $this->assertStringNotContainsString(self::SECRET, $dumps);
+    }
+
+    /** @return iterable<string, array{string, string}> */
+    public static function paths(): iterable
+    {
+        yield 'relative' => ['nszm.pem', self::root() . 'config/certs/nszm.pem'];
+        yield 'in a directory of its own' => ['nszm/cert.pem', self::root() . 'config/certs/nszm/cert.pem'];
+        yield 'full' => ['/etc/aa-isds/nszm.pem', '/etc/aa-isds/nszm.pem'];
+        yield 'with spaces' => [' /etc/aa-isds/nszm.pem ', '/etc/aa-isds/nszm.pem'];
+        yield 'relative with spaces' => [" nszm.pem\t", self::root() . 'config/certs/nszm.pem'];
+        yield 'none' => ['', ''];
+        yield 'only spaces' => ['  ', ''];
+    }
+
+    /** one rule for every file the settings name: the certificate of the registration and those of the accounts */
+    #[DataProvider('paths')]
+    public function test_path_relativeStartsInCertDir(string $path, string $full): void
+    {
+        $this->assertSame($full, DatovkaConf::path($path));
+        $this->assertSame(self::root(), DatovkaConf::base());
+    }
+
     public function test_fromFile_missingGivesDefaults(): void
     {
         $conf = DatovkaConf::fromFile("$this->dir/datovka_conf.php");
@@ -197,6 +307,7 @@ final class DatovkaConfTest extends TestCase
         $this->assertDefaults($conf);
         $this->assertSame([], $conf->problems());
         $this->assertSame([], $conf->strays());
+        $this->assertFailure('', $conf);
     }
 
     /** PHP quotes the code around a syntax error - the value after the missing comma here */
@@ -206,6 +317,7 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame(['misc/datovka/datovka_conf.php is not valid PHP (line 3) - AA runs as if the file were not there'], $conf->problems());
+        $this->assertFailure('broken', $conf);
     }
 
     public function test_fromFile_errorGivesDefaults(): void
@@ -214,6 +326,7 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame(['misc/datovka/datovka_conf.php stops with Error - AA runs as if the file were not there'], $conf->problems());
+        $this->assertFailure('broken', $conf);
     }
 
     public function test_fromFile_unreadableGivesDefaults(): void
@@ -229,6 +342,28 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame(['PHP cannot read misc/datovka/datovka_conf.php - give it the owner, group and mode of include/config.php, and check that open_basedir lets PHP there'], $conf->problems());
+        $this->assertFailure('unreadable', $conf);
+    }
+
+    /** a directory PHP cannot list may hold the file: no file is a file without accounts, not knowing is not */
+    public function test_fromFile_unlistedDirectoryIsNoMissingFile(): void
+    {
+        $dir = "$this->dir/unlisted";
+        mkdir($dir, 0o300);
+        try {
+            if (@scandir($dir) !== false) {
+                $this->markTestSkipped('root lists any directory');
+            }
+
+            $conf = DatovkaConf::fromFile("$dir/datovka_conf.php");
+
+            $this->assertDefaults($conf);
+            $this->assertSame(['PHP cannot list the directory of misc/datovka/datovka_conf.php, so it cannot tell whether the file is there - check that open_basedir lets PHP there and that PHP may read the directory'], $conf->problems());
+            $this->assertFailure('unreadable', $conf);
+        } finally {
+            chmod($dir, 0o700);
+            rmdir($dir);
+        }
     }
 
     /** another tree over the same database links the file of the first one, which may be gone */
@@ -240,6 +375,7 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame([self::UNREACHABLE], $conf->problems());
+        $this->assertFailure('unreadable', $conf);
     }
 
     /** /aa-dev/ links the file of /aaa/: open_basedir may hide the target, and then even the link */
@@ -272,6 +408,7 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame([self::UNREACHABLE], $conf->problems());
+        $this->assertFailure('unreadable', $conf);
     }
 
     #[RunInSeparateProcess]
@@ -314,6 +451,8 @@ final class DatovkaConfTest extends TestCase
         $this->assertSame(self::root() . 'config/certs/ats.crt', $conf->ats('standard')['cert']);
         $this->assertSame([], $conf->problems());
         $this->assertSame([], $conf->strays());
+        $this->assertSame([], $conf->accounts());
+        $this->assertFailure('', $conf);
     }
 
     #[RunInSeparateProcess]
@@ -335,6 +474,7 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame(['misc/datovka/datovka_conf.php does not define DATOVKA_CONF - AA runs as if the file were not there'], $conf->problems());
+        $this->assertFailure('broken', $conf);
     }
 
     #[RunInSeparateProcess]
@@ -345,6 +485,7 @@ final class DatovkaConfTest extends TestCase
 
         $this->assertDefaults($conf);
         $this->assertSame(['DATOVKA_CONF in misc/datovka/datovka_conf.php is not an array - AA runs as if the file were not there'], $conf->problems());
+        $this->assertFailure('broken', $conf);
     }
 
     #[RunInSeparateProcess]
@@ -367,13 +508,16 @@ final class DatovkaConfTest extends TestCase
         $this->assertSame([], $conf->strays());
         $this->assertDefaults($conf);
         $template = constant('DATOVKA_CONF');
-        $this->assertSame(['instances', 'test', 'standard'], array_keys($template));
+        $this->assertSame(['instances', 'test', 'standard', 'accounts'], array_keys($template));
+        $this->assertSame([], $conf->accounts());
         $this->assertSame(['cert', 'atsId'], array_keys($template['test']));
         $this->assertSame(['cert', 'atsId'], array_keys($template['standard']));
         $text = (string) file_get_contents($file);
         $this->assertStringNotContainsString('AA_BASE_PATH', $text, 'a directly requested file must print nothing, not an error');
         $this->assertDoesNotMatchRegularExpression('/\b[0-9a-f]{16}\b/', $text, 'no atsId, not even in a comment');
-        $this->assertDoesNotMatchRegularExpression('/[\'"](password|passphrase|login)[\'"]\s*=>/i', $text);
+        // the example of an account shows a placeholder such as '<password>' or nothing in their place
+        $this->assertMatchesRegularExpression('/[\'"]password[\'"]\s*=>/', $text, 'the example of an account is there');
+        $this->assertDoesNotMatchRegularExpression('/[\'"](password|passphrase|login|box)[\'"]\s*+=>\s*+(?![\'"](<[^<>\'"]*>)?[\'"])/i', $text);
     }
 
     /** a copy of the file must reach neither git nor dist - nor the public SVN mirror built from it */

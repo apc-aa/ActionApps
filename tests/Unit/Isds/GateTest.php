@@ -7,6 +7,7 @@ namespace Tests\Unit\Isds;
 use AA;
 use AA\Isds\Access;
 use AA\Isds\Account;
+use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
@@ -104,7 +105,7 @@ final class GateTest extends TestCase
         return (string) json_encode(['campaign_slice' => self::CAMPAIGN, 'message_slice' => self::MESSAGE, 'source_slice' => self::SOURCE, 'types' => ['mesto' => 'Cities', 'mestocast' => 'City districts'], 'default_types' => ['mesto'], 'member_field' => Sending::MEMBER]);
     }
 
-    /** the slices of SITE, each closed by a password of its own; include/config.php binds them to SITE */
+    /** the slices of SITE, each closed by a password of its own; datovka_conf.php binds them to SITE */
     private static function rules(): FakeSliceRules
     {
         $rules                         = FakeSliceRules::ready(self::SITE, self::CAMPAIGN, self::MESSAGE)->withSource(self::SITE, self::SOURCE);
@@ -114,10 +115,9 @@ final class GateTest extends TestCase
         return $rules;
     }
 
-    /** @param array<string, string>|null $constants */
-    private static function gate(?string $site = self::SITE, string $login = self::READER, ?FakeSliceRules $rules = null, ?array $constants = null): FakeGate
+    private static function gate(?string $site = self::SITE, string $login = self::READER, ?FakeSliceRules $rules = null, ?DatovkaConf $conf = null): FakeGate
     {
-        return new FakeGate($site, $rules ?? self::rules(), $constants ?? Sending::bound(), FakePerms::login($login));
+        return new FakeGate($site, $rules ?? self::rules(), $conf ?? Sending::bound(), FakePerms::login($login));
     }
 
     /** what the gate gives the page, the UI recorded as the template would expand it */
@@ -192,7 +192,7 @@ final class GateTest extends TestCase
     }
 
     /**
-     * Settings the site cannot use - whoever may send learns only how include/config.php binds an account
+     * Settings the site cannot use - whoever may send learns only how datovka_conf.php binds an account
      * @return array<string, array{\Closure(string): FakeGate}>
      */
     public static function notBound(): array
@@ -207,8 +207,8 @@ final class GateTest extends TestCase
 
         return [
             'template of another site'       => [static fn(string $login): FakeGate => self::gate(site: self::SITE2, login: $login, rules: $rules())],
-            'slices not bound in config.php' => [static fn(string $login): FakeGate => self::gate(login: $login, constants: Sending::bound(self::SITE, self::CAMPAIGN . ',' . self::SOURCE))],
-            'no account in config.php'       => [static fn(string $login): FakeGate => self::gate(login: $login, constants: [])],
+            'slices not bound in the file'   => [static fn(string $login): FakeGate => self::gate(login: $login, conf: Sending::bound(self::SITE, [self::CAMPAIGN, self::SOURCE]))],
+            'no account in the file'         => [static fn(string $login): FakeGate => self::gate(login: $login, conf: Sending::conf([]))],
         ];
     }
 
@@ -218,7 +218,7 @@ final class GateTest extends TestCase
     {
         self::assertSame(self::REFUSAL, $this->render($gate(Sending::USER)), 'who may not send');
         $office = $this->render($gate(self::READER));
-        self::assertStringContainsString('No usable ISDS account in include/config.php is bound to this site and these slices.', $office);
+        self::assertStringContainsString('No usable ISDS account in misc/datovka/datovka_conf.php is bound to this site and these slices.', $office);
         self::assertStringNotContainsString('ISDS campaigns', $office);
         self::assertSame([], $this->expanded, 'the UI is never expanded');
         $this->assertLocked();

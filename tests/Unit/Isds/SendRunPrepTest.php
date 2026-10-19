@@ -10,6 +10,7 @@ use AA\Http\Response;
 use AA\IO\DB\DB_AA;
 use AA\Isds\Account;
 use AA\Isds\Client;
+use AA\Isds\DatovkaConf;
 use AA\Isds\File;
 use AA\Isds\Letter;
 use AA\Isds\Recipient;
@@ -32,7 +33,7 @@ use Tests\Unit\Isds\Registry\Fixtures\PropertySlice;
 use Tests\Unit\Later\Fixtures\BatchRunTables;
 use Tests\Unit\Legacy\Fixtures\FakeFields;
 
-// the in-memory object_text and toexecute, the config constants; the fixtures extend classes of AA
+// the in-memory object_text and toexecute, datovka_conf.php; the fixtures extend classes of AA
 require_once __DIR__ . '/../Later/Fixtures/BatchRunTables.php';
 require_once __DIR__ . '/fixtures/Sending.php';
 require_once __DIR__ . '/fixtures/MemorySendItems.php';
@@ -305,7 +306,7 @@ final class SendRunPrepTest extends TestCase
     {
         $id = self::queued();
         self::damage($id, 'files');
-        TestSendRun::$constants = Sending::bound();
+        TestSendRun::$conf = Sending::bound();
         self::ownerIs();
 
         self::assertSame('step 1', self::runQueued());
@@ -352,10 +353,10 @@ final class SendRunPrepTest extends TestCase
         // a step died sending message 1
         self::storedSet($id, 'inflight', '1');
         self::storedSet($id, 'inflight_at', (string) (self::NOW - 50));
-        $writes                 = count(self::items()->writes);
-        $rules->problems        = [new SliceProblem('Slice "ISDS messages" imports items from other slices')];
-        TestSendRun::$constants = Sending::bound();
-        $http                   = self::ownerIs();
+        $writes            = count(self::items()->writes);
+        $rules->problems   = [new SliceProblem('Slice "ISDS messages" imports items from other slices')];
+        TestSendRun::$conf = Sending::bound();
+        $http              = self::ownerIs();
 
         self::assertSame('error ' . SendRun::SETTINGS, self::runQueued());
 
@@ -376,7 +377,7 @@ final class SendRunPrepTest extends TestCase
     // ------------------------------------------------------------ what a step that died left
 
     #[DataProvider('accounts')]
-    public function test_work_resolves_inflight_as_uncertain(array $constants, string $ends): void
+    public function test_work_resolves_inflight_as_uncertain(DatovkaConf $conf, string $ends): void
     {
         $id = self::queued();
         self::runQueued();
@@ -386,7 +387,7 @@ final class SendRunPrepTest extends TestCase
         self::storedSet($id, 'inflight_at', (string) (self::NOW - 50));
         self::storedSet($id, 'uncertain', '{"0":100}');
         self::storedSet($id, 'cursor', '1');
-        TestSendRun::$constants = $constants;
+        TestSendRun::$conf = $conf;
         self::ownerIs();
         TestSendRun::$now = self::NOW + 10;
 
@@ -400,20 +401,20 @@ final class SendRunPrepTest extends TestCase
         self::assertSame(Schema::MESSAGE_STATE_QUEUED, self::items()->field($messages[2], Schema::MESSAGE_STATE));
     }
 
-    /** @return array<string, array{array<string, string>, string}> */
+    /** @return array<string, array{DatovkaConf, string}> */
     public static function accounts(): array
     {
         return [
             'the account as queued' => [Sending::bound(), 'step 2'],
-            'the account gone'      => [[], 'error ACCOUNT_CHANGED'],
+            'the account gone'      => [Sending::conf([]), 'error ACCOUNT_CHANGED'],
         ];
     }
 
     // the cursor only grows: a message tried later stays tried
     public function test_work_inflight_keeps_a_later_cursor(): void
     {
-        $id                     = self::queued(self::SEND, ['cursor' => '3', 'inflight' => '1', 'inflight_at' => (string) (self::NOW - 50)]);
-        TestSendRun::$constants = Sending::bound();
+        $id                = self::queued(self::SEND, ['cursor' => '3', 'inflight' => '1', 'inflight_at' => (string) (self::NOW - 50)]);
+        TestSendRun::$conf = Sending::bound();
         self::ownerIs();
 
         self::runQueued();
@@ -429,10 +430,10 @@ final class SendRunPrepTest extends TestCase
         $writes = count(self::items()->writes);
         self::storedSet($id, 'inflight', '1');
         self::storedSet($id, 'inflight_at', (string) (self::NOW - 50));
-        TestSendRun::$constants = Sending::bound();
-        $http                   = self::ownerIs();
-        $armed                  = false;
-        TableDb::$fail          = static function (string $sql) use ($id, &$armed): bool {
+        TestSendRun::$conf = Sending::bound();
+        $http              = self::ownerIs();
+        $armed             = false;
+        TableDb::$fail     = static function (string $sql) use ($id, &$armed): bool {
             if ($armed && str_contains($sql, 'FOR UPDATE')) {
                 $armed = false;
                 self::storedSet($id, 'state', 'error');
@@ -465,26 +466,26 @@ final class SendRunPrepTest extends TestCase
 
     // a step that only pauses, or fails on the account, holds no attachment in memory - and marks what was in flight
     #[DataProvider('pastTheAccount')]
-    public function test_work_reads_files_only_past_the_account(array $constants, string $answer, string $ends): void
+    public function test_work_reads_files_only_past_the_account(DatovkaConf $conf, string $answer, string $ends): void
     {
         $id = self::queued();
         self::runQueued();
         self::damage($id, 'files');
         self::storedSet($id, 'inflight', '1');
         self::storedSet($id, 'inflight_at', (string) (self::NOW - 50));
-        TestSendRun::$constants = $constants;
-        TestSendRun::$http      = new FakeHttp([($answer === '') ? new Response(503, 'Service Unavailable') : new Response(200, $answer)]);
+        TestSendRun::$conf = $conf;
+        TestSendRun::$http = new FakeHttp([($answer === '') ? new Response(503, 'Service Unavailable') : new Response(200, $answer)]);
 
         self::assertSame($ends, self::runQueued());
 
         self::assertSame(Schema::MESSAGE_STATE_UNCERTAIN, self::items()->field(self::messages($id)[1], Schema::MESSAGE_STATE));
     }
 
-    /** @return array<string, array{array<string, string>, string, string}> */
+    /** @return array<string, array{DatovkaConf, string, string}> */
     public static function pastTheAccount(): array
     {
         return [
-            'the account gone'   => [[], '', 'error ACCOUNT_CHANGED'],
+            'the account gone'   => [Sending::conf([]), '', 'error ACCOUNT_CHANGED'],
             'ISDS not answering' => [Sending::bound(), '', 'step 2'],
             'the account fine'   => [Sending::bound(), self::ownerXml(), 'error ' . Snapshot::CHANGED],
         ];
@@ -500,8 +501,8 @@ final class SendRunPrepTest extends TestCase
         if ($damaged !== '') {
             self::damage($id, $damaged);
         }
-        TestSendRun::$constants = ($answer === '') ? [] : Sending::bound();
-        TestSendRun::$http      = new FakeHttp([new Response(200, $answer)]);
+        TestSendRun::$conf = ($answer === '') ? null : Sending::bound();
+        TestSendRun::$http = new FakeHttp([new Response(200, $answer)]);
 
         self::assertSame("error $code", self::runQueued());
 
@@ -567,7 +568,7 @@ final class SendRunPrepTest extends TestCase
     {
         $id = self::queued(self::SEND, ['camp_state' => Schema::CAMPAIGN_STATE_ERROR]);
         self::items()->stored[self::CAMPAIGN_ITEM]['fields'] = [Schema::CAMPAIGN_STATE => Schema::CAMPAIGN_STATE_ERROR, Schema::CAMPAIGN_ERROR_TEXT => 'ACCOUNT_CHANGED'];
-        TestSendRun::$constants = Sending::bound();
+        TestSendRun::$conf = Sending::bound();
         self::ownerIs();
 
         self::assertSame('step 1', self::runQueued());
@@ -579,11 +580,11 @@ final class SendRunPrepTest extends TestCase
     // ------------------------------------------------------------ the account, before ISDS is asked anything
 
     #[DataProvider('bindings')]
-    public function test_work_stops_when_binding_changed(array $constants, array $props): void
+    public function test_work_stops_when_binding_changed(DatovkaConf $conf, array $props): void
     {
-        $id                     = self::queued(self::SEND, $props);
-        TestSendRun::$constants = $constants;
-        $http                   = self::ownerIs();
+        $id                = self::queued(self::SEND, $props);
+        TestSendRun::$conf = $conf;
+        $http              = self::ownerIs();
 
         self::assertSame('error ACCOUNT_CHANGED', self::runQueued());
 
@@ -591,49 +592,54 @@ final class SendRunPrepTest extends TestCase
         self::assertSame(self::fingerprint(), self::stored($id)['acct_id']);
     }
 
-    /** @return array<string, array{array<string, string>, array<string, string>}> */
+    /** @return array<string, array{DatovkaConf, array<string, string>}> */
     public static function bindings(): array
     {
-        $renamed = [];
-        foreach (Sending::bound() as $name => $value) {
-            $renamed[str_replace('_NSZM_', '_OTHER_', $name)] = $value;
-        }
         return [
-            'no account bound'           => [[], []],
-            'another account'            => [$renamed, []],
+            'no account bound'           => [Sending::conf([]), []],
+            'another account'            => [Sending::conf(['OTHER' => Sending::account()]), []],
             'not for the site any more'  => [Sending::bound(Sending::SITE2), []],
-            'another pair of slices'     => [Sending::bound(Sending::SITE, Sending::CAMPAIGN . ',' . Sending::OTHER), []],
+            'another pair of slices'     => [Sending::bound(Sending::SITE, [Sending::CAMPAIGN, Sending::OTHER]), []],
+            'now for production'         => [Sending::conf(['NSZM' => ['environment' => Account::PRODUCTION, 'auth' => Account::CERT, 'cert' => '/etc/aa-isds/nszm.pem', 'login' => '', 'password' => ''] + Sending::account()]), []],
             'queued with a certificate'  => [Sending::bound(), ['kind' => Account::CERT]],
             'queued for production'      => [Sending::bound(), ['env' => Account::PRODUCTION]],
             'queued without environment' => [Sending::bound(), ['env' => '']],
+            'the account set to null'    => [Sending::conf(['NSZM' => null]), []],
+            // what can be read is no longer this site and pair
+            'a bad site, the pair of others' => [Sending::conf(['NSZM' => Sending::account(over: ['sites' => [Sending::SITE, 'xx'], 'slices' => [Sending::CAMPAIGN, Sending::OTHER]])]), []],
+            'another site, bad slices'   => [Sending::conf(['NSZM' => Sending::account(Sending::SITE2, over: ['slices' => [Sending::CAMPAIGN, 'xx']])]), []],
         ];
     }
 
-    // the run's account still bound to the slices, only broken: fixed in config.php, not a sender gone
+    // the run's account still bound to the slices, only broken, or the file broken: fixed in datovka_conf.php, not a sender gone
     #[DataProvider('brokenBindings')]
-    public function test_work_fails_on_broken_binding(array $constants, array $props, string $code): void
+    public function test_work_fails_on_broken_binding(DatovkaConf $conf, array $props, string $code): void
     {
         self::queued(self::SEND, $props);
-        TestSendRun::$constants = $constants;
-        $http                   = self::ownerIs();
+        TestSendRun::$conf = $conf;
+        $http              = self::ownerIs();
 
         self::assertSame("error $code", self::runQueued());
 
         self::assertSame([], $http->calls);
     }
 
-    /** @return array<string, array{array<string, string>, array<string, string>, string}> */
+    /** @return array<string, array{DatovkaConf, array<string, string>, string}> */
     public static function brokenBindings(): array
     {
-        $broken  = array_diff_key(Sending::bound(), ['AA_APIKEY_ISDSTEST_NSZM_PASSWORD' => '']);
-        $renamed = [];
-        foreach ($broken as $name => $value) {
-            $renamed[str_replace('_NSZM_', '_OTHER_', $name)] = $value;
-        }
+        $broken = array_diff_key(Sending::account(), ['password' => '']);
         return [
-            'the account of the run'          => [$broken, [], 'ISDS_CONFIG'],
-            'another account'                 => [$renamed, [], 'ACCOUNT_CHANGED'],
-            'the run queued with certificate' => [$broken, ['kind' => Account::CERT], 'ACCOUNT_CHANGED'],
+            'the account of the run'          => [Sending::conf(['NSZM' => $broken]), [], 'ISDS_CONFIG'],
+            'another account'                 => [Sending::conf(['OTHER' => $broken]), [], 'ACCOUNT_CHANGED'],
+            'the run queued with certificate' => [Sending::conf(['NSZM' => $broken]), ['kind' => Account::CERT], 'ACCOUNT_CHANGED'],
+            // a broken file is no file without accounts
+            'accounts no array'               => [DatovkaConf::fromArray([DatovkaConf::ACCOUNTS => 'NSZM']), [], 'ISDS_CONFIG'],
+            'the account of the run no array' => [Sending::conf(['NSZM' => Sending::SITE]), [], 'ISDS_CONFIG'],
+            'another account no array'        => [Sending::conf(['OTHER' => Sending::SITE]), [], 'ACCOUNT_CHANGED'],
+            // a bad id makes the whole list unreadable: the account may still be bound here
+            'a bad site of the account'       => [Sending::conf(['NSZM' => Sending::account(over: ['sites' => [Sending::SITE, 'xx']])]), [], 'ISDS_CONFIG'],
+            'bad slices of the account'       => [Sending::conf(['NSZM' => Sending::account(over: ['slices' => [Sending::CAMPAIGN, 'xx']])]), [], 'ISDS_CONFIG'],
+            'no sites, no slices'             => [Sending::conf(['NSZM' => Sending::account(over: ['sites' => null, 'slices' => null])]), [], 'ISDS_CONFIG'],
         ];
     }
 
@@ -641,9 +647,9 @@ final class SendRunPrepTest extends TestCase
     public function test_work_accepts_new_fingerprint_of_same_box(): void
     {
         // the only recipient skipped: ISDS is asked nothing but whose the login is
-        $id                     = self::queued(self::SEND, ['acct_id' => 'of the old password', 'owner_at' => (string) (self::NOW - 60)], 1);
-        TestSendRun::$constants = Sending::bound();
-        $http                   = self::ownerIs();
+        $id                = self::queued(self::SEND, ['acct_id' => 'of the old password', 'owner_at' => (string) (self::NOW - 60)], 1);
+        TestSendRun::$conf = Sending::bound();
+        $http              = self::ownerIs();
 
         self::assertSame('step 1', self::runQueued());
 
@@ -654,8 +660,8 @@ final class SendRunPrepTest extends TestCase
 
     public function test_work_stops_when_box_changed(): void
     {
-        $id                     = self::queued(self::SEND, ['acct_id' => 'of another login']);
-        TestSendRun::$constants = Sending::bound();
+        $id                = self::queued(self::SEND, ['acct_id' => 'of another login']);
+        TestSendRun::$conf = Sending::bound();
         self::ownerIs('zz99zzz');
 
         self::assertSame('error ACCOUNT_CHANGED', self::runQueued());
@@ -666,9 +672,9 @@ final class SendRunPrepTest extends TestCase
     #[DataProvider('ownerChecks')]
     public function test_work_asks_owner_box_once_an_hour(string $ownerAt, int $calls): void
     {
-        $id                     = self::queued(self::SEND, ['owner_at' => $ownerAt], 1);
-        TestSendRun::$constants = Sending::bound();
-        $http                   = self::ownerIs();
+        $id                = self::queued(self::SEND, ['owner_at' => $ownerAt], 1);
+        TestSendRun::$conf = Sending::bound();
+        $http              = self::ownerIs();
 
         self::runQueued();
 
@@ -690,9 +696,9 @@ final class SendRunPrepTest extends TestCase
     #[DataProvider('refusals')]
     public function test_work_stops_on_refused_login(string $page, string $code): void
     {
-        $id                     = self::queued(self::SEND, ['owner_at' => '']);
-        TestSendRun::$constants = Sending::bound();
-        TestSendRun::$http      = new FakeHttp([new Response(401, (string) file_get_contents(__DIR__ . "/fixtures/$page"))]);
+        $id                = self::queued(self::SEND, ['owner_at' => '']);
+        TestSendRun::$conf = Sending::bound();
+        TestSendRun::$http = new FakeHttp([new Response(401, (string) file_get_contents(__DIR__ . "/fixtures/$page"))]);
 
         self::assertSame("error $code", self::runQueued());
 
@@ -708,9 +714,9 @@ final class SendRunPrepTest extends TestCase
     // what ISDS said stays out of the record: its status is enough to look it up
     public function test_work_stops_when_isds_refuses_owner_info(): void
     {
-        $id                     = self::queued(self::SEND);
-        TestSendRun::$constants = Sending::bound();
-        TestSendRun::$http      = new FakeHttp([new Response(200, str_replace('Provedeno úspěšně.', 'Přístup odepřen', self::ownerXml(status: '1214')))]);
+        $id                = self::queued(self::SEND);
+        TestSendRun::$conf = Sending::bound();
+        TestSendRun::$http = new FakeHttp([new Response(200, str_replace('Provedeno úspěšně.', 'Přístup odepřen', self::ownerXml(status: '1214')))]);
 
         self::assertSame('error ISDS_REFUSED', self::runQueued());
 
@@ -722,9 +728,9 @@ final class SendRunPrepTest extends TestCase
     // no answer is no reason to fail: the run waits, longer each time, and spends none of its retries
     public function test_work_pauses_while_isds_does_not_answer(): void
     {
-        $id                     = self::queued(self::SEND);
-        TestSendRun::$constants = Sending::bound();
-        TestSendRun::$http      = new FakeHttp([new Response(503, 'Service Unavailable')]);
+        $id                = self::queued(self::SEND);
+        TestSendRun::$conf = Sending::bound();
+        TestSendRun::$http = new FakeHttp([new Response(503, 'Service Unavailable')]);
 
         self::runQueued();
         TestSendRun::$now = self::NOW + 30;
@@ -738,9 +744,9 @@ final class SendRunPrepTest extends TestCase
     #[DataProvider('pauses')]
     public function test_work_pause_doubles_up_to_ten_minutes(int $waits, int $wait): void
     {
-        $id                     = self::queued(['p' => 'send', 'i' => 0, 'w' => $waits, 'u' => self::NOW, 's' => self::NOW - 60]);
-        TestSendRun::$constants = Sending::bound();
-        TestSendRun::$http      = new FakeHttp([new Response(503, 'Service Unavailable')]);
+        $id                = self::queued(['p' => 'send', 'i' => 0, 'w' => $waits, 'u' => self::NOW, 's' => self::NOW - 60]);
+        TestSendRun::$conf = Sending::bound();
+        TestSendRun::$http = new FakeHttp([new Response(503, 'Service Unavailable')]);
 
         self::runQueued();
 
@@ -757,8 +763,8 @@ final class SendRunPrepTest extends TestCase
     public function test_work_fails_after_six_hours_without_answer(int $since, string $ends): void
     {
         self::queued(['p' => 'send', 'i' => 0, 'w' => 9, 'u' => self::NOW, 's' => self::NOW - $since]);
-        TestSendRun::$constants = Sending::bound();
-        TestSendRun::$http      = new FakeHttp([new Response(503, 'Service Unavailable')]);
+        TestSendRun::$conf = Sending::bound();
+        TestSendRun::$http = new FakeHttp([new Response(503, 'Service Unavailable')]);
 
         self::assertSame($ends, self::runQueued());
     }
@@ -769,12 +775,47 @@ final class SendRunPrepTest extends TestCase
         return ['a second more than six hours' => [6 * 3600 + 1, 'error ISDS_UNAVAILABLE']];
     }
 
+    // a network file system refuses PHP now and then: the run waits for the file as for ISDS, asking ISDS nothing
+    public function test_work_pauses_while_the_file_cannot_be_read(): void
+    {
+        $id                = self::queued(self::SEND);
+        TestSendRun::$conf = Sending::fileConf(broken: false);
+        $http              = self::ownerIs();
+
+        self::runQueued();
+
+        $stored = self::stored($id);
+        self::assertSame(['i' => 0, 'p' => 'send', 's' => self::NOW, 'u' => self::NOW + 30, 'w' => 1], self::position($id));
+        self::assertSame(['ISDS_CONFIG', '0', 'sending'], [$stored['retry_code'], $stored['failures'], $stored['state']]);
+        self::assertSame([], $http->calls);
+    }
+
+    public function test_work_fails_after_six_hours_without_the_file(): void
+    {
+        self::queued(['p' => 'send', 'i' => 0, 'w' => 9, 'u' => self::NOW, 's' => self::NOW - 6 * 3600 - 1]);
+        TestSendRun::$conf = Sending::fileConf(broken: false);
+
+        self::assertSame('error ISDS_CONFIG', self::runQueued());
+    }
+
+    // a file that holds no settings does not pass by itself: it is fixed by hand, as a broken account
+    public function test_work_fails_on_a_broken_file(): void
+    {
+        self::queued(self::SEND);
+        TestSendRun::$conf = Sending::fileConf(broken: true);
+        $http              = self::ownerIs();
+
+        self::assertSame('error ISDS_CONFIG', self::runQueued());
+
+        self::assertSame([], $http->calls);
+    }
+
     public function test_positionOnResume_resets_pause(): void
     {
         FakePerms::install([Sending::USER => [Sending::CAMPAIGN => self::role('EDITOR')]]);
-        $id                     = self::queued(self::SEND);
-        TestSendRun::$constants = Sending::bound();
-        TestSendRun::$http      = new FakeHttp([new Response(503, 'Service Unavailable')]);
+        $id                = self::queued(self::SEND);
+        TestSendRun::$conf = Sending::bound();
+        TestSendRun::$http = new FakeHttp([new Response(503, 'Service Unavailable')]);
         self::runQueued();
 
         DB_AA::transaction(static fn() => TestSendRun::lockForUpdate($id)?->resume(Sending::USER));

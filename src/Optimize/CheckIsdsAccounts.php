@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
-use AA\Credential\Store;
 use AA\Http\ClientCertificate;
 use AA\Isds\Account;
 use AA\Isds\Accounts;
 use AA\Isds\Binding;
 use AA\Isds\ConfigException;
+use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
 use AA\Isds\SliceProblem;
 use AA\Isds\SliceRules;
@@ -18,11 +18,12 @@ use AA_Log;
 use AA_Module;
 
 /**
- * The ISDS accounts include/config.php sets up (AA\Isds\Accounts): what to fix in their constants,
- * the constants AA does not read, whether the site and the slices each account is bound to are ready
- * (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
+ * The ISDS accounts misc/datovka/datovka_conf.php sets up (AA\Isds\Accounts): what to fix in their
+ * settings, what of them AA does not read, whether the site and the slices each account is bound to are
+ * ready (SliceRules - the rules the page that sends applies), the files of a certificate, the pages whose
  * settings of the sending were not ready and the campaigns whose recipients could not be told (Gate logs
- * both). Constant names and file names only, never a key or a passphrase. No network: CheckIsds logs in.
+ * both). Only the accounts of the sites of this database (Accounts::here()). Names of settings and files
+ * only, never a password, a key or a passphrase. No network: CheckIsds logs in.
  */
 class CheckIsdsAccounts extends AbstractOptimize
 {
@@ -43,7 +44,7 @@ class CheckIsdsAccounts extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Checks the ISDS accounts include/config.php sets up for sending to data boxes: their constants, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, or whose campaigns could not tell their recipients, in the last week.');
+        return _m('Checks the ISDS accounts misc/datovka/datovka_conf.php sets up for sending to data boxes from the sites of this database: their settings, the files of their certificates, the site and slices each account sends for, and the pages of a mass sending whose settings were not ready, or whose campaigns could not tell their recipients, in the last week.');
     }
 
     public static function types(): array
@@ -64,20 +65,27 @@ class CheckIsdsAccounts extends AbstractOptimize
     /** @return Finding[] */
     public function findings(): array
     {
-        $constants = $this->constants();
-        $bindings  = Accounts::bindings($constants);
-        $strays    = Accounts::strays($constants);
-        $rules     = $this->sliceRules();
-        $pages     = [...$this->pageFindings($rules), ...$this->recipientFindings($rules)];
+        $conf     = $this->conf();
+        $all      = Accounts::bindings($conf);
+        $here     = $this->modulesHere(Accounts::moduleIds($all));
+        $bindings = Accounts::here($all, $here);
+        // a misspelt key of an account of another database is for that one to show
+        $strays   = Accounts::strays($conf, array_map(static fn(Binding $b): string => $b->name, $bindings));
+        $rules    = $this->sliceRules();
+        $pages    = [...$this->pageFindings($rules), ...$this->recipientFindings($rules)];
         if (!$bindings && !$strays) {
-            return $pages ?: [new Finding(Finding::OK, _m('No ISDS account is set up in include/config.php'))];
+            return $pages ?: [new Finding(Finding::OK, _m('No ISDS account in misc/datovka/datovka_conf.php sends for a site of this database'))];
         }
         $findings = [];
         foreach ($bindings as $binding) {
             if (!$binding->usable()) {
                 $findings[] = self::accountFinding($binding);
             }
-            array_push($findings, ...$this->certificateFindings($binding, $constants));
+            if (($binding->sites === []) && !array_intersect(array_filter([$binding->campaignSlice, $binding->messageSlice]), $here)) {
+                // its problem shown in every database; its files and slices only in the one of its slices
+                continue;
+            }
+            array_push($findings, ...$this->certificateFindings($binding, $conf));
             $finding = self::slicesFinding($binding, $rules);
             if ($finding !== null) {
                 $findings[] = $finding;
@@ -86,15 +94,15 @@ class CheckIsdsAccounts extends AbstractOptimize
         if ($strays) {
             $findings[] = new Finding(
                 Finding::WARNING,
-                _m('include/config.php has ISDS constants AA does not read: %1', [count($strays)]),
+                _m('misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: %1', [count($strays)]),
                 count: count($strays),
-                evidence: array_map(static fn(string $name): array => [_m('Constant') => safe($name)], $strays),
-                advice: _m('An ISDS account is set up by the constants %1, the account named by one word of capital letters and digits; production ones start with %2. Correct the names, or remove the constants.', [implode(', ', Accounts::constants(Account::TEST, Accounts::PLACEHOLDER)), Accounts::prefix(Account::PRODUCTION, '')]),
+                evidence: array_map(static fn(string $name): array => [_m('Setting') => safe($name)], $strays),
+                advice: _m('An ISDS account in %1 is named by one word of capital letters and digits, the first a letter, and AA reads only the keys %2. Correct the names, or remove what AA does not read.', [DatovkaConf::key(DatovkaConf::ACCOUNTS), implode(', ', Accounts::keys(Account::TEST))]),
                 key: 'strays',
             );
         }
 
-        return [...$findings, ...$pages] ?: [new Finding(Finding::OK, _m('ISDS accounts ready to send: %1', [implode(', ', array_map(static fn(Binding $b): string => Accounts::prefix($b->environment, $b->name), $bindings))]))];
+        return [...$findings, ...$pages] ?: [new Finding(Finding::OK, _m('ISDS accounts ready to send: %1', [implode(', ', array_map(static fn(Binding $b): string => Accounts::label($b->environment, $b->name), $bindings))]))];
     }
 
     /**
@@ -170,14 +178,14 @@ class CheckIsdsAccounts extends AbstractOptimize
         return $findings;
     }
 
-    /** the account's own constants hold the problem */
+    /** the account's own settings hold the problem */
     private static function accountFinding(Binding $binding): Finding
     {
         return new Finding(
             Finding::ERROR,
-            _m('ISDS account %1 cannot be used', [Accounts::prefix($binding->environment, $binding->name)]),
+            _m('ISDS account %1 cannot be used', [Accounts::label($binding->environment, $binding->name)]),
             evidence: array_map(static fn(string $problem): array => [_m('Problem') => safe($problem)], $binding->problems),
-            advice: _m('Fix in include/config.php what the evidence names. The account is set up by the constants %1.', [implode(', ', Accounts::constants($binding->environment, $binding->name, $binding->kind))]),
+            advice: _m('Fix in misc/datovka/datovka_conf.php what the evidence names. The account is %1, with the keys %2.', [Accounts::setting($binding->name), implode(', ', Accounts::keys($binding->environment, $binding->kind))]),
             key: "account:{$binding->environment}:{$binding->name}",
         );
     }
@@ -187,34 +195,33 @@ class CheckIsdsAccounts extends AbstractOptimize
      * from a TLS handshake (ClientCertificate::problem()), who else may read the key, how long the
      * certificate lasts. Evidence names the files and what the certificate says of itself, never the key
      * or the passphrase.
-     * @param array<string, mixed> $constants
      * @return list<Finding>
      */
-    private function certificateFindings(Binding $binding, #[\SensitiveParameter] array $constants): array
+    private function certificateFindings(Binding $binding, #[\SensitiveParameter] DatovkaConf $conf): array
     {
         try {
-            $certificate = Accounts::certificate($binding, $constants);
+            $certificate = Accounts::certificate($binding, $conf);
         } catch (ConfigException) {
-            // a damaged constant: accountFinding() names it
+            // a damaged setting: accountFinding() names it
             return [];
         }
         if (is_null($certificate)) {
             return [];
         }
-        $label    = Accounts::prefix($binding->environment, $binding->name);
+        $label    = Accounts::label($binding->environment, $binding->name);
         $key      = "{$binding->environment}:{$binding->name}";
-        $constant = static fn(string $kind): string => Accounts::constant($binding->environment, $binding->name, $kind);
+        $setting  = static fn(string $field): string => Accounts::setting($binding->name, $field);
         $files    = array_filter([Accounts::CERT => $certificate->certificate, Accounts::KEY => $certificate->key]);
         $problem  = $certificate->problem($this->now());
         // first: a key others may read is a leak even while the other file cannot be read
-        $findings = array_filter([$this->keyAccess($files, $constant, $label, $key, $constants)]);
+        $findings = array_filter([$this->keyAccess($files, $setting, $label, $key)]);
         if (in_array($problem, [ClientCertificate::UNREADABLE, ClientCertificate::KEY_UNREADABLE], true)) {
-            $kind = ($problem === ClientCertificate::UNREADABLE) ? Accounts::CERT : Accounts::KEY;
+            $field = ($problem === ClientCertificate::UNREADABLE) ? Accounts::CERT : Accounts::KEY;
             return [...$findings, new Finding(
                 Finding::ERROR,
                 _m('PHP cannot read the certificate of ISDS account %1', [$label]),
-                evidence: [[_m('Constant') => $constant($kind), _m('File') => safe($files[$kind])]],
-                advice: _m('Check that the constant names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there.', [Accounts::CERT_DIR]),
+                evidence: [[_m('Setting') => safe($setting($field)), _m('File') => safe($files[$field])]],
+                advice: _m('Check that the setting names the file by a full path - a relative one starts in %1 of AA -, that the user PHP runs as may read it, and that open_basedir lets PHP there.', [DatovkaConf::CERT_DIR]),
                 key: "certificate-file:$key",
             )];
         }
@@ -225,15 +232,15 @@ class CheckIsdsAccounts extends AbstractOptimize
         $until    = (int) ($details['validTo_time_t'] ?? 0);
         $evidence = $details ? [_m('Subject') => safe((string) ($details['name'] ?? '')), _m('Serial number') => safe((string) ($details['serialNumberHex'] ?? '')), _m('Valid until') => date('Y-m-d H:i', $until)] : [];
         $text     = match ($problem) {
-            ClientCertificate::NOT_A_CERTIFICATE => _m('%1 names a file with no PEM certificate', [$constant(Accounts::CERT)]),
-            ClientCertificate::KEY_LOCKED        => _m('The private key in %1 does not open: it is missing, or %2 does not fit', [$constant(isset($files[Accounts::KEY]) ? Accounts::KEY : Accounts::CERT), $constant(Accounts::PASSPHRASE)]),
-            ClientCertificate::KEY_MISMATCH      => _m('The private key in %1 does not belong to the certificate in %2', [$constant(isset($files[Accounts::KEY]) ? Accounts::KEY : Accounts::CERT), $constant(Accounts::CERT)]),
+            ClientCertificate::NOT_A_CERTIFICATE => _m('%1 names a file with no PEM certificate', [$setting(Accounts::CERT)]),
+            ClientCertificate::KEY_LOCKED        => _m('The private key in %1 does not open: it is missing, or %2 does not fit', [$setting(isset($files[Accounts::KEY]) ? Accounts::KEY : Accounts::CERT), $setting(Accounts::PASSPHRASE)]),
+            ClientCertificate::KEY_MISMATCH      => _m('The private key in %1 does not belong to the certificate in %2', [$setting(isset($files[Accounts::KEY]) ? Accounts::KEY : Accounts::CERT), $setting(Accounts::CERT)]),
             ClientCertificate::WEAK_KEY          => _m('The private key is shorter than %1 bits, which the secure connection refuses', [ClientCertificate::MIN_BITS]),
             ClientCertificate::NOT_YET_VALID     => _m('The certificate is valid from %1 only', [date('Y-m-d H:i', (int) ($details['validFrom_time_t'] ?? 0))]),
             default                              => '',
         };
         if ($text !== '') {
-            $findings[] = new Finding(Finding::ERROR, _m('The certificate of ISDS account %1 cannot be used', [$label]), evidence: [$evidence + [_m('Problem') => $text]], advice: _m('Name the certificate and its key in include/config.php, and the passphrase of an encrypted key.'), key: "certificate-invalid:$key");
+            $findings[] = new Finding(Finding::ERROR, _m('The certificate of ISDS account %1 cannot be used', [$label]), evidence: [$evidence + [_m('Problem') => safe($text)]], advice: _m('Name the certificate and its key in misc/datovka/datovka_conf.php, and the passphrase of an encrypted key.'), key: "certificate-invalid:$key");
         }
         $left = $until - $this->now();
         if ($details && ($left < self::CERTIFICATE_DAYS * 86400)) {
@@ -241,7 +248,7 @@ class CheckIsdsAccounts extends AbstractOptimize
                 ($left < self::CERTIFICATE_ERROR_DAYS * 86400) ? Finding::ERROR : Finding::WARNING,
                 ($left < 0) ? _m('The certificate of ISDS account %1 expired on %2', [$label, date('Y-m-d', $until)]) : _m('The certificate of ISDS account %1 expires on %2', [$label, date('Y-m-d', $until)]),
                 evidence: [$evidence],
-                advice: _m('Get a new certificate, have ISDS register it next to the old one, and name its file in include/config.php - ISDS wants it %1 days before the old one expires.', [self::CERTIFICATE_DAYS]),
+                advice: _m('Get a new certificate, have ISDS register it next to the old one, and name its file in misc/datovka/datovka_conf.php - ISDS wants it %1 days before the old one expires.', [self::CERTIFICATE_DAYS]),
                 key: "certificate-expiry:$key",
             );
         }
@@ -254,20 +261,22 @@ class CheckIsdsAccounts extends AbstractOptimize
      * of AA the web server may serve it whatever .htaccess says - there the group must not read it
      * either, and with PHP inside the web server no mode helps; outside, others must not. Inside is
      * judged by the path, so a bind mount of the directory of AA elsewhere is not seen.
-     * @param array<string, string>   $files     CERT and KEY => the file
-     * @param \Closure(string): string $constant the constant of a kind
-     * @param array<string, mixed>    $constants AA_BASE_PATH among them
+     * @param array<string, string>   $files   CERT and KEY => the file
+     * @param \Closure(string): string $setting the setting of a key of the account
      */
-    private function keyAccess(array $files, \Closure $constant, string $label, string $key, #[\SensitiveParameter] array $constants): ?Finding
+    private function keyAccess(array $files, \Closure $setting, string $label, string $key): ?Finding
     {
         clearstatcache(true);
-        $base = is_string($constants['AA_BASE_PATH'] ?? null) ? $constants['AA_BASE_PATH'] : '';
-        // as written and as resolved: the web server follows links (FollowSymLinks)
-        $bases    = ($base === '') ? [] : array_unique(array_filter([self::collapse($base), realpath($base)], is_string(...)));
+        $bases = [];
+        foreach ($this->bases() as $base) {
+            // as written and as resolved: the web server follows links (FollowSymLinks)
+            array_push($bases, self::collapse($base), realpath($base));
+        }
+        $bases    = array_unique(array_filter($bases, is_string(...)));
         $module   = $this->sapi() === 'apache2handler';
         $evidence = [];
         $served   = false;
-        foreach (array_unique($files) as $kind => $file) {
+        foreach (array_unique($files) as $field => $file) {
             $real = realpath($file);
             // not a FIFO or a device: reading one would wait for ever
             if (($real === false) || !is_file($real) || !is_readable($real) || !str_contains((string) file_get_contents($real, false, null, 0, ClientCertificate::MAX_BYTES), 'PRIVATE KEY-----')) {
@@ -280,7 +289,7 @@ class CheckIsdsAccounts extends AbstractOptimize
             $mode   = (int) fileperms($real);
             if (($inside && $module) || (($mode & ($inside ? 0o077 : 0o007)) !== 0)) {
                 $served     = $served || $inside;
-                $evidence[] = [_m('Constant') => $constant($kind), _m('File') => safe($file), _m('Permissions') => sprintf('%04o', $mode & 0o7777)];
+                $evidence[] = [_m('Setting') => safe($setting($field)), _m('File') => safe($file), _m('Permissions') => sprintf('%04o', $mode & 0o7777)];
             }
         }
         if (!$evidence) {
@@ -352,7 +361,7 @@ class CheckIsdsAccounts extends AbstractOptimize
 
         return new Finding(
             Finding::ERROR,
-            _m('The slices of ISDS account %1 are not ready for sending', [Accounts::prefix($binding->environment, $binding->name)]),
+            _m('The slices of ISDS account %1 are not ready for sending', [Accounts::label($binding->environment, $binding->name)]),
             count: count($problems),
             evidence: array_map(static fn(SliceProblem $problem): array => [_m('Problem') => safe($problem->text)], $problems),
             advice: _m('Fix what the evidence names before sending from these slices.'),
@@ -364,10 +373,29 @@ class CheckIsdsAccounts extends AbstractOptimize
 
     // ------------------------------------------------------------ what tests replace
 
-    /** @return array<string, mixed> as Store::userConstants() */
-    protected function constants(): array
+    protected function conf(): DatovkaConf
     {
-        return Store::userConstants();
+        return DatovkaConf::load();
+    }
+
+    /**
+     * @param list<string> $ids of sites or slices
+     * @return list<string> those that are modules of this database
+     */
+    protected function modulesHere(array $ids): array
+    {
+        return Accounts::modulesHere($ids);
+    }
+
+    /**
+     * The directory of AA, which the web server serves: AA_BASE_PATH - as config.php writes it, the web
+     * server may reach it by a link; include/locsess.php sets it resolved when config.php does not - and
+     * as PHP resolved it. None known counts as everywhere.
+     * @return list<string>
+     */
+    protected function bases(): array
+    {
+        return array_values(array_unique(array_filter([defined('AA_BASE_PATH') ? (string) constant('AA_BASE_PATH') : '', DatovkaConf::base()])));
     }
 
     protected function sliceRules(): SliceRules

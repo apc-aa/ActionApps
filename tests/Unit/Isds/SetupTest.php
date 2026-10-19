@@ -6,6 +6,7 @@ namespace Tests\Unit\Isds;
 
 use AA;
 use AA\Isds\Account;
+use AA\Isds\DatovkaConf;
 use AA\Isds\Registry\Config;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
@@ -21,7 +22,7 @@ require_once __DIR__ . '/fixtures/Sending.php';
 
 /**
  * The settings a template gives {datovkabulk:page}: checked on every page, one problem per thing to
- * fix. A template names any slices it likes - only the site and the pair include/config.php binds
+ * fix. A template names any slices it likes - only the site and the pair datovka_conf.php binds
  * together pass, and of the others it learns nothing.
  */
 final class SetupTest extends TestCase
@@ -67,23 +68,19 @@ final class SetupTest extends TestCase
         return FakeSliceRules::ready(self::SITE, self::CAMPAIGN, self::MESSAGE)->withSource(self::SITE, self::SOURCE);
     }
 
-    /**
-     * @param array<string, mixed>|string $settings
-     * @param array<string, string>|null  $constants
-     */
-    private static function build(array|string $settings, string $site = self::SITE, ?FakeSliceRules $rules = null, ?array $constants = null): Setup
+    /** @param array<string, mixed>|string $settings */
+    private static function build(array|string $settings, string $site = self::SITE, ?FakeSliceRules $rules = null, ?DatovkaConf $conf = null): Setup
     {
-        return Setup::fromTemplate(is_string($settings) ? $settings : (string) json_encode($settings), $site, $rules ?? self::rules(), $constants ?? Sending::bound());
+        return Setup::fromTemplate(is_string($settings) ? $settings : (string) json_encode($settings), $site, $rules ?? self::rules(), $conf ?? Sending::bound());
     }
 
     /**
      * @param array<string, mixed>|string $settings
-     * @param array<string, string>|null  $constants
      * @return list<string> the problems
      */
-    private static function problems(array|string $settings, string $site = self::SITE, ?FakeSliceRules $rules = null, ?array $constants = null): array
+    private static function problems(array|string $settings, string $site = self::SITE, ?FakeSliceRules $rules = null, ?DatovkaConf $conf = null): array
     {
-        $checked = Setup::checked(is_string($settings) ? $settings : (string) json_encode($settings), $site, $rules ?? self::rules(), $constants ?? Sending::bound());
+        $checked = Setup::checked(is_string($settings) ? $settings : (string) json_encode($settings), $site, $rules ?? self::rules(), $conf ?? Sending::bound());
         self::assertInstanceOf(SetupException::class, $checked, 'the settings passed');
 
         return array_map(static fn(SliceProblem $p): string => $p->text, $checked->problems);
@@ -175,14 +172,16 @@ final class SetupTest extends TestCase
 
     public function test_fromTemplate_hostedServiceTellsTheSenderBox(): void
     {
-        $constants = [
-            'AA_APIKEY_ISDSTEST_NSZM_SITE'   => self::SITE,
-            'AA_APIKEY_ISDSTEST_NSZM_SLICES' => self::CAMPAIGN . ',' . self::MESSAGE,
-            'AA_APIKEY_ISDSTEST_NSZM_CERT'   => '/etc/aa-isds/ecn.pem',
-            'AA_APIKEY_ISDSTEST_NSZM_BOX'    => 'DJ7J6MK',
-        ];
+        $conf = Sending::conf(['NSZM' => [
+            'environment' => 'test',
+            'auth'        => 'hosted',
+            'sites'       => [self::SITE],
+            'slices'      => [self::CAMPAIGN, self::MESSAGE],
+            'box'         => 'DJ7J6MK',
+            'cert'        => '/etc/aa-isds/ecn.pem',
+        ]]);
 
-        self::assertSame('dj7j6mk', self::build(self::settings(), constants: $constants)->senderBox);
+        self::assertSame('dj7j6mk', self::build(self::settings(), conf: $conf)->senderBox);
     }
 
     /** @return array<string, array{string}> */
@@ -262,10 +261,10 @@ final class SetupTest extends TestCase
         self::assertSame(Setup::MAX_RECIPIENTS, self::build(['max_recipients' => Setup::MAX_RECIPIENTS] + self::settings())->maxRecipients);
     }
 
-    // production only where include/config.php binds production keys to the pair
+    // production only where datovka_conf.php binds a production account to the pair
     public function test_fromTemplate_environmentOnlyNarrows(): void
     {
-        self::assertSame(['environment may only be "test" - include/config.php decides when production is used'], self::problems(['environment' => 'production'] + self::settings()));
+        self::assertSame(['environment may only be "test" - misc/datovka/datovka_conf.php decides when production is used'], self::problems(['environment' => 'production'] + self::settings()));
         self::assertSame(Account::TEST, self::build(['environment' => 'test'] + self::settings())->environment);
     }
 
@@ -278,14 +277,14 @@ final class SetupTest extends TestCase
         $problems                    = self::problems(self::settings(), self::SITE2, $rules);
 
         self::assertCount(1, $problems);
-        self::assertStringStartsWith('No usable ISDS account in include/config.php is bound to this site and these slices.', $problems[0]);
+        self::assertStringStartsWith('No usable ISDS account in misc/datovka/datovka_conf.php is bound to this site and these slices.', $problems[0]);
         self::assertStringNotContainsString('NSZM', $problems[0], 'names no account there is');
         self::assertStringNotContainsString('nszm01login', $problems[0]);
     }
 
     /**
      * An open slice of another site: neither its name nor anything of its settings or fields - only that
-     * the site does not use it, and how include/config.php would bind it.
+     * the site does not use it, and how datovka_conf.php would bind it.
      * @return array<string, array{string}>
      */
     public static function foreignSlice(): array
@@ -311,7 +310,7 @@ final class SetupTest extends TestCase
         }
     }
 
-    // the site uses the pair, but include/config.php binds it nowhere: nothing of the slices yet
+    // the site uses the pair, but datovka_conf.php binds it nowhere: nothing of the slices yet
     public function test_fromTemplate_openSlicesOfTheSiteNotBound(): void
     {
         $rules                         = self::rules();
@@ -319,10 +318,10 @@ final class SetupTest extends TestCase
         $rules->slices[self::MESSAGE]  = FakeSliceRules::sliceOf(self::MESSAGE, false, ['reading_password' => ''], ['text...........1']);
         $rules->outlets[self::MESSAGE] = ['feeds_out'];
 
-        $problems = self::problems(self::settings(), rules: $rules, constants: Sending::bound(self::SITE2));
+        $problems = self::problems(self::settings(), rules: $rules, conf: Sending::bound(self::SITE2));
 
         self::assertCount(1, $problems);
-        self::assertStringStartsWith('No usable ISDS account in include/config.php is bound to this site and these slices.', $problems[0]);
+        self::assertStringStartsWith('No usable ISDS account in misc/datovka/datovka_conf.php is bound to this site and these slices.', $problems[0]);
     }
 
     // a protected slice of the installation the site does not use
@@ -332,7 +331,7 @@ final class SetupTest extends TestCase
         $rules->slices[self::OTHER] = FakeSliceRules::sliceOf(self::OTHER, false);
 
         self::assertSame([
-            "No usable ISDS account in include/config.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, set AA_APIKEY_ISDSTEST_<ACCOUNT>_SITE to '" . self::SITE . "', AA_APIKEY_ISDSTEST_<ACCOUNT>_SLICES to '" . self::CAMPAIGN . ',' . self::OTHER . "' (the campaign slice first), AA_APIKEY_ISDSTEST_<ACCOUNT>_LOGIN and AA_APIKEY_ISDSTEST_<ACCOUNT>_PASSWORD; a production account logs in with a certificate (AA_APIKEY_ISDS_<ACCOUNT>_CERT) instead. The State Check lists the accounts and their problems",
+            "No usable ISDS account in misc/datovka/datovka_conf.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, add to DATOVKA_CONF['accounts'] an account with 'environment' => 'test', 'auth' => 'basic', 'sites' => ['" . self::SITE . "'], 'slices' => ['" . self::CAMPAIGN . "', '" . self::OTHER . "'] (the campaign slice first), 'login' and 'password'; a production account logs in with a certificate ('auth' => 'cert' or 'hosted') instead. The State Check lists the accounts and their problems",
             'Site "Terminal" does not use slice ' . self::OTHER . ' - add the slice to Uses modules in the settings of the site',
         ], self::problems(['message_slice' => self::OTHER] + self::settings(), rules: $rules));
     }

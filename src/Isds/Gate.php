@@ -99,7 +99,7 @@ class Gate
         return "isds:$action:$campaignSlice:$campaign";
     }
 
-    /** Account::TEST or Account::PRODUCTION - from include/config.php, never from the text of the template */
+    /** Account::TEST or Account::PRODUCTION - from datovka_conf.php, never from the text of the template */
     public function env(): string
     {
         return safe(self::$open->environment ?? '');

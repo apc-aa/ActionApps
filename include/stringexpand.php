@@ -10642,7 +10642,7 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Mass sending by data box (ISDS) from include/config.php - opens its slices to who may send, on a page of the site
+/** Mass sending by data box (ISDS) from misc/datovka/datovka_conf.php - opens its slices to who may send, on a page of the site
  *    {datovkabulk:page:<settings>:{(<UI>)}:<no right>} - the settings as {jsonasoc:...} (AA\Isds\Setup); the UI only
  *        for a user who may edit all items of the campaign slice (a reader through a set of readers), else <no right>.
  *        Put the whole UI inside {(...)}: it stays unexpanded until the gate opens - not wrapped, it expands
@@ -10653,7 +10653,7 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
  *        no campaign id only to save a new campaign
- *    {datovkabulk:env}    - test | production, as include/config.php binds the slices
+ *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:result} - what the posted action did
  *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted

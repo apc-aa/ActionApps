@@ -9,7 +9,7 @@ use AA_Field;
 
 /**
  * The settings of one mass sending - one data box it sends from - as {datovkabulk:page} gets them
- * from the template: checked against the slices, the site and include/config.php each time, never
+ * from the template: checked against the slices, the site and misc/datovka/datovka_conf.php each time, never
  * stored. Holds no secret. In the template a JSON object, as {jsonasoc:...} makes it:
  *     {jsonasoc:campaign_slice:<id>:message_slice:<id>:source_slice:<id>
  *       :types:{jsonasoc:mesto:Cities:mestocast:City districts}:default_types:["mesto"]
@@ -17,7 +17,7 @@ use AA_Field;
  * {jsonasoc} gives a nested object or list as its JSON text, so types, default_types and test_box
  * take that text too; one type or box may be a plain text. An empty value is a value not set.
  * Required are the three slices and types. Who may send is a matter of AA rights (Access), not of
- * the settings. environment can only narrow to the test ISDS - production comes from include/config.php.
+ * the settings. environment can only narrow to the test ISDS - production comes from datovka_conf.php.
  */
 final readonly class Setup
 {
@@ -36,7 +36,7 @@ final readonly class Setup
      * @param list<string>             $defaultTypes the types chosen at first
      * @param string                   $memberField  the field of the source that tells a member; '' = none
      * @param list<string>             $testBoxes    the only boxes a test message goes to
-     * @param string                   $environment  Account::TEST or Account::PRODUCTION, as include/config.php binds it
+     * @param string                   $environment  Account::TEST or Account::PRODUCTION, as datovka_conf.php binds it
      * @param string                   $senderBox    the box a hosted filing service sends from; '' = ISDS tells it
      *                                               when asked, which a page never does
      * @param string                   $letterhead   plain text above every letter, one line a row - the sender,
@@ -82,16 +82,16 @@ final readonly class Setup
     }
 
     /**
-     * The settings of the template, when the slices, the site and include/config.php are ready for them.
-     * Of a slice the site does not use, or include/config.php does not bind to it, it tells only that:
+     * The settings of the template, when the slices, the site and datovka_conf.php are ready for them.
+     * Of a slice the site does not use, or datovka_conf.php does not bind to it, it tells only that:
      * a template of any site may name any slice.
-     * @param string                    $settings  the JSON object of the template
-     * @param string                    $site      the site whose page is rendered - never a value of the template
-     * @param array<string, mixed>|null $constants as Accounts::binding()
+     * @param string       $settings the JSON object of the template
+     * @param string       $site     the site whose page is rendered - never a value of the template
+     * @param ?DatovkaConf $conf     as Accounts::binding()
      * @throws SetupException what to fix
      * @throws \InvalidArgumentException $site is no id
      */
-    public static function fromTemplate(string $settings, string $site, ?SliceRules $rules = null, #[\SensitiveParameter] ?array $constants = null): self
+    public static function fromTemplate(string $settings, string $site, ?SliceRules $rules = null, #[\SensitiveParameter] ?DatovkaConf $conf = null): self
     {
         $site   = ModuleId::normalize($site) ?? throw new \InvalidArgumentException('A site id is 32 hexadecimal digits');
         $rules ??= new SliceRules();
@@ -123,7 +123,7 @@ final readonly class Setup
             $problems[] = new SliceProblem(_m('default_types names types that are not among types: %1', [implode(', ', $unchosen)]));
         }
         if (!in_array($environment, ['', Account::TEST], true)) {
-            $problems[] = new SliceProblem(_m('environment may only be "%1" - include/config.php decides when production is used', [Account::TEST]));
+            $problems[] = new SliceProblem(_m('environment may only be "%1" - misc/datovka/datovka_conf.php decides when production is used', [Account::TEST]));
         }
         if (!is_string($letterhead)) {
             $problems[] = new SliceProblem(_m('Set letterhead to a text'));
@@ -133,7 +133,7 @@ final readonly class Setup
         if (($campaign !== '') && ($message !== '')) {
             $siteProblems = $rules->siteProblems($site, $campaign, $message);
             try {
-                $account = Accounts::forSlices($site, $campaign, $message, ($environment === Account::TEST) ? Account::TEST : '', $constants);
+                $account = Accounts::forSlices($site, $campaign, $message, ($environment === Account::TEST) ? Account::TEST : '', $conf);
             } catch (ConfigException $e) {
                 // says how to bind an account, nothing of the accounts there are
                 $problems[] = new SliceProblem($e->getMessage());
@@ -154,12 +154,11 @@ final readonly class Setup
 
     /**
      * fromTemplate() for AA::Contentcache() - the Setup, or what to fix, once a request
-     * @param array<string, mixed>|null $constants
      */
-    public static function checked(string $settings, string $site, ?SliceRules $rules = null, #[\SensitiveParameter] ?array $constants = null): self|SetupException
+    public static function checked(string $settings, string $site, ?SliceRules $rules = null, #[\SensitiveParameter] ?DatovkaConf $conf = null): self|SetupException
     {
         try {
-            return self::fromTemplate($settings, $site, $rules, $constants);
+            return self::fromTemplate($settings, $site, $rules, $conf);
         } catch (SetupException $e) {
             return $e;
         }

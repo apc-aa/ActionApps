@@ -85,7 +85,7 @@ class CheckIsdsRegistry extends AbstractOptimize
                     continue;
                 }
                 $name       = $this->sliceName($site);
-                $evidence[] = [_m('ISDS account') => safe(Accounts::prefix($binding->environment, $binding->name)), _m('Site') => safe($name)];
+                $evidence[] = [_m('ISDS account') => safe(Accounts::label($binding->environment, $binding->name)), _m('Site') => safe($name)];
                 $links[SliceRules::pageLabel(SliceRules::SITE_PAGE) . ': ' . $name] = AA_Module::getModuleUrl($site, SliceRules::SITE_PAGE);
             }
         }
