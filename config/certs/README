@@ -1,6 +1,6 @@
 Per-install certificates: of the ISDS accounts (the constants AA_APIKEY_ISDS..._CERT and _KEY in include/config.php;
 a relative path starts here) and of the older data-box client in misc/datovka (see
-misc/datovka/datovka_conf.php). The directory is versioned only through this file: git does not keep
+misc/datovka/datovka_conf.php.default). The directory is versioned only through this file: git does not keep
 empty directories, and the certificates themselves are per-install and ignored.
 
 This directory lies in the tree the web server serves, and some servers ignore .htaccess. A file that

@@ -13,6 +13,7 @@
 /include/custom/
 /modules/site/sites/site_*.php
 /misc/file2slice/*
+/misc/datovka/datovka_conf.php
 /config/certs/*
 !/config/certs/README
 # editor typings (package.json is versioned, its install is not)

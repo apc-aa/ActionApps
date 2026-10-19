@@ -35,3 +35,4 @@
 - /.browserslistrc
 - /include/config.php
 - /include/config.php3
+- /misc/datovka/datovka_conf.php

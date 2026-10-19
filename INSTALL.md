@@ -75,6 +75,10 @@ Uncomment `define('AA_LOG_PHP_FATALS', true);` too, so that PHP fatal errors app
 `config.php` contains the database password. Make it readable only by you and the web server, for
 example with `chmod 640 include/config.php` and the web server's group.
 
+To send messages to Czech data boxes with `{datovka}`, also copy `misc/datovka/datovka_conf.php.default`
+to `misc/datovka/datovka_conf.php`, with the same owner, group and mode as `config.php`. The comments in
+the file explain what to fill in.
+
 ## 4. Create the upload directory
 
 AA stores uploaded files and generated thumbnails in `IMG_UPLOAD_PATH`. By default this is `img_upload/`

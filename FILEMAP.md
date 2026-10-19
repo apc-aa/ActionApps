@@ -422,6 +422,12 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Credential/Secret.php | Key/password/token wrapped so it cannot leak by accident | Secret::reveal(), hint() | S |
 | Credential/Store.php | Keys from AA_APIKEY_* constants in config.php; one line each, damaged ones refused | Store::resolve(), describe(), damagedIn() | S |
 
+### Isds (data boxes)
+
+| File | Purpose | Key API | Size |
+|------|---------|---------|------|
+| Isds/DatovkaConf.php | The one reader of the per-install misc/datovka/datovka_conf.php (template datovka_conf.php.default) for {datovka}; the ISDS addresses live here (ATS) | DatovkaConf::load(), ats(), instances(), problems() | S |
+
 ### Expand
 
 | File | Purpose | Key API | Size |

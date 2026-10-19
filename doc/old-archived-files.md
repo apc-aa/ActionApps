@@ -1,5 +1,9 @@
 ### List of removed, no longer maintained files in ActionApps
 
+/misc/datovka/**datovka_conf.php**  
+Settings of the data-box client behind {datovka}: the installations sharing one registration of the ISDS authentication service, the certificate and atsId of each environment, and the addresses of ISDS.  
+_Belongs to the installation now, like include/config.php: git ignores it, so an update never overwrites the settings of a server; misc/datovka/datovka_conf.php.default is the template to copy. The addresses of ISDS moved into the code (AA\Isds\DatovkaConf::ATS), and AA runs without the file. Removed 2026-10-19 - honzam_
+
 /src/Isds/Registry/**RegisterIndex.php**, /tests/Unit/Isds/Registry/fixtures/**LockedRegisterIndex.php**  
 The record of the downloaded register of data boxes (sha256, size and time of the download), and the same with the record kept in memory, for the tests.  
 _Renamed, not dropped: with the index of the register gone, the class keeps only the record of the download and is now AA\Isds\Registry\DownloadedRegister (src/Isds/Registry/DownloadedRegister.php), its stand-in for the tests MemoryDownloadedRegister (tests/Unit/Isds/Registry/fixtures/MemoryDownloadedRegister.php). Removed 2026-10-19 - honzam_

@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . "/datovka_conf.php";
+use AA\Isds\DatovkaConf;
 
 /** extends aa_object for the possibility to store it to object store */
 class Datovka extends AA_Object
@@ -41,7 +41,8 @@ class Datovka extends AA_Object
 
     public function __construct(string $conf = 'standard', string $to = '', string $annotation = '', string $attachments = '', array $params = [], string $return_url = '', string $module_id = '', string $related_to = '')
     {
-        $system_id = array_keys(array_filter(DATOVKA_CONF['instances'], static fn($v) => $v['url'] === AA_INSTAL_URL))[0] ?? 1000;
+        // 0 = not in instances: the installation ISDS answers to handles the answer itself
+        $system_id = (int) array_search(AA_INSTAL_URL, static::conf()->instances(), true);
         $this->datovka_id            = random_int(10000000000, 99999999999) * 10000 + $system_id;   // mmmmmmmmmmmaaaa   message_id.aa_did
         $this->setNew(new_id(), $module_id, "DS {$this->datovka_id} " . date("Y-m-d H:i:s"));
 
@@ -72,13 +73,41 @@ class Datovka extends AA_Object
         $this->dmAllowSubstDelivery  = $params['dmAllowSubstDelivery'] ?? false;
     }
 
-    public static function possiblyRedirectToAa($appToken): void
+    /** Passes the answer of ISDS on to the installation that sent the message - the last four digits of the
+     *  token name it, 0 this one. False for an id datovka_conf.php does not list: refuse the answer. */
+    public static function possiblyRedirectToAa(string $appToken): bool
     {
         $system_id = $appToken % 10000;
-        $required_install_url = DATOVKA_CONF['instances'][$system_id]['url'];
-        if (AA_INSTAL_URL !== $required_install_url) {
-            go_url(DATOVKA_CONF['instances'][$system_id]['url'] . 'misc/datovka/service.php?' . http_build_query($_GET));
+        if ($system_id === 0) {
+            return true;
         }
+        $required_install_url = static::conf()->instances()[$system_id] ?? null;
+        if ($required_install_url === null) {
+            return false;
+        }
+        if (AA_INSTAL_URL !== $required_install_url) {
+            go_url($required_install_url . 'misc/datovka/service.php?' . http_build_query($_GET));
+        }
+        return true;
+    }
+
+    /** The token of an answer of ISDS as datovka_id makes it - 11 random digits and the 4 of the instance;
+     *  null for anything else, refuse it */
+    public static function validAppToken(mixed $appToken): ?string
+    {
+        return (is_string($appToken) && preg_match('/^[1-9]\d{14}\z/', $appToken)) ? $appToken : null;
+    }
+
+    /** settings of this installation; a test hands in its own */
+    protected static function conf(): DatovkaConf
+    {
+        return DatovkaConf::load();
+    }
+
+    /** the authentication service of ISDS in the environment of this message */
+    private function ats(): array
+    {
+        return static::conf()->ats($this->conf);
     }
 
     public function getDatovkaId(): int
@@ -88,7 +117,7 @@ class Datovka extends AA_Object
 
     public function getAtsId(): string
     {
-        return DATOVKA_CONF[$this->conf]['atsId'];
+        return $this->ats()['atsId'];
     }
 
     public static function getFromToken(string $appToken): ?Datovka
@@ -148,12 +177,13 @@ class Datovka extends AA_Object
      */
     protected function getCredentials(): object
     {
-        $wsdl = DATOVKA_CONF[$this->conf]['wsdl_GetCredential'];               // like 'Provozni_rad/pril_4/GetCredential.wsdl';
+        $ats  = $this->ats();
+        $wsdl = $ats['wsdl_GetCredential'];               // like 'Provozni_rad/pril_4/GetCredential.wsdl';
 
         // SOAP client options
         $options = [
-            'location'   => DATOVKA_CONF[$this->conf]['url_GetCredential'],    // like 'https://cert.czebox.cz/asws/extIs2Endpoint';
-            'local_cert' => DATOVKA_CONF[$this->conf]['cert'],                 // like 'certs/ecntest.crt';
+            'location'   => $ats['url_GetCredential'],    // like 'https://cert.czebox.cz/asws/extIs2Endpoint';
+            'local_cert' => $ats['cert'],                 // like 'certs/ecntest.crt';
             'trace'      => 1, // For debugging, allows to display last queries and responses
             'exceptions' => true,
         ];
@@ -216,13 +246,14 @@ class Datovka extends AA_Object
      */
     protected function prepareConcept($timeLimitedId)
     {
-        $wsdl = DATOVKA_CONF[$this->conf]['wsdl_SetConcept'];              // like 'Provozni_rad/pril_4/SetConcept.wsdl';
+        $ats  = $this->ats();
+        $wsdl = $ats['wsdl_SetConcept'];              // like 'Provozni_rad/pril_4/SetConcept.wsdl';
 
         // SOAP client options
         $options = [
-            'location'   => DATOVKA_CONF[$this->conf]['url_SetConcept'],
+            'location'   => $ats['url_SetConcept'],
             // like 'https://cert.czebox.cz/asws/konceptEndpoint';
-            'local_cert' => DATOVKA_CONF[$this->conf]['cert'],
+            'local_cert' => $ats['cert'],
             // like 'certs/ecntest.crt';
             'login'      => 'ExtWS',
             'password'   => $timeLimitedId,
@@ -320,7 +351,7 @@ class Datovka extends AA_Object
                     $this->setState(2 ** 10, 'concept prepared');  // 1024 - step 3
 
                     $dmID = $result->dmID;
-                    go_url(DATOVKA_CONF[$this->conf]['url_ViewConcept'], ['konceptId' => $dmID]);    // DATOVKA_CONF[$this->conf]['atsId'], 'appToken' => $this->getDatovkaId()]);  // redirect to service - https://www.czebox.cz/as/login?atsId=7981e09c632b4bac&appToken=123
+                    go_url($this->ats()['url_ViewConcept'], ['konceptId' => $dmID]);
                     //echo '<a href="https://www.czebox.cz/as/koncept/view?konceptId=' . $dmID . '">https://www.czebox.cz/as/koncept/view?konceptId=' . $dmID . '</a><br>';
                 } else {
                     $this->setState(2 ** 15 + 1, 'Err - Concept not prepared');
@@ -341,6 +372,7 @@ class Datovka extends AA_Object
 
     public function startWithLogin(): void
     {
-        go_url(DATOVKA_CONF[$this->conf]['url_login'], ['atsId' => DATOVKA_CONF[$this->conf]['atsId'], 'appToken' => $this->getDatovkaId()]);  // redirect to service - https://www.czebox.cz/as/login?atsId=7981e09c632b4bac&appToken=123
+        $ats = $this->ats();
+        go_url($ats['url_login'], ['atsId' => $ats['atsId'], 'appToken' => $this->getDatovkaId()]);  // redirect to the login of ISDS - <url_login>?atsId=<atsId>&appToken=<datovka id>
     }
 }
