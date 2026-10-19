@@ -15,25 +15,39 @@ use zids;
  * The slices and items an item listing view called from the URL (view.php, jsview.php, discussion.php)
  * lists: its own slice - vid= or cmd[]=v- picks the view - and the others its parameters name,
  * set[<vid>]=slice_id-... or slices-..., and the item ids of cmd[<vid>]=x|o|i-...; the same for
- * slices[] of slice.php. Slices with a reading password the request does not know are left out, the
- * view's own one too: GetItemContent() hides their fields, but the ids, the count and the conditions of
- * a listing would still tell about them. A page that needs such a slice calls the view from its
- * template ({view...}), where views are trusted; slice_pwd= in the URL fits only a server-side include
- * - in a link, AJAX or jsview.php the password would end up in the page source, logs, Referer and
- * history.
+ * slices[] of slice.php and for the banner views the URL picks (set[]=banner-, slice.php?banner=).
+ * Slices with a reading password the request does not know are left out, the view's own one too:
+ * GetItemContent() hides their fields, but the ids, the count and the conditions of a listing would
+ * still tell about them. A page that needs such a slice calls the view from its template ({view...}),
+ * where views are trusted; slice_pwd= in the URL fits only a server-side include - in a link, AJAX or
+ * jsview.php the password would end up in the page source, logs, Referer and history.
+ *
+ * Each call of a listing decides everything before it renders, as the templates of its rows may give
+ * passwords ({credentials:...}, slice_pwd= of an inner view) meant for themselves: a banner before the
+ * listing around it (decideOwn()), pinned to the id of the view found then - one not found is left out -
+ * and its own narrow() gets the same answer, as the gate is one for the request (forRequest()). A view
+ * the URL calls draws only the banners the URL chose, not those a template call in the request left to it.
  *
  * What stays open: the main slice of slice.php, which the request chooses; the single items of
- * slice.php (x=, o=, sh_itm=, items[]); a banner from the URL (set[]=banner-, slice.php?banner=), whose
- * inner view runs as a template's; a condition on a remote field (d-<field>@<slice>/<relation>), or
+ * slice.php (x=, o=, sh_itm=, items[]); a condition on a remote field (d-<field>@<slice>/<relation>), or
  * sorting by one, reaches a protected slice through a related public one; discussions (discus views);
- * the hit of a refused x- item; noitem from the URL, expanded as a template; ?debug without a
- * permission; the template commands - {view}, {view.php?...}, {ids}, {count} - which are trusted, also
- * when a template builds an inner view per item from URL values (als[], cmd[]=x-<vid>-url).
+ * the banners the URL chose stay on the view for its later calls in the request (AA_View keeps them,
+ * setBannerParam()), so a template call of the same view decides those its first call did not draw only
+ * during the rows of that first call; the hit of a refused x- item; noitem from the URL, expanded as a
+ * template; ?debug without a permission; the template commands - {view}, {view.php?...}, {ids},
+ * {count} - which are trusted, also when a template builds an inner view per item from URL values
+ * (als[], cmd[]=x-<vid>-url).
  */
 final class ViewSlices
 {
     /** log.type of the slices left out - selector vid:slice_id (or slice.php:slice_id), params the page without its query */
     public const EVENT = 'VIEW_DENY';
+
+    /** the view types that list items - the only ones narrowed */
+    public const LISTINGS = ['full', 'seetoo', 'calendar', 'digest', 'list', 'rss', 'urls', 'script'];
+
+    /** one gate per request - see forRequest() */
+    private static ?self $request = null;
 
     /** @var ?array<string, int> ids of the protected slices as keys */
     private ?array $protected_memo = null;
@@ -56,9 +70,10 @@ final class ViewSlices
         private readonly Closure $log,
     ) {}
 
+    /** one for the request, so the first answer about a slice holds for all of it */
     public static function forRequest(): self
     {
-        return new self(
+        return self::$request ??= new self(
             static fn(): array => AA::Contentcache()->get_result([self::class, 'protectedFromDb']),
             static fn(string $slice_id): bool => self::knownToRequest($slice_id),
             static fn(array $ids): array => self::storedFromDb($ids),
@@ -106,6 +121,16 @@ final class ViewSlices
         }
         // the own items skip the check only when the request may read them - else x- under another slice_id- would show them
         return [$slice_id, $slices, is_null($zids) ? null : $this->items($vid, $lists_own ? $own_slice_id : '', $zids)];
+    }
+
+    /**
+     * Decides now whether a view the URL picks by its id alone - a banner, set[]=banner-..., slice.php?banner=...
+     * - may list its own slice; a refusal is logged as narrow() logs it. The answer is kept, so the view's own
+     * narrow() gets it later even when a password came in between (see the class).
+     */
+    public function decideOwn(int $vid, string $type, string $own_slice_id): bool
+    {
+        return !in_array($type, self::LISTINGS, true) || $this->knows($vid, $own_slice_id);
     }
 
     /**

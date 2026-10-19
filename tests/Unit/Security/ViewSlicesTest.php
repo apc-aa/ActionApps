@@ -35,10 +35,13 @@ final class ViewSlicesTest extends TestCase
         require_once __DIR__ . '/../fixtures/util_shims.php';   // ParamImplode(), AA_Credentials
     }
 
-    /** the module cache and the credentials are static - what a test put there must not reach the next one */
+    /** the module cache, the credentials and the gate of the request are static - what a test put there must not reach the next one */
     protected function tearDown(): void
     {
         unset($GLOBALS['slice_pwd']);
+        Closure::bind(static function (): void {
+            self::$request = null;
+        }, null, ViewSlices::class)();
         $ids = $this->fake_slices;
         Closure::bind(static function () use ($ids): void {
             foreach ($ids as $id) {
@@ -283,6 +286,63 @@ final class ViewSlicesTest extends TestCase
 
         $this->assertSame([self::OPEN], $slices);
         $this->assertSame(['34'], $zids->getArray());
+    }
+
+    /** a banner over a protected slice is refused and logged as narrow() would; one the request may read passes */
+    public function test_decideOwn_listingOverLockedSlice_isRefusedAndLoggedOnce(): void
+    {
+        $guard = $this->guard();
+
+        $this->assertFalse($guard->decideOwn(9, 'list', self::LOCKED));
+        $this->assertFalse($guard->decideOwn(9, 'rss', self::LOCKED));
+        $this->assertTrue($guard->decideOwn(9, 'list', self::KNOWN));
+        $this->assertSame(['9:' . self::LOCKED], $this->logged);
+    }
+
+    /** a view that lists no items is never narrowed - nothing to ask, nothing to log */
+    public function test_decideOwn_notAListing_asksNothing(): void
+    {
+        $guard = new ViewSlices(
+            static fn(): array => throw new RuntimeException('passwords looked up'),
+            static fn(string $slice_id): bool => throw new RuntimeException('credentials asked'),
+            static fn(array $ids): array => throw new RuntimeException('slices looked up'),
+            static fn(zids $zids): array => throw new RuntimeException('items looked up'),
+            static fn(string $selector): bool => throw new RuntimeException('logged'),
+        );
+
+        $this->assertTrue($guard->decideOwn(9, 'static', self::LOCKED));
+        $this->assertTrue($guard->decideOwn(9, 'discus', self::LOCKED));
+    }
+
+    /** a row rendered before the banner may give the password ({credentials:...}) - the banner's narrow() keeps the answer given before the rows */
+    public function test_decideOwn_passwordGivenLater_changesNothingForTheRequest(): void
+    {
+        $known_now = false;
+        $guard     = new ViewSlices(
+            static fn(): array => [self::LOCKED],
+            function (string $slice_id) use (&$known_now): bool {
+                return $known_now;
+            },
+            static fn(array $ids): array => [],
+            static fn(zids $zids): array => [],
+            function (string $selector): void {
+                $this->logged[] = $selector;
+            },
+        );
+
+        $this->assertFalse($guard->decideOwn(9, 'list', self::LOCKED));
+        $known_now = true;
+        [$shown, , $zids] = $guard->narrow(9, self::LOCKED, '', null, null);
+
+        $this->assertSame(self::LOCKED, $shown);
+        $this->assertTrue($zids->isEmpty());
+        $this->assertSame(['9:' . self::LOCKED], $this->logged);
+    }
+
+    /** the answers hold for the request only when every caller gets the same gate */
+    public function test_forRequest_isOneGatePerRequest(): void
+    {
+        $this->assertSame(ViewSlices::forRequest(), ViewSlices::forRequest());
     }
 
     /** AA_Slice keeps the password hashed and AA_Credentials registers hashes - the column holds it plain */

@@ -29,6 +29,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Security\ViewSlices;
 use AA\Util\Langs;
 use AA\Util\SingletonTrait;
 use AA\Util\Txt;
@@ -266,9 +267,11 @@ class AA_View
 
     /** getViewFormat function
      * @param $selected_item
+     * @param bool $from_request the URL called the view - it draws only the banners the URL chose, not those a
+     *                           template call in the request left here
      * @return array
      */
-    public function getViewFormat($selected_item = ''): array
+    public function getViewFormat($selected_item = '', bool $from_request = false): array
     {
         $format                        = [];
         $format['group_by']            = $this->fields['group_by1'];
@@ -287,7 +290,9 @@ class AA_View
         $format['vid']                 = $this->fields['id'];
         $format['noitem_msg']          = $this->fields['noitem_msg'];
 
-        $format['banners']             = $this->fields['banners'];
+        $banners_from_request           = ($this->fields['banners_from_request'] ?? false) === true;
+        $format['banners']              = (!$from_request || $banners_from_request) ? ($this->fields['banners'] ?? null) : null;
+        $format['banners_from_request'] = $banners_from_request;
 
         $format['calendar_start_date'] = $this->fields['field1'];
         $format['calendar_end_date']   = $this->fields['field2'];
@@ -347,8 +352,10 @@ class AA_View
      *  Parses banner url parameter (for view.php as well as for slice.php
      *  (banner parameter format: banner-<position in list>-<banner vid>-[<weight_field>]
      *  (@see {@link https://actionapps.org/faq/#219})
+     * @param bool $from_request the URL chose the banners - a view the URL picks lists only what the request may
+     *                           read (AA\Security\ViewSlices), the banner views of a template stay trusted
      */
-    public static function parseBannerParam($banner_arr): array
+    public static function parseBannerParam($banner_arr, bool $from_request): array
     {
         $ret = [];
         if ($banner_arr) {
@@ -361,10 +368,38 @@ class AA_View
                         $bparam['set'][$foo_vid] = 'random-' . ($foo_fld ?: 1);
                     }
                     $ret['banners'][$foo_pos] = http_build_query($bparam, '', '&');   // not arg_separator.output - it may be &amp;
+                    $ret['banners_from_request'] = $from_request;   // set only with banners: setBannerParam() merges, so the banners left from an earlier call keep their own flag
                 }
             }
         }
         return $ret;
+    }
+
+    /** The banners the URL chose, decided before the listing around them renders (AA\Security\ViewSlices): each
+     *  pinned to the id of its view, as a view name found nothing yet may find a view once a row sets AA::$slice_id;
+     *  a missing or invalid view is left out. A refused banner stays - its narrow() gets the same answer and it
+     *  shows an empty listing, as a refused view does.
+     * @param array<int|string, string> $banners view parameters by position, as parseBannerParam() writes them
+     * @return array<int|string, string>
+     */
+    public static function decideBanners(array $banners, ViewSlices $gate): array
+    {
+        $decided = [];
+        foreach ($banners as $pos => $query) {
+            parse_str((string) $query, $param);
+            $view = is_string($param['vid'] ?? null) ? AA_Views::getView($param['vid']) : null;
+            if (!$view?->isValid()) {
+                continue;
+            }
+            $vid = $view->getId();
+            $gate->decideOwn($vid, (string) $view->f('type'), $view->getSliceId());
+            $pinned = ['vid' => $vid];
+            if (isset($param['set'][$param['vid']])) {
+                $pinned['set'][$vid] = $param['set'][$param['vid']];
+            }
+            $decided[$pos] = http_build_query($pinned, '', '&');
+        }
+        return $decided;
     }
 
     /** ParseSettings function

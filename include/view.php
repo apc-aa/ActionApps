@@ -396,7 +396,7 @@ class AA_Showview
                 : ("<div>" . _m("No item found") . "</div>")));
 
         if ($this->_view_param["banner"]) {
-            $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"]));  // if banner set format
+            $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"], $this->from_request));  // if banner set format
         }
 
         if (($slice_id = $this->_view_param["slice_id"]) && !is_long_id($slice_id)) { // unpacked
@@ -404,7 +404,7 @@ class AA_Showview
             return '';
         }
         $refusable = [];
-        if ($this->from_request && in_array($view_info['type'], ['full', 'seetoo', 'calendar', 'digest', 'list', 'rss', 'urls', 'script'], true)) {
+        if ($this->from_request && in_array($view_info['type'], ViewSlices::LISTINGS, true)) {
             // tagged for the cache too - an empty listing must go when the password of a refused slice changes
             $refusable = array_map('strtolower', array_merge($slice_id ? [$slice_id] : [], is_array($slices) ? $slices : []));
             // item listings only; slices and items the request may not list leave an empty listing
@@ -477,7 +477,7 @@ class AA_Showview
                 if (!$category_id) {
                     $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
                 }
-                $format    = $view->getViewFormat($selected_item);
+                $format    = $view->getViewFormat($selected_item, $this->from_request);
                 if (!$conds) {          // conds could be defined via cmd[]=d command
                     $conds = $view->getConds($param_conds);
                 }
@@ -512,7 +512,7 @@ class AA_Showview
                 break;
 
             case 'full':  // parameters: zids, als
-                $format = $view->getViewFormat($selected_item);
+                $format = $view->getViewFormat($selected_item, $this->from_request);
                 AA::$debug & 8 && AA::$dbg->log("view type - full - zids", $zids);
                 if (isset($zids) && !$zids->isEmpty() && ($slice = AA_Slice::getModule($slice_id))) {
                     $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
@@ -623,7 +623,7 @@ class AA_Showview
                 //     $zids2 = $zids2->retag($zids);
                 // }
 
-                $format = $view->getViewFormat($selected_item);
+                $format = $view->getViewFormat($selected_item, $this->from_request);
                 $format['calendar_month'] = $month;
                 $format['calendar_year']  = $year;
                 if (isset($this->_view_param['group_by'])) {
