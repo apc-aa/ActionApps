@@ -1,12 +1,14 @@
 /**
  * AA template syntax in the code editor: {#…} comments greyed out, as the expander drops them;
- * completion of {command names and the parameter hint of the command the cursor is in.
- * Over whatever language the editor has, so it works inside HTML attributes too.
+ * completion of {command names and the parameter hint of the command the cursor is in; braces
+ * matched as the expander pairs them. Over whatever language the editor has, so it works inside
+ * HTML attributes too.
  */
 import { ViewPlugin, Decoration, EditorView, showTooltip } from '@codemirror/view';
 import { RangeSetBuilder, StateEffect, StateField } from '@codemirror/state';
 import { autocompletion, pickedCompletion } from '@codemirror/autocomplete';
-import { scan, contextAt, signature } from './aa-syntax.js';
+import { bracketMatching } from '@codemirror/language';
+import { scan, contextAt, pairedBrace, signature } from './aa-syntax.js';
 
 const commentMark = Decoration.mark({ class: 'cm-aa-comment' });
 
@@ -34,6 +36,30 @@ const comments = ViewPlugin.fromClass(class {
         }
     }
 }, { decorations: plugin => plugin.decorations });
+
+const matchingMark    = Decoration.mark({ class: 'cm-matchingBracket' });
+const nonmatchingMark = Decoration.mark({ class: 'cm-nonmatchingBracket' });
+
+/**
+ * CodeMirror's bracket matching, with braces paired as the expander pairs them. In a <script> or
+ * <style> CodeMirror follows the JavaScript or CSS syntax tree, and AA expressions break it there.
+ * @return {import('@codemirror/state').Extension}
+ */
+export function aaBracketMatching() {
+    return bracketMatching({
+        renderMatch({ start, end, matched }, state) {
+            // CodeMirror has chosen the bracket at the cursor; for a brace only its pair is ours
+            const ch = state.sliceDoc(start.from, start.to);
+            if ((ch === '{') || (ch === '}')) {
+                const pair = pairedBrace(state.doc.toString(), start.from);
+                end     = (pair < 0) ? null : { from: pair, to: pair + 1 };
+                matched = !!end;
+            }
+            const mark = matched ? matchingMark : nonmatchingMark;
+            return [start, end].filter(Boolean).map(r => mark.range(r.from, r.to));
+        },
+    });
+}
 
 // the bundle is javascript/codemirror6.min.js; ?_path= - the ECN servers ignore the .htaccess rewrite
 const CATALOG_URL = new URL('../api/index.php?_path=v1/expressions', import.meta.url);

@@ -102,6 +102,28 @@ export function contextAt(text, pos) {
     return { name: text.slice(name.from, name.to).toLowerCase(), from: open.from, param: open.seps.length - 1, start: (open.seps.at(-1) ?? open.from) + 1 };
 }
 
+/**
+ * The brace paired with the one at `pos`, as the expander pairs them - in a <script> or <style>
+ * too, where JavaScript or CSS reads them differently.
+ * @param {string} text
+ * @param {number} pos  of a "{" or "}"
+ * @return {number} -1 when it has no pair
+ */
+export function pairedBrace(text, pos) {
+    const dir = (text.charCodeAt(pos) === OPEN) ? 1 : -1;
+    let depth = 0;
+    for (let i = pos; (i >= 0) && (i < text.length); i += dir) {
+        const c = text.charCodeAt(i);
+        if ((c === OPEN) || (c === CLOSE)) {
+            depth += ((c === OPEN) === (dir > 0)) ? 1 : -1;
+            if (!depth) {
+                return i;
+            }
+        }
+    }
+    return -1;
+}
+
 const SUBSCRIPT = '₀₁₂₃₄₅₆₇₈₉';
 const numbered = (name, n) => name + [...String(n)].map(d => SUBSCRIPT[d]).join('');
 
