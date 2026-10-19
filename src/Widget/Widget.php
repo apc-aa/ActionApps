@@ -278,7 +278,7 @@ class Widget extends AA_Object implements NamedInterface
         if (!strlen($option)) {
             return empty($this->_selected) ? $ret_val : '';
         }
-        return $this->_selected[(string) $option] ? $ret_val : '';
+        return !empty($this->_selected[(string) $option]) ? $ret_val : '';
     }
 
     /**
@@ -337,7 +337,7 @@ class Widget extends AA_Object implements NamedInterface
             }
 
             // ignore pairs (key=>value) we already used
-            if ($pair_used[$k . "aa~$v"]) {
+            if (!empty($pair_used[$k . "aa~$v"])) {
                 continue;
             }
             $pair_used[$k . "aa~$v"] = true;   // mark this pair - do not use it again
@@ -357,11 +357,11 @@ class Widget extends AA_Object implements NamedInterface
         // now add all values, which is not in the array, but field has this value
         // (this is slice inconsistence, which could go from feeding, ...)
         foreach ($this->_selected as $k => $foo) {
-            if (!$already_selected[$k]) {
+            if (empty($already_selected[$k])) {
                 $val_txt = $k;
                 if ($this->getProperty('const') && is_long_id($k)) {
                     $opt = $this->getFormattedOptions('', new zids($k, 'l'), '', true);
-                    if (!strlen($val_txt = $opt[$k])) {
+                    if (!strlen($val_txt = $opt[$k] ?? '')) {
                         $val_txt = $k;
                     }
                 }
@@ -395,15 +395,15 @@ class Widget extends AA_Object implements NamedInterface
 
         $ret = '';
         foreach ($options as $option) {
-            if ($restrict === 'selected' && !$option['selected']) {
+            if ($restrict === 'selected' && empty($option['selected'])) {
                 continue;  // do not print this option
             }
-            if ($restrict === 'unselected' && $option['selected']) {
+            if ($restrict === 'unselected' && !empty($option['selected'])) {
                 continue;  // do not print this option
             }
-            $selected = $option['selected'] ? $select_string : '';
-            $missing = $option['mis'] ? ' class="sel_missing"' : '';
-            $default = $option['justdefault'] ? ' hidden disabled' : '';
+            $selected = !empty($option['selected']) ? $select_string : '';
+            $missing = !empty($option['mis']) ? ' class="sel_missing"' : '';
+            $default = !empty($option['justdefault']) ? ' hidden disabled' : '';
             $ret .= "<option value=\"" . safe($option['k']) . "\"$selected$missing$default>" . safe($option['v']) . "</option>";
         }
         return $ret;

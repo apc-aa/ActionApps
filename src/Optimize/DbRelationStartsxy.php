@@ -30,14 +30,30 @@ class DbRelationStartsxy extends AbstractOptimize
         return _m("Testing if relations between slices are OK (without x or y chars on the beginning)");
     }
 
+    /** $where for `content`: an item id with a leading x or y in a relation field; null = no relation field.
+     *  field.id repeats in every slice (aadb: 444 relation fields, 40 ids), so joining `field` read each
+     *  content row once per slice and ran for minutes - the DB watchdog killed it. With the distinct ids
+     *  it is one index range on the x/y prefix (76 ms there); `_` matches one character, so the pattern
+     *  checks the length too.
+     */
+    private static function badRelationWhere(): ?array
+    {
+        $field_ids = DB_AA::select('', 'SELECT DISTINCT `id` FROM `field`', [['input_show_func', '#sLiCe-', 'CONTAIN']]);
+        if (!$field_ids) {
+            return null;
+        }
+        $any_id = str_repeat('_', 32);
+        return [['field_id', $field_ids], [null, [[['`text`', "x$any_id", 'LIKE']], [['`text`', "y$any_id", 'LIKE']]], 'OR']];
+    }
+
     /** Test function
      * tests for x or y starts
      * @return bool
      */
     public function test(): bool
     {
-        $SQL = 'SELECT count(*) as err_count FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
-        $err_count = DB_AA::select1('err_count', $SQL);
+        $where = self::badRelationWhere();
+        $err_count = $where ? DB_AA::count('content', $where) : 0;
         if ($err_count > 0) {
             $this->message(_m('%1 bad relation records found', [$err_count]));
             return false;
@@ -51,11 +67,15 @@ class DbRelationStartsxy extends AbstractOptimize
      */
     public function repair(): bool
     {
-        $SQL = 'SELECT `content`.item_id, `content`.`text` FROM `content`,field WHERE (`text` LIKE \'x%\' OR `text` LIKE \'y%\') AND content.field_id = field.id AND LENGTH(`text`)=33 AND field.input_show_func LIKE \'%#sLiCe-%\'';
-        $err_text = DB_AA::select([], $SQL);
+        $where = self::badRelationWhere();
+        $err_text = $where ? DB_AA::select([], 'SELECT `item_id`, `text` FROM `content`', $where) : [];
         if ($err_text) {
             $this->message(_m('%1 bad relation records found', [count($err_text)]));
             foreach ($err_text as $wrong) {
+                // the same field id may be plain text in another slice - change only what is an item id
+                if (!preg_match('/^[xy][0-9a-f]{32}$/', (string) $wrong['text'])) {
+                    continue;
+                }
                 $this->message(_m('repair value: %1 with item_id: %2', [substr($wrong['text'], 1), $wrong['item_id'] ]));
                 DB_AA::update('content', [['`text`', substr($wrong['text'], 1), 's']], [['item_id', $wrong['item_id'], 'b'], ['`text`', $wrong['text']]]);
             }

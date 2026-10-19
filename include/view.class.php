@@ -353,13 +353,14 @@ class AA_View
         $ret = [];
         if ($banner_arr) {
             foreach ((array) $banner_arr as $banner) {
-                [$foo_pos, $foo_vid, $foo_fld] = explode('-', $banner);
-                if (ctype_digit($foo_pos) && strlen($foo_vid)) {
-                    $bparam = "vid=$foo_vid";
+                [$foo_pos, $foo_vid, $foo_fld] = array_pad(explode('-', is_string($banner) ? $banner : ''), 3, '');
+                // it comes from the URL and becomes the parameters of a view - nothing but a view id and a weight field
+                if (ctype_digit($foo_pos) && preg_match('/^[A-Za-z0-9_]+\z/', $foo_vid) && preg_match('/^(?:[0-9]*|norandom|[A-Za-z0-9_.]{16})\z/', $foo_fld)) {
+                    $bparam = ['vid' => $foo_vid];
                     if ($foo_fld !== 'norandom') {
-                        $bparam .= "&set[$foo_vid]=random-" . ($foo_fld ?: 1);
+                        $bparam['set'][$foo_vid] = 'random-' . ($foo_fld ?: 1);
                     }
-                    $ret['banners'][$foo_pos] = $bparam;
+                    $ret['banners'][$foo_pos] = http_build_query($bparam, '', '&');   // not arg_separator.output - it may be &amp;
                 }
             }
         }
@@ -569,6 +570,7 @@ class AA_View
         //  $arr['item_ids'] = $item_ids;
         $arr['zids'] = $zids;
         $arr['hits'] = $hits;   // set always - a set[]=hits-… from the URL must not get here
+        $arr['from_request'] = !$query_string;   // the URL chose them (AA_Showview narrows the slices); set always, like hits
 
         AA::$debug & 2 && AA::$dbg->log($arr);
         return $arr;

@@ -68,6 +68,9 @@ class AA_Router
     protected $slices;
     protected $home;
     protected $web_languages = [];
+    /** @var array{xcat?: string, xflag?: string} regular expressions from the site settings the URL parts must match */
+    protected $rules = [];
+    protected $rejected = false;
 
     /** @var AA_Router $_instance
      * Store the single instance of Database
@@ -81,7 +84,7 @@ class AA_Router
     }
 
     /** @return AA_Router */
-    public static function singleton($type, $slices = null, $home = '', $web_languages = null): AA_Router
+    public static function singleton($type, $slices = null, $home = '', $web_languages = null, ?array $rules = null): AA_Router
     {
         if (!isset(self::$_instance)) {
             self::$_instance = new $type($slices, $home);
@@ -89,7 +92,16 @@ class AA_Router
         if (is_array($web_languages)) {
             self::$_instance->setWebLangs($web_languages);
         }
+        if (is_array($rules)) {
+            self::$_instance->rules = $rules;
+        }
         return self::$_instance;
+    }
+
+    /** the last parse() refused the URL - the page should answer 404 */
+    public function rejected(): bool
+    {
+        return $this->rejected;
     }
 
     protected function setWebLangs(array $web_languages): void
@@ -195,7 +207,12 @@ class AA_Router_Seo extends AA_Router
     {
         global $auth;
 
-        $this->apc          = self::parseApc($url, $this->home, $this->web_languages);
+        $this->apc      = self::parseApc($url, $this->home, $this->web_languages);
+        $this->rejected = $this->apc && !self::allowedState($this->apc, $this->rules);
+        if ($this->rejected) {
+            // the 404 page still needs {xlang}, {go}, ... - only the refused parts go
+            $this->apc = array_merge($this->apc, ['xpage' => '', 'xflag' => '', 'xcat' => '', 'xqs' => '']);
+        }
         $this->apc['state'] = self::getState($this->apc);
 
         /** Login From Usage:
@@ -269,6 +286,37 @@ class AA_Router_Seo extends AA_Router
         return $this->apc;
     }
 
+    /** {xcat} and {xflag} never hold "=" - that is a query string pasted into the path (/czt-35&wa=x/page)
+     *  by old or mangled links. Such a page must not answer: every link on it copies the path and the
+     *  discussion links append to it, so crawlers follow ever longer URLs. A site may restrict both further.
+     * @param array $apc_state  parsed state
+     * @param array $rules      ['xcat' => regexp, 'xflag' => regexp] - without delimiters, matching the whole value
+     */
+    public static function allowedState(array $apc_state, array $rules): bool
+    {
+        foreach (['xcat', 'xflag'] as $var) {
+            $value = (string) ($apc_state[$var] ?? '');
+            if (str_contains($value, '=')) {
+                return false;
+            }
+            if (($pattern = trim((string) ($rules[$var] ?? ''))) === '') {
+                continue;
+            }
+            // \x01 as the delimiter - nobody types it, so the pattern needs no escaping
+            if (($match = @preg_match("\x01^(?:$pattern)$\x01D", $value)) === 1) {
+                continue;
+            }
+            // the settings form refuses a pattern that does not compile; one that slipped in must not
+            // take the whole site down. A run-time failure (backtrack limit) is a refusal, not a pass.
+            if (($match === false) && (preg_last_error() === PREG_INTERNAL_ERROR)) {
+                error_log('AA: site ' . AA::$site_id . " - invalid $var pattern in the site settings");
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+
     /** static function - calling from outside is not necessary, now */
     public static function parseApc($apc, $home = '', $langs = []): array
     {
@@ -330,7 +378,7 @@ class AA_Router_Seo extends AA_Router
         }
 
         // add querystring
-        if ($parsed_url['query']) {
+        if (!empty($parsed_url['query'])) {
             $ret['xqs'] = $parsed_url['query'];
         }
 
@@ -535,6 +583,26 @@ class AA_Router_Seo extends AA_Router
     // function _getSeoSlices() {
     //     return array_map('unpack_id', DB_AA::select('slice_id', 'SELECT slice_id FROM field', array(array('slice_id', $this->slices, 'l'), array('id', 'seo.............'))));
     // }
+
+    /** every part of the path ({xseo1}, {xseo2}, ...) is an item and all above the page itself are published
+     *  - the page itself is checked by site.php, which answers its own 404 or 410 */
+    public function xseoPathPublished(): bool
+    {
+        $max = self::_maxKey($this->apc ?: [], 'xseo');
+        for ($i = 1; $i <= $max; ++$i) {
+            $id = $this->_xseo2id($this->apc['xseo' . $i] ?? '');
+            if (!$id || ($i < $max && !$this->isPublished($id))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    protected function isPublished(string $id): bool
+    {
+        $item = AA_Items::getItem($id);
+        return $item && ($item->getBin() === AA_BIN_ACTIVE);
+    }
 
     public function _xseo2id($seo_string)
     {

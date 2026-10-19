@@ -929,8 +929,8 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
             $item_fields[] = 'short_id';
         }
 
-        // we need slice_id for each item, if we have to count with slice permissions
-        if (!$ignore_reading_password && !in_array('slice_id', $item_fields)) {
+        // every item gets u_slice_id...... below - and the reading password is checked per slice
+        if (!in_array('slice_id', $item_fields)) {
             $item_fields[] = 'slice_id';
         }
 
@@ -984,19 +984,25 @@ function GetItemContent($zids, $unused_use_short_ids = false, $ignore_reading_pa
 
     if (!$ignore_reading_password) {
         $credentials = AA_Credentials::singleton();
+        $closed      = [];
         foreach (array_keys($slices) as $unpack_slice_id) {
             if (!$credentials->checkSlice($unpack_slice_id, $crypted_additional_slice_pwd)) {
-                // it should be rare
-
-                // mark all items from this slice as unpermitted
-                $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
-                foreach ($content as $unpack_id => $c4id) {
-                    $unpermitted[$unpack_id] = true;
-                    foreach (array_keys($c4id) as $fid) {
-                        // at least id and slice_id should be correct.............. for AA_Items::getItems()
-                        if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
-                            $content[$unpack_id][$fid] = $ERR_VALUE;
-                        }
+                $closed[$unpack_slice_id] = true;   // it should be rare
+            }
+        }
+        if ($closed) {
+            // mark the items of these slices as unpermitted - and any item of a slice not known
+            $ERR_VALUE = [["value" => _m("Error: Missing Reading Password"), "flag"  => FLAG_HTML]];
+            foreach ($content as $unpack_id => $c4id) {
+                $sid = $c4id['u_slice_id......'][0]['value'] ?? null;
+                if (($sid !== null) && !isset($closed[$sid])) {
+                    continue;
+                }
+                $unpermitted[$unpack_id] = true;
+                foreach (array_keys($c4id) as $fid) {
+                    // at least id and slice_id should be correct.............. for AA_Items::getItems()
+                    if (!in_array($fid, ['id..............','slice_id........','unpacked_id.....','u_slice_id......'])) {
+                        $content[$unpack_id][$fid] = $ERR_VALUE;
                     }
                 }
             }
@@ -1599,6 +1605,10 @@ class AA_Credentials
 
     protected $_pwd = [];     // Array of all known slice passwords (md5 for better security)
 
+    /** @var array<string, true> slices the server opened for this request (openForRequest(), withSlicesOpen()) - by id, not by password:
+     *  another slice with the same password stays closed and getAsToken() has nothing to carry */
+    protected $_request_slices = [];
+
     /** main method for checking the slice_pwd
      * @param string $slice_id
      * @param string $crypted_additional_slice_pwd
@@ -1606,6 +1616,9 @@ class AA_Credentials
      */
     public function checkSlice($slice_id, $crypted_additional_slice_pwd = null): bool
     {
+        if (!empty($this->_request_slices[strtolower((string) $slice_id)])) {
+            return true;
+        }
         // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
         return $this->checkCryptedPassword(AA_Slice::getModuleProperty($slice_id, 'reading_password'), $crypted_additional_slice_pwd);
     }
@@ -1617,13 +1630,15 @@ class AA_Credentials
      */
     public function checkCryptedPassword($crypted_slice_pwd, $crypted_additional_slice_pwd = null): bool
     {
-        if (!$crypted_slice_pwd || $this->_pwd[$crypted_slice_pwd] || $crypted_slice_pwd == $crypted_additional_slice_pwd) {
+        // === - md5 hashes like "0e123..." are equal numbers for ==
+        if (!$crypted_slice_pwd || !empty($this->_pwd[$crypted_slice_pwd]) || $crypted_slice_pwd === $crypted_additional_slice_pwd) {
             return true;
         }
-        if ($GLOBALS['slice_pwd']) {
-            $this->register(self::encrypt($GLOBALS['slice_pwd']));
+        $slice_pwd = $GLOBALS['slice_pwd'] ?? '';
+        if (is_string($slice_pwd) && $slice_pwd) {   // slice_pwd[]= in the URL makes it an array
+            $this->register(self::encrypt($slice_pwd));
         }
-        return (bool) $this->_pwd[$crypted_slice_pwd];
+        return !empty($this->_pwd[$crypted_slice_pwd]);
     }
 
     /** Load reading_password from slice
@@ -1631,7 +1646,108 @@ class AA_Credentials
      */
     public function loadFromSlice($slice_id): void
     {
-        $this->register(AA_Slice::getModuleProperty($slice_id, 'reading_password'));  // AA_Slice::getModuleProperty($slice_id,'reading_password') is encrypted
+        $this->register(AA_Slice::getModuleProperty($slice_id, 'reading_password'));
+    }
+
+    /**
+     * Opens the slices to this request only, after the server's own check allowed it ({datovkabulk:page}).
+     * No {ajax} on the page carries them to a next request, and a page showing them must not be served
+     * from the page cache to someone the check would refuse.
+     * Items and expressions ({view}) read masked before are read again; {define}, {array}, {table},
+     * {dictionary} and the item of an enclosing {item} or {view} row keep what they read.
+     * Only for a page being rendered - from a queued task or cron the slices would stay open for the
+     * rest of the process; use withSlicesOpen() there.
+     * @throws \InvalidArgumentException not a slice id - nothing is opened
+     */
+    public function openForRequest(string ...$slice_ids): void
+    {
+        $this->open($slice_ids);
+    }
+
+    /**
+     * $fn with the slices open, outside a page: a queue runs more tasks in one process and the next
+     * one must find them closed. Closes only the slices this call opened: that resets the open set and,
+     * when a slice then reads masked, AA_Items and the soft cache - never {define}/{definejson} (the
+     * stable cache), the statics of {array} and {table}, nor the passwords of loadFromSlice(),
+     * register() and {credentials}. So every write to the slices goes inside $fn (storeItem() caches
+     * the stored item as read unmasked), $fn expands no template, returns no item content and never
+     * runs under a memoised function (AA::Contentcache()->get_result()) - what it returns, or what an
+     * enclosing memo stores, outlives the scope.
+     * @template T
+     * @param list<string>  $slice_ids
+     * @param callable(): T $fn
+     * @return T
+     * @throws \InvalidArgumentException not a slice id - nothing is opened, $fn is not called
+     */
+    public function withSlicesOpen(array $slice_ids, callable $fn): mixed
+    {
+        $opened = $this->open($slice_ids);
+        try {
+            return $fn();
+        } finally {
+            $this->close($opened);
+        }
+    }
+
+    /**
+     * @param array<string> $slice_ids
+     * @return list<string> the slices this call opened - the others were open already
+     * @throws \InvalidArgumentException
+     */
+    private function open(array $slice_ids): array
+    {
+        $ids = [];
+        foreach ($slice_ids as $slice_id) {
+            $id = strtolower($slice_id);
+            if (!is_long_id($id)) {
+                throw new \InvalidArgumentException('A slice id is 32 hexadecimal digits');
+            }
+            $ids[$id] = $id;
+        }
+        AA::Pagecache()->switchCacheNostore();
+        $opened = array_values(array_diff_key($ids, $this->_request_slices));
+        $masked = $this->anyMasked($opened);
+        foreach ($opened as $id) {
+            $this->_request_slices[$id] = true;
+        }
+        if ($masked) {
+            self::forgetReads();
+        }
+        return $opened;
+    }
+
+    /** @param list<string> $slice_ids what open() opened */
+    private function close(array $slice_ids): void
+    {
+        foreach ($slice_ids as $id) {
+            unset($this->_request_slices[$id]);
+        }
+        if ($this->anyMasked($slice_ids)) {
+            self::forgetReads();
+        }
+    }
+
+    /**
+     * Whether one of the slices reads masked without the open set - only then are the cached reads
+     * forgotten. A password the request knew before they were cached makes them read the same; one
+     * registered later ({credentials}, loadFromSlice()) leaves the masked reads before it cached.
+     * @param list<string> $slice_ids none of them in the open set
+     */
+    private function anyMasked(array $slice_ids): bool
+    {
+        foreach ($slice_ids as $id) {
+            if (!$this->checkSlice($id)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** AA_Items and expressions ({view}) cache their reads for the whole request - with the access the slice had then */
+    private static function forgetReads(): void
+    {
+        AA_Items::singleton()->invalidate();
+        AA::Contentcache()->clear_soft();
     }
 
     public function register($crypted_slice_pwd): void
@@ -1641,7 +1757,7 @@ class AA_Credentials
         }
     }
 
-    /** we are sending collected slice passwords to {ajax...} */
+    /** we are sending collected slice passwords to {ajax...} - never the slices opened by id (openForRequest()) */
     public function getAsToken(): string
     {
         return AA_Stringexpand_Encrypt::get_time_token(['spwd' => array_keys($this->_pwd)], 'slice-pwd');
@@ -1805,7 +1921,7 @@ class AA_Contentcache
 
     /** Get value for $access_code.
      *  @param $access_code
-     *  @return false if the value is not cached for the $access_code (use ===)
+     *  @return mixed the value; false when nothing is cached for the $access_code (use ===)
      */
     public function get($access_code): mixed
     {

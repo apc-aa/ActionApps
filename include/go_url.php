@@ -109,9 +109,7 @@ function get_url($url, $params = [], $state = false): string
     if (($pos = strpos($url, '?')) !== false) {
         return substr_replace($url, "?$param_string&", $pos, 1);
     }
-    if (($pos = strpos($url, '&')) !== false) {
-        return substr_replace($url, "&$param_string&", $pos, 1);
-    }
+    // an "&" without "?" is a part of the path (old links like /cz-35&wa=x/page), not a place for parameters
     if (($pos = strrpos($url, '#')) !== false) {
         return substr_replace($url, "?$param_string#", $pos, 1);
     }

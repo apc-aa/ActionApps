@@ -3076,7 +3076,7 @@ h1:has(+form[name="inputform"]) {
         border: 0;
     }
     .aa-ui-nav select {
-        width: 76vw;
+        width: min(76vw, 100vw - 114px); /* room for eye, gear, scrollbar */
         margin: 0;
     }
     .aa-ui-modules a.aa-ui-moduleview {width: 21px;}
@@ -3097,10 +3097,13 @@ h1:has(+form[name="inputform"]) {
         margin: 0;
     }
     .aa-ui-content {
-        width: calc(100vw - 20px);
+        width: calc(100% - 20px); /* not 100vw: it includes the scrollbar */
         margin: 0 20px;
         padding: 0;
         box-sizing: border-box;
+    }
+    form[name="inputform"] {
+        margin-right: 0; /* no content padding here to bleed into */
     }
     .expanded .aa-formgroup-inline .aa-sbrow-and, .aa-orderrow-label, .aa-form-label {
         width: 100%;

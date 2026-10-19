@@ -141,6 +141,8 @@ class AA_Validate extends AA_Serializable
                     break;
                 case 'regexp':   $standard_validators[$sv_key] = new AA_Validate_Regexp($parameters);
                     break;
+                case 'pattern':  $standard_validators[$sv_key] = new AA_Validate_Pattern($parameters);
+                    break;
                 case 'login':    $standard_validators[$sv_key] = new AA_Validate_Login($parameters);
                     break;
                 case 'password': $standard_validators[$sv_key] = new AA_Validate_Pwd($parameters);
@@ -937,6 +939,22 @@ class AA_Validate_Text extends AA_Validate
             $ret['size']       = ((int) $this->maxlength + 2);
         }
         return $ret;
+    }
+}
+
+/** A regular expression without delimiters (as in the site settings) - it must compile on its own,
+ *  so an unbalanced ")" cannot escape the anchors the caller puts around it */
+class AA_Validate_Pattern extends AA_Validate_Text
+{
+    public function validate(?string &$var, AA_Content $content_context = null, string $var_id = ''): bool
+    {
+        if (!parent::validate($var, $content_context, $var_id)) {
+            return false;
+        }
+        if (trim((string) $var) === '' || @preg_match("\x01$var\x01", '') !== false) {
+            return true;
+        }
+        return AA_Validate::bad(VALIDATE_ERROR_BAD_PARAMETER, _m('Not a valid regular expression'), $var_id);
     }
 }
 

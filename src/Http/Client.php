@@ -64,15 +64,26 @@ final class Client implements ClientInterface
      * @param int $redirects how many 3xx hops to follow; 0 means the 3xx itself is the answer
      * @param int $maxBytes  largest body accepted, 0 = no limit; over it ResponseTooLargeException,
      *                       decided by Content-Length when sent, else while the body arrives
+     * @param bool $reuse    false: a new connection for every request, closed after it. libcurl
+     *                       sends a request again by itself when a kept-alive connection turns out
+     *                       closed before the answer - a POST that did its work does it twice. The
+     *                       NativeHttpClient Symfony takes without the curl extension never reuses one
+     * @param ?ClientCertificate $certificate shown to the server in every TLS handshake
      */
-    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0)
+    public function __construct(float $timeout = 30, float $idle = 10, string $agent = '', int $redirects = 0, ?HttpClientInterface $http = null, private readonly int $maxBytes = 0, bool $reuse = true, private readonly ?ClientCertificate $certificate = null)
     {
         $options = [
             'max_duration'  => $timeout,
             'timeout'       => $idle,
             'max_redirects' => $redirects,
             'headers'       => ['User-Agent' => $agent === '' ? self::agent() : $agent],
+            // the library's defaults, set again: a client handed in cannot have them switched off
+            'verify_peer'   => true,
+            'verify_host'   => true,
         ];
+        if (!$reuse && \defined('CURLOPT_FRESH_CONNECT')) {
+            $options['extra']['curl'] = [\CURLOPT_FRESH_CONNECT => true, \CURLOPT_FORBID_REUSE => true];
+        }
         // the policy is AA's, not the transport's: a caller who hands us a client - a test with a
         // mock, later a throttled or SSRF-guarded one - still gets our timeouts and redirect rule
         $this->http = is_null($http) ? HttpClient::create($options) : $http->withOptions($options);
@@ -85,7 +96,7 @@ final class Client implements ClientInterface
      */
     public function request(string $method, #[\SensitiveParameter] string $url, #[\SensitiveParameter] ?string $body = null, #[\SensitiveParameter] array $headers = []): Response
     {
-        $options = ['headers' => $headers];
+        $options = ['headers' => $headers] + $this->certificateOptions();
         if (!is_null($body)) {
             $options['body'] = $body;
         }
@@ -107,6 +118,24 @@ final class Client implements ClientInterface
         }
 
         return new Response($status, $content, $out, $redirect);
+    }
+
+    /**
+     * Per request, not among the options the library's client keeps: a dump of this client would
+     * show the passphrase there.
+     * @return array<string, string>
+     */
+    private function certificateOptions(): array
+    {
+        if (is_null($this->certificate)) {
+            return [];
+        }
+        $options = ['local_cert' => $this->certificate->certificate, 'passphrase' => $this->certificate->passphrase()];
+        if ($this->certificate->key !== '') {
+            $options['local_pk'] = $this->certificate->key;
+        }
+
+        return $options;
     }
 
     /**

@@ -28,6 +28,7 @@
  *
 */
 
+use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
 use AA\Util\Langs;
 
@@ -229,10 +230,15 @@ class AA_Showview
     /** @var zids[] the item of an x command and the random item shown - counted once the output is there */
     private array $hits = [];
 
+    /** the parameters come from the URL (AA_View::parseViewParameters() without a query string), so they may
+     *  name only the slices and items the request may list; those of templates are trusted */
+    private bool $from_request;
+
     public function __construct($view_param)
     {
         $this->hits = is_array($view_param['hits'] ?? null) ? $view_param['hits'] : [];
-        unset($view_param['hits']);
+        $this->from_request = ($view_param['from_request'] ?? false) === true;
+        unset($view_param['hits'], $view_param['from_request']);
         $this->_view_param = $view_param;
     }
 
@@ -393,21 +399,27 @@ class AA_Showview
             $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"]));  // if banner set format
         }
 
-        if ($slice_id = $this->_view_param["slice_id"]) {
-            if (!is_long_id($slice_id)) { // unpacked
-                $this->outputEnd($view, $dbgtime, "View parameter slice_id is not slice ID. If you want to use more slices, use parameter slices.");
-                return '';
-            }
-            $view_info["slice_id"] = pack_id($slice_id);  // packed,not quoted
-        } else {
-            $slice_id = unpack_id($view_info["slice_id"]);
+        if (($slice_id = $this->_view_param["slice_id"]) && !is_long_id($slice_id)) { // unpacked
+            $this->outputEnd($view, $dbgtime, "View parameter slice_id is not slice ID. If you want to use more slices, use parameter slices.");
+            return '';
         }
+        $refusable = [];
+        if ($this->from_request && in_array($view_info['type'], ['full', 'seetoo', 'calendar', 'digest', 'list', 'rss', 'urls', 'script'], true)) {
+            // tagged for the cache too - an empty listing must go when the password of a refused slice changes
+            $refusable = array_map('strtolower', array_merge($slice_id ? [$slice_id] : [], is_array($slices) ? $slices : []));
+            // item listings only; slices and items the request may not list leave an empty listing
+            [$slice_id, $slices, $zids] = ViewSlices::forRequest()->narrow($vid, unpack_id($view_info["slice_id"]), (string) ($slice_id ?: ''), is_array($slices) ? $slices : null, ($zids instanceof zids) ? $zids : null);
+            if ($zids?->isEmpty()) {
+                $GLOBALS['QueryIDsCount'] = 0;   // QueryZids() returns at once for no ids - _#ID_COUNT would show the last listing's count
+            }
+        }
+        $slice_id              = $slice_id ?: unpack_id($view_info["slice_id"]);
+        $view_info["slice_id"] = pack_id($slice_id);  // packed,not quoted
 
         // At this point, view_info["slice_id"] = $slice_id
-        // and view_param[slice_id] is empty or same
 
         // collect used slices for cache invalidation
-        AA_Module::mark4cache(is_array($slices) ? array_merge([$slice_id], $slices) : [$slice_id]);
+        AA_Module::mark4cache(array_merge([$slice_id], is_array($slices) ? $slices : [], $refusable));
 
         if (!AA::$site_id && !AA::$slice_id) {  // it is used as allpage main module to find {_:alias} aliases when called outside of site module
             AA::$slice_id = $slice_id;

@@ -42,6 +42,7 @@
 */
 
 use AA\IO\DB\DB_AA;
+use AA\Isds\Registry\Config as IsdsRegistryConfig;
 
 require_once __DIR__ . "/menu_util.php";
 require_once __DIR__ . "/perm_core.php";
@@ -162,6 +163,8 @@ function get_aamenus(): array
             "header5"       => ["cond" => $slice && IfSlPerm(PS_EDIT), 'label' => _m("Misc"), 'ico' => 'ico-misc.png'],
             "history"       => ["cond" => IfSlPerm(PS_HISTORY),    "href" => "admin/se_history.php",   'ico' => 'ico-history.png',    "label" => _m("History")],
             "statistics"    => ["cond" => IfSlPerm(PS_EDIT_ALL_ITEMS), "href" => "admin/se_statistics.php", 'ico' => 'ico-statistics.png', "label" => _m("Statistics")],
+            // whoever may set the pairing up, and editors where it is set up - the one look-up (an indexed query) last
+            "isds_registry" => ["cond" => IsSuperadmin() || IfSlPerm(PS_FIELDS) || (IfSlPerm(PS_EDIT_ALL_ITEMS) && (IsdsRegistryConfig::forSlice((string) AA::$module_id) !== null)), "href" => "admin/se_isds_registry.php", "label" => _m("Data boxes from the register")],
             "field_ids"     => ["cond" => IfSlPerm(PS_FIELDS),     "href" => "admin/se_fieldid.php",               "label" => _m("Change field IDs")],
             "javascript"    => ["cond" => IfSlPerm(PS_FIELDS),     "href" => "admin/se_javascript.php",            "label" => _m("Field Triggers")],
             "fileman"       => ["cond" => FilemanPerms(AA::$module_id), "href" => "admin/fileman.php",                "label" => _m("File Manager")],

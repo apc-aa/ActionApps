@@ -2045,9 +2045,12 @@ class AA_Items
         self::preload($zids);
         $items = self::singleton();
 
-        // all is cached, we get all the items in RIGHT ORDER
+        // taken out of the cache before any expansion - one may empty it (a gate opening a slice) and drop the rest
+        $list = [];
         for ($i = 0, $ino = $zids->count(); $i < $ino; ++$i) {
-            $item = $items->_getFromCache($zids->zid($i));
+            $list[] = $items->_getFromCache($zids->zid($i));
+        }
+        foreach ($list as $item) {
             if ($item && ($bin == AA_BIN_ALL || $item->isActive($bin))) {  // AA_BIN_ALL - all items - speedup - no need to check
                 $res[$item->getItemId()] = strlen($expression) ? $item->subst_alias($expression) : '';       // long item id
             }
