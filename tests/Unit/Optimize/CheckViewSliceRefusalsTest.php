@@ -39,6 +39,16 @@ final class CheckViewSliceRefusalsTest extends TestCase
         $this->assertSame('example.org/news', $finding->evidence[0][_m('Page asked for')]);
     }
 
+    /** a bare view.php?vid= over the slice is refused too - the advice must not send the reader after slice parameters only */
+    public function test_findingsFor_refusedSlice_adviceNamesTheViewCalledOverTheSlice(): void
+    {
+        $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
+
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], []);
+
+        $this->assertStringStartsWith('The view was called from the URL (view.php, jsview.php, discussion.php) over that slice, or its URL parameters', $finding->advice);
+    }
+
     public function test_findingsFor_sliceScript_isNamedAsItIs(): void
     {
         $row = ['selector' => ParamImplode(['slice.php', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];

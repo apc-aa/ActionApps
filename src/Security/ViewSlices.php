@@ -13,21 +13,22 @@ use zids;
 
 /**
  * The slices and items an item listing view called from the URL (view.php, jsview.php, discussion.php)
- * lists when its parameters name others than the view is set up for: set[<vid>]=slice_id-... or
- * slices-..., and the item ids of cmd[<vid>]=x|o|i-...; the same for slices[] of slice.php. Slices with
- * a reading password the request does not know are left out: GetItemContent() hides their fields, but
- * the ids, the count and the conditions of a listing would still tell about them. A page that needs
- * such a slice calls the view from its template ({view...}), where views are trusted; slice_pwd= in the
- * URL fits only a server-side include - in a link, AJAX or jsview.php the password would end up in the
- * page source, logs, Referer and history.
+ * lists: its own slice - vid= or cmd[]=v- picks the view - and the others its parameters name,
+ * set[<vid>]=slice_id-... or slices-..., and the item ids of cmd[<vid>]=x|o|i-...; the same for
+ * slices[] of slice.php. Slices with a reading password the request does not know are left out, the
+ * view's own one too: GetItemContent() hides their fields, but the ids, the count and the conditions of
+ * a listing would still tell about them. A page that needs such a slice calls the view from its
+ * template ({view...}), where views are trusted; slice_pwd= in the URL fits only a server-side include
+ * - in a link, AJAX or jsview.php the password would end up in the page source, logs, Referer and
+ * history.
  *
- * What stays open: a protected slice's own view still answers the conditions of the URL (vid= or
- * cmd[]=v- picks such a view), and so does the main slice of slice.php, which the request chooses;
- * the single items of slice.php (x=, o=, sh_itm=, items[]); a condition on a remote field
- * (d-<field>@<slice>/<relation>) reaches a protected slice through a related public one; discussions
- * (discus views); the hit of a refused x- item; noitem from the URL, expanded as a template; ?debug
- * without a permission; the template commands - {view}, {view.php?...}, {ids}, {count} - which are
- * trusted, also when a template builds an inner view per item from URL values (als[], cmd[]=x-<vid>-url).
+ * What stays open: the main slice of slice.php, which the request chooses; the single items of
+ * slice.php (x=, o=, sh_itm=, items[]); a banner from the URL (set[]=banner-, slice.php?banner=), whose
+ * inner view runs as a template's; a condition on a remote field (d-<field>@<slice>/<relation>), or
+ * sorting by one, reaches a protected slice through a related public one; discussions (discus views);
+ * the hit of a refused x- item; noitem from the URL, expanded as a template; ?debug without a
+ * permission; the template commands - {view}, {view.php?...}, {ids}, {count} - which are trusted, also
+ * when a template builds an inner view per item from URL values (als[], cmd[]=x-<vid>-url).
  */
 final class ViewSlices
 {
@@ -67,8 +68,9 @@ final class ViewSlices
     }
 
     /**
-     * The slice, slices and items the view shows. A refused slice_id leaves the view's own slice with
-     * no items, so the page looks like an empty listing whether the slice is protected or does not exist.
+     * The slice, slices and items the view shows. A refused slice - the view's own one too - leaves the
+     * view's own slice with no items, so the page looks like an empty listing whether the slice is
+     * protected or does not exist.
      * @param string    $own_slice_id the view's own slice, as unpack_id() writes it
      * @param string    $slice_id     set[]=slice_id-..., '' when not given
      * @param ?string[] $slices       set[]=slices-...
@@ -77,6 +79,16 @@ final class ViewSlices
      */
     public function narrow(int $vid, string $own_slice_id, string $slice_id, ?array $slices, ?zids $zids): array
     {
+        $slice_id = strtolower($slice_id);
+        if ($slice_id === $own_slice_id) {
+            $slice_id = '';
+        }
+        // slices- replaces the listed slice, slice_id- then gives only the aliases
+        $lists_own = is_null($slices) ? ($slice_id === '') : in_array($own_slice_id, array_map(static fn($id): string => strtolower((string) $id), $slices), true);
+        // no look-up of the protected slices: AA_Slice reads the password from the settings the listing loads anyway
+        if ($lists_own && !$this->knows($vid, $own_slice_id)) {
+            return [$own_slice_id, is_null($slices) ? null : [], new zids()];
+        }
         $nothing = false;
         if ($slice_id === '') {
             $slice_id = $own_slice_id;
@@ -92,7 +104,8 @@ final class ViewSlices
         if ($nothing) {
             return [$slice_id, $slices, new zids()];
         }
-        return [$slice_id, $slices, is_null($zids) ? null : $this->items($vid, $own_slice_id, $zids)];
+        // the own items skip the check only when the request may read them - else x- under another slice_id- would show them
+        return [$slice_id, $slices, is_null($zids) ? null : $this->items($vid, $lists_own ? $own_slice_id : '', $zids)];
     }
 
     /**
@@ -124,8 +137,9 @@ final class ViewSlices
     }
 
     /**
-     * The ids without the items of protected slices other than the own one; an id of no item goes too.
-     * The items are looked up only when another slice of the install has a reading password.
+     * The ids without the items of protected slices other than $own_slice_id, which the caller lets
+     * through ('' for none); an id of no item goes too. The items are looked up only when another slice
+     * of the install has a reading password.
      */
     public function items(int|string $lister, string $own_slice_id, zids $zids): zids
     {
@@ -153,7 +167,7 @@ final class ViewSlices
         return $this->protected_memo ??= array_flip(($this->protected)());
     }
 
-    /** whether the request knows the password of the protected slice; logs it once when not */
+    /** whether the request knows the password of the slice - true for one without a password; logs it once when not */
     private function knows(int|string $lister, string $slice_id): bool
     {
         if (!isset($this->known_memo[$slice_id])) {

@@ -168,17 +168,85 @@ final class ViewSlicesTest extends TestCase
         $this->assertSame([], $this->logged);
     }
 
-    public function test_narrow_nothingAsked_changesNothingAndLooksNothingUp(): void
+    /** the credentials let a slice without a password through - the protected and stored slices are not looked up */
+    public function test_narrow_ownSliceWithoutPassword_changesNothingAndLooksNothingUp(): void
     {
+        $asked = [];
         $guard = new ViewSlices(
             static fn(): array => throw new RuntimeException('passwords looked up'),
-            static fn(string $slice_id): bool => throw new RuntimeException('credentials asked'),
+            function (string $slice_id) use (&$asked): bool {
+                $asked[] = $slice_id;
+                return true;
+            },
             static fn(array $ids): array => throw new RuntimeException('slices looked up'),
             static fn(zids $zids): array => throw new RuntimeException('items looked up'),
-            static fn(string $selector): bool => true,
+            static fn(string $selector): bool => throw new RuntimeException('logged'),
         );
 
+        // slice_id- naming the own slice, in any case, is the own slice - its credentials are asked
+        $this->assertSame([self::OWN, null, null], $guard->narrow(7, self::OWN, strtoupper(self::OWN), null, null));
+        $this->assertSame([self::OWN], $asked);
         $this->assertSame([self::OWN, null, null], $guard->narrow(7, self::OWN, '', null, null));
+        $this->assertSame([self::OWN, [self::OWN], null], $guard->narrow(7, self::OWN, strtoupper(self::OWN), [strtoupper(self::OWN)], null));
+        $this->assertSame([self::OWN], $asked);
+    }
+
+    /** a view over a protected slice called from the URL lists nothing, not even the ids of cmd[]=x- - as for a refused slice_id */
+    public function test_narrow_ownSliceWithUnknownPassword_showsNoItemsAndLogsOnce(): void
+    {
+        $guard = $this->guard();
+        foreach (['', strtoupper(self::OWN)] as $slice_id) {
+            [$shown, $slices, $zids] = $guard->narrow(7, self::OWN, $slice_id, null, new zids(['12'], 's'));
+
+            $this->assertSame(self::OWN, $shown);
+            $this->assertNull($slices);
+            $this->assertTrue($zids->isEmpty());
+        }
+        $this->assertSame(['7:' . self::OWN], $this->logged);
+        $this->assertSame([], $this->stored_asked);
+    }
+
+    /** the own slice still saves the look-up of its items, once the request may read it */
+    public function test_narrow_ownSliceWithKnownPassword_listsAsBefore(): void
+    {
+        $this->assertSame([self::KNOWN, null, null], $this->guard()->narrow(7, self::KNOWN, '', null, null));
+
+        [, , $zids] = $this->guard([12 => self::KNOWN, 34 => self::LOCKED])->narrow(7, self::KNOWN, '', null, new zids(['12', '34'], 's'));
+
+        $this->assertSame(['12'], $zids->getArray());
+        $this->assertSame(['7:' . self::LOCKED], $this->logged);
+    }
+
+    public function test_narrow_listWithLockedOwnSlice_showsNothing(): void
+    {
+        $guard = $this->guard();
+        foreach ([self::OWN, strtoupper(self::OWN)] as $own) {
+            [$shown, $slices, $zids] = $guard->narrow(7, self::OWN, '', [self::OPEN, $own], null);
+
+            $this->assertSame(self::OWN, $shown);
+            $this->assertSame([], $slices);
+            $this->assertTrue($zids->isEmpty());
+        }
+        $this->assertSame(['7:' . self::OWN], $this->logged);
+        $this->assertSame([], $this->stored_asked);
+    }
+
+    /** slices- replaces the listed slice - a list without the locked own slice is shown */
+    public function test_narrow_listWithoutLockedOwnSlice_isShown(): void
+    {
+        $this->assertSame([self::OWN, [self::OPEN], null], $this->guard()->narrow(7, self::OWN, '', [self::OPEN], null));
+        $this->assertSame([], $this->logged);
+    }
+
+    /** another slice_id- is listed, but the ids of cmd[]=x- bring no item of the locked own slice with it */
+    public function test_narrow_otherSliceIdOverLockedOwnSlice_leavesOutTheOwnItems(): void
+    {
+        [$shown, $slices, $zids] = $this->guard([12 => self::OWN, 34 => self::OPEN])->narrow(7, self::OWN, self::OPEN, null, new zids(['12', '34'], 's'));
+
+        $this->assertSame(self::OPEN, $shown);
+        $this->assertNull($slices);
+        $this->assertSame(['34'], $zids->getArray());
+        $this->assertSame(['7:' . self::OWN], $this->logged);
     }
 
     public function test_narrow_allowedSliceId_isShown(): void
