@@ -10577,9 +10577,9 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
      */
     function expand($conf='', $to='', $annotation='', $attachments='', $params='', $ret_url='', $related_to=''): string
     {
-        // the massage is already sent and the return url is to this page - we just print result
+        // the page shows a result passed in its URL instead of sending - only as text, anyone can write the URL
         if (array_key_exists('datRes', $_GET)) {
-            return $_GET['datRes'];
+            return is_string($_GET['datRes']) ? \AA\Security\UrlValue::asText($_GET['datRes']) : '';
         }
         // datovka start
         if (!in_array($conf, ['1', 'test', 'standard']) || !strlen($to) || !strlen($annotation) || !strlen($attachments)) {
