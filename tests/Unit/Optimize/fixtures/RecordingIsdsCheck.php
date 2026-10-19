@@ -46,7 +46,7 @@ final class RecordingIsdsCheck extends CheckIsdsRegistry
 
     public int $registerReads = 0;
 
-    /** @var list<Binding> the ISDS accounts of include/config.php */
+    /** @var list<Binding> the ISDS accounts of misc/datovka/datovka_conf.php */
     public array $bindings = [];
 
     /** @var array<string, list<string>> site id => the modules it uses; an id not here is no site */

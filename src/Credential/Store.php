@@ -12,9 +12,6 @@ namespace AA\Credential;
  * The more specific one wins. Callers ask resolve() and get a Secret, so they will not change
  * when keys get another home.
  *
- * Name a new vendor in one word: AA_APIKEY_ISDS_REGISTRY_LOGIN of a vendor isds-registry is also
- * the context REGISTRY_LOGIN of the vendor isds, whose contexts name accounts (contextsIn()).
- *
  * A key is one line: it goes into HTTP headers, where a line break would add a header of its
  * own. A JSON key (a Google service account) fits on one line: paste the line `jq -c . key.json`
  * prints - its output ends with a line break, so file_get_contents() of it would not do.
@@ -36,61 +33,6 @@ final class Store
     public static function resolve(string $vendor, string $context = ''): ?Secret
     {
         return self::lookup(self::names($vendor, $context));
-    }
-
-    /**
-     * The key of exactly this vendor and context, never the vendor's own: for a key of one named
-     * thing (an account), where the vendor's key would be somebody else's. No context, no key.
-     *
-     * @param array<string, mixed>|null $constants name => value, as userConstants(); null = the constants defined now
-     * @throws \UnexpectedValueException as resolve()
-     */
-    public static function resolveExact(string $vendor, string $context, #[\SensitiveParameter] ?array $constants = null): ?Secret
-    {
-        return (self::part($context) === '') ? null : self::lookup(array_slice(self::names($vendor, $context), 0, 1), $constants);
-    }
-
-    /**
-     * A vendor's constants among $constants with their contexts as written after the vendor; '' for
-     * the vendor's own key. The vendor is matched in any case, so that a name Store never reads can
-     * be reported - names() spells the one it reads. For a vendor whose contexts are not fixed (a
-     * set per account).
-     *
-     * @param string               $vendor    one word of letters and digits: the contexts of a vendor
-     *                                        of two words would be read wrongly
-     * @param array<string, mixed> $constants as damagedIn()
-     * @return array<string, string> constant name => context
-     * @throws \InvalidArgumentException a vendor of more words
-     */
-    public static function contextsIn(string $vendor, #[\SensitiveParameter] array $constants): array
-    {
-        $vendor = self::part($vendor);
-        if (preg_match('/^[A-Z0-9]+\z/', $vendor) !== 1) {
-            throw new \InvalidArgumentException('Contexts are listed only for a vendor of one word of letters and digits');
-        }
-        $own      = self::PREFIX . $vendor;
-        $contexts = [];
-        foreach (array_keys($constants) as $name) {
-            $name = (string) $name;
-            if (strcasecmp($name, $own) === 0) {
-                $contexts[$name] = '';
-            } elseif (strncasecmp($name, $own . '_', strlen($own) + 1) === 0) {
-                $contexts[$name] = substr($name, strlen($own) + 1);
-            }
-        }
-
-        return $contexts;
-    }
-
-    /**
-     * The constants include/config.php and AA define, keys among them - pass them on only to
-     * #[\SensitiveParameter] parameters.
-     *
-     * @return array<string, mixed>
-     */
-    public static function userConstants(): array
-    {
-        return get_defined_constants(true)['user'] ?? [];
     }
 
     /** whether the constant is set, damaged or not - resolve() tells the difference */
@@ -116,7 +58,7 @@ final class Store
 
     /**
      * The key constants among $constants that hold CR, LF or NUL - names only, for State Check.
-     * @param array<string, mixed> $constants name => value, as userConstants()
+     * @param array<string, mixed> $constants name => value, as get_defined_constants(true)['user']
      * @return list<string>
      */
     public static function damagedIn(#[\SensitiveParameter] array $constants): array
@@ -151,17 +93,16 @@ final class Store
     /**
      * The key of the first of $names that is set.
      *
-     * @param list<string>              $names
-     * @param array<string, mixed>|null $constants null = the constants defined now
+     * @param list<string> $names
      * @throws \UnexpectedValueException the key holds CR, LF or NUL
      */
-    private static function lookup(array $names, #[\SensitiveParameter] ?array $constants = null): ?Secret
+    private static function lookup(array $names): ?Secret
     {
-        $name = self::first($names, $constants);
+        $name = self::first($names);
         if (is_null($name)) {
             return null;
         }
-        $value = self::value($name, $constants);
+        $value = self::value($name);
         if (self::breaks($value)) {
             throw new \UnexpectedValueException("$name holds a line break or NUL - fix it in the configuration");
         }
@@ -172,13 +113,12 @@ final class Store
     /**
      * The first of $names that holds a key; null when none does.
      *
-     * @param list<string>              $names
-     * @param array<string, mixed>|null $constants
+     * @param list<string> $names
      */
-    private static function first(array $names, #[\SensitiveParameter] ?array $constants = null): ?string
+    private static function first(array $names): ?string
     {
         foreach ($names as $name) {
-            if (self::value($name, $constants) !== '') {
+            if (self::value($name) !== '') {
                 return $name;
             }
         }
@@ -186,14 +126,10 @@ final class Store
         return null;
     }
 
-    /**
-     * The constant as text; '' when it is not defined or holds no text.
-     *
-     * @param array<string, mixed>|null $constants
-     */
-    private static function value(string $name, #[\SensitiveParameter] ?array $constants = null): string
+    /** The constant as text; '' when it is not defined or holds no text. */
+    private static function value(string $name): string
     {
-        $value = is_null($constants) ? (defined($name) ? constant($name) : null) : ($constants[$name] ?? null);
+        $value = defined($name) ? constant($name) : null;
 
         return is_scalar($value) ? (string) $value : '';
     }
