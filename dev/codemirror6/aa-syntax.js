@@ -103,19 +103,21 @@ export function contextAt(text, pos) {
 }
 
 /**
- * The brace paired with the one at `pos`, as the expander pairs them - in a <script> or <style>
- * too, where JavaScript or CSS reads them differently.
+ * The brace paired with the one at `pos`, as the expander pairs them.
  * @param {string} text
  * @param {number} pos  of a "{" or "}"
  * @return {number} -1 when it has no pair
  */
 export function pairedBrace(text, pos) {
-    const dir = (text.charCodeAt(pos) === OPEN) ? 1 : -1;
+    const own = text.charCodeAt(pos);
+    const dir = (own === OPEN) ? 1 : -1;
     let depth = 0;
     for (let i = pos; (i >= 0) && (i < text.length); i += dir) {
         const c = text.charCodeAt(i);
-        if ((c === OPEN) || (c === CLOSE)) {
-            depth += ((c === OPEN) === (dir > 0)) ? 1 : -1;
+        if (c === own) {
+            depth++;
+        } else if ((c === OPEN) || (c === CLOSE)) {
+            depth--;
             if (!depth) {
                 return i;
             }

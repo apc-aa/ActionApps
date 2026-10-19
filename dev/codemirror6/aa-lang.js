@@ -41,24 +41,19 @@ const matchingMark    = Decoration.mark({ class: 'cm-matchingBracket' });
 const nonmatchingMark = Decoration.mark({ class: 'cm-nonmatchingBracket' });
 
 /**
- * CodeMirror's bracket matching, with braces paired as the expander pairs them. In a <script> or
- * <style> CodeMirror follows the JavaScript or CSS syntax tree, and AA expressions break it there.
- * @return {import('@codemirror/state').Extension}
+ * Marks the bracket CodeMirror found at the cursor and its pair - for a brace the pair the expander
+ * gives it: in a <script> or <style> CodeMirror pairs braces by the JavaScript or CSS syntax tree,
+ * which AA expressions break there.
  */
-export function aaBracketMatching() {
-    return bracketMatching({
-        renderMatch({ start, end, matched }, state) {
-            // CodeMirror has chosen the bracket at the cursor; for a brace only its pair is ours
-            const ch = state.sliceDoc(start.from, start.to);
-            if ((ch === '{') || (ch === '}')) {
-                const pair = pairedBrace(state.doc.toString(), start.from);
-                end     = (pair < 0) ? null : { from: pair, to: pair + 1 };
-                matched = !!end;
-            }
-            const mark = matched ? matchingMark : nonmatchingMark;
-            return [start, end].filter(Boolean).map(r => mark.range(r.from, r.to));
-        },
-    });
+function renderBracketMatch({ start, end, matched }, state) {
+    const ch = state.sliceDoc(start.from, start.to);
+    if ((ch === '{') || (ch === '}')) {
+        const pair = pairedBrace(state.doc.toString(), start.from);
+        matched = (pair >= 0);
+        end     = matched ? { from: pair, to: pair + 1 } : null;
+    }
+    const mark = matched ? matchingMark : nonmatchingMark;
+    return [start, end].filter(Boolean).map(r => mark.range(r.from, r.to));
 }
 
 // the bundle is javascript/codemirror6.min.js; ?_path= - the ECN servers ignore the .htaccess rewrite
@@ -217,6 +212,7 @@ const hintLoader = ViewPlugin.fromClass(class {
 export function aaSyntax() {
     return [
         comments,
+        bracketMatching({ renderMatch: renderBracketMatch }),
         // instead of the language's own completion: HTML tags were never offered here
         autocompletion({ override: [aaCompletions], icons: false }),
         hint,

@@ -1,7 +1,19 @@
 // Brace matching of the code editor: a brace pairs as the expander pairs it, whatever the language around.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { pairedBrace } from '../../dev/codemirror6/aa-syntax.js';
+
+const cases = JSON.parse(readFileSync(new URL('./aa-syntax-cases.json', import.meta.url), 'utf8'));
+
+test('pairs every span of the shared cases, from both ends', () => {
+    for (const { input, spans } of cases.scan) {
+        for (const [, from, to] of spans) {
+            assert.equal(pairedBrace(input, from), to - 1, input);
+            assert.equal(pairedBrace(input, to - 1), from, input);
+        }
+    }
+});
 
 /** the text with the brace at `pos` and its pair in [] */
 function show(text, pos) {

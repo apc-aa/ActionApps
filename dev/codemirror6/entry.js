@@ -12,12 +12,12 @@
 import { EditorView, keymap, drawSelection, dropCursor } from '@codemirror/view';
 import { EditorState, Compartment } from '@codemirror/state';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
-import { indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
+import { bracketMatching, indentOnInput, syntaxHighlighting, defaultHighlightStyle } from '@codemirror/language';
 import { search, searchKeymap, highlightSelectionMatches } from '@codemirror/search';
 import { html } from '@codemirror/lang-html';
 import { javascript } from '@codemirror/lang-javascript';
 import { css } from '@codemirror/lang-css';
-import { aaSyntax, aaBracketMatching } from './aa-lang.js';
+import { aaSyntax } from './aa-lang.js';
 
 const LANGUAGES = { html, javascript, css };
 
@@ -49,7 +49,7 @@ export function createEditor(textarea, { language = 'html', disabled = false, on
                 dropCursor(),
                 indentOnInput(),
                 syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-                aaBracketMatching(),          // CodeMirror 5's matchBrackets + matchTags
+                bracketMatching(),            // CodeMirror 5's matchBrackets + matchTags
                 search(),
                 highlightSelectionMatches(),
                 keymap.of([...defaultKeymap, ...searchKeymap, ...historyKeymap]),
