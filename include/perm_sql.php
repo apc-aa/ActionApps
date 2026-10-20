@@ -54,6 +54,16 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     /** @var array<string, string[]> groups (all levels) of the ids resolved in this request - see getMembership() */
     private static array $membership = [];
 
+    /** A login compared with loginKey(): case and edge spaces do not count, as in the LDAP login people are
+     *  used to, accents do - utf8mb4_bin, because uid is binary and a *_ci mail would also ignore accents */
+    private const LOGIN_UID  = 'LOWER(TRIM(CONVERT(uid USING utf8mb4))) COLLATE utf8mb4_bin';
+    private const LOGIN_MAIL = 'LOWER(TRIM(CONVERT(mail USING utf8mb4))) COLLATE utf8mb4_bin';
+
+    private static function loginKey(string $login): string
+    {
+        return mb_strtolower(trim($login), 'UTF-8');
+    }
+
     /** Drops the per-request membership memo - called by every function that writes the membership table */
     public static function forgetMembership(): void
     {
@@ -314,18 +324,18 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     public function authenticateUsername($username, $password, $code2fa = ''): false|string
     {
-        // case and edge spaces do not count, as in the LDAP login people are used to; uid is binary, mail a *_ci char
-        $key = mb_strtolower(trim((string) $username), 'UTF-8');
+        $key = self::loginKey((string) $username);
         if (($key === '') || ((string) $password === '')) {
             return false;
         }
-        $column = strpos($key, '@') ? 'LOWER(TRIM(mail))' : 'LOWER(TRIM(CONVERT(uid USING utf8mb4)))';
-        $users  = DB_AA::select([], 'SELECT id, password FROM `users`', [[$column, $key]], null, null, 2);
-        // a folded name that fits two accounts belongs to neither of them
-        if ((count($users) !== 1) || !AA_Perm::comparePwds($password, $users[0]['password'])) {
+        $column = strpos($key, '@') ? self::LOGIN_MAIL : self::LOGIN_UID;
+        $users  = DB_AA::select([], 'SELECT id, password FROM `users`', [[$column, $key], ['type', [_m("User"), 'User']]], null, null, 10);
+        // several accounts may share one e-mail - the password picks one; when it fits two, it belongs to neither
+        $matches = array_values(array_filter($users, static fn($row) => AA_Perm::comparePwds($password, $row['password'])));
+        if (count($matches) !== 1) {
             return false;
         }
-        $user = $users[0];
+        $user = $matches[0];
         // Opportunistic rehash: if the stored hash is a legacy LDAP
         // hash ({SSHA}/{SHA}/{SMD5}/{MD5}/{CRYPT}) carried over by
         // AA\Optimize\LdapPermsToSql, upgrade it to bcrypt now that
@@ -356,10 +366,10 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         return !(DB_AA::select1('', 'SELECT uid FROM `users`', [['uid', $username]]));
     }
 
-    /** uid is binary (case counts), mail a *_ci char - both folded here, $login in UTF-8 */
+    /** $login in UTF-8, folded as authenticateUsername() folds it */
     public function isLoginFree(string $login): bool {
-        $key = mb_strtolower(rtrim($login, ' '), 'UTF-8');
-        foreach (["LOWER(TRIM(TRAILING ' ' FROM CONVERT(uid USING utf8mb4)))", "LOWER(TRIM(TRAILING ' ' FROM mail))"] as $column) {
+        $key = self::loginKey($login);
+        foreach ([self::LOGIN_UID, self::LOGIN_MAIL] as $column) {
             if (DB_AA::select1('id', 'SELECT id FROM `users`', [[$column, $key]])) {
                 return false;
             }

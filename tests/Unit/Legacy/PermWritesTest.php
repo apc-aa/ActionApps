@@ -35,9 +35,16 @@ namespace {
             return true;
         }
 
+        public static bool $login_free = true;
+
         public function isUsernameFree($username): bool
         {
             return true;
+        }
+
+        public function isLoginFree(string $login): bool
+        {
+            return self::$login_free;
         }
 
         /** @param list<mixed> $args */
@@ -143,6 +150,11 @@ namespace {
             return self::$free;
         }
 
+        public function isLoginFree(string $login): bool
+        {
+            return true;
+        }
+
         public function getGroup($group_id): false|array
         {
             return false;
@@ -194,6 +206,7 @@ namespace Tests\Unit\Legacy {
             AA::$perm   = new AA_Perm(['sql', 'Reader']);
             RecordingDb::reset();
             $GLOBALS['spareDBs'] = [new RecordingDb()];
+            \AA_Permsystem_Fakestore::$login_free = true;
         }
 
         protected function tearDown(): void
@@ -214,6 +227,8 @@ namespace Tests\Unit\Legacy {
                 'AddUser' => [static fn() => AA::$perm->addUser($user), [
                     "SELECT uid FROM `users` WHERE uid = 'jan' LIMIT  1",
                     "SELECT LOWER(HEX(module.id)) AS unpackid FROM slice, module WHERE slice.id = module.id AND slice.type = 'ReaderManagement' AND module.deleted < 1",
+                    "SELECT id FROM `users` WHERE LOWER(TRIM(CONVERT(uid USING utf8mb4))) COLLATE utf8mb4_bin = 'jan' LIMIT  1",
+                    "SELECT id FROM `users` WHERE LOWER(TRIM(CONVERT(mail USING utf8mb4))) COLLATE utf8mb4_bin = 'jan' LIMIT  1",
                     "INSERT INTO `users` (`type`,`password`,`uid`,`mail`,`name`,`description`,`givenname`,`sn`) VALUES ('User','<hash>','jan','jan@example.org','Jan Novak','','Jan','Novak')",
                 ], '1'],
                 'DelUser' => [static fn() => AA::$perm->delUser('7'), [
@@ -316,6 +331,16 @@ namespace Tests\Unit\Legacy {
 
             self::assertFalse((new AA_Perm(['fakestore', 'fakereader']))->addUser(['uid' => 'jan', 'userpassword' => 'secret']));
             self::assertSame([], \AA_Permsystem_Fakestore::$calls, 'the storage is not asked to add a taken login');
+        }
+
+        public function test_facade_addUserRefusesALoginTakenInAnotherCase(): void
+        {
+            \AA_Permsystem_Fakestore::$calls      = [];
+            \AA_Permsystem_Fakestore::$login_free = false;   // 'jan' is free as typed, 'Jan' is not
+            \AA_Permsystem_Fakereader::$free      = true;
+
+            self::assertFalse((new AA_Perm(['fakestore', 'fakereader']))->addUser(['uid' => 'jan', 'userpassword' => 'secret']));
+            self::assertSame([], \AA_Permsystem_Fakestore::$calls, 'the folded login would fit both accounts and log in neither');
         }
 
         public function test_facade_withoutStorageThrows(): void

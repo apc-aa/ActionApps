@@ -593,7 +593,7 @@ class AA_Perm {
         return true;
     }
 
-    /** No user of AA logs in with $login - as the login name or the e-mail, in any case, with trailing
+    /** No user of AA logs in with $login - as the login name or the e-mail, in any case, with edge
      *  spaces or not. The readers of Reader Management slices are left out. Without a user system
      *  (restrictPermsTo()) it throws: "free" would be a guess.
      *  @throws LogicException */
@@ -786,7 +786,7 @@ class AA_Perm {
 
     /** getMembership function
      * @param string $uid
-     * @param $flags - use to obey group in groups?
+     * @param $flags - 0: groups of all levels, else only the groups $uid is directly in
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($uid, $flags = 0): array
@@ -856,10 +856,13 @@ class AA_Perm {
         return $this->_whichPermstorage() ?? throw new LogicException('No permission system stores users, groups and permissions');
     }
 
-    /** @return false|string id of the new user; false when the login is taken (in any backend) or the write failed */
+    /** The login must be free also in another case or with edge spaces - the folded login would fit both
+     *  accounts and log in neither.
+     *  @return false|string id of the new user; false when the login is taken (in any backend) or the write failed
+     *  @throws LogicException no backend of users (restrictPermsTo() leaves the readers only) - storage() would throw too */
     public function addUser(array $user): false|string
     {
-        if (!$this->isUsernameFree($user['uid'])) {
+        if (!$this->isUsernameFree($user['uid']) || !$this->isAdminUsernameFree((string) $user['uid'])) {
             return false;
         }
         return $this->storage()->addUser($user);
@@ -1153,7 +1156,7 @@ abstract class AA_Permsystem {
 
     function isUsernameFree($username): bool                                  { return false; }
 
-    /** no user has $login as the login name or the e-mail - case and trailing spaces ignored */
+    /** no user has $login as the login name or the e-mail - case and edge spaces ignored */
     public function isLoginFree(string $login): bool                        { return false; }
 
     /** @return string|array - string "too much" if too many users should be listed (LDAP returns it sometimes) */
