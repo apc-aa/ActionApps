@@ -125,7 +125,8 @@ class AA_Permsystem_Ldap extends AA_Permsystem
     //############### User functions //#############################################
 
     /** addUser function
-     *  Creates new person in LDAP permission system - AA_Perm::addUser() checks the login is free
+     *  Creates new person in LDAP permission system. Call it through AA::$perm - AA_Perm::addUser() checks
+     *  the login is free in every backend, this one does not.
      *
      * @param $user
      *
@@ -197,7 +198,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem
             $arr    = ldap_get_entries($ds, $r);
             for ($i = 0; $i < $arr["count"]; ++$i) {
                 // indexes in lowercase !!!
-                $this->delPerm($user_id, $arr[$i]["apcobjectid"][0], $arr[$i]["apcobjecttype"][0]);
+                $this->delPerm($user_id, $arr[$i]["apcobjectid"][0], (string) ($arr[$i]["apcobjecttype"][0] ?? ''));
             }
             ldap_free_result($r);
         }
@@ -305,7 +306,7 @@ class AA_Permsystem_Ldap extends AA_Permsystem
             $arr    = ldap_get_entries($ds, $r);
             for ($i = 0; $i < $arr["count"]; ++$i) {
                 // indexes in lowercase !!!
-                $this->delPerm($group_id, $arr[$i]["apcobjectid"][0], $arr[$i]["apcobjecttype"][0]);
+                $this->delPerm($group_id, $arr[$i]["apcobjectid"][0], (string) ($arr[$i]["apcobjecttype"][0] ?? ''));
             }
             ldap_free_result($r);
         }

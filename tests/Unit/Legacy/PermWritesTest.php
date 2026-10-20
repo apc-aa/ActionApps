@@ -40,82 +40,76 @@ namespace {
             return true;
         }
 
+        /** @param list<mixed> $args */
+        private static function record(string $method, array $args, string|bool $result): string|bool
+        {
+            self::$calls[] = [$method, $args];
+            return $result;
+        }
+
         public function addUser(array $user): false|string
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return '7';
+            return self::record(__FUNCTION__, func_get_args(), '7');
         }
 
         public function delUser($user_id, int $flags = 3): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function changeUser(array $user): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function addGroup(array $group): false|string
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return '9';
+            return self::record(__FUNCTION__, func_get_args(), '9');
         }
 
         public function delGroup($group_id, int $flags = 3): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function changeGroup(array $group): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function addGroupMember($group_id, $id): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function delGroupMember($group_id, $id): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function addPermObject($objectID, string $objectType): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function delPermObject($objectID, string $objectType): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function addPerm($id, $objectID, string $objectType, $perm): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function delPerm($id, $objectID, string $objectType): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function changePerm($id, $objectID, string $objectType, $perm): bool
         {
-            self::$calls[] = [__FUNCTION__, func_get_args()];
-            return true;
+            return self::record(__FUNCTION__, func_get_args(), true);
         }
 
         public function getGroup($group_id): false|array
@@ -207,7 +201,7 @@ namespace Tests\Unit\Legacy {
             AA::$perm = $this->perm;
         }
 
-        /** @return array<string, array{callable(): mixed, list<string>}> */
+        /** @return array<string, array{callable(): mixed, list<string>, string|bool}> */
         public static function sqlWrites(): array
         {
             $user  = ['uid' => 'jan', 'mail' => 'jan@example.org', 'givenname' => 'Jan', 'sn' => 'Novak', 'userpassword' => 'secret'];
@@ -221,50 +215,51 @@ namespace Tests\Unit\Legacy {
                     "SELECT uid FROM `users` WHERE uid = 'jan' LIMIT  1",
                     "SELECT LOWER(HEX(module.id)) AS unpackid FROM slice, module WHERE slice.id = module.id AND slice.type = 'ReaderManagement' AND module.deleted < 1",
                     "INSERT INTO `users` (`type`,`password`,`uid`,`mail`,`name`,`description`,`givenname`,`sn`) VALUES ('User','<hash>','jan','jan@example.org','Jan Novak','','Jan','Novak')",
-                ]],
+                ], '1'],
                 'DelUser' => [static fn() => AA::$perm->delUser('7'), [
                     "DELETE FROM `membership`  WHERE memberid = '7'",
                     "DELETE FROM `perms`  WHERE userid = '7'",
                     "DELETE FROM `users`  WHERE id = '7'",
-                ]],
+                ], true],
                 'ChangeUser' => [static fn() => AA::$perm->changeUser(['uid' => '7', 'mail' => ['jan@example.org'], 'givenname' => 'Jan', 'sn' => 'Novak', 'userpassword' => '']), [
                     "SELECT * FROM `users` WHERE id='7'",
                     "UPDATE `users` SET `mail`='jan@example.org', `name`='Jan Novak', `givenname`='Jan', `sn`='Novak' WHERE id='7'",
-                ]],
+                ], true],
                 'AddGroup' => [static fn() => AA::$perm->addGroup(['name' => 'Editors', 'description' => 'Desk']), [
                     "INSERT INTO `users` (`type`,`password`,`uid`,`mail`,`name`,`description`,`givenname`,`sn`) VALUES ('Group','crypt will never return this','','','Editors','Desk','','')",
-                ]],
+                ], '1'],
                 'DelGroup' => [static fn() => AA::$perm->delGroup('9'), [
                     "DELETE FROM `membership`  WHERE groupid = '9'",
                     "DELETE FROM `membership`  WHERE memberid = '9'",
                     "DELETE FROM `perms`  WHERE userid = '9'",
                     "DELETE FROM `users`  WHERE id = '9'",
-                ]],
+                ], true],
                 'ChangeGroup' => [static fn() => AA::$perm->changeGroup(['uid' => '9', 'name' => 'Editors', 'description' => 'Desk']), [
                     "SELECT * FROM `users` WHERE id='9'",
                     "UPDATE `users` SET `name`='Editors', `description`='Desk' WHERE id='9'",
-                ]],
+                ], true],
                 'AddGroupMember' => [static fn() => AA::$perm->addGroupMember('9', '7'), [
                     "DELETE FROM `membership`  WHERE groupid = '9' AND memberid = '7'",
                     "INSERT INTO `membership` (`groupid`,`memberid`) VALUES (9,'7')",
-                ]],
+                ], true],
                 'DelGroupMember' => [static fn() => AA::$perm->delGroupMember('9', '7'), [
                     "DELETE FROM `membership`  WHERE groupid = '9' AND memberid = '7'",
-                ]],
+                ], true],
                 // SQL keeps no ACL objects
-                'AddPermObject' => [static fn() => AA::$perm->addPermObject($slice, 'slice'), []],
-                'DelPermObject' => [static fn() => AA::$perm->delPermObject($slice, 'slice'), []],
-                'AddPerm'       => [static fn() => AA::$perm->addPerm('7', $slice, 'slice', '2'), $perm],
-                'DelPerm'       => [static fn() => AA::$perm->delPerm('7', $slice, 'slice'), [$perm[0]]],
-                'ChangePerm'    => [static fn() => AA::$perm->changePerm('7', $slice, 'slice', '2'), $perm],
+                'AddPermObject' => [static fn() => AA::$perm->addPermObject($slice, 'slice'), [], true],
+                'DelPermObject' => [static fn() => AA::$perm->delPermObject($slice, 'slice'), [], true],
+                'AddPerm'       => [static fn() => AA::$perm->addPerm('7', $slice, 'slice', '2'), $perm, true],
+                'DelPerm'       => [static fn() => AA::$perm->delPerm('7', $slice, 'slice'), [$perm[0]], true],
+                'ChangePerm'    => [static fn() => AA::$perm->changePerm('7', $slice, 'slice', '2'), $perm, true],
             ];
         }
 
         /** @param list<string> $expected */
         #[DataProvider('sqlWrites')]
-        public function test_sqlWrites_emitTheSameStatements(callable $write, array $expected): void
+        public function test_sqlWrites_emitTheSameStatements(callable $write, array $expected, string|bool $result): void
         {
-            $write();
+            // the id of a new user or group is what the insert reports - RecordingDb says '1'
+            self::assertSame($result, $write());
 
             // the password hash is salted - a new string every time
             $log = preg_replace('/\$2y\$\d+\$[.\/A-Za-z0-9]{53}/', '<hash>', RecordingDb::$log);
@@ -278,38 +273,39 @@ namespace Tests\Unit\Legacy {
 
             self::assertTrue(class_exists('AA_Permsystem_Ldap'));
             self::assertTrue(class_exists('AA_Permsystem_Sql'));
-            self::assertFalse(function_exists('AddUser'));
+            foreach (['AddUser', 'DelUser', 'ChangeUser', 'AddGroup', 'DelGroup', 'ChangeGroup', 'AddGroupMember', 'DelGroupMember', 'AddPermObject', 'DelPermObject', 'AddPerm', 'DelPerm', 'ChangePerm'] as $function) {
+                self::assertFalse(function_exists($function), $function);
+            }
         }
 
-        /** @return array<string, array{string, list<mixed>}> */
+        /** @return array<string, array{string, list<mixed>, string|bool}> */
         public static function writes(): array
         {
             return [
-                'addUser'        => ['addUser', [['uid' => 'jan']]],
-                'delUser'        => ['delUser', ['7', 1]],
-                'changeUser'     => ['changeUser', [['uid' => '7']]],
-                'addGroup'       => ['addGroup', [['name' => 'Editors']]],
-                'delGroup'       => ['delGroup', ['9', 2]],
-                'changeGroup'    => ['changeGroup', [['uid' => '9']]],
-                'addGroupMember' => ['addGroupMember', ['9', '7']],
-                'delGroupMember' => ['delGroupMember', ['9', '7']],
-                'addPermObject'  => ['addPermObject', ['x', 'slice']],
-                'delPermObject'  => ['delPermObject', ['x', 'slice']],
-                'addPerm'        => ['addPerm', ['7', 'x', 'slice', '2']],
-                'delPerm'        => ['delPerm', ['7', 'x', 'slice']],
-                'changePerm'     => ['changePerm', ['7', 'x', 'slice', '2']],
+                'addUser'        => ['addUser', [['uid' => 'jan']], '7'],
+                'delUser'        => ['delUser', ['7', 1], true],
+                'changeUser'     => ['changeUser', [['uid' => '7']], true],
+                'addGroup'       => ['addGroup', [['name' => 'Editors']], '9'],
+                'delGroup'       => ['delGroup', ['9', 2], true],
+                'changeGroup'    => ['changeGroup', [['uid' => '9']], true],
+                'addGroupMember' => ['addGroupMember', ['9', '7'], true],
+                'delGroupMember' => ['delGroupMember', ['9', '7'], true],
+                'addPermObject'  => ['addPermObject', ['x', 'slice'], true],
+                'delPermObject'  => ['delPermObject', ['x', 'slice'], true],
+                'addPerm'        => ['addPerm', ['7', 'x', 'slice', '2'], true],
+                'delPerm'        => ['delPerm', ['7', 'x', 'slice'], true],
+                'changePerm'     => ['changePerm', ['7', 'x', 'slice', '2'], true],
             ];
         }
 
         /** @param list<mixed> $args */
         #[DataProvider('writes')]
-        public function test_facade_sendsWritesToTheStorageBackend(string $method, array $args): void
+        public function test_facade_sendsWritesToTheStorageBackend(string $method, array $args, string|bool $result): void
         {
             \AA_Permsystem_Fakestore::$calls = [];
             \AA_Permsystem_Fakereader::$free = true;
 
-            (new AA_Perm(['fakereader', 'fakestore']))->$method(...$args);
-
+            self::assertSame($result, (new AA_Perm(['fakereader', 'fakestore']))->$method(...$args));
             self::assertSame([[$method, $args]], \AA_Permsystem_Fakestore::$calls);
         }
 

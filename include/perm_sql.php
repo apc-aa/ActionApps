@@ -74,7 +74,8 @@ class AA_Permsystem_Sql extends AA_Permsystem {
     //   (also marked by  'type'
 
     /** addUser function
-     * creates new person in permission system - AA_Perm::addUser() checks the login is free
+     * creates new person in permission system. Call it through AA::$perm - AA_Perm::addUser() checks
+     * the login is free in every backend, this one does not.
      * @param array $user
      * @return false|string  id of the new user (last_insert_id)
      */

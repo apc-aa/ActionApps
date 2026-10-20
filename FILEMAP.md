@@ -637,7 +637,7 @@ Note: *.php3 files are legacy wrappers that include the .php version.
 | modutils.php | Module utility functions | | M |
 | notify.php | Notification system functions | | S |
 | perm_core.php | Core permissions management | AA_Perm_Resource, CheckPerms() | XL |
-| perm_ldap.php | LDAP permissions backend | AddUser(), DelUser() | XL |
+| perm_ldap.php | LDAP permissions backend | AA_Permsystem_Ldap, InitLDAP() | XL |
 | perm_sql.php | SQL permissions backend | | L |
 | phplib.php | PHPLib session support wrapper | | L |
 | profile.class.php | User profile settings class | AA_Profile | M |

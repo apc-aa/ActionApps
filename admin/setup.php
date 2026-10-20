@@ -29,10 +29,10 @@
 ///////////////////////////////////////////////////////////////////////////
 
 // Superadmin-creation form inputs, read explicitly from the request. Kept RAW - the DB layer
-// escapes them on insert (AA_Permsystem_Sql::addUser() builds a Cvarset, whose two-item
-// rows default to type "text" = quote()d) and AA_Inputfield::inputText() safe()s them when the
-// form is redisplayed. The old $$k = AddslashesDeep() register_globals loop was removed
-// (finding N14, 2026-09); it also double-escaped these values on top of the "text" insert.
+// escapes them on insert (the backend's addUser() stores them safely - Metabase quotes each column
+// by its type) and AA_Inputfield::inputText() safe()s them when the form is redisplayed.
+// The old $$k = AddslashesDeep() register_globals loop was removed (finding N14, 2026-09);
+// it also double-escaped these values on top of the quoting insert.
 // Plain $_REQUEST and not InputVars here: the composer autoloader is only registered by
 // locsess.php, which this page requires below.
 $phase     = $_REQUEST['phase']     ?? '';

@@ -1170,8 +1170,11 @@ abstract class AA_Permsystem {
     function getObjectsPerms($objectID, $objectType): array { return []; }
     function getJoinedPerms($uid, $objectType, $groups= []): array { return []; }
 
-    /** Writes - called through AA_Perm, which picks the backend that stores the general perms (storesGeneralPerms());
-     *  a backend which cannot write refuses. Ids are the backend's own (a number in SQL, a DN in LDAP). */
+    // Writes - called through AA_Perm, which picks the backend that stores the general perms (storesGeneralPerms());
+    // a backend which cannot write refuses. Ids are the backend's own (a number in SQL, a DN in LDAP).
+
+    /** Callers go through AA::$perm: AA_Perm::addUser() checks the login is free in every backend, the backend
+     *  itself does not (it cannot see the others). */
     public function addUser(array $user): false|string                          { return false; }
     public function delUser($user_id, int $flags = 3): bool                    { return false; }
     public function changeUser(array $user): bool                              { return false; }

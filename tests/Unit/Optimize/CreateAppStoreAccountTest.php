@@ -45,12 +45,6 @@ final class CreateAppStoreAccountTest extends TestCase
                 return $username !== $this->login;
             }
 
-            /** @param array<string, mixed> $user */
-            public function addUser(array $user): false|string
-            {
-                return $this->isUsernameFree($user['uid']) ? '7' : false;
-            }
-
             public function authenticateUsername($username, $password, $code2fa = ''): false|string
             {
                 return (($username === $this->login) && ($password === $this->password)) ? '7' : false;
