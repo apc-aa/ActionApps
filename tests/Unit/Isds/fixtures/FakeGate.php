@@ -8,13 +8,14 @@ use AA\Isds\Access;
 use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
 use AA\Isds\Recipients;
+use AA\Isds\SendRun;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Isds\SliceRules;
 
 /**
  * The gate on a page given here: the site rendered, the slices (FakeSliceRules), the accounts of
- * datovka_conf.php, the login (Access over the rights of FakePerms), the campaigns and the recipients.
+ * datovka_conf.php, the login (Access over the rights of FakePerms), the campaigns, their runs and the recipients.
  * The slices open in the real AA_Credentials.
  */
 final class FakeGate extends Gate
@@ -27,8 +28,11 @@ final class FakeGate extends Gate
 
     public int $noStores = 0;
 
-    /** @var array<string, array{slice: string, active: bool, filter: string}> item id => what stored() gives */
+    /** @var array<string, array{slice: string, active: bool, filter: string, state: string}> item id => what stored() gives */
     public array $campaigns = [];
+
+    /** @var array<string, SendRun> campaign id => its newest run */
+    public array $runs = [];
 
     public ?Recipients $resolver = null;
 
@@ -79,6 +83,11 @@ final class FakeGate extends Gate
     protected function stored(string $id): ?array
     {
         return $this->campaigns[$id] ?? null;
+    }
+
+    protected function run(string $campaign): ?SendRun
+    {
+        return $this->runs[$campaign] ?? null;
     }
 
     protected function resolver(): Recipients

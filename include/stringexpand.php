@@ -10662,6 +10662,10 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        ids '' for no recipients - {view} with no ids lists the whole slice, so guard it (not with _#1 - AA
  *        expands the inner command first; so the inner {view} still runs once over the slice, the guard only
  *        hides it): {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
+ *    {datovkabulk:progress:<campaign id>:state|total|sent|failed|skipped|uncertain|stopped|queued|until} - how far its
+ *        sending got, from the record of the run: state of the campaign item while it has no run, then sending,
+ *        error, done or abandoned (given up in error; a sending a person stopped ends done, its unsent counted as
+ *        stopped); the counts add up to total, '' with no run; until - the unix time a pause waits till, or ''
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
@@ -10676,6 +10680,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'sender'     => $gate->sender(),
             'result'     => $gate->result(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
+            'progress'   => $gate->progress((string)$settings, (string)$ui),
             default      => '',
         };
     }

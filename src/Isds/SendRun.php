@@ -664,6 +664,34 @@ class SendRun extends BatchRun
     }
 
     /**
+     * How far the sending got - from the record and the frozen recipients, no message item, no ISDS.
+     * Each recipient counts as the end of the run counts it (SendMaps::tally()), by the maps and the
+     * frozen reasons, not by the cursor: a message in flight is uncertain, a recipient skipped by its
+     * reason is skipped before the cursor gets to it too. One never tried is stopped once a stop or
+     * the end of the run leaves it so - nothing sends it any more -, otherwise queued. The counts add
+     * up to total; until is the end of a pause, 0 = none.
+     * Public for the page of a sending (Gate::progress()); a progressExtra() of this run must call it
+     * too, so that both show the same figures.
+     * @return array{total: int, sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int, until: int}
+     * @throws \JsonException|BatchFailed a record edited into no JSON, recipients not as frozen
+     */
+    public function progressFigures(): array
+    {
+        $now   = static::now();
+        $rows  = $this->recipients();
+        $tally = $this->maps()->tally($rows);
+        $over  = ((string) $this->stop_by !== '') || in_array($this->state(), [self::DONE, self::ENDED], true);
+        // a position left by a run in error waits for nothing
+        $until = ($this->state() === self::SENDING) ? SendPace::pauseEnd($this->position(), $now) : 0;
+        return array_merge($tally, [
+            'total'   => count($rows),
+            'stopped' => $over ? $tally['stopped'] : 0,
+            'queued'  => $over ? 0 : $tally['stopped'],
+            'until'   => ($until > $now) ? $until : 0,
+        ]);
+    }
+
+    /**
      * Every message tried, or skipped by its reason: the cursor says so past the last ones too, and
      * the sending goes on to what became of them
      */

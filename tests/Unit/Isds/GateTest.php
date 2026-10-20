@@ -410,13 +410,13 @@ final class GateTest extends TestCase
 
     /**
      * The gate with the territory of the source slice: Benešov has no box, Děčín the box of Adamov
-     * @param array<string, string|array{slice: string, active: bool, filter: string}> $campaigns item id => the
+     * @param array<string, string|array{slice: string, active: bool, filter: string, state: string}> $campaigns item id => the
      *        filter of an active item of the campaign slice, or what stored() gives
      */
     private static function recipientGate(array $campaigns): FakeGate
     {
         $gate            = self::gate();
-        $gate->campaigns = array_map(static fn(string|array $c): array => is_string($c) ? ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => $c] : $c, $campaigns);
+        $gate->campaigns = array_map(static fn(string|array $c): array => is_string($c) ? ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => $c, 'state' => 'draft'] : $c, $campaigns);
         $gate->resolver  = new FakeRecipients([
             self::ADAMOV  => Sending::item('Adamov', 'mesto', '1', 'ada1234'),
             self::BENESOV => Sending::item('Benešov', 'mesto', '1', ''),
@@ -449,7 +449,7 @@ final class GateTest extends TestCase
         self::assertSame(['2', '1', self::ADAMOV . '-' . self::CHEB], self::counts(self::recipientGate([self::ITEM => " \n"]), self::ITEM));
     }
 
-    /** @return array<string, array{string, string, array<string, string|array{slice: string, active: bool, filter: string}>}> */
+    /** @return array<string, array{string, string, array<string, string|array{slice: string, active: bool, filter: string, state: string}>}> */
     public static function notACampaign(): array
     {
         $stored = [self::ITEM => ''];
@@ -457,16 +457,16 @@ final class GateTest extends TestCase
         return [
             'not an id'              => ['12" onclick="x', 'count', $stored],
             'no such item'           => [self::ITEM, 'count', []],
-            'an item of messages'    => [self::LETTER, 'count', [self::LETTER => ['slice' => self::MESSAGE, 'active' => true, 'filter' => '']]],
-            'an item of the source'  => [self::ADAMOV, 'count', [self::ADAMOV => ['slice' => self::SOURCE, 'active' => true, 'filter' => '']]],
-            'a campaign in a bin'    => [self::ITEM, 'count', [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '']]],
+            'an item of messages'    => [self::LETTER, 'count', [self::LETTER => ['slice' => self::MESSAGE, 'active' => true, 'filter' => '', 'state' => 'sent']]],
+            'an item of the source'  => [self::ADAMOV, 'count', [self::ADAMOV => ['slice' => self::SOURCE, 'active' => true, 'filter' => '', 'state' => '']]],
+            'a campaign in a bin'    => [self::ITEM, 'count', [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'draft']]],
             // a read without the password masks the status code too - the item is in no bin
-            'a campaign read masked' => [self::ITEM, 'count', [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => 'Error: Missing Reading Password']]],
+            'a campaign read masked' => [self::ITEM, 'count', [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => 'Error: Missing Reading Password', 'state' => 'Error: Missing Reading Password']]],
             'unknown question'       => [self::ITEM, 'all', $stored],
         ];
     }
 
-    /** @param array<string, string|array{slice: string, active: bool, filter: string}> $campaigns */
+    /** @param array<string, string|array{slice: string, active: bool, filter: string, state: string}> $campaigns */
     #[DataProvider('notACampaign')]
     public function test_recipients_notACampaignOfThePage(string $campaign, string $what, array $campaigns): void
     {

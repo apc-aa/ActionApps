@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Isds;
 
+use AA\Later\BatchFailed;
 use AA\Util\FormToken;
 use AA\Util\LogOnce;
 use AA_Credentials;
@@ -17,8 +18,8 @@ use zids;
  * with settings Setup accepts for that site; only then expands the UI the template deferred. Everyone
  * else gets the refusal, the UI stays unexpanded and the slices stay closed. Once opened, the slices
  * stay readable to the rest of the request, never to a next one through the token of an {ajax}.
- * Inside the UI the other subcommands give the settings, the fields of a form and the recipients,
- * outside of it nothing.
+ * Inside the UI the other subcommands give the settings, the fields of a form, the recipients and
+ * the progress of a sending, outside of it nothing.
  *
  * What the template must keep in mind:
  * - Nothing before the gate should read the two slices: items and {view}s read before it are read
@@ -39,6 +40,9 @@ class Gate
 
     /** the actions a form may name - its token binds the action and the campaign */
     public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'verify', 'fixbox'];
+
+    /** what progress() tells */
+    private const PROGRESS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until'];
 
     /** the settings of the UI being expanded; null outside every gate */
     private static ?Setup $open = null;
@@ -150,6 +154,30 @@ class Gate
         };
     }
 
+    /**
+     * How far the sending of a campaign of the page got, read anew on each request from the record of
+     * its newest run (SendRun::progressFigures()), never from the message items or ISDS. state: while
+     * the campaign has no run, the state of its item; then the run's - sending (queued, working or
+     * waiting), error (waits for Continue), done, abandoned (given up in error). A sending a person
+     * stopped ends done, what it left unsent counted as stopped. total: the recipients frozen, skipped
+     * ones too - sent, failed, uncertain, skipped, stopped and queued add up to it. until: the unix
+     * time a pause waits till. '' with no run, for a record that cannot be read, another item or
+     * question; until '' when nothing waits.
+     * @param string $campaign long id of an item of the campaign slice
+     */
+    public function progress(string $campaign, string $what): string
+    {
+        $setup = self::$open;
+        $id    = ModuleId::normalize($campaign);
+        if (is_null($setup) || is_null($id) || !in_array($what, self::PROGRESS, true)) {
+            return '';
+        }
+        // once a request for all the answers; a closure cannot key the cache itself
+        $progress = \AA::Contentcache()->_get_result(get_hash(self::class . '::progress', $setup, $id), fn(): array => $this->campaignProgress($setup, $id), [], self::class . '>progress');
+
+        return $progress[$what] ?? '';
+    }
+
     /** the action of this request tells what it did - plain text */
     public static function report(string $text): void
     {
@@ -196,6 +224,42 @@ class Gate
         }
     }
 
+    /**
+     * @return array<string, string> progress() of each question it answers; [] = not a campaign of the page
+     */
+    private function campaignProgress(Setup $setup, string $id): array
+    {
+        // the id comes from the page: only an item of the page's campaign slice and a run of it
+        $stored = $this->stored($id);
+        if (is_null($stored) || ($stored['slice'] !== $setup->campaignSlice)) {
+            return [];
+        }
+        $run = $this->run($id);
+        if (is_null($run)) {
+            // never queued, or its record deleted: the item tells the state; '' tells no count from 0
+            return ['state' => in_array($stored['state'], Schema::CAMPAIGN_STATES, true) ? $stored['state'] : ''];
+        }
+        // another binding may share the campaign slice and send into a message slice of its own
+        if (((string) $run->getProperty('camp_slice') !== $setup->campaignSlice) || ((string) $run->getProperty('msg_slice') !== $setup->messageSlice)) {
+            return [];
+        }
+        $state = match ($run->state()) {
+            SendRun::SENDING, SendRun::ERROR, SendRun::DONE => $run->state(),
+            // not "stopped": the campaign item says so of a sending a person stopped
+            SendRun::ENDED => 'abandoned',
+            default        => '',
+        };
+        try {
+            $counts = $run->progressFigures();
+        } catch (\JsonException|BatchFailed) {
+            // edited outside AA: no figure can be trusted, the state still can
+            return ['state' => $state];
+        }
+        $counts['until'] = ($counts['until'] > 0) ? $counts['until'] : '';
+
+        return ['state' => $state] + array_map('strval', $counts);
+    }
+
     // ------------------------------------------------------------ what tests replace
 
     /** the site whose own page is being rendered; null in view.php, slice.php, a widget, cron */
@@ -226,15 +290,21 @@ class Gate
     }
 
     /**
-     * The item through the item cache of the request: its slice, whether it is in the active bin, and
-     * the recipient filter it stores
-     * @return ?array{slice: string, active: bool, filter: string} null = no such item
+     * The item through the item cache of the request: its slice, whether it is in the active bin, the
+     * recipient filter and the state it stores
+     * @return ?array{slice: string, active: bool, filter: string, state: string} null = no such item
      */
     protected function stored(string $id): ?array
     {
         $item = AA_Items::getItem(new zids($id, 'l'));
 
-        return $item ? ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'filter' => (string) $item->getval(Schema::CAMPAIGN_FILTER)] : null;
+        return $item ? ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'filter' => (string) $item->getval(Schema::CAMPAIGN_FILTER), 'state' => (string) $item->getval(Schema::CAMPAIGN_STATE)] : null;
+    }
+
+    /** the newest run of the campaign, read-only; null = never queued */
+    protected function run(string $campaign): ?SendRun
+    {
+        return SendRun::ofSubject($campaign, 1)[0] ?? null;
     }
 
     protected function resolver(): Recipients
