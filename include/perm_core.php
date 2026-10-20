@@ -465,6 +465,9 @@ class AA_Perm {
     /** @var AA_Permsystem[] */
     private array $perm_systems = [];
 
+    /** @var AA_Permsystem[] all the configured systems - restrictPermsTo() does not narrow them */
+    private array $configured_systems = [];
+
     /** @var $perm_mode - '' | 'cron' - currently used only for toexecute task for ANONYMOUS_EDIT_CRON permission  */
     private string $perm_mode = '';
 
@@ -527,6 +530,7 @@ class AA_Perm {
             $system_name = 'AA_Permsystem_' . ucfirst($system_name);
             $this->perm_systems[$system_name] = new $system_name;
         }
+        $this->configured_systems = $this->perm_systems;
     }
 
     /**
@@ -877,13 +881,22 @@ class AA_Perm {
     public function delPerm($id, $objectID, string $objectType): bool         { return $this->storage()->delPerm($id, $objectID, $objectType); }
     public function changePerm($id, $objectID, string $objectType, $perm): bool { return $this->storage()->changePerm($id, $objectID, $objectType, $perm); }
 
+    /** Some configured permission system issues ids of this form. Checked against all of them, not only
+     *  those restrictPermsTo() leaves: a readers-only site opens the session of an admin, too, and must
+     *  not log them out. */
+    public function recognizesId(string $uid): bool
+    {
+        return $this->_whichUsersystem($uid, $this->configured_systems) !== null;
+    }
+
     /** $this->_whichUsersystem($uid) function
      *  returns the permission system for the user id
      * @param $uid
+     * @param AA_Permsystem[]|null $systems where to look; the systems in use when null
      */
-    private function _whichUsersystem($uid): ?AA_Permsystem
+    private function _whichUsersystem($uid, ?array $systems = null): ?AA_Permsystem
     {
-        foreach ($this->perm_systems as $perm_sys) {
+        foreach ($systems ?? $this->perm_systems as $perm_sys) {
             if ($perm_sys->userIdFormatMatches($uid)) {
                 return $perm_sys;
             }

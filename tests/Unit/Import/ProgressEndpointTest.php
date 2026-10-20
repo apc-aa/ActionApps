@@ -53,7 +53,7 @@ final class ProgressEndpointTest extends TestCase
         $GLOBALS['auth'] = new class {
             public function getUid(): string
             {
-                return 'uid-1';
+                return '1';
             }
 
             public function getUname(): string
@@ -500,7 +500,8 @@ final class ProgressEndpointTest extends TestCase
         session_id(self::SID);
         session_start();
         $auth = new \AA_Auth();
-        (new \ReflectionProperty(\Auth::class, 'auth'))->setValue($auth, ['uid' => 'uid-1', 'uname' => 'tester', 'perm' => '', 'exp' => $exp, 'refresh' => 0]);
+        // an id of a user system - a session with an id no system knows is logged out
+        (new \ReflectionProperty(\Auth::class, 'auth'))->setValue($auth, ['uid' => '1', 'uname' => 'tester', 'perm' => '', 'exp' => $exp, 'refresh' => 0]);
         $_SESSION = ['auth' => $auth];
         session_write_close();
         unset($GLOBALS['auth'], $GLOBALS['sess']);

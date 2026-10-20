@@ -64,6 +64,18 @@ class AA_Auth extends Auth
         return strlen($this->auth["uid"]) && $this->auth["uid"] !== 'nobody';
     }
 
+    /** A session keeps the id it logged in with - after a change of PERM_LIB (ldap -> sql) no system may
+     *  know it, and the user would stay logged in without any right. Such a session logs in again. */
+    public function is_authenticated()
+    {
+        $uid = parent::is_authenticated();
+        if ($uid && !in_array($uid, ['nobody', 'form'], true) && !AA::$perm->recognizesId((string) $uid)) {
+            $this->unauth();
+            return false;
+        }
+        return $uid;
+    }
+
     public function getUid(): string
     {
         return (string) $this->auth["uid"];
