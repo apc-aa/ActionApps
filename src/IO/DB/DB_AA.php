@@ -335,7 +335,31 @@ final class DB_AA
         return $ret;
     }
 
-    /** used as: DB_AA::delete('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
+    /** Rewrites $table.$column by $map (old => new) in one UPDATE ... CASE - one pass over a big
+     *  table instead of one per value.
+     *  All rows change at once, so chains (a => b, b => c) are safe - which is also why the map
+     *  is never split; it must fit into max_allowed_packet (fine up to thousands of entries).
+     *  Keys and values are compared as strings. Keys equal under the column's collation
+     *  ('Ab' and 'ab' in a *_ci column) must map to the same value, else CASE takes the first.
+     *  used as: DB_AA::remap('item', 'posted_by', ['uid=joe,ou=People' => '17']);
+     * @param array<string|int, string|int> $map
+     * @return false|int number of changed rows, false on a DB error, 0 for an empty map (no query)
+     */
+    public static function remap(string $table, string $column, array $map): false|int
+    {
+        if (!$map) {
+            return 0;
+        }
+        $col   = self::quoteIdentifier($column);
+        $whens = '';
+        foreach ($map as $old => $new) {
+            $whens .= ' WHEN ' . qquote((string) $old) . ' THEN ' . qquote((string) $new);
+        }
+        $olds = implode(', ', array_map(static fn($old) => qquote((string) $old), array_keys($map)));
+        return self::sql('UPDATE ' . self::quoteIdentifier($table) . " SET $col = CASE $col$whens END WHERE $col IN ($olds)");
+    }
+
+    /** used as: DB_AA::delete('perms',[['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      * @param string $table
      * @param array $where
      * @return false|int
