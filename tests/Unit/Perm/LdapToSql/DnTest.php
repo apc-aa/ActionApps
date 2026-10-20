@@ -26,9 +26,15 @@ final class DnTest extends TestCase
             'hex utf-8 bytes'               => ['uid=\C5\A0imon,ou=People,ou=AA', 'uid=šimon,ou=people,ou=aa'],
             'escaped backslash'             => ['uid=a\\\\b,ou=AA', 'uid=a\5cb,ou=aa'],
             'escaped equals is plain value' => ['uid=a\=b,ou=AA', 'uid=a=b,ou=aa'],
+            'uppercase hex comma'           => ['uid=a\2Cb,ou=AA', 'uid=a\2cb,ou=aa'],
+            'escaped leading space'         => ['uid=\20x,ou=AA', 'uid=x,ou=aa'],
+            'inner spaces collapse'         => ['cn=AA  \20 Admins,ou=AA', 'cn=aa admins,ou=aa'],
+            'invalid utf-8, ascii only'     => ['uid=AB\C5,ou=AA', "uid=ab\xC5,ou=aa"],
             // Malformed input must still map to one stable key, never throw.
             'rdn without equals'            => ['uid=x, Garbage ,ou=AA', 'uid=x,garbage,ou=aa'],
             'trailing backslash is literal' => ['uid=a\\', 'uid=a\5c'],
+            'empty rdns dropped'            => ['uid=x,,ou=AA,', 'uid=x,ou=aa'],
+            'escaped-space rdn dropped'     => ['uid=x,\20,ou=AA', 'uid=x,ou=aa'],
             'empty'                         => ['', ''],
         ];
     }
@@ -45,6 +51,13 @@ final class DnTest extends TestCase
         $this->assertSame($expected, Dn::normalize($expected));
     }
 
+    public function test_normalize_keepsDistinctInvalidUtf8Apart(): void
+    {
+        // cp1250 'Š' and 'š' would both become '?' under mb_strtolower.
+        $this->assertNotSame(Dn::normalize("uid=\x8Aimon,ou=AA"), Dn::normalize("uid=\x9Aimon,ou=AA"));
+        $this->assertNotSame(Dn::normalize('uid=\C5,ou=AA'), Dn::normalize('uid=\C4,ou=AA'));
+    }
+
     /** @return array<string, array{string, bool}> */
     public static function values(): array
     {
@@ -56,6 +69,9 @@ final class DnTest extends TestCase
             'importer id'          => ['9999999999', false],
             'hex32 id'             => ['0123456789abcdef0123456789abcdef', false],
             'plain name'           => ['nobody', false],
+            'space before comma'   => ['uid=fesprag1 ,ou=People,ou=AA', true],
+            'space after equals'   => ['uid= heidi01,ou=People,ou=AA', true],
+            'empty'                => ['', false],
             'no comma'             => ['uid=x', false],
             'only escaped comma'   => ['uid=a\,b', false],
             'other attribute'      => ['ou=People,ou=AA', false],

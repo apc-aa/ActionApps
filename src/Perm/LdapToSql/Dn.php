@@ -11,8 +11,17 @@ namespace AA\Perm\LdapToSql;
  * RFC 4514 escapes like `\20`); LDAP's caseIgnore/DN matching treats them as one
  * entry, so the conversion has to as well.
  *
- * Malformed input never throws: an RDN without '=' is kept as a bare value and a
- * trailing lone backslash is taken literally, so every string still has a stable key.
+ * Spaces follow LDAP insignificant-space handling: leading and trailing ones are
+ * dropped even when escaped (`\20x` = `x`), inner runs collapse to one.
+ * A value that is not valid UTF-8 (legacy cp1250 bytes) is lowercased in ASCII only,
+ * because mb_strtolower would turn distinct bytes into '?' and merge distinct people.
+ *
+ * Malformed input never throws and still gets a stable key: an RDN without '=' is kept
+ * as a bare value, a trailing lone backslash is literal, empty RDNs (`uid=x,ou=AA,`)
+ * are dropped.
+ *
+ * Not handled, as AA data does not use them: multi-valued RDNs ('+'), attribute
+ * aliases and OIDs (`2.5.4.3=` vs `cn=`), `#`-prefixed BER hex values.
  */
 final class Dn
 {
@@ -20,10 +29,13 @@ final class Dn
     {
         $rdns = [];
         foreach (self::splitUnescaped($dn, ',') as $rdn) {
-            $parts   = self::splitUnescaped($rdn, '=', 2);
-            $rdns[]  = count($parts) === 2
+            $parts = self::splitUnescaped($rdn, '=', 2);
+            $rdn   = count($parts) === 2
                 ? strtolower(trim($parts[0])) . '=' . self::normalizeValue($parts[1])
                 : self::normalizeValue($rdn);
+            if ($rdn !== '') {
+                $rdns[] = $rdn;
+            }
         }
         return implode(',', $rdns);
     }
@@ -41,8 +53,10 @@ final class Dn
             static fn(array $m): string => strlen($m[1]) === 2 ? chr((int) hexdec($m[1])) : $m[1],
             $value,
         ) ?? $value;
+        $value = preg_replace('/ {2,}/', ' ', trim($value)) ?? $value;
+        $value = mb_check_encoding($value, 'UTF-8') ? mb_strtolower($value, 'UTF-8') : strtolower($value);
         // Only ',' and '\' would break re-parsing; '=' is safe because RDNs split at the first one.
-        return strtr(mb_strtolower(trim($value), 'UTF-8'), ['\\' => '\5c', ',' => '\2c']);
+        return strtr($value, ['\\' => '\5c', ',' => '\2c']);
     }
 
     /**
