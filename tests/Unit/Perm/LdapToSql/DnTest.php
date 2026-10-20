@@ -83,4 +83,13 @@ final class DnTest extends TestCase
     {
         $this->assertSame($expected, Dn::isDn($value));
     }
+
+    public function test_firstValue(): void
+    {
+        $this->assertSame('Kalen01', Dn::firstValue('uid=Kalen01,ou=People,ou=AA', 'uid'));
+        $this->assertSame('Kalen01', Dn::firstValue(' UID = Kalen01\\20 ,ou=AA', 'uid'));
+        $this->assertSame('a,b', Dn::firstValue('uid=a\\2cb,ou=AA', 'uid'));
+        $this->assertNull(Dn::firstValue('cn=x,ou=AA', 'uid'));
+        $this->assertNull(Dn::firstValue('ou=AA,uid=x', 'uid'));
+    }
 }

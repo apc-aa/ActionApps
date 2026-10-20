@@ -46,14 +46,30 @@ final class Dn
             && count(self::splitUnescaped($value, ',')) > 1;
     }
 
-    private static function normalizeValue(string $value): string
+    /**
+     * The value of the first RDN when its attribute is $attribute, unescaped and trimmed
+     * but otherwise as written - e.g. the uid an LDAP login binds as.
+     */
+    public static function firstValue(string $dn, string $attribute): ?string
     {
-        $value = preg_replace_callback(
+        $parts = self::splitUnescaped(self::splitUnescaped($dn, ',', 2)[0], '=', 2);
+        return count($parts) === 2 && strcasecmp(trim($parts[0]), $attribute) === 0
+            ? trim(self::unescape($parts[1]))
+            : null;
+    }
+
+    private static function unescape(string $value): string
+    {
+        return preg_replace_callback(
             '/\\\\([0-9a-fA-F]{2}|.)/s',
             static fn(array $m): string => strlen($m[1]) === 2 ? chr((int) hexdec($m[1])) : $m[1],
             $value,
         ) ?? $value;
-        $value = preg_replace('/ {2,}/', ' ', trim($value)) ?? $value;
+    }
+
+    private static function normalizeValue(string $value): string
+    {
+        $value = preg_replace('/ {2,}/', ' ', trim(self::unescape($value))) ?? $value;
         $value = mb_check_encoding($value, 'UTF-8') ? mb_strtolower($value, 'UTF-8') : strtolower($value);
         // Only ',' and '\' would break re-parsing; '=' is safe because RDNs split at the first one.
         return strtr($value, ['\\' => '\5c', ',' => '\2c']);

@@ -14,19 +14,11 @@ namespace AA\Perm\LdapToSql;
  */
 final class Plan
 {
-    /** Schemes AA_Perm::verifyLdapHash() can check; comparePwds() sends every '{'-prefixed hash there. */
-    private const SCHEMES = ['SSHA', 'SHA', 'SMD5', 'MD5', 'CRYPT'];
+    /** varbinary(N) columns of `users` (include/metabase_schema.php): N bytes */
+    private const BYTE_WIDTHS = ['uid' => 40, 'password' => 255];
 
-    /** Byte widths of the `users` columns (include/metabase_schema.php). */
-    private const WIDTHS = [
-        'uid'         => 40,
-        'mail'        => 40,
-        'name'        => 80,
-        'givenname'   => 40,
-        'sn'          => 40,
-        'description' => 255,
-        'password'    => 255,
-    ];
+    /** char(N) columns of `users`: N characters, which is N bytes unless the DB is UTF-8 */
+    private const CHAR_WIDTHS = ['mail' => 40, 'name' => 80, 'givenname' => 40, 'sn' => 40, 'description' => 255];
 
     /** Finding texts list at most this many examples; the count is always complete. */
     private const EXAMPLES = 10;
@@ -57,19 +49,34 @@ final class Plan
      * @param array<string, array{cn: string, description: string, members: list<string>}> $groups keyed by the entry DN
      * @param list<array{type: string, id: string, perms: array<string, string>}> $acls
      * @param list<string> $referenced DN-shaped values found in the reference columns
+     * @param string $db_character_set DB_CHARACTER_SET of the install; LDAP values are stored byte for byte,
+     *                                 so only a utf8* DB counts char(N) in characters
      */
-    public static function build(array $people, array $groups, array $acls, array $referenced, int $first_id): self
+    public static function build(array $people, array $groups, array $acls, array $referenced, int $first_id, string $db_character_set = ''): self
     {
         $findings = [];
+        $utf8     = str_starts_with(strtolower($db_character_set), 'utf8');
 
         $personKeys = [];
+        $uids       = [];
+        $uidDiffers = [];
         foreach ($people as $dn => $person) {
-            if (($person['uid'] ?? '') === '') {
+            $dn = (string) $dn;
+            // LDAP login binds as the DN's uid RDN, so that value is the login, not the attribute
+            $rdnUid = Dn::firstValue($dn, 'uid');
+            $uid    = $rdnUid ?? $person['uid'] ?? '';
+            if ($uid === '') {
                 $findings[] = self::block("Person $dn has no uid, so it cannot be imported.");
                 continue;
             }
-            $personKeys[(string) $dn] = Dn::normalize((string) $dn);
+            if ($rdnUid !== null && $person['uid'] !== null && strcasecmp($person['uid'], $rdnUid) !== 0) {
+                $uidDiffers[] = "$dn (uid attribute {$person['uid']})";
+            }
+            $uids[$dn]       = $uid;
+            $personKeys[$dn] = Dn::normalize($dn);
         }
+        $findings[] = self::info('People whose uid attribute differs from the uid in their DN log in with the DN one', $uidDiffers);
+
         $groupKeys = [];
         foreach (array_keys($groups) as $dn) {
             $groupKeys[(string) $dn] = Dn::normalize((string) $dn);
@@ -92,6 +99,7 @@ final class Plan
 
         $users     = [];
         $multiMail = [];
+        $logins    = ['uid' => [], 'mail' => []];
         foreach ($personKeys as $dn => $key) {
             if ($canonical[$key] !== $dn) {
                 continue;
@@ -102,17 +110,32 @@ final class Plan
             }
             $row = [
                 'id'        => $ids[$key],
-                'uid'       => (string) $person['uid'],
+                'uid'       => $uids[$dn],
                 'mail'      => $person['mail'][0] ?? '',
                 'name'      => $person['cn'] ?? trim(($person['givenname'] ?? '') . ' ' . ($person['sn'] ?? '')),
                 'givenname' => $person['givenname'] ?? '',
                 'sn'        => $person['sn'] ?? '',
                 'password'  => self::password($person['password'], $dn, $findings),
             ];
-            self::checkWidths($row, $dn, $findings);
+            self::checkWidths($row, $dn, $utf8, $findings);
+            foreach ($logins as $column => $_) {
+                $login = mb_strtolower(trim($row[$column]));
+                if ($login !== '') {
+                    $logins[$column][$login][] = $dn;
+                }
+            }
             $users[] = $row;
         }
         $findings[] = self::info('People with more than one mail keep only the first', $multiMail);
+        $shared = [];
+        foreach ($logins as $column => $byLogin) {
+            foreach ($byLogin as $login => $dns) {
+                if (count($dns) > 1) {
+                    $shared[] = "$column $login: " . implode(', ', $dns);
+                }
+            }
+        }
+        $findings[] = self::info('Logins shared by several people; login picks the account by password', $shared);
 
         $groupRows  = [];
         $membership = [];
@@ -123,12 +146,12 @@ final class Plan
                 continue;
             }
             $row = ['id' => $ids[$key], 'name' => $groups[$dn]['cn'], 'description' => $groups[$dn]['description']];
-            self::checkWidths($row, $dn, $findings);
+            self::checkWidths($row, $dn, $utf8, $findings);
             $groupRows[] = $row;
 
             $seen = [];
             foreach ($groups[$dn]['members'] as $member) {
-                $memberid = self::principal($member, $ids);
+                $memberid = self::principal($member, $ids)[0] ?? null;
                 if ($memberid === null) {
                     $unknown[] = "$member in $dn";
                 } elseif (isset($seen[$memberid])) {
@@ -139,26 +162,31 @@ final class Plan
                 }
             }
         }
-        $findings[] = self::info('Group members not in the directory are dropped', $unknown);
+        $findings[] = self::info('Group members that are neither in the directory nor a reader id are dropped', $unknown);
         $findings[] = self::info('Group members listed twice under different DN spellings are imported once', $duplicates);
 
         $perms      = [];
         $unknown    = [];
         $duplicates = [];
         foreach ($acls as $acl) {
-            /** @var array<string, array{0: string, 1: string}> $chosen userid => [principal, perm] */
+            $where = "{$acl['type']} {$acl['id']}";
+            /** @var array<string, array{0: string, 1: string, 2: bool}> $chosen userid => [principal, perm, spelled as in the directory] */
             $chosen = [];
             foreach ($acl['perms'] as $principal => $perm) {
                 $principal = (string) $principal;
-                $userid    = self::principal($principal, $ids);
-                $where     = "{$acl['type']} {$acl['id']}";
-                if ($userid === null) {
+                $found     = self::principal($principal, $ids);
+                if ($found === null) {
                     $unknown[] = "$principal on $where";
-                } elseif (!isset($chosen[$userid])) {
-                    $chosen[$userid] = [$principal, $perm];
-                } elseif ($principal === $canonical[Dn::normalize($principal)]) {
+                    continue;
+                }
+                [$userid, $key] = $found;
+                // LDAP's getJoinedPerms() used the first ACI naming the DN case-insensitively
+                $asDirectory = $key !== null && strcasecmp($principal, $canonical[$key] ?? '') === 0;
+                if (!isset($chosen[$userid])) {
+                    $chosen[$userid] = [$principal, $perm, $asDirectory];
+                } elseif ($asDirectory && !$chosen[$userid][2]) {
                     $duplicates[]    = "{$chosen[$userid][0]} on $where";
-                    $chosen[$userid] = [$principal, $perm];
+                    $chosen[$userid] = [$principal, $perm, true];
                 } else {
                     $duplicates[] = "$principal on $where";
                 }
@@ -167,7 +195,7 @@ final class Plan
                 $perms[] = ['object_type' => $acl['type'], 'objectid' => $acl['id'], 'userid' => (string) $userid, 'perm' => $perm];
             }
         }
-        $findings[] = self::info('Rights of people or groups not in the directory are dropped', $unknown);
+        $findings[] = self::info('Rights of principals that are neither in the directory nor a reader id are dropped', $unknown);
         $findings[] = self::info(
             'Rights granted to one person or group under several DN spellings keep the directory spelling (else the first); dropped',
             $duplicates,
@@ -202,17 +230,19 @@ final class Plan
     }
 
     /**
-     * A non-DN principal (a Reader id, a Reader set's group id) is already what SQL stores.
+     * SQL id and normalized DN of a member or ACL principal; a reader id is already what
+     * SQL stores. Anything else (placeholders like cn=aauser, stray numbers) has no SQL owner.
      *
      * @param array<string, int> $ids
+     * @return array{0: string, 1: ?string}|null
      */
-    private static function principal(string $value, array $ids): ?string
+    private static function principal(string $value, array $ids): ?array
     {
-        if (!Dn::isDn($value)) {
-            return $value;
+        if (Dn::isDn($value)) {
+            $key = Dn::normalize($value);
+            return isset($ids[$key]) ? [(string) $ids[$key], $key] : null;
         }
-        $id = $ids[Dn::normalize($value)] ?? null;
-        return $id === null ? null : (string) $id;
+        return \is_long_id($value) ? [$value, null] : null;
     }
 
     /** @param list<array{blocking: bool, text: string}|null> $findings */
@@ -222,14 +252,15 @@ final class Plan
             $findings[] = self::block("Person $dn has no password.");
             return '';
         }
+        // AA_Perm::comparePwds() treats every '{'-prefixed value as an LDAP hash
         if (!str_starts_with($password, '{')) {
-            return \AA_Permsystem_Sql::generatePasswordHash($password);
+            return \AA_Perm::cryptPwd($password);
         }
-        if (preg_match('/^\{([A-Za-z0-9]+)\}/', $password, $m) && in_array(strtoupper($m[1]), self::SCHEMES, true)) {
+        if (\AA_Perm::isVerifiableLdapHash($password)) {
             return $password;
         }
         $scheme     = preg_match('/^\{[^}]*\}/', $password, $m) ? $m[0] : '{';
-        $findings[] = self::block("Person $dn has a password in the $scheme scheme, which AA cannot verify.");
+        $findings[] = self::block("Person $dn has a $scheme password hash that AA cannot verify.");
         return '';
     }
 
@@ -237,12 +268,20 @@ final class Plan
      * @param array<string, int|string> $row
      * @param list<array{blocking: bool, text: string}|null> $findings
      */
-    private static function checkWidths(array $row, string $dn, array &$findings): void
+    private static function checkWidths(array $row, string $dn, bool $utf8, array &$findings): void
     {
-        foreach (array_intersect_key(self::WIDTHS, $row) as $column => $width) {
-            $length = strlen((string) $row[$column]);
+        foreach ($row as $column => $value) {
+            if (isset(self::BYTE_WIDTHS[$column])) {
+                [$width, $length, $unit] = [self::BYTE_WIDTHS[$column], strlen((string) $value), 'bytes'];
+            } elseif (isset(self::CHAR_WIDTHS[$column])) {
+                [$width, $length, $unit] = $utf8
+                    ? [self::CHAR_WIDTHS[$column], mb_strlen((string) $value, 'UTF-8'), 'characters']
+                    : [self::CHAR_WIDTHS[$column], strlen((string) $value), 'bytes'];
+            } else {
+                continue;
+            }
             if ($length > $width) {
-                $findings[] = self::block("$dn: $column is $length bytes, the users column holds $width.");
+                $findings[] = self::block("$dn: $column is $length $unit, the users column holds $width.");
             }
         }
     }

@@ -919,6 +919,41 @@ class AA_Perm {
         return null;
     }
 
+    /** LDAP hash schemes AA verifies => [digest algorithm, salted]; CRYPT is a crypt(3) string */
+    public const LDAP_HASH_SCHEMES = [
+        'SSHA'  => ['sha1', true],
+        'SHA'   => ['sha1', false],
+        'SMD5'  => ['md5', true],
+        'MD5'   => ['md5', false],
+        'CRYPT' => null,
+    ];
+
+    /** @return array{0: string, 1: string}|null [upper-case scheme, value] of a {SCHEME}value hash */
+    private static function splitLdapHash(string $hash): ?array
+    {
+        return preg_match('/^\{([A-Za-z0-9]+)\}(.*)$/s', $hash, $m) ? [strtoupper($m[1]), $m[2]] : null;
+    }
+
+    /** true if some password can match the LDAP-style hash - a known scheme with a well-formed value */
+    public static function isVerifiableLdapHash(string $hash): bool
+    {
+        [$scheme, $value] = self::splitLdapHash($hash) ?? ['', ''];
+        if (!array_key_exists($scheme, self::LDAP_HASH_SCHEMES)) {
+            return false;
+        }
+        $digest = self::LDAP_HASH_SCHEMES[$scheme];
+        if ($digest === null) {
+            // crypt() answers '*0'/'*1' for a salt this PHP cannot use (locked '!', unsupported scheme)
+            return !str_starts_with((string) crypt('probe', $value), '*');
+        }
+        $raw = base64_decode($value, true);
+        if ($raw === false) {
+            return false;
+        }
+        $length = strlen(hash($digest[0], '', true));
+        return $digest[1] ? strlen($raw) >= $length : strlen($raw) === $length;
+    }
+
     /** Verify a password against a LDAP-style hash ({SSHA}, {SHA},
      *  {SMD5}, {MD5}, {CRYPT}). Used by comparePwds() to accept hashes
      *  migrated from the LDAP perm backend. Returns true iff the
@@ -926,28 +961,23 @@ class AA_Perm {
      */
     private static function verifyLdapHash(string $password, string $hash): bool
     {
-        if (!preg_match('/^\{([A-Za-z0-9]+)\}(.*)$/s', $hash, $m)) {
+        [$scheme, $value] = self::splitLdapHash($hash) ?? ['', ''];
+        // a crypt() failure ('*0'/'*1') never equals the stored value, so CRYPT needs no probe here
+        if ($scheme !== 'CRYPT' && !self::isVerifiableLdapHash($hash)) {
             return false;
         }
-        $value = $m[2];
-        switch (strtoupper($m[1])) {
+        switch ($scheme) {
             case 'SSHA':    // base64( sha1(password . salt) . salt )
                 $raw = base64_decode($value, true);
-                if ($raw === false || strlen($raw) < 20) {
-                    return false;
-                }
                 return hash_equals(substr($raw, 0, 20), sha1($password . substr($raw, 20), true));
             case 'SHA':
                 return hash_equals($value, base64_encode(sha1($password, true)));
             case 'SMD5':    // base64( md5(password . salt) . salt )
                 $raw = base64_decode($value, true);
-                if ($raw === false || strlen($raw) < 16) {
-                    return false;
-                }
                 return hash_equals(substr($raw, 0, 16), md5($password . substr($raw, 16), true));
             case 'MD5':
                 return hash_equals($value, base64_encode(md5($password, true)));
-            case 'CRYPT':   // the value is a crypt(3) string incl. its salt; an invalid salt makes crypt() return '*0'
+            case 'CRYPT':   // the value is a crypt(3) string incl. its salt
                 return hash_equals($value, (string) crypt($password, $value));
         }
         return false;

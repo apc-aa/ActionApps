@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-// Hashing a cleartext password loads include/perm_sql.php, whose include/locsess.php
+// Hashing a cleartext password loads include/perm_core.php, whose include/locsess.php
 // needs the constants include/config.php normally provides.
 
 namespace {
@@ -37,6 +37,8 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
 
         private const READER = '0123456789abcdef0123456789abcdef';
         private const CRYPT  = '{CRYPT}$6$salt$hashhashhash';
+        /** 20 bytes: a well-formed SHA-1 digest without salt */
+        private const SSHA = '{SSHA}YWFhYWFhYWFhYWFhYWFhYWFhYWE=';
 
         public function test_build_idsFromFirstIdPeopleThenGroups(): void
         {
@@ -108,10 +110,115 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
 
             self::assertEqualsCanonicalizing([
                 ['object_type' => 'aa', 'objectid' => AA_ID, 'userid' => '339', 'perm' => '4'],
-                ['object_type' => 'slice', 'objectid' => 'S1', 'userid' => '338', 'perm' => '3'],
+                // LDAP's getJoinedPerms() took the first ACI matching the DN case-insensitively
+                ['object_type' => 'slice', 'objectid' => 'S1', 'userid' => '338', 'perm' => '2'],
                 ['object_type' => 'slice', 'objectid' => 'S1', 'userid' => self::READER, 'perm' => '1'],
             ], $plan->perms);
-            self::assertTrue($this->hasFinding($plan, false, 'uid=Kalen01,ou=People,ou=AA'));
+            self::assertTrue($this->hasFinding($plan, false, 'uid=kalen01,ou=People,ou=AA on slice S1'));
+        }
+
+        public function test_build_spellingVariantsPreferTheDirectoryDnIgnoringCase(): void
+        {
+            $acls = [['type' => 'slice', 'id' => 'S2', 'perms' => [
+                'uid=kalen01 ,ou=People,ou=AA' => '1',
+                'UID=KALEN01,OU=PEOPLE,OU=AA'  => '2',
+                'uid=kalen01,ou=People,ou=AA'  => '3',
+            ]]];
+
+            $plan = Plan::build($this->people(), [], $acls, [], 336);
+
+            self::assertSame([['object_type' => 'slice', 'objectid' => 'S2', 'userid' => '338', 'perm' => '2']], $plan->perms);
+        }
+
+        public function test_build_dropsNonDnPrincipalsOtherThanReaderIds(): void
+        {
+            $junk   = ['', 'cn=dummy', 'uid=nobody', '1', 'cn=aauser'];
+            $groups = ['cn=G,ou=AA' => ['cn' => 'G', 'description' => '', 'members' => [...$junk, self::READER]]];
+            $acls   = [['type' => 'slice', 'id' => 'S3', 'perms' => array_fill_keys([...$junk, self::READER], '1')]];
+
+            $plan = Plan::build([], $groups, $acls, [], 1);
+
+            self::assertSame([['groupid' => 1, 'memberid' => self::READER]], $plan->membership);
+            self::assertSame([self::READER], array_column($plan->perms, 'userid'));
+            self::assertTrue($this->hasFinding($plan, false, 'cn=dummy in cn=G,ou=AA'));
+            self::assertTrue($this->hasFinding($plan, false, '1 on slice S3'));
+            self::assertFalse($plan->blocking());
+        }
+
+        public function test_build_unverifiableHashesBlock(): void
+        {
+            $people = [
+                'uid=y,ou=AA'   => $this->person('y', '{CRYPT}!$6$salt$hash'),
+                'uid=sha,ou=AA' => $this->person('sha', '{SHA}' . base64_encode(str_repeat('a', 19))),
+                'uid=md5,ou=AA' => $this->person('md5', '{MD5}' . base64_encode(str_repeat('a', 20))),
+                'uid=sm,ou=AA'  => $this->person('sm', '{SMD5}' . base64_encode(str_repeat('a', 15))),
+                'uid=b64,ou=AA' => $this->person('b64', '{SSHA}***'),
+                'uid=ok,ou=AA'  => $this->person('ok', '{SMD5}' . base64_encode(str_repeat('a', 16))),
+            ];
+
+            $plan = Plan::build($people, [], [], [], 1);
+
+            foreach (['y', 'sha', 'md5', 'sm', 'b64'] as $uid) {
+                self::assertTrue($this->hasFinding($plan, true, "uid=$uid,ou=AA"), $uid);
+            }
+            self::assertFalse($this->hasFinding($plan, true, 'uid=ok,ou=AA'));
+        }
+
+        public function test_build_uidFromTheDnRdn(): void
+        {
+            $people = [
+                'uid=Petr\\20,ou=People,ou=AA' => $this->person('petr', self::SSHA),
+                'uid=Pavel,ou=People,ou=AA'    => $this->person('pavlik', self::SSHA),
+            ];
+
+            $plan  = Plan::build($people, [], [], [], 1);
+            $users = array_column($plan->users, 'uid');
+
+            self::assertEqualsCanonicalizing(['Petr', 'Pavel'], $users);
+            // login is case-insensitive, so a case-only difference changes nothing
+            self::assertFalse($this->hasFinding($plan, false, 'uid=Petr\\20,ou=People,ou=AA'));
+            self::assertTrue($this->hasFinding($plan, false, 'uid=Pavel,ou=People,ou=AA (uid attribute pavlik)'));
+            self::assertFalse($plan->blocking());
+        }
+
+        public function test_build_reportsUidAndMailCollisions(): void
+        {
+            $people = [
+                'uid=Ann,ou=People,ou=AA' => ['mail' => ['A@x.org']] + $this->person('Ann', self::SSHA),
+                'uid=ann,ou=Old,ou=AA'    => ['mail' => [' a@x.org']] + $this->person('ann', self::SSHA),
+                'uid=bob,ou=People,ou=AA' => $this->person('bob', self::SSHA),
+            ];
+
+            $plan = Plan::build($people, [], [], [], 1);
+
+            self::assertTrue($this->hasFinding($plan, false, 'uid=ann,ou=Old,ou=AA'));
+            self::assertTrue($this->hasFinding($plan, false, 'a@x.org'));
+            self::assertFalse($this->hasFinding($plan, false, 'uid=bob'));
+            self::assertFalse($plan->blocking());
+        }
+
+        public function test_build_charColumnsCountBytesUnlessTheDbIsUtf8(): void
+        {
+            $people = ['cn=a,ou=AA' => ['cn' => str_repeat('ž', 41)] + $this->person('a', self::SSHA)];
+
+            foreach (['', 'cp1250', 'latin1'] as $charset) {
+                $plan = Plan::build($people, [], [], [], 1, $charset);
+                self::assertTrue($this->hasFinding($plan, true, 'cn=a,ou=AA: name is 82 bytes'), $charset);
+            }
+            self::assertFalse(Plan::build($people, [], [], [], 1, 'utf8')->blocking());
+        }
+
+        public function test_build_charColumnsCountCharactersVarbinaryBytes(): void
+        {
+            $fits = ['cn' => str_repeat('ž', 80), 'sn' => str_repeat('ž', 40)] + $this->person('a', self::SSHA);
+            $long = ['cn' => str_repeat('ž', 81)] + $this->person('b', self::SSHA);
+            $uid  = $this->person(str_repeat('ž', 21), self::SSHA);
+
+            $plan = Plan::build(['cn=a,ou=AA' => $fits, 'cn=b,ou=AA' => $long, 'cn=u,ou=AA' => $uid], [], [], [], 1, 'utf8mb4');
+
+            self::assertFalse($this->hasFinding($plan, true, 'cn=a,ou=AA'));
+            self::assertTrue($this->hasFinding($plan, true, 'cn=b,ou=AA: name'));
+            self::assertTrue($this->hasFinding($plan, true, 'cn=u,ou=AA: uid'));
         }
 
         public function test_build_mapsAttributes(): void
@@ -129,32 +236,32 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
         public function test_build_overlongUidBlocks(): void
         {
             $dn     = 'uid=' . str_repeat('a', 41) . ',ou=People,ou=AA';
-            $people = [$dn => $this->person(str_repeat('a', 41), '{SSHA}abc')];
+            $people = [$dn => $this->person(str_repeat('a', 41), self::SSHA)];
 
             $plan = Plan::build($people, [], [], [], 1);
 
             self::assertTrue($plan->blocking());
             self::assertTrue($this->hasFinding($plan, true, $dn));
 
-            $ok = Plan::build(['uid=a,ou=AA' => $this->person(str_repeat('a', 40), '{SSHA}abc')], [], [], [], 1);
+            $ok = Plan::build(['uid=' . str_repeat('a', 40) . ',ou=AA' => $this->person(str_repeat('a', 40), self::SSHA)], [], [], [], 1);
             self::assertFalse($ok->blocking());
         }
 
         public function test_build_personWithoutUidBlocks(): void
         {
-            $people = ['uid=x,ou=People,ou=AA' => $this->person(null, '{SSHA}abc')];
+            $people = ['cn=x,ou=People,ou=AA' => $this->person(null, self::SSHA)];
 
             $plan = Plan::build($people, [], [], [], 1);
 
-            self::assertTrue($this->hasFinding($plan, true, 'uid=x,ou=People,ou=AA'));
+            self::assertTrue($this->hasFinding($plan, true, 'cn=x,ou=People,ou=AA'));
             self::assertSame([], $plan->users);
         }
 
         public function test_build_twoEntriesWithOneNormalizedDnBlock(): void
         {
             $people = [
-                'uid=Petr,ou=People,ou=AA'  => $this->person('Petr', '{SSHA}abc'),
-                'uid=petr ,ou=People,ou=AA' => $this->person('petr ', '{SSHA}def'),
+                'uid=Petr,ou=People,ou=AA'  => $this->person('Petr', self::SSHA),
+                'uid=petr ,ou=People,ou=AA' => $this->person('petr ', self::SSHA),
             ];
 
             $plan = Plan::build($people, [], [], [], 1);

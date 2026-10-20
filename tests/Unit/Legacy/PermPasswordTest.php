@@ -99,6 +99,32 @@ namespace Tests\Unit\Legacy {
             ];
         }
 
+        #[DataProvider('hashes')]
+        public function test_isVerifiableLdapHash_acceptsEveryLdapHashThatLogsIn(string $hash, bool $ldap): void
+        {
+            $this->assertSame($ldap, AA_Perm::isVerifiableLdapHash($hash));
+        }
+
+        public static function unverifiable(): array
+        {
+            return [
+                'locked crypt'      => ['{CRYPT}!$6$salt$hash'],
+                'unknown scheme'    => ['{PBKDF2}abc'],
+                'broken base64'     => ['{SSHA}***'],
+                'SSHA too short'    => ['{SSHA}' . base64_encode(str_repeat('a', 19))],
+                'SMD5 too short'    => ['{SMD5}' . base64_encode(str_repeat('a', 15))],
+                'SHA wrong length'  => ['{SHA}' . base64_encode(str_repeat('a', 21))],
+                'MD5 wrong length'  => ['{MD5}' . base64_encode(str_repeat('a', 20))],
+                'no scheme'         => ['plain'],
+            ];
+        }
+
+        #[DataProvider('unverifiable')]
+        public function test_isVerifiableLdapHash_rejectsHashesNoPasswordCanMatch(string $hash): void
+        {
+            $this->assertFalse(AA_Perm::isVerifiableLdapHash($hash));
+        }
+
         #[DataProvider('rejected')]
         public function test_unusable_hash_rejects_every_password(?string $hash): void
         {
