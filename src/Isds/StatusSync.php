@@ -37,6 +37,9 @@ final class StatusSync
     /** dmMessageStatus that settles the outcome of delivery: refused by the antivirus check, accepted by
      *  a login, read, undeliverable, deleted, in the vault - what may come after it changes nothing */
     public const FINAL = [3, 6, 7, 8, 9, 10];
+    /** dmMessageStatus that fails a message sent: refused by the antivirus check, or undeliverable - an
+     *  acceptance it had before does not make it delivered (WS 1.12.1) */
+    public const FAILED = [3, 8];
     /** dmMessageStatus => rank; the higher rank wins a merge, 3 (refused by the antivirus check) and 8
      *  (undeliverable) over any other */
     public const ORDER = [1 => 1, 2 => 2, 4 => 3, 5 => 4, 6 => 5, 7 => 6, 9 => 7, 10 => 8, 3 => 9, 8 => 10];

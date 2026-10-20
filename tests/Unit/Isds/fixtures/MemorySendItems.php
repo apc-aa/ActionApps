@@ -67,13 +67,14 @@ final class MemorySendItems extends SendItems
     }
 
     // as GetItemContent(): keyed by the id in small letters, the slice of every item
-    protected function content(string $id, string $field): array
+    protected function content(string $id, array $fields): array
     {
         $id   = strtolower($id);
         $item = $this->stored[$id] ?? null;
         if (is_null($item)) {
             return [];
         }
-        return [$id => ['u_slice_id......' => [['value' => $item['slice']]]] + (isset($item['fields'][$field]) ? [$field => [['value' => $item['fields'][$field]]]] : [])];
+        $values = array_map(static fn(string $v): array => [['value' => $v]], array_intersect_key($item['fields'], array_flip($fields)));
+        return [$id => ['u_slice_id......' => [['value' => $item['slice']]]] + $values];
     }
 }

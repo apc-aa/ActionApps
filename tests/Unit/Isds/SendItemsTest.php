@@ -6,12 +6,15 @@ namespace Tests\Unit\Isds;
 
 use AA\Isds\AuthException;
 use AA\Isds\IsdsException;
+use AA\Isds\Lookup;
 use AA\Isds\Outcome;
 use AA\Isds\Schema;
 use AA\Isds\SendItems;
 use AA\Isds\SendResult;
 use AA\Isds\SentMessage;
 use AA\Isds\Soap;
+use AA\Isds\StateChange;
+use AA\Isds\StatusSync;
 use AA\Isds\TransportException;
 use AA_Credentials;
 use AA_Field;
@@ -36,6 +39,13 @@ final class SendItemsTest extends TestCase
     private const MSG      = 'a0000000000000000000000000000001';
     private const SRC      = 'b0000000000000000000000000000001';
     private const AT       = 1790841600;
+    // the times ISDS tells of the message sent at AT + 20: delivered, accepted by a login, after 10 days, undeliverable
+    private const DELIVERED = self::AT + 3600;
+    private const LOGIN     = self::AT + 7200;
+    private const FICTION   = self::AT + 864000;
+    private const CLOSED    = self::AT + 950400;
+    /** the dmID ISDS took the message under, as the record keeps it */
+    private const DM = '1835603';
 
     /** the run's own campaign fields as a queued campaign gets them */
     private const QUEUED = [
@@ -260,7 +270,13 @@ final class SendItemsTest extends TestCase
             [Schema::MESSAGE_STATE_FAILED, '3', '1835603', '3', (string) (self::AT + 5), ''],
             [$fields[Schema::MESSAGE_STATE], $fields[Schema::MESSAGE_ERROR_CODE], $fields[Schema::MESSAGE_DM_ID], $fields[Schema::MESSAGE_DM_STATUS], $fields[Schema::MESSAGE_SENT_AT], $fields[Schema::MESSAGE_DELIVERED_AT] ?? ''],
         );
-        self::assertSame(['at' => self::AT + 900, 'kind' => Schema::EVENT_AV, 'dmID' => '1835603', 'code' => '3'], self::timeline($items)[1]);
+        // ISDS tells no time of the refusal: when AA found it is no time of ISDS
+        self::assertSame([
+            ['at' => self::AT + 900, 'kind' => Schema::EVENT_LOOKUP_FOUND, 'dmID' => '1835603'],
+            ['at' => 0, 'kind' => Schema::EVENT_AV, 'code' => '3'],
+        ], array_slice(self::timeline($items), 1));
+        self::assertSame(self::entry(3, 0, 0, 0), $items->markDelivery(self::MSG, self::entry(3, 0, 0, 0), '1835603'));
+        self::assertCount(2, $items->writes, 'the delivery of the record shown already');
     }
 
     // the time ISDS took the message; a delivery or a lookup found later keeps it
@@ -584,13 +600,643 @@ final class SendItemsTest extends TestCase
             /** @return array<array-key, mixed> */
             public function contentOf(string $id, string $field): array
             {
-                return $this->content($id, $field);
+                return $this->content($id, [$field]);
             }
         };
 
         $content = $items->contentOf(self::MSG, Schema::MESSAGE_EVENTS);
 
         self::assertStringContainsString('Missing Reading Password', $content[self::MSG][Schema::MESSAGE_EVENTS][0]['value']);
+    }
+
+    public function test_markDelivery_writes_status_and_times(): void
+    {
+        $items = self::sent();
+
+        self::assertSame(self::entry(4, self::DELIVERED, self::DELIVERED, 0), $items->markDelivery(self::MSG, self::entry(4, self::DELIVERED, self::DELIVERED, 0), self::DM));
+        self::assertSame(self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN), $items->markDelivery(self::MSG, self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN), self::DM));
+
+        self::assertSame([
+            Schema::MESSAGE_STATE        => 'sent',
+            Schema::MESSAGE_DM_ID        => self::DM,
+            Schema::MESSAGE_DM_STATUS    => '6',
+            Schema::MESSAGE_DELIVERED_AT => (string) self::DELIVERED,
+            Schema::MESSAGE_ACCEPTED_AT  => (string) self::LOGIN,
+            Schema::MESSAGE_SENT_AT      => (string) (self::AT + 20),
+            Schema::MESSAGE_ERROR_CODE   => '',
+            Schema::MESSAGE_ERROR_TEXT   => '',
+        ], self::fields($items, [Schema::MESSAGE_STATE, Schema::MESSAGE_DM_ID, Schema::MESSAGE_DM_STATUS, Schema::MESSAGE_DELIVERED_AT, Schema::MESSAGE_ACCEPTED_AT, Schema::MESSAGE_SENT_AT, Schema::MESSAGE_ERROR_CODE, Schema::MESSAGE_ERROR_TEXT]));
+        self::assertSame([['at' => self::DELIVERED, 'kind' => 'delivered'], ['at' => self::LOGIN, 'kind' => 'login']], array_slice(self::timeline($items), 2));
+        self::assertSame([['update', ItemContent::FLAG_JUST_STORE], ['update', ItemContent::FLAG_JUST_STORE]], array_map(static fn(array $w): array => [$w['mode'], $w['flags']], array_slice($items->writes, 2)));
+        self::assertOnlySchema($items);
+    }
+
+    // a step died between the record and the item: the record says it was sent, under which id
+    #[DataProvider('behindTheRecord')]
+    public function test_markDelivery_completes_item_behind_record(string $state, string $event): void
+    {
+        $items = self::created();
+        $items->mark(self::MSG, $state, $event, self::AT + 10);
+
+        $items->markDelivery(self::MSG, self::entry(4, self::DELIVERED, self::DELIVERED, 0), self::DM);
+
+        $fields = $items->stored[self::MSG]['fields'];
+        self::assertSame(['sent', self::DM, '', ''], [$fields[Schema::MESSAGE_STATE], $fields[Schema::MESSAGE_DM_ID], $fields[Schema::MESSAGE_ERROR_CODE], $fields[Schema::MESSAGE_SENT_AT] ?? '']);
+    }
+
+    public static function behindTheRecord(): array
+    {
+        return [
+            'queued'    => [Schema::MESSAGE_STATE_QUEUED, Schema::EVENT_QUEUED],
+            'sending'   => [Schema::MESSAGE_STATE_SENDING, Schema::EVENT_SENDING],
+            'uncertain' => [Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT],
+            'stopped'   => [Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED],
+        ];
+    }
+
+    // the record's ids are digits; anything else would put a text where a message id belongs
+    #[DataProvider('notDmIds')]
+    public function test_markDelivery_refuses_dm_id_not_digits(string $dmId): void
+    {
+        $items = self::sent();
+
+        $this->expectException(\InvalidArgumentException::class);
+        try {
+            $items->markDelivery(self::MSG, self::entry(4, self::DELIVERED, self::DELIVERED, 0), $dmId);
+        } finally {
+            self::assertCount(2, $items->writes);
+        }
+    }
+
+    public static function notDmIds(): array
+    {
+        return ['none' => [''], 'letters' => ['18356O3'], 'too long' => [str_repeat('1', 21)], 'a space' => ['1835603 ']];
+    }
+
+    // an entry of each kind once, however often a round tells it; submitted stays the one the sending wrote
+    public function test_markDelivery_event_once_per_kind(): void
+    {
+        $items = self::sent();
+
+        foreach ([
+            self::entry(1, 0, 0, 0),
+            self::entry(4, self::DELIVERED, self::DELIVERED, 0),
+            self::entry(4, self::DELIVERED, self::DELIVERED, 0),
+            self::entry(5, self::FICTION, self::DELIVERED, self::FICTION),
+            self::entry(6, self::FICTION + 60, self::DELIVERED, self::FICTION),
+        ] as $entry) {
+            $items->markDelivery(self::MSG, $entry, self::DM);
+        }
+
+        self::assertSame(['queued', 'submitted', 'delivered', 'fiction', 'login'], array_column(self::timeline($items), 'kind'));
+        self::assertSame(self::AT + 20, self::timeline($items)[1]['at']);
+        self::assertSame((string) (self::AT + 20), $items->stored[self::MSG]['fields'][Schema::MESSAGE_SENT_AT], 'the time ISDS took it');
+    }
+
+    // the time of submitted is the one AA sent it at: a time the record has of status 1 moves nothing
+    public function test_markDelivery_submitted_keeps_time_of_sending(): void
+    {
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, self::entry(1, self::AT + 50, 0, 0), self::DM);
+
+        self::assertSame([['at' => self::AT, 'kind' => 'queued'], ['at' => self::AT + 20, 'kind' => 'submitted', 'dmID' => self::DM]], self::timeline($items));
+    }
+
+    // status 1 of a message the lookup found: the timeline gets submitted, its time AA's own SENT_AT
+    public function test_markDelivery_submitted_for_1_of_found_message(): void
+    {
+        $items = self::created();
+        $items->mark(self::MSG, Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, self::AT + 10);
+        $items->markFound(self::MSG, new SentMessage(self::DM, 1, '1234-1', 'a7kbrrn', null, null, 'Pozvánka'), self::AT + 5, self::AT + 900);
+
+        $items->markDelivery(self::MSG, self::entry(1, 0, 0, 0), self::DM);
+
+        self::assertSame(['queued', 'timeout', 'lookup-found', 'submitted'], array_column(self::timeline($items), 'kind'));
+        self::assertSame(['at' => 0, 'kind' => 'submitted'], array_slice(self::timeline($items), -1)[0]);
+        self::assertSame((string) (self::AT + 5), $items->stored[self::MSG]['fields'][Schema::MESSAGE_SENT_AT]);
+    }
+
+    // only the list of sent messages tells status 2, and it gives no time of it
+    public function test_markDelivery_stamped_for_2(): void
+    {
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, self::entry(2, 0, 0, 0), self::DM);
+
+        self::assertSame(['at' => 0, 'kind' => 'stamped'], array_slice(self::timeline($items), -1)[0]);
+        self::assertSame('2', $items->stored[self::MSG]['fields'][Schema::MESSAGE_DM_STATUS]);
+    }
+
+    // read, deleted, in the vault: the status changes, the timeline does not
+    #[DataProvider('statusOnly')]
+    public function test_markDelivery_no_event_for_7_9_10(int $status): void
+    {
+        $accepted = self::sent();
+        $accepted->markDelivery(self::MSG, self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN), self::DM);
+        $timeline = self::timeline($accepted);
+        $fresh    = self::sent();
+
+        $accepted->markDelivery(self::MSG, self::entry($status, 0, self::DELIVERED, self::LOGIN), self::DM);
+        $fresh->markDelivery(self::MSG, self::entry($status, 0, 0, 0), self::DM);
+
+        self::assertSame($timeline, self::timeline($accepted));
+        self::assertSame(['queued', 'submitted'], array_column(self::timeline($fresh), 'kind'));
+        self::assertSame([(string) $status, (string) $status], [$accepted->stored[self::MSG]['fields'][Schema::MESSAGE_DM_STATUS], $fresh->stored[self::MSG]['fields'][Schema::MESSAGE_DM_STATUS]]);
+    }
+
+    public static function statusOnly(): array
+    {
+        return ['read' => [7], 'deleted' => [9], 'in the vault' => [10]];
+    }
+
+    // accepted after 10 days while the status stayed 4 (WS 1.8.3): the list of sent messages tells it so
+    public function test_markDelivery_fiction_event_without_status_change(): void
+    {
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, self::entry(4, self::DELIVERED, self::DELIVERED, self::FICTION), self::DM);
+
+        $fields = $items->stored[self::MSG]['fields'];
+        self::assertSame(['4', (string) self::FICTION], [$fields[Schema::MESSAGE_DM_STATUS], $fields[Schema::MESSAGE_ACCEPTED_AT]]);
+        self::assertSame([['at' => self::DELIVERED, 'kind' => 'delivered'], ['at' => self::FICTION, 'kind' => 'fiction']], array_slice(self::timeline($items), 2));
+    }
+
+    /**
+     * 8 excludes a login, so its acceptance is the one after 10 days - told with 8 in one step, or by the
+     * list first; a login up to a minute after the time of acceptance (6) is no acceptance after 10 days,
+     * one later is
+     * @param list<string> $kinds
+     */
+    #[DataProvider('acceptances')]
+    public function test_markDelivery_fiction_only_where_no_login(array $entry, array $kinds): void
+    {
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, $entry, self::DM);
+
+        self::assertSame($kinds, array_column(array_slice(self::timeline($items), 2), 'kind'));
+        self::assertSame((string) $entry['a'], $items->stored[self::MSG]['fields'][Schema::MESSAGE_ACCEPTED_AT]);
+    }
+
+    public static function acceptances(): array
+    {
+        return [
+            'undeliverable after 10 days' => [self::entry(8, self::CLOSED, self::DELIVERED, self::FICTION), ['delivered', 'fiction', 'undeliverable']],
+            'a login seconds later'       => [self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN - 2), ['delivered', 'login']],
+            'a login a minute later'      => [self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN - Lookup::SKEW), ['delivered', 'login']],
+            'a login just over a minute'  => [self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN - Lookup::SKEW - 1), ['delivered', 'fiction', 'login']],
+        ];
+    }
+
+    // the change to 4 was missed - out of the window, or a time out of range - and the list tells it later
+    public function test_markDelivery_delivered_event_when_d_first_seen(): void
+    {
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, self::entry(5, self::FICTION, 0, self::FICTION), self::DM);
+        self::assertSame([['at' => self::FICTION, 'kind' => 'fiction']], array_slice(self::timeline($items), 2));
+        self::assertArrayNotHasKey(Schema::MESSAGE_DELIVERED_AT, $items->stored[self::MSG]['fields']);
+
+        $items->markDelivery(self::MSG, self::entry(5, self::FICTION, self::DELIVERED, self::FICTION), self::DM);
+        self::assertSame([['at' => self::FICTION, 'kind' => 'fiction'], ['at' => self::DELIVERED, 'kind' => 'delivered']], array_slice(self::timeline($items), 2));
+        self::assertSame((string) self::DELIVERED, $items->stored[self::MSG]['fields'][Schema::MESSAGE_DELIVERED_AT]);
+    }
+
+    // a step that died after the items is repeated: nothing more is written
+    public function test_markDelivery_nothing_when_shown(): void
+    {
+        $items = self::sent();
+        $entry = self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN);
+        $items->markDelivery(self::MSG, $entry, self::DM);
+        $writes = count($items->writes);
+
+        self::assertSame($entry, $items->markDelivery(self::MSG, $entry, self::DM));
+
+        self::assertCount($writes, $items->writes);
+        self::assertSame([Sending::MESSAGE, Sending::MESSAGE, Sending::MESSAGE], array_slice($items->scopes, -3), 'read with the slice open');
+    }
+
+    /** @param list<array<string, string|int>> $entries what the timeline gets */
+    #[DataProvider('failedAfterSend')]
+    public function test_markDelivery_av_and_undeliverable_failed_with_code(array $entry, array $entries): void
+    {
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, $entry, self::DM);
+
+        $fields = $items->stored[self::MSG]['fields'];
+        self::assertSame(['failed', (string) $entry['s'], (string) $entry['s'], ''], [$fields[Schema::MESSAGE_STATE], $fields[Schema::MESSAGE_ERROR_CODE], $fields[Schema::MESSAGE_DM_STATUS], $fields[Schema::MESSAGE_ERROR_TEXT]]);
+        self::assertSame($entries, array_slice(self::timeline($items), 2));
+        self::assertOnlySchema($items);
+    }
+
+    public static function failedAfterSend(): array
+    {
+        return [
+            // the list of sent messages tells no time of it
+            'refused by the antivirus check' => [self::entry(3, 0, 0, 0), [['at' => 0, 'kind' => 'av', 'code' => '3']]],
+            'undeliverable'                  => [self::entry(8, self::CLOSED, self::DELIVERED, 0), [['at' => self::DELIVERED, 'kind' => 'delivered'], ['at' => self::CLOSED, 'kind' => 'undeliverable', 'code' => '8']]],
+        ];
+    }
+
+    // the box closed after the acceptance: it is not delivered (WS 1.12.1), the time stays to be seen
+    public function test_markDelivery_undeliverable_keeps_fiction_time(): void
+    {
+        $items = self::sent();
+        $items->markDelivery(self::MSG, self::entry(5, self::FICTION, self::DELIVERED, self::FICTION), self::DM);
+
+        $items->markDelivery(self::MSG, self::entry(8, self::CLOSED, self::DELIVERED, self::FICTION), self::DM);
+
+        $fields = $items->stored[self::MSG]['fields'];
+        self::assertSame(['failed', '8', (string) self::FICTION, (string) self::DELIVERED], [$fields[Schema::MESSAGE_STATE], $fields[Schema::MESSAGE_ERROR_CODE], $fields[Schema::MESSAGE_ACCEPTED_AT], $fields[Schema::MESSAGE_DELIVERED_AT]]);
+        self::assertSame(['delivered', 'fiction', 'undeliverable'], array_column(array_slice(self::timeline($items), 2), 'kind'));
+    }
+
+    // a delivery carries no words of ISDS, and the error text of an earlier attempt goes
+    public function test_markDelivery_writes_no_isds_text(): void
+    {
+        $items = self::created();
+        $items->markOutcome(self::MSG, Outcome::of(new IsdsException('Schránka příjemce není přístupná', '1233')), self::AT + 20);
+
+        $items->markDelivery(self::MSG, self::entry(8, self::CLOSED, self::DELIVERED, self::FICTION), self::DM);
+
+        $fields = $items->stored[self::MSG]['fields'];
+        self::assertSame(['8', ''], [$fields[Schema::MESSAGE_ERROR_CODE], $fields[Schema::MESSAGE_ERROR_TEXT]]);
+        self::assertSame([], array_filter(array_slice(self::timeline($items), 2), static fn(array $e): bool => isset($e['message'])));
+        self::assertSame([], array_diff_key(end($items->writes)['fields'], array_flip([Schema::MESSAGE_STATE, Schema::MESSAGE_ERROR_CODE, Schema::MESSAGE_ERROR_TEXT, Schema::MESSAGE_DM_ID, Schema::MESSAGE_DM_STATUS, Schema::MESSAGE_DELIVERED_AT, Schema::MESSAGE_ACCEPTED_AT, Schema::MESSAGE_EVENTS])));
+    }
+
+    // deleted by hand, or of another slice: the record goes on, dm_dirty drops it
+    public function test_markDelivery_gone_item_null(): void
+    {
+        $items = self::items();
+        $items->stored[self::SRC] = ['slice' => Sending::OTHER, 'fields' => []];
+
+        self::assertNull($items->markDelivery(self::MSG, self::entry(4, self::DELIVERED, self::DELIVERED, 0), self::DM));
+        self::assertNull($items->markDelivery(self::SRC, self::entry(4, self::DELIVERED, self::DELIVERED, 0), self::DM));
+
+        self::assertSame([], $items->writes);
+    }
+
+    // what the step compares with the record after writing the item
+    public function test_markDelivery_returns_shown_entry(): void
+    {
+        $items = self::sent();
+
+        foreach ([self::entry(3, 0, 0, 0), self::entry(10, 0, 0, 0), self::entry(4, self::DELIVERED, self::DELIVERED, self::FICTION)] as $entry) {
+            self::assertSame($entry, $items->markDelivery(self::MSG, $entry, self::DM));
+            self::assertSame($entry, $items->markDelivery(self::MSG, $entry, self::DM), 'nothing written, the same entry');
+        }
+    }
+
+    // the list of sent messages tells 6 without its time: 0 says so, the time of the write would pass for one of ISDS
+    public function test_markDelivery_unknown_time_event_at_zero(): void
+    {
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, self::entry(6, 0, self::DELIVERED, self::LOGIN), self::DM);
+
+        self::assertSame([['at' => self::DELIVERED, 'kind' => 'delivered'], ['at' => 0, 'kind' => 'login']], array_slice(self::timeline($items), 2));
+    }
+
+    // the list tells 6 without the time of the login, the state changes of a later round with it
+    public function test_markDelivery_known_time_fills_unknown_event(): void
+    {
+        [$listed, $changed] = self::rounds(
+            [new SentMessage(self::DM, 6, '1234-1', 'a7kbrrn', self::DELIVERED, self::LOGIN, 'Pozvánka')],
+            [new StateChange(self::DM, 6, self::LOGIN)],
+        );
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, $listed, self::DM);
+        self::assertSame(['at' => 0, 'kind' => 'login'], array_slice(self::timeline($items), -1)[0]);
+
+        $items->markDelivery(self::MSG, $changed, self::DM);
+        self::assertSame([['at' => self::DELIVERED, 'kind' => 'delivered'], ['at' => self::LOGIN, 'kind' => 'login']], array_slice(self::timeline($items), 2));
+        self::assertSame((string) self::LOGIN, $items->stored[self::MSG]['fields'][Schema::MESSAGE_ACCEPTED_AT]);
+    }
+
+    /**
+     * The state changes and the list date one delivery differently, the earlier told a round later: the
+     * record keeps the earliest, and the field and the timeline both show it. A later time or none
+     * changes the record, and so the item, no more.
+     */
+    public function test_markDelivery_earlier_time_moves_field_and_event(): void
+    {
+        $entries = self::rounds(
+            [new StateChange(self::DM, 4, self::DELIVERED)],
+            [new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED - 600, null, 'Pozvánka')],
+            [new StateChange(self::DM, 4, self::DELIVERED + 600)],
+            [new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', null, null, 'Pozvánka')],
+        );
+        $items = self::sent();
+        $shown = [];
+
+        foreach ($entries as $entry) {
+            $items->markDelivery(self::MSG, $entry, self::DM);
+            $shown[] = [$items->stored[self::MSG]['fields'][Schema::MESSAGE_DELIVERED_AT], array_column(array_slice(self::timeline($items), 2), 'at', 'kind'), count($items->writes)];
+        }
+
+        $early = self::DELIVERED - 600;
+        self::assertSame([
+            [(string) self::DELIVERED, ['delivered' => self::DELIVERED], 3],
+            [(string) $early, ['delivered' => $early], 4],
+            [(string) $early, ['delivered' => $early], 4],
+            [(string) $early, ['delivered' => $early], 4],
+        ], $shown);
+    }
+
+    // the list tells the acceptance of a message still 4, the state changes then 5 dated a second later: one time shows
+    public function test_markDelivery_fiction_dated_as_accepted(): void
+    {
+        [, $changed] = self::rounds(
+            [new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED, self::FICTION - 1, 'Pozvánka')],
+            [new StateChange(self::DM, 5, self::FICTION)],
+        );
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, $changed, self::DM);
+
+        self::assertSame(self::entry(5, self::FICTION, self::DELIVERED, self::FICTION - 1), $changed);
+        self::assertSame((string) (self::FICTION - 1), $items->stored[self::MSG]['fields'][Schema::MESSAGE_ACCEPTED_AT]);
+        self::assertSame(['at' => self::FICTION - 1, 'kind' => 'fiction'], array_slice(self::timeline($items), -1)[0]);
+    }
+
+    /**
+     * Accepted after 10 days, then logged in: the record keeps the acceptance whichever way ISDS tells it,
+     * and so does the timeline
+     * @param list<list<StateChange|SentMessage>> $rounds
+     * @param array<string, int>                  $timeline kind => time after the submitted entry
+     */
+    #[DataProvider('fictionThenLogin')]
+    public function test_markDelivery_fiction_of_6_before_login(array $rounds, array $timeline): void
+    {
+        $entries = self::rounds(...$rounds);
+        $items   = self::sent();
+
+        foreach ($entries as $entry) {
+            $items->markDelivery(self::MSG, $entry, self::DM);
+        }
+
+        self::assertSame(self::entry(6, self::FICTION + 1800, self::DELIVERED, self::FICTION), end($entries));
+        self::assertSame($timeline, array_column(array_slice(self::timeline($items), 2), 'at', 'kind'));
+        self::assertSame((string) self::FICTION, $items->stored[self::MSG]['fields'][Schema::MESSAGE_ACCEPTED_AT]);
+    }
+
+    public static function fictionThenLogin(): array
+    {
+        [$f, $l] = [self::FICTION, self::FICTION + 1800];
+        return [
+            // the morning reads the day of the acceptance after the round that read the login
+            'the acceptance read after the login' => [
+                [[new StateChange(self::DM, 4, self::DELIVERED)], [new StateChange(self::DM, 6, $l)], [new StateChange(self::DM, 5, $f)]],
+                ['delivered' => self::DELIVERED, 'login' => $l, 'fiction' => $f],
+            ],
+            'both in one round'                   => [
+                [[new StateChange(self::DM, 4, self::DELIVERED)], [new StateChange(self::DM, 5, $f), new StateChange(self::DM, 6, $l)]],
+                ['delivered' => self::DELIVERED, 'fiction' => $f, 'login' => $l],
+            ],
+            'the list tells the acceptance'       => [
+                [[new StateChange(self::DM, 4, self::DELIVERED)], [new StateChange(self::DM, 6, $l)], [new SentMessage(self::DM, 6, '1234-1', 'a7kbrrn', self::DELIVERED, $f, 'Pozvánka')]],
+                ['delivered' => self::DELIVERED, 'login' => $l, 'fiction' => $f],
+            ],
+        ];
+    }
+
+    /**
+     * Logged in, read, deleted, in the vault: the list tells an earlier time of the acceptance after 10
+     * days, the timeline moves with it
+     * @param list<list<StateChange|SentMessage>> $later    rounds after the acceptance
+     * @param array<string, int>                  $timeline kind => time after the submitted entry
+     */
+    #[DataProvider('laterStatuses')]
+    public function test_markDelivery_redates_fiction_in_any_status(array $later, int $s, array $timeline): void
+    {
+        $entries = self::rounds([new StateChange(self::DM, 4, self::DELIVERED)], [new StateChange(self::DM, 5, self::FICTION)], ...$later);
+        $items   = self::sent();
+
+        foreach ($entries as $entry) {
+            $items->markDelivery(self::MSG, $entry, self::DM);
+        }
+
+        self::assertSame([$s, self::FICTION - 1], [end($entries)['s'], end($entries)['a']]);
+        self::assertSame($timeline, array_column(array_slice(self::timeline($items), 2), 'at', 'kind'));
+        self::assertSame((string) (self::FICTION - 1), $items->stored[self::MSG]['fields'][Schema::MESSAGE_ACCEPTED_AT]);
+    }
+
+    public static function laterStatuses(): array
+    {
+        $list = static fn(int $s): SentMessage => new SentMessage(self::DM, $s, '1234-1', 'a7kbrrn', self::DELIVERED, self::FICTION - 1, 'Pozvánka');
+        $fiction = ['delivered' => self::DELIVERED, 'fiction' => self::FICTION - 1];
+        return [
+            // the list tells no time of the login
+            'logged in'                 => [[[$list(6)]], 6, $fiction + ['login' => 0]],
+            // too close to the login to add an acceptance after 10 days, yet the one the timeline has moves
+            'logged in within a minute' => [[[new StateChange(self::DM, 6, self::FICTION + 30)], [$list(6)]], 6, $fiction + ['login' => self::FICTION + 30]],
+            'read'                      => [[[$list(7)]], 7, $fiction],
+            'deleted'                   => [[[$list(9)]], 9, $fiction],
+            'in the vault'              => [[[$list(10)]], 10, $fiction],
+        ];
+    }
+
+    /**
+     * Only the rules of the status add an acceptance after 10 days: one dated by a login is none, and an
+     * acceptance whose time ISDS did not tell keeps 0 - the time of a later login is not its time
+     * @param list<list<StateChange|SentMessage>> $rounds
+     * @param array<string, int>                  $timeline kind => time after the submitted entry
+     */
+    #[DataProvider('noFictionDated')]
+    public function test_markDelivery_redate_adds_no_fiction(array $rounds, array $timeline): void
+    {
+        $items = self::sent();
+
+        foreach (self::rounds(...$rounds) as $entry) {
+            $items->markDelivery(self::MSG, $entry, self::DM);
+        }
+
+        self::assertSame($timeline, array_column(array_slice(self::timeline($items), 2), 'at', 'kind'));
+    }
+
+    public static function noFictionDated(): array
+    {
+        return [
+            'read after a login'               => [
+                [[new StateChange(self::DM, 4, self::DELIVERED)], [new StateChange(self::DM, 6, self::LOGIN)], [new SentMessage(self::DM, 7, '1234-1', 'a7kbrrn', self::DELIVERED, self::LOGIN, 'Pozvánka')]],
+                ['delivered' => self::DELIVERED, 'login' => self::LOGIN],
+            ],
+            // a time of 5 out of range is not known
+            'an acceptance of no time, a login' => [
+                [[new StateChange(self::DM, 4, self::DELIVERED)], [new StateChange(self::DM, 5, self::AT - 5000)], [new StateChange(self::DM, 6, self::FICTION + 1800)]],
+                ['delivered' => self::DELIVERED, 'fiction' => 0, 'login' => self::FICTION + 1800],
+            ],
+        ];
+    }
+
+    // the list tells the delivery of a message still 2, the state changes then 4 a few seconds later: the field and the entry show the delivery
+    public function test_markDelivery_delivered_dated_by_delivery(): void
+    {
+        [, $delivered] = self::rounds(
+            [new SentMessage(self::DM, 2, '1234-1', 'a7kbrrn', self::DELIVERED, null, 'Pozvánka')],
+            [new StateChange(self::DM, 4, self::DELIVERED + 5)],
+        );
+        $items = self::sent();
+
+        $items->markDelivery(self::MSG, $delivered, self::DM);
+
+        self::assertSame(self::entry(4, self::DELIVERED + 5, self::DELIVERED, 0), $delivered);
+        self::assertSame([['at' => self::DELIVERED, 'kind' => 'delivered']], array_slice(self::timeline($items), 2));
+        self::assertSame((string) self::DELIVERED, $items->stored[self::MSG]['fields'][Schema::MESSAGE_DELIVERED_AT]);
+    }
+
+    // only an entry StatusSync::entry() reads: anything else would write a status or a time no one told
+    #[DataProvider('notEntries')]
+    public function test_markDelivery_refuses_entry_not_of_record(array $entry): void
+    {
+        $items = self::sent();
+
+        $this->expectException(\InvalidArgumentException::class);
+        try {
+            $items->markDelivery(self::MSG, $entry, self::DM);
+        } finally {
+            self::assertCount(2, $items->writes);
+        }
+    }
+
+    public static function notEntries(): array
+    {
+        return [
+            'status 0'          => [self::entry(0, 0, 0, 0)],
+            'status 11'         => [self::entry(11, 0, 0, 0)],
+            'a negative time'   => [self::entry(4, -1, -1, 0)],
+            'a time too large'  => [self::entry(4, 10000000000, 0, 0)],
+            'a string'          => [['s' => '4', 't' => 0, 'd' => 0, 'a' => 0]],
+            'a key missing'     => [['s' => 4, 't' => 0, 'd' => 0]],
+            'a key more'        => [self::entry(4, 0, 0, 0) + ['x' => 0]],
+            'keys out of order' => [['t' => 4, 's' => 4, 'd' => 0, 'a' => 0]],
+            'none'              => [[]],
+        ];
+    }
+
+    // the one way a message is written takes only entries the reader keeps: the next write would drop one, and write again
+    #[DataProvider('notPerKind')]
+    public function test_update_refuses_entry_per_kind_not_written_here(array $entry, bool $redate): void
+    {
+        $items = self::sent();
+        $fields = [Schema::MESSAGE_STATE => Schema::MESSAGE_STATE_SENT];
+
+        $this->expectException(\InvalidArgumentException::class);
+        try {
+            (new \ReflectionMethod(SendItems::class, 'update'))->invoke($items, self::MSG, $fields, null, $redate ? [] : [$entry], [], $redate ? [$entry] : []);
+        } finally {
+            self::assertCount(2, $items->writes);
+        }
+    }
+
+    public static function notPerKind(): array
+    {
+        $entries = [
+            'a kind not of Schema' => ['at' => 0, 'kind' => 'bogus'],
+            'a key not written'    => ['at' => 0, 'kind' => 'delivered', 'note' => 'x'],
+            'a text too long'      => ['at' => 0, 'kind' => 'av', 'code' => str_repeat('3', Soap::QUOTE + 4)],
+        ];
+        $cases = [];
+        foreach ($entries as $name => $entry) {
+            $cases[$name] = [$entry, false];
+            $cases["$name, redating"] = [$entry, true];
+        }
+        return $cases;
+    }
+
+    // the lookup first, the delivery then: the lookup repeated after its step died changes nothing
+    public function test_markFound_then_markDelivery(): void
+    {
+        $items = self::uncertain();
+        $items->markFound(self::MSG, new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED, null, 'Pozvánka'), self::AT + 5, self::AT + 900);
+        $items->markDelivery(self::MSG, self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN), self::DM);
+        $writes = count($items->writes);
+
+        self::assertTrue($items->markFound(self::MSG, new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED, null, 'Pozvánka'), self::AT + 5, self::AT + 1800));
+
+        self::assertCount($writes, $items->writes);
+        self::assertSame(['6', (string) (self::AT + 5), self::DM], [$items->stored[self::MSG]['fields'][Schema::MESSAGE_DM_STATUS], $items->stored[self::MSG]['fields'][Schema::MESSAGE_SENT_AT], $items->stored[self::MSG]['fields'][Schema::MESSAGE_DM_ID]]);
+        self::assertSame(['queued', 'timeout', 'lookup-found', 'delivered', 'login'], array_column(self::timeline($items), 'kind'));
+    }
+
+    // the delivery first - its step wrote the record before the lookup's items: the lookup still completes the item, once
+    public function test_markDelivery_then_markFound(): void
+    {
+        $items = self::uncertain();
+        $items->markDelivery(self::MSG, self::entry(4, self::DELIVERED, self::DELIVERED, 0), self::DM);
+
+        self::assertTrue($items->markFound(self::MSG, new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED, null, 'Pozvánka'), self::AT + 5, self::AT + 900));
+        $writes = count($items->writes);
+        self::assertTrue($items->markFound(self::MSG, new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED, null, 'Pozvánka'), self::AT + 5, self::AT + 1800));
+
+        self::assertCount($writes, $items->writes, 'the lookup repeated');
+        self::assertSame(['sent', self::DM, (string) (self::AT + 5)], [$items->stored[self::MSG]['fields'][Schema::MESSAGE_STATE], $items->stored[self::MSG]['fields'][Schema::MESSAGE_DM_ID], $items->stored[self::MSG]['fields'][Schema::MESSAGE_SENT_AT]]);
+        self::assertSame(['queued', 'timeout', 'delivered', 'lookup-found'], array_column(self::timeline($items), 'kind'));
+    }
+
+    // sent, its time shown, yet no message id: the lookup writes it
+    public function test_markFound_completes_missing_dm_id(): void
+    {
+        $items = self::created();
+        $items->mark(self::MSG, Schema::MESSAGE_STATE_SENT, Schema::EVENT_SUBMITTED, self::AT + 5);
+
+        $items->markFound(self::MSG, new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED, null, 'Pozvánka'), self::AT + 5, self::AT + 900);
+
+        self::assertSame(self::DM, $items->stored[self::MSG]['fields'][Schema::MESSAGE_DM_ID]);
+        self::assertCount(3, $items->writes);
+    }
+
+    // an id edited into the record of another sending, or an item made by hand: no write reaches it
+    #[DataProvider('notOfThisCampaign')]
+    public function test_message_of_another_campaign_never_written(string $campaign): void
+    {
+        $items = self::created();
+        $items->stored[self::MSG]['fields'][Schema::MESSAGE_CAMPAIGN] = $campaign;
+
+        self::assertFalse($items->mark(self::MSG, Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED, self::AT + 10));
+        self::assertFalse($items->markOutcome(self::MSG, Outcome::of(new SendResult(self::DM, '0000', 'Provedeno úspěšně.')), self::AT + 20));
+        self::assertFalse($items->markFound(self::MSG, new SentMessage(self::DM, 4, '1234-1', 'a7kbrrn', self::DELIVERED, null, 'Pozvánka'), self::AT + 5, self::AT + 900));
+        self::assertNull($items->markDelivery(self::MSG, self::entry(4, self::DELIVERED, self::DELIVERED, 0), self::DM));
+
+        self::assertCount(1, $items->writes, 'the create only');
+    }
+
+    public static function notOfThisCampaign(): array
+    {
+        return ['another campaign' => ['ca000000000000000000000000000c02'], 'none' => ['']];
+    }
+
+    // the same campaign, its id in capitals as a person may type it
+    public function test_message_of_this_campaign_in_capitals_written(): void
+    {
+        $items = self::created();
+        $items->stored[self::MSG]['fields'][Schema::MESSAGE_CAMPAIGN] = strtoupper(self::CAMPAIGN);
+
+        self::assertTrue($items->mark(self::MSG, Schema::MESSAGE_STATE_STOPPED, Schema::EVENT_STOPPED, self::AT + 10));
+    }
+
+    /**
+     * Through the real storeItem() and GetItemContent(): the numbers come back from the number column as
+     * they went in, so a delivery told again writes nothing and the history gets no noise
+     */
+    #[WithoutErrorHandler]      // the full legacy storeItem() trips notices on unset keys
+    public function test_markDelivery_realStoreWritesNumbersOnce(): void
+    {
+        self::realMessage([Schema::MESSAGE_ERROR_CODE, Schema::MESSAGE_ERROR_TEXT, Schema::MESSAGE_DM_ID, Schema::MESSAGE_DM_STATUS, Schema::MESSAGE_DELIVERED_AT, Schema::MESSAGE_ACCEPTED_AT]);
+        $items = new SendItems(Sending::CAMPAIGN, Sending::MESSAGE, self::CAMPAIGN);
+        $entry = self::entry(4, self::DELIVERED, self::DELIVERED, self::FICTION);
+
+        self::assertSame($entry, $items->markDelivery(self::MSG, $entry, self::DM));
+        $statements = count(RecordingDb::$log);
+        self::assertSame($entry, $items->markDelivery(self::MSG, $entry, self::DM));
+
+        $numbers = array_column(array_filter(RecordingDb::$content, static fn(array $r): bool => in_array($r['field'], Schema::MESSAGE_NUMBER_FIELDS, true)), 'number', 'field');
+        self::assertSame([Schema::MESSAGE_DM_STATUS => 4, Schema::MESSAGE_DELIVERED_AT => self::DELIVERED, Schema::MESSAGE_ACCEPTED_AT => self::FICTION], $numbers);
+        self::assertSame([], array_filter(array_slice(RecordingDb::$log, $statements), static fn(string $sql): bool => !str_starts_with($sql, 'SELECT')), 'the second only reads');
     }
 
     public function test_campaign_onlyItsOwnFields(): void
@@ -719,8 +1365,9 @@ final class SendItemsTest extends TestCase
     /**
      * The message of row() in a message slice behind a reading password, read and written through the
      * real GetItemContent() and storeItem() against RecordingDb
+     * @param list<string> $more further fields of the slice, those of Schema::MESSAGE_NUMBER_FIELDS in numbers
      */
-    private static function realMessage(): void
+    private static function realMessage(array $more = []): void
     {
         $field  = static fn(string $id, array $data = []): AA_Field => new AA_Field($data + ['id' => $id, 'slice_id' => '', 'in_item_tbl' => '', 'text_stored' => 1, 'input_show_func' => 'fld', 'input_insert_func' => 'qte', 'content_edit' => 0, 'html_default' => 0, 'multiple' => 0]);
         $fields = new FakeFields(Sending::MESSAGE, [
@@ -730,11 +1377,12 @@ final class SendItemsTest extends TestCase
             $field(Schema::MESSAGE_EVENTS),
             $field('status_code.....', ['in_item_tbl' => 'status_code', 'text_stored' => 0]),
             $field('publish_date....', ['in_item_tbl' => 'publish_date', 'text_stored' => 0]),
+            ...array_map(static fn(string $id): AA_Field => $field($id, ['text_stored' => (int) !in_array($id, Schema::MESSAGE_NUMBER_FIELDS, true)]), $more),
         ]);
         new PropertySlice(Sending::MESSAGE, $fields, ['historylog' => '1', 'reading_password' => AA_Credentials::encrypt('secret')]);
         $GLOBALS['spareDBs']  = [new RecordingDb()];
         $row                  = static fn(string $field, string $text): array => ['item' => self::MSG, 'field' => $field, 'number' => 0, 'text' => $text, 'flag' => 64];
-        RecordingDb::$content = [$row(Schema::MESSAGE_NAME, 'Brno'), $row(Schema::MESSAGE_STATE, 'queued'), $row(Schema::MESSAGE_EVENTS, '[{"at":1790841600,"kind":"queued"}]')];
+        RecordingDb::$content = [$row(Schema::MESSAGE_NAME, 'Brno'), $row(Schema::MESSAGE_CAMPAIGN, self::CAMPAIGN), $row(Schema::MESSAGE_STATE, 'queued'), $row(Schema::MESSAGE_EVENTS, '[{"at":1790841600,"kind":"queued"}]')];
         RecordingDb::$answer  = static fn(string $sql): array => match (true) {
             preg_match('/^SELECT \S+ FROM item WHERE/', $sql) === 1 => [[
                 'id' => pack_id(self::MSG), 'slice_id' => pack_id(Sending::MESSAGE), 'status_code' => '1', 'publish_date' => '1700000000', 'expiry_date' => '4000000000',
@@ -770,6 +1418,52 @@ final class SendItemsTest extends TestCase
     private static function row(string $reason = ''): array
     {
         return ['msg' => self::MSG, 'src' => self::SRC, 'box' => 'a7kbrrn', 'name' => 'Statutární město Brno', 'reason' => $reason];
+    }
+
+    /** @return array{s: int, t: int, d: int, a: int} an entry of the record's dm_state */
+    private static function entry(int $s, int $t, int $d, int $a): array
+    {
+        return ['s' => $s, 't' => $t, 'd' => $d, 'a' => $a];
+    }
+
+    /**
+     * @param list<string> $fields
+     * @return array<string, string> $fields of the message of row() as stored, '' for one it has not
+     */
+    private static function fields(object $items, array $fields): array
+    {
+        return array_map(static fn(string $f): string => $items->stored[self::MSG]['fields'][$f] ?? '', array_combine($fields, $fields));
+    }
+
+    /**
+     * The record's entry of the message after each round, as following merges what ISDS told
+     * @param list<StateChange|SentMessage> ...$rounds
+     * @return list<array{s: int, t: int, d: int, a: int}>
+     */
+    private static function rounds(array ...$rounds): array
+    {
+        [$state, $entries] = [[], []];
+        foreach ($rounds as $events) {
+            $state     = StatusSync::merge($state, $events, StatusSync::indexOf([self::DM]), self::AT, self::AT + 30 * 86400)['state'];
+            $entries[] = StatusSync::entry($state[0]);
+        }
+        return $entries;
+    }
+
+    /** the items with the message of row() of unknown fate: its sending got no answer */
+    private static function uncertain(): object
+    {
+        $items = self::created();
+        $items->mark(self::MSG, Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, self::AT + 10);
+        return $items;
+    }
+
+    /** the items with the message of row() sent: ISDS took it at AT + 20 */
+    private static function sent(): object
+    {
+        $items = self::created();
+        $items->markOutcome(self::MSG, Outcome::of(new SendResult(self::DM, '0000', 'Provedeno úspěšně.')), self::AT + 20);
+        return $items;
     }
 
     /** the items with the message of row() created */
@@ -819,7 +1513,7 @@ final class SendItemsTest extends TestCase
             }
 
             // as GetItemContent(): keyed by the id in small letters, the slice of every item
-            protected function content(string $id, string $field): array
+            protected function content(string $id, array $fields): array
             {
                 Assert::assertNotSame('', $this->open, 'read outside an open slice');
                 $id   = strtolower($id);
@@ -827,7 +1521,8 @@ final class SendItemsTest extends TestCase
                 if (is_null($item)) {
                     return [];
                 }
-                return [$id => ['u_slice_id......' => [['value' => $item['slice']]]] + (isset($item['fields'][$field]) ? [$field => [['value' => $item['fields'][$field]]]] : [])];
+                $values = array_map(static fn(string $v): array => [['value' => $v]], array_intersect_key($item['fields'], array_flip($fields)));
+                return [$id => ['u_slice_id......' => [['value' => $item['slice']]]] + $values];
             }
 
             protected function whileOpen(string $slice, \Closure $fn): bool

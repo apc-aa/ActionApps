@@ -53,6 +53,17 @@ class SendItems
     /** the states that say what went wrong; any other clears the error of the message */
     private const PROBLEMS = [Schema::MESSAGE_STATE_FAILED, Schema::MESSAGE_STATE_UNCERTAIN, Schema::MESSAGE_STATE_SKIPPED];
 
+    /** dmMessageStatus => the kind of its entry in the timeline; 7, 9 and 10 change MESSAGE_DM_STATUS only */
+    private const STATUS_EVENTS = [
+        1 => Schema::EVENT_SUBMITTED,
+        2 => Schema::EVENT_STAMPED,
+        3 => Schema::EVENT_AV,
+        4 => Schema::EVENT_DELIVERED,
+        5 => Schema::EVENT_FICTION,
+        6 => Schema::EVENT_LOGIN,
+        8 => Schema::EVENT_UNDELIVERABLE,
+    ];
+
     /**
      * @param string $campaignSlice unpacked id
      * @param string $messageSlice  unpacked id
@@ -101,7 +112,7 @@ class SendItems
             // a view leaving test messages out (test = 0) would miss a message without the number
             Schema::MESSAGE_TEST        => 0,
             Schema::MESSAGE_STATE       => $state,
-            Schema::MESSAGE_EVENTS      => self::appended('', $event),
+            Schema::MESSAGE_EVENTS      => self::encoded([$event]),
         ] + ($skipped ? [Schema::MESSAGE_ERROR_CODE => $reason] : []);
         return $this->whileOpen($this->messageSlice, function () use ($row, $fields): bool {
             if ($this->save($this->messageSlice, $row['msg'], $fields, 'insert_if_new', ItemContent::FLAG_JUST_STORE)) {
@@ -122,7 +133,7 @@ class SendItems
      * @param string $senderRef CODE letters, at most Message::MAX_REF
      * @param bool   $once      nothing written when the item shows $state already: a stop or a lookup
      *                          repeated after its step died adds no second entry
-     * @return bool false = no such message item, deleted by hand - nothing written
+     * @return bool false = no such message item of this campaign, deleted by hand - nothing written
      * @throws \RuntimeException not stored
      */
     public function mark(string $msg, string $state, string $event, int $at, string $dmId = '', string $code = '', string $senderRef = '', bool $once = false): bool
@@ -143,20 +154,93 @@ class SendItems
     /**
      * A message of unknown fate the list of sent ones holds: sent when it was tried - ISDS took it
      * within that request -, delivered as the list says; failed for good, its status the code, when
-     * the antivirus check refused it. Once, as mark() $once.
+     * the antivirus check refused it. ISDS tells no time of the refusal, so its entry is dated 0 (not
+     * known); the time AA found the message is that of lookup-found. Nothing is written when the item
+     * shows the state, the message id and the time it was sent already: a lookup repeated after its
+     * step died adds no second entry, and one after markDelivery() still completes the item.
      * @param int $triedAt the time of the attempt the record keeps
+     * @return bool false = no such message item of this campaign - nothing written
+     * @throws \RuntimeException not stored
      */
     public function markFound(string $msg, SentMessage $sent, int $triedAt, int $at): bool
     {
         $refused  = ($sent->status === SentMessage::AV_REFUSED);
+        $code     = $refused ? (string) $sent->status : '';
         $delivery = [
             Schema::MESSAGE_DM_STATUS    => $sent->status,
             Schema::MESSAGE_SENT_AT      => $triedAt,
             Schema::MESSAGE_DELIVERED_AT => $sent->deliveredAt,
             Schema::MESSAGE_ACCEPTED_AT  => $sent->acceptedAt,
         ];
-        [$state, $event, $code] = $refused ? [Schema::MESSAGE_STATE_FAILED, Schema::EVENT_AV, (string) $sent->status] : [Schema::MESSAGE_STATE_SENT, Schema::EVENT_LOOKUP_FOUND, ''];
-        return $this->write($msg, $state, $event, $at, $sent->dmId, $code, '', '', array_filter($delivery, is_int(...)), true);
+        $fields = [
+            Schema::MESSAGE_STATE      => $refused ? Schema::MESSAGE_STATE_FAILED : Schema::MESSAGE_STATE_SENT,
+            Schema::MESSAGE_ERROR_CODE => $code,
+            Schema::MESSAGE_ERROR_TEXT => '',
+        ] + self::given([Schema::MESSAGE_DM_ID => $sent->dmId]) + array_filter($delivery, is_int(...));
+        $found = ['at' => $at, 'kind' => Schema::EVENT_LOOKUP_FOUND] + self::given(['dmID' => $sent->dmId]);
+        $av    = $refused ? [['at' => 0, 'kind' => Schema::EVENT_AV, 'code' => $code]] : [];
+        return $this->update($msg, $fields, $found, $av, [Schema::MESSAGE_STATE, Schema::MESSAGE_DM_ID, Schema::MESSAGE_SENT_AT]);
+    }
+
+    /**
+     * The message item shows its delivery as the record keeps it: sent under $dmId, the status, failed
+     * with the status as its code for StatusSync::FAILED. The timeline gets an entry of the status, of
+     * the delivery and of an acceptance after 10 days, each once by its kind.
+     * - The times of delivery and acceptance are the record's, in the fields and in the timeline alike:
+     *   the record keeps the earliest ISDS told, so an earlier one moves both. An entry of a status is
+     *   dated by the status - login too: an acceptance by a login shows in ACCEPTED_AT.
+     * - A time ISDS did not tell is 0, not the time of this write, which would pass for one of ISDS with
+     *   legal weight; 0 takes nothing away, so a time markFound() wrote from the list stays. An acceptance
+     *   after 10 days at 0 stays at 0 even when ACCEPTED_AT gets a time: that may be the login's.
+     * Nothing is written when the item shows it all already, and no text of ISDS ever.
+     * @param array{s: int, t: int, d: int, a: int} $entry StatusSync::entry()
+     * @param string                                $dmId  of the message in the record (dm_ids)
+     * @return ?array{s: int, t: int, d: int, a: int} $entry as written - the step compares it with the
+     *                                                  record; null = no such message item of this
+     *                                                  campaign, nothing written
+     * @throws \RuntimeException not stored
+     */
+    public function markDelivery(string $msg, array $entry, string $dmId): ?array
+    {
+        if ((array_filter($entry, is_int(...)) !== $entry) || (StatusSync::entry(implode(':', $entry)) !== $entry)) {
+            throw new \InvalidArgumentException('A delivery is an entry as StatusSync::entry() reads it');
+        }
+        if (preg_match('/^\d{1,20}\z/', $dmId) !== 1) {
+            throw new \InvalidArgumentException('A message id is digits, as ISDS numbers messages');
+        }
+        ['s' => $s, 't' => $t, 'd' => $d, 'a' => $a] = $entry;
+        $failed = in_array($s, StatusSync::FAILED, true);
+        $own    = self::STATUS_EVENTS[$s] ?? null;
+        // when ISDS took it is SENT_AT, the time AA sent it; the record has no time of 1
+        $times = is_null($own) ? [] : [$own => ($s === 1) ? 0 : $t];
+        if ($d > 0) {
+            // status 4 is dated by its delivery
+            $times[Schema::EVENT_DELIVERED] = $d;
+        }
+        // a login makes 6, which 8 excludes: the acceptance of 4, 5 or 8 is the one after 10 days; that of
+        // 6 too when it came well before the login - seconds apart, two sources tell the login itself, and
+        // the list tells no time of the login (t = 0), so its acceptance may be the login's
+        if (($a > 0) && (in_array($s, [4, 5, 8], true) || (($s === 6) && ($a < $t - Lookup::SKEW)))) {
+            $times[Schema::EVENT_FICTION] = $a;
+        }
+        $perKind = [];
+        // in the order a message goes through them
+        foreach (Schema::EVENT_KINDS as $kind) {
+            if (isset($times[$kind])) {
+                $code      = ($failed && ($kind === $own)) ? ['code' => (string) $s] : [];
+                $perKind[] = ['at' => $times[$kind], 'kind' => $kind] + $code;
+            }
+        }
+        $fields = [
+            Schema::MESSAGE_STATE      => $failed ? Schema::MESSAGE_STATE_FAILED : Schema::MESSAGE_STATE_SENT,
+            Schema::MESSAGE_ERROR_CODE => $failed ? (string) $s : '',
+            Schema::MESSAGE_ERROR_TEXT => '',
+            Schema::MESSAGE_DM_ID      => $dmId,
+            Schema::MESSAGE_DM_STATUS  => $s,
+        ] + array_filter([Schema::MESSAGE_DELIVERED_AT => $d, Schema::MESSAGE_ACCEPTED_AT => $a]);
+        // whatever the status, an acceptance after 10 days the timeline has is the one ACCEPTED_AT shows
+        $redate = ($a > 0) ? [['at' => $a, 'kind' => Schema::EVENT_FICTION]] : [];
+        return $this->update($msg, $fields, entry: null, perKind: $perKind, once: [], redate: $redate) ? $entry : null;
     }
 
     /**
@@ -184,7 +268,7 @@ class SendItems
         }
         $fields = [Schema::CAMPAIGN_STATE => $state, Schema::CAMPAIGN_ERROR_TEXT => $error] + $fields;
         return $this->whileOpen($this->campaignSlice, function () use ($fields, $state, $once): bool {
-            $shown = $this->read($this->campaignSlice, $this->campaign, Schema::CAMPAIGN_STATE);
+            $shown = $this->read($this->campaignSlice, $this->campaign, [Schema::CAMPAIGN_STATE])[Schema::CAMPAIGN_STATE] ?? null;
             if (is_null($shown)) {
                 return false;
             }
@@ -204,10 +288,13 @@ class SendItems
         return $content->storeItem($mode, $flags) !== false;
     }
 
-    /** @return array<array-key, mixed> GetItemContent() of one field of the item $id */
-    protected function content(string $id, string $field): array
+    /**
+     * @param list<string> $fields
+     * @return array<array-key, mixed> GetItemContent() of $fields of the item $id
+     */
+    protected function content(string $id, array $fields): array
     {
-        return GetItemContent(new zids($id, 'l'), false, false, [$field]);
+        return GetItemContent(new zids($id, 'l'), false, false, $fields);
     }
 
     /**
@@ -224,9 +311,8 @@ class SendItems
     /**
      * The error fields hold the error of this state, cleared by one that is no problem; the timeline
      * keeps the earlier ones. $dmId and $senderRef left '' keep what the item has.
-     * @param array<string, int> $more further fields of Schema
      */
-    private function write(string $msg, string $state, string $event, int $at, string $dmId, string $code, string $text, string $senderRef, array $more = [], bool $once = false): bool
+    private function write(string $msg, string $state, string $event, int $at, string $dmId, string $code, string $text, string $senderRef, bool $once = false): bool
     {
         if (!in_array($state, Schema::MESSAGE_STATES, true) || !in_array($event, Schema::EVENT_KINDS, true)) {
             throw new \InvalidArgumentException('A message takes a state of Schema::MESSAGE_STATES and an event of Schema::EVENT_KINDS');
@@ -235,29 +321,60 @@ class SendItems
             throw new \InvalidArgumentException('A skipped message takes its reason, one of Schema::BOX_PROBLEMS');
         }
         $problem = in_array($state, self::PROBLEMS, true);
-        $entry   = ['at' => $at, 'kind' => $event] + self::given(['dmID' => $dmId, 'code' => $code, 'message' => $text]);
-        // the next write would drop an entry the reader does not take
-        if (!self::isEntry($entry)) {
-            throw new \InvalidArgumentException('A timeline entry takes no value longer than ' . self::LONGEST_VALUE . ' bytes');
-        }
         $fields  = [
             Schema::MESSAGE_STATE      => $state,
             Schema::MESSAGE_ERROR_CODE => $problem ? $code : '',
             Schema::MESSAGE_ERROR_TEXT => $problem ? $text : '',
-        ] + self::given([Schema::MESSAGE_DM_ID => $dmId, Schema::MESSAGE_SENDER_REF => $senderRef]) + $more;
+        ] + self::given([Schema::MESSAGE_DM_ID => $dmId, Schema::MESSAGE_SENDER_REF => $senderRef]);
         // when ISDS took it; a later lookup or delivery does not move it
         if ($event === Schema::EVENT_SUBMITTED) {
             $fields[Schema::MESSAGE_SENT_AT] = $at;
         }
-        return $this->whileOpen($this->messageSlice, function () use ($msg, $entry, $fields, $state, $once): bool {
-            if ($once && ($this->read($this->messageSlice, $msg, Schema::MESSAGE_STATE) === $state)) {
-                return true;
+        $entry = ['at' => $at, 'kind' => $event] + self::given(['dmID' => $dmId, 'code' => $code, 'message' => $text]);
+        return $this->update($msg, $fields, $entry, [], $once ? [Schema::MESSAGE_STATE] : []);
+    }
+
+    /**
+     * The one way a message item is written: $fields, $entry added to the timeline, $perKind joined to
+     * it and $redate dating what it has (withFirstOfKind()). Only an item of this campaign is written -
+     * an id edited into the record of another sending reaches no other campaign's message. Nothing is
+     * written when the item shows the fields of $once already, nor when it shows every field and the
+     * timeline gains nothing.
+     * @param array<string, string|int>                         $fields  of Schema, the timeline aside
+     * @param ?array<string, string|int>                        $entry   joins the timeline whatever it has
+     * @param list<array{at: int, kind: string, code?: string}> $perKind
+     * @param list<string>                                      $once    fields of $fields: the item shows
+     *                                                                    them all already, nothing is written
+     * @param list<array{at: int, kind: string, code?: string}> $redate
+     * @return bool false = no such message item of this campaign - nothing written
+     * @throws \RuntimeException not stored
+     */
+    private function update(string $msg, array $fields, ?array $entry, array $perKind, array $once, array $redate = []): bool
+    {
+        // the next write would drop an entry the reader does not take
+        if (!is_null($entry) && !self::isEntry($entry)) {
+            throw new \InvalidArgumentException('A timeline entry takes no value longer than ' . self::LONGEST_VALUE . ' bytes');
+        }
+        foreach ([...$perKind, ...$redate] as $e) {
+            if (!self::isEntry($e) || !in_array($e['kind'], Schema::EVENT_KINDS, true)) {
+                throw new \InvalidArgumentException('A timeline entry is one this class writes, of a kind of Schema::EVENT_KINDS');
             }
-            $events = $this->read($this->messageSlice, $msg, Schema::MESSAGE_EVENTS);
-            if (is_null($events)) {
+        }
+        return $this->whileOpen($this->messageSlice, function () use ($msg, $fields, $entry, $perKind, $once, $redate): bool {
+            $shown = $this->read($this->messageSlice, $msg, [...array_keys($fields), Schema::MESSAGE_CAMPAIGN, Schema::MESSAGE_EVENTS]);
+            if (is_null($shown) || (strtolower($shown[Schema::MESSAGE_CAMPAIGN]) !== strtolower($this->campaign))) {
                 return false;
             }
-            $fields[Schema::MESSAGE_EVENTS] = self::appended($events, $entry);
+            if (($once !== []) && (array_diff_assoc(array_intersect_key($fields, array_flip($once)), $shown) === [])) {
+                return true;
+            }
+            $had      = self::timeline($shown[Schema::MESSAGE_EVENTS]);
+            $timeline = self::withFirstOfKind(is_null($entry) ? $had : [...$had, $entry], $perKind, true);
+            $timeline = self::withFirstOfKind($timeline, $redate, false);
+            if (($timeline === $had) && (array_diff_assoc($fields, $shown) === [])) {
+                return true;
+            }
+            $fields[Schema::MESSAGE_EVENTS] = self::encoded($timeline);
             if (!$this->save($this->messageSlice, $msg, $fields, 'update', ItemContent::FLAG_JUST_STORE)) {
                 throw new \RuntimeException("Message item $msg not stored, error " . ItemContent::lastErr());
             }
@@ -265,15 +382,23 @@ class SendItems
         });
     }
 
-    /** $field of the item $id as stored now; null = no such item in $slice */
-    private function read(string $slice, string $id, string $field): ?string
+    /**
+     * $fields of the item $id as stored now, '' for one it has not; null = no such item in $slice
+     * @param list<string> $fields
+     * @return ?array<string, string>
+     */
+    private function read(string $slice, string $id, array $fields): ?array
     {
         // GetItemContent() keys the items by their ids in small letters
-        $item = $this->content($id, $field)[strtolower($id)] ?? null;
+        $item = $this->content($id, $fields)[strtolower($id)] ?? null;
         if (!is_array($item) || (($item['u_slice_id......'][0]['value'] ?? '') !== strtolower($slice))) {
             return null;
         }
-        return (string) ($item[$field][0]['value'] ?? '');
+        $shown = [];
+        foreach ($fields as $field) {
+            $shown[$field] = (string) ($item[$field][0]['value'] ?? '');
+        }
+        return $shown;
     }
 
     /** @param array<string, string|int> $fields */
@@ -291,18 +416,55 @@ class SendItems
     }
 
     /**
-     * $events with $entry added, its first entry and the last EVENTS_KEPT kept. ASCII JSON: a cp1250
-     * install keeps it intact. Only entries as this class writes them stay - one edited by hand into
-     * something else, or a number no encoder writes back (1e400), would fail every later write; a
-     * letter typed in another code page costs only itself.
-     * @param array<string, string|int> $entry
+     * The entries of the timeline $events. Only entries as this class writes them stay - one edited by
+     * hand into something else, or a number no encoder writes back (1e400), would fail every later
+     * write; a letter typed in another code page costs only itself.
+     * @return list<array<string, string|int>>
      */
-    private static function appended(string $events, array $entry): string
+    private static function timeline(string $events): array
     {
         // depth 3: the list, an entry, its values - anything deeper is no entry
         $list = (strlen($events) <= self::LONGEST_TIMELINE) ? json_decode($events, true, 3, JSON_INVALID_UTF8_SUBSTITUTE) : null;
-        $list = (is_array($list) && array_is_list($list)) ? array_values(array_filter($list, self::isEntry(...))) : [];
-        $list[] = $entry;
+        return (is_array($list) && array_is_list($list)) ? array_values(array_filter($list, self::isEntry(...))) : [];
+    }
+
+    /**
+     * $list with the time of each of $entries on the first entry of its kind - the time of the record,
+     * which moves only to an earlier one ISDS told; the other keys of the entry dated stay. 0 (not told)
+     * changes nothing. Joining, an entry whose kind $list lacks joins it; else it only moves a time told:
+     * one not told may be that of another event.
+     * @param list<array<string, string|int>>                   $list
+     * @param list<array{at: int, kind: string, code?: string}> $entries
+     * @return list<array<string, string|int>>
+     */
+    private static function withFirstOfKind(array $list, array $entries, bool $join): array
+    {
+        foreach ($entries as $entry) {
+            $first = null;
+            foreach ($list as $i => $had) {
+                if (($had['kind'] ?? null) === $entry['kind']) {
+                    $first = $i;
+                    break;
+                }
+            }
+            if (is_null($first)) {
+                if ($join) {
+                    $list[] = $entry;
+                }
+            } elseif (($entry['at'] !== 0) && ($join || (($list[$first]['at'] ?? 0) !== 0))) {
+                $list[$first]['at'] = $entry['at'];
+            }
+        }
+        return $list;
+    }
+
+    /**
+     * The timeline of $list as stored: its first entry and the last EVENTS_KEPT. ASCII JSON: a cp1250
+     * install keeps it intact.
+     * @param list<array<string, string|int>> $list
+     */
+    private static function encoded(array $list): string
+    {
         if (count($list) > self::EVENTS_KEPT + 1) {
             $list = [$list[0], ...array_slice($list, -self::EVENTS_KEPT)];
         }
