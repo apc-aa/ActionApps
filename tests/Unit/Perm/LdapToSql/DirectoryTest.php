@@ -157,6 +157,57 @@ final class DirectoryTest extends TestCase
         );
     }
 
+    public function test_people_withoutUidSurviveSplit(): void
+    {
+        $entries   = $this->peopleEntries($this->syntheticUids());
+        $entries[] = ['dn' => 'cn=No Uid,' . self::PEOPLE, 'objectclass' => ['inetOrgPerson'], 'cn' => ['No Uid']];
+        $dir       = $this->directory($entries);
+
+        $people = $dir->people();
+
+        self::assertCount(2501, $people);
+        self::assertNull($people['cn=No Uid,' . self::PEOPLE]['uid']);
+        self::assertContains('(&(objectClass=inetOrgPerson)(!(uid=*)))', $this->filters);
+    }
+
+    public function test_people_spacesInUidNeverSplitOnSpace(): void
+    {
+        $entries = $this->peopleEntries([...$this->syntheticUids(), ' heidi01', 'jan  novak', 'ab0001 x']);
+        $dir     = $this->directory($entries);
+
+        $people = $dir->people();
+
+        self::assertCount(2503, $people);
+        self::assertSame(' heidi01', $people['uid= heidi01,' . self::PEOPLE]['uid']);
+        self::assertSame('jan  novak', $people['uid=jan  novak,' . self::PEOPLE]['uid']);
+        foreach ($this->filters as $filter) {
+            self::assertDoesNotMatchRegularExpression('/\(uid=[^()]* \*\)/', $filter);
+        }
+    }
+
+    public function test_groups_multiValuedCnFoundOnceAfterSplit(): void
+    {
+        $entries = [];
+        for ($i = 0; $i < 1001; ++$i) {
+            $entries[] = ['dn' => sprintf('cn=g%04d,', $i) . self::GROUPS, 'objectclass' => ['groupOfNames'], 'cn' => [sprintf('g%04d', $i)]];
+        }
+        $entries[] = ['dn' => 'cn=Ánketa,' . self::GROUPS, 'objectclass' => ['groupOfNames'], 'cn' => ['Ánketa', 'zeta']];
+        $dir       = $this->directory($entries);
+
+        $groups = $dir->groups();
+
+        self::assertCount(1002, $groups);
+        self::assertSame('Ánketa', $groups['cn=Ánketa,' . self::GROUPS]['cn']);
+    }
+
+    public function test_acisToPerms_parsesPrincipalPerm(): void
+    {
+        $entries = [['dn' => 'apcobjectid=s1,ou=ACLs,ou=AA', 'apcaci' => ['uid=a,ou=People,ou=AA:E', 'cn=G,ou=AA:S', 'garbage']]];
+
+        self::assertSame(['uid=a,ou=People,ou=AA' => 'E', 'cn=G,ou=AA' => 'S'], Directory::acisToPerms($entries));
+        self::assertSame([], Directory::acisToPerms([]));
+    }
+
     /**
      * 2 500 uids: a 1 300-strong cluster under "ab" (splits twice), the rest
      * spread over letters and digits, plus two that no listed prefix covers.
@@ -191,8 +242,9 @@ final class DirectoryTest extends TestCase
     }
 
     /**
-     * Fake server: understands the filter shapes Directory sends, matches
-     * case-insensitively like LDAP and caps every answer at LIMIT entries.
+     * Fake server: understands the filter shapes Directory sends, matches any
+     * value of an attribute case-insensitively with insignificant spaces like
+     * LDAP, and caps every answer at LIMIT entries.
      *
      * @param list<array<string, list<string>|string>> $entries
      */
@@ -205,31 +257,32 @@ final class DirectoryTest extends TestCase
             }
             $class   = strtolower($m[1]);
             $attr    = null;
+            $absent  = null;
             $include = '';
             $exclude = [];
-            if (preg_match('/^\(&\(objectClass=\w+\)\((\w+)=([^()]*)\*\)/', $filter, $m)) {
+            if (preg_match('/^\(&\(objectClass=\w+\)\(!\((\w+)=\*\)\)\)$/', $filter, $m)) {
+                $absent = $m[1];
+            } elseif (preg_match('/^\(&\(objectClass=\w+\)\((\w+)=([^()]*)\*\)/', $filter, $m)) {
                 [, $attr, $include] = $m;
-                $include            = self::unescape($include);
+                $include            = self::fold(self::unescape($include));
                 if (preg_match('/\(!\(\|(.*)\)\)\)$/', $filter, $n)) {
                     preg_match_all('/\(\w+=([^()]*)\*\)/', $n[1], $ex);
-                    $exclude = array_map(self::unescape(...), $ex[1]);
+                    $exclude = array_map(fn(string $x): string => self::fold(self::unescape($x)), $ex[1]);
                 }
             }
             $found = [];
             foreach ($entries as $e) {
-                $classes = array_map('strtolower', (array) $e['objectclass']);
-                if (!in_array($class, $classes, true)) {
+                if (!in_array($class, array_map('strtolower', (array) $e['objectclass']), true)) {
+                    continue;
+                }
+                if ($absent !== null && isset($e[$absent])) {
                     continue;
                 }
                 if ($attr !== null) {
-                    $value = mb_strtolower(((array) ($e[strtolower($attr)] ?? ['']))[0]);
-                    if (!str_starts_with($value, mb_strtolower($include))) {
+                    $values = array_map(self::fold(...), (array) ($e[$attr] ?? []));
+                    $starts = fn(string $p): bool => array_filter($values, fn(string $v): bool => str_starts_with($v, $p)) !== [];
+                    if (!$starts($include) || array_filter($exclude, $starts) !== []) {
                         continue;
-                    }
-                    foreach ($exclude as $x) {
-                        if (str_starts_with($value, mb_strtolower($x))) {
-                            continue 2;
-                        }
                     }
                 }
                 $found[] = $e;
@@ -237,6 +290,12 @@ final class DirectoryTest extends TestCase
             return [array_slice($found, 0, self::LIMIT), count($found) > self::LIMIT];
         };
         return new Directory($search, static fn(string $id, string $type): array => [], self::PEOPLE, self::GROUPS);
+    }
+
+    /** caseIgnoreMatch with insignificant space handling */
+    private static function fold(string $value): string
+    {
+        return mb_strtolower(trim((string) preg_replace('/ +/', ' ', $value)));
     }
 
     private static function unescape(string $value): string
