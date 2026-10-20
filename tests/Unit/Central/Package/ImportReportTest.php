@@ -121,9 +121,9 @@ final class ImportReportTest extends TestCase
 
     public function test_the_rights_of_aa_the_acl_object_and_a_role_below_super(): void
     {
-        class_exists(\AA_Permsystem_Sql::class);         // include/perm_sql.php: AddPermObject(), AddPerm()
-        $saved = [$GLOBALS['auth'] ?? null, $GLOBALS['r_superuser'] ?? null, $GLOBALS['permission_uid'] ?? null, $GLOBALS['permission_to'] ?? null];
+        $saved = [$GLOBALS['auth'] ?? null, $GLOBALS['r_superuser'] ?? null, $GLOBALS['permission_uid'] ?? null, $GLOBALS['permission_to'] ?? null, \AA::$perm];
         try {
+            \AA::$perm                = new \AA_Perm(['sql']);   // the SQL backend writes the perms table
             $GLOBALS['auth']           = new class {
                 public function getUid(): string
                 {
@@ -145,7 +145,7 @@ final class ImportReportTest extends TestCase
                 'PS_INSTALL_APP below SUPER: the ADMINISTRATOR role',
             );
         } finally {
-            [$GLOBALS['auth'], $GLOBALS['r_superuser'], $GLOBALS['permission_uid'], $GLOBALS['permission_to']] = $saved;
+            [$GLOBALS['auth'], $GLOBALS['r_superuser'], $GLOBALS['permission_uid'], $GLOBALS['permission_to'], \AA::$perm] = $saved;
         }
     }
 

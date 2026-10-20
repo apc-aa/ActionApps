@@ -37,7 +37,7 @@ namespace Tests\Unit\Legacy {
      *
      * Written against the code that asks the database on every call; kept as the contract
      * for the per-request memo (T6): the same id is answered from memory until the
-     * membership table is written through the perm_sql.php functions.
+     * membership table is written through the write methods of AA_Permsystem_Sql.
      */
     final class MembershipCacheTest extends TestCase
     {
@@ -137,10 +137,10 @@ namespace Tests\Unit\Legacy {
         public static function membershipWriters(): array
         {
             return [
-                'AddGroupMember' => [static fn() => \AddGroupMember('g9', 'u1')],
-                'DelGroupMember' => [static fn() => \DelGroupMember('g1', 'u1')],
-                'DelUser'        => [static fn() => \DelUser('u1')],
-                'DelGroup'       => [static fn() => \DelGroup('g1')],
+                'addGroupMember' => [static fn() => (new AA_Permsystem_Sql())->addGroupMember('g9', 'u1')],
+                'delGroupMember' => [static fn() => (new AA_Permsystem_Sql())->delGroupMember('g1', 'u1')],
+                'delUser'        => [static fn() => (new AA_Permsystem_Sql())->delUser('u1')],
+                'delGroup'       => [static fn() => (new AA_Permsystem_Sql())->delGroup('g1')],
             ];
         }
 

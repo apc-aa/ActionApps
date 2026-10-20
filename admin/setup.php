@@ -29,7 +29,7 @@
 ///////////////////////////////////////////////////////////////////////////
 
 // Superadmin-creation form inputs, read explicitly from the request. Kept RAW - the DB layer
-// escapes them on insert (AddUser() in include/perm_sql.php builds a Cvarset, whose two-item
+// escapes them on insert (AA_Permsystem_Sql::addUser() builds a Cvarset, whose two-item
 // rows default to type "text" = quote()d) and AA_Inputfield::inputText() safe()s them when the
 // form is redisplayed. The old $$k = AddslashesDeep() register_globals loop was removed
 // (finding N14, 2026-09); it also double-escaped these values on top of the "text" insert.
@@ -197,7 +197,7 @@ switch ($phase) {
          break;
       }
 
-      if (AddPermObject(AA_ID, "aa")) {
+      if (AA::$perm->addPermObject(AA_ID, "aa")) {
          SuperForm();
       } else {         // Either AA_ID exists or there is more severe error
          echo "<p>", _m("Can't add primary permission object.<br>Please check the access settings to your permission system.<br>If you just deleted your superadmin account, use <b>Recover</b>"), "</p>";
@@ -214,7 +214,7 @@ switch ($phase) {
 
       if ($notusers) {                 // Delete orphan permissions
          foreach ($notusers as $uid) {
-            if (!DelPerm ($uid, AA_ID, "aa")) {
+            if (!AA::$perm->delPerm($uid, AA_ID, "aa")) {
                echo _m("Can't delete invalid permission."), "$uid<br>";
             } else {
                echo _m("Invalid permission deleted (no such user/group): "), "$uid<br>";
@@ -266,7 +266,7 @@ switch ($phase) {
 
       // Try to create the account
 
-      $superid = AddUser($super);
+      $superid = AA::$perm->addUser($super);
 
       if (!$superid) {               // No success :-(
          echo _m("It is impossible to add user to permission system");
@@ -275,7 +275,7 @@ switch ($phase) {
 
       // Assign super admin privilege
 
-      AddPerm($superid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+      AA::$perm->addPerm($superid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
 
       // Check whether succefful
 

@@ -40,24 +40,24 @@ do {
     //  $grouprecord["owner"] = ...;           // not used, for now
 
     if ($add_submit) {
-        if (!($newgroupid = AddGroup($grouprecord))) {
+        if (!($newgroupid = AA::$perm->addGroup($grouprecord))) {
             $err["LDAP"] = MsgErr(_m("It is impossible to add group to permission system"));
         }
         if (!count($err)) {
             if ($group_super) {	// set super admin privilege
-                AddPerm($newgroupid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+                AA::$perm->addPerm($newgroupid, AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
             }
             go_url(get_url('', ['grp_edit' => 1, 'selected_group' => $newgroupid, 'Msg' => _m("Group successfully added to permission system")], true));
         }
     } else {
         $grouprecord["uid"] = $selected_group;
-        if (!ChangeGroup($grouprecord)) {
+        if (!AA::$perm->changeGroup($grouprecord)) {
             $err["LDAP"] = MsgErr(_m("Can't change group"));
         }
         if ($group_super) {		// set or revoke super admin privilege
-            AddPerm($grouprecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
+            AA::$perm->addPerm($grouprecord["uid"], AA_ID, "aa", AA_Perm::ROLES["SUPER"]['id']);
         } else {
-            DelPerm($grouprecord["uid"], AA_ID, "aa");
+            AA::$perm->delPerm($grouprecord["uid"], AA_ID, "aa");
         }
     }
 
@@ -70,12 +70,12 @@ do {
 
     if (isset($sel_users) && is_array($sel_users) && $sel_users["n"] == "") {
         foreach (array_keys($sel_users) as $foo_uid) {
-            DelGroupMember($selected_group, $foo_uid);
+            AA::$perm->delGroupMember($selected_group, $foo_uid);
         }
     }
     if (isset($assigned_users)) {
         foreach ($assigned_users as $foo_uid) {
-            AddGroupMember($selected_group, $foo_uid);
+            AA::$perm->addGroupMember($selected_group, $foo_uid);
         }
     }
 

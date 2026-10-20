@@ -10,7 +10,7 @@ use AA\Central\Package\Model\Package;
  *  caches, so none may run inside the transaction. Each method throws when it did not do its job. */
 interface AfterCommit
 {
-    /** the ACL object of a new module (as AddPermObject()) and, unless $user is a superadmin, the
+    /** the ACL object of a new module (as AA::$perm->addPermObject()) and, unless $user is a superadmin, the
      *  ADMINISTRATOR role of $user on it */
     public function permissions(string $module, string $user): void;
 

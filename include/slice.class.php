@@ -322,7 +322,7 @@ abstract class AA_Module
 
             // delete module from module table
             DB_AA::delete_low_priority('module', [['id', $module_id, 'l']]);
-            DelPermObject($module_id, "slice");   // delete module from permission system
+            AA::$perm->delPermObject($module_id, "slice");   // delete module from permission system
         }
         return true;
     }

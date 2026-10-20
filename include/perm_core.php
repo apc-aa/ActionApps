@@ -364,14 +364,14 @@ function ChangeCatPermAsIn($category, $template): void
     // Delete all old perms
     if ( $oldPerms ) {
         foreach (array_keys($oldPerms) as $uid ) {
-            DelPerm($uid, $category_perm_id, 'slice');
+            AA::$perm->delPerm($uid, $category_perm_id, 'slice');
         }
     }
 
     // Copy template's permissions
     if ( $newPerms ) {
         foreach ($newPerms as  $uid => $perm) {
-            AddPerm($uid, $category_perm_id, 'slice', $perm);
+            AA::$perm->addPerm($uid, $category_perm_id, 'slice', $perm);
         }
     }
 }
@@ -844,6 +844,39 @@ class AA_Perm {
         return [];
     }
 
+    /** Every write of users, groups, memberships and permissions goes to the one backend which stores the
+     *  general perms (PERM_LIB) - the other backends only read.
+     *  @throws LogicException none stores them (restrictPermsTo() leaves the readers only) */
+    private function storage(): AA_Permsystem
+    {
+        return $this->_whichPermstorage() ?? throw new LogicException('No permission system stores users, groups and permissions');
+    }
+
+    /** @return false|string id of the new user; false when the login is taken (in any backend) or the write failed */
+    public function addUser(array $user): false|string
+    {
+        if (!$this->isUsernameFree($user['uid'])) {
+            return false;
+        }
+        return $this->storage()->addUser($user);
+    }
+
+    /** @param int $flags 1 - drop the memberships too, 2 - drop the user's permissions too */
+    public function delUser($user_id, int $flags = 3): bool                   { return $this->storage()->delUser($user_id, $flags); }
+    public function changeUser(array $user): bool                             { return $this->storage()->changeUser($user); }
+    /** @return false|string id of the new group */
+    public function addGroup(array $group): false|string                      { return $this->storage()->addGroup($group); }
+    /** @param int $flags 1 - drop its membership in other groups too, 2 - drop its permissions too */
+    public function delGroup($group_id, int $flags = 3): bool                 { return $this->storage()->delGroup($group_id, $flags); }
+    public function changeGroup(array $group): bool                           { return $this->storage()->changeGroup($group); }
+    public function addGroupMember($group_id, $id): bool                      { return $this->storage()->addGroupMember($group_id, $id); }
+    public function delGroupMember($group_id, $id): bool                      { return $this->storage()->delGroupMember($group_id, $id); }
+    public function addPermObject($objectID, string $objectType): bool        { return $this->storage()->addPermObject($objectID, $objectType); }
+    public function delPermObject($objectID, string $objectType): bool        { return $this->storage()->delPermObject($objectID, $objectType); }
+    public function addPerm($id, $objectID, string $objectType, $perm): bool  { return $this->storage()->addPerm($id, $objectID, $objectType, $perm); }
+    public function delPerm($id, $objectID, string $objectType): bool         { return $this->storage()->delPerm($id, $objectID, $objectType); }
+    public function changePerm($id, $objectID, string $objectType, $perm): bool { return $this->storage()->changePerm($id, $objectID, $objectType, $perm); }
+
     /** $this->_whichUsersystem($uid) function
      *  returns the permission system for the user id
      * @param $uid
@@ -1136,6 +1169,22 @@ abstract class AA_Permsystem {
 
     function getObjectsPerms($objectID, $objectType): array { return []; }
     function getJoinedPerms($uid, $objectType, $groups= []): array { return []; }
+
+    /** Writes - called through AA_Perm, which picks the backend that stores the general perms (storesGeneralPerms());
+     *  a backend which cannot write refuses. Ids are the backend's own (a number in SQL, a DN in LDAP). */
+    public function addUser(array $user): false|string                          { return false; }
+    public function delUser($user_id, int $flags = 3): bool                    { return false; }
+    public function changeUser(array $user): bool                              { return false; }
+    public function addGroup(array $group): false|string                       { return false; }
+    public function delGroup($group_id, int $flags = 3): bool                  { return false; }
+    public function changeGroup(array $group): bool                            { return false; }
+    public function addGroupMember($group_id, $id): bool                       { return false; }
+    public function delGroupMember($group_id, $id): bool                       { return false; }
+    public function addPermObject($objectID, string $objectType): bool         { return false; }
+    public function delPermObject($objectID, string $objectType): bool         { return false; }
+    public function addPerm($id, $objectID, string $objectType, $perm): bool   { return false; }
+    public function delPerm($id, $objectID, string $objectType): bool          { return false; }
+    public function changePerm($id, $objectID, string $objectType, $perm): bool { return false; }
 
     /** true, if the system is able to store permissins for groups and users (even foreign users and groups)
      *  SQL and LDAP is able to store it, Reader not. */

@@ -62,7 +62,7 @@ class CreateAppStoreAccount extends AbstractOptimize
         if (!AA::$perm->isUsernameFree(AppStore::PUBLIC_USER)) {
             return $this->test();
         }
-        $uid = AddUser(['uid' => AppStore::PUBLIC_USER, 'userpassword' => AppStore::PUBLIC_PASSWORD, 'givenname' => 'App', 'sn' => 'store', 'mail' => '']);
+        $uid = AA::$perm->addUser(['uid' => AppStore::PUBLIC_USER, 'userpassword' => AppStore::PUBLIC_PASSWORD, 'givenname' => 'App', 'sn' => 'store', 'mail' => '']);
         if (!$uid) {
             $this->message(_m('The app store account could not be created'));
             return false;

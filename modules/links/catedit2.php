@@ -143,7 +143,7 @@ function UnassignBaseCategory($parent, $child): void
     if (IsCatEmpty($child)) {
         DeleteCategory($child);
         DeleteCatAssignment($parent, $child);
-        DelPermObject($child, 'category');
+        AA::$perm->delPermObject($child, 'category');
 
         $r_msg[] = MsgOk(_m('Subcategory deleted'));
     } else {

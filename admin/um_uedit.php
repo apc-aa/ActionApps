@@ -113,7 +113,7 @@ if (!IfSlPerm(PS_NEW_USER)) {
 }
 
 if ( $submit_action === "usr_del" && $selected_user ) {
-    DelUser( $selected_user );    // default is to delete any references as well
+    AA::$perm->delUser( $selected_user );    // default is to delete any references as well
     go_url( StateUrl($_SERVER['PHP_SELF']) );
 }
 

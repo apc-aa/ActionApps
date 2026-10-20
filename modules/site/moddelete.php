@@ -70,7 +70,7 @@ DB_AA::sql('DELETE LOW_PRIORITY FROM `site`', [['id', $del, 'l']]);
 DB_AA::sql('DELETE LOW_PRIORITY FROM `site_spot`', [['site_id', $del, 'l']]);
 
 // delete module from permission system
-DelPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
+AA::$perm->delPermObject($del, "slice");  // the word 'slice' is not mistake - do not change
 
 Session::page_close();                                // to save session variables
 go_url(get_admin_url("slicedel.php", ['Msg' => _m("Slice successfully deleted, tables are optimized")]));

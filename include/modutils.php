@@ -235,7 +235,7 @@ function WriteModuleFields(?string $module_id, $superadmin, $type, $name, $slice
         }
 
         $GLOBALS['r_lang_file'] = stripslashes($lang_file);
-        AddPermObject($module_id, "slice");    // no special permission added - only superuser can access
+        AA::$perm->addPermObject($module_id, "slice");    // no special permission added - only superuser can access
     }
     return $module_id;
 }

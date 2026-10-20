@@ -52,13 +52,13 @@ function ChangeRole($UsrAdd, $UsrDel, $slice_id, $editor_perms, $role): void
 {
     if ($UsrAdd) {
         if (CanChangeRole(AA::$perm->getModulePerms($UsrAdd, $slice_id, false), $editor_perms, AA_Perm::ROLES[$role]['perm'])) {
-            AddPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
+            AA::$perm->addPerm($UsrAdd, $slice_id, "slice", AA_Perm::ROLES[$role]['id']);
             AA::$perm->invalidateCache();
             AA::Pagecache()->invalidateFor($slice_id);  // invalidate old cached values
         }
     } elseif ($UsrDel) {
         if (CanChangeRole(AA::$perm->getModulePerms($UsrDel, $slice_id, false), $editor_perms, AA_Perm::ROLES["AUTHOR"]['perm'])) { // smallest permission
-            DelPerm($UsrDel, $slice_id, "slice");
+            AA::$perm->delPerm($UsrDel, $slice_id, "slice");
             AA::$perm->invalidateCache();
         }
 
