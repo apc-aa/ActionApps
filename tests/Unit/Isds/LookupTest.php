@@ -323,6 +323,7 @@ final class LookupTest extends TestCase
             'an offset as text'            => [['o' => '981']],
             'no start'                     => [['f' => null]],
             'another start'                => [['f' => self::NOW - 7200]],
+            'a reading of more messages'   => [['k' => [1, 2]]],
             'past the window'              => [['t' => self::NOW + 86400]],
             'matches no list'              => [['x' => 'junk']],
             'a match of another kind'      => [['x' => [1 => ['9001' => ['9001', '4', '4711-2', 'b000001', null, null, self::SUBJECT]]]]],
