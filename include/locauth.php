@@ -70,6 +70,8 @@ class AA_Auth extends Auth
     {
         $uid = parent::is_authenticated();
         if ($uid && !in_array($uid, ['nobody', 'form'], true) && !AA::$perm->recognizesId((string) $uid)) {
+            // tells such a logout from a lost session; once, as unauth() clears the uid (type: 10 bytes at most)
+            AA_Log::write('UNKNOWN_ID', AA_Log::context((string) $uid, false), (string) ($this->auth['uname'] ?? ''));
             $this->unauth();
             return false;
         }

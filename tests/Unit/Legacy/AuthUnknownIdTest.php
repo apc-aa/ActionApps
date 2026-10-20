@@ -28,6 +28,7 @@ namespace Tests\Unit\Legacy {
     use AA_Auth;
     use AA_Perm;
     use PHPUnit\Framework\TestCase;
+    use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
     /**
      * A session keeps the user id it logged in with. After PERM_LIB changes (ldap -> sql) a session holding
@@ -51,12 +52,19 @@ namespace Tests\Unit\Legacy {
 
         protected function setUp(): void
         {
+            RecordingDb::reset();
+            $GLOBALS['spareDBs'] = [new RecordingDb()];
             $this->perm = AA::$perm;
             AA::$perm   = new AA_Perm(['sql', 'Reader']);
+            $_SERVER['REMOTE_ADDR'] = '192.0.2.1';
+            $_SERVER['HTTP_HOST']   = 'aa.example.org';
+            $_SERVER['REQUEST_URI'] = '/admin/index.php?x=1';
         }
 
         protected function tearDown(): void
         {
+            $GLOBALS['spareDBs'] = [];
+            RecordingDb::reset();
             AA::$perm = $this->perm;
         }
 
@@ -75,6 +83,19 @@ namespace Tests\Unit\Legacy {
             $this->assertFalse($auth->is_authenticated());
             $this->assertSame('', $auth->getUid());
             $this->assertSame('', $auth->getUname());
+            [$row] = RecordingDb::inserts('log');
+            $this->assertSame(['UNKNOWN_ID', 'jan'], [$row['type'], $row['params']]);
+            $this->assertStringStartsWith('uid=jan,ou=People,ou=AA:', $row['selector']);
+            $this->assertStringNotContainsString('x=1', $row['selector']);
+            // logged out - the next check of the session does not log it again
+            $this->assertFalse($auth->is_authenticated());
+            $this->assertCount(1, RecordingDb::inserts('log'));
+        }
+
+        public function test_isAuthenticated_knownIdLogsNothing(): void
+        {
+            self::sessionOf('12')->is_authenticated();
+            $this->assertSame([], RecordingDb::inserts('log'));
         }
 
         public function test_isAuthenticated_numericUserStays(): void
