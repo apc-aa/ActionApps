@@ -54,11 +54,12 @@ namespace Tests\Unit\IO\DB {
 
             $ret = DB_AA::remap('item', 'posted_by', ['a' => '1', "o'k" => '2', 'b\\c' => "x'\\y"]);
 
-            $c = DB_AA::quoteIdentifier('posted_by');
+            $c   = DB_AA::quoteIdentifier('posted_by');
+            $cmp = "CONVERT($c USING utf8mb4) COLLATE utf8mb4_bin";
             self::assertSame([
-                'UPDATE ' . DB_AA::quoteIdentifier('item') . " SET $c = CASE $c"
-                . " WHEN 'a' THEN '1' WHEN 'o\\'k' THEN '2' WHEN 'b\\\\c' THEN 'x\\'\\\\y' END"
-                . " WHERE $c IN ('a', 'o\\'k', 'b\\\\c')",
+                'UPDATE ' . DB_AA::quoteIdentifier('item') . " SET $c = CASE $cmp"
+                . " WHEN 'a' THEN '1' WHEN 'o\\'k' THEN '2' WHEN 'b\\\\c' THEN 'x\\'\\\\y' ELSE $c END"
+                . " WHERE $cmp IN ('a', 'o\\'k', 'b\\\\c')",
             ], RecordingDb::$log);
             self::assertSame(7, $ret, 'affected rows of the statement');
         }
@@ -69,6 +70,18 @@ namespace Tests\Unit\IO\DB {
 
             self::assertStringContainsString("WHEN '12' THEN '3'", RecordingDb::$log[0]);
             self::assertStringContainsString("IN ('9999999999', '12')", RecordingDb::$log[0]);
+        }
+
+        public function test_remap_chainIsOneStatement(): void
+        {
+            DB_AA::remap('item', 'posted_by', ['a' => 'b', 'b' => 'c']);
+
+            $c   = DB_AA::quoteIdentifier('posted_by');
+            $cmp = "CONVERT($c USING utf8mb4) COLLATE utf8mb4_bin";
+            self::assertSame([
+                'UPDATE ' . DB_AA::quoteIdentifier('item') . " SET $c = CASE $cmp WHEN 'a' THEN 'b' WHEN 'b' THEN 'c' ELSE $c END"
+                . " WHERE $cmp IN ('a', 'b')",
+            ], RecordingDb::$log, 'one statement, so a row once a ends as b, not c');
         }
 
         public function test_remap_emptyMapDoesNothing(): void

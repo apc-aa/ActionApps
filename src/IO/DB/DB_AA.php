@@ -339,10 +339,12 @@ final class DB_AA
      *  table instead of one per value.
      *  All rows change at once, so chains (a => b, b => c) are safe - which is also why the map
      *  is never split; it must fit into max_allowed_packet (fine up to thousands of entries).
-     *  Keys and values are compared as strings. Keys equal under the column's collation
-     *  ('Ab' and 'ab' in a *_ci column) must map to the same value, else CASE takes the first.
+     *  Compared as utf8mb4_bin: under a *_ci collation 'Správci' and 'spravci' are equal, so two
+     *  keys would hit the same rows and CASE would silently take the first one. Not BINARY - that
+     *  compares the stored bytes and a cp1250/latin1 column would never match UTF-8 keys.
+     *  utf8mb4_bin is PAD SPACE, so 'a' and 'a ' still collide: map such keys to the same value.
      *  used as: DB_AA::remap('item', 'posted_by', ['uid=joe,ou=People' => '17']);
-     * @param array<string|int, string|int> $map
+     * @param array<string|int, string|int> $map  every exact spelling to rewrite
      * @return false|int number of changed rows, false on a DB error, 0 for an empty map (no query)
      */
     public static function remap(string $table, string $column, array $map): false|int
@@ -351,15 +353,17 @@ final class DB_AA
             return 0;
         }
         $col   = self::quoteIdentifier($column);
+        $cmp   = "CONVERT($col USING utf8mb4) COLLATE utf8mb4_bin";
         $whens = '';
         foreach ($map as $old => $new) {
             $whens .= ' WHEN ' . qquote((string) $old) . ' THEN ' . qquote((string) $new);
         }
         $olds = implode(', ', array_map(static fn($old) => qquote((string) $old), array_keys($map)));
-        return self::sql('UPDATE ' . self::quoteIdentifier($table) . " SET $col = CASE $col$whens END WHERE $col IN ($olds)");
+        // ELSE keeps the value should WHERE ever match a row no WHEN does
+        return self::sql('UPDATE ' . self::quoteIdentifier($table) . " SET $col = CASE $cmp$whens ELSE $col END WHERE $cmp IN ($olds)");
     }
 
-    /** used as: DB_AA::delete('perms',[['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
+    /** used as: DB_AA::delete('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
      * @param string $table
      * @param array $where
      * @return false|int
