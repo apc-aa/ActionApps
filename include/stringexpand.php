@@ -1555,7 +1555,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
             }
             function AA__LoadLazyDiv(el) {
                 el.classList.add('aa-updating');
-                AA_Load(el, el.dataset.aaUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}})
+                AA_Load(el, el.dataset.aaUrl, {headers: {"X-Requested-With": "XMLHttpRequest"}})
                   .catch(error => console.error(error))
                   .finally(() => el.classList.remove('aa-updating'));
             }
