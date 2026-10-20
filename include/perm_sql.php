@@ -104,6 +104,26 @@ class AA_Permsystem_Sql extends AA_Permsystem {
         ]);  // last_insert_id
     }
 
+    /** Stores a person taken over from another permission system under the id it was given there.
+     *  The password is already a hash comparePwds() verifies, so it is stored as it is.
+     *  'nohalt': a failed insert returns false, so the caller can roll its transaction back.
+     * @param array{id: int, uid: string, mail: string, name: string, givenname: string, sn: string, password: string} $row
+     */
+    public function importUser(array $row): bool
+    {
+        return (bool) AA::Metabase()->doInsert('users', [
+            'id'          => $row['id'],
+            'type'        => 'User',
+            'uid'         => $row['uid'],
+            'mail'        => $row['mail'],
+            'name'        => $row['name'],
+            'sn'          => $row['sn'],
+            'givenname'   => $row['givenname'],
+            'description' => '',
+            'password'    => $row['password'],
+        ], 'nohalt');
+    }
+
     /** delUser function
      * @param $user_id
      * @param int $flags
@@ -172,6 +192,25 @@ class AA_Permsystem_Sql extends AA_Permsystem {
             'description' => (string) $group['description'],
             'password'    => 'crypt will never return this',
         ]); // last_insert_id
+    }
+
+    /** Stores a group taken over from another permission system under the id it was given there
+     *  (same columns as addGroup()). 'nohalt': a failed insert returns false.
+     * @param array{id: int, name: string, description: string} $row
+     */
+    public function importGroup(array $row): bool
+    {
+        return (bool) AA::Metabase()->doInsert('users', [
+            'id'          => $row['id'],
+            'type'        => 'Group',
+            'uid'         => '',
+            'mail'        => '',
+            'name'        => $row['name'],
+            'sn'          => '',
+            'givenname'   => '',
+            'description' => $row['description'],
+            'password'    => 'crypt will never return this',
+        ], 'nohalt');
     }
 
     /** delGroup function
