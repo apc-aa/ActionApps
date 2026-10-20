@@ -314,20 +314,26 @@ class AA_Permsystem_Sql extends AA_Permsystem {
      */
     public function authenticateUsername($username, $password, $code2fa = ''): false|string
     {
-        if ($user = DB_AA::select1('', 'SELECT id, password FROM `users`', [[strpos($username, "@") ? 'mail' : 'uid', $username]])) {
-            if (!AA_Perm::comparePwds($password, $user['password'])) {
-                return false;
-            }
-            // Opportunistic rehash: if the stored hash is a legacy LDAP
-            // hash ({SSHA}/{SHA}/{SMD5}/{MD5}/{CRYPT}) carried over by
-            // AA\Optimize\LdapPermsToSql, upgrade it to bcrypt now that
-            // we have the plaintext in hand. Silent and transparent.
-            if (str_starts_with((string) $user['password'], '{')) {
-                AA::Metabase()->doUpdate('users', ['id' => $user['id'], 'password' => self::generatePasswordHash($password)]);
-            }
-            return $user['id'];
+        // case and edge spaces do not count, as in the LDAP login people are used to; uid is binary, mail a *_ci char
+        $key = mb_strtolower(trim((string) $username), 'UTF-8');
+        if (($key === '') || ((string) $password === '')) {
+            return false;
         }
-        return false;
+        $column = strpos($key, '@') ? 'LOWER(TRIM(mail))' : 'LOWER(TRIM(CONVERT(uid USING utf8mb4)))';
+        $users  = DB_AA::select([], 'SELECT id, password FROM `users`', [[$column, $key]], null, null, 2);
+        // a folded name that fits two accounts belongs to neither of them
+        if ((count($users) !== 1) || !AA_Perm::comparePwds($password, $users[0]['password'])) {
+            return false;
+        }
+        $user = $users[0];
+        // Opportunistic rehash: if the stored hash is a legacy LDAP
+        // hash ({SSHA}/{SHA}/{SMD5}/{MD5}/{CRYPT}) carried over by
+        // AA\Optimize\LdapPermsToSql, upgrade it to bcrypt now that
+        // we have the plaintext in hand. Silent and transparent.
+        if (str_starts_with((string) $user['password'], '{')) {
+            AA::Metabase()->doUpdate('users', ['id' => $user['id'], 'password' => self::generatePasswordHash($password)]);
+        }
+        return (string) $user['id'];
     }
 
     /** The stored password hash - exactly users.password, so tokens tagged with it stay valid */
@@ -449,13 +455,13 @@ class AA_Permsystem_Sql extends AA_Permsystem {
 
     /** getMembership function
      * @param $id
-     * @param $flags - use to obey group in groups?
+     * @param $flags - 0: groups of all levels, else only the groups $id is directly in (as LDAP)
      * @return array of group_ids, where id (group or user) is a member
      */
     function getMembership($id, $flags = 0): array {
-        // per-request memo (T6) - CheckPerms() asks for the same id over and over; only a scalar id
+        // per-request memo - CheckPerms() asks for the same id over and over; only a scalar id
         // can be a key (an array id never worked, but it must not turn into a TypeError here)
-        $memo_key = is_scalar($id) ? (string) $id : null;
+        $memo_key = is_scalar($id) ? "$id|$flags" : null;
         if ($memo_key !== null && isset(self::$membership[$memo_key])) {
             return self::$membership[$memo_key];
         }
@@ -483,7 +489,7 @@ class AA_Permsystem_Sql extends AA_Permsystem {
                     $all_groups[]  = $gid;
                 }
             }
-        } while (count($last_groups));
+        } while (count($last_groups) && ($flags == 0));
 
         // I _think_ this is a list of groupids.
         if ($memo_key !== null) {

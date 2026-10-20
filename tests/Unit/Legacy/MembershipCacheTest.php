@@ -112,6 +112,15 @@ namespace Tests\Unit\Legacy {
             self::assertSame(['g2'], $perm->getMembership('u2'));
         }
 
+        public function test_flagOneGivesDirectGroupsOnly(): void
+        {
+            $perm = new AA_Permsystem_Sql();
+
+            self::assertSame(['g1', 'g2'], $perm->getMembership('u1', 1));
+            self::assertSame(['g1', 'g2', 'g3'], $perm->getMembership('u1'), 'the memo keeps both answers apart');
+            self::assertSame(['g1', 'g2'], $perm->getMembership('u1', 1));
+        }
+
         public function testZeroGroupIdIsIgnored(): void
         {
             self::assertSame(['g1', 'g3'], (new AA_Permsystem_Sql())->getMembership('u0'));
