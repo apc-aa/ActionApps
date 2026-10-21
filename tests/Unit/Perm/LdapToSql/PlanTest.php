@@ -130,6 +130,22 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             self::assertSame([['object_type' => 'slice', 'objectid' => 'S2', 'userid' => '338', 'perm' => '2']], $plan->perms);
         }
 
+        public function test_build_objectListedTwiceKeepsTheFirstRight(): void
+        {
+            $acls = [
+                ['type' => 'slice', 'id' => 'S2', 'perms' => ['uid=kalen01,ou=People,ou=AA' => '2']],
+                ['type' => 'slice', 'id' => 'S2', 'perms' => ['uid=kalen01,ou=People,ou=AA' => '3', self::READER => '1']],
+            ];
+
+            $plan = Plan::build($this->people(), [], $acls, [], 336);
+
+            self::assertSame([
+                ['object_type' => 'slice', 'objectid' => 'S2', 'userid' => '338', 'perm' => '2'],
+                ['object_type' => 'slice', 'objectid' => 'S2', 'userid' => self::READER, 'perm' => '1'],
+            ], $plan->perms);
+            self::assertTrue($this->hasFinding($plan, false, 'Objects listed more than once keep the first right (1): uid=kalen01,ou=People,ou=AA on slice S2'));
+        }
+
         public function test_build_dropsNonDnPrincipalsOtherThanReaderIds(): void
         {
             $junk   = ['', 'cn=dummy', 'uid=nobody', '1', 'cn=aauser'];

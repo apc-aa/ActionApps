@@ -281,6 +281,48 @@ namespace Tests\Unit\Legacy {
             self::assertSame($expected, $log);
         }
 
+        /** @return array<string, array{callable(): mixed, string, list<string>}> */
+        public static function sqlRefusals(): array
+        {
+            $slice = self::SLICE;
+            return [
+                'DelUser membership' => [static fn() => AA::$perm->delUser('7'), 'DELETE FROM `membership`', []],
+                'DelUser perms'      => [static fn() => AA::$perm->delUser('7'), 'DELETE FROM `perms`', ["DELETE FROM `membership`  WHERE memberid = '7'"]],
+                'DelUser users'      => [static fn() => AA::$perm->delUser('7'), 'DELETE FROM `users`', [
+                    "DELETE FROM `membership`  WHERE memberid = '7'",
+                    "DELETE FROM `perms`  WHERE userid = '7'",
+                ]],
+                'DelGroup members'   => [static fn() => AA::$perm->delGroup('9'), "DELETE FROM `membership`  WHERE groupid", []],
+                'DelGroup users'     => [static fn() => AA::$perm->delGroup('9'), 'DELETE FROM `users`', [
+                    "DELETE FROM `membership`  WHERE groupid = '9'",
+                    "DELETE FROM `membership`  WHERE memberid = '9'",
+                    "DELETE FROM `perms`  WHERE userid = '9'",
+                ]],
+                'AddGroupMember delete' => [static fn() => AA::$perm->addGroupMember('9', '7'), 'DELETE FROM `membership`', []],
+                'AddGroupMember insert' => [static fn() => AA::$perm->addGroupMember('9', '7'), 'INSERT INTO `membership`', [
+                    "DELETE FROM `membership`  WHERE groupid = '9' AND memberid = '7'",
+                ]],
+                'AddGroupMember no member' => [static fn() => AA::$perm->addGroupMember('9', ''), 'nothing', []],
+                'DelGroupMember'     => [static fn() => AA::$perm->delGroupMember('9', '7'), 'DELETE FROM `membership`', []],
+                'AddPerm delete'     => [static fn() => AA::$perm->addPerm('7', $slice, 'slice', '2'), 'DELETE FROM `perms`', []],
+                'DelPerm'            => [static fn() => AA::$perm->delPerm('7', $slice, 'slice'), 'DELETE FROM `perms`', []],
+            ];
+        }
+
+        /**
+         * A statement the database refuses fails the write at once, so a caller inside a
+         * transaction can roll back instead of committing half of it.
+         * @param list<string> $before statements sent before the refused one
+         */
+        #[DataProvider('sqlRefusals')]
+        public function test_sqlWrites_refusedStatementReturnsFalse(callable $write, string $refused, array $before): void
+        {
+            RecordingDb::$refuse_on = $refused;
+
+            self::assertFalse($write());
+            self::assertSame($before, RecordingDb::$log);
+        }
+
         public function test_bothBackendsLoadInOneProcess(): void
         {
             require_once __DIR__ . '/../../../include/perm_sql.php';

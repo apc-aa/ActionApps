@@ -55,6 +55,8 @@ final class RecordingDb extends DB_PDO
     /** a statement starting with this string throws - simulates a failing write mid-transaction
      *  (with halting off it returns false instead) */
     public static ?string $fail_on = null;
+    /** a statement starting with this string returns false - what DB_PDO does on a handle that only reports errors */
+    public static ?string $refuse_on = null;
     /** @var array<string, array> table => columns as DB_PDO::metadata() lists them (name, type) */
     public static array $metadata = [];
     /** @var null|callable(string): int  affected rows of the last statement - 1 when not set */
@@ -76,6 +78,7 @@ final class RecordingDb extends DB_PDO
         self::$snapshot = [];
         self::$answer   = null;
         self::$fail_on  = null;
+        self::$refuse_on = null;
         self::$metadata = [];
         self::$affected = null;
     }
@@ -90,6 +93,9 @@ final class RecordingDb extends DB_PDO
     {
         if (self::$fail_on !== null && str_starts_with($Query_String, self::$fail_on)) {
             throw new \RuntimeException('RecordingDb: simulated failure of ' . self::$fail_on);
+        }
+        if (self::$refuse_on !== null && str_starts_with($Query_String, self::$refuse_on)) {
+            return false;
         }
         self::$log[]     = $Query_String;
         self::$handles[] = spl_object_id($this);

@@ -168,6 +168,8 @@ final class Plan
         $perms      = [];
         $unknown    = [];
         $duplicates = [];
+        $permKeys   = [];
+        $repeated   = [];
         foreach ($acls as $acl) {
             $where = "{$acl['type']} {$acl['id']}";
             /** @var array<string, array{0: string, 1: string, 2: bool}> $chosen userid => [principal, perm, spelled as in the directory] */
@@ -191,10 +193,18 @@ final class Plan
                     $duplicates[] = "$principal on $where";
                 }
             }
-            foreach ($chosen as $userid => [, $perm]) {
+            foreach ($chosen as $userid => [$principal, $perm]) {
+                // one row per perms primary key, else the insert of the second one fails
+                $permKey = "{$acl['type']}\0{$acl['id']}\0$userid";
+                if (isset($permKeys[$permKey])) {
+                    $repeated[] = "$principal on $where";
+                    continue;
+                }
+                $permKeys[$permKey] = true;
                 $perms[] = ['object_type' => $acl['type'], 'objectid' => $acl['id'], 'userid' => (string) $userid, 'perm' => $perm];
             }
         }
+        $findings[] = self::info('Objects listed more than once keep the first right', $repeated);
         $findings[] = self::info('Rights of principals that are neither in the directory nor a reader id are dropped', $unknown);
         $findings[] = self::info(
             'Rights granted to one person or group under several DN spellings keep the directory spelling (else the first); dropped',
