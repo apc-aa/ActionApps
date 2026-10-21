@@ -131,6 +131,46 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             self::assertSame([['object_type' => 'slice', 'objectid' => 'S2', 'userid' => '338', 'perm' => '2']], $plan->perms);
         }
 
+        public function test_build_groupSpellingsJoinAsLdapDoes(): void
+        {
+            // LDAP appends every ACI containing the group DN in any case; others never apply.
+            // The highest role digit stays, with the letters it does not cover
+            $acls = [['type' => 'slice', 'id' => 'S2', 'perms' => [
+                'cn=Editors,ou=AA'  => '3',
+                'cn=editors,ou=aa'  => 'ax1',
+                'cn=Editors ,ou=AA' => '4',
+            ]]];
+
+            $plan = Plan::build($this->people(), $this->directoryGroups(), $acls, [], 336);
+
+            self::assertSame([['object_type' => 'slice', 'objectid' => 'S2', 'userid' => '340', 'perm' => '3x']], $plan->perms);
+            self::assertTrue($this->hasFinding($plan, false, 'cn=Editors ,ou=AA on slice S2'));
+            self::assertFalse($this->hasFinding($plan, true, 'S2'));
+        }
+
+        public function test_build_personSpellingLoginNeverMatchesIsDropped(): void
+        {
+            // the session DN uid=jan,ou=People,ou=AA is not part of this ACI, so LDAP never gave it to jan
+            $acls = [['type' => 'slice', 'id' => 'S2', 'perms' => ['uid=jan\20,ou=People,ou=AA' => '1']]];
+
+            $plan = Plan::build($this->people(), [], $acls, [], 336);
+
+            self::assertSame([], $plan->perms);
+            self::assertTrue($this->hasFinding($plan, false, 'uid=jan\20,ou=People,ou=AA on slice S2'));
+        }
+
+        public function test_build_joinedRightOverThePermColumnBlocks(): void
+        {
+            $acls = [['type' => 'slice', 'id' => 'S2', 'perms' => [
+                'cn=Editors,ou=AA' => 'abcdefghijklmnopq',
+                'cn=EDITORS,ou=AA' => 'rstuvwxyzABCDEFGHIJ',
+            ]]];
+
+            $plan = Plan::build($this->people(), $this->directoryGroups(), $acls, [], 336);
+
+            self::assertTrue($this->hasFinding($plan, true, 'cn=Editors,ou=AA, cn=EDITORS,ou=AA on slice S2'));
+        }
+
         public function test_build_objectListedTwiceKeepsTheFirstRight(): void
         {
             $acls = [
@@ -301,9 +341,10 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             self::assertCount(1, $plan->users);
         }
 
-        private function plan(): Plan
+        /** @return array<string, array{cn: string, description: string, members: list<string>}> */
+        private function directoryGroups(): array
         {
-            $groups = [
+            return [
                 'cn=AA Admins,ou=AA' => [
                     'cn'          => 'AA Admins',
                     'description' => 'Admins',
@@ -311,6 +352,11 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
                 ],
                 'cn=Editors,ou=AA' => ['cn' => 'Editors', 'description' => '', 'members' => [self::READER]],
             ];
+        }
+
+        private function plan(): Plan
+        {
+            $groups = $this->directoryGroups();
             $acls = [
                 ['type' => 'aa', 'id' => AA_ID, 'perms' => ['cn=AA Admins,ou=AA' => '4']],
                 ['type' => 'slice', 'id' => 'S1', 'perms' => [

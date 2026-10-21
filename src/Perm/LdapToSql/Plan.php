@@ -23,6 +23,9 @@ final class Plan
     /** Finding texts list at most this many examples; the count is always complete. */
     private const EXAMPLES = 10;
 
+    /** varbinary(32) perms.perm */
+    private const PERM_WIDTH = 32;
+
     /**
      * @param array<string, int> $ids normalized DN => id
      * @param array<string, string> $canonical normalized DN => directory DN
@@ -168,35 +171,23 @@ final class Plan
         $findings[] = self::info('Group members that are neither in the directory nor a reader id are dropped', $unknown);
         $findings[] = self::info('Group members listed twice under different DN spellings are imported once', $duplicates);
 
-        $perms      = [];
-        $unknown    = [];
-        $duplicates = [];
-        $permKeys   = [];
-        $repeated   = [];
+        $perms     = [];
+        $unknown   = [];
+        $unapplied = [];
+        $permKeys  = [];
+        $repeated  = [];
+        $groupKey  = array_fill_keys($groupKeys, true);
         foreach ($acls as $acl) {
-            $where = "{$acl['type']} {$acl['id']}";
-            /** @var array<string, array{0: string, 1: string, 2: bool}> $chosen userid => [principal, perm, spelled as in the directory] */
-            $chosen = [];
-            foreach ($acl['perms'] as $principal => $perm) {
-                $principal = (string) $principal;
-                $found     = self::principal($principal, $ids);
-                if ($found === null) {
-                    $unknown[] = "$principal on $where";
-                    continue;
-                }
-                [$userid, $key] = $found;
-                // LDAP's getJoinedPerms() used the first ACI naming the DN case-insensitively
-                $asDirectory = $key !== null && strcasecmp($principal, $canonical[$key] ?? '') === 0;
-                if (!isset($chosen[$userid])) {
-                    $chosen[$userid] = [$principal, $perm, $asDirectory];
-                } elseif ($asDirectory && !$chosen[$userid][2]) {
-                    $duplicates[]    = "{$chosen[$userid][0]} on $where";
-                    $chosen[$userid] = [$principal, $perm, true];
-                } else {
-                    $duplicates[] = "$principal on $where";
-                }
+            $where   = "{$acl['type']} {$acl['id']}";
+            $result  = self::applied($acl['perms'], $ids, $canonical, $groupKey);
+            $applied = $result['applied'];
+            foreach ($result['unknown'] as $principal) {
+                $unknown[] = "$principal on $where";
             }
-            foreach ($chosen as $userid => [$principal, $perm]) {
+            foreach ($result['unapplied'] as $principal) {
+                $unapplied[] = "$principal on $where";
+            }
+            foreach ($applied as $userid => [$principal, $perm]) {
                 // one row per perms primary key, else the insert of the second one fails
                 $permKey = "{$acl['type']}\0{$acl['id']}\0$userid";
                 if (isset($permKeys[$permKey])) {
@@ -204,15 +195,15 @@ final class Plan
                     continue;
                 }
                 $permKeys[$permKey] = true;
+                if (strlen($perm) > self::PERM_WIDTH) {
+                    $findings[] = self::block("$principal on $where: the right $perm is " . strlen($perm) . ' bytes, perms.perm holds ' . self::PERM_WIDTH . '.');
+                }
                 $perms[] = ['object_type' => $acl['type'], 'objectid' => $acl['id'], 'userid' => (string) $userid, 'perm' => $perm];
             }
         }
         $findings[] = self::info('Objects listed more than once keep the first right', $repeated);
         $findings[] = self::info('Rights of principals that are neither in the directory nor a reader id are dropped', $unknown);
-        $findings[] = self::info(
-            'Rights granted to one person or group under several DN spellings keep the directory spelling (else the first); dropped',
-            $duplicates,
-        );
+        $findings[] = self::info('Rights under a DN spelling LDAP never applied to the person or group (or after the first for a person) are dropped', $unapplied);
 
         $remap   = [];
         $unknown = [];
@@ -256,6 +247,62 @@ final class Plan
             return isset($ids[$key]) ? [(string) $ids[$key], $key] : null;
         }
         return \is_long_id($value) ? [$value, null] : null;
+    }
+
+    /**
+     * The rights LDAP's getJoinedPerms() really applied on one object, by SQL id. It applies the
+     * ACIs containing (stripos()) the session DN - here the directory DN, which a login by mail
+     * returns - or a group's directory DN: a person's first one, all of a group's.
+     *
+     * @param array<array-key, mixed> $principalPerms principal => perm, as LDAP keeps them
+     * @param array<string, int> $ids normalized DN => id
+     * @param array<string, string> $canonical normalized DN => directory DN
+     * @param array<string, true> $groupKeys normalized DNs of groups
+     * @return array{applied: array<string, array{0: string, 1: string}>, unknown: list<string>, unapplied: list<string>}
+     *         applied: id => [principals, perm]; unknown: no SQL owner; unapplied: spellings LDAP never applied
+     */
+    public static function applied(array $principalPerms, array $ids, array $canonical, array $groupKeys): array
+    {
+        $out = ['applied' => [], 'unknown' => [], 'unapplied' => []];
+        foreach ($principalPerms as $principal => $perm) {
+            $principal = (string) $principal;
+            $perm      = (string) $perm;
+            $found     = self::principal($principal, $ids);
+            if ($found === null) {
+                $out['unknown'][] = $principal;
+                continue;
+            }
+            [$userid, $key] = $found;
+            if ($key !== null && stripos($principal, $canonical[$key]) === false) {
+                $out['unapplied'][] = $principal;
+            } elseif (!isset($out['applied'][$userid])) {
+                $out['applied'][$userid] = [$principal, $perm];
+            } elseif ($key !== null && isset($groupKeys[$key])) {
+                [$principals, $joined]   = $out['applied'][$userid];
+                $out['applied'][$userid] = ["$principals, $principal", self::joinPerms($joined . $perm)];
+            } else {
+                $out['unapplied'][] = $principal;
+            }
+        }
+        return $out;
+    }
+
+    /**
+     * The same rights in one short value: the highest role digit (which admin/setup.php and
+     * IsSuperadmin() look for as such) and the letters it does not cover, each once.
+     */
+    private static function joinPerms(string $perms): string
+    {
+        $role  = '';
+        $roles = array_column(\AA_Perm::ROLES, 'perm', 'id');
+        foreach (str_split($perms) as $char) {
+            if (isset($roles[$char]) && $char > $role) {
+                $role = $char;
+            }
+        }
+        $covered = $role === '' ? [] : str_split($roles[$role]);
+        $rest    = array_diff(str_split($perms), array_keys($roles), $covered);
+        return $role . implode('', array_unique($rest));
     }
 
     /** @param list<array{blocking: bool, text: string}|null> $findings */
@@ -311,12 +358,23 @@ final class Plan
      */
     private static function info(string $text, array $items): ?array
     {
+        return self::finding(false, $text, $items);
+    }
+
+    /**
+     * One finding for many items: the full count, at most EXAMPLES of them; null for none.
+     *
+     * @param list<string> $items
+     * @return array{blocking: bool, text: string}|null
+     */
+    public static function finding(bool $blocking, string $text, array $items): ?array
+    {
         if (!$items) {
             return null;
         }
         $more = count($items) > self::EXAMPLES ? '; ...' : '';
         return [
-            'blocking' => false,
+            'blocking' => $blocking,
             'text'     => "$text (" . count($items) . '): ' . implode('; ', array_slice($items, 0, self::EXAMPLES)) . $more,
         ];
     }

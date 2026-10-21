@@ -98,10 +98,11 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
         private const S2      = 'c5e9a2c4d6f8b0a1c3e5f7a9b1d3e5f7';
         private const S9      = 'd5e9a2c4d6f8b0a1c3e5f7a9b1d3e5f7';
         private const READER  = '0123456789abcdef0123456789abcdef';
+        private const PEOPLE  = 'ou=People,ou=AA';
         private const KALEN   = 'uid=kalen01,ou=People,ou=AA';
         private const VARIANT = 'uid=Kalen01,ou=People,ou=AA';
-        private const SPACED  = 'uid=kalen01 ,ou=People,ou=AA';
         private const JAN     = 'uid=jan,ou=People,ou=AA';
+        private const JAN_SP  = 'uid=jan\20,ou=People,ou=AA';
         private const ADMINS  = 'cn=AA Admins,ou=AA';
         private const EDITORS = 'cn=Editors,ou=AA';
         private const SSHA    = '{SSHA}YWFhYWFhYWFhYWFhYWFhYWFhYWE=';
@@ -129,27 +130,85 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             self::assertStringContainsString(self::JAN . ' on slice ' . self::S1, $this->blocking($findings)[0]);
         }
 
-        public function test_compare_extraLetterIsInfo(): void
+        public function test_compare_gainOnTheDirectoryDnMeansLdapDidNotAnswer(): void
         {
-            $sql = $this->sql();
-            $sql->userPerms['336']['slice'][self::S1] = '3';
-
-            $findings = $this->compare($this->ldap(), $sql);
-
-            self::assertSame([], $this->blocking($findings));
-            self::assertTrue($this->has($findings, false, self::JAN . ' on slice ' . self::S1));
-        }
-
-        public function test_compare_variantChecked(): void
-        {
+            // SQL holds only what LDAP applied to the directory DN, so more in SQL is a failed read
             $ldap = $this->ldap();
-            $ldap->userPerms[self::VARIANT]['slice'][self::S2] = '1';
+            $ldap->userPerms[self::JAN] = [];
 
             $findings = $this->compare($ldap, $this->sql());
 
             self::assertCount(1, $this->blocking($findings));
+            self::assertStringContainsString('LDAP did not give', $this->blocking($findings)[0]);
+            self::assertStringContainsString(self::JAN . ' on slice ' . self::S1, $this->blocking($findings)[0]);
+        }
+
+        public function test_compare_gainOnAnotherSpellingIsInfo(): void
+        {
+            // no SUPER on aa, which would cover any slice right
+            $ldap = $this->ldap();
+            $sql  = $this->sql();
+            $ldap->userPerms[self::KALEN]['aa'] = [];
+            $ldap->userPerms[self::VARIANT]     = [];
+            $sql->userPerms['337']['aa']        = [];
+
+            $findings = $this->compare($ldap, $sql);
+
+            self::assertSame([], $this->blocking($findings));
+            self::assertTrue($this->has($findings, false, self::VARIANT . ' on slice ' . self::S1));
+        }
+
+        public function test_compare_spellingLdapNeverAppliedIsNoObjectFinding(): void
+        {
+            // the plan drops it (with an info finding); no session with the directory DN ever had it
+            $acls = [
+                ['type' => 'aa', 'id' => self::AA, 'perms' => [self::ADMINS => '4']],
+                ['type' => 'slice', 'id' => self::S1, 'perms' => [self::JAN_SP => '1']],
+            ];
+            $ldap = $this->ldap();
+            $sql  = $this->sql();
+            $ldap->objectPerms['slice ' . self::S1] = $acls[1]['perms'];
+            $sql->objectPerms['slice ' . self::S1]  = [];
+            foreach ([self::KALEN, self::VARIANT, self::JAN] as $dn) {
+                $ldap->userPerms[$dn]['slice'] = [];
+            }
+            $sql->userPerms['336']['slice'] = [];
+            $sql->userPerms['337']['slice'] = [];
+
+            self::assertSame([], $this->blocking($this->compare($ldap, $sql, $acls)));
+        }
+
+        public function test_compare_variantChecked(): void
+        {
+            // no SUPER on aa, which would cover any slice right
+            $ldap = $this->ldap();
+            $sql  = $this->sql();
+            $ldap->userPerms[self::KALEN]['aa']   = [];
+            $ldap->userPerms[self::VARIANT]['aa'] = [];
+            $sql->userPerms['337']['aa']          = [];
+            $ldap->userPerms[self::VARIANT]['slice'][self::S2] = '1';
+
+            $findings = $this->compare($ldap, $sql);
+
+            self::assertCount(1, $this->blocking($findings));
             self::assertStringContainsString(self::VARIANT . ' on slice ' . self::S2, $this->blocking($findings)[0]);
             self::assertSame(1, $ldap->calls['getMembership ' . self::VARIANT . ' 1']);
+        }
+
+        public function test_compare_loginSpellingChecked(): void
+        {
+            // AA builds the session DN from the typed login and LDAP_PEOPLE, not from the directory
+            $login = 'uid=jan,OU=People,OU=AA';
+            $ldap  = $this->ldap();
+            $ldap->userPerms[$login] = ['slice' => [self::S1 => '2', self::S2 => '1']];
+            $plan  = $this->plan($this->acls());
+
+            $answers  = Parity::ask($ldap, $plan, $this->objects(), self::AA, 'OU=People,OU=AA');
+            $findings = Parity::compare($answers, $this->sql(), $plan, self::AA);
+
+            self::assertArrayHasKey($login, $answers['people']['336']);
+            self::assertCount(1, $this->blocking($findings));
+            self::assertStringContainsString($login . ' on slice ' . self::S2, $this->blocking($findings)[0]);
         }
 
         public function test_compare_emptySuperGroupBlocks(): void
@@ -165,8 +224,9 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             }
             $sql->userPerms['337']['aa'] = [];
             $sql->membership['337']      = [[], []];
+            $plan = $this->plan($this->acls(), ['cn=aauser,ou=AA']);
 
-            $findings = $this->compare($ldap, $sql);
+            $findings = Parity::compare(Parity::ask($ldap, $plan, $this->objects(), self::AA, self::PEOPLE), $sql, $plan, self::AA);
 
             self::assertCount(1, $this->blocking($findings));
             self::assertStringContainsString('admin/setup.php', $this->blocking($findings)[0]);
@@ -218,28 +278,80 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             self::assertTrue($this->has($findings, false, 'other@example.org'));
         }
 
-        public function test_compare_spellingThePlanDroppedOnlyInforms(): void
+        public function test_compare_everyLostLetterBlocks(): void
         {
-            // the plan keeps the directory spelling; LDAP still grants the other one to whoever logs in with it
-            $acls = $this->acls();
-            $acls[1]['perms'] = [self::SPACED => '3', self::KALEN => '2'] + $acls[1]['perms'];
-            $plan = $this->plan($acls, [self::VARIANT, self::SPACED]);
-            self::assertFalse($plan->blocking());
+            // LDAP never applied the \20 spelling to jan's session and joins both Editors ACIs: 3a;
+            // a user row 1 in SQL would override them
+            $acls = [
+                ['type' => 'aa', 'id' => self::AA, 'perms' => [self::ADMINS => '4']],
+                ['type' => 'slice', 'id' => self::S1, 'perms' => [self::JAN_SP => '1', self::EDITORS => '3', 'cn=editors,ou=aa' => 'a']],
+            ];
+            $ldap = $this->ldap();
+            $sql  = $this->sql();
+            $ldap->objectPerms['slice ' . self::S1] = $acls[1]['perms'];
+            $ldap->userPerms[self::JAN]['slice']    = [self::S1 => '3a'];
+            $sql->userPerms['336']['slice']         = [self::S1 => '1'];
+            $sql->objectPerms['slice ' . self::S1]  = ['336' => '1', '339' => '3a'];
+
+            $findings = $this->compare($ldap, $sql, $acls);
+
+            self::assertTrue($this->has($findings, true, self::JAN . ' on slice ' . self::S1));
+        }
+
+        public function test_compare_groupSpellingsCountTogether(): void
+        {
+            $acls = [['type' => 'aa', 'id' => self::AA, 'perms' => [self::ADMINS => '2', 'cn=aa admins,ou=aa' => '4']]];
+            $plan = $this->plan($acls);
+            // LDAP joins them: 24 is all SUPER, and setup.php looks for exactly 4
+            self::assertSame([['object_type' => 'aa', 'objectid' => self::AA, 'userid' => '338', 'perm' => '4']], $plan->perms);
 
             $ldap = $this->ldap();
             $sql  = $this->sql();
-            $ldap->objectPerms['slice ' . self::S1]  = $acls[1]['perms'];
-            $ldap->userPerms[self::KALEN]['slice']   = [self::S1 => '2'];
-            $ldap->userPerms[self::VARIANT]['slice'] = [self::S1 => '2'];
-            $ldap->userPerms[self::SPACED]           = $ldap->userPerms[self::KALEN];
-            $ldap->userPerms[self::SPACED]['slice']  = [self::S1 => '3'];
-            $sql->userPerms['337']['slice']          = [self::S1 => '2'];
-            $sql->objectPerms['slice ' . self::S1]['337'] = '2';
+            $ldap->objectPerms = ['aa ' . self::AA => $acls[0]['perms']];
+            $sql->objectPerms  = ['aa ' . self::AA => ['338' => '4']];
+            self::assertSame([], $this->blocking($this->compare($ldap, $sql, $acls)));
 
-            $findings = Parity::compare($ldap, $sql, $plan, array_keys($plan->remap), $this->objects(), self::AA);
+            $sql->objectPerms = ['aa ' . self::AA => ['338' => '2']];
+            self::assertTrue($this->has($this->compare($ldap, $sql, $acls), true, 'cn=aa admins,ou=aa on aa ' . self::AA));
+        }
 
-            self::assertSame([], $this->blocking($findings));
-            self::assertTrue($this->has($findings, false, self::SPACED . ' on slice ' . self::S1));
+        public function test_compare_sliceRightShadowingTheAaRightBlocks(): void
+        {
+            // CheckPerms() takes a slice right over an AA one below SUPER
+            $ldap = $this->ldap();
+            $sql  = $this->sql();
+            $ldap->userPerms[self::JAN] = ['aa' => [self::AA => '3']];
+            $sql->userPerms['336']      = ['aa' => [self::AA => '3'], 'slice' => [self::S2 => '1']];
+
+            $findings = $this->compare($ldap, $sql);
+
+            self::assertTrue($this->has($findings, true, self::JAN . ' on slice ' . self::S2));
+        }
+
+        public function test_compare_superadminIsTheRoleDigit(): void
+        {
+            // IsSuperadmin() looks for 4 itself; its letters alone are not enough
+            $sql = $this->sql();
+            $sql->userPerms['337']['aa'] = [self::AA => \AA_Perm::ROLES['SUPER']['perm']];
+
+            $findings = $this->compare($this->ldap(), $sql);
+
+            self::assertTrue($this->has($findings, true, self::KALEN . ': superadmin'));
+        }
+
+        public function test_compare_rowsLdapDidNotAnswerBlock(): void
+        {
+            // a failed LDAP read is an empty answer
+            $ldap = $this->ldap();
+            unset($ldap->objectPerms['slice ' . self::S1], $ldap->info[self::JAN], $ldap->members[self::EDITORS]);
+            $ldap->membership[self::JAN] = [[], []];
+
+            $findings = $this->compare($ldap, $this->sql());
+
+            self::assertTrue($this->has($findings, true, 'on slice ' . self::S1 . ': only in SQL'));
+            self::assertTrue($this->has($findings, true, self::JAN . ': no entry'));
+            self::assertTrue($this->has($findings, true, self::JAN . ' in ' . self::EDITORS));
+            self::assertTrue($this->has($findings, true, 'uid=jan,ou=People,ou=AA (id 336) in ' . self::EDITORS));
         }
 
         public function test_compare_ignoresObjectsOfOtherDbs(): void
@@ -258,33 +370,37 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
 
             // kalen01 is checked under two spellings, SQL knows one id
             self::assertSame(1, $sql->calls['getUserPerms 337 slice']);
+            self::assertSame(1, $sql->calls['getUserPerms 337 aa']);
             self::assertSame(1, $sql->calls['getMembership 337 1']);
             self::assertSame(1, $sql->calls['getIDsInfo 337']);
             self::assertSame(1, $sql->calls['getObjectsPerms aa ' . self::AA]);
         }
 
-        /** @return list<array{blocking: bool, text: string}> */
-        private function compare(FakePerm $ldap, FakePerm $sql): array
+        /**
+         * @param list<array{type: string, id: string, perms: array<string, string>}>|null $acls
+         * @return list<array{blocking: bool, text: string}>
+         */
+        private function compare(FakePerm $ldap, FakePerm $sql, ?array $acls = null): array
         {
-            $plan = $this->plan($this->acls());
-            return Parity::compare($ldap, $sql, $plan, array_keys($plan->remap), $this->objects(), self::AA);
+            $plan = $this->plan($acls ?? $this->acls());
+            return Parity::compare(Parity::ask($ldap, $plan, $this->objects(), self::AA, self::PEOPLE), $sql, $plan, self::AA);
         }
 
         /**
          * @param list<array{type: string, id: string, perms: array<string, string>}> $acls
-         * @param list<string> $referenced
+         * @param list<string> $adminMembers
          */
-        private function plan(array $acls, array $referenced = [self::VARIANT]): Plan
+        private function plan(array $acls, array $adminMembers = [self::KALEN, 'cn=aauser,ou=AA']): Plan
         {
             $person = static fn(string $uid, string $mail): array => [
                 'uid' => $uid, 'cn' => $uid, 'sn' => null, 'givenname' => null, 'mail' => [$mail], 'password' => self::SSHA,
             ];
             $people = [self::KALEN => $person('kalen01', 'k@example.org'), self::JAN => $person('jan', 'j@example.org')];
             $groups = [
-                self::ADMINS  => ['cn' => 'AA Admins', 'description' => '', 'members' => [self::KALEN, 'cn=aauser,ou=AA']],
+                self::ADMINS  => ['cn' => 'AA Admins', 'description' => '', 'members' => $adminMembers],
                 self::EDITORS => ['cn' => 'Editors', 'description' => '', 'members' => [self::JAN, self::READER]],
             ];
-            return Plan::build($people, $groups, $acls, $referenced, 336);
+            return Plan::build($people, $groups, $acls, [self::VARIANT], 336);
         }
 
         /** @return list<array{type: string, id: string, perms: array<string, string>}> */

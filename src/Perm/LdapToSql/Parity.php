@@ -5,102 +5,141 @@ declare(strict_types=1);
 namespace AA\Perm\LdapToSql;
 
 /**
- * Asks the LDAP and the converted SQL permission system the same questions and reports
- * where the answers differ: LDAP is asked with each spelling of a DN, SQL with its id.
+ * Compares what the LDAP permission system answers with what the converted SQL one does:
+ * LDAP is asked with every spelling of a DN (ask(), before the import), SQL with its id
+ * (compare(), after it, inside the same transaction).
  *
- * Whatever SQL would deny that LDAP grants blocks the switch; whatever SQL grants on top
- * is info. Principals and DN spellings the plan already drops (with its own finding) are
- * not reported again.
+ * Any right SQL would deny that LDAP grants blocks the switch, and so does an answer LDAP
+ * did not give although its snapshot has it - its read functions turn failures into
+ * empty answers; so does any right SQL grants beyond LDAP's answer for the directory DN,
+ * which is all the import took. Gains under other spellings are info.
+ *
+ * @phpstan-type Answers array{
+ *     objects: array<string, list<string>>,
+ *     objectPerms: array<string, array<string, string>>,
+ *     people: array<int|string, array<string, PersonAnswer>>,
+ *     groups: array<int|string, GroupAnswer>,
+ * }
+ * @phpstan-type PersonAnswer array{perms: array<string, array<string, string>>, membership: array{0: list<string>, 1: list<string>}, info: false|array<string, mixed>}
+ * @phpstan-type GroupAnswer array{info: false|array<string, mixed>, members: list<string>}
  */
 final class Parity
 {
-    /** Finding texts list at most this many examples; the count is always complete. */
-    private const EXAMPLES = 10;
-
     /** category => [blocking, text]; findings come out in this order */
     private const CATEGORIES = [
-        'lost'       => [true, 'Rights LDAP grants and SQL does not (missing letters)'],
+        'lost'       => [true, 'Rights LDAP grants and SQL does not, as CheckPerms() combines them'],
+        'objects'    => [true, 'Object rights missing, different or extra in SQL'],
         'unknown'    => [true, 'People or groups SQL does not know, or knows as another type'],
         'membership' => [true, 'Group memberships missing in SQL'],
         'members'    => [true, 'Group members missing in SQL'],
-        'objects'    => [true, 'Object rights missing or different in SQL'],
-        'dropped'    => [false, 'Rights LDAP grants only through a DN spelling the conversion drops (see the plan findings)'],
-        'gained'     => [false, 'Rights SQL grants beyond LDAP (extra letters)'],
+        'silent'     => [true, 'Answers LDAP did not give although its snapshot has them (a failed LDAP read?)'],
+        'gained'     => [false, 'Rights SQL grants beyond LDAP'],
         'joined'     => [false, 'Group memberships SQL has beyond LDAP'],
-        'extra'      => [false, 'Object rights SQL has and LDAP does not'],
         'details'    => [false, 'Login, mail or name differs between LDAP and SQL'],
     ];
 
-    /** @var array<string, array<string, true>> object type => object id => true */
-    private array $objects = [];
+    /** @var \AA_Perm set by compare() only - ask() must not touch SQL */
+    private object $sql;
 
-    /** @var array<string, string> id => directory DN */
+    /** @var array<int|string, string> id => directory DN */
     private array $dnOf = [];
 
-    /** @var array<string, true> "type\0object\0id" where the plan drops a spelling granting other rights */
-    private array $droppedSpelling = [];
+    /** @var array<string, true> normalized DNs of groups */
+    private array $groupKeys = [];
 
     /** @var array<string, list<string>> category => items */
     private array $items = [];
 
-    /** @var array<string, mixed> SQL answers by question; variants of one DN share an id */
+    /** @var array<string, mixed> SQL answers by question; the spellings of one DN share an id */
     private array $sqlMemo = [];
 
-    /**
-     * @param \AA_Perm $ldap
-     * @param \AA_Perm $sql
-     */
-    private function __construct(
-        private readonly object $ldap,
-        private readonly object $sql,
-        private readonly Plan $plan,
-    ) {
+    private function __construct(private readonly Plan $plan)
+    {
         foreach ($plan->ids as $key => $id) {
             $this->dnOf[(string) $id] = $plan->canonical[$key];
+        }
+        $groupIds = array_column($plan->groupRows, 'id', 'id');
+        foreach ($plan->ids as $key => $id) {
+            if (isset($groupIds[$id])) {
+                $this->groupKeys[$key] = true;
+            }
         }
     }
 
     /**
+     * Everything compare() needs from LDAP, asked once before any transaction. Each person
+     * is asked under the directory DN, the DN AA builds from the typed login and every
+     * referenced spelling (Plan::$remap).
+     *
      * @param \AA_Perm $ldap AA_Perm(['ldap', 'Reader'])
-     * @param \AA_Perm $sql AA_Perm(['sql', 'Reader'])
-     * @param list<string> $variants every referenced DN value of a person (Plan::$remap keys)
      * @param list<array{type: string, id: string}> $objects the objects of this DB
-     * @return list<array{blocking: bool, text: string}>
+     * @param ?string $people_base LDAP_PEOPLE; null reads the constant (no login spelling without it)
+     * @return Answers
      */
-    public static function compare(object $ldap, object $sql, Plan $plan, array $variants, array $objects, string $aa_id): array
+    public static function ask(object $ldap, Plan $plan, array $objects, string $aa_id, ?string $people_base = null): array
     {
-        $parity = new self($ldap, $sql, $plan);
+        $parity = new self($plan);
+        $people_base ??= \defined('LDAP_PEOPLE') ? (string) \constant('LDAP_PEOPLE') : '';
+
+        $byType = [];
         foreach ($objects as $object) {
-            $parity->objects[$object['type']][$object['id']] = true;
+            $byType[$object['type']][$object['id']] = true;
         }
-        // object rights first: they tell which lost letters the plan's dropped spellings explain
-        foreach ($parity->objects as $type => $ids) {
+        $answers = ['objects' => [], 'objectPerms' => [], 'people' => [], 'groups' => []];
+        foreach ($byType as $type => $ids) {
             foreach (array_keys($ids) as $id) {
-                $parity->object((string) $type, (string) $id);
+                $answers['objects'][(string) $type][] = (string) $id;
+                $answers['objectPerms']["$type $id"]  = self::strings($ldap->getObjectsPerms((string) $id, (string) $type));
             }
         }
-        $spellings = [];
-        foreach ($plan->users as $user) {
-            $spellings[(string) $user['id']] = [];
-        }
-        foreach ($plan->ids as $key => $id) {
-            if (isset($spellings[(string) $id])) {
-                $spellings[(string) $id][] = $plan->canonical[$key];
-            }
-        }
-        foreach (array_unique($variants) as $variant) {
-            $id = $parity->map($variant);
-            if ($id !== null && isset($spellings[$id]) && !in_array($variant, $spellings[$id], true)) {
-                $spellings[$id][] = $variant;
-            }
-        }
-        foreach ($spellings as $id => $dns) {
-            foreach ($dns as $i => $dn) {
-                $parity->person((string) $id, $dn, $i === 0);
+        // the AA right decides every slice right too
+        $wanted       = $byType;
+        $wanted['aa'] = ($wanted['aa'] ?? []) + [$aa_id => true];
+
+        foreach ($parity->spellings($people_base) as $id => $dns) {
+            foreach ($dns as $dn) {
+                $perms = [];
+                foreach ($wanted as $type => $ids) {
+                    $perms[(string) $type] = array_intersect_key(self::strings($ldap->getUserPerms($dn, (string) $type)), $ids);
+                }
+                $answers['people'][$id][$dn] = [
+                    'perms'      => $perms,
+                    'membership' => [self::list($ldap->getMembership($dn, 0)), self::list($ldap->getMembership($dn, 1))],
+                    'info'       => $ldap->getIDsInfo($dn),
+                ];
             }
         }
         foreach ($plan->groupRows as $group) {
-            $parity->group((string) $group['id']);
+            $dn = $parity->dnOf[(string) $group['id']];
+            $answers['groups'][(string) $group['id']] = [
+                'info'    => $ldap->getIDsInfo($dn),
+                'members' => self::list(array_keys($ldap->getGroupMembers($dn))),
+            ];
+        }
+        return $answers;
+    }
+
+    /**
+     * @param Answers $answers from ask() with the same plan
+     * @param \AA_Perm $sql AA_Perm(['sql', 'Reader'])
+     * @return list<array{blocking: bool, text: string}>
+     */
+    public static function compare(array $answers, object $sql, Plan $plan, string $aa_id): array
+    {
+        $parity      = new self($plan);
+        $parity->sql = $sql;
+        foreach ($answers['objects'] as $type => $ids) {
+            foreach ($ids as $id) {
+                $parity->object((string) $type, $id, $answers['objectPerms']["$type $id"] ?? []);
+            }
+        }
+        foreach ($answers['people'] as $id => $spellings) {
+            foreach ($spellings as $dn => $answer) {
+                $parity->person((string) $id, (string) $dn, $answer, $answers['objects'], $aa_id);
+            }
+        }
+        foreach ($answers['groups'] as $id => $answer) {
+            $parity->group((string) $id, $answer);
         }
 
         $findings = [];
@@ -111,108 +150,136 @@ final class Parity
             ];
         }
         foreach (self::CATEGORIES as $category => [$blocking, $text]) {
-            $items = $parity->items[$category] ?? [];
-            if ($items) {
-                $more       = count($items) > self::EXAMPLES ? '; ...' : '';
-                $findings[] = [
-                    'blocking' => $blocking,
-                    'text'     => "$text (" . count($items) . '): ' . implode('; ', array_slice($items, 0, self::EXAMPLES)) . $more,
-                ];
+            if ($finding = Plan::finding($blocking, $text, $parity->items[$category] ?? [])) {
+                $findings[] = $finding;
             }
         }
         return $findings;
     }
 
-    /** The rights LDAP keeps on the object, mapped to ids as the plan imported them */
-    private function object(string $type, string $object): void
+    /**
+     * Directory DN first, then the login DN and the referenced spellings of the person.
+     *
+     * @return array<int|string, list<string>> id => spellings
+     */
+    private function spellings(string $people_base): array
     {
-        $where = "$type $object";
-        /** @var array<string, array{0: string, 1: string, 2: bool}> $chosen id => [principal, perm, spelled as in the directory] */
-        $chosen  = [];
-        $dropped = [];
-        foreach ($this->ldap->getObjectsPerms($object, $type) as $principal => $perm) {
-            $principal = (string) $principal;
-            $id        = $this->map($principal);
-            if ($id === null) {
-                continue;
-            }
-            // the plan's choice among spellings of one principal
-            $asDirectory = strcasecmp($principal, $this->dnOf[$id] ?? '') === 0;
-            if (!isset($chosen[$id])) {
-                $chosen[$id] = [$principal, (string) $perm, $asDirectory];
-                continue;
-            }
-            if ($asDirectory && !$chosen[$id][2]) {
-                $dropped[$id][] = $chosen[$id][1];
-                $chosen[$id]    = [$principal, (string) $perm, true];
-            } else {
-                $dropped[$id][] = (string) $perm;
-            }
+        /** @var array<int|string, list<string>> $variants id => referenced spellings */
+        $variants = [];
+        foreach (array_keys($this->plan->remap) as $variant) {
+            $variants[$this->map((string) $variant) ?? ''][] = (string) $variant;
         }
-        foreach ($dropped as $id => $perms) {
-            foreach ($perms as $perm) {
-                if (self::letters($perm) !== self::letters($chosen[$id][1])) {
-                    $this->droppedSpelling["$type\0$object\0$id"] = true;
+        $out = [];
+        foreach ($this->plan->users as $user) {
+            $id  = (string) $user['id'];
+            $dns = [$this->dnOf[$id]];
+            if ($people_base !== '') {
+                // as AA_Permsystem_Ldap::authenticateUsername() builds the session DN
+                $dns[] = 'uid=' . self::escapeDn($user['uid']) . ',' . $people_base;
+            }
+            $out[$id] = [];
+            foreach ([...$dns, ...$variants[$id] ?? []] as $dn) {
+                // a login DN under another base does not bind, so no session ever had it
+                if (!in_array($dn, $out[$id], true) && $this->map($dn) === $id) {
+                    $out[$id][] = $dn;
                 }
             }
         }
+        return $out;
+    }
 
+    /** @param array<string, string> $ldapPerms principal => perm, as LDAP keeps them on the object */
+    private function object(string $type, string $object, array $ldapPerms): void
+    {
+        $where = "$type $object";
+        // spellings LDAP never applied, and principals the plan does not import, have their own plan findings
+        $ldap = Plan::applied($ldapPerms, $this->plan->ids, $this->plan->canonical, $this->groupKeys)['applied'];
         $sqlPerms = $this->sqlObjectPerms($type, $object);
-        foreach ($chosen as $id => [$principal, $perm]) {
+        foreach ($ldap as $id => [$principals, $perm]) {
             if (!isset($sqlPerms[$id])) {
-                $this->items['objects'][] = "$principal on $where: missing (LDAP $perm)";
+                $this->items['objects'][] = "$principals on $where: missing (LDAP $perm)";
             } elseif (self::letters($perm) !== self::letters($sqlPerms[$id])) {
-                $this->items['objects'][] = "$principal on $where: LDAP $perm, SQL {$sqlPerms[$id]}";
+                $this->items['objects'][] = "$principals on $where: LDAP $perm, SQL {$sqlPerms[$id]}";
             }
         }
-        foreach (array_diff_key($sqlPerms, $chosen) as $id => $perm) {
-            $this->items['extra'][] = $this->label((string) $id) . " on $where: $perm";
+        // the import copies LDAP, so a row LDAP lacks means LDAP did not answer
+        foreach (array_diff_key($sqlPerms, $ldap) as $id => $perm) {
+            $this->items['objects'][] = $this->label((string) $id) . " on $where: only in SQL ($perm)";
         }
     }
 
-    private function person(string $id, string $dn, bool $canonical): void
+    /**
+     * @param PersonAnswer $answer
+     * @param array<string, list<string>> $objects
+     */
+    private function person(string $id, string $dn, array $answer, array $objects, string $aa_id): void
     {
-        foreach ($this->objects as $type => $objects) {
+        // SQL holds only what LDAP applied to the directory DN: more in SQL there means LDAP did not
+        // answer; another spelling may just miss a person's own ACI
+        $canonical = $dn === $this->dnOf[$id];
+        $ldapAa    = $answer['perms']['aa'][$aa_id] ?? '';
+        $sqlAa     = $this->sqlUserPerms($id, 'aa')[$aa_id] ?? '';
+        foreach ($objects as $type => $ids) {
             $type = (string) $type;
-            $ldap = $this->ldap->getUserPerms($dn, $type);
             $sql  = $this->sqlUserPerms($id, $type);
-            foreach (array_keys($objects) as $object) {
-                $object  = (string) $object;
-                $ldapHas = (string) ($ldap[$object] ?? '');
-                $sqlHas  = (string) ($sql[$object] ?? '');
-                $where   = "$dn on $type $object";
-                if ($lost = array_diff(self::letters($ldapHas), self::letters($sqlHas))) {
-                    $category                 = $this->explainedByDroppedSpelling($id, $type, $object) ? 'dropped' : 'lost';
-                    $this->items[$category][] = "$where: " . implode('', $lost) . " (LDAP $ldapHas, SQL $sqlHas)";
+            foreach ($ids as $object) {
+                $ldapHas = $answer['perms'][$type][$object] ?? '';
+                $sqlHas  = $sql[$object] ?? '';
+                if ($type === 'slice') {
+                    // a slice right replaces the AA one unless that is SUPER
+                    $ldapHas = (string) \AA_Perm::joinSliceAndAAPerm($ldapHas, $ldapAa);
+                    $sqlHas  = (string) \AA_Perm::joinSliceAndAAPerm($sqlHas, $sqlAa);
                 }
-                // a variant seldom has an ACI of its own; its gains would only repeat the canonical ones
-                if ($canonical && ($gained = array_diff(self::letters($sqlHas), self::letters($ldapHas)))) {
-                    $this->items['gained'][] = "$where: " . implode('', $gained) . " (LDAP $ldapHas, SQL $sqlHas)";
+                $where = "$dn on $type $object";
+                if ($lost = array_diff(self::letters($ldapHas), self::letters($sqlHas))) {
+                    $this->items['lost'][] = "$where: " . implode('', $lost) . " (LDAP $ldapHas, SQL $sqlHas)";
+                }
+                if ($gained = array_diff(self::letters($sqlHas), self::letters($ldapHas))) {
+                    $this->items[$canonical ? 'silent' : 'gained'][] = "$where: " . implode('', $gained) . " (LDAP $ldapHas, SQL $sqlHas)";
                 }
             }
+        }
+        // IsSuperadmin() looks for the role digit itself, not for its letters
+        $super = \AA_Perm::ROLES['SUPER']['id'];
+        if (\IsPerm($ldapAa, $super) && !\IsPerm($sqlAa, $super)) {
+            $this->items['lost'][] = "$dn: superadmin (LDAP $ldapAa, SQL $sqlAa)";
+        } elseif (!\IsPerm($ldapAa, $super) && \IsPerm($sqlAa, $super)) {
+            $this->items[$canonical ? 'silent' : 'gained'][] = "$dn: superadmin (LDAP $ldapAa, SQL $sqlAa)";
         }
 
         foreach ([0 => 'any level', 1 => 'direct'] as $flags => $level) {
             $sqlGroups = array_flip($this->sqlMembership($id, $flags));
-            $ldapIds   = [];
-            foreach ($this->ldap->getMembership($dn, $flags) as $group) {
-                $group   = (string) $group;
+            /** @var array<int|string, true> $ldapIds */
+            $ldapIds = [];
+            foreach ($answer['membership'][$flags] as $group) {
                 $groupId = $this->map($group);
-                if ($groupId === null || !isset($sqlGroups[$groupId])) {
-                    $this->items['membership'][] = "$dn in $group ($level)";
-                } else {
+                if ($groupId !== null) {
                     $ldapIds[$groupId] = true;
                 }
+                if ($groupId === null || !isset($sqlGroups[$groupId])) {
+                    $this->items['membership'][] = "$dn in $group ($level)";
+                }
             }
-            if ($canonical) {
-                foreach (array_diff_key($sqlGroups, $ldapIds) as $groupId => $_) {
-                    $this->items['joined'][] = "$dn in " . $this->label((string) $groupId) . " ($level)";
+            if (!$canonical) {
+                continue;
+            }
+            foreach (array_diff_key($sqlGroups, $ldapIds) as $groupId => $_) {
+                $this->items['joined'][] = "$dn in " . $this->label((string) $groupId) . " ($level)";
+            }
+            if ($flags === 1) {
+                foreach ($this->plan->membership as $row) {
+                    if ($row['memberid'] === $id && !isset($ldapIds[(string) $row['groupid']])) {
+                        $this->items['silent'][] = "$dn in " . $this->label((string) $row['groupid']);
+                    }
                 }
             }
         }
 
-        $ldapInfo = $this->ldap->getIDsInfo($dn);
+        $ldapInfo = $answer['info'];
         $sqlInfo  = $this->sqlInfo($id);
+        if ($canonical && !$ldapInfo) {
+            $this->items['silent'][] = "$dn: no entry";
+        }
         if (!$sqlInfo) {
             if ($canonical) {
                 $this->items['unknown'][] = "$dn (id $id): missing";
@@ -230,20 +297,36 @@ final class Parity
         }
     }
 
-    private function group(string $id): void
+    /** @param GroupAnswer $answer */
+    private function group(string $id, array $answer): void
     {
         $dn      = $this->dnOf[$id];
         $sqlInfo = $this->sqlInfo($id);
+        if (!$answer['info']) {
+            $this->items['silent'][] = "$dn: no entry";
+        }
         if (!$sqlInfo || ($sqlInfo['type'] ?? '') !== 'Group') {
             $this->items['unknown'][] = "$dn (id $id): " . ($sqlInfo ? "SQL {$sqlInfo['type']}" : 'missing');
         }
         $sqlMembers = $this->sqlMembers($id);
-        foreach (array_keys($this->ldap->getGroupMembers($dn)) as $member) {
-            $member   = (string) $member;
+        /** @var array<int|string, true> $ldapIds */
+        $ldapIds = [];
+        foreach ($answer['members'] as $member) {
             $memberId = $this->map($member);
             // a member the plan drops (deleted, placeholder) has its own plan finding
-            if ($memberId !== null && !isset($sqlMembers[$memberId])) {
+            if ($memberId === null) {
+                continue;
+            }
+            $ldapIds[$memberId] = true;
+            if (!isset($sqlMembers[$memberId])) {
                 $this->items['members'][] = "$member in $dn";
+            }
+        }
+        foreach ($this->plan->membership as $row) {
+            $memberId = $row['memberid'];
+            // LDAP lists only members it can describe, never a reader
+            if ((string) $row['groupid'] === $id && !\is_long_id($memberId) && !isset($ldapIds[$memberId])) {
+                $this->items['silent'][] = $this->label($memberId) . " in $dn";
             }
         }
     }
@@ -258,17 +341,6 @@ final class Parity
             }
             $info = $this->sqlInfo((string) $id);
             if ($info && (($info['type'] ?? '') !== 'Group' || count($this->sqlMembers((string) $id)) > 0)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /** LDAP lost the letters only where the plan dropped a spelling of the person or of one of their groups */
-    private function explainedByDroppedSpelling(string $id, string $type, string $object): bool
-    {
-        foreach ([$id, ...$this->sqlMembership($id, 0)] as $principal) {
-            if (isset($this->droppedSpelling["$type\0$object\0$principal"])) {
                 return true;
             }
         }
@@ -290,6 +362,25 @@ final class Parity
         return isset($this->dnOf[$id]) ? "{$this->dnOf[$id]} (id $id)" : $id;
     }
 
+    /** ldap_escape($value, '', LDAP_ESCAPE_DN); test hosts lack ext-ldap */
+    private static function escapeDn(string $value): string
+    {
+        if (\function_exists('ldap_escape')) {
+            return ldap_escape($value, '', LDAP_ESCAPE_DN);
+        }
+        $out = '';
+        foreach (str_split($value) as $char) {
+            $out .= str_contains("\\,=+<>;\"#\r", $char) ? sprintf('\\%02x', \ord($char)) : $char;
+        }
+        if (str_starts_with($out, ' ')) {
+            $out = '\\20' . substr($out, 1);
+        }
+        if (strlen($out) > 1 && str_ends_with($out, ' ')) {
+            $out = substr($out, 0, -1) . '\\20';
+        }
+        return $out;
+    }
+
     /** @return list<string> distinct letters, the roles resolved */
     private static function letters(string $perms): array
     {
@@ -307,7 +398,7 @@ final class Parity
     /** @return list<string> group ids */
     private function sqlMembership(string $id, int $flags): array
     {
-        return $this->sqlMemo["membership\0$id\0$flags"] ??= array_values(array_map('strval', $this->sql->getMembership($id, $flags)));
+        return $this->sqlMemo["membership\0$id\0$flags"] ??= self::list($this->sql->getMembership($id, $flags));
     }
 
     /** @return false|array<string, mixed> */
@@ -339,5 +430,14 @@ final class Parity
             $out[(string) $key] = (string) $value;
         }
         return $out;
+    }
+
+    /**
+     * @param array<array-key, mixed> $values
+     * @return list<string>
+     */
+    private static function list(array $values): array
+    {
+        return array_values(array_map('strval', $values));
     }
 }
