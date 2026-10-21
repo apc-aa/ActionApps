@@ -23,11 +23,15 @@ final class References
     /** the user of imported items - never a person, so its number stays out of the id range */
     private const IMPORTER = '9999999999';
 
-    /** users.id is int(11) */
-    private const MAX_ID = 2147483647;
+    /** the highest id users.id (int(11)) holds */
+    public const MAX_ID = 2147483647;
 
-    /** generic property values - its numbers are timestamps and counters, not user ids */
-    private const NOT_IDS = ['object_text.value'];
+    /**
+     * Extra conditions for columns holding more than user ids: object_text.value has
+     * timestamps and counters too; a user id only under these properties (Note author,
+     * AA_Plannedtask saved_by, BatchRun user).
+     */
+    private const ID_ROWS = ['object_text.value' => [['property', ['author', 'saved_by', 'user']]]];
 
     /** tables of the permission system itself, replaced by the import */
     private const OWN_TABLES = ['users', 'membership', 'perms'];
@@ -71,11 +75,12 @@ final class References
     {
         $max = self::maximum('users', 'MAX(' . DB_AA::quoteIdentifier('id') . ')', []);
         foreach (self::present() as [$table, $column]) {
-            if (in_array("$table.$column", self::NOT_IDS, true)) {
-                continue;
+            $col   = DB_AA::quoteIdentifier($column);
+            $where = [[$col, '^[0-9]+$', 'REGEXP'], [$col, self::IMPORTER, 's<>']];
+            foreach (self::ID_ROWS["$table.$column"] ?? [] as [$name, $value]) {
+                $where[] = [DB_AA::quoteIdentifier($name), $value];
             }
-            $col = DB_AA::quoteIdentifier($column);
-            $max = max($max, self::maximum($table, "MAX(CAST($col AS UNSIGNED))", [[$col, '^[0-9]+$', 'REGEXP'], [$col, self::IMPORTER, 's<>']]));
+            $max = max($max, self::maximum($table, "MAX(CAST($col AS UNSIGNED))", $where));
         }
         if ($max >= self::MAX_ID) {
             throw new \RuntimeException("The data already holds user id $max - no room left for new ids in users.id.");

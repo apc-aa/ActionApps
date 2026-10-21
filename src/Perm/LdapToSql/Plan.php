@@ -96,6 +96,9 @@ final class Plan
             $ids[$key]       = $next++;
             $canonical[$key] = $dn;
         }
+        if ($next - 1 > References::MAX_ID) {
+            $findings[] = self::block('The ids would reach ' . ($next - 1) . ', above ' . References::MAX_ID . ', the highest users.id can hold.');
+        }
 
         $users     = [];
         $multiMail = [];

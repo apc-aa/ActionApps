@@ -153,6 +153,13 @@ final class DbAaMakeWhereTest extends TestCase
         $this->assertSame("WHERE t LIKE 'a\\\\\\' OR 1=1 -- %'", DB_AA::makeWhere([['t', "a\\' OR 1=1 -- %", 'LIKE']]));
     }
 
+    public function test_quoteIdentifier_doublesAnEmbeddedQuoteChar(): void
+    {
+        $q = DB_AA::quoteIdentifier('x')[0];   // ` for MySQL, " otherwise
+        $this->assertSame("{$q}a{$q}{$q}b{$q}", DB_AA::quoteIdentifier("a{$q}b"));
+        $this->assertSame("{$q}t{$q}.{$q}c{$q}{$q} OR 1=1{$q}", DB_AA::quoteIdentifier("t.c{$q} OR 1=1"));
+    }
+
     public function test_regexp_pattern_is_one_quoted_literal(): void
     {
         $this->assertSame("WHERE uid REGEXP '^[0-9]+\$'", DB_AA::makeWhere([['uid', '^[0-9]+$', 'REGEXP']]));

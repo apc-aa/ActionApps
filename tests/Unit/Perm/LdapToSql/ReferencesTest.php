@@ -61,7 +61,7 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             self::assertSame(336, References::firstFreeId());
 
             $maxima = $this->queries('SELECT MAX(');
-            self::assertCount(13, $maxima, '12 reference columns and users.id');
+            self::assertCount(14, $maxima, '13 reference columns and users.id');
             foreach ($maxima as $sql) {
                 if (str_contains($sql, DB_AA::quoteIdentifier('users'))) {
                     continue;
@@ -69,7 +69,25 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
                 self::assertStringContainsString("<> '9999999999'", $sql, 'the importer is left out by the query itself');
                 self::assertStringContainsString("REGEXP '^[0-9]+\$'", $sql, 'only all-digit values are ids');
             }
-            self::assertSame([], array_filter($maxima, static fn($s) => str_contains($s, 'object_text')), 'object_text.value holds timestamps, not ids');
+            $objects = array_values(array_filter($maxima, static fn($s) => str_contains($s, 'object_text')));
+            self::assertCount(1, $objects);
+            self::assertStringContainsString(
+                DB_AA::quoteIdentifier('property') . " IN ('author','saved_by','user')",
+                $objects[0],
+                'other object properties hold timestamps and counters, not user ids',
+            );
+        }
+
+        public function test_firstFreeId_countsUserIdsOfObjects(): void
+        {
+            $this->answer(fn(string $sql) => [['m' => str_contains($sql, 'object_text') ? '400' : '3']]);
+
+            self::assertSame(401, References::firstFreeId());
+        }
+
+        public function test_maxId_isTheUsersIdColumnLimit(): void
+        {
+            self::assertSame(2147483647, References::MAX_ID);
         }
 
         public function test_firstFreeId_unreadMaximumThrows(): void

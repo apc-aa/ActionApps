@@ -26,6 +26,7 @@ namespace {
 namespace AA\Tests\Unit\Perm\LdapToSql {
 
     use AA\Perm\LdapToSql\Plan;
+    use AA\Perm\LdapToSql\References;
     use PHPUnit\Framework\TestCase;
 
     final class PlanTest extends TestCase
@@ -261,6 +262,19 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
 
             $ok = Plan::build(['uid=' . str_repeat('a', 40) . ',ou=AA' => $this->person(str_repeat('a', 40), self::SSHA)], [], [], [], 1);
             self::assertFalse($ok->blocking());
+        }
+
+        public function test_build_idsBeyondTheUsersIdRangeBlock(): void
+        {
+            $people = [
+                'uid=a,ou=People,ou=AA' => $this->person('a', self::SSHA),
+                'uid=b,ou=People,ou=AA' => $this->person('b', self::SSHA),
+            ];
+
+            self::assertFalse(Plan::build($people, [], [], [], References::MAX_ID - 1)->blocking(), 'the last id is the limit itself');
+
+            $plan = Plan::build($people, [], [], [], References::MAX_ID);
+            self::assertTrue($this->hasFinding($plan, true, (string) (References::MAX_ID + 1)));
         }
 
         public function test_build_personWithoutUidBlocks(): void

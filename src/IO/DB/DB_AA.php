@@ -515,7 +515,7 @@ final class DB_AA
      *     NOT BEGIN-                   LIKE             single or array    ['selector', $item_id, 'BEGIN']
      *     CONTAIN  -                   LIKE             single or array    ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
-     *     REGEXP   -                   REGEXP           single             ['user', '^[0-9]+$', 'REGEXP']
+     *     REGEXP   -                   REGEXP           single             ['user', '^[0-9]+$', 'REGEXP'] // the pattern from code, never input (a crafted one can run for long)
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
      *     OR       - alternatives      OR               list of varlists   [null, [[['a', 1, 'i']], [['b', $x], ['c', 2, 'i']]], 'OR'] // (a = 1 OR (b = 'x' AND c = 2))
      *
@@ -691,10 +691,11 @@ final class DB_AA
         return 'GROUP BY ' . implode(',', $group);
     }
 
+    /** `table` or `table`.`column`; an embedded quote char is doubled, so a name cannot end the identifier */
     public static function quoteIdentifier(string $str): string
     {
         $char = in_array(DB_TYPE, ['db_mysql','db_mysqli','db_pdo:mysql']) ? '`' : '"';   // in original was used just '"' character (which is SQL standard and could be OK), but using PDO with mysql needs '`' character
-        return $char . implode("$char.$char", explode(".", $str)) . $char;
+        return $char . implode("$char.$char", explode(".", str_replace($char, $char . $char, $str))) . $char;
     }
 
 }
