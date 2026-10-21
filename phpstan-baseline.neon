@@ -637,24 +637,6 @@ parameters:
 			path: src/Optimize/FixPagecache.php
 
 		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: src/Optimize/LdapPermsToSql.php
-
-		-
-			message: '#^Class Cvarset referenced with incorrect case\: CVarset\.$#'
-			identifier: class.nameCase
-			count: 6
-			path: src/Optimize/LdapPermsToSql.php
-
-		-
-			message: '#^Constant AA_ID not found\.$#'
-			identifier: constant.notFound
-			count: 1
-			path: src/Optimize/LdapPermsToSql.php
-
-		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 2

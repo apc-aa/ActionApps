@@ -1,65 +1,56 @@
 <?php
 
+declare(strict_types=1);
+
 namespace AA\Optimize;
 
-use AA;
+use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
-use AA_Permsystem_Ldap;
-use CVarset;
+use AA\Perm\LdapToSql\Directory;
+use AA\Perm\LdapToSql\Importer;
+use AA\Perm\LdapToSql\Parity;
+use AA\Perm\LdapToSql\Plan;
+use AA\Perm\LdapToSql\References;
+use AA_Log;
+use AA_Perm;
+use AA_Permsystem_Sql;
+use RuntimeException;
 use Throwable;
 
-/** Migrate users, groups, memberships and permissions from the LDAP
- *  permission backend (perm_ldap) into the SQL permission backend
- *  (perm_sql), and rewrite user-id references in existing AA data
- *  (item.posted_by, item.edited_by) from LDAP DN form to the new
- *  SQL numeric ids.
+/**
+ * One-time switch of an LDAP install to SQL permissions: people and groups of the directory
+ * get numeric ids in users/membership/perms and every reference to a person in the data is
+ * rewritten from the DN to the id.
  *
- *  Intended to be run once on each install that wants to switch
- *  PERM_LIB from 'ldap' to 'sql'. Idempotent and revertable via a
- *  dedicated ldap2sql_map table that records every DN->id mapping.
+ * Test reads LDAP and the database and runs the import in a transaction it rolls back.
+ * Repair imports, checks that SQL answers as LDAP does and rewrites the references in one
+ * transaction, so a failure anywhere leaves the install as it was. There is no revert: the
+ * way back is the backup taken before Repair.
  *
- *  Note: perm_sql.php is deliberately NOT required - it declares the
- *  same global function names (AddUser, AddGroup, ...) as perm_ldap.php,
- *  which is already loaded via locauth.php when PERM_LIB='ldap'. All
- *  writes to the SQL permission tables are therefore done directly
- *  via DB_AA from this class.
+ * @phpstan-import-type Answers from Parity
+ * @phpstan-type Prepared array{objects: list<array{type: string, id: string}>, plan: Plan, answers: Answers}
  */
 class LdapPermsToSql extends AbstractOptimize
 {
-    public const MAP_TABLE = 'ldap2sql_map';
+    /** log type of a finished conversion - a second run would hand out other ids */
+    public const LOG_TYPE = 'LDAP2SQL';
 
-    /** Columns in AA data tables that store the current user id and
-     *  therefore need rewriting from LDAP DN form to SQL numeric id.
-     *  Hard-coded for safety and inspectability (see plan).
-     */
-    public const REWRITE_COLUMNS = [
-        ['table' => 'item', 'col' => 'posted_by'],
-        ['table' => 'item', 'col' => 'edited_by'],
-        // the passkeys of an account (AA_Perm::passkeyId()) - left on the DN they would log in nobody
-        ['table' => 'authenticator', 'col' => 'uid'],
-    ];
+    /** the tables the import empties and fills - only InnoDB rolls them back */
+    private const PERM_TABLES = ['users', 'membership', 'perms'];
 
-    /** @var bool - true during test(), suppresses all writes */
-    private bool $dry_run = false;
-
-    /** @var AA_Permsystem_Ldap */
-    private $ldap;
-
-    /** Name function */
     public static function name(): string
     {
-        return _m("Migrate LDAP perms to SQL perms");
+        return _m('Convert LDAP permissions to SQL');
     }
 
-    /** Description function */
     public static function description(): string
     {
-        return _m("Copies all users, groups, memberships and permissions from the LDAP backend into the SQL backend tables (users, membership, perms), and rewrites item.posted_by / item.edited_by and the owners of passkeys from LDAP DN form (uid=...,ou=...) to the new SQL numeric ids. Run once per install, then switch PERM_LIB to 'sql' in config. 'Test' is a read-only dry run. 'Repair' performs the migration and is re-runnable. 'Revert' uses the mapping table to undo everything.");
+        return _m("Moves the users, groups and rights of this database from LDAP to the SQL tables under new numeric ids and rewrites the references to people in the data. Test only reads: its trial import is rolled back. Repair does everything in one transaction; then set PERM_LIB='sql' in every config of this database. Take a backup first - restoring it is the only way back.");
     }
 
     public static function actions(): array
     {
-        return ['test', 'repair', 'revert'];
+        return ['test', 'repair'];
     }
 
     public static function types(): array
@@ -67,538 +58,297 @@ class LdapPermsToSql extends AbstractOptimize
         return ['private_fix'];
     }
 
-    /** Guard + initialize both permission backends */
-    private function init(): bool
-    {
-        if (!defined('PERM_LIB') || PERM_LIB !== 'ldap') {
-            $this->message(_m("This optimizer only runs when PERM_LIB='ldap'. Current PERM_LIB='%1'.", [defined('PERM_LIB') ? PERM_LIB : '?']));
-            return false;
-        }
-        $this->ldap = new AA_Permsystem_Ldap();
-        $this->ensureMapTable();
-        return true;
-    }
-
-    /** Create the persistent DN->id mapping table if it does not exist. */
-    private function ensureMapTable(): void
-    {
-        if (DB_AA::exists_table(self::MAP_TABLE)) {
-            return;
-        }
-        if ($this->dry_run) {
-            $this->message(_m("Would create mapping table `%1`", [self::MAP_TABLE]));
-            return;
-        }
-        $db = getDb();
-        $db->query("CREATE TABLE IF NOT EXISTS `" . self::MAP_TABLE . "` (
-            ldap_dn  VARCHAR(255) NOT NULL,
-            sql_id   BIGINT       NOT NULL,
-            kind     ENUM('user','group') NOT NULL,
-            login    VARCHAR(100) NOT NULL,
-            created  DATETIME     NOT NULL,
-            PRIMARY KEY (ldap_dn),
-            INDEX idx_sql_id (sql_id),
-            INDEX idx_login  (login)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-        freeDB($db);
-    }
-
-    //-------------------------------------------------------------- test
-
     public function test(): bool
     {
-        $this->clear_report();
-        $this->dry_run = true;
-        try {
-            if (!$this->init()) {
-                return false;
-            }
-            $this->runMigration();
-        } catch (Throwable $e) {
-            $this->message(_m("Test failed: %1", [safe($e->getMessage())]));
+        if (!$this->canRun()) {
             return false;
         }
-        $this->message(_m("Test finished (dry run - no changes made)."));
-        return true;
-    }
+        if (DB_AA::test('log', [['type', self::LOG_TYPE]])) {
+            $this->message(_m('This database was already converted - Repair will refuse to run again.'));
+        }
+        try {
+            $prepared = $this->prepare();
+            $plan     = $prepared['plan'];
+            $this->reportPlan($plan);
 
-    //------------------------------------------------------------ repair
+            $ok = !$plan->blocking();
+            if ($ok) {
+                $parity = $this->trialRun($prepared);
+                $this->reportFindings($parity);
+                $ok = !self::blocks($parity);
+                $this->message($ok ? _m('Parity check passed: SQL answers as LDAP does.') : _m('Parity check failed - Repair would stop at it.'));
+            } else {
+                $this->message(_m('The trial import is skipped: it would stop at the first blocking finding above. Fix them and run Test again.'));
+            }
+            $this->reportReferences($plan);
+        } catch (Throwable $e) {
+            $this->message(_m('Test failed: %1', [safe($e->getMessage())]));
+            return false;
+        }
+        return $ok;
+    }
 
     public function repair(): bool
     {
-        $this->clear_report();
-        $this->dry_run = false;
-        try {
-            if (!$this->init()) {
-                return false;
-            }
-            $this->runMigration();
-        } catch (Throwable $e) {
-            $this->message(_m("Repair failed: %1", [safe($e->getMessage())]));
+        if (!$this->canRun()) {
             return false;
         }
-        $this->message(_m("Repair finished."));
-        return true;
-    }
-
-    //------------------------------------------------------------ revert
-
-    public function revert(): bool
-    {
-        $this->clear_report();
-        $this->dry_run = false;
-        try {
-            if (!$this->init()) {
-                return false;
-            }
-            $this->runRevert();
-        } catch (Throwable $e) {
-            $this->message(_m("Revert failed: %1", [safe($e->getMessage())]));
+        if (DB_AA::test('log', [['type', self::LOG_TYPE]])) {
+            $this->message(_m('This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again.'));
             return false;
         }
-        $this->message(_m("Revert finished."));
+        $parity = [];
+        try {
+            $prepared = $this->prepare();
+            $plan     = $prepared['plan'];
+            $this->reportPlan($plan);
+            if ($plan->blocking()) {
+                $this->message(_m('Nothing was changed: the findings above block the conversion.'));
+                return false;
+            }
+            $counts = $this->inTransaction(function () use ($prepared, $plan, &$parity): array {
+                $imported = $this->import($plan);
+                // before the rewrite: its UPDATEs lock the big tables until the commit
+                $parity = $this->compare($prepared['answers'], $plan);
+                if (self::blocks($parity)) {
+                    throw new RuntimeException('SQL would not answer as LDAP does (see the parity findings).');
+                }
+                $rewritten = $this->rewrite($plan->remap);
+                $this->logConversion($imported, $rewritten);
+                return ['imported' => $imported, 'rewritten' => $rewritten];
+            });
+        } catch (Throwable $e) {
+            $this->reportFindings($parity);
+            $this->message(_m('Repair failed, nothing was changed: %1', [safe($e->getMessage())]));
+            return false;
+        } finally {
+            AA_Permsystem_Sql::forgetMembership();
+        }
+
+        $this->reportFindings($parity);
+        try {
+            PageCache::invalidateOlder(time());
+        } catch (Throwable $e) {
+            $this->message(_m('The page cache was not cleared, clear it by hand: %1', [safe($e->getMessage())]));
+        }
+        $imported = $counts['imported'];
+        $this->message(_m('Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed.', [$imported['users'], $imported['groups'], $imported['membership'], $imported['perms'], $imported['deleted']]));
+        foreach ($counts['rewritten'] as $column => $rows) {
+            $this->message(_m('Rewritten %1: %2 rows', [safe((string) $column), $rows]));
+        }
+        $this->message(_m('New ids of the directory entries:') . '<pre>' . safe(self::idMap($plan)) . '</pre>');
+        $this->message('<strong>' . _m("Now set PERM_LIB='sql' in every config of this database - until then AA still asks LDAP.") . '</strong>');
         return true;
-    }
-
-    //============================================================== core
-
-    private function runMigration(): void
-    {
-        $this->migrateUsers();
-        $this->migrateGroups();
-        $this->migrateMemberships();
-        $this->migratePerms();
-        $this->rewriteUserRefs();
-    }
-
-    //----- phase 1+2: users
-
-    private function migrateUsers(): void
-    {
-        $ldap_users = $this->ldap->findUsernames('');
-        if (!is_array($ldap_users)) {
-            $this->message(_m("LDAP findUsernames failed or returned: %1", [safe(print_r($ldap_users, true))]));
-            return;
-        }
-        $this->message(_m("LDAP users found: %1", [count($ldap_users)]));
-
-        $created = 0;
-        $reused = 0;
-        $failed = 0;
-        foreach ($ldap_users as $dn => $_row) {
-            if ($this->mapGet($dn)) {
-                continue;
-            }
-
-            $info = $this->ldap->getIDsInfo($dn);
-            if (!$info || ($info['type'] ?? '') !== 'User') {
-                continue;
-            }
-            $login = $info['login'] ?: $this->extractUidFromDn($dn);
-            if (!$login) {
-                $this->message(_m("Skipping user %1 - cannot determine login", [safe($dn)]));
-                $failed++;
-                continue;
-            }
-
-            // Conflict policy (plan): reuse existing sql user with same login.
-            $existing = DB_AA::select1('', "SELECT id, password FROM `users`", [['uid', $login], ['type', 'User']]);
-            if (is_array($existing)) {
-                $sql_id = (int) $existing['id'];
-                $this->message(_m("User %1 already exists in SQL (id %2), reusing", [safe($login), $sql_id]));
-                if (!$this->dry_run) {
-                    $this->mapPut($dn, $sql_id, 'user', $login);
-                    // If row holds our placeholder hash, overwrite with the
-                    // real LDAP hash so opportunistic rehash still works.
-                    if ($this->isPlaceholderHash($existing['password'])) {
-                        $this->maybeCopyLdapHash($dn, $sql_id);
-                    }
-                }
-                $reused++;
-                continue;
-            }
-
-            if ($this->dry_run) {
-                $this->message(_m("Would create SQL user: %1 (from %2)", [safe($login), safe($dn)]));
-                $created++;
-                continue;
-            }
-
-            $pwd_hash = $this->readLdapUserPassword($dn) ?: $this->placeholderHash();
-            $sql_id = $this->sqlInsertUser($login, $info, $pwd_hash);
-            if (!$sql_id) {
-                $this->message(_m("Failed to create SQL user %1", [safe($login)]));
-                $failed++;
-                continue;
-            }
-            $this->mapPut($dn, $sql_id, 'user', $login);
-            $created++;
-        }
-        $this->message(_m("Users: created=%1 reused=%2 failed=%3", [$created, $reused, $failed]));
-    }
-
-    //----- phase 3: groups
-
-    private function migrateGroups(): void
-    {
-        $ldap_groups = $this->ldap->findGroups('');
-        $this->message(_m("LDAP groups found: %1", [count($ldap_groups)]));
-
-        $created = 0;
-        $reused = 0;
-        $failed = 0;
-        foreach ($ldap_groups as $dn => $row) {
-            if ($this->mapGet($dn)) {
-                continue;
-            }
-
-            $gname = $row['name'] ?? '';
-            if (!$gname) {
-                continue;
-            }
-            $full = $this->ldap->getGroup($dn) ?: [];
-            $gdesc = $full['description'] ?? '';
-
-            // Conflict policy: reuse existing SQL group by name.
-            $existing = DB_AA::select1('', "SELECT id FROM `users`", [['name', $gname], ['type', 'Group']]);
-            if (is_array($existing)) {
-                $sql_id = (int) $existing['id'];
-                $this->message(_m("Group %1 already exists in SQL (id %2), reusing", [safe($gname), $sql_id]));
-                if (!$this->dry_run) {
-                    $this->mapPut($dn, $sql_id, 'group', $gname);
-                }
-                $reused++;
-                continue;
-            }
-
-            if ($this->dry_run) {
-                $this->message(_m("Would create SQL group: %1 (from %2)", [safe($gname), safe($dn)]));
-                $created++;
-                continue;
-            }
-
-            $sql_id = $this->sqlInsertGroup($gname, $gdesc);
-            if (!$sql_id) {
-                $this->message(_m("Failed to create SQL group %1", [safe($gname)]));
-                $failed++;
-                continue;
-            }
-            $this->mapPut($dn, $sql_id, 'group', $gname);
-            $created++;
-        }
-        $this->message(_m("Groups: created=%1 reused=%2 failed=%3", [$created, $reused, $failed]));
-    }
-
-    //----- phase 4: memberships
-
-    private function migrateMemberships(): void
-    {
-        $ldap_groups = $this->ldap->findGroups('');
-        $added = 0;
-        $skipped = 0;
-        foreach ($ldap_groups as $group_dn => $_row) {
-            $group_sql_id = $this->mapGet($group_dn);
-            if (!$group_sql_id) {
-                continue;
-            }
-            $members = $this->ldap->getGroupMembers($group_dn);
-            foreach ($members as $member_dn => $_info) {
-                $member_sql_id = $this->mapGet($member_dn);
-                if (!$member_sql_id) {
-                    $skipped++;
-                    continue;
-                }
-                if ($this->dry_run) {
-                    $added++;
-                    continue;
-                }
-                // idempotent: delete then insert (mirrors perm_sql AddGroupMember)
-                DB_AA::transaction(static function () use ($group_sql_id, $member_sql_id) {
-                    DB_AA::delete('membership', [['groupid', $group_sql_id, 'i'], ['memberid', $member_sql_id, 'i']]);
-                    AA::Metabase()->doInsert('membership', [
-                        'groupid'  => (string) $group_sql_id,
-                        'memberid' => (string) $member_sql_id,
-                    ]);
-                });
-                self::forgetMembershipMemo();
-                $added++;
-            }
-        }
-        $this->message(_m("Memberships: added=%1 skipped_unmapped=%2", [$added, $skipped]));
-    }
-
-    //----- phase 5: permissions
-
-    private function migratePerms(): void
-    {
-        $object_ids = $this->collectPermObjects();
-        $total = 0;
-        foreach ($object_ids as $object_type => $ids) {
-            foreach ($ids as $oid) {
-                $acl = $this->ldap->getObjectsPerms($oid, $object_type);
-                if (!$acl) {
-                    continue;
-                }
-                foreach ($acl as $dn => $perm) {
-                    $sql_id = $this->mapGet($dn);
-                    if (!$sql_id) {
-                        continue;
-                    }
-                    if ($this->dry_run) {
-                        $total++;
-                        continue;
-                    }
-                    // idempotent: delete+insert (mirrors perm_sql AddPerm)
-                    DB_AA::transaction(static function () use ($object_type, $oid, $sql_id, $perm) {
-                        DB_AA::delete('perms', [
-                            ['object_type', $object_type],
-                            ['objectid',    $oid],
-                            ['userid',      (string) $sql_id],
-                        ]);
-                        AA::Metabase()->doInsert('perms', [
-                            'object_type' => $object_type,
-                            'objectid'    => $oid,
-                            'userid'      => (string) $sql_id,
-                            'perm'        => (string) $perm,
-                        ]);
-                    });
-                    $total++;
-                }
-            }
-        }
-        $this->message(_m("Permission rows migrated: %1", [$total]));
-    }
-
-    /** All (object_type, object_id) pairs whose perms need migration.
-     *  In AA there are two object types: "aa" (single = AA_ID) and
-     *  "slice" (all modules in the module table).
-     */
-    private function collectPermObjects(): array
-    {
-        $slices = DB_AA::select('unpackid', "SELECT LOWER(HEX(`id`)) AS unpackid FROM `module`");
-        return [
-            'aa'    => [AA_ID],
-            'slice' => is_array($slices) ? $slices : [],
-        ];
-    }
-
-    //----- phase 6: rewrite user-id references in AA data
-
-    private function rewriteUserRefs(): void
-    {
-        $pairs = $this->mapAll();
-        if (!$pairs) {
-            $this->message(_m("No mapping entries - nothing to rewrite."));
-            return;
-        }
-        foreach (self::REWRITE_COLUMNS as $spec) {
-            $t = $spec['table'];
-            $c = $spec['col'];
-            if (!DB_AA::exists_table($t)) {   // the table of passkeys comes with sql_update
-                continue;
-            }
-            $changed = 0;
-            foreach ($pairs as $row) {
-                $cnt = DB_AA::count($t, [[$c, $row['ldap_dn']]]);
-                if (!$cnt) {
-                    continue;
-                }
-                if ($this->dry_run) {
-                    $changed += $cnt;
-                    continue;
-                }
-                DB_AA::update($t, [[$c, (string) $row['sql_id']]], [[$c, $row['ldap_dn']]]);
-                $changed += $cnt;
-            }
-            $this->message(_m("Rewrite %1.%2: %3 rows", [$t, $c, $changed]));
-        }
-    }
-
-    //============================================================ revert
-
-    private function runRevert(): void
-    {
-        $pairs = $this->mapAll();
-        if (!$pairs) {
-            $this->message(_m("Mapping table is empty - nothing to revert."));
-            return;
-        }
-        // 1. Reverse user-id rewrites in AA data.
-        foreach (self::REWRITE_COLUMNS as $spec) {
-            $t = $spec['table'];
-            $c = $spec['col'];
-            if (!DB_AA::exists_table($t)) {   // the table of passkeys comes with sql_update
-                continue;
-            }
-            $changed = 0;
-            foreach ($pairs as $row) {
-                $cnt = DB_AA::count($t, [[$c, (string) $row['sql_id']]]);
-                if (!$cnt) {
-                    continue;
-                }
-                DB_AA::update($t, [[$c, $row['ldap_dn']]], [[$c, (string) $row['sql_id']]]);
-                $changed += $cnt;
-            }
-            $this->message(_m("Revert %1.%2: %3 rows", [$t, $c, $changed]));
-        }
-        // 2. Delete SQL users/groups we created (mirrors perm_sql DelUser/DelGroup).
-        $users = 0;
-        $groups = 0;
-        foreach ($pairs as $row) {
-            $sql_id = (int) $row['sql_id'];
-            DB_AA::delete('membership', [['memberid', $sql_id, 'i']]);
-            DB_AA::delete('membership', [['groupid',  $sql_id, 'i']]);
-            self::forgetMembershipMemo();
-            DB_AA::delete('perms', [['userid', (string) $sql_id]]);
-            DB_AA::delete('users', [['id', $sql_id, 'i']]);
-            if ($row['kind'] === 'group') {
-                $groups++;
-            } else {
-                $users++;
-            }
-        }
-        $this->message(_m("Deleted SQL users=%1 groups=%2", [$users, $groups]));
-        // 3. Drop mapping rows but keep the table itself for audit.
-        DB_AA::sql("DELETE FROM `" . self::MAP_TABLE . "`");
-    }
-
-    //========================================================== helpers
-
-    /** Extract the `uid` component from a DN like `uid=foo,ou=People,...`. */
-    private function extractUidFromDn(string $dn): string
-    {
-        if (preg_match('/^uid=([^,]+),/i', $dn, $m)) {
-            return $m[1];
-        }
-        return '';
-    }
-
-    /** Direct SQL insert into the users table (mirrors perm_sql::AddUser). */
-    private function sqlInsertUser(string $login, array $info, string $pwd_hash): ?int
-    {
-        $id = AA::Metabase()->doInsert('users', [
-            'type'        => 'User',
-            'uid'         => $login,
-            'mail'        => is_array($info['mails'] ?? null) ? ($info['mails'][0] ?? '') : ($info['mail'] ?? ''),
-            'name'        => trim(($info['givenname'] ?? '') . ' ' . ($info['sn'] ?? '')),
-            'sn'          => $info['sn'] ?? '',
-            'givenname'   => $info['givenname'] ?? '',
-            'description' => '',
-            'password'    => $pwd_hash,
-        ]);
-        return $id ? (int) $id : null;
-    }
-
-    /** Direct SQL insert into the users table for a group
-     *  (mirrors perm_sql::AddGroup).
-     */
-    private function sqlInsertGroup(string $name, string $description): ?int
-    {
-        $id = AA::Metabase()->doInsert('users', [
-            'type'        => 'Group',
-            'uid'         => '',
-            'mail'        => '',
-            'name'        => $name,
-            'sn'          => '',
-            'givenname'   => '',
-            'description' => $description,
-            'password'    => 'crypt will never return this',
-        ]);
-        return $id ? (int) $id : null;
-    }
-
-    /** Read the userPassword attribute from LDAP for a given user DN.
-     *  Returns the raw hash string (e.g. {SSHA}...) or null on failure.
-     *  Uses perm_ldap.php's InitLDAP() which is already loaded.
-     */
-    private function readLdapUserPassword(string $dn): ?string
-    {
-        if (!function_exists('InitLDAP')) {
-            return null;
-        }
-        $ds = \InitLDAP();
-        if (!$ds) {
-            return null;
-        }
-        $result = @\ldap_read($ds, $dn, 'objectclass=*', ['userPassword']);
-        if (!$result) {
-            @\ldap_unbind($ds);
-            return null;
-        }
-        $entries = \ldap_get_entries($ds, $result);
-        @\ldap_unbind($ds);
-        if (!$entries || $entries['count'] < 1) {
-            return null;
-        }
-        $attr = $entries[0]['userpassword'] ?? null;
-        if (!is_array($attr) || $attr['count'] < 1) {
-            return null;
-        }
-        return (string) $attr[0];
-    }
-
-    /** An unusable placeholder hash used when we cannot read the LDAP
-     *  userPassword. It will fail both legacy-hash and bcrypt checks,
-     *  and can later be overwritten by a repair re-run.
-     */
-    private function placeholderHash(): string
-    {
-        return '{CRYPT}$6$disabled$x';
-    }
-
-    private function isPlaceholderHash(?string $hash): bool
-    {
-        return $hash === null || $hash === '' || str_contains((string) $hash, '$disabled$');
-    }
-
-    /** Overwrite the SQL users.password with the raw LDAP hash so the
-     *  opportunistic-rehash login path can verify it on first login.
-     */
-    private function maybeCopyLdapHash(string $dn, int $sql_id): void
-    {
-        $hash = $this->readLdapUserPassword($dn);
-        if (!$hash) {
-            return;
-        }
-        AA::Metabase()->doUpdate('users', ['id' => $sql_id, 'password' => $hash]);
-    }
-
-    //----- mapping table helpers
-
-    private function mapGet(string $dn): ?int
-    {
-        $row = DB_AA::select1('sql_id', "SELECT sql_id FROM `" . self::MAP_TABLE . "`", [['ldap_dn', $dn]]);
-        return $row ? (int) $row : null;
-    }
-
-    private function mapPut(string $dn, int $sql_id, string $kind, string $login): void
-    {
-        $varset = new CVarset([
-            ['ldap_dn', $dn],
-            ['sql_id',  $sql_id],
-            ['kind',    $kind],
-            ['login',   $login],
-            ['created', date('Y-m-d H:i:s')],
-        ]);
-        $varset->doInsert(self::MAP_TABLE);
-    }
-
-    /** @return array<int,array{ldap_dn:string,sql_id:int,kind:string,login:string}> */
-    private function mapAll(): array
-    {
-        $rows = DB_AA::select([], "SELECT ldap_dn, sql_id, kind, login FROM `" . self::MAP_TABLE . "`");
-        return is_array($rows) ? $rows : [];
     }
 
     /**
-     * AA_Permsystem_Sql memoizes getMembership() per request; every write to `membership` has to
-     * drop that memo. perm_sql.php is only loaded when PERM_LIB is 'sql' (it must never be
-     * required from here - its functions clash with perm_ldap.php), so the call is guarded.
+     * Objects whose rights LDAP keeps for this database: the AA itself, every module and
+     * every Links category (stored as a slice id).
+     * @return list<array{type: string, id: string}>
      */
-    private static function forgetMembershipMemo(): void
+    public static function objects(): array
     {
-        if (class_exists(\AA_Permsystem_Sql::class, false)) {
-            \AA_Permsystem_Sql::forgetMembership();
+        $objects = [['type' => 'aa', 'id' => (string) constant('AA_ID')]];
+        foreach (DB_AA::select('id', 'SELECT LOWER(HEX(id)) AS id FROM module') as $id) {
+            $objects[] = ['type' => 'slice', 'id' => (string) $id];
         }
+        if (DB_AA::test('information_schema.TABLES', [['TABLE_SCHEMA', (string) constant('DB_NAME')], ['TABLE_NAME', 'links_categories']])) {
+            require_once __DIR__ . '/../../modules/links/util.php';
+            foreach (DB_AA::select('id', 'SELECT id FROM links_categories') as $category) {
+                $objects[] = ['type' => 'slice', 'id' => \Links_Category2SliceID($category)];
+            }
+        }
+        return $objects;
+    }
+
+    protected function permLib(): string
+    {
+        return \defined('PERM_LIB') ? (string) constant('PERM_LIB') : '';
+    }
+
+    /**
+     * Everything both actions need from LDAP, read before any transaction - the parity
+     * answers included, so no lock is held while LDAP answers.
+     * @return Prepared
+     */
+    protected function prepare(): array
+    {
+        // tens of thousands of LDAP and SQL requests
+        @set_time_limit(0);
+        require_once __DIR__ . '/../../include/perm_sql.php';
+
+        $objects   = self::objects();
+        $directory = Directory::fromConfig();
+        $charset   = \defined('DB_CHARACTER_SET') ? (string) constant('DB_CHARACTER_SET') : '';
+        $plan      = Plan::build($directory->people(), $directory->groups(), $directory->acls($objects), References::dnValues(), References::firstFreeId(), $charset);
+        $answers   = Parity::ask(new AA_Perm(['ldap', 'Reader']), $plan, $objects, (string) constant('AA_ID'));
+        return ['objects' => $objects, 'plan' => $plan, 'answers' => $answers];
+    }
+
+    /** @return array{deleted: int, users: int, groups: int, membership: int, perms: int} */
+    protected function import(Plan $plan): array
+    {
+        return Importer::run(new AA_Permsystem_Sql(), $plan);
+    }
+
+    /**
+     * @param Answers $answers
+     * @return list<array{blocking: bool, text: string}>
+     */
+    protected function compare(array $answers, Plan $plan): array
+    {
+        return Parity::compare($answers, new AA_Perm(['sql', 'Reader']), $plan, (string) constant('AA_ID'));
+    }
+
+    /**
+     * @param array<string, string> $remap
+     * @return array<string, int>
+     */
+    protected function rewrite(array $remap): array
+    {
+        return References::rewrite($remap);
+    }
+
+    /**
+     * The row that makes a second Repair refuse - written in the transaction, so it exists
+     * exactly when the conversion does.
+     * @param array{deleted: int, users: int, groups: int, membership: int, perms: int} $imported
+     * @param array<string, int> $rewritten
+     */
+    protected function logConversion(array $imported, array $rewritten): void
+    {
+        // log.params holds 128 bytes - totals only, the report lists the columns
+        $params = (string) json_encode($imported + ['rewritten' => array_sum($rewritten)]);
+        if (!AA_Log::write(self::LOG_TYPE, '', $params) || !DB_AA::test('log', [['type', self::LOG_TYPE]])) {
+            throw new RuntimeException('The log row of the conversion was not stored.');
+        }
+    }
+
+    /** Refusals common to both actions, before anything reads LDAP */
+    private function canRun(): bool
+    {
+        if ($this->permLib() !== 'ldap') {
+            $this->message(_m("This conversion runs only while PERM_LIB is 'ldap'; here it is '%1'.", [safe($this->permLib())]));
+            return false;
+        }
+        if (self::justPrint()) {
+            // transaction() would not start one, and the import would delete the users for real
+            $this->message(_m('The conversion has no dry run - switch it off. Test itself changes nothing.'));
+            return false;
+        }
+
+        $engines = DB_AA::select(['TABLE_NAME' => 'ENGINE'], 'SELECT TABLE_NAME, ENGINE FROM information_schema.TABLES', [
+            ['TABLE_SCHEMA', (string) constant('DB_NAME')], ['TABLE_NAME', self::PERM_TABLES],
+        ]);
+        $wrong = [];
+        foreach (self::PERM_TABLES as $table) {
+            if (($engines[$table] ?? '') !== 'InnoDB') {
+                $wrong[] = $table . ' (' . ($engines[$table] ?? '-') . ')';
+            }
+        }
+        if ($wrong) {
+            $this->message(_m('Tables %1 must be InnoDB: on another engine a rollback restores nothing, so even the trial import of Test would delete the users for good. Convert them first - Optimize "%2".', [safe(implode(', ', $wrong)), Convert2innodb::name()]));
+            return false;
+        }
+
+        $charset = (string) DB_AA::select1('c', 'SELECT @@character_set_connection AS c');
+        if ($charset !== 'utf8mb4') {
+            $this->message(_m('The database connection uses "%1", not utf8mb4: a DN with a character outside it would silently not be found in the data. Set DB_CHARACTER_SET to "utf8mb4" in config.php first.', [safe($charset)]));
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * The import in a transaction that is always rolled back - Test changes nothing.
+     * @param Prepared $prepared
+     * @return list<array{blocking: bool, text: string}> parity findings
+     */
+    private function trialRun(array $prepared): array
+    {
+        $rollback = new RuntimeException('trial run rolled back');
+        $parity   = [];
+        try {
+            $this->inTransaction(function () use ($prepared, $rollback, &$parity): void {
+                $imported = $this->import($prepared['plan']);
+                $this->message(_m('Trial import: %1 people, %2 groups, %3 memberships, %4 rights; %5 old rows removed (all rolled back).', [$imported['users'], $imported['groups'], $imported['membership'], $imported['perms'], $imported['deleted']]));
+                $parity = $this->compare($prepared['answers'], $prepared['plan']);
+                throw $rollback;
+            });
+        } catch (Throwable $e) {
+            if ($e !== $rollback) {
+                throw $e;
+            }
+        } finally {
+            // the memo would keep the rolled-back memberships
+            AA_Permsystem_Sql::forgetMembership();
+        }
+        return $parity;
+    }
+
+    /**
+     * $work in one transaction on the handle of query(). READ COMMITTED: InnoDB then does
+     * not lock the rows a full-scan UPDATE skips, so the webs of this DB go on writing.
+     */
+    private function inTransaction(callable $work): mixed
+    {
+        // applies to the next transaction of this connection only - so right before it
+        $this->query('SET TRANSACTION ISOLATION LEVEL READ COMMITTED');
+        return $this->transaction(static function () use ($work): mixed {
+            // without one, DB_AA::transaction() runs the block anyway and nothing could be taken back
+            if (!DB_AA::inTransaction()) {
+                throw new RuntimeException('The database did not start a transaction.');
+            }
+            return $work();
+        });
+    }
+
+    private function reportPlan(Plan $plan): void
+    {
+        $this->message(_m('Plan: %1 people, %2 groups, %3 memberships, %4 rights; new ids from %5; %6 spellings of DNs in the data to rewrite.', [
+            count($plan->users), count($plan->groupRows), count($plan->membership), count($plan->perms),
+            $plan->ids ? min($plan->ids) : '-', count($plan->remap),
+        ]));
+        $this->reportFindings($plan->findings);
+    }
+
+    /** @param list<array{blocking: bool, text: string}> $findings */
+    private function reportFindings(array $findings): void
+    {
+        foreach ($findings as $finding) {
+            $this->message(($finding['blocking'] ? '<strong>' . _m('Blocking') . '</strong>: ' : _m('Info') . ': ') . safe($finding['text']));
+        }
+    }
+
+    /** What Repair rewrites and how long its scans take, and what it leaves for a manual fix */
+    private function reportReferences(Plan $plan): void
+    {
+        $counts = References::count($plan->remap);
+        foreach ($counts as $column => $count) {
+            $this->message(_m('References in %1: %2 rows (%3 s)', [safe((string) $column), $count['rows'], round($count['seconds'], 1)]));
+        }
+        $this->message(_m('Repair rewrites the references in about %1 s - each UPDATE scans its table as the count did.', [round(array_sum(array_column($counts, 'seconds')), 1)]));
+        $this->message(_m('A DN stored as cp1250 bytes with diacritics is not UTF-8, so it matches no directory entry and stays as it is.'));
+        foreach (References::mentions() as $column => $rows) {
+            $this->message(_m('Mentions of ou=AA in %1: %2 rows - fix them by hand.', [safe((string) $column), $rows]));
+        }
+    }
+
+    /** @param list<array{blocking: bool, text: string}> $findings */
+    private static function blocks(array $findings): bool
+    {
+        return \in_array(true, array_column($findings, 'blocking'), true);
+    }
+
+    /** "id DN" lines of every imported person and group */
+    private static function idMap(Plan $plan): string
+    {
+        $ids = $plan->ids;
+        asort($ids);
+        $lines = [];
+        foreach ($ids as $key => $id) {
+            $lines[] = "$id\t{$plan->canonical[$key]}";
+        }
+        return implode("\n", $lines);
     }
 }
