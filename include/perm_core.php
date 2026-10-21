@@ -830,8 +830,8 @@ class AA_Perm {
         if ($uid === '') {
             return false;
         }
-        $slice_perm = self::_resolve((string) ($this->getUserPerms($uid, 'slice')[$slice_id] ?? ''));
-        $aa_perm    = self::_resolve((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''));
+        $slice_perm = self::resolveRoles((string) ($this->getUserPerms($uid, 'slice')[$slice_id] ?? ''));
+        $aa_perm    = self::resolveRoles((string) ($this->getUserPerms($uid, 'aa')[AA_ID] ?? ''));
         return IsPerm(self::joinSliceAndAAPerm($slice_perm, $aa_perm), $perm);
     }
 
@@ -1064,14 +1064,14 @@ class AA_Perm {
 
         // Resolve all permission (convert roles into perms)
         foreach ($permission_to["slice"] as $key => $val) {
-            $permission_to["slice"][$key] = self::_resolve($val);
+            $permission_to["slice"][$key] = self::resolveRoles((string) $val);
         }
 
         foreach ($permission_to["aa"] as $key => $val) {
             if ( IsPerm($val, self::ROLES['SUPER']['id']) ) {
                 $r_superuser[$key] = true;
             }
-            $permission_to["aa"][$key] = self::_resolve($val);
+            $permission_to["aa"][$key] = self::resolveRoles((string) $val);
         }
 
         // after the values are set - register() copies the global into a session which does not have it yet
@@ -1098,8 +1098,8 @@ class AA_Perm {
      */
     public static function compare($perms1, $perms2): string
     {
-        $perms1 = self::_resolve($perms1);
-        $perms2 = self::_resolve($perms2);
+        $perms1 = self::resolveRoles((string) $perms1);
+        $perms2 = self::resolveRoles((string) $perms2);
 
         if (strlen($perms1) == strspn($perms1, $perms2)) {
             // perms are equal ?
@@ -1142,13 +1142,9 @@ class AA_Perm {
         return ($slice_perm ?: $aa_perm);
     }
 
-    /** AA_Perm::_resolve($perms) function
-     *  Replaces roles with apropriate perms
-     *  substitute role identifiers (1,2,3,4) with his permissions (E,A,R ...)
-     * @param $perms
-     * @return string
+    /** Replaces the role digits (1-4) by the letters of the role (ROLES), so rights compare letter by letter
      */
-    private static function _resolve($perms): string
+    public static function resolveRoles(string $perms): string
     {
         foreach (self::ROLES as $arr) {
             $perms = str_replace($arr['id'], $arr['perm'], $perms);

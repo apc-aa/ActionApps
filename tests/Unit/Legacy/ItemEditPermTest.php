@@ -121,7 +121,7 @@ namespace Tests\Unit\Legacy {
         public function test_aUserWithNoEntryForTheWholeAaIsJudgedBySliceRightsQuietly(): void
         {
             // the usual shape of the cache; a missing entry must not reach str_replace() in
-            // AA_Perm::_resolve() as null - a deprecation on every check
+            // AA_Perm::resolveRoles() as null - a deprecation on every check
             $GLOBALS['permission_to'] = ['slice' => [self::OWN => AA_Perm::ROLES['EDITOR']['perm']]];
             set_error_handler(static function (int $errno, string $errstr): never {
                 throw new \ErrorException($errstr, 0, $errno);
