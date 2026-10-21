@@ -53,17 +53,32 @@ final class References
     public static function dnValues(): array
     {
         $values = [];
+        foreach (self::dnValuesByColumn() as $dns) {
+            foreach ($dns as $dn) {
+                $values[$dn] = true;
+            }
+        }
+        return array_map('strval', array_keys($values));
+    }
+
+    /**
+     * dnValues() of each column - after the conversion, the DNs left in the data.
+     * @return array<string, list<string>> "table.column" => distinct DN values, only columns with one
+     */
+    public static function dnValuesByColumn(): array
+    {
+        $ret = [];
         foreach (self::present() as [$table, $column]) {
             $found = DB_AA::select(
                 '',
                 'SELECT DISTINCT ' . DB_AA::asText($column) . ' AS v FROM ' . DB_AA::quoteIdentifier($table),
                 [[DB_AA::quoteIdentifier($column), '%=%,%', 'LIKE']],
             );
-            foreach ($found as $value) {
-                $values[(string) $value] = true;
+            if ($dns = array_values(array_filter(array_map('strval', $found), Dn::isDn(...)))) {
+                $ret["$table.$column"] = $dns;
             }
         }
-        return array_values(array_filter(array_map('strval', array_keys($values)), Dn::isDn(...)));
+        return $ret;
     }
 
     /**

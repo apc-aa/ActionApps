@@ -141,6 +141,21 @@ namespace AA\Tests\Unit\Perm\LdapToSql {
             );
         }
 
+        public function test_dnValuesByColumn_onlyColumnsWithADn(): void
+        {
+            $this->answer(fn(string $sql) => match (true) {
+                str_contains($sql, 'posted_by') => [['v' => 'uid=a,ou=AA'], ['v' => 'cn=x']],
+                str_contains($sql, DB_AA::quoteIdentifier('log')) => [['v' => 'uid=a,ou=AA'], ['v' => 'uid=b,ou=AA']],
+                str_contains($sql, 'edited_by') => [['v' => 'cn=y']],
+                default => [],
+            });
+
+            self::assertSame(
+                ['item.posted_by' => ['uid=a,ou=AA'], 'log.user' => ['uid=a,ou=AA', 'uid=b,ou=AA']],
+                References::dnValuesByColumn(),
+            );
+        }
+
         public function test_dnValues_skipsMissingColumns(): void
         {
             $this->answer(fn() => [], ['links_links', 'toexecute', 'object_text']);

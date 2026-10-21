@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA;
 use AA\Cache\PageCache;
 use AA\IO\DB\DB_AA;
 use AA\Perm\LdapToSql\Directory;
@@ -22,8 +23,8 @@ use Throwable;
  * get numeric ids in users/membership/perms and every reference to a person in the data is
  * rewritten from the DN to the id.
  *
- * Test reads LDAP and the database and runs the import in a transaction it rolls back.
- * Repair imports, checks that SQL answers as LDAP does and rewrites the references in one
+ * Test reads LDAP and the database and runs the import in a transaction it rolls back;
+ * after the conversion it only reports the DNs left in the data. Repair imports, checks that SQL answers as LDAP does and rewrites the references in one
  * transaction, so a failure anywhere leaves the install as it was. There is no revert: the
  * way back is the backup taken before Repair.
  *
@@ -60,11 +61,12 @@ class LdapPermsToSql extends AbstractOptimize
 
     public function test(): bool
     {
+        // also under PERM_LIB 'sql': the check of a finished conversion
+        if ($conversion = $this->conversion()) {
+            return $this->reportConversion($conversion);
+        }
         if (!$this->canRun()) {
             return false;
-        }
-        if (DB_AA::test('log', [['type', self::LOG_TYPE]])) {
-            $this->message(_m('This database was already converted - Repair will refuse to run again.'));
         }
         try {
             $prepared = $this->prepare();
@@ -90,11 +92,11 @@ class LdapPermsToSql extends AbstractOptimize
 
     public function repair(): bool
     {
-        if (!$this->canRun()) {
+        if ($this->conversion()) {
+            $this->message(self::alreadyConverted());
             return false;
         }
-        if (DB_AA::test('log', [['type', self::LOG_TYPE]])) {
-            $this->message(_m('This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again.'));
+        if (!$this->canRun()) {
             return false;
         }
         $parity = [];
@@ -108,18 +110,28 @@ class LdapPermsToSql extends AbstractOptimize
             }
             $counts = $this->inTransaction(function () use ($prepared, $plan, &$parity): array {
                 $imported = $this->import($plan);
+                // a run started at the same time waited in the import for our locks or we for its;
+                // READ COMMITTED now sees its commit
+                if ($this->conversion()) {
+                    throw new RuntimeException(self::alreadyConverted());
+                }
                 // before the rewrite: its UPDATEs lock the big tables until the commit
                 $parity = $this->compare($prepared['answers'], $plan);
                 if (self::blocks($parity)) {
                     throw new RuntimeException('SQL would not answer as LDAP does (see the parity findings).');
                 }
+                // before the rewrite, so the operator's DN in log.user is rewritten too
+                $log_id    = $this->logConversion($imported);
                 $rewritten = $this->rewrite($plan->remap);
-                $this->logConversion($imported, $rewritten);
+                $this->logRewritten($log_id, $imported, $rewritten);
                 return ['imported' => $imported, 'rewritten' => $rewritten];
             });
         } catch (Throwable $e) {
             $this->reportFindings($parity);
-            $this->message(_m('Repair failed, nothing was changed: %1', [safe($e->getMessage())]));
+            // a failed commit may still have been stored
+            $this->message($this->conversion()
+                ? _m('Repair failed, yet the database holds a finished conversion (its log row exists) - check it with Test: %1', [safe($e->getMessage())])
+                : _m('Repair failed, nothing was changed: %1', [safe($e->getMessage())]));
             return false;
         } finally {
             AA_Permsystem_Sql::forgetMembership();
@@ -131,8 +143,7 @@ class LdapPermsToSql extends AbstractOptimize
         } catch (Throwable $e) {
             $this->message(_m('The page cache was not cleared, clear it by hand: %1', [safe($e->getMessage())]));
         }
-        $imported = $counts['imported'];
-        $this->message(_m('Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed.', [$imported['users'], $imported['groups'], $imported['membership'], $imported['perms'], $imported['deleted']]));
+        $this->reportImport($counts['imported'], false);
         foreach ($counts['rewritten'] as $column => $rows) {
             $this->message(_m('Rewritten %1: %2 rows', [safe((string) $column), $rows]));
         }
@@ -146,7 +157,7 @@ class LdapPermsToSql extends AbstractOptimize
      * every Links category (stored as a slice id).
      * @return list<array{type: string, id: string}>
      */
-    public static function objects(): array
+    protected static function objects(): array
     {
         $objects = [['type' => 'aa', 'id' => (string) constant('AA_ID')]];
         foreach (DB_AA::select('id', 'SELECT LOWER(HEX(id)) AS id FROM module') as $id) {
@@ -213,15 +224,64 @@ class LdapPermsToSql extends AbstractOptimize
      * The row that makes a second Repair refuse - written in the transaction, so it exists
      * exactly when the conversion does.
      * @param array{deleted: int, users: int, groups: int, membership: int, perms: int} $imported
-     * @param array<string, int> $rewritten
+     * @return int id of the log row
      */
-    protected function logConversion(array $imported, array $rewritten): void
+    protected function logConversion(array $imported): int
     {
-        // log.params holds 128 bytes - totals only, the report lists the columns
-        $params = (string) json_encode($imported + ['rewritten' => array_sum($rewritten)]);
-        if (!AA_Log::write(self::LOG_TYPE, '', $params) || !DB_AA::test('log', [['type', self::LOG_TYPE]])) {
+        $written = AA_Log::write(self::LOG_TYPE, '', (string) json_encode($imported));
+        $id      = $written ? (int) ($this->conversion()['id'] ?? 0) : 0;
+        if (!$id) {
             throw new RuntimeException('The log row of the conversion was not stored.');
         }
+        return $id;
+    }
+
+    /**
+     * Adds the total of rewritten rows to the log row.
+     * @param array{deleted: int, users: int, groups: int, membership: int, perms: int} $imported
+     * @param array<string, int> $rewritten
+     */
+    protected function logRewritten(int $log_id, array $imported, array $rewritten): void
+    {
+        $params = (string) json_encode($imported + ['rewritten' => array_sum($rewritten)]);
+        // log.params holds 128 bytes - the report lists the columns anyway
+        if (strlen($params) > 128) {
+            return;
+        }
+        if (AA::Metabase()->doUpdate('log', ['id' => $log_id, 'params' => $params]) === false) {
+            throw new RuntimeException('The log row of the conversion was not updated.');
+        }
+    }
+
+    /** @return false|array{id: mixed, time: mixed, params: mixed} the log row of a finished conversion */
+    private function conversion(): false|array
+    {
+        return DB_AA::select1(['id', 'time', 'params'], 'SELECT id, time, params FROM log', [['type', self::LOG_TYPE]], ['time']);
+    }
+
+    private static function alreadyConverted(): string
+    {
+        return _m('This database was already converted. A second run would give people other ids than the data now holds - restore the backup first if it really has to run again.');
+    }
+
+    /**
+     * After the conversion: when it ran and the DNs live webs or the conversion left in the data.
+     * @param array{id: mixed, time: mixed, params: mixed} $conversion
+     */
+    private function reportConversion(array $conversion): bool
+    {
+        @set_time_limit(0);
+        $this->message(_m('This database was converted to SQL permissions on %1 (%2). Its parity check ran inside the committed transaction; Repair does not run twice.', [
+            date('Y-m-d H:i', (int) $conversion['time']), safe((string) $conversion['params']),
+        ]));
+        $left = References::dnValuesByColumn();
+        foreach ($left as $column => $dns) {
+            $this->message(_m('DNs left in %1 (%2): %3', [safe($column), count($dns), safe(implode('; ', array_slice($dns, 0, 10)))]));
+        }
+        $this->message($left
+            ? _m('These were written after the conversion or match no directory entry - fix them by hand if they matter.')
+            : _m('No DN is left in the columns referring to people.'));
+        return true;
     }
 
     /** Refusals common to both actions, before anything reads LDAP */
@@ -270,8 +330,7 @@ class LdapPermsToSql extends AbstractOptimize
         $parity   = [];
         try {
             $this->inTransaction(function () use ($prepared, $rollback, &$parity): void {
-                $imported = $this->import($prepared['plan']);
-                $this->message(_m('Trial import: %1 people, %2 groups, %3 memberships, %4 rights; %5 old rows removed (all rolled back).', [$imported['users'], $imported['groups'], $imported['membership'], $imported['perms'], $imported['deleted']]));
+                $this->reportImport($this->import($prepared['plan']), true);
                 $parity = $this->compare($prepared['answers'], $prepared['plan']);
                 throw $rollback;
             });
@@ -301,6 +360,13 @@ class LdapPermsToSql extends AbstractOptimize
             }
             return $work();
         });
+    }
+
+    /** @param array{deleted: int, users: int, groups: int, membership: int, perms: int} $imported */
+    private function reportImport(array $imported, bool $rolled_back): void
+    {
+        $this->message(_m('Imported %1 people, %2 groups, %3 memberships and %4 rights; %5 old rows removed.', [$imported['users'], $imported['groups'], $imported['membership'], $imported['perms'], $imported['deleted']])
+            . ($rolled_back ? ' ' . _m('(Trial run - rolled back.)') : ''));
     }
 
     private function reportPlan(Plan $plan): void
