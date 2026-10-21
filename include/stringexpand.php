@@ -43,7 +43,6 @@ use AA\Optimize\AddDurationLog;
 use AA\Optimize\CheckCkeditorUse;
 use AA\Security\LoginThrottle;
 use AA\Util\ChangesMonitor;
-use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
@@ -6476,6 +6475,9 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
  */
 function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err='', int $seconds=0): string
 {
+    if (str_contains($parturl, 'URL_PARAMETERS')) {
+        PageCache::server('REQUEST_URI');   // the query string comes from it, with the tracking parameters the key leaves out
+    }
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
     // filename do not use colons as separators => dequote before callig
     if (!$filename || trim($filename)==='') {
@@ -6502,7 +6504,10 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
 }
 
 /** Get $_SERVER[<variable>] value
- *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:REFERER},...
+ *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:HTTP_REFERER},...
+ *   A cached site page is stored once per value read of the host, scheme or URI; a page reading
+ *   anything else, which may be the visitor's own (REMOTE_ADDR, HTTP_USER_AGENT, HTTP_REFERER, ...),
+ *   is not cached at all.
  */
 class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
     /** expand function
@@ -6513,10 +6518,7 @@ class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
      */
     function expand($variable = ''): string
     {
-        if ($variable === 'HTTP_COOKIE') {
-            AA::Pagecache()->switchCacheNostore();   // the whole jar - session id included - is no page for others
-        }
-        return (string)$_SERVER[$variable];
+        return (string) PageCache::server((string) $variable);
     }
 }
 
@@ -9298,6 +9300,8 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
  *   {qs}            - returns the whole querystring (including GET and POST variables)
  *   {qs:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
  *                   - returns the value of the variable - exactly as posted
+ *   A cached site page is stored once per value of a tracking parameter read here
+ *   ({qs:utm_source}) - the page-cache key leaves those parameters out.
  */
 class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
 
@@ -9309,10 +9313,12 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
     function expand($variable_name='', $delimiter=null): string
     {
         if (empty($variable_name)) {
+            PageCache::server('REQUEST_URI');   // the query string comes from it, with the tracking parameters the key leaves out
             return shtml_query_string();
         }
         $ret = '';
         if (str_contains($variable_name, '[')) {
+            PageCache::server('REQUEST_URI');   // a decoded tracking parameter could hold the variable
             $qstring = rawurldecode(shtml_query_string());
             if (str_contains($qstring, $variable_name)) {
                 $qarr = explode('&', $qstring);
@@ -9324,12 +9330,15 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
                     }
                 }
             }
-        } elseif (($value = InputVars::request($variable_name)) !== null) {
+        } elseif (($value = PageCache::param($variable_name)) !== null) {
             $ret = $value;
         } elseif ( $_SERVER['CONTENT_TYPE'] === 'application/json' ) {
             $req_body = json_decode(file_get_contents('php://input'), true);
             $ret      = $req_body[$variable_name];
         } else {
+            if (\AA\Util\Url::isTrackingParam($variable_name)) {
+                PageCache::server('REQUEST_URI');   // add_vars() finds it there when a rewrite left it out of $_GET
+            }
             $shtml_get = add_vars('', 'return');
             $ret = $shtml_get[$variable_name];
         }

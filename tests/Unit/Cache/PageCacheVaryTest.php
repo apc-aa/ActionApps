@@ -13,7 +13,8 @@ use PHPUnit\Framework\TestCase;
  * Cookies are not part of the site page-cache key: a cached page varies only on the
  * cookies its render read through PageCache::cookie(). Consent and ad frameworks set
  * cookies unique per visitor (euconsent-v2, udid, ...), and with every cookie in the key
- * each such visitor got a private copy of every page.
+ * each such visitor got a private copy of every page. The tracking URL parameters the key
+ * leaves out (PageCache::param()) and $_SERVER (PageCache::server()) vary the page the same way.
  *
  * The rows go through an in-memory PageCache (getRow()/store() overridden), so the lookup
  * and store logic runs without a database. The source scan at the end keeps AA code from
@@ -29,7 +30,7 @@ final class PageCacheVaryTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->saved = ['cookie' => $_COOKIE, 'request' => $_REQUEST, 'get' => $_GET, 'post' => $_POST];
+        $this->saved = ['cookie' => $_COOKIE, 'request' => $_REQUEST, 'get' => $_GET, 'post' => $_POST, 'server' => $_SERVER];
         self::readSince();   // reads of earlier tests must not leak in
     }
 
@@ -40,6 +41,7 @@ final class PageCacheVaryTest extends TestCase
         $_REQUEST = $this->saved['request'];
         $_GET     = $this->saved['get'];
         $_POST    = $this->saved['post'];
+        $_SERVER  = $this->saved['server'];
     }
 
     /** PageCache keeping its rows in an array */
@@ -65,7 +67,7 @@ final class PageCacheVaryTest extends TestCase
     /** Cookies read since the last call (name => value); starts a new request */
     private static function readSince(): array
     {
-        $read = new \ReflectionProperty(PageCache::class, 'cookies_read');
+        $read = new \ReflectionProperty(PageCache::class, 'vary_reads');
         $was  = $read->getValue();
         $read->setValue(null, []);
         return $was;
@@ -74,7 +76,7 @@ final class PageCacheVaryTest extends TestCase
     /** the names row of $key */
     private static function namesRow(PageCache $cache, string $key): array
     {
-        return $cache->rows[get_hash('vary', $key)];
+        return $cache->rows[get_hash('vary2', $key)];
     }
 
     // --- tracking ---
@@ -162,7 +164,7 @@ final class PageCacheVaryTest extends TestCase
         $_COOKIE = ['A' => '1'];
         PageCache::cookie('A');
         $cache->storeVaried('k', 'one', new CacheStr2find());
-        $cache->rows[get_hash('vary', 'k')]['stored'] = 42;
+        $cache->rows[get_hash('vary2', 'k')]['stored'] = 42;
 
         self::readSince();
         $_COOKIE = ['A' => '2'];
@@ -208,6 +210,95 @@ final class PageCacheVaryTest extends TestCase
         $this->assertNotSame(PageCache::variantKey('k', ['A' => null]), PageCache::variantKey('k', ['A' => '']));
     }
 
+    // --- URL parameters and $_SERVER ---
+
+    public function test_tracking_param_read_is_recorded(): void
+    {
+        $_REQUEST = $_GET = ['utm_source' => 'www.seznam.cz', 'vid' => '12'];
+        $this->assertSame('www.seznam.cz', PageCache::param('utm_source'));
+        $this->assertNull(PageCache::param('utm_medium'));
+        $this->assertSame(["\0param:utm_source" => 'www.seznam.cz', "\0param:utm_medium" => null], self::readSince());
+    }
+
+    public function test_param_in_the_key_is_not_recorded(): void
+    {
+        $_REQUEST = $_GET = ['vid' => '12'];
+        $this->assertSame('12', PageCache::param('vid'));
+        $this->assertSame([], self::readSince(), 'the site key holds it already');
+    }
+
+    public function test_param_is_never_a_cookie(): void
+    {
+        $_COOKIE  = ['utm_source' => 'cookie'];
+        $_REQUEST = ['utm_source' => 'cookie'];   // request_order GPC
+        $_GET     = [];
+        $this->assertNull(PageCache::param('utm_source'));
+    }
+
+    public function test_page_reading_a_tracking_param_is_stored_per_its_value(): void
+    {
+        $cache = self::cache();
+        $_REQUEST = $_GET = ['utm_source' => 'www.seznam.cz'];
+        PageCache::param('utm_source');
+        $cache->storeVaried('k', 'seznam-ads', new CacheStr2find());
+
+        self::readSince();
+        $_REQUEST = $_GET = ['utm_source' => 'www.seznam.cz', 'utm_campaign' => 'hp_feed'];
+        $this->assertSame('seznam-ads', $cache->getVaried('k'), 'other tracking parameters do not matter');
+
+        self::readSince();
+        $_REQUEST = $_GET = [];
+        $this->assertFalse($cache->getVaried('k'), 'a visit without it needs its own render');
+    }
+
+    public function test_server_read_is_recorded(): void
+    {
+        $_SERVER['HTTP_HOST'] = 'www.example.org';
+        unset($_SERVER['HTTPS']);
+        $this->assertSame('www.example.org', PageCache::server('HTTP_HOST'));
+        $this->assertNull(PageCache::server('HTTPS'));
+        $this->assertSame(["\0server:HTTP_HOST" => 'www.example.org', "\0server:HTTPS" => null], self::readSince());
+    }
+
+    public function test_server_value_in_the_key_is_not_recorded(): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $this->assertSame('GET', PageCache::server('REQUEST_METHOD'));
+        $this->assertSame([], self::readSince());
+    }
+
+    public function test_page_reading_the_host_is_stored_per_host(): void
+    {
+        // the key holds the host without www. - a redirect to the bare domain must not be served to www
+        $cache = self::cache();
+        $_SERVER['HTTP_HOST'] = 'example.org';
+        PageCache::server('HTTP_HOST');
+        $cache->storeVaried('k', 'no-redirect', new CacheStr2find());
+
+        self::readSince();
+        $_SERVER['HTTP_HOST'] = 'www.example.org';
+        $this->assertFalse($cache->getVaried('k'));
+        self::readSince();
+        $_SERVER['HTTP_HOST'] = 'example.org';
+        $this->assertSame('no-redirect', $cache->getVaried('k'));
+    }
+
+    public function test_rows_are_apart_from_those_of_an_older_aa(): void
+    {
+        // an older AA on the same database would take a parameter name for a cookie (and a NUL name for a jar)
+        $cache = self::cache();
+        $_REQUEST = $_GET = ['utm_source' => 'x'];
+        PageCache::param('utm_source');
+        $cache->storeVaried('k', 'html', new CacheStr2find());
+        $this->assertArrayNotHasKey(get_hash('vary', 'k'), $cache->rows);
+    }
+
+    public function test_server_and_param_names_are_no_cookies(): void
+    {
+        $_COOKIE = ["\0server:HTTP_HOST" => 'x'];
+        $this->assertNull(PageCache::cookie("\0server:HTTP_HOST"));
+    }
+
     // --- $_REQUEST ---
 
     public function test_request_without_cookies_merges_like_php(): void
@@ -222,13 +313,12 @@ final class PageCacheVaryTest extends TestCase
 
     /** Files that get at cookies directly, how many lines, and why it cannot change a cached site page */
     private const COOKIE_ALLOWED = [
-        'src/Cache/PageCache.php'           => [6, 'the tracker itself'],
+        'src/Cache/PageCache.php'           => [7, 'the tracker itself; server(\'HTTP_COOKIE\') stores nothing'],
         'src/Optimize/CheckCookieReads.php' => [1, 'the detector'],
         'include/phplib.php'                => [3, 'the session; its user is keyed as $auth4cache'],
         'modules/site/site.php'             => [2, 'AA_Session -> $auth4cache, debug log'],
         'include/locsess.php'               => [1, 'aa_debug -> AA::$debug, which is in the key'],
         'include/util.php'                  => [2, 'debug() log switch; Authorization header'],
-        'include/stringexpand.php'          => [1, '{server:HTTP_COOKIE} turns storing off'],
         'include/debug.class.php'           => [2, 'PhpConsole, debugging only'],
         'include/request.class.php'         => [5, 'AA_Auth for external PHP pages'],
         'include/menu.php'                  => [1, 'admin'],

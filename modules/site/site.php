@@ -74,7 +74,8 @@ if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authe
 // so identical content does not get cached under thousands of campaign-tagged
 // URLs. See AA\Util\Url::isTrackingParam() for the list.
 // Cookies are left out: getVariedPage()/storeVariedPage() add only those the render read, so
-// consent and ad cookies (unique per visitor) do not give everyone a private copy.
+// consent and ad cookies (unique per visitor) do not give everyone a private copy. The same
+// goes for the tracker params and $_SERVER a template reads ({qs:utm_source}, {server:HTTP_HOST}).
 // AA::$debug stands for the aa_debug cookie.
 // $_GET is kept (in addition to REQUEST_URI) because URL-rewrite variables
 // (site_id) only show up in $_GET; *_STRING_UNESCAPED is for the old

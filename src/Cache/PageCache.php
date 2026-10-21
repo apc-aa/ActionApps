@@ -36,6 +36,7 @@ use AA;
 use AA\IO\DB\DB_AA;
 use AA\Later\PagecachePurge;
 use AA\Later\Toexecute;
+use AA\Util\InputVars;
 use AA\Util\Url;
 use Cvarset;
 use Mobile_Detect;
@@ -47,7 +48,7 @@ use Mobile_Detect;
  *      str2find text NOT NULL,    (string used to find record on manual invalidate cache record - could be keystring)
  *      content mediumtext,        (cached information)
  *      stored bigint,             (timestamp of information storing)
- *      flag int,                  (FLAG_VARY = the row holds cookie names, see storeVaried())
+ *      flag int,                  (FLAG_VARY = the row holds the names of what a render read, see storeVaried())
  *     PRIMARY KEY (id), KEY (stored)
  *   );
  */
@@ -58,16 +59,47 @@ class PageCache
 
     private bool $cache_nostore = false; // if true, the cache is not stored (used for {user:xxxx} alias)
 
-    /** Cookies this request's render read: name => value at the first read. One set for the
-     *  whole request - an expansion memoized earlier in it is not read again. */
-    private static array $cookies_read = [];
+    /** the page shows a value of the visitor's own - storeOutput() and the page stores keep it out,
+     *  smaller results (field definitions, dictionaries) are still stored */
+    private bool $page_nostore = false;
 
-    /** pagecache.flag: the row holds the cookie names of a varied page, not content */
+    /** Request values this request's render read and the site key does not hold: name => value
+     *  at the first read. One set for the whole request - an expansion memoized earlier in it is
+     *  not read again. */
+    private static array $vary_reads = [];
+
+    /** pagecache.flag: the row holds the names of what a varied page read, not content */
     private const FLAG_VARY = 1;
 
-    /** $cookies_read names of whole jars; cookie() refuses names starting with NUL */
+    /** $vary_reads names other than a cookie's; cookie() refuses names starting with NUL */
     private const ALL_COOKIES = "\0all";
     private const FORWARDED   = "\0forwarded";
+    private const PARAM       = "\0param:";
+    private const SERVER      = "\0server:";
+
+    /** Prefix of the row ids of varied pages. An older AA on the same database (staging, a rollout
+     *  over two servers) uses its own: it would take a name of a URL parameter for a cookie, store
+     *  its render under the variant of the visitor without the parameter, and a ksort()ed NUL name
+     *  makes it fail. */
+    private const VARY = 'vary2';
+
+    /** $_SERVER values the key holds already or a vhost never changes - read as they are */
+    private const SERVER_KEYED = [
+        'REQUEST_METHOD' => 1, 'REDIRECT_URL' => 1, 'DOCUMENT_ROOT' => 1, 'CONTEXT_DOCUMENT_ROOT' => 1,
+        'SERVER_SOFTWARE' => 1, 'SERVER_ADDR' => 1, 'SERVER_ADMIN' => 1, 'GATEWAY_INTERFACE' => 1,
+        'SCRIPT_NAME' => 1, 'SCRIPT_FILENAME' => 1, 'PHP_SELF' => 1,
+    ];
+
+    /** $_SERVER values holding a secret of the visitor - nothing of the render is stored */
+    private const SERVER_SECRET = ['HTTP_COOKIE' => 1, 'HTTP_AUTHORIZATION' => 1, 'PHP_AUTH_PW' => 1];
+
+    /** $_SERVER values with a few values per site - the page is cached once per value read. Any
+     *  other value may be the visitor's own (address, browser, referer, the cookie jar, time of
+     *  the request) and keeps the page out of the cache. */
+    private const SERVER_VARY = [
+        'HTTP_HOST' => 1, 'SERVER_NAME' => 1, 'SERVER_PORT' => 1, 'HTTPS' => 1, 'REQUEST_SCHEME' => 1,
+        'REQUEST_URI' => 1, 'QUERY_STRING' => 1, 'HTTP_X_REQUESTED_WITH' => 1,
+    ];
 
     /** Google's ad cookies, which the `_` prefix rule of keyCookies() misses */
     private const TRACKING_COOKIES = ['IDE' => 1, 'NID' => 1, '1P_JAR' => 1, 'DSID' => 1];
@@ -275,20 +307,80 @@ class PageCache
         return $cookies;
     }
 
+    /** The one way rendering code reads a URL parameter the site key leaves out (utm_source, ...,
+     *  see Url::isTrackingParam()): the page is then cached once per its value - or not at all for
+     *  an id of one click (gclid, ...). Other parameters are in the key already.
+     */
+    public static function param(string $name): mixed
+    {
+        if (!Url::isTrackingParam($name)) {
+            return InputVars::request($name);
+        }
+        if (Url::isClickId($name)) {
+            AA::Pagecache()->switchPageNostore();
+            return InputVars::request($name);
+        }
+        return self::read(self::PARAM . $name);
+    }
+
+    /** The one way rendering code reads $_SERVER. The site key holds only parts of it (the host
+     *  without www., the URI without tracking parameters), so the page is cached once per value
+     *  read here (SERVER_VARY); any value possibly of the visitor's own keeps it out of the cache.
+     */
+    public static function server(string $name): mixed
+    {
+        if (isset(self::SERVER_KEYED[$name])) {
+            return $_SERVER[$name] ?? null;
+        }
+        if (isset(self::SERVER_SECRET[$name])) {
+            AA::Pagecache()->switchCacheNostore();   // the session id, a password
+            return $_SERVER[$name] ?? null;
+        }
+        if (!self::variesOnServer($name)) {
+            AA::Pagecache()->switchPageNostore();
+            return $_SERVER[$name] ?? null;
+        }
+        $value = self::read(self::SERVER . $name);
+        if ((($name === 'REQUEST_URI') || ($name === 'QUERY_STRING')) && self::hasClickId((string) $value)) {
+            AA::Pagecache()->switchPageNostore();   // a variant per click
+        }
+        return $value;
+    }
+
+    /** Whether a page reading $_SERVER[$name] may be cached (once per its value) */
+    public static function variesOnServer(string $name): bool
+    {
+        return isset(self::SERVER_KEYED[$name]) || isset(self::SERVER_VARY[$name]);
+    }
+
+    /** Whether the URI or query string $uri carries an id of one click */
+    private static function hasClickId(string $uri): bool
+    {
+        $query = (($pos = strpos($uri, '?')) === false) ? $uri : substr($uri, $pos + 1);
+        foreach (explode('&', $query) as $pair) {
+            if (Url::isClickId(rawurldecode(explode('=', $pair, 2)[0]))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static function read(string $name): mixed
     {
-        if (!array_key_exists($name, self::$cookies_read)) {
-            $value = match ($name) {
-                self::ALL_COOKIES => $_COOKIE,
-                self::FORWARDED   => self::keyCookies($_COOKIE),
-                default           => $_COOKIE[$name] ?? null,
+        if (!array_key_exists($name, self::$vary_reads)) {
+            $value = match (true) {
+                $name === self::ALL_COOKIES          => $_COOKIE,
+                $name === self::FORWARDED            => self::keyCookies($_COOKIE),
+                str_starts_with($name, self::PARAM)  => InputVars::request(substr($name, strlen(self::PARAM))),
+                str_starts_with($name, self::SERVER) => $_SERVER[substr($name, strlen(self::SERVER))] ?? null,
+                default                              => $_COOKIE[$name] ?? null,
             };
-            if (str_starts_with($name, "\0")) {
+            if (($name === self::ALL_COOKIES) || ($name === self::FORWARDED)) {
                 ksort($value, SORT_STRING);   // any order in the header, one variant
             }
-            self::$cookies_read[$name] = $value;
+            self::$vary_reads[$name] = $value;
         }
-        return self::$cookies_read[$name];
+        return self::$vary_reads[$name];
     }
 
     /** $_REQUEST without cookies, for a render cached without them - a value read from there
@@ -316,11 +408,11 @@ class PageCache
         return strtoupper((string) (ini_get('request_order') ?: ini_get('variables_order')));
     }
 
-    /** Row id of the content stored for these cookie values (name => value) */
+    /** Row id of the content stored for these read values (name => value) */
     public static function variantKey(string $key, array $values): string
     {
         ksort($values, SORT_STRING);
-        return get_hash('vary', $key, $values);
+        return get_hash(self::VARY, $key, $values);
     }
 
     /** get function
@@ -358,40 +450,46 @@ class PageCache
         return null;
     }
 
-    /** Content storeVaried() stored under $key for this request's cookies, or false.
+    /** Content storeVaried() stored under $key for this request's cookies and other values, or false.
      *  Its rows never use $key itself: an older AA reading the same database would take the
      *  names row for a page.
      */
     public function getVaried(string $key, string $action = 'get'): false|string
     {
-        $row = $this->getRow($base = get_hash('vary', $key), $action);
+        $row = $this->getRow($base = get_hash(self::VARY, $key), $action);
         if ($row && ((int) $row['flag'] & self::FLAG_VARY)) {
             $names  = unserialize((string) $row['content'], ['allowed_classes' => false]);
             $values = [];
             foreach (is_array($names) ? $names : [] as $name) {
-                $values[$name] = self::read((string) $name);   // the page served or rendered now depends on them
+                $name = (string) $name;
+                // the page served or rendered now depends on them; server() also refuses a variant per click
+                $values[$name] = str_starts_with($name, self::SERVER) ? self::server(substr($name, strlen(self::SERVER))) : self::read($name);
             }
             $row = $this->getRow(self::variantKey($key, $values), $action);
         }
         return $row ? $row['content'] : false;
     }
 
-    /** Stores $content rendered under $key. When the render read cookies (cookie()), the
-     *  content goes under a row id extended by their values and the names go to a row of
-     *  their own - visitors differing only in other cookies (consent, ads) share the page.
+    /** Stores $content rendered under $key. When the render read cookies or other values the
+     *  key does not hold (cookie(), param(), server()), the content goes under a row id extended
+     *  by their values and the names go to a row of their own - visitors differing only in other
+     *  cookies (consent, ads) share the page.
      *  The names row is written with every variant: it must not expire or be swept before
      *  them. Names found at the lookup are among the ones read (getVaried()), so no variant
      *  stored so far becomes unreachable.
      */
     public function storeVaried(string $key, string $content, CacheStr2find $str2find, bool $force = false): bool
     {
-        $base = get_hash('vary', $key);
-        if (!self::$cookies_read) {
+        if ($this->page_nostore) {
+            return false;
+        }
+        $base = get_hash(self::VARY, $key);
+        if (!self::$vary_reads) {
             return $this->store($base, $content, $str2find, $force);
         }
-        $names = array_keys(self::$cookies_read);
+        $names = array_keys(self::$vary_reads);
         sort($names, SORT_STRING);
-        return $this->store(self::variantKey($key, self::$cookies_read), $content, $str2find, $force)
+        return $this->store(self::variantKey($key, self::$vary_reads), $content, $str2find, $force)
             && $this->store($base, serialize($names), $str2find, $force, self::FLAG_VARY);
     }
 
@@ -522,6 +620,13 @@ class PageCache
         return $ret;
     }
 
+    /** store() for what the visitor is shown (a page, the listing of slice.php) - not when the
+     *  render read a value of the visitor's own (switchPageNostore()) */
+    public function storeOutput($key, string $content, $str2find, bool $force = false): bool
+    {
+        return !$this->page_nostore && $this->store($key, $content, $str2find, $force);
+    }
+
     /** special cache function for storing whole page. The whole page should be
      *  cached also with headers and id of item, where to count hit.
      *  When page is stored with storePage(), then you have to use getPage()
@@ -530,7 +635,7 @@ class PageCache
     public function storePage($key, Cacheentry $entry, $str2find, $force = false): bool
     {
         // @todo - we can use json_encode, when $entry->$h['encoding']==='utf-8' which is quicker, than serialize
-        return $this->store($key, serialize($entry), $str2find, $force);
+        return $this->storeOutput($key, serialize($entry), $str2find, $force);
     }
 
     public function getPage($key, $action = 'get'): ?Cacheentry
@@ -648,5 +753,11 @@ class PageCache
     public function switchCacheNostore(): void
     {
         $this->cache_nostore = true;
+    }
+
+    /** the page is not stored in the cache, smaller results of its render are */
+    public function switchPageNostore(): void
+    {
+        $this->page_nostore = true;
     }
 }

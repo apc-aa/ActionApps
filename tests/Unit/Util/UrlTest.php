@@ -98,6 +98,7 @@ final class UrlTest extends TestCase
             'utm prefix, any suffix'      => ['utm_anything_at_all'],
             'gclid'                       => ['gclid'],
             'fbclid'                      => ['fbclid'],
+            'Seznam.cz feed'              => ['sznclid'],
             'Google search results'       => ['srsltid'],
             'Google Analytics linker'     => ['_ga'],
             'Google Analytics 4 linker'   => ['_gl'],
@@ -110,6 +111,16 @@ final class UrlTest extends TestCase
     public function test_isTrackingParam_knowsTheTrackers(string $name): void
     {
         self::assertTrue(Url::isTrackingParam($name));
+    }
+
+    public function test_isClickId_tellsAClickFromACampaign(): void
+    {
+        foreach (['gclid', 'fbclid', 'sznclid', 'srsltid', '_ga', 'mc_eid', '_hsenc'] as $name) {
+            self::assertTrue(Url::isClickId($name), $name);
+        }
+        foreach (['utm_source', 'utm_campaign', 'mc_cid', '_hsmi', 'vid'] as $name) {
+            self::assertFalse(Url::isClickId($name), $name);
+        }
     }
 
     /** @return array<string, array{string}> */

@@ -229,7 +229,7 @@ class itemview
         // and leave their own (already merged) accumulator in the shared slot - that
         // superset is what this level has to store.
         $str2find_passon->add([unpack_id($this->slice_info["id"])]);
-        AA::Pagecache()->store($key, $res, $str2find_passon);
+        AA::Pagecache()->storeOutput($key, $res, $str2find_passon);
         $str2find_passon->add_str2find($str2find_save); // and append saved for above
 
         $this->_was_cached = false;

@@ -74,7 +74,7 @@ final class StringexpandIncludeTest extends TestCase
     protected function setUp(): void
     {
         // each test is a request of its own - forget the cookies read by the previous one
-        (new \ReflectionProperty(\AA\Cache\PageCache::class, 'cookies_read'))->setValue(null, []);
+        (new \ReflectionProperty(\AA\Cache\PageCache::class, 'vary_reads'))->setValue(null, []);
         $_COOKIE    = [];
         $this->http = new FakeHttp([new Response(200, 'the page')]);
         HttpInclude::useHttp($this->http);
@@ -82,7 +82,7 @@ final class StringexpandIncludeTest extends TestCase
 
     protected function tearDown(): void
     {
-        (new \ReflectionProperty(\AA\Cache\PageCache::class, 'cookies_read'))->setValue(null, []);
+        (new \ReflectionProperty(\AA\Cache\PageCache::class, 'vary_reads'))->setValue(null, []);
         HttpInclude::useHttp(null);
     }
 
