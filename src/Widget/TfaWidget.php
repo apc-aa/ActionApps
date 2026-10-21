@@ -68,7 +68,7 @@ class TfaWidget extends Widget
 
         $input_name = $base_name . "[tfa][usr]";
         $input_id = FormArray::formName2Id($input_name);
-        $widget .= "\n<div class=aa-2fa-username><input type=text readonly id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Username') . "\" value=\"" . AuthGetUname() . "\"></div>";
+        $widget .= "\n<div class=aa-2fa-username><input type=text readonly id=\"$input_id\" name=\"$input_name\" placeholder=\"" . _m('Username') . "\" value=\"" . safe(AuthGetUname()) . "\"></div>";
 
         $input_name = $base_name . "[tfa][pwd]";
         $input_id = FormArray::formName2Id($input_name);
