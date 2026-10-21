@@ -6804,6 +6804,9 @@ class AA_Unalias_Callback {
         // anything inside the value, and then makes sure any remaining quotes
         // don't interfere with caller
         if (isset($GLOBALS['apc_state'][$out])) {
+            if (($out === 'xqs') || ($out === 'state')) {
+                PageCache::server('REQUEST_URI');   // the visit's query string, with the tracking parameters the key leaves out
+            }
             return $this->expandUrlValue('{' . $out . '}', $GLOBALS['apc_state'][$out]);
         }
 
@@ -11690,6 +11693,10 @@ class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
  *     {go:xseo1=faq&xseo2=questions}
  *     {go:xqs=}?year=2023     // remove query string part and add year=2013
  *     {go:xqs_year=2023}      // replace query string year variable with new value (other qs variables are preserved)
+ *     {go:clean}              // without the tracking parameters of the visit (utm_source, ...), e.g.
+ *                             // <meta property="og:url" content="https://example.org{go:clean}">
+ *     {go:clean&xqs_year=2023}
+ *  The url keeps the visit's campaign parameters (utm_*), not the id of one click (gclid, sznclid, ...).
  *
  *  (we used to use {go2url} custom function in previous versions of AA. This function
  *  is however core function)
