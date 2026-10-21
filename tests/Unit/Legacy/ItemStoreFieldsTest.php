@@ -781,7 +781,7 @@ namespace Tests\Unit\Legacy {
 
         // ------------------------------------------------------------ low-level entry point
 
-        /** StoreToContent() is also called directly (src/Later/HitcounterStats.php) with $delete = true. */
+        /** StoreToContent() with $delete = true replaces the values of the field. */
         public function test_store_to_content_with_delete_flag_replaces_the_row(): void
         {
             RecordingDb::$content = [$this->row(self::ITEM, 'hit_counter.....', 3, null, 0)];

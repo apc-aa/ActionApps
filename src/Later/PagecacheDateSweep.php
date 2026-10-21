@@ -211,7 +211,7 @@ class PagecacheDateSweep implements LaterInterface
     /** Maintenance-only scan of item metadata (no content, no permissions, no items
      *  built) - the canonical GetItemContent()/AA_Items path cannot express a date
      *  window grouped by slice; same practice as the other cron tasks reading `item`
-     *  directly (HitcounterStats:39, HitcounterUpdate:68).
+     *  directly (HitcounterStats, HitcounterUpdate).
      *
      * @return array{0: array<string, list<int|string>>, 1: array<string, list<int|string>>} [expiry, publish]
      */
