@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
-use AA\IO\DB\DB_AA;
-use AA\Util\Adminlink;
 use AA_Module;
-use AA_Object;
 
 /** Templates and site settings still carrying a Universal Analytics id (UA-...). Google stopped
  *  collecting its data on 1 July 2023, so such a site measures no visits - unless a GA4 id (G-...)
@@ -49,31 +46,22 @@ class CheckUniversalAnalytics extends AbstractOptimize
 
     public function findings(): array
     {
-        $rows = self::matching('UA-', static fn(string $txt): bool => (bool) self::uaIds($txt));
+        $rows = CodePoints::matching('UA-', static fn(string $txt): bool => (bool) self::uaIds($txt));
         if (!$rows) {
             return self::findingsFor([], []);
         }
         // the new tag may sit in another template of the module (gtag.js and Tag Manager both load from
         // googletagmanager.com); a value with a UA id is in $rows already - the LIKE above matched it
-        array_push($rows, ...self::matching('googletagmanager', static fn(string $txt): bool => self::newIds($txt) && !self::uaIds($txt)));
+        array_push($rows, ...CodePoints::matching('googletagmanager', static fn(string $txt): bool => self::newIds($txt) && !self::uaIds($txt)));
 
-        $objects = array_column(array_filter($rows, static fn(array $row): bool => $row['table'] === 'object_text'), 'iid');
-        $owners  = $objects ? AA_Object::loadProperties(array_values(array_unique($objects)), 'aa_owner') : [];
-        $with_ua = [];
-        foreach ($rows as $key => $row) {
-            $module_id = self::moduleOf($row, $owners);
-            $rows[$key]['module'] = $module_id;
-            if (is_long_id($module_id) && self::uaIds($row['txt'])) {
-                $with_ua[$module_id] = $module_id;
-            }
-        }
-        // deleted modules are not served
-        $names = $with_ua ? DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['id', array_values($with_ua), 'l'], ['deleted', 0, 'i']]) : [];
+        $rows    = CodePoints::withModules($rows);
+        $with_ua = array_column(array_filter($rows, static fn(array $row): bool => (bool) self::uaIds($row['txt'])), 'module');
+        $names   = CodePoints::liveModules($with_ua);
 
         $found = [];
         foreach ($rows as $row) {
             if (isset($names[$row['module']])) {
-                $found[] = ['module' => $row['module'], 'where' => Adminlink::linkByTable($row['table'], $row['column'], $row) ?: safe("$row[table].$row[column] $row[iid]"), 'txt' => $row['txt']];
+                $found[] = ['module' => $row['module'], 'where' => CodePoints::where($row), 'txt' => $row['txt']];
             }
         }
         // a G-... id in the site settings: {generate:HEAD} prints gtag.js with it
@@ -136,16 +124,6 @@ class CheckUniversalAnalytics extends AbstractOptimize
         return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No template uses the old Google Analytics (Universal Analytics)'))];
     }
 
-    /** The module a CodePoints row belongs to: a view, field, spot or Code item names it in sid, a row of
-     *  slice / module / site / polls is the module, an object belongs to its owner.
-     *  @param array{table: string, iid: string, sid?: string} $row
-     *  @param array<string, list<string>> $owners  object id => [aa_owner] (AA_Object::loadProperties())
-     */
-    public static function moduleOf(array $row, array $owners): string
-    {
-        return (string) ($row['sid'] ?? ($row['table'] === 'object_text' ? ($owners[$row['iid']][0] ?? '') : $row['iid']));
-    }
-
     /** @return list<string> the UA ids in the code, AA comments left out */
     public static function uaIds(string $code): array
     {
@@ -161,56 +139,7 @@ class CheckUniversalAnalytics extends AbstractOptimize
     /** @return list<string> */
     private static function ids(string $pattern, string $code): array
     {
-        preg_match_all($pattern, self::withoutComments($code), $match);
+        preg_match_all($pattern, CodePoints::withoutComments($code), $match);
         return array_values(array_unique($match[0]));
-    }
-
-    /** $code without the {#comments} AA removes, nested braces included. One pass over the braces: a regex
-     *  for nested braces backtracks quadratically on unclosed {#, which any template author can write.
-     *  An unclosed comment is printed, so what it holds counts. */
-    private static function withoutComments(string $code): string
-    {
-        if (!str_contains($code, '{#')) {
-            return $code;
-        }
-        $open = [];   // positions of the unclosed {
-        $cut  = [];   // comment start => its }
-        $len  = strlen($code);
-        for ($i = strcspn($code, '{}'); $i < $len; $i += 1 + strcspn($code, '{}', $i + 1)) {
-            if ($code[$i] === '{') {
-                $open[] = $i;
-            } elseif ($open) {
-                $start = array_pop($open);
-                if ($i === $start + 1) {
-                    $open = [];   // AA never expands an empty {}, so no brace around it closes
-                } elseif ($code[$start + 1] === '#') {
-                    $cut[$start] = $i;
-                }
-            }
-        }
-        ksort($cut);   // inner comments close first
-        $out = '';
-        $pos = 0;
-        foreach ($cut as $start => $end) {
-            if ($start >= $pos) {   // not inside a comment cut already
-                $out .= substr($code, $pos, $start - $pos);
-                $pos  = $end + 1;
-            }
-        }
-        return $out . substr($code, $pos);
-    }
-
-    /** the code values containing $needle which $keep accepts
-     *  @param callable(string): bool $keep
-     *  @return list<array{table: string, column: string, iid: string, sid?: string, txt: string}> */
-    private static function matching(string $needle, callable $keep): array
-    {
-        $rows = [];
-        foreach (CodePoints::containing($needle) as $row) {
-            if ($keep($row['txt'])) {
-                $rows[] = $row;
-            }
-        }
-        return $rows;
     }
 }
