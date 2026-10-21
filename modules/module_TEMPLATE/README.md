@@ -119,7 +119,7 @@ takes the key of the main menu and the key of the submenu item from `menu.php`. 
 **`modedit.php`** — add a new instance and edit its settings. Follow `modules/alerts/modedit.php`;
 the shared helpers in `include/modutils.php` do the work: `ValidateModuleFields()`,
 `CreateNewOwner()`, `WriteModuleFields()` (writes the `module` row and, on insert, calls
-`AddPermObject($module_id, "slice")`) and `RenderModuleFieldsForm()` (name, URL, priority, owner,
+`AA::$perm->addPermObject($module_id, "slice")`) and `RenderModuleFieldsForm()` (name, URL, priority, owner,
 deleted). Rules learned the hard way:
 
 - Read input only through `AA\Util\InputVars`. Set `$no_slice_id = true` from the request **before**

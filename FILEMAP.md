@@ -282,7 +282,7 @@ Pluggable sources; UI in admin/se_dataimport.php, javascript/dataimport.js, css/
 | Optimize/ImgCacheWritable.php | State Check (basic): whether PHP can write the image cache root (a cache which cannot store regenerates every image on every request) and whether the root is a symlink the purge skips | ImgCacheWritable::canStore() | S |
 | Optimize/ImgMeasuring.php | State Check: {img} expressions in the templates which measure their image over HTTP on every render, with the reason | ImgMeasuring::measuringCalls(), calls() | S |
 | Optimize/ItemDiscussion.php | Item discussion management | ItemDiscussion | S |
-| Optimize/LdapPermsToSql.php | Migrate LDAP users/groups/permissions into the SQL backend | LdapPermsToSql | M |
+| Optimize/LdapPermsToSql.php | One-shot LDAP → SQL permission switch: Test (rolled-back trial + parity), Repair (import, parity gate, reference rewrite in one transaction; log LDAP2SQL guards a rerun) | LdapPermsToSql | M |
 | Optimize/MissCacheRouting.php | Image cache miss routing: writes IMG_UPLOAD_PATH/mC/.htaccess when missing (sql_update, every queue tick via ScheduleAaTasks); State Check HTTP-probes that a miss reaches the dispatcher and img.php is reachable | MissCacheRouting::ensure(), write(), rule(), verdict(), imgPhpRuns() | S |
 | Optimize/MultivalueDuplicates.php | Find multivalue field duplicates | MultivalueDuplicates | S |
 | Optimize/ReadersLogin2id.php | Migrate readers login to ID | ReadersLogin2id | S |
@@ -445,6 +445,17 @@ Exact host as RP ID; an account with a passkey no longer logs in by password alo
 | File | Purpose | Key API | Size |
 |------|---------|---------|------|
 | Isds/DatovkaConf.php | The one reader of the per-install misc/datovka/datovka_conf.php (template datovka_conf.php.default) for {datovka}; the ISDS addresses live here (ATS) | DatovkaConf::load(), ats(), instances(), problems() | S |
+
+### Perm/LdapToSql (LDAP → SQL permission conversion, used by Optimize/LdapPermsToSql)
+
+| File | Purpose | Key API | Size |
+|------|---------|---------|------|
+| Perm/LdapToSql/Dn.php | One normalized form for every spelling of a DN | Dn::normalize(), isDn(), firstValue() | S |
+| Perm/LdapToSql/Directory.php | Snapshot of ou=AA people, groups and ACLs, split past the LDAP sizelimit | Directory::fromConfig(), people(), groups(), acls() | M |
+| Perm/LdapToSql/Plan.php | Numeric ids, rows to import, DN → id remap and findings; applies ACI spellings as LDAP does | Plan::build(), applied(), finding(), blocking() | M |
+| Perm/LdapToSql/Importer.php | Wipes the SQL perm tables and imports a Plan through the backend, inside a transaction | Importer::run() | S |
+| Perm/LdapToSql/References.php | DN references in 13 columns: list, first free id, count, one-pass rewrite, other mentions | References::dnValues(), firstFreeId(), count(), rewrite(), mentions() | M |
+| Perm/LdapToSql/Parity.php | Gate: SQL must answer every right, membership and superadmin LDAP gave | Parity::ask(), compare() | M |
 
 ### Expand
 
@@ -638,7 +649,7 @@ Note: *.php3 files are legacy wrappers that include the .php version.
 | notify.php | Notification system functions | | S |
 | perm_core.php | Core permissions management | AA_Perm_Resource, CheckPerms() | XL |
 | perm_ldap.php | LDAP permissions backend | AA_Permsystem_Ldap, InitLDAP() | XL |
-| perm_sql.php | SQL permissions backend | | L |
+| perm_sql.php | SQL permissions backend (login, users/groups/perms writes, explicit-id import) | AA_Permsystem_Sql | L |
 | phplib.php | PHPLib session support wrapper | | L |
 | profile.class.php | User profile settings class | AA_Profile | M |
 | profile.php | User profile handler | | M |
