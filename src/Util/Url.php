@@ -28,6 +28,8 @@ final class Url
         'gclid' => 1, 'gbraid' => 1, 'wbraid' => 1, 'dclid' => 1,
         'fbclid' => 1, 'msclkid' => 1, 'yclid' => 1, 'ttclid' => 1,
         'twclid' => 1, 'li_fat_id' => 1, 'igshid' => 1,
+        // Seznam.cz adds it to links from its home page feed
+        'sznclid' => 1,
         // Google adds it to links in its search results to measure them
         'srsltid' => 1,
         // Google Analytics carries the visitor across domains in these
@@ -41,6 +43,9 @@ final class Url
     /** Families of tracking parameters by prefix - only utm_* is in widespread use */
     private const TRACKING_PREFIXES = ['utm_'];
 
+    /** Tracking parameters of a whole campaign or mailing; the other ones name one click or visitor */
+    private const CAMPAIGN_PARAMS = ['mc_cid' => 1, '_hsmi' => 1];
+
     /** Whether the query parameter $name only tracks the visit (utm_source, gclid, srsltid, ...) */
     public static function isTrackingParam(string $name): bool
     {
@@ -53,6 +58,13 @@ final class Url
             }
         }
         return false;
+    }
+
+    /** Whether the tracking parameter $name is unique to a click or visitor (gclid, fbclid, _ga, ...),
+     *  unlike utm_* and other values of a whole campaign */
+    public static function isClickId(string $name): bool
+    {
+        return isset(self::TRACKING_PARAMS[$name]) && !isset(self::CAMPAIGN_PARAMS[$name]);
     }
 
     /**

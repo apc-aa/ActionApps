@@ -34,6 +34,7 @@
 
 use AA\Cache\CacheStr2find;
 use AA\Cache\PageCache;
+use AA\Security\ViewSlices;
 
 require_once __DIR__ . "/stringexpand.php";
 
@@ -228,7 +229,7 @@ class itemview
         // and leave their own (already merged) accumulator in the shared slot - that
         // superset is what this level has to store.
         $str2find_passon->add([unpack_id($this->slice_info["id"])]);
-        AA::Pagecache()->store($key, $res, $str2find_passon);
+        AA::Pagecache()->storeOutput($key, $res, $str2find_passon);
         $str2find_passon->add_str2find($str2find_save); // and append saved for above
 
         $this->_was_cached = false;
@@ -538,6 +539,9 @@ class itemview
 
         $is_random = $this->is_random();
         $real_from = (int) $this->from_record;  // $this->from_record could be "random:..."
+        if (!$is_random) {
+            $this->decideBanners($view_type);   // before anything of this listing expands - the order by an alias does
+        }
 
         // fill the foo_ids - ids to itemids to get from database
         if (!$is_random) {
@@ -615,6 +619,10 @@ class itemview
             $this->random_hit = $this->zids->slice(0);
         }
 
+        if ($is_random) {
+            $this->decideBanners($view_type);   // once the pick knows the rows; it expands nothing of this listing
+        }
+
         switch ($view_type) {
             case "fulltext":
                 $iid = $this->zids->short_or_longids(0);  // unpacked or short id
@@ -662,7 +670,10 @@ class itemview
                 for ($i = 0; $i < $number_of_ids; ++$i) {
                     // display banner, if you have to
                     if ($this->slice_info['banners'] && $this->slice_info['banners'][$i]) {
-                        $out .= (new AA_Showview(AA_View::parseViewParameters($this->slice_info['banners'][$i])))->getViewOutput();
+                        $view_param = AA_View::parseViewParameters($this->slice_info['banners'][$i]);
+                        // a banner the URL chose is a listing the URL chose - its view lists only what the request may read
+                        $view_param['from_request'] = $this->slice_info['banners_from_request'] ?? false;
+                        $out .= (new AA_Showview($view_param))->getViewOutput();
                     }
 
                     $zidx = $real_from + $i;
@@ -820,6 +831,21 @@ class itemview
                 array_pop($GLOBALS['QueryIDsItemGroupIndex']);
         }
         return $out;
+    }
+
+    /** Decides the banners the URL chose and keeps those to draw (AA_View::decideBanners()) - only the compact
+     *  listing (the default output of get_output()) draws banners, one before each of its rows */
+    private function decideBanners(string $view_type): void
+    {
+        if (!($this->slice_info['banners_from_request'] ?? false) || empty($this->slice_info['banners']) || in_array($view_type, ['fulltext', 'itemlist', 'calendar'], true)) {
+            return;
+        }
+        $rows = ($this->num_records < 0) ? MAX_NO_OF_ITEMS_4_GROUP : (int) $this->num_records;
+        // the loop stops after the banner past the last item (a random pick has replaced the ids and starts at 0)
+        $rows = min($rows, max(0, $this->zids->count() - (int) $this->from_record) + 1);
+        // the loop reads [$i] - a position written 03 stays a string key and is never drawn
+        $drawn = array_filter($this->slice_info['banners'], static fn($pos): bool => is_int($pos) && ($pos < $rows), ARRAY_FILTER_USE_KEY);
+        $this->slice_info['banners'] = AA_View::decideBanners($drawn, ViewSlices::forRequest());
     }
 
     // ----------------------------------------------------------------------------

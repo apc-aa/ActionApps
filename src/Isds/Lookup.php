@@ -16,7 +16,7 @@ use AA\Isds\Registry\Box;
  * is left so. ISDS lists a message once it reached the box, after an antivirus check of up to 240 s,
  * so one not listed is waited for till CREATE_TIMEOUT + GRACE after its attempt, and only then taken
  * for one that never went. The list is read page by page while $more allows, over as many steps as it
- * takes; only a list read to its end decides. Pure: the list comes from $list.
+ * takes (SentList); only a list read to its end decides. Pure: the list comes from $list.
  */
 final readonly class Lookup
 {
@@ -26,11 +26,8 @@ final readonly class Lookup
     /** seconds after the longest CreateMessage a message may still be missing from the list - a wrong
      *  "never sent" makes a person send it twice */
     public const GRACE = 3600;
-    /** pages of one reading of the list at most: one that does not end tells nothing */
-    public const MAX_PAGES = 50;
-    /** records each page repeats of the one before: the list moves between pages, a message in the
-     *  antivirus check takes its place by the time it was submitted */
-    public const OVERLAP = 20;
+    public const MAX_PAGES = SentList::MAX_PAGES;
+    public const OVERLAP   = SentList::OVERLAP;
     /** seconds an attempt is looked up for: ISDS deletes a sent message some 90 days after its delivery,
      *  so the list of an older one may be empty without telling anything */
     public const KEPT = 30 * 86400;
@@ -72,17 +69,21 @@ final readonly class Lookup
             return new self([], [], $unsure, []);
         }
         $at    = array_column($valid, 'at');
-        $fresh = ['k' => array_keys($valid), 'f' => min($at) - self::SKEW, 't' => min($now, max($at) + Client::CREATE_TIMEOUT + self::GRACE), 'o' => 1, 'a' => '', 'c' => 0, 'x' => [], 'n' => []];
+        $fresh = ['k' => array_keys($valid)]
+            + SentList::fresh(min($at) - self::SKEW, min($now, max($at) + Client::CREATE_TIMEOUT + self::GRACE))
+            + ['x' => [], 'n' => []];
         $scan  = self::fits($scan, $fresh) ? $scan : $fresh;
         $keys = [];
         foreach ($valid as $k => $w) {
             $keys[$w['ref'] . "\n" . Box::normalizeId($w['box'])] = $k;
         }
         $subject = Text::isdsKey($annotation);
-        $ended   = false;
-        for ($read = 0; !$ended && ($scan['c'] < self::MAX_PAGES) && (($read === 0) || is_null($more) || $more()); ++$read) {
-            $records = $list($scan['f'], $scan['t'], $scan['o'], Client::MAX_LIST);
-            ++$scan['c'];
+        /**
+         * @param list<SentMessage>    $records
+         * @param array<string, mixed> $scan
+         * @return array<string, mixed>
+         */
+        $match = static function (array $records, array $scan) use ($keys, $valid, $subject): array {
             foreach ($records as $sent) {
                 $k = $keys[$sent->senderRef . "\n" . $sent->recipient] ?? null;
                 // one refused by the antivirus check has no delivery time, and is listed all the same
@@ -96,19 +97,11 @@ final readonly class Lookup
                     $scan['x'][$k][$sent->dmId] = [$sent->dmId, $sent->status, $sent->senderRef, $sent->recipient, $sent->deliveredAt, $sent->acceptedAt, $sent->annotation];
                 }
             }
-            $ids = array_map(static fn(SentMessage $s): string => $s->dmId, $records);
-            if (($scan['a'] !== '') && !in_array($scan['a'], $ids, true)) {
-                // the last record of the page before is gone from this one: the list moved by more
-                // than OVERLAP, and what lay between may have been skipped
-                [$scan['o'], $scan['a']] = [1, ''];
-                continue;
-            }
-            $ended      = (count($records) < Client::MAX_LIST);
-            $scan['o'] += Client::MAX_LIST - self::OVERLAP;
-            $scan['a']  = ($ids === []) ? '' : $ids[count($ids) - 1];
-        }
-        if (!$ended) {
-            return ($scan['c'] < self::MAX_PAGES) ? new self([], [], [], [], $scan) : new self([], [], self::sorted([...$unsure, ...array_keys($valid)]), []);
+            return $scan;
+        };
+        [$scan, $end] = SentList::read($list, $scan, $match, $more);
+        if ($end !== 'ended') {
+            return ($end === '') ? new self([], [], [], [], $scan) : new self([], [], self::sorted([...$unsure, ...array_keys($valid)]), []);
         }
         [$found, $missing, $waiting] = [[], [], []];
         foreach ($valid as $k => $w) {
@@ -127,20 +120,15 @@ final readonly class Lookup
 
     /**
      * The reading of a step before goes on only when it is consistent with how this class leaves it:
-     * of these messages, in the window it started with, no further than its pages took it, past page 1
-     * only with the last record of the page before (which the next page must hold), matches of the
-     * shape SentMessage takes - a position edited by hand would fail every step, or skip the list it
-     * never read
+     * a cursor SentList::fits() takes, of these messages, with matches of the shape SentMessage takes -
+     * a position edited by hand would fail every step, or skip the list it never read
      * @param array<string, mixed> $scan
      * @param array<string, mixed> $fresh a reading started now
      */
     private static function fits(array $scan, array $fresh): bool
     {
-        [$t, $o, $c] = [$scan['t'] ?? null, $scan['o'] ?? null, $scan['c'] ?? null];
-        if ((($scan['k'] ?? null) !== $fresh['k']) || (($scan['f'] ?? null) !== $fresh['f']) || !is_int($t) || !is_int($o) || !is_int($c)
-            || !is_string($scan['a'] ?? null) || !is_array($scan['n'] ?? null) || !is_array($scan['x'] ?? null)
-            || ($t < $fresh['f']) || ($t > $fresh['t']) || ($c < 0) || ($o < 1) || ($o > 1 + $c * (Client::MAX_LIST - self::OVERLAP))
-            || (($o === 1) !== ($scan['a'] === ''))) {
+        if (!SentList::fits($scan, $fresh['f'], $fresh['t']) || (($scan['k'] ?? null) !== $fresh['k'])
+            || !is_array($scan['n'] ?? null) || !is_array($scan['x'] ?? null)) {
             return false;
         }
         foreach ($scan['x'] as $k => $rows) {

@@ -5,80 +5,90 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\Credential\Secret;
-use AA\Credential\Store;
 use AA\Http\ClientCertificate;
+use AA\IO\DB\DB_AA;
 use AA\Isds\Registry\Box;
 
 /**
- * The ISDS accounts include/config.php sets up. Each sends only for the sites and the one pair of
- * slices - campaigns and their messages - the server's administrator bound it to:
- *     define('AA_APIKEY_ISDS_NSZM_SITE',   '<site module id>');   // more sites: separated by commas
- *     define('AA_APIKEY_ISDS_NSZM_SLICES', '<campaign slice id>,<message slice id>');
- *     define('AA_APIKEY_ISDS_NSZM_CERT',   '/etc/aa-isds/nszm.pem');   // outside the directory of AA
- *     define('AA_APIKEY_ISDS_NSZM_BOX',    '<data box id>');           // only for a hosted filing service
- * The key vendor is the environment (isds = production, isdstest = test), NSZM names the account: one
- * word of capital letters and digits. Slice ids are public, so they alone choose no account: the
- * caller passes the site as well, and an account is used only where the site and both slices match.
- * A slice belongs to one account of an environment.
- * What is set decides the login (Account): BOX - a hosted filing service, with the certificate of the
- * service; CERT - a system certificate of the data box; otherwise LOGIN and PASSWORD, in the test
- * environment only. CERT holds the key too unless KEY names a file of its own; PASSPHRASE opens an
- * encrypted key. A relative path starts in CERT_DIR of AA, which the web server serves - a key belongs
- * outside it.
+ * The ISDS accounts of misc/datovka/datovka_conf.php (DatovkaConf::accounts()). Each sends only for the
+ * sites and the one pair of slices - campaigns and their messages - the server's administrator bound it to:
+ *     'accounts' => [
+ *         'NSZM' => [
+ *             'environment' => 'production',                 // or 'test'
+ *             'auth'        => 'hosted',
+ *             'sites'       => ['<site module id>'],
+ *             'slices'      => ['<campaign slice id>', '<message slice id>'],
+ *             'box'         => '<data box id>',
+ *             'cert'        => '/etc/aa-isds/nszm.pem',      // outside the directory of AA
+ *         ],
+ *     ],
+ * NSZM names the account: one word of capital letters and digits, the first a letter - so one name has
+ * one environment. Slice ids are public, so they alone choose no account: the caller passes the site as
+ * well, and an account is used only where the site and both slices match. A slice belongs to one account
+ * of an environment.
+ * auth says how it logs in (Account): basic - login and password, in the test environment only; cert - a
+ * system certificate of the data box; hosted - the certificate of a hosted filing service, sending from
+ * box. cert holds the key too unless key names a file of its own; passphrase opens an encrypted key. A
+ * relative path starts in DatovkaConf::CERT_DIR, which the web server serves - a key belongs outside it.
  *
  * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string}
  */
 final class Accounts
 {
-    public const SITE       = 'SITE';
-    public const SLICES     = 'SLICES';
-    public const LOGIN      = 'LOGIN';
-    public const PASSWORD   = 'PASSWORD';
-    public const CERT       = 'CERT';
-    public const KEY        = 'KEY';
-    public const PASSPHRASE = 'PASSPHRASE';
-    public const BOX        = 'BOX';
+    /** the keys of an account */
+    public const ENVIRONMENT = 'environment';
+    public const AUTH        = 'auth';
+    public const SITES       = 'sites';
+    public const SLICES      = 'slices';
+    public const LOGIN       = 'login';
+    public const PASSWORD    = 'password';
+    public const BOX         = 'box';
+    public const CERT        = 'cert';
+    public const KEY         = 'key';
+    public const PASSPHRASE  = 'passphrase';
 
-    /** where a relative path of CERT and KEY starts in the installation; git ignores the files there */
-    public const CERT_DIR = 'config/certs/';
+    /** the keys of every account */
+    private const COMMON = [self::ENVIRONMENT, self::AUTH, self::SITES, self::SLICES];
 
-    /** the account in advice that shows how to name the constants */
-    public const PLACEHOLDER = '<ACCOUNT>';
+    /** the keys of each login - the values of auth -, in the order the file shows them */
+    private const LOGINS = [
+        Account::BASIC  => [self::LOGIN, self::PASSWORD],
+        Account::CERT   => [self::CERT, self::KEY, self::PASSPHRASE],
+        Account::HOSTED => [self::BOX, self::CERT, self::KEY, self::PASSPHRASE],
+    ];
 
-    /** the key vendor of each environment */
-    public const VENDORS = [Account::PRODUCTION => 'isds', Account::TEST => 'isdstest'];
+    /** the keys AA reads */
+    private const KEYS = [...self::COMMON, self::LOGIN, self::PASSWORD, self::BOX, self::CERT, self::KEY, self::PASSPHRASE];
 
-    /** an account of one word: AA_APIKEY_ISDS_TEST_NSZM_SLICES cannot pass for a test account */
-    private const NAME = '/^([A-Z0-9]+)_(' . self::SITE . '|' . self::SLICES . '|' . self::LOGIN . '|' . self::PASSWORD . '|'
-        . self::CERT . '|' . self::KEY . '|' . self::PASSPHRASE . '|' . self::BOX . ')\z/';
+    /** one word: the name labels the account in State Check */
+    private const NAME = '/^[A-Z][A-Z0-9]*\z/';
 
     /**
      * The account bound to the site and the pair of slices.
      *
-     * @param array<string, mixed>|null $constants as binding()
      * @throws ConfigException as binding()
      * @throws \InvalidArgumentException as binding()
      */
-    public static function forSlices(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?array $constants = null): Account
+    public static function forSlices(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?DatovkaConf $conf = null): Account
     {
-        $constants ??= Store::userConstants();
+        $conf ??= DatovkaConf::load();
 
-        return self::account(self::binding($site, $campaignSlice, $messageSlice, $environment, $constants), $constants);
+        return self::account(self::binding($site, $campaignSlice, $messageSlice, $environment, $conf), $conf);
     }
 
     /**
      * The usable binding of the site and the pair of slices; account() gives its login.
      *
-     * @param string $site        the site whose own page is rendered (AA_Module_Site::renderingPage()), never a value from the template
-     * @param string $environment '' = test only when every production constant provably concerns other sites
-     *                            or slices, else production; 'test' or 'production' = that one only (a template
-     *                            narrows to test, a queued run asks for the environment it was queued in)
-     * @param array<string, mixed>|null $constants name => value, as Store::userConstants(); null = those
+     * @param string       $site        the site whose own page is rendered (AA_Module_Site::renderingPage()), never a value from the template
+     * @param string       $environment '' = test only when every production account provably concerns other sites
+     *                                  or slices, else production; 'test' or 'production' = that one only (a template
+     *                                  narrows to test, a queued run asks for the environment it was queued in)
+     * @param ?DatovkaConf $conf        the settings; null = those of this installation
      * @throws ConfigException no usable account is bound - the message tells how to bind one and nothing
      *                         about the accounts there are: whoever writes the template reads it
      * @throws \InvalidArgumentException an id that is not one, an unknown environment
      */
-    public static function binding(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?array $constants = null): Binding
+    public static function binding(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?DatovkaConf $conf = null): Binding
     {
         $site          = ModuleId::normalize($site) ?? throw new \InvalidArgumentException('A site id is 32 hexadecimal digits');
         $campaignSlice = ModuleId::normalize($campaignSlice) ?? throw new \InvalidArgumentException('A slice id is 32 hexadecimal digits');
@@ -86,10 +96,10 @@ final class Accounts
         if (!in_array($environment, ['', Account::TEST, Account::PRODUCTION], true)) {
             throw new \InvalidArgumentException('An ISDS environment is "' . Account::TEST . '", "' . Account::PRODUCTION . '" or none');
         }
-        $bindings = self::bindings($constants ??= Store::userConstants());
+        $bindings = self::bindings($conf ??= DatovkaConf::load());
         if ($environment === '') {
             // never test in place of production: a run sent to the test ISDS reaches nobody
-            $environment = self::productionMeant($constants, $site, $campaignSlice, $messageSlice) ? Account::PRODUCTION : Account::TEST;
+            $environment = self::productionMeant($conf, $site, $campaignSlice, $messageSlice) ? Account::PRODUCTION : Account::TEST;
         }
         foreach ($bindings as $binding) {
             if (($binding->environment === $environment) && $binding->binds($site, $campaignSlice, $messageSlice)) {
@@ -104,48 +114,44 @@ final class Accounts
     }
 
     /**
-     * The account of a binding binding() or bindings() returned in this request - the constants may
-     * change between requests. A queued run asks binding() again with the environment it stored,
-     * never ''.
-     * @param array<string, mixed>|null $constants as binding()
+     * The account of a binding binding() or bindings() returned in this request - the file may change
+     * between requests. A queued run asks binding() again with the environment it stored, never ''.
      * @throws ConfigException the binding is not usable - its problems say why
      */
-    public static function account(Binding $binding, #[\SensitiveParameter] ?array $constants = null): Account
+    public static function account(Binding $binding, #[\SensitiveParameter] ?DatovkaConf $conf = null): Account
     {
         if (!$binding->usable()) {
-            throw new ConfigException('Fix the constants of ' . self::prefix($binding->environment, $binding->name) . ' in config.php first: ' . implode('; ', $binding->problems));
+            throw new ConfigException('Fix ' . self::setting($binding->name) . ' in ' . DatovkaConf::FILE . ' first: ' . implode('; ', $binding->problems));
         }
 
-        return self::login($binding->environment, $binding->name, $binding->kind, $constants ?? Store::userConstants());
+        return self::login($binding->environment, $binding->name, $binding->kind, self::entry($binding->name, $conf));
     }
 
     /**
-     * The certificate CERT, KEY and PASSPHRASE of a binding name, usable or not - for State Check to
-     * check the files. Null for a name and a password, or without CERT.
-     * @param array<string, mixed>|null $constants as binding()
-     * @throws ConfigException a line break or NUL in one of them
+     * The cert, key and passphrase of a binding, usable or not - for State Check to check the files. Null
+     * without cert.
+     * @throws ConfigException one of them is no text, or holds a line break or NUL
      */
-    public static function certificate(Binding $binding, #[\SensitiveParameter] ?array $constants = null): ?ClientCertificate
+    public static function certificate(Binding $binding, #[\SensitiveParameter] ?DatovkaConf $conf = null): ?ClientCertificate
     {
-        return self::certificateOf($binding->environment, $binding->name, $constants ?? Store::userConstants());
+        return self::certificateOf($binding->name, self::entry($binding->name, $conf));
     }
 
     /**
-     * Every account config.php sets up, usable or not, with what is wrong - for State Check, which
-     * only a superadmin sees. No key is in them.
+     * Every account the file sets up, usable or not, with what is wrong - for State Check, which only a
+     * superadmin sees. No secret is in them. An account of a name AA does not read is a stray.
      *
-     * @param array<string, mixed>|null $constants as binding()
      * @return list<Binding> production first, by name
      */
-    public static function bindings(#[\SensitiveParameter] ?array $constants = null): array
+    public static function bindings(#[\SensitiveParameter] ?DatovkaConf $conf = null): array
     {
-        $constants ??= Store::userConstants();
-        $found       = [];
-        foreach (self::scan($constants)[0] as $environment => $accounts) {
-            foreach ($accounts as $name => $kinds) {
-                $found[] = self::read($environment, (string) $name, $kinds, $constants);
+        $found = [];
+        foreach (($conf ?? DatovkaConf::load())->accounts() as $name => $fields) {
+            if (preg_match(self::NAME, (string) $name) === 1) {
+                $found[] = self::read((string) $name, $fields);
             }
         }
+        usort($found, static fn(array $a, array $b): int => [$a['environment'] === Account::TEST, $a['name']] <=> [$b['environment'] === Account::TEST, $b['name']]);
         $shared   = self::shared($found);
         $bindings = [];
         foreach ($found as $i => $f) {
@@ -156,118 +162,154 @@ final class Accounts
     }
 
     /**
-     * The constants of the ISDS vendors that are no account's key, so AA never reads them: a key
-     * without an account (AA_APIKEY_ISDSTEST_LOGIN), a misspelt kind, a name in small letters.
+     * What of the accounts AA never reads: an account whose name is not one word of capital letters and
+     * digits, a misspelt key of an account.
      *
-     * @param array<string, mixed>|null $constants as binding()
-     * @return list<string> constant names
+     * @param ?list<string> $names the accounts whose keys to look at; null = all. Each account of a name AA
+     *                             does not read is named.
+     * @return list<string> as DATOVKA_CONF['accounts']['NSZM']['pasword']
      */
-    public static function strays(#[\SensitiveParameter] ?array $constants = null): array
+    public static function strays(#[\SensitiveParameter] ?DatovkaConf $conf = null, ?array $names = null): array
     {
-        return self::scan($constants ?? Store::userConstants())[1];
-    }
-
-    /**
-     * The accounts' constants and the strays.
-     *
-     * @param array<string, mixed> $constants
-     * @return array{array<string, array<array-key, list<string>>>, list<string>} environment => account => kinds; strays
-     */
-    private static function scan(#[\SensitiveParameter] array $constants): array
-    {
-        $accounts = [];
-        $strays   = [];
-        foreach (self::VENDORS as $environment => $vendor) {
-            $accounts[$environment] = [];
-            foreach (Store::contextsIn($vendor, $constants) as $name => $context) {
-                // Store reads a constant only as it spells it - in another case it is a stray
-                if ((preg_match(self::NAME, $context, $m) === 1) && ($name === self::constant($environment, $m[1], $m[2]))) {
-                    $accounts[$environment][$m[1]][] = $m[2];
-                } else {
-                    $strays[] = $name;
+        $strays = [];
+        foreach (($conf ?? DatovkaConf::load())->accounts() as $name => $fields) {
+            if (preg_match(self::NAME, (string) $name) !== 1) {
+                $strays[] = DatovkaConf::key(DatovkaConf::ACCOUNTS, $name);
+                continue;
+            }
+            if (!is_null($names) && !in_array($name, $names, true)) {
+                continue;
+            }
+            foreach (is_array($fields) ? array_keys($fields) : [] as $key) {
+                if (!in_array($key, self::KEYS, true)) {
+                    $strays[] = DatovkaConf::key(DatovkaConf::ACCOUNTS, $name, $key);
                 }
             }
-            ksort($accounts[$environment], SORT_STRING);
         }
 
-        return [$accounts, $strays];
+        return $strays;
     }
 
     /**
-     * @param list<string>         $kinds the account's constants there are
-     * @param array<string, mixed> $constants
-     * @return Found
-     */
-    private static function read(string $environment, string $name, array $kinds, #[\SensitiveParameter] array $constants): array
-    {
-        $sites    = [];
-        $slices   = ['', ''];
-        $problems = [];
-        try {
-            $sites = self::sites($environment, $name, $constants);
-        } catch (ConfigException $e) {
-            $problems[] = $e->getMessage();
-        }
-        try {
-            $slices = self::slices($environment, $name, $constants);
-        } catch (ConfigException $e) {
-            $problems[] = $e->getMessage();
-        }
-        $kind  = self::kind($kinds);
-        $mixed = self::mixed($environment, $name, $kind, $kinds);
-        array_push($problems, ...$mixed);
-        // production with a name and a password has said all there is: set the certificate
-        if (($environment !== Account::PRODUCTION) || ($kind !== Account::BASIC)) {
-            try {
-                self::login($environment, $name, $kind, $constants);
-            } catch (ConfigException $e) {
-                $problems[] = $e->getMessage();
-            }
-        }
-
-        return ['name' => $name, 'environment' => $environment, 'sites' => $sites, 'slices' => $slices, 'problems' => $problems, 'kind' => $kind];
-    }
-
-    /**
-     * The login the constants there are mean, even empty ones: BOX a hosted filing service, CERT a
-     * system certificate, otherwise a name and a password.
-     * @param list<string> $kinds
-     */
-    private static function kind(array $kinds): string
-    {
-        return match (true) {
-            in_array(self::BOX, $kinds, true)  => Account::HOSTED,
-            in_array(self::CERT, $kinds, true) => Account::CERT,
-            default                            => Account::BASIC,
-        };
-    }
-
-    /**
-     * Constants of another login than the one kind() chose - which one is meant is not guessed - and
-     * production without a certificate.
-     * @param list<string> $kinds
+     * The ids to ask modulesHere() about, in one query: the sites of the bindings, and the slices of
+     * those of no site read.
+     *
+     * @param list<Binding> $bindings
      * @return list<string>
      */
-    private static function mixed(string $environment, string $name, string $kind, array $kinds): array
+    public static function moduleIds(array $bindings): array
     {
-        $names    = fn(string ...$of): string => implode(' and ', array_map(fn(string $k): string => self::constant($environment, $name, $k), $of));
-        $named    = array_values(array_intersect([self::LOGIN, self::PASSWORD], $kinds));
-        $orphans  = array_values(array_intersect([self::KEY, self::PASSPHRASE], $kinds));
-        $problems = [];
-        if ($kind !== Account::BASIC) {
-            if ($named) {
-                $problems[] = 'Remove ' . $names(...$named) . ' from config.php - an account with a certificate logs in without a name and a password';
-            }
-        } elseif ($environment === Account::PRODUCTION) {
-            $problems[] = 'Set ' . $names(self::CERT) . ' in config.php to the file of the certificate - production ISDS lets an application in with a certificate only';
-            if ($named) {
-                $problems[] = 'Remove ' . $names(...$named) . ' from config.php - AA never logs in to production ISDS with a name and a password';
-            }
-        } elseif ($orphans) {
-            $problems[] = 'Set ' . $names(self::CERT) . ' in config.php, or remove ' . $names(...$orphans) . ' - they belong to a certificate';
+        $ids = [];
+        foreach ($bindings as $b) {
+            array_push($ids, ...(($b->sites === []) ? array_filter([$b->campaignSlice, $b->messageSlice]) : $b->sites));
         }
 
-        return $problems;
+        return array_values(array_unique($ids));
+    }
+
+    /**
+     * The bindings State Check of a database deals with: one tree serves several databases, and each
+     * keeps its own log of refused logins. Those of no site read are a fault of the file - shown in each.
+     * A module id may be in two databases: an account of such a site is dealt with in both.
+     *
+     * @param list<Binding> $bindings
+     * @param list<string>  $here     the modules of this database among moduleIds()
+     * @return list<Binding>
+     */
+    public static function here(array $bindings, array $here): array
+    {
+        return array_values(array_filter($bindings, static fn(Binding $b): bool => ($b->sites === []) || (array_intersect($b->sites, $here) !== [])));
+    }
+
+    /**
+     * @param list<string> $ids of sites or slices
+     * @return list<string> those that are modules of this database
+     */
+    public static function modulesHere(array $ids): array
+    {
+        return $ids ? array_values(DB_AA::select('id', 'SELECT LOWER(HEX(`id`)) AS id FROM `module`', [['id', $ids, 'l']])) : [];
+    }
+
+    /** @return Found */
+    private static function read(string $name, #[\SensitiveParameter] mixed $fields): array
+    {
+        $found = ['name' => $name, 'environment' => self::environment($fields), 'sites' => [], 'slices' => ['', ''], 'problems' => [], 'kind' => ''];
+        if (!is_array($fields)) {
+            $found['problems'][] = self::setting($name) . ' is not an array - give the account its keys in one';
+
+            return $found;
+        }
+        $written = in_array($fields[self::ENVIRONMENT] ?? null, [Account::TEST, Account::PRODUCTION], true);
+        if (!$written) {
+            $found['problems'][] = 'Set ' . self::setting($name, self::ENVIRONMENT) . " to '" . Account::TEST . "' or '" . Account::PRODUCTION . "'";
+        }
+        $kind = $fields[self::AUTH] ?? null;
+        if (is_string($kind) && isset(self::LOGINS[$kind])) {
+            $found['kind'] = $kind;
+        } else {
+            $found['problems'][] = 'Set ' . self::setting($name, self::AUTH) . " to '" . Account::BASIC . "', '" . Account::CERT . "' or '" . Account::HOSTED . "'";
+        }
+        try {
+            $found['sites'] = self::sites($name, $fields);
+        } catch (ConfigException $e) {
+            $found['problems'][] = $e->getMessage();
+        }
+        try {
+            $found['slices'] = self::slices($name, $fields);
+        } catch (ConfigException $e) {
+            $found['problems'][] = $e->getMessage();
+        }
+        // an environment misspelt is to fix first: which keys belong is not known before
+        if ($written) {
+            array_push($found['problems'], ...self::mixed($found['environment'] === Account::PRODUCTION, $name, $found['kind'], $fields));
+        }
+        // production with a name and a password has said all there is: auth is to change
+        if (($found['kind'] !== '') && (($found['environment'] !== Account::PRODUCTION) || ($found['kind'] !== Account::BASIC))) {
+            try {
+                self::login($found['environment'], $name, $found['kind'], $fields);
+            } catch (ConfigException $e) {
+                $found['problems'][] = $e->getMessage();
+            }
+        }
+
+        return $found;
+    }
+
+    /**
+     * production unless written exactly as test: a typo must never send to the test ISDS in place of
+     * production. A block out of its place holds Secret (DatovkaConf::loose()).
+     */
+    private static function environment(#[\SensitiveParameter] mixed $fields): string
+    {
+        $environment = is_array($fields) ? ($fields[self::ENVIRONMENT] ?? null) : null;
+        $environment = ($environment instanceof Secret) ? $environment->reveal() : $environment;
+
+        return ($environment === Account::TEST) ? Account::TEST : Account::PRODUCTION;
+    }
+
+    /**
+     * Keys of another login than auth names - which one is meant is not guessed - and production with a
+     * name and a password, where auth is to change and the other keys may be the right ones.
+     * @param bool                    $production environment says production
+     * @param array<array-key, mixed> $fields
+     * @return list<string>
+     */
+    private static function mixed(bool $production, string $name, string $kind, #[\SensitiveParameter] array $fields): array
+    {
+        if ($kind === '') {
+            return [];
+        }
+        $set      = array_values(array_filter(array_diff(self::KEYS, self::COMMON), static fn(string $key): bool => self::isSet($fields[$key] ?? null)));
+        $settings = static fn(array $keys): string => implode(' and ', array_map(static fn(string $key): string => self::setting($name, $key), $keys));
+        if ($production && ($kind === Account::BASIC)) {
+            $named = array_values(array_intersect($set, self::LOGINS[Account::BASIC]));
+
+            return ['Set ' . self::setting($name, self::AUTH) . " to '" . Account::CERT . "' or '" . Account::HOSTED . "'"
+                . ($named ? ' and remove ' . $settings($named) : '') . ' - AA never logs in to production ISDS with a name and a password'];
+        }
+        $others = array_values(array_diff($set, self::LOGINS[$kind]));
+
+        return $others ? ['Remove ' . $settings($others) . " - an account with auth '$kind' does not use " . ((count($others) === 1) ? 'it' : 'them')] : [];
     }
 
     /**
@@ -290,7 +332,7 @@ final class Accounts
             if (count($indexes) < 2) {
                 continue;
             }
-            $names   = array_map(static fn(int $i): string => self::constant($found[$i]['environment'], $found[$i]['name'], self::SLICES), $indexes);
+            $names   = array_map(static fn(int $i): string => self::setting($found[$i]['name'], self::SLICES), $indexes);
             $problem = implode(', ', $names) . ' name the same slice - a slice belongs to one account';
             foreach ($indexes as $i) {
                 // a pair named twice shares both slices - one problem
@@ -302,165 +344,143 @@ final class Accounts
     }
 
     /**
-     * @param array<string, mixed> $constants
+     * @param array<array-key, mixed> $fields
      * @return list<string>
      * @throws ConfigException
      */
-    private static function sites(string $environment, string $name, #[\SensitiveParameter] array $constants): array
+    private static function sites(string $name, #[\SensitiveParameter] array $fields): array
     {
-        $constant = self::constant($environment, $name, self::SITE);
-        $value    = self::key($environment, $name, self::SITE, $constants)
-            ?? throw new ConfigException("Set $constant in config.php to the id of the site the account sends for - more sites separated by commas");
-        $ids = self::ids($value->reveal()) ?? throw new ConfigException("$constant is not a list of site ids - 32 hexadecimal digits each, separated by commas");
+        $setting = self::setting($name, self::SITES);
+        if (!self::isSet($fields[self::SITES] ?? null)) {
+            throw new ConfigException("Set $setting to the ids of the sites the account sends for: ['<site id>']");
+        }
+        $ids = self::ids($fields[self::SITES]) ?? throw new ConfigException("$setting is not a list of site ids - write ['<site id>', ...], 32 hexadecimal digits each");
 
         return array_values(array_unique($ids));
     }
 
     /**
-     * @param array<string, mixed> $constants
+     * @param array<array-key, mixed> $fields
      * @return array{string, string} the campaign slice and the message slice
      * @throws ConfigException
      */
-    private static function slices(string $environment, string $name, #[\SensitiveParameter] array $constants): array
+    private static function slices(string $name, #[\SensitiveParameter] array $fields): array
     {
-        $constant = self::constant($environment, $name, self::SLICES);
-        $value    = self::key($environment, $name, self::SLICES, $constants)
-            ?? throw new ConfigException("Set $constant in config.php to the ids of the campaign slice and the message slice the account sends for, separated by a comma");
-        $ids = self::ids($value->reveal());
+        $setting = self::setting($name, self::SLICES);
+        if (!self::isSet($fields[self::SLICES] ?? null)) {
+            throw new ConfigException("Set $setting to the ids of the campaign slice and the message slice the account sends for: ['<campaign slice id>', '<message slice id>']");
+        }
+        $ids = self::ids($fields[self::SLICES]);
         if (is_null($ids) || (count($ids) !== 2) || ($ids[0] === $ids[1])) {
-            throw new ConfigException("$constant is not a pair of slices - write the id of the campaign slice, a comma and the id of the message slice, 32 hexadecimal digits each");
+            throw new ConfigException("$setting is not a pair of slices - write ['<campaign slice id>', '<message slice id>'], 32 hexadecimal digits each");
         }
 
         return [$ids[0], $ids[1]];
     }
 
     /**
-     * @param string $kind Account::BASIC, CERT or HOSTED, as kind() chose
-     * @param array<string, mixed> $constants
+     * @param string                  $kind Account::BASIC, CERT or HOSTED, as auth says
+     * @param array<array-key, mixed> $fields
      * @throws ConfigException
      */
-    private static function login(string $environment, string $name, string $kind, #[\SensitiveParameter] array $constants): Account
+    private static function login(string $environment, string $name, string $kind, #[\SensitiveParameter] array $fields): Account
     {
         if ($kind !== Account::BASIC) {
-            $certificate = self::certificateOf($environment, $name, $constants)
-                ?? throw new ConfigException('Set ' . self::constant($environment, $name, self::CERT) . ' in config.php to the PEM file of the certificate '
+            $certificate = self::certificateOf($name, $fields)
+                ?? throw new ConfigException('Set ' . self::setting($name, self::CERT) . ' to the PEM file of the certificate '
                     . (($kind === Account::HOSTED) ? 'of the hosting service' : 'ISDS registered for the data box') . ' - a full path outside the directory of AA');
 
-            return Account::withCertificate($environment, $certificate, ($kind === Account::HOSTED) ? self::box($environment, $name, $constants) : '');
+            return Account::withCertificate($environment, $certificate, ($kind === Account::HOSTED) ? self::box($name, $fields) : '');
         }
-        $login    = self::key($environment, $name, self::LOGIN, $constants);
-        $password = self::key($environment, $name, self::PASSWORD, $constants);
+        $login    = self::text($name, $fields, self::LOGIN);
+        $password = self::secret($name, $fields, self::PASSWORD);
         if (is_null($login) || is_null($password)) {
-            $missing = [];
-            if (is_null($login)) {
-                $missing[] = self::constant($environment, $name, self::LOGIN);
-            }
-            if (is_null($password)) {
-                $missing[] = self::constant($environment, $name, self::PASSWORD);
-            }
-            throw new ConfigException('Set ' . implode(' and ', $missing) . ' in config.php - the account logs in with a name and a password');
+            $missing = array_keys(array_filter([self::LOGIN => is_null($login), self::PASSWORD => is_null($password)]));
+            throw new ConfigException('Set ' . implode(' and ', array_map(static fn(string $key): string => self::setting($name, $key), $missing)) . ' - the account logs in with a name and a password');
         }
         try {
-            return new Account($environment, $login->reveal(), $password);
+            return new Account($environment, $login, $password);
         } catch (\InvalidArgumentException $e) {
             // the reason names no value
-            throw new ConfigException('Fix ' . self::constant($environment, $name, self::LOGIN) . ' or ' . self::constant($environment, $name, self::PASSWORD) . ' in config.php: ' . $e->getMessage(), 0, $e);
+            throw new ConfigException('Fix ' . self::setting($name, self::LOGIN) . ' or ' . self::setting($name, self::PASSWORD) . ': ' . $e->getMessage(), 0, $e);
         }
     }
 
     /**
      * The data box a hosted filing service sends from - no secret, ISDS answers name it.
-     * @param array<string, mixed> $constants
+     * @param array<array-key, mixed> $fields
      * @throws ConfigException
      */
-    private static function box(string $environment, string $name, #[\SensitiveParameter] array $constants): string
+    private static function box(string $name, #[\SensitiveParameter] array $fields): string
     {
-        $constant = self::constant($environment, $name, self::BOX);
-        $box      = self::key($environment, $name, self::BOX, $constants)
-            ?? throw new ConfigException("Set $constant in config.php to the id of the data box the account sends from");
+        $setting = self::setting($name, self::BOX);
+        $box     = self::text($name, $fields, self::BOX) ?? throw new ConfigException("Set $setting to the id of the data box the account sends from");
         try {
-            return Box::normalizeId($box->reveal());
+            return Box::normalizeId($box);
         } catch (\InvalidArgumentException $e) {
-            throw new ConfigException("$constant is not the id of a data box - 7 letters or digits", 0, $e);
+            throw new ConfigException("$setting is not the id of a data box - 7 letters or digits", 0, $e);
         }
     }
 
     /**
-     * CERT, with KEY and PASSPHRASE when set; null without CERT.
-     * @param array<string, mixed> $constants
+     * cert, with key and passphrase when set; null without cert. A path of spaces names no file.
+     * @param array<array-key, mixed> $fields
      * @throws ConfigException
      */
-    private static function certificateOf(string $environment, string $name, #[\SensitiveParameter] array $constants): ?ClientCertificate
+    private static function certificateOf(string $name, #[\SensitiveParameter] array $fields): ?ClientCertificate
     {
-        $certificate = self::key($environment, $name, self::CERT, $constants);
-        if (is_null($certificate)) {
+        $certificate = DatovkaConf::path(self::text($name, $fields, self::CERT) ?? '');
+        if ($certificate === '') {
             return null;
         }
-        $key = self::key($environment, $name, self::KEY, $constants);
 
         return new ClientCertificate(
-            self::path($certificate->reveal(), self::constant($environment, $name, self::CERT), $constants),
-            is_null($key) ? '' : self::path($key->reveal(), self::constant($environment, $name, self::KEY), $constants),
-            self::key($environment, $name, self::PASSPHRASE, $constants) ?? new Secret(''),
+            $certificate,
+            DatovkaConf::path(self::text($name, $fields, self::KEY) ?? ''),
+            self::secret($name, $fields, self::PASSPHRASE) ?? new Secret(''),
         );
     }
 
     /**
-     * A file config.php names: a relative path starts in CERT_DIR of the installation.
-     * @param array<string, mixed> $constants AA_BASE_PATH among them, as locsess.php defines it
-     * @throws ConfigException a relative path without AA_BASE_PATH - the directory PHP runs in is no base
+     * Whether a production account may be meant for the site or the slices. Every account not written
+     * for test may be - bound, broken, of a name AA does not read, or a bracket out of its place
+     * (DatovkaConf::loose(), and any array in an account or in those, at any depth - inner()) - unless the
+     * site and slice ids in it are all of others. Ids are taken
+     * wherever they stand in sites, slices and the keys AA does not read, keys of lists too: a list
+     * broken by one bad part still names its sites and slices, ids glued together are read apart, and a
+     * word of 16 or more letters, digits and dashes that is no id may be one of ours with a typo (AA reads
+     * no id with dashes). Never from the other keys of an account: a path, a login or a passphrase would
+     * make each account doubtful.
+     * No sites and slices prove nothing, and the test ISDS reaches nobody.
      */
-    private static function path(string $path, string $constant, #[\SensitiveParameter] array $constants): string
+    private static function productionMeant(#[\SensitiveParameter] DatovkaConf $conf, string $site, string $campaignSlice, string $messageSlice): bool
     {
-        $path = trim($path);
-        if (str_starts_with($path, '/')) {
-            return $path;
-        }
-        $base = $constants['AA_BASE_PATH'] ?? null;
-        if (!is_string($base) || ($base === '')) {
-            throw new ConfigException("Give $constant in config.php a full path - AA_BASE_PATH, where a relative one starts, is not defined");
-        }
-
-        return rtrim($base, '/') . '/' . self::CERT_DIR . $path;
-    }
-
-    /**
-     * Whether a production account may be meant for the site or the slices. Every production account
-     * may be - bound, broken, or constants AA does not read for a typo in the name of the account or of
-     * the constant - unless the site and slice ids in it are all of others. Ids are taken wherever they
-     * stand in a SITE or SLICE constant: a list broken by one bad part still names its sites and slices,
-     * ids glued together are read apart, and a word of 16 or more letters, digits and dashes that is no
-     * id may be one of ours with a typo (AA reads no id with dashes).
-     * A forgotten SITE and SLICES proves nothing, and the test ISDS reaches nobody.
-     * @param array<string, mixed> $constants
-     */
-    private static function productionMeant(#[\SensitiveParameter] array $constants, string $site, string $campaignSlice, string $messageSlice): bool
-    {
-        $accounts = [];
-        $doubtful = [];
-        foreach (Store::contextsIn(self::VENDORS[Account::PRODUCTION], $constants) as $name => $context) {
-            // the account without the last word: Nszm_SLICES and NSZM_SITES belong to NSZM
-            $cut                = strrpos($context, '_');
-            $account            = strtoupper(($cut === false) ? '' : substr($context, 0, $cut));
-            $word               = strtoupper(($cut === false) ? $context : substr($context, $cut + 1));
-            $accounts[$account] ??= [];
-            // ids only, never a key: only the SITE and SLICE constants are read
-            if (str_starts_with($word, self::SITE) || str_starts_with($word, 'SLICE')) {
-                $value = $constants[$name] ?? '';
-                preg_match_all('/[0-9a-z-]+/i', is_scalar($value) ? (string) $value : '', $tokens);
+        $blocks = [...array_values($conf->accounts()), ...$conf->loose()];
+        for ($i = 0; $i < count($blocks); ++$i) {
+            $fields = $blocks[$i];
+            $texts  = $fields;
+            if (is_array($fields)) {
+                array_push($blocks, ...self::inner($fields));
+                $texts = array_diff_key($fields, array_flip(array_diff(self::KEYS, [self::ENVIRONMENT, self::SITES, self::SLICES])));
+            }
+            if (self::environment($fields) !== Account::PRODUCTION) {
+                continue;
+            }
+            $ids      = [];
+            $doubtful = false;
+            foreach (self::texts($texts) as $text) {
+                preg_match_all('/[0-9a-z-]+/i', $text, $tokens);
                 foreach ($tokens[0] as $token) {
                     if (((strlen($token) % 32) === 0) && ctype_xdigit($token)) {
                         // ids glued together are read apart
-                        array_push($accounts[$account], ...str_split(strtolower($token), 32));
+                        array_push($ids, ...str_split(strtolower($token), 32));
                     } elseif (strlen($token) >= 16) {
                         // an id with dashes, a digit too few or many, o for 0: maybe ours
-                        $doubtful[$account] = true;
+                        $doubtful = true;
                     }
                 }
             }
-        }
-        foreach ($accounts as $account => $ids) {
-            if (($ids === []) || isset($doubtful[$account]) || (array_intersect($ids, [$site, $campaignSlice, $messageSlice]) !== [])) {
+            if (($ids === []) || $doubtful || (array_intersect($ids, [$site, $campaignSlice, $messageSlice]) !== [])) {
                 return true;
             }
         }
@@ -468,38 +488,122 @@ final class Accounts
         return false;
     }
 
+    /**
+     * The arrays in an account where it holds none - the value of a key AA does not read, an item of a key
+     * it reads, of a test account too -: each may be an account a bracket out of its place. A real list of
+     * sites or slices holds texts only.
+     *
+     * @param array<array-key, mixed> $fields
+     * @return list<array<array-key, mixed>> not empty
+     */
+    private static function inner(#[\SensitiveParameter] array $fields): array
+    {
+        $inner = [];
+        foreach ($fields as $key => $value) {
+            array_push($inner, ...((in_array($key, self::KEYS, true) && is_array($value)) ? array_values($value) : [$value]));
+        }
+
+        return array_values(array_filter($inner, static fn(mixed $value): bool => is_array($value) && ($value !== [])));
+    }
+
+    /** @return list<string> the keys and the values in $value, at any depth, Secret revealed */
+    private static function texts(#[\SensitiveParameter] mixed $value): array
+    {
+        if (!is_array($value)) {
+            return ($value instanceof Secret) ? [$value->reveal()] : (is_scalar($value) ? [(string) $value] : []);
+        }
+        $texts = [];
+        foreach ($value as $key => $item) {
+            array_push($texts, (string) $key, ...self::texts($item));
+        }
+
+        return $texts;
+    }
+
     /** how to bind an account - nothing about the accounts there are, the State Check lists them */
     private static function refusal(string $site, string $campaignSlice, string $messageSlice): string
     {
-        $constant = static fn(string $kind): string => self::constant(Account::TEST, self::PLACEHOLDER, $kind);
-
-        return 'No usable ISDS account in include/config.php is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, set '
-            . $constant(self::SITE) . " to '$site', " . $constant(self::SLICES) . " to '$campaignSlice,$messageSlice' (the campaign slice first), "
-            . $constant(self::LOGIN) . ' and ' . $constant(self::PASSWORD) . '; a production account logs in with a certificate (' . self::constant(Account::PRODUCTION, self::PLACEHOLDER, self::CERT) . ') instead. The State Check lists the accounts and their problems';
+        return 'No usable ISDS account in ' . DatovkaConf::FILE . ' is bound to this site and these slices. If a test account is bound and you mean it, ask for the test environment. To bind a test account, add to '
+            . DatovkaConf::key(DatovkaConf::ACCOUNTS) . " an account with 'environment' => 'test', 'auth' => 'basic', 'sites' => ['$site'], 'slices' => ['$campaignSlice', '$messageSlice'] (the campaign slice first), 'login' and 'password'; a production account logs in with a certificate ('auth' => 'cert' or 'hosted') instead. The State Check lists the accounts and their problems";
     }
 
     /**
-     * An account's constant. SITE and SLICES hold no key, but they live with the keys and are read
-     * the same way.
-     *
-     * @param array<string, mixed> $constants
-     * @throws ConfigException a line break or NUL in it
+     * @return array<array-key, mixed> the keys of the account $name; [] when the file has none
      */
-    private static function key(string $environment, string $name, string $kind, #[\SensitiveParameter] array $constants): ?Secret
+    private static function entry(string $name, #[\SensitiveParameter] ?DatovkaConf $conf): array
     {
-        try {
-            return Store::resolveExact(self::VENDORS[$environment], "{$name}_{$kind}", $constants);
-        } catch (\UnexpectedValueException $e) {
-            throw new ConfigException($e->getMessage(), 0, $e);
-        }
+        $fields = ($conf ?? DatovkaConf::load())->accounts()[$name] ?? [];
+
+        return is_array($fields) ? $fields : [];
     }
 
-    /** @return list<string>|null the ids of a list separated by commas; null when one is not an id */
-    private static function ids(string $list): ?array
+    /**
+     * A key of an account; null when not set, or of spaces only. DatovkaConf keeps only a text as it is.
+     * @param array<array-key, mixed> $fields
+     * @throws ConfigException no text, or a line break or NUL in it - in a login it would end a header of HTTP
+     */
+    private static function text(string $name, #[\SensitiveParameter] array $fields, string $key): ?string
     {
+        $value = $fields[$key] ?? '';
+        if (!is_string($value)) {
+            throw new ConfigException(self::setting($name, $key) . ' is not a text - write it in quotes');
+        }
+
+        return self::filled($name, $key, $value);
+    }
+
+    /**
+     * password or passphrase, which DatovkaConf keeps as Secret - as false when no text
+     * @param array<array-key, mixed> $fields
+     * @throws ConfigException as text()
+     */
+    private static function secret(string $name, #[\SensitiveParameter] array $fields, string $key): ?Secret
+    {
+        $value = $fields[$key] ?? null;
+        if (is_null($value)) {
+            return null;
+        }
+        if (!($value instanceof Secret)) {
+            throw new ConfigException(self::setting($name, $key) . ' is not a text - write it in quotes');
+        }
+
+        return is_null(self::filled($name, $key, $value->reveal())) ? null : $value;
+    }
+
+    /**
+     * @return ?string $value; null when of spaces only
+     * @throws ConfigException a line break or NUL in it
+     */
+    private static function filled(string $name, string $key, #[\SensitiveParameter] string $value): ?string
+    {
+        if (strpbrk($value, "\r\n\0") !== false) {
+            throw new ConfigException(self::setting($name, $key) . ' holds a line break or NUL - remove it');
+        }
+
+        return (trim($value) === '') ? null : $value;
+    }
+
+    /** a value that says something: no text of spaces, no empty list or secret */
+    private static function isSet(#[\SensitiveParameter] mixed $value): bool
+    {
+        return match (true) {
+            $value instanceof Secret => !$value->isEmpty(),
+            is_string($value)        => trim($value) !== '',
+            default                  => !in_array($value, [null, []], true),
+        };
+    }
+
+    /** @return list<string>|null the ids of a list; null when it is no list of ids */
+    private static function ids(mixed $list): ?array
+    {
+        if (!is_array($list)) {
+            return null;
+        }
         $ids = [];
-        foreach (explode(',', $list) as $id) {
-            $id = ModuleId::normalize(trim($id));
+        foreach ($list as $id) {
+            // an item under a name DatovkaConf keeps as Secret
+            $id = ($id instanceof Secret) ? $id->reveal() : $id;
+            $id = is_string($id) ? ModuleId::normalize(trim($id)) : null;
             if (is_null($id)) {
                 return null;
             }
@@ -509,38 +613,31 @@ final class Accounts
         return $ids;
     }
 
-    /** the start the constants of an account share: AA_APIKEY_ISDSTEST_NSZM; '' account = of all accounts */
-    public static function prefix(string $environment, string $account): string
+    /** the account in the texts of State Check: NSZM (test) */
+    public static function label(string $environment, string $name): string
     {
-        return Store::names(self::VENDORS[$environment])[0] . "_$account";
+        return "$name ($environment)";
+    }
+
+    /** where the file sets the account, or one of its keys: DATOVKA_CONF['accounts']['NSZM']['password'] */
+    public static function setting(string $name, string $key = ''): string
+    {
+        return DatovkaConf::key(DatovkaConf::ACCOUNTS, $name, ...(($key === '') ? [] : [$key]));
     }
 
     /**
-     * @param string $account an account, or PLACEHOLDER in advice
-     * @param string $kind    SITE, SLICES, LOGIN, PASSWORD, CERT, KEY, PASSPHRASE or BOX
+     * @param string $login Account::BASIC, CERT or HOSTED; '' = of any login. Production never lists
+     *                      login and password: it lets an application in with a certificate only
+     * @return list<string> the keys of an account, in the order the file shows them
      */
-    public static function constant(string $environment, string $account, string $kind): string
+    public static function keys(string $environment, string $login = ''): array
     {
-        return self::prefix($environment, $account) . "_$kind";
-    }
-
-    /**
-     * @param ?string $login Account::BASIC, CERT or HOSTED; null = of any login. Production never lists
-     *                       LOGIN and PASSWORD: it lets an application in with a certificate only
-     * @return list<string> the constants that set up an account, in the order config.php shows them
-     */
-    public static function constants(string $environment, string $account, ?string $login = null): array
-    {
-        if (($environment === Account::PRODUCTION) && in_array($login, [null, Account::BASIC], true)) {
+        if (($environment === Account::PRODUCTION) && in_array($login, ['', Account::BASIC], true)) {
             $login = Account::HOSTED;
         }
-        $kinds = match ($login) {
-            Account::BASIC  => [self::LOGIN, self::PASSWORD],
-            Account::CERT   => [self::CERT, self::KEY, self::PASSPHRASE],
-            Account::HOSTED => [self::BOX, self::CERT, self::KEY, self::PASSPHRASE],
-            default         => [self::LOGIN, self::PASSWORD, self::BOX, self::CERT, self::KEY, self::PASSPHRASE],
-        };
 
-        return array_map(static fn(string $kind): string => self::constant($environment, $account, $kind), [self::SITE, self::SLICES, ...$kinds]);
+        $keys = self::LOGINS[$login] ?? null;
+
+        return is_null($keys) ? self::KEYS : [...self::COMMON, ...$keys];
     }
 }

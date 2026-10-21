@@ -320,8 +320,8 @@ $add_aliases = $aliases    = AA_View::getAliasesFromUrl($als);
 
 $add_aliases['_#SESSION_'] = GetAliasDef('f_e:session', 'id..............', _m('session id'));
 
-// if banner parameter supplied => set format
-$slice_info = array_merge($slice_info, AA_View::parseBannerParam($banner));
+// if banner parameter supplied => set format; slice.php is a listing the URL chose
+$slice_info = array_merge($slice_info, AA_View::parseBannerParam($banner, true));
 
 $multi_aliases = [];
 // get alias list from database and possibly from url

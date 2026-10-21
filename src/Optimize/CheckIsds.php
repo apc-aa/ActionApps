@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
-use AA\Credential\Store;
 use AA\Http\TransportException as HttpTransportException;
 use AA\Isds\Account;
 use AA\Isds\Accounts;
@@ -13,6 +12,7 @@ use AA\Isds\AuthException;
 use AA\Isds\Binding;
 use AA\Isds\Client;
 use AA\Isds\ConfigException;
+use AA\Isds\DatovkaConf;
 use AA\Isds\IsdsException;
 use AA\Isds\LoginLatch;
 use AA\Isds\TransportException;
@@ -21,12 +21,14 @@ use AA\Isds\UserInfo;
 use AA\Later\Toexecute;
 
 /**
- * Logs in to ISDS with each usable account of include/config.php: the data box it sends from and, for
- * a name and a password, the rights of its user and when its password expires. Read-only operations of
- * the ISDS client only.
- * The accounts that cannot be used, CheckIsdsAccounts names - they are not tried here. A login ISDS
- * refused is tried again only by a person here (Recheck, Run extended checks), never by the daily run;
- * an address ISDS blocked, by a person or once after LoginLatch::BLOCK_HOURS.
+ * Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this
+ * database (Accounts::here() - each database keeps its own log of refused logins): the data box it sends
+ * from and, for a name and a password, the rights of its user and when its password expires. Read-only
+ * operations of the ISDS client only.
+ * The accounts that cannot be used, CheckIsdsAccounts names, and a file AA cannot use, CheckIsdsConf -
+ * they are not tried here. A login ISDS refused is tried again only by a person here (Recheck, Run
+ * extended checks), never by the daily run; an address ISDS blocked, by a person or once after
+ * LoginLatch::BLOCK_HOURS.
  */
 class CheckIsds extends AbstractOptimize
 {
@@ -49,7 +51,7 @@ class CheckIsds extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Logs in to ISDS with each usable account of include/config.php and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires.');
+        return _m('Logs in to ISDS with each usable account of misc/datovka/datovka_conf.php that sends for a site of this database, and checks the data box it sends from; for a login with a name and a password also the rights of its user and when its password expires.');
     }
 
     public static function types(): array
@@ -70,10 +72,11 @@ class CheckIsds extends AbstractOptimize
     /** @return Finding[] */
     public function findings(): array
     {
-        $constants = $this->constants();
-        $usable    = array_values(array_filter(Accounts::bindings($constants), static fn(Binding $b): bool => $b->usable()));
+        $conf     = $this->conf();
+        $bindings = Accounts::bindings($conf);
+        $usable   = array_values(array_filter(Accounts::here($bindings, $this->modulesHere(Accounts::moduleIds($bindings))), static fn(Binding $b): bool => $b->usable()));
         if (!$usable) {
-            return [new Finding(Finding::OK, _m('No usable ISDS account to log in with'))];
+            return CheckIsdsConf::notChecked($conf) ?: [new Finding(Finding::OK, _m('No usable ISDS account to log in with'))];
         }
         $latch    = $this->latch();
         $retry    = !$this->unattended();
@@ -82,8 +85,8 @@ class CheckIsds extends AbstractOptimize
         $stopped  = [];
         $notTried = [];
         foreach ($usable as $binding) {
-            $label   = Accounts::prefix($binding->environment, $binding->name);
-            $account = Accounts::account($binding, $constants);
+            $label   = Accounts::label($binding->environment, $binding->name);
+            $account = Accounts::account($binding, $conf);
             // a block of the address holds for the environment; no answer, for the host - a name and a
             // password log in on ws1, a certificate on ws1c
             $host = $binding->environment . ':' . parse_url($account->url('DsManage'), PHP_URL_HOST);
@@ -107,7 +110,7 @@ class CheckIsds extends AbstractOptimize
                 $stopped[($stop instanceof AddressBlockedException) ? $binding->environment : $host] = $stop;
             }
             if ($box !== '') {
-                $boxes[] = "$label ($box)";
+                $boxes[] = "$label: $box";
             }
         }
         foreach ($notTried as $where => $labels) {
@@ -149,7 +152,7 @@ class CheckIsds extends AbstractOptimize
             Finding::ERROR,
             _m('The TLS library of this server refuses the certificate of ISDS account %1', [$label]),
             evidence: [array_filter([_m('Reason of OpenSSL') => safe($reason), _m('Problem') => safe($e->getMessage())])],
-            advice: _m('OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in include/config.php.'),
+            advice: _m('OpenSSL on this server does not take the certificate or its key - e.g. a key shorter than its policy wants, a weak certificate in the chain or an old signature. Get a certificate that meets the policy (an RSA key of 3072 bits, a SHA-256 signature), have ISDS register it and name it in misc/datovka/datovka_conf.php.'),
             key: "certificate-refused:$where",
         );
     }
@@ -168,7 +171,7 @@ class CheckIsds extends AbstractOptimize
     {
         $box      = '';
         $findings = [];
-        $label    = Accounts::prefix($binding->environment, $binding->name);
+        $label    = Accounts::label($binding->environment, $binding->name);
         $key      = "{$binding->environment}:{$binding->name}";
         try {
             $box = $client->ownerBox();
@@ -197,7 +200,7 @@ class CheckIsds extends AbstractOptimize
                 $findings[] = new Finding(
                     Finding::WARNING,
                     _m('The password of ISDS account %1 expires on %2', [$label, date('Y-m-d', $expiry)]),
-                    advice: _m('Change the password in the ISDS portal and write the new one to %1 in include/config.php.', [Accounts::constant($binding->environment, $binding->name, Accounts::PASSWORD)]),
+                    advice: _m('Change the password in the ISDS portal and write the new one to %1 in misc/datovka/datovka_conf.php.', [Accounts::setting($binding->name, Accounts::PASSWORD)]),
                     key: "expiry:$key",
                 );
             }
@@ -256,7 +259,7 @@ class CheckIsds extends AbstractOptimize
 
     private function failure(Binding $binding, Account $account, IsdsException $e): Finding
     {
-        $label = Accounts::prefix($binding->environment, $binding->name);
+        $label = Accounts::label($binding->environment, $binding->name);
         [$severity, $kind, $title, $advice] = match (true) {
             // the server, not the account: never advice to change the login
             $e instanceof AddressBlockedException => [
@@ -289,12 +292,12 @@ class CheckIsds extends AbstractOptimize
 
     private static function refusedAdvice(Binding $binding, Account $account): string
     {
-        $constant = static fn(string $kind): string => Accounts::constant($binding->environment, $binding->name, $kind);
+        $setting = static fn(string $field): string => Accounts::setting($binding->name, $field);
 
         return match ($account->kind) {
-            Account::CERT   => _m('Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more.', [$constant(Accounts::CERT)]),
-            Account::HOSTED => _m('Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more.', [$account->login, $constant(Accounts::CERT)]),
-            default         => _m('Check %1 and %2 in include/config.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more.', [$constant(Accounts::LOGIN), $constant(Accounts::PASSWORD)]),
+            Account::CERT   => _m('Check that the certificate %1 names is the system certificate ISDS registered for the data box, and that it has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more.', [$setting(Accounts::CERT)]),
+            Account::HOSTED => _m('Check that the data box %1 allows the hosting service whose certificate %2 names (Settings, Access of external applications in the ISDS portal), and that the certificate has not expired. AA tries a new certificate by itself, the same one never. Run extended checks or Recheck here tries it once more.', [$account->login, $setting(Accounts::CERT)]),
+            default         => _m('Check %1 and %2 in misc/datovka/datovka_conf.php, and in the ISDS portal that the password has not expired. AA tries a changed login or password by itself, the same one never - every refused attempt extends the block of the login. Run extended checks or Recheck here tries it once more.', [$setting(Accounts::LOGIN), $setting(Accounts::PASSWORD)]),
         };
     }
 
@@ -363,10 +366,18 @@ class CheckIsds extends AbstractOptimize
 
     // ------------------------------------------------------------ what tests replace
 
-    /** @return array<string, mixed> as Store::userConstants() */
-    protected function constants(): array
+    protected function conf(): DatovkaConf
     {
-        return Store::userConstants();
+        return DatovkaConf::load();
+    }
+
+    /**
+     * @param list<string> $ids of sites or slices
+     * @return list<string> those that are modules of this database
+     */
+    protected function modulesHere(array $ids): array
+    {
+        return Accounts::modulesHere($ids);
     }
 
     /** one for the run: a login refused for one account is not tried for another */

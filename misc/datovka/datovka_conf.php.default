@@ -1,0 +1,67 @@
+<?php
+
+// Data-box settings of this installation of AA, for {datovka} and for mass sending ({datovkabulk}).
+//
+// Copy this file to datovka_conf.php in this directory and fill in your own values. git ignores
+// datovka_conf.php, so updates of AA never change it. AA works without it too: then there is no atsId,
+// this installation keeps every answer from ISDS for itself, and it has no account for mass sending.
+//
+// - Give datovka_conf.php the same owner, group and mode as include/config.php.
+// - Keep copies (backups, older versions) only outside the web tree. The web server may send a copy such
+//   as datovka_conf.php.bak or datovka_conf.php~ to anyone as plain text.
+// - A relative path of a certificate starts in config/certs/ of AA; a full path starts with /. The
+//   certificate file holds its private key too, so keep that file outside the web tree if you can (see
+//   config/certs/README).
+// - The addresses of ISDS are part of AA (AA\Isds\DatovkaConf::ATS). AA does not read url_* or wsdl_*
+//   from this file.
+//
+// 'instances' - only for AA installations that share one registration of the authentication service
+// (one atsId). ISDS sends every answer to the one address of the registration, and the installation there
+// passes it on to the one that sent the message. Give each installation an id from 1 to 9999 and its
+// AA_INSTAL_URL exactly as in its include/config.php - starting with https:// and ending with /, or AA
+// leaves the entry out - and list the same ids on all of them, for example:
+//
+//     'instances' => [
+//         1000 => ['url' => 'https://www.example.org/apc-aa/'],
+//         1001 => ['url' => 'https://other.example.net/apc-aa/'],
+//     ],
+//
+// 'accounts' - the ISDS accounts of mass sending. Name each by one word of capital letters and digits,
+// the first a letter. An account sends only for its sites and its pair of slices, the campaign slice
+// first; a slice belongs to one account. environment is 'test' or 'production'. auth says how it logs
+// in: 'basic' - login and password, in the test environment only; 'cert' - cert, the system certificate
+// of the data box; 'hosted' - box and cert, the certificate of a hosted filing service the data box
+// allowed. key names the private key when cert does not hold it, passphrase opens an encrypted key.
+// The State Check (ISDS accounts) tells what to fix. For example:
+//
+//     'accounts' => [
+//         'ECNTEST' => [
+//             'environment' => 'test',
+//             'auth'        => 'basic',
+//             'sites'       => ['<site id>'],
+//             'slices'      => ['<campaign slice id>', '<message slice id>'],
+//             'login'       => '<login>',
+//             'password'    => '<password>',
+//         ],
+//         'NSZM' => [
+//             'environment' => 'production',
+//             'auth'        => 'hosted',
+//             'sites'       => ['<site id>'],
+//             'slices'      => ['<campaign slice id>', '<message slice id>'],
+//             'box'         => '<data box id>',
+//             'cert'        => '/etc/aa-isds/hosting.pem',
+//         ],
+//     ],
+
+const DATOVKA_CONF = [
+    'instances' => [],
+    'test'      => [   // the public test environment of ISDS
+        'cert'  => '',   // the certificate this installation logs in to the authentication service with
+        'atsId' => '',   // the id ISDS gave the registration of the authentication service
+    ],
+    'standard'  => [   // production ISDS - real messages
+        'cert'  => '',
+        'atsId' => '',
+    ],
+    'accounts'  => [],
+];

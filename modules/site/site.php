@@ -74,7 +74,8 @@ if ($_COOKIE['AA_Session'] && !isset($_REQUEST['username'])) {   // do not authe
 // so identical content does not get cached under thousands of campaign-tagged
 // URLs. See AA\Util\Url::isTrackingParam() for the list.
 // Cookies are left out: getVariedPage()/storeVariedPage() add only those the render read, so
-// consent and ad cookies (unique per visitor) do not give everyone a private copy.
+// consent and ad cookies (unique per visitor) do not give everyone a private copy. The same
+// goes for the tracker params and $_SERVER a template reads ({qs:utm_source}, {server:HTTP_HOST}).
 // AA::$debug stands for the aa_debug cookie.
 // $_GET is kept (in addition to REQUEST_URI) because URL-rewrite variables
 // (site_id) only show up in $_GET; *_STRING_UNESCAPED is for the old
@@ -353,6 +354,15 @@ $page_changer->checkAndProcessCall($is_valid === 'Valid');
 
 
 $page_content = ($is_valid === 'Valid') ? $module->getSite($apc_state) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
+
+if (isset($router) && $router->xpageBeyondEnd()) {
+    // what an inactive item gets above: the 404 page, or for "Do not care" the page itself with 404 (cached so)
+    $page404 = (string) $module->getProperty('page404');
+    if ($page404 === '2' || $page404 === '3') {
+        Die404(($page404 === '3') ? $module->getProperty('page404_code') : null);  // calls exit
+    }
+    AA::$headers['status'] ??= 'HTTP/1.0 404 Not Found';   // a deleted item keeps its 410
+}
 
 // AJAX check
 if ((AA::$headers['encoding'] !== 'utf-8') && (AA::$encoding !== 'utf-8') && IsAjaxCall()) {

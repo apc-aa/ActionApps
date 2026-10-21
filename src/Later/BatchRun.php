@@ -37,6 +37,11 @@ abstract class BatchRun extends AA_Object
     /** steps in a row without progress after which onRetriesExhausted() decides - nothing goes round for ever */
     public const MAX_FAILURES = 3;
 
+    /** BatchFailed reason: the user may not control the run (mayControl()) */
+    public const FORBIDDEN = 'FORBIDDEN';
+    /** BatchFailed reason: a table the run writes in one transaction is not InnoDB; the place is the table */
+    public const NO_TRANSACTION = 'NO_TRANSACTION';
+
     /** what the queue row of an ended run expects instead of a fingerprint: it runs afterClose() after
      *  the end has committed - late, and more than once when the queue repeats a row whose process died */
     public const CLOSE_ROW = 'close';
@@ -974,7 +979,7 @@ abstract class BatchRun extends AA_Object
     private function requireControl(string $uid): void
     {
         if (!$this->mayControl($uid)) {
-            throw new BatchFailed('FORBIDDEN');
+            throw new BatchFailed(self::FORBIDDEN);
         }
     }
 
@@ -1030,7 +1035,7 @@ abstract class BatchRun extends AA_Object
         $engines = array_change_key_case($engines);         // lower_case_table_names
         foreach ($tables as $table) {
             if (strtolower((string) ($engines[strtolower($table)] ?? '')) !== 'innodb') {
-                throw new BatchFailed('NO_TRANSACTION', $table);
+                throw new BatchFailed(self::NO_TRANSACTION, $table);
             }
         }
     }

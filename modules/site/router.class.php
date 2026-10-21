@@ -26,7 +26,9 @@ https://www.apc.org/
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
+use AA\Cache\PageCache;
 use AA\Util\Langs;
+use AA\Util\Url;
 
 /** AA_Router - base class for all routers
  *  Router is the class, which controls the url in AA site module. It should be
@@ -71,6 +73,8 @@ class AA_Router
     /** @var array{xcat?: string, xflag?: string} regular expressions from the site settings the URL parts must match */
     protected $rules = [];
     protected $rejected = false;
+    /** @var array{in: int, out: int} listings of this request that have the page {xpage} asks for / that end before it */
+    private array $xpage_listings = ['in' => 0, 'out' => 0];
 
     /** @var AA_Router $_instance
      * Store the single instance of Database
@@ -104,6 +108,20 @@ class AA_Router
         return $this->rejected;
     }
 
+    /** a listing paged by {xpage} tells whether it has that page */
+    public function noteXpageListing(bool $has_page): void
+    {
+        ++$this->xpage_listings[$has_page ? 'in' : 'out'];
+    }
+
+    /** {xpage} asks for a page that no listing of the page has - /cz9999/... renders a whole page with
+     *  empty listings, and crawlers walk such pages without end. Only listings decide: a page none of
+     *  them is paged by is left alone, it may read {xpage} in its own way. */
+    public function xpageBeyondEnd(): bool
+    {
+        return ($this->xpage_listings['out'] > 0) && ($this->xpage_listings['in'] === 0);
+    }
+
     protected function setWebLangs(array $web_languages): void
     {
         $this->web_languages = $web_languages;
@@ -123,10 +141,59 @@ class AA_Router
         return '';
     }
 
+    /** Url of the current state changed by $query_string ({go:...}, pager links). The visit's
+     *  campaign parameters (utm_*) stay in the url - a redirect keeps the campaign -, an id of one
+     *  click (gclid, ...) does not; 'clean' in $query_string ({go:clean}) leaves out both. What
+     *  $query_string sets itself stays.
+     */
     public function go2url($query_string): string
     {
         global $apc_state;
-        return static::getState(static::newState($apc_state, $query_string));
+        $flag  = '/(?:^|&)clean(?:=1)?(?=&|$)/';
+        $clean = (bool) preg_match($flag, (string) $query_string);
+        if ($clean) {
+            $query_string = trim(preg_replace($flag, '', (string) $query_string), '&');
+        }
+        // parameters the template sets ({go:xqs_utm_campaign=x}, {go:xqs=...}) are its own, not the visit's
+        parse_str((string) $query_string, $asked);
+        $own = [];
+        foreach ($asked as $var => $v) {
+            if (($var === 'xqs') && is_string($v)) {
+                parse_str($v, $xqs);
+                array_push($own, ...array_map('strval', array_keys($xqs)));
+            } elseif (str_starts_with((string) $var, 'xqs_')) {
+                $own[] = substr((string) $var, 4);
+            }
+        }
+        return self::withoutTracking(static::getState(static::newState($apc_state, $query_string)), $clean, $own);
+    }
+
+    /** $url without the click ids, and without all tracking parameters when $all. The site cache key
+     *  leaves out those of the visit, so a page printing a campaign parameter is cached once per its value.
+     *  @param list<string> $own  parameters the template set itself */
+    private static function withoutTracking(string $url, bool $all, array $own): string
+    {
+        if (($pos = strpos($url, '?')) === false) {
+            return $url;
+        }
+        $kept = [];
+        foreach (explode('&', substr($url, $pos + 1)) as $pair) {
+            [$name, $value] = array_map('urldecode', explode('=', $pair, 2) + [1 => '']);
+            $visit = Url::isTrackingParam($name) && !in_array($name, $own, true);   // a tracking parameter of the visit
+            if (($pair === '') || ($visit && ($all || Url::isClickId($name)))) {
+                continue;
+            }
+            if ($visit) {
+                // the page varies on the value PHP parsed - a pair it read otherwise (utm_a.b, utm_x[], a repeated
+                // name) is left out, and the value is encoded anew: a raw "<" and its %3C share the variant
+                if (PageCache::param($name) !== $value) {
+                    continue;
+                }
+                $pair = rawurlencode($name) . '=' . rawurlencode($value);
+            }
+            $kept[] = $pair;
+        }
+        return substr($url, 0, $pos) . ($kept ? '?' . implode('&', $kept) : '');
     }
 
     // should be refined in subclass

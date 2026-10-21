@@ -43,7 +43,6 @@ use AA\Optimize\AddDurationLog;
 use AA\Optimize\CheckCkeditorUse;
 use AA\Security\LoginThrottle;
 use AA\Util\ChangesMonitor;
-use AA\Util\InputVars;
 use AA\Util\Langs;
 use AA\Util\LogarithmIndex;
 use AA\Util\NamedInterface;
@@ -1555,7 +1554,7 @@ class AA_Stringexpand_Lazy extends AA_Stringexpand_Nevercache { // do not cache 
             }
             function AA__LoadLazyDiv(el) {
                 el.classList.add('aa-updating');
-                AA_Load(el, el.dataset.aaUrl, {method: "POST", headers: {"X-Requested-With": "XMLHttpRequest"}})
+                AA_Load(el, el.dataset.aaUrl, {headers: {"X-Requested-With": "XMLHttpRequest"}})
                   .catch(error => console.error(error))
                   .finally(() => el.classList.remove('aa-updating'));
             }
@@ -6476,6 +6475,9 @@ class AA_Stringexpand_Include extends AA_Stringexpand {
  */
 function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $data='', $err='', int $seconds=0): string
 {
+    if (str_contains($parturl, 'URL_PARAMETERS')) {
+        PageCache::server('REQUEST_URI');   // the query string comes from it, with the tracking parameters the key leaves out
+    }
     $filename = str_replace( 'URL_PARAMETERS', DeBackslash(shtml_query_string()), $parturl);
     // filename do not use colons as separators => dequote before callig
     if (!$filename || trim($filename)==='') {
@@ -6502,7 +6504,10 @@ function expandFilenameWithHttp($parturl, string $type='', array $headers=[], $d
 }
 
 /** Get $_SERVER[<variable>] value
- *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:REFERER},...
+ *   {server:REMOTE_ADDR}, {server:SERVER_NAME}, {server:HTTP_HOST}, {server:HTTP_REFERER},...
+ *   A cached site page is stored once per value read of the host, scheme or URI; a page reading
+ *   anything else, which may be the visitor's own (REMOTE_ADDR, HTTP_USER_AGENT, HTTP_REFERER, ...),
+ *   is not cached at all.
  */
 class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
     /** expand function
@@ -6513,10 +6518,7 @@ class AA_Stringexpand_Server extends AA_Stringexpand_Nevercache {
      */
     function expand($variable = ''): string
     {
-        if ($variable === 'HTTP_COOKIE') {
-            AA::Pagecache()->switchCacheNostore();   // the whole jar - session id included - is no page for others
-        }
-        return (string)$_SERVER[$variable];
+        return (string) PageCache::server((string) $variable);
     }
 }
 
@@ -6802,6 +6804,9 @@ class AA_Unalias_Callback {
         // anything inside the value, and then makes sure any remaining quotes
         // don't interfere with caller
         if (isset($GLOBALS['apc_state'][$out])) {
+            if (($out === 'xqs') || ($out === 'state')) {
+                PageCache::server('REQUEST_URI');   // the visit's query string, with the tracking parameters the key leaves out
+            }
             return $this->expandUrlValue('{' . $out . '}', $GLOBALS['apc_state'][$out]);
         }
 
@@ -9298,6 +9303,8 @@ class AA_Stringexpand_Credentials extends AA_Stringexpand_Nevercache {
  *   {qs}            - returns the whole querystring (including GET and POST variables)
  *   {qs:aa[n1000_3130303132312d726d2d7361736f762d][con_email_______][]}
  *                   - returns the value of the variable - exactly as posted
+ *   A cached site page is stored once per value of a tracking parameter read here
+ *   ({qs:utm_source}) - the page-cache key leaves those parameters out.
  */
 class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
 
@@ -9309,10 +9316,12 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
     function expand($variable_name='', $delimiter=null): string
     {
         if (empty($variable_name)) {
+            PageCache::server('REQUEST_URI');   // the query string comes from it, with the tracking parameters the key leaves out
             return shtml_query_string();
         }
         $ret = '';
         if (str_contains($variable_name, '[')) {
+            PageCache::server('REQUEST_URI');   // a decoded tracking parameter could hold the variable
             $qstring = rawurldecode(shtml_query_string());
             if (str_contains($qstring, $variable_name)) {
                 $qarr = explode('&', $qstring);
@@ -9324,12 +9333,15 @@ class AA_Stringexpand_Qs extends AA_Stringexpand_Nevercachenotrim {
                     }
                 }
             }
-        } elseif (($value = InputVars::request($variable_name)) !== null) {
+        } elseif (($value = PageCache::param($variable_name)) !== null) {
             $ret = $value;
         } elseif ( $_SERVER['CONTENT_TYPE'] === 'application/json' ) {
             $req_body = json_decode(file_get_contents('php://input'), true);
             $ret      = $req_body[$variable_name];
         } else {
+            if (\AA\Util\Url::isTrackingParam($variable_name)) {
+                PageCache::server('REQUEST_URI');   // add_vars() finds it there when a rewrite left it out of $_GET
+            }
             $shtml_get = add_vars('', 'return');
             $ret = $shtml_get[$variable_name];
         }
@@ -10642,7 +10654,7 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
     }
 }
 
-/** Mass sending by data box (ISDS) from include/config.php - opens its slices to who may send, on a page of the site
+/** Mass sending by data box (ISDS) from misc/datovka/datovka_conf.php - opens its slices to who may send, on a page of the site
  *    {datovkabulk:page:<settings>:{(<UI>)}:<no right>} - the settings as {jsonasoc:...} (AA\Isds\Setup); the UI only
  *        for a user who may edit all items of the campaign slice (a reader through a set of readers), else <no right>.
  *        Put the whole UI inside {(...)}: it stays unexpanded until the gate opens - not wrapped, it expands
@@ -10653,7 +10665,7 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
  *        no campaign id only to save a new campaign
- *    {datovkabulk:env}    - test | production, as include/config.php binds the slices
+ *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:result} - what the posted action did
  *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted
@@ -10662,6 +10674,10 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        ids '' for no recipients - {view} with no ids lists the whole slice, so guard it (not with _#1 - AA
  *        expands the inner command first; so the inner {view} still runs once over the slice, the guard only
  *        hides it): {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
+ *    {datovkabulk:progress:<campaign id>:state|total|sent|failed|skipped|uncertain|stopped|queued|until} - how far its
+ *        sending got, from the record of the run: state of the campaign item while it has no run, then sending,
+ *        error, done or abandoned (given up in error; a sending a person stopped ends done, its unsent counted as
+ *        stopped); the counts add up to total, '' with no run; until - the unix time a pause waits till, or ''
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
@@ -10676,6 +10692,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'sender'     => $gate->sender(),
             'result'     => $gate->result(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
+            'progress'   => $gate->progress((string)$settings, (string)$ui),
             default      => '',
         };
     }
@@ -11676,6 +11693,10 @@ class AA_Stringexpand_Aadocumentation extends AA_Stringexpand {
  *     {go:xseo1=faq&xseo2=questions}
  *     {go:xqs=}?year=2023     // remove query string part and add year=2013
  *     {go:xqs_year=2023}      // replace query string year variable with new value (other qs variables are preserved)
+ *     {go:clean}              // without the tracking parameters of the visit (utm_source, ...), e.g.
+ *                             // <meta property="og:url" content="https://example.org{go:clean}">
+ *     {go:clean&xqs_year=2023}
+ *  The url keeps the visit's campaign parameters (utm_*), not the id of one click (gclid, sznclid, ...).
  *
  *  (we used to use {go2url} custom function in previous versions of AA. This function
  *  is however core function)

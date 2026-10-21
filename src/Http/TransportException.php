@@ -6,7 +6,7 @@ namespace AA\Http;
 
 use RuntimeException;
 
-/** No answer came back at all - a timeout, DNS, a refused connection. Worth trying again later, unless malformedAddress() */
+/** No answer came back at all - a timeout, DNS, a refused connection - or one too broken to read. Worth trying again later, unless malformedAddress() */
 final class TransportException extends RuntimeException
 {
     public const DNS     = 'dns';

@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 /**
- * One ISDS account of include/config.php, the sites it sends for and its pair of slices (Accounts) -
- * names and ids only, no key.
+ * One ISDS account of misc/datovka/datovka_conf.php, the sites it sends for and its pair of slices
+ * (Accounts) - names and ids only, no secret.
  */
 final class Binding
 {
     /**
-     * @param string       $name          the account as the constants name it: NSZM
+     * @param string       $name          the account as the file names it: NSZM
      * @param string       $environment   Account::TEST or Account::PRODUCTION
      * @param list<string> $sites         site module ids in small letters; [] when missing or broken
      * @param string       $campaignSlice unpacked id in small letters; '' when the slices are missing or broken
      * @param string       $messageSlice  as $campaignSlice
-     * @param list<string> $problems      what to fix in config.php, naming the constants; [] = usable
-     * @param string       $kind          the login the constants mean: Account::BASIC, CERT or HOSTED
+     * @param list<string> $problems      what to fix in the file, naming its keys; [] = usable
+     * @param string       $kind          the login auth names: Account::BASIC, CERT or HOSTED; '' = none of them
      */
     public function __construct(
         public readonly string $name,

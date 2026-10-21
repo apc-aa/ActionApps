@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA;
-use AA\Credential\Store;
 use AA\IO\DB\DB_AA;
 use AA\Later\BatchBudget;
 use AA\Later\BatchFailed;
@@ -31,7 +30,7 @@ use AA_Property;
  */
 class SendRun extends BatchRun
 {
-    /** BatchFailed reason: config.php no longer binds the account the run was queued with, or its login now belongs to another box */
+    /** BatchFailed reason: datovka_conf.php no longer binds the account the run was queued with, or its login now belongs to another box */
     public const ACCOUNT_CHANGED = 'ACCOUNT_CHANGED';
     /** BatchFailed reason: ISDS refused to say whose the login is, or refused SendPace::REFUSALS messages in a row with
      *  one status (SendPace::breaker()); the detail is the status */
@@ -153,6 +152,25 @@ class SendRun extends BatchRun
         return $props;
     }
 
+    /**
+     * A new run of $campaign, in the caller's transaction: its snapshot saved, prep from the first
+     * frozen recipient, nothing tried yet
+     * @param array<string, string> $props the own properties of the account, the slices and camp_short
+     * @throws BatchFailed BatchRun::NO_TRANSACTION as start()
+     */
+    public static function begin(string $campaign, string $uid, Snapshot $snapshot, array $props): static
+    {
+        $snapshot->save();
+        return static::start($props + [
+            'subject'  => $campaign,
+            'user'     => $uid,
+            'position' => ['p' => self::PREP, 'i' => 0],
+            'snapshot' => (string) $snapshot->getId(),
+            'manifest' => $snapshot->manifest(),
+            'cursor'   => '0',
+        ]);
+    }
+
     /** a run of $campaign was started, whatever became of it - a campaign is sent once */
     public static function existsFor(string $campaign): bool
     {
@@ -254,7 +272,7 @@ class SendRun extends BatchRun
             return 'WRONG_STATE';
         }
         if (!(static::get((string) $id)?->mayControl($uid) ?? false)) {
-            return 'FORBIDDEN';
+            return self::FORBIDDEN;
         }
         if (!static::lockCampaign($campaign)) {
             return self::BUSY;
@@ -262,7 +280,7 @@ class SendRun extends BatchRun
         try {
             return DB_AA::transaction(static function () use ($id, $uid, $do): string {
                 $run = static::lockForUpdate((string) $id) ?? throw new BatchFailed('WRONG_STATE');
-                return $run->mayControl($uid) ? $do($run) : 'FORBIDDEN';
+                return $run->mayControl($uid) ? $do($run) : self::FORBIDDEN;
             });
         } catch (BatchFailed $e) {
             return $e->reason;
@@ -456,8 +474,8 @@ class SendRun extends BatchRun
         }
         $this->requireMemory();
         $client = $this->checkedClient();
-        if (is_null($client)) {
-            return $this->paused($from, Outcome::UNAVAILABLE);
+        if (is_string($client)) {
+            return $this->paused($from, $client);
         }
         $snapshot = $this->snapshot(true);
         $rows     = $snapshot->recipients();
@@ -646,6 +664,34 @@ class SendRun extends BatchRun
     }
 
     /**
+     * How far the sending got - from the record and the frozen recipients, no message item, no ISDS.
+     * Each recipient counts as the end of the run counts it (SendMaps::tally()), by the maps and the
+     * frozen reasons, not by the cursor: a message in flight is uncertain, a recipient skipped by its
+     * reason is skipped before the cursor gets to it too. One never tried is stopped once a stop or
+     * the end of the run leaves it so - nothing sends it any more -, otherwise queued. The counts add
+     * up to total; until is the end of a pause, 0 = none.
+     * Public for the page of a sending (Gate::progress()); a progressExtra() of this run must call it
+     * too, so that both show the same figures.
+     * @return array{total: int, sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int, until: int}
+     * @throws \JsonException|BatchFailed a record edited into no JSON, recipients not as frozen
+     */
+    public function progressFigures(): array
+    {
+        $now   = static::now();
+        $rows  = $this->recipients();
+        $tally = $this->maps()->tally($rows);
+        $over  = ((string) $this->stop_by !== '') || in_array($this->state(), [self::DONE, self::ENDED], true);
+        // a position left by a run in error waits for nothing
+        $until = ($this->state() === self::SENDING) ? SendPace::pauseEnd($this->position(), $now) : 0;
+        return array_merge($tally, [
+            'total'   => count($rows),
+            'stopped' => $over ? $tally['stopped'] : 0,
+            'queued'  => $over ? 0 : $tally['stopped'],
+            'until'   => ($until > $now) ? $until : 0,
+        ]);
+    }
+
+    /**
      * Every message tried, or skipped by its reason: the cursor says so past the last ones too, and
      * the sending goes on to what became of them
      */
@@ -738,15 +784,15 @@ class SendRun extends BatchRun
             return $early;
         }
         $client = $this->checkedClient();
-        if (is_null($client)) {
-            return $this->paused($from, Outcome::UNAVAILABLE);
+        if (is_string($client)) {
+            return $this->paused($from, $client);
         }
         $wanted = [];
         foreach ($open as $k => $triedAt) {
             $wanted[$k] = ['ref' => $this->senderRef($k), 'box' => $rows[$k]['box'], 'at' => $triedAt];
         }
         // a further page only while the budget lasts: overrun() covers the last one
-        $lookup = $this->ask(fn(): Lookup => Lookup::resolve($client->sentMessages(...), $wanted, $snapshot->annotation(), static::now(), (array) ($from[self::READING] ?? []), static fn(): bool => !$budget->spent()));
+        $lookup = self::ask(fn(): Lookup => Lookup::resolve($client->sentMessages(...), $wanted, $snapshot->annotation(), static::now(), (array) ($from[self::READING] ?? []), static fn(): bool => !$budget->spent()));
         if (is_null($lookup)) {
             return $this->paused($from, Outcome::UNAVAILABLE);
         }
@@ -960,31 +1006,47 @@ class SendRun extends BatchRun
     }
 
     /**
-     * The client of the account the run was queued with: config.php still binds that account to the
-     * site and the pair of slices, and its login still belongs to the box the run sends from. ISDS is
-     * asked whose the login is when it changed (another password or certificate), on the first step
+     * The client of the account the run was queued with: datovka_conf.php still binds that account to
+     * the site and the pair of slices, and its login still belongs to the box the run sends from. ISDS
+     * is asked whose the login is when it changed (another password or certificate), on the first step
      * of sending, and then once an hour - a certificate belongs to one box, so the fingerprint alone
      * tells a new sender, the question is a safeguard.
-     * @return ?Client null = ISDS did not answer whose the login is
+     * @return Client|string the client, or the code a pause fails with after SendPace::LONGEST_PAUSE:
+     *                       Outcome::UNAVAILABLE when ISDS did not answer whose the login is,
+     *                       Outcome::CONFIG when PHP could not read datovka_conf.php
      * @throws BatchFailed ACCOUNT_CHANGED, REFUSED, or Outcome's code of a login ISDS refused or a configuration that cannot work
      */
-    private function checkedClient(): ?Client
+    private function checkedClient(): Client|string
     {
-        $constants = $this->constants();
+        $conf = $this->conf();
+        if ($conf->unreadable()) {
+            // a network file system refuses PHP now and then: what is set up may be back the next step
+            return Outcome::CONFIG;
+        }
         [$site, $campaignSlice, $messageSlice, $env] = [(string) $this->site, (string) $this->camp_slice, (string) $this->msg_slice, (string) $this->env];
         [$name, $kind] = [(string) $this->account, (string) $this->kind];
+        // the file, or the account of the run in it, is fixed by hand - no sender went away; an account
+        // set to null is one taken away
+        if ($conf->broken() || !is_array($conf->accounts()[$name] ?? [])) {
+            throw new BatchFailed(Outcome::CONFIG);
+        }
+        // no file is a file without accounts: the run ends at once, as an installation without the file
+        // never gets one by waiting - an update that moves the file aside ends the run too
         try {
-            $binding = Accounts::binding($site, $campaignSlice, $messageSlice, $env, $constants);
+            $binding = Accounts::binding($site, $campaignSlice, $messageSlice, $env, $conf);
         } catch (ConfigException) {
-            // the account of the run, still bound to the slices, only broken, is fixed in config.php - no sender went away
-            $broken = array_filter(Accounts::bindings($constants), static fn(Binding $b): bool => ($b->name === $name) && ($b->kind === $kind) && ($b->environment === $env) && $b->binds($site, $campaignSlice, $messageSlice));
+            // the account of the run, still bound to the site and the slices as far as they can be read, only
+            // broken, is fixed in the file - no sender went away
+            $broken = array_filter(Accounts::bindings($conf), static fn(Binding $b): bool => ($b->name === $name) && ($b->kind === $kind) && ($b->environment === $env)
+                && (($b->sites === []) || in_array($site, $b->sites, true))
+                && (($b->campaignSlice === '') || (($b->campaignSlice === $campaignSlice) && ($b->messageSlice === $messageSlice))));
             throw new BatchFailed($broken ? Outcome::CONFIG : self::ACCOUNT_CHANGED);
         }
         if (($binding->name !== $name) || ($binding->kind !== $kind) || ($binding->environment !== $env)) {
             throw new BatchFailed(self::ACCOUNT_CHANGED);
         }
         try {
-            $account     = Accounts::account($binding, $constants);
+            $account     = Accounts::account($binding, $conf);
             $fingerprint = self::fingerprintOf($account);
         } catch (ConfigException $e) {
             throw new BatchFailed(Outcome::of($e)->code);
@@ -994,9 +1056,9 @@ class SendRun extends BatchRun
         if (($fingerprint === $this->acct_id) && ((string) $this->owner_at !== '') && ($now - (int) $this->owner_at < self::OWNER_EVERY)) {
             return $client;
         }
-        $box = $this->ask($client->ownerBox(...));
+        $box = self::ask($client->ownerBox(...));
         if (is_null($box)) {
-            return null;
+            return Outcome::UNAVAILABLE;
         }
         if ($box !== $this->sender_box) {
             throw new BatchFailed(self::ACCOUNT_CHANGED);
@@ -1010,14 +1072,15 @@ class SendRun extends BatchRun
     }
 
     /**
-     * $ask of ISDS - a question, nothing sent - its failures as the run takes them
+     * $ask of ISDS - a question, nothing sent - its failures as the run takes them; queueing a run
+     * asks whose the login is through it too, so both refuse alike
      * @template T
      * @param \Closure(): T $ask
      * @return ?T null = ISDS did not answer: the run pauses
      * @throws BatchFailed Outcome's code of a login ISDS refused or a configuration that cannot work;
      *                     REFUSED with the status of any other refusal
      */
-    private function ask(\Closure $ask): mixed
+    public static function ask(\Closure $ask): mixed
     {
         try {
             return $ask();
@@ -1044,10 +1107,10 @@ class SendRun extends BatchRun
         DB_AA::unlock(self::lockName($campaign));
     }
 
-    /** @return array<string, mixed> the constants of config.php, read once a step */
-    protected function constants(): array
+    /** the settings of the installation, read once a request */
+    protected function conf(): DatovkaConf
     {
-        return Store::userConstants();
+        return DatovkaConf::load();
     }
 
     protected function client(Account $account): Client

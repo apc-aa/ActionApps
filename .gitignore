@@ -9,4 +9,5 @@
 /include/custom/
 /modules/site/sites/site_*.php
 /misc/file2slice/*
+/misc/datovka/datovka_conf.php
 /config/certs/*

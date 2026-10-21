@@ -28,6 +28,7 @@
  *
 */
 
+use AA\Security\UrlValue;
 use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
 use AA\Util\Langs;
@@ -302,7 +303,25 @@ class AA_Showview
                 $list_from += $listlen * ((int) $page - 1);
             }
         }
+        // the site router counts the listings paged by {xpage} (accepted by the view, or passed as
+        // page-{xpage}) - when none of them has that page, site.php answers 404. Page 1 always exists.
+        $xpage = (int) ($GLOBALS['apc_state']['xpage'] ?? 0);
+        // class_exists(): view.php and slice.php take apc_state from the request, without any router
+        if (!$random && ($xpage > 1) && ((int) $page === $xpage) && isset($GLOBALS['apc_state']['router']) && class_exists('AA_Router', false)) {
+            AA_Router::singleton($GLOBALS['apc_state']['router'])->noteXpageListing(self::hasPage((string) $page, $idscount, (int) $list_from));
+        }
         return [$listlen, $random ?: ($list_from ?: 0)];
+    }
+
+    /** the listing has the page: "<page>-<number of pages>" splits any count into that many pages,
+     *  a plain page starts at $list_from */
+    public static function hasPage(string $page, int $idscount, int $list_from): bool
+    {
+        if (str_contains($page, '-')) {
+            [$page_n, $no_of_pages] = explode('-', $page, 2);
+            return (int) $page_n <= max(1, (int) $no_of_pages);
+        }
+        return $idscount > $list_from;
     }
 
     public function getViewOutput(): string
@@ -328,6 +347,20 @@ class AA_Showview
             Hitcounter::hit($zids, $cached, false, $duration);
         }
         $this->hits = [];
+    }
+
+    /** the text shown when the view finds nothing - noitem given to the view, else the view's own message; both
+     *  are templates, except a noitem from the URL, shown as text (AA\Security\UrlValue::template()) */
+    protected function noitemMsg(AA_View $view): string
+    {
+        if (isset($this->_view_param['noitem'])) {
+            $noitem = $this->_view_param['noitem'];
+            // the log names the view - every view of view.php is the same page
+            return $this->from_request ? UrlValue::template('set[' . $view->getId() . ']=noitem-', $noitem) : $noitem;
+        }
+        return (strlen((string) $view->f('noitem_msg')) > 0)
+            ? str_replace('<!--Vacuum-->', '', $view->f('noitem_msg'))
+            : ('<div>' . _m('No item found') . '</div>');
     }
 
     private function viewOutput(float $dbgtime): string
@@ -391,12 +424,8 @@ class AA_Showview
             AA::$langnum = [Langs::getLangName2Num(AA::$lang)];   // array of prefered languages in priority order.
         }
 
-        $noitem_msg = ($this->_view_param["noitem"] ?? (((strlen($view->f('noitem_msg')) > 0))
-                ? str_replace('<!--Vacuum-->', '', $view->f('noitem_msg'))
-                : ("<div>" . _m("No item found") . "</div>")));
-
         if ($this->_view_param["banner"]) {
-            $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"]));  // if banner set format
+            $view->setBannerParam(AA_View::parseBannerParam($this->_view_param["banner"], $this->from_request));  // if banner set format
         }
 
         if (($slice_id = $this->_view_param["slice_id"]) && !is_long_id($slice_id)) { // unpacked
@@ -404,7 +433,7 @@ class AA_Showview
             return '';
         }
         $refusable = [];
-        if ($this->from_request && in_array($view_info['type'], ['full', 'seetoo', 'calendar', 'digest', 'list', 'rss', 'urls', 'script'], true)) {
+        if ($this->from_request && in_array($view_info['type'], ViewSlices::LISTINGS, true)) {
             // tagged for the cache too - an empty listing must go when the password of a refused slice changes
             $refusable = array_map('strtolower', array_merge($slice_id ? [$slice_id] : [], is_array($slices) ? $slices : []));
             // item listings only; slices and items the request may not list leave an empty listing
@@ -477,7 +506,7 @@ class AA_Showview
                 if (!$category_id) {
                     $category_id = Links_SliceID2Category($slice_id);             // get default category for the view
                 }
-                $format    = $view->getViewFormat($selected_item);
+                $format    = $view->getViewFormat($selected_item, $this->from_request);
                 if (!$conds) {          // conds could be defined via cmd[]=d command
                     $conds = $view->getConds($param_conds);
                 }
@@ -504,7 +533,7 @@ class AA_Showview
                 $itemview->parameter('start_cat', $this->_view_param['start_cat']);
 
                 if (!isset($zids) || $zids->isEmpty()) {
-                    $ret = $itemview->unaliasWithScroller($noitem_msg);
+                    $ret = $itemview->unaliasWithScroller($this->noitemMsg($view));   // only when shown - a noitem from the URL may write a log row
                     break;
                 }
 
@@ -512,7 +541,7 @@ class AA_Showview
                 break;
 
             case 'full':  // parameters: zids, als
-                $format = $view->getViewFormat($selected_item);
+                $format = $view->getViewFormat($selected_item, $this->from_request);
                 AA::$debug & 8 && AA::$dbg->log("view type - full - zids", $zids);
                 if (isset($zids) && !$zids->isEmpty() && ($slice = AA_Slice::getModule($slice_id))) {
                     $bins   = AA_BIN_ACTIVE | ($slice->isExpiredContentAllowed() ? AA_BIN_EXPIRED : 0) | ($slice->isPendingContentAllowed() ? AA_BIN_PENDING : 0);
@@ -533,7 +562,7 @@ class AA_Showview
                         break;
                     }
                 }
-                $ret      = AA::Un($noitem_msg);
+                $ret      = AA::Un($this->noitemMsg($view));
                 break;
             case 'seetoo':
             case 'calendar':
@@ -623,7 +652,7 @@ class AA_Showview
                 //     $zids2 = $zids2->retag($zids);
                 // }
 
-                $format = $view->getViewFormat($selected_item);
+                $format = $view->getViewFormat($selected_item, $this->from_request);
                 $format['calendar_month'] = $month;
                 $format['calendar_year']  = $year;
                 if (isset($this->_view_param['group_by'])) {
@@ -641,7 +670,7 @@ class AA_Showview
                 if ($zids2->count() > (ctype_digit((string) $list_from) ? (int) $list_from : 0)) { // $list_from could be 'random:number.........1' ...
                     $ret = $itemview->get_output(($view_info['type'] === 'calendar') ? 'calendar' : 'view');
                 } else {
-                    $ret = $itemview->unaliasWithScroller($noitem_msg);
+                    $ret = $itemview->unaliasWithScroller($this->noitemMsg($view));
                 }
 
                 if ($view_info['type'] === 'list' && $view->f('scroller') == 2 && $GLOBALS['apc_state']['router']) {

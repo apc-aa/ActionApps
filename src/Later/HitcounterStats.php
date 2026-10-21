@@ -9,6 +9,9 @@ use AA\IO\DB\DB_AA;
  */
 class HitcounterStats implements LaterInterface
 {
+    /** items written in one transaction */
+    private const WRITE_CHUNK = 500;
+
     /** For which slice we will count the hits */
     private string $slice_id;
 
@@ -32,29 +35,63 @@ class HitcounterStats implements LaterInterface
 
         $days = $this->getDays();
         $time = time() - ($days * 86400);
-        $hits = DB_AA::select(['id' => 'count'], 'SELECT item.id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id', [['hit_archive.time', $time, '>'], ['item.slice_id', $this->slice_id, 'l']], null, ['hit_archive.id']);
+        $hits = DB_AA::select(['id' => 'count'], 'SELECT LOWER(HEX(item.id)) AS id, sum(hits) as count FROM hit_archive INNER JOIN item ON hit_archive.id=item.short_id', [['hit_archive.time', $time, '>'], ['item.slice_id', $this->slice_id, 'l']], null, ['hit_archive.id']);
         $dbgtime[] = microtime(true);
-        $item_ids = DB_AA::select('', 'SELECT id FROM item', [['slice_id', $this->slice_id, 'l']]);
+        $item_ids = DB_AA::select('id', 'SELECT LOWER(HEX(id)) AS id FROM item', [['slice_id', $this->slice_id, 'l']]);
+        $field    = DB_AA::select1('', 'SELECT `id`,`text_stored` FROM `field`', [
+            ['slice_id', $this->slice_id, 'l'],
+            ['id', $this->field_id],
+        ]);
         $dbgtime[] = microtime(true);
 
-        if ($item_ids) {
-            // shuffle - if there are a lot of items, so we reach timelimit, it is better to
-            // count hits in random order, so each item will be counted after some time period
-            shuffle($item_ids);
-            $field = DB_AA::select1('', 'SELECT `id`,`text_stored` FROM `field`', [
-                ['slice_id', $this->slice_id, 'l'],
-                ['id', $this->field_id],
-            ]);
-
-            foreach ($item_ids as $id) {
-                //$db->query("DELETE FROM content WHERE item_id ='".quote($id)."' AND field_id = '". quote($this->field_id)."'");
-                $value = $hits[$id] ?: 0;
-                StoreToContent(unpack_id($id), $field['id'], $field["text_stored"], $value, 0, 0, true);
+        // Most counts do not move between two runs, so only the changed ones are written, in
+        // transactions of WRITE_CHUNK items - not one autocommit per item.
+        $changed = 0;
+        if ($item_ids && $field) {
+            $text_stored = (bool) $field['text_stored'];
+            foreach (array_chunk($item_ids, self::WRITE_CHUNK) as $chunk) {
+                $content = GetItemContent(new \zids($chunk, 'l'), false, true, [$this->field_id]);
+                $values  = self::changedValues($chunk, $hits, $content, $this->field_id);
+                if (!$values) {
+                    continue;
+                }
+                $changed += count($values);
+                DB_AA::transaction(function () use ($values, $text_stored): void {
+                    $writer = new \AA_Field_Writer('');
+                    // all clears first: each one filters the rows queued so far
+                    foreach (array_keys($values) as $id) {
+                        $writer->clearField((string) $id, $this->field_id);
+                    }
+                    foreach ($values as $id => $value) {
+                        $writer->addContentRow((string) $id, $this->field_id, $text_stored, $value, 0, 0);
+                    }
+                    $writer->flush();
+                });
             }
         }
         $dbgtime[] = microtime(true);
         // for AA_Log
-        return count($item_ids) . '-' . number_format($dbgtime[1] - $dbgtime[0], 2) . '-' . number_format($dbgtime[2] - $dbgtime[1], 2) . '-' . number_format($dbgtime[3] - $dbgtime[2], 2);
+        return count($item_ids) . '-' . number_format($dbgtime[1] - $dbgtime[0], 2) . '-' . number_format($dbgtime[2] - $dbgtime[1], 2) . '-' . number_format($dbgtime[3] - $dbgtime[2], 2) . '-' . $changed;
+    }
+
+    /** The items whose stored count differs from the counted one - a missing value, an item without
+     *  hits that still shows some, or more than one value count as different too.
+     * @param array $item_ids long ids
+     * @param array $hits     long id => hits counted; an item without hits is not there
+     * @param array $content  GetItemContent() of the items, at least with the field
+     * @return array<string, int> long id => count to store
+     */
+    public static function changedValues(array $item_ids, array $hits, array $content, string $field_id): array
+    {
+        $changed = [];
+        foreach ($item_ids as $id) {
+            $value = (int) ($hits[$id] ?? 0);
+            $have  = $content[$id][$field_id] ?? [];
+            if ((count($have) !== 1) || ((string) (reset($have)['value'] ?? '') !== (string) $value)) {
+                $changed[$id] = $value;
+            }
+        }
+        return $changed;
     }
 
     public static function getStats(array $slice_ids, int $from = 0, int $to = 0, $order = true, $limit = 0): array

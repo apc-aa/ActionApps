@@ -23,7 +23,8 @@ git pull --ff-only
 If git refuses with *"Your local changes … would be overwritten"*, a file shipped with AA was edited
 on the server. `git diff` shows the edit. Keep a copy of it if you need it, then run
 `git checkout -- <file>` and pull again.
-The most common case is an access code left in `service/sql_update.php`.
+The most common case is an access code left in `service/sql_update.php`. The exception is
+`misc/datovka/datovka_conf.php`: never check it out, see [Data-box settings](#data-box-settings).
 
 ## 3. Update the database
 
@@ -45,6 +46,36 @@ git diff ORIG_HEAD HEAD -- include/config.php.default
 
 Copy the options you want into `include/config.php`. Options you leave out keep their defaults.
 
+## Data-box settings
+
+Since October 2026, `misc/datovka/datovka_conf.php` (the settings of `{datovka}`) belongs to the
+installation, like `include/config.php`: git ignores it, and AA ships the template
+`misc/datovka/datovka_conf.php.default` instead. The addresses of ISDS are now part of AA; from your file
+AA reads only `instances`, `cert` and `atsId`. Each URL in `instances` must start with `https://` and end
+with `/`, or AA leaves that entry out.
+
+- **You never edited the file:** the update deletes it and nothing is lost. To use `{datovka}`, copy the
+  template to `datovka_conf.php` and fill it in.
+- **You edited it:** git stops the pull and changes nothing. `git diff misc/datovka/datovka_conf.php`
+  shows your edit; AA no longer reads the `url_*` and `wsdl_*` lines, and a relative `cert` now starts
+  in `config/certs/` (a path with `AA_BASE_PATH` or a full path stays as it is). Move the file out of
+  the web tree, pull, and move it back:
+
+  ```sh
+  mv misc/datovka/datovka_conf.php ~/datovka_conf.keep
+  git pull --ff-only
+  mv ~/datovka_conf.keep misc/datovka/datovka_conf.php
+  ```
+
+  `mv` keeps the owner, mode and ACL of the file; if you copy it instead, use `cp -a`, not `cp -p`.
+  Never use `git checkout --`, `git stash` or `git pull --autostash` on this file: the first throws your
+  settings away, the others can leave them in the template or in a stash.
+- **Several trees over one database** (a staging tree next to production, say) serve the same sites
+  and share one task queue, so they must read one file: in the other trees, make
+  `misc/datovka/datovka_conf.php` a symbolic link to the file of the main tree.
+- **Copies** of the file belong outside the web tree: the web server may send `datovka_conf.php.bak` or
+  `datovka_conf.php~` to anyone as plain text.
+
 ## Rolling back
 
 `git pull` stores the previous version as `ORIG_HEAD`:
@@ -56,11 +87,20 @@ git reset --hard ORIG_HEAD
 If the database was already updated, restore the backup from step 1 as well. After a later pull
 `ORIG_HEAD` points elsewhere; then find the commit you need with `git reflog`.
 
+Going back to a version from before October 2026, with `git reset --hard` or `git checkout`,
+overwrites your `misc/datovka/datovka_conf.php` with the shipped one. Move it out first and back after.
+
 ## Subversion installations (deprecated)
 
 The SVN trunk is a read-only mirror of the git `dist` branch, so `svn update` still delivers the same
 code. After `svn update`, continue with step 3 above, and look for new options in
 `include/config.php.default`.
+
+If you edited `misc/datovka/datovka_conf.php` (see [Data-box settings](#data-box-settings)), move it
+out of the web tree before `svn update` and back after; `svn status` then lists it with `?`. Without
+that, the update leaves it in a tree conflict. To resolve one: copy the file out, run
+`svn revert misc/datovka/datovka_conf.php`, and copy it back. Do not use `svn resolve --accept working`:
+the file would stay scheduled for addition (`A +`), and a later `svn revert -R .` deletes it.
 
 ### Moving from SVN to git
 

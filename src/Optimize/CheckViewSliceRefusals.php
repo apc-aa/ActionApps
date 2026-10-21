@@ -9,9 +9,9 @@ use AA\Security\ViewSlices;
 use AA\Util\LogOnce;
 use AA_Log;
 
-/** Slices that views and slice.php left out in the last 30 days: their parameters named another slice
- *  than the view is set up for, or items of it, and the page did not know its reading password
- *  (AA\Security\ViewSlices) - logged once a day per view and slice. Index-only.
+/** Slices that views and slice.php left out in the last 30 days, as the page did not know their reading
+ *  password: a view called from the URL over such a slice, or parameters that named such a slice, or items
+ *  of it (AA\Security\ViewSlices) - logged once a day per view and slice. Index-only.
  */
 class CheckViewSliceRefusals extends AbstractOptimize
 {
@@ -25,7 +25,7 @@ class CheckViewSliceRefusals extends AbstractOptimize
 
     public static function description(): string
     {
-        return _m('Lists the views that left out a slice in the last 30 days because their parameters named a slice, or items of a slice, with a reading password the page did not know.');
+        return _m('Lists the views that left out a slice in the last 30 days because the page did not know the slice\'s reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it.');
     }
 
     public static function types(): array
@@ -82,7 +82,7 @@ class CheckViewSliceRefusals extends AbstractOptimize
                     _m('Days seen')      => (string) (int) $row['days'],
                     _m('Last')           => date('Y-m-d', (int) $row['last']),
                 ]],
-                advice: _m('The URL parameters of the view (set[]=slice_id-... or slices-..., or the item ids of cmd[]=x-...), or slices[] of slice.php, named another slice than the view or page is set up for, and the page did not know the reading password of that slice. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change.'),
+                advice: _m('The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice\'s reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change.'),
                 links: [_m('Log rows') => AA_Log::getAdminUrl(ViewSlices::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],
