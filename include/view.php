@@ -303,7 +303,25 @@ class AA_Showview
                 $list_from += $listlen * ((int) $page - 1);
             }
         }
+        // the site router counts the listings paged by {xpage} (accepted by the view, or passed as
+        // page-{xpage}) - when none of them has that page, site.php answers 404. Page 1 always exists.
+        $xpage = (int) ($GLOBALS['apc_state']['xpage'] ?? 0);
+        // class_exists(): view.php and slice.php take apc_state from the request, without any router
+        if (!$random && ($xpage > 1) && ((int) $page === $xpage) && isset($GLOBALS['apc_state']['router']) && class_exists('AA_Router', false)) {
+            AA_Router::singleton($GLOBALS['apc_state']['router'])->noteXpageListing(self::hasPage((string) $page, $idscount, (int) $list_from));
+        }
         return [$listlen, $random ?: ($list_from ?: 0)];
+    }
+
+    /** the listing has the page: "<page>-<number of pages>" splits any count into that many pages,
+     *  a plain page starts at $list_from */
+    public static function hasPage(string $page, int $idscount, int $list_from): bool
+    {
+        if (str_contains($page, '-')) {
+            [$page_n, $no_of_pages] = explode('-', $page, 2);
+            return (int) $page_n <= max(1, (int) $no_of_pages);
+        }
+        return $idscount > $list_from;
     }
 
     public function getViewOutput(): string

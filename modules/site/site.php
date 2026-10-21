@@ -355,6 +355,15 @@ $page_changer->checkAndProcessCall($is_valid === 'Valid');
 
 $page_content = ($is_valid === 'Valid') ? $module->getSite($apc_state) : AA::Stringexpander()->postprocess(AA::Un($module->getProperty('loginpage_code')));
 
+if (isset($router) && $router->xpageBeyondEnd()) {
+    // what an inactive item gets above: the 404 page, or for "Do not care" the page itself with 404 (cached so)
+    $page404 = (string) $module->getProperty('page404');
+    if ($page404 === '2' || $page404 === '3') {
+        Die404(($page404 === '3') ? $module->getProperty('page404_code') : null);  // calls exit
+    }
+    AA::$headers['status'] ??= 'HTTP/1.0 404 Not Found';   // a deleted item keeps its 410
+}
+
 // AJAX check
 if ((AA::$headers['encoding'] !== 'utf-8') && (AA::$encoding !== 'utf-8') && IsAjaxCall()) {
     $page_content = ConvertCharset::singleton()->Convert($page_content, AA::$encoding, 'utf-8');

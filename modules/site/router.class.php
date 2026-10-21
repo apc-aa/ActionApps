@@ -71,6 +71,8 @@ class AA_Router
     /** @var array{xcat?: string, xflag?: string} regular expressions from the site settings the URL parts must match */
     protected $rules = [];
     protected $rejected = false;
+    /** @var array{in: int, out: int} listings of this request that have the page {xpage} asks for / that end before it */
+    private array $xpage_listings = ['in' => 0, 'out' => 0];
 
     /** @var AA_Router $_instance
      * Store the single instance of Database
@@ -102,6 +104,20 @@ class AA_Router
     public function rejected(): bool
     {
         return $this->rejected;
+    }
+
+    /** a listing paged by {xpage} tells whether it has that page */
+    public function noteXpageListing(bool $has_page): void
+    {
+        ++$this->xpage_listings[$has_page ? 'in' : 'out'];
+    }
+
+    /** {xpage} asks for a page that no listing of the page has - /cz9999/... renders a whole page with
+     *  empty listings, and crawlers walk such pages without end. Only listings decide: a page none of
+     *  them is paged by is left alone, it may read {xpage} in its own way. */
+    public function xpageBeyondEnd(): bool
+    {
+        return ($this->xpage_listings['out'] > 0) && ($this->xpage_listings['in'] === 0);
     }
 
     protected function setWebLangs(array $web_languages): void
