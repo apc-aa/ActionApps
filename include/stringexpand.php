@@ -7023,6 +7023,49 @@ class AA_Stringexpander implements LaterInterface {
         return $text;
     }
 
+    /** cuts {#comments} out before the expansion, so nothing inside them runs (a commented-out view costs nothing).
+     *  The braces pair as in the expansion loop, which removes a comment once it is innermost: a comment with {} inside
+     *  (the loop never expands {}) or without its closing brace stays as it is.
+     * @param int $removed  increased by the number of comments cut out
+     */
+    static function removeComments(string $text, int &$removed = 0): string
+    {
+        // braces before the first comment cannot change how the comments pair
+        if (($i = strpos($text, '{#')) === false) {
+            return $text;
+        }
+        $open = [];   // offsets of the braces not closed yet
+        $cuts = [];   // [start, end] of the outermost comments
+        $wall = -1;   // offset of the last {} - no bracket around it is ever removed
+        $len  = strlen($text);
+        for (; $i < $len; $i += 1 + strcspn($text, '{}', $i + 1)) {
+            if ($text[$i] === '{') {
+                if (($text[$i + 1] ?? '') === '}') {
+                    $wall = $i;
+                    ++$i;     // its } closes nothing
+                } else {
+                    $open[] = $i;
+                }
+            } elseif ($open && (($start = array_pop($open)) > $wall) && ($text[$start + 1] === '#')) {
+                while ($cuts && (end($cuts)[0] > $start)) {
+                    array_pop($cuts);
+                }
+                $cuts[] = [$start, $i];
+            }
+        }
+        if (!$cuts) {
+            return $text;
+        }
+        $ret = '';
+        $pos = 0;
+        foreach ($cuts as [$start, $end]) {
+            $ret .= substr($text, $pos, $start - $pos);
+            $pos  = $end + 1;
+        }
+        $removed += count($cuts);
+        return $ret . substr($text, $pos);
+    }
+
     /** called as AA::Un();
      * @param $text string
      * @param $remove string
@@ -7055,6 +7098,7 @@ class AA_Stringexpander implements LaterInterface {
                 //   {item:6625:{(some text {headline........}...etc.)}}
                 $text = self::ApplyInlineAlias($text);
             }
+            $text = self::removeComments($text, $quotecolons_partly);
 
             $last_replacements  = 0;
             // we store it in the variable -  AA::$debug could change in do-while loop {debug...} which thel leads to error
@@ -9427,6 +9471,8 @@ class AA_Stringexpand__ extends AA_Stringexpand {
             // we want to use inline aliases also inside {_:aliases...}
             $text = AA_Stringexpander::ApplyInlineAlias($text);
         }
+        // the text joins the template mid-expansion, where AA::Un() no longer cuts comments out
+        $text = AA_Stringexpander::removeComments($text);
         AA::$debug&8 && AA::$dbg->traceend("_:$name", $text);
 
         return $text;
