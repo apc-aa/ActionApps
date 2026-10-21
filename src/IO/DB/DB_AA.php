@@ -339,9 +339,8 @@ final class DB_AA
      *  table instead of one per value.
      *  All rows change at once, so chains (a => b, b => c) are safe - which is also why the map
      *  is never split; it must fit into max_allowed_packet (fine up to thousands of entries).
-     *  Compared as utf8mb4_bin: under a *_ci collation 'Správci' and 'spravci' are equal, so two
-     *  keys would hit the same rows and CASE would silently take the first one. Not BINARY - that
-     *  compares the stored bytes and a cp1250/latin1 column would never match UTF-8 keys.
+     *  Keys are compared by asText(): under a *_ci collation 'Správci' and 'spravci' are equal, so
+     *  two keys would hit the same rows and CASE would silently take the first one.
      *  utf8mb4_bin is PAD SPACE, so 'a' and 'a ' still collide: map such keys to the same value.
      *  used as: DB_AA::remap('item', 'posted_by', ['uid=joe,ou=People' => '17']);
      * @param array<string|int, string|int> $map  every exact spelling to rewrite
@@ -353,7 +352,7 @@ final class DB_AA
             return 0;
         }
         $col   = self::quoteIdentifier($column);
-        $cmp   = "CONVERT($col USING utf8mb4) COLLATE utf8mb4_bin";
+        $cmp   = self::asText($column);
         $whens = '';
         foreach ($map as $old => $new) {
             $whens .= ' WHEN ' . qquote((string) $old) . ' THEN ' . qquote((string) $new);
@@ -361,6 +360,19 @@ final class DB_AA
         $olds = implode(', ', array_map(static fn($old) => qquote((string) $old), array_keys($map)));
         // ELSE keeps the value should WHERE ever match a row no WHEN does
         return self::sql('UPDATE ' . self::quoteIdentifier($table) . " SET $col = CASE $cmp$whens ELSE $col END WHERE $cmp IN ($olds)");
+    }
+
+    /** The column as UTF-8 text, so that char, cp1250/latin1 and varbinary columns compare with a
+     *  literal alike. Not BINARY - that compares the stored bytes and a cp1250 column would never
+     *  match a UTF-8 literal.
+     *  $exact: utf8mb4_bin - every spelling apart, as remap() matches (SELECT DISTINCT of it lists
+     *  each value remap() can tell apart); otherwise utf8mb4_general_ci - case-insensitive even in
+     *  varbinary columns.
+     *  used as: DB_AA::select('', 'SELECT DISTINCT ' . DB_AA::asText('posted_by') . ' FROM `item`');
+     */
+    public static function asText(string $column, bool $exact = true): string
+    {
+        return 'CONVERT(' . self::quoteIdentifier($column) . ' USING utf8mb4) COLLATE ' . ($exact ? 'utf8mb4_bin' : 'utf8mb4_general_ci');
     }
 
     /** used as: DB_AA::delete('perms', [['object_type', $object_type], ['objectid', $objectID], ['flag', REL_FLAG_FEED, 'i']]);
@@ -503,6 +515,7 @@ final class DB_AA
      *     NOT BEGIN-                   LIKE             single or array    ['selector', $item_id, 'BEGIN']
      *     CONTAIN  -                   LIKE             single or array    ['selector', $item_id, 'CONTAIN'] // similar to LIKE, but the value must contain exact match of the string (including "%" and "_" characters)
      *     NOT LIKE -                   NOT LIKE         single             ['id', '\_%', 'NOT LIKE']
+     *     REGEXP   -                   REGEXP           single             ['user', '^[0-9]+$', 'REGEXP']
      *     FILLED   -                   > ''             single             ['field3', '', 'FILLED']     // not null, not empty, not any whitespace character(s)
      *     OR       - alternatives      OR               list of varlists   [null, [[['a', 1, 'i']], [['b', $x], ['c', 2, 'i']]], 'OR'] // (a = 1 OR (b = 'x' AND c = 2))
      *
@@ -522,7 +535,7 @@ final class DB_AA
                 // $value is a column name - anything else matches nothing rather than reach the SQL
                 $where[] = preg_match('/^\w+(\.\w+)?\z/', (string) $value) ? "$name " . substr($type, 1) . " $value" : '2=1';
                 continue;
-            } elseif ($type === 'LIKE' || $type === 'NOT LIKE') {
+            } elseif ($type === 'LIKE' || $type === 'NOT LIKE' || $type === 'REGEXP') {
                 $where[] = "$name $type " . qquote($value);   // quote() escapes \ too; MySQL reads '\\_%' as the same pattern as '\_%'
                 continue;
             } elseif ($type === 'RLIKE') {

@@ -84,6 +84,13 @@ namespace Tests\Unit\IO\DB {
             ], RecordingDb::$log, 'one statement, so a row once a ends as b, not c');
         }
 
+        public function test_asText_exactOrCaseInsensitive(): void
+        {
+            $c = DB_AA::quoteIdentifier('posted_by');
+            self::assertSame("CONVERT($c USING utf8mb4) COLLATE utf8mb4_bin", DB_AA::asText('posted_by'));
+            self::assertSame("CONVERT($c USING utf8mb4) COLLATE utf8mb4_general_ci", DB_AA::asText('posted_by', false));
+        }
+
         public function test_remap_emptyMapDoesNothing(): void
         {
             self::assertSame(0, DB_AA::remap('item', 'posted_by', []));

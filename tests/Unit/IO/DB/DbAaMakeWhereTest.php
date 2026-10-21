@@ -152,4 +152,10 @@ final class DbAaMakeWhereTest extends TestCase
         $this->assertSame("WHERE id NOT LIKE '\\\\_%'", DB_AA::makeWhere([['id', '\_%', 'NOT LIKE']]));
         $this->assertSame("WHERE t LIKE 'a\\\\\\' OR 1=1 -- %'", DB_AA::makeWhere([['t', "a\\' OR 1=1 -- %", 'LIKE']]));
     }
+
+    public function test_regexp_pattern_is_one_quoted_literal(): void
+    {
+        $this->assertSame("WHERE uid REGEXP '^[0-9]+\$'", DB_AA::makeWhere([['uid', '^[0-9]+$', 'REGEXP']]));
+        $this->assertSame("WHERE uid REGEXP '\\\\d\\' OR 1=1 -- '", DB_AA::makeWhere([['uid', "\\d' OR 1=1 -- ", 'REGEXP']]));
+    }
 }
