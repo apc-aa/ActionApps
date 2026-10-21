@@ -176,8 +176,9 @@ class Linkcheck
         if (!str_starts_with($url_lower, 'http://') && !str_starts_with($url_lower, 'https://')) {
             if (str_starts_with($url_lower, 'mailto:')) {
                 $email = trim(preg_replace("/^mailto:(.+)/i", "\\1", $url));
-                [$username, $host] = explode("@", $email);
-                $dnsCheck = checkdnsrr($host, "MX");
+                // checkdnsrr() throws on an empty host ("mailto:info", "mailto:a@")
+                $host     = (string) substr((string) strrchr($email, '@'), 1);
+                $dnsCheck = ($host !== '') && checkdnsrr($host, "MX");
                 $result['code'] = ($dnsCheck ? "OK" : "ERROR");
             } else {
                 $result['code'] = "N/A";
@@ -294,7 +295,14 @@ class Linkcheck
         $links = DB_AA::select([], 'SELECT id, url, valid_codes, valid_rank FROM links_links', order: ['validated'], rows: (int) LINKS_VALIDATION_COUNT);
 
         foreach ($links as $link) {
-            $val = $this->check_url((string) $link['url']);
+            // links go oldest first, so a link whose check throws would come first in every run again
+            // and stop the checker for good - it is recorded as not answering and the run goes on
+            try {
+                $val = $this->check_url((string) $link['url']);
+            } catch (\Throwable $e) {
+                error_log('AA: link check of links_links #' . $link['id'] . ' failed - ' . $e::class . ': ' . $e->getMessage());
+                $val = self::noAnswer(self::get_empty_ressult(), 'the check failed with ' . $e::class . ': ' . $e->getMessage());
+            }
             $val['valid_codes'] = $this->add_check($val, $link['valid_codes']);
             AA::Metabase()->doUpdate('links_links', [
                 'id'          => $link['id'],

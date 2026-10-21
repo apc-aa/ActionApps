@@ -98,6 +98,13 @@ final class LinkcheckHttpTest extends TestCase
         self::assertStringContainsString('Could not resolve host', (string) $result['error']);
     }
 
+    public function test_aMailtoWithoutADomainIsAnInvalidHostNotAnError(): void
+    {
+        foreach (['mailto:info', 'mailto:info@'] as $url) {
+            self::assertSame('ERROR', (new Linkcheck(new FakeHttp()))->check_url($url)['code'], $url);
+        }
+    }
+
     public function test_somethingThatIsNotAWebAddressIsNotFetchedAtAll(): void
     {
         $http   = new FakeHttp([new Response(200, '')]);

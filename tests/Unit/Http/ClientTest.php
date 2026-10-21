@@ -13,6 +13,9 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Contracts\HttpClient\ResponseStreamInterface;
 
 /**
  * AA's HTTP door. The library does the work; what is worth pinning is the part we decided:
@@ -95,6 +98,43 @@ final class ClientTest extends TestCase
 
         $this->expectException(TransportException::class);
         $client->request('GET', 'https://example.org/x');
+    }
+
+    private static function throwing(\Throwable $e): HttpClientInterface
+    {
+        return new class ($e) implements HttpClientInterface {
+            public function __construct(private \Throwable $e) {}
+
+            public function request(string $method, string $url, array $options = []): ResponseInterface
+            {
+                throw $this->e;
+            }
+
+            public function stream(ResponseInterface|iterable $responses, ?float $timeout = null): ResponseStreamInterface
+            {
+                throw new \LogicException('not used');
+            }
+
+            public function withOptions(array $options): static
+            {
+                return $this;
+            }
+        };
+    }
+
+    public function test_anAnswerTheLibraryCannotFollowIsNoAnswer(): void
+    {
+        // what the SSRF guard's wrapper throws for "HTTP/1.1 0" followed by a body
+        $broken = self::throwing(new \LogicException('Instance of "CurlResponse" is already consumed and cannot be managed by "NoPrivateNetworkHttpClient". A decorated client should not call any of the response\'s methods in its "request()" method.'));
+
+        $this->expectException(TransportException::class);
+        (new Client(http: $broken))->request('HEAD', 'https://example.org/x');
+    }
+
+    public function test_anyOtherLogicExceptionIsABugNotAnOutage(): void
+    {
+        $this->expectException(\LogicException::class);
+        (new Client(http: self::throwing(new \LogicException('A chunk passthru must yield an "isLast()" chunk.'))))->request('GET', 'https://example.org/x');
     }
 
     public function test_aBodyOverTheLimitIsRefusedByItsDeclaredLength(): void

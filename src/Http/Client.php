@@ -115,6 +115,15 @@ final class Client implements ClientInterface
             $redirect = (string) ($answer->getInfo('redirect_url') ?? '');
         } catch (TransportExceptionInterface $e) {
             throw new TransportException('No answer from ' . $url . ' - ' . $e->getMessage(), 0, $e);
+        } catch (\LogicException $e) {
+            // The SSRF guard's response wrapper throws this for an answer it cannot follow: a status
+            // line below 100 that curl takes for an informational 1xx, then a body (www.bde.es answers
+            // bots "HTTP/1.1 0" with a page, even to HEAD). Matched by its text - any other
+            // LogicException is a bug of ours and must not pass for an outage.
+            if (!str_contains($e->getMessage(), 'is already consumed and cannot be managed by')) {
+                throw $e;
+            }
+            throw new TransportException('No usable answer from ' . $url . ' - ' . $e->getMessage(), 0, $e);
         }
 
         return new Response($status, $content, $out, $redirect);
