@@ -4672,6 +4672,7 @@ class AA_Stringexpand_Iftext extends AA_Stringexpand_Nevercachenotrim {
  *  Example: {if1:{_#IS_PUBLI}:_#HEADLINE:no public yet}
  */
 class AA_Stringexpand_If1 extends AA_Stringexpand_Nevercachenotrim {
+    public const PARAMS = ['condition', 'text', 'else_text'];
 
     /** expand function
      * @param $condition
@@ -4809,6 +4810,8 @@ class AA_Stringexpand_If extends AA_Stringexpand_Nevercachenotrim {
  *  Example: {ifeqfield::category.......1:Nature: class="green"} // for current item
  */
 class AA_Stringexpand_Ifeqfield extends AA_Stringexpand {
+    public const PARAMS = ['item_id', 'field', 'var', 'text', 'else_text'];
+
     /** Do not trim all parameters (maybe we can?) */
     protected static function doTrimParams(): bool { return false; }
 
@@ -7071,6 +7074,241 @@ class AA_Stringexpander implements LaterInterface {
         return $ret . substr($text, $pos);
     }
 
+    /** the conditions which expand just the branch they choose - see expandCondition() */
+    private const CONDITION = '/\{if(?:eq|in|set|text|1|bit|intersect|type|eqfield)?:/i';
+
+    /** with the number of the parameter it stands for a branch when the condition is asked which branch it chooses -
+     *  no quoting changes it */
+    private const BRANCH = "\x1E|~@?";
+
+    /** conditions nested deeper are expanded as before - each level keeps its own copy of the text */
+    private const NESTING = 30;
+
+    /** a condition asked more times (bracket options between the branches) expands the rest as before - each question
+     *  repeats the parameters left of the branch */
+    private const ASKS = 32;
+
+    /** expands the brackets - the innermost first, the leftmost first. A condition the loop reaches goes
+     *  to expandCondition(), so the branches it does not choose are never expanded.
+     * @param int $count    increased by the number of brackets expanded
+     * @param int $nesting  how many conditions the text is in
+     */
+    private static function expandBrackets(string $text, callable $callback, int &$count, int $nesting = 0): string
+    {
+        $condition = self::nextCondition($text, 0);
+        $lazy      = true;
+        while ($found = preg_match('/[{]([^{}]+)[}]/s', $text, $match, PREG_OFFSET_CAPTURE)) {
+            [$bracket, $start] = $match[0];
+            while (($condition >= 0) && ($condition < $start)) {
+                // the bracket is inside the condition
+                $expanded = self::expandCondition($text, $condition, $callback, $count, $nesting);
+                if ($expanded === false) {
+                    // a condition not closed shows on the page - the text is expanded as before, without scanning
+                    // the conditions again and again
+                    $condition = -1;
+                    $lazy      = false;
+                    break;
+                }
+                $condition = self::nextCondition($expanded ?? $text, $condition + 1);
+                if ($expanded !== null) {
+                    $text = $expanded;
+                    continue 2;
+                }
+            }
+            $out  = $callback([$bracket, $match[1][0]]);
+            $text = substr_replace($text, $out, $start, strlen($bracket));
+            ++$count;
+            if ($lazy && (($condition === $start) || str_contains($out, '{'))) {
+                // the condition itself is expanded, or the unquoted output of {_:...} may bring one
+                $condition = self::nextCondition($text, $start);
+            } elseif ($condition > $start) {
+                $condition += strlen($out) - strlen($bracket);
+            }
+        }
+        if ($found === false) {
+            echo 'Error ' . preg_last_error() . ': ' . preg_last_error_msg() . " - unalias\n";
+            print_r($text);
+            return 'preg_replace_callback Error ' . preg_last_error();
+        }
+        return $text;
+    }
+
+    /** @return int  offset of the first condition from $offset on, -1 for none */
+    private static function nextCondition(string $text, int $offset): int
+    {
+        return (($offset < strlen($text)) && preg_match(self::CONDITION, $text, $match, PREG_OFFSET_CAPTURE, $offset)) ? $match[0][1] : -1;
+    }
+
+    /** Expands the parameters of the condition at $start ({ifeq:...}, {ifset:...}...) from the left as the loop
+     *  would, except the branches: the condition is asked, with a mark in place of a branch, which branch it chooses,
+     *  and only that one is expanded - the branches not chosen are left out, so a view or rss in them costs nothing.
+     *  A condition decides by its other parameters only, so it chooses the same as when everything was expanded first.
+     *  Where the expansion could split the parameters other than the brackets do now (the unquoted output
+     *  of {_:...}, '#' or 'tp' next to a separator...), the condition, or its rest, is left to the loop as before.
+     * @return string|false|null  $text with the parameters of the condition expanded - all of them, or those it
+     *                            got to; null when the loop is to expand the condition as before, false when it is
+     *                            not closed
+     */
+    private static function expandCondition(string $text, int $start, callable $callback, int &$count, int $nesting): string|false|null
+    {
+        if ($nesting >= self::NESTING) {
+            return null;
+        }
+        $name     = substr($text, $start + 1, strpos($text, ':', $start) - $start - 1);
+        $from     = $start + strlen($name) + 2;
+        $params   = [];   // [offset, length, has a bracket, has {_:...}, {dequote:...} or {mlx_view} - unquoted output]
+        $begin    = $from;
+        $bracket  = $unquoted = $later = false;
+        // the parameters split where ParamExplode() splits them once the brackets inside are expanded
+        for ($i = $from + strcspn($text, '{}:', $from); isset($text[$i]); $i += strcspn($text, '{}:', $i)) {
+            if ($text[$i] === '{') {
+                // the bracket with the brackets inside, as the loop pairs them
+                if (!preg_match('/\G(\{(?:[^{}]++|(?1))*+\})/', $text, $match, 0, $i)) {
+                    return false;
+                }
+                if (($text[$i - 1] === '#') || str_contains($match[1], '{}')) {
+                    // an empty output would make '#:' of the separator, and the loop never expands {}
+                    return null;
+                }
+                $bracket  = true;
+                $later    = $later || $params;
+                $unquoted = $unquoted || preg_match('/^\{(?:_[:(]|dequote:|mlx_view)/', $match[1]);
+                $i       += strlen($match[1]);
+                continue;
+            }
+            if ($text[$i] === '}') {
+                break;
+            }
+            $tp    = (substr($text, $i - 2, 2) === 'tp') || (substr($text, $i - 3, 3) === 'tps');
+            $after = substr($text, $i + 1, 2);
+            if (($text[$i - 1] !== '#') && !($tp && ($after === '//'))) {
+                if ($tp || ($after === '//') || ($after === '/{')) {
+                    return null;   // an expanded bracket next to it could make 'tp://', which does not split
+                }
+                $params[] = [$begin, $i - $begin, $bracket, $unquoted];
+                $begin    = $i + 1;
+                $bracket  = $unquoted = false;
+            }
+            ++$i;
+        }
+        unset($match);   // a copy of the last bracket - the expansion below may go deep
+        if (!isset($text[$i])) {
+            return false;
+        }
+        if (!$later) {
+            return null;   // no bracket past the first parameter - nothing to leave out
+        }
+        $params[] = [$begin, $i - $begin, $bracket, $unquoted];
+        $end      = $i;
+        $branches = self::branches($name, count($params));
+        $marks    = [];   // [parameter => mark] - the branches to ask about
+        $last     = -1;   // the last of the other parameters with a bracket
+        foreach ($params as $k => [, , $bracket, $unquoted]) {
+            if ($branches[$k] && $bracket && !$unquoted) {
+                $marks[$k] = self::BRANCH . $k;
+            } elseif ($bracket) {
+                $last = $k;
+            }
+        }
+        if (!$marks || preg_match('/##S|~@\|_/', substr($text, $from, $end - $from))) {
+            // no bracket to leave out, or text ParamExplode() reads its own way (also when a bracket joins '##S' and 'x')
+            return null;
+        }
+
+        // the code in the parameters runs left to right as before - one question for all the branches does only where
+        // nothing right of them runs (a switch with plain options); else the condition is asked branch by branch
+        $flat   = [];      // the parameters as the condition gets them
+        $done   = [];      // the expanded parameters - a fallback puts them back to the text
+        $chosen = null;    // the branch the condition chooses, false for none, null until known
+        $asked  = 0;
+        foreach ($params as $k => [$offset, $length, $bracket]) {
+            if (isset($marks[$k]) && ($chosen === null)) {
+                $ask = $flat;
+                $put = 0;   // marks in the question
+                // from after the last other bracket on, the parameters are the branches and plain text - one answer for all
+                for ($j = $k; isset($params[$j]) && (($j === $k) || ($k > $last)); ++$j) {
+                    $put  += isset($marks[$j]) ? 1 : 0;
+                    $ask[] = $marks[$j] ?? substr($text, $params[$j][0], $params[$j][1]);
+                }
+                $ask = $name . ':' . implode(':', $ask);
+                if ((substr_count($ask, self::BRANCH) !== $put) || (++$asked > self::ASKS)) {
+                    // a mark came with the data, or too many questions - the loop expands the rest as before
+                    return substr_replace($text, self::loopParams($text, $params, $done), $from, $end - $from);
+                }
+                $answer = array_search($callback(['{' . $ask . '}', $ask]), $marks, true);
+                if (($k > $last) || ($answer === $k)) {
+                    $chosen = $answer;
+                }
+            }
+            if (isset($marks[$k]) && ($chosen !== $k)) {
+                $flat[] = '';      // not chosen
+                continue;
+            }
+            $flat[] = $param = $bracket ? self::expandBrackets(substr($text, $offset, $length), $callback, $count, $nesting + 1) : substr($text, $offset, $length);
+            if ($bracket) {
+                $done[$k] = $param;
+                if (!self::staysOne($param, isset($params[$k + 1]) ? substr($text, $offset + $length + 1, 2) : '')) {
+                    // it splits the condition otherwise - the loop expands the rest as before
+                    return substr_replace($text, self::loopParams($text, $params, $done), $from, $end - $from);
+                }
+            }
+        }
+        return substr_replace($text, implode(':', $flat), $from, $end - $from);
+    }
+
+    /** the parameters of a condition as the loop would have them - the expanded ones from $done, the rest as they are */
+    private static function loopParams(string $text, array $params, array $done): string
+    {
+        $ret = [];
+        foreach ($params as $k => [$offset, $length]) {
+            $ret[] = $done[$k] ?? substr($text, $offset, $length);
+        }
+        return implode(':', $ret);
+    }
+
+    /** @return bool[]  which of the $count parameters of the condition are branches (text, else_text) by its PARAMS */
+    private static function branches(string $condition, int $count): array
+    {
+        static $cache = [];
+        if (isset($cache[$key = strtolower($condition) . "/$count"])) {
+            return $cache[$key];
+        }
+        $class = AA_Serializable::constructClassName($condition, 'AA_Stringexpand_');
+        $head  = $repeat = $tail = [];
+        foreach ($class::PARAMS as $name) {
+            if (is_array($name)) {
+                $repeat = $name;
+            } elseif ($repeat) {
+                $tail[] = $name;
+            } else {
+                $head[] = $name;
+            }
+        }
+        $ret = [];
+        for ($i = 0; $i < $count; ++$i) {
+            if ($i < count($head)) {
+                $name = $head[$i];
+            } elseif ($i >= $count - count($tail)) {
+                $name = $tail[$i - $count + count($tail)];
+            } else {
+                $name = $repeat ? $repeat[($i - count($head)) % count($repeat)] : '';
+            }
+            $ret[] = in_array($name, ['text', 'else_text'], true);
+        }
+        return $cache[$key] = $ret;
+    }
+
+    /** whether an expanded parameter stays one parameter - the unquoted output of {_:...} may bring a separator
+     *  or a brace, or join the separator next to it into '#:' or 'tp://'
+     * @param string $next  the start of the parameter which follows
+     */
+    private static function staysOne(string $param, string $next): bool
+    {
+        return (strpbrk($param, '{}') === false) && ((strpbrk($param, ':S') === false) || (count(ParamExplode($param)) === 1))
+            && !str_ends_with($param, '#') && !str_starts_with($param, '//')
+            && !((str_ends_with($param, 'tp') || str_ends_with($param, 'tps')) && (($next[0] ?? '') === '{' || $next === '//' || $next === '/{'));
+    }
+
     /** called as AA::Un();
      * @param $text string
      * @param $remove string
@@ -7105,30 +7343,10 @@ class AA_Stringexpander implements LaterInterface {
             }
             $text = self::removeComments($text, $quotecolons_partly);
 
-            $last_replacements  = 0;
-            // we store it in the variable -  AA::$debug could change in do-while loop {debug...} which thel leads to error
+            // we store it in the variable -  AA::$debug could change in the loop {debug...} which then leads to error
             ($do_trace = AA::$debug&4) && AA::$dbg->tracestart('unalias', $text);
             $callback = [new AA_Unalias_Callback($item, $itemview), AA::$debug&8 ? 'expand_bracketed_timedebug':'expand_bracketed'];
-            do {
-                $oldtext = $text;
-                if (is_null($text = preg_replace_callback('/[{]([^{}]+)[}]/s', $callback, $text, 1, $last_replacements))) {  //s for newlines, U for nongreedy
-                    //huhl( "Error: preg_replace_callback", '/[{]([^{}]+)[}]/s', $callback, $text, -1, $last_replacements);
-                    echo "Error ". preg_last_error().": preg_replace_callback - 2\n";
-                    $pcre_const   = get_defined_constants(true);    // we can't use array dereference in php<=5.3: array_flip(get_defined_constants(true)['pcre']);
-                    $pcre_err_arr = array_flip($pcre_const['pcre']);
-                    echo $pcre_err_arr[preg_last_error()];
-                    print_r($oldtext);
-                    print_r($callback);
-                    print_r($last_replacements);
-                    echo ini_get('pcre.backtrack_limit');
-                    echo "\n.\n";
-                    echo ini_get('pcre.recursion_limit');
-                    echo "\n.\n";
-                    echo ini_get('pcre.jit');
-                    $text = 'preg_replace_callback Error '.preg_last_error();
-                }
-                $quotecolons_partly += $last_replacements;
-            } while($last_replacements);
+            $text     = self::expandBrackets($text, $callback, $quotecolons_partly);
             $do_trace && AA::$dbg->traceend('unalias', "$quotecolons_partly - $text");
         }
 
