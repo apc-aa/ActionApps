@@ -20,6 +20,9 @@ use AA\Upload\UploadToken;
 use AA\Util\Imgfunc;
 use AA\Util\LogOnce;
 use AA_Log;
+use AA_Logentry;
+use AA_Logentry_Un;
+use AA_Logentry_Unv;
 use AA_Slice;
 use AA_Stringexpand_Img;
 use Files;
@@ -270,7 +273,9 @@ class FilesController
 
     protected function logRefusal(string $slice_id, string $reason, string $detail): void
     {
-        LogOnce::daily(self::EVENT_REFUSED, ParamImplode([$slice_id, $reason]), ParamImplode([$this->ip(), $detail]));
+        $params = new AA_Logentry_Unv(['ip' => $this->ip(), 'detail' => $detail]);
+        $params->trimToFit(['detail'], AA_Logentry::PARAMS_MAX);
+        LogOnce::daily(self::EVENT_REFUSED, (new AA_Logentry_Un(['slice' => $slice_id, 'reason' => $reason]))->serializeToString(true), $params->serializeToString());
     }
 
     /** @return list<array{selector: string, params: string}> */

@@ -1266,3 +1266,36 @@ class AA_Logentry_Mf extends AA_Logentry
         ];
     }
 }
+
+/** UPLOAD_NO selector - an upload the editor refused (AA\Api\Controller\FilesController), at most one row
+ *  a day per slice and reason. Reversed (slice first, for prefix lookup): slice:reason:Un; pairs with the
+ *  params entry AA_Logentry_Unv.
+ */
+class AA_Logentry_Un extends AA_Logentry
+{
+    public string $slice  = '';
+    public string $reason = '';
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'slice'  => new AA_Property('slice', _m('Slice ID'), 'string'),
+            'reason' => new AA_Property('reason', _m('Reason'), 'string'),
+        ];
+    }
+}
+
+/** UPLOAD_NO params - who uploaded and what was wrong with the file (size, type, ...) */
+class AA_Logentry_Unv extends AA_Logentry
+{
+    public string $ip     = '';
+    public string $detail = '';
+
+    public static function getClassProperties(): array
+    {
+        return [
+            'ip'     => new AA_Property('ip', _m('IP Address'), 'string'),
+            'detail' => new AA_Property('detail', _m('Detail'), 'string'),
+        ];
+    }
+}

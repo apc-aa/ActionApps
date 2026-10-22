@@ -9,6 +9,8 @@ use AA\IO\DB\DB_AA;
 use AA\Upload\UploadPolicy;
 use AA\Util\LogOnce;
 use AA_Log;
+use AA_Logentry;
+use AA_Logentry_Unv;
 
 /** Uploads from the rich-text editor that AA refused in the last 30 days, per slice and reason
  *  (logged once a day by FilesController): an expired login or a probe, a file type, or an
@@ -69,7 +71,8 @@ class CheckUploadRefusals extends AbstractOptimize
             $selector = (string) $row['selector'];
             [$slice_id, $reason] = array_pad(ParamExplode($selector), 2, '');
             $slice_name = (string) ($slice_names[$slice_id] ?? '') ?: $slice_id;
-            [$address, $detail] = array_pad(ParamExplode((string) $row['params']), 2, '');
+            $params     = AA_Logentry::factoryByString((string) $row['params']);
+            [$address, $detail] = ($params instanceof AA_Logentry_Unv) ? [$params->ip, $params->detail] : ['', ''];
             $kind       = in_array($reason, ['dir', 'store'], true) ? 'dir' : $reason;
             $findings[] = new Finding(
                 ($kind === 'dir') ? Finding::ERROR : Finding::WARNING,

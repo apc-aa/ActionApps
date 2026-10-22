@@ -15,12 +15,14 @@ final class CheckUploadRefusalsTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';   // _m(), safe(), ParamImplode()
+        require_once __DIR__ . '/../../../include/logs.php';     // AA_Logentry_Un/Unv - the rows FilesController writes
     }
 
     /** @return array<string, ?string> */
     private function row(string $reason, string $detail = '', int $days = 2): array
     {
-        return ['selector' => ParamImplode([self::SLICE, $reason]), 'days' => (string) $days, 'first' => '1790000000', 'last' => '1790086400', 'params' => ParamImplode(['192.0.2.1', $detail])];
+        return ['selector' => (new \AA_Logentry_Un(['slice' => self::SLICE, 'reason' => $reason]))->serializeToString(true), 'days' => (string) $days, 'first' => '1790000000', 'last' => '1790086400',
+            'params' => (new \AA_Logentry_Unv(['ip' => '2001:db8::1', 'detail' => $detail]))->serializeToString()];
     }
 
     public function test_no_refusals_is_ok(): void
@@ -37,7 +39,7 @@ final class CheckUploadRefusalsTest extends TestCase
         $this->assertStringContainsString('News', $finding->title);
         $this->assertStringContainsString('type', $finding->title);
         $this->assertSame(2, $finding->count);
-        $this->assertSame('192.0.2.1', $finding->evidence[0][_m('Address')]);
+        $this->assertSame('2001:db8::1', $finding->evidence[0][_m('Address')], 'the colons of an IPv6 address come back unescaped');
         $this->assertSame('html', $finding->evidence[0][_m('Detail')]);
     }
 
