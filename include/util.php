@@ -2103,7 +2103,7 @@ function arrval(array|ArrayAccess $arr, string|int $key, mixed $default = null):
  */
 function aa_version($format = 'full'): string
 {
-    $version = '2026.9';
+    $version = '2026.10';
     $release = is_file(__DIR__ . '/release.php') ? include __DIR__ . '/release.php' : [];
     $commit  = substr((string) ($release['commit'] ?? ''), 0, 7);
     // build-dist.sh stores git's ISO 8601 date; drop the "T" and the offset, and keep the wall
