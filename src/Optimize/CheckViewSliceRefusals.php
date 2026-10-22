@@ -8,6 +8,7 @@ use AA\IO\DB\DB_AA;
 use AA\Security\ViewSlices;
 use AA\Util\LogOnce;
 use AA_Log;
+use AA_Views;
 
 /** Slices that views and slice.php left out in the last 30 days, as the page did not know their reading
  *  password: a view called from the URL over such a slice, or parameters that named such a slice, or items
@@ -47,27 +48,46 @@ class CheckViewSliceRefusals extends AbstractOptimize
     {
         $rows   = LogOnce::recent(ViewSlices::EVENT, now() - self::WINDOW_SECONDS, self::GROUPS);
         $slices = [];
+        $views  = [];
         foreach ($rows as $row) {
-            $slice = (string) (ParamExplode((string) $row['selector'])[1] ?? '');
+            [$lister, $slice] = array_pad(ParamExplode((string) $row['selector']), 2, '');
             if (is_long_id($slice)) {
                 $slices[$slice] = $slice;
             }
+            if (ctype_digit($lister)) {
+                $views[$lister] = (int) $lister;
+            }
         }
         $slice_names = $slices ? DB_AA::select(['unpackid' => 'name'], 'SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module`', [['id', array_values($slices), 'l']]) : [];
-        return self::findingsFor($rows, $slice_names);
+        $view_urls   = [];
+        foreach ($views as $vid) {
+            $view = AA_Views::getViewNumeric($vid);
+            if ($view->load()) {            // a deleted view has no settings to open
+                $view_urls[$vid] = $view->jumpUrl();
+            }
+        }
+        return self::findingsFor($rows, $slice_names, $view_urls);
     }
 
     /**
      * @param list<array<string, ?string>> $rows         LogOnce::recent() rows
      * @param array<string, string>        $slice_names  slice id => name
+     * @param array<int|string, string>    $view_urls    view id => url of its settings
      * @return Finding[]
      */
-    public static function findingsFor(array $rows, array $slice_names): array
+    public static function findingsFor(array $rows, array $slice_names, array $view_urls): array
     {
         $findings = [];
         foreach ($rows as $row) {
             $selector = (string) $row['selector'];
             [$lister, $slice_id] = array_pad(ParamExplode($selector), 2, '');
+            $links = [];
+            if (isset($view_urls[$lister])) {
+                $links[_m('View settings')] = $view_urls[$lister];
+            }
+            if (is_long_id($slice_id)) {
+                $links[_m('Slice settings (reading password)')] = get_admin_url('slicedit.php', ['change_id' => $slice_id]);
+            }
             $lister     = ctype_digit($lister) ? _m('View %1', [$lister]) : $lister;   // or slice.php
             $slice_name = ($slice_names[$slice_id] ?? '') ?: $slice_id;
             $findings[] = new Finding(
@@ -83,7 +103,7 @@ class CheckViewSliceRefusals extends AbstractOptimize
                     _m('Last')           => date('Y-m-d', (int) $row['last']),
                 ]],
                 advice: _m('The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters (set[]=slice_id-.../slices-..., the item ids of cmd[]=x-...) or slices[] of slice.php named it, and the page did not know the slice\'s reading password. If your page needs the slice there, call the view from the template of the page ({view...}), where views are trusted; give its password in the URL (slice_pwd=...) only in a server-side include, never in a link, AJAX or jsview.php, where it would end up in the page source and logs. If you do not know the page, the request did not come from your pages and nothing needs to change.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(ViewSlices::EVENT, $selector)],
+                links: $links + [_m('Log rows') => AA_Log::getAdminUrl(ViewSlices::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],
             );

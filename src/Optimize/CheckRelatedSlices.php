@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA_Module;
 use AA_Slice;
@@ -73,7 +74,7 @@ class CheckRelatedSlices extends AbstractOptimize
             }
             $evidence[] = [
                 _m('Slice')          => $name($link['slice'], true),
-                _m('Field')          => safe($link['field']),
+                _m('Field')          => a_href(Adminlink::fieldUrl($link['slice'], $link['field']), safe($link['field'])),
                 _m('Related slice')  => $name($link['target'], true),
                 _m('Its websites')   => implode(', ', array_map(static fn(string $site): string => $name($site, false), $source_sites)),
             ];

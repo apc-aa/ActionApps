@@ -33,6 +33,19 @@ class Adminlink
         return $txt;
     }
 
+    /** url of the settings of a field - where a list of links wants a url, not the HTML of fieldLink();
+     *  '' for ids a log row may hold cut or empty */
+    public static function fieldUrl(string $slice_id, string $field_id): string
+    {
+        return (is_long_id($slice_id) && ($field_id !== '')) ? get_admin_url('se_inputform.php', ['change_id' => $slice_id, 'fid' => $field_id]) : '';
+    }
+
+    /** url of the item in the item editor */
+    public static function itemUrl(string $item_id, string $slice_id): string
+    {
+        return get_admin_url('itemedit.php', ['id' => $item_id, 'change_id' => $slice_id, 'edit' => 1]);
+    }
+
     public static function linkByTable(string $table, string $fld, array $row): string
     {
         return match ($table) {
@@ -109,7 +122,7 @@ class Adminlink
 
         $info   = [];
         $info[] = self::searchLink($item_id);
-        $info[] = a_href(get_admin_url('itemedit.php', ['id' => $item_id, 'change_id' => $slice_id, 'edit' => 1]), "$seo$hdln");
+        $info[] = a_href(self::itemUrl($item_id, $slice_id), "$seo$hdln");
         if (!$no_module_link) {
             $info[] = AA_Slice::getModuleNameSafe($slice_id, true);
         }
@@ -134,12 +147,15 @@ class Adminlink
 
     public static function searchLink(string $searchtext, string $label = "🔍"): string
     {
-        return a_href(
-            get_admin_url(
-                'aafinder.php',
-                ['search' => $searchtext, 'searchinview' => 1, 'searchinslice' => 1, 'searchinfield' => 1, 'searchinspot' => 1, 'searchinobject' => 1, 'searchincodeitems' => 1, 'go_search' => 1],
-            ),
-            $label,
+        return a_href(self::searchUrl($searchtext), $label);
+    }
+
+    /** url of the AA Finder searching every template (views, slices, fields, site spots, objects, code items) */
+    public static function searchUrl(string $searchtext): string
+    {
+        return get_admin_url(
+            'aafinder.php',
+            ['search' => $searchtext, 'searchinview' => 1, 'searchinslice' => 1, 'searchinfield' => 1, 'searchinspot' => 1, 'searchinobject' => 1, 'searchincodeitems' => 1, 'go_search' => 1],
         );
     }
 

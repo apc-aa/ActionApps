@@ -76,7 +76,8 @@ class CheckDiscussionRefusals extends AbstractOptimize
                     _m('Last')      => date('Y-m-d', (int) $row['last']),
                 ]],
                 advice: _m('The slice has no discussion view and none is set in "Show discussion" of its fulltext design, so a comment would not be shown anywhere. If the site shows the comments through a discussion view of another slice, choose that view in "Show discussion"; otherwise remove the comment form from the slice templates.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $slice_id)],
+                // "Show discussion" is a setting of the fulltext design
+                links: (is_long_id($slice_id) ? [_m('Fulltext design') => get_admin_url('se_fulltext.php', ['change_id' => $slice_id])] : []) + [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $slice_id)],
                 key: $slice_id,
                 last: (int) $row['last'],
             );

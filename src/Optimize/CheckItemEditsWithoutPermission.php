@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
 use AA_Log;
@@ -93,7 +94,7 @@ class CheckItemEditsWithoutPermission extends AbstractOptimize
                     _m('Last')      => $last,
                 ]],
                 advice: _m('A future version will let only users with the permission to edit the item change it. If this is a form of the site, note it - it will need a login or a signed edit link.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
+                links: array_filter([_m('Field settings') => Adminlink::fieldUrl($slice_id, $field_id), _m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)]),
                 key: $selector,
                 last: (int) $row['last'],
             );

@@ -19,7 +19,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
 
     public function test_findingsFor_noRefusals_isOk(): void
     {
-        $findings = CheckViewSliceRefusals::findingsFor([], []);
+        $findings = CheckViewSliceRefusals::findingsFor([], [], []);
 
         $this->assertCount(1, $findings);
         $this->assertSame(Finding::OK, $findings[0]->severity);
@@ -29,7 +29,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '2', 'first' => '1790000000', 'last' => '1790086400', 'params' => 'example.org/news'];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members']);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members'], []);
 
         $this->assertSame(Finding::WARNING, $finding->severity);
         $this->assertStringContainsString('View 42', $finding->title);
@@ -44,16 +44,28 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], []);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], []);
 
         $this->assertStringStartsWith('The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters', $finding->advice);
+    }
+
+    public function test_findingsFor_refusedSlice_linksTheViewAndTheSliceSettings(): void
+    {
+        $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
+
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], [42 => '/aa/admin/se_view.php?view_id=42']);
+
+        $this->assertSame([
+            '/aa/admin/se_view.php?view_id=42',
+            AA_INSTAL_PATH . 'admin/slicedit.php?change_id=' . self::SLICE,
+        ], array_slice(array_values($finding->links), 0, 2));
     }
 
     public function test_findingsFor_sliceScript_isNamedAsItIs(): void
     {
         $row = ['selector' => ParamImplode(['slice.php', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members']);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members'], []);
 
         $this->assertStringStartsWith('slice.php ', $finding->title);
     }
@@ -62,7 +74,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], []);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], []);
 
         $this->assertStringContainsString(self::SLICE, $finding->title);
     }

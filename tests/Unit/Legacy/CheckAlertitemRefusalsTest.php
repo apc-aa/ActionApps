@@ -67,6 +67,7 @@ namespace Tests\Unit\Legacy {
                 [self::logRow('sQjwa', self::SLICE, 'editor1', days: 4), self::logRow('abcde', self::SLICE, 'editor2')],
                 ['sQjwa' => 'Newsletter'],
                 [self::SLICE => 'News'],
+                [],
             );
 
             $this->assertSame([Finding::WARNING, Finding::WARNING], array_map(static fn(Finding $f) => $f->severity, $findings));
@@ -84,7 +85,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_logged_values_are_escaped_in_evidence(): void
         {
-            [$finding] = CheckAlertitemRefusals::findingsFor([self::logRow('<b>', '<i>', '<u>', '<s>')], [], []);
+            [$finding] = CheckAlertitemRefusals::findingsFor([self::logRow('<b>', '<i>', '<u>', '<s>')], [], [], []);
 
             foreach (['Collection' => '&lt;b&gt;', 'Slice' => '&lt;i&gt;', 'User' => '&lt;u&gt;', 'Item' => '&lt;s&gt;'] as $col => $expected) {
                 $this->assertSame($expected, $finding->evidence[0][$col], $col);
@@ -93,14 +94,14 @@ namespace Tests\Unit\Legacy {
 
         public function test_no_rows_is_ok(): void
         {
-            $this->assertSame([Finding::OK], array_map(static fn(Finding $f) => $f->severity, CheckAlertitemRefusals::findingsFor([], [], [])));
+            $this->assertSame([Finding::OK], array_map(static fn(Finding $f) => $f->severity, CheckAlertitemRefusals::findingsFor([], [], [], [])));
         }
 
         public function test_findings_query_the_log_and_the_names(): void
         {
             RecordingDb::$answer = static fn(string $sql) => match (true) {
                 str_contains($sql, 'FROM `log`')               => [self::logRow('sQjwa', self::SLICE, 'editor1')],
-                str_contains($sql, 'FROM `alerts_collection`') => [['id' => 'sQjwa', 'name' => 'Newsletter']],
+                str_contains($sql, 'FROM `alerts_collection`') => [['id' => 'sQjwa', 'name' => 'Newsletter', 'module_id' => str_repeat('c', 32)]],
                 default                                        => [['unpackid' => self::SLICE, 'name' => 'News']],
             };
 
@@ -108,9 +109,10 @@ namespace Tests\Unit\Legacy {
 
             $this->assertCount(3, RecordingDb::$log);
             $this->assertStringContainsString("FROM `log` WHERE type = '" . CheckAlertitemRefusals::EVENT . "' AND time >= ", RecordingDb::$log[0]);
-            $this->assertSame("SELECT c.id, m.name FROM `alerts_collection` AS c JOIN `module` AS m ON m.id = c.module_id WHERE c.id = 'sQjwa'", RecordingDb::$log[1]);
+            $this->assertSame("SELECT c.id, m.name, LOWER(HEX(c.module_id)) AS module_id FROM `alerts_collection` AS c JOIN `module` AS m ON m.id = c.module_id WHERE c.id = 'sQjwa'", RecordingDb::$log[1]);
             $this->assertSame('SELECT LOWER(HEX(`id`)) AS unpackid, `name` FROM `module` WHERE id = 0x' . self::SLICE, RecordingDb::$log[2]);
             $this->assertSame('Alert send of an item of slice News through collection Newsletter was refused', $findings[0]->title);
+            $this->assertSame(AA_INSTAL_PATH . 'modules/alerts/acf.php?module_id=' . str_repeat('c', 32), $findings[0]->links[_m('Selections of the collection')]);
         }
     }
 }

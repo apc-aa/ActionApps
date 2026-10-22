@@ -46,7 +46,7 @@ final class CheckRelatedSlicesTest extends TestCase
         $this->assertSame(Finding::INFO, $finding->severity);
         $this->assertSame([
             _m('Slice')         => 'link:' . self::ARTICLES,
-            _m('Field')         => 'relation........',
+            _m('Field')         => '<a href="' . safe(AA_INSTAL_PATH . 'admin/se_inputform.php?change_id=' . self::ARTICLES . '&fid=relation........') . '" >relation........</a>',
             _m('Related slice') => 'link:' . self::FOREIGN,
             _m('Its websites')  => self::SITE,
         ], $finding->evidence[0]);

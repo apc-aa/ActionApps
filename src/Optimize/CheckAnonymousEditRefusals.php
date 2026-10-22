@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Optimize;
 
+use AA\Util\Adminlink;
 use AA\IO\DB\DB_AA;
 use AA\Util\LogOnce;
 use AA_Log;
@@ -90,7 +91,7 @@ class CheckAnonymousEditRefusals extends AbstractOptimize
                     _m('Last')      => $last,
                 ]],
                 advice: _m('The field was left as stored, the rest of the item was saved. Either a form of the site sends this field without a login - then the site must let the reader log in before the form is sent - or the request was forged to take over a reader\'s account or the item.'),
-                links: [_m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)],
+                links: array_filter([_m('Field settings') => Adminlink::fieldUrl($slice_id, $field_id), _m('Log rows') => AA_Log::getAdminUrl(self::EVENT, $selector)]),
                 key: $selector,
                 last: (int) $row['last'],
             );

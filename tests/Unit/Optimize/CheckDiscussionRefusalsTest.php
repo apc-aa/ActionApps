@@ -34,6 +34,7 @@ final class CheckDiscussionRefusalsTest extends TestCase
         $this->assertStringContainsString('News', $finding->title);
         $this->assertSame(3, $finding->count);
         $this->assertSame(self::SLICE, $finding->key);
+        $this->assertSame(AA_INSTAL_PATH . 'admin/se_fulltext.php?change_id=' . self::SLICE, $finding->links[_m('Fulltext design')], '"Show discussion" is set there');
     }
 
     public function test_an_unknown_slice_is_named_by_its_id(): void
