@@ -9,10 +9,10 @@ use AA\Util\Adminlink;
  */
 class DbInconsistencyConstants extends AbstractOptimize
 {
-    /** shown on State Check - see AbstractOptimize::CHECK_* */
+    /** shown on State Check - see AbstractOptimize::CHECK_*; LIKE scans over all code, so not basic */
     public static function types(): array
     {
-        return [self::CHECK_BASIC];
+        return [self::CHECK_EXTENDED];
     }
 
     /** unused constant groups are clutter, not a malfunction */
@@ -43,6 +43,8 @@ class DbInconsistencyConstants extends AbstractOptimize
         $not_used = [];
         $all_groups = DB_AA::select('group_id', "SELECT DISTINCT group_id FROM `constant`");
         foreach ($all_groups as $grp) {
+            // the usual places first: they settle most groups in a few probes (1 s on aadev, 20 s without).
+            // Repair deletes what this misses, so then any mention of the name in any code counts as a use.
             if ($grp
                 and ($grp !== 'lt_groupNames')
                 and !DB_AA::test('field', [['input_show_func',":$grp",'CONTAIN']])
@@ -55,6 +57,7 @@ class DbInconsistencyConstants extends AbstractOptimize
                 and !DB_AA::test('view', [['`before`',":$grp",'CONTAIN']])
                 and !DB_AA::test('view', [['after',":$grp",'CONTAIN']])
                 and !DB_AA::test('view', [['group_title',":$grp",'CONTAIN']])
+                and !CodePoints::contains((string) $grp)
             ) {
                 $not_used[] = $grp;
             }
