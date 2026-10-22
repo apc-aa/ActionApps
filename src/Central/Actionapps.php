@@ -229,6 +229,9 @@ class Actionapps
         $response = $this->send(new AA_Request('Get_Jwt'), ['username' => $username, 'password' => $password], '');
         $jwt      = $response->getResponse();
         $this->last_error = match (true) {
+            // a failed password check leaves the remote request anonymous, so it answers the generic 101
+            // "(nobody)" in the remote's text = the password check failed, a login name = not a superadmin there
+            $response->getError() === ResponderPolicy::ERR_NO_PERMISSION => _m('The remote AA refused the login: wrong username or password, an account with two-factor login (Central cannot send the code yet), or the user is not a superadmin there') . ' (' . self::responseText($response) . ')',
             $response->isError()                                 => self::responseText($response),
             !is_string($jwt) || !RemoteSource::isToken($jwt)     => _m('The remote AA gave no login token - update it'),
             !RemoteSource::livesADay(RemoteSource::claims($jwt)) => _m('The remote AA gave a token for longer than a day - update the remote AA'),

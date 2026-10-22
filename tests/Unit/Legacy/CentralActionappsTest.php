@@ -458,6 +458,15 @@ final class CentralActionappsTest extends TestCase
         $this->assertSame('13 Needs a login by password', $aa->getLastError());
     }
 
+    public function test_requestJwt_refused_login_names_its_possible_causes(): void
+    {
+        // a failed password check leaves the remote request anonymous: it answers "You (nobody) don't have permissions"
+        $aa = self::stubbedAa(new AA_Response("You (nobody) don't have permissions to run Get_Jwt", 101));
+
+        $this->assertSame('', $aa->requestJwt('central', 'wrong'));
+        $this->assertStringContainsString('wrong username or password', $aa->getLastError());
+    }
+
     public function test_requestJwt_non_token_answer_is_refused(): void
     {
         $aa = self::stubbedAa(new AA_Response(['not', 'a token']));
