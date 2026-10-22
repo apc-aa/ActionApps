@@ -82,7 +82,9 @@ function alertsAvailableSelections(): array
 $available = alertsAvailableSelections();
 // descriptions for every filter (so already-chosen selections show a label even
 // if the user no longer has fulltext access to the originating slice)
-$all_desc  = DB_AA::select(['id' => 'description'], "SELECT id, description FROM alerts_filter");
+// a selection whose filter or view was deleted makes the sweep send nothing from it, silently
+$filters   = DB_AA::select(['id' => []], "SELECT alerts_filter.id, alerts_filter.description, view.id IS NOT NULL AS live FROM alerts_filter LEFT JOIN view ON view.id = alerts_filter.vid");
+$all_desc  = array_map(static fn(array $f) => $f['description'], $filters);
 
 // ---- process actions -------------------------------------------------------
 if ($do_delete && is_array($del)) {
@@ -116,6 +118,11 @@ echo '<table><tr class="aa-tbl-header"><th>' . _m("order") . '</th><th>' . _m("s
 if ($current) {
     foreach ($current as $fid => $order) {
         $label = isset($all_desc[$fid]) ? safe($all_desc[$fid]) : '';
+        if (empty($filters[$fid]['live'])) {
+            $label .= '<div class="aa-err">' . safe(isset($all_desc[$fid])
+                ? _m('Its view was deleted - readers get nothing from this selection. Remove it and add an existing one.')
+                : _m('This selection was deleted - readers get nothing from it. Remove it and add an existing one.')) . '</div>';
+        }
         echo '<tr><td><input type="number" name="idx[' . (int) $fid . ']" value="' . (int) $order . '" size="3"></td>'
             . '<td>f' . (int) $fid . ' ' . $label . '</td>'
             . '<td><input type="checkbox" name="del[' . (int) $fid . ']" value="1"></td></tr>';
