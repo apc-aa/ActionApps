@@ -202,8 +202,15 @@ if ($repair !== '') {
     } else {
         MoreTimeLimit();
         $optimizer     = new $classes[$repair]();
+        $error         = '';
+        try {
+            $repaired = $optimizer->repair();
+        } catch (Throwable $e) {
+            $repaired = false;
+            $error    = ' ' . safe($e->getMessage());
+        }
         // both texts spelled out - AA\Lang\MsgExtractor skips an _m() whose first argument is not a literal
-        $repair_report = ($optimizer->repair() ? _m('Repair of %1 done.', [$repair]) : _m('Repair of %1 failed.', [$repair])) . $optimizer->report();
+        $repair_report = ($repaired ? _m('Repair of %1 done.', [$repair]) : _m('Repair of %1 failed.', [$repair])) . $error . $optimizer->report();
     }
 }
 
@@ -242,9 +249,14 @@ if ($recheck !== '' && $posted && isset(($classes = CheckRunner::classes(STATECH
         $ran[]    = $recheck;
     }
     $still = StateCheckModel::stillThere($findings, $recheck, $recheck_key);
-    $toast = $still
-        ? [_m('Checked again at %1: still there. %2', [date('H:i'), safe($still->title)]), 'err']   // AA_Message sets innerHTML
-        : [_m('Checked again at %1: the problem is gone.', [date('H:i')]), 'ok'];
+    $toast = match (true) {
+        !$still => [_m('Checked again at %1: the problem is gone.', [date('H:i')]), 'ok'],
+        // counted from what already happened (log rows, the last run), so a fix cannot show at once
+        $still->last > 0 => [_m('Checked again at %1: still listed, last seen %2. %3 This finding is counted from what already happened (log rows, the last run), so a fix does not show here at once - it goes when those age out or the next run passes. After the fix mark it resolved; it comes back if it happens again.', [date('H:i'), date('Y-m-d H:i', $still->last), safe($still->title)]), 'err'],
+        default => [_m('Checked again at %1: still there. %2', [date('H:i'), safe($still->title)]), 'err'],   // AA_Message sets innerHTML
+    };
+} elseif (($recheck !== '' || $run_extended || $run_slow) && !$posted) {
+    $toast = [_m('The form has expired; reload the page and try again.'), 'err'];
 }
 
 $model = StateCheckModel::load($findings, $ran, now());
