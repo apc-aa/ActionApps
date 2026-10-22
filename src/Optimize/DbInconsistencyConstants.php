@@ -92,8 +92,8 @@ class DbInconsistencyConstants extends AbstractOptimize
 
         foreach ($non_ascii as $grp) {
             $this->message(['problem' => _m('Non ASCII chars in group_id'),
-                'group'   => Adminlink::searchLink($grp, $grp),
-                'values'  => implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]]))]);
+                'group'   => Adminlink::searchLink($grp, safe($grp)),
+                'values'  => safe(implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]])))]);
             $ret = false;
         }
         $this->message(_m('Found %1 Non ASCII', [count($non_ascii)]));
@@ -102,8 +102,8 @@ class DbInconsistencyConstants extends AbstractOptimize
 
         foreach ($not_used as $grp) {
             $this->message(['problem' => _m('Not used constant group'),
-                'group'   => Adminlink::searchLink($grp, $grp),
-                'values'  => implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]]))]);
+                'group'   => Adminlink::searchLink($grp, safe($grp)),
+                'values'  => safe(implode(', ', DB_AA::select('c', "SELECT CONCAT(`name`,'->',`value`) as c FROM `constant`", [['group_id', $grp]])))]);
             $ret = false;
         }
         $this->message(_m('Found %1 unused constant groups', [count($not_used)]));

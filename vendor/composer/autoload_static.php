@@ -830,6 +830,8 @@ class ComposerStaticInit17cbdb6b6f147d0a4bf02d28862f205a
         'AA_Logentry_Sc' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_Scs' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_Sys' => __DIR__ . '/../..' . '/include/logs.php',
+        'AA_Logentry_Un' => __DIR__ . '/../..' . '/include/logs.php',
+        'AA_Logentry_Unv' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_W' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_X' => __DIR__ . '/../..' . '/include/logs.php',
         'AA_Logentry_Xrun' => __DIR__ . '/../..' . '/include/logs.php',

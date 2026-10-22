@@ -687,6 +687,8 @@ return array(
     'AA_Logentry_Sc' => $baseDir . '/include/logs.php',
     'AA_Logentry_Scs' => $baseDir . '/include/logs.php',
     'AA_Logentry_Sys' => $baseDir . '/include/logs.php',
+    'AA_Logentry_Un' => $baseDir . '/include/logs.php',
+    'AA_Logentry_Unv' => $baseDir . '/include/logs.php',
     'AA_Logentry_W' => $baseDir . '/include/logs.php',
     'AA_Logentry_X' => $baseDir . '/include/logs.php',
     'AA_Logentry_Xrun' => $baseDir . '/include/logs.php',
