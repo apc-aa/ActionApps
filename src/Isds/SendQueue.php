@@ -47,6 +47,9 @@ class SendQueue
     private const MEMORY_PER_BYTE = 2;
     private const MEMORY_SLACK    = 16 * 1024 * 1024;
 
+    /** seconds a letter may take to be made from now: PdfBody stopped the slowest one measured at 5.1 s */
+    private const LETTER_SECONDS = 60;
+
     /** a test message still sending after its request could have ended died on its way - it may have gone */
     private const TEST_DEAD_AFTER = Client::CREATE_TIMEOUT + 60;
 
@@ -270,8 +273,8 @@ class SendQueue
      * The checksum of what the recipient sees: the subject, "to hands" and each file - its name, type
      * and content - in the order of the message. The main file counts by what it is made of, as the
      * same draft need not give the same bytes; the letterhead is in it. Whatever changes the checksum
-     * of the same letter - another way of counting it, an update of libgd that draws the images of the
-     * letter - lets it be tested once more.
+     * of the same letter - another way of counting it, another dompdf or look of the PDF (PdfBody::source()),
+     * an update of libgd that draws the images of the letter - lets it be tested once more.
      * @param string $mainSource Letter::$source of the main file
      * @return string 32 hexadecimal digits
      */
@@ -433,14 +436,26 @@ class SendQueue
         }
     }
 
-    /** the letter of the campaign item; refused CONTENT with what to fix */
+    /** the letter of the campaign item; refused CONTENT with what to fix, or MEMORY for its PDF */
     protected function letter(Setup $setup, ItemContent $item): Letter|SendStart
     {
+        $this->timeForLetter();
         try {
-            return Letter::of($item, $setup->letterhead, $this->uploads($setup->campaignSlice));
+            return Letter::of($item, $setup->letterhead, $this->uploads($setup->campaignSlice), fn(int $bytes): string => $this->memoryFor($bytes, 1));
+        } catch (\OverflowException $e) {
+            return SendStart::refused(SendStart::MEMORY, $e->getMessage());
         } catch (\InvalidArgumentException|\RuntimeException $e) {
             // what to fix in the campaign: it reads the uploads, never the database
             return SendStart::refused(SendStart::CONTENT, $e->getMessage());
+        }
+    }
+
+    /** dompdf takes up to PdfBody::MAX_SECONDS and a moment more: the time of the request is raised, never cut */
+    private function timeForLetter(): void
+    {
+        $limit = $this->timeLimit();
+        if ($limit > 0) {
+            $this->setTimeLimit(max(self::LETTER_SECONDS, $limit));
         }
     }
 
@@ -579,6 +594,17 @@ class SendQueue
     protected function keepRunning(int $seconds): void
     {
         ignore_user_abort(true);
+        set_time_limit($seconds);
+    }
+
+    /** max_execution_time, 0 = none */
+    protected function timeLimit(): int
+    {
+        return (int) ini_get('max_execution_time');
+    }
+
+    protected function setTimeLimit(int $seconds): void
+    {
         set_time_limit($seconds);
     }
 

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds\Body;
 
 use AA\Isds\Body\HtmlBody;
-use AA\Isds\File;
 use AA\Isds\Message;
 use AA\Upload\UploadDir;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -75,11 +74,12 @@ final class HtmlBodyTest extends TestCase
         return substr($document, $start, strrpos($document, "\n</body>") - $start);
     }
 
-    public function test_render_mainFileOfTheMessage(): void
+    // the look of the PDF after the letter's own
+    public function test_document_cssAppended(): void
     {
-        $file = (new HtmlBody())->render('Pozvánka na setkání', '<p>Vážený pane starosto,</p>');
+        $document = (new HtmlBody())->document('Pozvánka', '<p>Vážení,</p>', css: '@page{size:A4}');
 
-        self::assertSame(['Dopis.html', 'text/html', File::MAIN], [$file->name, $file->mimeType, $file->metaType]);
+        self::assertMatchesRegularExpression('~<style>body\{[^<]*img\{max-width:100%;height:auto\}@page\{size:A4\}</style>~', $document);
     }
 
     public function test_document_wholeUtf8Document(): void
@@ -665,6 +665,72 @@ final class HtmlBodyTest extends TestCase
         ];
     }
 
+    #[DataProvider('lengths')]
+    public function test_document_lengthsOfAReadableSize(string $style, string $expected): void
+    {
+        self::assertSame($expected, self::body("<p style=\"$style\">a</p>"));
+    }
+
+    // what Word and TinyMCE write stays; lines of no height or a letter wide would only make dompdf work for long
+    public static function lengths(): array
+    {
+        $kept = ['font-size: 11pt', 'font-size: 10.5pt', 'font-size: 0.8em', 'font-size: 80%', 'line-height: 115%', 'line-height: 1.15',
+            'line-height: normal', 'line-height: 18px', 'width: 50%', 'width: 300px', 'height: 2em', 'margin-left: 0.1px'];
+        $dropped = ['font-size: 0', 'font-size: 12345px', 'font-size: -1px', 'font-size: x-small', 'line-height: 0', 'line-height: 0.5',
+            'line-height: 50%', 'width: 1px', 'width: 0.001px', 'width: 1e3px', 'height: 10px'];
+        // an editor's small print stays small
+        $raised = ['font-size: 5pt' => 'font-size: 6pt', 'font-size: 0.01px' => 'font-size: 8px', 'font-size: 7px' => 'font-size: 8px',
+            'font-size: 0.3em' => 'font-size: 6pt', 'font-size: 30%' => 'font-size: 6pt'];
+        return array_merge(
+            array_combine($kept, array_map(static fn(string $style): array => [$style, "<p style=\"$style\">a</p>"], $kept)),
+            array_combine($dropped, array_map(static fn(string $style): array => [$style, '<p>a</p>'], $dropped)),
+            array_combine(array_keys($raised), array_map(static fn(string $style, string $min): array => [$style, "<p style=\"$min\">a</p>"], array_keys($raised), $raised)),
+        );
+    }
+
+    #[DataProvider('nestedFonts')]
+    public function test_document_smallestFontRaised(string $html, string $expected): void
+    {
+        self::assertSame($expected, self::body($html));
+    }
+
+    // each font-size above its minimum, together below any size a reader could read
+    public static function nestedFonts(): array
+    {
+        return [
+            'six <small>'     => [str_repeat('<small>', 6) . 'a' . str_repeat('</small>', 6), str_repeat('<small>', 5) . '<small style="font-size: 6pt">a' . str_repeat('</small>', 6)],
+            'five <small>'    => [str_repeat('<small>', 5) . 'a' . str_repeat('</small>', 5), str_repeat('<small>', 5) . 'a' . str_repeat('</small>', 5)],
+            'half of half'    => ['<p style="font-size: 50%"><span style="font-size: 50%">a</span></p>', '<p style="font-size: 6pt"><span style="font-size: 6pt">a</span></p>'],
+            'em of a heading' => ['<h6 style="color: red; font-size: 0.5em">a</h6>', '<h6 style="color: red; font-size: 6pt">a</h6>'],
+            'larger again'    => ['<p style="font-size: 50%"><span style="font-size: 200%">a</span></p>', '<p style="font-size: 6pt"><span style="font-size: 200%">a</span></p>'],
+        ];
+    }
+
+    /** @param string $img an <img> with its width, the image 400 x 1600 pixels */
+    #[DataProvider('imageWidths')]
+    public function test_document_imageWidthInProportions(string $img, string $expected): void
+    {
+        self::needsGd();
+        $src = 'data:image/png;base64,' . base64_encode(self::image(400, 1600));
+
+        self::assertStringContainsString($expected, self::body('<p>' . str_replace('SRC', $src, $img) . '</p>'));
+    }
+
+    // dompdf makes it no higher than a page by its height alone: a width that would make it higher is lowered
+    public static function imageWidths(): array
+    {
+        return [
+            'width'        => ['<img width="2000" src="SRC">', 'width="233"'],
+            'width in %'   => ['<img width="100%" src="SRC">', 'width="233"'],
+            'narrow width' => ['<img width="100" src="SRC">', 'width="100"'],
+            'narrow %'     => ['<img width="10%" src="SRC">', 'width="10%"'],
+            'style'        => ['<img style="width: 2000px" src="SRC">', 'style="width: 175pt"'],
+            'style in %'   => ['<img style="width: 100%" src="SRC">', 'style="width: 175pt"'],
+            'style in em'  => ['<img style="color: red; width: 40em" src="SRC">', 'style="color: red; width: 175pt"'],
+            'narrow style' => ['<img style="width: 100pt" src="SRC">', 'style="width: 100pt"'],
+        ];
+    }
+
     #[DataProvider('displays')]
     public function test_document_displayAllowList(string $display, string $expected): void
     {
@@ -947,13 +1013,13 @@ final class HtmlBodyTest extends TestCase
         self::assertSame([], $letter->omitted());
     }
 
-    // the letter passes the check ISDS makes of every HTML file, whatever it was written from
-    public function test_render_passesTheHtmlCheck(): void
+    // nothing active, whatever the letter was written from
+    public function test_document_noActiveElements(): void
     {
-        $file = (new HtmlBody())->render('<script>', '<p>&lt;script&gt;</p><script>alert(1)</script><iframe></iframe><object></object>');
+        $document = (new HtmlBody())->document('<script>', '<p>&lt;script&gt;</p><script>alert(1)</script><iframe></iframe><object></object>');
 
         foreach (['<script', '<iframe', '<object'] as $needle) {
-            self::assertStringNotContainsStringIgnoringCase($needle, $file->content);
+            self::assertStringNotContainsStringIgnoringCase($needle, $document);
         }
     }
 }

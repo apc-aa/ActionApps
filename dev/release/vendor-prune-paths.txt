@@ -10,3 +10,10 @@ honzito/qr-platba/logo.png
 # src/Util/Difftext.php renders in English only
 jfcherng/php-diff/src/languages/[!e]*.json
 mobiledetect/mobiledetectlib/Mobile_Detect.json
+# Isds\Body\PdfBody writes in DejaVu Sans and Sans Mono only, never PDF/A: the serif faces, the metrics of
+# the PDF core fonts, the colour profile of PDF/A and the code-page maps of php-font-lib stay unread
+dompdf/dompdf/lib/fonts/DejaVuSerif*
+dompdf/dompdf/lib/fonts/*.afm
+dompdf/dompdf/lib/fonts/mustRead.html
+dompdf/dompdf/lib/res/sRGB2014.icc*
+dompdf/php-font-lib/maps

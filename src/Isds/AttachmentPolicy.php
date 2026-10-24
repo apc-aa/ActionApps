@@ -101,11 +101,11 @@ final readonly class AttachmentPolicy
      * checked here without ext-zip.
      */
     private const ARCHIVES = ['zip', 'asice', 'asics', 'sce', 'scs'];
-    /** the letter is the only HTML of a message: HtmlBody cleans it, nothing would clean an attached one */
+    /** a message carries no HTML - the letter goes as a PDF -, and nothing would clean an attached one */
     private const HTML = ['html', 'htm'];
     /** ISDS names these only application/octet-stream: any content but ACTIVE */
     private const ANY_CONTENT = ['dbf', 'ddd', 'dgn', 'prj', 'qix', 'sbn', 'sbx', 'shp', 'shx'];
-    /** pages a browser runs the scripts of; the letter is the only HTML a message may have */
+    /** pages a browser runs the scripts of; a message carries no HTML */
     private const ACTIVE = ['text/html', 'image/svg+xml'];
     /** plain text is any text - a list, a source file, a saved mail, JSON - except HTML */
     private const ANY_TEXT = ['txt'];

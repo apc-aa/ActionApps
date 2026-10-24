@@ -9,6 +9,8 @@ use AA\Http\Response;
 use AA\Http\TransportException as HttpTransportException;
 use AA\IO\DB\DB_AA;
 use AA\Isds\Account;
+use AA\Isds\Body\HtmlBody;
+use AA\Isds\Body\PdfBody;
 use AA\Isds\Client;
 use AA\Isds\Message;
 use AA\Isds\Outcome;
@@ -21,6 +23,7 @@ use AA\Isds\Setup;
 use AA\Isds\Snapshot;
 use AA\Isds\TestResult;
 use AA\Optimize\Finding;
+use AA\Upload\UploadDir;
 use AA_Credentials;
 use AA_Items;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -33,6 +36,7 @@ use Tests\Unit\Isds\Fixtures\FakeGate;
 use Tests\Unit\Isds\Fixtures\FakePerms;
 use Tests\Unit\Isds\Fixtures\FakeRecipients;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
+use Tests\Unit\Isds\Fixtures\PdfText;
 use Tests\Unit\Isds\Fixtures\ScriptedIsds;
 use Tests\Unit\Isds\Fixtures\SendRunCase;
 use Tests\Unit\Isds\Fixtures\Sending;
@@ -45,6 +49,7 @@ require_once __DIR__ . '/fixtures/FakeSliceRules.php';
 require_once __DIR__ . '/fixtures/FakeRecipients.php';
 require_once __DIR__ . '/fixtures/FakeGate.php';
 require_once __DIR__ . '/fixtures/TestSendQueue.php';
+require_once __DIR__ . '/fixtures/PdfText.php';
 require_once __DIR__ . '/../Optimize/fixtures/IsdsRunChecks.php';
 require_once __DIR__ . '/../fixtures/Certificates.php';
 
@@ -214,7 +219,7 @@ final class SendQueueTest extends TestCase
 
         self::assertSame(['Pozvánka', 'starosta'], [$letter->annotation, $letter->toHands]);
         self::assertSame(self::PDF, $letter->files[1]->content);
-        self::assertStringContainsString('Národní síť<br>', $letter->files[0]->content, 'the letterhead of the page');
+        self::assertStringStartsWith("Národní síť\nPraha\n", PdfText::of($letter->files[0]->content), 'the letterhead of the page');
     }
 
     // a campaign id in capitals is the same campaign
@@ -1216,14 +1221,67 @@ final class SendQueueTest extends TestCase
 
         $this->test();
 
-        $sent = base64_decode((string) preg_replace('~.*dmFileDescr="Dopis.html"[^>]*>\s*<\w+:dmEncodedContent>([^<]*)<.*~s', '$1', $isds->calls[1]['body']));
-        $made = substr($sent, 0, -strlen($this->sending->mainTail));
+        $sent = self::sentLetter($isds->calls[1]['body']);
         $rows = $this->sending->testLogged[0][3];
-        self::assertSame('1:' . strlen($sent) . ':' . hash('xxh128', $sent) . ':' . hash('xxh128', $made) . ':Dopis.html', $rows[0]);
+        self::assertSame('1:' . strlen($sent) . ':' . hash('xxh128', $sent) . ':' . PdfBody::source($this->document()) . ':Dopis.pdf', $rows[0]);
         self::assertSame('2:' . strlen(self::PDF) . ':' . hash('xxh128', self::PDF) . ':pozvanka.pdf', $rows[1]);
         self::assertStringStartsWith('3:' . strlen(self::PDF) . ':' . hash('xxh128', self::PDF) . ':příloha-', $rows[2]);
         self::assertLessThanOrEqual(255, strlen($rows[2]), 'a long name cut');
         self::assertTrue(mb_check_encoding($rows[2], 'UTF-8'));
+    }
+
+    /** the letter of the campaign item as Letter::of() makes its document, with the letterhead of the page */
+    private function document(): string
+    {
+        return (new HtmlBody(new UploadDir(TestSendQueue::UPLOAD_URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, "Národní síť\nPraha", PdfBody::CSS);
+    }
+
+    /** the main file of the message in the body of CreateMessage */
+    private static function sentLetter(string $body): string
+    {
+        return base64_decode((string) preg_replace('~.*dmFileDescr="Dopis.pdf"[^>]*>\s*<\w+:dmEncodedContent>([^<]*)<.*~s', '$1', $body));
+    }
+
+    // a letter takes seconds to be made: the time of the request is raised for it, never cut
+    #[DataProvider('timeLimits')]
+    public function test_test_timeLimitOnlyRaised(int $limit, array $set): void
+    {
+        self::testIsds();
+        $this->sending->timeLimit = $limit;
+
+        self::assertSame(TestResult::STATUS_SENT, $this->test()->status);
+
+        self::assertSame($set, $this->sending->timeLimits);
+    }
+
+    public static function timeLimits(): array
+    {
+        return [
+            'none'   => [0, []],
+            'short'  => [30, [60]],
+            'longer' => [300, [300]],
+        ];
+    }
+
+    // what dompdf takes is asked for before it starts: refused only when memory_limit stays below it
+    public function test_test_memoryRefusedOnlyWhenCannotRaise(): void
+    {
+        self::testIsds();
+        $need = PdfBody::memory($this->document());
+        TestSendRun::$memoryLimit = 1024;
+
+        $refused = $this->test();
+        TestSendRun::$mayRaise = true;
+        $raised                = $this->test();
+        TestSendRun::$mayRaise    = false;
+        TestSendRun::$memoryLimit = 8 * 1024 * 1024 * 1024;
+        $enough                   = $this->test(box: self::TEST_BOX2, setup: self::testPage([self::TEST_BOX, self::TEST_BOX2]));
+
+        self::assertSame([TestResult::STATUS_REFUSED, SendStart::MEMORY], [$refused->status, $refused->code]);
+        self::assertGreaterThan($need, (int) substr($refused->detail, 3) * 1024 * 1024, 'the MB the PDF needs');
+        self::assertSame(TestResult::STATUS_SENT, $raised->status);
+        self::assertGreaterThan($need, $this->sending->raised[0] ?? 0, 'raised for the PDF first');
+        self::assertSame(TestResult::STATUS_SENT, $enough->status);
     }
 
     public function test_test_campaignStateUnchanged(): void
@@ -1276,9 +1334,7 @@ final class SendQueueTest extends TestCase
         self::assertSame(['starosta'], $isds->sent('dmToHands'));
         self::assertStringContainsString('dmFileDescr="pozvanka.pdf"', $body);
         self::assertStringContainsString('<isds:dmEncodedContent>' . base64_encode(self::PDF) . '<', $body);
-        $letter = base64_decode((string) preg_replace('~.*dmFileDescr="Dopis.html"[^>]*>\s*<\w+:dmEncodedContent>([^<]*)<.*~s', '$1', $body));
-        self::assertStringContainsString('Národní síť<br>', $letter, 'the letterhead of the page');
-        self::assertStringContainsString('<b>zveme</b>', $letter);
+        self::assertSame("Národní síť\nPraha\nVážení, \nzveme\n Vás\n", PdfText::of(self::sentLetter($body)), 'the letterhead of the page and the draft');
     }
 
     public function test_test_insideATransaction_throws(): void

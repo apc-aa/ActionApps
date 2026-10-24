@@ -55,6 +55,12 @@ final class TestSendQueue extends SendQueue
     public string $mainTail = '';
     /** memory_get_usage(true) when memory_limit was asked for - right after the need was counted */
     public int $usageAtCheck = 0;
+    /** @var list<int> each memory_limit asked for, in bytes */
+    public array $raised = [];
+    /** max_execution_time, 0 = none */
+    public int $timeLimit = 0;
+    /** @var list<int> each set_time_limit() */
+    public array $timeLimits = [];
 
     public function __construct(public FakeSliceRules $rules, public Recipients $resolver, private string $uploadDir) {}
 
@@ -143,8 +149,19 @@ final class TestSendQueue extends SendQueue
         return TestSendRun::$memoryLimit;
     }
 
+    protected function timeLimit(): int
+    {
+        return $this->timeLimit;
+    }
+
+    protected function setTimeLimit(int $seconds): void
+    {
+        $this->timeLimits[] = $seconds;
+    }
+
     protected function raiseMemoryLimit(int $bytes): ?string
     {
+        $this->raised[]        = $bytes;
         TestSendRun::$raisedTo = $bytes;
         return TestSendRun::$mayRaise ? (string) TestSendRun::$memoryLimit : null;
     }

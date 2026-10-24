@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace AA\Isds\Body;
 
-use AA\Isds\File;
 use AA\Isds\Message;
 use AA\Isds\Text;
 use AA\Upload\UploadDir;
@@ -13,19 +12,17 @@ use AA\Util\Imgfunc;
 use AA\Util\Libxml;
 
 /**
- * The letter of a data message as an HTML file: a whole UTF-8 document that loads nothing and runs
- * nothing. Its body comes from a rich-text field and goes to thousands of filing systems, so it is
- * rebuilt from an allow-list rather than cleaned of known dangers: an element not in ELEMENTS gives
- * only its own cleaned content (a DROPPED or UNSEEN one nothing), an attribute not listed is left out, every
- * text and value is escaped anew and every image is drawn again. What a reader would miss - an
- * image, a link, an embedded object - omitted() lists, for the sender to see before sending.
+ * The letter of a data message as an HTML document, which PdfBody lays out as Dopis.pdf: a whole UTF-8
+ * document that loads nothing and runs nothing. Its body comes from a rich-text field and goes to
+ * thousands of filing systems, so it is rebuilt from an allow-list rather than cleaned of known
+ * dangers: an element not in ELEMENTS gives only its own cleaned content (a DROPPED or UNSEEN one
+ * nothing), an attribute not listed is left out, every text and value is escaped anew and every image
+ * is drawn again. What a reader would miss - an image, a link, an embedded object - omitted() lists,
+ * for the sender to see before sending.
  * Entities only HTML5 knows (&colon;, &NewLine;) stay as they are written: libxml reads HTML 4.
- * ISDS refuses HTML containing "<object", "<iframe" or "<script" (WS_manipulace_s_datovymi_zpravami.pdf 3).
  */
 final class HtmlBody
 {
-    public const NAME = 'Dopis.html';
-
     /** pixels of all images of a letter together: each is decoded whole before it is drawn smaller */
     public const MAX_PIXELS = 200_000_000;
 
@@ -82,8 +79,6 @@ final class HtmlBody
      *  (also the Mongolian ones), C1 control characters, the Khmer inherent vowels, the Hangul fillers and the
      *  blank Braille cell */
     private const INVISIBLE = '\s\x{A0}\p{Cf}\x{34F}\x{80}-\x{9F}\x{FE00}-\x{FE0F}\x{E0100}-\x{E01EF}\x{180B}-\x{180D}\x{180F}\x{17B4}\x{17B5}\x{115F}\x{1160}\x{3164}\x{FFA0}\x{2800}';
-
-    private const FORBIDDEN = ['<object', '<iframe', '<script'];
 
     private const ALIGN  = ['left', 'right', 'center', 'justify'];
     private const VALIGN = ['top', 'middle', 'bottom', 'baseline'];
@@ -164,6 +159,22 @@ final class HtmlBody
     private const DISPLAY = ['block', 'inline', 'inline-block', 'list-item', 'none'];
     /** a table and its rows: dompdf throws on any display of them but none */
     private const TABLE_PARTS = ['table', 'thead', 'tbody', 'tfoot', 'tr'];
+    /**
+     * The smallest length of a property by its unit ('' = a number alone): dompdf cannot stop within a page, and
+     * a page of lines of no height or one letter wide took it 38 s. A smaller value is left out, a smaller
+     * font-size raised to it: text of an editor's 5 pt stays small.
+     */
+    private const MIN_LENGTH = [
+        'font-size'   => ['pt' => 6, 'px' => 8, 'em' => 0.5, '%' => 50],
+        'line-height' => ['' => 1, '%' => 100, 'em' => 1, 'pt' => 6, 'px' => 8],
+        'width'       => ['pt' => 15, 'px' => 20, 'em' => 2, '%' => 1],
+        'height'      => ['pt' => 15, 'px' => 20, 'em' => 2, '%' => 1],
+    ];
+    /** points of the smallest text, however its font-size is nested: the font-size of the elements below is raised to it */
+    private const MIN_FONT_PT = 6;
+    /** the font-size of the text of a letter, and what dompdf makes of it in these elements */
+    private const FONT_PT   = 11;
+    private const TAG_FONTS = ['h1' => 2, 'h2' => 1.5, 'h3' => 1.17, 'h5' => 0.83, 'h6' => 0.67, 'small' => 8 / 9, 'sub' => 8 / 9, 'sup' => 8 / 9];
     /** words, numbers with units, #colours and rgb()/hsl() - no url(), quotes, escapes or comments */
     private const STYLE_VALUE = '~^(?:[a-z0-9#%.,\s-]|(?:rgba?|hsla?)\([0-9.,%\s/]*\))+$~i';
     private const COLOUR      = '~^(?:#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z]{3,20})$~i';
@@ -183,7 +194,7 @@ final class HtmlBody
 
     private const HEAD = "<!DOCTYPE html>\n<html lang=\"cs\">\n<head>\n<meta charset=\"utf-8\">\n"
         . "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n"
-        // the browser's own guard, should anything active get through
+        // the guard of a browser that shows the document, should anything active get through
         . "<meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'none'; img-src data:; style-src 'unsafe-inline'\">\n"
         // a link followed from the letter does not tell the site where it came from
         . "<meta name=\"referrer\" content=\"no-referrer\">\n";
@@ -202,6 +213,10 @@ final class HtmlBody
     private array $images = [];
     /** @var non-empty-list<int> 0xRRGGBB behind the element being written and each around it; the page is white */
     private array $backgrounds = [0xFFFFFF];
+    /** @var non-empty-list<float> points of the font of the element being written and each around it */
+    private array $fonts = [self::FONT_PT];
+    /** @var array<string, array{int, int}> pixels of each image drawn, by the xxh128 of its data: URI */
+    private array $sizes = [];
     /** @var array<string, true> */
     private array $omitted = [];
 
@@ -226,31 +241,15 @@ final class HtmlBody
     }
 
     /**
-     * Dopis.html, the main file of a message
-     * @throws \InvalidArgumentException see document()
-     * @throws \RuntimeException an image among the uploads cannot be read
-     */
-    public function render(string $subject, string $body, bool $html = true, string $letterhead = ''): File
-    {
-        $document = $this->document($subject, $body, $html, $letterhead);
-        foreach (self::FORBIDDEN as $tag) {
-            // every "<" of the letter is escaped, so only a bug here could write one
-            if (stripos($document, $tag) !== false) {
-                throw new \LogicException("The letter came out with $tag");
-            }
-        }
-        return new File(self::NAME, 'text/html', File::MAIN, $document);
-    }
-
-    /**
      * The whole HTML document of the letter
      * @param bool   $html       false: $body is plain text - a blank line parts paragraphs, a line end breaks a line
      * @param string $letterhead plain text above the body, in the same way - the sender, an address
+     * @param string $css        appended to the style of the letter: the code's own, never a user's (PdfBody::CSS)
      * @throws \InvalidArgumentException not UTF-8, cut off by libxml, empty, larger than a message may be, or
      *                                   of too many pixels; a message may quote the letter - escape it when shown
      * @throws \RuntimeException an image among the uploads cannot be read; the message names it
      */
-    public function document(string $subject, string $body, bool $html = true, string $letterhead = ''): string
+    public function document(string $subject, string $body, bool $html = true, string $letterhead = '', string $css = ''): string
     {
         // before anything copies or splits them
         if (strlen($letterhead) + strlen($body) > Message::MAX_BYTES) {
@@ -268,8 +267,10 @@ final class HtmlBody
         $this->pixels     = 0;
         $this->images      = [];
         $this->backgrounds = [0xFFFFFF];
+        $this->fonts       = [self::FONT_PT];
+        $this->sizes       = [];
         $this->omitted     = [];
-        $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . "</style>\n</head>\n<body>\n");
+        $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . $css . "</style>\n</head>\n<body>\n");
         if (trim($letterhead) !== '') {
             $this->children(self::parse(self::plainText($letterhead)));
             // a letterhead alone is no letter
@@ -550,6 +551,10 @@ final class HtmlBody
         if (($tag === 'img') && !isset($attributes['src'])) {
             return;
         }
+        if ($tag === 'img') {
+            $attributes = $this->imageWidth($attributes);
+        }
+        $font = $this->font($tag, $attributes);
         if (($tag === 'a') && !isset($attributes['href'])) {
             $this->children($element);
             return;
@@ -562,11 +567,90 @@ final class HtmlBody
             return;
         }
         $this->backgrounds[] = self::background($attributes) ?? $this->backgrounds[array_key_last($this->backgrounds)];
-        $this->paragraphs += ($tag === 'p') ? 1 : 0;
+        $this->fonts[]       = $font;
+        $this->paragraphs   += ($tag === 'p') ? 1 : 0;
         $this->children($element);
         $this->paragraphs -= ($tag === 'p') ? 1 : 0;
         array_pop($this->backgrounds);
+        array_pop($this->fonts);
         $this->append("</$tag>");
+    }
+
+    /**
+     * Points of the font of a <$tag> as dompdf counts them, raised to MIN_FONT_PT by its style: nested
+     * <small> or font-size: 50% each above its minimum would make text of no size
+     * @param array<string, string> $attributes those it keeps; its style gets the font-size raised
+     */
+    private function font(string $tag, array &$attributes): float
+    {
+        $parent = $this->fonts[array_key_last($this->fonts)];
+        $font   = $parent * (self::TAG_FONTS[$tag] ?? 1);
+        $kept   = [];
+        foreach (explode('; ', $attributes['style'] ?? '') as $declaration) {
+            [$property, $value] = explode(': ', $declaration, 2) + [1 => ''];
+            if ($property === 'font-size') {
+                preg_match('~^([0-9.]+)([a-z%]+)$~', $value, $m);
+                $number = (float) $m[1];
+                $font   = match ($m[2]) {
+                    'pt'    => $number,
+                    'px'    => $number * 0.75,
+                    'em'    => $number * $parent,
+                    default => $number * $parent / 100,
+                };
+            } elseif ($declaration !== '') {
+                $kept[] = $declaration;
+            }
+        }
+        if ($font >= self::MIN_FONT_PT) {
+            return $font;
+        }
+        $kept[]              = 'font-size: ' . self::MIN_FONT_PT . 'pt';
+        $attributes['style'] = implode('; ', $kept);
+        return self::MIN_FONT_PT;
+    }
+
+    /**
+     * dompdf makes an image no higher than a page (PdfBody::IMAGE_HEIGHT) by its height alone: a width it is
+     * given, by the attribute or the style, is made narrower instead, in the proportions of the image. A width
+     * in % or em is counted at most as wide as it can come out.
+     * @param array<string, string> $attributes of an <img>
+     * @return array<string, string>
+     */
+    private function imageWidth(array $attributes): array
+    {
+        [$w, $h] = $this->sizes[hash('xxh128', $attributes['src'])] ?? [0, 0];
+        if ($w === 0) {
+            return $attributes;
+        }
+        $max   = PdfBody::IMAGE_HEIGHT * $w / max(1, $h);
+        $width = $attributes['width'] ?? '';
+        if (($width !== '') && ($this->points($width . (ctype_digit($width) ? 'px' : '')) > $max)) {
+            $attributes['width'] = (string) max(1, (int) floor($max / 0.75));
+        }
+        if (isset($attributes['style'])) {
+            $declarations = explode('; ', $attributes['style']);
+            foreach ($declarations as $i => $declaration) {
+                [$property, $value] = explode(': ', $declaration, 2) + [1 => ''];
+                if (($property === 'width') && ($this->points($value) > $max)) {
+                    $declarations[$i] = 'width: ' . max(1, floor($max)) . 'pt';
+                }
+            }
+            $attributes['style'] = implode('; ', $declarations);
+        }
+        return $attributes;
+    }
+
+    /** points of a width of style(), within a line of the page */
+    private function points(string $length): float
+    {
+        preg_match('~^([0-9.]+)([a-z%]+)$~', $length, $m);
+        $number = (float) ($m[1] ?? 0);
+        return match ($m[2] ?? '') {
+            'pt'    => $number,
+            'px'    => $number * 0.75,
+            'em'    => min($number * $this->fonts[array_key_last($this->fonts)], PdfBody::LINE_WIDTH),
+            default => min($number, 100) / 100 * PdfBody::LINE_WIDTH,
+        };
     }
 
     /** @return array<string, string> name => value, escaped */
@@ -752,6 +836,13 @@ final class HtmlBody
         if (!@mkdir($dir, 0o700)) {
             throw new \RuntimeException('There is no temporary directory for the images of the letter');
         }
+        $remove = static function () use ($dir): void {
+            @unlink("$dir/in");
+            @unlink("$dir/out");
+            @rmdir($dir);
+        };
+        // GD out of memory is a fatal error, which skips finally
+        register_shutdown_function($remove);
         try {
             if (file_put_contents("$dir/in", $bytes) !== strlen($bytes)) {
                 throw new \RuntimeException('The images of the letter cannot be stored for a while');
@@ -762,11 +853,13 @@ final class HtmlBody
             }
             $image = (string) file_get_contents("$dir/out");
             $info  = getimagesizefromstring($image);
-            return 'data:' . (is_array($info) ? $info['mime'] : 'image/jpeg') . ';base64,' . base64_encode($image);
+            $uri   = 'data:' . (is_array($info) ? $info['mime'] : 'image/jpeg') . ';base64,' . base64_encode($image);
+            if (is_array($info)) {
+                $this->sizes[hash('xxh128', $uri)] = [$info[0], $info[1]];
+            }
+            return $uri;
         } finally {
-            @unlink("$dir/in");
-            @unlink("$dir/out");
-            @rmdir($dir);
+            $remove();
         }
     }
 
@@ -781,12 +874,39 @@ final class HtmlBody
                 if ($property === 'display') {
                     $value = self::oneOf($value, in_array($tag, self::TABLE_PARTS, true) ? ['none'] : self::DISPLAY);
                 }
+                if (isset(self::MIN_LENGTH[$property])) {
+                    $value = self::length($value, self::MIN_LENGTH[$property], $property === 'font-size');
+                }
                 if ($value !== null) {
                     $kept[] = "$property: $value";
                 }
             }
         }
         return ($kept === []) ? null : implode('; ', $kept);
+    }
+
+    /**
+     * A number of at most 4 digits and decimals with a unit of $min, not smaller than its minimum
+     * @param array<string, float|int> $min the smallest number by its unit, '' = without one
+     * @param bool $raise a smaller number made the minimum instead of left out
+     */
+    private static function length(string $value, array $min, bool $raise = false): ?string
+    {
+        $value = strtolower($value);
+        if (($value === 'normal') && isset($min[''])) {
+            return $value;
+        }
+        if (preg_match('~^(\d{1,4}(?:\.\d{1,4})?|\.\d{1,4})(px|pt|em|%)?$~', $value, $m) !== 1) {
+            return null;
+        }
+        $unit = $m[2] ?? '';
+        if (!isset($min[$unit])) {
+            return null;
+        }
+        if ((float) $m[1] >= $min[$unit]) {
+            return $value;
+        }
+        return $raise ? $min[$unit] . $unit : null;
     }
 
     /** @param list<string> $allowed lower case */
@@ -822,7 +942,7 @@ final class HtmlBody
         return strlen($text) + 5 * (substr_count($text, '"') + substr_count($text, "'")) + 4 * substr_count($text, '&') + 3 * (substr_count($text, '<') + substr_count($text, '>'));
     }
 
-    /** like safe(), but &#039; for an apostrophe: the HTML 4 viewers of some filing systems show &apos; as it is */
+    /** like safe(), but &#039; for an apostrophe: a reference every HTML parser reads, &apos; HTML 4 does not know */
     private static function escape(string $text): string
     {
         return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');

@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\Isds\Body\HtmlBody;
+use AA\Isds\Body\PdfBody;
 use AA\Upload\UploadDir;
 
 /**
- * What a mass sending sends to every recipient: the subject, "to hands", the letter (Dopis.html) and
+ * What a mass sending sends to every recipient: the subject, "to hands", the letter (Dopis.pdf) and
  * the attachments - checked as a data message is, so that a sending ISDS would refuse for everyone is
  * refused before it starts.
  */
@@ -41,23 +42,32 @@ final readonly class Letter
     }
 
     /**
-     * The letter of a campaign item: the letterhead above the body as Dopis.html, then the files of
+     * The letter of a campaign item: the letterhead above the body as Dopis.pdf, then the files of
      * its attachment field
-     * @param string    $letterhead lines of plain text (Setup::$letterhead) - the sender, an address
-     * @param UploadDir $uploads    of the campaign slice: images of the body and the attachments
+     * @param string                $letterhead lines of plain text (Setup::$letterhead) - the sender, an address
+     * @param UploadDir             $uploads    of the campaign slice: images of the body and the attachments
+     * @param \Closure(int): string $makeRoom   memory for the PDF, given the bytes it needs: '' = there is
+     *                                          room, else why not - the message of \OverflowException
+     * @throws \OverflowException no memory for the PDF
      * @throws \InvalidArgumentException|\RuntimeException what to fix in the campaign; the message
      *                                   quotes file names and URLs - escape it when shown
      */
-    public static function of(\AA_Content $campaign, string $letterhead, UploadDir $uploads): self
+    public static function of(\AA_Content $campaign, string $letterhead, UploadDir $uploads, \Closure $makeRoom): self
     {
-        $subject = (string) $campaign->getValue(Schema::CAMPAIGN_SUBJECT);
+        $subject  = (string) $campaign->getValue(Schema::CAMPAIGN_SUBJECT);
         // getFlag() of the content warns about a field the item has no value of
-        $html    = ($campaign->getAaValue(Schema::CAMPAIGN_BODY)->getFlag() & FLAG_HTML) !== 0;
-        $files   = [(new HtmlBody($uploads))->render($subject, (string) $campaign->getValue(Schema::CAMPAIGN_BODY), $html, $letterhead)];
-        // the HTML document is sent as it is made
-        $source  = hash('xxh128', $files[0]->content);
-        $bytes   = $files[0]->size();
-        $policy  = new AttachmentPolicy($uploads);
+        $html     = ($campaign->getAaValue(Schema::CAMPAIGN_BODY)->getFlag() & FLAG_HTML) !== 0;
+        $document = (new HtmlBody($uploads))->document($subject, (string) $campaign->getValue(Schema::CAMPAIGN_BODY), $html, $letterhead, PdfBody::CSS);
+        $short    = $makeRoom(PdfBody::memory($document));
+        if ($short !== '') {
+            throw new \OverflowException($short);
+        }
+        $files  = [(new PdfBody())->render($document)];
+        $source = PdfBody::source($document);
+        // up to 20 MB of images, before the attachments are read
+        unset($document);
+        $bytes  = $files[0]->size();
+        $policy = new AttachmentPolicy($uploads);
         foreach ($campaign->getValuesArray(Schema::CAMPAIGN_FILES) as $url) {
             $url = trim((string) $url);
             // past one message the trial refuses it anyway: read no more of up to 20 MB each

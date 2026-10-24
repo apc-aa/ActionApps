@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds;
 
 use AA\Isds\Body\HtmlBody;
+use AA\Isds\Body\PdfBody;
 use AA\Isds\File;
 use AA\Isds\Letter;
 use AA\Isds\Message;
@@ -13,6 +14,9 @@ use AA\Upload\UploadDir;
 use ItemContent;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Isds\Fixtures\PdfText;
+
+require_once __DIR__ . '/fixtures/PdfText.php';
 
 /** The letter of a campaign as a data message carries it - refused here when ISDS would refuse it for everyone */
 final class LetterTest extends TestCase
@@ -41,8 +45,11 @@ final class LetterTest extends TestCase
         rmdir($this->dir);
     }
 
-    /** @param array<string, mixed> $over field => its value, or a list of values; $html: FLAG_HTML on the body */
-    private function letter(array $over = [], string $letterhead = '', bool $html = true): Letter
+    /**
+     * @param array<string, mixed> $over field => its value, or a list of values; $html: FLAG_HTML on the body
+     * @param ?\Closure(int): string $makeRoom memory for the PDF, there always is by default
+     */
+    private function letter(array $over = [], string $letterhead = '', bool $html = true, ?\Closure $makeRoom = null): Letter
     {
         $fields  = $over + [Schema::CAMPAIGN_SUBJECT => ' Pozvánka ', Schema::CAMPAIGN_BODY => '<p>Vážení, <b>zveme</b> Vás</p>', Schema::CAMPAIGN_TO_HANDS => 'starosta', Schema::CAMPAIGN_FILES => self::URL . '/pozvanka.pdf'];
         $content = [];
@@ -51,13 +58,13 @@ final class LetterTest extends TestCase
                 $content[$field][] = ['value' => $value, 'flag' => (($field === Schema::CAMPAIGN_BODY) && $html) ? FLAG_HTML : 0];
             }
         }
-        return Letter::of(new ItemContent($content), $letterhead, new UploadDir(self::URL, $this->dir));
+        return Letter::of(new ItemContent($content), $letterhead, new UploadDir(self::URL, $this->dir), $makeRoom ?? static fn(int $bytes): string => '');
     }
 
+    /** the text of the letter as its PDF shows it, a line of each run of text */
     private static function body(Letter $letter): string
     {
-        preg_match('~<body>\n(.*)\n</body>~s', $letter->files[0]->content, $m);
-        return $m[1] ?? '';
+        return PdfText::of($letter->files[0]->content);
     }
 
     public function test_of_letterThenAttachments(): void
@@ -65,9 +72,36 @@ final class LetterTest extends TestCase
         $letter = $this->letter();
 
         self::assertSame(['Pozvánka', 'starosta'], [$letter->annotation, $letter->toHands]);
-        self::assertSame([[HtmlBody::NAME, File::MAIN], ['pozvanka.pdf', File::ENCLOSURE]], array_map(static fn(File $f): array => [$f->name, $f->metaType], $letter->files));
+        self::assertSame([[PdfBody::NAME, File::MAIN], ['pozvanka.pdf', File::ENCLOSURE]], array_map(static fn(File $f): array => [$f->name, $f->metaType], $letter->files));
+        self::assertSame('application/pdf', $letter->files[0]->mimeType);
         self::assertSame(self::PDF, $letter->files[1]->content);
-        self::assertStringContainsString('<title>Pozvánka</title>', $letter->files[0]->content);
+        self::assertSame("Vážení, \nzveme\n Vás\n", self::body($letter));
+    }
+
+    // what a test message compares: the document the PDF was made of, not its bytes
+    public function test_of_sourceOfTheDocument(): void
+    {
+        $document = (new HtmlBody(new UploadDir(self::URL, $this->dir)))->document('Pozvánka', '<p>Vážení, <b>zveme</b> Vás</p>', true, 'NSZM', PdfBody::CSS);
+
+        self::assertSame(PdfBody::source($document), $this->letter([], 'NSZM')->source);
+    }
+
+    // the memory dompdf will take is asked for before it starts, from the document
+    public function test_of_memoryAskedBeforeThePdf(): void
+    {
+        $asked = [];
+
+        try {
+            $this->letter(makeRoom: static function (int $bytes) use (&$asked): string {
+                $asked[] = $bytes;
+                return 'mb:300';
+            });
+            self::fail('No letter without memory');
+        } catch (\OverflowException $e) {
+            self::assertSame('mb:300', $e->getMessage());
+        }
+        self::assertCount(1, $asked);
+        self::assertGreaterThan(20 * 1024 * 1024, $asked[0]);
     }
 
     #[DataProvider('blanks')]
@@ -75,7 +109,7 @@ final class LetterTest extends TestCase
     {
         $files = $this->letter([Schema::CAMPAIGN_FILES => [$blank, self::URL . '/pozvanka.pdf', $blank]])->files;
 
-        self::assertSame([HtmlBody::NAME, 'pozvanka.pdf'], array_map(static fn(File $f): string => $f->name, $files));
+        self::assertSame([PdfBody::NAME, 'pozvanka.pdf'], array_map(static fn(File $f): string => $f->name, $files));
     }
 
     public static function blanks(): array
@@ -86,8 +120,8 @@ final class LetterTest extends TestCase
     // lines of text in either format of the body, escaped, above it
     public function test_of_letterheadAboveTheBody(): void
     {
-        self::assertSame("<p>Zdravá města &amp; obce<br>\nPalackého 1</p>\n<p>Vážení, <b>zveme</b> Vás</p>", self::body($this->letter([], "Zdravá města & obce\nPalackého 1")));
-        self::assertSame("<p>&lt;b&gt;NSZM&lt;/b&gt;</p>\n<p>Vážení,<br>\nzveme Vás</p>\n", self::body($this->letter([Schema::CAMPAIGN_BODY => "Vážení,\nzveme Vás"], '<b>NSZM</b>', false)));
+        self::assertSame("Zdravá města & obce\nPalackého 1\nVážení, \nzveme\n Vás\n", self::body($this->letter([], "Zdravá města & obce\nPalackého 1")));
+        self::assertSame("<b>NSZM</b>\nVážení,\nzveme Vás\n", self::body($this->letter([Schema::CAMPAIGN_BODY => "Vážení,\nzveme Vás"], '<b>NSZM</b>', false)));
     }
 
     #[DataProvider('flags')]
@@ -99,8 +133,8 @@ final class LetterTest extends TestCase
     public static function flags(): array
     {
         return [
-            'HTML'       => [true, "Vážení,\n<b>zveme</b> Vás"],
-            'plain text' => [false, "<p>Vážení,<br>\n&lt;b&gt;zveme&lt;/b&gt; Vás</p>\n"],
+            'HTML'       => [true, "Vážení, \nzveme\n Vás\n"],
+            'plain text' => [false, "Vážení,\n<b>zveme</b> Vás\n"],
         ];
     }
 
@@ -170,7 +204,7 @@ final class LetterTest extends TestCase
 
     public function test_construct_refusesLargerThanAMessage(): void
     {
-        $main = new File(HtmlBody::NAME, 'text/html', File::MAIN, '<p>x</p>');
+        $main = new File(PdfBody::NAME, 'application/pdf', File::MAIN, self::PDF);
 
         $this->expectException(\InvalidArgumentException::class);
         new Letter('Pozvánka', [$main, new File('a.pdf', 'application/pdf', File::ENCLOSURE, str_repeat('x', Message::MAX_BYTES))]);
