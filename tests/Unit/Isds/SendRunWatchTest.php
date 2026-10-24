@@ -9,7 +9,10 @@ use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException as HttpTransportException;
 use AA\Isds\Client;
 use AA\Isds\Schema;
+use AA\Isds\SendPace;
 use AA\Isds\SendRun;
+use AA\Isds\SliceProblem;
+use AA\Isds\SliceRules;
 use AA\Isds\StatusSync;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -474,6 +477,272 @@ final class SendRunWatchTest extends TestCase
         self::assertSame([['n' => 1, 'p' => 'watch', 'u' => $friday + 1800], SendRun::MAINTENANCE], [self::position($id), self::stored($id)['retry_code']]);
     }
 
+    // following spends nothing: ISDS down for longer than a sending may wait, the rounds go on
+    public function test_watch_isds_down_waits_without_6h_limit(): void
+    {
+        $id = self::watching();
+        for ($round = 0; $round < 8; ++$round) {
+            TestSendRun::$now = self::NOW + $round * 3600;
+            self::watchIsds([new HttpTransportException('Connection timed out after 30000 milliseconds')]);
+
+            self::assertSame('step ' . ($round + 1), self::runQueued());
+        }
+
+        $stored = self::stored($id);
+        self::assertSame(['sending', 'ISDS_UNAVAILABLE', '', '0', (string) self::SENT], [$stored['state'], $stored['retry_code'], $stored['error_detail'], $stored['failures'], $stored['watch_last']]);
+        self::assertSame(['n' => 8, 'p' => 'watch', 'u' => self::NEXT + 7 * 3600], self::position($id));
+        self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
+    }
+
+    // the address of the server blocked: the block passes by itself, a person can do nothing - the run waits, says why
+    #[DataProvider('blockedCalls')]
+    public function test_watch_blocked_address_waits(string $op, string $ownerAt): void
+    {
+        $id      = self::watching(2, ['owner_at' => $ownerAt]);
+        $blocked = new Response(401, self::fixture('address-blocked.html'));
+        TestSendRun::$http = new ScriptedIsds([
+            'GetOwnerInfoFromLogin2' => [($op === 'GetOwnerInfoFromLogin2') ? $blocked : new Response(200, self::fixture('owner-info.xml'))],
+            'GetMessageStateChanges' => [$blocked],
+        ]);
+
+        self::assertSame('step 1', self::runQueued());
+
+        $stored = self::stored($id);
+        self::assertSame(['n' => 1, 'p' => 'watch', 'u' => self::NEXT], self::position($id));
+        self::assertSame(['sending', 'ISDS_UNAVAILABLE', 'blocked', (string) self::SENT], [$stored['state'], $stored['retry_code'], $stored['error_detail'], $stored['watch_last']]);
+        self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
+
+        // run before its time, it asks ISDS nothing and still says why it waits
+        $isds = self::watchIsds();
+        self::runQueued();
+        self::assertSame([[], 'ISDS_UNAVAILABLE', 'blocked'], [$isds->ops(), self::stored($id)['retry_code'], self::stored($id)['error_detail']]);
+    }
+
+    /** @return array<string, array{string, string}> the call ISDS refuses, owner_at */
+    public static function blockedCalls(): array
+    {
+        return [
+            'reading the changes'       => ['GetMessageStateChanges', (string) self::NOW],
+            'asking whose the login is' => ['GetOwnerInfoFromLogin2', (string) (self::NOW - 86400)],
+        ];
+    }
+
+    // a network file system refuses PHP now and then: the round waits, with no limit and no call
+    public function test_watch_unreadable_conf_waits(): void
+    {
+        $id                = self::watching();
+        $isds              = self::watchIsds();
+        TestSendRun::$conf = Sending::fileConf(broken: false);
+
+        self::assertSame('step 1', self::runQueued());
+
+        $stored = self::stored($id);
+        self::assertSame(['n' => 1, 'p' => 'watch', 'u' => self::NEXT], self::position($id));
+        self::assertSame(['sending', 'ISDS_UNAVAILABLE', 'config'], [$stored['state'], $stored['retry_code'], $stored['error_detail']]);
+        self::assertSame([[], Schema::CAMPAIGN_STATE_DONE], [$isds->ops(), self::campaign()]);
+    }
+
+    // ISDS did not say whose the login is: the round waits as for ISDS down
+    public function test_watch_owner_box_unanswered_waits(): void
+    {
+        $id   = self::watching(2, ['owner_at' => (string) (self::NOW - 86400)]);
+        $isds = TestSendRun::$http = new ScriptedIsds(['GetOwnerInfoFromLogin2' => [new HttpTransportException('Connection timed out after 30000 milliseconds')]]);
+
+        self::assertSame('step 1', self::runQueued());
+
+        $stored = self::stored($id);
+        self::assertSame(['n' => 1, 'p' => 'watch', 'u' => self::NEXT], self::position($id));
+        self::assertSame(['sending', 'ISDS_UNAVAILABLE', '', (string) (self::NOW - 86400)], [$stored['state'], $stored['retry_code'], $stored['error_detail'], $stored['owner_at']]);
+        self::assertSame(['GetOwnerInfoFromLogin2'], $isds->ops());
+    }
+
+    // ------------------------------------------------------------ what needs a person
+
+    // the run errs and waits for Continue or Stop; the campaign keeps the end of the sending
+    #[DataProvider('watchFailures')]
+    public function test_watch_login_refused_errors_campaign_stays_done(\Closure $fail, string $error): void
+    {
+        $id = self::watching();
+        self::watchIsds();
+        $fail($id);
+
+        self::assertSame("error $error", self::runQueued());
+
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, ''], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
+        self::assertNotContains(self::CAMPAIGN_ITEM, self::items()->written('update'));
+        self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::stored($id)['camp_state']);
+    }
+
+    /** @return array<string, array{\Closure(string): void, string}> */
+    public static function watchFailures(): array
+    {
+        return [
+            'the login refused'             => [static function (): void {
+                self::watchIsds([new Response(401, self::fixture('unauthorized.html'))]);
+            }, 'ISDS_LOGIN'],
+            'the login of another box'      => [static function (string $id): void {
+                self::storedSet($id, 'owner_at', (string) (self::NOW - 86400));
+                TestSendRun::$http = new ScriptedIsds(['GetOwnerInfoFromLogin2' => [new Response(200, str_replace('>kv62bqf<', '>xx99zzz<', self::fixture('owner-info.xml')))]]);
+            }, SendRun::ACCOUNT_CHANGED],
+            'the account taken away'        => [static function (): void {
+                TestSendRun::$conf = null;
+            }, SendRun::ACCOUNT_CHANGED],
+            'a file that is no valid PHP'   => [static function (): void {
+                TestSendRun::$conf = Sending::fileConf(broken: true);
+            }, 'ISDS_CONFIG'],
+            'ISDS refuses the changes'      => [static function (): void {
+                self::watchIsds([new Response(200, str_replace('<q:dmStatusCode>0000<', '<q:dmStatusCode>1214<', self::fixture('state-changes.xml')))]);
+            }, SendRun::REFUSED],
+            'the slices break a rule'       => [static function (): void {
+                TestSendRun::$rules = new class extends SliceRules {
+                    public function sliceProblems(string $campaignSlice, string $messageSlice): array
+                    {
+                        return [new SliceProblem('Slice "ISDS messages" imports items from other slices')];
+                    }
+                };
+            }, SendRun::SETTINGS],
+            'a map edited into nested JSON' => [static function (string $id): void {
+                self::storedSet($id, 'dm_state', '{"0":{"s":4}}');
+            }, 'INTERNAL'],
+        ];
+    }
+
+    // the pages cannot be invalidated after following started - in the step of look that started it, or in a
+    // round: the run errs, the campaign keeps the end of the sending, also once Continue ends look again
+    #[DataProvider('followingStarted')]
+    public function test_invalidate_failing_once_following_leaves_campaign(bool $look): void
+    {
+        if ($look) {
+            $id = self::queued(2, ['dm_ids' => '{"0":"1001","1":"1002"}', 'cursor' => '2'], self::LOOK);
+            self::isds();
+        } else {
+            $id = self::watching();
+            self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_FINISHED_AT] = (string) self::NOW;
+            self::watchIsds([self::changes([['1001', self::DELIVERED, 4]])]);
+        }
+        TestSendRun::$invalidateFails = new \RuntimeException('Pagecache not invalidated');
+
+        self::assertSame('error INTERNAL', self::runQueued());
+
+        $campaign = static fn(): array => [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)];
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, '', (string) self::NOW], $campaign());
+        self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::stored($id)['camp_state']);
+        $following = static fn(): array => array_intersect_key(self::stored($id), array_flip(['watch_from', 'watch_last', 'watch_day']));
+        $before    = $following();
+        self::assertCount(3, $before);
+
+        TestSendRun::$invalidateFails = null;
+        TestSendRun::$now             = self::NOW + 100;
+        self::assertSame('', TestSendRun::resumeFor(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertStringStartsWith('step ', self::runQueued());
+
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, '', (string) self::NOW], $campaign());
+        if ($look) {
+            // following counts from the end of the sending, not from Continue
+            self::assertSame([$before, 'watch'], [$following(), self::position($id)['p']]);
+        }
+    }
+
+    /** @return array<string, array{bool}> */
+    public static function followingStarted(): array
+    {
+        return ['the step of look' => [true], 'a round' => [false]];
+    }
+
+    public function test_watch_item_write_failure_errors(): void
+    {
+        $id = self::watching(2, ['dm_state' => '{"0":"' . self::entry(4, self::DELIVERED, self::DELIVERED, 0) . '"}', 'dm_dirty' => '{"0":1}']);
+        self::watchIsds();
+        self::items()->onWrite = static function (): void {
+            throw new \RuntimeException('Message item not stored');
+        };
+
+        self::assertSame('error INTERNAL', self::runQueued());
+
+        self::assertSame([[0 => 1], Schema::CAMPAIGN_STATE_DONE], [self::map($id, 'dm_dirty'), self::campaign()]);
+    }
+
+    // a step count edited to its end: the count starts over, or every step and Continue would fail
+    public function test_watch_step_count_at_its_end_starts_over(): void
+    {
+        $id = self::watching(2, [], ['n' => PHP_INT_MAX, 'p' => 'watch']);
+        self::watchIsds();
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame(['n' => 1, 'p' => 'watch', 'u' => self::NEXT], self::position($id));
+    }
+
+    // ------------------------------------------------------------ the campaign, the phase
+
+    // a step of an older tree that does not know watch put the campaign into error: the sending ended all
+    // the same, and the campaign shows it again - at the time it ended
+    /** @param array<string, string> $props */
+    #[DataProvider('endsOfSending')]
+    public function test_watch_campaign_error_restored_to_done(array $props, string $end): void
+    {
+        $id = self::watching(2, $props + ['camp_state' => Schema::CAMPAIGN_STATE_ERROR]);
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'] = [
+            Schema::CAMPAIGN_STATE       => Schema::CAMPAIGN_STATE_ERROR,
+            Schema::CAMPAIGN_ERROR_TEXT  => 'INTERNAL',
+            Schema::CAMPAIGN_FINISHED_AT => (string) (self::SENT + 600),
+        ];
+        self::storedSet($id, 'state', 'error');
+        self::storedSet($id, 'error_code', 'INTERNAL');
+        TableDb::$tables['toexecute'] = [];
+        self::watchIsds();
+        self::assertSame('', TestSendRun::resumeFor(self::CAMPAIGN_ITEM, Sending::USER));
+
+        self::assertStringStartsWith('step ', self::runQueued());
+
+        $campaign = [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)];
+        self::assertSame([$end, '', (string) (self::SENT + 600)], $campaign);
+        self::assertSame([$end, 'sending', SendRun::WATCHING], [self::stored($id)['camp_state'], self::stored($id)['state'], self::stored($id)['retry_code']]);
+    }
+
+    /** @return array<string, array{array<string, string>, string}> */
+    public static function endsOfSending(): array
+    {
+        return [
+            'all sent'                => [[], Schema::CAMPAIGN_STATE_DONE],
+            'no state recorded'       => [['camp_state' => ''], Schema::CAMPAIGN_STATE_DONE],
+            'recorded sending'        => [['camp_state' => Schema::CAMPAIGN_STATE_SENDING], Schema::CAMPAIGN_STATE_DONE],
+            // stopped before message 1 went
+            'stopped before the last' => [['dm_ids' => '{"0":"1001"}', 'cursor' => '1', 'stop_by' => Sending::USER], Schema::CAMPAIGN_STATE_STOPPED],
+        ];
+    }
+
+    // the record says the campaign shows the end: a round reads no frozen recipients and writes no campaign
+    #[DataProvider('campaignEnds')]
+    public function test_watch_campaign_done_reads_no_snapshot(string $end): void
+    {
+        self::watching(2, ['camp_state' => $end]);
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE] = $end;
+        self::watchIsds();
+        $from = count(TableDb::$log);
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame([[], []], [preg_grep("/'rcpt'/", array_slice(TableDb::$log, $from)), self::items()->writes]);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function campaignEnds(): array
+    {
+        return ['done' => [Schema::CAMPAIGN_STATE_DONE], 'stopped' => [Schema::CAMPAIGN_STATE_STOPPED]];
+    }
+
+    // a phase of newer code, run by this one: the step fails before it writes anything
+    public function test_unknown_phase_leaves_campaign(): void
+    {
+        $id = self::watching(2, [], ['n' => 0, 'p' => 'later']);
+
+        self::assertSame('error INTERNAL', self::runQueued());
+
+        self::assertSame([[], Schema::CAMPAIGN_STATE_DONE, 0], [self::items()->writes, self::campaign(), TestSendRun::$invalidated]);
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, 'error'], [self::stored($id)['camp_state'], self::stored($id)['state']]);
+    }
+
     // ------------------------------------------------------------ windows and days
 
     // too large for one answer: the call that was, not the span asked for, is halved, till the round ends
@@ -515,7 +784,7 @@ final class SendRunWatchTest extends TestCase
         self::runQueued();
 
         self::assertSame(['n' => 1, 'p' => 'watch', 'u' => self::NEXT, 'z' => 3600], self::position($id));
-        self::assertSame(['ISDS_UNAVAILABLE', (string) (self::H - 3600)], [self::stored($id)['retry_code'], self::stored($id)['watch_last']]);
+        self::assertSame(['ISDS_UNAVAILABLE', 'too_large', (string) (self::H - 3600)], [self::stored($id)['retry_code'], self::stored($id)['error_detail'], self::stored($id)['watch_last']]);
     }
 
     // in the morning the days not read whole are read, each in one call - an acceptance after 10 days is dated 23:59:59
@@ -719,6 +988,19 @@ final class SendRunWatchTest extends TestCase
         self::assertNotContains(self::CAMPAIGN_ITEM, self::items()->written('update'));
     }
 
+    // the end of following writes the end of the sending only where the record had another, never its time
+    public function test_finalCheck_of_watch_keeps_finished_at(): void
+    {
+        self::watching(2, ['camp_state' => Schema::CAMPAIGN_STATE_STOPPED]);
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE]       = Schema::CAMPAIGN_STATE_STOPPED;
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_FINISHED_AT] = (string) (self::SENT + 600);
+        self::watchIsds([self::changes([['1001', self::LOGIN, 6], ['1002', self::LOGIN, 6]])]);
+
+        self::assertSame('done', self::runQueued());
+
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, (string) (self::SENT + 600)], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
+    }
+
     public function test_finalCheck_reports_delivery(): void
     {
         $id = self::watching(3, ['dm_state' => '{"2":"' . self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN) . '"}']);
@@ -734,13 +1016,71 @@ final class SendRunWatchTest extends TestCase
     // never CreateMessage, nothing about received messages: the operations of Client only
     public function test_watch_calls_only_allowed_ops(): void
     {
-        self::watching(2, ['owner_at' => (string) (self::NOW - 7200)]);
+        self::watching(2, ['owner_at' => (string) (self::NOW - 86400)]);
         $isds = self::watchIsds([self::changes([['1001', self::DELIVERED, 4]])]);
 
         self::runQueued();
 
         self::assertSame(['GetOwnerInfoFromLogin2', 'GetMessageStateChanges'], $isds->ops());
         self::assertSame([], array_diff($isds->ops(), array_keys(Client::OPERATIONS)));
+    }
+
+    // a step starts a call only while its budget lasts, but the check of the box may come right before it
+    public function test_overrun_in_watch_covers_two_calls(): void
+    {
+        $id = self::watching();
+
+        self::assertSame(100, TestSendRun::get($id)?->overrunOf());
+        self::assertGreaterThanOrEqual(2 * Client::TIMEOUT + SendPace::RECORD_RESERVE, TestSendRun::get($id)?->overrunOf());
+    }
+
+    // nothing is sent while following: whose the login is once a day, or when the login changed
+    /**
+     * @param array<string, string> $props
+     * @param list<string>          $asked
+     */
+    #[DataProvider('ownerChecks')]
+    public function test_owner_box_daily_and_on_new_fingerprint(array $props, array $asked): void
+    {
+        $id   = self::watching(2, $props);
+        $isds = self::watchIsds();
+
+        self::runQueued();
+
+        self::assertSame([...$asked, 'GetMessageStateChanges'], $isds->ops());
+        self::assertSame(($asked === []) ? $props['owner_at'] : (string) self::NOW, self::stored($id)['owner_at']);
+    }
+
+    /** @return array<string, array{array<string, string>, list<string>}> */
+    public static function ownerChecks(): array
+    {
+        return [
+            'asked 23 hours ago' => [['owner_at' => (string) (self::NOW - 23 * 3600)], []],
+            'asked a day ago'    => [['owner_at' => (string) (self::NOW - 86400)], ['GetOwnerInfoFromLogin2']],
+            'a new password'     => [['owner_at' => (string) (self::NOW - 600), 'acct_id' => 'a-fingerprint-of-before'], ['GetOwnerInfoFromLogin2']],
+        ];
+    }
+
+    // nothing to read: no account checked, no ISDS - an account taken away does not fail such a round
+    public function test_round_without_reading_calls_no_isds(): void
+    {
+        $id                = self::watching(2, ['watch_last' => (string) self::H, 'owner_at' => (string) (self::NOW - 2 * 86400)]);
+        TestSendRun::$conf = null;
+        TestSendRun::$http = null;
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame([SendRun::WATCHING, 'sending'], [self::stored($id)['retry_code'], self::stored($id)['state']]);
+    }
+
+    // following waits for its rounds, not for ISDS: nothing for a person to wait for; delivered and accepted counted
+    public function test_progressFigures_until_empty_while_watching(): void
+    {
+        $id = self::watching(3, ['dm_state' => '{"0":"' . self::entry(6, self::LOGIN, self::DELIVERED, self::LOGIN) . '","1":"' . self::entry(4, self::DELIVERED, self::DELIVERED, 0) . '"}'], ['n' => 2, 'p' => 'watch', 'u' => self::NEXT]);
+
+        $figures = TestSendRun::get($id)?->progressFigures() ?? [];
+
+        self::assertSame(['sent' => 3, 'delivered' => 2, 'accepted' => 1, 'total' => 3, 'until' => 0], array_intersect_key($figures, array_flip(['total', 'sent', 'until', 'delivered', 'accepted'])));
     }
 
     // a round that learns nothing new reads no frozen recipients and leaves the pages be; one that does reads them once

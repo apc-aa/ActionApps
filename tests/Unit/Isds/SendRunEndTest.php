@@ -12,6 +12,7 @@ use AA\Isds\Schema;
 use AA\Isds\SendRun;
 use AA\Isds\SentMessage;
 use AA\Isds\Snapshot;
+use AA\Isds\StatusSync;
 use AA\Later\BatchRun;
 use AA\Later\Toexecute;
 use AA_Credentials;
@@ -978,7 +979,136 @@ final class SendRunEndTest extends TestCase
         ];
     }
 
+    // ------------------------------------------------------------ following delivery
+
+    // every message went: a stop has nothing to stop, whatever stop_by and the cursor say - following ends by itself
+    /** @param array<string, string> $props */
+    #[DataProvider('followedRuns')]
+    public function test_stop_in_watch_all_sent(array $props): void
+    {
+        $id     = self::followed($props, ['n' => 2, 'p' => 'watch', 'u' => self::NOW + 1800]);
+        $before = self::stored($id);
+        $queue  = self::queue();
+
+        self::assertSame(SendRun::ALL_SENT, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+
+        self::assertSame([$before, $queue], [self::stored($id), self::queue()], 'nothing written, the next round as it was');
+        self::assertSame([], self::items()->writes);
+    }
+
+    /** @return array<string, array{array<string, string>}> */
+    public static function followedRuns(): array
+    {
+        return [
+            'stopped while sending'   => [['stop_by' => Sending::USER]],
+            // stopped before message 1 went: the cursor stays below the last recipient
+            'not every message tried' => [['dm_ids' => '{"0":"1001"}', 'cursor' => '1', 'stop_by' => Sending::USER]],
+        ];
+    }
+
+    // a run that cannot follow delivery without a person is given up; the campaign keeps the end of the sending
+    public function test_stop_of_watch_in_error_abandons(): void
+    {
+        $id = self::followed();
+        self::storedSet($id, 'state', 'error');
+        self::storedSet($id, 'error_code', SendRun::ACCOUNT_CHANGED);
+        TableDb::$tables['toexecute'] = [];
+
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('closed', self::runQueued());
+
+        self::assertSame(['stopped', ''], [self::stored($id)['state'], self::stored($id)['stop_by'] ?? '']);
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, (string) (self::NOW - 3600)], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
+        self::assertSame([Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_SENT], self::states($id));
+    }
+
+    // given up: the items show the delivery the record kept, the record of the ended run stays as it was;
+    // a campaign an older tree put into error shows the end of the sending again, at the time it ended
+    public function test_afterClose_writes_dirty_items_record_untouched(): void
+    {
+        $delivered = self::NOW - 5000;
+        $id        = self::followed(['dm_state' => "{\"0\":\"4:$delivered:$delivered:0\"}", 'dm_dirty' => '{"0":1}']);
+        self::storedSet($id, 'state', 'error');
+        TableDb::$tables['toexecute'] = [];
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE]      = Schema::CAMPAIGN_STATE_ERROR;
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_ERROR_TEXT] = 'INTERNAL';
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        $record = array_intersect_key(self::stored($id), array_flip(['dm_state', 'dm_dirty', 'watch_last', 'watch_from', 'camp_state']));
+
+        self::assertSame('closed', self::runQueued());
+
+        $msg = self::message($id, 0);
+        self::assertSame(['4', (string) $delivered], [self::items()->field($msg, Schema::MESSAGE_DM_STATUS), self::items()->field($msg, Schema::MESSAGE_DELIVERED_AT)]);
+        self::assertSame('', self::items()->field(self::message($id, 1), Schema::MESSAGE_DM_STATUS), 'nothing known of the other');
+        self::assertSame($record, array_intersect_key(self::stored($id), $record));
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, '', (string) (self::NOW - 3600)], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
+    }
+
+    // a map edited into nested JSON: its items are not written, every other write of the end still is
+    #[DataProvider('nestedMaps')]
+    public function test_afterClose_with_broken_map_writes_the_rest(string $map): void
+    {
+        $id = self::followed([$map => '{"0":{"s":4}}', 'uncertain' => '{"1":' . (self::NOW - 9000) . '}', 'dm_ids' => '{"0":"1001"}']);
+        self::storedSet($id, 'state', 'error');
+        TableDb::$tables['toexecute'] = [];
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE] = Schema::CAMPAIGN_STATE_ERROR;
+        self::assertSame(SendRun::ABANDONED, TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+
+        self::assertSame('closed', self::runQueued());
+
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, Schema::MESSAGE_STATE_UNCERTAIN], [self::campaign(), self::state($id, 1)]);
+        self::assertSame('after_close', json_decode(self::stored($id)['progress'], true)['warning'] ?? '');
+    }
+
+    /** @return array<string, array{string}> */
+    public static function nestedMaps(): array
+    {
+        return ['dm_state' => ['dm_state'], 'dm_dirty' => ['dm_dirty']];
+    }
+
+    // Continue runs the round now: no wait, the full span of calls, the list of sent messages from its start
+    public function test_resume_in_watch_runs_round_now(): void
+    {
+        $id = self::followed([], ['l' => ['o' => '981'], 'n' => 3, 'p' => 'watch', 'u' => self::NOW + 1800, 'z' => 3600]);
+        self::storedSet($id, 'state', 'error');
+        self::storedSet($id, 'error_code', SendRun::ACCOUNT_CHANGED);
+        TableDb::$tables['toexecute'] = [];
+        $isds = new ScriptedIsds(['GetMessageStateChanges' => [new Response(200, self::fixture('state-changes.xml'))]]);
+        TestSendRun::$http = $isds;
+
+        self::assertSame('', TestSendRun::resumeFor(self::CAMPAIGN_ITEM, Sending::USER));
+
+        self::assertSame([['n' => 3, 'p' => 'watch'], 'sending', (string) self::NOW], [self::position($id), self::stored($id)['state'], self::stored($id)['next_at']]);
+        self::assertStringStartsWith('step ', self::runQueued());
+        self::assertSame(['GetMessageStateChanges'], $isds->ops());
+    }
+
     // ------------------------------------------------------------ the run and its items
+
+    /**
+     * A run that sent its two messages as 1001 and 1002 two hours ago and follows their delivery since
+     * an hour ago: the items sent, the campaign done then, ISDS asked whose the login is now
+     * @param array<string, string>     $props
+     * @param array<string, int|string> $position
+     */
+    private static function followed(array $props = [], array $position = self::WATCH): string
+    {
+        $id = self::queued(2, $props + [
+            'dm_ids'     => '{"0":"1001","1":"1002"}',
+            'cursor'     => '2',
+            'camp_state' => Schema::CAMPAIGN_STATE_DONE,
+            'watch_from' => (string) (self::NOW - 3600),
+            'watch_last' => (string) (self::NOW - 7200),
+            'watch_day'  => StatusSync::firstWatchDay(self::NOW - 3600),
+        ], $position);
+        foreach (self::rows($id) as $k => $row) {
+            self::items()->mark($row['msg'], Schema::MESSAGE_STATE_SENT, Schema::EVENT_SUBMITTED, self::NOW - 7200, (string) (1001 + $k), senderRef: self::SHORT . '-' . ($k + 1));
+        }
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE]       = Schema::CAMPAIGN_STATE_DONE;
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_FINISHED_AT] = (string) (self::NOW - 3600);
+        self::items()->writes = [];
+        return $id;
+    }
 
     /**
      * A run given up after its stop failed: message 1 sent, 2 in flight when its step died, 3 never

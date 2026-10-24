@@ -74,6 +74,7 @@ class SendRun extends BatchRun
     private const STOP = 'stop';
     private const LOOK = 'look';
     private const WATCH = 'watch';
+    private const PHASES = [self::PREP, self::SEND, self::STOP, self::LOOK, self::WATCH];
 
     /** the run's own properties, each a text row of the record */
     private const OWN = [
@@ -91,6 +92,9 @@ class SendRun extends BatchRun
 
     /** seconds between checks of the box the login belongs to, when its fingerprint did not change */
     private const OWNER_EVERY = 3600;
+    /** the same while following delivery: nothing is sent, the fingerprint alone tells a new sender, and
+     *  ISDS asks for no more questions than needed */
+    private const OWNER_WATCHING = 86400;
 
     /** seconds a step must have left to start a message; the message may take longer, the lease covers it (overrun()) */
     private const MIN_SEND = 3;
@@ -221,7 +225,8 @@ class SendRun extends BatchRun
      * Stop: what was never tried does not go, what may have gone is still looked up - the steps do it,
      * with no account and no ISDS. A run that would not go on by itself (in error, waiting, its step
      * dead) goes on at once. A run in error that is stopped already, or has nothing left to stop, is
-     * given up: what may have gone stays uncertain for a person to verify.
+     * given up: what may have gone stays uncertain for a person to verify. A run following delivery has
+     * nothing left to stop, whatever the stop and the cursor say: it ends by itself, given up only in error.
      * @return string '' = stopping; ABANDONED; or why not: BUSY, FORBIDDEN, WRONG_STATE (no sending, or
      *                one that ended), ALL_SENT
      */
@@ -231,6 +236,13 @@ class SendRun extends BatchRun
             $states = static::states();
             if (in_array($run->state(), [$states->done, $states->ended], true)) {
                 return 'WRONG_STATE';
+            }
+            if ($run->watching()) {
+                if ($run->state() === $states->error) {
+                    $run->end($uid, self::ABANDONED);
+                    return self::ABANDONED;
+                }
+                return self::ALL_SENT;
             }
             $stopped = ((string) $run->stop_by !== '');
             // a sending all sent does not end as stopped
@@ -340,12 +352,18 @@ class SendRun extends BatchRun
      * taken for dead: the last message it starts with MIN_SEND left takes the check of its box, the
      * request with SendPace::RECORD_RESERVE, and a little for the rest. A look step reads a page of the
      * list, and more only while its budget lasts; the last one and the items it then writes fit the same.
+     * A watch step starts a call only while its budget lasts, but the check of the box (checkedClient())
+     * may come right before it: two calls, the record and a chunk of items.
      * prep and stop call no ISDS: a step of theirs that died holds Continue back no longer than one of
      * any run.
      */
     protected function overrun(): int
     {
-        return in_array($this->position()['p'] ?? self::PREP, [self::SEND, self::LOOK], true) ? Client::TIMEOUT + Client::CREATE_TIMEOUT + SendPace::RECORD_RESERVE + 10 : parent::overrun();
+        return match ($this->position()['p'] ?? self::PREP) {
+            self::SEND, self::LOOK => Client::TIMEOUT + Client::CREATE_TIMEOUT + SendPace::RECORD_RESERVE + 10,
+            self::WATCH            => 2 * Client::TIMEOUT + SendPace::RECORD_RESERVE + 10,
+            default                => parent::overrun(),
+        };
     }
 
     /** after a pause till its end; after a failed step a minute more for each failure */
@@ -387,14 +405,19 @@ class SendRun extends BatchRun
     {
         $failure     = null;
         $this->quiet = false;
+        $phase       = (string) ($from['p'] ?? self::PREP);
+        // a phase of newer code, run by an older tree over the same database, writes nothing
+        if (!in_array($phase, self::PHASES, true)) {
+            throw new \LogicException("A sending has no phase $phase");
+        }
+        $watch       = ($phase === self::WATCH);
         try {
             $inflight = (string) $this->inflight;
             if (($inflight !== '') && !$this->settleInflight()) {
                 // ended, or Continue or another step took the run: the core drops this result
                 return new BatchStepResult($from, false);
             }
-            $phase = (string) ($from['p'] ?? self::PREP);
-            if ($phase === self::WATCH) {
+            if ($watch) {
                 // every message was tried, nothing is left to stop; the frozen recipients are read only
                 // for the items a round writes
                 return $this->watch($from, $budget);
@@ -404,9 +427,6 @@ class SendRun extends BatchRun
             $msg      = ($inflight === '') ? null : ($snapshot->recipients()[(int) $inflight]['msg'] ?? null);
             if (!is_null($msg)) {
                 $this->items()->mark($msg, Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, static::now());
-            }
-            if (!in_array($phase, [self::PREP, self::SEND, self::STOP, self::LOOK], true)) {
-                throw new \LogicException("A sending has no phase $phase");
             }
             // after Continue the campaign shows the error the run stopped at; prep leaves a queued one till its end
             if (($phase === self::SEND) || ($this->camp_state === Schema::CAMPAIGN_STATE_ERROR)) {
@@ -424,7 +444,7 @@ class SendRun extends BatchRun
                 self::LOOK => $this->look($from, $budget, $snapshot),
             };
         } catch (\Throwable $failure) {
-            $this->campaignFails($failure);
+            $this->campaignFails($failure, $watch);
             throw $failure;
         } finally {
             try {
@@ -434,16 +454,23 @@ class SendRun extends BatchRun
             } catch (\Throwable $e) {
                 // the failure of the step is the one the run shows
                 if (is_null($failure)) {
-                    $this->campaignFails($e);
+                    $this->campaignFails($e, $watch);
                     throw $e;
                 }
             }
         }
     }
 
-    /** the run ends in error, so the campaign must not go on showing it sending - the code only, as the run's */
-    private function campaignFails(\Throwable $e): void
+    /**
+     * The run ends in error, so the campaign must not go on showing it sending - the code only, as the run's.
+     * Once following delivery started - in a step of watch, or in the step of look that started it - the
+     * campaign shows the end of the sending, and what fails is the run's only.
+     */
+    private function campaignFails(\Throwable $e, bool $watch): void
     {
+        if ($watch || $this->watching()) {
+            return;
+        }
         try {
             $this->campaignIs(Schema::CAMPAIGN_STATE_ERROR, ($e instanceof BatchFailed) ? $e->reason : self::INTERNAL);
         } catch (\Throwable) {
@@ -714,10 +741,11 @@ class SendRun extends BatchRun
      * frozen reasons, not by the cursor: a message in flight is uncertain, a recipient skipped by its
      * reason is skipped before the cursor gets to it too. One never tried is stopped once a stop or
      * the end of the run leaves it so - nothing sends it any more -, otherwise queued. The counts add
-     * up to total; until is the end of a pause, 0 = none.
+     * up to total; until is the end of a pause, 0 = none - following delivery waits for its rounds, not
+     * for ISDS. delivered and accepted as SendMaps::delivery().
      * Public for the page of a sending (Gate::progress()); a progressExtra() of this run must call it
      * too, so that both show the same figures.
-     * @return array{total: int, sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int, until: int}
+     * @return array{total: int, sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int, until: int, delivered: int, accepted: int}
      * @throws \JsonException|BatchFailed a record edited into no JSON, recipients not as frozen
      */
     public function progressFigures(): array
@@ -727,8 +755,8 @@ class SendRun extends BatchRun
         $tally = $this->maps()->tally($rows);
         $over  = ((string) $this->stop_by !== '') || in_array($this->state(), [self::DONE, self::ENDED], true);
         // a position left by a run in error waits for nothing
-        $until = ($this->state() === self::SENDING) ? SendPace::pauseEnd($this->position(), $now) : 0;
-        return array_merge($tally, [
+        $until = (($this->state() === self::SENDING) && !$this->watching()) ? SendPace::pauseEnd($this->position(), $now) : 0;
+        return array_merge($tally, $this->maps()->delivery(), [
             'total'   => count($rows),
             'stopped' => $over ? $tally['stopped'] : 0,
             'queued'  => $over ? 0 : $tally['stopped'],
@@ -883,12 +911,17 @@ class SendRun extends BatchRun
      * The end of look. A sending that sent messages goes on following their delivery: the campaign shows
      * its end first - the sending is over for people, whatever is delivered later -, then the record says
      * since when, the state changes to read from the start of the run. One that sent none ends now.
+     * A look repeated after following started - its step failed later, Continue ran it again - only goes
+     * on: following counts from the end of the sending, not from Continue.
      * @param list<array<string, string>> $rows
      */
     private function lookEnds(array $at, array $rows): BatchStepResult
     {
         if (StatusSync::indexOf(SendMaps::entries((string) $this->dm_ids)) === []) {
             return new BatchStepResult($at, true, done: $this->total, total: $this->total);
+        }
+        if ($this->watching()) {
+            return $this->result(['p' => self::WATCH, 'n' => 0]);
         }
         $now = static::now();
         try {
@@ -907,7 +940,9 @@ class SendRun extends BatchRun
      * state changes and the days not read yet (readChanges()). What ISDS told goes into the record first
      * - a message this sending did not send is passed over -, then into the items; an item leaves
      * dm_dirty only when it shows what the record keeps now. Work the step can do now goes on at once
-     * (StatusSync::pending()), the rest waits for the next whole hour, and so does ISDS that fails.
+     * (StatusSync::pending()), the rest waits for the next whole hour; so does ISDS that fails, with no
+     * limit - following spends nothing -, its detail saying why (readChanges()). What needs a person
+     * fails the run; the campaign keeps the end of the sending.
      */
     private function watch(array $from, BatchBudget $budget): BatchStepResult
     {
@@ -915,14 +950,22 @@ class SendRun extends BatchRun
         $this->total = Snapshot::recipientCount((string) $this->manifest);
         $this->quiet = true;
         $this->rows  = null;
+        // a step of an older tree that does not know watch put the campaign into error: the sending ended
+        // all the same. The record says what the campaign shows, so a round reads no snapshot for it.
+        if (!in_array((string) $this->camp_state, [Schema::CAMPAIGN_STATE_DONE, Schema::CAMPAIGN_STATE_STOPPED], true)) {
+            $this->rows = $this->snapshot(false)->recipients();
+            $this->campaignIs(self::endState($this->maps()->tally($this->rows)), '', [], true);
+        }
         $indexOf     = StatusSync::indexOf(SendMaps::entries((string) $this->dm_ids));
-        $byIndex     = array_map(strval(...), array_flip($indexOf));
+        $byIndex     = $this->byIndex();
         $times       = $this->watchTimes($byIndex, $now);
         if (is_null($times)) {
             return new BatchStepResult($from, false);
         }
         [$started, $last, $since] = $times;
-        $at    = ['n' => (int) ($from['n'] ?? 0) + 1] + array_diff_key($from, array_flip(self::PAUSE_KEYS));
+        // a count edited to its end would fail every step, Continue too
+        $n     = $from['n'] ?? 0;
+        $at    = ['n' => (is_int($n) && ($n >= 0) && ($n < PHP_INT_MAX)) ? $n + 1 : 1] + array_diff_key($from, array_flip(self::PAUSE_KEYS));
         $dirty = SendMaps::entries((string) $this->dm_dirty);
         $state = SendMaps::entries((string) $this->dm_state);
         $done  = $this->showDelivery(array_keys($dirty), $state, $byIndex, $budget);
@@ -950,8 +993,8 @@ class SendRun extends BatchRun
         $at   = array_filter([self::SPAN => ($read['span'] < StatusSync::MAX_SPAN) ? $read['span'] : 0, self::DAY => $read['at']]) + array_diff_key($at, [self::SPAN => true, self::DAY => true]);
         // a minute past the time ISDS may still record the changes of the next whole hour (LAG)
         $next = StatusSync::boundary($now) + StatusSync::ROUND + StatusSync::LAG + 60;
-        if ($got['failed']) {
-            return $this->result(['u' => $next] + $at, Outcome::UNAVAILABLE);
+        if (!is_null($got['failed'])) {
+            return $this->result(['u' => $next] + $at, Outcome::UNAVAILABLE, $got['failed']);
         }
         $w = ['watch_last' => $read['last'], 'watch_day' => $read['day'], 'dm_dirty' => $left];
         if (StatusSync::ends($w, $state, $indexOf, $since, $now)) {
@@ -1001,41 +1044,58 @@ class SendRun extends BatchRun
      * The state changes of a round while the budget lasts, MAX_CALLS calls at most (StatusSync::nextCall()),
      * merged after each call: an answer tells of every message of the box, and only this sending's are
      * kept. An answer too large halves the span of the calls, down to ROUND; ISDS that does not answer
-     * ends the reading, and what was read stays read.
+     * ends the reading, and what was read stays read - so do a datovka_conf.php PHP cannot read now and
+     * the address of the server blocked: each passes by itself, no person has to act.
      * @param array<array-key, mixed>                           $state   dm_state
      * @param array{last: int, day: string, at: int, span: int} $read    as StatusSync::nextCall()
      * @param array<array-key, int>                             $indexOf of the messages sent
-     * @return array{state: array<array-key, mixed>, changed: array<int, int>, read: array{last: int, day: string, at: int, span: int}, asked: bool, failed: bool}
-     *         dm_state and the indexes whose entry changed, where the reading stands, whether ISDS was asked and whether it failed
+     * @return array{state: array<array-key, mixed>, changed: array<int, int>, read: array{last: int, day: string, at: int, span: int}, asked: bool, failed: ?string}
+     *         dm_state and the indexes whose entry changed, where the reading stands, whether ISDS was asked, and why
+     *         the reading failed: '' ISDS did not answer, too_large, blocked, config; null = it did not
+     * @throws BatchFailed what needs a person: the account changed, the login refused, a configuration that cannot work
      */
     private function readChanges(array $state, array $read, array $indexOf, int $started, BatchBudget $budget, int $now): array
     {
         $changed = [];
         $client  = null;
-        $failed  = false;
-        for ($calls = 0; ($calls < StatusSync::MAX_CALLS) && !$failed && !$budget->spent(); ++$calls) {
+        $failed  = null;
+        for ($calls = 0; ($calls < StatusSync::MAX_CALLS) && is_null($failed) && !$budget->spent(); ++$calls) {
             $call = StatusSync::nextCall($read, $now);
             if (is_null($call)) {
                 break;
             }
-            $client ??= $this->checkedClient();
-            $answer = is_string($client) ? null : self::ask(static function () use ($client, $call): array|false {
-                try {
-                    return $client->stateChanges($call['from'], $call['to']);
-                } catch (TransportException $e) {
-                    if ($e->tooLarge()) {
-                        return false;
+            try {
+                $client ??= $this->checkedClient();
+                if (is_string($client)) {
+                    // ISDS did not say whose the login is, or PHP cannot read datovka_conf.php now
+                    $failed = ($client === Outcome::CONFIG) ? 'config' : '';
+                    break;
+                }
+                $answer = self::ask(static function () use ($client, $call): array|false {
+                    try {
+                        return $client->stateChanges($call['from'], $call['to']);
+                    } catch (TransportException $e) {
+                        if ($e->tooLarge()) {
+                            return false;
+                        }
+                        throw $e;
                     }
+                });
+            } catch (BatchFailed $e) {
+                // LoginLatch lifts the block by itself; a new password would not
+                if ($e->reason !== Outcome::BLOCKED) {
                     throw $e;
                 }
-            });
+                $failed = 'blocked';
+                break;
+            }
             if ($answer === false) {
                 // more changes than an answer holds: a shorter call may fit
                 $span         = StatusSync::halve(min($read['span'], $call['to'] - $call['from']));
-                $failed       = is_null($span);
+                $failed       = is_null($span) ? 'too_large' : null;
                 $read['span'] = $span ?? $read['span'];
             } elseif (is_null($answer)) {
-                $failed = true;
+                $failed = '';
             } else {
                 $merged   = StatusSync::merge($state, $answer, $indexOf, $started, $now);
                 $state    = $merged['state'];
@@ -1066,11 +1126,33 @@ class SendRun extends BatchRun
         $rows        = $this->rows ??= $this->snapshot(false)->recipients();
         $items       = $this->items();
         $this->inChunks($keys, 0, $budget, static function (int $i, int $k) use ($rows, $items, $state, $byIndex, &$done): void {
-            $entry = is_string($state[$k] ?? null) ? StatusSync::entry($state[$k]) : null;
-            $shown = (is_null($entry) || !isset($rows[$k])) ? null : $items->markDelivery($rows[$k]['msg'], $entry, $byIndex[$k]);
-            $done[$k] = is_null($shown) ? ($state[$k] ?? null) : StatusSync::encode($shown);
+            $done[$k] = self::showEntry($items, $rows, $state, $byIndex, $k);
         });
         return $done;
+    }
+
+    /**
+     * index => dmID of each message sent
+     * @return array<int, string>
+     * @throws \JsonException dm_ids edited into no JSON
+     */
+    private function byIndex(): array
+    {
+        return array_map(strval(...), array_flip(StatusSync::indexOf(SendMaps::entries((string) $this->dm_ids))));
+    }
+
+    /**
+     * The message item of $k shows the delivery $state keeps
+     * @param list<array<string, string>> $rows
+     * @param array<array-key, mixed>     $state
+     * @param array<int, string>          $byIndex
+     * @return mixed the entry the item shows now, or the value passed over
+     */
+    private static function showEntry(SendItems $items, array $rows, array $state, array $byIndex, int $k): mixed
+    {
+        $entry = is_string($state[$k] ?? null) ? StatusSync::entry($state[$k]) : null;
+        $shown = (is_null($entry) || !isset($rows[$k])) ? null : $items->markDelivery($rows[$k]['msg'], $entry, $byIndex[$k]);
+        return is_null($shown) ? ($state[$k] ?? null) : StatusSync::encode($shown);
     }
 
     /**
@@ -1152,8 +1234,9 @@ class SendRun extends BatchRun
         if (SendPace::pauseEnd($from, static::now()) <= static::now()) {
             return null;
         }
-        $code = BatchFailed::isCode((string) $this->retry_code) ? (string) $this->retry_code : Outcome::UNAVAILABLE;
-        return $this->result(['e' => (int) ($from['e'] ?? 0) + 1] + $from, $code);
+        $code   = BatchFailed::isCode((string) $this->retry_code) ? (string) $this->retry_code : Outcome::UNAVAILABLE;
+        $detail = BatchFailed::isDetail((string) $this->error_detail) ? (string) $this->error_detail : '';
+        return $this->result(['e' => (int) ($from['e'] ?? 0) + 1] + $from, $code, $detail);
     }
 
     /**
@@ -1169,7 +1252,7 @@ class SendRun extends BatchRun
         return $this->withSlices(function (): array {
             $maps   = $this->maps();
             $report = $maps->tally($this->snapshot(false)->recipients()) + $maps->delivery();
-            $this->campaignIs(self::endState($report), '', [Schema::CAMPAIGN_FINISHED_AT => static::now()], true);
+            $this->campaignIs(self::endState($report), '', $this->finishedAt(static::now()), true);
             return $report;
         });
     }
@@ -1201,7 +1284,19 @@ class SendRun extends BatchRun
                     $writes[] = fn() => $this->cancel($k, $row, $items, $known);
                 }
                 if ((string) array_key_first(self::recordsOfSubject((string) $this->subject)) === (string) $this->getId()) {
-                    $writes[] = fn() => $items->campaign(self::endState($maps->tally($rows)), [Schema::CAMPAIGN_FINISHED_AT => $now], true);
+                    $writes[] = fn() => $items->campaign(self::endState($maps->tally($rows)), $this->finishedAt($now), true);
+                }
+                // the delivery the record keeps and the items do not show yet; the record of an ended run stays
+                // as it is, an item that fails stays in its dm_dirty. A map edited into no JSON fails as one
+                // write: the others still run.
+                try {
+                    $state   = SendMaps::entries((string) $this->dm_state);
+                    $byIndex = $this->byIndex();
+                    foreach (array_keys(array_intersect_key(SendMaps::entries((string) $this->dm_dirty), $byIndex)) as $k) {
+                        $writes[] = static fn() => self::showEntry($items, $rows, $state, $byIndex, $k);
+                    }
+                } catch (\JsonException $e) {
+                    $writes[] = static fn() => throw $e;
                 }
                 $failure = null;
                 foreach ($writes as $write) {
@@ -1218,6 +1313,16 @@ class SendRun extends BatchRun
         } finally {
             $this->invalidate();
         }
+    }
+
+    /**
+     * The time the sending finished, for the campaign item; none while following delivery, whose campaign
+     * shows when the sending ended, not when following does
+     * @return array<string, int>
+     */
+    private function finishedAt(int $now): array
+    {
+        return $this->watching() ? [] : [Schema::CAMPAIGN_FINISHED_AT => $now];
     }
 
     /** @param array{stopped: int} $tally SendMaps::tally() */
@@ -1253,11 +1358,11 @@ class SendRun extends BatchRun
         return $this->result(SendPace::paused($at, static::now(), $code), $code);
     }
 
-    /** the step ends at $at, with what it warns of */
-    private function result(array $at, string $retry = ''): BatchStepResult
+    /** the step ends at $at, with what it warns of; $detail tells why it waits */
+    private function result(array $at, string $retry = '', string $detail = ''): BatchStepResult
     {
         $warnings = ($this->unchecked > 0) ? [self::UNCHECKED => $this->unchecked] : [];
-        return new BatchStepResult($at, false, warnings: $warnings, done: min($this->next($at), $this->total), total: $this->total, retry: $retry);
+        return new BatchStepResult($at, false, warnings: $warnings, done: min($this->next($at), $this->total), total: $this->total, retry: $retry, retryDetail: $detail);
     }
 
     /**
@@ -1321,8 +1426,8 @@ class SendRun extends BatchRun
      * The client of the account the run was queued with: datovka_conf.php still binds that account to
      * the site and the pair of slices, and its login still belongs to the box the run sends from. ISDS
      * is asked whose the login is when it changed (another password or certificate), on the first step
-     * of sending, and then once an hour - a certificate belongs to one box, so the fingerprint alone
-     * tells a new sender, the question is a safeguard.
+     * of sending, and then once an hour, once a day while following delivery - a certificate belongs to
+     * one box, so the fingerprint alone tells a new sender, the question is a safeguard.
      * @return Client|string the client, or the code a pause fails with after SendPace::LONGEST_PAUSE:
      *                       Outcome::UNAVAILABLE when ISDS did not answer whose the login is,
      *                       Outcome::CONFIG when PHP could not read datovka_conf.php
@@ -1365,7 +1470,8 @@ class SendRun extends BatchRun
         }
         $client = $this->client($account);
         $now    = static::now();
-        if (($fingerprint === $this->acct_id) && ((string) $this->owner_at !== '') && ($now - (int) $this->owner_at < self::OWNER_EVERY)) {
+        $every  = $this->watching() ? self::OWNER_WATCHING : self::OWNER_EVERY;
+        if (($fingerprint === $this->acct_id) && ((string) $this->owner_at !== '') && ($now - (int) $this->owner_at < $every)) {
             return $client;
         }
         $box = self::ask($client->ownerBox(...));
