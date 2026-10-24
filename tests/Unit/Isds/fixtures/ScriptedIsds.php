@@ -50,6 +50,18 @@ final class ScriptedIsds implements ClientInterface
         return $windows;
     }
 
+    /** @return list<array{int, int, int}> dmFromTime, dmToTime (unix seconds) and dmOffset of each GetListOfSentMessages, in order */
+    public function lists(): array
+    {
+        $lists = [];
+        foreach ($this->calls as $call) {
+            if (($call['op'] === 'GetListOfSentMessages') && (preg_match('~<\w+:dmFromTime>([^<]*)<.*<\w+:dmToTime>([^<]*)<.*<\w+:dmOffset>(\d+)<~s', $call['body'], $m) === 1)) {
+                $lists[] = [(int) strtotime($m[1]), (int) strtotime($m[2]), (int) $m[3]];
+            }
+        }
+        return $lists;
+    }
+
     /** @return list<string> $element of each CreateMessage, in order - dbIDRecipient, dmSenderRefNumber */
     public function sent(string $element = 'dbIDRecipient'): array
     {

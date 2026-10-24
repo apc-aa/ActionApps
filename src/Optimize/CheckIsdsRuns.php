@@ -205,17 +205,21 @@ class CheckIsdsRuns extends AbstractOptimize
 
     /**
      * Following delivery that has read nothing for WATCH_LATE, or says it read up to a time in the future; the
-     * last wait tells why, a normal wait for the next round (WATCHING) is none
+     * last wait tells why, a normal wait for the next round (WATCHING) is none. A reading of the list of sent
+     * messages counts from when it started, whatever the windows read meanwhile: past changes ISDS no longer
+     * keeps, watch_last moves only once the whole list is read, and a list ISDS keeps breaking off stands.
      * @param array<string, string> $r
      * @return list<Finding>
      */
     private function watchStands(SendRun $run, string $id, array $r, ?string $shown, int $now): array
     {
-        $from  = self::time($r['watch_from'] ?? '');
-        $last  = self::time($r['watch_last'] ?? '');
-        $ahead = $last > $now + StatusSync::ROUND;
+        $from    = self::time($r['watch_from'] ?? '');
+        $last    = self::time($r['watch_last'] ?? '');
+        $l       = $run->position()['l'] ?? null;
+        $reading = (is_array($l) && is_int($l['h'] ?? null) && ($l['h'] <= $now)) ? $l['h'] : 0;
+        $ahead   = $last > $now + StatusSync::ROUND;
         // watch_last starts at the start of the run, long before following
-        $since = $ahead ? $from : max($last, $from);
+        $since = $ahead ? $from : (($reading > 0) ? max($from, $reading) : max($last, $from));
         if (!$ahead && ($now - $since <= self::WATCH_LATE)) {
             return [];
         }

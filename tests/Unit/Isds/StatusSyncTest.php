@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds;
 
 use AA\Isds\Lookup;
+use AA\Isds\SentList;
 use AA\Isds\SentMessage;
 use AA\Isds\Soap;
 use AA\Isds\StateChange;
@@ -431,7 +432,7 @@ final class StatusSyncTest extends TestCase
 
             self::assertSame($at - StatusSync::OVERLAP, $windows[0][0], "$span: the overlap first");
             self::assertSame([], array_filter($windows, static fn(array $w): bool => $w[1] <= $at), "$span: each past watch_last");
-            self::assertLessThanOrEqual($span + StatusSync::OVERLAP, $windows[0][1] - $windows[0][0], "$span: the first call no longer than the span and the overlap");
+            self::assertLessThanOrEqual($span, $windows[0][1] - $windows[0][0], "$span: the first call no longer than the span, the overlap included");
         }
     }
 
@@ -463,9 +464,10 @@ final class StatusSyncTest extends TestCase
         }
 
         self::assertSame([
-            [self::prague('2030-03-21 23:58'), self::prague('2030-03-22 01:00')],
-            [self::prague('2030-03-22 00:58'), self::prague('2030-03-22 02:00')],
-            [self::prague('2030-03-22 01:58'), self::prague('2030-03-22 03:00')],
+            [self::prague('2030-03-21 23:58'), self::prague('2030-03-22 00:58')],
+            [self::prague('2030-03-22 00:56'), self::prague('2030-03-22 01:56')],
+            [self::prague('2030-03-22 01:54'), self::prague('2030-03-22 02:54')],
+            [self::prague('2030-03-22 02:52'), self::prague('2030-03-22 03:00')],
         ], $calls);
     }
 
@@ -497,9 +499,10 @@ final class StatusSyncTest extends TestCase
     /** @return array<string, array{int, list<array{string, string}>}> */
     public static function spans(): array
     {
-        $hourly = [['09:58', '11:00'], ['11:00', '12:00'], ['12:00', '13:00'], ['13:00', '14:00'], ['14:00', '15:00']];
+        // the overlap counts in the first call: an hour ISDS answered as too large is tried as an hour
+        $hourly = [['09:58', '10:58'], ['10:58', '11:58'], ['11:58', '12:58'], ['12:58', '13:58'], ['13:58', '14:58'], ['14:58', '15:00']];
         return [
-            'two hours'             => [7200, [['09:58', '12:00'], ['12:00', '14:00'], ['14:00', '15:00']]],
+            'two hours'             => [7200, [['09:58', '11:58'], ['11:58', '13:58'], ['13:58', '15:00']]],
             'an hour'               => [3600, $hourly],
             // a position edited by hand: a span that would never end
             'none'                  => [0, $hourly],
@@ -517,7 +520,7 @@ final class StatusSyncTest extends TestCase
         $windows = StatusSync::windows($last, $now, StatusSync::ROUND);
 
         self::assertCount(StatusSync::MAX_CALLS, $windows);
-        self::assertSame([$last - StatusSync::OVERLAP, $last + 3600], $windows[0]);
+        self::assertSame([$last - StatusSync::OVERLAP, $last - StatusSync::OVERLAP + 3600], $windows[0]);
         foreach (array_slice($windows, 1) as $i => $window) {
             self::assertSame($windows[$i][1], $window[0], 'one after another');
         }
@@ -525,23 +528,26 @@ final class StatusSyncTest extends TestCase
         self::assertSame([], StatusSync::windows($last, $now, StatusSync::ROUND, 0));
     }
 
-    // ISDS keeps the changes of 15 days: no call starts more than CHANGES_KEPT before now, nor its overlap
+    // ISDS keeps the changes of 15 days: a window that starts sooner, its overlap too, is not read - the list of
+    // sent messages tells what it would have
     #[DataProvider('pastKept')]
-    public function test_windows_never_start_before_kept(int $before): void
+    public function test_windows_too_old_goes_to_list(int $before): void
     {
         $now    = self::prague('2030-03-21 10:37');
         $oldest = $now - StatusSync::CHANGES_KEPT;
+        $last   = $oldest + StatusSync::OVERLAP - $before;
+        $w      = ['watch_from' => $oldest, 'watch_last' => $last, 'watch_rec' => $oldest, 'dm_state' => [], 'indexOf' => self::INDEX_OF];
 
-        $windows = StatusSync::windows($oldest - $before, $now, StatusSync::ROUND);
-
-        self::assertSame([$oldest, max($oldest - $before, $oldest) + 3600], $windows[0]);
-        self::assertCount(StatusSync::MAX_CALLS, $windows);
+        self::assertSame([], StatusSync::windows($last, $now, StatusSync::ROUND));
+        self::assertSame('b', StatusSync::due($w, $now));
+        self::assertTrue(StatusSync::pending($w, $now));
+        self::assertSame([$oldest, $oldest + 3600], StatusSync::windows($oldest + StatusSync::OVERLAP, $now, StatusSync::ROUND)[0], 'the overlap still kept');
     }
 
     /** @return array<string, array{int}> */
     public static function pastKept(): array
     {
-        return ['the overlap before' => [-60], 'just before' => [0], 'a year before' => [365 * 86400], 'from 1970' => [self::prague('2030-03-07 10:37')]];
+        return ['a second of the overlap' => [1], 'a day before' => [86400], 'a year before' => [365 * 86400], 'from 1970' => [self::prague('2030-03-07 10:37')]];
     }
 
     public function test_halve_stops_at_hour(): void
@@ -776,7 +782,7 @@ final class StatusSyncTest extends TestCase
     {
         $read = ['last' => self::prague('2030-03-25 01:00'), 'day' => '2030-03-24', 'at' => 0, 'span' => 7200];
 
-        self::assertSame(['from' => self::prague('2030-03-25 00:58'), 'to' => self::prague('2030-03-25 03:00'), 'read' => array_replace($read, ['last' => self::prague('2030-03-25 03:00')])], StatusSync::nextCall($read, self::prague('2030-03-25 07:30')));
+        self::assertSame(['from' => self::prague('2030-03-25 00:58'), 'to' => self::prague('2030-03-25 02:58'), 'read' => array_replace($read, ['last' => self::prague('2030-03-25 02:58')])], StatusSync::nextCall($read, self::prague('2030-03-25 07:30')));
     }
 
     public function test_firstWatchDay_yesterday_after_six(): void
@@ -925,10 +931,217 @@ final class StatusSyncTest extends TestCase
         $since = self::prague('2030-03-09 07:00');
         $state = [0 => self::entry(4, 10, 10, 0)];
 
-        self::assertFalse(StatusSync::ends(self::allRead(), $state, self::INDEX_OF, $since + 3600, self::prague('2030-03-25 07:30')), 'not yet');
-        self::assertTrue(StatusSync::ends(self::allRead(), $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')));
-        self::assertFalse(StatusSync::ends(['dm_dirty' => '{"0":1}'] + self::allRead(), $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')), 'an item to write');
-        self::assertFalse(StatusSync::ends(['watch_last' => (string) self::prague('2030-03-25 06:00')] + self::allRead(), $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')), 'a window unread');
+        // the list of sent messages read at the deadline
+        $read  = ['watch_rec' => self::prague('2030-03-25 07:10')] + self::allRead();
+
+        self::assertFalse(StatusSync::ends($read, $state, self::INDEX_OF, $since + 3600, self::prague('2030-03-25 07:30')), 'not yet');
+        self::assertTrue(StatusSync::ends($read, $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')));
+        self::assertFalse(StatusSync::ends(self::allRead(), $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')), 'the list not read since the deadline');
+        self::assertFalse(StatusSync::ends(['dm_dirty' => '{"0":1}'] + $read, $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')), 'an item to write');
+        self::assertFalse(StatusSync::ends(['watch_last' => (string) self::prague('2030-03-25 06:00')] + $read, $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')), 'a window unread');
+    }
+
+    // ------------------------------------------------------------ the list of sent messages
+
+    /**
+     * What the record holds when following started at 10:00 and read up to $last, the list not read yet;
+     * one message delivered, two not known
+     * @return array<string, mixed>
+     */
+    private static function following(string $last = '2030-03-21 11:00'): array
+    {
+        return [
+            'started'    => self::prague('2030-03-21 09:00'),
+            'watch_from' => self::prague('2030-03-21 10:00'),
+            'watch_last' => self::prague($last),
+            'watch_rec'  => null,
+            'dm_state'   => [0 => self::entry(4, 10, 10, 0)],
+            'indexOf'    => self::INDEX_OF,
+        ];
+    }
+
+    // the antivirus check may refuse a message after its dmID came back, and no state change says so
+    public function test_due_av_after_grace(): void
+    {
+        self::assertSame('a', StatusSync::due(self::following(), self::prague('2030-03-21 11:05')));
+        self::assertSame('a', StatusSync::due(['dm_state' => [0 => '2:5:0:0', 1 => self::entry(6, 9, 8, 9), 2 => self::entry(3, 0, 0, 0)]] + self::following(), self::prague('2030-03-21 11:05')), 'timestamped only');
+    }
+
+    public function test_due_av_not_before_h_reaches_grace(): void
+    {
+        self::assertSame('', StatusSync::due(self::following(), self::prague('2030-03-21 11:04:59')));
+        self::assertSame('', StatusSync::due(['watch_from' => self::prague('2030-03-21 10:01')] + self::following(), self::prague('2030-03-21 11:30')));
+    }
+
+    public function test_due_av_once(): void
+    {
+        $now = self::prague('2030-03-21 11:05');
+
+        self::assertSame('', StatusSync::due(['watch_rec' => self::prague('2030-03-21 11:05')] + self::following(), $now), 'read');
+        self::assertSame('', StatusSync::due(['watch_rec' => (string) self::prague('2030-03-21 11:05')] + self::following(), $now), 'read, as the record keeps it');
+        self::assertSame('', StatusSync::due(['dm_state' => array_fill(0, 3, self::entry(4, 10, 10, 0))] + self::following(), $now), 'each past the check');
+    }
+
+    // ISDS keeps the changes of 15 days: older ones the list tells, whatever was read before
+    public function test_due_after_14_days(): void
+    {
+        $now  = self::prague('2030-03-21 11:05');
+        $kept = $now - StatusSync::CHANGES_KEPT + StatusSync::OVERLAP;
+        $read = ['watch_rec' => self::prague('2030-03-21 11:00'), 'dm_state' => array_fill(0, 3, self::entry(4, 10, 10, 0))];
+
+        self::assertSame('b', StatusSync::due(['watch_last' => $kept - 1] + $read + self::following(), $now));
+        self::assertSame('', StatusSync::due(['watch_last' => $kept] + $read + self::following(), $now));
+    }
+
+    // at the deadline, once: a message not final yet may have been accepted or made undeliverable unseen
+    #[DataProvider('nonFinals')]
+    public function test_due_final_sweep_for_any_nonfinal(array $state): void
+    {
+        $end = StatusSync::deadline(self::prague('2030-03-21 10:00'));
+        $w   = ['dm_state' => $state, 'watch_rec' => self::prague('2030-03-21 11:10'), 'watch_last' => $end - 3600] + self::following();
+
+        self::assertSame('', StatusSync::due($w, $end - 1));
+        self::assertSame('c', StatusSync::due($w, $end));
+        self::assertSame('', StatusSync::due(['watch_rec' => $end] + $w, $end + 3600), 'once');
+    }
+
+    /** @return array<string, array{array<int, string>}> */
+    public static function nonFinals(): array
+    {
+        $final = [0 => self::entry(6, 10, 5, 10), 1 => self::entry(8, 20, 0, 0), 2 => self::entry(3, 0, 0, 0)];
+        return [
+            'delivered'     => [[1 => self::entry(4, 20, 20, 0)] + $final],
+            'by fiction'    => [[1 => self::entry(5, 20, 10, 20)] + $final],
+            'not known'     => [array_diff_key($final, [2 => true])],
+        ];
+    }
+
+    public function test_due_none_when_all_final(): void
+    {
+        $w   = ['dm_state' => [0 => self::entry(6, 10, 5, 10), 1 => self::entry(8, 20, 0, 0), 2 => self::entry(3, 0, 0, 0)]] + self::following();
+        $end = StatusSync::deadline(self::prague('2030-03-21 10:00'));
+
+        self::assertSame('', StatusSync::due($w, self::prague('2030-03-21 11:05')));
+        self::assertSame('', StatusSync::due(['watch_last' => $end - 3600] + $w, $end));
+    }
+
+    // 14 days past the deadline ISDS keeps none of its changes: nothing is read, whatever is due
+    public function test_due_none_past_over(): void
+    {
+        $over = StatusSync::deadline(self::prague('2030-03-21 10:00')) + StatusSync::CHANGES_KEPT;
+
+        self::assertSame('b', StatusSync::due(self::following(), $over - 1));
+        self::assertFalse(StatusSync::over(self::prague('2030-03-21 10:00'), $over - 1));
+        self::assertSame('', StatusSync::due(self::following(), $over));
+        self::assertTrue(StatusSync::over(self::prague('2030-03-21 10:00'), $over));
+    }
+
+    // what is due is work to do now
+    public function test_pending_true_when_due(): void
+    {
+        $w = ['watch_day' => '2030-03-20', 'dm_dirty' => ''] + self::following();
+
+        self::assertTrue(StatusSync::pending($w, self::prague('2030-03-21 11:05')));
+        self::assertFalse(StatusSync::pending(['watch_rec' => self::prague('2030-03-21 11:05')] + $w, self::prague('2030-03-21 11:05')));
+    }
+
+    // every message was delivered before GRACE after following started; the first round may read sooner
+    public function test_listWindow_ends_at_h_in_first_round(): void
+    {
+        $started = self::prague('2030-03-21 09:00');
+        $since   = self::prague('2030-03-21 10:00');
+
+        self::assertSame([$started - Lookup::SKEW, $since - 3600], StatusSync::listWindow($started, $since, $since - 3600));
+        self::assertSame([$started - Lookup::SKEW, $since + Lookup::GRACE], StatusSync::listWindow($started, $since, $since + 86400));
+        self::assertSame([0, 0], StatusSync::listWindow(0, 0, 0), 'a start that is no time: from 1970, never ending before it starts');
+    }
+
+    // a reading is started when due, with the boundary it started at
+    public function test_listCursor_fresh_when_due(): void
+    {
+        $now = self::prague('2030-03-21 11:05');
+        $h   = self::prague('2030-03-21 11:00');
+
+        $fresh = ['f' => self::prague('2030-03-21 08:59'), 't' => $h, 'o' => 1, 'a' => '', 'c' => 0, 'h' => $h];
+        self::assertSame($fresh, StatusSync::listCursor(null, self::following(), $now));
+        self::assertNull(StatusSync::listCursor(null, ['watch_rec' => $h] + self::following(), $now), 'none due');
+    }
+
+    // a reading a step left goes on, also once nothing is due and after JSON
+    public function test_listCursor_takes_own_after_json(): void
+    {
+        $now = self::prague('2030-03-21 11:05');
+        $l   = ['f' => self::prague('2030-03-21 08:59'), 't' => self::prague('2030-03-21 11:00'), 'o' => 981, 'a' => '5001', 'c' => 1, 'h' => self::prague('2030-03-21 11:00')];
+        $l   = json_decode((string) json_encode($l), true);
+
+        self::assertSame($l, StatusSync::listCursor($l, ['watch_rec' => $now] + self::following(), $now));
+        self::assertSame($l, StatusSync::listCursor($l, self::following(), self::prague('2030-03-21 12:30')), 'the window it started with');
+    }
+
+    /** @param array<string, mixed> $edit */
+    #[DataProvider('editedCursors')]
+    public function test_listCursor_refuses_edited(array $edit): void
+    {
+        $now = self::prague('2030-03-21 11:05');
+        $l   = array_replace(['f' => self::prague('2030-03-21 08:59'), 't' => self::prague('2030-03-21 11:00'), 'o' => 981, 'a' => '5001', 'c' => 1, 'h' => self::prague('2030-03-21 11:00')], $edit);
+
+        self::assertSame(($edit === []) ? 981 : 1, StatusSync::listCursor($l, self::following(), $now)['o'] ?? null);
+        self::assertSame(($edit === []) ? 981 : null, StatusSync::listCursor($l, ['watch_rec' => $now] + self::following(), $now)['o'] ?? null, 'started anew only when due');
+    }
+
+    /** @return array<string, array{array<string, mixed>}> */
+    public static function editedCursors(): array
+    {
+        return [
+            'as read() left it'    => [[]],
+            'h past H'             => [['h' => self::prague('2030-03-21 12:00')]],
+            'h before GRACE'       => [['h' => self::prague('2030-03-21 10:59'), 't' => self::prague('2030-03-21 10:59')]],
+            'h no number'          => [['h' => (string) self::prague('2030-03-21 11:00')]],
+            'no h'                 => [['h' => null]],
+            'another start'        => [['f' => self::prague('2030-03-21 08:58')]],
+            'another end'          => [['t' => self::prague('2030-03-21 10:59')]],
+            'no list'              => [['o' => 'x']],
+            'all pages read'       => [['c' => SentList::MAX_PAGES, 'o' => 1, 'a' => '']],
+        ];
+    }
+
+    // the windows a step reads move watch_last past h: the reading goes on, also after ISDS broke it off
+    // hours ago; past changes ISDS no longer keeps watch_last stands, and an h before it was edited in
+    public function test_listCursor_h_against_watch_last_only_past_kept_changes(): void
+    {
+        $now = self::prague('2030-03-21 15:05');
+        $l   = ['f' => self::prague('2030-03-21 08:59'), 't' => self::prague('2030-03-21 11:00'), 'o' => 981, 'a' => '5001', 'c' => 1, 'h' => self::prague('2030-03-21 11:00')];
+
+        self::assertSame($l, StatusSync::listCursor($l, self::following('2030-03-21 15:00'), $now));
+
+        $last = $now - 15 * 86400;
+        $lost = ['watch_from' => $now - 15 * 86400 + 600, 'started' => $last, 'watch_last' => $last];
+        $l    = ['f' => $last - Lookup::SKEW, 't' => $last + 4200, 'o' => 981, 'a' => '5001', 'c' => 1];
+        self::assertSame(981, StatusSync::listCursor($l + ['h' => self::prague('2030-03-21 14:00')], $lost + self::following(), $now)['o'] ?? null);
+        self::assertSame(1, StatusSync::listCursor($l + ['h' => $last - 3600, 't' => $last - 3600] + $l, $lost + self::following(), $now)['o'] ?? null);
+    }
+
+    // a reading done past changes ISDS no longer keeps reads the changes on from where it started; else as they were
+    public function test_afterList_from_h_only_past_kept_changes(): void
+    {
+        $now = self::prague('2030-03-21 11:05');
+        $h   = self::prague('2030-03-21 11:00');
+
+        self::assertSame($h, StatusSync::afterList($now - 15 * 86400, $h, $now));
+        self::assertSame($h - 7200, StatusSync::afterList($h - 7200, $h, $now));
+        self::assertSame($h, StatusSync::afterList($h, $h - 3600, $now));
+    }
+
+    // past over() the run ends once its items are written: no reading, no morning, nothing due waits for it
+    public function test_ends_past_over_without_reading(): void
+    {
+        $since = self::prague('2030-02-01 10:00');
+        $now   = StatusSync::deadline($since) + StatusSync::CHANGES_KEPT;
+        $w     = ['watch_last' => $since, 'watch_day' => '2030-02-01', 'dm_dirty' => '', 'l' => ['f' => 1]];
+
+        self::assertFalse(StatusSync::ends($w, [], self::INDEX_OF, $since, $now - 1));
+        self::assertTrue(StatusSync::ends($w, [], self::INDEX_OF, $since, $now));
+        self::assertFalse(StatusSync::ends(['dm_dirty' => '{"1":1}'] + $w, [], self::INDEX_OF, $since, $now), 'an item to write');
     }
 
     public function test_deadline_16_days(): void

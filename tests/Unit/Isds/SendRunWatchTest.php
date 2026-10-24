@@ -8,9 +8,12 @@ use AA\Http\Response;
 use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException as HttpTransportException;
 use AA\Isds\Client;
+use AA\Isds\Lookup;
+use AA\Isds\Outcome;
 use AA\Isds\Schema;
 use AA\Isds\SendPace;
 use AA\Isds\SendRun;
+use AA\Isds\SentList;
 use AA\Isds\SliceProblem;
 use AA\Isds\SliceRules;
 use AA\Isds\StatusSync;
@@ -264,16 +267,17 @@ final class SendRunWatchTest extends TestCase
         ];
     }
 
-    // a start of the run that is no time: what ISDS keeps is read, and no time it tells is too early
+    // a start of the run that is no time: what ISDS keeps is read, and no time it tells is too early - the
+    // changes from then ISDS no longer gives, the list of sent messages from 1970 tells them
     public function test_watch_started_out_of_shape_reads_what_isds_keeps(): void
     {
         $id = self::watching(2, ['watch_last' => 'x']);
         self::storedSet($id, 'started', (string) (self::NOW + 86400));
-        $isds = self::watchIsds([self::changes([['1001', self::DELIVERED, 4]])]);
+        $isds = self::watchIsds([], [self::listed([['1001', self::SHORT . '-1', self::box(0), self::DELIVERED]])]);
 
         self::runQueued();
 
-        self::assertSame([self::NOW - StatusSync::CHANGES_KEPT, (string) self::H], [$isds->windows()[0][0], self::stored($id)['watch_last']]);
+        self::assertSame([[[0, self::SENT + 600 + Lookup::GRACE, 1]], [], (string) self::H], [$isds->lists(), $isds->windows(), self::stored($id)['watch_last']]);
         self::assertSame([0 => self::entry(4, self::DELIVERED, self::DELIVERED, 0)], self::map($id, 'dm_state'));
     }
 
@@ -370,9 +374,10 @@ final class SendRunWatchTest extends TestCase
             self::assertSame('step ' . ($step + 1), self::runQueued());
         }
 
+        // each call an hour, its overlap included
         $on = self::MIDNIGHT - StatusSync::OVERLAP;
-        self::assertSame([[$on, self::MIDNIGHT + 3600], [$on + 3600, self::MIDNIGHT + 7200], [$on + 7200, self::MIDNIGHT + 10800]], $isds->windows());
-        self::assertSame([(string) (self::MIDNIGHT + 10800), '', '0'], [self::stored($id)['watch_last'], self::stored($id)['retry_code'], self::stored($id)['failures']]);
+        self::assertSame([[$on, $on + 3600], [$on + 3480, $on + 7080], [$on + 6960, $on + 10560]], $isds->windows());
+        self::assertSame([(string) ($on + 10560), '', '0'], [self::stored($id)['watch_last'], self::stored($id)['retry_code'], self::stored($id)['failures']]);
     }
 
     // the budget went before the step asked or wrote anything: a failure the core counts, not a step that
@@ -733,6 +738,21 @@ final class SendRunWatchTest extends TestCase
     }
 
     // a phase of newer code, run by this one: the step fails before it writes anything
+    // a step of watch that fails before it reads the times of the record leaves the campaign be, also when
+    // watch_from was taken out of the record by hand
+    public function test_watch_failure_before_times_without_watch_from_leaves_campaign(): void
+    {
+        $id = self::watching();
+        self::storedSet($id, 'watch_from', '');
+        self::storedSet($id, 'dm_ids', '{"0":');
+        self::watchIsds();
+
+        self::assertSame('error INTERNAL', self::runQueued());
+
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, ''], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_ERROR_TEXT)]);
+        self::assertNotContains(self::CAMPAIGN_ITEM, self::items()->written('update'));
+    }
+
     public function test_unknown_phase_leaves_campaign(): void
     {
         $id = self::watching(2, [], ['n' => 0, 'p' => 'later']);
@@ -764,15 +784,32 @@ final class SendRunWatchTest extends TestCase
 
         self::runQueued();
 
-        self::assertSame([[$from, self::H], [$from, $last + $half]], $isds->windows());
+        self::assertSame([[$from, self::H], [$from, $from + $half]], $isds->windows());
         self::assertSame(['n' => 1, 'p' => 'watch', 'z' => $half], self::position($id));
-        self::assertSame((string) ($last + $half), self::stored($id)['watch_last']);
+        self::assertSame((string) ($from + $half), self::stored($id)['watch_last']);
 
         TestSendRun::$microNow = null;
         self::runQueued();
 
-        self::assertSame([[$last + $half - StatusSync::OVERLAP, self::H]], array_slice($isds->windows(), 2), 'a step reads on from where the one before got, in the shorter span');
+        self::assertSame([[$from + $half - StatusSync::OVERLAP, self::H - StatusSync::OVERLAP], [self::H - 2 * StatusSync::OVERLAP, self::H]], array_slice($isds->windows(), 2), 'a step reads on from where the one before got, in the shorter span');
         self::assertSame(['n' => 2, 'p' => 'watch', 'u' => self::NEXT], self::position($id), 'the next round asks for the full span again');
+    }
+
+    // a call of an hour and its overlap too large: an hour is tried, the overlap counted in it
+    public function test_watch_too_large_tries_an_hour(): void
+    {
+        $id   = self::watching(2, ['watch_last' => (string) (self::H - 3600)]);
+        $isds = null;
+        $isds = self::watchIsds([static function () use (&$isds): Response {
+            $window = array_slice($isds?->windows() ?? [], -1)[0] ?? [0, 0];
+            return ($window[1] - $window[0] > 3600) ? throw new ResponseTooLargeException('Response body exceeds 8388608 bytes') : self::changes();
+        }]);
+
+        self::runQueued();
+
+        $from = self::H - 3600 - StatusSync::OVERLAP;
+        self::assertSame([[$from, self::H], [$from, $from + 3600], [$from + 3600 - StatusSync::OVERLAP, self::H]], $isds->windows());
+        self::assertSame([SendRun::WATCHING, (string) self::H], [self::stored($id)['retry_code'], self::stored($id)['watch_last']]);
     }
 
     // an hour too large is all ISDS gives: the round waits as for ISDS that fails
@@ -888,17 +925,250 @@ final class SendRunWatchTest extends TestCase
         self::assertSame(['d' => self::MIDNIGHT - 3600, 'n' => 4, 'p' => 'watch'], self::position($id), 'how far the day is read stays');
     }
 
-    // ISDS keeps the changes of 15 days: no call starts sooner than CHANGES_KEPT before now
-    public function test_watch_reads_nothing_older_than_changes_kept(): void
+    // ------------------------------------------------------------ the list of sent messages
+
+    // the antivirus check refused a message: no state change tells it, the list of sent messages does - once,
+    // when the check has had its hour
+    public function test_finds_av_refused_after_grace(): void
     {
-        $id   = self::watching(2, ['watch_last' => (string) (self::NOW - 20 * 86400)]);
-        $isds = self::watchIsds();
+        $id   = self::watching(2, ['watch_rec' => '']);
+        $isds = self::watchIsds([self::changes([['1001', self::DELIVERED, 4]])], [self::listed([['1001', self::SHORT . '-1', self::box(0), self::DELIVERED], ['1002', self::SHORT . '-2', self::box(1), null, 3]])]);
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame(['GetMessageStateChanges', 'GetListOfSentMessages'], $isds->ops());
+        self::assertSame([[self::SENT - Lookup::SKEW, self::SENT + 600 + Lookup::GRACE, 1]], $isds->lists());
+        self::assertSame([0 => self::entry(4, self::DELIVERED, self::DELIVERED, 0), 1 => '3:0:0:0'], self::map($id, 'dm_state'));
+        self::assertSame([Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_FAILED], self::states($id));
+        self::assertSame('3', self::items()->field(self::message($id, 1), Schema::MESSAGE_ERROR_CODE));
+        self::assertSame([(string) self::NOW, SendRun::WATCHING], [self::stored($id)['watch_rec'], self::stored($id)['retry_code']]);
+
+        TestSendRun::$now = self::NOW + 3600;
+        self::runQueued();
+
+        self::assertCount(1, $isds->lists(), 'once');
+    }
+
+    // ISDS no longer keeps the changes since watch_last: the list tells what they would have, and the changes
+    // are read on from where the reading of the list started
+    public function test_catches_up_after_15_days_watch_last_from_h(): void
+    {
+        $sent = self::NOW - 15 * 86400;
+        $id   = self::watching(2, ['watch_day' => '2030-03-16'], sent: $sent);
+        $isds = self::watchIsds([], [self::listed([['1001', self::SHORT . '-1', self::box(0), $sent + 1800], ['1002', self::SHORT . '-2', self::box(1), $sent + 1800, 6, $sent + 7200]])]);
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame([[[$sent - Lookup::SKEW, $sent + 600 + Lookup::GRACE, 1]], []], [$isds->lists(), $isds->windows()]);
+        self::assertSame([(string) self::H, (string) self::NOW], [self::stored($id)['watch_last'], self::stored($id)['watch_rec']]);
+        self::assertSame([0 => self::entry(4, $sent + 1800, $sent + 1800, 0), 1 => self::entry(6, 0, $sent + 1800, $sent + 7200)], self::map($id, 'dm_state'));
+
+        TestSendRun::$now = self::NOW + 3600;
+        self::runQueued();
+
+        self::assertSame([[self::H - StatusSync::OVERLAP, self::H + 3600]], $isds->windows());
+        self::assertCount(1, $isds->lists());
+    }
+
+    // a list longer than a step reads goes on in the next step, in the window it started with
+    public function test_list_read_over_steps_window_fixed(): void
+    {
+        $id   = self::watching(2, ['watch_rec' => '', 'watch_last' => (string) self::H]);
+        $page = array_map(static fn(int $i): array => [(string) (5000 + $i), '', self::box(0), self::DELIVERED], range(1, Client::MAX_LIST - 1));
+        TestSendRun::$microNow = (float) self::NOW;
+        $isds = self::watchIsds([], [static function () use ($page): Response {
+            TestSendRun::$microNow += 30.0;
+            return self::listed([...$page, ['1001', '', self::box(0), self::DELIVERED]]);
+        }, self::listed([['1001', '', self::box(0), self::DELIVERED], ['1002', '', self::box(1), null, 3]])]);
+        $window = [self::SENT - Lookup::SKEW, self::SENT + 600 + Lookup::GRACE];
+
+        self::assertSame('step 1', self::runQueued());
+
+        $o = 1 + Client::MAX_LIST - SentList::OVERLAP;
+        self::assertSame(['f' => $window[0], 't' => $window[1], 'o' => $o, 'a' => '1001', 'c' => 1, 'h' => self::H], self::position($id)['l'] ?? null);
+        self::assertSame(['', [0 => self::entry(4, self::DELIVERED, self::DELIVERED, 0)]], [self::stored($id)['watch_rec'], self::map($id, 'dm_state')]);
+
+        TestSendRun::$microNow = null;
+        TestSendRun::$now      = self::NOW + 600;
+        self::assertSame('step 2', self::runQueued());
+
+        self::assertSame([[...$window, 1], [...$window, $o]], $isds->lists());
+        self::assertSame([(string) (self::NOW + 600), '3:0:0:0'], [self::stored($id)['watch_rec'], self::map($id, 'dm_state')[1] ?? null]);
+        self::assertArrayNotHasKey('l', self::position($id));
+    }
+
+    // ISDS down in the middle of the list: the next round reads the changes of its hour, then the list on
+    // from the page that failed, in the window it started with
+    public function test_list_goes_on_after_isds_down_mid_reading(): void
+    {
+        $id     = self::watching(2, ['watch_rec' => '', 'watch_last' => (string) self::H]);
+        $page   = array_map(static fn(int $i): array => [(string) (5000 + $i), '', self::box(0), self::DELIVERED], range(1, Client::MAX_LIST - 1));
+        $isds   = self::watchIsds([], [
+            self::listed([...$page, ['1001', '', self::box(0), self::DELIVERED]]),
+            new HttpTransportException('Connection reset'),
+            self::listed([['1001', '', self::box(0), self::DELIVERED], ['1002', '', self::box(1), null, 3]]),
+        ]);
+        $window = [self::SENT - Lookup::SKEW, self::SENT + 600 + Lookup::GRACE];
+        $o      = 1 + Client::MAX_LIST - SentList::OVERLAP;
+
+        self::runQueued();
+        self::assertSame([Outcome::UNAVAILABLE, $o], [self::stored($id)['retry_code'], self::position($id)['l']['o'] ?? null]);
+
+        TestSendRun::$now = self::NOW + 3600;
+        self::runQueued();
+
+        self::assertSame([[...$window, 1], [...$window, $o], [...$window, $o]], $isds->lists());
+        self::assertSame([[self::H - StatusSync::OVERLAP, self::H + 3600]], $isds->windows());
+        self::assertSame([(string) (self::NOW + 3600), '3:0:0:0'], [self::stored($id)['watch_rec'], self::map($id, 'dm_state')[1] ?? null]);
+    }
+
+    /** @param array<string, mixed> $edit */
+    #[DataProvider('listCursors')]
+    public function test_list_edited_cursor_reads_anew(array $edit, int $offset): void
+    {
+        $l  = array_replace(['f' => self::SENT - Lookup::SKEW, 't' => self::SENT + 600 + Lookup::GRACE, 'o' => 981, 'a' => '1001', 'c' => 1, 'h' => self::H], $edit);
+        $id = self::watching(2, ['watch_rec' => '', 'watch_last' => (string) self::H], ['n' => 3, 'p' => 'watch', 'l' => $l]);
+        $isds = self::watchIsds([], [self::listed([['1001', '', self::box(0), self::DELIVERED], ['1002', '', self::box(1), self::DELIVERED]])]);
 
         self::runQueued();
 
-        $calls = $isds->windows();
-        self::assertSame([self::NOW - StatusSync::CHANGES_KEPT, self::H], [$calls[0][0], array_slice($calls, -1)[0][1]]);
-        self::assertSame((string) self::H, self::stored($id)['watch_last']);
+        self::assertSame([[self::SENT - Lookup::SKEW, self::SENT + 600 + Lookup::GRACE, $offset]], $isds->lists());
+        self::assertSame((string) self::NOW, self::stored($id)['watch_rec']);
+        self::assertArrayNotHasKey('l', self::position($id));
+    }
+
+    /** @return array<string, array{array<string, mixed>, int}> */
+    public static function listCursors(): array
+    {
+        return [
+            'as a step left it'      => [[], 981],
+            'h past H'               => [['h' => self::H + 3600], 1],
+            // the windows of a step moved watch_last past it: the reading goes on
+            'h before watch_last'    => [['h' => self::H - 3600], 981],
+            'h before GRACE'         => [['h' => self::SENT + 600 + Lookup::GRACE - 1, 't' => self::SENT + 600 + Lookup::GRACE - 1], 1],
+            'all pages read'         => [['c' => SentList::MAX_PAGES, 'o' => 1, 'a' => ''], 1],
+            'h no number'            => [['h' => (string) self::H], 1],
+            'another start'          => [['f' => self::SENT - Lookup::SKEW - 1], 1],
+            'another end'            => [['t' => self::SENT + 600 + Lookup::GRACE - 1], 1],
+            'past its pages'         => [['o' => 982], 1],
+        ];
+    }
+
+    // SentList gave up after its pages: the reading is done all the same, not read again for ever
+    public function test_list_gave_up_counts_as_read(): void
+    {
+        $last = SentList::MAX_PAGES - 1;
+        $o    = 1 + $last * (Client::MAX_LIST - SentList::OVERLAP);
+        $l    = ['f' => self::SENT - Lookup::SKEW, 't' => self::SENT + 600 + Lookup::GRACE, 'o' => $o, 'a' => '1001', 'c' => $last, 'h' => self::H];
+        $id   = self::watching(2, ['watch_rec' => '', 'watch_last' => (string) self::H], ['n' => 3, 'p' => 'watch', 'l' => $l]);
+        $page = array_map(static fn(int $i): array => [(string) (5000 + $i), '', self::box(0), self::DELIVERED], range(1, Client::MAX_LIST - 1));
+        $isds = self::watchIsds([], [self::listed([['1001', '', self::box(0), self::DELIVERED], ...$page])]);
+
+        self::assertSame('step 1', self::runQueued());
+
+        self::assertSame([[self::SENT - Lookup::SKEW, self::SENT + 600 + Lookup::GRACE, $o]], $isds->lists(), 'the last page, full');
+        self::assertSame([(string) self::NOW, SendRun::WATCHING], [self::stored($id)['watch_rec'], self::stored($id)['retry_code']]);
+        self::assertArrayNotHasKey('l', self::position($id));
+
+        TestSendRun::$now = self::NOW + 3600;
+        self::runQueued();
+
+        self::assertCount(1, $isds->lists(), 'not read again');
+    }
+
+    // ISDS breaks the list off in two rounds in a row: each round reads its changes, the list goes on from
+    // the page that failed - the windows moved watch_last past where the reading started
+    public function test_list_goes_on_after_two_breaks_in_different_hours(): void
+    {
+        $id     = self::watching(2, ['watch_rec' => '', 'watch_last' => (string) self::H]);
+        $page   = array_map(static fn(int $i): array => [(string) (5000 + $i), '', self::box(0), self::DELIVERED], range(1, Client::MAX_LIST - 1));
+        $broken = new HttpTransportException('Connection reset');
+        $isds   = self::watchIsds([], [
+            self::listed([...$page, ['1001', '', self::box(0), self::DELIVERED]]),
+            $broken,
+            $broken,
+            self::listed([['1001', '', self::box(0), self::DELIVERED], ['1002', '', self::box(1), null, 3]]),
+        ]);
+        $window = [self::SENT - Lookup::SKEW, self::SENT + 600 + Lookup::GRACE];
+        $o      = 1 + Client::MAX_LIST - SentList::OVERLAP;
+
+        foreach ([0, 3600, 7200] as $later) {
+            TestSendRun::$now = self::NOW + $later;
+            self::runQueued();
+        }
+
+        self::assertSame([[...$window, 1], [...$window, $o], [...$window, $o], [...$window, $o]], $isds->lists());
+        self::assertSame([[self::H - StatusSync::OVERLAP, self::H + 3600], [self::H + 3600 - StatusSync::OVERLAP, self::H + 7200]], $isds->windows());
+        self::assertSame([(string) (self::NOW + 7200), '3:0:0:0'], [self::stored($id)['watch_rec'], self::map($id, 'dm_state')[1] ?? null]);
+        self::assertArrayNotHasKey('l', self::position($id));
+    }
+
+    // a watch_rec to come - edited, or a clock set back - is no reading: the list is read, and the time is now
+    public function test_watch_rec_to_come_reads_the_list(): void
+    {
+        $id   = self::watching(2, ['watch_rec' => (string) (self::NOW + 86400), 'watch_last' => (string) self::H]);
+        $isds = self::watchIsds([], [self::listed([['1001', '', self::box(0), self::DELIVERED], ['1002', '', self::box(1), self::DELIVERED]])]);
+
+        self::runQueued();
+
+        self::assertCount(1, $isds->lists());
+        self::assertSame((string) self::NOW, self::stored($id)['watch_rec']);
+    }
+
+    // at the deadline a message not final yet is looked up in the list once more: the end waits for it
+    public function test_final_sweep_for_any_nonfinal(): void
+    {
+        $since   = self::NOW - StatusSync::WATCH_DAYS * 86400 - 3600;
+        $sent    = $since - 600;
+        $fiction = $sent + 1800 + 10 * 86400;
+        $state   = '{"0":"' . self::entry(6, $sent + 7200, $sent + 1800, $sent + 7200) . '","1":"' . self::entry(5, $fiction, $sent + 1800, $fiction) . '"}';
+        $id      = self::watching(2, ['watch_last' => (string) self::H, 'watch_day' => '2030-03-16', 'dm_state' => $state], sent: $sent);
+        $isds    = self::watchIsds([], [self::listed([['1002', self::SHORT . '-2', self::box(1), $sent + 1800, 6, $fiction]])]);
+
+        self::assertSame('done', self::runQueued());
+
+        self::assertSame([[[$sent - Lookup::SKEW, $since + Lookup::GRACE, 1]], []], [$isds->lists(), $isds->windows()]);
+        self::assertSame(self::entry(6, 0, $sent + 1800, $fiction), self::map($id, 'dm_state')[1] ?? null);
+        self::assertSame('6', self::items()->field(self::message($id, 1), Schema::MESSAGE_DM_STATUS));
+    }
+
+    // Continue long after the deadline: the list tells what the changes no longer can, then the run ends
+    public function test_continue_after_20_days_reads_then_ends(): void
+    {
+        $sent = self::NOW - 20 * 86400;
+        $id   = self::watching(2, ['watch_last' => (string) ($sent + 5 * 86400)], sent: $sent);
+        self::storedSet($id, 'state', 'error');
+        TableDb::$tables['toexecute'] = [];
+        $isds = self::watchIsds([], [self::listed([['1001', self::SHORT . '-1', self::box(0), $sent + 1800], ['1002', self::SHORT . '-2', self::box(1), $sent + 1800, 6, $sent + 7200]])]);
+
+        self::assertSame('', TestSendRun::resumeFor(self::CAMPAIGN_ITEM, Sending::USER));
+        self::assertSame('done', self::runQueued());
+
+        self::assertSame(['GetListOfSentMessages'], array_values(array_unique(array_diff($isds->ops(), ['GetMessageStateChanges']))));
+        self::assertCount(1, $isds->lists());
+        self::assertGreaterThanOrEqual(self::NOW - StatusSync::CHANGES_KEPT, $isds->windows()[0][0] ?? 0, 'the days ISDS still keeps');
+        self::assertSame(self::MIDNIGHT, array_slice($isds->windows(), -1)[0][1] ?? 0);
+        self::assertSame([(string) self::H, (string) self::NOW], [self::stored($id)['watch_last'], self::stored($id)['watch_rec']]);
+        self::assertSame(['4', '6'], [self::items()->field(self::message($id, 0), Schema::MESSAGE_DM_STATUS), self::items()->field(self::message($id, 1), Schema::MESSAGE_DM_STATUS)]);
+    }
+
+    // ISDS down for good, or datovka_conf.php never readable again: once it keeps nothing of the time before the
+    // deadline, the run calls nothing and ends
+    public function test_list_beyond_kept_ends_after_16_days(): void
+    {
+        $sent = self::NOW - StatusSync::WATCH_DAYS * 86400 - StatusSync::CHANGES_KEPT - 600 + 3600;
+        $id   = self::watching(2, ['watch_last' => (string) ($sent + 86400)], sent: $sent);
+        self::watchIsds([new HttpTransportException('Connection refused')], [new HttpTransportException('Connection refused')]);
+
+        self::assertSame('step 1', self::runQueued());
+        self::assertSame(Outcome::UNAVAILABLE, self::stored($id)['retry_code']);
+
+        TestSendRun::$now  = self::NOW + 3600;
+        TestSendRun::$http = null;
+        TestSendRun::$conf = null;
+        self::assertSame('done', self::runQueued());
+
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, ''], [self::campaign(), self::stored($id)['dm_state']]);
     }
 
     // ------------------------------------------------------------ the end
@@ -923,10 +1193,11 @@ final class SendRunWatchTest extends TestCase
         TestSendRun::$now = $night;
         $since            = $night - StatusSync::WATCH_DAYS * 86400 - 3600;
         $id               = self::watching(2, ['watch_from' => (string) $since, 'watch_last' => (string) $h, 'watch_day' => '2030-03-16'], sent: $since - 600);
-        $isds             = self::watchIsds();
+        $isds             = self::watchIsds([], [self::listed([['1001', self::SHORT . '-1', self::box(0), $since], ['1002', self::SHORT . '-2', self::box(1), $since]])]);
 
         self::assertSame('step 1', self::runQueued());
         self::assertSame([[], SendRun::WATCHING], [$isds->windows(), self::stored($id)['retry_code']], 'yesterday is read only from 6:00');
+        self::assertCount(1, $isds->lists(), 'the list once more, at the deadline');
 
         TestSendRun::$now = $h + 4 * 3600 + 600;
         self::assertSame('done', self::runQueued());
@@ -1106,7 +1377,8 @@ final class SendRunWatchTest extends TestCase
 
     /**
      * A run of $n recipients that sent them all as 1001, 1002, ... at $sent - its items sent, the campaign
-     * done - and follows their delivery from 10 minutes later; ISDS was asked whose the login is now
+     * done - and follows their delivery from 10 minutes later; the list of sent messages was read once the
+     * antivirus check had time (StatusSync::due() 'a'), ISDS was asked whose the login is now
      * @param array<string, string>     $props    own properties over those
      * @param array<string, int|string> $position
      */
@@ -1123,6 +1395,7 @@ final class SendRunWatchTest extends TestCase
             'watch_from' => (string) ($sent + 600),
             'watch_last' => (string) $sent,
             'watch_day'  => StatusSync::firstWatchDay($sent + 600),
+            'watch_rec'  => (string) min($now, $sent + 600 + Lookup::GRACE),
         ], $position);
         TestSendRun::$now = $now;
         foreach (self::rows($id) as $k => $row) {
@@ -1134,15 +1407,17 @@ final class SendRunWatchTest extends TestCase
     }
 
     /**
-     * ISDS for a round: the state changes as scripted, none when not; whose the login is when asked
+     * ISDS for a round: the state changes as scripted, none when not; the list of sent messages only
+     * when scripted; whose the login is when asked
      * @param list<Response|\Throwable|\Closure(): Response> $changes
+     * @param list<Response|\Throwable|\Closure(): Response> $list
      */
-    private static function watchIsds(array $changes = []): ScriptedIsds
+    private static function watchIsds(array $changes = [], array $list = []): ScriptedIsds
     {
         return TestSendRun::$http = new ScriptedIsds([
             'GetMessageStateChanges' => $changes ?: [self::changes()],
             'GetOwnerInfoFromLogin2' => [new Response(200, self::fixture('owner-info.xml'))],
-        ]);
+        ] + (($list === []) ? [] : ['GetListOfSentMessages' => $list]));
     }
 
     /**

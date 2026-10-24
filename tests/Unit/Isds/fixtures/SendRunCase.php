@@ -248,20 +248,20 @@ trait SendRunCase
     }
 
     /**
-     * GetListOfSentMessages with these records, not yet accepted, all with the subject of the sending
-     * @param list<array{0: string, 1: string, 2: string, 3: ?int, 4?: int}> $records dmID, dmSenderRefNumber, dbIDRecipient,
-     *                                                                       dmDeliveryTime, dmMessageStatus (4)
+     * GetListOfSentMessages with these records, all with the subject of the sending
+     * @param list<array{0: string, 1: string, 2: string, 3: ?int, 4?: int, 5?: int}> $records dmID, dmSenderRefNumber,
+     *        dbIDRecipient, dmDeliveryTime, dmMessageStatus (4), dmAcceptanceTime (none)
      */
     private static function listed(array $records): Response
     {
-        $xml = '';
+        $xml  = '';
+        $time = static fn(string $name, ?int $at): string => is_null($at) ? "<q:$name xsi:nil=\"true\"/>" : "<q:$name>" . gmdate('Y-m-d\TH:i:s', $at) . "Z</q:$name>";
         foreach ($records as $record) {
             [$dmId, $ref, $box, $delivered] = $record;
             $status = $record[4] ?? 4;
-            $time   = is_null($delivered) ? '<q:dmDeliveryTime xsi:nil="true"/>' : '<q:dmDeliveryTime>' . gmdate('Y-m-d\TH:i:s', $delivered) . 'Z</q:dmDeliveryTime>';
             $xml   .= "<q:dmRecord><q:dmID>$dmId</q:dmID><q:dbIDRecipient>$box</q:dbIDRecipient><q:dmAnnotation>Pozvánka</q:dmAnnotation>"
                 . "<q:dmSenderRefNumber>$ref</q:dmSenderRefNumber><q:dmMessageStatus>$status</q:dmMessageStatus>"
-                . $time . '<q:dmAcceptanceTime xsi:nil="true"/></q:dmRecord>';
+                . $time('dmDeliveryTime', $delivered) . $time('dmAcceptanceTime', $record[5] ?? null) . '</q:dmRecord>';
         }
         return new Response(200, (string) preg_replace('~<q:dmRecords>.*</q:dmRecords>~s', "<q:dmRecords>$xml</q:dmRecords>", self::fixture('sent-messages.xml')));
     }

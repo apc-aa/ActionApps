@@ -72,8 +72,9 @@ final class SentList
 
     /**
      * A cursor of a call before goes on only when it is consistent with how read() leaves it: in the
-     * window it started with, no further than its pages took it, past page 1 only with an anchor - a
-     * cursor edited by hand would fail every step, or skip the list it never read
+     * window it started with, no further than its pages took it, past page 1 only with an anchor, short
+     * of MAX_PAGES - read() leaves no other: a cursor edited by hand would fail every step, or pass for a
+     * list read to its end
      * @param array<string, mixed> $cursor
      * @param int                  $f      the start of the window a reading started now would have
      * @param int                  $tMax   the furthest end its window may have
@@ -82,7 +83,7 @@ final class SentList
     {
         [$t, $o, $a, $c] = [$cursor['t'] ?? null, $cursor['o'] ?? null, $cursor['a'] ?? null, $cursor['c'] ?? null];
         return (($cursor['f'] ?? null) === $f) && is_int($t) && is_int($o) && is_string($a) && is_int($c)
-            && ($f <= $t) && ($t <= $tMax) && ($c >= 0)
+            && ($f <= $t) && ($t <= $tMax) && ($c >= 0) && ($c < self::MAX_PAGES)
             && ($o >= 1) && ($o <= 1 + $c * (Client::MAX_LIST - self::OVERLAP)) && (($o === 1) === ($a === ''));
     }
 }

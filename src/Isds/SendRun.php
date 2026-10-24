@@ -30,8 +30,9 @@ use AA_Property;
  * Once look is over, a sending that sent messages follows their delivery (watch, StatusSync): the
  * campaign shows its end at once, the run reads the state changes of ISDS each hour into its record
  * (dm_state) and the message items show them. It ends in the morning when every message is in a final
- * status, or after StatusSync::WATCH_DAYS. Its position {p, n} counts the steps, z the span of a call
- * shortened by an answer too large, d how far the day being read whole is read.
+ * status, or after StatusSync::WATCH_DAYS. What the changes never tell it reads from the list of sent
+ * messages (StatusSync::due()). Its position {p, n} counts the steps, z the span of a call shortened by
+ * an answer too large, d how far the day being read whole is read, l how far the list is read.
  * A pause waits for ISDS without spending the run's retries: w pauses in a row, u the time to wait
  * till, s the start of the first one (SendPace).
  */
@@ -100,7 +101,8 @@ class SendRun extends BatchRun
     private const MIN_SEND = 3;
     /** the position of a pause: w pauses in a row, u the time to wait till, s the start of the first, e the steps run before u */
     private const PAUSE_KEYS = ['w', 'u', 's', 'e'];
-    /** the position of a reading of the list a look did not finish (Lookup::$scan) */
+    /** the position of a reading of the list of sent messages a step did not finish: of look (Lookup::$scan),
+     *  of watch (StatusSync::listCursor()) */
     private const READING = 'l';
     /** the position of watch: the span of a call after ISDS answered one too large, till the round ends */
     private const SPAN = 'z';
@@ -410,7 +412,7 @@ class SendRun extends BatchRun
         if (!in_array($phase, self::PHASES, true)) {
             throw new \LogicException("A sending has no phase $phase");
         }
-        $watch       = ($phase === self::WATCH);
+        $watch = ($phase === self::WATCH);
         try {
             $inflight = (string) $this->inflight;
             if (($inflight !== '') && !$this->settleInflight()) {
@@ -948,12 +950,12 @@ class SendRun extends BatchRun
 
     /**
      * A round of following delivery: the message items that do not show their delivery yet, then the
-     * state changes and the days not read yet (readChanges()). What ISDS told goes into the record first
-     * - a message this sending did not send is passed over -, then into the items; an item leaves
-     * dm_dirty only when it shows what the record keeps now. Work the step can do now goes on at once
-     * (StatusSync::pending()), the rest waits for the next whole hour; so does ISDS that fails, with no
-     * limit - following spends nothing -, its detail saying why (readChanges()). What needs a person
-     * fails the run; the campaign keeps the end of the sending.
+     * state changes, the days not read yet and the list of sent messages when due (readChanges()). What
+     * ISDS told goes into the record first - a message this sending did not send is passed over -, then
+     * into the items; an item leaves dm_dirty only when it shows what the record keeps now. Work the step
+     * can do now goes on at once (StatusSync::pending()), the rest waits for the next whole hour; so does
+     * ISDS that fails, with no limit - following spends nothing -, its detail saying why (readChanges()).
+     * What needs a person fails the run; the campaign keeps the end of the sending.
      */
     private function watch(array $from, BatchBudget $budget): BatchStepResult
     {
@@ -973,7 +975,7 @@ class SendRun extends BatchRun
         if (is_null($times)) {
             return new BatchStepResult($from, false);
         }
-        [$started, $last, $since] = $times;
+        [$started, $last, $since, $rec] = $times;
         // a count edited to its end would fail every step, Continue too
         $n     = $from['n'] ?? 0;
         $at    = ['n' => (is_int($n) && ($n >= 0) && ($n < PHP_INT_MAX)) ? $n + 1 : 1] + array_diff_key($from, array_flip(self::PAUSE_KEYS));
@@ -986,13 +988,15 @@ class SendRun extends BatchRun
             return $wait;
         }
         $read = ['last' => $last, 'day' => (string) $this->watch_day, 'at' => is_int($at[self::DAY] ?? null) ? $at[self::DAY] : 0, 'span' => self::span($at)];
-        $got  = $this->readChanges($state, $read, $indexOf, $started, $budget, $now);
+        $w    = ['started' => $started, 'watch_from' => $since, 'watch_rec' => $rec, 'indexOf' => $indexOf];
+        $got  = $this->readChanges($state, $read, $w + ['l' => $at[self::READING] ?? null], $budget, $now);
         $dirty += $got['changed'];
         $record = array_filter([
             'dm_state'   => ($got['changed'] === []) ? null : self::json($got['state']),
             'dm_dirty'   => ($got['changed'] === []) ? null : self::json($dirty),
             'watch_last' => ($got['read']['last'] === $last) ? null : (string) $got['read']['last'],
             'watch_day'  => ($got['read']['day'] === $read['day']) ? null : $got['read']['day'],
+            'watch_rec'  => ($got['rec'] === $rec) ? null : (string) $got['rec'],
         ], is_string(...));
         // the record before the items that show it: a step that dies in between leaves them in dm_dirty
         if (($record !== []) && is_null($this->record($record))) {
@@ -1001,13 +1005,14 @@ class SendRun extends BatchRun
         [$state, $read] = [$got['state'], $got['read']];
         $done = $this->showDelivery(array_keys(self::stillDirty($dirty, $state, $done)), $state, $byIndex, $budget, $done);
         $left = $this->written($dirty, $state, $done);
-        $at   = array_filter([self::SPAN => ($read['span'] < StatusSync::MAX_SPAN) ? $read['span'] : 0, self::DAY => $read['at']]) + array_diff_key($at, [self::SPAN => true, self::DAY => true]);
+        $at   = array_filter([self::SPAN => ($read['span'] < StatusSync::MAX_SPAN) ? $read['span'] : 0, self::DAY => $read['at'], self::READING => $got['l']])
+            + array_diff_key($at, [self::SPAN => true, self::DAY => true, self::READING => true]);
         // a minute past the time ISDS may still record the changes of the next whole hour (LAG)
         $next = StatusSync::boundary($now) + StatusSync::ROUND + StatusSync::LAG + 60;
         if (!is_null($got['failed'])) {
             return $this->result(['u' => $next] + $at, Outcome::UNAVAILABLE, $got['failed']);
         }
-        $w = ['watch_last' => $read['last'], 'watch_day' => $read['day'], 'dm_dirty' => $left];
+        $w = ['watch_last' => $read['last'], 'watch_day' => $read['day'], 'dm_dirty' => $left, 'l' => $got['l'], 'watch_rec' => $got['rec'], 'dm_state' => $state] + $w;
         if (StatusSync::ends($w, $state, $indexOf, $since, $now)) {
             return new BatchStepResult($at, true, done: $this->total, total: $this->total);
         }
@@ -1025,10 +1030,11 @@ class SendRun extends BatchRun
      * watch_last that is no time, or one to come, reads from the start of the run; such a watch_from
      * follows from now - an end that came early would lose deliveries, one that comes late costs calls -,
      * and dm_dirty loses the indexes of no message sent. A start that is no time is 0: what ISDS keeps is
-     * read, and no time it tells is too early.
+     * read, and no time it tells is too early. A watch_rec that is no time is none: the list is read once
+     * more.
      * @param array<int, string> $byIndex index => dmID of each message sent
-     * @return ?array{0: int, 1: int, 2: int} started, watch_last, watch_from; null = Continue or another
-     *                                         step took the run
+     * @return ?array{0: int, 1: int, 2: int, 3: ?int} started, watch_last, watch_from, watch_rec; null =
+     *                                                  Continue or another step took the run
      */
     private function watchTimes(array $byIndex, int $now): ?array
     {
@@ -1048,31 +1054,46 @@ class SendRun extends BatchRun
         if (array_diff_key($dirty, $byIndex) !== []) {
             $fix['dm_dirty'] = self::json(array_intersect_key($dirty, $byIndex));
         }
-        return (($fix === []) || !is_null($this->record($fix))) ? [$started, $last, $since] : null;
+        return (($fix === []) || !is_null($this->record($fix))) ? [$started, $last, $since, self::recordedTime((string) $this->watch_rec, $now)] : null;
     }
 
     /**
      * The state changes of a round while the budget lasts, MAX_CALLS calls at most (StatusSync::nextCall()),
-     * merged after each call: an answer tells of every message of the box, and only this sending's are
-     * kept. An answer too large halves the span of the calls, down to ROUND; ISDS that does not answer
-     * ends the reading, and what was read stays read - so do a datovka_conf.php PHP cannot read now and
-     * the address of the server blocked: each passes by itself, no person has to act.
-     * @param array<array-key, mixed>                           $state   dm_state
-     * @param array{last: int, day: string, at: int, span: int} $read    as StatusSync::nextCall()
-     * @param array<array-key, int>                             $indexOf of the messages sent
-     * @return array{state: array<array-key, mixed>, changed: array<int, int>, read: array{last: int, day: string, at: int, span: int}, asked: bool, failed: ?string}
-     *         dm_state and the indexes whose entry changed, where the reading stands, whether ISDS was asked, and why
-     *         the reading failed: '' ISDS did not answer, too_large, blocked, config; null = it did not
+     * then the list of sent messages when it is due (StatusSync::listCursor()), a page a call, merged after
+     * each call: an answer tells of every message of the box, and only this sending's are kept. A page read
+     * again after a failure merges the same. An answer too large halves the span of the calls, down to
+     * ROUND; ISDS that does not answer ends the reading, and what was read stays read - so do a
+     * datovka_conf.php PHP cannot read now and the address of the server blocked: each passes by itself, no
+     * person has to act. Past StatusSync::over() nothing is read.
+     * @param array<array-key, mixed>                           $state dm_state
+     * @param array{last: int, day: string, at: int, span: int} $read  as StatusSync::nextCall()
+     * @param array{started: int, watch_from: int, watch_rec: ?int, indexOf: array<array-key, int>, l: mixed} $w
+     *        the times of the record, the messages sent, and l of the position: the reading of the list a step before left
+     * @return array{state: array<array-key, mixed>, changed: array<int, int>, read: array{last: int, day: string, at: int, span: int}, rec: ?int, l: ?array<string, mixed>, asked: bool, failed: ?string}
+     *         dm_state and the indexes whose entry changed, where the reading stands, when the list was read last, the
+     *         reading of the list to go on with, whether ISDS was asked, and why the reading failed: '' ISDS did not
+     *         answer, too_large, blocked, config; null = it did not
      * @throws BatchFailed what needs a person: the account changed, the login refused, a configuration that cannot work
      */
-    private function readChanges(array $state, array $read, array $indexOf, int $started, BatchBudget $budget, int $now): array
+    private function readChanges(array $state, array $read, array $w, BatchBudget $budget, int $now): array
     {
-        $changed = [];
-        $client  = null;
-        $failed  = null;
-        for ($calls = 0; ($calls < StatusSync::MAX_CALLS) && is_null($failed) && !$budget->spent(); ++$calls) {
-            $call = StatusSync::nextCall($read, $now);
-            if (is_null($call)) {
+        $changed  = [];
+        $client   = null;
+        $failed   = null;
+        $rec      = $w['watch_rec'];
+        // a reading a step before left is checked once, against the record: the windows this step reads move
+        // watch_last past where it started
+        $l        = is_null($w['l']) ? null : StatusSync::listCursor($w['l'], ['watch_last' => $read['last'], 'dm_state' => $state] + $w, $now);
+        $merge    = static function (array $events) use (&$state, &$changed, $w, $now): void {
+            $merged   = StatusSync::merge($state, $events, $w['indexOf'], $w['started'], $now);
+            $state    = $merged['state'];
+            $changed += array_fill_keys($merged['changed'], 1);
+        };
+        $over = StatusSync::over($w['watch_from'], $now);
+        for ($calls = 0; !$over && ($calls < StatusSync::MAX_CALLS) && is_null($failed) && !$budget->spent(); ++$calls) {
+            $call   = StatusSync::nextCall($read, $now);
+            $cursor = is_null($call) ? ($l ?? StatusSync::listCursor(null, ['watch_last' => $read['last'], 'watch_rec' => $rec, 'dm_state' => $state] + $w, $now)) : null;
+            if (is_null($call) && is_null($cursor)) {
                 break;
             }
             try {
@@ -1082,7 +1103,7 @@ class SendRun extends BatchRun
                     $failed = ($client === Outcome::CONFIG) ? 'config' : '';
                     break;
                 }
-                $answer = self::ask(static function () use ($client, $call): array|false {
+                $answer = is_null($cursor) ? self::ask(static function () use ($client, $call): array|false {
                     try {
                         return $client->stateChanges($call['from'], $call['to']);
                     } catch (TransportException $e) {
@@ -1091,7 +1112,10 @@ class SendRun extends BatchRun
                         }
                         throw $e;
                     }
-                });
+                }) : self::ask(static fn(): array => SentList::read($client->sentMessages(...), $cursor, static function (array $records, array $cursor) use ($merge): array {
+                    $merge($records);
+                    return $cursor;
+                }, static fn(): bool => false));
             } catch (BatchFailed $e) {
                 // LoginLatch lifts the block by itself; a new password would not
                 if ($e->reason !== Outcome::BLOCKED) {
@@ -1100,21 +1124,22 @@ class SendRun extends BatchRun
                 $failed = 'blocked';
                 break;
             }
-            if ($answer === false) {
+            if (is_null($answer)) {
+                $failed = '';
+            } elseif (!is_null($cursor)) {
+                // read to its end or given up, the reading is done: what the list did not tell, it never will
+                [$read['last'], $rec, $l] = ($answer[1] === '') ? [$read['last'], $rec, $answer[0]] : [StatusSync::afterList($read['last'], (int) $cursor['h'], $now), $now, null];
+            } elseif ($answer === false) {
                 // more changes than an answer holds: a shorter call may fit
                 $span         = StatusSync::halve(min($read['span'], $call['to'] - $call['from']));
                 $failed       = is_null($span) ? 'too_large' : null;
                 $read['span'] = $span ?? $read['span'];
-            } elseif (is_null($answer)) {
-                $failed = '';
             } else {
-                $merged   = StatusSync::merge($state, $answer, $indexOf, $started, $now);
-                $state    = $merged['state'];
-                $changed += array_fill_keys($merged['changed'], 1);
-                $read     = $call['read'];
+                $merge($answer);
+                $read = $call['read'];
             }
         }
-        return ['state' => $state, 'changed' => $changed, 'read' => $read, 'asked' => $calls > 0, 'failed' => $failed];
+        return ['state' => $state, 'changed' => $changed, 'read' => $read, 'rec' => $rec, 'l' => $l, 'asked' => $calls > 0, 'failed' => $failed];
     }
 
     /**

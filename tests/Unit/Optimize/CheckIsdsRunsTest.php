@@ -14,6 +14,7 @@ use AA\Optimize\Finding;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Tests\Unit\Central\Package\Fixtures\TableDb;
+use Tests\Unit\Isds\Fixtures\ScriptedIsds;
 use Tests\Unit\Isds\Fixtures\Sending;
 use Tests\Unit\Isds\Fixtures\TestSendRun;
 use Tests\Unit\Optimize\Fixtures\IsdsRunCheckCase;
@@ -615,6 +616,52 @@ final class CheckIsdsRunsTest extends TestCase
         self::following(4, ['dm_state' => '{"0":"' . self::ACCEPTED . '","2":"2:1899990000:0:0"}']);
 
         self::assertSame([Finding::OK], self::severities((new TestIsdsRunsCheck())->findings()));
+    }
+
+    // past changes ISDS no longer keeps watch_last moves only once the whole list of sent messages is read: a
+    // reading going on is no stall, one standing since it started is
+    #[DataProvider('listReadings')]
+    public function test_findings_watchReadingList_countsFromItsStart(int $h, bool $warns): void
+    {
+        $id = self::following(2, [], self::NOW - 15 * 86400);
+        self::storedSet($id, 'position', (string) json_encode(['l' => ['f' => 1, 't' => 2, 'o' => 981, 'a' => '901', 'c' => 1, 'h' => $h], 'n' => 3, 'p' => 'watch']));
+
+        self::assertSame($warns ? ["watch:$id"] : [''], self::keys((new TestIsdsRunsCheck())->findings()));
+    }
+
+    /** @return iterable<string, array{int, bool}> */
+    public static function listReadings(): iterable
+    {
+        yield 'started this hour' => [StatusSync::boundary(self::NOW), false];
+        yield 'started the hours of a wait ago' => [self::NOW - self::LATE, false];
+        yield 'a second more' => [self::NOW - self::LATE - 1, true];
+        yield 'h edited into the future' => [self::NOW + self::HOUR, true];
+    }
+
+    // ISDS keeps breaking the list off while the windows of changes are read: the list stands, so does following
+    public function test_findings_watchListStandsWhileWindowsRead(): void
+    {
+        $id = self::following(2, [], self::NOW - 2 * 86400, StatusSync::boundary(self::NOW));
+        self::storedSet($id, 'position', (string) json_encode(['l' => ['f' => 1, 't' => 2, 'o' => 981, 'a' => '901', 'c' => 1, 'h' => self::NOW - self::LATE - 1], 'n' => 9, 'p' => 'watch']));
+        self::storedSet($id, 'retry_code', Outcome::UNAVAILABLE);
+
+        $finding = self::only((new TestIsdsRunsCheck())->findings());
+
+        self::assertSame(["watch:$id", self::NOW - self::LATE - 1, 'ISDS_UNAVAILABLE'], [$finding->key, $finding->since, $finding->evidence[0]['Last wait'] ?? null]);
+    }
+
+    // following longer than ISDS keeps the changes: the list read at the deadline tells what became of the
+    // messages, and the end reports only the one it does not list
+    public function test_findings_noUndeliveredForWhatTheListFound(): void
+    {
+        $from = self::NOW - StatusSync::WATCH_DAYS * 86400 - self::HOUR;
+        $id   = self::following(3, ['watch_day' => '2030-03-16', 'owner_at' => (string) self::NOW], $from, StatusSync::boundary(self::NOW));
+        TestSendRun::$http = new ScriptedIsds(['GetListOfSentMessages' => [self::listed([['901', '4711-1', self::box(0), $from], ['902', '4711-2', self::box(1), $from, 6, $from + 600]])]]);
+
+        self::assertSame('done', self::runQueued());
+
+        $finding = self::only((new TestIsdsRunsCheck())->findings());
+        self::assertSame(["undelivered:$id", 1, '4711-3'], [$finding->key, $finding->count, $finding->evidence[0]['Examples']]);
     }
 
     // ------------------------------------------------------------ helpers
