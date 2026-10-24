@@ -770,7 +770,7 @@ final class HtmlBodyTest extends TestCase
         self::assertSame(['an image written into the letter: The image has too many pixels'], $letter->omitted());
     }
 
-    // drawn again: a transparent image as PNG, of the letter's own bytes; written once however often shown
+    // drawn again: of the letter's own bytes; written once however often shown
     public function test_document_drawsDataImageAgain(): void
     {
         self::needsGd();
@@ -781,6 +781,54 @@ final class HtmlBodyTest extends TestCase
         self::assertSame($m[1][0], $m[1][1]);
         self::assertStringContainsString(' alt=""', $body);
         self::assertSame([1, 1, IMAGETYPE_PNG], array_slice((array) getimagesizefromstring(base64_decode($m[1][0])), 0, 3));
+    }
+
+    /** a 20 x 10 PNG: white at x 0-9, transparent at x 10-19 - a white logo cut out */
+    private static function whiteLogo(): string
+    {
+        $img = imagecreatetruecolor(20, 10);
+        imagealphablending($img, false);
+        imagesavealpha($img, true);
+        imagefill($img, 0, 0, (int) imagecolorallocatealpha($img, 0, 0, 0, 127));
+        imagefilledrectangle($img, 0, 0, 9, 9, (int) imagecolorallocate($img, 255, 255, 255));
+        ob_start();
+        imagepng($img);
+        return 'data:image/png;base64,' . base64_encode((string) ob_get_clean());
+    }
+
+    // alpha would cost a PDF seconds: the image is drawn on what shows behind it, so a white logo stays seen
+    #[DataProvider('backgrounds')]
+    public function test_document_transparentImageOnItsBackground(string $before, string $after, int $background): void
+    {
+        self::needsGd();
+        $letter = new HtmlBody();
+
+        $body = self::body($before . '<img src="' . self::whiteLogo() . '">' . $after, $letter);
+
+        self::assertSame(1, preg_match('~<img src="data:image/png;base64,([A-Za-z0-9+/=]+)">~', $body, $m));
+        $image = imagecreatefromstring(base64_decode($m[1]));
+        self::assertNotFalse($image);
+        self::assertSame([0xFFFFFF, $background], [imagecolorat($image, 2, 5), imagecolorat($image, 17, 5)]);
+        self::assertSame([], $letter->omitted());
+    }
+
+    public static function backgrounds(): array
+    {
+        $cell = static fn(string $td): array => ["<table><tr>$td", '</td></tr></table>'];
+        return [
+            'the page'                        => ['<p>', '</p>', 0xFFFFFF],
+            'bgcolor of a cell'               => [...$cell('<td bgcolor="#003366">'), 0x003366],
+            'bgcolor by name'                 => [...$cell('<td bgcolor="Navy">'), 0x000080],
+            'bgcolor of the table'            => ['<table bgcolor="#036"><tr><td>', '</td></tr></table>', 0x003366],
+            'background-color as rgb()'       => ['<div style="background-color:rgb(0, 51, 102)">', '</div>', 0x003366],
+            'colour in the shorthand'         => ['<p style="background:#003366 none">', '</p>', 0x003366],
+            'style before bgcolor'            => [...$cell('<td bgcolor="#ff0000" style="background-color:#003366">'), 0x003366],
+            'transparent shows the one above' => ['<div style="background:#003366"><p style="background-color:transparent">', '</p></div>', 0x003366],
+            'unread colour shows the page'    => [...$cell('<td style="background-color:darkblue">'), 0xFFFFFF],
+            'bgcolor a div has not'           => ['<div bgcolor="#003366">', '</div>', 0xFFFFFF],
+            'tag the letter leaves out'       => ['<center style="background:#003366">', '</center>', 0xFFFFFF],
+            'after a coloured block'          => ['<div style="background:#003366"><p>a</p></div><p>', '</p>', 0xFFFFFF],
+        ];
     }
 
     public function test_document_drawsUploadedImageAgain(): void

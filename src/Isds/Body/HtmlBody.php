@@ -167,6 +167,13 @@ final class HtmlBody
     /** words, numbers with units, #colours and rgb()/hsl() - no url(), quotes, escapes or comments */
     private const STYLE_VALUE = '~^(?:[a-z0-9#%.,\s-]|(?:rgba?|hsla?)\([0-9.,%\s/]*\))+$~i';
     private const COLOUR      = '~^(?:#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z]{3,20})$~i';
+    /** the colours HTML 4 named; a background of another name is looked for further up */
+    private const COLOUR_NAMES = [
+        'black' => 0x000000, 'silver' => 0xC0C0C0, 'gray' => 0x808080, 'white' => 0xFFFFFF, 'maroon' => 0x800000,
+        'red' => 0xFF0000, 'purple' => 0x800080, 'fuchsia' => 0xFF00FF, 'green' => 0x008000, 'lime' => 0x00FF00,
+        'olive' => 0x808000, 'yellow' => 0xFFFF00, 'navy' => 0x000080, 'blue' => 0x0000FF, 'teal' => 0x008080,
+        'aqua' => 0x00FFFF,
+    ];
 
     /**
      * libxml errors after which the rest of the letter is missing: 1 (internal) is the depth limit on
@@ -191,8 +198,10 @@ final class HtmlBody
     private int $paragraphs = 0;
     private bool $visible   = false;
     private int $pixels     = 0;
-    /** @var array<string, ?string> the data: URI of an image by the hash of its src, null = left out */
+    /** @var array<string, ?string> the data: URI of an image by the hash of its background and src, null = left out */
     private array $images = [];
+    /** @var non-empty-list<int> 0xRRGGBB behind the element being written and each around it; the page is white */
+    private array $backgrounds = [0xFFFFFF];
     /** @var array<string, true> */
     private array $omitted = [];
 
@@ -257,8 +266,9 @@ final class HtmlBody
         $this->paragraphs = 0;
         $this->visible    = false;
         $this->pixels     = 0;
-        $this->images     = [];
-        $this->omitted    = [];
+        $this->images      = [];
+        $this->backgrounds = [0xFFFFFF];
+        $this->omitted     = [];
         $this->append(self::HEAD . '<title>' . self::escape($title) . "</title>\n<style>" . self::CSS . "</style>\n</head>\n<body>\n");
         if (trim($letterhead) !== '') {
             $this->children(self::parse(self::plainText($letterhead)));
@@ -551,9 +561,11 @@ final class HtmlBody
         if (in_array($tag, self::VOID, true)) {
             return;
         }
+        $this->backgrounds[] = self::background($attributes) ?? $this->backgrounds[array_key_last($this->backgrounds)];
         $this->paragraphs += ($tag === 'p') ? 1 : 0;
         $this->children($element);
         $this->paragraphs -= ($tag === 'p') ? 1 : 0;
+        array_pop($this->backgrounds);
         $this->append("</$tag>");
     }
 
@@ -663,35 +675,73 @@ final class HtmlBody
         return $origin . (implode('/', $kept) ?: '/') . substr($href, $cut);
     }
 
-    /** the image as a data: URI, drawn once however often the letter shows it; null = left out */
+    /** the image as a data: URI, drawn once on each background however often the letter shows it; null = left out */
     private function image(string $src): ?string
     {
-        $key = hash('sha256', $src);
+        $background = $this->backgrounds[array_key_last($this->backgrounds)];
+        $key        = hash('sha256', "$background $src");
         if (!array_key_exists($key, $this->images)) {
-            $this->images[$key] = $this->inline($src);
+            $this->images[$key] = $this->inline($src, $background);
         }
         return $this->images[$key];
     }
 
     /** @throws \RuntimeException an image among the uploads cannot be read */
-    private function inline(string $src): ?string
+    private function inline(string $src, int $background): ?string
     {
         if (preg_match('~^data:[^,]*;base64,~i', $src, $m) === 1) {
             $bytes = base64_decode(substr($src, strlen($m[0])), true);
-            return ($bytes === false) ? $this->omit('an image written into the letter is broken') : $this->drawn($bytes, 'an image written into the letter');
+            return ($bytes === false) ? $this->omit('an image written into the letter is broken') : $this->drawn($bytes, 'an image written into the letter', $background);
         }
         if (($this->uploads === null) || !$this->uploads->contains($src)) {
             return $this->omit('the image ' . self::short($src) . ' is not stored with the letter');
         }
-        return $this->drawn($this->uploads->read($src, Message::MAX_BYTES), 'the image ' . self::short($src));
+        return $this->drawn($this->uploads->read($src, Message::MAX_BYTES), 'the image ' . self::short($src), $background);
     }
 
     /**
-     * $bytes drawn again (Imgfunc::reencode()), as JPEG or PNG, at most IMAGE_PX on the longer side: the
-     * EXIF of a phone photo (its GPS position) and anything hidden after the image do not reach thousands of offices
+     * @param array<string, string> $attributes those an element keeps
+     * @return ?int 0xRRGGBB of its background; null = see-through or a colour not read, the one around shows
+     */
+    private static function background(array $attributes): ?int
+    {
+        $colour = isset($attributes['bgcolor']) ? self::rgb($attributes['bgcolor']) : null;
+        // a style wins over bgcolor and its last background counts, as in CSS; a shorthand without a colour is transparent
+        foreach (explode('; ', $attributes['style'] ?? '') as $declaration) {
+            [$property, $value] = explode(': ', $declaration, 2) + [1 => ''];
+            if (in_array($property, ['background', 'background-color'], true)) {
+                $colour = self::rgb($value);
+            }
+        }
+        return $colour;
+    }
+
+    /** the first colour among the words of a CSS value as 0xRRGGBB: #rgb, #rrggbb, rgb() of numbers or a name of COLOUR_NAMES */
+    private static function rgb(string $value): ?int
+    {
+        preg_match_all('~(?:rgba?|hsla?)\([^)]*\)|[^\s,]+~i', strtolower($value), $words);
+        foreach ($words[0] as $word) {
+            if (preg_match('~^#(?:[0-9a-f]{3}){1,2}$~', $word) === 1) {
+                $hex = substr($word, 1);
+                return (int) hexdec((strlen($hex) === 3) ? $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2] : $hex);
+            }
+            if ((preg_match('~^rgb\(\s*(\d{1,3})[\s,]+(\d{1,3})[\s,]+(\d{1,3})\s*\)$~', $word, $m) === 1) && (max($m[1], $m[2], $m[3]) <= 255)) {
+                return ((int) $m[1] << 16) | ((int) $m[2] << 8) | (int) $m[3];
+            }
+            if (isset(self::COLOUR_NAMES[$word])) {
+                return self::COLOUR_NAMES[$word];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * $bytes drawn again (Imgfunc::reencode()), on $background, at most IMAGE_PX on the longer side: the EXIF of
+     * a phone photo (its GPS position) and anything hidden after the image do not reach thousands of offices, and
+     * a PDF of the letter does not wait for the transparency of a PNG
      * @throws \InvalidArgumentException the images of the letter have more than MAX_PIXELS together
      */
-    private function drawn(string $bytes, string $what): ?string
+    private function drawn(string $bytes, string $what, int $background): ?string
     {
         $size          = @getimagesizefromstring($bytes);
         $this->pixels += is_array($size) ? $size[0] * $size[1] : 0;
@@ -706,7 +756,7 @@ final class HtmlBody
             if (file_put_contents("$dir/in", $bytes) !== strlen($bytes)) {
                 throw new \RuntimeException('The images of the letter cannot be stored for a while');
             }
-            $error = Imgfunc::reencode("$dir/in", "$dir/out", self::IMAGE_PX, UploadPolicy::ANON_MAX_PIXELS, true);
+            $error = Imgfunc::reencode("$dir/in", "$dir/out", self::IMAGE_PX, UploadPolicy::ANON_MAX_PIXELS, $background);
             if ($error !== null) {
                 return $this->omit("$what: $error");
             }

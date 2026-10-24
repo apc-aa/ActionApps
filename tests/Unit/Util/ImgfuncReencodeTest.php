@@ -146,35 +146,76 @@ final class ImgfuncReencodeTest extends TestCase
         $this->assertStringNotContainsString('TRAILER-XYZ', (string) file_get_contents("$this->dir/out.avif"));
     }
 
-    public function test_portable_gif_with_transparency_becomes_png(): void
-    {
-        $img = imagecreate(4, 4);
-        imagecolorallocate($img, 255, 0, 0);
-        $clear = imagecolorallocate($img, 0, 255, 0);
-        imagecolortransparent($img, (int) $clear);
-        imagefilledrectangle($img, 0, 0, 1, 3, (int) $clear);
-        imagegif($img, $src = "$this->dir/a.gif");
+    private const NAVY = 0x003366;
 
-        $this->assertNull(Imgfunc::reencode($src, "$this->dir/out", 2000, Imgfunc::REENCODE_MAX_PIXELS, true));
-        $this->assertSame(IMAGETYPE_PNG, getimagesize("$this->dir/out")[2]);
-        $out = imagecreatefrompng("$this->dir/out");
-        $this->assertSame([127, 0], [(imagecolorat($out, 0, 0) >> 24) & 0x7F, (imagecolorat($out, 3, 0) >> 24) & 0x7F]);
+    /** red at x 0-9, transparent black at x 10-19, of $w x $h */
+    private function halfTransparent(int $w = 20, int $h = 10): string
+    {
+        $img = imagecreatetruecolor($w, $h);
+        imagealphablending($img, false);
+        imagesavealpha($img, true);
+        imagefill($img, 0, 0, (int) imagecolorallocatealpha($img, 0, 0, 0, 127));
+        imagefilledrectangle($img, 0, 0, intdiv($w, 2) - 1, $h - 1, (int) imagecolorallocate($img, 255, 0, 0));
+        imagepng($img, $src = "$this->dir/half.png");
+        return $src;
     }
 
-    public function test_portable_opaque_png_becomes_jpeg(): void
+    /** 0xRRGGBB of the pixel at $x, $y of the image $file, rounded to 16 levels a channel against JPEG noise */
+    private static function colourAt(string $file, int $x, int $y): int
     {
-        $img = imagecreatetruecolor(3000, 1500);
-        imagefill($img, 0, 0, (int) imagecolorallocate($img, 10, 200, 10));
-        imagepng($img, $src = "$this->dir/a.png");
-        file_put_contents($src, 'TRAILER-XYZ', FILE_APPEND);
+        $rgb   = imagecolorat(imagecreatefromstring((string) file_get_contents($file)), $x, $y);
+        $level = static fn(int $shift): int => ((int) round((($rgb >> $shift) & 0xFF) / 17) * 17) << $shift;
+        return $level(16) | $level(8) | $level(0);
+    }
 
-        $this->assertNull(Imgfunc::reencode($src, "$this->dir/out", 1600, Imgfunc::REENCODE_MAX_PIXELS, true));
-        $info = getimagesize("$this->dir/out");
-        $this->assertSame([1600, 800, IMAGETYPE_JPEG], [$info[0], $info[1], $info[2]]);
+    public function test_flattened_small_png_stays_sharp_png_without_alpha(): void
+    {
+        $this->assertNull(Imgfunc::reencode($this->halfTransparent(), "$this->dir/out", 2000, flatten_on: self::NAVY));
+        $this->assertSame([20, 10, IMAGETYPE_PNG], array_slice((array) getimagesize("$this->dir/out"), 0, 3));
+        $out = imagecreatefrompng("$this->dir/out");
+        $this->assertSame([0xFF0000, self::NAVY], [imagecolorat($out, 2, 5), imagecolorat($out, 17, 5)], 'red stays, transparency becomes the colour');
+        $this->assertSame(0, (imagecolorat($out, 17, 5) >> 24) & 0x7F, 'no alpha left');
+    }
+
+    public function test_flattened_big_png_becomes_jpeg_on_the_colour(): void
+    {
+        file_put_contents($src = $this->halfTransparent(3000, 1500), 'TRAILER-XYZ', FILE_APPEND);
+
+        $this->assertNull(Imgfunc::reencode($src, "$this->dir/out", 1600, flatten_on: self::NAVY));
+        $this->assertSame([1600, 800, IMAGETYPE_JPEG], array_slice((array) getimagesize("$this->dir/out"), 0, 3));
+        $this->assertSame([0xFF0000, self::NAVY], [self::colourAt("$this->dir/out", 100, 400), self::colourAt("$this->dir/out", 1500, 400)]);
         $this->assertStringNotContainsString('TRAILER-XYZ', (string) file_get_contents("$this->dir/out"));
     }
 
-    public function test_portable_webp_with_alpha_becomes_png(): void
+    /** a photo is many times bigger as PNG than as JPEG: small or not, it is written as JPEG */
+    public function test_flattened_small_photo_becomes_jpeg(): void
+    {
+        $img = imagecreatetruecolor(100, 100);
+        for ($y = 0; $y < 100; $y++) {
+            for ($x = 0; $x < 100; $x++) {
+                imagesetpixel($img, $x, $y, random_int(0, 0xFFFFFF));
+            }
+        }
+        imagepng($img, $src = "$this->dir/a.png");
+
+        $this->assertNull(Imgfunc::reencode($src, "$this->dir/out", 2000, flatten_on: 0xFFFFFF));
+        $this->assertSame(IMAGETYPE_JPEG, getimagesize("$this->dir/out")[2]);
+    }
+
+    public function test_flattened_gif_keeps_its_colours_on_the_colour(): void
+    {
+        $img = imagecreate(20, 10);
+        imagecolorallocate($img, 255, 0, 0);
+        $clear = imagecolorallocate($img, 0, 0, 0);
+        imagecolortransparent($img, (int) $clear);
+        imagefilledrectangle($img, 10, 0, 19, 9, (int) $clear);
+        imagegif($img, $src = "$this->dir/a.gif");
+
+        $this->assertNull(Imgfunc::reencode($src, "$this->dir/out", 2000, flatten_on: self::NAVY));
+        $this->assertSame([0xFF0000, self::NAVY], [self::colourAt("$this->dir/out", 2, 5), self::colourAt("$this->dir/out", 17, 5)]);
+    }
+
+    public function test_flattened_webp_with_alpha_is_taken(): void
     {
         if (!(imagetypes() & IMG_WEBP)) {
             $this->markTestSkipped('GD without WebP');
@@ -185,13 +226,13 @@ final class ImgfuncReencodeTest extends TestCase
         imagefill($img, 0, 0, (int) imagecolorallocatealpha($img, 0, 0, 0, 127));
         imagewebp($img, $src = "$this->dir/a.webp", 100);
 
-        $this->assertNull(Imgfunc::reencode($src, "$this->dir/out", 2000, Imgfunc::REENCODE_MAX_PIXELS, true));
-        $this->assertSame(IMAGETYPE_PNG, getimagesize("$this->dir/out")[2]);
+        $this->assertNull(Imgfunc::reencode($src, "$this->dir/out", 2000, flatten_on: self::NAVY));
+        $this->assertSame(self::NAVY, self::colourAt("$this->dir/out", 10, 10));
     }
 
-    public function test_portable_jpeg_stays_jpeg(): void
+    public function test_flattened_jpeg_stays_jpeg(): void
     {
-        $this->assertNull(Imgfunc::reencode($this->jpeg(50, 40), "$this->dir/out", 2000, Imgfunc::REENCODE_MAX_PIXELS, true));
+        $this->assertNull(Imgfunc::reencode($this->jpeg(50, 40), "$this->dir/out", 2000, flatten_on: 0xFFFFFF));
         $this->assertSame(IMAGETYPE_JPEG, getimagesize("$this->dir/out")[2]);
     }
 
