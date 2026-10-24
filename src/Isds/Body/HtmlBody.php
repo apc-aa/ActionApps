@@ -36,9 +36,52 @@ final class HtmlBody
      *  0.9 GB); a letter has a few hundred */
     private const MAX_TAGS = 200_000;
 
+    /** attributes of one tag: libxml compares each with all before it, outside memory_limit - 100 000 in
+     *  one <p> took 22 s */
+    private const MAX_ATTRIBUTES = 1000;
+    /** attributes of the whole letter: 6 000 tags of 1000 attributes each still took 15 s */
+    private const MAX_ALL_ATTRIBUTES = 200_000;
+
+    private const LETTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    /** the bytes of a name of libxml 2.9-2.13, and those it may begin with */
+    private const NAME_BYTES = self::LETTERS . '0123456789_:.-';
+    private const NAME_START = self::LETTERS . '_:.';
+    private const BLANK      = " \t\n\r";
+    private const WHITE      = " \t\n\r\f";
+    /**
+     * The states of checkAttributes(), each with the bytes it passes over: strspn() of them (true, at most
+     * the third number of bytes) or strcspn() (false). "l" reads a tag as libxml 2.9-2.13 does, "h" as HTML5
+     * and libxml 2.14: they part on "/", "\f" and the names the older one cannot read
+     */
+    private const SCAN = [
+        // libxml 2.9-2.13 reads 100 bytes of a name, the rest is the next attribute
+        'lTag'    => [true, self::NAME_BYTES, 100],
+        'lBefore' => [true, self::BLANK],
+        'lBogus'  => [false, self::BLANK . '>'],
+        // the first byte was read on entering
+        'lName'   => [true, self::NAME_BYTES, 99],
+        'lAfter'  => [true, self::BLANK],
+        'lEq'     => [true, self::BLANK],
+        'lDq'     => [false, '"'],
+        'lSq'     => [false, "'"],
+        'lUnq'    => [false, self::BLANK . '>'],
+        'hSlash'  => [true, ''],
+        'hTag'    => [false, self::WHITE . '/>'],
+        'hBefore' => [true, self::WHITE . '/'],
+        'hName'   => [false, self::WHITE . '/>='],
+        'hAfter'  => [true, self::WHITE],
+        'hEq'     => [true, self::WHITE],
+        'hDq'     => [false, '"'],
+        'hSq'     => [false, "'"],
+        'hUnq'    => [false, self::WHITE . '>'],
+        'hQuoted' => [true, ''],
+    ];
+
     /** what is no visible text: spaces and the invisible characters editors leave - format characters
-     *  (zero-width space, BOM, soft hyphen, word joiner), the Hangul fillers and the blank Braille cell */
-    private const INVISIBLE = '\s\x{A0}\p{Cf}\x{115F}\x{1160}\x{3164}\x{FFA0}\x{2800}';
+     *  (zero-width space, BOM, soft hyphen, word joiner), the combining grapheme joiner, variation selectors
+     *  (also the Mongolian ones), C1 control characters, the Khmer inherent vowels, the Hangul fillers and the
+     *  blank Braille cell */
+    private const INVISIBLE = '\s\x{A0}\p{Cf}\x{34F}\x{80}-\x{9F}\x{FE00}-\x{FE0F}\x{E0100}-\x{E01EF}\x{180B}-\x{180D}\x{180F}\x{17B4}\x{17B5}\x{115F}\x{1160}\x{3164}\x{FFA0}\x{2800}';
 
     private const FORBIDDEN = ['<object', '<iframe', '<script'];
 
@@ -117,6 +160,10 @@ final class HtmlBody
         'margin', 'margin-bottom', 'margin-left', 'margin-right', 'margin-top', 'padding', 'padding-left', 'text-align',
         'text-decoration', 'text-indent', 'vertical-align', 'width',
     ];
+    /** the display a letter needs: table-cell and the like would make a table cell of a <p>, dompdf throws on that */
+    private const DISPLAY = ['block', 'inline', 'inline-block', 'list-item', 'none'];
+    /** a table and its rows: dompdf throws on any display of them but none */
+    private const TABLE_PARTS = ['table', 'thead', 'tbody', 'tfoot', 'tr'];
     /** words, numbers with units, #colours and rgb()/hsl() - no url(), quotes, escapes or comments */
     private const STYLE_VALUE = '~^(?:[a-z0-9#%.,\s-]|(?:rgba?|hsla?)\([0-9.,%\s/]*\))+$~i';
     private const COLOUR      = '~^(?:#[0-9a-f]{3}|#[0-9a-f]{6}|[a-z]{3,20})$~i';
@@ -248,6 +295,7 @@ final class HtmlBody
         if (substr_count($html, '<') > self::MAX_TAGS) {
             throw new \InvalidArgumentException('The letter has more than ' . self::MAX_TAGS . ' tags or lines - attach a long table as a file');
         }
+        self::checkAttributes($html);
         return Libxml::run(static function () use ($html): \DOMElement {
             $dom = new \DOMDocument();
             // the charset first: a <meta> in the letter declaring another one comes too late
@@ -266,6 +314,146 @@ final class HtmlBody
             }
             return $dom->documentElement ?? throw new \LogicException('libxml made no <html>');
         });
+    }
+
+    /**
+     * Refuses too many attributes before libxml reads them. A tag is taken to begin at every "<" before
+     * a letter (for older libxml also before "_", ":" or "."), also in a comment, a <script> or a quoted value: what libxml reads as text there differs
+     * among its versions, so nothing may hide a tag from the scan - and no letter has a tag of a thousand
+     * attributes in a comment. The count is an upper bound: a lone quote in a comment followed by a paragraph
+     * of over 1000 words without a tag refuses a letter libxml would read. Of the tags in one state of SCAN
+     * only the one of the most attributes is followed, so every byte is read a bounded number of times.
+     * @throws \InvalidArgumentException
+     */
+    private static function checkAttributes(string $html): void
+    {
+        $length = strlen($html);
+        $states = [];   // state => attributes of the tag read through it
+        $stops  = [];   // state => the next byte it reads
+        $all   = ['l' => 0, 'h' => 0];
+        $lt    = strpos($html, '<');
+        while (($i = min([...$stops, ($lt === false) ? $length : $lt])) < $length) {
+            $byte    = $html[$i];
+            $next    = $html[$i + 1] ?? '';
+            $entered = [];
+            foreach (array_keys($stops, $i, true) as $state) {
+                $count = $states[$state];
+                $model = $state[0];
+                unset($states[$state], $stops[$state]);
+                do {
+                    [$state, $begun, $again] = self::step($state, $byte, $next);
+                    $count += $begun;
+                } while ($again);
+                if ($state === null) {
+                    $all[$model] += $count;
+                } else {
+                    $entered[$state] = max($entered[$state] ?? 0, $count);
+                }
+            }
+            if ($i === $lt) {
+                if (strspn($html, self::LETTERS, $i + 1, 1) === 1) {
+                    $entered += ['lTag' => 0, 'hTag' => 0];
+                } elseif (strspn($html, self::NAME_START, $i + 1, 1) === 1) {
+                    // libxml 2.9.14 reads these as text, an older one may begin a tag
+                    $entered += ['lTag' => 0];
+                } elseif (($next === '/') && (strspn($html, self::LETTERS, $i + 2, 1) === 1)) {
+                    $entered += ['hSlash' => 0];
+                }
+                $lt = strpos($html, '<', $i + 1);
+            }
+            foreach ($entered as $state => $count) {
+                if ($count > self::MAX_ATTRIBUTES) {
+                    throw new \InvalidArgumentException('The letter has a tag of more than ' . self::MAX_ATTRIBUTES . ' attributes - paste the text without its formatting');
+                }
+                $states[$state] = max($states[$state] ?? 0, $count);
+                [$spn, $bytes, $max] = self::SCAN[$state] + [2 => null];
+                // a state already followed passes over the same bytes from here
+                $stops[$state] ??= $i + 1 + ($spn ? strspn($html, $bytes, $i + 1, $max) : strcspn($html, $bytes, $i + 1));
+            }
+            if (max($all) > self::MAX_ALL_ATTRIBUTES) {
+                break;
+            }
+        }
+        foreach ($states as $state => $count) {
+            $all[$state[0]] += $count;
+        }
+        if (max($all) > self::MAX_ALL_ATTRIBUTES) {
+            throw new \InvalidArgumentException('The letter has more than ' . self::MAX_ALL_ATTRIBUTES . ' attributes - paste the text without its formatting');
+        }
+    }
+
+    /**
+     * $byte read in $state of SCAN
+     * @return array{?string, int, bool} the next state (null: the tag ends), attributes begun, whether the
+     *                                   next state reads $byte again
+     */
+    private static function step(string $state, string $byte, string $next): array
+    {
+        $white = str_contains(self::WHITE, $byte);
+        $blank = $white && ($byte !== "\f");
+        $end   = [null, 0, false];
+        return match ($state) {
+            'lTag'           => ['lBefore', 0, true],
+            // a word libxml 2.9-2.13 cannot read as a name is no attribute there, here it is one: a tag of
+            // such words alone would otherwise cost a step each without a bound
+            'lBefore'        => match (true) {
+                $blank                                                  => ['lBefore', 0, false],
+                ($byte === '>') || (($byte === '/') && ($next === '>')) => $end,
+                str_contains(self::NAME_START, $byte)                  => ['lName', 1, false],
+                default                                                => ['lBogus', 1, false],
+            },
+            'lBogus', 'lUnq' => match (true) {
+                $byte === '>' => $end,
+                $blank        => ['lBefore', 0, false],
+                default       => [$state, 0, false],
+            },
+            'lName'          => match (true) {
+                $blank        => ['lAfter', 0, false],
+                $byte === '=' => ['lEq', 0, false],
+                default       => ['lBefore', 0, true],
+            },
+            'lAfter'         => ($byte === '=') ? ['lEq', 0, false] : ['lBefore', 0, true],
+            'lEq'            => match ($byte) {
+                '"'     => ['lDq', 0, false],
+                "'"     => ['lSq', 0, false],
+                default => ['lUnq', 0, true],
+            },
+            'lDq', 'lSq'     => ['lBefore', 0, false],
+            'hSlash'         => ['hTag', 0, false],
+            'hTag'           => ($byte === '>') ? $end : ['hBefore', 0, false],
+            // HTML5: "/" outside a value parts attributes, or ends the tag before ">"
+            'hBefore'        => match (true) {
+                $byte === '>'              => $end,
+                $white || ($byte === '/') => ['hBefore', 0, false],
+                default                    => ['hName', 1, false],
+            },
+            'hName'          => match (true) {
+                $byte === '>' => $end,
+                $byte === '=' => ['hEq', 0, false],
+                $byte === '/' => ['hBefore', 0, false],
+                default       => ['hAfter', 0, false],
+            },
+            'hAfter'         => match ($byte) {
+                '>'     => $end,
+                '='     => ['hEq', 0, false],
+                '/'     => ['hBefore', 0, false],
+                default => ['hName', 1, false],
+            },
+            'hEq'            => match ($byte) {
+                '"'     => ['hDq', 0, false],
+                "'"     => ['hSq', 0, false],
+                '>'     => $end,
+                default => ['hUnq', 0, true],
+            },
+            'hDq', 'hSq'     => ['hQuoted', 0, false],
+            'hUnq'           => match (true) {
+                $byte === '>' => $end,
+                $white        => ['hBefore', 0, false],
+                default       => ['hUnq', 0, false],
+            },
+            'hQuoted'        => ($byte === '>') ? $end : ['hBefore', 0, true],
+            default          => throw new \LogicException("No state $state of the scan"),
+        };
     }
 
     /**
@@ -376,7 +564,7 @@ final class HtmlBody
         foreach ($element->attributes as $attribute) {
             $name = $attribute->nodeName;
             if (in_array($name, self::ELEMENTS[$tag], true) || in_array($name, self::GLOBAL, true)) {
-                $value = $this->value($name, trim((string) $attribute->nodeValue));
+                $value = $this->value($name, trim((string) $attribute->nodeValue), $tag);
                 if ($value !== null) {
                     // the data: URI of an image is made here, of base64 only
                     $kept[$name] = ($name === 'src') ? $value : self::escape($value);
@@ -386,13 +574,13 @@ final class HtmlBody
         return $kept;
     }
 
-    /** $value of the attribute $name as it may stay, null = left out */
-    private function value(string $name, string $value): ?string
+    /** $value of the attribute $name of a <$tag> as it may stay, null = left out */
+    private function value(string $name, string $value, string $tag): ?string
     {
         return match ($name) {
             'href'            => $this->href($value),
             'src'             => $this->image($value),
-            'style'           => self::style($value),
+            'style'           => self::style($value, $tag),
             // an empty alt marks an image that only decorates
             'alt'             => $value,
             'title'           => ($value === '') ? null : $value,
@@ -404,8 +592,16 @@ final class HtmlBody
             'valign'          => self::oneOf($value, self::VALIGN),
             'bgcolor'         => (preg_match(self::COLOUR, $value) === 1) ? $value : null,
             'width', 'height' => (preg_match('~^\d{1,5}%?$~', $value) === 1) ? $value : null,
+            'colspan', 'span' => self::span($value, 1000),
+            'rowspan'         => self::span($value, 65534),
             default           => (preg_match('~^\d{1,5}$~', $value) === 1) ? $value : null,
         };
+    }
+
+    /** a span of cells within the bounds of HTML, 1 to $max; 0 (a rowspan to the end of the table) is left out */
+    private static function span(string $value, int $max): ?string
+    {
+        return ((preg_match('~^\d+$~', $value) === 1) && ((int) $value > 0)) ? (string) min((int) $value, $max) : null;
     }
 
     /**
@@ -524,15 +720,20 @@ final class HtmlBody
         }
     }
 
-    /** declarations of STYLES with plain values only */
-    private static function style(string $css): ?string
+    /** declarations of STYLES with plain values only, for a <$tag> */
+    private static function style(string $css, string $tag): ?string
     {
         $kept = [];
         foreach (explode(';', $css) as $declaration) {
             [$property, $value] = array_map('trim', explode(':', $declaration, 2)) + [1 => ''];
             $property           = strtolower($property);
             if (in_array($property, self::STYLES, true) && (strlen($value) <= 100) && (preg_match(self::STYLE_VALUE, $value) === 1)) {
-                $kept[] = "$property: $value";
+                if ($property === 'display') {
+                    $value = self::oneOf($value, in_array($tag, self::TABLE_PARTS, true) ? ['none'] : self::DISPLAY);
+                }
+                if ($value !== null) {
+                    $kept[] = "$property: $value";
+                }
             }
         }
         return ($kept === []) ? null : implode('; ', $kept);

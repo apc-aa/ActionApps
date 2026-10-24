@@ -191,6 +191,94 @@ final class HtmlBodyTest extends TestCase
         self::assertStringEndsWith('<br><p>a</p>', self::body(str_repeat('<br>', 199_998) . '<p>a</p>'));
     }
 
+    /** $count attributes a0, a1, ... parted by $gap */
+    private static function attributes(int $count, string $gap = ' '): string
+    {
+        return implode($gap, array_map(static fn(int $i): string => "a$i", range(0, $count - 1)));
+    }
+
+    // libxml compares each attribute of a tag with all before it, outside memory_limit
+    #[DataProvider('manyAttributes')]
+    public function test_document_tooManyAttributes(string $html): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('a tag of more than 1000 attributes');
+        (new HtmlBody())->document('Pozvánka', $html);
+    }
+
+    public static function manyAttributes(): array
+    {
+        $over = self::attributes(1001);
+        // libxml up to 2.13 reads 100 bytes of a name, the rest is the next attribute
+        $long = implode('', array_map(static fn(int $i): string => 'a' . str_pad((string) $i, 99, 'x', STR_PAD_LEFT), range(1, 1001)));
+        return [
+            'in a tag'                    => ["<p $over>a</p>"],
+            'with values'                 => ['<p ' . self::attributes(1001, '="1" ') . '>a</p>'],
+            'after a quoted ">"'          => ['<p title=">" ' . self::attributes(1000) . '>a</p>'],
+            'unclosed'                    => ["<p>a</p><p $over"],
+            // libxml 2.12 ends <!--> at once, 2.9 at the next -->
+            'in a comment'                => ["<!--><p $over>a</p>-->"],
+            'after a quote in a comment'  => ["<!-- <b x=\"--><p $over>a</p>\" -->"],
+            'after a quote in a script'   => ["<script>x = a<b, y=\"</script><p $over>a</p>\"</script>"],
+            'in a value of no tag'        => ["<_x a=\"<p $over>\">a"],
+            // libxml up to 2.13 reads the name a, then the rest as attributes
+            'quoted after a strange name' => ["<p a\"b=\"$over\">a</p>"],
+            'a long name'                 => ["<p $long>a</p>"],
+            'a long tag name'             => ['<p' . str_repeat('q', 99) . "$long>a"],
+            // HTML5 and libxml 2.14
+            'parted by slashes'           => ['<p ' . self::attributes(1001, '/') . '>a</p>'],
+            'of an end tag'               => ["<p>a</p $over>"],
+        ];
+    }
+
+    public function test_document_takesAttributesUpToTheBound(): void
+    {
+        self::assertSame('<p>a</p>', self::body('<p ' . self::attributes(1000) . '>a</p>'));
+    }
+
+    // one tag of a thousand attributes took libxml 2 ms, 6 000 of them 15 s
+    public function test_document_refusesTooManyAttributesTogether(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('more than 200000 attributes');
+        (new HtmlBody())->document('Pozvánka', str_repeat('<p ' . self::attributes(1000) . '>a</p>', 201));
+    }
+
+    // 100 000 attributes of one tag took libxml 22 s
+    public function test_document_refusesManyAttributesFast(): void
+    {
+        $html  = '<p ' . self::attributes(100_000) . '>a</p>';
+        $start = hrtime(true);
+        try {
+            (new HtmlBody())->document('Pozvánka', $html);
+            self::fail('accepted');
+        } catch (\InvalidArgumentException $e) {
+            self::assertStringContainsString('a tag of more than 1000 attributes', $e->getMessage());
+        }
+        self::assertLessThan(1.0, (hrtime(true) - $start) / 1e9);
+    }
+
+    #[DataProvider('notAttributes')]
+    public function test_document_attributesInQuotesNotCounted(string $html, string $expected): void
+    {
+        self::assertSame($expected, self::body($html));
+    }
+
+    public static function notAttributes(): array
+    {
+        $words = self::attributes(2000);
+        return [
+            'double quotes'         => ["<p title=\"$words\">a</p>", "<p title=\"$words\">a</p>"],
+            'single quotes'         => ["<p title='$words'>a</p>", "<p title=\"$words\">a</p>"],
+            'spaces around ='       => ["<p title = \"$words\">a</p>", "<p title=\"$words\">a</p>"],
+            'a ">" in quotes'       => ["<p title=\"> $words\">a</p>", "<p title=\"&gt; $words\">a</p>"],
+            'a comment'             => ["<!-- $words --><p>a</p>", '<p>a</p>'],
+            // what Word puts into a pasted letter
+            'styles in a comment'   => ['<style><!-- ' . str_repeat('p.MsoNormal {margin: 0cm; font-size: 11pt; mso-style-unhide: no} ', 400) . '--></style><p>a</p>', '<p>a</p>'],
+            'a conditional comment' => ['<!--[if gte mso 9]><xml><o:OfficeDocumentSettings><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]--><p>a</p>', '<p>a</p>'],
+        ];
+    }
+
     // what escape() and the line ends would make of it is refused before it is built: at most one copy of
     // the text, never the 6 times larger HTML
     #[DataProvider('growing')]
@@ -277,6 +365,28 @@ final class HtmlBodyTest extends TestCase
             'word joiner'       => ["\u{2060}\u{2060}"],
             'Hangul filler'     => ["\u{3164}"],
             'blank Braille'     => ["\u{2800}"],
+        ];
+    }
+
+    #[DataProvider('selectors')]
+    public function test_document_variationSelectorIsNoText(string $html): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('empty');
+        (new HtmlBody())->document('Pozvánka', $html);
+    }
+
+    public static function selectors(): array
+    {
+        return [
+            'variation selector'            => ["<p>\u{FE0F}</p>"],
+            'variation selector supplement' => ["<p>\u{E0100}\u{E01EF}</p>"],
+            'grapheme joiner'               => ["<p>\u{34F}</p>"],
+            'C1 control character'          => ["<p>\u{80}\u{9F}</p>"],
+            'Mongolian variation selectors' => ["<p>\u{180B}\u{180D}\u{180F}</p>"],
+            'Khmer inherent vowels'         => ["<p>\u{17B4}\u{17B5}</p>"],
+            // the five codes Windows-1252 leaves free
+            'C1 reference'                  => ['<p>&#129;&#x9D;</p>'],
         ];
     }
 
@@ -552,6 +662,71 @@ final class HtmlBodyTest extends TestCase
             'import'                 => ['@import url(x.css); color: red', '<p style="color: red">a</p>'],
             'value of 100'           => ['margin: 10' . str_repeat(' 0', 49), '<p style="margin: 10' . str_repeat(' 0', 49) . '">a</p>'],
             'value over 100'         => ['margin: 100' . str_repeat(' 0', 49), '<p>a</p>'],
+        ];
+    }
+
+    #[DataProvider('displays')]
+    public function test_document_displayAllowList(string $display, string $expected): void
+    {
+        self::assertSame($expected, self::body("<p style=\"display: $display; color: red\">a</p>"));
+    }
+
+    public static function displays(): array
+    {
+        $kept    = static fn(string $display): string => "<p style=\"display: $display; color: red\">a</p>";
+        $dropped = '<p style="color: red">a</p>';
+        return [
+            'block'         => ['block', $kept('block')],
+            'inline'        => ['inline', $kept('inline')],
+            'inline-block'  => ['inline-block', $kept('inline-block')],
+            'list-item'     => ['list-item', $kept('list-item')],
+            'none'          => ['NONE', $kept('none')],
+            'table-cell'    => ['table-cell', $dropped],
+            'table'         => ['table', $dropped],
+            'flex'          => ['flex', $dropped],
+            'of dompdf'     => ['-dompdf-image', $dropped],
+            'two of them'   => ['block inline', $dropped],
+        ];
+    }
+
+    #[DataProvider('tableParts')]
+    public function test_document_displayOfATableOnlyNone(string $tag, string $display, string $expected): void
+    {
+        $html = "<$tag style=\"display: $display; color: red\"><td>a</td></$tag>";
+        if ($tag !== 'table') {
+            $html = "<table>$html</table>";
+        }
+        self::assertStringContainsString($expected, self::body($html));
+    }
+
+    public static function tableParts(): array
+    {
+        return [
+            'table block'  => ['table', 'block', '<table style="color: red">'],
+            'tbody inline' => ['tbody', 'inline', '<tbody style="color: red">'],
+            'tr list-item' => ['tr', 'list-item', '<tr style="color: red">'],
+            'tr none'      => ['tr', 'none', '<tr style="display: none; color: red">'],
+        ];
+    }
+
+    #[DataProvider('spans')]
+    public function test_document_spanClamped(string $html, string $expected): void
+    {
+        self::assertSame("<table>$expected<tr><td>a</td></tr></table>", self::body("<table>$html<tr><td>a</td></tr></table>"));
+    }
+
+    public static function spans(): array
+    {
+        return [
+            'within'           => ['<tr><td colspan="3" rowspan="2">b</td></tr>', '<tr><td colspan="3" rowspan="2">b</td></tr>'],
+            'too wide'         => ['<tr><td colspan="5000">b</td></tr>', '<tr><td colspan="1000">b</td></tr>'],
+            'too high'         => ['<tr><th rowspan="70000">b</th></tr>', '<tr><th rowspan="65534">b</th></tr>'],
+            'past an integer'  => ['<tr><td colspan="99999999999999999999999">b</td></tr>', '<tr><td colspan="1000">b</td></tr>'],
+            'leading zeros'    => ['<tr><td colspan="007">b</td></tr>', '<tr><td colspan="7">b</td></tr>'],
+            'zero'             => ['<tr><td colspan="0" rowspan="0">b</td></tr>', '<tr><td>b</td></tr>'],
+            'not a number'     => ['<tr><td colspan="-2" rowspan="2x">b</td></tr>', '<tr><td>b</td></tr>'],
+            'columns too wide' => ['<colgroup span="2000"><col span="1001"></colgroup>', '<colgroup span="1000"><col span="1000"></colgroup>'],
+            'no columns'       => ['<col span="0">', '<col>'],
         ];
     }
 
