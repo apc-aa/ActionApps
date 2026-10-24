@@ -607,6 +607,27 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertSame(['-', '-'], [$findings[1]->evidence[0]['Campaign slice'], $findings[1]->evidence[0]['Campaign']], 'a selector of another shape');
     }
 
+    // an action of a page that failed inside AA: where, never what the exception said
+    public function test_findings_internalActionFailures(): void
+    {
+        $check          = self::check([]);
+        $selector       = 'resume:ca00000000000000000000000000000b';
+        $check->actions = [
+            ['selector' => $selector, 'days' => '2', 'first' => '1790700000', 'last' => '1790800000', 'params' => '#' . self::SITE . ' RuntimeException src/Isds/<b>SendRun.php:309'],
+            ['selector' => 'save:', 'days' => '1', 'first' => '1790800000', 'last' => '1790800000', 'params' => ''],
+        ];
+
+        $findings = $check->findings();
+
+        self::assertSame(['action:' . $selector, 'action:save:'], self::keys($findings));
+        $finding = $findings[0];
+        self::assertSame([Finding::WARNING, 'An action of a page of a mass sending failed on an internal error: resume', 2, 1790700000, 1790800000, 'Terminal'], [$finding->severity, $finding->title, $finding->count, $finding->since, $finding->last, $finding->place]);
+        self::assertSame(['Action' => 'resume', 'Campaign' => 'ca00000000000000000000000000000b', 'Where' => '#' . self::SITE . ' RuntimeException src/Isds/&lt;b&gt;SendRun.php:309', 'Days seen' => '2', 'Last' => date('Y-m-d', 1790800000)], $finding->evidence[0]);
+        self::assertStringContainsString('may have done part of its work', $finding->advice);
+        self::assertStringContainsString('srchbr_value%5B1%5D=ISDS_ACT', $finding->links['Log rows']);
+        self::assertSame(['-', ''], [$findings[1]->evidence[0]['Campaign'], $findings[1]->place], 'a new draft has no campaign yet; no site logged');
+    }
+
     // ------------------------------------------------------------ helpers
 
     /**

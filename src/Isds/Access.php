@@ -53,7 +53,8 @@ class Access
 
     // ------------------------------------------------------------ what tests replace
 
-    protected function uid(): string
+    /** the login of the request - the only user an action of the page hands to the core */
+    public function uid(): string
     {
         return AuthGetUid();
     }

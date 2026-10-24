@@ -57,7 +57,7 @@ final class FakePerms extends AA_Permsystem
         return new class ($uid) extends Access {
             public function __construct(private string $login) {}
 
-            protected function uid(): string
+            public function uid(): string
             {
                 return $this->login;
             }

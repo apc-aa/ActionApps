@@ -13,7 +13,7 @@ use Tests\Unit\Isds\Fixtures\Sending;
 require_once __DIR__ . '/../../Isds/fixtures/Sending.php';
 
 /** CheckIsdsAccounts over the accounts in $accounts, the slice rules in $rules and the log rows in
- *  $pages and $campaigns instead of datovka_conf.php and the database, with the modules $here in this
+ *  $pages, $campaigns and $actions instead of datovka_conf.php and the database, with the modules $here in this
  *  database, at the time $now, under the PHP SAPI $sapi, with the directory of AA $bases. */
 final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
 {
@@ -41,6 +41,9 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
 
     /** @var list<array<string, ?string>> LogOnce::recent() rows of the campaigns whose recipients were not told */
     public array $campaigns = [];
+
+    /** @var list<array<string, ?string>> LogOnce::recent() rows of the actions that failed on an internal error */
+    public array $actions = [];
 
     public function __construct(public FakeSliceRules $rules) {}
 
@@ -84,5 +87,10 @@ final class ScriptedIsdsAccountsCheck extends CheckIsdsAccounts
     protected function unresolvedCampaigns(): array
     {
         return $this->campaigns;
+    }
+
+    protected function failedActions(): array
+    {
+        return $this->actions;
     }
 }

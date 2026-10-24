@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds\Fixtures;
 
 use AA\Isds\Access;
+use AA\Isds\Actions;
 use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
 use AA\Isds\Recipients;
@@ -13,9 +14,12 @@ use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Isds\SliceRules;
 
+require_once __DIR__ . '/FakeActions.php';
+
 /**
  * The gate on a page given here: the site rendered, the slices (FakeSliceRules), the accounts of
- * datovka_conf.php, the login (Access over the rights of FakePerms), the campaigns, their runs and the recipients.
+ * datovka_conf.php, the login (Access over the rights of FakePerms), the campaigns, their runs and the recipients,
+ * the actions (FakeActions), the clock and whether output went out. A redirect throws Redirected.
  * The slices open in the real AA_Credentials.
  */
 final class FakeGate extends Gate
@@ -35,6 +39,17 @@ final class FakeGate extends Gate
     public array $runs = [];
 
     public ?Recipients $resolver = null;
+
+    /** output went out before the gate - ?debug */
+    public bool $headersSent = false;
+
+    /** @var list<string> the headers the gate sent itself */
+    public array $sentHeaders = [];
+
+    public int $now = 1_800_000_000;
+
+    /** the settings as checked; null = checked from the template over $rules and $conf */
+    public ?Setup $setup = null;
 
     /**
      * @param ?string $site the site whose page is rendered; null = no site page (view.php, cron)
@@ -58,7 +73,7 @@ final class FakeGate extends Gate
 
     protected function setup(string $settings, string $site): Setup|SetupException
     {
-        return Setup::checked($settings, $site, $this->rules, $this->conf);
+        return $this->setup ?? Setup::checked($settings, $site, $this->rules, $this->conf);
     }
 
     protected function rules(): SliceRules
@@ -93,5 +108,39 @@ final class FakeGate extends Gate
     protected function resolver(): Recipients
     {
         return $this->resolver ?? throw new \LogicException('The test gives no recipients');
+    }
+
+    protected function actions(Access $access): Actions
+    {
+        return new FakeActions($access, $this->campaignOfPage(...), $this->run(...), $this->answered(...));
+    }
+
+    protected function headersSent(): bool
+    {
+        return $this->headersSent;
+    }
+
+    protected function sendHeader(string $header): void
+    {
+        $this->sentHeaders[] = $header;
+    }
+
+    protected function redirect(string $url): never
+    {
+        throw new Redirected($url);
+    }
+
+    protected function now(): int
+    {
+        return $this->now;
+    }
+}
+
+/** the gate sent the browser to $url and ended the request */
+final class Redirected extends \RuntimeException
+{
+    public function __construct(public readonly string $url)
+    {
+        parent::__construct("Redirected to $url");
     }
 }

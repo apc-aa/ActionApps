@@ -108,6 +108,23 @@ namespace Tests\Unit\Legacy {
             self::assertSame('ca00000000000000000000000000000b|ids', $command->expand('recipients', 'ca00000000000000000000000000000b', 'ids'));
         }
 
+        public function test_result_questionToTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function result(string $what = 'text'): string
+                        {
+                            return "result|$what";
+                        }
+                    };
+                }
+            };
+
+            self::assertSame(['result|code', 'result|'], [$command->expand('result', 'code'), $command->expand('result')]);
+        }
+
         public function test_progress_campaignAndQuestionToTheGate(): void
         {
             $command = new class ([]) extends AA_Stringexpand_Datovkabulk {

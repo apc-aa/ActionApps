@@ -20,6 +20,11 @@ use zids;
  * stay readable to the rest of the request, never to a next one through the token of an {ajax}.
  * Inside the UI the other subcommands give the settings, the fields of a form, the recipients and
  * the progress of a sending, outside of it nothing.
+ * Before the UI the gate runs the action a form of it posts (Actions), then sends the browser to the
+ * same page with the key of the result (isds_r): a reload shows the result again and repeats nothing.
+ * Only that page shows it, to the same user under the same binding, for FLASH_SECONDS; the same form
+ * posted again in that time - a double click - does nothing more and shows it too. An open gate keeps the page out of
+ * frames of other sites - or, when the headers went out before it (?debug), gives no form at all.
  *
  * What the template must keep in mind:
  * - Nothing before the gate should read the two slices: items and {view}s read before it are read
@@ -38,8 +43,16 @@ class Gate
     /** log.type: a campaign whose recipients cannot be told - its stored filter or the source slice is broken, once a day */
     public const RECIPIENTS_EVENT = 'ISDS_RCPT';
 
-    /** the actions a form may name - its token binds the action and the campaign */
-    public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'verify', 'fixbox'];
+    /** the actions a form may name - its token binds the action, the binding of the page and the campaign */
+    public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'resume', 'verify', 'fixbox'];
+    /** of ACTIONS those whose shown form is posted again on purpose (autosave): each post acts */
+    public const REPOSTED = ['save'];
+
+    /** $_SESSION key of the results kept for the page after an action, by their key */
+    private const FLASH = 'aa_isds_result';
+    /** a result older is not shown; newer ones are kept no more than FLASH_MAX */
+    private const FLASH_SECONDS = 600;
+    private const FLASH_MAX     = 10;
 
     /** what progress() tells */
     private const PROGRESS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until', 'delivered', 'accepted'];
@@ -47,8 +60,11 @@ class Gate
     /** the settings of the UI being expanded; null outside every gate */
     private static ?Setup $open = null;
 
-    /** what the action of this request did, for {datovkabulk:result} */
-    private static string $result = '';
+    /** what an action did, for the UI being expanded: of this request, or kept for the page after it */
+    private static ?ActionResult $shown = null;
+
+    /** the UI being expanded goes out with the headers against framing - only then it gets forms */
+    private static bool $guarded = false;
 
     /**
      * @param callable(string): string $expand expands the deferred UI - AA::Un() in the context of the template
@@ -70,37 +86,65 @@ class Gate
         if (!$access->may($setup->campaignSlice)) {
             return $refusal;
         }
+        // a frame of another site - a sibling *.ecn.cz too - could make the user click a form unseen
+        \AA::$headers['XFO']             = 'X-Frame-Options: SAMEORIGIN';
+        \AA::$headers['frame-ancestors'] = "'self'";
+        // ?debug printed before the gate: the headers cannot go out any more. Printed after it - a {view}
+        // of the UI -, they go out at once: so the one that matters goes now, not with the page at its end
+        $guarded = !$this->headersSent();
+        if ($guarded) {
+            $this->sendHeader(\AA::$headers['XFO']);
+        }
         AA_Credentials::singleton()->openForRequest($setup->campaignSlice, $setup->messageSlice);
-        $outer      = self::$open;
-        self::$open = $setup;
+        $result = $this->actions($access)->run($setup, $guarded);
+        if ($result?->taken() ?? false) {
+            $this->redirect(self::afterAction($result->campaign, $this->keep($setup, $access->uid(), $result)));
+        }
+        $outer         = [self::$open, self::$shown, self::$guarded];
+        self::$open    = $setup;
+        self::$shown   = $result ?? $this->kept($setup, $access->uid());
+        self::$guarded = $guarded;
         try {
             return $expand($ui);
         } finally {
-            self::$open = $outer;
+            [self::$open, self::$shown, self::$guarded] = $outer;
         }
     }
 
     /**
      * The hidden fields of a form asking for $action on the campaign: the token binds both and the
-     * campaign slice, so a form of one action or campaign cannot be posted as another.
+     * binding of the page, so a form of one action, campaign or page cannot be posted as another.
+     * '' on a page that could not be kept out of frames.
      * @param string $campaign long id; '' only to save a new campaign
      */
     public function fields(string $action, string $campaign = ''): string
     {
-        $campaign = (($campaign === '') && ($action === 'save')) ? '' : ModuleId::normalize($campaign);
-        if (is_null(self::$open) || !in_array($action, self::ACTIONS, true) || is_null($campaign)) {
+        $campaign = self::campaignOf($action, $campaign);
+        if (is_null(self::$open) || !self::$guarded || !in_array($action, self::ACTIONS, true) || is_null($campaign)) {
             return '';
         }
 
         return getFrmHiddenEasy('isds_action', $action)
             . getFrmHiddenEasy('isds_campaign', $campaign)
-            . getFrmHiddenEasy('isds_token', FormToken::get(self::purpose($action, self::$open->campaignSlice, $campaign)));
+            . getFrmHiddenEasy('isds_token', FormToken::get(self::purpose($action, self::$open, $campaign)))
+            // the token is the same in every form of the action: this tells one shown form from another
+            . getFrmHiddenEasy('isds_form', bin2hex(random_bytes(8)));
     }
 
-    /** the purpose of the token of a form; ids in small letters */
-    public static function purpose(string $action, string $campaignSlice, string $campaign): string
+    /**
+     * The purpose of the token of a form: the action, the binding of the page and the campaign - two
+     * pages of one campaign slice, a test one and a production one, take no form of each other
+     * @param string $campaign long id in small letters
+     */
+    public static function purpose(string $action, Setup $setup, string $campaign): string
     {
-        return "isds:$action:$campaignSlice:$campaign";
+        return "isds:$action:{$setup->bindingKey()}:$campaign";
+    }
+
+    /** the campaign a form of $action names, in small letters: '' only to save a new one; null = none */
+    public static function campaignOf(string $action, string $campaign): ?string
+    {
+        return (($campaign === '') && ($action === 'save')) ? '' : ModuleId::normalize($campaign);
     }
 
     /** Account::TEST or Account::PRODUCTION - from datovka_conf.php, never from the text of the template */
@@ -115,10 +159,26 @@ class Gate
         return safe(self::$open->senderBox ?? '');
     }
 
-    /** what the action of this request did, escaped */
-    public function result(): string
+    /**
+     * What the action did, escaped: text - in the language of the page, how to go on, with what the
+     * core said -, or its code, status or action for the conditions of a template. '' with no result:
+     * after the redirect only the page with its key (isds_r) shows it, a reload of the progress or
+     * another tab does not.
+     */
+    public function result(string $what = 'text'): string
     {
-        return is_null(self::$open) ? '' : safe(self::$result);
+        $result = is_null(self::$open) ? null : self::$shown;
+        if (is_null($result)) {
+            return '';
+        }
+
+        return safe(match ($what) {
+            '', 'text' => trim(Advice::text($result->code, $result->params) . ' ' . $result->detail),
+            'code'     => $result->code,
+            'status'   => $result->status,
+            'action'   => $result->action,
+            default    => '',
+        });
     }
 
     /**
@@ -183,10 +243,100 @@ class Gate
         return $progress[$what] ?? '';
     }
 
-    /** the action of this request tells what it did - plain text */
-    public static function report(string $text): void
+    /**
+     * Keeps the result in the session for the page the browser is sent to. Of the results kept before,
+     * those older than FLASH_SECONDS go, and the oldest beyond FLASH_MAX - autosaves add one every few seconds.
+     * @return string its key - random, so a link cannot name the result of another
+     */
+    private function keep(Setup $setup, string $uid, ActionResult $result): string
     {
-        self::$result = $text;
+        $key  = bin2hex(random_bytes(8));
+        $now  = $this->now();
+        $kept = is_array($_SESSION[self::FLASH] ?? null) ? $_SESSION[self::FLASH] : [];
+        $kept = array_filter($kept, static fn(mixed $entry): bool => is_array($entry) && ((int) ($entry['at'] ?? 0) > $now - self::FLASH_SECONDS));
+        // only what ran is repeated to the same form again: a refusal or BUSY may not hold the next click
+        $ran        = in_array($result->status, [ActionResult::DONE, ActionResult::FAILED], true);
+        $kept[$key] = ['binding' => $setup->bindingKey(), 'uid' => $uid, 'at' => $now, 'form' => $ran ? self::postedForm() : '', 'result' => $result->toArray()];
+        // a key of digits only is an int key: keep the keys as they are
+        $_SESSION[self::FLASH] = array_slice($kept, -self::FLASH_MAX, null, true);
+
+        return $key;
+    }
+
+    /** the result kept for the page a GET with its key asks for - of the same user and binding, not too old */
+    private function kept(Setup $setup, string $uid): ?ActionResult
+    {
+        $key = $_GET['isds_r'] ?? null;
+        if ((($_SERVER['REQUEST_METHOD'] ?? '') !== 'GET') || !is_string($key) || (preg_match('/^[0-9a-f]{16}\z/', $key) !== 1)) {
+            return null;
+        }
+
+        return ActionResult::fromArray($this->keptFor($setup, $uid)[$key]['result'] ?? null);
+    }
+
+    /**
+     * What the form posted did when it was posted before - a double click: the first result kept for it
+     * of an action that ran; null = not posted yet, too long ago, a form that does not tell itself from
+     * others, or one of REPOSTED
+     */
+    protected function answered(Setup $setup, string $uid): ?ActionResult
+    {
+        $form = in_array($_POST['isds_action'] ?? '', self::REPOSTED, true) ? '' : self::postedForm();
+        foreach (($form === '') ? [] : $this->keptFor($setup, $uid) as $entry) {
+            if (($entry['form'] ?? '') === $form) {
+                return ActionResult::fromArray($entry['result'] ?? null);
+            }
+        }
+
+        return null;
+    }
+
+    /** @return array<array-key, array<string, mixed>> the results kept for the user under the binding, not too old, the oldest first */
+    private function keptFor(Setup $setup, string $uid): array
+    {
+        $since = $this->now() - self::FLASH_SECONDS;
+
+        return array_filter(
+            is_array($_SESSION[self::FLASH] ?? null) ? $_SESSION[self::FLASH] : [],
+            static fn(mixed $entry): bool => is_array($entry) && (($entry['binding'] ?? '') === $setup->bindingKey()) && (($entry['uid'] ?? '') === $uid) && ((int) ($entry['at'] ?? 0) > $since),
+        );
+    }
+
+    /** the form shown once (fields()), as the session keeps it - a hash, not its token; '' = none told */
+    private static function postedForm(): string
+    {
+        $token = $_POST['isds_token'] ?? '';
+        $form  = $_POST['isds_form'] ?? '';
+        if (!is_string($token) || !is_string($form) || (preg_match('/^[0-9a-f]{16}\z/', $form) !== 1)) {
+            return '';
+        }
+
+        return hash('sha256', "$token:$form");
+    }
+
+    /**
+     * Where the browser goes after an action: the path of this page with its query, the campaign and
+     * the key of the result in place of any it had. Never another host: "//host/..." and "/\host/..."
+     * lead to the host they name (the router reads "//host/cz/x" as "/cz/x"), so such a path, or one
+     * with a control character, leads to "/".
+     */
+    private static function afterAction(string $campaign, string $key): string
+    {
+        $uri            = (string) ($_SERVER['REQUEST_URI'] ?? '');
+        [$path, $query] = explode('?', explode('#', $uri, 2)[0], 2) + [1 => ''];
+        if ((preg_match('~^/(?![/\\\\])~', $path) !== 1) || (preg_match('/[\x00-\x20\x7f]/', $uri) === 1)) {
+            [$path, $query] = ['/', ''];
+        }
+        $pairs = array_filter(explode('&', $query), static function (string $pair): bool {
+            $name = (string) preg_replace('/\[.*$/s', '', urldecode(explode('=', $pair, 2)[0]));
+            return ($pair !== '') && !in_array($name, ['isds_campaign', 'isds_r'], true);
+        });
+        if ($campaign !== '') {
+            $pairs[] = 'isds_campaign=' . $campaign;
+        }
+        $pairs[] = 'isds_r=' . $key;
+
+        return $path . '?' . implode('&', $pairs);
     }
 
     /** what to fix, and the pages that fix it - for a user of AA who may */
@@ -206,13 +356,25 @@ class Gate
     }
 
     /**
+     * The item $id names, when it is a campaign of the page - an item of its campaign slice, in any bin.
+     * The id comes from the page or a form.
+     * @return ?array{slice: string, active: bool, filter: string, state: string} as stored()
+     */
+    protected function campaignOfPage(Setup $setup, string $id): ?array
+    {
+        $stored = $this->stored($id);
+
+        return (($stored['slice'] ?? '') === $setup->campaignSlice) ? $stored : null;
+    }
+
+    /**
      * @return ?list<Recipient> null = not an active campaign of the page, or its recipients cannot be told (logged)
      */
     private function campaignRecipients(Setup $setup, string $id): ?array
     {
-        // the id comes from the page: only an active item of the page's campaign slice tells a filter
-        $stored = $this->stored($id);
-        if (is_null($stored) || ($stored['slice'] !== $setup->campaignSlice) || !$stored['active']) {
+        // only an active campaign tells a filter
+        $stored = $this->campaignOfPage($setup, $id);
+        if (is_null($stored) || !$stored['active']) {
             return null;
         }
         try {
@@ -234,9 +396,8 @@ class Gate
      */
     private function campaignProgress(Setup $setup, string $id): array
     {
-        // the id comes from the page: only an item of the page's campaign slice and a run of it
-        $stored = $this->stored($id);
-        if (is_null($stored) || ($stored['slice'] !== $setup->campaignSlice)) {
+        $stored = $this->campaignOfPage($setup, $id);
+        if (is_null($stored)) {
             return [];
         }
         $run = $this->run($id);
@@ -245,7 +406,7 @@ class Gate
             return ['state' => in_array($stored['state'], Schema::CAMPAIGN_STATES, true) ? $stored['state'] : ''];
         }
         // another binding may share the campaign slice and send into a message slice of its own
-        if (((string) $run->getProperty('camp_slice') !== $setup->campaignSlice) || ((string) $run->getProperty('msg_slice') !== $setup->messageSlice)) {
+        if (!$setup->ownsRun($run)) {
             return [];
         }
         // the record, not the position, tells the sending is over (a stopped one too): the step of look writes
@@ -298,6 +459,33 @@ class Gate
     protected function access(): Access
     {
         return new Access();
+    }
+
+    /** the actions of the page, for the login the gate let in */
+    protected function actions(Access $access): Actions
+    {
+        return new Actions($access, $this->campaignOfPage(...), $this->run(...), $this->answered(...));
+    }
+
+    protected function headersSent(): bool
+    {
+        return headers_sent();
+    }
+
+    protected function sendHeader(string $header): void
+    {
+        header($header);
+    }
+
+    /** 303: the reload of the page it leads to is a GET */
+    protected function redirect(string $url): never
+    {
+        go_url($url, '', false, 303);
+    }
+
+    protected function now(): int
+    {
+        return time();
     }
 
     /**

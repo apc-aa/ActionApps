@@ -452,12 +452,44 @@ class AA {
         if (isset(AA::$headers['disposition'])) {
             $ret['disposition'] = 'Content-Disposition: '.AA::$headers['disposition'];
         }
-        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS','CORSH'] as $possibleheader) {  // @todo CORS
+        foreach (['CSP','CSP-RO','RT','NEL','XSS','XCTO','RP','CORS','CORSH','XFO'] as $possibleheader) {  // @todo CORS
             if (isset(AA::$headers[$possibleheader])) {
                 $ret[$possibleheader] = AA::$headers[$possibleheader];
             }
         }
+        if (isset(AA::$headers['frame-ancestors'])) {
+            $ret['CSP'] = self::withFrameAncestors($ret['CSP'] ?? '', AA::$headers['frame-ancestors']);
+        }
         return $ret;
+    }
+
+    /** The CSP header with frame-ancestors set to $sources in each of its policies (a comma parts them).
+     *  Within the one header: a second one of the name would replace the template's, and a browser takes
+     *  the first frame-ancestors of a policy and, once there is one, ignores X-Frame-Options. A policy
+     *  of the template that lets no frame in at all ('none') keeps it. */
+    private static function withFrameAncestors(string $header, string $sources): string {
+        $space    = " \t\n\f\r";   // the white space of CSP, \f included
+        $policies = [];
+        foreach (explode(',', ($header === '') ? '' : substr($header, strlen('Content-Security-Policy:'))) as $policy) {
+            $directives = [];
+            $first      = null;   // the frame-ancestors the browser takes
+            foreach (explode(';', $policy) as $directive) {
+                $words = preg_split("/[$space]+/", trim($directive, $space), -1, PREG_SPLIT_NO_EMPTY);
+                if (!$words) {
+                    continue;
+                }
+                if (strcasecmp($words[0], 'frame-ancestors') === 0) {
+                    $first ??= strtolower(implode(' ', array_slice($words, 1)));
+                } else {
+                    $directives[] = implode(' ', $words);
+                }
+            }
+            if ($directives || !is_null($first) || !$policies) {
+                $directives[] = 'frame-ancestors ' . (($first === "'none'") ? "'none'" : $sources);
+                $policies[]   = implode('; ', $directives);
+            }
+        }
+        return 'Content-Security-Policy: ' . implode(', ', $policies);
     }
 
     /** @usage AA::setEncoding($module->getCharset());

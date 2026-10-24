@@ -10882,10 +10882,13 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        Even inside the gate {dictionary} may serve a copy an earlier request stored in the page cache. Nor may the
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
- *        no campaign id only to save a new campaign
+ *        no campaign id only to save a new campaign. Actions: resume (Continue a sending in error or waiting)
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
- *    {datovkabulk:result} - what the posted action did
+ *    {datovkabulk:result[:text|code|status|action]} - what the posted action did: text to read (default), or
+ *        for a condition its code (RESUMED, BUSY, EXPIRED, ...), status (done, refused, busy, expired, failed) or
+ *        action. After the action the page is loaded again with isds_campaign and isds_r added to its URL; the
+ *        result shows only with that isds_r, for 10 minutes
  *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted
  *        anew: how many get the letter, how many are skipped for their data box, the dash-separated ids of who gets
  *        it (for {view}); a queued or sent campaign keeps its count from then in the campaign. '' on any error, and
@@ -10929,7 +10932,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'fields'     => $gate->fields((string)$settings, (string)$ui),
             'env'        => $gate->env(),
             'sender'     => $gate->sender(),
-            'result'     => $gate->result(),
+            'result'     => $gate->result((string)$settings),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
             default      => '',

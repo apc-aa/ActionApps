@@ -7,8 +7,11 @@ namespace Tests\Unit\Isds;
 use AA;
 use AA\Isds\Access;
 use AA\Isds\Account;
+use AA\Isds\ActionResult;
+use AA\Isds\Actions;
 use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
+use AA\Isds\SendRun;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Util\FormToken;
@@ -18,11 +21,14 @@ use AA_Stringexpand_Encrypt;
 use Closure;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use ReflectionMethod;
 use ReflectionProperty;
+use Tests\Unit\Isds\Fixtures\FakeActions;
 use Tests\Unit\Isds\Fixtures\FakeGate;
 use Tests\Unit\Isds\Fixtures\FakePerms;
 use Tests\Unit\Isds\Fixtures\FakeRecipients;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
+use Tests\Unit\Isds\Fixtures\Redirected;
 use Tests\Unit\Isds\Fixtures\Sending;
 
 // data providers read its ids before setUpBeforeClass()
@@ -31,7 +37,8 @@ require_once __DIR__ . '/fixtures/Sending.php';
 /**
  * {datovkabulk:page}: the deferred UI and the two slices open only on a page of the bound site for
  * whoever AA lets send; for anyone else the UI stays unexpanded and the slices closed. An opened slice
- * never goes into the token {ajax} carries.
+ * never goes into the token {ajax} carries. An open gate runs the action its form posts before the UI,
+ * then sends the browser to the page with the key of the result; no other site may frame it.
  */
 final class GateTest extends TestCase
 {
@@ -56,6 +63,9 @@ final class GateTest extends TestCase
     /** @var list<string> the UI each expansion got */
     private array $expanded = [];
 
+    /** @var array<string, mixed> $_SERVER before the test */
+    private array $server = [];
+
     public static function setUpBeforeClass(): void
     {
         require_once __DIR__ . '/../fixtures/util_shims.php';
@@ -76,6 +86,9 @@ final class GateTest extends TestCase
     {
         FakeRecipients::forget();
         FakePerms::install([Sending::SET => [self::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']]], [self::READER => [Sending::READERS, Sending::SET]]);
+        FakeActions::reset();
+        $this->server = $_SERVER;
+        $_SESSION     = [];
     }
 
     /** what a test changed of the request stays in it */
@@ -93,7 +106,12 @@ final class GateTest extends TestCase
         (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
         AA::Contentcache()->clear();
         FakeRecipients::forget();
-        Gate::report('');
+        FakeActions::reset();
+        AA::$headers = [];
+        $_SERVER     = $this->server;
+        $_POST       = [];
+        $_GET        = [];
+        $_SESSION    = [];
         if (session_status() !== PHP_SESSION_ACTIVE) {
             session_id('');
         }
@@ -305,18 +323,33 @@ final class GateTest extends TestCase
         }));
     }
 
-    public function test_fields_tokenBindsTheActionTheCampaignAndItsSlice(): void
+    public function test_fields_purposeBindsBinding(): void
     {
         session_id('gate-test-session');
         $gate   = self::gate();
         $inputs = self::inputs(self::inside($gate, static fn(): string => $gate->fields('send', strtoupper(self::ITEM))));
+        $page   = self::page();
+        $other  = static fn(string $site, string $message, string $environment): Setup => Setup::fromSnapshot($site, self::CAMPAIGN, $message, self::SOURCE, ['mesto' => 'Cities'], environment: $environment);
 
-        self::assertSame(['isds_action', 'isds_campaign', 'isds_token'], array_keys($inputs));
+        self::assertSame(['isds_action', 'isds_campaign', 'isds_token', 'isds_form'], array_keys($inputs));
         self::assertSame(['send', self::ITEM], [$inputs['isds_action'], $inputs['isds_campaign']]);
-        self::assertTrue(FormToken::check(Gate::purpose('send', self::CAMPAIGN, self::ITEM), $inputs['isds_token']));
-        self::assertFalse(FormToken::check(Gate::purpose('stop', self::CAMPAIGN, self::ITEM), $inputs['isds_token']), 'another action');
-        self::assertFalse(FormToken::check(Gate::purpose('send', self::CAMPAIGN, self::MESSAGE), $inputs['isds_token']), 'another campaign');
-        self::assertFalse(FormToken::check(Gate::purpose('send', self::MESSAGE, self::ITEM), $inputs['isds_token']), 'the campaign slice of another page');
+        self::assertMatchesRegularExpression('/^[0-9a-f]{16}\z/', $inputs['isds_form']);
+        self::assertTrue(FormToken::check(Gate::purpose('send', $page, self::ITEM), $inputs['isds_token']));
+        self::assertFalse(FormToken::check(Gate::purpose('stop', $page, self::ITEM), $inputs['isds_token']), 'another action');
+        self::assertFalse(FormToken::check(Gate::purpose('send', $page, self::MESSAGE), $inputs['isds_token']), 'another campaign');
+        self::assertFalse(FormToken::check(Gate::purpose('send', $other(self::SITE, self::MESSAGE, Account::PRODUCTION), self::ITEM), $inputs['isds_token']), 'the production page of the slices');
+        self::assertFalse(FormToken::check(Gate::purpose('send', $other(self::SITE, Sending::OTHER, Account::TEST), self::ITEM), $inputs['isds_token']), 'another message slice');
+        self::assertFalse(FormToken::check(Gate::purpose('send', $other(self::SITE2, self::MESSAGE, Account::TEST), self::ITEM), $inputs['isds_token']), 'another site');
+    }
+
+    public function test_fields_resume(): void
+    {
+        session_id('gate-test-session');
+        $gate   = self::gate();
+        $inputs = self::inputs(self::inside($gate, static fn(): string => $gate->fields('resume', self::ITEM)));
+
+        self::assertSame(['resume', self::ITEM], [$inputs['isds_action'], $inputs['isds_campaign']]);
+        self::assertTrue(FormToken::check(Gate::purpose('resume', self::page(), self::ITEM), $inputs['isds_token']));
     }
 
     public function test_fields_newCampaignOnlyToSave(): void
@@ -325,7 +358,7 @@ final class GateTest extends TestCase
         $gate   = self::gate();
         $fields = self::inside($gate, static fn(): array => [$gate->fields('save'), $gate->fields('send'), $gate->fields('clone', '')]);
 
-        self::assertTrue(FormToken::check(Gate::purpose('save', self::CAMPAIGN, ''), self::inputs($fields[0])['isds_token']));
+        self::assertTrue(FormToken::check(Gate::purpose('save', self::page(), ''), self::inputs($fields[0])['isds_token']));
         self::assertSame(['', ''], [$fields[1], $fields[2]]);
     }
 
@@ -334,15 +367,6 @@ final class GateTest extends TestCase
         $gate = self::gate();
 
         self::assertSame(['', '', '', ''], self::inside($gate, static fn(): array => [$gate->fields('delete', self::ITEM), $gate->fields('send', '12" onclick="x'), $gate->fields('', self::ITEM), $gate->fields('save', 'x')]));
-    }
-
-    public function test_result_escapedInsideTheUiOnly(): void
-    {
-        $gate = self::gate();
-        Gate::report('Sent to <b>5</b> boxes');
-
-        self::assertSame('Sent to &lt;b&gt;5&lt;/b&gt; boxes', self::inside($gate, static fn(): string => $gate->result()));
-        self::assertSame('', $gate->result());
     }
 
     // State Check and the log tell the administrator; a reader learns nothing of the setup
@@ -494,5 +518,494 @@ final class GateTest extends TestCase
         self::assertSame(['', '', ''], self::counts($gate, self::ITEM));
         self::assertSame([[self::SITE . ':' . self::CAMPAIGN . ':' . self::ITEM, $problem]], $gate->recipientsLogged);
         self::assertSame([], $gate->logged, 'not a problem of the settings');
+    }
+
+    // ------------------------------------------------------------ actions
+
+    /** the settings of the page as the gate checks them */
+    private static function page(): Setup
+    {
+        return Setup::fromTemplate(self::settings(), self::SITE, self::rules(), Sending::bound());
+    }
+
+    /** the page of a sending in error: ITEM a campaign of it, its run by the binding of the page */
+    private static function actionGate(string $login = self::READER): FakeGate
+    {
+        $gate            = self::gate(login: $login);
+        $gate->campaigns = [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'sending']];
+        $gate->runs      = [self::ITEM => new SendRun(['site' => self::SITE, 'camp_slice' => self::CAMPAIGN, 'msg_slice' => self::MESSAGE, 'state' => SendRun::ERROR])];
+
+        return $gate;
+    }
+
+    /** Continue of ITEM posted from the page at $uri, its token for $setup */
+    private static function postResume(?Setup $setup = null, string $uri = '/cz/rozesilka?tab=2'): void
+    {
+        session_id('gate-test-session');
+        $_SERVER['REQUEST_METHOD']      = 'POST';
+        $_SERVER['HTTP_HOST']           = 'www.example.cz';
+        $_SERVER['HTTP_SEC_FETCH_SITE'] = 'same-origin';
+        $_SERVER['REQUEST_URI']         = $uri;
+        $_GET                           = [];
+        $_POST                          = ['isds_action' => 'resume', 'isds_campaign' => self::ITEM, 'isds_token' => FormToken::get(Gate::purpose('resume', $setup ?? self::page(), self::ITEM)), 'isds_form' => bin2hex(random_bytes(8))];
+    }
+
+    /** the gate renders the page of a POST and sends the browser on: where to */
+    private function redirectOf(Gate $gate): string
+    {
+        try {
+            $this->render($gate);
+        } catch (Redirected $redirect) {
+            return $redirect->url;
+        }
+        self::fail('The gate sends the browser on after an action');
+    }
+
+    /** the GET the browser makes after the redirect, or a reload of it */
+    private static function getAfter(string $url): void
+    {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REQUEST_URI']    = $url;
+        $_POST                     = [];
+        parse_str((string) parse_url($url, PHP_URL_QUERY), $_GET);
+    }
+
+    /** @return list<string> what {datovkabulk:result} gives the UI: text, code, status, action */
+    private static function shown(Gate $gate): array
+    {
+        return self::inside($gate, static fn(): array => [$gate->result(), $gate->result('code'), $gate->result('status'), $gate->result('action')]);
+    }
+
+    /** @return array<string, string> the headers the page is sent with */
+    private static function headers(): array
+    {
+        AA::$headers += ['type' => 'text/html', 'encoding' => 'utf-8'];   // no language files read
+
+        return AA::getHeaders();
+    }
+
+    /** a reader without the role, a site page that is none, ... - never acts, whatever the form */
+    #[DataProvider('refused')]
+    public function test_page_refusedUserTriggersNoAction(\Closure $gate): void
+    {
+        self::postResume();
+        $refused            = $gate();
+        $refused->campaigns = self::actionGate()->campaigns;
+        $refused->runs      = self::actionGate()->runs;
+
+        self::assertSame(self::REFUSAL, $this->render($refused));
+        self::assertSame([[], []], [FakeActions::$resumed, $_SESSION]);
+    }
+
+    // a test page and a production page of one campaign slice: the form of one acts only on its own
+    public function test_page_twoGatesOnlyOwnFormActs(): void
+    {
+        $production        = self::actionGate();
+        $production->setup = Setup::fromSnapshot(self::SITE, self::CAMPAIGN, self::MESSAGE, self::SOURCE, ['mesto' => 'Cities'], environment: Account::PRODUCTION);
+        $test              = self::actionGate();
+        $test->setup       = Setup::fromSnapshot(self::SITE, self::CAMPAIGN, self::MESSAGE, self::SOURCE, ['mesto' => 'Cities'], environment: Account::TEST);
+        self::postResume($test->setup);
+
+        self::assertSame(['The form has expired, or it does not belong to this page. Load the page again.', Actions::EXPIRED, ActionResult::EXPIRED, ''], self::shown($production), 'shown in place: a later gate may take the form');
+        self::assertSame([], FakeActions::$resumed);
+        $url = $this->redirectOf($test);
+        self::assertSame([[self::ITEM, self::READER]], FakeActions::$resumed);
+
+        self::getAfter($url);
+        self::assertSame(['', ''], [self::shown($production)[1], $production->result()], 'the result is the test page\'s');
+        self::assertSame(Actions::RESUMED, self::shown($test)[1]);
+    }
+
+    public function test_page_noStoreBeforeAction(): void
+    {
+        $gate                = self::actionGate();
+        $seen                = [];
+        FakeActions::$resume = static function () use ($gate, &$seen): string {
+            $seen = [$gate->noStores, AA::$headers['XFO'] ?? ''];
+
+            return '';
+        };
+        self::postResume();
+
+        $this->redirectOf($gate);
+
+        self::assertSame([1, 'X-Frame-Options: SAMEORIGIN'], $seen, 'the page is kept out of the cache and of frames before anything is done');
+    }
+
+    // the UI of the POST is never expanded: the browser loads the page anew, with what the action did
+    public function test_page_actionBeforeUi(): void
+    {
+        $order               = [];
+        FakeActions::$resume = static function () use (&$order): string {
+            $order[] = 'action';
+
+            return '';
+        };
+        self::postResume();
+
+        $this->redirectOf(self::actionGate());
+
+        self::assertSame([['action'], []], [$order, $this->expanded]);
+    }
+
+    // ?debug printed before the gate: the page goes out without the headers against framing, so it
+    // gives no form a frame of another site could make the user click
+    public function test_page_noFormsWhenFramingCannotBeSent(): void
+    {
+        session_id('gate-test-session');
+        $gate              = self::actionGate();
+        $gate->headersSent = true;
+
+        self::assertSame(['', ''], self::inside($gate, static fn(): array => [$gate->fields('resume', self::ITEM), $gate->fields('save')]));
+        self::assertNotSame('', self::inside(self::actionGate(), static fn(): string => self::actionGate()->fields('resume', self::ITEM)), 'with the headers it does');
+    }
+
+    public function test_page_framingForbiddenWhenOpen(): void
+    {
+        $this->render(self::gate());
+
+        $headers = self::headers();
+        self::assertSame('X-Frame-Options: SAMEORIGIN', $headers['XFO']);
+        self::assertSame("Content-Security-Policy: frame-ancestors 'self'", $headers['CSP']);
+    }
+
+    // a template may set its CSP after the gate as well as before it
+    public function test_page_framingMergedWithTemplateCsp(): void
+    {
+        AA::$headers['CSP'] = "Content-Security-Policy: default-src 'self'; img-src *";
+        $this->render(self::gate());
+        self::assertSame("Content-Security-Policy: default-src 'self'; img-src *; frame-ancestors 'self'", self::headers()['CSP']);
+
+        AA::$headers['CSP'] = "Content-Security-Policy: script-src 'self';";
+        self::assertSame("Content-Security-Policy: script-src 'self'; frame-ancestors 'self'", self::headers()['CSP']);
+    }
+
+    // a browser takes the first frame-ancestors and then ignores X-Frame-Options
+    public function test_page_framingTemplateFrameAncestorsOverridden(): void
+    {
+        $this->render(self::gate());
+        AA::$headers['CSP'] = "Content-Security-Policy: frame-ancestors https://cizi.example; default-src 'self'; FRAME-ANCESTORS *";
+
+        self::assertSame("Content-Security-Policy: default-src 'self'; frame-ancestors 'self'", self::headers()['CSP']);
+    }
+
+    // a {view} of the UI printing with ?debug sends the headers before the page ends: X-Frame-Options must be out already
+    public function test_page_framingHeaderSentAtTheGate(): void
+    {
+        $gate = self::gate();
+        $this->render($gate);
+        self::assertSame(['X-Frame-Options: SAMEORIGIN'], $gate->sentHeaders);
+
+        $late              = self::gate();
+        $late->headersSent = true;
+        $this->render($late);
+        self::assertSame([], $late->sentHeaders, 'gone already: nothing to send');
+
+        $refused = self::gate(login: Sending::USER);
+        $this->render($refused);
+        self::assertSame([], $refused->sentHeaders, 'a refused gate offers nothing to frame');
+    }
+
+    public function test_page_refusedGateLeavesFramingAsItWas(): void
+    {
+        $this->render(self::gate(login: Sending::USER));
+
+        self::assertArrayNotHasKey('XFO', self::headers());
+    }
+
+    public function test_page_flashOfRevokedUserNotShown(): void
+    {
+        self::postResume();
+        $url = $this->redirectOf(self::actionGate());
+        self::getAfter($url);
+        FakePerms::install([]);
+
+        self::assertSame(self::REFUSAL, $this->render(self::actionGate()));
+    }
+
+    // another login of the same browser session sees nothing of it either
+    public function test_page_flashOfOtherUserNotShown(): void
+    {
+        self::postResume();
+        self::getAfter($this->redirectOf(self::actionGate()));
+        FakePerms::install([Sending::USER => [self::CAMPAIGN => PS_EDIT_ALL_ITEMS]]);
+
+        self::assertSame(['', '', '', ''], self::shown(self::actionGate(Sending::USER)));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function foreignPaths(): array
+    {
+        return [
+            'another host'            => ['//cizi.example/cz/x'],
+            'another host, backslash' => ['/\cizi.example/cz/x'],
+            'a header in the path'    => ["/cz/x\r\nSet-Cookie: a=b"],
+            'a header in the query'   => ["/cz/x?a=1\nSet-Cookie: a=b"],
+            'a tab'                   => ["/\t/cizi.example"],
+            'no path'                 => ['cizi.example/cz/x'],
+            'none'                    => [''],
+        ];
+    }
+
+    #[DataProvider('foreignPaths')]
+    public function test_redirect_neverLeavesTheHost(string $uri): void
+    {
+        self::postResume(uri: $uri);
+
+        self::assertMatchesRegularExpression('~^/\?isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
+    }
+
+    public function test_redirect_keepsQueryReplacesKeys(): void
+    {
+        self::postResume(uri: '/cz/rozesilka?tab=2&isds_r=0123456789abcdef&isds_campaign=x&isds_r%5B%5D=1&q=a%26b#top');
+
+        $url = $this->redirectOf(self::actionGate());
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&q=a%26b&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $url);
+    }
+
+    // nor does it act on a form: the page of the result would go out unguarded too
+    public function test_redirect_noRedirectAfterHeaders(): void
+    {
+        $gate              = self::actionGate();
+        $gate->headersSent = true;
+        self::postResume();
+
+        self::assertSame([Actions::EXPIRED, ActionResult::EXPIRED, ''], array_slice(self::shown($gate), 1));
+        self::assertSame([[], []], [FakeActions::$resumed, $_SESSION], 'nothing done, nothing kept');
+    }
+
+    // the second click finds the sending going on already - it shows what the first did, not a refusal
+    public function test_result_doubleClickShowsTheFirstResult(): void
+    {
+        self::postResume();
+        $first = $this->redirectOf(self::actionGate());
+        $form  = $_POST;
+        Actions::forget();
+        FakeActions::$resume = static fn(): string => Actions::WRONG_STATE;
+        self::postResume();
+        $_POST = $form;
+
+        $second = $this->redirectOf(self::actionGate());
+
+        self::assertSame([[self::ITEM, self::READER]], FakeActions::$resumed, 'the core asked once');
+        self::assertNotSame($first, $second);
+        self::getAfter($second);
+        self::assertSame(['The sending goes on.', Actions::RESUMED, ActionResult::DONE, 'resume'], self::shown(self::actionGate()));
+    }
+
+    /** @return array<string, array{\Closure(): string}> what the core says to the first click */
+    public static function didNotRun(): array
+    {
+        return [
+            'busy'          => [static fn(): string => Actions::BUSY],
+            'a step works'  => [static fn(): string => Actions::LEASE],
+            'not waiting'   => [static fn(): string => Actions::WRONG_STATE],
+            'not the right' => [static fn(): string => Actions::FORBIDDEN],
+        ];
+    }
+
+    // only what ran is repeated: a click refused, or turned away while another request held the
+    // campaign, does not hold the same form back
+    /** @param \Closure(): string $first */
+    #[DataProvider('didNotRun')]
+    public function test_result_onlyAnActionThatRanIsRepeated(\Closure $first): void
+    {
+        FakeActions::$resume = $first;
+        self::postResume();
+        $form = $_POST;
+        $this->redirectOf(self::actionGate());
+        Actions::forget();
+        FakeActions::$resume = null;
+        $_POST               = $form;
+
+        self::getAfter($this->redirectOf(self::actionGate()));
+
+        self::assertCount(2, FakeActions::$resumed);
+        self::assertSame(Actions::RESUMED, self::shown(self::actionGate())[1]);
+    }
+
+    // an internal error may have done part of the work: the click again shows it, never does it twice
+    public function test_result_failedIsRepeated(): void
+    {
+        FakeActions::$resume = static fn(): string => throw new \RuntimeException('broken');
+        self::postResume();
+        $form = $_POST;
+        $this->redirectOf(self::actionGate());
+        Actions::forget();
+        FakeActions::$resume = null;
+        $_POST               = $form;
+
+        self::getAfter($this->redirectOf(self::actionGate()));
+
+        self::assertCount(1, FakeActions::$resumed);
+        self::assertSame([Actions::INTERNAL, ActionResult::FAILED], array_slice(self::shown(self::actionGate()), 1, 2));
+    }
+
+    // an autosave posts the form shown once again and again: each post acts
+    public function test_result_repostedActionNotRepeated(): void
+    {
+        $gate   = self::actionGate();
+        $form   = bin2hex(random_bytes(8));
+        $token  = 'a-token';
+        $result = new ActionResult('save', ActionResult::DONE, 'SAVED', self::ITEM);
+        $_SESSION['aa_isds_result']['0123456789abcdef'] = ['binding' => self::page()->bindingKey(), 'uid' => self::READER, 'at' => $gate->now, 'form' => hash('sha256', "$token:$form"), 'result' => $result->toArray()];
+        $answered = static fn(): ?ActionResult => (new ReflectionMethod(Gate::class, 'answered'))->invoke($gate, self::page(), self::READER);
+
+        $_POST = ['isds_action' => 'resume', 'isds_token' => $token, 'isds_form' => $form];
+        self::assertEquals($result, $answered(), 'the same form of another action is answered');
+        $_POST['isds_action'] = 'save';
+        self::assertNull($answered());
+    }
+
+    /** @return array<string, array{\Closure(array<string, string>, FakeGate): void}> */
+    public static function notTheSameForm(): array
+    {
+        return [
+            // Continue again after the sending failed again: the token is the same in every form of it
+            'the form shown again'      => [static function (array $first, FakeGate $gate): void {}],
+            'a form that does not tell' => [static function (array $first, FakeGate $gate): void {
+                $_POST = ['isds_form' => '<x>'] + $first;
+            }],
+            'the same form, forgotten'  => [static function (array $first, FakeGate $gate): void {
+                $_POST     = $first;
+                $gate->now += 600;
+            }],
+        ];
+    }
+
+    /** @param \Closure(array<string, string>, FakeGate): void $again */
+    #[DataProvider('notTheSameForm')]
+    public function test_result_otherFormActsAgain(\Closure $again): void
+    {
+        self::postResume();
+        $first = $_POST;
+        $this->redirectOf(self::actionGate());
+        Actions::forget();
+        self::postResume();
+        $gate = self::actionGate();
+        $again($first, $gate);
+
+        $this->redirectOf($gate);
+
+        self::assertCount(2, FakeActions::$resumed);
+    }
+
+    // the progress reloaded every few seconds and a second tab get no isds_r: they neither show nor take it
+    public function test_result_pollDoesNotConsumeFlash(): void
+    {
+        self::postResume();
+        $url = $this->redirectOf(self::actionGate());
+
+        self::getAfter('/cz/rozesilka?tab=2');
+        self::assertSame(['', '', '', ''], self::shown(self::actionGate()), 'the poll');
+        self::getAfter($url);
+        self::assertSame(['The sending goes on.', Actions::RESUMED, ActionResult::DONE, 'resume'], self::shown(self::actionGate()));
+        self::assertSame(Actions::RESUMED, self::shown(self::actionGate())[1], 'a reload shows it again');
+    }
+
+    // two tabs, two actions: each page shows its own result
+    public function test_result_otherTabSeesNoResult(): void
+    {
+        self::postResume();
+        $first = $this->redirectOf(self::actionGate());
+        Actions::forget();
+        FakeActions::$resume = static fn(): string => Actions::BUSY;
+        self::postResume();
+        $second = $this->redirectOf(self::actionGate());
+
+        self::getAfter($first);
+        self::assertSame(Actions::RESUMED, self::shown(self::actionGate())[1]);
+        self::getAfter($second);
+        self::assertSame([Actions::BUSY, ActionResult::BUSY], array_slice(self::shown(self::actionGate()), 1, 2));
+    }
+
+    public function test_result_unknownKeyShowsNothing(): void
+    {
+        self::postResume();
+        $this->redirectOf(self::actionGate());
+
+        self::getAfter('/cz/rozesilka?isds_r=0123456789abcdef');
+        self::assertSame(['', '', '', ''], self::shown(self::actionGate()));
+    }
+
+    /** @return array<string, array{\Closure(string): void}> */
+    public static function malformedKeys(): array
+    {
+        return [
+            'an array'        => [static function (string $key): void {
+                $_GET['isds_r'] = [$key];
+            }],
+            'capitals'        => [static function (string $key): void {
+                $_GET['isds_r'] = strtoupper($key);
+            }],
+            'a line end'      => [static function (string $key): void {
+                $_GET['isds_r'] = "$key\n";
+            }],
+            'posted, not got' => [static function (string $key): void {
+                $_POST = ['isds_r' => $key];
+                $_GET  = [];
+            }],
+            // another form posted to the page after the action, its URL with the key
+            'a POST'          => [static function (string $key): void {
+                $_POST                     = ['comment' => 'x'];
+                $_SERVER['REQUEST_METHOD'] = 'POST';
+            }],
+        ];
+    }
+
+    /** @param \Closure(string): void $spoil */
+    #[DataProvider('malformedKeys')]
+    public function test_result_malformedKeyShowsNothing(\Closure $spoil): void
+    {
+        self::postResume();
+        self::getAfter($this->redirectOf(self::actionGate()));
+        $spoil((string) $_GET['isds_r']);
+
+        self::assertSame(['', '', '', ''], self::shown(self::actionGate()));
+    }
+
+    public function test_result_expiresAfterTenMinutes(): void
+    {
+        self::postResume();
+        self::getAfter($this->redirectOf(self::actionGate()));
+        $gate = self::actionGate();
+
+        $gate->now += 599;
+        self::assertSame(Actions::RESUMED, self::shown($gate)[1]);
+        $gate->now += 1;
+        self::assertSame('', self::shown($gate)[1]);
+    }
+
+    // autosaves every few seconds keep adding results: the oldest go
+    public function test_result_keepsTheTenNewest(): void
+    {
+        $urls = [];
+        for ($i = 0; $i < 11; ++$i) {
+            Actions::forget();
+            self::postResume();
+            $urls[] = $this->redirectOf(self::actionGate());
+        }
+
+        self::assertCount(10, $_SESSION['aa_isds_result']);
+        self::getAfter($urls[0]);
+        self::assertSame('', self::shown(self::actionGate())[1]);
+        self::getAfter($urls[1]);
+        self::assertSame(Actions::RESUMED, self::shown(self::actionGate())[1]);
+    }
+
+    public function test_result_detailCutOnCharBoundary(): void
+    {
+        $detail = str_repeat('ž', 1001) . '<b>';
+        $result = new ActionResult('resume', ActionResult::REFUSED, Actions::UNKNOWN, self::ITEM, $detail);
+        self::assertSame(str_repeat('ž', 1000), $result->detail);
+
+        $_SESSION['aa_isds_result']['0123456789abcdef'] = ['binding' => self::page()->bindingKey(), 'uid' => self::READER, 'at' => 1_800_000_000, 'result' => ['detail' => '<b>' . $detail] + $result->toArray()];
+        self::getAfter('/cz/rozesilka?isds_r=0123456789abcdef');
+        $text = self::shown(self::actionGate())[0];
+
+        self::assertStringStartsWith('This sending is not on this page. &lt;b&gt;žž', $text, 'escaped');
+        self::assertTrue(mb_check_encoding(htmlspecialchars_decode($text), 'UTF-8'));
+        self::assertSame(ActionResult::DETAIL_MAX - 1, strlen(htmlspecialchars_decode($text)) - strlen('This sending is not on this page. '), 'cut whole characters');
     }
 }

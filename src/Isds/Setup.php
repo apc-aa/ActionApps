@@ -170,6 +170,26 @@ final readonly class Setup
     }
 
     /**
+     * The binding the page sends by - the site, both slices and the environment - as 16 hexadecimal
+     * digits: a form of a test page is no form of the production page of the same campaign slice.
+     */
+    public function bindingKey(): string
+    {
+        return substr(hash('sha256', implode('|', [$this->site, $this->campaignSlice, $this->messageSlice, $this->environment])), 0, 16);
+    }
+
+    /**
+     * The run sends from the slices of this page, so the page shows it and controls it. Not by the site:
+     * an account may serve several sites, and a run queued on the page of one goes on from the page of
+     * another; nor by the environment - a binding switched between test and production must still let
+     * its runs be stopped. The token of a form binds both (bindingKey()).
+     */
+    public function ownsRun(SendRun $run): bool
+    {
+        return ((string) $run->getProperty('camp_slice') === $this->campaignSlice) && ((string) $run->getProperty('msg_slice') === $this->messageSlice);
+    }
+
+    /**
      * fromTemplate() for AA::Contentcache() - the Setup, or what to fix, once a request
      */
     public static function checked(string $settings, string $site, ?SliceRules $rules = null, #[\SensitiveParameter] ?DatovkaConf $conf = null): self|SetupException
