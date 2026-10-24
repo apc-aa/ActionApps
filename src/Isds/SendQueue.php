@@ -173,7 +173,7 @@ class SendQueue
                 return TestResult::refused(TestResult::BUSY);
             }
             try {
-                return $this->sendTest($setup, $campaign, (string) $item->getValue('short_id........'), $message, $binding, $account);
+                return $this->sendTest($setup, $campaign, (string) $item->getValue('short_id........'), $message, $letter->source, $binding, $account);
             } finally {
                 $this->unlock($lock);
             }
@@ -182,12 +182,13 @@ class SendQueue
 
     /**
      * Under the lock: the earlier tests, the price, the message item, the message and what came of it
+     * @param string $mainSource Letter::$source of the main file
      */
-    private function sendTest(Setup $setup, string $campaign, string $campShort, Message $message, Binding $binding, Account $account): TestResult
+    private function sendTest(Setup $setup, string $campaign, string $campShort, Message $message, string $mainSource, Binding $binding, Account $account): TestResult
     {
         $runClass = $this->runClass();
         $items    = $this->items($setup, $campaign);
-        $sum      = self::sum($message);
+        $sum      = self::sum($message, $mainSource);
         $box      = $message->recipient;
         foreach ($items->tests() as $test) {
             if ($test['state'] === Schema::MESSAGE_STATE_SENDING) {
@@ -230,7 +231,7 @@ class SendQueue
         }
         $ref     = "$campShort-T$short";
         $message = new Message($box, $message->annotation, $message->files, $ref, $message->toHands);
-        $this->testLog($campaign, $msg, $sum, $message->files);
+        $this->testLog($campaign, $msg, $sum, self::testLogRows($message->files, $mainSource));
         $items->markTestSending($msg, $runClass::clock(), $ref, $sum, count($message->files));
         try {
             $result = $client->createMessage($message);
@@ -266,14 +267,17 @@ class SendQueue
     }
 
     /**
-     * The checksum of what the recipient sees: the subject, "to hands" and each file - its name, type,
-     * size and content - in the order of the message. The letterhead is in the letter. HtmlBody draws
-     * its images again: after an update of libgd the same letter may differ and be tested once more.
+     * The checksum of what the recipient sees: the subject, "to hands" and each file - its name, type
+     * and content - in the order of the message. The main file counts by what it is made of, as the
+     * same draft need not give the same bytes; the letterhead is in it. Whatever changes the checksum
+     * of the same letter - another way of counting it, an update of libgd that draws the images of the
+     * letter - lets it be tested once more.
+     * @param string $mainSource Letter::$source of the main file
      * @return string 32 hexadecimal digits
      */
-    private static function sum(Message $message): string
+    private static function sum(Message $message, string $mainSource): string
     {
-        $files = array_map(static fn(File $f): array => [$f->name, $f->mimeType, $f->size(), hash('xxh128', $f->content)], $message->files);
+        $files = array_map(static fn(File $f): array => ($f->metaType === File::MAIN) ? [$f->name, $f->mimeType, $mainSource] : [$f->name, $f->mimeType, $f->size(), hash('xxh128', $f->content)], $message->files);
         return hash('xxh128', json_encode([$message->annotation, $message->toHands, $files], JSON_THROW_ON_ERROR));
     }
 
@@ -430,7 +434,7 @@ class SendQueue
     }
 
     /** the letter of the campaign item; refused CONTENT with what to fix */
-    private function letter(Setup $setup, ItemContent $item): Letter|SendStart
+    protected function letter(Setup $setup, ItemContent $item): Letter|SendStart
     {
         try {
             return Letter::of($item, $setup->letterhead, $this->uploads($setup->campaignSlice));
@@ -597,17 +601,30 @@ class SendQueue
     }
 
     /**
-     * What a test message sends: a row of it - log.user tells who -, then a row of each file. log.params
-     * holds 128 bytes, log.selector 255: a long file name is cut
-     * @param list<File> $files
+     * What a test message sends: a row of it - log.user tells who -, then a row of each file
+     * (testLogRows()). log.params holds 128 bytes.
+     * @param list<string> $rows
      */
-    protected function testLog(string $campaign, string $msg, string $sum, array $files): void
+    protected function testLog(string $campaign, string $msg, string $sum, array $rows): void
     {
         AA_Log::write(self::TEST_LOG_EVENT, "test:$campaign", [$msg, $sum]);
+        AA_Log::write(self::TEST_LOG_EVENT, $rows, "file:$msg");
+    }
+
+    /**
+     * A row of each file: its number, size and checksum, then its name - the main file also with what it
+     * is made of, the part of sum() the bytes do not show. log.selector holds 255 bytes: a long name is cut
+     * @param list<File> $files
+     * @param string     $mainSource Letter::$source of the main file
+     * @return list<string>
+     */
+    private static function testLogRows(array $files, string $mainSource): array
+    {
         $rows = [];
         foreach ($files as $i => $f) {
-            $rows[] = mb_strcut(ParamImplode([$i + 1, $f->size(), hash('xxh128', $f->content), $f->name]), 0, 255, 'UTF-8');
+            $source = ($f->metaType === File::MAIN) ? [$mainSource] : [];
+            $rows[] = mb_strcut(ParamImplode([$i + 1, $f->size(), hash('xxh128', $f->content), ...$source, $f->name]), 0, 255, 'UTF-8');
         }
-        AA_Log::write(self::TEST_LOG_EVENT, $rows, "file:$msg");
+        return $rows;
     }
 }

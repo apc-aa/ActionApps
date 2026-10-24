@@ -9,10 +9,12 @@ use AA\Isds\Account;
 use AA\Isds\Client;
 use AA\Isds\DatovkaConf;
 use AA\Isds\File;
+use AA\Isds\Letter;
 use AA\Isds\Recipients;
 use AA\Isds\Schema;
 use AA\Isds\SendItems;
 use AA\Isds\SendQueue;
+use AA\Isds\SendStart;
 use AA\Isds\Setup;
 use AA\Isds\SliceRules;
 use AA\Upload\UploadDir;
@@ -41,7 +43,7 @@ final class TestSendQueue extends SendQueue
     public array $lockLog = [];
     /** @var list<array{string, string, string}> campaign, user and run of each log row */
     public array $logged = [];
-    /** @var list<array{string, string, string, list<string>}> campaign, message item, checksum and files (name:size) of each test logged */
+    /** @var list<array{string, string, string, list<string>}> campaign, message item, checksum and the rows of its files of each test logged */
     public array $testLogged = [];
     /** @var list<int> the seconds each keepRunning() asked for */
     public array $keptRunning = [];
@@ -49,6 +51,8 @@ final class TestSendQueue extends SendQueue
     public ?HttpClientInterface $transport = null;
     /** @var ?\Closure(): void runs when the letter's uploads are asked for - past the checks of the campaign, before the transaction */
     public ?\Closure $beforeLetter = null;
+    /** appended to the main file of each letter made, its source kept - as a PDF of the same draft differs */
+    public string $mainTail = '';
     /** memory_get_usage(true) when memory_limit was asked for - right after the need was counted */
     public int $usageAtCheck = 0;
 
@@ -150,8 +154,19 @@ final class TestSendQueue extends SendQueue
         $this->logged[] = [$campaign, $uid, $runId];
     }
 
-    protected function testLog(string $campaign, string $msg, string $sum, array $files): void
+    protected function letter(Setup $setup, ItemContent $item): Letter|SendStart
     {
-        $this->testLogged[] = [$campaign, $msg, $sum, array_map(static fn(File $f): string => $f->name . ':' . $f->size(), $files)];
+        $letter = parent::letter($setup, $item);
+        if (($this->mainTail === '') || ($letter instanceof SendStart)) {
+            return $letter;
+        }
+        $files    = $letter->files;
+        $files[0] = new File($files[0]->name, $files[0]->mimeType, File::MAIN, $files[0]->content . $this->mainTail);
+        return new Letter($letter->annotation, $files, $letter->toHands, $letter->source);
+    }
+
+    protected function testLog(string $campaign, string $msg, string $sum, array $rows): void
+    {
+        $this->testLogged[] = [$campaign, $msg, $sum, $rows];
     }
 }

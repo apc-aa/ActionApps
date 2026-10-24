@@ -26,10 +26,13 @@ final readonly class Letter
 
     /**
      * @param array<File> $files
+     * @param string      $source what the main file is made of, 32 hexadecimal digits: a test message
+     *                            compares letters by it, not by bytes that may differ each time they are
+     *                            made. '' = not known - a letter of a snapshot
      * @throws \InvalidArgumentException a data message cannot carry it; the message may quote a file
      *                                   name - escape it when shown
      */
-    public function __construct(string $annotation, array $files, string $toHands = '')
+    public function __construct(string $annotation, array $files, string $toHands = '', public string $source = '')
     {
         $trial            = new Message(self::TRIAL_BOX, $annotation, $files, '', $toHands);
         $this->annotation = $trial->annotation;
@@ -51,6 +54,8 @@ final readonly class Letter
         // getFlag() of the content warns about a field the item has no value of
         $html    = ($campaign->getAaValue(Schema::CAMPAIGN_BODY)->getFlag() & FLAG_HTML) !== 0;
         $files   = [(new HtmlBody($uploads))->render($subject, (string) $campaign->getValue(Schema::CAMPAIGN_BODY), $html, $letterhead)];
+        // the HTML document is sent as it is made
+        $source  = hash('xxh128', $files[0]->content);
         $bytes   = $files[0]->size();
         $policy  = new AttachmentPolicy($uploads);
         foreach ($campaign->getValuesArray(Schema::CAMPAIGN_FILES) as $url) {
@@ -65,6 +70,6 @@ final readonly class Letter
                 $bytes  += $file->size();
             }
         }
-        return new self($subject, $files, (string) $campaign->getValue(Schema::CAMPAIGN_TO_HANDS));
+        return new self($subject, $files, (string) $campaign->getValue(Schema::CAMPAIGN_TO_HANDS), $source);
     }
 }

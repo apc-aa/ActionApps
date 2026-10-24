@@ -1167,6 +1167,65 @@ final class SendQueueTest extends TestCase
         self::assertCount(2, $isds->sent());
     }
 
+    // the letter is made anew for each test: the same draft, the same checksum
+    public function test_test_sameDraftSameSum(): void
+    {
+        self::testIsds();
+        $page = self::testPage([self::TEST_BOX, self::TEST_BOX2]);
+
+        $first  = $this->test($page);
+        $second = $this->test($page, self::TEST_BOX2);
+        self::subjectIs('Pozvánka na sněm');
+        $edited = $this->test($page, self::TEST_BOX2);
+
+        $sums = array_map(static fn(TestResult $r): string => self::timeline($r->msg)[1]['sum'], [$first, $second, $edited]);
+        self::assertSame($sums[0], $sums[1]);
+        self::assertNotSame($sums[0], $sums[2]);
+        self::assertSame($sums, array_column($this->sending->testLogged, 2), 'the log holds it too');
+    }
+
+    // a PDF of the same draft is not the same bytes twice: what the main file is made of counts, not its bytes
+    public function test_test_sumWithoutMainBytes(): void
+    {
+        $isds = self::testIsds();
+        $page = self::testPage([self::TEST_BOX, self::TEST_BOX2]);
+        $this->sending->mainTail = '<!-- 1 -->';
+        $first = $this->test($page);
+        $this->sending->mainTail = '<!-- 2 -->';
+
+        $second = $this->test($page, self::TEST_BOX2);
+        $again  = $this->test($page);
+
+        self::assertSame([TestResult::STATUS_SENT, TestResult::SAME_LETTER], [$second->status, $again->code]);
+        self::assertSame(self::timeline($first->msg)[1]['sum'], self::timeline($second->msg)[1]['sum']);
+        [$bytes1, $bytes2] = array_map(static fn(array $l): string => explode(':', $l[3][0])[2], $this->sending->testLogged);
+        self::assertNotSame($bytes1, $bytes2, 'other bytes went');
+        file_put_contents("$this->dir/pozvanka.pdf", self::PDF . '%');
+        self::assertSame(TestResult::STATUS_SENT, $this->test($page)->status, 'an attachment counts by its bytes');
+        self::assertCount(3, $isds->sent());
+    }
+
+    // what went can be found again: the bytes of each file, and what the main one was made of
+    public function test_test_logHasBytesAndSource(): void
+    {
+        $isds = self::testIsds();
+        $long = str_repeat('příloha-', 24) . '.pdf';
+        file_put_contents("$this->dir/$long", self::PDF);
+        $this->sending->files[]  = TestSendQueue::UPLOAD_URL . '/' . rawurlencode($long);
+        $this->sending->mainTail = '<!-- made again -->';
+
+        $this->test();
+
+        $sent = base64_decode((string) preg_replace('~.*dmFileDescr="Dopis.html"[^>]*>\s*<\w+:dmEncodedContent>([^<]*)<.*~s', '$1', $isds->calls[1]['body']));
+        $made = substr($sent, 0, -strlen($this->sending->mainTail));
+        $rows = $this->sending->testLogged[0][3];
+        self::assertSame('1:' . strlen($sent) . ':' . hash('xxh128', $sent) . ':' . hash('xxh128', $made) . ':Dopis.html', $rows[0]);
+        self::assertSame('2:' . strlen(self::PDF) . ':' . hash('xxh128', self::PDF) . ':pozvanka.pdf', $rows[1]);
+        self::assertStringStartsWith('3:' . strlen(self::PDF) . ':' . hash('xxh128', self::PDF) . ':příloha-', $rows[2]);
+        self::assertLessThanOrEqual(255, strlen($rows[2]), 'a long name cut');
+        self::assertTrue(mb_check_encoding($rows[2], 'UTF-8'));
+    }
+
     public function test_test_campaignStateUnchanged(): void
     {
         self::testIsds();
