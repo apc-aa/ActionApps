@@ -135,11 +135,22 @@ final class SendRunSendTest extends TestCase
         self::assertSame(['4', self::LOOK], [self::stored($id)['cursor'], self::position($id)], 'the last ones skipped by their reason too');
 
         // nothing goes out from here
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
         self::assertCount(2, $isds->sent());
     }
 
     // ------------------------------------------------------------ never twice
+
+    // a dmID edited into null by hand is still a message sent: never sent again
+    public function test_work_never_sends_message_whose_dm_id_was_edited_to_null(): void
+    {
+        self::queued(2, ['dm_ids' => '{"0":null}'], self::SEND);
+        $isds = self::isds();
+
+        self::runQueued();
+
+        self::assertNotContains(self::box(0), $isds->sent());
+    }
 
     public function test_work_never_sends_twice_after_dying_mid_request(): void
     {

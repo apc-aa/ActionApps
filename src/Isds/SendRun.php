@@ -11,8 +11,10 @@ use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
 use AA\Later\BatchStates;
 use AA\Later\BatchStepResult;
+use AA\Later\Toexecute;
 use AA\Util\Secret;
 use AA_Credentials;
+use AA_Log;
 use AA_Property;
 
 /**
@@ -25,6 +27,11 @@ use AA_Property;
  * prep or send to the phase stop, which cancels what was never tried - with no account and no ISDS,
  * so it works while they fail - and goes on to look: what was sent is still looked up. A look keeps
  * in l how far it read the list, so that a long one is read over several steps.
+ * Once look is over, a sending that sent messages follows their delivery (watch, StatusSync): the
+ * campaign shows its end at once, the run reads the state changes of ISDS each hour into its record
+ * (dm_state) and the message items show them. It ends in the morning when every message is in a final
+ * status, or after StatusSync::WATCH_DAYS. Its position {p, n} counts the steps, z the span of a call
+ * shortened by an answer too large, d how far the day being read whole is read.
  * A pause waits for ISDS without spending the run's retries: w pauses in a row, u the time to wait
  * till, s the start of the first one (SendPace).
  */
@@ -45,6 +52,8 @@ class SendRun extends BatchRun
     public const UNCHECKED = 'CHECKBOX_REFUSED';
     /** BatchStepResult::$retry: messages of unknown fate are not listed yet, the run looks again when they may be */
     public const LOOKING = 'ISDS_LOOKUP';
+    /** BatchStepResult::$retry: following delivery waits for the next round */
+    public const WATCHING = 'ISDS_WATCH';
     /** stop(), resumeFor(): another request holds the lock of the campaign */
     public const BUSY = 'BUSY';
     /** stop(): every message has been tried, nothing is left to stop */
@@ -64,12 +73,14 @@ class SendRun extends BatchRun
     private const SEND = 'send';
     private const STOP = 'stop';
     private const LOOK = 'look';
+    private const WATCH = 'watch';
 
     /** the run's own properties, each a text row of the record */
     private const OWN = [
         'site', 'env', 'account', 'kind', 'acct_id', 'sender_box', 'camp_slice', 'msg_slice', 'camp_short',
         'snapshot', 'manifest', 'cursor', 'inflight', 'inflight_at', 'dm_ids', 'uncertain', 'failed', 'skips',
-        'streak', 'camp_state', 'owner_at', 'stop_by',
+        'streak', 'camp_state', 'owner_at', 'stop_by', 'watch_from', 'watch_last', 'watch_day', 'watch_rec',
+        'dm_state', 'dm_dirty',
     ];
 
     /** message items in one transaction: a commit each would cost a sync of the disk each */
@@ -87,6 +98,10 @@ class SendRun extends BatchRun
     private const PAUSE_KEYS = ['w', 'u', 's', 'e'];
     /** the position of a reading of the list a look did not finish (Lookup::$scan) */
     private const READING = 'l';
+    /** the position of watch: the span of a call after ISDS answered one too large, till the round ends */
+    private const SPAN = 'z';
+    /** the position of watch: the time the first day not read whole yet is read up to */
+    private const DAY = 'd';
 
     /** memory of a message beyond what the process holds: the files read from the database (its buffer
      *  of their base64 too), the base64 of the request and the request - a few times the files */
@@ -135,9 +150,25 @@ class SendRun extends BatchRun
     protected $owner_at = '';
     /** who stopped the sending; '' = no one. Nothing is tried after it, so the cursor stays where the stop found it */
     protected $stop_by = '';
+    /** the time following delivery started; '' = the run does not follow it */
+    protected $watch_from = '';
+    /** the time the state changes are read up to */
+    protected $watch_last = '';
+    /** the last local day (Y-m-d) read whole for the acceptances after 10 days ISDS records after its midnight */
+    protected $watch_day = '';
+    /** the time the list of sent messages was last read through for delivery, '' = never */
+    protected $watch_rec = '';
+    /** JSON index => the delivery of the message, an entry of StatusSync::entry() */
+    protected $dm_state = '';
+    /** JSON index => 1: message items that do not show their dm_state yet */
+    protected $dm_dirty = '';
 
     /** messages of this step sent without the state of their box */
     private int $unchecked = 0;
+    /** a step of watch that writes no message item reads no snapshot and leaves the pages of the slice be */
+    private bool $quiet = false;
+    /** @var ?list<array<string, string>> the frozen recipients, read by the first item a step of watch writes */
+    private ?array $rows = null;
     /** recipients of the snapshot this step sends to */
     private int $total = 0;
     /** memory_limit before the step raised it, null = not raised */
@@ -323,11 +354,17 @@ class SendRun extends BatchRun
         return ($failures === 0) ? max(1, SendPace::pauseEnd($this->position(), static::now()) - static::now()) : 60 * $failures;
     }
 
-    /** Continue gives a pause the full time again, and reads the list from its start: a reading a step
-     *  failed on would fail again */
+    /** Continue gives a pause the full time again, reads the list from its start and calls ISDS over the
+     *  full span again: a reading a step failed on would fail again */
     protected function positionOnResume(array $position): array
     {
-        return array_diff_key($position, array_flip([...self::PAUSE_KEYS, self::READING]));
+        return array_diff_key($position, array_flip([...self::PAUSE_KEYS, self::READING, self::SPAN]));
+    }
+
+    /** all messages tried, the run follows their delivery - read from the record, not the position */
+    public function watching(): bool
+    {
+        return (string) $this->watch_from !== '';
     }
 
     protected function work(array $from, BatchBudget $budget, mixed $fetched): BatchStepResult
@@ -348,12 +385,19 @@ class SendRun extends BatchRun
 
     private function workFrom(array $from, BatchBudget $budget): BatchStepResult
     {
-        $failure = null;
+        $failure     = null;
+        $this->quiet = false;
         try {
             $inflight = (string) $this->inflight;
             if (($inflight !== '') && !$this->settleInflight()) {
                 // ended, or Continue or another step took the run: the core drops this result
                 return new BatchStepResult($from, false);
+            }
+            $phase = (string) ($from['p'] ?? self::PREP);
+            if ($phase === self::WATCH) {
+                // every message was tried, nothing is left to stop; the frozen recipients are read only
+                // for the items a round writes
+                return $this->watch($from, $budget);
             }
             // the recipients only: the attachments are read when sending, past the account
             $snapshot = $this->snapshot(false);
@@ -361,7 +405,6 @@ class SendRun extends BatchRun
             if (!is_null($msg)) {
                 $this->items()->mark($msg, Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, static::now());
             }
-            $phase = (string) ($from['p'] ?? self::PREP);
             if (!in_array($phase, [self::PREP, self::SEND, self::STOP, self::LOOK], true)) {
                 throw new \LogicException("A sending has no phase $phase");
             }
@@ -385,7 +428,9 @@ class SendRun extends BatchRun
             throw $failure;
         } finally {
             try {
-                $this->invalidate();
+                if (!$this->quiet) {
+                    $this->invalidate();
+                }
             } catch (\Throwable $e) {
                 // the failure of the step is the one the run shows
                 if (is_null($failure)) {
@@ -542,7 +587,7 @@ class SendRun extends BatchRun
             // stopped meanwhile, a message on its way already, or one the record has the fate of - also
             // below a cursor lowered by hand
             $stopped = ((string) $run->stop_by !== '');
-            if ($stopped || ((string) $run->inflight !== '') || ($k < (int) $run->cursor) || isset($run->maps()->decided()[$k])) {
+            if ($stopped || ((string) $run->inflight !== '') || ($k < (int) $run->cursor) || array_key_exists($k, $run->maps()->decided())) {
                 return false;
             }
             $run->inflight    = (string) $k;
@@ -644,7 +689,7 @@ class SendRun extends BatchRun
     /** what the record keeps of each recipient, as this instance read or wrote it */
     public function maps(): SendMaps
     {
-        return new SendMaps((string) $this->dm_ids, (string) $this->uncertain, (string) $this->failed, (string) $this->skips, (string) $this->inflight, (int) $this->inflight_at);
+        return new SendMaps((string) $this->dm_ids, (string) $this->uncertain, (string) $this->failed, (string) $this->skips, (string) $this->inflight, (int) $this->inflight_at, (string) $this->dm_state);
     }
 
     /** the reference of the message to recipient $k - ISDS lists it, a person finds the message by it */
@@ -728,8 +773,9 @@ class SendRun extends BatchRun
     /**
      * $write of each row from $at on, CHUNK of them in a transaction - a commit each would cost a sync
      * of the disk each - while the budget lasts
-     * @param list<array<string, string>>                    $rows
-     * @param \Closure(int, array<string, string>): void $write
+     * @template T
+     * @param list<T>                $rows
+     * @param \Closure(int, T): void $write
      * @return int the index to go on from
      */
     private function inChunks(array $rows, int $at, BatchBudget $budget, \Closure $write): int
@@ -754,7 +800,7 @@ class SendRun extends BatchRun
      */
     private function cancel(int $k, array $row, SendItems $items, array $known): void
     {
-        if (isset($known[$k])) {
+        if (array_key_exists($k, $known)) {
             return;
         }
         $now = static::now();
@@ -777,7 +823,7 @@ class SendRun extends BatchRun
         $this->total = count($rows);
         $open        = $this->maps()->unsettled();
         if ($open === []) {
-            return new BatchStepResult($from, true, done: $this->total, total: $this->total);
+            return $this->lookEnds($from, $rows);
         }
         $early = $this->early($from) ?? $this->maintenancePause($from);
         if ($early) {
@@ -830,7 +876,270 @@ class SendRun extends BatchRun
         foreach ([...$lookup->unsure, ...array_keys($lookup->waiting)] as $k) {
             $items->mark($rows[$k]['msg'], Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, $now, once: true);
         }
-        return ($lookup->until() > 0) ? $this->result(['u' => $lookup->until()] + $at, self::LOOKING) : new BatchStepResult($at, true, done: $this->total, total: $this->total);
+        return ($lookup->until() > 0) ? $this->result(['u' => $lookup->until()] + $at, self::LOOKING) : $this->lookEnds($at, $rows);
+    }
+
+    /**
+     * The end of look. A sending that sent messages goes on following their delivery: the campaign shows
+     * its end first - the sending is over for people, whatever is delivered later -, then the record says
+     * since when, the state changes to read from the start of the run. One that sent none ends now.
+     * @param list<array<string, string>> $rows
+     */
+    private function lookEnds(array $at, array $rows): BatchStepResult
+    {
+        if (StatusSync::indexOf(SendMaps::entries((string) $this->dm_ids)) === []) {
+            return new BatchStepResult($at, true, done: $this->total, total: $this->total);
+        }
+        $now = static::now();
+        try {
+            $this->campaignIs(self::endState($this->maps()->tally($rows)), '', [Schema::CAMPAIGN_FINISHED_AT => $now], true);
+        } catch (\Throwable $e) {
+            // tried again as the core tries the end of a run that failed: later each time, then the run errs
+            AA_Log::write(Toexecute::FAILED_EVENT, $this->selector(), Toexecute::failureParams($this->getId(), $e));
+            return new BatchStepResult($at, false, retry: 'FINAL_CHECK');
+        }
+        $goesOn = $this->record(['watch_from' => (string) $now, 'watch_last' => (string) $this->started, 'watch_day' => StatusSync::firstWatchDay($now)]);
+        return is_null($goesOn) ? new BatchStepResult($at, false) : $this->result(['p' => self::WATCH, 'n' => 0]);
+    }
+
+    /**
+     * A round of following delivery: the message items that do not show their delivery yet, then the
+     * state changes and the days not read yet (readChanges()). What ISDS told goes into the record first
+     * - a message this sending did not send is passed over -, then into the items; an item leaves
+     * dm_dirty only when it shows what the record keeps now. Work the step can do now goes on at once
+     * (StatusSync::pending()), the rest waits for the next whole hour, and so does ISDS that fails.
+     */
+    private function watch(array $from, BatchBudget $budget): BatchStepResult
+    {
+        $now         = static::now();
+        $this->total = Snapshot::recipientCount((string) $this->manifest);
+        $this->quiet = true;
+        $this->rows  = null;
+        $indexOf     = StatusSync::indexOf(SendMaps::entries((string) $this->dm_ids));
+        $byIndex     = array_map(strval(...), array_flip($indexOf));
+        $times       = $this->watchTimes($byIndex, $now);
+        if (is_null($times)) {
+            return new BatchStepResult($from, false);
+        }
+        [$started, $last, $since] = $times;
+        $at    = ['n' => (int) ($from['n'] ?? 0) + 1] + array_diff_key($from, array_flip(self::PAUSE_KEYS));
+        $dirty = SendMaps::entries((string) $this->dm_dirty);
+        $state = SendMaps::entries((string) $this->dm_state);
+        $done  = $this->showDelivery(array_keys($dirty), $state, $byIndex, $budget);
+        $wait  = $this->early($from) ?? $this->maintenancePause($at);
+        if ($wait) {
+            $this->written($dirty, $state, $done);
+            return $wait;
+        }
+        $read = ['last' => $last, 'day' => (string) $this->watch_day, 'at' => is_int($at[self::DAY] ?? null) ? $at[self::DAY] : 0, 'span' => self::span($at)];
+        $got  = $this->readChanges($state, $read, $indexOf, $started, $budget, $now);
+        $dirty += $got['changed'];
+        $record = array_filter([
+            'dm_state'   => ($got['changed'] === []) ? null : self::json($got['state']),
+            'dm_dirty'   => ($got['changed'] === []) ? null : self::json($dirty),
+            'watch_last' => ($got['read']['last'] === $last) ? null : (string) $got['read']['last'],
+            'watch_day'  => ($got['read']['day'] === $read['day']) ? null : $got['read']['day'],
+        ], is_string(...));
+        // the record before the items that show it: a step that dies in between leaves them in dm_dirty
+        if (($record !== []) && is_null($this->record($record))) {
+            return new BatchStepResult($from, false);
+        }
+        [$state, $read] = [$got['state'], $got['read']];
+        $done = $this->showDelivery(array_keys(self::stillDirty($dirty, $state, $done)), $state, $byIndex, $budget, $done);
+        $left = $this->written($dirty, $state, $done);
+        $at   = array_filter([self::SPAN => ($read['span'] < StatusSync::MAX_SPAN) ? $read['span'] : 0, self::DAY => $read['at']]) + array_diff_key($at, [self::SPAN => true, self::DAY => true]);
+        // a minute past the time ISDS may still record the changes of the next whole hour (LAG)
+        $next = StatusSync::boundary($now) + StatusSync::ROUND + StatusSync::LAG + 60;
+        if ($got['failed']) {
+            return $this->result(['u' => $next] + $at, Outcome::UNAVAILABLE);
+        }
+        $w = ['watch_last' => $read['last'], 'watch_day' => $read['day'], 'dm_dirty' => $left];
+        if (StatusSync::ends($w, $state, $indexOf, $since, $now)) {
+            return new BatchStepResult($at, true, done: $this->total, total: $this->total);
+        }
+        if (!StatusSync::pending($w, $now)) {
+            return $this->result(['u' => $next] + array_diff_key($at, [self::SPAN => true]), self::WATCHING);
+        }
+        // a step whose budget went before it asked or wrote anything fails as one without progress, or the
+        // next ones would go round at once for ever
+        return ($got['asked'] || ($done !== [])) ? $this->result($at) : new BatchStepResult($from, false);
+    }
+
+    /**
+     * When the run started, watch_last and watch_from, as times. A record edited out of shape is set right
+     * first - a step would otherwise go on at once for ever (StatusSync::pending()), or never end: a
+     * watch_last that is no time, or one to come, reads from the start of the run; such a watch_from
+     * follows from now - an end that came early would lose deliveries, one that comes late costs calls -,
+     * and dm_dirty loses the indexes of no message sent. A start that is no time is 0: what ISDS keeps is
+     * read, and no time it tells is too early.
+     * @param array<int, string> $byIndex index => dmID of each message sent
+     * @return ?array{0: int, 1: int, 2: int} started, watch_last, watch_from; null = Continue or another
+     *                                         step took the run
+     */
+    private function watchTimes(array $byIndex, int $now): ?array
+    {
+        $started = self::recordedTime((string) $this->started, $now) ?? 0;
+        $last    = self::recordedTime((string) $this->watch_last, $now);
+        $since   = self::recordedTime((string) $this->watch_from, $now);
+        $dirty   = SendMaps::entries((string) $this->dm_dirty);
+        $fix     = [];
+        if (is_null($last)) {
+            $last              = $started;
+            $fix['watch_last'] = (string) $last;
+        }
+        if (is_null($since)) {
+            $since             = $now;
+            $fix['watch_from'] = (string) $since;
+        }
+        if (array_diff_key($dirty, $byIndex) !== []) {
+            $fix['dm_dirty'] = self::json(array_intersect_key($dirty, $byIndex));
+        }
+        return (($fix === []) || !is_null($this->record($fix))) ? [$started, $last, $since] : null;
+    }
+
+    /**
+     * The state changes of a round while the budget lasts, MAX_CALLS calls at most (StatusSync::nextCall()),
+     * merged after each call: an answer tells of every message of the box, and only this sending's are
+     * kept. An answer too large halves the span of the calls, down to ROUND; ISDS that does not answer
+     * ends the reading, and what was read stays read.
+     * @param array<array-key, mixed>                           $state   dm_state
+     * @param array{last: int, day: string, at: int, span: int} $read    as StatusSync::nextCall()
+     * @param array<array-key, int>                             $indexOf of the messages sent
+     * @return array{state: array<array-key, mixed>, changed: array<int, int>, read: array{last: int, day: string, at: int, span: int}, asked: bool, failed: bool}
+     *         dm_state and the indexes whose entry changed, where the reading stands, whether ISDS was asked and whether it failed
+     */
+    private function readChanges(array $state, array $read, array $indexOf, int $started, BatchBudget $budget, int $now): array
+    {
+        $changed = [];
+        $client  = null;
+        $failed  = false;
+        for ($calls = 0; ($calls < StatusSync::MAX_CALLS) && !$failed && !$budget->spent(); ++$calls) {
+            $call = StatusSync::nextCall($read, $now);
+            if (is_null($call)) {
+                break;
+            }
+            $client ??= $this->checkedClient();
+            $answer = is_string($client) ? null : self::ask(static function () use ($client, $call): array|false {
+                try {
+                    return $client->stateChanges($call['from'], $call['to']);
+                } catch (TransportException $e) {
+                    if ($e->tooLarge()) {
+                        return false;
+                    }
+                    throw $e;
+                }
+            });
+            if ($answer === false) {
+                // more changes than an answer holds: a shorter call may fit
+                $span         = StatusSync::halve(min($read['span'], $call['to'] - $call['from']));
+                $failed       = is_null($span);
+                $read['span'] = $span ?? $read['span'];
+            } elseif (is_null($answer)) {
+                $failed = true;
+            } else {
+                $merged   = StatusSync::merge($state, $answer, $indexOf, $started, $now);
+                $state    = $merged['state'];
+                $changed += array_fill_keys($merged['changed'], 1);
+                $read     = $call['read'];
+            }
+        }
+        return ['state' => $state, 'changed' => $changed, 'read' => $read, 'asked' => $calls > 0, 'failed' => $failed];
+    }
+
+    /**
+     * The message items of $keys show the delivery $state keeps, CHUNK of them in a transaction while the
+     * budget lasts. An entry out of shape, an index with no item of this campaign or one whose item is
+     * gone has nothing to show it by: it is passed over, and a merge that changes its entry adds it to
+     * dm_dirty again.
+     * @param list<int>               $keys
+     * @param array<array-key, mixed> $state   dm_state
+     * @param array<int, string>      $byIndex index => dmID of each message sent
+     * @param array<int, mixed>       $done    what showDelivery() gave before
+     * @return array<int, mixed> $done and index => the entry its item shows now, or the value passed over
+     */
+    private function showDelivery(array $keys, array $state, array $byIndex, BatchBudget $budget, array $done = []): array
+    {
+        if (($keys === []) || $budget->spent()) {
+            return $done;
+        }
+        $this->quiet = false;
+        $rows        = $this->rows ??= $this->snapshot(false)->recipients();
+        $items       = $this->items();
+        $this->inChunks($keys, 0, $budget, static function (int $i, int $k) use ($rows, $items, $state, $byIndex, &$done): void {
+            $entry = is_string($state[$k] ?? null) ? StatusSync::entry($state[$k]) : null;
+            $shown = (is_null($entry) || !isset($rows[$k])) ? null : $items->markDelivery($rows[$k]['msg'], $entry, $byIndex[$k]);
+            $done[$k] = is_null($shown) ? ($state[$k] ?? null) : StatusSync::encode($shown);
+        });
+        return $done;
+    }
+
+    /**
+     * dm_dirty without the items that show what the record keeps, written by the record as it is now: an
+     * item written before its entry changed stays to be written again
+     * @param array<array-key, mixed> $dirty
+     * @param array<array-key, mixed> $state
+     * @param array<int, mixed>       $done  as showDelivery()
+     * @return array<array-key, mixed> what is left to write
+     */
+    private function written(array $dirty, array $state, array $done): array
+    {
+        $left = self::stillDirty($dirty, $state, $done);
+        if (count($left) < count($dirty)) {
+            $this->recordResult(static function (self $run) use ($done): bool {
+                $run->dm_dirty = self::json(self::stillDirty(SendMaps::entries((string) $run->dm_dirty), SendMaps::entries((string) $run->dm_state), $done));
+                return true;
+            });
+        }
+        return $left;
+    }
+
+    /**
+     * $dirty without the indexes whose item shows the entry $state keeps, or was passed over at it
+     * @param array<array-key, mixed> $dirty
+     * @param array<array-key, mixed> $state
+     * @param array<int, mixed>       $done  as showDelivery()
+     * @return array<array-key, mixed>
+     */
+    private static function stillDirty(array $dirty, array $state, array $done): array
+    {
+        return array_filter($dirty, static fn(int|string $k): bool => !array_key_exists($k, $done) || ($done[$k] !== ($state[$k] ?? null)), ARRAY_FILTER_USE_KEY);
+    }
+
+    /** the span of calls a round shortened to after an answer too large; MAX_SPAN when none, or edited out of range */
+    private static function span(array $at): int
+    {
+        $span = $at[self::SPAN] ?? null;
+        return (is_int($span) && ($span >= StatusSync::ROUND) && ($span < StatusSync::MAX_SPAN)) ? $span : StatusSync::MAX_SPAN;
+    }
+
+    /**
+     * A time the record keeps; null when it is none - edited out of shape or into the future, it must not
+     * pass for a huge, negative or coming time. SKEW leaves room for another server whose clock is ahead.
+     */
+    private static function recordedTime(string $value, int $now): ?int
+    {
+        return ((preg_match('/^\d{1,10}\z/', $value) === 1) && ((int) $value <= $now + Lookup::SKEW)) ? (int) $value : null;
+    }
+
+    /** a map of the record, by index; '' when empty, as a record starts */
+    private static function json(array $map): string
+    {
+        ksort($map);
+        return ($map === []) ? '' : json_encode($map, JSON_THROW_ON_ERROR | JSON_FORCE_OBJECT);
+    }
+
+    /**
+     * @param array<string, string> $props own properties => their text
+     * @return ?bool as recordResult()
+     */
+    private function record(array $props): ?bool
+    {
+        return $this->recordResult(static function (self $run) use ($props): bool {
+            foreach ($props as $property => $value) {
+                $run->$property = $value;
+            }
+            return true;
+        });
     }
 
     /**
@@ -849,14 +1158,17 @@ class SendRun extends BatchRun
 
     /**
      * The end: the campaign done, or stopped when a stop left messages unsent - one that came when
-     * all had gone stopped nothing. A failure here makes the core try again later.
-     * @return array<string, int> the report: what became of the recipients
+     * all had gone stopped nothing. A sending that followed delivery showed its end at the end of look,
+     * and its campaign keeps it, with the time it finished. A failure here makes the core try again later.
+     * @return array<string, int> the report: what became of the recipients, how many messages were
+     *                            delivered and accepted
      */
     protected function finalCheck(): array
     {
         $this->requireSliceRules();
         return $this->withSlices(function (): array {
-            $report = $this->maps()->tally($this->snapshot(false)->recipients());
+            $maps   = $this->maps();
+            $report = $maps->tally($this->snapshot(false)->recipients()) + $maps->delivery();
             $this->campaignIs(self::endState($report), '', [Schema::CAMPAIGN_FINISHED_AT => static::now()], true);
             return $report;
         });

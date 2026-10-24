@@ -38,6 +38,18 @@ final class ScriptedIsds implements ClientInterface
         return array_column($this->calls, 'op');
     }
 
+    /** @return list<array{int, int}> dmFromTime and dmToTime of each GetMessageStateChanges, in order, as unix seconds */
+    public function windows(): array
+    {
+        $windows = [];
+        foreach ($this->calls as $call) {
+            if (($call['op'] === 'GetMessageStateChanges') && (preg_match('~<\w+:dmFromTime>([^<]*)<.*<\w+:dmToTime>([^<]*)<~s', $call['body'], $m) === 1)) {
+                $windows[] = [(int) strtotime($m[1]), (int) strtotime($m[2])];
+            }
+        }
+        return $windows;
+    }
+
     /** @return list<string> $element of each CreateMessage, in order - dbIDRecipient, dmSenderRefNumber */
     public function sent(string $element = 'dbIDRecipient'): array
     {

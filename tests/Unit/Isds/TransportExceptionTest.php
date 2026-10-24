@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Isds;
 
+use AA\Http\ResponseTooLargeException;
 use AA\Http\TransportException as HttpTransportException;
 use AA\Isds\TransportException;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -51,5 +52,15 @@ final class TransportExceptionTest extends TestCase
         $e        = TransportException::uncertain('ISDS answered something else', '9200', $previous);
 
         self::assertSame([true, true, '9200', $previous], [$e->mayHaveBeenSent(), $e->answered(), $e->isdsCode(), $e->getPrevious()]);
+    }
+
+    // an answer over the limit of the client: a question over a shorter time may fit, any other failure says nothing of it
+    public function test_too_large_from_previous(): void
+    {
+        $tooLarge = TransportException::uncertain('The answer of ISDS to GetMessageStateChanges is too large', '', new ResponseTooLargeException('Response body exceeds 8388608 bytes'));
+
+        self::assertTrue($tooLarge->tooLarge());
+        self::assertFalse(TransportException::uncertain('ISDS answered something else', '', new \UnexpectedValueException('not XML'))->tooLarge());
+        self::assertFalse(TransportException::fromHttp(new HttpTransportException('No answer', 0, new TimeoutException('Idle timeout reached')))->tooLarge());
     }
 }

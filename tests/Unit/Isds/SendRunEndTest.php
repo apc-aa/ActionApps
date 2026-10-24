@@ -13,6 +13,7 @@ use AA\Isds\SendRun;
 use AA\Isds\SentMessage;
 use AA\Isds\Snapshot;
 use AA\Later\BatchRun;
+use AA\Later\Toexecute;
 use AA_Credentials;
 use AA_Perm;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -42,7 +43,7 @@ final class SendRunEndTest extends TestCase
         $id   = self::queued(3, ['dm_ids' => '{"0":"901","2":"903"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '3'], self::LOOK);
         $isds = self::isds(list: [self::listed([['9002', '4711-2', self::box(1), self::NOW - 150]])]);
 
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([0 => '901', 1 => '9002', 2 => '903'], self::map($id, 'dm_ids'));
         self::assertSame([1 => self::NOW - 200], self::map($id, 'uncertain'), 'the time it was tried stays');
@@ -80,13 +81,13 @@ final class SendRunEndTest extends TestCase
         $id               = self::queued(3, ['dm_ids' => '{"0":"901","2":"903"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '3'], self::LOOK);
         self::isds(list: [self::listed([['9002', '4711-T2', self::box(1), self::NOW - 150]])]);
 
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([1 => Schema::NOT_FOUND], self::map($id, 'failed'));
         $msg = self::message($id, 1);
         self::assertSame([Schema::MESSAGE_STATE_FAILED, Schema::NOT_FOUND], [self::state($id, 1), self::items()->field($msg, Schema::MESSAGE_ERROR_CODE)], 'not delivered, to be sent again by hand');
         self::assertSame(Schema::EVENT_LOOKUP_MISSING, array_slice(self::kinds($id, 1), -1)[0]);
-        self::assertSame(['sent' => 2, 'failed' => 1], array_intersect_key(json_decode(self::stored($id)['report'], true), ['sent' => 0, 'failed' => 0]));
+        self::assertSame(['sent' => 2, 'failed' => 1], array_intersect_key(self::tally($id), ['sent' => 0, 'failed' => 0]));
         self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
     }
 
@@ -96,11 +97,11 @@ final class SendRunEndTest extends TestCase
         $id = self::queued(2, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '2'], self::LOOK);
         self::isds(list: [self::listed([['9002', '4711-2', self::box(1), self::NOW - 150], ['7002', '4711-2', self::box(1), self::NOW - 100]])]);
 
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([[0 => '901'], [], [1 => self::NOW - 200]], [self::map($id, 'dm_ids'), self::map($id, 'failed'), self::map($id, 'uncertain')]);
         self::assertSame(Schema::MESSAGE_STATE_UNCERTAIN, self::state($id, 1));
-        self::assertSame(1, json_decode(self::stored($id)['report'], true)['uncertain']);
+        self::assertSame(1, self::tally($id)['uncertain']);
     }
 
     // the record says uncertain; its item stayed sending when the step failed after recording it
@@ -123,7 +124,7 @@ final class SendRunEndTest extends TestCase
         $id = self::queued(2, ['dm_ids' => '{"0":"901"}', 'inflight' => '1', 'inflight_at' => (string) (self::NOW - 200), 'cursor' => '1'], self::LOOK);
         self::isds(list: [self::listed([['9002', '4711-2', self::box(1), self::NOW - 150]])]);
 
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([[0 => '901', 1 => '9002'], ''], [self::map($id, 'dm_ids'), self::stored($id)['inflight']]);
         self::assertSame(Schema::MESSAGE_STATE_SENT, self::state($id, 1));
@@ -147,9 +148,9 @@ final class SendRunEndTest extends TestCase
         $id                = self::queued(2, ['dm_ids' => '{"0":"901"}', 'failed' => '{"1":"1233"}', 'cursor' => '2'], self::LOOK);
         TestSendRun::$conf = null;
 
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
-        self::assertSame('done', self::stored($id)['state']);
+        self::assertSame((string) self::NOW, self::stored($id)['watch_from']);
         self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
     }
 
@@ -218,12 +219,12 @@ final class SendRunEndTest extends TestCase
         $id = self::queued(2, ['dm_ids' => '{"0":"901"}', 'uncertain' => '{"1":' . (self::NOW - 200) . '}', 'cursor' => '2'], self::LOOK);
         self::isds(list: [self::listed([['9002', '4711-2', self::box(1), null, SentMessage::AV_REFUSED]])]);
 
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([[0 => '901'], [1 => '3']], [self::map($id, 'dm_ids'), self::map($id, 'failed')]);
         self::assertSame([Schema::MESSAGE_STATE_FAILED, '9002'], [self::state($id, 1), self::items()->field(self::message($id, 1), Schema::MESSAGE_DM_ID)]);
         self::assertSame(Schema::EVENT_AV, array_slice(self::kinds($id, 1), -1)[0]);
-        self::assertSame(['sent' => 1, 'failed' => 1], array_intersect_key(json_decode(self::stored($id)['report'], true), ['sent' => 0, 'failed' => 0]));
+        self::assertSame(['sent' => 1, 'failed' => 1], array_intersect_key(self::tally($id), ['sent' => 0, 'failed' => 0]));
     }
 
     // a page starts only while the budget lasts: a part of the list decides nothing, the next step reads on
@@ -246,7 +247,7 @@ final class SendRunEndTest extends TestCase
         self::assertSame(['GetListOfSentMessages'], $isds->ops());
         self::assertSame([Client::MAX_LIST - Lookup::OVERLAP + 1, 1], [self::position($id)['l']['o'], self::position($id)['l']['c']]);
         self::assertSame(['0', [], Schema::MESSAGE_STATE_QUEUED], [self::stored($id)['failures'], self::map($id, 'failed'), self::state($id, 1)], 'nothing decided, and no failure');
-        self::assertSame('done', self::finish());
+        self::assertSame('watch', self::lookOver($id));
         self::assertSame([[0 => '901', 1 => '9002'], (string) (Client::MAX_LIST - Lookup::OVERLAP + 1)], [self::map($id, 'dm_ids'), self::element($isds, 'dmOffset')]);
     }
 
@@ -282,7 +283,7 @@ final class SendRunEndTest extends TestCase
 
         TestSendRun::$now = $until;
         self::storedSet($id, 'owner_at', (string) $until);
-        self::assertSame('done', self::finish());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([1 => Schema::NOT_FOUND], self::map($id, 'failed'));
         self::assertSame(['1', gmdate('Y-m-d\TH:i:s', $until)], [self::element($isds, 'dmOffset'), substr(self::element($isds, 'dmToTime'), 0, 19)]);
@@ -304,9 +305,56 @@ final class SendRunEndTest extends TestCase
 
     // ------------------------------------------------------------ the end
 
-    public function test_finalCheck_marks_campaign_done_and_retries(): void
+    // a sending that sent: the campaign shows the end before following delivery, and tries again till it does
+    public function test_look_end_marks_campaign_done_and_retries(): void
     {
         $id     = self::queued(2, ['dm_ids' => '{"0":"901","1":"902"}', 'cursor' => '2'], self::LOOK);
+        $failed = false;
+        self::items()->onWrite = function () use (&$failed): void {
+            $last = array_slice(self::items()->writes, -1)[0];
+            if (!$failed && ($last['id'] === self::CAMPAIGN_ITEM)) {
+                $failed = true;
+                throw new \RuntimeException('Campaign item not stored');
+            }
+        };
+
+        self::assertSame('step 1', self::runQueued());
+        $stored = self::stored($id);
+        self::assertSame(['sending', 'FINAL_CHECK', '1', (string) (self::NOW + 60)], [$stored['state'], $stored['retry_code'], $stored['failures'], $stored['next_at']], 'tried again as the end of a run');
+        self::assertSame([self::LOOK, '', Schema::CAMPAIGN_STATE_QUEUED], [self::position($id), $stored['watch_from'] ?? '', self::campaign()]);
+        $logged = array_values(array_filter(TableDb::rows('log'), static fn(array $r): bool => $r['type'] === Toexecute::FAILED_EVENT));
+        self::assertCount(1, $logged, 'the failure is in the log, as the core logs one');
+        self::assertStringContainsString('RuntimeException', $logged[0]['params']);
+
+        TestSendRun::$now = self::NOW + 61;
+        self::assertSame('watch', self::lookOver($id));
+
+        self::assertSame([Schema::CAMPAIGN_STATE_DONE, (string) (self::NOW + 61)], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
+        self::assertSame((string) (self::NOW + 61), self::stored($id)['watch_from']);
+    }
+
+    // the end of look keeps failing: the run errs as one whose end keeps failing
+    public function test_look_end_campaign_failing_errs(): void
+    {
+        $id = self::queued(2, ['dm_ids' => '{"0":"901","1":"902"}', 'cursor' => '2'], self::LOOK);
+        self::items()->onWrite = static function (): void {
+            if (array_slice(self::items()->writes, -1)[0]['id'] === self::CAMPAIGN_ITEM) {
+                throw new \RuntimeException('Campaign item not stored');
+            }
+        };
+
+        for ($try = 1; $try <= 3; ++$try) {
+            $said             = self::runQueued();
+            TestSendRun::$now = (int) self::stored($id)['next_at'];
+        }
+
+        self::assertSame(['error FINAL_CHECK', 'error', 'FINAL_CHECK', ''], [$said, self::stored($id)['state'], self::stored($id)['error_code'], self::stored($id)['watch_from'] ?? '']);
+    }
+
+    public function test_finalCheck_marks_campaign_done_and_retries(): void
+    {
+        // nothing sent, so nothing to follow: the campaign ends in the final phase
+        $id     = self::queued(2, ['failed' => '{"0":"1233","1":"1233"}', 'cursor' => '2'], self::LOOK);
         $failed = false;
         self::items()->onWrite = function () use (&$failed): void {
             $last = array_slice(self::items()->writes, -1)[0];
@@ -325,25 +373,25 @@ final class SendRunEndTest extends TestCase
         self::assertSame('done', self::finish());
 
         self::assertSame([Schema::CAMPAIGN_STATE_DONE, (string) (self::NOW + 61)], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
-        self::assertSame(['sent' => 2, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0], json_decode(self::stored($id)['report'], true));
+        self::assertSame(['sent' => 0, 'failed' => 2, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 0, 'delivered' => 0, 'accepted' => 0], json_decode(self::stored($id)['report'], true));
     }
 
-    // a final phase repeated after its campaign was written keeps the time the sending finished
-    public function test_finalCheck_keeps_campaign_it_ended(): void
+    // an end of look repeated after its campaign was written keeps the time the sending finished
+    public function test_look_end_keeps_campaign_it_ended(): void
     {
-        self::queued(2, ['dm_ids' => '{"0":"901","1":"902"}', 'cursor' => '2'], self::LOOK);
+        $id = self::queued(2, ['dm_ids' => '{"0":"901","1":"902"}', 'cursor' => '2'], self::LOOK);
         self::items()->stored[self::CAMPAIGN_ITEM]['fields'] = [Schema::CAMPAIGN_STATE => Schema::CAMPAIGN_STATE_DONE, Schema::CAMPAIGN_FINISHED_AT => (string) (self::NOW - 60)];
 
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([[], (string) (self::NOW - 60)], [self::items()->written('update'), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
     }
 
-    public function test_finalCheck_counts_skipped_as_done(): void
+    public function test_look_end_counts_skipped_as_done(): void
     {
         $id = self::queued(3, ['dm_ids' => '{"0":"901"}', 'skips' => '{"2":"inactive"}', 'cursor' => '3'], self::LOOK, [1 => Schema::BOX_DUPLICATE]);
-        self::assertSame('done', self::runQueued());
-        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 2, 'stopped' => 0], json_decode(self::stored($id)['report'], true));
+        self::assertSame('watch', self::lookOver($id));
+        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 2, 'stopped' => 0], self::tally($id));
         self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
     }
 
@@ -390,6 +438,17 @@ final class SendRunEndTest extends TestCase
         self::assertSame([Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_UNCERTAIN], self::states($id));
     }
 
+    // a dmID edited into null by hand is still a message sent: the stop leaves its item be
+    public function test_stop_leaves_message_whose_dm_id_was_edited_to_null(): void
+    {
+        $id = self::queued(2, ['dm_ids' => '{"0":null}', 'cursor' => '0'], self::SEND);
+
+        self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
+        self::runQueued();
+
+        self::assertSame([Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_STOPPED], self::states($id));
+    }
+
     // a stop meets a step that has no time for all items: the next one goes on from there
     public function test_stop_goes_on_where_time_ran_out(): void
     {
@@ -413,8 +472,7 @@ final class SendRunEndTest extends TestCase
         self::storedSet($id, 'retry_code', 'ISDS_UNAVAILABLE');
 
         self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER), 'no need to wait for the pause');
-        self::runQueued();
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([Schema::MESSAGE_STATE_QUEUED, Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_STOPPED], self::states($id));
         self::assertSame(Schema::CAMPAIGN_STATE_STOPPED, self::campaign());
@@ -428,12 +486,11 @@ final class SendRunEndTest extends TestCase
 
         self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
         self::assertSame('sending', self::stored($id)['state'], 'Continue at once');
-        self::runQueued();
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([Schema::MESSAGE_STATE_STOPPED, Schema::MESSAGE_STATE_STOPPED], [self::state($id, 1), self::state($id, 2)]);
         self::assertSame([Schema::CAMPAIGN_STATE_STOPPED, (string) self::NOW], [self::campaign(), self::items()->field(self::CAMPAIGN_ITEM, Schema::CAMPAIGN_FINISHED_AT)]);
-        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 2], json_decode(self::stored($id)['report'], true));
+        self::assertSame(['sent' => 1, 'failed' => 0, 'uncertain' => 0, 'skipped' => 0, 'stopped' => 2], self::tally($id));
     }
 
     // prep had made one item: the others are made stopped, or skipped for their reason
@@ -482,8 +539,7 @@ final class SendRunEndTest extends TestCase
         }]);
 
         self::runQueued();
-        self::runQueued();
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame([self::box(0)], $isds->sent());
         self::assertSame([0 => '1001'], self::map($id, 'dm_ids'));
@@ -528,7 +584,7 @@ final class SendRunEndTest extends TestCase
             TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER);
             return self::created('1002');
         }]);
-        self::assertSame('done', self::finish());
+        self::assertSame('watch', self::lookOver($id));
         self::assertSame([Sending::USER, Schema::CAMPAIGN_STATE_DONE], [self::stored($id)['stop_by'], self::campaign()]);
     }
 
@@ -629,7 +685,7 @@ final class SendRunEndTest extends TestCase
 
         self::assertSame($before, self::stored($id), 'nothing written');
         if ($state !== 'done') {
-            self::assertSame('done', self::finish());
+            self::assertSame('watch', self::lookOver($id));
             self::assertSame(Schema::CAMPAIGN_STATE_DONE, self::campaign());
         }
     }
@@ -651,8 +707,7 @@ final class SendRunEndTest extends TestCase
         $isds = self::isds(list: [self::listed([['9002', '4711-2', self::box(1), self::NOW - 50]])]);
 
         self::assertSame('', TestSendRun::stop(self::CAMPAIGN_ITEM, Sending::USER));
-        self::runQueued();
-        self::assertSame('done', self::runQueued());
+        self::assertSame('watch', self::lookOver($id));
 
         self::assertSame(['GetListOfSentMessages'], $isds->ops());
         self::assertSame([0 => '901', 1 => '9002'], self::map($id, 'dm_ids'));
@@ -940,25 +995,6 @@ final class SendRunEndTest extends TestCase
     }
 
     // ------------------------------------------------------------ what ISDS answers
-
-    /**
-     * GetListOfSentMessages with these records, not yet accepted, all with the subject of the sending
-     * @param list<array{0: string, 1: string, 2: string, 3: ?int, 4?: int}> $records dmID, dmSenderRefNumber, dbIDRecipient,
-     *                                                                       dmDeliveryTime, dmMessageStatus (4)
-     */
-    private static function listed(array $records): Response
-    {
-        $xml = '';
-        foreach ($records as $record) {
-            [$dmId, $ref, $box, $delivered] = $record;
-            $status = $record[4] ?? 4;
-            $time   = is_null($delivered) ? '<q:dmDeliveryTime xsi:nil="true"/>' : '<q:dmDeliveryTime>' . gmdate('Y-m-d\TH:i:s', $delivered) . 'Z</q:dmDeliveryTime>';
-            $xml   .= "<q:dmRecord><q:dmID>$dmId</q:dmID><q:dbIDRecipient>$box</q:dbIDRecipient><q:dmAnnotation>Pozvánka</q:dmAnnotation>"
-                . "<q:dmSenderRefNumber>$ref</q:dmSenderRefNumber><q:dmMessageStatus>$status</q:dmMessageStatus>"
-                . $time . '<q:dmAcceptanceTime xsi:nil="true"/></q:dmRecord>';
-        }
-        return new Response(200, (string) preg_replace('~<q:dmRecords>.*</q:dmRecords>~s', "<q:dmRecords>$xml</q:dmRecords>", self::fixture('sent-messages.xml')));
-    }
 
     /** the queued steps run, the stale rows of steps gone by skipped, till the run is done
      *  @return string what the last step said */

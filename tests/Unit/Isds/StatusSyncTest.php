@@ -62,6 +62,20 @@ final class StatusSyncTest extends TestCase
         return StatusSync::merge($state, $events, self::INDEX_OF, self::STARTED, self::NOW);
     }
 
+    /**
+     * The calls nextCall() gives one after another from $read till nothing is left to read
+     * @param array{last: int, day: string, at: int, span: int} $read
+     * @return list<array{int, int}>
+     */
+    private static function calls(array $read, int $now): array
+    {
+        $calls = [];
+        for ($call = StatusSync::nextCall($read, $now); !is_null($call) && (count($calls) < 100); $call = StatusSync::nextCall($call['read'], $now)) {
+            $calls[] = [$call['from'], $call['to']];
+        }
+        return $calls;
+    }
+
     // ------------------------------------------------------------ the record
 
     // a map edited by hand: an id twice, of another type, not of digits, under no index
@@ -401,10 +415,58 @@ final class StatusSyncTest extends TestCase
             StatusSync::windows(self::prague('2030-03-21 22:00'), self::prague('2030-03-22 02:10'), StatusSync::MAX_SPAN),
         );
         self::assertSame(
-            [[self::prague('2030-03-21 23:58'), self::prague('2030-03-22 00:00')], [self::prague('2030-03-22 00:00'), self::prague('2030-03-22 01:00')]],
+            [[self::prague('2030-03-21 23:58'), self::prague('2030-03-22 01:00')]],
             StatusSync::windows(self::prague('2030-03-22 00:00'), self::prague('2030-03-22 01:10'), StatusSync::MAX_SPAN),
-            'the overlap before midnight is a call of its own',
+            'the overlap before midnight goes with the first call, which ends past watch_last',
         );
+    }
+
+    // a step that makes one call only moves on: no call ends at watch_last, whatever midnight is near
+    #[DataProvider('lasts')]
+    public function test_windows_each_call_ends_past_watch_last(string $last): void
+    {
+        $at = self::prague($last);
+        foreach ([StatusSync::ROUND, 7200, StatusSync::MAX_SPAN] as $span) {
+            $windows = StatusSync::windows($at, $at + 3 * 86400, $span);
+
+            self::assertSame($at - StatusSync::OVERLAP, $windows[0][0], "$span: the overlap first");
+            self::assertSame([], array_filter($windows, static fn(array $w): bool => $w[1] <= $at), "$span: each past watch_last");
+            self::assertLessThanOrEqual($span + StatusSync::OVERLAP, $windows[0][1] - $windows[0][0], "$span: the first call no longer than the span and the overlap");
+        }
+    }
+
+    /** @return array<string, array{string}> */
+    public static function lasts(): array
+    {
+        return [
+            'local midnight'                    => ['2030-03-22 00:00'],
+            'a minute after midnight'           => ['2030-03-22 00:01'],
+            'two minutes after midnight'        => ['2030-03-22 00:02'],
+            'midnight of the 25-hour day'       => ['2030-10-27 00:00'],
+            'midnight after the 25-hour day'    => ['2030-10-28 00:00'],
+            'midnight of the 23-hour day'       => ['2030-03-31 00:00'],
+            'an hour'                           => ['2030-03-22 13:00'],
+            'a minute before midnight'          => ['2030-03-21 23:59'],
+        ];
+    }
+
+    // a step with time for one call: each reads on from where the one before got
+    public function test_windows_one_call_a_step_moves_on(): void
+    {
+        $last = self::prague('2030-03-22 00:00');
+        $now  = self::prague('2030-03-22 03:10');
+
+        $calls = [];
+        for ($window = StatusSync::windows($last, $now, StatusSync::ROUND, 1); $window !== []; $window = StatusSync::windows($last, $now, StatusSync::ROUND, 1)) {
+            $calls[] = $window[0];
+            $last    = $window[0][1];
+        }
+
+        self::assertSame([
+            [self::prague('2030-03-21 23:58'), self::prague('2030-03-22 01:00')],
+            [self::prague('2030-03-22 00:58'), self::prague('2030-03-22 02:00')],
+            [self::prague('2030-03-22 01:58'), self::prague('2030-03-22 03:00')],
+        ], $calls);
     }
 
     // summer time ends on 27 October 2030 and starts on 31 March: days of 25 and 23 hours
@@ -435,9 +497,9 @@ final class StatusSyncTest extends TestCase
     /** @return array<string, array{int, list<array{string, string}>}> */
     public static function spans(): array
     {
-        $hourly = [['09:58', '10:58'], ['10:58', '11:58'], ['11:58', '12:58'], ['12:58', '13:58'], ['13:58', '14:58'], ['14:58', '15:00']];
+        $hourly = [['09:58', '11:00'], ['11:00', '12:00'], ['12:00', '13:00'], ['13:00', '14:00'], ['14:00', '15:00']];
         return [
-            'two hours'             => [7200, [['09:58', '11:58'], ['11:58', '13:58'], ['13:58', '15:00']]],
+            'two hours'             => [7200, [['09:58', '12:00'], ['12:00', '14:00'], ['14:00', '15:00']]],
             'an hour'               => [3600, $hourly],
             // a position edited by hand: a span that would never end
             'none'                  => [0, $hourly],
@@ -446,22 +508,40 @@ final class StatusSyncTest extends TestCase
         ];
     }
 
-    // a watch_last long past: the oldest calls, no more than a step reads
+    // a watch_last long past: the oldest calls ISDS still answers, no more than a step reads
     public function test_windows_at_most_max_oldest_first(): void
     {
-        $last = self::prague('2029-03-21 10:00');
+        $last = self::prague('2030-03-11 10:00');
         $now  = self::prague('2030-03-21 10:37');
 
         $windows = StatusSync::windows($last, $now, StatusSync::ROUND);
 
         self::assertCount(StatusSync::MAX_CALLS, $windows);
-        self::assertSame([$last - StatusSync::OVERLAP, $last - StatusSync::OVERLAP + 3600], $windows[0]);
+        self::assertSame([$last - StatusSync::OVERLAP, $last + 3600], $windows[0]);
         foreach (array_slice($windows, 1) as $i => $window) {
             self::assertSame($windows[$i][1], $window[0], 'one after another');
         }
         self::assertSame(array_slice($windows, 0, 3), StatusSync::windows($last, $now, StatusSync::ROUND, 3));
         self::assertSame([], StatusSync::windows($last, $now, StatusSync::ROUND, 0));
-        self::assertCount(StatusSync::MAX_CALLS, StatusSync::windows(0, $now, StatusSync::ROUND), 'from 1970');
+    }
+
+    // ISDS keeps the changes of 15 days: no call starts more than CHANGES_KEPT before now, nor its overlap
+    #[DataProvider('pastKept')]
+    public function test_windows_never_start_before_kept(int $before): void
+    {
+        $now    = self::prague('2030-03-21 10:37');
+        $oldest = $now - StatusSync::CHANGES_KEPT;
+
+        $windows = StatusSync::windows($oldest - $before, $now, StatusSync::ROUND);
+
+        self::assertSame([$oldest, max($oldest - $before, $oldest) + 3600], $windows[0]);
+        self::assertCount(StatusSync::MAX_CALLS, $windows);
+    }
+
+    /** @return array<string, array{int}> */
+    public static function pastKept(): array
+    {
+        return ['the overlap before' => [-60], 'just before' => [0], 'a year before' => [365 * 86400], 'from 1970' => [self::prague('2030-03-07 10:37')]];
     }
 
     public function test_halve_stops_at_hour(): void
@@ -532,7 +612,8 @@ final class StatusSyncTest extends TestCase
         $at   = self::prague($now);
         $days = StatusSync::days('2000-01-01', $at);
 
-        $start = StatusSync::dayWindows($days[0], StatusSync::MAX_SPAN)[0][0];
+        $start = StatusSync::nextCall(['last' => $at, 'day' => '2000-01-01', 'at' => 0, 'span' => StatusSync::MAX_SPAN], $at)['from'] ?? 0;
+        self::assertSame(self::prague("$days[0] 00:00"), $start);
         self::assertGreaterThanOrEqual($at - StatusSync::CHANGES_KEPT, $start);
         self::assertGreaterThanOrEqual(23 * 3600, 15 * 86400 - ($at - $start), 'a reserve before the 15 days of ISDS');
         self::assertSame($yesterday, $days[count($days) - 1]);
@@ -573,12 +654,14 @@ final class StatusSyncTest extends TestCase
     {
         $fiction = Soap::timestamp($isds);
 
-        $calls = StatusSync::dayWindows($day, StatusSync::MAX_SPAN);
+        $read  = ['last' => self::prague($morning), 'day' => $watchDay, 'at' => 0, 'span' => StatusSync::MAX_SPAN];
+        $calls = self::calls($read, self::prague($morning));
 
         self::assertSame([$day], StatusSync::days($watchDay, self::prague($morning)));
         self::assertSame([[self::prague("$day 00:00"), self::prague("$day 00:00 +1 day")]], $calls);
         self::assertTrue(($calls[0][0] <= $fiction) && ($fiction < $calls[0][1]), 'inside the call of its day');
-        self::assertSame($calls[0][1], StatusSync::dayWindows(date('Y-m-d', self::prague("$day 12:00 +1 day")), StatusSync::MAX_SPAN)[0][0], 'the next day goes on where it ends');
+        $next = self::prague("$morning +1 day");
+        self::assertSame($calls[0][1], self::calls(array_replace($read, ['last' => $next, 'day' => $day]), $next)[0][0] ?? null, 'the next day goes on where it ends');
     }
 
     /** @return array<string, array{string, string, string, string}> */
@@ -595,9 +678,10 @@ final class StatusSyncTest extends TestCase
 
     // more changes in a day than one answer holds: the day is read in pieces, all of it
     #[DataProvider('daySpans')]
-    public function test_dayWindows_split_by_span(int $span, int $calls, int $last): void
+    public function test_nextCall_reads_day_in_pieces(int $span, int $calls, int $last): void
     {
-        $windows = StatusSync::dayWindows('2030-10-27', $span);
+        $now     = self::prague('2030-10-28 06:30');
+        $windows = self::calls(['last' => $now, 'day' => '2030-10-26', 'at' => 0, 'span' => $span], $now);
 
         self::assertCount($calls, $windows);
         self::assertSame([self::prague('2030-10-27 00:00'), self::prague('2030-10-28 00:00')], [$windows[0][0], $windows[$calls - 1][1]]);
@@ -613,18 +697,86 @@ final class StatusSyncTest extends TestCase
         return ['the whole day' => [StatusSync::MAX_SPAN, 1, 25 * 3600], 'two hours' => [7200, 13, 3600], 'an hour' => [3600, 25, 3600], 'none' => [0, 25, 3600]];
     }
 
-    #[DataProvider('noDays')]
-    public function test_dayWindows_refuses_no_day(string $day): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
+    // ------------------------------------------------------------ the next call
 
-        StatusSync::dayWindows($day, StatusSync::MAX_SPAN);
+    // the window of changes first, then the days not read whole, each from where the reading got
+    public function test_nextCall_window_then_days(): void
+    {
+        $now  = self::prague('2030-03-25 07:30');
+        $read = ['last' => self::prague('2030-03-25 05:00'), 'day' => '2030-03-22', 'at' => 0, 'span' => StatusSync::MAX_SPAN];
+
+        $calls = [];
+        $reads = [];
+        for ($call = StatusSync::nextCall($read, $now); !is_null($call); $call = StatusSync::nextCall($call['read'], $now)) {
+            $calls[] = [$call['from'], $call['to']];
+            $reads[] = $call['read'];
+        }
+
+        self::assertSame([
+            [self::prague('2030-03-25 04:58'), self::prague('2030-03-25 07:00')],
+            [self::prague('2030-03-23 00:00'), self::prague('2030-03-24 00:00')],
+            [self::prague('2030-03-24 00:00'), self::prague('2030-03-25 00:00')],
+        ], $calls);
+        self::assertSame([
+            array_replace($read, ['last' => self::prague('2030-03-25 07:00')]),
+            array_replace($read, ['last' => self::prague('2030-03-25 07:00'), 'day' => '2030-03-23']),
+            array_replace($read, ['last' => self::prague('2030-03-25 07:00'), 'day' => '2030-03-24']),
+        ], $reads);
     }
 
-    /** @return array<string, array{string}> */
-    public static function noDays(): array
+    // a call within the day keeps how far it got; the last one moves watch_day and starts the next day anew
+    public function test_nextCall_day_over_steps(): void
     {
-        return ['no such day' => ['2030-02-30'], 'a time' => ['2030-03-24 12:00'], 'text' => ['today'], 'empty' => ['']];
+        $now  = self::prague('2030-03-25 07:30');
+        $read = ['last' => self::prague('2030-03-25 07:00'), 'day' => '2030-03-23', 'at' => self::prague('2030-03-24 22:00'), 'span' => StatusSync::ROUND];
+
+        $first = StatusSync::nextCall($read, $now);
+        $last  = StatusSync::nextCall($first['read'] ?? [], $now);
+
+        self::assertSame(['from' => self::prague('2030-03-24 22:00'), 'to' => self::prague('2030-03-24 23:00'), 'read' => array_replace($read, ['at' => self::prague('2030-03-24 23:00')])], $first);
+        self::assertSame(['from' => self::prague('2030-03-24 23:00'), 'to' => self::prague('2030-03-25 00:00'), 'read' => array_replace($read, ['day' => '2030-03-24', 'at' => 0])], $last);
+        self::assertNull(StatusSync::nextCall($last['read'] ?? [], $now));
+    }
+
+    // a position edited by hand to a time out of the day being read reads it from its start
+    #[DataProvider('outOfDay')]
+    public function test_nextCall_day_at_out_of_day_from_start(int $at): void
+    {
+        $now  = self::prague('2030-03-25 07:30');
+        $read = ['last' => self::prague('2030-03-25 07:00'), 'day' => '2030-03-23', 'at' => $at, 'span' => StatusSync::ROUND];
+
+        self::assertSame(['from' => self::prague('2030-03-24 00:00'), 'to' => self::prague('2030-03-24 01:00')], array_slice(StatusSync::nextCall($read, $now) ?? [], 0, 2));
+    }
+
+    /** @return array<string, array{int}> */
+    public static function outOfDay(): array
+    {
+        return [
+            'small'          => [5],
+            'negative'       => [-3600],
+            'the day before' => [self::prague('2030-03-23 12:00')],
+            'its start'      => [self::prague('2030-03-24 00:00')],
+            'its end'        => [self::prague('2030-03-25 00:00')],
+            'far ahead'      => [9_999_999_999],
+        ];
+    }
+
+    // nothing to read: the window read, yesterday read or the night before six
+    public function test_nextCall_none(): void
+    {
+        $read = ['last' => self::prague('2030-03-25 07:00'), 'day' => '2030-03-24', 'at' => 0, 'span' => StatusSync::MAX_SPAN];
+
+        self::assertNull(StatusSync::nextCall($read, self::prague('2030-03-25 08:04:59')));
+        self::assertNull(StatusSync::nextCall(['last' => self::prague('2030-03-25 05:00'), 'day' => '2030-03-23'] + $read, self::prague('2030-03-25 05:30')));
+        self::assertSame(self::prague('2030-03-25 07:00'), StatusSync::nextCall($read, self::prague('2030-03-25 08:05'))['from'] + StatusSync::OVERLAP);
+    }
+
+    // an answer too large shortened the span: the next call reads in it
+    public function test_nextCall_in_span(): void
+    {
+        $read = ['last' => self::prague('2030-03-25 01:00'), 'day' => '2030-03-24', 'at' => 0, 'span' => 7200];
+
+        self::assertSame(['from' => self::prague('2030-03-25 00:58'), 'to' => self::prague('2030-03-25 03:00'), 'read' => array_replace($read, ['last' => self::prague('2030-03-25 03:00')])], StatusSync::nextCall($read, self::prague('2030-03-25 07:30')));
     }
 
     public function test_firstWatchDay_yesterday_after_six(): void
@@ -728,6 +880,55 @@ final class StatusSyncTest extends TestCase
         $this->expectException(\JsonException::class);
 
         StatusSync::pending(['dm_dirty' => '{"3":'] + self::allRead(), self::prague('2030-03-25 07:30'));
+    }
+
+    #[DataProvider('finals')]
+    public function test_allFinal(array $state, bool $final): void
+    {
+        self::assertSame($final, StatusSync::allFinal($state, self::INDEX_OF));
+    }
+
+    /** @return array<string, array{array<array-key, mixed>, bool}> */
+    public static function finals(): array
+    {
+        $final = [0 => self::entry(6, 10, 5, 10), 1 => self::entry(8, 20, 0, 0), 2 => self::entry(3, 1, 0, 0)];
+        return [
+            'all final'                  => [$final, true],
+            'one delivered'              => [[1 => self::entry(4, 20, 20, 0)] + $final, false],
+            'one by fiction'             => [[1 => self::entry(5, 20, 10, 20)] + $final, false],
+            'one not known'              => [array_diff_key($final, [2 => true]), false],
+            'one out of shape'           => [[2 => '6:x:0:0'] + $final, false],
+            'one no text'                => [[2 => 6] + $final, false],
+            // a message of no index of the sending says nothing
+            'final, and another not'     => [$final + [7 => self::entry(4, 20, 20, 0)], true],
+        ];
+    }
+
+    public function test_allFinal_nothing_sent(): void
+    {
+        self::assertTrue(StatusSync::allFinal([], []));
+    }
+
+    // all final in the night: the morning reading of yesterday may still tell the time of an acceptance after 10 days
+    public function test_ends_only_in_the_morning(): void
+    {
+        $state = [0 => self::entry(8, 10, 0, 0), 1 => self::entry(6, 10, 5, 10), 2 => self::entry(6, 10, 5, 10)];
+        $w     = ['watch_last' => (string) self::prague('2030-03-25 04:00'), 'watch_day' => '2030-03-23', 'dm_dirty' => ''];
+
+        self::assertFalse(StatusSync::ends($w, $state, self::INDEX_OF, self::STARTED, self::prague('2030-03-25 05:30')));
+        self::assertFalse(StatusSync::ends($w, $state, self::INDEX_OF, self::STARTED, self::prague('2030-03-25 06:30')), 'yesterday unread');
+        self::assertTrue(StatusSync::ends(['watch_last' => (string) self::prague('2030-03-25 06:00'), 'watch_day' => '2030-03-24'] + $w, $state, self::INDEX_OF, self::STARTED, self::prague('2030-03-25 06:30')));
+    }
+
+    public function test_ends_after_deadline_in_the_morning(): void
+    {
+        $since = self::prague('2030-03-09 07:00');
+        $state = [0 => self::entry(4, 10, 10, 0)];
+
+        self::assertFalse(StatusSync::ends(self::allRead(), $state, self::INDEX_OF, $since + 3600, self::prague('2030-03-25 07:30')), 'not yet');
+        self::assertTrue(StatusSync::ends(self::allRead(), $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')));
+        self::assertFalse(StatusSync::ends(['dm_dirty' => '{"0":1}'] + self::allRead(), $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')), 'an item to write');
+        self::assertFalse(StatusSync::ends(['watch_last' => (string) self::prague('2030-03-25 06:00')] + self::allRead(), $state, self::INDEX_OF, $since, self::prague('2030-03-25 07:30')), 'a window unread');
     }
 
     public function test_deadline_16_days(): void

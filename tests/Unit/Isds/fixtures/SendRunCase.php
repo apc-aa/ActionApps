@@ -47,8 +47,9 @@ trait SendRunCase
     /** the short id of the campaign: its messages are referenced 4711-1, 4711-2, ... */
     private const SHORT = '4711';
     /** positions, their keys sorted as position() gives them */
-    private const SEND = ['i' => 0, 'p' => 'send'];
-    private const LOOK = ['i' => 0, 'p' => 'look'];
+    private const SEND  = ['i' => 0, 'p' => 'send'];
+    private const LOOK  = ['i' => 0, 'p' => 'look'];
+    private const WATCH = ['n' => 0, 'p' => 'watch'];
 
     public static function setUpBeforeClass(): void
     {
@@ -204,6 +205,32 @@ trait SendRunCase
     }
 
     /**
+     * The queued steps run till look is over: a run that sent messages follows their delivery, one
+     * that sent none is done
+     * @return string 'watch', or what the last step said
+     */
+    private static function lookOver(string $id): string
+    {
+        $said = '';
+        for ($rows = 0; ($said !== 'done') && self::queue() && ($rows < 10); ++$rows) {
+            $said = self::runQueued();
+            if ((self::position($id)['p'] ?? '') === 'watch') {
+                return 'watch';
+            }
+        }
+        return $said;
+    }
+
+    /**
+     * What became of the recipients by the record, as the end of the run reports it
+     * @return array<string, int> SendMaps::tally()
+     */
+    private static function tally(string $id): array
+    {
+        return (TestSendRun::get($id) ?? throw new \LogicException('No run'))->maps()->tally(self::rows($id));
+    }
+
+    /**
      * ISDS for a step: every box active, every message accepted, numbered 1001, 1002, ... unless the
      * scripts say else; the list of sent messages only when scripted
      * @param list<Response|\Throwable|\Closure(): Response> $create
@@ -218,6 +245,25 @@ trait SendRunCase
         };
         $answers = ['CheckDataBox' => $check ?: [self::boxIs(1)], 'CreateMessage' => $create ?: [$made]];
         return TestSendRun::$http = new ScriptedIsds(($list === []) ? $answers : ['GetListOfSentMessages' => $list] + $answers);
+    }
+
+    /**
+     * GetListOfSentMessages with these records, not yet accepted, all with the subject of the sending
+     * @param list<array{0: string, 1: string, 2: string, 3: ?int, 4?: int}> $records dmID, dmSenderRefNumber, dbIDRecipient,
+     *                                                                       dmDeliveryTime, dmMessageStatus (4)
+     */
+    private static function listed(array $records): Response
+    {
+        $xml = '';
+        foreach ($records as $record) {
+            [$dmId, $ref, $box, $delivered] = $record;
+            $status = $record[4] ?? 4;
+            $time   = is_null($delivered) ? '<q:dmDeliveryTime xsi:nil="true"/>' : '<q:dmDeliveryTime>' . gmdate('Y-m-d\TH:i:s', $delivered) . 'Z</q:dmDeliveryTime>';
+            $xml   .= "<q:dmRecord><q:dmID>$dmId</q:dmID><q:dbIDRecipient>$box</q:dbIDRecipient><q:dmAnnotation>Pozvánka</q:dmAnnotation>"
+                . "<q:dmSenderRefNumber>$ref</q:dmSenderRefNumber><q:dmMessageStatus>$status</q:dmMessageStatus>"
+                . $time . '<q:dmAcceptanceTime xsi:nil="true"/></q:dmRecord>';
+        }
+        return new Response(200, (string) preg_replace('~<q:dmRecords>.*</q:dmRecords>~s', "<q:dmRecords>$xml</q:dmRecords>", self::fixture('sent-messages.xml')));
     }
 
     private static function fixture(string $name): string

@@ -145,17 +145,49 @@ final class StatusSync
     }
 
     /**
-     * The windows a round reads state changes in, oldest first: from OVERLAP before $watchLast to
-     * boundary(), in calls as cut()
-     * @param int $span the longest call: MAX_SPAN, or less after ISDS answered one too large (halve())
+     * The windows a round reads state changes in, oldest first: from $watchLast to boundary(), in calls
+     * as cut(), the first from OVERLAP sooner. So every call ends past $watchLast: a step that makes one
+     * call only still moves on, also over a local midnight. None starts more than CHANGES_KEPT before
+     * now - ISDS keeps no more.
+     * @param int $span the longest call: MAX_SPAN, or less after ISDS answered one too large (halve());
+     *                  the first call is OVERLAP longer
      * @param int $max  the windows to give at most: a step reads no more, and a $watchLast long past
      *                  would make a list of thousands
      * @return list<array{int, int}> from, to; none until boundary() is past $watchLast
      */
     public static function windows(int $watchLast, int $now, int $span, int $max = self::MAX_CALLS): array
     {
-        $to = self::boundary($now);
-        return ($to <= $watchLast) ? [] : self::cut($watchLast - self::OVERLAP, $to, $span, $max);
+        $oldest = $now - self::CHANGES_KEPT;
+        $calls  = self::cut(max($watchLast, $oldest), self::boundary($now), $span, $max);
+        if ($calls !== []) {
+            $calls[0][0] = max($watchLast - self::OVERLAP, $oldest);
+        }
+        return $calls;
+    }
+
+    /**
+     * The next call of a step, and where the reading stands once ISDS answers it; null = nothing to read
+     * now. The window of changes first (windows()), then the first day to read whole (days()) from where
+     * a step got in it: in short calls a day takes more of them than a step makes.
+     * @param array{last: int, day: string, at: int, span: int} $read where the reading stands: watch_last,
+     *        watch_day, how far the first day of days() is read (0 = not begun; a time out of that day
+     *        reads it from its start) and the longest call
+     * @return ?array{from: int, to: int, read: array{last: int, day: string, at: int, span: int}}
+     */
+    public static function nextCall(array $read, int $now): ?array
+    {
+        $window = self::windows($read['last'], $now, $read['span'], 1)[0] ?? null;
+        if (!is_null($window)) {
+            return ['from' => $window[0], 'to' => $window[1], 'read' => array_replace($read, ['last' => $window[1]])];
+        }
+        $day = self::days($read['day'], $now)[0] ?? null;
+        if (is_null($day)) {
+            return null;
+        }
+        $start         = self::day($day) ?? throw new \LogicException('days() gives days only');
+        [$begin, $end] = [$start->getTimestamp(), $start->add(new \DateInterval('P1D'))->getTimestamp()];
+        [$from, $to]   = self::cut((($read['at'] > $begin) && ($read['at'] < $end)) ? $read['at'] : $begin, $end, $read['span'], 1)[0];
+        return ['from' => $from, 'to' => $to, 'read' => array_replace($read, ($to === $end) ? ['day' => $day, 'at' => 0] : ['at' => $to])];
     }
 
     /**
@@ -174,7 +206,8 @@ final class StatusSync
      * before today - edited by hand, or a clock set back - gives yesterday, so that the record has a day
      * again.
      * @param string $watchDay the last day read whole, Y-m-d
-     * @return list<string> Y-m-d; read each in dayWindows()
+     * @return list<string> Y-m-d; each is read from its local midnight to the next one, 23 to 25 h - an
+     *                      acceptance after 10 days, dated 23:59:59.999 of the day, lies inside
      */
     public static function days(string $watchDay, int $now): array
     {
@@ -187,20 +220,6 @@ final class StatusSync
             $days[] = $day->format('Y-m-d');
         }
         return $days;
-    }
-
-    /**
-     * The calls a day is read whole in: from its local midnight to the next one, 23 to 25 h, in pieces
-     * of $span. An acceptance after 10 days, dated 23:59:59.999 of the day, lies inside.
-     * @param string $day  Y-m-d
-     * @param int    $span as windows()
-     * @return list<array{int, int}>
-     * @throws \InvalidArgumentException $day is no day
-     */
-    public static function dayWindows(string $day, int $span): array
-    {
-        $at = self::day($day) ?? throw new \InvalidArgumentException('A day is Y-m-d');
-        return self::cut($at->getTimestamp(), $at->add(new \DateInterval('P1D'))->getTimestamp(), $span, PHP_INT_MAX);
     }
 
     /**
@@ -222,6 +241,36 @@ final class StatusSync
     public static function deadline(int $watchFrom): int
     {
         return $watchFrom + self::WATCH_DAYS * 86400;
+    }
+
+    /**
+     * Every message sent is in a final status: nothing ISDS may still tell changes what became of it
+     * @param array<array-key, mixed> $state   index => entry, the record's dm_state
+     * @param array<array-key, int>   $indexOf indexOf() of the messages sent
+     */
+    public static function allFinal(array $state, array $indexOf): bool
+    {
+        foreach ($indexOf as $k) {
+            $entry = self::at($state, $k);
+            if (is_null($entry) || !self::isFinal($entry['s'])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Following ends: no work a step can do now (pending()), and every message sent in a final status or
+     * the deadline() past - only from MORNING on, though: in the night yesterday is not read whole yet, and
+     * an end then would lose the time of an acceptance after 10 days that only that reading tells.
+     * @param array<string, mixed>    $w       as pending()
+     * @param array<array-key, mixed> $state   as allFinal()
+     * @param array<array-key, int>   $indexOf as allFinal()
+     * @throws \JsonException as pending()
+     */
+    public static function ends(array $w, array $state, array $indexOf, int $watchFrom, int $now): bool
+    {
+        return self::isMorning($now) && !self::pending($w, $now) && (($now >= self::deadline($watchFrom)) || self::allFinal($state, $indexOf));
     }
 
     /**
@@ -292,6 +341,7 @@ final class StatusSync
         return false;
     }
 
+    /** from MORNING on, yesterday can be read whole: ISDS has recorded its acceptances after 10 days */
     private static function isMorning(int $now): bool
     {
         return (int) self::local($now)->format('G') >= self::MORNING;
