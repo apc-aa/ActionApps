@@ -8,6 +8,7 @@ use AA\IO\DB\DB_AA;
 use AA\Isds\Account;
 use AA\Isds\Client;
 use AA\Isds\DatovkaConf;
+use AA\Isds\File;
 use AA\Isds\Recipients;
 use AA\Isds\Schema;
 use AA\Isds\SendItems;
@@ -34,12 +35,16 @@ final class TestSendQueue extends SendQueue
     public bool $active = true;
     /** @var list<string> the URLs its attachment field holds */
     public array $files = [];
-    /** another request holds the lock of the campaign */
+    /** another request holds every lock */
     public bool $lockedByOther = false;
-    /** @var list<string> each lock and unlock, and whether a transaction was open then */
+    /** @var list<string> each lock and unlock by its name, and whether a transaction was open then */
     public array $lockLog = [];
     /** @var list<array{string, string, string}> campaign, user and run of each log row */
     public array $logged = [];
+    /** @var list<array{string, string, string, list<string>}> campaign, message item, checksum and files (name:size) of each test logged */
+    public array $testLogged = [];
+    /** @var list<int> the seconds each keepRunning() asked for */
+    public array $keptRunning = [];
     /** ISDS for a login with a certificate, which the HTTP client of AA sends; TestSendRun::$http answers the others */
     public ?HttpClientInterface $transport = null;
     /** @var ?\Closure(): void runs when the letter's uploads are asked for - past the checks of the campaign, before the transaction */
@@ -112,15 +117,20 @@ final class TestSendQueue extends SendQueue
         return TestSendRun::$items ?? throw new \LogicException('No items');
     }
 
-    protected function lock(string $campaign): bool
+    protected function lock(string $name): bool
     {
-        $this->lockLog[] = "lock $campaign" . (DB_AA::inTransaction() ? ' in a transaction' : '');
+        $this->lockLog[] = "lock $name" . (DB_AA::inTransaction() ? ' in a transaction' : '');
         return !$this->lockedByOther;
     }
 
-    protected function unlock(string $campaign): void
+    protected function unlock(string $name): void
     {
-        $this->lockLog[] = "unlock $campaign" . (DB_AA::inTransaction() ? ' in a transaction' : '');
+        $this->lockLog[] = "unlock $name" . (DB_AA::inTransaction() ? ' in a transaction' : '');
+    }
+
+    protected function keepRunning(int $seconds): void
+    {
+        $this->keptRunning[] = $seconds;
     }
 
     protected function memoryLimit(): int
@@ -138,5 +148,10 @@ final class TestSendQueue extends SendQueue
     protected function log(string $campaign, string $uid, string $runId): void
     {
         $this->logged[] = [$campaign, $uid, $runId];
+    }
+
+    protected function testLog(string $campaign, string $msg, string $sum, array $files): void
+    {
+        $this->testLogged[] = [$campaign, $msg, $sum, array_map(static fn(File $f): string => $f->name . ':' . $f->size(), $files)];
     }
 }

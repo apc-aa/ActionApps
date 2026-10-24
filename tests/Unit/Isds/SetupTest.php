@@ -243,6 +243,27 @@ final class SetupTest extends TestCase
         self::assertSame([], self::build(['test_box' => []] + self::settings())->testBoxes);
     }
 
+    // production takes only the boxes datovka_conf.php lists for the account: a template narrows them, never adds one -
+    // one beyond them is left out, the page still sends
+    public function test_fromTemplate_testBoxesOnlyNarrowProduction(): void
+    {
+        $conf = Sending::conf(['NSZM' => Sending::account(over: ['environment' => 'production', 'auth' => 'cert', 'login' => null, 'password' => null, 'cert' => '/etc/aa/nszm.pem', 'test_boxes' => ['dj7j6mk', 'ab12cde']])]);
+
+        self::assertSame(['dj7j6mk'], self::build(self::settings(), conf: $conf)->testBoxes);
+        self::assertSame(['dj7j6mk', 'ab12cde'], self::build(['test_box' => []] + self::settings(), conf: $conf)->testBoxes, 'all of the account');
+        self::assertSame(['dj7j6mk'], self::build(['test_box' => ['KV62BQF', 'dj7j6mk']] + self::settings(), conf: $conf)->testBoxes);
+        self::assertSame([], self::build(['test_box' => ['kv62bqf']] + self::settings(), conf: $conf)->testBoxes, 'none left: no test message');
+    }
+
+    // the test ISDS reaches nobody: the template may name its own boxes
+    public function test_fromTemplate_testBoxesOfTheTestAccount(): void
+    {
+        $conf = Sending::conf(['NSZM' => Sending::account(over: ['test_boxes' => ['ab12cde']])]);
+
+        self::assertSame(['dj7j6mk'], self::build(self::settings(), conf: $conf)->testBoxes, "the template's");
+        self::assertSame(['ab12cde'], self::build(['test_box' => []] + self::settings(), conf: $conf)->testBoxes, "the account's");
+    }
+
     /** @return array<string, array{mixed}> */
     public static function badMax(): array
     {

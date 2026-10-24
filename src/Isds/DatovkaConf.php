@@ -85,7 +85,7 @@ final class DatovkaConf
     private const PLAIN = [Accounts::ENVIRONMENT, Accounts::AUTH, Accounts::CERT, Accounts::KEY, Accounts::BOX, Accounts::LOGIN];
 
     /** the keys of an account whose list of texts is read as it is */
-    private const LISTS = [Accounts::SITES, Accounts::SLICES];
+    private const LISTS = [Accounts::SITES, Accounts::SLICES, Accounts::TEST_BOXES];
 
     /** an instance id is the last four digits of the token ISDS hands back */
     private const MAX_INSTANCE = 9999;

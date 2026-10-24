@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Isds;
 
 use AA\Later\BatchFailed;
+use AA_Set;
 use AA_Value;
 use ItemContent;
 use zids;
@@ -44,8 +45,11 @@ class SendItems
      *  timeline written here, and decoding it could take more memory than a step has */
     private const LONGEST_TIMELINE = 256 * 1024;
 
-    /** the keys of a timeline entry */
-    private const ENTRY_KEYS = ['at', 'kind', 'dmID', 'code', 'message'];
+    /** the keys of a timeline entry; sum and files only in the sending of a test message */
+    private const ENTRY_KEYS = ['at', 'kind', 'dmID', 'code', 'message', 'sum', 'files'];
+
+    /** the checksum of the letter of a test message (SendQueue) */
+    private const SUM = '/^[0-9a-f]{32}\z/';
 
     /** a word of Schema::BOX_PROBLEMS, a run's code or dmMessageStatus digits: no room for a text or a path */
     private const CODE = '/^[0-9A-Za-z._-]{0,64}\z/';
@@ -82,14 +86,18 @@ class SendItems
      * @param string                $environment Account::TEST or Account::PRODUCTION
      * @param bool                  $stopped     the sending stopped before the recipient was tried; one
      *                                           skipped by its reason stays skipped
+     * @param bool                  $test        a test message of the campaign, of no recipient frozen
      * @return bool created now; false = it is there already
      * @throws \RuntimeException not stored
      */
-    public function create(array $row, string $environment, string $senderBox, int $at, bool $stopped = false): bool
+    public function create(array $row, string $environment, string $senderBox, int $at, bool $stopped = false, bool $test = false): bool
     {
         $reason = $row['reason'];
         if (($reason !== '') && !in_array($reason, Schema::BOX_PROBLEMS, true)) {
             throw new \InvalidArgumentException('A recipient is skipped for one of Schema::BOX_PROBLEMS');
+        }
+        if ($test && (($reason !== '') || $stopped)) {
+            throw new \InvalidArgumentException('A test message is sent, never skipped or stopped');
         }
         if (!in_array($environment, [Account::TEST, Account::PRODUCTION], true)) {
             throw new \InvalidArgumentException('An ISDS environment is Account::TEST or Account::PRODUCTION');
@@ -110,7 +118,7 @@ class SendItems
             Schema::MESSAGE_CAMPAIGN    => $this->campaign,
             Schema::MESSAGE_RECIPIENT   => $row['src'],
             // a view leaving test messages out (test = 0) would miss a message without the number
-            Schema::MESSAGE_TEST        => 0,
+            Schema::MESSAGE_TEST        => $test ? 1 : 0,
             Schema::MESSAGE_STATE       => $state,
             Schema::MESSAGE_EVENTS      => self::encoded([$event]),
         ] + ($skipped ? [Schema::MESSAGE_ERROR_CODE => $reason] : []);
@@ -138,11 +146,72 @@ class SendItems
      */
     public function mark(string $msg, string $state, string $event, int $at, string $dmId = '', string $code = '', string $senderRef = '', bool $once = false): bool
     {
-        if ((preg_match('/^\d{0,20}\z/', $dmId) !== 1) || (preg_match(self::CODE, $code) !== 1)
-            || (preg_match(self::CODE, $senderRef) !== 1) || (strlen($senderRef) > Message::MAX_REF)) {
-            throw new \InvalidArgumentException('A message id, a code and a reference are words, never a text');
-        }
+        self::checkWords($dmId, $code, $senderRef);
         return $this->write($msg, $state, $event, $at, $dmId, $code, '', $senderRef, once: $once);
+    }
+
+    /**
+     * A test message on its way: its entry of sending keeps the checksum of the letter, by which the
+     * same letter is not tested on the same box twice, and the count of its files - a list of them
+     * would not fit an entry (LONGEST_VALUE)
+     * @param string $sum SendQueue's checksum, 32 hexadecimal digits
+     * @return bool as mark()
+     * @throws \RuntimeException not stored
+     */
+    public function markTestSending(string $msg, int $at, string $senderRef, string $sum, int $files): bool
+    {
+        self::checkWords('', '', $senderRef);
+        if ((preg_match(self::SUM, $sum) !== 1) || ($files < 1)) {
+            throw new \InvalidArgumentException('A test message has a checksum of 32 hexadecimal digits and a file at least');
+        }
+        return $this->write($msg, Schema::MESSAGE_STATE_SENDING, Schema::EVENT_SENDING, $at, '', '', '', $senderRef, more: ['sum' => $sum, 'files' => $files]);
+    }
+
+    /**
+     * The test messages of the campaign, in every bin: one moved to the trash or edited to wait does
+     * not take back a letter that went
+     * @return list<array{id: string, box: string, state: string, ref: string, dmId: string, sending: int, sum: string}>
+     *         sending - when it was sent, 0 = not known; sum - the checksum of its letter, '' = not known
+     */
+    public function tests(): array
+    {
+        $fields = [Schema::MESSAGE_CAMPAIGN, Schema::MESSAGE_TEST, Schema::MESSAGE_BOX, Schema::MESSAGE_STATE, Schema::MESSAGE_SENDER_REF, Schema::MESSAGE_DM_ID, Schema::MESSAGE_EVENTS];
+        return $this->whileOpen($this->messageSlice, function () use ($fields): array {
+            $tests = [];
+            foreach ($this->testIds() as $id) {
+                $shown = $this->read($this->messageSlice, $id, $fields);
+                if (is_null($shown) || (strtolower($shown[Schema::MESSAGE_CAMPAIGN]) !== strtolower($this->campaign)) || ($shown[Schema::MESSAGE_TEST] !== '1')) {
+                    continue;
+                }
+                $sending = [];
+                foreach (self::timeline($shown[Schema::MESSAGE_EVENTS]) as $entry) {
+                    if (($entry['kind'] ?? null) === Schema::EVENT_SENDING) {
+                        $sending = $entry;
+                    }
+                }
+                $sum     = (string) ($sending['sum'] ?? '');
+                $tests[] = [
+                    'id'      => $id,
+                    'box'     => strtolower(trim($shown[Schema::MESSAGE_BOX])),
+                    'state'   => $shown[Schema::MESSAGE_STATE],
+                    // what a page shows of it: an item edited by hand may hold anything
+                    'ref'     => self::isRef($shown[Schema::MESSAGE_SENDER_REF]) ? $shown[Schema::MESSAGE_SENDER_REF] : '',
+                    'dmId'    => (preg_match('/^\d{0,20}\z/', $shown[Schema::MESSAGE_DM_ID]) === 1) ? $shown[Schema::MESSAGE_DM_ID] : '',
+                    'sending' => is_int($sending['at'] ?? null) ? $sending['at'] : 0,
+                    'sum'     => (preg_match(self::SUM, $sum) === 1) ? $sum : '',
+                ];
+            }
+            return $tests;
+        });
+    }
+
+    /** the short id of the message item $msg of this campaign, '' = none */
+    public function shortId(string $msg): string
+    {
+        return $this->whileOpen($this->messageSlice, function () use ($msg): string {
+            $shown = $this->read($this->messageSlice, $msg, ['short_id........', Schema::MESSAGE_CAMPAIGN]);
+            return (strtolower($shown[Schema::MESSAGE_CAMPAIGN] ?? '') === strtolower($this->campaign)) ? $shown['short_id........'] : '';
+        });
     }
 
     /** mark() with what Outcome::of() made of an attempt, its text too */
@@ -297,13 +366,31 @@ class SendItems
         return GetItemContent(new zids($id, 'l'), false, false, $fields);
     }
 
+    /** @return list<string> long ids of the test messages of the campaign, in every bin */
+    private function testIds(): array
+    {
+        $conds = [
+            [Schema::MESSAGE_CAMPAIGN => 1, 'operator' => '==', 'value' => $this->campaign],
+            [Schema::MESSAGE_TEST => 1, 'operator' => '==', 'value' => '1'],
+        ];
+        return $this->search(new AA_Set([$this->messageSlice], $conds, [['publish_date....' => 'a']], \AA_BIN_ALL));
+    }
+
+    /** @return list<string> long ids of the items of $set, AA's search */
+    protected function search(AA_Set $set): array
+    {
+        return array_map('strval', $set->query()->longids());
+    }
+
     /**
      * $fn with $slice open. storeItem() reads the item before an update with the reading password of
      * the request - masked, the history would list every field as changed - and keeps what it stored
      * in AA_Items. A slice the run opened already stays open after it.
-     * @param \Closure(): bool $fn
+     * @template T
+     * @param \Closure(): T $fn
+     * @return T
      */
-    protected function whileOpen(string $slice, \Closure $fn): bool
+    protected function whileOpen(string $slice, \Closure $fn): mixed
     {
         return \AA_Credentials::singleton()->withSlicesOpen([$slice], $fn);
     }
@@ -311,8 +398,9 @@ class SendItems
     /**
      * The error fields hold the error of this state, cleared by one that is no problem; the timeline
      * keeps the earlier ones. $dmId and $senderRef left '' keep what the item has.
+     * @param array<string, string|int> $more further keys of the entry (ENTRY_KEYS)
      */
-    private function write(string $msg, string $state, string $event, int $at, string $dmId, string $code, string $text, string $senderRef, bool $once = false): bool
+    private function write(string $msg, string $state, string $event, int $at, string $dmId, string $code, string $text, string $senderRef, bool $once = false, array $more = []): bool
     {
         if (!in_array($state, Schema::MESSAGE_STATES, true) || !in_array($event, Schema::EVENT_KINDS, true)) {
             throw new \InvalidArgumentException('A message takes a state of Schema::MESSAGE_STATES and an event of Schema::EVENT_KINDS');
@@ -330,7 +418,7 @@ class SendItems
         if ($event === Schema::EVENT_SUBMITTED) {
             $fields[Schema::MESSAGE_SENT_AT] = $at;
         }
-        $entry = ['at' => $at, 'kind' => $event] + self::given(['dmID' => $dmId, 'code' => $code, 'message' => $text]);
+        $entry = ['at' => $at, 'kind' => $event] + self::given(['dmID' => $dmId, 'code' => $code, 'message' => $text]) + $more;
         return $this->update($msg, $fields, $entry, [], $once ? [Schema::MESSAGE_STATE] : []);
     }
 
@@ -476,6 +564,20 @@ class SendItems
     {
         return is_array($entry) && !array_is_list($entry) && (array_diff(array_keys($entry), self::ENTRY_KEYS) === [])
             && ($entry === array_filter($entry, static fn(mixed $v): bool => is_int($v) || (is_string($v) && (strlen($v) <= self::LONGEST_VALUE))));
+    }
+
+    /** @throws \InvalidArgumentException a message id, a code or a reference that is no word */
+    private static function checkWords(string $dmId, string $code, string $senderRef): void
+    {
+        if ((preg_match('/^\d{0,20}\z/', $dmId) !== 1) || (preg_match(self::CODE, $code) !== 1) || !self::isRef($senderRef)) {
+            throw new \InvalidArgumentException('A message id, a code and a reference are words, never a text');
+        }
+    }
+
+    /** a reference of a message: a word, no longer than ISDS takes */
+    private static function isRef(string $senderRef): bool
+    {
+        return (preg_match(self::CODE, $senderRef) === 1) && (strlen($senderRef) <= Message::MAX_REF);
     }
 
     /**

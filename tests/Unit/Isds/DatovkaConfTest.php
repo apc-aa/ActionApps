@@ -413,6 +413,15 @@ final class DatovkaConfTest extends TestCase
         $this->assertStringNotContainsString(self::SECRET, $dumps);
     }
 
+    // no secret: the State Check names the boxes; what is no text of the list is hidden as anywhere
+    public function test_accounts_testBoxesAsWritten(): void
+    {
+        $read = DatovkaConf::fromArray(['accounts' => ['NSZM' => ['test_boxes' => ['dj7j6mk', self::SECRET]], 'PROD' => ['test_boxes' => [['x' => self::SECRET]]]]])->accounts();
+
+        $this->assertSame(['dj7j6mk', self::SECRET], $read['NSZM']['test_boxes']);
+        $this->assertInstanceOf(Secret::class, $read['PROD']['test_boxes'][0]['x']);
+    }
+
     /** an account a bracket out of its place: at the top, in test or standard - its texts hidden, Accounts looks for ids in it */
     public function test_loose_arraysUnderKeysAaDoesNotKnow(): void
     {

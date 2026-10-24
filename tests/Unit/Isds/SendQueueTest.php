@@ -6,8 +6,11 @@ namespace Tests\Unit\Isds;
 
 use AA;
 use AA\Http\Response;
+use AA\Http\TransportException as HttpTransportException;
 use AA\IO\DB\DB_AA;
 use AA\Isds\Account;
+use AA\Isds\Client;
+use AA\Isds\Message;
 use AA\Isds\Outcome;
 use AA\Isds\Recipients;
 use AA\Isds\Registry\Config;
@@ -16,6 +19,7 @@ use AA\Isds\SendRun;
 use AA\Isds\SendStart;
 use AA\Isds\Setup;
 use AA\Isds\Snapshot;
+use AA\Isds\TestResult;
 use AA\Optimize\Finding;
 use AA_Credentials;
 use AA_Items;
@@ -68,8 +72,15 @@ final class SendQueueTest extends TestCase
     /** an hour and the retries of a run that did not pause (SendRun::retryDelay()): 1 + 60 + 120 s */
     private const HANGS_AFTER = 3600 + 1 + 60 + 120;
 
+    /** the test boxes of the page */
+    private const TEST_BOX  = 'dj7j6mk';
+    private const TEST_BOX2 = 'ab12cde';
+
     /** how often computed() ran - an entry of the soft cache computed again was cleared */
     private static int $computed = 0;
+
+    /** the certificates of a production account, when a test made them */
+    private string $certificates = '';
 
     private FakeSliceRules $rules;
     private FakeRecipients $territory;
@@ -113,6 +124,9 @@ final class SendQueueTest extends TestCase
     {
         array_map('unlink', glob("$this->dir/*") ?: []);
         rmdir($this->dir);
+        if ($this->certificates !== '') {
+            Certificates::remove($this->certificates);
+        }
         FakeSliceRules::forget();
         FakeRecipients::forget();
         AA::Contentcache()->clear();
@@ -189,7 +203,7 @@ final class SendQueueTest extends TestCase
             array_map(self::campaignField(...), [Schema::CAMPAIGN_STATE, Schema::CAMPAIGN_ERROR_TEXT, Schema::CAMPAIGN_ENVIRONMENT, Schema::CAMPAIGN_SENDER_BOX, Schema::CAMPAIGN_RECIPIENTS, Schema::CAMPAIGN_SENT_BY, Schema::CAMPAIGN_SENT_BY_NAME, Schema::CAMPAIGN_STARTED_AT]),
         );
         self::assertSame([[self::CAMPAIGN_ITEM, Sending::USER, $id]], $this->sending->logged);
-        self::assertSame(['lock ' . self::CAMPAIGN_ITEM, 'unlock ' . self::CAMPAIGN_ITEM], $this->sending->lockLog, 'after the commit, outside the transaction');
+        self::assertSame(['lock ' . SendRun::lockName(self::CAMPAIGN_ITEM), 'unlock ' . SendRun::lockName(self::CAMPAIGN_ITEM)], $this->sending->lockLog, 'after the commit, outside the transaction');
     }
 
     public function test_queue_lettersFrozen(): void
@@ -255,7 +269,7 @@ final class SendQueueTest extends TestCase
         self::assertSame([SendStart::STATUS_BUSY, SendStart::BUSY], [$start->status, $start->code]);
         self::assertSame($before, TableDb::$tables, 'nothing written');
         self::assertSame(Schema::CAMPAIGN_STATE_DRAFT, self::campaignField(Schema::CAMPAIGN_STATE));
-        self::assertSame(['lock ' . self::CAMPAIGN_ITEM], $this->sending->lockLog, 'no unlock of a lock not got');
+        self::assertSame(['lock ' . SendRun::lockName(self::CAMPAIGN_ITEM)], $this->sending->lockLog, 'no unlock of a lock not got');
     }
 
     // RF7: aa[] of a filler sets the state back - the run is the proof the campaign was sent
@@ -341,7 +355,7 @@ final class SendQueueTest extends TestCase
         self::assertSame([[], []], [TableDb::rows('object_text'), self::queue()], 'no snapshot, no run, no step');
         self::assertSame(Schema::CAMPAIGN_STATE_DRAFT, self::campaignField(Schema::CAMPAIGN_STATE));
         self::assertSame([], $this->sending->logged);
-        self::assertSame(['lock ' . self::CAMPAIGN_ITEM, 'unlock ' . self::CAMPAIGN_ITEM], $this->sending->lockLog);
+        self::assertSame(['lock ' . SendRun::lockName(self::CAMPAIGN_ITEM), 'unlock ' . SendRun::lockName(self::CAMPAIGN_ITEM)], $this->sending->lockLog);
         self::assertSame([], $itemCache->getValue(AA_Items::singleton()), 'the items read are read again');
         self::assertSame(2, AA::Contentcache()->get_result([self::class, 'computed']), 'the expressions read are read again');
     }
@@ -366,7 +380,7 @@ final class SendQueueTest extends TestCase
 
         self::assertSame($before, TableDb::$tables, 'nothing written');
         self::assertSame(Schema::CAMPAIGN_STATE_DRAFT, self::campaignField(Schema::CAMPAIGN_STATE));
-        self::assertSame(['lock ' . self::CAMPAIGN_ITEM, 'unlock ' . self::CAMPAIGN_ITEM], $this->sending->lockLog);
+        self::assertSame(['lock ' . SendRun::lockName(self::CAMPAIGN_ITEM), 'unlock ' . SendRun::lockName(self::CAMPAIGN_ITEM)], $this->sending->lockLog);
     }
 
     public function test_queue_campaignGoneBeforeItsWrite_writesNothing(): void
@@ -613,6 +627,606 @@ final class SendQueueTest extends TestCase
         } finally {
             Certificates::remove($dir);
         }
+    }
+
+    // ------------------------------------------------------------ a test message of the draft
+
+    /** the page with its test boxes, its account in $environment */
+    private static function testPage(array $boxes = [self::TEST_BOX], string $environment = Account::TEST, string $senderBox = ''): Setup
+    {
+        return Setup::fromSnapshot(Sending::SITE, Sending::CAMPAIGN, Sending::MESSAGE, Sending::SOURCE, ['mesto' => 'Cities'], ['mesto'], Sending::MEMBER, $boxes, Setup::DEFAULT_RECIPIENTS, $environment, $senderBox, "Národní síť\nPraha");
+    }
+
+    /** PDZSendInfo as ISDS answers it: $paid the result, $status the status of the answer */
+    private static function paidAnswer(string $paid = 'false', string $status = '0000'): string
+    {
+        return str_replace(['>true<', '>0000<'], [">$paid<", ">$status<"], self::fixture('pdz-send-info.xml'));
+    }
+
+    /**
+     * ISDS of the test account: whether a message would be paid, each message accepted - numbered 2001,
+     * 2002, ... - unless $create says else
+     * @param list<Response|\Throwable|\Closure(): Response> $create
+     */
+    private static function testIsds(string $paid = 'false', array $create = []): ScriptedIsds
+    {
+        $next = 2001;
+        $made = static function () use (&$next): Response {
+            return self::created((string) $next++);
+        };
+        return TestSendRun::$http = new ScriptedIsds(['PDZSendInfo' => [new Response(200, self::paidAnswer($paid))], 'CreateMessage' => $create ?: [$made]]);
+    }
+
+    /** as the gate sends one: the page's settings, the editor of the campaign slice */
+    private function test(?Setup $setup = null, string $box = self::TEST_BOX, string $uid = Sending::USER, string $campaign = self::CAMPAIGN_ITEM): TestResult
+    {
+        return $this->sending->test($setup ?? self::testPage(), $campaign, $uid, $box);
+    }
+
+    /** @return array<string, array<string, string>> item id => the fields of each test message stored */
+    private static function testItems(): array
+    {
+        $tests = array_filter(self::items()->stored, static fn(array $item): bool => ($item['fields'][Schema::MESSAGE_TEST] ?? '') === '1');
+        return array_map(static fn(array $item): array => $item['fields'], $tests);
+    }
+
+    /** @return list<array<string, mixed>> the timeline of the message item $msg */
+    private static function timeline(string $msg): array
+    {
+        return json_decode(self::items()->field($msg, Schema::MESSAGE_EVENTS), true);
+    }
+
+    /** the subject the page keeps, as the draft changes */
+    private static function subjectIs(string $subject): void
+    {
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_SUBJECT] = $subject;
+    }
+
+    /**
+     * The production account of a hosted filing service sending from SENDER, with $testBoxes; ISDS answers
+     * PDZSendInfo with $paid and accepts each message - $asked lists the operations
+     * @param list<string> $testBoxes
+     * @param list<string> $asked
+     * @param string       $page        PDZSendInfo answers with this fixture and $code instead
+     * @param string       $certificate the PEM of the account; '' = a sound one
+     */
+    private function production(array $testBoxes, string $paid, array &$asked, string $status = '0000', string $page = '', int $code = 200, string $certificate = ''): void
+    {
+        $this->certificates  = Certificates::directory();
+        [$sound, $key]       = Certificates::make();
+        $over                = ['environment' => 'production', 'auth' => 'hosted', 'login' => null, 'password' => null, 'box' => self::SENDER, 'cert' => Certificates::file($this->certificates, 'both.pem', ($certificate === '') ? $sound . $key : $certificate), 'test_boxes' => $testBoxes];
+        TestSendRun::$conf   = Sending::conf(['NSZM' => Sending::account(over: $over)]);
+        $paidXml             = ($page === '') ? self::paidAnswer($paid, $status) : self::fixture($page);
+        $created             = self::fixture('create-message-ok.xml');
+        $this->sending->transport = new MockHttpClient(static function (string $method, string $url, array $options) use (&$asked, $paidXml, $code, $created): MockResponse {
+            $op      = (preg_match('~<\w+:Body>\s*<\w+:(\w+)~', (string) ($options['body'] ?? ''), $m) === 1) ? $m[1] : '?';
+            $asked[] = $op;
+            return match ($op) {
+                'PDZSendInfo'   => new MockResponse($paidXml, ['http_code' => $code]),
+                'CreateMessage' => new MockResponse($created),
+                default         => throw new \LogicException("ISDS was asked $op"),
+            };
+        });
+    }
+
+    public function test_test_onlyToTestBox(): void
+    {
+        $isds = self::testIsds();
+
+        self::assertSame([TestResult::STATUS_REFUSED, TestResult::NOT_TEST_BOX], [$this->test(box: self::TEST_BOX2)->status, $this->test(box: self::TEST_BOX2)->code]);
+        self::assertSame([], $isds->ops(), 'nothing asked of ISDS for a box of no list');
+        $result = $this->test(box: ' DJ7J6MK ');
+
+        self::assertSame([TestResult::STATUS_SENT, '', self::TEST_BOX, '4711-T2', '2001', false], [$result->status, $result->code, $result->box, $result->ref, $result->dmId, $result->paid]);
+        self::assertSame(['PDZSendInfo', 'CreateMessage'], $isds->ops());
+        self::assertSame([self::TEST_BOX], $isds->sent());
+        self::assertSame(['4711-T2'], $isds->sent('dmSenderRefNumber'));
+        $item = self::testItems()[$result->msg];
+        self::assertSame(
+            [self::TEST_BOX, self::TEST_BOX, self::CAMPAIGN_ITEM, '', '1', Account::TEST, '', Schema::MESSAGE_STATE_SENT, '2001', '4711-T2', (string) self::NOW],
+            [$item[Schema::MESSAGE_BOX], $item[Schema::MESSAGE_NAME], $item[Schema::MESSAGE_CAMPAIGN], $item[Schema::MESSAGE_RECIPIENT], $item[Schema::MESSAGE_TEST], $item[Schema::MESSAGE_ENVIRONMENT], $item[Schema::MESSAGE_SENDER_BOX], $item[Schema::MESSAGE_STATE], $item[Schema::MESSAGE_DM_ID], $item[Schema::MESSAGE_SENDER_REF], $item[Schema::MESSAGE_SENT_AT]],
+        );
+        self::assertSame([Schema::EVENT_QUEUED, Schema::EVENT_SENDING, Schema::EVENT_SUBMITTED], array_column(self::timeline($result->msg), 'kind'));
+        self::assertSame([[self::CAMPAIGN_ITEM, $result->msg]], array_map(static fn(array $l): array => array_slice($l, 0, 2), $this->sending->testLogged));
+        self::assertSame([Client::TIMEOUT + Client::CREATE_TIMEOUT + 60], $this->sending->keptRunning);
+        self::assertSame(['lock isds-test:' . Sending::MESSAGE, 'unlock isds-test:' . Sending::MESSAGE], $this->sending->lockLog, 'outside a transaction');
+    }
+
+    // what the request names is a box or nothing; it is compared as ISDS knows boxes
+    public function test_test_garbageBoxIsNotTestBox(): void
+    {
+        TestSendRun::$http = null;
+        $two               = self::testPage([self::TEST_BOX, self::TEST_BOX2]);
+
+        foreach (['<b>dj7j6mk</b>', 'dj7j6m', 'dj7j6mk1', 'dj7j 6mk', ''] as $box) {
+            self::assertSame(TestResult::NOT_TEST_BOX, $this->test($two, $box)->code, $box);
+        }
+        self::assertSame([], self::testItems());
+    }
+
+    public function test_test_oneTestBoxNeedsNoChoice(): void
+    {
+        $isds = self::testIsds();
+
+        self::assertSame(TestResult::STATUS_SENT, $this->test(box: '')->status);
+        self::assertSame([self::TEST_BOX], $isds->sent());
+    }
+
+    public function test_test_refusesNotDraft(): void
+    {
+        TestSendRun::$http = null;
+        self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_STATE] = Schema::CAMPAIGN_STATE_SENDING;
+
+        self::assertSame([TestResult::STATUS_REFUSED, TestResult::NOT_DRAFT], [$this->test()->status, $this->test()->code]);
+        self::assertSame([], self::testItems());
+    }
+
+    public function test_test_refusesForeignUser(): void
+    {
+        TestSendRun::$http = null;
+
+        $result = $this->test(uid: 'stranger');
+
+        self::assertSame([TestResult::STATUS_REFUSED, TestResult::FORBIDDEN, ''], [$result->status, $result->code, $result->detail]);
+        self::assertSame([[], []], [self::testItems(), $this->sending->lockLog]);
+    }
+
+    /** @return array<string, array{\Closure(TestSendQueue): array<string, mixed>, string}> what to change, the code */
+    public static function refusedTests(): array
+    {
+        return [
+            'no long id'          => [static fn(): array => ['campaign' => 'ca00000000000000000000000000c01'], TestResult::UNKNOWN],
+            'item in the trash'   => [static function (TestSendQueue $q): array {
+                $q->active = false;
+                return [];
+            }, TestResult::UNKNOWN],
+            'a run of it'         => [static function (): array {
+                self::queued(1);
+                return [];
+            }, TestResult::ALREADY],
+            'no test box'         => [static fn(): array => ['setup' => self::testPage([])], TestResult::NO_TEST_BOX],
+            'the own box'         => [static fn(): array => ['setup' => self::testPage([self::TEST_BOX], senderBox: self::TEST_BOX)], TestResult::OWN_BOX],
+            'no account bound'    => [static function (): array {
+                TestSendRun::$conf = Sending::conf([]);
+                return [];
+            }, SendStart::ACCOUNT],
+            'a slice mails'       => [static function (TestSendQueue $q): array {
+                $q->rules->outlets[Sending::MESSAGE] = ['notify'];
+                return [];
+            }, SendStart::SETTINGS],
+            'ISDS maintained'     => [static function (): array {
+                TestSendRun::$now = (new \DateTimeImmutable('2030-03-22 00:30', new \DateTimeZone('Europe/Prague')))->getTimestamp();
+                return [];
+            }, TestResult::MAINTENANCE],
+            'no letter'           => [static function (): array {
+                self::items()->stored[self::CAMPAIGN_ITEM]['fields'][Schema::CAMPAIGN_BODY] = '';
+                return [];
+            }, SendStart::CONTENT],
+            'subject too long'    => [static function (): array {
+                self::subjectIs(str_repeat('á', 250));
+                return [];
+            }, SendStart::CONTENT],
+            'no memory to send'   => [static function (): array {
+                TestSendRun::$memoryLimit = 1024;
+                return [];
+            }, SendStart::MEMORY],
+        ];
+    }
+
+    // the source slice is no business of a test: it has no recipients
+    #[DataProvider('refusedTests')]
+    public function test_test_refusedBeforeIsds(\Closure $change, string $code): void
+    {
+        TestSendRun::$http = null;
+        $call              = $change($this->sending) + ['setup' => null, 'campaign' => self::CAMPAIGN_ITEM];
+        $this->rules->configs[Sending::SOURCE] = Config::fromValues(Sending::SOURCE, ['name_field' => Sending::NAME, 'ds_field' => Sending::DS]);
+
+        $result = $this->test($call['setup'], campaign: $call['campaign']);
+
+        self::assertSame([TestResult::STATUS_REFUSED, $code, ''], [$result->status, $result->code, $result->msg]);
+        self::assertSame([], self::testItems());
+        self::assertSame([], $this->sending->testLogged);
+    }
+
+    public function test_test_refusesPaidInProduction(): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], 'true', $asked);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        self::assertSame([TestResult::STATUS_REFUSED, TestResult::PAID], [$result->status, $result->code]);
+        self::assertSame(['PDZSendInfo'], $asked);
+        self::assertSame([], self::testItems());
+    }
+
+    /** @return array<string, array{0: string, 1: string, 2: string, 3?: int}> the result PDZSendInfo answers with, its status, the status the refusal names, HTTP */
+    public static function unknownPaid(): array
+    {
+        return [
+            'no such box'   => ['false', '5001', '5001'],
+            'refused'       => ['false', '1214', '1214'],
+            'no answer'     => ['Ano', '0000', ''],
+            'ISDS down'     => ['false', '0000', '', 503],
+        ];
+    }
+
+    // a box ISDS does not know is no "free": the user checks the box, nothing is sent
+    #[DataProvider('unknownPaid')]
+    public function test_test_refusesWhenPaidUnknownInProduction(string $paid, string $status, string $code, int $http = 200): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], $paid, $asked, $status, code: $http);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        self::assertSame([TestResult::STATUS_REFUSED, TestResult::PAID_UNKNOWN, $code], [$result->status, $result->code, $result->isdsCode]);
+        self::assertSame(['PDZSendInfo'], $asked);
+        self::assertSame([], self::testItems());
+    }
+
+    /** @return array<string, array{string, string, string}> the page PDZSendInfo answers with, its HTTP status - or a certificate that cannot work -, the run's code */
+    public static function loginFailures(): array
+    {
+        return [
+            'login refused'     => ['unauthorized.html', '401', Outcome::LOGIN],
+            'address blocked'   => ['address-blocked.html', '401', Outcome::BLOCKED],
+            'no certificate'    => ['', 'not a certificate', Outcome::CONFIG],
+        ];
+    }
+
+    // the login cannot work: CreateMessage would fail alike - nothing sent, nothing paid, no item
+    #[DataProvider('loginFailures')]
+    public function test_test_loginFailureAskingThePriceIsFailed(string $page, string $how, string $code): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], 'false', $asked, page: $page, code: is_numeric($how) ? (int) $how : 200, certificate: is_numeric($how) ? '' : $how);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        self::assertSame([TestResult::STATUS_FAILED, $code, ''], [$result->status, $result->code, $result->msg]);
+        self::assertSame(($code === Outcome::CONFIG) ? [] : ['PDZSendInfo'], $asked);
+        self::assertSame([], self::testItems());
+    }
+
+    // in the test ISDS too: no CreateMessage after a refused login
+    public function test_test_loginRefusedInTestIsdsSendsNothing(): void
+    {
+        $isds = TestSendRun::$http = new ScriptedIsds(['PDZSendInfo' => [new Response(401, self::fixture('unauthorized.html'))]]);
+
+        $result = $this->test();
+
+        self::assertSame([TestResult::STATUS_FAILED, Outcome::LOGIN], [$result->status, $result->code]);
+        self::assertSame(['PDZSendInfo'], $isds->ops());
+        self::assertSame([], self::testItems());
+    }
+
+    public function test_test_freeInProductionGoes(): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX], 'false', $asked);
+
+        $result = $this->test(self::testPage(environment: Account::PRODUCTION, senderBox: self::SENDER));
+
+        self::assertSame([TestResult::STATUS_SENT, '1835603', false], [$result->status, $result->dmId, $result->paid]);
+        self::assertSame(['PDZSendInfo', 'CreateMessage'], $asked);
+        self::assertSame([Account::PRODUCTION, self::SENDER], [self::items()->field($result->msg, Schema::MESSAGE_ENVIRONMENT), self::items()->field($result->msg, Schema::MESSAGE_SENDER_BOX)]);
+    }
+
+    // in the test ISDS a paid one only notes it: nothing is paid there
+    public function test_test_paidOnlyNotedInTestIsds(): void
+    {
+        self::testIsds('true');
+
+        $result = $this->test();
+
+        self::assertSame([TestResult::STATUS_SENT, true], [$result->status, $result->paid]);
+    }
+
+    // the page's list again, as datovka_conf.php has it: a page settled before the file changed, a template's box
+    public function test_test_productionBoxesFromConfOnly(): void
+    {
+        $asked = [];
+        $this->production([self::TEST_BOX2], 'false', $asked);
+
+        $result = $this->test(self::testPage([self::TEST_BOX], Account::PRODUCTION, self::SENDER));
+
+        self::assertSame(TestResult::NOT_TEST_BOX, $result->code);
+        self::assertSame([], $asked);
+    }
+
+    // the environment of the list is the account's: a template cannot add a box to production by saying test
+    public function test_test_testListOnlyByAccountEnvironment(): void
+    {
+        $conf     = static fn(string $environment): \AA\Isds\DatovkaConf => Sending::conf(['NSZM' => Sending::account(over: ['environment' => $environment, 'test_boxes' => [self::TEST_BOX]] + (($environment === Account::PRODUCTION) ? ['auth' => 'cert', 'login' => null, 'password' => null, 'cert' => '/etc/aa/nszm.pem'] : []))]);
+        $settings = static fn(array $over): string => (string) json_encode($over + json_decode(self::settings(), true));
+
+        $production = Setup::checked($settings(['test_box' => [self::TEST_BOX2]]), Sending::SITE, $this->rules, $conf(Account::PRODUCTION));
+        $narrowed   = Setup::checked($settings(['test_box' => self::TEST_BOX]), Sending::SITE, $this->rules, $conf(Account::PRODUCTION));
+        $all        = Setup::checked($settings([]), Sending::SITE, $this->rules, $conf(Account::PRODUCTION));
+        $test       = Setup::checked($settings(['test_box' => [self::TEST_BOX2]]), Sending::SITE, $this->rules, $conf(Account::TEST));
+        $saysTest   = Setup::checked($settings(['test_box' => [self::TEST_BOX2], 'environment' => Account::TEST]), Sending::SITE, $this->rules, $conf(Account::PRODUCTION));
+
+        self::assertSame([[], [self::TEST_BOX], [self::TEST_BOX], [self::TEST_BOX2]], [$production->testBoxes ?? null, $narrowed->testBoxes ?? null, $all->testBoxes ?? null, $test->testBoxes ?? null]);
+        self::assertInstanceOf(Setup::class, $production);
+        TestSendRun::$http = null;
+        self::assertSame(TestResult::NO_TEST_BOX, $this->test($production)->code, 'the page sends; its box of no list tests nothing');
+        self::assertInstanceOf(\AA\Isds\SetupException::class, $saysTest, 'no test account is bound');
+    }
+
+    public function test_test_busyWhileLocked(): void
+    {
+        self::testIsds();
+        $this->sending->lockedByOther = true;
+
+        $result = $this->test();
+
+        self::assertSame([TestResult::STATUS_BUSY, TestResult::BUSY], [$result->status, $result->code]);
+        self::assertSame([[], [], ['lock isds-test:' . Sending::MESSAGE]], [self::testItems(), TestSendRun::$http?->ops() ?? null, $this->sending->lockLog]);
+    }
+
+    // a process that died while ISDS had the message leaves it sending: busy while its request could still run, then uncertain
+    public function test_test_deadSendingBecomesUncertain(): void
+    {
+        $isds = self::testIsds();
+        self::items()->onWrite = static function (): void {
+            $last = self::items()->writes[array_key_last(self::items()->writes)];
+            if (($last['fields'][Schema::MESSAGE_STATE] ?? '') === Schema::MESSAGE_STATE_SENT) {
+                throw new \RuntimeException('The process died');
+            }
+        };
+        try {
+            $this->test();
+            self::fail('The process died');
+        } catch (\RuntimeException) {
+        }
+        self::items()->onWrite = null;
+        [$msg]                 = array_keys(self::testItems());
+        self::assertSame(Schema::MESSAGE_STATE_SENDING, self::items()->field($msg, Schema::MESSAGE_STATE));
+
+        TestSendRun::$now = self::NOW + Client::CREATE_TIMEOUT + 60;
+        self::assertSame(TestResult::BUSY, $this->test()->code);
+        self::assertSame(Schema::MESSAGE_STATE_SENDING, self::items()->field($msg, Schema::MESSAGE_STATE));
+
+        TestSendRun::$now = self::NOW + Client::CREATE_TIMEOUT + 61;
+        $result           = $this->test();
+
+        self::assertSame([TestResult::SAME_LETTER, $msg, '4711-T2', self::NOW], [$result->code, $result->msg, $result->ref, $result->at]);
+        self::assertSame(Schema::MESSAGE_STATE_UNCERTAIN, self::items()->field($msg, Schema::MESSAGE_STATE));
+        self::assertSame(Schema::EVENT_TIMEOUT, self::timeline($msg)[array_key_last(self::timeline($msg))]['kind']);
+        self::assertSame(1, count($isds->sent()), 'never sent again by itself');
+    }
+
+    public function test_test_sameLetterSameBoxRefused(): void
+    {
+        $isds  = self::testIsds();
+        $first = $this->test(self::testPage([self::TEST_BOX, self::TEST_BOX2]));
+
+        $again = $this->test(self::testPage([self::TEST_BOX, self::TEST_BOX2]));
+        $other = $this->test(self::testPage([self::TEST_BOX, self::TEST_BOX2]), self::TEST_BOX2);
+
+        self::assertSame([TestResult::STATUS_REFUSED, TestResult::SAME_LETTER, $first->msg, $first->ref, $first->dmId, self::NOW], [$again->status, $again->code, $again->msg, $again->ref, $again->dmId, $again->at]);
+        self::assertSame(TestResult::STATUS_SENT, $other->status, 'another box gets it');
+        self::assertSame([self::TEST_BOX, self::TEST_BOX2], $isds->sent());
+    }
+
+    public function test_test_editedDraftMayTestAgain(): void
+    {
+        $isds = self::testIsds();
+        $this->test();
+        self::subjectIs('Pozvánka na sněm');
+
+        $result = $this->test();
+
+        self::assertSame(TestResult::STATUS_SENT, $result->status);
+        self::assertSame(['ZKOUŠKA: Pozvánka', 'ZKOUŠKA: Pozvánka na sněm'], $isds->sent('dmAnnotation'));
+    }
+
+    // a refusal sends nothing: the same letter may go once what ISDS refused is fixed
+    public function test_test_failedDoesNotBlock(): void
+    {
+        $isds  = self::testIsds(create: [new Response(200, self::fixture('create-message-1233.xml')), self::created('2002')]);
+        $first = $this->test();
+
+        $second = $this->test();
+
+        self::assertSame([TestResult::STATUS_FAILED, '', '1233'], [$first->status, $first->code, $first->isdsCode]);
+        self::assertStringContainsString('nekomerční', $first->detail);
+        self::assertSame([Schema::MESSAGE_STATE_FAILED, '1233'], [self::items()->field($first->msg, Schema::MESSAGE_STATE), self::items()->field($first->msg, Schema::MESSAGE_ERROR_CODE)]);
+        self::assertSame([TestResult::STATUS_SENT, '2002'], [$second->status, $second->dmId]);
+        self::assertCount(2, $isds->sent());
+    }
+
+    // a double click, a second tab, F5 before the redirect, the same POST two minutes later
+    public function test_test_samePostTwiceSendsOnce(): void
+    {
+        $isds  = self::testIsds();
+        $first = $this->test();
+        TestSendRun::$now = self::NOW + 120;
+
+        $second = $this->test();
+
+        self::assertSame([TestResult::STATUS_SENT, TestResult::SAME_LETTER], [$first->status, $second->code]);
+        self::assertCount(1, $isds->sent());
+        self::assertCount(1, self::testItems());
+    }
+
+    // a list of the files would not fit an entry of the timeline: the sending would fail before ISDS
+    public function test_test_manyAttachmentsStillSend(): void
+    {
+        $isds = self::testIsds();
+        $this->sending->files = [];
+        for ($i = 1; $i < Message::MAX_FILES; ++$i) {
+            $name = sprintf('%03d-', $i) . str_repeat('priloha-', 25) . '.pdf';
+            file_put_contents("$this->dir/$name", self::PDF . $i);
+            $this->sending->files[] = TestSendQueue::UPLOAD_URL . '/' . $name;
+        }
+
+        $result = $this->test();
+
+        self::assertSame([TestResult::STATUS_SENT, ''], [$result->status, $result->detail]);
+        $sending = self::timeline($result->msg)[1];
+        self::assertSame([Schema::EVENT_SENDING, Message::MAX_FILES], [$sending['kind'], $sending['files']]);
+        self::assertMatchesRegularExpression('/^[0-9a-f]{32}\z/', $sending['sum']);
+        self::assertCount(Message::MAX_FILES, $this->sending->testLogged[0][3], 'each file logged');
+        self::assertCount(1, $isds->sent());
+    }
+
+    // the item shows the message on its way, with what tells its letter, before the request leaves
+    public function test_test_sendingBeforeTheRequest(): void
+    {
+        $seen = [];
+        TestSendRun::$http = new ScriptedIsds(['PDZSendInfo' => [new Response(200, self::paidAnswer())], 'CreateMessage' => [static function () use (&$seen): Response {
+            [$msg]  = array_keys(self::testItems());
+            $last   = self::timeline($msg)[array_key_last(self::timeline($msg))];
+            $seen[] = [self::items()->field($msg, Schema::MESSAGE_STATE), self::items()->field($msg, Schema::MESSAGE_SENDER_REF), $last['kind'], isset($last['sum']), $last['files'] ?? null];
+            return self::created('2001');
+        }]]);
+
+        self::assertSame(TestResult::STATUS_SENT, $this->test()->status);
+
+        self::assertSame([[Schema::MESSAGE_STATE_SENDING, '4711-T2', Schema::EVENT_SENDING, true, 2]], $seen);
+    }
+
+    // a failure AA does not know: the message may have gone - uncertain, and the caller learns of it
+    public function test_test_unknownFailureUncertainAndThrown(): void
+    {
+        self::testIsds(create: [new \LogicException('A bug')]);
+
+        try {
+            $this->test();
+            self::fail('The failure goes up');
+        } catch (\LogicException $e) {
+            self::assertSame('A bug', $e->getMessage());
+        }
+
+        [$msg] = array_keys(self::testItems());
+        self::assertSame(Schema::MESSAGE_STATE_UNCERTAIN, self::items()->field($msg, Schema::MESSAGE_STATE));
+        self::assertSame(['unlock isds-test:' . Sending::MESSAGE], array_slice($this->sending->lockLog, -1));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function editedStates(): array
+    {
+        return ['none' => [''], 'a word of no state' => ['odesláno'], 'stopped' => [Schema::MESSAGE_STATE_STOPPED]];
+    }
+
+    // only failed and queued sent nothing for sure: a state edited by hand may hide a letter that went
+    #[DataProvider('editedStates')]
+    public function test_test_editedStateBlocks(string $state): void
+    {
+        self::testIsds();
+        $first = $this->test();
+        self::items()->stored[$first->msg]['fields'][Schema::MESSAGE_STATE] = $state;
+
+        self::assertSame(TestResult::SAME_LETTER, $this->test()->code);
+    }
+
+    // what a page shows of an earlier test: a reference or a message id edited into a text is none
+    public function test_test_sameLetterEditedReferenceShowsNone(): void
+    {
+        self::testIsds();
+        $first = $this->test();
+        self::items()->stored[$first->msg]['fields'][Schema::MESSAGE_SENDER_REF] = '<b>4711-T2</b>';
+        self::items()->stored[$first->msg]['fields'][Schema::MESSAGE_DM_ID]      = '2001<script>';
+
+        $again = $this->test();
+
+        self::assertSame([TestResult::SAME_LETTER, '', ''], [$again->code, $again->ref, $again->dmId]);
+    }
+
+    // a timeline edited by hand tells no letter: it may be this one
+    public function test_test_unreadableTimelineBlocks(): void
+    {
+        self::testIsds();
+        $first = $this->test();
+        self::items()->stored[$first->msg]['fields'][Schema::MESSAGE_EVENTS] = '[{"at":"soon"';
+        self::subjectIs('Pozvánka na sněm');
+
+        self::assertSame(TestResult::SAME_LETTER, $this->test()->code);
+    }
+
+    public function test_test_trashedPreviousStillBlocks(): void
+    {
+        self::testIsds();
+        $first = $this->test();
+        self::items()->stored[$first->msg]['fields']['status_code.....'] = '3';
+
+        self::assertSame(TestResult::SAME_LETTER, $this->test()->code);
+    }
+
+    // the recipient sees another name: another letter
+    public function test_test_renamedFileIsOtherLetter(): void
+    {
+        $isds = self::testIsds();
+        $this->test();
+        rename("$this->dir/pozvanka.pdf", "$this->dir/pozvanka-2.pdf");
+        $this->sending->files = [TestSendQueue::UPLOAD_URL . '/pozvanka-2.pdf'];
+
+        self::assertSame(TestResult::STATUS_SENT, $this->test()->status);
+        self::assertCount(2, $isds->sent());
+    }
+
+    public function test_test_campaignStateUnchanged(): void
+    {
+        self::testIsds();
+        $before = TableDb::$tables;
+        $fields = self::items()->stored[self::CAMPAIGN_ITEM]['fields'];
+
+        self::assertSame(TestResult::STATUS_SENT, $this->test()->status);
+
+        self::assertSame($fields, self::items()->stored[self::CAMPAIGN_ITEM]['fields']);
+        self::assertSame($before, TableDb::$tables, 'no run, no snapshot, no step');
+        self::assertSame([], array_values(array_diff(self::items()->written('update'), array_keys(self::testItems()))), 'only its message item written');
+    }
+
+    // ISDS took the request and never answered: the message may have gone - uncertain, by its reference
+    public function test_test_uncertainOnTimeout(): void
+    {
+        $isds = self::testIsds(create: [new HttpTransportException('Operation timed out after 300000 milliseconds')]);
+
+        $result = $this->test();
+
+        self::assertSame([TestResult::STATUS_UNCERTAIN, '', '4711-T2'], [$result->status, $result->code, $result->ref]);
+        self::assertSame(Schema::MESSAGE_STATE_UNCERTAIN, self::items()->field($result->msg, Schema::MESSAGE_STATE));
+        self::assertSame(TestResult::SAME_LETTER, $this->test()->code, 'never sent again by itself');
+        self::assertCount(1, $isds->sent());
+    }
+
+    // a login refused, an address blocked, ISDS down: nothing left, and a test is never tried again by itself
+    public function test_test_nothingLeftIsFailed(): void
+    {
+        self::testIsds(create: [new HttpTransportException('No connection', 0, new \RuntimeException('Could not resolve host: ws1.czebox.cz')), self::created('2002')]);
+
+        $result = $this->test();
+
+        self::assertSame([TestResult::STATUS_FAILED, Outcome::UNAVAILABLE], [$result->status, $result->code]);
+        self::assertSame([Schema::MESSAGE_STATE_FAILED, Outcome::UNAVAILABLE], [self::items()->field($result->msg, Schema::MESSAGE_STATE), self::items()->field($result->msg, Schema::MESSAGE_ERROR_CODE)]);
+        self::assertSame(TestResult::STATUS_SENT, $this->test()->status, 'the same letter may go: none went');
+    }
+
+    // the letter as stored, the letterhead of the page and the prefix: nothing of the request but the box
+    public function test_test_sendsStoredDraftNotRequest(): void
+    {
+        $isds = self::testIsds();
+
+        $this->test();
+
+        $body = $isds->calls[1]['body'];
+        self::assertSame(['ZKOUŠKA: Pozvánka'], $isds->sent('dmAnnotation'));
+        self::assertSame(['starosta'], $isds->sent('dmToHands'));
+        self::assertStringContainsString('dmFileDescr="pozvanka.pdf"', $body);
+        self::assertStringContainsString('<isds:dmEncodedContent>' . base64_encode(self::PDF) . '<', $body);
+        $letter = base64_decode((string) preg_replace('~.*dmFileDescr="Dopis.html"[^>]*>\s*<\w+:dmEncodedContent>([^<]*)<.*~s', '$1', $body));
+        self::assertStringContainsString('Národní síť<br>', $letter, 'the letterhead of the page');
+        self::assertStringContainsString('<b>zveme</b>', $letter);
+    }
+
+    public function test_test_insideATransaction_throws(): void
+    {
+        $this->expectException(\LogicException::class);
+
+        DB_AA::transaction(fn(): TestResult => $this->test());
     }
 
     public function test_queue_insideATransaction_throws(): void

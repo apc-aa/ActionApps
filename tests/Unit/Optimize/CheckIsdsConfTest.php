@@ -200,6 +200,27 @@ final class CheckIsdsConfTest extends TestCase
         self::assertSame([[Sending::SITE2, Sending::SITE]], $check->asked, 'in the order of the names');
     }
 
+    // a list of test boxes AA cannot read stops no sending - a warning by its key, of the accounts of this database only
+    public function test_findings_testBoxesAaCannotRead(): void
+    {
+        $this->write(DatovkaConf::FILE, "<?php\nconst DATOVKA_CONF = [];\n", 0o640);
+        $this->write('include/config.php', '<?php', 0o640);
+        $check       = $this->check(['accounts' => [
+            'NSZM' => ['sites' => [Sending::SITE], 'test_boxes' => [self::SECRET]],
+            'ECN'  => ['sites' => [Sending::SITE2], 'test_boxes' => self::SECRET],
+            'GOOD' => ['sites' => [Sending::SITE], 'test_boxes' => ['dj7j6mk']],
+        ]]);
+        $check->here = [Sending::SITE];
+
+        $findings = $check->findings();
+
+        self::assertSame(['test-boxes'], self::keys($findings));
+        self::assertSame([Finding::WARNING, 'Test boxes of ISDS accounts AA cannot read: 1'], [$findings[0]->severity, $findings[0]->title]);
+        self::assertSame([['Setting' => Txt::safe("DATOVKA_CONF['accounts']['NSZM']['test_boxes']")]], $findings[0]->evidence);
+        self::assertStringNotContainsString(self::SECRET, serialize($findings));
+        self::assertStringNotContainsString('ECN', serialize($findings), 'the database of its sites names it');
+    }
+
     // the tokens of a long file would take a basic check too long - not checked, and it says so
     public function test_findings_longFileNotCheckedForKeysWrittenTwice(): void
     {

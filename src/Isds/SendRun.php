@@ -111,7 +111,7 @@ class SendRun extends BatchRun
 
     /** memory of a message beyond what the process holds: the files read from the database (its buffer
      *  of their base64 too), the base64 of the request and the request - a few times the files */
-    private const MEMORY_PER_BYTE = 8;
+    public const MEMORY_PER_BYTE  = 8;
     private const MEMORY_SLACK    = 16 * 1024 * 1024;
 
     /** the site module whose binding (Accounts::binding()) the run sends by, with env, account and kind as queued */

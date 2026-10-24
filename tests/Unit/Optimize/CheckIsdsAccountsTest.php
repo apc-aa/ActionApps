@@ -203,7 +203,7 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertSame('ISDS account NSZM (test) cannot be used', $finding->title);
         self::assertSame('account:test:NSZM', $finding->key);
         self::assertStringContainsString(self::setting('password'), $finding->evidence[0]['Problem']);
-        self::assertStringContainsString("The account is DATOVKA_CONF['accounts']['NSZM'], with the keys environment, auth, sites, slices, login, password.", $finding->advice);
+        self::assertStringContainsString("The account is DATOVKA_CONF['accounts']['NSZM'], with the keys environment, auth, sites, slices, test_boxes, login, password.", $finding->advice);
         self::assertNoSecret($findings, ['short-1']);
     }
 
@@ -255,7 +255,7 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertSame('misc/datovka/datovka_conf.php has settings of ISDS accounts AA does not read: 2', $finding->title);
         self::assertSame([2, 'strays'], [$finding->count, $finding->key]);
         self::assertSame([['Setting' => self::setting('pasword')], ['Setting' => Txt::safe("DATOVKA_CONF['accounts']['Nszm']")]], $finding->evidence);
-        self::assertStringContainsString('AA reads only the keys environment, auth, sites, slices, login, password, box, cert, key, passphrase.', $finding->advice);
+        self::assertStringContainsString('AA reads only the keys environment, auth, sites, slices, test_boxes, login, password, box, cert, key, passphrase.', $finding->advice);
         self::assertNoSecret($findings, ['stray-value-1', 'stray-value-2']);
     }
 
@@ -271,7 +271,7 @@ final class CheckIsdsAccountsTest extends TestCase
         self::assertSame('ISDS account NSZM (production) cannot be used', $findings[0]->title);
         self::assertSame(['account:production:NSZM', 'slices:production:NSZM'], self::keys($findings));
         self::assertSame([['Problem' => Txt::safe("Set DATOVKA_CONF['accounts']['NSZM']['auth'] to 'cert' or 'hosted' and remove DATOVKA_CONF['accounts']['NSZM']['login'] and DATOVKA_CONF['accounts']['NSZM']['password'] - AA never logs in to production ISDS with a name and a password")]], $findings[0]->evidence);
-        self::assertStringContainsString('with the keys environment, auth, sites, slices, box, cert, key, passphrase.', $findings[0]->advice, 'the keys it needs');
+        self::assertStringContainsString('with the keys environment, auth, sites, slices, test_boxes, box, cert, key, passphrase.', $findings[0]->advice, 'the keys it needs');
         self::assertStringNotContainsString('login', $findings[0]->advice);
         self::assertNoSecret($findings);
     }

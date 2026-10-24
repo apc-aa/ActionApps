@@ -6,6 +6,7 @@ namespace AA\Isds;
 
 use AA;
 use AA\IO\DB\DB_AA;
+use AA\Isds\Registry\Box;
 use AA\Isds\Registry\Config;
 use AA\Later\BatchFailed;
 use AA\Later\BatchRun;
@@ -25,11 +26,18 @@ use zids;
  * connection, and a rollback would take the record away - and outside the lock, which a slow answer
  * would hold against a stop. Only the send action of {datovkabulk} calls it, after Access and the
  * form token.
+ * A test message (test()) goes from a draft at once, in the request, to a test box of the page: one
+ * message, its message item, no run, the campaign untouched.
  */
 class SendQueue
 {
     /** log.type of a sending queued, with the user and the run */
     public const LOG_EVENT = 'ISDS_SEND';
+    /** log.type of a test message: who sent it and its files, which its message item cannot hold */
+    public const TEST_LOG_EVENT = 'ISDS_TEST';
+
+    /** before the subject of a test message: an authority files it among its incoming letters; '' = none */
+    public const TEST_SUBJECT = 'ZKOUŠKA: ';
 
     /**
      * Memory a snapshot takes beyond the letter read - its base64 rows and a row escaped for its INSERT:
@@ -38,6 +46,9 @@ class SendQueue
      */
     private const MEMORY_PER_BYTE = 2;
     private const MEMORY_SLACK    = 16 * 1024 * 1024;
+
+    /** a test message still sending after its request could have ended died on its way - it may have gone */
+    private const TEST_DEAD_AFTER = Client::CREATE_TIMEOUT + 60;
 
     /**
      * @param Setup  $setup     the settings of the page that sends, as its gate checked them in this request
@@ -77,23 +88,202 @@ class SendQueue
             if ($props instanceof SendStart) {
                 return $props;
             }
-            if (!$this->lock($campaign)) {
+            if (!$this->lock(SendRun::lockName($campaign))) {
                 return SendStart::refused(SendStart::BUSY);
             }
             try {
                 return $this->freeze($setup, $campaign, $uid, $confirmed, $config, $props);
             } finally {
-                $this->unlock($campaign);
+                $this->unlock(SendRun::lockName($campaign));
             }
         });
     }
 
     /**
+     * One test message of the draft, now, to a test box of the page - the letter as stored, with
+     * TEST_SUBJECT before its subject. Each letter goes to a box once: one that went or may have gone
+     * there is not sent again until the draft changes (its checksum, sum()). In production a message
+     * that would be paid, or of which ISDS does not say, is refused. Only the test action of
+     * {datovkabulk} calls it, after Access, the form token and the check of a foreign origin.
+     * CONTENT also when the subject with TEST_SUBJECT is longer than ISDS takes.
+     * @param string $uid as queue()
+     * @param string $box the box the user chose; '' = the only test box of the page
+     * @throws \Throwable as queue(): a failure no code tells. One after the message item is written
+     *                    leaves it queued, sending, or uncertain when CreateMessage threw it - the next
+     *                    test settles a sending one as uncertain
+     */
+    public function test(Setup $setup, string $campaign, string $uid, string $box): TestResult
+    {
+        if (DB_AA::inTransaction()) {
+            throw new \LogicException('A test message is sent outside any transaction');
+        }
+        $campaign = ModuleId::normalize($campaign);
+        if (is_null($campaign)) {
+            return TestResult::refused(TestResult::UNKNOWN);
+        }
+        if (!Access::userMay($uid, $setup->campaignSlice)) {
+            return TestResult::refused(TestResult::FORBIDDEN);
+        }
+        if ($setup->testBoxes === []) {
+            return TestResult::refused(TestResult::NO_TEST_BOX);
+        }
+        $box = self::testBox($setup, $box);
+        if (is_null($box)) {
+            return TestResult::refused(TestResult::NOT_TEST_BOX);
+        }
+        // known of a hosted filing service only; ISDS refuses the others
+        if ($box === $setup->senderBox) {
+            return TestResult::refused(TestResult::OWN_BOX);
+        }
+        $ready = $this->ready($setup, false);
+        if ($ready instanceof SendStart) {
+            return TestResult::refused($ready->code, $ready->detail);
+        }
+        [$binding, $account] = $ready;
+        // the page's list again, as the account has it: production never trusts the template alone
+        if (($binding->environment === Account::PRODUCTION) && !in_array($box, $binding->testBoxes, true)) {
+            return TestResult::refused(TestResult::NOT_TEST_BOX);
+        }
+        $end = SendPace::maintenanceEnd($this->runClass()::clock());
+        if (!is_null($end)) {
+            return TestResult::refused(TestResult::MAINTENANCE, (string) $end);
+        }
+        return AA_Credentials::singleton()->withSlicesOpen([$setup->campaignSlice, $setup->messageSlice], function () use ($setup, $campaign, $box, $binding, $account): TestResult {
+            $item = $this->draft($setup, $campaign);
+            if ($item instanceof SendStart) {
+                return TestResult::refused($item->code);
+            }
+            $letter = $this->letter($setup, $item);
+            if ($letter instanceof SendStart) {
+                return TestResult::refused($letter->code, $letter->detail);
+            }
+            try {
+                $message = new Message($box, self::TEST_SUBJECT . $letter->annotation, $letter->files, '', $letter->toHands);
+            } catch (\InvalidArgumentException $e) {
+                // the subject with the prefix may be too long
+                return TestResult::refused(SendStart::CONTENT, $e->getMessage());
+            }
+            $memory = $this->memoryFor($message->size(), SendRun::MEMORY_PER_BYTE);
+            if ($memory !== '') {
+                return TestResult::refused(SendStart::MEMORY, $memory);
+            }
+            // one test of the pair at a time: none sees another one half written
+            $lock = 'isds-test:' . $setup->messageSlice;
+            if (!$this->lock($lock)) {
+                return TestResult::refused(TestResult::BUSY);
+            }
+            try {
+                return $this->sendTest($setup, $campaign, (string) $item->getValue('short_id........'), $message, $binding, $account);
+            } finally {
+                $this->unlock($lock);
+            }
+        });
+    }
+
+    /**
+     * Under the lock: the earlier tests, the price, the message item, the message and what came of it
+     */
+    private function sendTest(Setup $setup, string $campaign, string $campShort, Message $message, Binding $binding, Account $account): TestResult
+    {
+        $runClass = $this->runClass();
+        $items    = $this->items($setup, $campaign);
+        $sum      = self::sum($message);
+        $box      = $message->recipient;
+        foreach ($items->tests() as $test) {
+            if ($test['state'] === Schema::MESSAGE_STATE_SENDING) {
+                // the request of a test that died: no lock held, so its process is gone
+                if ($runClass::clock() - $test['sending'] <= self::TEST_DEAD_AFTER) {
+                    return TestResult::refused(TestResult::BUSY);
+                }
+                $items->mark($test['id'], Schema::MESSAGE_STATE_UNCERTAIN, Schema::EVENT_TIMEOUT, $runClass::clock());
+                $test['state'] = Schema::MESSAGE_STATE_UNCERTAIN;
+            }
+            // only failed and queued sent nothing for sure; a state or a checksum edited by hand may be this letter
+            if (($test['box'] === $box) && !in_array($test['state'], [Schema::MESSAGE_STATE_FAILED, Schema::MESSAGE_STATE_QUEUED], true) && in_array($test['sum'], [$sum, ''], true)) {
+                return TestResult::refused(TestResult::SAME_LETTER, msg: $test['id'], ref: $test['ref'], dmId: $test['dmId'], at: $test['sending']);
+            }
+        }
+        // the price asked and the message sent, each to its timeout
+        $this->keepRunning(Client::TIMEOUT + Client::CREATE_TIMEOUT + 60);
+        $client     = $this->client($account);
+        $production = ($binding->environment === Account::PRODUCTION);
+        try {
+            $paid = $client->wouldBePaid($box);
+        } catch (AuthException|ConfigException $e) {
+            // the login cannot work: CreateMessage would fail alike, nothing is sent, nothing paid
+            return TestResult::of(Outcome::of($e), '', $box, '', null);
+        } catch (\Exception $e) {
+            // a box ISDS does not know too: whatever ISDS did not answer is no "free"
+            if ($production) {
+                return TestResult::refused(TestResult::PAID_UNKNOWN, isdsCode: ($e instanceof IsdsException) ? $e->isdsCode() : '');
+            }
+            $paid = null;
+        }
+        if ($production && $paid) {
+            return TestResult::refused(TestResult::PAID);
+        }
+        $msg = new_id();
+        $items->create(['msg' => $msg, 'src' => '', 'box' => $box, 'name' => $box, 'reason' => ''], $binding->environment, $setup->senderBox, $runClass::clock(), test: true);
+        $short = $items->shortId($msg);
+        if ($short === '') {
+            throw new \RuntimeException("The test message item $msg is not to be read");
+        }
+        $ref     = "$campShort-T$short";
+        $message = new Message($box, $message->annotation, $message->files, $ref, $message->toHands);
+        $this->testLog($campaign, $msg, $sum, $message->files);
+        $items->markTestSending($msg, $runClass::clock(), $ref, $sum, count($message->files));
+        try {
+            $result = $client->createMessage($message);
+        } catch (\Throwable $e) {
+            $result = $e;
+        }
+        $outcome = Outcome::of($result);
+        if ($outcome->state === Schema::MESSAGE_STATE_QUEUED) {
+            // nothing left, and a test is never tried again by itself
+            $items->mark($msg, Schema::MESSAGE_STATE_FAILED, Schema::EVENT_FAILED, $runClass::clock(), code: $outcome->code);
+        } else {
+            $items->markOutcome($msg, $outcome, $runClass::clock());
+        }
+        // a failure AA does not know: the item shows it uncertain, the caller learns of it as of any other
+        if (($outcome->then === Outcome::RETHROW) && ($result instanceof \Throwable)) {
+            throw $result;
+        }
+        return TestResult::of($outcome, $msg, $box, $ref, $paid);
+    }
+
+    /** the box asked for among the test boxes of the page, as ISDS knows it; null = none of them */
+    private static function testBox(Setup $setup, string $box): ?string
+    {
+        if (trim($box) === '') {
+            return (count($setup->testBoxes) === 1) ? $setup->testBoxes[0] : null;
+        }
+        try {
+            $box = Box::normalizeId($box);
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
+        return in_array($box, $setup->testBoxes, true) ? $box : null;
+    }
+
+    /**
+     * The checksum of what the recipient sees: the subject, "to hands" and each file - its name, type,
+     * size and content - in the order of the message. The letterhead is in the letter. HtmlBody draws
+     * its images again: after an update of libgd the same letter may differ and be tested once more.
+     * @return string 32 hexadecimal digits
+     */
+    private static function sum(Message $message): string
+    {
+        $files = array_map(static fn(File $f): array => [$f->name, $f->mimeType, $f->size(), hash('xxh128', $f->content)], $message->files);
+        return hash('xxh128', json_encode([$message->annotation, $message->toHands, $files], JSON_THROW_ON_ERROR));
+    }
+
+    /**
      * The account bound to the site and the two slices, and the rules of the slices and the source -
      * as the page checked them, once more: nothing else stands between a request and a run
-     * @return array{Binding, Account, Config}|SendStart
+     * @param bool $source the source slice too; a test message has no recipients
+     * @return ($source is true ? array{Binding, Account, Config}|SendStart : array{Binding, Account, null}|SendStart)
      */
-    private function ready(Setup $setup): array|SendStart
+    private function ready(Setup $setup, bool $source = true): array|SendStart
     {
         $conf = $this->conf();
         if ($conf->unreadable() || $conf->broken()) {
@@ -110,11 +300,11 @@ class SendQueue
         $problems = [
             ...$rules->siteProblems($setup->site, $setup->campaignSlice, $setup->messageSlice),
             ...$rules->sliceProblems($setup->campaignSlice, $setup->messageSlice),
-            ...$rules->sourceProblems($setup->site, $setup->sourceSlice, array_map('strval', array_keys($setup->types)), $setup->memberField),
+            ...($source ? $rules->sourceProblems($setup->site, $setup->sourceSlice, array_map('strval', array_keys($setup->types)), $setup->memberField) : []),
         ];
         // Recipients::resolve() refuses settings without a type field; sourceProblems() read its own copy
-        $config = $rules->registryConfig($setup->sourceSlice);
-        if ($problems || is_null($config) || ($config->typeField() === '')) {
+        $config = $source ? $rules->registryConfig($setup->sourceSlice) : null;
+        if ($problems || ($source && (is_null($config) || ($config->typeField() === '')))) {
             return SendStart::refused(SendStart::SETTINGS, implode('; ', array_map(static fn(SliceProblem $p): string => $p->text, $problems)));
         }
         return [$binding, $account, $config];
@@ -224,30 +414,47 @@ class SendQueue
      */
     private function snapshot(Setup $setup, ItemContent $item, array $recipients, string $campaign): Snapshot|SendStart
     {
-        try {
-            $uploads = $this->uploads($setup->campaignSlice);
-        } catch (\InvalidArgumentException $e) {
-            return SendStart::refused(SendStart::CONTENT, $e->getMessage());
+        $letter = $this->letter($setup, $item);
+        if ($letter instanceof SendStart) {
+            return $letter;
         }
-        try {
-            $letter = Letter::of($item, $setup->letterhead, $uploads);
-        } catch (\InvalidArgumentException|\RuntimeException $e) {
-            // what to fix in the campaign: it reads the uploads, never the database
-            return SendStart::refused(SendStart::CONTENT, $e->getMessage());
-        }
-        // as SendRun: free pages PHP keeps are no need
-        gc_mem_caches();
-        $need  = memory_get_usage(true) + self::MEMORY_SLACK + self::MEMORY_PER_BYTE * array_sum(array_map(static fn(File $f): int => $f->size(), $letter->files));
-        $limit = $this->memoryLimit();
-        // raised for the rest of the request, which only shows the page then
-        if (($limit >= 0) && ($limit < $need) && is_null($this->raiseMemoryLimit($need))) {
-            return SendStart::refused(SendStart::MEMORY, 'mb:' . (int) ceil($need / (1024 * 1024)));
+        $memory = $this->memoryFor(array_sum(array_map(static fn(File $f): int => $f->size(), $letter->files)), self::MEMORY_PER_BYTE);
+        if ($memory !== '') {
+            return SendStart::refused(SendStart::MEMORY, $memory);
         }
         try {
             return Snapshot::of($letter, $recipients, $campaign);
         } catch (\InvalidArgumentException $e) {
             return SendStart::refused(SendStart::CONTENT, $e->getMessage());
         }
+    }
+
+    /** the letter of the campaign item; refused CONTENT with what to fix */
+    private function letter(Setup $setup, ItemContent $item): Letter|SendStart
+    {
+        try {
+            return Letter::of($item, $setup->letterhead, $this->uploads($setup->campaignSlice));
+        } catch (\InvalidArgumentException|\RuntimeException $e) {
+            // what to fix in the campaign: it reads the uploads, never the database
+            return SendStart::refused(SendStart::CONTENT, $e->getMessage());
+        }
+    }
+
+    /**
+     * memory_limit raised for the rest of the request - which only shows the page then - when it is
+     * lower than what $bytes of files take
+     * @return string '' = enough; else the MB needed, the detail of MEMORY
+     */
+    private function memoryFor(int $bytes, int $perByte): string
+    {
+        // as SendRun: free pages PHP keeps are no need
+        gc_mem_caches();
+        $need  = memory_get_usage(true) + self::MEMORY_SLACK + $perByte * $bytes;
+        $limit = $this->memoryLimit();
+        if (($limit >= 0) && ($limit < $need) && is_null($this->raiseMemoryLimit($need))) {
+            return 'mb:' . (int) ceil($need / (1024 * 1024));
+        }
+        return '';
     }
 
     /**
@@ -354,14 +561,21 @@ class SendQueue
     }
 
     /** @return bool got it - unlock() then; false also when the database gives no lock at all */
-    protected function lock(string $campaign): bool
+    protected function lock(string $name): bool
     {
-        return DB_AA::lock(SendRun::lockName($campaign));
+        return DB_AA::lock($name);
     }
 
-    protected function unlock(string $campaign): void
+    protected function unlock(string $name): void
     {
-        DB_AA::unlock(SendRun::lockName($campaign));
+        DB_AA::unlock($name);
+    }
+
+    /** the request goes on for $seconds more, also when the browser leaves: a message sent is marked */
+    protected function keepRunning(int $seconds): void
+    {
+        ignore_user_abort(true);
+        set_time_limit($seconds);
     }
 
     /** memory_limit in bytes, -1 = none */
@@ -380,5 +594,20 @@ class SendQueue
     protected function log(string $campaign, string $uid, string $runId): void
     {
         AA_Log::write(self::LOG_EVENT, "queued:$campaign", [$uid, $runId]);
+    }
+
+    /**
+     * What a test message sends: a row of it - log.user tells who -, then a row of each file. log.params
+     * holds 128 bytes, log.selector 255: a long file name is cut
+     * @param list<File> $files
+     */
+    protected function testLog(string $campaign, string $msg, string $sum, array $files): void
+    {
+        AA_Log::write(self::TEST_LOG_EVENT, "test:$campaign", [$msg, $sum]);
+        $rows = [];
+        foreach ($files as $i => $f) {
+            $rows[] = mb_strcut(ParamImplode([$i + 1, $f->size(), hash('xxh128', $f->content), $f->name]), 0, 255, 'UTF-8');
+        }
+        AA_Log::write(self::TEST_LOG_EVENT, $rows, "file:$msg");
     }
 }

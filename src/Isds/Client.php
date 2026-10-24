@@ -13,10 +13,10 @@ use AA\Isds\Registry\Box;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
- * The ISDS web services AA calls: send a message, follow what happened to sent ones, check a box,
- * ask whether a message to it would be paid, read the account. Times are unix seconds. An answer that cannot be read whole is a
- * TransportException, never a shorter list. A certificate that cannot work - unreadable, locked,
- * not of its key, out of its validity - is a ConfigException before anything is sent.
+ * The ISDS web services AA calls: send a message, follow what happened to sent ones, check a box, ask
+ * whether a message to it would be paid, read the account. Times are unix seconds. An answer that cannot
+ * be read whole is a TransportException, never a shorter list. A certificate that cannot work -
+ * unreadable, locked, not of its key, out of its validity - is a ConfigException before anything is sent.
  */
 final class Client
 {
@@ -174,12 +174,13 @@ final class Client
      */
     public function wouldBePaid(string $box): bool
     {
-        $result = $this->call(Soap::request('PDZSendInfo', ['dbId' => Box::normalizeId($box), 'PDZType' => 'Normal']))->value('isds:PDZsiResult');
+        $result  = $this->call(Soap::request('PDZSendInfo', ['dbId' => Box::normalizeId($box), 'PDZType' => 'Normal']))->value('isds:PDZsiResult');
+        $unclear = is_null($result) ? 'ISDS did not say whether a message would be paid' : 'ISDS answered whether a message would be paid "' . $this->quote($result, 32) . '"';
         return match ($result) {
             'true', '1'  => true,
             'false', '0' => false,
             // a guess either way could send a paid message
-            default => throw TransportException::uncertain(is_null($result) ? 'ISDS did not say whether a message would be paid' : 'ISDS answered whether a message would be paid "' . $this->quote($result, 32) . '"'),
+            default => throw TransportException::uncertain($unclear),
         };
     }
 

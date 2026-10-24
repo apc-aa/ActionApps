@@ -18,6 +18,9 @@ use AA_Field;
  * take that text too; one type or box may be a plain text. An empty value is a value not set.
  * Required are the three slices and types. Who may send is a matter of AA rights (Access), not of
  * the settings. environment can only narrow to the test ISDS - production comes from datovka_conf.php.
+ * test_box can only narrow the test_boxes of a production account too: a template must not send a
+ * letter of the sender to anyone the administrator of the server did not allow. A box beyond them is
+ * left out, not refused: tests are no reason to stop the page.
  */
 final readonly class Setup
 {
@@ -35,7 +38,9 @@ final readonly class Setup
      * @param array<array-key, string> $types        item type => its label, as offered; PHP keeps a type of digits as an int key
      * @param list<string>             $defaultTypes the types chosen at first
      * @param string                   $memberField  the field of the source that tells a member; '' = none
-     * @param list<string>             $testBoxes    the only boxes a test message goes to
+     * @param list<string>             $testBoxes    the only boxes a test message goes to: of the template, in
+     *                                               production only those test_boxes of the account lists;
+     *                                               without test_box those of the account; [] = none
      * @param string                   $environment  Account::TEST or Account::PRODUCTION, as datovka_conf.php binds it
      * @param string                   $senderBox    the box a hosted filing service sends from; '' = ISDS tells it
      *                                               when asked, which a page never does
@@ -131,6 +136,7 @@ final readonly class Setup
         }
 
         $account = null;
+        $binding = null;
         if (($campaign !== '') && ($message !== '')) {
             $siteProblems = $rules->siteProblems($site, $campaign, $message);
             $conf ??= DatovkaConf::load();
@@ -139,7 +145,8 @@ final readonly class Setup
                 $problems[] = new SliceProblem(_m('The settings of data boxes cannot be read now - ask the administrator of the server'));
             } else {
                 try {
-                    $account = Accounts::forSlices($site, $campaign, $message, ($environment === Account::TEST) ? Account::TEST : '', $conf);
+                    $binding = Accounts::binding($site, $campaign, $message, ($environment === Account::TEST) ? Account::TEST : '', $conf);
+                    $account = Accounts::account($binding, $conf);
                 } catch (ConfigException $e) {
                     // says how to bind an account, nothing of the accounts there are
                     $problems[] = new SliceProblem($e->getMessage());
@@ -151,6 +158,9 @@ final readonly class Setup
         }
         if (($source !== '') && $types) {
             array_push($problems, ...$rules->sourceProblems($site, $source, $typeIds, $memberField));
+        }
+        if (!is_null($binding)) {
+            $testBoxes = self::allowed($testBoxes, $binding);
         }
         if ($problems || is_null($account)) {
             throw new SetupException($problems, $campaign);
@@ -287,6 +297,24 @@ final readonly class Setup
         }
 
         return array_values(array_unique($boxes));
+    }
+
+    /**
+     * The test boxes of the page: the template's, or those of the account without test_box. Production
+     * takes only those the account lists - the environment is the account's, never the template's.
+     * @param list<string> $boxes of the template
+     * @return list<string>
+     */
+    private static function allowed(array $boxes, Binding $binding): array
+    {
+        if ($boxes === []) {
+            return $binding->testBoxes;
+        }
+        if ($binding->environment === Account::TEST) {
+            return $boxes;
+        }
+
+        return array_values(array_intersect($boxes, $binding->testBoxes));
     }
 
     /** @param list<SliceProblem> $problems */

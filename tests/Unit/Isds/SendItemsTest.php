@@ -203,6 +203,71 @@ final class SendItemsTest extends TestCase
         $items->create(['msg' => 'a0000000000000000000000000000002'] + self::row(), 'test', 'kv62bqf', self::AT);
     }
 
+    // a test message of the campaign: no recipient frozen, marked so a view tells it from the sending
+    public function test_create_testMessage(): void
+    {
+        $items = self::items();
+
+        self::assertTrue($items->create(['src' => ''] + self::row(), 'test', '', self::AT, test: true));
+
+        self::assertSame(['1', '', Schema::MESSAGE_STATE_QUEUED], array_values(self::fields($items, [Schema::MESSAGE_TEST, Schema::MESSAGE_RECIPIENT, Schema::MESSAGE_STATE])));
+    }
+
+    /** @return array<string, array{string, bool}> */
+    public static function notTests(): array
+    {
+        return ['skipped' => [Schema::BOX_MISSING, false], 'stopped' => ['', true]];
+    }
+
+    #[DataProvider('notTests')]
+    public function test_create_testNeverSkippedOrStopped(string $reason, bool $stopped): void
+    {
+        $items = self::items();
+
+        $this->expectException(\InvalidArgumentException::class);
+        try {
+            $items->create(self::row($reason), 'test', '', self::AT, $stopped, true);
+        } finally {
+            self::assertSame([], $items->writes);
+        }
+    }
+
+    // what the same letter is told by, in an entry the reader keeps - however many files it has
+    public function test_markTestSending_checksumAndCountOfFiles(): void
+    {
+        $items = self::created();
+        $sum   = hash('xxh128', 'letter');
+
+        self::assertTrue($items->markTestSending(self::MSG, self::AT + 10, '4711-T2', $sum, 100));
+
+        self::assertSame([['at' => self::AT, 'kind' => 'queued'], ['at' => self::AT + 10, 'kind' => 'sending', 'sum' => $sum, 'files' => 100]], self::timeline($items));
+        self::assertSame([Schema::MESSAGE_STATE_SENDING, '4711-T2'], array_values(self::fields($items, [Schema::MESSAGE_STATE, Schema::MESSAGE_SENDER_REF])));
+    }
+
+    /** @return array<string, array{string, int, string}> */
+    public static function badTestSendings(): array
+    {
+        return [
+            'checksum in capitals' => [strtoupper(hash('xxh128', 'letter')), 1, '4711-T2'],
+            'checksum too short'   => [substr(hash('xxh128', 'letter'), 1), 1, '4711-T2'],
+            'no file'              => [hash('xxh128', 'letter'), 0, '4711-T2'],
+            'a text for reference' => [hash('xxh128', 'letter'), 1, '4711 T2'],
+        ];
+    }
+
+    #[DataProvider('badTestSendings')]
+    public function test_markTestSending_refusesWhatIsNoChecksum(string $sum, int $files, string $ref): void
+    {
+        $items = self::created();
+
+        $this->expectException(\InvalidArgumentException::class);
+        try {
+            $items->markTestSending(self::MSG, self::AT + 10, $ref, $sum, $files);
+        } finally {
+            self::assertCount(1, $items->writes, 'the create only');
+        }
+    }
+
     // each write adds to the timeline - the times of the fields alone miss a timeout or a lookup
     public function test_mark_appendsToTimeline(): void
     {
@@ -1525,7 +1590,7 @@ final class SendItemsTest extends TestCase
                 return [$id => ['u_slice_id......' => [['value' => $item['slice']]]] + $values];
             }
 
-            protected function whileOpen(string $slice, \Closure $fn): bool
+            protected function whileOpen(string $slice, \Closure $fn): mixed
             {
                 $this->scopes[] = $slice;
                 $this->open     = $slice;

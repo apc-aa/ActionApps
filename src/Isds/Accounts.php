@@ -20,6 +20,7 @@ use AA\Isds\Registry\Box;
  *             'slices'      => ['<campaign slice id>', '<message slice id>'],
  *             'box'         => '<data box id>',
  *             'cert'        => '/etc/aa-isds/nszm.pem',      // outside the directory of AA
+ *             'test_boxes'  => ['<data box id>'],
  *         ],
  *     ],
  * NSZM names the account: one word of capital letters and digits, the first a letter - so one name has
@@ -30,8 +31,10 @@ use AA\Isds\Registry\Box;
  * system certificate of the data box; hosted - the certificate of a hosted filing service, sending from
  * box. cert holds the key too unless key names a file of its own; passphrase opens an encrypted key. A
  * relative path starts in DatovkaConf::CERT_DIR, which the web server serves - a key belongs outside it.
+ * test_boxes lists the only boxes a test message of a production account may go to: a template of the site
+ * may narrow them, never add one (Setup). A list AA cannot read leaves the account sending, without tests.
  *
- * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string}
+ * @phpstan-type Found array{name: string, environment: string, sites: list<string>, slices: array{string, string}, problems: list<string>, kind: string, testBoxes: list<string>}
  */
 final class Accounts
 {
@@ -46,9 +49,10 @@ final class Accounts
     public const CERT        = 'cert';
     public const KEY         = 'key';
     public const PASSPHRASE  = 'passphrase';
+    public const TEST_BOXES  = 'test_boxes';
 
     /** the keys of every account */
-    private const COMMON = [self::ENVIRONMENT, self::AUTH, self::SITES, self::SLICES];
+    private const COMMON = [self::ENVIRONMENT, self::AUTH, self::SITES, self::SLICES, self::TEST_BOXES];
 
     /** the keys of each login - the values of auth -, in the order the file shows them */
     private const LOGINS = [
@@ -155,7 +159,7 @@ final class Accounts
         $shared   = self::shared($found);
         $bindings = [];
         foreach ($found as $i => $f) {
-            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['kind']);
+            $bindings[] = new Binding($f['name'], $f['environment'], $f['sites'], $f['slices'][0], $f['slices'][1], [...$f['problems'], ...($shared[$i] ?? [])], $f['kind'], $f['testBoxes']);
         }
 
         return $bindings;
@@ -233,7 +237,7 @@ final class Accounts
     /** @return Found */
     private static function read(string $name, #[\SensitiveParameter] mixed $fields): array
     {
-        $found = ['name' => $name, 'environment' => self::environment($fields), 'sites' => [], 'slices' => ['', ''], 'problems' => [], 'kind' => ''];
+        $found = ['name' => $name, 'environment' => self::environment($fields), 'sites' => [], 'slices' => ['', ''], 'problems' => [], 'kind' => '', 'testBoxes' => []];
         if (!is_array($fields)) {
             $found['problems'][] = self::setting($name) . ' is not an array - give the account its keys in one';
 
@@ -259,6 +263,8 @@ final class Accounts
         } catch (ConfigException $e) {
             $found['problems'][] = $e->getMessage();
         }
+        // only for tests of a draft: a mistake there must not stop a sending (brokenTestBoxes())
+        $found['testBoxes'] = self::testBoxes($fields) ?? [];
         // an environment misspelt is to fix first: which keys belong is not known before
         if ($written) {
             array_push($found['problems'], ...self::mixed($found['environment'] === Account::PRODUCTION, $name, $found['kind'], $fields));
@@ -376,6 +382,40 @@ final class Accounts
         }
 
         return [$ids[0], $ids[1]];
+    }
+
+    /**
+     * @param array<array-key, mixed> $fields
+     * @return ?list<string> box ids as ISDS knows them, [] when not set; null = no list of box ids
+     */
+    private static function testBoxes(#[\SensitiveParameter] array $fields): ?array
+    {
+        $list = $fields[self::TEST_BOXES] ?? [];
+        if (!is_array($list)) {
+            return null;
+        }
+        try {
+            // DatovkaConf keeps what is no text of the list as Secret
+            return array_values(array_unique(array_map(static fn(mixed $box): string => Box::normalizeId(is_string($box) ? $box : ''), $list)));
+        } catch (\InvalidArgumentException) {
+            return null;
+        }
+    }
+
+    /**
+     * The accounts whose test_boxes AA cannot read - they send, but no test message goes from them
+     * @return list<string> names of the accounts
+     */
+    public static function brokenTestBoxes(#[\SensitiveParameter] ?DatovkaConf $conf = null): array
+    {
+        $broken = [];
+        foreach (($conf ?? DatovkaConf::load())->accounts() as $name => $fields) {
+            if ((preg_match(self::NAME, (string) $name) === 1) && is_array($fields) && is_null(self::testBoxes($fields))) {
+                $broken[] = (string) $name;
+            }
+        }
+
+        return $broken;
     }
 
     /**

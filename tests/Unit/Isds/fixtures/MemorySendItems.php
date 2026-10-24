@@ -24,11 +24,11 @@ final class MemorySendItems extends SendItems
     /** @var ?\Closure(): void runs at each write after it is listed, before it is stored - a step fails or dies there */
     public ?\Closure $onWrite = null;
 
-    /** @param string $campaign the long id of the campaign item, there as queued */
-    public function __construct(string $campaign)
+    /** @param string $campaignId the long id of the campaign item, there as queued */
+    public function __construct(private string $campaignId)
     {
-        parent::__construct(Sending::CAMPAIGN, Sending::MESSAGE, $campaign);
-        $this->stored[$campaign] = ['slice' => Sending::CAMPAIGN, 'fields' => [Schema::CAMPAIGN_STATE => Schema::CAMPAIGN_STATE_QUEUED]];
+        parent::__construct(Sending::CAMPAIGN, Sending::MESSAGE, $campaignId);
+        $this->stored[$campaignId] = ['slice' => Sending::CAMPAIGN, 'fields' => [Schema::CAMPAIGN_STATE => Schema::CAMPAIGN_STATE_QUEUED]];
     }
 
     /** @return list<string> ids of the writes of $mode */
@@ -66,7 +66,7 @@ final class MemorySendItems extends SendItems
         return true;
     }
 
-    // as GetItemContent(): keyed by the id in small letters, the slice of every item
+    // as GetItemContent(): keyed by the id in small letters, the slice of every item, a short id by the order stored
     protected function content(string $id, array $fields): array
     {
         $id   = strtolower($id);
@@ -75,6 +75,22 @@ final class MemorySendItems extends SendItems
             return [];
         }
         $values = array_map(static fn(string $v): array => [['value' => $v]], array_intersect_key($item['fields'], array_flip($fields)));
-        return [$id => ['u_slice_id......' => [['value' => $item['slice']]]] + $values];
+        $short  = in_array('short_id........', $fields, true) ? ['short_id........' => [['value' => (string) (array_search($id, array_keys($this->stored), true) + 1)]]] : [];
+        return [$id => ['u_slice_id......' => [['value' => $item['slice']]]] + $short + $values];
+    }
+
+    // the test messages of the campaign, as AA's search finds them in the bins of $set: status 1 active, any other not
+    protected function search(\AA_Set $set): array
+    {
+        $ids = [];
+        foreach ($this->stored as $id => $item) {
+            $fields = $item['fields'];
+            $active = (($fields['status_code.....'] ?? '') === '1');
+            if (($item['slice'] === Sending::MESSAGE) && (($fields[Schema::MESSAGE_CAMPAIGN] ?? '') === $this->campaignId)
+                && (($fields[Schema::MESSAGE_TEST] ?? '') === '1') && ($active || ($set->getBins() === \AA_BIN_ALL))) {
+                $ids[] = (string) $id;
+            }
+        }
+        return $ids;
     }
 }

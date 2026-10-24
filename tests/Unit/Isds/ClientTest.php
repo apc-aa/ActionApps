@@ -439,6 +439,23 @@ final class ClientTest extends TestCase
         return ['Ano' => ['Ano'], 'empty' => [''], 'upper case' => ['TRUE']];
     }
 
+    // a refusal of the question - no box of that id, a sender ISDS does not let ask - is no answer either
+    #[DataProvider('refusedPaid')]
+    public function test_wouldBePaid_refusedIsException(string $status): void
+    {
+        try {
+            self::client(self::answering(self::changed('pdz-send-info.xml', '~>0000<~', ">$status<")))->wouldBePaid('kv62bqf');
+            self::fail('IsdsException expected');
+        } catch (IsdsException $e) {
+            self::assertSame([IsdsException::class, $status], [$e::class, $e->isdsCode()]);
+        }
+    }
+
+    public static function refusedPaid(): array
+    {
+        return ['no such box' => ['5001'], 'refused' => ['1214']];
+    }
+
     public function test_wouldBePaid_refusesBadBoxWithoutRequest(): void
     {
         $http = new FakeHttp();
@@ -636,6 +653,32 @@ final class ClientTest extends TestCase
             'GetOwnerInfoFromLogin2' => 'DsManage',
             'GetPasswordInfo'        => 'DsManage',
         ], Client::OPERATIONS);
+    }
+
+    // a message goes only from a run or as a test of a draft: a third way would skip what those two guard
+    public function test_createMessage_calledOnlyBySendRunAndSendQueue(): void
+    {
+        $src     = dirname(__DIR__, 3);
+        $callers = [];
+        // what AA runs, not what it is built or tested with
+        $skip  = ['vendor', 'tests', 'node_modules', '.git'];
+        $dirs  = new \RecursiveCallbackFilterIterator(new \RecursiveDirectoryIterator($src, \FilesystemIterator::SKIP_DOTS), static fn(\SplFileInfo $f): bool => !($f->isDir() && in_array(substr($f->getPathname(), strlen($src) + 1), $skip, true)));
+        $files = new \RecursiveIteratorIterator($dirs);
+        foreach ($files as $file) {
+            if (!in_array($file->getExtension(), ['php', 'php3'], true)) {
+                continue;
+            }
+            $tokens = array_values(array_filter(token_get_all((string) file_get_contents($file->getPathname())), static fn(mixed $t): bool => !is_array($t) || !in_array($t[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)));
+            foreach ($tokens as $i => $token) {
+                $method = is_array($token) && in_array($token[0], [T_OBJECT_OPERATOR, T_NULLSAFE_OBJECT_OPERATOR], true) && is_array($tokens[$i + 1] ?? null) && (strcasecmp($tokens[$i + 1][1], 'createMessage') === 0);
+                if ($method && (($tokens[$i + 2] ?? null) === '(')) {
+                    $callers[] = substr($file->getPathname(), strlen($src) + 1);
+                }
+            }
+        }
+        sort($callers);
+
+        self::assertSame(['src/Isds/SendQueue.php', 'src/Isds/SendRun.php'], $callers);
     }
 
     // the constant OPERATIONS and Soap::envelope(), which refuses what is not in it
