@@ -68,19 +68,6 @@ final class Accounts
     private const NAME = '/^[A-Z][A-Z0-9]*\z/';
 
     /**
-     * The account bound to the site and the pair of slices.
-     *
-     * @throws ConfigException as binding()
-     * @throws \InvalidArgumentException as binding()
-     */
-    public static function forSlices(string $site, string $campaignSlice, string $messageSlice, string $environment, #[\SensitiveParameter] ?DatovkaConf $conf = null): Account
-    {
-        $conf ??= DatovkaConf::load();
-
-        return self::account(self::binding($site, $campaignSlice, $messageSlice, $environment, $conf), $conf);
-    }
-
-    /**
      * The usable binding of the site and the pair of slices; account() gives its login.
      *
      * @param string       $site        the site whose own page is rendered (AA_Module_Site::renderingPage()), never a value from the template

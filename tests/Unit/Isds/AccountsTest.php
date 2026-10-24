@@ -16,7 +16,7 @@ use PHPUnit\Framework\TestCase;
 
 /**
  * The accounts are passed in as DATOVKA_CONF['accounts'] - DatovkaConf::fromArray() reads them as it reads
- * the file. Only test_forSlices_fromAFile reads a file, in a process of its own: PHP defines the constant once.
+ * the file. Only test_account_fromAFile reads a file, in a process of its own: PHP defines the constant once.
  */
 final class AccountsTest extends TestCase
 {
@@ -97,15 +97,15 @@ final class AccountsTest extends TestCase
     }
 
     /**
-     * forSlices() and binding() refuse alike
+     * binding() and the account through it refuse alike
      * @param array<array-key, mixed> $accounts
      */
     private static function assertRefused(array $accounts, string $environment = '', string $site = self::SITE, string $campaign = self::CAMPAIGN, string $message = self::MESSAGE): void
     {
         $conf  = self::conf($accounts);
         $calls = [
-            'forSlices' => static fn() => Accounts::forSlices($site, $campaign, $message, $environment, $conf),
-            'binding'   => static fn() => Accounts::binding($site, $campaign, $message, $environment, $conf),
+            'account' => static fn() => self::account($conf, $environment, $site, $campaign, $message),
+            'binding' => static fn() => Accounts::binding($site, $campaign, $message, $environment, $conf),
         ];
         foreach ($calls as $name => $call) {
             try {
@@ -118,10 +118,15 @@ final class AccountsTest extends TestCase
         }
     }
 
-    /** @param array<array-key, mixed> $accounts */
-    private static function forSlices(array $accounts, string $environment = '', string $site = self::SITE, string $campaign = self::CAMPAIGN, string $message = self::MESSAGE): Account
+    /**
+     * The account the way AA gets it: binding(), then account()
+     * @param array<array-key, mixed>|DatovkaConf $accounts DATOVKA_CONF['accounts'], or the whole settings
+     */
+    private static function account(array|DatovkaConf $accounts, string $environment = '', string $site = self::SITE, string $campaign = self::CAMPAIGN, string $message = self::MESSAGE): Account
     {
-        return Accounts::forSlices($site, $campaign, $message, $environment, self::conf($accounts));
+        $conf = ($accounts instanceof DatovkaConf) ? $accounts : self::conf($accounts);
+
+        return Accounts::account(Accounts::binding($site, $campaign, $message, $environment, $conf), $conf);
     }
 
     /** @param array<array-key, mixed> $accounts */
@@ -135,9 +140,9 @@ final class AccountsTest extends TestCase
         self::fail("no binding $name");
     }
 
-    public function test_forSlices_testAccountOfTheSiteAndPair(): void
+    public function test_account_testAccountOfTheSiteAndPair(): void
     {
-        $account = self::forSlices(self::testAccount());
+        $account = self::account(self::testAccount());
 
         self::assertSame(Account::TEST, $account->environment);
         self::assertSame(self::LOGIN, $account->login);
@@ -151,7 +156,7 @@ final class AccountsTest extends TestCase
      * @param list<string> $bound environments with an account bound to the site and pair
      */
     #[DataProvider('environments')]
-    public function test_forSlices_environment(array $bound, string $asked, bool $sends): void
+    public function test_account_environment(array $bound, string $asked, bool $sends): void
     {
         $accounts = [];
         if (in_array(Account::TEST, $bound, true)) {
@@ -162,7 +167,7 @@ final class AccountsTest extends TestCase
         }
 
         if ($sends) {
-            self::assertSame(Account::TEST, self::forSlices($accounts, $asked)->environment);
+            self::assertSame(Account::TEST, self::account($accounts, $asked)->environment);
         } else {
             self::assertRefused($accounts, $asked);
         }
@@ -190,16 +195,16 @@ final class AccountsTest extends TestCase
      * @param array<array-key, mixed> $production
      */
     #[DataProvider('productionNearby')]
-    public function test_forSlices_noneAskedNeverTestInPlaceOfProduction(array $production, bool $refused): void
+    public function test_account_noneAskedNeverTestInPlaceOfProduction(array $production, bool $refused): void
     {
         $accounts = self::testAccount() + $production;
 
         if ($refused) {
             self::assertRefused($accounts);
         } else {
-            self::assertSame(Account::TEST, self::forSlices($accounts)->environment);
+            self::assertSame(Account::TEST, self::account($accounts)->environment);
         }
-        self::assertSame(self::LOGIN, self::forSlices($accounts, Account::TEST)->login, 'asking for test is always fine');
+        self::assertSame(self::LOGIN, self::account($accounts, Account::TEST)->login, 'asking for test is always fine');
     }
 
     public static function productionNearby(): array
@@ -314,12 +319,12 @@ final class AccountsTest extends TestCase
 
     /** slice ids are public: the site, which the caller passes, decides */
     #[DataProvider('sites')]
-    public function test_forSlices_site(array $sites, string $asked, bool $sends): void
+    public function test_account_site(array $sites, string $asked, bool $sends): void
     {
         $accounts = self::testAccount(sites: $sites);
 
         if ($sends) {
-            self::assertSame(self::LOGIN, self::forSlices($accounts, site: $asked)->login);
+            self::assertSame(self::LOGIN, self::account($accounts, site: $asked)->login);
         } else {
             self::assertRefused($accounts, site: $asked);
         }
@@ -338,12 +343,12 @@ final class AccountsTest extends TestCase
 
     /** @param list<string> $slices */
     #[DataProvider('pairs')]
-    public function test_forSlices_pair(array $slices, string $campaign, string $message, bool $sends): void
+    public function test_account_pair(array $slices, string $campaign, string $message, bool $sends): void
     {
         $accounts = self::testAccount(slices: $slices);
 
         if ($sends) {
-            self::assertSame(self::LOGIN, self::forSlices($accounts, campaign: $campaign, message: $message)->login);
+            self::assertSame(self::LOGIN, self::account($accounts, campaign: $campaign, message: $message)->login);
         } else {
             self::assertRefused($accounts, '', self::SITE, $campaign, $message);
         }
@@ -496,7 +501,7 @@ final class AccountsTest extends TestCase
         if ($problems) {
             self::assertRefused($accounts, $environment);
         } else {
-            $account = self::forSlices($accounts, $environment);
+            $account = self::account($accounts, $environment);
             self::assertSame([$environment, $kind], [$account->environment, $account->kind]);
         }
     }
@@ -549,21 +554,21 @@ final class AccountsTest extends TestCase
     }
 
     // production is meant where it is bound; a relative path starts in config/certs/ of AA
-    public function test_forSlices_certificateAccount(): void
+    public function test_account_certificateAccount(): void
     {
         $accounts = self::testAccount() + self::withAuth(Account::PRODUCTION, Account::CERT, ['cert' => ' nszm.pem ', 'key' => ' /etc/aa-isds/nszm.key', 'passphrase' => 'Pass-phrase-never-shown'], 'PROD');
 
-        $account = self::forSlices($accounts);
+        $account = self::account($accounts);
 
         self::assertSame([Account::PRODUCTION, Account::CERT, 'https://ws1c.datovka.gov.cz/cert/DS/dz', []], [$account->environment, $account->kind, $account->url('dz'), $account->headers()]);
         self::assertSame([DatovkaConf::base() . 'config/certs/nszm.pem', '/etc/aa-isds/nszm.key', 'Pass-phrase-never-shown'], [$account->certificate?->certificate, $account->certificate?->key, $account->certificate?->passphrase()]);
-        self::assertSame(self::LOGIN, self::forSlices($accounts, Account::TEST)->login, 'test asked, test given');
+        self::assertSame(self::LOGIN, self::account($accounts, Account::TEST)->login, 'test asked, test given');
     }
 
     // the hosted filing service names the box it sends from, with an empty password
-    public function test_forSlices_hostedAccount(): void
+    public function test_account_hostedAccount(): void
     {
-        $account = self::forSlices(self::withAuth(Account::PRODUCTION, Account::HOSTED, ['cert' => '/etc/aa/ecn.pem', 'box' => 'KV62BQF']));
+        $account = self::account(self::withAuth(Account::PRODUCTION, Account::HOSTED, ['cert' => '/etc/aa/ecn.pem', 'box' => 'KV62BQF']));
 
         self::assertSame([Account::HOSTED, 'kv62bqf', 'https://ws1c.datovka.gov.cz/hspis/DS/dz'], [$account->kind, $account->login, $account->url('dz')]);
         self::assertSame(['Authorization' => 'Basic ' . base64_encode('kv62bqf:')], $account->headers());
@@ -588,16 +593,16 @@ final class AccountsTest extends TestCase
      * @param array<array-key, mixed> $production
      */
     #[DataProvider('productionStrays')]
-    public function test_forSlices_productionStrayNeverTestInItsPlace(array $production, bool $refused): void
+    public function test_account_productionStrayNeverTestInItsPlace(array $production, bool $refused): void
     {
         $accounts = self::testAccount() + $production;
 
         if ($refused) {
             self::assertRefused($accounts);
         } else {
-            self::assertSame(Account::TEST, self::forSlices($accounts)->environment);
+            self::assertSame(Account::TEST, self::account($accounts)->environment);
         }
-        self::assertSame(self::LOGIN, self::forSlices($accounts, Account::TEST)->login, 'asking for test is always fine');
+        self::assertSame(self::LOGIN, self::account($accounts, Account::TEST)->login, 'asking for test is always fine');
     }
 
     public static function productionStrays(): array
@@ -627,10 +632,10 @@ final class AccountsTest extends TestCase
      * @param array<array-key, mixed> $settings DATOVKA_CONF besides the accounts
      */
     #[DataProvider('outOfPlace')]
-    public function test_forSlices_productionOutOfPlaceNeverTestInItsPlace(array $settings, bool $refused): void
+    public function test_account_productionOutOfPlaceNeverTestInItsPlace(array $settings, bool $refused): void
     {
         $conf = DatovkaConf::fromArray($settings + [DatovkaConf::ACCOUNTS => self::testAccount()]);
-        $call = static fn(string $environment): Account => Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, $environment, $conf);
+        $call = static fn(string $environment): Account => self::account($conf, $environment);
 
         if ($refused) {
             try {
@@ -679,17 +684,17 @@ final class AccountsTest extends TestCase
      * @param array<array-key, mixed> $settings DATOVKA_CONF; its accounts beside the test account NSZM
      */
     #[DataProvider('nested')]
-    public function test_forSlices_productionAnywhereNeverTestInItsPlace(array $settings): void
+    public function test_account_productionAnywhereNeverTestInItsPlace(array $settings): void
     {
         $conf = DatovkaConf::fromArray([DatovkaConf::ACCOUNTS => ($settings[DatovkaConf::ACCOUNTS] ?? []) + self::testAccount()] + $settings);
 
         try {
-            Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $conf);
+            self::account($conf);
             self::fail('ConfigException expected');
         } catch (ConfigException $e) {
             self::assertSame(self::refusalText(), $e->getMessage());
         }
-        self::assertSame(self::LOGIN, Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, Account::TEST, $conf)->login, 'asking for test is always fine');
+        self::assertSame(self::LOGIN, self::account($conf, Account::TEST)->login, 'asking for test is always fine');
     }
 
     public static function nested(): array
@@ -721,11 +726,11 @@ final class AccountsTest extends TestCase
      * @param array<array-key, mixed> $settings DATOVKA_CONF; its accounts beside the test account NSZM, or in its place
      */
     #[DataProvider('soundFiles')]
-    public function test_forSlices_soundFileLeavesTest(array $settings): void
+    public function test_account_soundFileLeavesTest(array $settings): void
     {
         $conf = DatovkaConf::fromArray([DatovkaConf::ACCOUNTS => ($settings[DatovkaConf::ACCOUNTS] ?? []) + self::testAccount()] + $settings);
 
-        self::assertSame([Account::TEST, self::LOGIN], [Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $conf)->environment, Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $conf)->login]);
+        self::assertSame([Account::TEST, self::LOGIN], [self::account($conf)->environment, self::account($conf)->login]);
     }
 
     public static function soundFiles(): array
@@ -813,12 +818,12 @@ final class AccountsTest extends TestCase
         self::assertSame([true, true], [self::binding($accounts)->usable(), self::binding($accounts, 'PROD')->usable()]);
     }
 
-    public function test_forSlices_eachSiteAndPairItsAccount(): void
+    public function test_account_eachSiteAndPairItsAccount(): void
     {
         $accounts = self::testAccount('A', login: 'login-a') + self::testAccount('B', self::PAIR2, 'login-b', sites: [self::SITE2]);
 
-        self::assertSame('login-a', self::forSlices($accounts)->login);
-        self::assertSame('login-b', self::forSlices($accounts, site: self::SITE2, campaign: self::CAMPAIGN2, message: self::MESSAGE2)->login);
+        self::assertSame('login-a', self::account($accounts)->login);
+        self::assertSame('login-b', self::account($accounts, site: self::SITE2, campaign: self::CAMPAIGN2, message: self::MESSAGE2)->login);
         self::assertRefused($accounts, '', self::SITE2, self::CAMPAIGN, self::MESSAGE);
         // the slices of B named on the site of A
         self::assertRefused($accounts, Account::TEST, self::SITE, self::CAMPAIGN2, self::MESSAGE2);
@@ -941,10 +946,10 @@ final class AccountsTest extends TestCase
     }
 
     #[DataProvider('notArguments')]
-    public function test_forSlices_refusesArguments(string $site, string $campaign, string $message, string $environment): void
+    public function test_account_refusesArguments(string $site, string $campaign, string $message, string $environment): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        Accounts::forSlices($site, $campaign, $message, $environment, self::conf(self::testAccount()));
+        self::account(self::testAccount(), $environment, $site, $campaign, $message);
     }
 
     public static function notArguments(): array
@@ -961,13 +966,13 @@ final class AccountsTest extends TestCase
     }
 
     /** the file holds the passwords of all accounts - a trace with the arguments must show none of them */
-    public function test_forSlices_keysNotInTraces(): void
+    public function test_account_keysNotInTraces(): void
     {
         $other = 'Other-Pa55-never-in-a-trace';
         $conf  = self::conf(self::testAccount() + self::testAccount('OTHER', self::PAIR2, 'other-login-never-in-a-trace', $other, [self::SITE2]));
         $calls = [
-            'refused'     => static fn() => Accounts::forSlices(self::SITE2, self::CAMPAIGN, self::MESSAGE, '', $conf),
-            'environment' => static fn() => Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, 'staging', $conf),
+            'refused'     => static fn() => self::account($conf, '', self::SITE2),
+            'environment' => static fn() => self::account($conf, 'staging'),
             'unusable'    => static fn() => Accounts::account(new Binding('NSZM', Account::TEST, [self::SITE], self::CAMPAIGN, self::MESSAGE, ['broken'], Account::BASIC), $conf),
         ];
 
@@ -1001,7 +1006,7 @@ final class AccountsTest extends TestCase
     /** the one test with a real file: as the administrator writes it */
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
-    public function test_forSlices_fromAFile(): void
+    public function test_account_fromAFile(): void
     {
         $file = sys_get_temp_dir() . '/aa-accounts-' . bin2hex(random_bytes(6)) . '.php';
         file_put_contents($file, "<?php\nconst DATOVKA_CONF = ['accounts' => [\n    'REAL' => [\n        'environment' => 'test',\n        'auth'        => 'basic',\n        'sites'       => ['" . strtoupper(self::SITE) . "'],\n        'slices'      => ['" . self::CAMPAIGN . "', '" . self::MESSAGE . "'],\n        'login'       => 'real-login',\n        'password'    => 'Real-Pa55-never-shown',\n    ],\n]];\n");
@@ -1011,7 +1016,7 @@ final class AccountsTest extends TestCase
             unlink($file);
         }
 
-        $account = Accounts::forSlices(self::SITE, self::CAMPAIGN, self::MESSAGE, '', $conf);
+        $account = self::account($conf);
 
         self::assertSame(['real-login', ['Authorization' => 'Basic ' . base64_encode('real-login:Real-Pa55-never-shown')]], [$account->login, $account->headers()]);
         self::assertSame([[], []], [$conf->problems(), Accounts::strays($conf)]);
