@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Optimize;
 
+use AA\Isds\Outcome;
 use AA\Isds\Schema;
 use AA\Isds\SendRun;
+use AA\Isds\StatusSync;
 use AA\Optimize\AbstractOptimize;
 use AA\Optimize\CheckIsdsRuns;
 use AA\Optimize\Finding;
@@ -33,6 +35,10 @@ final class CheckIsdsRunsTest extends TestCase
     private const HOUR = 3600;
     /** an hour and the retries of a run that did not pause (SendRun::retryDelay()): 1 + 60 + 120 s */
     private const HANGS_AFTER = 3600 + 1 + 60 + 120;
+    /** following that read nothing longer has stalled: three hours past a round and its lag */
+    private const LATE = 3 * 3600 + StatusSync::ROUND + StatusSync::LAG;
+    /** a delivery of the record: delivered, then accepted by a login */
+    private const ACCEPTED = '6:1899990000:1899980000:1899990000';
 
     public function test_types_basicCheckOfMail(): void
     {
@@ -76,6 +82,14 @@ final class CheckIsdsRunsTest extends TestCase
         // one refusal among the first three is no trend
         yield 'one of three tried failed' => [static function (): void {
             self::itemsAre(self::queued(20, ['dm_ids' => '{"0":"901","1":"902"}', 'failed' => '{"2":"1233"}', 'cursor' => '3']), [Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_FAILED]);
+        }];
+        // the items of dm_dirty a step of following writes yet; waiting for the next round is no failure
+        yield 'following, an item not showing its delivery yet' => [static function (): void {
+            self::following(2, ['dm_state' => '{"0":"' . self::ACCEPTED . '"}', 'dm_dirty' => '{"0":1}']);
+        }];
+        yield 'following ended, every message accepted' => [static function (): void {
+            $id = self::finished(self::following(2, ['dm_state' => '{"0":"' . self::ACCEPTED . '","1":"' . self::ACCEPTED . '"}']), SendRun::DONE);
+            self::itemStatusesAre($id, ['6', '6']);
         }];
         // the campaign is written from the queue once the end committed and the lease of the last step ran out
         yield 'given up a minute ago' => [static function (): void {
@@ -429,6 +443,178 @@ final class CheckIsdsRunsTest extends TestCase
 
         self::assertSame(["end:$id", "failed:$id"], self::keys($findings));
         self::assertSame(['&lt;b&gt;done&lt;/b&gt;', '&lt;i&gt;x&lt;/i&gt; ×2'], [$findings[0]->evidence[0]['Campaign state'], $findings[1]->evidence[0]['Error']]);
+    }
+
+    /** @return iterable<string, array{string, string, int, string, ?string}> */
+    public static function watchWaits(): iterable
+    {
+        $long = self::NOW - self::LATE - 1;
+        yield 'ISDS does not answer' => [Outcome::UNAVAILABLE, '', $long, 'ISDS did not answer', 'ISDS_UNAVAILABLE'];
+        yield 'the address blocked' => [Outcome::UNAVAILABLE, 'blocked', $long, 'blocked the address of this server. AA tries again after 24 hours. See the check "ISDS login"', 'ISDS_UNAVAILABLE blocked'];
+        yield 'datovka_conf.php unreadable' => [Outcome::UNAVAILABLE, 'config', $long, 'PHP cannot read misc/datovka/datovka_conf.php', 'ISDS_UNAVAILABLE config'];
+        yield 'an hour of changes too large' => [Outcome::UNAVAILABLE, 'too_large', $long, 'so many changes in an hour', 'ISDS_UNAVAILABLE too_large'];
+        // waiting for the next round is no failure to show
+        yield 'waiting for the next round' => [SendRun::WATCHING, '', $long, 'AA tries again by itself', null];
+        yield 'read up to a time in the future' => [SendRun::WATCHING, '', self::NOW + StatusSync::ROUND + 1, 'a time in the future', null];
+    }
+
+    // following that reads nothing says why from its last wait, and that it catches up by itself
+    #[DataProvider('watchWaits')]
+    public function test_findings_watchNotRead3h_warnsWithDetail(string $code, string $detail, int $last, string $advice, ?string $wait): void
+    {
+        $from = self::NOW - 10 * self::HOUR;
+        $id   = self::following(2, [], $from, $last);
+        self::storedSet($id, 'retry_code', $code);
+        self::storedSet($id, 'error_detail', $detail);
+
+        $finding = self::only((new TestIsdsRunsCheck())->findings());
+
+        self::assertSame([Finding::WARNING, "watch:$id", ($last > self::NOW) ? $from : $last], [$finding->severity, $finding->key, $finding->since]);
+        self::assertSame('Following the delivery of a mass sending to data boxes has stalled', $finding->title);
+        self::assertStringContainsString($advice, $finding->advice);
+        self::assertStringContainsString('sends no message again', $finding->advice);
+        self::assertSame($wait, $finding->evidence[0]['Last wait'] ?? null);
+        self::assertSame(date('Y-m-d H:i', $last), $finding->evidence[0]['Read up to']);
+    }
+
+    // a run no step works on hangs; that it reads nothing follows from that
+    public function test_findings_watchNotWhenStuck(): void
+    {
+        $id = self::following(2, [], self::NOW - 10 * self::HOUR);
+        self::storedSet($id, 'next_at', (string) (self::NOW - 5 * self::HOUR));
+        self::storedSet($id, 'moved', (string) (self::NOW - 5 * self::HOUR));
+
+        self::assertSame(["stuck:$id"], self::keys((new TestIsdsRunsCheck())->findings()));
+    }
+
+    /** @return iterable<string, array{int, int, bool}> */
+    public static function watchStarts(): iterable
+    {
+        // watch_last starts at the start of the run: following counts from watch_from
+        yield 'following for the hours of a wait' => [self::NOW - self::LATE, self::NOW - 2 * 86400, false];
+        yield 'a second more' => [self::NOW - self::LATE - 1, self::NOW - 2 * 86400, true];
+        yield 'read up to the hours of a wait ago' => [self::NOW - 2 * 86400, self::NOW - self::LATE, false];
+        yield 'read up to a round to come' => [self::NOW - 2 * self::HOUR, self::NOW + StatusSync::ROUND, false];
+    }
+
+    #[DataProvider('watchStarts')]
+    public function test_findings_watchNotInFirstHours(int $from, int $last, bool $warns): void
+    {
+        $id = self::following(2, [], $from, $last);
+
+        self::assertSame($warns ? ["watch:$id"] : [''], self::keys((new TestIsdsRunsCheck())->findings()));
+    }
+
+    // every message went: the campaign shows its end, only the delivery is not read
+    public function test_findings_errorInWatch_isWarningWithOwnAdvice(): void
+    {
+        $id = self::following(2, [], self::NOW - 5 * self::HOUR);
+        foreach (['state' => SendRun::ERROR, 'error_code' => 'ISDS_LOGIN', 'moved' => (string) (self::NOW - 600)] as $property => $value) {
+            self::storedSet($id, $property, $value);
+        }
+
+        $finding = self::only((new TestIsdsRunsCheck())->findings());
+
+        self::assertSame([Finding::WARNING, "error:$id", 'ISDS_LOGIN'], [$finding->severity, $finding->key, $finding->evidence[0]['Error']]);
+        self::assertSame('Following the delivery of a mass sending to data boxes stopped by an error', $finding->title);
+        self::assertStringContainsString('only finding out whether they were delivered has stopped', $finding->advice);
+    }
+
+    // looked up in vain before following: nothing looks them up any more, the office need not wait for the end
+    public function test_findings_unknownWhileWatching_ownTitle(): void
+    {
+        $id = self::following(3, ['dm_ids' => '{"0":"901","1":"902"}', 'uncertain' => '{"2":' . (self::NOW - 2 * self::HOUR) . '}']);
+
+        $finding = self::only((new TestIsdsRunsCheck())->findings());
+
+        self::assertSame([Finding::WARNING, "unknown:$id", 1, '4711-3'], [$finding->severity, $finding->key, $finding->count, $finding->evidence[0]['Examples']]);
+        self::assertSame('A mass sending being followed has messages of unknown fate: 1', $finding->title);
+    }
+
+    // refused by the antivirus check or undeliverable after it was sent: failed, though in dm_ids, counted once all were tried
+    public function test_findings_failedCounts3And8WithAdvice(): void
+    {
+        $id = self::following(3, ['dm_state' => '{"0":"' . self::ACCEPTED . '","1":"3:1899990000:0:0","2":"8:1899990000:1899900000:1899950000"}']);
+
+        $finding = self::only((new TestIsdsRunsCheck())->findings());
+
+        self::assertSame([Finding::WARNING, "failed:$id", '2 of 3 messages of a mass sending to data boxes failed', '3 ×1, 8 ×1'], [$finding->severity, $finding->key, $finding->title, $finding->evidence[0]['Error']]);
+        self::assertStringContainsString('Code 3: an attachment did not pass the antivirus check', $finding->advice);
+        self::assertStringContainsString('Code 8: the data box of the recipient was made inaccessible', $finding->advice);
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function followingMaps(): iterable
+    {
+        // SendMaps reads such a map as no delivery - which would hide every failure in it
+        yield 'dm_state' => ['dm_state'];
+        // CheckIsdsRunItems would skip no item it names, and a step fails on it
+        yield 'dm_dirty' => ['dm_dirty'];
+    }
+
+    #[DataProvider('followingMaps')]
+    public function test_findings_followingMapNotJson_cannotBeRead(string $map): void
+    {
+        $id = self::following(2, [$map => '{"0":']);
+
+        self::assertSame(["record:$id"], self::keys((new TestIsdsRunsCheck())->findings()));
+    }
+
+    /** @return iterable<string, array{int, bool}> */
+    public static function watchCampaigns(): iterable
+    {
+        yield 'an hour after following started' => [self::HOUR, false];
+        yield 'a second more' => [self::HOUR + 1, true];
+    }
+
+    // following starts after the campaign shows the end: a campaign that does not is wrong once the end may have been written
+    #[DataProvider('watchCampaigns')]
+    public function test_findings_endInWatch_afterCloseGrace(int $ago, bool $warns): void
+    {
+        $id = self::following(2, [], self::NOW - $ago);
+        self::campaignShows(Schema::CAMPAIGN_STATE_ERROR);
+
+        $findings = (new TestIsdsRunsCheck())->findings();
+
+        if (!$warns) {
+            self::assertSame([Finding::OK], self::severities($findings));
+            return;
+        }
+        $finding = self::only($findings);
+        self::assertSame([Finding::WARNING, "end:$id", self::NOW - $ago], [$finding->severity, $finding->key, $finding->since]);
+    }
+
+    // the error finding says what to do; Continue restores the campaign
+    public function test_findings_endNotForWatchInError(): void
+    {
+        $id = self::following(2, [], self::NOW - 5 * self::HOUR);
+        self::storedSet($id, 'state', SendRun::ERROR);
+        self::storedSet($id, 'error_code', 'INTERNAL');
+        self::campaignShows(Schema::CAMPAIGN_STATE_ERROR);
+
+        self::assertSame(["error:$id"], self::keys((new TestIsdsRunsCheck())->findings()));
+    }
+
+    // no entry, or one before delivery or refusal: ISDS never said what became of it - of one refused by
+    // the antivirus check it did
+    public function test_findings_undeliveredAfterEnd(): void
+    {
+        $id = self::finished(self::following(30, ['dm_state' => '{"0":"' . self::ACCEPTED . '","2":"2:1899990000:0:0","3":"x","4":"3:1899990000:0:0"}'], self::NOW - 10 * 86400), SendRun::DONE);
+
+        // one of 30 failed is no share to warn of
+        $finding = self::only((new TestIsdsRunsCheck())->findings());
+
+        self::assertSame(["undelivered:$id", 28], [$finding->key, $finding->count]);
+
+        self::assertSame([Finding::WARNING, self::NOW - 10 * 86400], [$finding->severity, $finding->since]);
+        self::assertSame('4711-2, 4711-3, 4711-4, 4711-6, 4711-7', $finding->evidence[0]['Examples']);
+    }
+
+    public function test_findings_noUndeliveredWhileWatching(): void
+    {
+        self::following(4, ['dm_state' => '{"0":"' . self::ACCEPTED . '","2":"2:1899990000:0:0"}']);
+
+        self::assertSame([Finding::OK], self::severities((new TestIsdsRunsCheck())->findings()));
     }
 
     // ------------------------------------------------------------ helpers

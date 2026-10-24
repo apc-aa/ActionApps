@@ -719,6 +719,17 @@ class SendRun extends BatchRun
         return new SendMaps((string) $this->dm_ids, (string) $this->uncertain, (string) $this->failed, (string) $this->skips, (string) $this->inflight, (int) $this->inflight_at, (string) $this->dm_state);
     }
 
+    /**
+     * The messages whose item does not show the delivery the record keeps yet (dm_dirty): while the run
+     * follows delivery, its steps write them. Of a run that ended they mean nothing.
+     * @return array<int, mixed> index => 1
+     * @throws \JsonException dm_dirty edited into no JSON
+     */
+    public function unshown(): array
+    {
+        return SendMaps::entries((string) $this->dm_dirty);
+    }
+
     /** the reference of the message to recipient $k - ISDS lists it, a person finds the message by it */
     public function senderRef(int $k): string
     {

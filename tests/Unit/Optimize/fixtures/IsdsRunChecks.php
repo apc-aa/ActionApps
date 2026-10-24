@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Optimize\Fixtures;
 
 use AA\Isds\Schema;
+use AA\Isds\SendRun;
 use AA\Optimize\CheckIsdsRunItems;
 use AA\Optimize\CheckIsdsRuns;
 use AA\Optimize\Finding;
@@ -76,6 +77,38 @@ trait IsdsRunCheckCase
         self::storedSet($id, 'finished', (string) (self::NOW - $ago));
         self::campaignShows($campaign);
         return $id;
+    }
+
+    /**
+     * A run that sent $n messages as 901, 902, ... and follows their delivery since $from, read up to
+     * $last ($from when null), waiting for its next round; its items sent, the campaign done
+     * @param array<string, string> $props own properties over those
+     */
+    private static function following(int $n = 2, array $props = [], int $from = self::NOW - 3600, ?int $last = null): string
+    {
+        $now              = (int) TestSendRun::$now;
+        TestSendRun::$now = $from - 600;
+        $id               = self::queued($n, $props + [
+            'dm_ids'     => (string) json_encode((object) array_map(static fn(int $k): string => (string) (901 + $k), range(0, $n - 1))),
+            'cursor'     => (string) $n,
+            'camp_state' => Schema::CAMPAIGN_STATE_DONE,
+            'watch_from' => (string) $from,
+            'watch_last' => (string) ($last ?? $from),
+        ], self::WATCH);
+        TestSendRun::$now = $now;
+        self::storedSet($id, 'next_at', (string) ($now + 600));
+        self::storedSet($id, 'retry_code', SendRun::WATCHING);
+        self::itemsAre($id, array_fill(0, $n, Schema::MESSAGE_STATE_SENT));
+        self::campaignShows(Schema::CAMPAIGN_STATE_DONE);
+        return $id;
+    }
+
+    /** @param array<int, string> $statuses index => the dmMessageStatus the message item of the run $id shows */
+    private static function itemStatusesAre(string $id, array $statuses): void
+    {
+        foreach ($statuses as $k => $s) {
+            self::items()->stored[self::message($id, $k)]['fields'][Schema::MESSAGE_DM_STATUS] = $s;
+        }
     }
 
     private static function campaignShows(string $state): void

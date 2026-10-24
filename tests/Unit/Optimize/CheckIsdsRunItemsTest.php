@@ -230,6 +230,88 @@ final class CheckIsdsRunItemsTest extends TestCase
         self::assertSame([Finding::ERROR, "record:$id"], [$finding->severity, $finding->key]);
     }
 
+    /** @return iterable<string, array{string, string}> */
+    public static function ends(): iterable
+    {
+        yield 'done' => [SendRun::DONE, Schema::CAMPAIGN_STATE_DONE];
+        // a stop leaves dm_dirty as it was: what afterClose() did not write stays wrong
+        yield 'given up' => [SendRun::ENDED, Schema::CAMPAIGN_STATE_DONE];
+    }
+
+    // undeliverable since the item was written: the step that read it writes the item
+    public function test_findings_skipsDirtyWhileWatching(): void
+    {
+        $id = self::following(2, ['dm_state' => '{"1":"8:1899990000:0:0"}', 'dm_dirty' => '{"1":1}']);
+
+        self::assertSame([Finding::OK], self::severities((new TestIsdsRunItemsCheck())->findings()));
+
+        self::storedSet($id, 'dm_dirty', '');
+
+        self::assertSame('4711-2 (' . self::message($id, 1) . '): sent → failed', self::only((new TestIsdsRunItemsCheck())->findings())->evidence[0]['Examples']);
+    }
+
+    #[DataProvider('ends')]
+    public function test_findings_comparesDirtyAfterEnd(string $state, string $campaign): void
+    {
+        $id = self::finished(self::following(2, ['dm_state' => '{"1":"8:1899990000:0:0"}', 'dm_dirty' => '{"1":1}']), $state, 7200, $campaign);
+
+        $finding = self::only((new TestIsdsRunItemsCheck())->findings());
+
+        self::assertSame(["items:$id", '4711-2 (' . self::message($id, 1) . '): sent → failed'], [$finding->key, $finding->evidence[0]['Examples']]);
+    }
+
+    public function test_findings_undeliverableMatchesFailed(): void
+    {
+        $id = self::following(2, ['dm_state' => '{"0":"4:1899990000:1899990000:0","1":"8:1899990000:0:0"}']);
+        self::itemsAre($id, [Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_FAILED]);
+        self::itemStatusesAre($id, ['4', '8']);
+
+        self::assertSame([Finding::OK], self::severities((new TestIsdsRunItemsCheck())->findings()));
+    }
+
+    // the state is the same word from 4 on: only the status tells delivered from accepted
+    public function test_findings_dmStatusMismatchFound(): void
+    {
+        $id = self::following(3, ['dm_state' => '{"0":"4:1899990000:1899990000:0","1":"6:1899990000:1899980000:1899990000"}']);
+        self::itemStatusesAre($id, ['4', '4', '1']);
+        $check = new TestIsdsRunItemsCheck();
+
+        $finding = self::only($check->findings());
+
+        self::assertSame([1, '4711-2 (' . self::message($id, 1) . '): dmMessageStatus 4 → 6'], [$finding->count, $finding->evidence[0]['Examples']]);
+        self::assertSame(['ids' => array_slice(array_column(self::rows($id), 'msg'), 0, 2), 'field' => Schema::MESSAGE_DM_STATUS], $check->reads[2], 'only the messages the record has a delivery of');
+    }
+
+    // an item that does not show it at all
+    public function test_findings_dmStatusEmpty_shownAsDash(): void
+    {
+        $id = self::following(2, ['dm_state' => '{"0":"4:1899990000:1899990000:0"}']);
+        self::itemStatusesAre($id, ['']);
+
+        self::assertSame('4711-1 (' . self::message($id, 0) . '): dmMessageStatus – → 4', self::only((new TestIsdsRunItemsCheck())->findings())->evidence[0]['Examples']);
+    }
+
+    // a sending that never followed delivery has none to compare: no read more
+    public function test_findings_dmStatusNotReadWithoutWatch(): void
+    {
+        $id = self::finished(self::queued(2, ['dm_ids' => '{"0":"901","1":"902"}', 'dm_state' => '{"0":"4:1899990000:1899990000:0"}', 'cursor' => '2']), SendRun::DONE);
+        self::itemsAre($id, [Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_SENT]);
+        self::itemStatusesAre($id, ['1', '1']);
+        $check = new TestIsdsRunItemsCheck();
+
+        self::assertSame([Finding::OK], self::severities($check->findings()));
+        self::assertSame([Schema::CAMPAIGN_STATE, Schema::MESSAGE_STATE], array_column($check->reads, 'field'));
+    }
+
+    // a running sending looks it up; once following, nothing does
+    public function test_findings_unknownFateWhileWatching_itemQueued(): void
+    {
+        $id = self::following(3, ['dm_ids' => '{"0":"901","1":"902"}', 'uncertain' => '{"2":1899990000}']);
+        self::itemsAre($id, [Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_SENT, Schema::MESSAGE_STATE_QUEUED]);
+
+        self::assertSame('4711-3 (' . self::message($id, 2) . '): queued → uncertain', self::only((new TestIsdsRunItemsCheck())->findings())->evidence[0]['Examples']);
+    }
+
     // CheckIsdsRuns reports it - the two together on State Check would say it twice
     public function test_findings_corruptMap_leftToTheRunsCheck(): void
     {
