@@ -231,6 +231,7 @@ final class ClientTest extends TestCase
             'state changes'    => ['GetMessageStateChanges', 'dmBaseTypes.xsd', 'state-changes.xml', Account::TEST, $test . 'dx', static fn(Client $c) => $c->stateChanges(self::FROM, self::TO)],
             'sent messages'    => ['GetListOfSentMessages', 'dmBaseTypes.xsd', 'sent-messages.xml', Account::TEST, $test . 'dx', static fn(Client $c) => $c->sentMessages(self::FROM, self::TO, 1001, 500)],
             'check box'        => ['CheckDataBox', 'dbTypes.xsd', 'check-data-box.xml', Account::TEST, $test . 'df', static fn(Client $c) => $c->checkDataBox('kv62bqf')],
+            'would be paid'    => ['PDZSendInfo', 'dbTypes.xsd', 'pdz-send-info.xml', Account::TEST, $test . 'df', static fn(Client $c) => $c->wouldBePaid('kv62bqf')],
             'user'             => ['GetUserInfoFromLogin2', 'dbTypes.xsd', 'user-info.xml', Account::TEST, $test . 'DsManage', static fn(Client $c) => $c->userInfo()],
             'password'         => ['GetPasswordInfo', 'dbTypes.xsd', 'password-info.xml', Account::TEST, $test . 'DsManage', static fn(Client $c) => $c->passwordExpiry()],
             'owner'            => ['GetOwnerInfoFromLogin2', 'dbTypes.xsd', 'owner-info.xml', Account::TEST, $test . 'DsManage', static fn(Client $c) => $c->ownerBox()],
@@ -389,6 +390,66 @@ final class ClientTest extends TestCase
         }
     }
 
+    public function test_wouldBePaid_trueForPaidBox(): void
+    {
+        $http = self::answering(self::fixture('pdz-send-info.xml'));
+
+        self::assertTrue(self::client($http)->wouldBePaid(" KV62BQF\n"));
+        self::assertSame(['dbId' => 'kv62bqf', 'PDZType' => 'Normal'], self::children(self::operation((string) $http->calls[0]['body'])));
+    }
+
+    public function test_wouldBePaid_falseForAuthority(): void
+    {
+        $http = self::answering(self::changed('pdz-send-info.xml', '~>true<~', '>false<'));
+
+        self::assertFalse(self::client($http)->wouldBePaid('kv62bqf'));
+    }
+
+    // the other two values of xs:boolean, with the blanks XSD collapses
+    public function test_wouldBePaid_acceptsOneAndZero(): void
+    {
+        self::assertTrue(self::client(self::answering(self::changed('pdz-send-info.xml', '~>true<~', '>1<')))->wouldBePaid('kv62bqf'));
+        self::assertFalse(self::client(self::answering(self::changed('pdz-send-info.xml', '~>true<~', "> 0\n<")))->wouldBePaid('kv62bqf'));
+    }
+
+    // dbTypes.xsd lets ISDS leave it out or send nil: no answer to the question, never "free"
+    #[DataProvider('unsaidPaid')]
+    public function test_wouldBePaid_nilOrMissingIsException(string $replacement): void
+    {
+        self::assertUncertain(self::changed('pdz-send-info.xml', '~<p:PDZsiResult>true</p:PDZsiResult>~', $replacement), static fn(Client $c) => $c->wouldBePaid('kv62bqf'));
+    }
+
+    public static function unsaidPaid(): array
+    {
+        return [
+            'nil'     => ['<p:PDZsiResult xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>'],
+            'missing' => [''],
+        ];
+    }
+
+    // the documentation says "Ano/Ne"; only xs:boolean is read, the rest is no answer
+    #[DataProvider('otherPaid')]
+    public function test_wouldBePaid_otherValueIsException(string $value): void
+    {
+        self::assertUncertain(self::changed('pdz-send-info.xml', '~>true<~', ">$value<"), static fn(Client $c) => $c->wouldBePaid('kv62bqf'));
+    }
+
+    public static function otherPaid(): array
+    {
+        return ['Ano' => ['Ano'], 'empty' => [''], 'upper case' => ['TRUE']];
+    }
+
+    public function test_wouldBePaid_refusesBadBoxWithoutRequest(): void
+    {
+        $http = new FakeHttp();
+        try {
+            self::client($http)->wouldBePaid('kv62bq');
+            self::fail('InvalidArgumentException expected');
+        } catch (\InvalidArgumentException) {
+            self::assertSame([], $http->calls);
+        }
+    }
+
     public function test_stateChanges_list(): void
     {
         $http    = self::answering(self::fixture('state-changes.xml'));
@@ -508,7 +569,7 @@ final class ClientTest extends TestCase
     public function test_rights_ofEveryOperation(): void
     {
         self::assertSame(array_keys(Client::OPERATIONS), array_keys(Client::RIGHTS));
-        self::assertSame([4, 8, 8, 16, 0, 0, 0], array_values(Client::RIGHTS));
+        self::assertSame([4, 8, 8, 16, 0, 0, 0, 0], array_values(Client::RIGHTS));
     }
 
     #[DataProvider('badUsers')]
@@ -570,6 +631,7 @@ final class ClientTest extends TestCase
             'GetMessageStateChanges' => 'dx',
             'GetListOfSentMessages'  => 'dx',
             'CheckDataBox'           => 'df',
+            'PDZSendInfo'            => 'df',
             'GetUserInfoFromLogin2'  => 'DsManage',
             'GetOwnerInfoFromLogin2' => 'DsManage',
             'GetPasswordInfo'        => 'DsManage',

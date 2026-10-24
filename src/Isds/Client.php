@@ -14,7 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
  * The ISDS web services AA calls: send a message, follow what happened to sent ones, check a box,
- * read the account. Times are unix seconds. An answer that cannot be read whole is a
+ * ask whether a message to it would be paid, read the account. Times are unix seconds. An answer that cannot be read whole is a
  * TransportException, never a shorter list. A certificate that cannot work - unreadable, locked,
  * not of its key, out of its validity - is a ConfigException before anything is sent.
  */
@@ -31,6 +31,7 @@ final class Client
         'GetMessageStateChanges' => 'dx',          // dm_info.wsdl
         'GetListOfSentMessages'  => 'dx',          // dm_info.wsdl
         'CheckDataBox'           => 'df',          // db_search.wsdl
+        'PDZSendInfo'            => 'df',          // db_search.wsdl
         'GetUserInfoFromLogin2'  => 'DsManage',    // db_access.wsdl
         'GetOwnerInfoFromLogin2' => 'DsManage',    // db_access.wsdl
         'GetPasswordInfo'        => 'DsManage',    // db_access.wsdl
@@ -38,13 +39,14 @@ final class Client
 
     /**
      * The right of the user each operation needs (UserInfo, WS_manipulace_s_datovymi_zpravami.pdf 1.4);
-     * 0 = none, the account questions
+     * 0 = none: the account questions, and PDZSendInfo any user of the box may ask (WS_vyhledavani_datovych_schranek.pdf 2.7)
      */
     public const RIGHTS = [
         'CreateMessage'          => UserInfo::CREATE_DM,
         'GetMessageStateChanges' => UserInfo::VIEW_INFO,
         'GetListOfSentMessages'  => UserInfo::VIEW_INFO,
         'CheckDataBox'           => UserInfo::SEARCH_DB,
+        'PDZSendInfo'            => 0,
         'GetUserInfoFromLogin2'  => 0,
         'GetOwnerInfoFromLogin2' => 0,
         'GetPasswordInfo'        => 0,
@@ -157,6 +159,28 @@ final class Client
         }
         $state = $answer->value('isds:dbState');
         return in_array($state, ['1', '2', '3', '4', '5'], true) ? (int) $state : self::NO_STATE;
+    }
+
+    /**
+     * Whether a message from this account to $box would go as a postal data message (PDZSendInfo with
+     * PDZType Normal), which someone pays for. False when the recipient or the sender is an authority, the
+     * box does not accept messages or PDZ, the user may not send, or nothing would pay for one
+     * (WS_vyhledavani_datovych_schranek.pdf 2.7). True does not say who would pay: a contract or the
+     * credit of the sender, or another box.
+     * @throws \InvalidArgumentException not a box id - nothing is sent
+     * @throws IsdsException             no answer read; TransportException for a result other than xs:boolean
+     *                                   true/false/1/0 - nil or left out (dbTypes.xsd allows it) says nothing
+     * @throws ConfigException           the certificate cannot work - nothing is sent
+     */
+    public function wouldBePaid(string $box): bool
+    {
+        $result = $this->call(Soap::request('PDZSendInfo', ['dbId' => Box::normalizeId($box), 'PDZType' => 'Normal']))->value('isds:PDZsiResult');
+        return match ($result) {
+            'true', '1'  => true,
+            'false', '0' => false,
+            // a guess either way could send a paid message
+            default => throw TransportException::uncertain(is_null($result) ? 'ISDS did not say whether a message would be paid' : 'ISDS answered whether a message would be paid "' . $this->quote($result, 32) . '"'),
+        };
     }
 
     /**

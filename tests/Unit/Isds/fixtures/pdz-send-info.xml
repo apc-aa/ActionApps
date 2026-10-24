@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- PDZSendInfo to a box a PDZ could go to: WS_vyhledavani_datovych_schranek.pdf 2.7 (no example there, built after tPDZSendOutput) -->
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Body>
+    <p:PDZSendInfoResponse xmlns:p="http://isds.czechpoint.cz/v20">
+      <p:PDZsiResult>true</p:PDZsiResult>
+      <p:dbStatus>
+        <p:dbStatusCode>0000</p:dbStatusCode>
+        <p:dbStatusMessage>Provedeno úspěšně.</p:dbStatusMessage>
+      </p:dbStatus>
+    </p:PDZSendInfoResponse>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
