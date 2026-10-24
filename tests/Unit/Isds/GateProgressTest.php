@@ -31,7 +31,7 @@ final class GateProgressTest extends TestCase
     private const ITEM   = 'ca00000000000000000000000000000b';   // a campaign - an item of the campaign slice
     private const LETTER = 'be00000000000000000000000000000d';   // a message - an item of the message slice
 
-    private const QUESTIONS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until'];
+    private const QUESTIONS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until', 'delivered', 'accepted'];
 
     /** the clock of the runs here: a pause is judged at this time, however slow the machine */
     public const NOW = 1800000000;
@@ -151,6 +151,29 @@ final class GateProgressTest extends TestCase
         ], ['', 'missing', '', '', '', '', '', 'duplicate', '', '']);
     }
 
+    /**
+     * Ten recipients, all but one tried, the sending stopped by a person, delivery followed since an hour ago:
+     * 0 delivered, 1 accepted by fiction, 2 refused by the antivirus check, 3 undeliverable (an acceptance
+     * it had counts for nothing), 4 only submitted, 5 accepted by a login, 6 refused when sent,
+     * 7 skipped (its frozen reason), 8 never tried, 9 uncertain
+     * @param array<string, string|array<array-key, mixed>> $props
+     */
+    private static function watchedRun(array $props = []): SendRun
+    {
+        $t = self::NOW - 86400;
+
+        return self::sendRun($props + [
+            'cursor'     => '10',
+            'stop_by'    => Sending::READER,
+            'dm_ids'     => ['0' => '501', '1' => '502', '2' => '503', '3' => '504', '4' => '505', '5' => '506'],
+            'dm_state'   => ['0' => "4:$t:$t:0", '1' => "6:$t:$t:" . ($t + 1), '2' => "3:$t:0:0", '3' => "8:$t:$t:" . ($t + 2), '4' => "1:$t:0:0", '5' => "5:$t:$t:" . ($t + 3)],
+            'failed'     => ['6' => '1233'],
+            'uncertain'  => ['9' => 1700000000],
+            'watch_from' => (string) (self::NOW - 3600),
+            'position'   => ['p' => 'watch', 'i' => 0],
+        ], ['', '', '', '', '', '', '', 'duplicate', '', '']);
+    }
+
     private static function settings(): string
     {
         return (string) json_encode(['campaign_slice' => Sending::CAMPAIGN, 'message_slice' => Sending::MESSAGE, 'source_slice' => Sending::SOURCE, 'types' => ['mesto' => 'Cities'], 'default_types' => ['mesto'], 'member_field' => Sending::MEMBER]);
@@ -182,8 +205,8 @@ final class GateProgressTest extends TestCase
         $answers = self::answers($gate, strtoupper(self::ITEM));
 
         self::assertSame(['state' => 'sending', 'until' => ''], array_intersect_key($answers, array_flip(['state', 'until'])));
-        self::assertSame(['total' => '10', 'sent' => '2', 'failed' => '2', 'skipped' => '3', 'uncertain' => '1', 'stopped' => '0', 'queued' => '2'], array_diff_key($answers, array_flip(['state', 'until'])));
-        self::assertSame(1, $run->reads, 'nine answers, one read');
+        self::assertSame(['total' => '10', 'sent' => '2', 'failed' => '2', 'skipped' => '3', 'uncertain' => '1', 'stopped' => '0', 'queued' => '2', 'delivered' => '0', 'accepted' => '0'], array_diff_key($answers, array_flip(['state', 'until'])));
+        self::assertSame(1, $run->reads, 'eleven answers, one read');
         self::assertSame('', $gate->progress(self::ITEM, 'total'), 'outside the UI');
     }
 
@@ -330,5 +353,95 @@ final class GateProgressTest extends TestCase
         $answers = self::answers(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run()]));
 
         self::assertSame(['state' => 'sending'] + array_fill_keys(array_slice(self::QUESTIONS, 1), ''), $answers);
+    }
+
+    /** @return array<string, array{array<string, string|array<array-key, mixed>>, string}> props of the run, state */
+    public static function watched(): array
+    {
+        return [
+            'waiting for its round'         => [['retry_code' => 'ISDS_WATCH'], 'watching'],
+            // ISDS down is waited out, not failed
+            'waiting out ISDS'              => [['retry_code' => 'ISDS_MAINTENANCE'], 'watching'],
+            // the step of look that started it: the record decides, not the position
+            'started in the step of look'   => [['position' => ['p' => 'look', 'i' => 0]], 'watching'],
+            'a position of watch, no start' => [['watch_from' => ''], 'sending'],
+        ];
+    }
+
+    /** @param array<string, string|array<array-key, mixed>> $props */
+    #[DataProvider('watched')]
+    public function test_progress_watching(array $props, string $state): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun($props)]));
+
+        self::assertSame($state, $answers['state']);
+    }
+
+    public function test_progress_watchError(): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun(['state' => SendRun::ERROR, 'error_code' => SendRun::ACCOUNT_CHANGED])]));
+
+        self::assertSame(['watch_error', '10', '1'], [$answers['state'], $answers['total'], $answers['stopped']]);
+    }
+
+    // Stop of a following in error gives it up: all was sent, the sending is over
+    public function test_progress_abandonedWatchIsDone(): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun(['state' => SendRun::ENDED, 'progress' => ['note' => SendRun::ABANDONED]])]));
+
+        self::assertSame(['done', '3', '2'], [$answers['state'], $answers['delivered'], $answers['accepted']]);
+    }
+
+    /** @return array<string, array{array<string, string|array<array-key, mixed>>, string}> props of the run, state */
+    public static function sendingFailed(): array
+    {
+        return [
+            'sending in error'     => [['state' => 'error'], 'error'],
+            'looking up in error'  => [['state' => 'error', 'position' => ['p' => 'look', 'i' => 0]], 'error'],
+            'sending given up'     => [['state' => 'stopped'], 'abandoned'],
+            'looking up, given up' => [['state' => 'stopped', 'position' => ['p' => 'look', 'i' => 0]], 'abandoned'],
+        ];
+    }
+
+    /** @param array<string, string|array<array-key, mixed>> $props */
+    #[DataProvider('sendingFailed')]
+    public function test_progress_sendingErrorStaysError(array $props, string $state): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('error')], [self::ITEM => self::watchedRun($props + ['watch_from' => ''])]));
+
+        self::assertSame($state, $answers['state']);
+    }
+
+    // statuses 3 and 8 are failed, neither delivered nor accepted; status 1 is not delivered yet; the counts still add up to total
+    public function test_progress_deliveredAndAccepted(): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun()]));
+
+        self::assertSame(
+            ['state' => 'watching', 'total' => '10', 'sent' => '4', 'failed' => '3', 'skipped' => '1', 'uncertain' => '1', 'stopped' => '1', 'queued' => '0', 'until' => '', 'delivered' => '3', 'accepted' => '2'],
+            $answers,
+        );
+    }
+
+    /** @return array<string, array{array<string, int|string>, string, bool}> position, watch_from, waits */
+    public static function watchPauses(): array
+    {
+        $now = self::NOW;
+
+        return [
+            'the next round'                 => [['p' => 'watch', 'i' => 0, 'u' => $now + 300], (string) ($now - 3600), false],
+            'the step of look that began it' => [['p' => 'look', 'i' => 0, 'u' => $now + 300], (string) ($now - 3600), false],
+            'looking up, not watching yet'   => [['p' => 'look', 'i' => 0, 'u' => $now + 300], '', true],
+        ];
+    }
+
+    /** @param array<string, int|string> $position */
+    #[DataProvider('watchPauses')]
+    public function test_progress_untilEmptyWhileWatching(array $position, string $watchFrom, bool $waits): void
+    {
+        $run     = self::watchedRun(['position' => $position, 'watch_from' => $watchFrom, 'retry_code' => SendRun::WATCHING]);
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('done')], [self::ITEM => $run]));
+
+        self::assertSame($waits ? (string) $position['u'] : '', $answers['until']);
     }
 }

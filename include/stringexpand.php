@@ -10892,10 +10892,31 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        ids '' for no recipients - {view} with no ids lists the whole slice, so guard it (not with _#1 - AA
  *        expands the inner command first; so the inner {view} still runs once over the slice, the guard only
  *        hides it): {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
- *    {datovkabulk:progress:<campaign id>:state|total|sent|failed|skipped|uncertain|stopped|queued|until} - how far its
- *        sending got, from the record of the run: state of the campaign item while it has no run, then sending,
- *        error, done or abandoned (given up in error; a sending a person stopped ends done, its unsent counted as
- *        stopped); the counts add up to total, '' with no run; until - the unix time a pause waits till, or ''
+ *    {datovkabulk:progress:<campaign id>:<what>} - how far its sending got, from the record of the run; '' (state
+ *        aside) with no run and for a record that cannot be read. <what>:
+ *        state - of the campaign item while it has no run, then one of:
+ *            sending      queued, sending or waiting
+ *            error        sending stopped by an error, waits for Continue
+ *            abandoned    sending given up in error
+ *            watching     the sending is over (a stopped one too), the delivery is being followed
+ *            watch_error  the sending is over, following the delivery stopped by an error: Continue goes on,
+ *                         Stop ends it
+ *            done         the end - also of a following given up; a sending a person stopped that sent anything
+ *                         is watching first
+ *        total|sent|failed|skipped|uncertain|stopped|queued - recipients; the counts add up to total. failed:
+ *            refused by ISDS, not found by the lookup (never left), or taken and then not delivered (it leaves
+ *            sent then)
+ *        delivered - messages sent that reached the box; to a public authority (OVM) this is delivery in law
+ *        accepted  - of those delivered, accepted by a login or by fiction 10 days after delivery
+ *            Both are part of sent, not of the sum to total, and 0 while the delivery is not followed (an
+ *            older sending that never followed it too).
+ *        until - the unix time a pause of sending waits till; '' when none, and while the delivery is followed
+ *        A copy "for the unsent": offer it only when stopped > 0 and state is watching, watch_error, done or
+ *        abandoned - never while sending or error: the stop is still marking the message items then. Send it
+ *        only to recipients whose message item is stopped already; of an abandoned sending the queue marks
+ *        them, a few minutes late. Never to uncertain ones - they may have got the letter -, nor to failed
+ *        ones, and never decide by queued - the run may still send those. error, watch_error and abandoned
+ *        alone tell nothing of unsent messages.
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {

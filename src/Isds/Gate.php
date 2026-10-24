@@ -42,7 +42,7 @@ class Gate
     public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'verify', 'fixbox'];
 
     /** what progress() tells */
-    private const PROGRESS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until'];
+    private const PROGRESS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until', 'delivered', 'accepted'];
 
     /** the settings of the UI being expanded; null outside every gate */
     private static ?Setup $open = null;
@@ -158,11 +158,16 @@ class Gate
      * How far the sending of a campaign of the page got, read anew on each request from the record of
      * its newest run (SendRun::progressFigures()), never from the message items or ISDS. state: while
      * the campaign has no run, the state of its item; then the run's - sending (queued, working or
-     * waiting), error (waits for Continue), done, abandoned (given up in error). A sending a person
-     * stopped ends done, what it left unsent counted as stopped. total: the recipients frozen, skipped
-     * ones too - sent, failed, uncertain, skipped, stopped and queued add up to it. until: the unix
-     * time a pause waits till. '' with no run, for a record that cannot be read, another item or
-     * question; until '' when nothing waits.
+     * waiting), error (sending waits for Continue), abandoned (sending given up in error); once the
+     * sending is over (a stopped one too) watching (the delivery is followed, waiting for its rounds
+     * too), watch_error (the following waits for Continue or Stop); done at the end, the following
+     * given up too. A sending a person stopped is watching first when it sent anything, then done,
+     * what it left unsent counted as stopped. total: the recipients frozen, skipped ones too - sent,
+     * failed (refused, not found by the lookup, or sent and then not delivered), uncertain, skipped,
+     * stopped and queued add up to it. delivered and accepted: of the messages sent, 0 while the
+     * delivery is not followed (SendMaps::delivery()). until: the unix time a pause of sending waits
+     * till. '' with no run, for a record that cannot be read, another item or question; until '' when
+     * nothing waits and while the delivery is followed.
      * @param string $campaign long id of an item of the campaign slice
      */
     public function progress(string $campaign, string $what): string
@@ -243,10 +248,16 @@ class Gate
         if (((string) $run->getProperty('camp_slice') !== $setup->campaignSlice) || ((string) $run->getProperty('msg_slice') !== $setup->messageSlice)) {
             return [];
         }
-        $state = match ($run->state()) {
-            SendRun::SENDING, SendRun::ERROR, SendRun::DONE => $run->state(),
+        // the record, not the position, tells the sending is over (a stopped one too): the step of look writes
+        // watch_from before its position moves on, and stays at look if it then fails
+        $watching = $run->watching();
+        $state    = match ($run->state()) {
+            SendRun::SENDING => $watching ? 'watching' : SendRun::SENDING,
+            SendRun::ERROR   => $watching ? 'watch_error' : SendRun::ERROR,
+            SendRun::DONE    => SendRun::DONE,
+            // given up while following delivery: the sending was over, only the following ended early;
             // not "stopped": the campaign item says so of a sending a person stopped
-            SendRun::ENDED => 'abandoned',
+            SendRun::ENDED => $watching ? SendRun::DONE : 'abandoned',
             default        => '',
         };
         try {
