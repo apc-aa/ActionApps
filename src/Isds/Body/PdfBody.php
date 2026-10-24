@@ -92,6 +92,8 @@ final class PdfBody
      *      the nodes themselves stay - the cell it may take out of its row
      */
     private array $groups = [];
+    /** @var list<int> the number each table laid out has in the letter: flow() made blocks of some */
+    private array $numbers = [];
     /** @var array<int, int> the page a row or a cell of $groups was drawn on, by spl_object_id() of its node */
     private array $drawnOn = [];
     /** @var array{}|array{int, int} table and row of the tallest row, of what lies off the page first, of a split group */
@@ -107,18 +109,16 @@ final class PdfBody
     /**
      * @param string $document of HtmlBody::document() with CSS
      * @throws \InvalidArgumentException a letter that is no PDF whole; the message says what to change
-     * @throws \RuntimeException no directory for dompdf, or PCRE failed to measure the letter
+     * @throws \RuntimeException no directory for dompdf, PCRE failed to measure the letter or lost an image of it
      */
     public function render(string $document): File
     {
         $size = self::measure($document);
-        if (self::tooLong($size)) {
-            throw new \InvalidArgumentException(self::TOO_LONG);
-        }
-        if (PdfTables::check($size['markup']) > self::MAX_GRID) {
+        if (self::tooLong($size) || self::tooMany(PdfTables::check($size['markup']))) {
             throw new \InvalidArgumentException(self::TOO_LONG);
         }
         unset($size);
+        [$document, $this->numbers] = PdfTables::flow($document);
         $dir = sys_get_temp_dir() . '/aa-pdf-' . bin2hex(random_bytes(8));
         if (!@mkdir($dir, 0o700)) {
             throw new \RuntimeException('There is no temporary directory for the PDF letter');
@@ -212,29 +212,29 @@ final class PdfBody
     {
         $size = self::measure($document);
         try {
-            $grid = self::tooLong($size) ? PHP_INT_MAX : PdfTables::check($size['markup']);
+            $tables = self::tooLong($size) ? null : PdfTables::check($size['markup']);
         } catch (\InvalidArgumentException) {
-            $grid = PHP_INT_MAX;
+            $tables = null;
         }
         // refused before dompdf starts: a span of 65534 rows would ask for terabytes
-        if ($grid > self::MAX_GRID) {
+        if (($tables === null) || self::tooMany($tables)) {
             return self::MEMORY_BASE;
         }
-        return self::MEMORY_BASE + self::MEMORY_PER_TAG * $size['tags'] + self::MEMORY_PER_CELL * $size['cells'] + self::MEMORY_PER_FIELD * $grid
+        return self::MEMORY_BASE + self::MEMORY_PER_TAG * $size['tags'] + self::MEMORY_PER_CELL * $tables['cells'] + self::MEMORY_PER_FIELD * $tables['grid']
             + self::MEMORY_PER_BYTE * (strlen($document) - strlen($size['markup']));
     }
 
     /**
-     * @return array{markup: string, weight: int, tags: int, cells: int, rows: int} counted without the data:
-     *         of images - HtmlBody writes every value in double quotes and every "<" of a text escaped
+     * @return array{markup: string, weight: int, tags: int, cells: int} counted without the data: of images -
+     *         HtmlBody writes every value in double quotes and every "<" of a text escaped; cells of all tables,
+     *         before check() reads them
      */
     private static function measure(string $document): array
     {
         $markup = preg_replace('~ src="data:[^"]*+"~', ' src=""', $document) ?? '';
         $lines  = preg_match_all(self::LINES, $markup);
-        $rows   = preg_match_all('~<tr\b~', $markup);
         $found  = preg_match_all('~<(td|th|col|colgroup)\b([^>]*+)>~', $markup, $tags, PREG_SET_ORDER);
-        if (($markup === '') || ($lines === false) || ($rows === false) || ($found === false)) {
+        if (($markup === '') || ($lines === false) || ($found === false)) {
             // a limit of PCRE: a letter not measured would pass every limit
             throw new \RuntimeException('The letter cannot be measured for a PDF');
         }
@@ -247,14 +247,23 @@ final class PdfBody
             'weight' => strlen($markup) + self::LINE_WEIGHT * (substr_count($markup, "\n") + $lines),
             'tags'   => substr_count($markup, '<'),
             'cells'  => $cells,
-            'rows'   => $rows,
         ];
     }
 
-    /** @param array{weight: int, tags: int, cells: int, rows: int} $size of measure() */
+    /**
+     * The cells of every table bound the work of check(); a frame of one cell a row, which becomes text, of so
+     * many cells would be too long as text, too
+     * @param array{weight: int, tags: int, cells: int} $size of measure()
+     */
     private static function tooLong(array $size): bool
     {
-        return ($size['weight'] > self::MAX_WEIGHT) || ($size['tags'] > self::MAX_TAGS) || ($size['cells'] > self::MAX_CELLS) || ($size['rows'] > self::MAX_ROWS);
+        return ($size['weight'] > self::MAX_WEIGHT) || ($size['tags'] > self::MAX_TAGS) || ($size['cells'] > self::MAX_CELLS);
+    }
+
+    /** @param array{grid: int, rows: int, cells: int} $tables of PdfTables::check(): the tables dompdf lays out */
+    private static function tooMany(array $tables): bool
+    {
+        return ($tables['grid'] > self::MAX_GRID) || ($tables['rows'] > self::MAX_ROWS) || ($tables['cells'] > self::MAX_CELLS);
     }
 
     private static function number(string $attributes, string $name): int
@@ -316,7 +325,7 @@ final class PdfBody
                     throw $limit;
                 }
                 if ($this->pages === 1) {
-                    [$this->rows, $this->groups] = self::tables($frame->get_node());
+                    [$this->rows, $this->groups] = self::tables($frame->get_node(), $this->numbers);
                 }
                 // the frame of <html>, within the margins of its page
                 $this->pageRoom = (float) $frame->get_containing_block()['h'];
@@ -386,9 +395,10 @@ final class PdfBody
     /**
      * Before the first page is laid out, while each table is whole: its rows numbered as PdfTables does, and
      * the cells spanning rows with the rows they span
+     * @param list<int> $numbers of the tables in the letter, by their order here
      * @return array{array<int, array{\DOMElement, int, int}>, list<array{array{}|array{int, int}, list<\DOMElement>}>}
      */
-    private static function tables(\DOMNode $html): array
+    private static function tables(\DOMNode $html, array $numbers): array
     {
         if ($html->ownerDocument === null) {
             return [[], []];
@@ -397,7 +407,7 @@ final class PdfBody
         $rows  = [];
         foreach (PdfTables::elements($xpath, '//table') as $t => $table) {
             foreach (PdfTables::elements($xpath, PdfTables::ROWS, $table) as $r => $row) {
-                $rows[spl_object_id($row)] = [$row, $t + 1, $r + 1];
+                $rows[spl_object_id($row)] = [$row, $numbers[$t] ?? $t + 1, $r + 1];
             }
         }
         $groups = [];

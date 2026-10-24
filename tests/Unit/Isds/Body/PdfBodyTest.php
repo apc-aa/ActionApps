@@ -143,7 +143,7 @@ final class PdfBodyTest extends TestCase
             // a line costs dompdf more than its bytes: 9 500 lines took it 5 s
             'br as lines' => ['<p>' . str_repeat('x<br>', 2500) . '</p>'],
             'tags'        => [str_repeat('<b>x</b> ', 5001)],
-            'rows'        => ['<table>' . str_repeat('<tr><td>x</td></tr>', 501) . '</table>'],
+            'rows'        => ['<table>' . str_repeat('<tr><td>x</td><td>y</td></tr>', 501) . '</table>'],
             'span area'   => ['<table><tr><td colspan="1000" rowspan="65534">x</td></tr></table>'],
             'span rows'   => ['<table>' . str_repeat('<tr><td colspan="300">x</td></tr>', 7) . '</table>'],
             'column span' => ['<table><colgroup span="1000"><col span="1000"></colgroup><tr><td>x</td><td>y</td></tr></table>'],
@@ -210,7 +210,7 @@ final class PdfBodyTest extends TestCase
     // a cell is laid out whole before its page: the time is looked at while its words are measured too
     public function test_render_timeStopsWithinAPage(): void
     {
-        $doc   = self::doc('<table><tr><td>' . str_repeat('slovo ', 2600) . '</td></tr></table>');
+        $doc   = self::doc('<table><tr><td>x</td><td>' . str_repeat('slovo ', 2600) . '</td></tr></table>');
         $start = hrtime(true);
         self::assertSame(PdfTables::at(PdfTables::LONG_CELL, [1, 1]), self::refusal($doc));
         $whole = (hrtime(true) - $start) / 1e9;
@@ -271,7 +271,6 @@ final class PdfBodyTest extends TestCase
 
         self::assertSame(5, self::numbered($five), 'a row as high as a page');
         self::assertSame(PdfTables::at(PdfTables::LONG_CELL, [1, 1]), self::refusal(self::doc('<table><tr><td>x</td><td>' . self::paragraphs(6, 30) . '</td></tr></table>')));
-        self::assertSame(PdfTables::at(PdfTables::LONG_CELL, [1, 1]), self::refusal(self::doc('<table><tr><td>' . self::paragraphs(60, 8) . '</td></tr></table>')), 'one cell of a layout too');
     }
 
     // more text than a page holds at 6 pt: refused before dompdf, which took 41 s for it
@@ -295,6 +294,7 @@ final class PdfBodyTest extends TestCase
     // where in the letter, by numbers only: a word of it could be of anything, also in a refusal shown elsewhere
     public function test_render_refusalSaysTheTableAndRow(): void
     {
+        // made blocks for the PDF, counted as the editor sees it
         $first = '<table border="1"><tr><td>a</td></tr></table>';
         $row   = static fn(string $cell): string => "<tr><td>b</td></tr><tr><td>c</td></tr><tr><td>x</td><td>$cell</td></tr>";
 
@@ -312,13 +312,42 @@ final class PdfBodyTest extends TestCase
         self::assertSame(11, preg_match_all('~/Type /Page\b~', $pdf));
     }
 
+    // a frame of one cell a row, from an e-mail or Word: dompdf would draw all but its first page below the page
+    public function test_render_oneCellLetterComplete(): void
+    {
+        $pdf = self::render(self::doc('<table border="1"><tr><td>' . self::paragraphs(150) . '</td></tr></table>'))->content;
+
+        self::assertSame(150, self::numbered($pdf));
+        self::assertSame(200, self::numbered(self::render(self::doc('<table><tr><td>' . self::paragraphs(200) . '</td></tr></table>'))->content), 'more than a row of a table may hold');
+    }
+
+    // its rows are no table rows any more: as many as the same paragraphs without the frame
+    public function test_render_frameOfManyRowsAsText(): void
+    {
+        $rows = implode('', array_map(static fn(int $i): string => "<tr><td><p>Odstavec$i</p></td></tr>", range(1, 501)));
+
+        self::assertSame(501, self::numbered(self::render(self::doc("<table>$rows</table>"))->content));
+    }
+
+    public function test_render_nestedLayoutComplete(): void
+    {
+        $inner = '<table><tr><td>Hlavička</td></tr><tr><td>' . self::paragraphs(150) . '</td></tr><tr><td>Patička</td></tr></table>';
+
+        $pdf  = self::render(self::doc("<table width=\"100%\" bgcolor=\"#eeeeee\"><tr><td>$inner</td></tr></table>"))->content;
+        $text = PdfText::of($pdf);
+
+        self::assertSame(150, self::numbered($pdf));
+        self::assertStringStartsWith("Hlavička\nOdstavec1 ", $text);
+        self::assertStringEndsWith("\nPatička\n", $text);
+    }
+
     // a line dompdf would draw past the right edge of the page
     public function test_render_wideTableRefused(): void
     {
-        $table = static fn(int $width): string => self::doc("<table width=\"$width\" border=\"1\"><tr><td>Odstavec1 začátek</td><td>střed</td><td>KONEC</td></tr></table>");
+        $table = self::doc('<table width="640" border="1"><tr><td>Odstavec1 začátek</td><td>střed</td><td>KONEC</td></tr></table>');
 
-        self::assertStringContainsString('KONEC', PdfText::of(self::render($table(640))->content));
-        self::assertSame(PdfTables::at(PdfBody::OFF_PAGE, [1, 1]), self::refusal($table(700)));
+        self::assertStringContainsString('KONEC', PdfText::of(self::render($table)->content));
+        self::assertSame(PdfTables::at(PdfBody::OFF_PAGE, [1, 1]), self::refusal(self::doc('<table border="1"><tr><td>Odstavec1</td><td>' . str_repeat('x', 300) . '</td></tr></table>')));
         self::assertSame(PdfBody::OFF_PAGE, self::refusal(self::doc('<p style="margin-left: 900px">KONEC</p>')));
         self::assertSame(PdfBody::OFF_PAGE, self::refusal(self::doc('<p style="text-indent: -9999px">KONEC</p>')));
         self::assertSame(PdfBody::OFF_PAGE, self::refusal(self::doc('<ol style="margin-left: -70px; padding-left: 0"><li>položka</li></ol>')), 'its number');

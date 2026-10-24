@@ -22,10 +22,15 @@ use Dompdf\Dompdf;
  */
 class CheckIsdsPdf extends AbstractOptimize
 {
-    /** Czech letters, a table, <pre> in the other font and an image: what each sending letter may hold */
+    /**
+     * Czech letters, a table, <pre> in the other font and an image: what each sending letter may hold; in the frame
+     * of an e-mail wider than the page, which the PDF makes blocks of and narrower
+     */
     private const LETTERHEAD = "Obec Zkušební\nNáměstí 1, 123 45 Zkušebná";
-    private const BODY = '<p>Příliš žluťoučký kůň úpěl ďábelské ódy.</p><table border="1"><tr><td>Pondělí</td><td>9:00</td></tr></table>'
-        . '<pre>Čj. 42/2026</pre><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQI12NkiFrAgA0wMeAAg1MCAMfEAQqHEKHXAAAAAElFTkSuQmCC" alt=""></p>';
+    private const BODY = '<table width="700"><tr><td><p>Příliš žluťoučký kůň úpěl ďábelské ódy.</p>'
+        . '<table border="1"><tr><td width="200">Pondělí</td><td>9:00</td></tr></table>'
+        . '<pre>Čj. 42/2026</pre><p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAIAAABLbSncAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAAFUlEQVQI12NkiFrAgA0wMeAAg1MCAMfEAQqHEKHXAAAAAElFTkSuQmCC" alt=""></p>'
+        . '</td></tr></table>';
 
     public static function name(): string
     {
