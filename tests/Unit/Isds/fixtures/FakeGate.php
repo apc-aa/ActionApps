@@ -75,6 +75,13 @@ final class FakeGate extends Gate
     /** @var array<string, list<string>> campaign => its test messages, the newest first */
     public array $tests = [];
 
+    /** @var array<string, array{slice: string, active?: bool, fields: array<string, string|list<string>>}> item id => an item as
+     *       FakeRecipients takes it (Sending::item()) - what readItems() reads */
+    public array $items = [];
+
+    /** @var list<list<string>> the ids of each readItems() */
+    public array $reads = [];
+
     /**
      * @param ?string $site the site whose page is rendered; null = no site page (view.php, cron)
      */
@@ -151,6 +158,17 @@ final class FakeGate extends Gate
         $this->shownViews[] = [$vid, $ids, $settings];
 
         return "<view $vid>";
+    }
+
+    protected function readItems(array $ids): array
+    {
+        $this->reads[] = $ids;
+        $read          = [];
+        foreach (array_intersect_key($this->items, array_flip($ids)) as $id => $item) {
+            $read[(string) $id] = ['slice' => $item['slice'], 'active' => $item['active'] ?? true, 'values' => array_map(static fn(string|array $v): array => array_values((array) $v), $item['fields'])];
+        }
+
+        return $read;
     }
 
     protected function campaignIds(Setup $setup): array

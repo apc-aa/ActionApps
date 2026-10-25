@@ -521,7 +521,7 @@ class SendItems
      * write; a letter typed in another code page costs only itself.
      * @return list<array<string, string|int>>
      */
-    private static function timeline(string $events): array
+    public static function timeline(string $events): array
     {
         // depth 3: the list, an entry, its values - anything deeper is no entry
         $list = (strlen($events) <= self::LONGEST_TIMELINE) ? json_decode($events, true, 3, JSON_INVALID_UTF8_SUBSTITUTE) : null;

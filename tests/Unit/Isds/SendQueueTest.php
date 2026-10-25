@@ -370,7 +370,7 @@ final class SendQueueTest extends TestCase
     public function test_queue_searchFails_throws(): void
     {
         $this->sending->resolver = new class extends Recipients {
-            protected function search(string $slice, array $conds, ?array $restrict = null): array
+            protected function search(string $slice, array $conds, ?array $restrict = null, array $sort = [], int $limit = 0): array
             {
                 throw new \RuntimeException('MySQL server has gone away');
             }

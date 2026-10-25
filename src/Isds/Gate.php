@@ -13,6 +13,7 @@ use AA_Credentials;
 use AA_Items;
 use AA_Module_Site;
 use AA_Set;
+use ItemContent;
 use zids;
 
 /**
@@ -82,6 +83,17 @@ class Gate
     /** messages of the group recent of messages(): those the sending got to last */
     private const RECENT = 6;
 
+    /** what filter() and source() tell */
+    private const FILTER = ['types', 'membership', 'include', 'exclude', 'includepage', 'excludepage'];
+    private const SOURCE = ['name', 'box', 'type', 'member', 'reason'];
+
+    /** items search() finds at most, and the characters of the text it looks for */
+    private const FOUND        = 20;
+    private const QUERY_LENGTH = 100;
+
+    /** what events() puts into its row for each entry of the timeline - the keys of the entry */
+    private const EVENT_KEYS = ['AT' => 'at', 'KIND' => 'kind', 'CODE' => 'code', 'TEXT' => 'message', 'DMID' => 'dmID', 'BY' => 'by'];
+
     /** param() of each name: the values of isds_<name> of the URL it gives; page is a number */
     private const PARAMS = [
         'tab'  => ['history', 'check'],
@@ -99,6 +111,13 @@ class Gate
 
     /** the UI being expanded goes out with the headers against framing - only then it gets forms */
     private static bool $guarded = false;
+
+    /**
+     * Items the UI being expanded listed or asked of: long id => false while not read, null for no such
+     * item, else as readItems() gives it. A question of source() or events() reads all those not read yet at once.
+     * @var array<string, false|null|array{slice: string, active: bool, values: array<string, list<string>>}>
+     */
+    private static array $items = [];
 
     /**
      * @param callable(string): string $expand expands the deferred UI - AA::Un() in the context of the template
@@ -134,14 +153,15 @@ class Gate
         if ($result?->taken() ?? false) {
             $this->redirect(self::afterAction($result->campaign, $this->keep($setup, $access->uid(), $result)));
         }
-        $outer         = [self::$open, self::$shown, self::$guarded];
+        $outer         = [self::$open, self::$shown, self::$guarded, self::$items];
         self::$open    = $setup;
         self::$shown   = $result ?? $this->kept($setup, $access->uid());
         self::$guarded = $guarded;
+        self::$items   = [];
         try {
             return $expand($ui);
         } finally {
-            [self::$open, self::$shown, self::$guarded] = $outer;
+            [self::$open, self::$shown, self::$guarded, self::$items] = $outer;
         }
     }
 
@@ -217,9 +237,11 @@ class Gate
         if (!$vids) {
             $this->log("$setup->site:$name", 'No view of the slices of the page has this name', self::VIEW_EVENT);
         }
-        $ids = implode('-', array_filter(array_map(static fn(string $id): ?string => ModuleId::normalize($id), explode_ids($ids))));
+        $listed = array_values(array_filter(array_map(static fn(string $id): ?string => ModuleId::normalize($id), explode_ids($ids))));
+        // read at the first question of a row (source(), events()), all at once
+        self::$items += array_fill_keys($listed, false);
 
-        return (count($vids) === 1) ? $this->showView((int) $vids[0], $ids, ($settings === '') ? null : $settings) : '';
+        return (count($vids) === 1) ? $this->showView((int) $vids[0], implode('-', $listed), ($settings === '') ? null : $settings) : '';
     }
 
     public static function pageView(string $name): bool
@@ -413,8 +435,7 @@ class Gate
         if (is_null($setup) || is_null($id) || !in_array($what, ['count', 'skipped', 'ids', 'skippedids'], true)) {
             return '';
         }
-        // once a request for all the answers, a failure too
-        $recipients = $this->once('recipients', fn(): ?array => $this->campaignRecipients($setup, $id), $setup, $id);
+        $recipients = $this->recipientsOf($setup, $id);
         if (is_null($recipients)) {
             return '';
         }
@@ -427,6 +448,145 @@ class Gate
             'ids'        => self::pageOf($ids($sendable), self::PAGE_SIZE),
             default      => self::pageOf($ids(array_diff_key($recipients, $sendable)), self::PAGE_SIZE),
         };
+    }
+
+    /**
+     * The recipient filter of a campaign of the page in the active bin, as recipients() takes it:
+     * types - comma-separated (Setup takes no comma in a type) -, membership; include, exclude - all
+     * their ids, dash-separated, for the hidden fields of the draft form (isds_include, isds_exclude):
+     * saving the form stores them as the whole filter; includepage, excludepage - only the page of them
+     * param:page shows, 50 a page, for the chips of a {datovkabulk:view}. Ids only of the active items of
+     * the source slice: a stored id of another item is left out. Of no campaign ('') the filter a new
+     * one starts with. '' for another item or question, and for a stored filter that cannot be read
+     * (logged as by recipients()) - '' then never means the filter a new campaign starts with.
+     * @param string $campaign long id; '' = a new campaign
+     */
+    public function filter(string $campaign, string $what): string
+    {
+        $setup = self::$open;
+        $id    = ($campaign === '') ? '' : ModuleId::normalize($campaign);
+        if (is_null($setup) || is_null($id) || !in_array($what, self::FILTER, true)) {
+            return '';
+        }
+        $filter = ($id === '') ? self::filterOf($setup, '') : $this->storedFilter($setup, $id);
+        if (is_null($filter)) {
+            return '';
+        }
+
+        return match ($what) {
+            'types'       => safe(implode(',', $filter->types)),
+            'membership'  => safe($filter->membership),
+            'include'     => safe(implode('-', $this->ofSource($setup, $filter->include))),
+            'exclude'     => safe(implode('-', $this->ofSource($setup, $filter->exclude))),
+            'includepage' => self::pageOf($this->ofSource($setup, $filter->include), self::PAGE_SIZE),
+            default       => self::pageOf($this->ofSource($setup, $filter->exclude), self::PAGE_SIZE),
+        };
+    }
+
+    /**
+     * What the page shows of an active item of the source slice: name; box - its data box field as
+     * typed, trimmed; type - the label the page gives its type, the type itself when the page offers none;
+     * member - 1 or 0, '' when the page tells no members; reason - why the campaign the page shows
+     * (campaign()) skips it: missing, format or duplicate, '' when it gets the letter or is none of its
+     * recipients. Escaped; '' for any other item or question. The first question reads at once every
+     * item the listings of the UI got so far ({datovkabulk:view}).
+     * @param string $item long id
+     */
+    public function source(string $item, string $what): string
+    {
+        $setup  = self::$open;
+        $id     = ModuleId::normalize($item);
+        $config = is_null($setup) ? null : $this->rules()->registryConfig($setup->sourceSlice);
+        if (is_null($setup) || is_null($id) || is_null($config) || !in_array($what, self::SOURCE, true)) {
+            return '';
+        }
+        $found = $this->item($id);
+        if (is_null($found) || ($found['slice'] !== $setup->sourceSlice) || !$found['active']) {
+            return '';
+        }
+        $first = static fn(string $field): string => ($field === '') ? '' : trim($found['values'][$field][0] ?? '');
+
+        return self::text(match ($what) {
+            'name'   => $first($config->nameField()),
+            'box'    => $first($config->dsField()),
+            'type'   => self::typeLabel($setup, $first($config->typeField())),
+            'member' => ($setup->memberField === '') ? '' : (Recipients::isMember($first($setup->memberField)) ? '1' : '0'),
+            default  => $this->skipReasons($setup)[$id] ?? '',
+        });
+    }
+
+    /**
+     * Active items of the source slice of the types the page offers whose name holds isds_q of the URL
+     * - up to 100 characters, % and _ as typed, a backslash left out (Recipients::named()) -, by name:
+     * the first 20, dash-separated for {datovkabulk:view}. '' for no text, a longer one, or one that is
+     * not UTF-8.
+     */
+    public function search(): string
+    {
+        $setup = self::$open;
+        $text  = $_GET['isds_q'] ?? null;
+        if (is_null($setup) || !is_string($text) || !mb_check_encoding($text, 'UTF-8') || (mb_strlen($text) > self::QUERY_LENGTH) || (trim($text) === '')) {
+            return '';
+        }
+        $text = trim($text);
+        $ids  = $this->once('search', function () use ($setup, $text): array {
+            $config = $this->rules()->registryConfig($setup->sourceSlice);
+
+            return is_null($config) ? [] : $this->resolver()->named($setup->sourceSlice, $config, array_map('strval', array_keys($setup->types)), $text, self::FOUND);
+        }, $setup, $text);
+
+        return safe(implode('-', $ids));
+    }
+
+    /**
+     * The message the page shows (isds_msg of its URL), when it is an item of the message slice of the
+     * campaign the page shows (campaign()); '' otherwise
+     */
+    public function message(): string
+    {
+        $setup = self::$open;
+        $id    = ModuleId::normalize(is_string($_GET['isds_msg'] ?? null) ? $_GET['isds_msg'] : '');
+
+        return (is_null($setup) || is_null($id) || is_null($this->pageMessage($setup, $id))) ? '' : safe($id);
+    }
+
+    /**
+     * The timeline of a message of the campaign the page shows, the newest first - an entry of unknown
+     * time (at 0) at the end; entries of one time in the order AA learnt of them. Each entry makes $row
+     * expanded with _#AT (unix time, '' when unknown), _#KIND, _#CODE, _#TEXT, _#DMID and _#BY (the
+     * name of who verified it) put in, in one pass - an alias that only begins so (_#TEXTO___) stays.
+     * The values are escaped, so that nothing of them expands. Write $row as {(...)}, so that what uses
+     * them expands after they are in - and mind two traps:
+     * - a {(...)} inside $row hides them: the outer one is swapped for a reference first; use {-...},
+     *   or _#1 of {ifset:_#TEXT:...};
+     * - {date:<format>:_#AT} shows today for an unknown time: give it the third parameter,
+     *   {date:j. n. Y H\:i:_#AT:unknown}.
+     * '' for another item.
+     * @param string                   $message long id
+     * @param callable(string): string $expand  expands a row - AA::Un() in the context of the template
+     */
+    public function events(string $message, string $row, callable $expand): string
+    {
+        $setup = self::$open;
+        $id    = ModuleId::normalize($message);
+        $item  = (is_null($setup) || is_null($id)) ? null : $this->pageMessage($setup, $id);
+        if (is_null($item)) {
+            return '';
+        }
+        $at       = static fn(array $entry): int => is_int($entry['at'] ?? null) ? $entry['at'] : 0;
+        $timeline = SendItems::timeline($item['values'][Schema::MESSAGE_EVENTS][0] ?? '');
+        // usort() keeps the order of equal ones
+        usort($timeline, static fn(array $a, array $b): int => (($at($a) === 0) <=> ($at($b) === 0)) ?: ($at($b) <=> $at($a)));
+        $out = '';
+        foreach ($timeline as $entry) {
+            $values         = array_map(static fn(string $key): string => (string) ($entry[$key] ?? ''), self::EVENT_KEYS);
+            $values['AT']   = ($at($entry) === 0) ? '' : (string) $at($entry);
+            $values['BY']   = self::verifiedBy($values['BY']);
+            $values         = array_map(static fn(string $v): string => QuoteColons(self::text($v)), $values);
+            $out           .= $expand((string) preg_replace_callback('/_#(AT|KIND|CODE|TEXT|DMID|BY)(?![A-Za-z0-9_])/', static fn(array $m): string => $values[$m[1]], $row));
+        }
+
+        return $out;
     }
 
     /**
@@ -686,15 +846,11 @@ class Gate
      */
     private function campaignRecipients(Setup $setup, string $id): ?array
     {
-        // only an active campaign tells a filter
-        $stored = $this->campaignOfPage($setup, $id);
-        if (is_null($stored) || !$stored['active']) {
+        $filter = $this->storedFilter($setup, $id);
+        if (is_null($filter)) {
             return null;
         }
         try {
-            // a campaign stored without a filter only previews the default audience; sending must refuse
-            // it, never widen it to the default, so the fallback stays here, not in fromJson()
-            $filter = (trim($stored['filter']) === '') ? RecipientFilter::default($setup) : RecipientFilter::fromJson($stored['filter'], $setup);
             $config = $this->rules()->sourceConfig($setup->sourceSlice);
 
             return $this->resolver()->resolve($setup, $filter, $config);
@@ -832,6 +988,131 @@ class Gate
         }, $setup, $id);
     }
 
+    /**
+     * $text escaped for the page, # too: an alias in it (_#HEADLINE) would expand with the item of the
+     * row - as would {...} if a command took it as a parameter, which QuoteColons() stops
+     */
+    private static function text(string $text): string
+    {
+        return str_replace('#', '&#35;', safe($text));
+    }
+
+    /** the label the page gives the type; the type itself when the page offers none */
+    private static function typeLabel(Setup $setup, string $type): string
+    {
+        foreach ($setup->types as $offered => $label) {
+            if (Recipients::typeKey($offered) === Recipients::typeKey($type)) {
+                return $label;
+            }
+        }
+
+        return $type;
+    }
+
+    /** @return ?list<Recipient> campaignRecipients(), once a request for all the answers, a failure too */
+    private function recipientsOf(Setup $setup, string $id): ?array
+    {
+        return $this->once('recipients', fn(): ?array => $this->campaignRecipients($setup, $id), $setup, $id);
+    }
+
+    /** @return array<string, string> item => why the campaign the page shows skips it (Schema::BOX_PROBLEMS), of those it skips */
+    private function skipReasons(Setup $setup): array
+    {
+        $campaign = $this->pageCampaign();
+
+        return is_null($campaign) ? [] : $this->once('reasons', function () use ($setup, $campaign): array {
+            $reasons = [];
+            foreach ($this->recipientsOf($setup, $campaign) ?? [] as $r) {
+                if (!$r->sendable()) {
+                    $reasons[$r->itemId] = $r->reason;
+                }
+            }
+
+            return $reasons;
+        }, $setup, $campaign);
+    }
+
+    /**
+     * @param list<string> $ids
+     * @return list<string> Recipients::ofSource() of the source slice, once a request
+     */
+    private function ofSource(Setup $setup, array $ids): array
+    {
+        return $ids ? $this->once('ofSource', fn(): array => $this->resolver()->ofSource($setup->sourceSlice, $ids), $setup, $ids) : [];
+    }
+
+    /**
+     * The item $id names, when it is a message of the campaign the page shows (campaign())
+     * @return ?array{slice: string, active: bool, values: array<string, list<string>>} as item()
+     */
+    private function pageMessage(Setup $setup, string $id): ?array
+    {
+        $campaign = $this->pageCampaign();
+        $item     = is_null($campaign) ? null : $this->item($id);
+
+        return (!is_null($item) && ($item['slice'] === $setup->messageSlice) && (strtolower($item['values'][Schema::MESSAGE_CAMPAIGN][0] ?? '') === $campaign)) ? $item : null;
+    }
+
+    /**
+     * An item the UI lists or asks of; the first question reads every item listed and not read yet, at
+     * once - an id with no item too, and only once
+     * @return ?array{slice: string, active: bool, values: array<string, list<string>>} as readItems(); null = no such item
+     */
+    private function item(string $id): ?array
+    {
+        self::$items += [$id => false];
+        $unread       = array_map('strval', array_keys(self::$items, false, true));
+        if ($unread) {
+            self::$items = array_replace(self::$items, array_fill_keys($unread, null), $this->readItems($unread));
+        }
+
+        return self::$items[$id] ?: null;
+    }
+
+    /**
+     * The filter an active campaign of the page stored, once a request; null = no such campaign, or a
+     * filter that cannot be read - logged, for State Check
+     */
+    private function storedFilter(Setup $setup, string $id): ?RecipientFilter
+    {
+        return $this->once('filter', function () use ($setup, $id): ?RecipientFilter {
+            // only an active campaign tells a filter
+            $stored = $this->campaignOfPage($setup, $id);
+            if (is_null($stored) || !$stored['active']) {
+                return null;
+            }
+            try {
+                return self::filterOf($setup, $stored['filter']);
+            } catch (\InvalidArgumentException $e) {
+                $this->log("$setup->site:$setup->campaignSlice:$id", $e->getMessage(), self::RECIPIENTS_EVENT);
+
+                return null;
+            }
+        }, $setup, $id);
+    }
+
+    /**
+     * The recipient filter a campaign stored: none - only a preview of the default audience; sending
+     * must refuse it, never widen it to the default, so the fallback stays here, not in fromJson()
+     * @throws \InvalidArgumentException see RecipientFilter::fromJson()
+     */
+    private static function filterOf(Setup $setup, string $stored): RecipientFilter
+    {
+        return (trim($stored) === '') ? RecipientFilter::default($setup) : RecipientFilter::fromJson($stored, $setup);
+    }
+
+    /**
+     * Who verified a message, as the timeline keeps it ("uid name", SendRun::verify()): the name AA
+     * shows of the login now, or the one kept when AA no longer knows it
+     */
+    private static function verifiedBy(string $by): string
+    {
+        [$uid, $kept] = explode(' ', $by, 2) + [1 => ''];
+        $name         = self::userName($uid);
+
+        return (($name === $uid) && ($kept !== '')) ? $kept : $name;
+    }
+
     /** the name AA shows of a login; '' for none */
     private static function userName(string $uid): string
     {
@@ -904,6 +1185,26 @@ class Gate
         $item = AA_Items::getItem(new zids($id, 'l'));
 
         return $item ? ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'filter' => (string) $item->getval(Schema::CAMPAIGN_FILTER), 'state' => (string) $item->getval(Schema::CAMPAIGN_STATE)] : null;
+    }
+
+    /**
+     * The items, read at once with the reading passwords of the request: the slice of each, whether it
+     * is in the active bin, and its values. Not through AA_Items: it would read an id with no item again
+     * on each question. The campaign of a form is read by stored(): an action writes it in this request.
+     * @param list<string> $ids long ids in small letters
+     * @return array<string, array{slice: string, active: bool, values: array<string, list<string>>}> long id => it; none for no such item
+     */
+    protected function readItems(array $ids): array
+    {
+        $read = [];
+        foreach (GetItemContent(new zids($ids, 'l')) as $id => $content4id) {
+            $item               = new ItemContent($content4id);
+            $fields             = array_map('strval', array_keys($item->getContent()));
+            $values             = array_map(static fn(string $field): array => array_map('strval', $item->getValuesArray($field)), array_combine($fields, $fields));
+            $read[(string) $id] = ['slice' => $item->getSliceID(), 'active' => $item->isActive(), 'values' => $values];
+        }
+
+        return $read;
     }
 
     /**

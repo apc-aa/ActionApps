@@ -55,7 +55,7 @@ class Recipients
         $recipients = [];
         foreach ($this->content($ids, $fields) as $id => $content4id) {
             $item   = new ItemContent($content4id);
-            $member = ($setup->memberField !== '') && (trim((string) $item->getValue($setup->memberField)) === '1');
+            $member = ($setup->memberField !== '') && self::isMember((string) $item->getValue($setup->memberField));
             // the type again, as the database compares it: a type field gone from the slice makes the search
             // skip the condition and find every item; the collation equates accents too (e, ě), this does not
             $byFilter = array_intersect(array_map(self::typeKey(...), $item->getValuesArray($type)), $wanted) && match ($filter->membership) {
@@ -84,6 +84,47 @@ class Recipients
         return $recipients;
     }
 
+    /**
+     * Of $ids those that are active items of the slice, in their order - an id the browser or a stored
+     * filter names may be of any slice, or in a bin
+     * @param list<string> $ids long ids in small letters
+     * @return list<string>
+     */
+    public function ofSource(string $slice, array $ids): array
+    {
+        $found = $ids ? array_flip($this->search($slice, [], $ids)) : [];
+
+        return array_values(array_filter($ids, static fn(string $id): bool => isset($found[$id])));
+    }
+
+    /**
+     * Active items of the slice of one of $types whose name holds $text, by name, at most $max. % and _
+     * match themselves (CONTAIN); a backslash is left out of $text: AA's LIKE escapes it after quoting
+     * and it would make them wildcards again - and no name needs it.
+     * @param list<string> $types as Setup takes them - letters, digits, spaces and - _ . only
+     * @return list<string> long ids
+     */
+    public function named(string $slice, Config $config, array $types, string $text, int $max): array
+    {
+        $name = $config->nameField();
+        $type = $config->typeField();
+        $text = str_replace('\\', '', $text);
+        if (($name === '') || ($type === '') || (trim($text) === '') || !$types) {
+            return [];
+        }
+        // = with quoted values is the exact match of any of them, as == of one in resolve()
+        $ofTypes = '"' . implode('" OR "', $types) . '"';
+        $found   = $this->search($slice, [[$name => 1, 'operator' => 'CONTAIN', 'value' => $text], [$type => 1, 'operator' => '=', 'value' => $ofTypes]], null, [[$name => 'a']], $max);
+        if (!$found) {
+            return [];
+        }
+        // the type again, as in resolve(): a type field gone from the slice makes the search skip the condition
+        $wanted = array_map(self::typeKey(...), $types);
+        $typed  = array_filter($this->content($found, [$type]), static fn(array $content4id): bool => (bool) array_intersect(array_map(static fn(array $v): string => self::typeKey($v['value'] ?? ''), $content4id[$type] ?? []), $wanted));
+
+        return array_values(array_filter($found, static fn(string $id): bool => isset($typed[$id])));
+    }
+
     /** the box of the field as ISDS knows it; or why there is none */
     private static function recipient(string $id, string $name, string $field): Recipient
     {
@@ -98,8 +139,14 @@ class Recipients
         }
     }
 
+    /** the value of the member field of an item that is a member */
+    public static function isMember(string $value): bool
+    {
+        return trim($value) === '1';
+    }
+
     /** a type as the collation of the database compares it: case and trailing spaces (PAD SPACE) do not count */
-    private static function typeKey(mixed $type): string
+    public static function typeKey(mixed $type): string
     {
         return mb_strtolower(rtrim((string) $type, ' '));
     }
@@ -108,16 +155,18 @@ class Recipients
 
     /**
      * Long ids of the active items of the slice that meet the conditions, AA's search
-     * @param list<array<string, mixed>> $conds    as QueryZids() takes them
-     * @param ?list<string>              $restrict only of these ids
+     * @param list<array<string, mixed>>  $conds    as QueryZids() takes them
+     * @param ?list<string>               $restrict only of these ids; [] none
+     * @param list<array<string, string>> $sort     as QueryZids() takes it
+     * @param int                         $limit    at most; 0 = all
      * @return list<string>
      */
-    protected function search(string $slice, array $conds, ?array $restrict = null): array
+    protected function search(string $slice, array $conds, ?array $restrict = null, array $sort = [], int $limit = 0): array
     {
         // QueryZids() wants a condition or a sort; a column of the item table needs no join
-        $set = new AA_Set([$slice], $conds ?: null, [['publish_date....' => 'a']], \AA_BIN_ACTIVE);
+        $set = new AA_Set([$slice], $conds ?: null, $sort ?: [['publish_date....' => 'a']], \AA_BIN_ACTIVE);
 
-        return array_map('strval', $set->query(is_null($restrict) ? null : new zids($restrict, 'l'))->longids());
+        return array_map('strval', $set->query(is_null($restrict) ? null : new zids($restrict, 'l'), $limit)->longids());
     }
 
     /**

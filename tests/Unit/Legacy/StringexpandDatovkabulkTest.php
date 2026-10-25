@@ -88,7 +88,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_subcommands_outsideTheUiGiveNothing(): void
         {
-            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:advice:ISDS_REFUSED:run}{datovkabulk:advice:isds:1233}{datovkabulk:view:isds_history}{datovkabulk:view:isds_messages:ca00000000000000000000000000000b}{datovkabulk:campaigns}{datovkabulk:campaigns:count}{datovkabulk:messages:problem}{datovkabulk:messages:test:count}{datovkabulk:param:page}{datovkabulk:param:tab}{datovkabulk:delete}{datovkabulk}'));
+            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:advice:ISDS_REFUSED:run}{datovkabulk:advice:isds:1233}{datovkabulk:view:isds_history}{datovkabulk:view:isds_messages:ca00000000000000000000000000000b}{datovkabulk:campaigns}{datovkabulk:campaigns:count}{datovkabulk:messages:problem}{datovkabulk:messages:test:count}{datovkabulk:param:page}{datovkabulk:param:tab}{datovkabulk:filter::types}{datovkabulk:filter:ca00000000000000000000000000000b:include}{datovkabulk:source:a0000000000000000000000000000001:name}{datovkabulk:search}{datovkabulk:message}{datovkabulk:events:be00000000000000000000000000000d:{(_#KIND)}}{datovkabulk:delete}{datovkabulk}'));
         }
 
         // the name, the ids and the settings as written; no ids reach the gate as none
@@ -222,6 +222,49 @@ namespace Tests\Unit\Legacy {
             };
 
             self::assertSame('ca00000000000000000000000000000b|queued', $command->expand('progress', 'ca00000000000000000000000000000b', 'queued'));
+        }
+
+        public function test_shows_questionsToTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function filter(string $campaign, string $what): string
+                        {
+                            return "filter|$campaign|$what";
+                        }
+
+                        public function source(string $item, string $what): string
+                        {
+                            return "source|$item|$what";
+                        }
+
+                        public function search(): string
+                        {
+                            return 'search';
+                        }
+
+                        public function message(): string
+                        {
+                            return 'message';
+                        }
+
+                        public function events(string $message, string $row, callable $expand): string
+                        {
+                            return "$message|" . $expand(str_replace('_#AT', '5', $row));
+                        }
+                    };
+                }
+            };
+
+            self::assertSame(
+                ['filter||types', 'source|a1|reason', 'search', 'message'],
+                [$command->expand('filter', '', 'types'), $command->expand('source', 'a1', 'reason'), $command->expand('search'), $command->expand('message')],
+            );
+            // the row reaches the gate as written and expands in the template after its values are in
+            self::assertSame('m1|<i>5probed</i>', $command->expand('events', 'm1', '<i>_#AT{datovkabulkprobe}</i>'));
+            self::assertSame(1, self::$probed);
         }
 
         // isds:<status> is split by the colon as any parameter: the status comes as the second one

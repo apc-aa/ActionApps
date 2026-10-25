@@ -130,7 +130,7 @@ final class RecipientsTest extends TestCase
 
         self::assertSame(['Adamov', 'Benešov', 'Cheb'], self::names(self::resolve($source, ['types' => ['mesto']])));
         self::assertSame(['Děčín'], self::names(self::resolve($source, ['types' => ['mestostatut']])));
-        self::assertSame([Sending::SOURCE, [[Sending::TYPE => 1, 'operator' => '==', 'value' => 'mesto']], null], FakeRecipients::$searches[0], 'the exact match - LIKE would find mestostatut and mestocast for mesto');
+        self::assertSame([Sending::SOURCE, [[Sending::TYPE => 1, 'operator' => '==', 'value' => 'mesto']], null, [], 0], FakeRecipients::$searches[0], 'the exact match - LIKE would find mestostatut and mestocast for mesto');
     }
 
     // what the database finds by type stays, though typed in capitals or with a space after
@@ -163,7 +163,7 @@ final class RecipientsTest extends TestCase
         $recipients = self::resolve(self::source(), ['types' => ['mesto'], 'membership' => 'members', 'include' => [self::DECIN, self::STRED, self::CHEB], 'exclude' => [self::STRED, self::ADAMOV]]);
 
         self::assertSame(['Děčín', 'Cheb'], self::names($recipients), 'an included item counts whatever its type and membership');
-        self::assertSame([Sending::SOURCE, [], [self::DECIN, self::CHEB]], FakeRecipients::$searches[1], 'include searched in the source slice, without what is excluded');
+        self::assertSame([Sending::SOURCE, [], [self::DECIN, self::CHEB], [], 0], FakeRecipients::$searches[1], 'include searched in the source slice, without what is excluded');
         self::assertSame([], array_intersect([self::STRED, self::ADAMOV], self::read()), 'what is excluded is not read');
     }
 

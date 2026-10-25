@@ -224,6 +224,17 @@ final class SetupTest extends TestCase
         self::assertSame(['Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}'], self::problems(['types' => $types] + self::settings()));
     }
 
+    // a type goes quoted into AA's search and comma-separated to the template ({datovkabulk:filter})
+    public function test_fromTemplate_typesPlainWords(): void
+    {
+        $odd = 'An item type in types may hold only letters, digits, spaces and the characters - _ . : mesto,obec, "x", a\\b';
+
+        self::assertContains($odd, self::problems(['types' => ['mesto,obec' => 'A', '"x"' => 'B', 'a\\b' => 'C', 'Městská část-2_a.b' => 'D'], 'default_types' => []] + self::settings()));
+        $rules                        = self::rules();
+        $rules->configs[self::SOURCE] = Config::fromValues(self::SOURCE, ['name_field' => 'headline........', 'ds_field' => 'text..........11', 'type_field' => 'switch.........1']);
+        self::assertSame(['Městská část-2_a.b' => 'D'], self::build(['types' => ['Městská část-2_a.b' => 'D'], 'default_types' => []] + self::settings(), rules: $rules)->types);
+    }
+
     public function test_fromTemplate_defaultTypesAmongTypes(): void
     {
         self::assertSame(['default_types names types that are not among types: obec'], self::problems(['default_types' => ['mesto', 'obec']] + self::settings()));

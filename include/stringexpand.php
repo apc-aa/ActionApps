@@ -11013,15 +11013,34 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        progress error (not the error a campaign item keeps - it outlives its state). {datovkabulk:advice:isds:<status>}
  *        - a status ISDS refused a message with (the error code of a message item when it is digits). '' for a code
  *        AA has no text for, and without run for one whose text names a count or an id (AA\Isds\Gate::advice())
+ *    {datovkabulk:filter:<campaign id>:types|membership|include|exclude|includepage|excludepage} - the recipient
+ *        filter a campaign of the page stores: types comma-separated; include and exclude all the ids of the active
+ *        items of the source slice - for the hidden fields isds_include and isds_exclude of the draft form, which
+ *        store them whole; includepage and excludepage only 50 a page (param:page) - for the chips of a
+ *        {datovkabulk:view}. Without the id the filter a new campaign starts with;
+ *        '' for a stored filter that cannot be read (logged) - never take it for the one a new campaign starts with
+ *    {datovkabulk:source:<item id>:name|box|type|member|reason} - what to show of an active item of the source slice,
+ *        escaped (no {safe:}): its name, data box, the label of its type, member (1, 0, '' without member_field),
+ *        reason - why the campaign of the page skips it (missing, format, duplicate; '' when it gets the letter)
+ *    {datovkabulk:search} - the ids of up to 20 active items of the source slice of the types the page offers
+ *        whose name holds isds_q of the URL (% and _ as typed, a backslash left out), by name; '' for no text or
+ *        one longer than 100
+ *    {datovkabulk:message} - isds_msg of the URL, when it is a message of {datovkabulk:campaign}; '' otherwise
+ *    {datovkabulk:events:<message id>:{(<row>)}} - the timeline of a message of {datovkabulk:campaign}, the newest
+ *        first, those of unknown time at the end: <row> for each entry with _#AT (unix time, '' unknown), _#KIND,
+ *        _#CODE, _#TEXT, _#DMID and _#BY (who verified it) in it - escaped (no {safe:}), they never expand. A {(...)}
+ *        inside <row> hides them - use {-...} or _#1 of {ifset}; {date:...:_#AT} shows today for an unknown time -
+ *        give it the third parameter: {date:j. n. Y H\:i:_#AT:unknown}
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
 
     function expand($subcommand='', $settings='', $ui='', $refusal=''): string
     {
-        $gate = $this->gate();
+        $gate   = $this->gate();
+        $expand = fn(string $text): string => AA::Un($text, '', $this->item, true, $this->itemview);
         return match ((string)$subcommand) {
-            'page'       => $gate->page((string)$settings, (string)$ui, (string)$refusal, fn(string $text): string => AA::Un($text, '', $this->item, true, $this->itemview)),
+            'page'       => $gate->page((string)$settings, (string)$ui, (string)$refusal, $expand),
             'fields'     => $gate->fields((string)$settings, (string)$ui),
             'env'        => $gate->env(),
             'sender'     => $gate->sender(),
@@ -11036,6 +11055,11 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'param'      => $gate->param((string)$settings),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
             'advice'     => $gate->advice((string)$settings, (string)$ui),
+            'filter'     => $gate->filter((string)$settings, (string)$ui),
+            'source'     => $gate->source((string)$settings, (string)$ui),
+            'search'     => $gate->search(),
+            'message'    => $gate->message(),
+            'events'     => $gate->events((string)$settings, (string)$ui, $expand),
             default      => '',
         };
     }

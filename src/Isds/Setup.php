@@ -282,6 +282,11 @@ final readonly class Setup
         if (!$ret) {
             $problems[] = new SliceProblem(_m('Set types to an object of the item types to offer, each with its label: {jsonasoc:<type>:<label>:...}'));
         }
+        // a type goes into a quoted condition of AA's search and into a comma-separated list for the template
+        $odd = array_filter(array_map('strval', array_keys($ret)), static fn(string $type): bool => preg_match('/^[\p{L}\p{N} _.-]+\z/u', $type) !== 1);
+        if ($odd) {
+            $problems[] = new SliceProblem(_m('An item type in types may hold only letters, digits, spaces and the characters - _ . : %1', [implode(', ', $odd)]));
+        }
 
         return $ret;
     }
