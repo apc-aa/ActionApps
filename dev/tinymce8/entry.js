@@ -25,40 +25,7 @@ import 'tinymce/plugins/searchreplace/index.js';
 import 'tinymce/plugins/visualblocks/index.js';
 import 'tinymce/plugins/fullscreen/index.js';
 import 'tinymce/plugins/autolink/index.js';
-
-const PLUGINS = 'lists advlist link image media table charmap anchor searchreplace visualblocks fullscreen autolink';
-
-/** the two rows CKEditor 4 had in AA, so editors find the buttons where they were */
-const TOOLBAR = [
-    'cut copy paste pastetext | undo redo | link unlink anchor | image media table hr charmap | fullscreen | aasource',
-    'bold italic strikethrough subscript superscript removeformat | numlist bullist | outdent indent | blockquote | alignleft aligncenter alignright | styles blocks fontsize | forecolor backcolor',
-];
-
-/** the styles AA offered in CKEditor 4 */
-const STYLE_FORMATS = [
-    { title: 'Italic Title', block: 'h2', styles: { 'font-style': 'italic' } },
-    { title: 'Subtitle', block: 'h3', styles: { color: '#aaa', 'font-style': 'italic' } },
-    { title: 'Special Container', block: 'div', wrapper: true, styles: { padding: '5px 10px', background: '#eee', border: '1px solid #ccc' } },
-    { title: 'Marker', inline: 'span', classes: 'marker' },
-    { title: 'Big', inline: 'big' },
-    { title: 'Small', inline: 'small' },
-    { title: 'Typewriter', inline: 'tt' },
-    { title: 'Computer Code', inline: 'code' },
-    { title: 'Keyboard Phrase', inline: 'kbd' },
-    { title: 'Sample Text', inline: 'samp' },
-    { title: 'Variable', inline: 'var' },
-    { title: 'Deleted Text', inline: 'del' },
-    { title: 'Inserted Text', inline: 'ins' },
-    { title: 'Cited Work', inline: 'cite' },
-    { title: 'Inline Quotation', inline: 'q' },
-    { title: 'Language: RTL', inline: 'span', attributes: { dir: 'rtl' } },
-    { title: 'Language: LTR', inline: 'span', attributes: { dir: 'ltr' } },
-    { title: 'Styled Image (left)', selector: 'img', classes: 'left' },
-    { title: 'Styled Image (right)', selector: 'img', classes: 'right' },
-    { title: 'Compact Table', selector: 'table', attributes: { cellpadding: '5', cellspacing: '0', border: '1', bordercolor: '#ccc' }, styles: { 'border-collapse': 'collapse' } },
-    { title: 'Borderless Table', selector: 'table', styles: { 'border-style': 'hidden', 'background-color': '#E6E6FA' } },
-    { title: 'Square Bulleted List', selector: 'ul', styles: { 'list-style-type': 'square' } },
-];
+import { toolbarPreset } from './toolbars.js';
 
 /** AA UI language => language pack in ./tinymce8/langs (build.sh copies exactly these) */
 const LANGS = { bg: 'bg-BG', cs: 'cs', cz: 'cs', de: 'de', es: 'es', fr: 'fr-FR', hr: 'hr', hu: 'hu-HU', ja: 'ja', pl: 'pl', pt: 'pt-PT', ro: 'ro', sk: 'sk', uk: 'uk', vi: 'vi', vn: 'vi' };
@@ -220,10 +187,12 @@ function uploadOptions({ image, imageTypes, file, pick, documentTypes }, onEdit)
  *                              page already shows, as the iframe's CSP does not guard it
  * @param {object} [options]    uiLang, inline, height, sourceLabel (the Source button), onEdit (every
  *                              edit), onFocus, onBlur, onSource (the Source button pressed), upload,
- *                              disabled (the field is switched off - shown, not editable)
+ *                              disabled (the field is switched off - shown, not editable), toolbar (a
+ *                              name of toolbars.js; unknown = the full one)
  */
-export async function createRichEditor(target, { uiLang, inline = false, height = 300, sourceLabel = 'Source', onEdit, onFocus, onBlur, onSource, upload = null, disabled = false } = {}) {
+export async function createRichEditor(target, { uiLang, inline = false, height = 300, sourceLabel = 'Source', onEdit, onFocus, onBlur, onSource, upload = null, disabled = false, toolbar = '' } = {}) {
     const language = LANGS[String(uiLang ?? '').slice(0, 2).toLowerCase()];
+    const preset   = toolbarPreset(toolbar, !!onSource);
     const [editor] = await tinymce.init({
         target,
         inline,
@@ -238,11 +207,12 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
         elementpath: false,
         resize: true,
         toolbar_mode: 'wrap',
-        toolbar: onSource ? TOOLBAR : TOOLBAR.map(row => row.replace(' | aasource', '')),
-        plugins: PLUGINS,
+        toolbar: preset.toolbar,
+        plugins: preset.plugins,
         ...(language ? { language, language_url: languageUrl(language) } : {}),
-        block_formats: 'Paragraph=p; Heading 1=h1; Heading 2=h2; Heading 3=h3; Heading 4=h4; Heading 5=h5; Heading 6=h6; Preformatted=pre',
-        style_formats: STYLE_FORMATS,
+        block_formats: preset.blockFormats,
+        style_formats: preset.styleFormats,
+        ...(preset.linkTargets ? {} : { link_target_list: false }),
         browser_spellcheck: true,
         image_caption: true,
         // in a shadow root the popups sit by the editor, inside the page's scrolling box:
@@ -253,7 +223,7 @@ export async function createRichEditor(target, { uiLang, inline = false, height 
             toolbar_location: 'top',
         } : {
             // only in the iframe: inline, the page styles the content and this body rule would restyle the whole page
-            content_style: 'body { font: 13px/1.6 Arial, Helvetica, Tahoma, Verdana, sans-serif; margin: 20px; color: #333; } table[border] td { border: 1px solid #333; }',
+            content_style: preset.contentStyle,
         }),
         // keep what AA stores: any element, any attribute, URLs as written, entities only where they were
         valid_elements: '*[*]',

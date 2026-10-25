@@ -1,7 +1,8 @@
 #!/bin/bash
 #
 # Rebuilds javascript/tinymce8.min.js and javascript/tinymce8/ (language packs,
-# licenses) from entry.js. Run only when upgrading TinyMCE - the output is committed.
+# licenses) from entry.js and toolbars.js. Run after changing them or upgrading TinyMCE -
+# the output is committed.
 #
 # npm install deliberately happens OUTSIDE the working copy: the tree is rsynced to
 # the live aadev server with --delete and has no exclude for node_modules.
@@ -14,7 +15,7 @@ out="$js/tinymce8.min.js"
 work="$(mktemp -d -t aa-tinymce8-build.XXXXXX)"
 trap 'rm -rf "$work"' EXIT
 
-cp "$src/package.json" "$src/entry.js" "$work/"
+cp "$src/package.json" "$src/entry.js" "$src/toolbars.js" "$work/"
 cd "$work"
 echo "installing pinned TinyMCE packages in $work ..."
 npm install --no-audit --no-fund --silent
