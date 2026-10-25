@@ -347,6 +347,21 @@ aa-isds-campaign { display: block; }
 .aa-isds .aud-seg__opt input:focus-visible + span { outline: 3px solid var(--ai-focus); outline-offset: -3px; }
 .aa-isds .aud-search { display: flex; gap: 8px; max-width: 640px; }
 .aa-isds .aud-search .ai-input { flex: 1 1 auto; min-width: 0; }
+/* suggestions (JS) */
+.aa-isds .aud-combo { position: relative; max-width: 640px; }
+.aa-isds .aud-combo__list {
+  position: absolute; z-index: 5; inset-inline: 0; top: 100%; max-height: 320px; margin: 4px 0 0; padding: 4px 0; overflow-y: auto;
+  list-style: none; border: 1px solid var(--ai-control-line); border-radius: var(--ai-radius); background: var(--ai-surface); box-shadow: var(--ai-shadow);
+}
+.aa-isds .aud-opt { padding: 7px 12px; font-size: 14px; cursor: pointer; }
+.aa-isds .aud-opt span + span { margin-left: 8px; color: var(--ai-ink-2); }
+.aa-isds .aud-opt:not([aria-disabled]) span:first-child { font-weight: 600; }
+.aa-isds .aud-opt:not([aria-disabled]):hover { background: var(--ai-surface-2); }
+.aa-isds .aud-opt[aria-selected="true"] { outline: 2px solid var(--ai-action); outline-offset: -2px; background: var(--ai-action-bg); }
+.aa-isds .aud-opt--none { color: var(--ai-muted); cursor: default; }
+/* a count not saved yet is old: grey, still readable */
+.aa-isds [data-aa-isds-fragment="count"][aria-busy="true"] { cursor: progress; }
+.aa-isds [data-aa-isds-fragment="count"][aria-busy="true"] .aud-count__n { color: var(--ai-muted); }
 
 /* one row in every list; the list shows its button.
    Save goes first: Enter takes the first button, even a hidden one */

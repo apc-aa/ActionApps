@@ -15,9 +15,15 @@
  *   [data-aa-isds-code] [-status]        on the fragment result: what the action did
  *   [data-aa-isds-field="subject|toHands|body"]  a field of the letter: counter, height, autosave
  *   input[data-aa-isds-confirm="<n>"]    the buttons of its form stay locked until n is typed
+ *   [data-aa-isds-fragment="progress"][data-aa-isds-state]  read again while sending (isds_part=progress);
+ *                                        in it [data-aa-isds-done][data-aa-isds-total] - the sentence a
+ *                                        screen reader hears at each quarter
+ *   .aud-combo input[name="isds_q"]      in the draft: suggestions (isds_part=search) of the rows
+ *                                        [data-aa-isds-item="<id>"] of the fragment search with isds_pick=include-<id>
  *   [data-aa-isds-live]                  hidden role="status" for screen readers; it also carries the
  *                                        texts the server cannot give: data-aa-isds-text-retry, -login,
- *                                        -reload, -failed, -big (English below when missing)
+ *                                        -reload, -failed, -big, -offline, -down, -gone, -paused, -refresh,
+ *                                        -found (%d = the count), -none, -short (English below when missing)
  *   .shl-env, [data-aa-isds-fragment="sendbar"]  measured into --ai-sticky-top / --ai-sticky-bottom
  *   .snd-bar__more                       the bar's "more" toggle - rendered hidden, for JS only
  */
@@ -53,6 +59,14 @@ const TEXTS = {
     reload: 'Load the page again',
     failed: 'The server refused to save the draft.',
     big:    'Images pasted into the letter make every save larger, and the history of the draft too.',
+    offline: 'No connection to the server. The sending goes on there; trying again.',
+    gone:    'The page cannot follow the sending any more. The sending goes on on the server.',
+    paused:  'The page stopped following the sending.',
+    refresh: 'Refresh',
+    down:    'The server does not answer now. The sending goes on there; trying again.',
+    found:   'Found: %d',
+    none:    'Nothing found',
+    short:   'Type at least 2 characters.',
 };
 
 /** ms until the letter is saved: a pause in typing, or the longest typing goes unsaved; times of the first and last change not sent */
@@ -161,17 +175,29 @@ export const sameOrigin = (url, base) => {
     }
 };
 
+/** the name of a pair of a query as PHP takes it: decoded, up to [, with . and space as _ */
+const phpName = (pair) => {
+    const name = pair.split('=')[0].replace(/\+/g, ' ');
+    let decoded = name;
+    try {
+        decoded = decodeURIComponent(name);
+    } catch {
+        // as PHP leaves a broken escape
+    }
+    return decoded.split('[')[0].trimStart().replace(/[. ]/g, '_');
+};
+
 /**
  * The address the page shows after the answer from $url (after the redirect): without the key of the
- * result, which a reload would show again - the redirect writes it as isds_r= -, the rest as it came;
- * null for another origin
+ * result, which a reload would show again - the redirect writes it as isds_r= -, without the names of
+ * $drop too, with the pairs of $add; the rest as it came; null for another origin
  */
-export const pageUrl = (url, base) => {
+export const pageUrl = (url, base, drop = ['isds_r'], add = []) => {
     if (!sameOrigin(url, base)) {
         return null;
     }
     const to  = new URL(url, base);
-    to.search = to.search.slice(1).split('&').filter(pair => (pair !== '') && !pair.startsWith('isds_r=')).join('&');
+    to.search = [...to.search.slice(1).split('&').filter(pair => (pair !== '') && !drop.includes(phpName(pair))), ...add].join('&');
     to.hash   = new URL(base).hash;
     return to.href;
 };
@@ -234,8 +260,11 @@ export class Autosave {
         this.#plan();
     }
 
-    /** a button of the form the save posts as if clicked (isds_pick); a save asked for (Uložit) passes null */
+    /** a button of the form the save posts as if clicked (isds_pick); a save asked for (Uložit) passes null; nothing once stopped */
     ask(pick) {
+        if (this.stopped) {
+            return;
+        }
         if (pick) {
             this.picks.push(pick);
         }
@@ -374,6 +403,75 @@ export class Autosave {
         this.#timer = null;
     }
 }
+
+/** ms: the progress of a sending is read so often; an error only just after the load (Continue takes a moment); nothing after an hour */
+export const POLL_EVERY = 5_000;
+export const POLL_ERROR_FOR = 120_000;
+export const POLL_FOR = 3_600_000;
+
+/** ms to the next reading of the progress after n network failures in a row: 5, 5, 10, 20, then every 60 s */
+export const pollDelay = n => ((n === 0) ? POLL_EVERY : ([5_000, 10_000, 20_000][n - 1] ?? 60_000));
+
+/** the progress is read again: in sight, for an hour since the load (ms $since), in sending - in error only just after the load */
+export const shouldPoll = ({ state, since, visible }) => visible && (since < POLL_FOR)
+    && ((state === 'sending') || ((state === 'error') && (since < POLL_ERROR_FOR)));
+
+const quarter = ({ done, total }) => ((total > 0) ? Math.min(4, Math.floor((4 * done) / total)) : 0);
+
+/**
+ * What a new reading of the progress tells a screen reader - not each message, which would never stop:
+ * the state changed (the page loads anew), or another quarter is done
+ * @param {{state: string, done?: number, total?: number}} before
+ * @returns {'state'|'quarter'|null}
+ */
+export const progressNews = (before, after) => ((before.state !== after.state) ? 'state' : ((quarter(after) > quarter(before)) ? 'quarter' : null));
+
+/** the page asked only for its part progress or search (of text $q) - with no key of a result, which would show twice */
+export const partUrl = (href, part, q = null) => pageUrl(href, href, ['isds_r', 'isds_part', 'isds_q'],
+    [`isds_part=${part}`, ...((q === null) ? [] : [`isds_q=${encodeURIComponent(q)}`])]);
+
+/** ms the suggestions wait after the last key; characters they ask from and at most (Gate::QUERY_LENGTH) */
+export const SEARCH_PAUSE = 300;
+export const SEARCH_MIN = 2;
+export const SEARCH_MAX = 100;
+
+/**
+ * A key in the search field over its list (APG combobox, list autocomplete): arrows move through the
+ * options round and open the list, Enter picks the active one or asks at once, Escape closes, Home, End
+ * and the side arrows move in the text
+ * @param {{open: boolean, active: number, count: number}} combo active -1 = none
+ * @returns {{open: boolean, active: number, act: 'pick'|'search'|null, handled: boolean}} handled = no default
+ */
+export const comboKey = ({ open, active, count }, key, alt = false) => {
+    const shut = { open: false, active: -1, act: null, handled: false };
+    const down = key === 'ArrowDown';
+    if (down || (key === 'ArrowUp')) {
+        if (alt && !down) {
+            return { ...shut, handled: true };
+        }
+        if (!count) {
+            return { open, active: -1, act: open ? null : 'search', handled: true };
+        }
+        const from = open ? active : -1;
+        const to   = alt ? from : ((from < 0) ? (down ? 0 : count - 1) : ((from + (down ? 1 : count - 1)) % count));
+        return { open: true, active: to, act: null, handled: true };
+    }
+    switch (key) {
+        case 'Enter':
+            return (open && (active >= 0)) ? { ...shut, act: 'pick', handled: true } : { open, active, act: 'search', handled: true };
+        case 'Escape':
+            return { ...shut, handled: open };
+        case 'Tab':
+            return shut;
+        case 'Home':
+        case 'End':
+        case 'ArrowLeft':
+        case 'ArrowRight':
+            return { open, active: -1, act: null, handled: false };
+        default:
+            return { open, active, act: null, handled: false };
+    }
+};
 
 /* ---------- the page: everything below needs a DOM ---------- */
 
@@ -606,11 +704,23 @@ const resultBox = (root, form) => {
 };
 
 /**
+ * The element of $copy that stands for $el of the fragment it replaced: of the same name and value, id,
+ * data-aa-isds-* or href, else of the same text (a summary); null unless just one. Never by its place -
+ * a list of recipients or messages has another one there now.
+ */
+const twinOf = (copy, el) => {
+    const key  = ['name', 'id', ...[...el.attributes].map(a => a.name).filter(n => n.startsWith('data-aa-isds-')), 'href'].find(n => el.getAttribute(n));
+    const same = [...copy.querySelectorAll(el.localName)].filter(c => (c.value === el.value)
+        && (key ? (c.getAttribute(key) === el.getAttribute(key)) : (c.textContent.trim() === el.textContent.trim())));
+    return (same.length === 1) ? same[0] : null;
+};
+
+/**
  * Fragments of the root replaced by those of the answer of the same name, in order; one the answer
  * lacks is emptied. Not replaced: one the answer sends unchanged, and one the user is in now - typing
  * into a field of it, or a field changed since the fragment came in -, which a swap would undo. A
  * <details> the user opened or closed keeps that in the new one (by id or summary), the rest are as the
- * server sends them; focus on a button goes to the same button.
+ * server sends them; focus goes to the same element (twinOf()), else to the fragment.
  * @param {string[]|null} only names to replace; null = all
  */
 const swapFragments = (root, form, answered, only) => {
@@ -653,21 +763,11 @@ const swapFragments = (root, form, answered, only) => {
             if (expanded) {
                 copy.querySelector('.snd-bar__more')?.setAttribute('aria-expanded', 'true');
             }
-            if (active) {
-                const same = (active.id && copy.querySelector(`#${CSS.escape(active.id)}`))
-                    || (active.name && [...copy.querySelectorAll(`[name="${CSS.escape(active.name)}"]`)].find(el => el.value === active.value));
-                if (same) {
-                    same.focus({ preventScroll: true });
-                } else {
-                    copy.tabIndex = -1;
-                    copy.focus({ preventScroll: true });
-                }
-            }
-            added.push([copy, toggled]);
+            added.push([copy, toggled, active]);
         });
     }
     const label = d => (d.id ? `#${d.id}` : d.querySelector(':scope > summary')?.textContent.trim());
-    for (const [copy, toggled] of added) {
+    for (const [copy, toggled, active] of added) {
         for (const enhancer of enhancers.get(root) ?? []) {
             try {
                 enhancer(copy);
@@ -681,6 +781,15 @@ const swapFragments = (root, form, answered, only) => {
             const twin = [...copy.querySelectorAll('details')].find(t => label(t) === label(d));
             if (twin) {
                 twin.open = d.open;
+            }
+        }
+        // after the details: a button in a closed one takes no focus
+        if (active) {
+            const same = twinOf(copy, active);
+            same?.focus({ preventScroll: true });
+            if (!same || (document.activeElement !== same)) {
+                copy.tabIndex = -1;
+                copy.focus({ preventScroll: true });
             }
         }
     }
@@ -732,9 +841,17 @@ const say = (root, form, message, status, role = 'alert') => {
     return box;
 };
 
-const offerReload = (root, box) => {
-    const button = Object.assign(document.createElement('button'), { type: 'button', className: 'ai-btn', textContent: text(root, 'reload') });
-    button.addEventListener('click', () => location.reload());
+const offerReload = (root, box, key = 'reload') => {
+    const button = Object.assign(document.createElement('button'), { type: 'button', className: 'ai-btn', textContent: text(root, key) });
+    // without the key of a result, which would show an old one as new
+    button.addEventListener('click', () => {
+        const url = pageUrl(location.href, location.href);
+        if (url && (url !== location.href)) {
+            location.assign(url);
+        } else {
+            location.reload();
+        }
+    });
     box.append(' ', button);
 };
 
@@ -743,6 +860,26 @@ const announce = (root, message) => {
     if (live) {
         live.textContent = message;
     }
+};
+
+/**
+ * A page of this origin parsed - no script runs, nothing loads - and in it the root at the place of
+ * $root, null when it has none (logged out). refused: a 4xx the same request would get again, not a
+ * timeout or a limit of requests. Throws on a network error, another failing status (error.status) or a
+ * GET with no answer in 30 s - a save may take longer to upload -, worth a later try.
+ * @returns {Promise<{response: Response, answer: Element|null, refused: boolean}>}
+ */
+const fetchRoot = async (root, url, init = {}) => {
+    const response = await fetch(url, { signal: init.method ? null : AbortSignal.timeout(30_000), ...init, credentials: 'same-origin', mode: 'same-origin' });
+    if ((response.status >= 400) && (response.status < 500) && ![408, 429].includes(response.status)) {
+        return { response, answer: null, refused: true };
+    }
+    if (!response.ok) {
+        throw Object.assign(new Error(`HTTP ${response.status}`), { status: response.status });
+    }
+    const doc   = new DOMParser().parseFromString(await response.text(), 'text/html');
+    const index = [...document.querySelectorAll('aa-isds-campaign')].indexOf(root);
+    return { response, answer: doc.querySelectorAll('aa-isds-campaign')[Math.max(index, 0)] ?? null, refused: false };
 };
 
 /** the draft saves itself; other forms wait for it, and none goes twice */
@@ -755,6 +892,7 @@ const setupForms = (root) => {
     let passing = null;                 // the submit the page sends on itself
     let sentAt = 0;                     // when a form went the usual way
     let replaying = false;
+    let filterRev = 0;                  // the change of the filter made last
 
     const entriesOf = button => payload([...new FormData(form)], {
         step:   new URL(location.href).searchParams.get('isds_step'),
@@ -776,29 +914,21 @@ const setupForms = (root) => {
         box.focus();
     };
 
-    const exchange = async ({ pick, rev }) => {
+    const save = async ({ pick, rev }) => {
         const entries = entriesOf(pick);
-        let response;
-        let html;
+        let got;
         try {
-            response = await fetch(location.href, { method: 'POST', body: bodyOf(entries), credentials: 'same-origin', mode: 'same-origin' });
-            // a refusal by the server or a proxy (413, 403) would come again and again; a timeout or a limit of requests not
-            if ((response.status >= 400) && (response.status < 500) && ![408, 429].includes(response.status)) {
-                offerReload(root, say(root, form, `${text(root, 'failed')} (HTTP ${response.status})`, 'refused'));
-                return { kind: 'stop' };
-            }
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            html = await response.text();
+            got = await fetchRoot(root, location.href, { method: 'POST', body: bodyOf(entries) });
         } catch {
             say(root, form, text(root, 'retry'), 'busy', 'status');
             return { kind: 'retry' };
         }
-        // a parsed document runs no script and loads nothing
-        const doc    = new DOMParser().parseFromString(html, 'text/html');
-        const index  = [...document.querySelectorAll('aa-isds-campaign')].indexOf(root);
-        const answer = doc.querySelectorAll('aa-isds-campaign')[Math.max(index, 0)];
+        const { response, answer } = got;
+        // a refusal by the server or a proxy (413, 403) would come again and again
+        if (got.refused) {
+            offerReload(root, say(root, form, `${text(root, 'failed')} (HTTP ${response.status})`, 'refused'));
+            return { kind: 'stop' };
+        }
         if (!answer) {
             say(root, form, text(root, 'login'), 'expired');
             return { kind: 'stop' };
@@ -838,6 +968,20 @@ const setupForms = (root) => {
             box.append(Object.assign(document.createElement('p'), { className: 'ai-help', textContent: text(root, 'big') }));
         }
         return { kind };
+    };
+    /** the count follows the filter: while a change of it or a pick is not saved, the count shown is old */
+    const markCount = (job = null) => {
+        const old = !draft.stopped && !!(job?.pick || draft.picks.length || ((filterRev > draft.saved) && (filterRev > draft.blocked)));
+        root.querySelectorAll('[data-aa-isds-fragment="count"]').forEach(el => (old ? el.setAttribute('aria-busy', 'true') : el.removeAttribute('aria-busy')));
+    };
+    const exchange = async (job) => {
+        markCount(job);
+        try {
+            return await save(job);
+        } finally {
+            // once the queue took the answer in: saved, blocked or to be tried again
+            draft.running?.then(() => markCount());
+        }
     };
 
     /** a form went the usual way and the page stayed: it is in use again */
@@ -884,6 +1028,8 @@ const setupForms = (root) => {
             if (kind === 'filter') {
                 back();
                 draft.changed('filter');
+                filterRev = draft.rev;
+                markCount();
                 if (['checkbox', 'radio'].includes(e.target.type)) {
                     touched.set(keyOf(e.target), draft.rev);
                 }
@@ -950,8 +1096,8 @@ const setupForms = (root) => {
         }
     };
 
-    /** a step posts the letter itself; it goes only with no pick waiting and no text the server refused or would refuse */
-    const stepOk = () => !draft.picks.length && !(draft.dirty && (draft.stopped || (draft.rev === draft.blocked)));
+    /** a step posts the letter itself; it goes only with no pick waiting and no text the server refused or would refuse - after an internal error it may */
+    const stepOk = () => !draft.picks.length && !(draft.dirty && ((draft.stopped && !draft.retryable) || (draft.rev === draft.blocked)));
 
     root.addEventListener('submit', (e) => {
         const target = e.target;
@@ -975,6 +1121,7 @@ const setupForms = (root) => {
                 // Uložit, Enter, a pick: saved in place
                 e.preventDefault();
                 draft.ask(((submitter?.name === 'isds_pick') && submitter.value) ? ['isds_pick', submitter.value] : null);
+                markCount();
                 return;
             }
             if (draft && (step ? (draft.running || !stepOk()) : ((target !== form) && draft.dirty))) {
@@ -1012,10 +1159,317 @@ const setupForms = (root) => {
             reset();
         }
     });
+    if (draft) {
+        // a pick of the suggestions goes as its button would: saved in place, the usual way after an internal error, else not at all
+        setupSearch(root, form, (value) => {
+            if (!draft.stopped) {
+                draft.ask(['isds_pick', value]);
+                markCount();
+            } else if (draft.retryable) {
+                const field = Object.assign(document.createElement('input'), { type: 'hidden', name: 'isds_pick', value });
+                form.append(field);
+                form.requestSubmit();
+                field.remove();                 // the post has read it; a cancelled one must not send it later
+            } else {
+                showResult();
+            }
+        });
+    }
+};
+
+/**
+ * The texts of a row of the fragment search, one for each element with a class (name, type, box) - not
+ * of buttons nor what only a screen reader or no one sees; an option takes no markup of the answer
+ */
+const textsOf = (row) => {
+    const parts = new Map();
+    const walk  = document.createTreeWalker(row, NodeFilter.SHOW_TEXT);
+    for (let node = walk.nextNode(); node; node = walk.nextNode()) {
+        const el = node.parentElement;
+        if (!el.closest('button, .ai-sr, [hidden], [aria-hidden="true"]')) {
+            const part = el.closest('[class]');
+            const key  = row.contains(part) ? part : row;
+            parts.set(key, (parts.get(key) ?? '') + node.data);
+        }
+    }
+    return [...parts.values()].map(t => t.replace(/\s+/g, ' ').trim()).filter(Boolean);
+};
+
+/**
+ * Suggestions under the search field of the draft (in .aud-combo): the page asked with isds_part=search
+ * renders the fragment search; its rows [data-aa-isds-item] the template offers to add (the button
+ * isds_pick=include-<id>) become options. $pickOne sends the value of that button.
+ */
+const setupSearch = (root, form, pickOne) => {
+    const input = [...form.elements].find(el => (el.name === 'isds_q') && (el.localName === 'input') && !inFragment(el));
+    const box   = input?.closest('.aud-combo');
+    if (!box) {
+        return;
+    }
+    const list  = Object.assign(document.createElement('ul'), { id: `${input.id || 'isds-q'}-aa-isds-list`, className: 'aud-combo__list', hidden: true });
+    const label = input.labels?.[0];
+    if (label) {
+        label.id ||= `${list.id}-label`;
+        list.setAttribute('aria-labelledby', label.id);
+    } else {
+        list.setAttribute('aria-label', input.getAttribute('aria-label') || input.placeholder);
+    }
+    list.setAttribute('role', 'listbox');
+    box.append(list);
+    Object.entries({ role: 'combobox', 'aria-autocomplete': 'list', 'aria-expanded': 'false', 'aria-controls': list.id, autocomplete: 'off' })
+        .forEach(([name, value]) => input.setAttribute(name, value));
+    let token = 0;                              // an answer is shown only if no key or close came since its question
+    let items = [];
+    let combo = { open: false, active: -1 };
+    let timer = null;
+
+    const render = (next = combo) => {
+        combo = { open: next.open, active: next.open ? next.active : -1 };
+        list.hidden = !combo.open;
+        input.setAttribute('aria-expanded', String(combo.open));
+        [...list.children].forEach(li => li.setAttribute('aria-selected', String(li === list.children[combo.active])));
+        const active = list.children[combo.active];
+        if (active) {
+            input.setAttribute('aria-activedescendant', active.id);
+            active.scrollIntoView({ block: 'nearest' });
+        } else {
+            input.removeAttribute('aria-activedescendant');
+        }
+    };
+    /** no question waiting or on its way */
+    const cancel = () => {
+        clearTimeout(timer);
+        token++;
+        list.removeAttribute('aria-busy');
+    };
+    const close = () => {
+        cancel();
+        render({ open: false });
+    };
+    const option = (texts, i) => {
+        const li = Object.assign(document.createElement('li'), { id: `${list.id}-${i}`, className: 'aud-opt' });
+        li.setAttribute('role', 'option');
+        li.append(...texts.map(t => Object.assign(document.createElement('span'), { textContent: t })));
+        return li;
+    };
+    /** the options, or one line that tells why there are none */
+    const show = (found, why = 'none') => {
+        items = found;
+        const none = Object.assign(option([text(root, why)], 'none'), { className: 'aud-opt aud-opt--none' });
+        none.setAttribute('aria-disabled', 'true');
+        list.replaceChildren(...(found.length ? found.map(({ texts }, i) => option(texts, i)) : [none]));
+        render({ open: true, active: -1 });
+        announce(root, found.length ? text(root, 'found').replace('%d', found.length) : text(root, why));
+    };
+    /** @param {boolean} asked Enter: a text too short is told */
+    const search = async (asked = false) => {
+        cancel();
+        // the server looks for no longer text, as the step search cuts it
+        const q = [...input.value.trim()].slice(0, SEARCH_MAX).join('');
+        if ([...q].length < SEARCH_MIN) {
+            items = [];
+            if (asked) {
+                show([], 'short');
+            } else {
+                close();
+            }
+            return;
+        }
+        const n = token;
+        list.setAttribute('aria-busy', 'true');
+        let found = null;
+        try {
+            const { answer } = await fetchRoot(root, partUrl(location.href, 'search', q));
+            const rows = answer?.querySelector('[data-aa-isds-fragment="search"]')?.querySelectorAll('[data-aa-isds-item]') ?? [];
+            found = answer && [...rows]
+                .map(row => ({ value: `include-${row.dataset.aaIsdsItem}`, texts: textsOf(row), row }))
+                .filter(({ value, row }) => [...row.querySelectorAll('button[name="isds_pick"]')].some(b => b.value === value));
+        } catch {
+            // no suggestions now; the step search of the form still works
+        }
+        if (n !== token) {
+            return;
+        }
+        list.removeAttribute('aria-busy');
+        if (found && (document.activeElement === input)) {
+            show(found);
+        } else {
+            close();
+        }
+    };
+    const pick = (i) => {
+        const value = items[i]?.value;
+        close();
+        if (value) {
+            pickOne(value);
+        }
+    };
+
+    input.addEventListener('input', () => {
+        cancel();
+        render({ ...combo, active: -1 });
+        timer = setTimeout(search, SEARCH_PAUSE);
+    });
+    input.addEventListener('keydown', (e) => {
+        if (e.isComposing) {
+            return;
+        }
+        const next = comboKey({ ...combo, count: items.length }, e.key, e.altKey);
+        if (next.handled) {
+            e.preventDefault();                 // Enter would post the draft
+        }
+        if (next.act === 'search') {
+            search(e.key === 'Enter');
+        } else if (next.act === 'pick') {
+            pick(combo.active);
+        } else if ((e.key === 'Escape') || (e.key === 'Tab') || (e.altKey && (e.key === 'ArrowUp'))) {
+            close();                            // no question after it either
+        } else {
+            render(next);
+        }
+    });
+    input.addEventListener('blur', close);
+    // the field keeps the focus while an option is clicked
+    list.addEventListener('mousedown', e => e.preventDefault());
+    list.addEventListener('click', e => pick([...list.children].indexOf(e.target.closest('[role="option"]'))));
+};
+
+/**
+ * The progress of a sending follows it (isds_part=progress) as shouldPoll() says. Another state loads
+ * the whole page once; logged out, refused or after an hour the reading stops with a button. A form of
+ * the page that goes (Stop, Continue) stops it too: a reload would cancel the form and its result.
+ */
+const setupProgress = (root) => {
+    const current = () => root.querySelector('[data-aa-isds-fragment="progress"][data-aa-isds-state]');
+    const first   = current();
+    const state   = first?.dataset.aaIsdsState;
+    if (!shouldPoll({ state, since: 0, visible: true })) {
+        return;
+    }
+    const figures = (box) => {
+        const el = box.querySelector('[data-aa-isds-done]');
+        return { state: box.dataset.aaIsdsState, done: Number(el?.dataset.aaIsdsDone), total: Number(el?.dataset.aaIsdsTotal), el };
+    };
+    let heard    = figures(first);              // the figures a screen reader was told last
+    let since    = Date.now();
+    let lastAt   = since;
+    let timer    = null;
+    let failures = 0;
+    let over     = false;
+    let running  = false;
+    let note     = null;
+    let noteKey  = '';
+
+    /** a line of the page itself under the figures, gone with the next reading; a screen reader hears it */
+    const tell = (key, button = null) => {
+        note?.remove();
+        if (key !== noteKey) {
+            announce(root, text(root, key));    // once, not at every retry
+        }
+        noteKey = key;
+        note    = Object.assign(document.createElement('p'), { className: 'prg-hint', textContent: text(root, key) });
+        if (button) {
+            offerReload(root, note, button);
+        }
+        current()?.append(note);
+    };
+    const end = (key, button) => {
+        over = true;
+        clearTimeout(timer);
+        tell(key, button);
+    };
+    const plan = (delay) => {
+        clearTimeout(timer);
+        if (over || running) {
+            return;                             // the reading on its way plans the next one
+        }
+        const visible = document.visibilityState === 'visible';
+        const wait    = Math.max(0, lastAt + delay - Date.now());
+        const age     = Date.now() + wait - since; // when the reading would be
+        if (age >= POLL_FOR) {
+            end('paused', 'refresh');
+        } else if (shouldPoll({ state, since: age, visible })) {
+            timer = setTimeout(poll, wait);
+        } else if (visible && noteKey) {
+            end('paused', 'refresh');           // "trying again" would lie now
+        }
+    };
+    const poll = async () => {
+        lastAt  = Date.now();
+        running = true;
+        let got = null;
+        let failed = 'offline';
+        try {
+            got = await fetchRoot(root, partUrl(location.href, 'progress'));
+        } catch (e) {
+            failed = (e?.status || (e?.name === 'TimeoutError')) ? 'down' : 'offline';
+        }
+        running = false;
+        if (over) {
+            return;
+        }
+        if (!got) {
+            tell(failed);
+            plan(pollDelay(++failures));
+            return;
+        }
+        failures = 0;
+        note?.remove();
+        noteKey = '';
+        const fresh = got.answer?.querySelector('[data-aa-isds-fragment="progress"][data-aa-isds-state]');
+        const box   = current();
+        if (!box) {
+            return;
+        }
+        if (!fresh) {
+            end('gone', 'reload');
+            return;
+        }
+        const now = figures(fresh);
+        if (progressNews(figures(box), now) === 'state') {
+            // once: a page loaded anew for the same change that shows the old state again stops here
+            const last = history.state?.aaIsdsReload;
+            if (last && ((Date.now() - last.at) < 60_000) && (last.from === state) && (last.to === now.state)) {
+                end('paused', 'refresh');
+            } else {
+                over = true;
+                history.replaceState({ ...history.state, aaIsdsReload: { at: Date.now(), from: state, to: now.state } }, '', pageUrl(location.href, location.href) ?? location.href);
+                location.reload();
+            }
+            return;
+        }
+        swapFragments(root, null, got.answer, ['progress']);
+        // only once the figures are in the page: a swap left out (focus in a field) tells nothing
+        if ((current() !== box) && (progressNews(heard, now) === 'quarter')) {
+            heard = now;
+            announce(root, figures(current()).el?.textContent.replace(/\s+/g, ' ').trim() ?? '');
+        }
+        plan(POLL_EVERY);
+    };
+    // after the handler of the forms: a form kept back does not count
+    root.addEventListener('submit', (e) => {
+        if (!e.defaultPrevented) {
+            over = true;
+            clearTimeout(timer);
+        }
+    });
+    document.addEventListener('visibilitychange', () => plan(POLL_EVERY));
+    // back from the history cache: the page is shown anew, with figures as old as it is
+    addEventListener('pageshow', (e) => {
+        if (e.persisted) {
+            since  = Date.now();
+            lastAt = 0;
+            over   = false;
+            note?.remove();
+            noteKey = '';
+            plan(0);
+        }
+    });
+    plan(POLL_EVERY);
 };
 
 /** what each root is set up with, in order */
-const SETUPS = Object.freeze([setupSources, setupSticky, setupBar, setupConfirm, setupLetter, setupForms]);
+const SETUPS = Object.freeze([setupSources, setupSticky, setupBar, setupConfirm, setupLetter, setupForms, setupProgress]);
 
 /**
  * Sets a root up once; any later call for the same root does nothing.
