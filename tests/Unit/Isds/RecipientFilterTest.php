@@ -8,9 +8,11 @@ use AA\Isds\RecipientFilter;
 use AA\Isds\Setup;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Isds\Fixtures\FakeRecipients;
 use Tests\Unit\Isds\Fixtures\Sending;
 
 require_once __DIR__ . '/fixtures/Sending.php';
+require_once __DIR__ . '/fixtures/FakeRecipients.php';
 
 /**
  * The filter a campaign stores comes from the browser: only what the page offers passes, and a key
@@ -20,6 +22,9 @@ final class RecipientFilterTest extends TestCase
 {
     private const A = 'a0000000000000000000000000000001';
     private const B = 'b0000000000000000000000000000002';
+    private const C = 'c0000000000000000000000000000003';
+    private const D = 'd0000000000000000000000000000004';
+    private const E = 'e0000000000000000000000000000005';
 
     public static function setUpBeforeClass(): void
     {
@@ -142,5 +147,111 @@ final class RecipientFilterTest extends TestCase
         self::assertCount(Setup::MAX_RECIPIENTS, RecipientFilter::ofItems(array_slice($ids, 1))->include);
         $this->expectException(\InvalidArgumentException::class);
         RecipientFilter::ofItems($ids);
+    }
+
+    // ------------------------------------------------------------ a pick of one item
+
+    /** the source slice: A, B and C active, D in the trash, E of another slice */
+    private static function source(): FakeRecipients
+    {
+        return new FakeRecipients([
+            self::A => Sending::item('Adamov', 'mesto', '1', 'abc1234'),
+            self::B => Sending::item('Benešov', 'mesto', '0', 'abc2345'),
+            self::C => Sending::item('Cheb', 'mestocast', '0', ''),
+            self::D => ['active' => false] + Sending::item('Dačice', 'mesto', '0', 'abc4567'),
+            self::E => ['slice' => Sending::OTHER] + Sending::item('Eger', 'mesto', '0', 'abc5678'),
+        ]);
+    }
+
+    /** @return list<list<string>> include and exclude of $filter with $pick */
+    private static function picked(RecipientFilter $filter, string $pick): array
+    {
+        $picked = $filter->picked($pick, Sending::page(), self::source());
+
+        return [$picked->include, $picked->exclude];
+    }
+
+    /** @return array<string, array{string, list<list<string>>}> a pick of the filter including A and leaving out B */
+    public static function picks(): array
+    {
+        return [
+            'include one more'         => ['include-' . self::C, [[self::A, self::C], [self::B]]],
+            'include one left out'     => ['include-' . self::B, [[self::A, self::B], []]],
+            'include one included'     => ['include-' . self::A, [[self::A], [self::B]]],
+            'include in capitals'      => ['include-' . strtoupper(self::C), [[self::A, self::C], [self::B]]],
+            'leave out one more'       => ['exclude-' . self::C, [[self::A], [self::B, self::C]]],
+            'leave out one included'   => ['exclude-' . self::A, [[], [self::B, self::A]]],
+            'take back one included'   => ['unpick-' . self::A, [[], [self::B]]],
+            'take back one left out'   => ['unpick-' . self::B, [[self::A], []]],
+            'take back one not picked' => ['unpick-' . self::C, [[self::A], [self::B]]],
+        ];
+    }
+
+    /** @param list<list<string>> $lists */
+    #[DataProvider('picks')]
+    public function test_picked_oneItemMovedBetweenTheLists(string $pick, array $lists): void
+    {
+        $filter = RecipientFilter::fromJson(Sending::filter(['types' => ['mestocast'], 'membership' => 'members', 'include' => [self::A], 'exclude' => [self::B]]), Sending::page());
+
+        self::assertSame($lists, self::picked($filter, $pick));
+        self::assertSame([['mestocast'], 'members'], [$filter->types, $filter->membership], 'the rest as it was');
+    }
+
+    /** @return array<string, array{string}> */
+    public static function notPicks(): array
+    {
+        return [
+            'another word'    => ['add-' . self::A],
+            'no id'           => ['include-'],
+            'an id too short' => ['include-' . substr(self::A, 1)],
+            'two ids'         => ['include-' . self::A . '-' . self::B],
+            'a line after'    => ['include-' . self::A . "\n"],
+            'nothing'         => [''],
+        ];
+    }
+
+    #[DataProvider('notPicks')]
+    public function test_picked_noPickRefused(string $pick): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+
+        self::picked(RecipientFilter::default(Sending::page()), $pick);
+    }
+
+    /** @return array<string, array{string}> */
+    public static function notOfTheSource(): array
+    {
+        return [
+            'an item in the trash'     => ['include-' . self::D],
+            'an item of another slice' => ['exclude-' . self::E],
+            'no item'                  => ['include-' . str_repeat('f', 32)],
+        ];
+    }
+
+    // only an active item of the source slice: an id of another would go into the filter unseen
+    #[DataProvider('notOfTheSource')]
+    public function test_picked_onlyItemsOfTheSource(string $pick): void
+    {
+        $this->expectException(\OutOfBoundsException::class);
+
+        self::picked(RecipientFilter::default(Sending::page()), $pick);
+    }
+
+    public function test_picked_unpickOfAnItemGone(): void
+    {
+        $filter = RecipientFilter::fromJson(Sending::filter(['include' => [self::A, self::D], 'exclude' => [self::E]]), Sending::page());
+
+        self::assertSame([[self::A], [self::E]], self::picked($filter, 'unpick-' . self::D), 'an item in the trash taken back');
+        self::assertSame([[self::A, self::D], []], self::picked($filter, 'unpick-' . self::E), 'an item of another slice taken back');
+    }
+
+    public function test_picked_noMoreThanTheLimit(): void
+    {
+        $ids    = array_map(static fn(int $i): string => sprintf('f%031x', $i), range(1, Setup::MAX_RECIPIENTS));
+        $filter = RecipientFilter::fromJson(Sending::filter(['include' => $ids, 'exclude' => $ids]), Sending::page());
+
+        self::assertCount(Setup::MAX_RECIPIENTS, self::picked($filter, 'unpick-' . self::A)[0], 'a full list taken back from');
+        $this->expectException(\LengthException::class);
+        self::picked($filter, 'include-' . self::A);
     }
 }

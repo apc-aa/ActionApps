@@ -14,11 +14,13 @@ use AA\Isds\SendStart;
 use AA\Isds\Setup;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use Tests\Unit\Isds\Fixtures\FakeRecipients;
 use Tests\Unit\Isds\Fixtures\MemoryDrafts;
 use Tests\Unit\Isds\Fixtures\Sending;
 
 require_once __DIR__ . '/fixtures/Sending.php';
 require_once __DIR__ . '/fixtures/MemoryDrafts.php';
+require_once __DIR__ . '/fixtures/FakeRecipients.php';
 
 /**
  * Drafts: a page saves the letter of a draft and whom it goes to - only while it is a draft of the
@@ -28,8 +30,12 @@ final class DraftsTest extends TestCase
 {
     private const NONCE = '0123456789abcdef0123456789abcdef';
     private const ITEM  = 'ca000000000000000000000000000c01';
-    // an item of the source slice
-    private const ADAMOV = 'a0000000000000000000000000000001';
+    // items of the source slice, one in the trash; an item of another slice
+    private const ADAMOV           = 'a0000000000000000000000000000001';
+    private const BENESOV          = 'b0000000000000000000000000000002';
+    private const CHEB             = 'c0000000000000000000000000000003';
+    private const TRASHED          = 'd0000000000000000000000000000004';
+    private const OTHER_SLICE_ITEM = 'e0000000000000000000000000000005';
 
     /** the letter fields a save may write; a new draft adds its bin, state and author */
     private const LETTER = [Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_TO_HANDS, Schema::CAMPAIGN_BODY, Schema::CAMPAIGN_FILTER];
@@ -64,11 +70,14 @@ final class DraftsTest extends TestCase
     }
 
     /**
+     * The form as the page shows it: with the filter it read - the one stored now -, unless $post tells another
      * @param array<string, mixed> $post
      * @return array{code: string, campaign: string, field: string, file: string}
      */
     private function save(array $post, string $campaign = '', ?Setup $page = null): array
     {
+        $post += ['isds_filter_seen' => Drafts::filterSeen($this->drafts->field(($campaign === '') ? self::newId() : $campaign, Schema::CAMPAIGN_FILTER))];
+
         return $this->drafts->save($page ?? Sending::page(), $campaign, $post);
     }
 
@@ -394,6 +403,197 @@ final class DraftsTest extends TestCase
 
         $this->assertRefusedNothingWritten(Actions::INPUT, Drafts::RECIPIENTS, $result);
         self::assertSame(self::ITEM, $result['campaign']);
+    }
+
+    // ------------------------------------------------------------ the filter the page read
+
+    /** the draft ITEM with a filter of many items chosen one by one - a copy for the unsent -, as a save stores it */
+    private function draftWithChosen(): string
+    {
+        $filter = RecipientFilter::ofItems([self::ADAMOV, self::BENESOV])->toJson();
+        $this->drafts->draft(self::ITEM);
+        $this->drafts->items[self::ITEM]['fields'][Schema::CAMPAIGN_FILTER] = [$filter, 0];
+
+        return $filter;
+    }
+
+    /** @return array<string, array{\Closure(string): string}> what a form tells of the filter of a page that did not read the one stored */
+    public static function notSeen(): array
+    {
+        return [
+            // a form of no page of the gate
+            'none'        => [static fn(string $stored): string => ''],
+            // another window saved another filter since
+            'another one' => [static fn(string $stored): string => Drafts::filterSeen(Sending::filter())],
+            'of no filter' => [static fn(string $stored): string => Drafts::filterSeen('')],
+            'in capitals' => [static fn(string $stored): string => strtoupper(Drafts::filterSeen($stored))],
+        ];
+    }
+
+    // saving the letter must not drop the recipients chosen - and the page tells the choice was not saved
+    #[DataProvider('notSeen')]
+    public function test_save_filterNotSeenKept(\Closure $seen): void
+    {
+        $stored = $this->draftWithChosen();
+
+        $result = $this->save(['isds_subject' => 'Výzva', 'isds_membership' => 'all', 'isds_types' => [], 'isds_include' => '', 'isds_exclude' => '', 'isds_filter_seen' => $seen($stored)], self::ITEM);
+
+        self::assertSame([Drafts::FILTER_CHANGED, self::ITEM], [$result['code'], $result['campaign']]);
+        self::assertSame([Schema::CAMPAIGN_SUBJECT], $this->lastWritten(), 'the letter saved');
+        self::assertSame($stored, $this->drafts->field(self::ITEM, Schema::CAMPAIGN_FILTER));
+    }
+
+    public function test_save_filterNotSeenKeptOfNewDraft(): void
+    {
+        $result = $this->saveNew(['isds_membership' => 'all', 'isds_types' => ['mesto'], 'isds_filter_seen' => '']);
+
+        self::assertSame(Drafts::FILTER_CHANGED, $result['code']);
+        self::assertSame('', $this->drafts->field(self::newId(), Schema::CAMPAIGN_FILTER));
+        self::assertSame('draft', $this->drafts->field(self::newId(), Schema::CAMPAIGN_STATE), 'the draft made');
+    }
+
+    // a second click before the page showed the first: the choice stored already, nothing lost
+    public function test_save_sameChoiceOfStaleFormSaved(): void
+    {
+        $stored = $this->draftWithChosen();
+        $this->drafts->writes = [];
+
+        $result = $this->save(['isds_membership' => 'all', 'isds_types' => [], 'isds_include' => self::ADAMOV . '-' . self::BENESOV, 'isds_filter_seen' => Drafts::filterSeen('')], self::ITEM);
+
+        self::assertSame(Drafts::SAVED, $result['code']);
+        self::assertSame([[], $stored], [$this->drafts->writes, $this->drafts->field(self::ITEM, Schema::CAMPAIGN_FILTER)]);
+    }
+
+    // a form saved again without loading the page (autosave): it shows the filter it saved only once it takes the answer
+    public function test_save_filterSeenOfTheFilterStoredNow(): void
+    {
+        $this->saveNew(['isds_membership' => 'all', 'isds_types' => ['mesto']]);
+        $first  = $this->drafts->field(self::newId(), Schema::CAMPAIGN_FILTER);
+        $chosen = ['isds_membership' => 'all', 'isds_types' => ['mestocast'], 'isds_nonce' => self::NONCE];
+
+        self::assertSame(Drafts::FILTER_CHANGED, $this->save($chosen + ['isds_filter_seen' => Drafts::filterSeen('')])['code']);
+        self::assertSame($first, $this->drafts->field(self::newId(), Schema::CAMPAIGN_FILTER), 'the form as shown before the first save');
+
+        self::assertSame(Drafts::SAVED, $this->save($chosen + ['isds_filter_seen' => Drafts::filterSeen($first)])['code']);
+        self::assertSame(['mestocast'], json_decode($this->drafts->field(self::newId(), Schema::CAMPAIGN_FILTER), true)['types']);
+    }
+
+    // a filter the page cannot read: a choice made anew, with what tells the text stored, replaces it
+    public function test_save_unreadableFilterReplacedByAChoiceMadeAnew(): void
+    {
+        $this->drafts->draft(self::ITEM);
+        $broken = Sending::filter(['types' => ['kraj']]);
+        $this->drafts->items[self::ITEM]['fields'][Schema::CAMPAIGN_FILTER] = [$broken, 0];
+
+        self::assertSame(Drafts::SAVED, $this->save(['isds_subject' => 'Výzva'], self::ITEM)['code'], 'an autosave of the letter leaves it');
+        self::assertSame($broken, $this->drafts->field(self::ITEM, Schema::CAMPAIGN_FILTER));
+
+        self::assertSame(Drafts::SAVED, $this->save(['isds_membership' => 'all', 'isds_types' => ['mesto'], 'isds_filter_seen' => Drafts::filterSeen($broken)], self::ITEM)['code']);
+        self::assertSame(Sending::filter(), $this->drafts->field(self::ITEM, Schema::CAMPAIGN_FILTER));
+    }
+
+    // the item a button picks goes into the lists the form shows - never into those stored
+    public function test_save_pickOnPostedLists(): void
+    {
+        $this->draftWithChosen();
+        $this->drafts->source = self::source();
+        $post = ['isds_membership' => 'all', 'isds_types' => ['mesto'], 'isds_include' => self::BENESOV, 'isds_exclude' => self::CHEB];
+
+        self::assertSame(Drafts::SAVED, $this->save($post + ['isds_pick' => 'include-' . strtoupper(self::CHEB)], self::ITEM)['code']);
+
+        self::assertSame(
+            ['types' => ['mesto'], 'membership' => 'all', 'include' => [self::BENESOV, self::CHEB], 'exclude' => []],
+            json_decode($this->drafts->field(self::ITEM, Schema::CAMPAIGN_FILTER), true),
+        );
+    }
+
+    // the form without its lists would pick into the lists stored, which the page did not show
+    public function test_save_pickWithoutMembershipInput(): void
+    {
+        $this->draftWithChosen();
+        $this->drafts->source = self::source();
+
+        $this->assertRefusedNothingWritten(Actions::INPUT, Drafts::RECIPIENTS, $this->save(['isds_subject' => 'Výzva', 'isds_include' => '', 'isds_pick' => 'exclude-' . self::ADAMOV], self::ITEM));
+    }
+
+    /** @return array<string, array{mixed}> */
+    public static function noPicks(): array
+    {
+        return [
+            'no such pick'   => ['add-' . self::CHEB],
+            'no id'          => ['include-'],
+            'an id and more' => ['include-' . self::CHEB . '-' . self::ADAMOV],
+            'a list'         => [['include-' . self::CHEB]],
+            'empty'          => [''],
+        ];
+    }
+
+    #[DataProvider('noPicks')]
+    public function test_save_noPickInput(mixed $pick): void
+    {
+        $this->draftWithChosen();
+        $this->drafts->source = self::source();
+
+        $this->assertRefusedNothingWritten(Actions::INPUT, Drafts::RECIPIENTS, $this->save(['isds_subject' => 'Výzva', 'isds_membership' => 'all', 'isds_pick' => $pick], self::ITEM));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function goneItems(): array
+    {
+        return [
+            'an item of another slice' => [self::OTHER_SLICE_ITEM],
+            'an item put in the trash' => [self::TRASHED],
+            'an item deleted'          => [str_repeat('f', 32)],
+        ];
+    }
+
+    // the page showed it, it is gone since: the letter is saved, the choice is not - and the page says so
+    #[DataProvider('goneItems')]
+    public function test_save_pickOtherSliceInput(string $item): void
+    {
+        $stored = $this->draftWithChosen();
+        $this->drafts->source = self::source();
+
+        $result = $this->save(['isds_subject' => 'Výzva', 'isds_membership' => 'all', 'isds_types' => [], 'isds_include' => self::ADAMOV, 'isds_pick' => "include-$item"], self::ITEM);
+
+        self::assertSame([Drafts::FILTER_CHANGED, self::ITEM], [$result['code'], $result['campaign']]);
+        self::assertSame([Schema::CAMPAIGN_SUBJECT], $this->lastWritten());
+        self::assertSame($stored, $this->drafts->field(self::ITEM, Schema::CAMPAIGN_FILTER));
+    }
+
+    public function test_save_pickOverMaxInput(): void
+    {
+        $this->drafts->draft(self::ITEM);
+        $this->drafts->source = self::source();
+        $ids = array_map(static fn(int $i): string => sprintf('b%031x', $i), range(1, Setup::MAX_RECIPIENTS));
+
+        $this->assertRefusedNothingWritten(Actions::INPUT, Drafts::TOO_MANY, $this->save(['isds_membership' => 'all', 'isds_exclude' => implode('-', $ids), 'isds_pick' => 'exclude-' . self::CHEB], self::ITEM));
+    }
+
+    // the stored filter is read only under the lock of the draft, a pick asks only the source slice
+    public function test_save_neverReadsStoredFilterOutsideLock(): void
+    {
+        $this->draftWithChosen();
+        $this->drafts->source = self::source();
+        FakeRecipients::forget();
+
+        $this->save(['isds_subject' => 'Výzva', 'isds_membership' => 'all', 'isds_include' => self::ADAMOV, 'isds_pick' => 'include-' . self::CHEB], self::ITEM);
+
+        self::assertSame([], $this->drafts->readUnlocked);
+        self::assertSame([[Sending::SOURCE, [], [self::CHEB], [], 0]], FakeRecipients::$searches, 'the item picked, of the source slice');
+        self::assertSame([], FakeRecipients::$read);
+    }
+
+    /** the source slice: ADAMOV, BENESOV and CHEB active, TRASHED in the trash; an item of another slice */
+    private static function source(): FakeRecipients
+    {
+        return new FakeRecipients([
+            self::ADAMOV           => Sending::item('Adamov', 'mesto', '1', 'abc1234'),
+            self::BENESOV          => Sending::item('Benešov', 'mesto', '0', 'abc2345'),
+            self::CHEB             => Sending::item('Cheb', 'mesto', '0', 'abc3456'),
+            self::TRASHED          => ['active' => false] + Sending::item('Dačice', 'mesto', '0', 'abc4567'),
+            self::OTHER_SLICE_ITEM => ['slice' => Sending::OTHER] + Sending::item('Eger', 'mesto', '0', 'abc5678'),
+        ]);
     }
 
     /** @return array<string, array{\Closure(): array<string, mixed>, string}> the form made in the test: PHPUnit keeps and exports what a provider gives */

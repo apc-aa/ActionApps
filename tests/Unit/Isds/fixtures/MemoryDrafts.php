@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Tests\Unit\Isds\Fixtures;
 
 use AA\Isds\Drafts;
+use AA\Isds\Recipients;
 use ItemContent;
 
 /**
  * Drafts over items in memory: what a store keeps, every write with its mode, the locks, the
- * campaigns that were queued once and a lock another request holds; the files PHP received, those
- * read and the upload directory of the campaign slice
+ * campaigns that were queued once and a lock another request holds, a campaign read without the lock;
+ * the files PHP received, those read and the upload directory of the campaign slice; the source slice
+ * a pick looks into
  */
 final class MemoryDrafts extends Drafts
 {
@@ -28,6 +30,10 @@ final class MemoryDrafts extends Drafts
     public bool $lockedByOther = false;
     /** @var list<string> each lock and unlock by its name */
     public array $lockLog = [];
+    /** @var list<string> the campaigns read while no lock was held */
+    public array $readUnlocked = [];
+    /** the items of the source slice a pick may take; null = the test picks none */
+    public ?Recipients $source = null;
     /** @var array<string, string> temporary name => content of each file PHP received in the request */
     public array $received = [];
     /** @var list<string> the temporary names read */
@@ -44,7 +50,13 @@ final class MemoryDrafts extends Drafts
     public bool $urlFails = false;
 
     private bool $open = false;
+    private bool $locked = false;
     private int $tmpNames = 0;
+
+    public function __construct()
+    {
+        parent::__construct(fn(): Recipients => $this->source ?? throw new \LogicException('This test picks no item'));
+    }
 
     /** a draft as an item of $slice, the status and the state given */
     public function draft(string $id, string $slice = Sending::CAMPAIGN, int $status = 1, string $state = 'draft'): void
@@ -110,6 +122,9 @@ final class MemoryDrafts extends Drafts
     // as AA_Items gives it, with the dates of an active item
     protected function campaign(string $id): ?ItemContent
     {
+        if (!$this->locked) {
+            $this->readUnlocked[] = $id;
+        }
         $item = $this->items[$id] ?? null;
         if (is_null($item)) {
             return null;
@@ -135,14 +150,18 @@ final class MemoryDrafts extends Drafts
     protected function lock(string $name): bool
     {
         $this->lockLog[] = "lock $name";
+        $this->locked    = !$this->lockedByOther;
 
-        return !$this->lockedByOther;
+        return $this->locked;
     }
 
     protected function unlock(string $name): void
     {
         $this->lockLog[] = "unlock $name";
+        $this->locked    = false;
     }
+
+
 
     protected function uploaded(string $tmp): ?string
     {

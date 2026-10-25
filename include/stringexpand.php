@@ -10910,10 +10910,17 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        no campaign id only to save a new campaign. Actions: save (a draft - the form adds isds_subject,
  *        isds_to_hands, isds_body, and for its recipients isds_membership, isds_types[], isds_include and
  *        isds_exclude, item ids separated by "-"; a field left out stays as it is, the recipients only with
- *        isds_membership. Every save of the form of a new campaign - autosaves too - writes the one new draft,
- *        whose id the page gets in {datovkabulk:campaign} after the save. The body is stored as posted HTML:
- *        a template must escape it wherever it shows it, in a <textarea> too. Attachments: a form with
- *        enctype="multipart/form-data" adds files as isds_files[] and drops attachments by their URLs in
+ *        isds_membership and only when the filter stored is still the one the page read - the fields carry
+ *        it. Else the letter is saved, the choice is not: FILTER_CHANGED - as for a pick of an item gone
+ *        since. An autosave must take from the answer both the hidden fields and the controls of the
+ *        filter. A button isds_pick (include-<id>, exclude-<id>, unpick-<id>) picks one item of the source
+ *        slice into the lists posted. A button isds_step (test, send, search, files) goes into the URL of
+ *        the page after the save, for param:step - and with search isds_q, for search -, only once the
+ *        draft is SAVED. Enter in a text field posts the first button of its form: put Save first, before
+ *        any isds_pick or isds_step button. Every save of the form of a new campaign - autosaves too -
+ *        writes the one new draft, whose id the page gets in {datovkabulk:campaign} after the save. The body
+ *        is stored as posted HTML: a template must escape it wherever it shows it, in a <textarea> too.
+ *        Attachments: a form with enctype="multipart/form-data" adds files as isds_files[] and drops attachments by their URLs in
  *        isds_remove[]; at most 99, of the types both the editor uploads and a data message carries, and none
  *        is saved if one is refused. They go into the upload directory of the slice, public to whoever knows
  *        the URL - say so on the page: they are not secret. PHP takes at most max_file_uploads files a
@@ -10952,7 +10959,9 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        WRONG_STATE, BUSY, EXPIRED, ...),
  *        status (done, refused, busy, expired, failed), action, or charge - what a test message cost (CHARGED,
  *        MAY_BE_CHARGED, '' nothing). After the action the page is loaded again with isds_campaign
- *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes
+ *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes. isds_part
+ *        goes from the URL; after a save SAVED isds_step, isds_q and isds_page are those of its form; after
+ *        another action done isds_step and isds_q go, isds_page stays; after one refused or failed all stay
  *    {datovkabulk:recipients:<campaign id>:count|skipped|ids|skippedids} - of an active campaign by its stored
  *        filter, counted anew: how many get the letter, how many are skipped for their data box, the dash-separated
  *        ids of who gets it or who is skipped - of the page param:page shows, 50 a page, in the order they are sent
@@ -11018,7 +11027,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        items of the source slice - for the hidden fields isds_include and isds_exclude of the draft form, which
  *        store them whole; includepage and excludepage only 50 a page (param:page) - for the chips of a
  *        {datovkabulk:view}. Without the id the filter a new campaign starts with;
- *        '' for a stored filter that cannot be read (logged) - never take it for the one a new campaign starts with
+ *        '' for a stored filter that cannot be read (logged) - never take it for the one a new campaign starts with:
+ *        show the controls of the filter unchecked then (membership '' tells it); a choice made anew replaces it
  *    {datovkabulk:source:<item id>:name|box|type|member|reason} - what to show of an active item of the source slice,
  *        escaped (no {safe:}): its name, data box, the label of its type, member (1, 0, '' without member_field),
  *        reason - why the campaign of the page skips it (missing, format, duplicate; '' when it gets the letter)

@@ -80,6 +80,35 @@ final readonly class RecipientFilter
         return new self($types, $membership, self::ids($values['include'], 'include'), self::ids($values['exclude'], 'exclude'));
     }
 
+    /**
+     * The filter with one item picked by a button of the page (isds_pick): include-<id> adds it, exclude-<id>
+     * leaves it out, unpick-<id> takes it back from both - the other list loses it each time. Only an active
+     * item of the source slice is put in, as an id of another slice would go into the filter unseen; any is
+     * taken back, so that an item gone to the trash does not return with it.
+     * @param string $pick include-, exclude- or unpick- with a long id
+     * @throws \InvalidArgumentException no pick
+     * @throws \OutOfBoundsException     not an active item of the source slice - deleted or in the trash since the page showed it
+     * @throws \LengthException          a list would have more than Setup::MAX_RECIPIENTS
+     */
+    public function picked(string $pick, Setup $setup, Recipients $recipients): self
+    {
+        $id = (preg_match('/^(include|exclude|unpick)-(.*)\z/s', $pick, $m) === 1) ? ModuleId::normalize($m[2]) : null;
+        if (is_null($id)) {
+            throw new \InvalidArgumentException('A pick is include-, exclude- or unpick- with an item id');
+        }
+        if (($m[1] !== 'unpick') && ($recipients->ofSource($setup->sourceSlice, [$id]) !== [$id])) {
+            throw new \OutOfBoundsException('Only an active item of the source slice may be picked');
+        }
+        $listed  = static fn(array $list, bool $in): array => $in ? array_values(array_unique([...$list, $id])) : array_values(array_diff($list, [$id]));
+        $include = $listed($this->include, $m[1] === 'include');
+        $exclude = $listed($this->exclude, $m[1] === 'exclude');
+        if (max(count($include), count($exclude)) > Setup::MAX_RECIPIENTS) {
+            throw new \LengthException('A list of the filter has more than ' . Setup::MAX_RECIPIENTS . ' items');
+        }
+
+        return new self($this->types, $this->membership, $include, $exclude);
+    }
+
     /** what fromJson() reads back */
     public function toJson(): string
     {

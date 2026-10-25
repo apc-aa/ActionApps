@@ -185,7 +185,7 @@ final class FakeGate extends Gate
 
     protected function actions(Access $access): Actions
     {
-        return new FakeActions($access, $this->campaignOfPage(...), $this->run(...), $this->answered(...));
+        return new FakeActions($access, $this->campaignOfPage(...), $this->run(...), $this->answered(...), $this->resolver(...));
     }
 
     protected function headersSent(): bool

@@ -14,6 +14,7 @@ use AA\Isds\Drafts;
 use AA\Isds\Gate;
 use AA\Isds\IsdsException;
 use AA\Isds\Outcome;
+use AA\Isds\Recipients;
 use AA\Isds\Registry\Sync;
 use AA\Isds\Schema;
 use AA\Isds\SendQueue;
@@ -127,6 +128,7 @@ final class ActionsTest extends TestCase
             fn(Setup $setup, string $id): ?array => (($this->campaigns[$id]['slice'] ?? '') === $setup->campaignSlice) ? $this->campaigns[$id] : null,
             static fn(string $id): ?SendRun => TestSendRun::ofSubject($id, 1)[0] ?? null,
             $answered ?? static fn(): ?ActionResult => null,
+            static fn(): Recipients => throw new \LogicException('This test picks no item'),
         );
     }
 

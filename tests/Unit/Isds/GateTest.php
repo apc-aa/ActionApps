@@ -11,6 +11,7 @@ use AA\Isds\ActionResult;
 use AA\Isds\Actions;
 use AA\Isds\Advice;
 use AA\Isds\DatovkaConf;
+use AA\Isds\Drafts;
 use AA\Isds\Gate;
 use AA\Isds\SendResult;
 use AA\Isds\SendRun;
@@ -18,6 +19,7 @@ use AA\Isds\SendStart;
 use AA\Isds\Outcome;
 use AA\Isds\Registry\DownloadedRegister;
 use AA\Isds\Registry\Sync;
+use AA\Isds\Schema;
 use AA\Isds\Setup;
 use AA\Isds\SetupException;
 use AA\Isds\TestResult;
@@ -114,6 +116,7 @@ final class GateTest extends TestCase
         }, AA_Credentials::singleton(), AA_Credentials::class)();
         (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
         AA::Contentcache()->clear();
+        \AA_Items::singleton()->doInvalidate();
         FakeRecipients::forget();
         FakeActions::reset();
         $GLOBALS['spareDBs'] = [];
@@ -526,6 +529,53 @@ final class GateTest extends TestCase
         }
         self::assertSame($nonces, array_unique($nonces), 'each form shown makes its own draft or copy');
         self::assertSame([[], [], []], array_map(static fn(array $f): array => array_intersect_key($f, ['isds_nonce' => 1]), array_slice($fields, 4)));
+    }
+
+    /** @return list<?string> isds_filter_seen of the forms of a draft and of others, of the campaigns of a page with a gate */
+    private static function filterSeen(FakeGate $gate): array
+    {
+        session_id('gate-test-session');
+
+        return self::inside($gate, static fn(): array => array_map(
+            static fn(array $f): ?string => self::inputs($gate->fields(...$f))['isds_filter_seen'] ?? null,
+            [['save', self::ITEM], ['save'], ['save', self::LETTER], ['save', self::BENESOV], ['send', self::ITEM], ['clone', self::ITEM]],
+        ));
+    }
+
+    /** a gate whose page has ITEM with a filter, LETTER with one of a type it no longer offers, BENESOV in the trash */
+    private static function filterGate(string $chosen, string $broken): FakeGate
+    {
+        $gate            = self::gate();
+        $gate->setup     = self::page();
+        $gate->campaigns = [
+            self::ITEM    => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => $chosen, 'state' => 'draft'],
+            self::LETTER  => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => $broken, 'state' => 'draft'],
+            self::BENESOV => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => $chosen, 'state' => 'draft'],
+        ];
+
+        return $gate;
+    }
+
+    // what the form of a draft tells of the filter stored: Drafts writes the recipients only over that one -
+    // over one the page cannot read too, so that a choice made anew replaces it (BAD_FILTER)
+    public function test_fields_saveTellsTheFilterSeen(): void
+    {
+        $chosen = Sending::filter(['include' => [self::ADAMOV]]);
+        $broken = Sending::filter(['types' => ['kraj']]);
+        $gate   = self::filterGate($chosen, $broken);
+
+        self::assertSame([Drafts::filterSeen($chosen), Drafts::filterSeen(''), Drafts::filterSeen($broken), null, null, null], self::filterSeen($gate));
+        // what the template prefills the controls with: nothing of the broken one
+        self::assertSame(['', ''], self::inside($gate, static fn(): array => [$gate->filter(self::LETTER, 'membership'), $gate->filter(self::LETTER, 'include')]));
+    }
+
+    // without the settings of data boxes of the source slice the page shows no choice to store over another
+    public function test_fields_saveTellsNoFilterWithoutSourceSettings(): void
+    {
+        $gate = self::filterGate(Sending::filter(['include' => [self::ADAMOV]]), Sending::filter(['types' => ['kraj']]));
+        unset(self::rulesOf($gate)->configs[self::SOURCE]);
+
+        self::assertSame([null, null, null, null, null, null], self::filterSeen($gate));
     }
 
     /** @return array<string, array{\Closure(FakeGate): void}> what keeps a page from taking a box of the register */
@@ -1222,6 +1272,156 @@ final class GateTest extends TestCase
         self::assertSame([[], []], [FakeActions::$resumed, $_SESSION], 'nothing done, nothing kept');
     }
 
+    /**
+     * Save of ITEM posted from the page at $uri by the form of the draft with $fields; the core says $code
+     * @param array<string, mixed> $fields
+     */
+    private static function postSave(string $code, array $fields, string $uri = '/cz/rozesilka?tab=2'): void
+    {
+        FakeActions::$save = static fn(): array => ['code' => $code, 'campaign' => self::ITEM, 'field' => ($code === Actions::INPUT) ? Drafts::SUBJECT : '', 'file' => ''];
+        self::postResume(uri: $uri);
+        $_POST = ['isds_action' => 'save', 'isds_token' => FormToken::get(Gate::purpose('save', self::page(), self::ITEM))] + $fields + $_POST;
+    }
+
+    /** @return array<string, array{string, string}> what the core says of a save, and what the URL after it adds */
+    public static function savesAndSteps(): array
+    {
+        return [
+            'saved'             => [Actions::SAVED, '&isds_step=search&isds_q=Brno'],
+            // the letter saved, the choice not: the page shows the choice stored, not the step
+            'filter changed'    => [Actions::FILTER_CHANGED, ''],
+            // the page stays at the form, with what to fix
+            'refused'           => [Actions::INPUT, ''],
+            'busy'              => [SendStart::BUSY, ''],
+            'no draft any more' => [SendStart::NOT_DRAFT, ''],
+        ];
+    }
+
+    // "Save and search" without JavaScript: the text is saved first, then the page shows the step
+    #[DataProvider('savesAndSteps')]
+    public function test_redirect_keepsStepAndQueryOnlyWhenSaved(string $code, string $added): void
+    {
+        self::postSave($code, ['isds_step' => 'search', 'isds_q' => 'Brno']);
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_campaign=' . self::ITEM . preg_quote($added, '~') . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
+    }
+
+    // only the form of the draft goes on to a step
+    public function test_redirect_noStepAfterAnotherAction(): void
+    {
+        self::postResume();
+        $_POST += ['isds_step' => 'search', 'isds_q' => 'Brno'];
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
+    }
+
+    // the search field of the draft form is posted by every save: the source is searched only for Search
+    public function test_redirect_queryOnlyForSearch(): void
+    {
+        self::postSave(Actions::SAVED, ['isds_step' => 'test', 'isds_q' => 'Brno']);
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_campaign=' . self::ITEM . '&isds_step=test&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
+    }
+
+    /** @return array<string, array{mixed, string}> isds_step posted, and what param:step tells after the save */
+    public static function steps(): array
+    {
+        return [
+            'test'            => ['test', 'test'],
+            'send'            => ['send', 'send'],
+            'search'          => ['search', 'search'],
+            'files'           => ['files', 'files'],
+            'another'         => ['history', ''],
+            'in capitals'     => ['Test', ''],
+            'with a space'    => ['test ', ''],
+            'a list'          => [['test'], ''],
+            'a parameter too' => ['test&isds_tab=check', ''],
+            'empty'           => ['', ''],
+        ];
+    }
+
+    #[DataProvider('steps')]
+    public function test_redirect_stepOnlyFixed(mixed $step, string $shown): void
+    {
+        self::postSave(Actions::SAVED, ['isds_step' => $step]);
+        $url = $this->redirectOf(self::actionGate());
+
+        self::assertSame(($shown === '') ? 0 : 1, substr_count($url, 'isds_step='));
+        self::assertStringNotContainsString('isds_tab', $url);
+        self::getAfter($url);
+        $gate = self::actionGate();
+        self::assertSame($shown, self::inside($gate, static fn(): string => $gate->param('step')));
+    }
+
+    /** @return array<string, array{mixed, ?string}> isds_q posted, and the text the page then looks for; null = none */
+    public static function queries(): array
+    {
+        return [
+            'a name'                => ['Brno', 'Brno'],
+            'cut to 100 letters'    => [str_repeat('č', 150), str_repeat('č', 100)],
+            'what a URL would read' => ['%_ a&isds_step=send#x', '%_ a&isds_step=send#x'],
+            'spaces trimmed'        => [' Ústí nad Labem ', 'Ústí nad Labem'],
+            // empty once cut
+            'spaces, then a name'   => [str_repeat(' ', 100) . 'Brno', null],
+            'only spaces'           => ['   ', null],
+            'not UTF-8'             => ["Brn\xF3", null],
+            'a list'                => [['Brno'], null],
+            'empty'                 => ['', null],
+        ];
+    }
+
+    // cut before it is encoded: a cut escape or letter would make no text the search takes
+    #[DataProvider('queries')]
+    public function test_redirect_queryCutBeforeEncoding(mixed $query, ?string $looked): void
+    {
+        self::postSave(Actions::SAVED, ['isds_step' => 'search', 'isds_q' => $query]);
+        $url = $this->redirectOf(self::actionGate());
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_campaign=' . self::ITEM . '&isds_step=search(&isds_q=[A-Za-z0-9%_.-]+)?&isds_r=[0-9a-f]{16}\z~', $url);
+        self::getAfter($url);
+        self::assertSame([$looked, 'search'], [$_GET['isds_q'] ?? null, $_GET['isds_step']]);
+    }
+
+    /** @return array<string, array{\Closure(string): void, string}> an action posted from a page at a step, and what of its URL stays */
+    public static function actionsAfterAStep(): array
+    {
+        $resume = static function (?string $code): \Closure {
+            return static function (string $uri) use ($code): void {
+                FakeActions::$resume = is_null($code) ? null : static fn(): string => $code;
+                self::postResume(uri: $uri);
+            };
+        };
+        $save = static fn(string $code): \Closure => static fn(string $uri) => self::postSave($code, [], $uri);
+
+        return [
+            // its form sets the step anew
+            'saved'                => [$save(Actions::SAVED), 'isds_tab=history&isds_Q=y&isds_show=ok'],
+            // done: the step goes, the page of the list stays - a row fixed on page 3 stays on page 3
+            'the choice not saved' => [$save(Actions::FILTER_CHANGED), 'isds_tab=history&isds_page=3&isds_Q=y&isds_show=ok'],
+            'continued'            => [$resume(null), 'isds_tab=history&isds_page=3&isds_Q=y&isds_show=ok'],
+            // not done: the card it failed on stays
+            'not continued'        => [$resume(Actions::WRONG_STATE), 'isds_tab=history&isds_step=send&isds_q=x&isds_page=3&isds_Q=y&isds_show=ok'],
+            'not saved'            => [$save(Actions::INPUT), 'isds_tab=history&isds_step=send&isds_q=x&isds_page=3&isds_Q=y&isds_show=ok'],
+        ];
+    }
+
+    // a part of the page asked for alone never comes back; the step, the search and the page of the list only as the action tells
+    #[DataProvider('actionsAfterAStep')]
+    public function test_redirect_dropsOldStepQueryPartPage(\Closure $post, string $kept): void
+    {
+        $post('/cz/rozesilka?isds_tab=history&isds_step=send&isds_q=x&isds_part=progress&isds_page=3&isds_Q=y&isds_show=ok');
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?' . preg_quote($kept, '~') . '&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
+    }
+
+    // PHP reads "isds.step", "isds step", "isds+part" and "isds[page" as isds_step, isds_part, isds_page
+    public function test_redirect_dropsNamesAsPhpReadsThem(): void
+    {
+        self::postSave(Actions::SAVED, [], '/cz/rozesilka?isds.step=send&isds%20q=x&isds+part=progress&isds[page=3&isds.r=0123456789abcdef&isds.campaign=c&isds_page%5B%5D=2&keep=1');
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?keep=1&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
+    }
+
     // the second click finds the sending going on already - it shows what the first did, not a refusal
     public function test_result_doubleClickShowsTheFirstResult(): void
     {
@@ -1587,6 +1787,30 @@ final class GateTest extends TestCase
         self::getAfter($url);
         $gate = self::actionGate();
         self::assertSame(['The draft is saved.', self::ITEM], self::inside($gate, static fn(): array => [$gate->result(), $gate->campaign()]));
+    }
+
+    // the page tells the filter it read, Drafts compares that under the lock with the one it reads: one
+    // item, read both ways, gives the same bytes - else every choice of recipients would be dropped
+    public function test_stored_gateAndDraftsReadTheSameFilter(): void
+    {
+        $filter = " {\"types\":[\"město\"],\"membership\":\"all\",\"include\":[],\"exclude\":[]}\n";
+        RecordingDb::reset();
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+        RecordingDb::$answer = static function (string $sql) use ($filter): array {
+            if (preg_match('/^SELECT (.+?) FROM item WHERE/', $sql, $m)) {
+                $row = ['id' => pack_id(self::ITEM), 'slice_id' => pack_id(self::CAMPAIGN), 'status_code' => '1', 'publish_date' => '1', 'expiry_date' => '4000000000'] + array_fill_keys(AA::Metabase()->getColumnNames('item'), '1');
+                return [($m[1] === '*') ? $row : array_intersect_key($row, array_flip(explode(',', $m[1])))];
+            }
+            return str_starts_with($sql, 'SELECT * FROM content WHERE') ? [['item_id' => pack_id(self::ITEM), 'field_id' => Schema::CAMPAIGN_FILTER, 'number' => 0, 'text' => $filter, 'flag' => FLAG_TEXT_STORED]] : [];
+        };
+        // a slice with no reading password: nothing masked
+        FakeSliceRules::fieldsSlice(self::CAMPAIGN, [Schema::CAMPAIGN_FILTER => 'qte']);
+
+        $gate   = (new ReflectionMethod(Gate::class, 'stored'))->invoke(new Gate(), self::ITEM)['filter'] ?? null;
+        $drafts = Drafts::stored(self::ITEM)?->getValue(Schema::CAMPAIGN_FILTER);
+
+        self::assertSame([$filter, $filter], [$gate, $drafts]);
+        self::assertSame(Drafts::filterSeen($gate), Drafts::filterSeen((string) $drafts));
     }
 
     // autosaves add a result every few seconds: they never push out the one that keeps a Test from going twice

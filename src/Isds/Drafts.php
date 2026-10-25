@@ -40,6 +40,9 @@ class Drafts
 
     /** the draft is saved - or was already as posted */
     public const SAVED = 'SAVED';
+    /** the letter is saved, the recipients the form chose are not: the filter stored is not the one its
+     *  page showed (another window saved another since), or an item it picked is gone */
+    public const FILTER_CHANGED = 'FILTER_CHANGED';
     /** the copy is made - or was, by the same form before */
     public const CLONED = 'CLONED';
 
@@ -75,22 +78,30 @@ class Drafts
     /** storeItem(): invalidate the pages of the campaign slice, no feeding, no events */
     private const FLAGS = [true, false, false, false];
 
+    /** @param \Closure(): Recipients $resolver as Gate::resolver() - tells a pick of an active item of the source slice */
+    public function __construct(private \Closure $resolver) {}
+
     /**
      * Saves what the form posts into the draft $campaign, or into a new one. A field the form does not
-     * post stays as it is; the recipients are written only with isds_membership.
+     * post stays as it is; the recipients are written only with isds_membership, and only when the form
+     * carries the filter stored now as the page read it (isds_filter_seen, filterSeen()): a page that
+     * could not read it shows it empty, a stale one shows another - the letter is saved then, the
+     * filter stays and the save tells FILTER_CHANGED, as for a pick of an item gone since.
      * Fields: isds_subject, isds_to_hands, isds_body (HTML, stored as posted - escape it wherever shown),
      * isds_membership, isds_types[], isds_include and isds_exclude (item ids separated by "-": thousands
-     * of fields would be cut by max_input_vars), isds_remove[] (URLs of attachments to drop), and for a
-     * new draft isds_nonce (32 hexadecimal digits). Files: isds_files[], added to the attachments; a
-     * file posted under another name is refused - the insert function of the field (fil) would take
-     * it by rules of its own -, an empty file input of another name is not.
+     * of fields would be cut by max_input_vars), isds_pick (one item picked by a button into the lists
+     * posted, RecipientFilter::picked() - only with isds_membership), isds_filter_seen, isds_remove[]
+     * (URLs of attachments to drop), and for a new draft isds_nonce (32 hexadecimal digits). Files:
+     * isds_files[], added to the attachments; a file posted under another name is refused - the insert
+     * function of the field (fil) would take it by rules of its own -, an empty file input of another
+     * name is not.
      * Anything refused writes nothing and leaves no file.
      * @param string                  $campaign long id in small letters of an item of the campaign slice;
      *                                            '' = a new draft
      * @param array<array-key, mixed> $post     the form as posted
      * @param array<array-key, mixed> $files    the files as posted ($_FILES)
      * @return array{code: string, campaign: string, field: string, file: string} code: SAVED,
-     *         Actions::INPUT (field: what cannot be taken; file: the name of the file refused, as it
+     *         FILTER_CHANGED, Actions::INPUT (field: what cannot be taken; file: the name of the file refused, as it
      *         would be stored, '' for none), Actions::EXPIRED (no session), SendStart::UNKNOWN, NOT_DRAFT, ALREADY or
      *         BUSY; campaign: the draft - of a new one too, so that the page goes on with it -, '' for
      *         UNKNOWN and with no id known
@@ -109,10 +120,11 @@ class Drafts
                 return self::told(Actions::EXPIRED, '');
             }
         }
-        $fields = $this->fields($setup, $post);
-        if (is_string($fields)) {
-            return self::told(Actions::INPUT, $id, $fields);
+        $read = $this->fields($setup, $post);
+        if (is_string($read)) {
+            return self::told(Actions::INPUT, $id, $read);
         }
+        [$fields, $lost] = $read;
         $attached = self::attached($post, $files);
         if ($attached['field'] !== '') {
             return self::told(Actions::INPUT, $id, $attached['field'], $attached['file']);
@@ -121,10 +133,21 @@ class Drafts
             return self::told(SendStart::BUSY, $id);
         }
         try {
-            return $this->whileOpen($setup->campaignSlice, fn(): array => $this->write($setup, $id, $campaign === '', $fields, $attached));
+            $seen = is_string($post['isds_filter_seen'] ?? null) ? $post['isds_filter_seen'] : '';
+
+            return $this->whileOpen($setup->campaignSlice, fn(): array => $this->write($setup, $id, $campaign === '', $fields, $lost, $attached, $seen));
         } finally {
             $this->unlock(SendRun::lockName($id));
         }
+    }
+
+    /**
+     * What tells the stored filter $stored ('' = none), so that a form can show which one its page read:
+     * the hidden field isds_filter_seen of the form of a draft (Gate::fields())
+     */
+    public static function filterSeen(string $stored): string
+    {
+        return hash('sha256', $stored);
     }
 
     /**
@@ -224,10 +247,12 @@ class Drafts
     /**
      * Under the lock: a new draft stored, or the draft checked as stored now and its changes written
      * @param array<string, AA_Value> $fields
+     * @param bool   $lost the form picked an item gone since: its filter is not in $fields
      * @param array{remove: list<string>, uploads: list<array{name: string, tmp: string}>, field: string, file: string} $attached
+     * @param string $seen isds_filter_seen of the form
      * @return array{code: string, campaign: string, field: string, file: string}
      */
-    private function write(Setup $setup, string $id, bool $new, array $fields, array $attached): array
+    private function write(Setup $setup, string $id, bool $new, array $fields, bool $lost, array $attached, string $seen): array
     {
         $queuedOnce = fn(): bool => $this->runExists($id);
         $uploads    = $attached['uploads'];
@@ -240,13 +265,14 @@ class Drafts
             if ($refused) {
                 return self::told(Actions::INPUT, $id, ...$refused);
             }
-            $moved   = $this->moveIn($setup, $uploads);
-            $content = self::content($setup, $id, [
+            [$written, $code] = self::overStored($fields, $lost, '', $seen);
+            $moved            = $this->moveIn($setup, $uploads);
+            $content          = self::content($setup, $id, [
                 'status_code.....'    => new AA_Value(\SC_ACTIVE),
                 Schema::CAMPAIGN_STATE => new AA_Value(Schema::CAMPAIGN_STATE_DRAFT),
-            ] + $fields + (($moved === []) ? [] : [Schema::CAMPAIGN_FILES => new AA_Value(array_values($moved))]));
+            ] + $written + (($moved === []) ? [] : [Schema::CAMPAIGN_FILES => new AA_Value(array_values($moved))]));
             if ($this->storeWith($content, 'insert_if_new', $moved)) {
-                return self::told(self::SAVED, $id);
+                return self::told($code, $id);
             }
             if ((ItemContent::lastErr() !== \ITEMCONTENT_ERROR_DUPLICATE) || ($moved !== [])) {
                 throw new \RuntimeException("Draft $id not stored, error " . ItemContent::lastErr());
@@ -270,7 +296,8 @@ class Drafts
         if ($refused) {
             return self::told(Actions::INPUT, $id, ...$refused);
         }
-        $changed = array_filter($fields, static function (AA_Value $value, string $field) use ($item): bool {
+        [$fields, $code] = self::overStored($fields, $lost, (string) $item->getValue(Schema::CAMPAIGN_FILTER), $seen);
+        $changed         = array_filter($fields, static function (AA_Value $value, string $field) use ($item): bool {
             $had = $item->getAaValue($field);
             // a body the admin stored as plain text would go as plain text
             $plain = ($field === Schema::CAMPAIGN_BODY) && (($had->getFlag() & FLAG_HTML) === 0);
@@ -284,7 +311,7 @@ class Drafts
             throw new \RuntimeException("Draft $id not stored, error " . ItemContent::lastErr());
         }
 
-        return self::told(self::SAVED, $id);
+        return self::told($code, $id);
     }
 
     /**
@@ -334,6 +361,23 @@ class Drafts
         }
 
         return self::copied(self::CLONED, $id, true);
+    }
+
+    /**
+     * What to write over the filter $stored now, and what the save tells: the filter the form posts only
+     * when the form showed $stored (filterSeen())
+     * @param array<string, AA_Value> $fields
+     * @param bool                    $lost   see write()
+     * @return array{array<string, AA_Value>, string} the fields; SAVED or FILTER_CHANGED
+     */
+    private static function overStored(array $fields, bool $lost, string $stored, string $seen): array
+    {
+        $posted = $fields[Schema::CAMPAIGN_FILTER] ?? null;
+        if (is_null($posted) || hash_equals(self::filterSeen($stored), $seen)) {
+            return [$fields, $lost ? self::FILTER_CHANGED : self::SAVED];
+        }
+        // the choice stored already - a second click before the page showed the first - loses nothing
+        return [array_diff_key($fields, [Schema::CAMPAIGN_FILTER => true]), ((string) $posted->getValue() === $stored) ? self::SAVED : self::FILTER_CHANGED];
     }
 
     /**
@@ -532,7 +576,8 @@ class Drafts
     /**
      * The fields of the letter the form posts, as they are stored
      * @param array<array-key, mixed> $post
-     * @return array<string, AA_Value>|string the field of the form that cannot be taken
+     * @return array{array<string, AA_Value>, bool}|string the fields, and whether the form picked an item gone
+     *         since - its filter left out then; or the field of the form that cannot be taken
      */
     private function fields(Setup $setup, array $post): array|string
     {
@@ -560,23 +605,31 @@ class Drafts
             // HtmlBody cleans it when the letter is made
             $fields[Schema::CAMPAIGN_BODY] = new AA_Value($body, FLAG_HTML);
         }
+        $lost = false;
         if (array_key_exists('isds_membership', $post)) {
-            $filter = self::filter($setup, $post);
+            $filter = $this->filter($setup, $post);
             if (in_array($filter, [self::RECIPIENTS, self::TOO_MANY], true)) {
                 return $filter;
             }
-            $fields[Schema::CAMPAIGN_FILTER] = new AA_Value($filter);
+            $lost = ($filter === self::FILTER_CHANGED);
+            if (!$lost) {
+                $fields[Schema::CAMPAIGN_FILTER] = new AA_Value($filter);
+            }
+        } elseif (array_key_exists('isds_pick', $post)) {
+            // a pick changes the lists the form shows; without them it would change those stored, unseen
+            return self::RECIPIENTS;
         }
 
-        return $fields;
+        return [$fields, $lost];
     }
 
     /**
-     * The recipient filter of the form, as the campaign stores it
+     * The recipient filter of the form, as the campaign stores it - with the item it picks (isds_pick)
      * @param array<array-key, mixed> $post
-     * @return string the filter; RECIPIENTS = not one the page offers, TOO_MANY = too many ids
+     * @return string the filter; RECIPIENTS = not one the page offers, TOO_MANY = too many ids,
+     *                FILTER_CHANGED = the item picked is no active item of the source slice (any more)
      */
-    private static function filter(Setup $setup, array $post): string
+    private function filter(Setup $setup, array $post): string
     {
         $lists = [];
         foreach (['include', 'exclude'] as $list) {
@@ -594,11 +647,19 @@ class Drafts
             }
         }
         $filter = ['types' => $post['isds_types'] ?? [], 'membership' => $post['isds_membership']] + $lists;
+        $pick   = $post['isds_pick'] ?? null;
         try {
             // one reader of a filter: the one sending reads it with
-            return RecipientFilter::fromJson(json_encode($filter, JSON_THROW_ON_ERROR), $setup)->toJson();
+            $read = RecipientFilter::fromJson(json_encode($filter, JSON_THROW_ON_ERROR), $setup);
+
+            return (is_null($pick) ? $read : $read->picked(is_string($pick) ? $pick : '', $setup, ($this->resolver)()))->toJson();
         } catch (\InvalidArgumentException|\JsonException) {
             return self::RECIPIENTS;
+        } catch (\LengthException) {
+            return self::TOO_MANY;
+        } catch (\OutOfBoundsException) {
+            // deleted or put in the trash since the page showed it: the letter is still saved
+            return self::FILTER_CHANGED;
         }
     }
 

@@ -151,7 +151,7 @@ class Gate
         AA_Credentials::singleton()->openForRequest($setup->campaignSlice, $setup->messageSlice);
         $result = $this->actions($access)->run($setup, $guarded);
         if ($result?->taken() ?? false) {
-            $this->redirect(self::afterAction($result->campaign, $this->keep($setup, $access->uid(), $result)));
+            $this->redirect(self::afterAction($result, $this->keep($setup, $access->uid(), $result)));
         }
         $outer         = [self::$open, self::$shown, self::$guarded, self::$items];
         self::$open    = $setup;
@@ -173,7 +173,12 @@ class Gate
      * unless the page could take a box from the register (fixable()) - the form adds isds_recipient and,
      * as isds_box, regbox() of the row.
      * The form of a new campaign and of a copy carries a nonce of its own: every post of the form shown
-     * makes the one draft (Drafts::newId(), copyId()).
+     * makes the one draft (Drafts::newId(), copyId()). The form of save tells the filter stored as the
+     * page read it (isds_filter_seen, filterSeenField()): Drafts writes the recipients only when that
+     * is the one stored then, else it saves the letter and tells FILTER_CHANGED. A form saved without
+     * loading the page again (autosave) must take from the answer both its hidden fields and the
+     * controls of the filter: a new isds_filter_seen beside the choice of before would let that choice
+     * overwrite the one stored.
      * @param string $campaign long id; '' only to save a new campaign
      */
     public function fields(string $action, string $campaign = ''): string
@@ -195,7 +200,26 @@ class Gate
             // the token is the same in every form of the action: this tells one shown form from another
             . getFrmHiddenEasy('isds_form', bin2hex(random_bytes(8)))
             // a new draft and a copy take their id from it; any other form names its campaign
-            . ((($campaign === '') || ($action === 'clone')) ? getFrmHiddenEasy('isds_nonce', bin2hex(random_bytes(16))) : '');
+            . ((($campaign === '') || ($action === 'clone')) ? getFrmHiddenEasy('isds_nonce', bin2hex(random_bytes(16))) : '')
+            . (($action === 'save') ? $this->filterSeenField(self::$open, $campaign) : '');
+    }
+
+    /**
+     * The hidden field isds_filter_seen of the form of a draft: what tells the filter it stores - none
+     * for a new one. A filter the page cannot read (filter() '', BAD_FILTER) gets it too, so that a
+     * choice made anew replaces it - the template shows the controls of the filter unchecked then, and
+     * an autosave of the letter, which posts no isds_membership, leaves it. '' for no active campaign
+     * of the page, and while the source slice has no settings of data boxes: what the page shows of the
+     * recipients then is no choice to store over another.
+     */
+    private function filterSeenField(Setup $setup, string $campaign): string
+    {
+        $item = ($campaign === '') ? ['active' => true, 'filter' => ''] : $this->campaignOfPage($setup, $campaign);
+        if (!($item['active'] ?? false) || is_null($this->rules()->registryConfig($setup->sourceSlice))) {
+            return '';
+        }
+
+        return getFrmHiddenEasy('isds_filter_seen', Drafts::filterSeen($item['filter']));
     }
 
     /**
@@ -458,7 +482,8 @@ class Gate
      * param:page shows, 50 a page, for the chips of a {datovkabulk:view}. Ids only of the active items of
      * the source slice: a stored id of another item is left out. Of no campaign ('') the filter a new
      * one starts with. '' for another item or question, and for a stored filter that cannot be read
-     * (logged as by recipients()) - '' then never means the filter a new campaign starts with.
+     * (logged as by recipients()) - '' then never means the filter a new campaign starts with: show the
+     * controls of the filter unchecked (membership '' tells it), a choice made anew replaces it.
      * @param string $campaign long id; '' = a new campaign
      */
     public function filter(string $campaign, string $what): string
@@ -790,27 +815,54 @@ class Gate
 
     /**
      * Where the browser goes after an action: the path of this page with its query, the campaign and
-     * the key of the result in place of any it had. Never another host: "//host/..." and "/\host/..."
-     * lead to the host they name (the router reads "//host/cz/x" as "/cz/x"), so such a path, or one
-     * with a control character, leads to "/".
+     * the key of the result in place of any it had, never a part of the page (isds_part). After the draft
+     * is saved (SAVED) the step (isds_step) its form asked for - and for search what to look for (isds_q) -
+     * in place of the step, search and page of the list of before; after another action that ran (done)
+     * the step and search go, the page of the list stays; after one that did not, all stay, so the
+     * page shows the card it failed on. Names as PHP reads them: "isds.step" is isds_step to it.
+     * Never another host: "//host/..." and "/\host/..." lead to the host they name (the router reads
+     * "//host/cz/x" as "/cz/x"), so such a path, or one with a control character, leads to "/".
      */
-    private static function afterAction(string $campaign, string $key): string
+    private static function afterAction(ActionResult $result, string $key): string
     {
         $uri            = (string) ($_SERVER['REQUEST_URI'] ?? '');
         [$path, $query] = explode('?', explode('#', $uri, 2)[0], 2) + [1 => ''];
         if ((preg_match('~^/(?![/\\\\])~', $path) !== 1) || (preg_match('/[\x00-\x20\x7f]/', $uri) === 1)) {
             [$path, $query] = ['/', ''];
         }
-        $pairs = array_filter(explode('&', $query), static function (string $pair): bool {
-            $name = (string) preg_replace('/\[.*$/s', '', urldecode(explode('=', $pair, 2)[0]));
-            return ($pair !== '') && !in_array($name, ['isds_campaign', 'isds_r'], true);
+        $saved = ($result->action === 'save') && ($result->code === Actions::SAVED);
+        $gone  = ['isds_campaign', 'isds_r', 'isds_part', ...match (true) {
+            $saved                                 => ['isds_step', 'isds_q', 'isds_page'],
+            $result->status === ActionResult::DONE => ['isds_step', 'isds_q'],
+            default                                => [],
+        }];
+        $pairs = array_filter(explode('&', $query), static function (string $pair) use ($gone): bool {
+            parse_str($pair, $read);
+            return ($pair !== '') && !in_array((string) array_key_first($read), $gone, true);
         });
-        if ($campaign !== '') {
-            $pairs[] = 'isds_campaign=' . $campaign;
+        if ($result->campaign !== '') {
+            $pairs[] = 'isds_campaign=' . $result->campaign;
+        }
+        if ($saved) {
+            $pairs = [...$pairs, ...self::nextStep()];
         }
         $pairs[] = 'isds_r=' . $key;
 
         return $path . '?' . implode('&', $pairs);
+    }
+
+    /** @return list<string> isds_step the form of the draft posts - only a step the page knows -, and for search isds_q, for the URL */
+    private static function nextStep(): array
+    {
+        $step = $_POST['isds_step'] ?? null;
+        if (!is_string($step) || !in_array($step, self::PARAMS['step'], true)) {
+            return [];
+        }
+        $query = $_POST['isds_q'] ?? null;
+        // cut before encoding - a cut escape would be no text -, and to what search() takes
+        $text = ($step === 'search') && is_string($query) && mb_check_encoding($query, 'UTF-8') ? trim(mb_substr($query, 0, self::QUERY_LENGTH)) : '';
+
+        return ($text === '') ? ["isds_step=$step"] : ["isds_step=$step", 'isds_q=' . rawurlencode($text)];
     }
 
     /** what to fix, and the pages that fix it - for a user of AA who may */
@@ -1151,7 +1203,7 @@ class Gate
     /** the actions of the page, for the login the gate let in */
     protected function actions(Access $access): Actions
     {
-        return new Actions($access, $this->campaignOfPage(...), $this->run(...), $this->answered(...));
+        return new Actions($access, $this->campaignOfPage(...), $this->run(...), $this->answered(...), $this->resolver(...));
     }
 
     protected function headersSent(): bool

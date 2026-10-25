@@ -64,6 +64,9 @@ class Actions
     public const TEST_BUSY = 'TEST_BUSY';
     /** Save: the draft is saved; the campaign of the result is the draft, a new one too */
     public const SAVED = Drafts::SAVED;
+    /** Save: the letter is saved, the choice of the recipients is not - it changed since the page showed it,
+     *  or an item picked is gone; the page shows the one stored */
+    public const FILTER_CHANGED = Drafts::FILTER_CHANGED;
     /** Copy: the copy is a new draft; the campaign of the result is the copy */
     public const CLONED = Drafts::CLONED;
     /** Copy of the unsent: the sending left no recipient unsent */
@@ -102,8 +105,9 @@ class Actions
      * @param \Closure(Setup, string): ?array{slice: string, active: bool, filter: string, state: string} $campaignOfPage as Gate::campaignOfPage()
      * @param \Closure(string): ?SendRun                                                                  $run            as Gate::run()
      * @param \Closure(Setup, string): ?ActionResult                                                      $answered       as Gate::answered()
+     * @param \Closure(): Recipients                                                                       $resolver       as Gate::resolver()
      */
-    public function __construct(private Access $access, private \Closure $campaignOfPage, private \Closure $run, private \Closure $answered) {}
+    public function __construct(private Access $access, private \Closure $campaignOfPage, private \Closure $run, private \Closure $answered, private \Closure $resolver) {}
 
     /**
      * The action the request asks of this page: a result taken() when it ran; an untaken one - the
@@ -209,7 +213,7 @@ class Actions
         ['code' => $code, 'campaign' => $id, 'field' => $field, 'file' => $file] = $this->saveDraft($setup, $campaign, $_POST, $_FILES);
 
         return match ($code) {
-            self::SAVED => new ActionResult('save', ActionResult::DONE, self::SAVED, $id),
+            self::SAVED, self::FILTER_CHANGED => new ActionResult('save', ActionResult::DONE, $code, $id),
             self::INPUT => self::refused('save', self::INPUT, $id, params: array_values(array_filter([$field, $file], static fn(string $p): bool => $p !== ''))),
             default     => self::refused('save', $code, $id),
         };
@@ -482,7 +486,7 @@ class Actions
      */
     protected function saveDraft(Setup $setup, string $campaign, array $post, array $files): array
     {
-        return (new Drafts())->save($setup, $campaign, $post, $files);
+        return (new Drafts($this->resolver))->save($setup, $campaign, $post, $files);
     }
 
     /**
@@ -493,7 +497,7 @@ class Actions
      */
     protected function copyDraft(Setup $setup, string $source, string $scope, array $post, array $unsent): array
     {
-        return (new Drafts())->copy($setup, $source, $scope, $post, $unsent);
+        return (new Drafts($this->resolver))->copy($setup, $source, $scope, $post, $unsent);
     }
 
     /**
