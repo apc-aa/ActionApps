@@ -421,6 +421,24 @@ final class GateTest extends TestCase
         self::assertSame(['', ''], [$fields[1], $fields[2]]);
     }
 
+    // the form of a new draft names it by a nonce of its own, new each time it is shown
+    public function test_fields_nonceOnlyForNewDraft(): void
+    {
+        session_id('gate-test-session');
+        $gate   = self::gate();
+        $fields = self::inside($gate, static fn(): array => array_map(
+            static fn(array $f): array => self::inputs($gate->fields(...$f)),
+            [['save'], ['save'], ['save', self::ITEM], ['send', self::ITEM], ['resume', self::ITEM]],
+        ));
+
+        [$new, $again] = array_map(static fn(array $f): string => $f['isds_nonce'] ?? '', $fields);
+        foreach ([$new, $again] as $nonce) {
+            self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $nonce);
+        }
+        self::assertNotSame($new, $again, 'each form shown makes its own draft');
+        self::assertSame([[], [], []], array_map(static fn(array $f): array => array_intersect_key($f, ['isds_nonce' => 1]), array_slice($fields, 2)));
+    }
+
     public function test_fields_unknownActionOrCampaign(): void
     {
         $gate = self::gate();
@@ -1133,6 +1151,77 @@ final class GateTest extends TestCase
             ['The test message has gone (ID 1835603 in ISDS, reference number 4711-T2). The test message went as a paid postal data message.', TestResult::CHARGED],
             self::inside($gate, static fn(): array => [$gate->result(), $gate->result('charge')]),
         );
+    }
+
+    // ------------------------------------------------------------ Save
+
+    // a new draft: the browser goes to the page of its id, which the template then reads
+    public function test_save_newDraftRedirectsToIt(): void
+    {
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => ''];
+        self::postResume();
+        $_POST = ['isds_action' => 'save', 'isds_campaign' => '', 'isds_token' => FormToken::get(Gate::purpose('save', self::page(), '')), 'isds_nonce' => str_repeat('a', 32), 'isds_subject' => 'Výzva'];
+
+        $url = $this->redirectOf(self::actionGate());
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?tab=2&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}$~', $url);
+        self::getAfter($url);
+        $gate = self::actionGate();
+        self::assertSame(['The draft is saved.', self::ITEM], self::inside($gate, static fn(): array => [$gate->result(), $gate->campaign()]));
+    }
+
+    // autosaves add a result every few seconds: they never push out the one that keeps a Test from going twice
+    public function test_result_autosavesKeepTheGuardOfATest(): void
+    {
+        FakeActions::$test = static fn(): TestResult => TestResult::of(Outcome::of(new SendResult('1835603', '0000', 'OK')), 'msg', 'dj7j6mk', '4711-T2', true, true);
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => ''];
+        self::postAction('test', ['isds_box' => 'dj7j6mk']);
+        $test = $_POST;
+        $this->redirectOf(self::actionGate());
+        for ($i = 0; $i < 12; ++$i) {
+            Actions::forget();
+            self::postAction('save', ['isds_subject' => "Výzva $i"]);
+            $this->redirectOf(self::actionGate());
+        }
+        Actions::forget();
+        self::postResume();
+        $_POST = $test;
+
+        self::getAfter($this->redirectOf(self::actionGate()));
+
+        self::assertCount(1, FakeActions::$tested, 'the test form posted again sent nothing');
+        self::assertSame(Actions::TEST_SENT, self::shown(self::actionGate())[1]);
+        self::assertCount(10, $_SESSION['aa_isds_result']);
+    }
+
+    /** @return array<string, array{mixed, string}> isds_campaign of the URL, what the template reads */
+    public static function campaignsOfTheUrl(): array
+    {
+        return [
+            'a campaign of the page'   => [self::ITEM, self::ITEM],
+            'in capitals'              => [strtoupper(self::ITEM), self::ITEM],
+            'in the trash'             => ['ca00000000000000000000000000000e', 'ca00000000000000000000000000000e'],
+            'an item of another slice' => [self::LETTER, ''],
+            'no item'                  => ['ca00000000000000000000000000000f', ''],
+            'not an id'                => [self::ITEM . '"><b>', ''],
+            'an array'                 => [[self::ITEM], ''],
+            'none'                     => [null, ''],
+        ];
+    }
+
+    #[DataProvider('campaignsOfTheUrl')]
+    public function test_campaign_onlyItemOfThePage(mixed $campaign, string $read): void
+    {
+        $gate            = self::gate();
+        $gate->campaigns = [
+            self::ITEM                         => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => '', 'state' => 'draft'],
+            'ca00000000000000000000000000000e' => ['slice' => self::CAMPAIGN, 'active' => false, 'filter' => '', 'state' => 'draft'],
+            self::LETTER                       => ['slice' => self::MESSAGE, 'active' => true, 'filter' => '', 'state' => ''],
+        ];
+        $_GET = is_null($campaign) ? [] : ['isds_campaign' => $campaign];
+
+        self::assertSame($read, self::inside($gate, static fn(): string => $gate->campaign()));
+        self::assertSame('', $gate->campaign(), 'outside the UI');
     }
 
     public function test_testboxes_escapedDashSeparated(): void

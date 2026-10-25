@@ -61,6 +61,27 @@ final class AdviceTest extends TestCase
         self::assertSame('', Advice::text('NO_SUCH_CODE'));
     }
 
+    /** @return array<string, array{list<int|string>, string}> the field INPUT names, what its text says */
+    public static function inputs(): array
+    {
+        return [
+            'subject'    => [['subject'], 'The subject cannot be saved: it may have at most 255 characters'],
+            'to hands'   => [['to_hands'], '"To hands" cannot be saved: it may have at most 30 characters'],
+            'body'       => [['body'], 'it is larger than 8 MB'],
+            'recipients' => [['recipients'], 'this page does not offer it. Nothing of the draft was saved'],
+            'too many'   => [['too_many'], 'at most 5000 of them may be chosen'],
+            'none'       => [[], 'A value of the form cannot be taken.'],
+            'unknown'    => [['isds_token'], 'A value of the form cannot be taken.'],
+        ];
+    }
+
+    /** @param list<int|string> $params */
+    #[DataProvider('inputs')]
+    public function test_text_inputNamesTheField(array $params, string $says): void
+    {
+        self::assertStringContainsString($says, Advice::text(Actions::INPUT, $params));
+    }
+
     /** @return array<string, array{string, ?bool, string}> how the test ended, whether it costs money if it goes, the code of what it cost */
     public static function charges(): array
     {

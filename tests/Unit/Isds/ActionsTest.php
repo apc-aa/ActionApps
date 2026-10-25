@@ -9,6 +9,7 @@ use AA\Isds\Account;
 use AA\Isds\AuthException;
 use AA\Isds\ActionResult;
 use AA\Isds\Actions;
+use AA\Isds\Drafts;
 use AA\Isds\Gate;
 use AA\Isds\IsdsException;
 use AA\Isds\Outcome;
@@ -28,6 +29,7 @@ use Tests\Unit\Isds\Fixtures\FakeActions;
 use Tests\Unit\Isds\Fixtures\FakePerms;
 use Tests\Unit\Isds\Fixtures\FakeRecipients;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
+use Tests\Unit\Isds\Fixtures\MemoryDrafts;
 use Tests\Unit\Isds\Fixtures\ScriptedIsds;
 use Tests\Unit\Isds\Fixtures\SendRunCase;
 use Tests\Unit\Isds\Fixtures\Sending;
@@ -39,6 +41,7 @@ require_once __DIR__ . '/fixtures/FakeActions.php';
 require_once __DIR__ . '/fixtures/FakeSliceRules.php';
 require_once __DIR__ . '/fixtures/FakeRecipients.php';
 require_once __DIR__ . '/fixtures/TestSendQueue.php';
+require_once __DIR__ . '/fixtures/MemoryDrafts.php';
 
 /**
  * The actions of a page of a mass sending: only a POST of this origin with the token of the form the
@@ -989,5 +992,105 @@ final class ActionsTest extends TestCase
 
         self::assertEquals($expected, $this->actions()->run(self::page(), true));
         self::assertSame([], FakeActions::$logged, 'the core logs the test');
+    }
+
+    // ------------------------------------------------------------ Save
+
+    /** @param array{code: string, campaign: string, field: string} $told what the core says */
+    private static function saves(array $told): void
+    {
+        FakeActions::$save = static fn(): array => $told;
+    }
+
+    // the form goes to the core as posted - it reads its own fields; an autosave every few seconds is not logged
+    public function test_save_formToTheCore(): void
+    {
+        $this->draftOfPage();
+        self::saves(['code' => Drafts::SAVED, 'campaign' => self::CAMPAIGN_ITEM, 'field' => '']);
+        self::post('save', over: ['isds_subject' => 'Výzva', 'isds_uid' => Sending::READER]);
+
+        self::assertEquals(new ActionResult('save', ActionResult::DONE, Actions::SAVED, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame([self::CAMPAIGN_ITEM, 'Výzva'], [FakeActions::$saved[0][0], FakeActions::$saved[0][1]['isds_subject']]);
+        self::assertSame([[], []], [FakeActions::$logged, FakeActions::$failures]);
+    }
+
+    // the page learns the id of the new draft from the result: the browser is sent to it
+    public function test_save_newDraftNamesItsId(): void
+    {
+        self::saves(['code' => Drafts::SAVED, 'campaign' => self::OTHER_ITEM, 'field' => '']);
+        self::post('save', campaign: '', over: ['isds_nonce' => str_repeat('a', 32)]);
+
+        self::assertEquals(new ActionResult('save', ActionResult::DONE, Actions::SAVED, self::OTHER_ITEM), $this->actions()->run(self::page(), true));
+        self::assertSame('', FakeActions::$saved[0][0]);
+    }
+
+    /** @return array<string, array{array{code: string, campaign: string, field: string}, ActionResult}> */
+    public static function saveRefusals(): array
+    {
+        $told = static fn(string $code, string $campaign = self::CAMPAIGN_ITEM, string $field = ''): array => ['code' => $code, 'campaign' => $campaign, 'field' => $field];
+
+        return [
+            'a field'          => [$told(Actions::INPUT, field: Drafts::SUBJECT), new ActionResult('save', ActionResult::REFUSED, Actions::INPUT, self::CAMPAIGN_ITEM, params: [Drafts::SUBJECT])],
+            'the nonce'        => [$told(Actions::INPUT, ''), new ActionResult('save', ActionResult::REFUSED, Actions::INPUT)],
+            'queued'           => [$told(SendStart::NOT_DRAFT), new ActionResult('save', ActionResult::REFUSED, SendStart::NOT_DRAFT, self::CAMPAIGN_ITEM)],
+            'with a run'       => [$told(SendStart::ALREADY), new ActionResult('save', ActionResult::REFUSED, SendStart::ALREADY, self::CAMPAIGN_ITEM)],
+            'being queued'     => [$told(SendStart::BUSY), new ActionResult('save', ActionResult::BUSY, SendStart::BUSY, self::CAMPAIGN_ITEM)],
+            'trashed meanwhile' => [$told(SendStart::UNKNOWN, ''), new ActionResult('save', ActionResult::REFUSED, SendStart::UNKNOWN)],
+        ];
+    }
+
+    /** @param array{code: string, campaign: string, field: string} $told */
+    #[DataProvider('saveRefusals')]
+    public function test_save_refusal(array $told, ActionResult $expected): void
+    {
+        $this->draftOfPage();
+        self::saves($told);
+        self::post('save');
+
+        self::assertEquals($expected, $this->actions()->run(self::page(), true));
+    }
+
+    // a draft in the trash, or an item of another slice, is no draft of the page to change: the page goes
+    // on with no campaign, as when the core refuses it so
+    public function test_save_trashedOrForeignCampaignUnknown(): void
+    {
+        $this->draftOfPage(active: false);
+        self::post('save', over: ['isds_subject' => 'Výzva']);
+        self::assertEquals(new ActionResult('save', ActionResult::REFUSED, Actions::UNKNOWN), $this->actions()->run(self::page(), true));
+
+        Actions::forget();
+        $this->campaigns = [self::CAMPAIGN_ITEM => self::item(Sending::MESSAGE)];
+        self::assertSame(Actions::UNKNOWN, $this->actions()->run(self::page(), true)?->code);
+        self::assertSame([], FakeActions::$saved);
+    }
+
+    // the token of a new draft is no token of a draft of the page, nor the other way round
+    public function test_save_tokenOfNewDraftActsOnNoCampaign(): void
+    {
+        $this->draftOfPage();
+        self::post('save', campaign: '', over: ['isds_campaign' => self::CAMPAIGN_ITEM]);
+
+        self::assertExpired($this->actions()->run(self::page(), true));
+        self::assertSame([], FakeActions::$saved);
+    }
+
+    // the real core: a form of a new draft saved twice - an autosave - makes one item, never a second
+    public function test_save_realDraftsOneItemForTheForm(): void
+    {
+        $drafts = new MemoryDrafts();
+        FakeActions::$save = static fn(Setup $setup, string $campaign, array $post): array => $drafts->save($setup, $campaign, $post);
+        $nonce  = str_repeat('b', 32);
+
+        self::post('save', campaign: '', over: ['isds_nonce' => $nonce, 'isds_subject' => 'Výzva']);
+        $first = $this->actions()->run(self::page(), true);
+        Actions::forget();
+        self::post('save', campaign: '', over: ['isds_nonce' => $nonce, 'isds_subject' => 'Výzva 2']);
+        $second = $this->actions()->run(self::page(), true);
+
+        self::assertSame([Actions::SAVED, Actions::SAVED], [$first?->code, $second?->code]);
+        self::assertSame(Drafts::newId(self::page(), $nonce), $first?->campaign);
+        self::assertSame($first?->campaign, $second?->campaign);
+        self::assertSame([$first?->campaign], array_keys($drafts->items));
+        self::assertSame('Výzva 2', $drafts->field((string) $first?->campaign, Schema::CAMPAIGN_SUBJECT));
     }
 }

@@ -34,7 +34,8 @@ final class Advice
             Actions::ALL_SENT        => _m('Every message has been sent or tried already - there is nothing left to stop.'),
             Actions::ABANDONED       => _m('The sending has been ended for good. Any message of unknown fate stays for you to verify.'),
             Actions::CONFIRM_ABANDON => _m('The sending has already stopped on an error, so Stop changes nothing here. You can choose Continue, or end the sending for good - messages of unknown fate and deliveries not yet read will then no longer be looked up.'),
-            Actions::INPUT           => _m('A value of the form cannot be taken. Load the page again and try it once more.'),
+            Actions::INPUT           => self::input((string) $first),
+            Actions::SAVED           => _m('The draft is saved.'),
             Actions::QUEUED          => _m('The sending is queued - recipients: %1. It goes on by itself, you may close the page.', [$first]),
             Actions::TEST_SENT       => _m('The test message has gone (ID %1 in ISDS, reference number %2).', [$first, $second]),
             Actions::TEST_UNCERTAIN  => _m('It is not known whether the test message went. Look for it among the sent messages of the data box by its reference number %1.', [$first]),
@@ -92,6 +93,19 @@ final class Advice
     private static function isdsOrStatus(string $status, bool $test = false): string
     {
         return ($status === '') ? '' : (self::isds($status, $test) ?: _m('ISDS answered with status %1.', [$status]));
+    }
+
+    /** what to fix in a field of the form (Drafts) */
+    private static function input(string $field): string
+    {
+        return match ($field) {
+            Drafts::SUBJECT    => _m('The subject cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved.', [Message::MAX_ANNOTATION]),
+            Drafts::TO_HANDS   => _m('"To hands" cannot be saved: it may have at most %1 characters, and no tab or other control character. Nothing of the draft was saved.', [Message::MAX_TO_HANDS]),
+            Drafts::BODY       => _m('The text of the letter cannot be saved: it is larger than %1, or it is not valid text. Nothing of the draft was saved.', [self::size(Drafts::MAX_BODY)]),
+            Drafts::RECIPIENTS => _m('The choice of the recipients cannot be saved: this page does not offer it. Nothing of the draft was saved - choose them once more and save it.'),
+            Drafts::TOO_MANY   => _m('The choice of the recipients cannot be saved: at most %1 of them may be chosen, and as many left out, one by one. Nothing of the draft was saved.', [Setup::MAX_RECIPIENTS]),
+            default            => _m('A value of the form cannot be taken. Load the page again and try it once more.'),
+        };
     }
 
     /** the texts that are not empty, as one */

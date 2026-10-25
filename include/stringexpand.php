@@ -10882,7 +10882,12 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        Even inside the gate {dictionary} may serve a copy an earlier request stored in the page cache. Nor may the
  *        page be the page of their item.
  *    {datovkabulk:fields:<action>:<campaign id>} - hidden fields of a <form method="post"> asking for the action;
- *        no campaign id only to save a new campaign. Actions: resume (Continue a sending in error or waiting),
+ *        no campaign id only to save a new campaign. Actions: save (a draft - the form adds isds_subject,
+ *        isds_to_hands, isds_body, and for its recipients isds_membership, isds_types[], isds_include and
+ *        isds_exclude, item ids separated by "-"; a field left out stays as it is, the recipients only with
+ *        isds_membership. Every save of the form of a new campaign - autosaves too - writes the one new draft,
+ *        whose id the page gets in {datovkabulk:campaign} after the save. The body is stored as posted HTML:
+ *        a template must escape it wherever it shows it, in a <textarea> too), resume (Continue a sending in error or waiting),
  *        stop (Stop: nothing more is sent; never gives the sending up), abandon (end a sending in error for good -
  *        its fields are '' unless Stop can no longer end it, so offer it in place of Stop when they are not),
  *        test (one test message of a draft at once - the form adds isds_box, one of testboxes; may be left out
@@ -10892,6 +10897,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *    {datovkabulk:env}    - test | production, as datovka_conf.php binds the slices
  *    {datovkabulk:sender} - the data box it sends from, when AA knows it
  *    {datovkabulk:testboxes} - the test boxes of the page, dash-separated: the options of isds_box
+ *    {datovkabulk:campaign} - the campaign the page was loaded with after an action (isds_campaign of its URL), when
+ *        it is an item of the campaign slice of the page - a draft saved new too; '' otherwise
  *    {datovkabulk:result[:text|code|status|action|charge]} - what the posted action did: text to read (default),
  *        or for a condition its code (RESUMED, STOPPING, CONFIRM_ABANDON, QUEUED, TEST_SENT, BUSY, EXPIRED, ...),
  *        status (done, refused, busy, expired, failed), action, or charge - what a test message cost (CHARGED,
@@ -10943,6 +10950,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'sender'     => $gate->sender(),
             'result'     => $gate->result((string)$settings),
             'testboxes'  => $gate->testBoxes(),
+            'campaign'   => $gate->campaign(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
             default      => '',

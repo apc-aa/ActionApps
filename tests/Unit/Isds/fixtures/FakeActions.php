@@ -11,7 +11,7 @@ use AA\Isds\TestResult;
 
 /**
  * Actions with the core, the logs and post_max_size given here: Continue says what $resume says, Stop
- * and Abandon what $stop says, Send what $queue, Test what $test, each records who asked it; a log row
+ * and Abandon what $stop says, Send what $queue, Test what $test, Save what $save, each records who asked it; a log row
  * is recorded, not written - or fails as $logFails says.
  */
 final class FakeActions extends Actions
@@ -40,6 +40,12 @@ final class FakeActions extends Actions
     /** @var list<array{string, string, string}> campaign, uid, box of each Test asked of the core */
     public static array $tested = [];
 
+    /** @var ?\Closure(Setup, string, array<array-key, mixed>): array{code: string, campaign: string, field: string} what Save of a campaign with the form says; null = the test asks none */
+    public static ?\Closure $save = null;
+
+    /** @var list<array{string, array<array-key, mixed>}> campaign, form of each Save asked of the core */
+    public static array $saved = [];
+
     /** @var list<array{string, string, list<string>}> event, selector, params of each log row */
     public static array $logged = [];
 
@@ -62,6 +68,8 @@ final class FakeActions extends Actions
         self::$queued      = [];
         self::$test        = null;
         self::$tested      = [];
+        self::$save        = null;
+        self::$saved       = [];
         self::$logged      = [];
         self::$failures    = [];
         self::$postMaxSize = 8 * 1024 * 1024;
@@ -100,6 +108,13 @@ final class FakeActions extends Actions
         self::$tested[] = [$campaign, $uid, $box];
 
         return (self::$test ?? throw new \LogicException('This test sends no test message'))($setup, $campaign, $uid, $box);
+    }
+
+    protected function saveDraft(Setup $setup, string $campaign, array $post): array
+    {
+        self::$saved[] = [$campaign, $post];
+
+        return (self::$save ?? throw new \LogicException('This test saves nothing'))($setup, $campaign, $post);
     }
 
     protected function log(string $event, string $selector, array $params): void

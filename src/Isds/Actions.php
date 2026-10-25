@@ -47,7 +47,7 @@ class Actions
     public const FORBIDDEN   = BatchRun::FORBIDDEN;
     public const LEASE       = 'LEASE';
     public const WRONG_STATE = 'WRONG_STATE';
-    /** a field of the form holds a value the action cannot take */
+    /** a field of the form holds a value the action cannot take; the param is the field (Drafts), if any */
     public const INPUT = 'INPUT';
     /** Send: the sending is queued and goes on by itself; the param is the recipients confirmed */
     public const QUEUED = 'QUEUED';
@@ -60,9 +60,11 @@ class Actions
     public const TEST_FAILED = 'TEST_FAILED';
     /** Test: another test message of the pair of slices is on its way, or one died a moment ago */
     public const TEST_BUSY = 'TEST_BUSY';
+    /** Save: the draft is saved; the campaign of the result is the draft, a new one too */
+    public const SAVED = Drafts::SAVED;
 
     /** the actions run here; the form of another one of Gate::ACTIONS is refused as one of no action */
-    private const RUNS = ['resume', 'stop', 'abandon', 'test', 'send'];
+    private const RUNS = ['save', 'resume', 'stop', 'abandon', 'test', 'send'];
 
     /** an action ran in this request: a form is acted on once, whichever gate on the page it names */
     private static bool $consumed = false;
@@ -145,19 +147,38 @@ class Actions
         // the id comes from the form: only an item of the campaign slice of the page, in any bin - a
         // sending of a campaign put in the trash still shows, so it must still be stopped
         $stored = ($campaign === '') ? null : ($this->campaignOfPage)($setup, $campaign);
+        // the page goes on with no campaign after a save it refused so: the core does alike
+        $unknown = self::refused($action, self::UNKNOWN, ($action === 'save') ? '' : $campaign);
         if (($campaign !== '') && is_null($stored)) {
-            return self::refused($action, self::UNKNOWN, $campaign);
+            return $unknown;
         }
-        // a draft in the trash is no campaign of the page to send; the core asks again under its lock
-        if (in_array($action, ['test', 'send'], true) && !($stored['active'] ?? false)) {
-            return self::refused($action, self::UNKNOWN, $campaign);
+        // a draft in the trash is no campaign of the page to change or send; the core asks again under its lock
+        if (in_array($action, ['save', 'test', 'send'], true) && !is_null($stored) && !$stored['active']) {
+            return $unknown;
         }
 
         return match ($action) {
+            'save'                      => $this->save($setup, $campaign),
             'resume', 'stop', 'abandon' => $this->onRun($setup, $action, $campaign),
             'test'                      => $this->test($setup, $campaign),
             'send'                      => $this->send($setup, $campaign),
             default                     => throw new \LogicException("No action $action"),
+        };
+    }
+
+    /**
+     * Save: the draft takes the fields of the letter the form posts, a new one is made; not logged -
+     * an autosave comes every few seconds, and the history of the slice keeps what changed
+     */
+    private function save(Setup $setup, string $campaign): ActionResult
+    {
+        // Drafts reads only its own fields of the form; storeItem() takes the author from the login
+        ['code' => $code, 'campaign' => $id, 'field' => $field] = $this->saveDraft($setup, $campaign, $_POST);
+
+        return match ($code) {
+            self::SAVED => new ActionResult('save', ActionResult::DONE, self::SAVED, $id),
+            self::INPUT => self::refused('save', self::INPUT, $id, params: ($field === '') ? [] : [$field]),
+            default     => self::refused('save', $code, $id),
         };
     }
 
@@ -298,6 +319,16 @@ class Actions
     protected function stopRun(string $campaign, string $uid, bool $abandon): string
     {
         return SendRun::stop($campaign, $uid, $abandon);
+    }
+
+    /**
+     * Drafts::save()
+     * @param array<array-key, mixed> $post
+     * @return array{code: string, campaign: string, field: string}
+     */
+    protected function saveDraft(Setup $setup, string $campaign, array $post): array
+    {
+        return (new Drafts())->save($setup, $campaign, $post);
     }
 
     /** SendQueue::queue() */

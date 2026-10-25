@@ -17,7 +17,6 @@ use AA_Items;
 use AA_Log;
 use AA_Slice;
 use ItemContent;
-use zids;
 
 /**
  * The decision to send a campaign: the account, the slices and the campaign checked, the letter and
@@ -330,14 +329,8 @@ class SendQueue
      */
     private function draft(Setup $setup, string $campaign): ItemContent|SendStart
     {
-        $item = $this->campaign($campaign);
-        if (is_null($item) || (strtolower($item->getSliceID()) !== $setup->campaignSlice) || !$item->isActive()) {
-            return SendStart::refused(SendStart::UNKNOWN);
-        }
-        if ((string) $item->getValue(Schema::CAMPAIGN_STATE) !== Schema::CAMPAIGN_STATE_DRAFT) {
-            return SendStart::refused(SendStart::NOT_DRAFT);
-        }
-        return $this->runClass()::existsFor($campaign) ? SendStart::refused(SendStart::ALREADY) : $item;
+        $item = Drafts::draftOf($setup, $this->campaign($campaign), fn(): bool => $this->runClass()::existsFor($campaign));
+        return is_string($item) ? SendStart::refused($item) : $item;
     }
 
     /**
@@ -577,11 +570,10 @@ class SendQueue
         return new Client($account);
     }
 
-    /** the campaign item as stored now, null = none */
+    /** Drafts::stored() */
     protected function campaign(string $id): ?ItemContent
     {
-        $content = AA_Items::getItem(new zids($id, 'l'), null, true)?->getItemContent();
-        return ($content instanceof ItemContent) ? $content : null;
+        return Drafts::stored($id);
     }
 
     /** @throws \InvalidArgumentException the uploads of the slice are not set right */

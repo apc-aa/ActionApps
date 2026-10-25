@@ -116,6 +116,8 @@ class Gate
      * binding of the page, so a form of one action, campaign or page cannot be posted as another.
      * '' on a page that could not be kept out of frames; for abandon '' unless the run is one a stop no
      * longer ends (SendRun::abandonable()) - the template offers it in place of Stop then.
+     * The form of a new campaign carries a nonce of its own: every save of the form shown makes the one
+     * draft (Drafts::newId()).
      * @param string $campaign long id; '' only to save a new campaign
      */
     public function fields(string $action, string $campaign = ''): string
@@ -132,7 +134,20 @@ class Gate
             . getFrmHiddenEasy('isds_campaign', $campaign)
             . getFrmHiddenEasy('isds_token', FormToken::get(self::purpose($action, self::$open, $campaign)))
             // the token is the same in every form of the action: this tells one shown form from another
-            . getFrmHiddenEasy('isds_form', bin2hex(random_bytes(8)));
+            . getFrmHiddenEasy('isds_form', bin2hex(random_bytes(8)))
+            // only a save of a new campaign names none
+            . (($campaign === '') ? getFrmHiddenEasy('isds_nonce', bin2hex(random_bytes(16))) : '');
+    }
+
+    /**
+     * The campaign the page was sent to after an action (isds_campaign of its URL), when it is an item
+     * of the campaign slice of the page: the template learns the id of a draft saved new. '' otherwise.
+     */
+    public function campaign(): string
+    {
+        $id = ModuleId::normalize(is_string($_GET['isds_campaign'] ?? null) ? $_GET['isds_campaign'] : '');
+
+        return (is_null(self::$open) || is_null($id) || is_null($this->campaignOfPage(self::$open, $id))) ? '' : safe($id);
     }
 
     /**
@@ -261,7 +276,9 @@ class Gate
 
     /**
      * Keeps the result in the session for the page the browser is sent to. Of the results kept before,
-     * those older than FLASH_SECONDS go, and the oldest beyond FLASH_MAX - autosaves add one every few seconds.
+     * those older than FLASH_SECONDS go, and the oldest beyond FLASH_MAX - first those that guard no form
+     * posted again (answered()): autosaves add one every few seconds, and must not push out the one that
+     * keeps a Test from being sent twice.
      * @return string its key - random, so a link cannot name the result of another
      */
     private function keep(Setup $setup, string $uid, ActionResult $result): string
@@ -271,10 +288,13 @@ class Gate
         $kept = is_array($_SESSION[self::FLASH] ?? null) ? $_SESSION[self::FLASH] : [];
         $kept = array_filter($kept, static fn(mixed $entry): bool => is_array($entry) && ((int) ($entry['at'] ?? 0) > $now - self::FLASH_SECONDS));
         // only what ran is repeated to the same form again: a refusal or BUSY may not hold the next click
-        $ran        = in_array($result->status, [ActionResult::DONE, ActionResult::FAILED], true);
+        $ran        = in_array($result->status, [ActionResult::DONE, ActionResult::FAILED], true) && !in_array($result->action, self::REPOSTED, true);
         $kept[$key] = ['binding' => $setup->bindingKey(), 'uid' => $uid, 'at' => $now, 'form' => $ran ? self::postedForm() : '', 'result' => $result->toArray()];
-        // a key of digits only is an int key: keep the keys as they are
-        $_SESSION[self::FLASH] = array_slice($kept, -self::FLASH_MAX, null, true);
+        while (count($kept) > self::FLASH_MAX) {
+            $guardsNone = array_filter(array_diff_key($kept, [$key => true]), static fn(array $entry): bool => ($entry['form'] ?? '') === '');
+            unset($kept[array_key_first($guardsNone) ?? array_key_first($kept)]);
+        }
+        $_SESSION[self::FLASH] = $kept;
 
         return $key;
     }
