@@ -22,6 +22,9 @@ final class ScriptedFile
     /** bytes served in all, at most - the guard of a test that would read for ever */
     public static int $limit = 32 * 1024 * 1024;
 
+    /** from this byte on a read fails as on EIO: false, and the stream ends; null = never */
+    public static ?int $failAt = null;
+
     public static int $opens = 0;
 
     public static int $served = 0;
@@ -32,6 +35,8 @@ final class ScriptedFile
     private string $data = '';
 
     private int $at = 0;
+
+    private bool $failed = false;
 
     public static function register(): void
     {
@@ -46,6 +51,7 @@ final class ScriptedFile
         self::$content = null;
         self::$growth  = '';
         self::$limit   = 32 * 1024 * 1024;
+        self::$failAt  = null;
         self::$opens   = 0;
         self::$served  = 0;
     }
@@ -59,8 +65,13 @@ final class ScriptedFile
         return true;
     }
 
-    public function stream_read(int $count): string
+    public function stream_read(int $count): string|false
     {
+        if ((self::$failAt !== null) && ($this->at >= self::$failAt)) {
+            $this->failed = true;
+            return false;
+        }
+        $count = min($count, (self::$failAt ?? PHP_INT_MAX) - $this->at);
         if ($this->at < strlen($this->data)) {
             $chunk = substr($this->data, $this->at, $count);
         } elseif ((self::$growth !== '') && (self::$served < self::$limit)) {
@@ -75,7 +86,7 @@ final class ScriptedFile
 
     public function stream_eof(): bool
     {
-        return ($this->at >= strlen($this->data)) && ((self::$growth === '') || (self::$served >= self::$limit));
+        return $this->failed || (($this->at >= strlen($this->data)) && ((self::$growth === '') || (self::$served >= self::$limit)));
     }
 
     /** @return array<string, int> */

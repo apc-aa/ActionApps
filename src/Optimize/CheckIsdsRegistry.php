@@ -138,7 +138,7 @@ class CheckIsdsRegistry extends AbstractOptimize
         } catch (\RuntimeException $e) {
             $advice = ($e instanceof \UnexpectedValueException)
                 ? _m('The copy of the register is damaged: downloading it again on the page Data boxes from the register of a paired slice replaces it.')
-                : _m('The copy of the register cannot be read: check the directory and the permissions named in the evidence.');
+                : _m('The copy of the register cannot be read: check the directory and the permissions named in the evidence; when they are right, the disk failed a read - try again later.');
             return [...$age, new Finding(Finding::WARNING, _m('The downloaded register of data boxes cannot be read'), evidence: [[_m('Error') => safe($e->getMessage())]], advice: $advice, links: $pages, key: 'register-unreadable')];
         }
         if ($boxes === null) {

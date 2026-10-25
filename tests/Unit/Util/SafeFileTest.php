@@ -143,6 +143,66 @@ final class SafeFileTest extends TestCase
         SafeFile::read($this->path, 3 * 1024 * 1024 - 1);
     }
 
+    // PHP 8.2 allocates the whole length stream_get_contents() is asked for, so only 8.2 (CI) catches it; 8.4 grows
+    // the string as it reads. The bound leaves room for the stream's read buffer, the chunk open() sets (1 MiB).
+    public function test_read_smallFileTakesNoMemoryOfTheLimit(): void
+    {
+        file_put_contents($this->path, 'abc');
+        memory_reset_peak_usage();
+        $before = memory_get_usage();
+
+        self::assertSame('abc', SafeFile::read($this->path, 40 * 1024 * 1024));
+        self::assertLessThan(2 * 1024 * 1024, memory_get_peak_usage() - $before);
+    }
+
+    public function test_read_upToTheLimitByte(): void
+    {
+        file_put_contents($this->path, 'abcde');
+
+        self::assertSame('abcde', SafeFile::read($this->path, 5));
+        $this->expectException(\UnexpectedValueException::class);
+        SafeFile::read($this->path, 4);
+    }
+
+    /** @return array<string, array{int}> */
+    public static function grownSizes(): array
+    {
+        return ['fstat() tells 0' => [0], 'fstat() tells the size' => [10]];
+    }
+
+    // what it reads, as long as it stays within the limit - here more than a chunk past the size
+    #[\PHPUnit\Framework\Attributes\DataProvider('grownSizes')]
+    public function test_read_fileThatGrewWithinTheLimit(int $size): void
+    {
+        ScriptedFile::$content = static fn(): string => str_repeat('a', $size);
+        ScriptedFile::$growth  = 'xyz';
+        ScriptedFile::$limit   = $size + 3 * 700_000;
+
+        try {
+            $bytes = SafeFile::read('scripted://list.xml', 4 * 1024 * 1024);
+        } finally {
+            ScriptedFile::reset();
+        }
+        self::assertSame(str_repeat('a', $size) . str_repeat('xyz', 700_000), $bytes);
+    }
+
+    // EIO in the middle: PHP gives the part read before it, not false
+    public function test_read_failedReadIsNoShorterFile(): void
+    {
+        ScriptedFile::$content = static fn(): string => str_repeat('a', 10);
+        ScriptedFile::$failAt  = 4;
+
+        try {
+            SafeFile::read('scripted://list.xml', 100);
+            self::fail('a part read as the whole file');
+        } catch (\RuntimeException $e) {
+            self::assertNotInstanceOf(\UnexpectedValueException::class, $e);
+            self::assertStringContainsString('Cannot read scripted://list.xml whole', $e->getMessage());
+        } finally {
+            ScriptedFile::reset();
+        }
+    }
+
     // a file PHP cannot open is a failed read, not another file: the exception type tells them apart
     public function test_open_failureIsNoOtherFile(): void
     {
