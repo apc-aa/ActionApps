@@ -163,6 +163,35 @@ final class SendRunVerifyTest extends TestCase
         self::assertSame($said, TestSendRun::verify(self::CAMPAIGN_ITEM, Sending::USER, self::message($id, 1)));
     }
 
+    /**
+     * What the page of a sending offers Verify by, and counts uncertain messages for a person by
+     * (Gate::progress()) is what verify() takes
+     * @param \Closure(): string $run
+     */
+    #[DataProvider('stillSending')]
+    public function test_verifiable_notWhileLookedUp(\Closure $run): void
+    {
+        self::assertFalse((TestSendRun::get($run()) ?? throw new \LogicException('No run'))->verifiable());
+    }
+
+    /** @param \Closure(): string $run */
+    #[DataProvider('overRuns')]
+    public function test_verifiable_afterSending(\Closure $run): void
+    {
+        self::assertTrue((TestSendRun::get($run()) ?? throw new \LogicException('No run'))->verifiable());
+    }
+
+    /** @param \Closure(array<string, mixed>): ?array<string, mixed> $left */
+    #[DataProvider('closeRows')]
+    public function test_verifiable_abandonedByItsCloseRow(\Closure $left, string $said): void
+    {
+        $id  = self::abandoned(['uncertain' => '{"1":' . self::TRIED . '}']);
+        $row = $left(self::queue()[0]);
+        TableDb::$tables['toexecute'] = is_null($row) ? [] : [$row];
+
+        self::assertSame($said === '', (TestSendRun::get($id) ?? throw new \LogicException('No run'))->verifiable());
+    }
+
     // an end that failed may never write the campaign: the person must not wait for it for ever
     public function test_verify_abandonedAfterFailedCloseVerifies(): void
     {

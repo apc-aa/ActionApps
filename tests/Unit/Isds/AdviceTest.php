@@ -11,7 +11,9 @@ use AA\Isds\Outcome;
 use AA\Isds\SendResult;
 use AA\Isds\SendRun;
 use AA\Isds\SendStart;
+use AA\Isds\Snapshot;
 use AA\Isds\TestResult;
+use AA\Later\BatchRun;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -186,6 +188,110 @@ final class AdviceTest extends TestCase
         self::assertStringStartsWith('ISDS refused to tell whose the login', $text);
         self::assertStringContainsString($says, $text);
         self::assertStringNotContainsString($not, $text);
+    }
+
+    /**
+     * Every code a sending may fail or wait with (BatchRun::lastFailure()): the reasons and retries
+     * SendRun and Snapshot name, those of ISDS asked (Outcome), and the ones BatchRun and SendRun give
+     * by a literal - read from the classes and their sources, so a code added there fails here until
+     * it has a text
+     * @return array<string, string>
+     */
+    private static function everyCodeOfARun(): array
+    {
+        $codes = [];
+        foreach ([SendRun::class, Snapshot::class] as $class) {
+            foreach ((new \ReflectionClass($class))->getReflectionConstants(\ReflectionClassConstant::IS_PUBLIC) as $constant) {
+                // BatchRun's own reasons (FORBIDDEN) refuse a person, not a run
+                if (($constant->getDeclaringClass()->getName() === $class) && (preg_match('~^/\*\*\s*(BatchFailed reason|BatchStepResult::\$retry)~', (string) $constant->getDocComment()) === 1)) {
+                    $codes[] = (string) $constant->getValue();
+                }
+            }
+        }
+        $outcome = (new \ReflectionClass(Outcome::class))->getConstants(\ReflectionClassConstant::IS_PUBLIC);
+        $codes   = [...$codes, ...array_values(array_diff_key($outcome, array_flip(['NEXT', 'PAUSE', 'FAIL', 'RETHROW']))), BatchRun::NO_TRANSACTION];
+        foreach (['src/Later/BatchRun.php', 'src/Isds/SendRun.php'] as $file) {
+            $source = (string) file_get_contents(dirname(__DIR__, 3) . '/' . $file);
+            preg_match_all("~retry: '([A-Z][A-Z0-9_]*)'|->retryOrError\([^;\n]*'([A-Z][A-Z0-9_]*)'|\['([A-Z][A-Z0-9_]*)', get_debug_type~", $source, $m);
+            $codes = [...$codes, ...array_filter([...$m[1], ...$m[2], ...$m[3]])];
+        }
+
+        return array_combine($codes, $codes);
+    }
+
+    // a run that waits or stopped on it: what was sent is told by the figures, not by the text
+    public function test_ofRun_everyCodeOfARunHasText(): void
+    {
+        $codes = self::everyCodeOfARun();
+        foreach (['ISDS_REFUSED', 'ISDS_WATCH', 'ISDS_LOGIN', 'CONTENT_CHANGED', 'NO_TRANSACTION', 'NO_PROGRESS', 'STEP_DIED', 'FINAL_CHECK', 'INTERNAL'] as $code) {
+            self::assertContains($code, $codes, 'read from the classes');
+        }
+        self::assertNotContains(SendRun::UNCHECKED, $codes, 'a warning, no failure');
+
+        foreach ($codes as $code) {
+            $text = Advice::ofRun($code);
+            self::assertNotSame('', $text, $code);
+            self::assertTrue(Advice::knowsRun($code), $code);
+            self::assertStringNotContainsString('nothing was sent', $text, $code);
+            self::assertDoesNotMatchRegularExpression('~%\d|/\w|\\\\\w|\.php|datovka_conf|config|password:|heslo|log of~i', $text, $code);
+        }
+    }
+
+    public function test_ofRun_knowsRunOnlyWhatHasText(): void
+    {
+        foreach ([...self::everyCode(), ...self::everyCodeOfARun(), 'NO_SUCH_CODE', ''] as $code) {
+            self::assertSame(Advice::ofRun($code) !== '', Advice::knowsRun($code), $code);
+        }
+        self::assertSame(['', ''], [Advice::ofRun('NO_SUCH_CODE'), Advice::ofRun(Actions::SAVED)]);
+    }
+
+    // the same code comes of a refused series of messages and of a refused question of the sending
+    public function test_ofRun_refusedFitsBothOrigins(): void
+    {
+        $text = Advice::ofRun(SendRun::REFUSED);
+
+        self::assertStringContainsString('several messages in a row with the same status, or refused a question of the sending', $text);
+        self::assertStringContainsString('After refused messages Continue sends one more', $text);
+        self::assertStringContainsString('after a refused question Continue asks again', $text);
+    }
+
+    // following delivery waits for ISDS without end: it never stops on it
+    public function test_ofRun_unavailableFitsAWaitToo(): void
+    {
+        self::assertStringContainsString('AA tries again by itself; if the sending stopped on it, choose Continue', Advice::ofRun(Outcome::UNAVAILABLE));
+        self::assertStringContainsString('choose Continue tomorrow', Advice::ofRun(Outcome::BLOCKED));
+    }
+
+    public function test_alone_textThatNeedsNothingMore(): void
+    {
+        self::assertSame(Advice::text(Actions::SAVED), Advice::alone(Actions::SAVED));
+        self::assertStringStartsWith('ISDS refused to tell whose the login', Advice::alone(SendRun::REFUSED));
+        self::assertSame('', Advice::alone('NO_SUCH_CODE'));
+        self::assertSame('The form sent is larger than the server takes. Nothing was saved - make the attachments smaller.', Advice::alone(Actions::TOO_LARGE));
+    }
+
+    /** @return array<string, array{string}> */
+    public static function namingAValue(): array
+    {
+        // literals: a data provider runs before Actions can be loaded
+        $codes = ['QUEUED', 'TEST_SENT', 'TEST_UNCERTAIN', 'SAME_LETTER', 'COUNT_CHANGED', 'TOO_MANY', 'CONTENT'];
+
+        return array_combine($codes, array_map(static fn(string $code): array => [$code], $codes));
+    }
+
+    #[DataProvider('namingAValue')]
+    public function test_alone_noTextThatNamesAValue(string $code): void
+    {
+        self::assertNotSame('', Advice::text($code, ['41', '4711-T2']));
+        self::assertSame('', Advice::alone($code));
+    }
+
+    // a code named alone gives its text whole, or nothing - no blank, made-up number or hanging colon
+    public function test_alone_neverABlank(): void
+    {
+        foreach (self::everyCode() as $code) {
+            self::assertDoesNotMatchRegularExpression('~%\d|\d+ kB|1970|\(\s*\)|\( |\s[.,)]|:\z~', Advice::alone($code), $code);
+        }
     }
 
     // a test is better made to an authority; a sending to such a box only fails

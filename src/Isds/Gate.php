@@ -57,7 +57,13 @@ class Gate
     private const FLASH_MAX     = 10;
 
     /** what progress() tells */
-    private const PROGRESS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until', 'delivered', 'accepted'];
+    private const PROGRESS = [
+        'state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until', 'delivered', 'accepted',
+        'messages', 'attention', 'checking', 'pending', 'verify', 'stop_by', 'error',
+    ];
+
+    /** states of progress() in which the code of the run still tells why it waits or stopped */
+    private const ERROR_SHOWN = [SendRun::SENDING, SendRun::ERROR, 'watching', 'watch_error'];
 
     /** the settings of the UI being expanded; null outside every gate */
     private static ?Setup $open = null;
@@ -208,6 +214,30 @@ class Gate
         });
     }
 
+    /**
+     * What a code means to the person on the page, escaped: Advice::alone() of the code; with run
+     * Advice::ofRun() - of progress error; not of Schema::CAMPAIGN_ERROR_TEXT, which outlives the state it
+     * held in (an abandoned campaign keeps a code that asks for Continue). The code
+     * isds with a status (advice:isds:<status>, Schema::MESSAGE_ERROR_CODE of digits) - what that refusal
+     * of ISDS means. '' for a code Advice does not know, outside the gate, and without run for a code
+     * whose text names a value the template cannot give (QUEUED, TEST_SENT, TEST_UNCERTAIN, SAME_LETTER,
+     * COUNT_CHANGED, TOO_MANY, CONTENT) - {datovkabulk:result} tells those with it.
+     * @param string $when run, the status for isds, else ''
+     */
+    public function advice(string $code, string $when = ''): string
+    {
+        if (is_null(self::$open)) {
+            return '';
+        }
+
+        return safe(match (true) {
+            $code === 'isds' => (preg_match('/^\d{1,5}\z/', $when) === 1) ? Advice::isds($when) : '',
+            $when === ''     => Advice::alone($code),
+            $when === 'run'  => Advice::ofRun($code),
+            default          => '',
+        });
+    }
+
     /** the test boxes of the page, dash-separated for a <select> of the test form (its field isds_box) */
     public function testBoxes(): string
     {
@@ -254,14 +284,33 @@ class Gate
      * waiting), error (sending waits for Continue - one stopped already or with every message tried
      * for Continue or Abandon, fields()), abandoned (sending given up in error); once the
      * sending is over (a stopped one too) watching (the delivery is followed, waiting for its rounds
-     * too), watch_error (the following waits for Continue or Abandon); done at the end, the following
-     * given up too. A sending a person stopped is watching first when it sent anything, then done,
-     * what it left unsent counted as stopped. total: the recipients frozen, skipped ones too - sent,
+     * too - not that every message went), watch_error (the following waits for Continue or Abandon);
+     * done at the end, the following given up too. A sending a person stopped is watching first when
+     * it sent anything, then done, what it left unsent counted as stopped - only once nothing sends it
+     * any more (SendRun::isOver()), so a template offers the copy for the unsent by stopped > 0 alone,
+     * in any state; the copy takes the same recipients. total: the recipients frozen, skipped ones too - sent,
      * failed (refused, not found by the lookup, or sent and then not delivered), uncertain, skipped,
      * stopped and queued add up to it. delivered and accepted: of the messages sent, 0 while the
      * delivery is not followed (SendMaps::delivery()). until: the unix time a pause of sending waits
-     * till. '' with no run, for a record that cannot be read, another item or question; until '' when
-     * nothing waits and while the delivery is followed.
+     * till. Counted of the same figures, so that a template counts nothing itself:
+     * - messages: those that go - sent, failed, uncertain, stopped, queued (total less skipped);
+     * - verify: '1' once nothing looks up a message of unknown fate any more (SendRun::verifiable()) -
+     *   offer Verify of an uncertain message then, never before;
+     * - attention: failed, and with verify uncertain too - a person verifies those. A message verified
+     *   moves from uncertain to failed, so attention stays: tell that it may be sent again (a copy);
+     * - checking: uncertain before verify. While the sending runs it finds out itself; in error it waits
+     *   for Continue - say so, not that it is being checked; after Abandon AA still checks them for the
+     *   few minutes until the run closes;
+     * - pending: sent and not delivered yet, '' while the delivery is not followed; once the following
+     *   ended (done) these were never delivered;
+     * - stop_by: the name of who stopped the sending, escaped already - do not wrap it in {safe:}; ''
+     *   for a sending given up (Abandon) that no one stopped before;
+     * - error: the code the run failed or waits with (BatchRun::lastFailure()) when Advice::ofRun()
+     *   has a text of it, for advice:<code>:run - only in sending, error, watching and watch_error; a
+     *   run that ended keeps a code that no longer holds.
+     * '' with no run, another item or question, and for a record whose maps cannot be read - verify,
+     * stop_by and error are read apart from them and stay; until '' when nothing waits and while the
+     * delivery is followed.
      * @param string $campaign long id of an item of the campaign slice
      */
     public function progress(string $campaign, string $what): string
@@ -271,7 +320,9 @@ class Gate
         if (is_null($setup) || is_null($id) || !in_array($what, self::PROGRESS, true)) {
             return '';
         }
-        return $this->progressOf($setup, $id)[$what] ?? '';
+        $answer = $this->progressOf($setup, $id)[$what] ?? '';
+
+        return ($what === 'stop_by') ? safe(self::userName($answer)) : $answer;
     }
 
     /** @return array<string, string> campaignProgress(), once a request for all the answers and fields() */
@@ -494,8 +545,9 @@ class Gate
     }
 
     /**
-     * @return array<string, string> progress() of each question it answers, and abandon '1' when only
-     *                               Abandon ends the run (fields()); [] = not a campaign of the page
+     * @return array<string, string> progress() of each question it answers - stop_by as the uid -, and
+     *                               abandon '1' when only Abandon ends the run (fields()); [] = not a
+     *                               campaign of the page
      */
     private function campaignProgress(Setup $setup, string $id): array
     {
@@ -524,16 +576,41 @@ class Gate
             SendRun::ENDED => $watching ? SendRun::DONE : 'abandoned',
             default        => '',
         };
-        $known = ['state' => $state, 'abandon' => $run->abandonable() ? '1' : ''];
+        $code       = $run->lastFailure()['code'] ?? '';
+        $verifiable = $run->verifiable();
+        $known      = [
+            'state'   => $state,
+            'abandon' => $run->abandonable() ? '1' : '',
+            'verify'  => $verifiable ? '1' : '',
+            // the uid: progress() asks AA for the name only when the template asks for it
+            'stop_by' => $run->stoppedBy(),
+            // a run that ended keeps its last code, which no longer holds
+            'error'   => (in_array($state, self::ERROR_SHOWN, true) && Advice::knowsRun($code)) ? $code : '',
+        ];
         try {
             $counts = $run->progressFigures();
         } catch (\JsonException|BatchFailed) {
             // edited outside AA: no figure can be trusted, the state still can
             return $known;
         }
+        $derived = [
+            // the parts of the bar of the page; total less skipped differs when a record edited by hand
+            // names indexes beyond the recipients
+            'messages'  => $counts['sent'] + $counts['failed'] + $counts['uncertain'] + $counts['stopped'] + $counts['queued'],
+            'attention' => $counts['failed'] + ($verifiable ? $counts['uncertain'] : 0),
+            'checking'  => $verifiable ? 0 : $counts['uncertain'],
+            // delivered is 0 while the delivery is not followed: sent would all pass for waiting for it
+            'pending'   => $run->watching() ? $counts['sent'] - $counts['delivered'] : '',
+        ];
         $counts['until'] = ($counts['until'] > 0) ? $counts['until'] : '';
 
-        return $known + array_map('strval', $counts);
+        return $known + array_map('strval', $counts + $derived);
+    }
+
+    /** the name AA shows of a login; '' for none */
+    private static function userName(string $uid): string
+    {
+        return ($uid === '') ? '' : \AA::$perm->getUserName($uid);
     }
 
     // ------------------------------------------------------------ what tests replace

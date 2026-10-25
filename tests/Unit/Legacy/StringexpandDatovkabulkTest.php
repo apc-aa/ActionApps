@@ -88,7 +88,7 @@ namespace Tests\Unit\Legacy {
 
         public function test_subcommands_outsideTheUiGiveNothing(): void
         {
-            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:delete}{datovkabulk}'));
+            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:advice:ISDS_REFUSED:run}{datovkabulk:advice:isds:1233}{datovkabulk:delete}{datovkabulk}'));
         }
 
         public function test_recipients_campaignAndQuestionToTheGate(): void
@@ -174,6 +174,24 @@ namespace Tests\Unit\Legacy {
             };
 
             self::assertSame('ca00000000000000000000000000000b|queued', $command->expand('progress', 'ca00000000000000000000000000000b', 'queued'));
+        }
+
+        // isds:<status> is split by the colon as any parameter: the status comes as the second one
+        public function test_advice_codeAndWhenToTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function advice(string $code, string $when = ''): string
+                        {
+                            return "$code|$when";
+                        }
+                    };
+                }
+            };
+
+            self::assertSame(['ISDS_REFUSED|run', 'isds|1233', 'BUSY|'], [$command->expand('advice', 'ISDS_REFUSED', 'run'), $command->expand('advice', 'isds', '1233'), $command->expand('advice', 'BUSY')]);
         }
     }
 }

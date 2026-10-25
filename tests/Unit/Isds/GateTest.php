@@ -9,6 +9,7 @@ use AA\Isds\Access;
 use AA\Isds\Account;
 use AA\Isds\ActionResult;
 use AA\Isds\Actions;
+use AA\Isds\Advice;
 use AA\Isds\DatovkaConf;
 use AA\Isds\Gate;
 use AA\Isds\SendResult;
@@ -331,6 +332,82 @@ final class GateTest extends TestCase
         }));
     }
 
+    public function test_advice_emptyOutsideGate(): void
+    {
+        $gate = self::gate();
+
+        self::assertSame(['', '', ''], [$gate->advice(Actions::BUSY), $gate->advice(SendRun::REFUSED, 'run'), $gate->advice('isds', '1233')]);
+        self::assertSame(Advice::text(Actions::BUSY), self::inside($gate, static fn(): string => $gate->advice(Actions::BUSY)), 'inside');
+    }
+
+    /** @return array<string, array{string, string}> code, when */
+    public static function unknownAdvice(): array
+    {
+        // literals: a data provider runs before Actions can be loaded
+        return [
+            'no such code'                => ['NO_SUCH_CODE', ''],
+            'no such code of a run'       => ['NO_SUCH_CODE', 'run'],
+            'empty'                       => ['', ''],
+            // a run waits for the next round of delivery: no action of the page says it
+            'a code only of a run'        => ['ISDS_WATCH', ''],
+            // a text that names what the template cannot give - the size, the count
+            'a text needing a number'     => ['COUNT_CHANGED', ''],
+            'a question of no kind'       => ['BUSY', 'later'],
+            'an action code in a run'     => ['SAVED', 'run'],
+        ];
+    }
+
+    #[DataProvider('unknownAdvice')]
+    public function test_advice_unknownEmpty(string $code, string $when): void
+    {
+        $gate = self::gate();
+
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->advice($code, $when)));
+    }
+
+    // a refusal while sending is no answer to the question of queueing, whose the login is
+    public function test_advice_runWording(): void
+    {
+        $gate = self::gate();
+        [$asked, $run, $watch] = self::inside($gate, static fn(): array => [$gate->advice(SendRun::REFUSED), $gate->advice(SendRun::REFUSED, 'run'), $gate->advice(SendRun::WATCHING, 'run')]);
+
+        self::assertStringContainsString('nothing was sent', $asked);
+        self::assertStringNotContainsString('nothing was sent', $run);
+        self::assertStringContainsString('After refused messages Continue sends one more', $run);
+        self::assertStringContainsString('does not mean every message went', $watch);
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->advice(SendRun::WATCHING)), 'waiting for a round is no answer to an action');
+    }
+
+    /** @return array<string, array{string, bool}> status, whether AA has a text of it */
+    public static function isdsStatuses(): array
+    {
+        return [
+            'known'         => ['1233', true],
+            'unknown'       => ['9999', false],
+            'no digits'     => ['12a3', false],
+            'too long'      => ['123456', false],
+            'none'          => ['', false],
+            'a line end'    => ["1233\n", false],
+        ];
+    }
+
+    #[DataProvider('isdsStatuses')]
+    public function test_advice_isdsStatus(string $status, bool $known): void
+    {
+        $gate = self::gate();
+        $text = self::inside($gate, static fn(): string => $gate->advice('isds', $status));
+
+        self::assertSame($known ? Advice::isds($status) : '', $text);
+        self::assertSame($known, $text !== '');
+    }
+
+    public function test_advice_escaped(): void
+    {
+        $gate = self::gate();
+
+        self::assertStringContainsString('The subject, &quot;to hands&quot; or', self::inside($gate, static fn(): string => $gate->advice('isds', '1225')));
+    }
+
     public function test_fields_purposeBindsBinding(): void
     {
         session_id('gate-test-session');
@@ -400,6 +477,12 @@ final class GateTest extends TestCase
             public function recipients(): array
             {
                 return $this->readable ? [] : throw new BatchFailed('CHANGED');
+            }
+
+            // of a run given up the queue tells it, which is not here
+            public function verifiable(): bool
+            {
+                return ($this->state() === SendRun::ENDED) || parent::verifiable();
             }
         }];
 

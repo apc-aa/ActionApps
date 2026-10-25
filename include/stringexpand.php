@@ -10941,7 +10941,8 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *            error        sending stopped by an error, waits for Continue; one stopped already or with every
  *                         message tried for Continue or Abandon (fields:abandon), Stop changes nothing
  *            abandoned    sending given up in error
- *            watching     the sending is over (a stopped one too), the delivery is being followed
+ *            watching     the sending is over (a stopped one too), the delivery is being followed - not that
+ *                         every message went: the figures tell
  *            watch_error  the sending is over, following the delivery stopped by an error: Continue goes on,
  *                         Abandon ends it
  *            done         the end - also of a following given up; a sending a person stopped that sent anything
@@ -10954,12 +10955,20 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *            Both are part of sent, not of the sum to total, and 0 while the delivery is not followed (an
  *            older sending that never followed it too).
  *        until - the unix time a pause of sending waits till; '' when none, and while the delivery is followed
- *        A copy "for the unsent": offer it only when stopped > 0 and state is watching, watch_error, done or
- *        abandoned - never while sending or error: the stop is still marking the message items then. Send it
- *        only to recipients whose message item is stopped already; of an abandoned sending the queue marks
- *        them, a few minutes late. Never to uncertain ones - they may have got the letter -, nor to failed
- *        ones, and never decide by queued - the run may still send those. error, watch_error and abandoned
- *        alone tell nothing of unsent messages.
+ *        Counted of the same, so that the template counts nothing (AA\Isds\Gate::progress() tells more):
+ *        messages - recipients the letter goes to; pending - sent, not delivered yet ('' while not followed);
+ *        verify - 1 when a message of unknown fate may be verified; attention - failed, with verify uncertain too;
+ *        checking - uncertain before verify; stop_by - who stopped the sending, escaped (no {safe:});
+ *        error - the code of what the sending waits or stopped with, for {datovkabulk:advice:<code>:run}
+ *        A copy "for the unsent" (clone with isds_scope unsent): offer it when stopped > 0, in any state.
+ *        stopped counts only recipients nothing sends any more (a sending stopped or over), from the record of
+ *        the run, not from the message items - the copy takes the same ones; before that the core refuses the
+ *        copy with WRONG_STATE. It never takes uncertain recipients - they may have got the letter -, failed
+ *        or queued ones.
+ *    {datovkabulk:advice:<code>[:run]} - what a code means and how to go on, in the language of the page; run for
+ *        progress error (not the error a campaign item keeps - it outlives its state). {datovkabulk:advice:isds:<status>}
+ *        - a status ISDS refused a message with (the error code of a message item when it is digits). '' for a code
+ *        AA has no text for, and without run for one whose text names a count or an id (AA\Isds\Gate::advice())
  *  All but page give nothing outside the UI of the page. AA\Isds\Gate tells more.
  */
 class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
@@ -10978,6 +10987,7 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'campaign'   => $gate->campaign(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
+            'advice'     => $gate->advice((string)$settings, (string)$ui),
             default      => '',
         };
     }

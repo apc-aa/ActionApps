@@ -279,6 +279,12 @@ class SendRun extends BatchRun
         });
     }
 
+    /** the uid of who stopped the sending; '' = no one */
+    public function stoppedBy(): string
+    {
+        return (string) $this->stop_by;
+    }
+
     /**
      * A run in error a stop can no longer end - stopped already, every message tried, or following
      * delivery: Continue, or giving it up. Read without the lock it only tells what to offer.
@@ -386,9 +392,11 @@ class SendRun extends BatchRun
     /**
      * Nothing looks up a message of unknown fate any more, nor marks it: following delivery (in error
      * too) - not while a repeated look still runs -, done, or given up once its end ran, or failed
-     * (after_close) and a person must not wait for it for ever
+     * (after_close) and a person must not wait for it for ever. Public for the page of a sending
+     * (Gate::progress()): it offers Verify by it, and counts uncertain messages as for a person by it.
+     * Of a run given up it asks the queue for its close row.
      */
-    private function verifiable(): bool
+    public function verifiable(): bool
     {
         return match ($this->state()) {
             self::DONE  => true,

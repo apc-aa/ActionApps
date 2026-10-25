@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace AA\Isds;
 
+use AA\Later\BatchRun;
+
 /**
  * What a person on the page of a mass sending reads of a code (ActionResult): plain text in the
  * language of the page, how to go on - never what went wrong inside AA, never a path or a setting
@@ -11,6 +13,27 @@ namespace AA\Isds;
  */
 final class Advice
 {
+    /** the codes of text() that name a value - a count, an id, a size - they cannot go without */
+    private const NAMES_A_VALUE = [
+        Actions::QUEUED, Actions::TEST_SENT, Actions::TEST_UNCERTAIN, TestResult::SAME_LETTER,
+        SendStart::COUNT_CHANGED, SendStart::TOO_MANY,
+        // the result puts what is wrong after its colon
+        SendStart::CONTENT,
+    ];
+
+    /** what BatchRun fails or waits with on its own, as it names it */
+    private const NO_PROGRESS = 'NO_PROGRESS';
+    private const STEP_DIED   = 'STEP_DIED';
+    private const FINAL_CHECK = 'FINAL_CHECK';
+
+    /** the codes ofRun() has a text of */
+    private const RUN_CODES = [
+        SendRun::REFUSED, SendRun::LOOKING, SendRun::WATCHING, SendRun::MAINTENANCE, SendRun::ACCOUNT_CHANGED,
+        Outcome::UNAVAILABLE, Outcome::LOGIN, Outcome::BLOCKED, Outcome::CONFIG, Snapshot::CHANGED,
+        BatchRun::NO_TRANSACTION, self::NO_PROGRESS, self::STEP_DIED, self::FINAL_CHECK, Actions::INTERNAL,
+        SendRun::SETTINGS, SendRun::MEMORY,
+    ];
+
     /**
      * @param list<int|string> $params what the text names, as ActionResult::$params
      * @return string '' for a code it does not know
@@ -22,7 +45,9 @@ final class Advice
 
         return match ($code) {
             Actions::EXPIRED         => _m('The form has expired, or it does not belong to this page. Load the page again.'),
-            Actions::TOO_LARGE       => _m('The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller.', [self::size((int) $first)]),
+            Actions::TOO_LARGE       => ((int) $first > 0)
+                ? _m('The form sent is larger than the server takes (%1). Nothing was saved - make the attachments smaller.', [self::size((int) $first)])
+                : _m('The form sent is larger than the server takes. Nothing was saved - make the attachments smaller.'),
             Actions::INTERNAL        => _m('The action failed on an internal error of AA and may have done part of its work. Load the page again and look before you try it once more.'),
             Actions::BUSY            => _m('Someone else, or another window, is working with this now. Try it again in a while.'),
             Actions::FORBIDDEN       => _m('You may not do this.'),
@@ -80,6 +105,55 @@ final class Advice
             TestResult::CHARGED      => _m('The test message went as a paid postal data message.'),
             TestResult::MAY_BE_CHARGED => _m('The test message may have cost money: it may have gone as a paid postal data message.'),
             default                  => '',
+        };
+    }
+
+    /**
+     * text() of a code a template names on its own, with nothing the text names
+     * @return string '' for a code it does not know, and for one of NAMES_A_VALUE
+     */
+    public static function alone(string $code): string
+    {
+        return in_array($code, self::NAMES_A_VALUE, true) ? '' : self::text($code);
+    }
+
+    /** whether ofRun() has a text of the code */
+    public static function knowsRun(string $code): bool
+    {
+        return in_array($code, self::RUN_CODES, true);
+    }
+
+    /**
+     * What a code of a sending (its error, or what it waits for: BatchRun::lastFailure()) means on its
+     * page - the cause and how to go on. The same code may make the sending wait and try again, or stop
+     * it till Continue; the page tells which by the state, so the text fits both. Unlike text(), which
+     * tells what an action of the page did: before a sending is queued nothing was sent, in it some was.
+     * @return string '' for a code not in RUN_CODES
+     */
+    public static function ofRun(string $code): string
+    {
+        return match ($code) {
+            SendRun::REFUSED          => self::join(
+                _m('ISDS refused several messages in a row with the same status, or refused a question of the sending - whose the login of the account is, or which messages were sent.'),
+                _m('After refused messages Continue sends one more, and the sending stops again if ISDS refuses that one too; after a refused question Continue asks again.'),
+            ),
+            SendRun::LOOKING          => _m('Waiting until ISDS lists the messages whose fate is not known yet. The sending looks them up by itself.'),
+            SendRun::WATCHING         => _m('The sending is over - which does not mean every message went, the figures tell. The delivery is followed in rounds; the next one comes by itself.'),
+            SendRun::MAINTENANCE      => _m('ISDS is being maintained. The sending waits till the end and goes on by itself.'),
+            SendRun::ACCOUNT_CHANGED  => _m('The data box account of this page is no longer the one the sending was queued with. Ask the administrator.'),
+            Outcome::UNAVAILABLE      => _m('ISDS does not answer. AA tries again by itself; if the sending stopped on it, choose Continue once ISDS answers.'),
+            Outcome::LOGIN            => _m('ISDS refuses the login of the account. Ask the administrator to check the login, then choose Continue.'),
+            Outcome::BLOCKED          => _m('ISDS has blocked the logins from this server. A new password does not help: choose Continue tomorrow, or ask the administrator.'),
+            Outcome::CONFIG           => _m('The settings of the account are not complete. Ask the administrator.'),
+            Snapshot::CHANGED         => _m('What was frozen for the sending - the letter, its attachments or the recipients - is missing or changed, so it cannot go on. Ask the administrator.'),
+            BatchRun::NO_TRANSACTION  => _m('The database cannot record the sending safely. Ask the administrator.'),
+            self::NO_PROGRESS         => _m('A step of the sending kept making no progress. Choose Continue; if it stops again, ask the administrator.'),
+            self::STEP_DIED           => _m('A step of the sending stopped before its end. AA tries again by itself; if the sending stopped on it, ask the administrator.'),
+            self::FINAL_CHECK         => _m('The end of the sending could not be recorded. AA tries again by itself; if the sending stopped on it, ask the administrator.'),
+            Actions::INTERNAL         => _m('A step of the sending failed on an internal error of AA. Choose Continue; if it fails again, ask the administrator.'),
+            // say nothing of what was sent, so they fit a sending too
+            SendRun::SETTINGS, SendRun::MEMORY => self::text($code),
+            default                   => '',
         };
     }
 

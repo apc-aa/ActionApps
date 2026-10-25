@@ -33,6 +33,9 @@ final class GateProgressTest extends TestCase
 
     private const QUESTIONS = ['state', 'total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'until', 'delivered', 'accepted'];
 
+    /** counted of QUESTIONS by the gate, so that a template counts nothing */
+    private const DERIVED = ['messages', 'attention', 'checking', 'pending', 'verify', 'stop_by', 'error'];
+
     /** the clock of the runs here: a pause is judged at this time, however slow the machine */
     public const NOW = 1800000000;
 
@@ -110,6 +113,9 @@ final class GateProgressTest extends TestCase
         return new class ($props, $rows, $unreadable) extends SendRun {
             public int $reads = 0;
 
+            /** its end ran (closing()); null = as a run given up whose close row is gone */
+            public ?bool $closed = null;
+
             /** @param list<array<string, string>> $frozen */
             public function __construct(array $props, private array $frozen, private ?\Throwable $unreadable)
             {
@@ -127,7 +133,21 @@ final class GateProgressTest extends TestCase
             {
                 return GateProgressTest::NOW;
             }
+
+            /** of a run given up the queue tells it (closeWaits()), which is not here: closing() does */
+            public function verifiable(): bool
+            {
+                return ($this->state() === SendRun::ENDED) ? ($this->closed ?? true) : parent::verifiable();
+            }
         };
+    }
+
+    /** $run given up, its end - the close row in the queue - $closed already */
+    private static function closing(SendRun $run, bool $closed): SendRun
+    {
+        (new ReflectionProperty($run, 'closed'))->setValue($run, $closed);
+
+        return $run;
     }
 
     /**
@@ -208,6 +228,187 @@ final class GateProgressTest extends TestCase
         self::assertSame(['total' => '10', 'sent' => '2', 'failed' => '2', 'skipped' => '3', 'uncertain' => '1', 'stopped' => '0', 'queued' => '2', 'delivered' => '0', 'accepted' => '0'], array_diff_key($answers, array_flip(['state', 'until'])));
         self::assertSame(1, $run->reads, 'eleven answers, one read');
         self::assertSame('', $gate->progress(self::ITEM, 'total'), 'outside the UI');
+    }
+
+    public function test_progress_messagesWithoutSkipped(): void
+    {
+        $run     = self::tenRecipients();
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run]), questions: [...self::QUESTIONS, ...self::DERIVED]);
+
+        self::assertSame(['total' => '10', 'skipped' => '3', 'messages' => '7'], array_intersect_key($answers, array_flip(['total', 'skipped', 'messages'])));
+        self::assertSame(1, $run->reads, 'all the answers, one read');
+    }
+
+    /** @return array<string, array{\Closure(): SendRun}> */
+    public static function runs(): array
+    {
+        return [
+            'sending'          => [static fn(): SendRun => self::tenRecipients()],
+            'stopping'         => [static fn(): SendRun => self::tenRecipients(['stop_by' => Sending::READER])],
+            'given up'         => [static fn(): SendRun => self::tenRecipients(['state' => SendRun::ENDED])],
+            'watching'         => [static fn(): SendRun => self::watchedRun()],
+            'following failed' => [static fn(): SendRun => self::watchedRun(['state' => SendRun::ERROR])],
+        ];
+    }
+
+    /** @param \Closure(): SendRun $run */
+    #[DataProvider('runs')]
+    public function test_progress_sumOfMessages(\Closure $run): void
+    {
+        $a = array_map('intval', self::answers(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run()]), questions: ['total', 'sent', 'failed', 'skipped', 'uncertain', 'stopped', 'queued', 'messages', 'attention', 'checking']));
+
+        self::assertSame($a['sent'] + $a['failed'] + $a['uncertain'] + $a['stopped'] + $a['queued'], $a['messages']);
+        self::assertSame($a['total'] - $a['skipped'], $a['messages']);
+        self::assertSame($a['failed'] + $a['uncertain'], $a['attention'] + $a['checking'], 'each failed or uncertain one is in one of them');
+    }
+
+    // the message in flight may still go: the sending finds out itself, no one is to act on it
+    public function test_progress_uncertainWhileSendingIsChecking(): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients()]), questions: ['state', 'failed', 'uncertain', 'attention', 'checking']);
+
+        self::assertSame(['state' => 'sending', 'failed' => '2', 'uncertain' => '1', 'attention' => '2', 'checking' => '1'], $answers);
+    }
+
+    /**
+     * Runs by whether a message of unknown fate is still looked up (SendRun::verifiable()) - with its
+     * state of the page, which alone does not tell it
+     * @return array<string, array{\Closure(): SendRun, string, bool}> the run, its state, verifiable
+     */
+    public static function lookups(): array
+    {
+        return [
+            'sending'                     => [static fn(): SendRun => self::tenRecipients(), 'sending', false],
+            'stopping'                    => [static fn(): SendRun => self::tenRecipients(['stop_by' => Sending::READER]), 'sending', false],
+            'in error'                    => [static fn(): SendRun => self::tenRecipients(['state' => SendRun::ERROR]), 'error', false],
+            'looking up in error'         => [static fn(): SendRun => self::watchedRun(['state' => SendRun::ERROR, 'watch_from' => '', 'position' => ['p' => 'look', 'i' => 0]]), 'error', false],
+            // the step of look that started following delivery, or Continue repeating it: it may still find the message
+            'watching, its look repeated' => [static fn(): SendRun => self::watchedRun(['position' => ['p' => 'look', 'i' => 0]]), 'watching', false],
+            'watch_error, look repeated'  => [static fn(): SendRun => self::watchedRun(['state' => SendRun::ERROR, 'position' => ['p' => 'look', 'i' => 0]]), 'watch_error', false],
+            'given up, its end queued'    => [static fn(): SendRun => self::closing(self::tenRecipients(['state' => SendRun::ENDED]), false), 'abandoned', false],
+            'given up, its end run'       => [static fn(): SendRun => self::closing(self::tenRecipients(['state' => SendRun::ENDED]), true), 'abandoned', true],
+            'watching'                    => [static fn(): SendRun => self::watchedRun(), 'watching', true],
+            'following failed'            => [static fn(): SendRun => self::watchedRun(['state' => SendRun::ERROR]), 'watch_error', true],
+            'done'                        => [static fn(): SendRun => self::watchedRun(['state' => SendRun::DONE]), 'done', true],
+            'following given up, closing' => [static fn(): SendRun => self::closing(self::watchedRun(['state' => SendRun::ENDED]), false), 'done', false],
+        ];
+    }
+
+    /** @param \Closure(): SendRun $run */
+    #[DataProvider('lookups')]
+    public function test_progress_attentionOnlyAfterLookup(\Closure $run, string $state, bool $verifiable): void
+    {
+        $run     = $run();
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run]), questions: ['state', 'failed', 'uncertain', 'attention', 'checking', 'verify']);
+        [$failed, $uncertain] = [(int) $answers['failed'], (int) $answers['uncertain']];
+
+        self::assertSame([$state, $verifiable], [$answers['state'], $run->verifiable()], 'the run as described');
+        self::assertSame(1, $uncertain, 'one of unknown fate in each');
+        self::assertSame($verifiable ? '1' : '', $answers['verify']);
+        self::assertSame($verifiable ? [$failed + $uncertain, 0] : [$failed, $uncertain], [(int) $answers['attention'], (int) $answers['checking']]);
+    }
+
+    /** @return array<string, array{\Closure(): SendRun, string}> the run, pending */
+    public static function deliveries(): array
+    {
+        return [
+            'followed'              => [static fn(): SendRun => self::watchedRun(), '1'],
+            'followed, then done'   => [static fn(): SendRun => self::watchedRun(['state' => SendRun::DONE]), '1'],
+            // delivered is 0 before: every message sent would pass for waiting for its delivery
+            'sending, not followed' => [static fn(): SendRun => self::tenRecipients(), ''],
+            'done, never followed'  => [static fn(): SendRun => self::watchedRun(['state' => SendRun::DONE, 'watch_from' => '']), ''],
+        ];
+    }
+
+    /** @param \Closure(): SendRun $run */
+    #[DataProvider('deliveries')]
+    public function test_progress_pendingOnlyWhileDeliveryFollowed(\Closure $run, string $pending): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('done')], [self::ITEM => $run()]), questions: ['sent', 'delivered', 'pending']);
+
+        self::assertSame($pending, $answers['pending']);
+        if ($pending !== '') {
+            self::assertSame(['sent' => '4', 'delivered' => '3'], array_intersect_key($answers, ['sent' => 1, 'delivered' => 1]));
+        }
+    }
+
+    public function test_progress_derivedEmptyWithoutRun(): void
+    {
+        $none    = array_fill_keys(self::DERIVED, '');
+        $derived = static function (FakeGate $gate): array {
+            // a request reads the progress once
+            AA::Contentcache()->clear();
+
+            return self::answers($gate, questions: self::DERIVED);
+        };
+
+        self::assertSame($none, $derived(self::gate([self::ITEM => self::campaign('draft')])), 'never queued');
+        self::assertSame($none, $derived(self::gate([self::ITEM => self::campaign('sending', Sending::OTHER)], [self::ITEM => self::tenRecipients(['stop_by' => Sending::READER])])), 'not a campaign of the page');
+        self::assertSame($none, $derived(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients(['dm_ids' => '{"0":'])])), 'a record edited out of shape');
+        self::assertNotSame($none, $derived(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients()])), 'a run');
+    }
+
+    // the record tells who and why apart from the maps: a map edited out of shape leaves them
+    public function test_progress_stopByAndErrorOfARecordOutOfShape(): void
+    {
+        $run     = self::tenRecipients(['dm_ids' => '{"0":', 'stop_by' => Sending::READER, 'state' => SendRun::ERROR, 'error_code' => SendRun::REFUSED]);
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('error')], [self::ITEM => $run]), questions: ['state', 'total', 'messages', 'stop_by', 'error']);
+
+        self::assertSame(['state' => 'error', 'total' => '', 'messages' => '', 'stop_by' => Sending::READER, 'error' => SendRun::REFUSED], $answers);
+    }
+
+    public function test_progress_stopByThroughPermUsername(): void
+    {
+        $perms                         = FakePerms::install([Sending::SET => [Sending::CAMPAIGN => AA_Perm::ROLES['EDITOR']['id']]], [Sending::READER => [Sending::READERS, Sending::SET]]);
+        $perms->names[Sending::READER] = 'Jana <b>Nová</b> & "spol."';
+        $stopped                       = static function (string $uid): string {
+            // a request reads the progress once
+            AA::Contentcache()->clear();
+
+            return self::answers(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients(($uid === '') ? [] : ['stop_by' => $uid])]), questions: ['stop_by'])['stop_by'];
+        };
+
+        self::assertSame('Jana &lt;b&gt;Nová&lt;/b&gt; &amp; &quot;spol.&quot;', $stopped(Sending::READER));
+        self::assertSame('', $stopped(''), 'no one stopped it');
+        // a login AA no longer knows shows as its id, as everywhere in AA
+        self::assertSame('&lt;gone&gt;', $stopped('<gone>'));
+    }
+
+    /** @return array<string, array{array<string, string|array<array-key, mixed>>, string}> props of the run, error */
+    public static function failures(): array
+    {
+        // literals: a data provider runs before SendRun can be loaded
+        return [
+            'refused in a run'            => [['state' => 'error', 'error_code' => 'ISDS_REFUSED', 'error_detail' => 'status:1233'], 'ISDS_REFUSED'],
+            'the account changed'         => [['state' => 'error', 'error_code' => 'ACCOUNT_CHANGED'], 'ACCOUNT_CHANGED'],
+            'waiting for the lookup'      => [['retry_code' => 'ISDS_LOOKUP'], 'ISDS_LOOKUP'],
+            'waiting for a round'         => [['retry_code' => 'ISDS_WATCH', 'watch_from' => (string) (self::NOW - 3600)], 'ISDS_WATCH'],
+            'waiting out ISDS'            => [['retry_code' => 'ISDS_UNAVAILABLE'], 'ISDS_UNAVAILABLE'],
+            'an internal error'           => [['state' => 'error', 'error_code' => 'INTERNAL', 'error_path' => 'RuntimeException'], 'INTERNAL'],
+            'no failure'                  => [[], ''],
+            'retrying the end'            => [['retry_code' => 'FINAL_CHECK'], 'FINAL_CHECK'],
+            'its end failed for good'     => [['state' => 'error', 'error_code' => 'FINAL_CHECK'], 'FINAL_CHECK'],
+            'a step that kept dying'      => [['state' => 'error', 'error_code' => 'STEP_DIED'], 'STEP_DIED'],
+            'the frozen part changed'     => [['state' => 'error', 'error_code' => 'CONTENT_CHANGED', 'error_detail' => 'rcpt'], 'CONTENT_CHANGED'],
+            'a code AA has no text of'    => [['state' => 'error', 'error_code' => 'NO_SUCH_CODE'], ''],
+            'an action code'              => [['state' => 'error', 'error_code' => 'SAVED'], ''],
+            // retry_code is shown only while the run is active
+            'retry left in a run in error' => [['state' => 'error', 'retry_code' => 'ISDS_LOOKUP'], ''],
+            'a code edited out of shape'  => [['state' => 'error', 'error_code' => '<b>'], ''],
+            // a run that ended keeps its last code: it no longer holds
+            'given up after a refusal'    => [['state' => 'stopped', 'error_code' => 'ISDS_REFUSED'], ''],
+            'done after an error'         => [['state' => 'done', 'error_code' => 'ACCOUNT_CHANGED'], ''],
+            'following failed'            => [['state' => 'error', 'error_code' => 'ISDS_UNAVAILABLE', 'watch_from' => (string) (self::NOW - 3600)], 'ISDS_UNAVAILABLE'],
+        ];
+    }
+
+    /** @param array<string, string|array<array-key, mixed>> $props */
+    #[DataProvider('failures')]
+    public function test_progress_errorOnlyKnownCodes(array $props, string $error): void
+    {
+        $answers = self::answers(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients($props)]), questions: ['error']);
+
+        self::assertSame($error, $answers['error']);
     }
 
     /** @return array<string, array{array<string, string>, string, string, string}> props of the run, state, stopped, queued */
