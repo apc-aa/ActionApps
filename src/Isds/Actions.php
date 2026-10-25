@@ -212,10 +212,10 @@ class Actions
     private function save(Setup $setup, string $campaign): ActionResult
     {
         // Drafts reads only its own fields and files of the form; storeItem() takes the author from the login
-        ['code' => $code, 'campaign' => $id, 'field' => $field, 'file' => $file] = $this->saveDraft($setup, $campaign, $_POST, $_FILES);
+        ['code' => $code, 'campaign' => $id, 'field' => $field, 'file' => $file, 'refiltered' => $refiltered] = $this->saveDraft($setup, $campaign, $_POST, $_FILES);
 
         return match ($code) {
-            self::SAVED, self::FILTER_CHANGED => new ActionResult('save', ActionResult::DONE, $code, $id),
+            self::SAVED, self::FILTER_CHANGED => new ActionResult('save', ActionResult::DONE, $code, $id, refiltered: $refiltered),
             self::INPUT => self::refused('save', self::INPUT, $id, params: array_values(array_filter([$field, $file], static fn(string $p): bool => $p !== ''))),
             default     => self::refused('save', $code, $id),
         };
@@ -515,7 +515,7 @@ class Actions
      * Drafts::save()
      * @param array<array-key, mixed> $post
      * @param array<array-key, mixed> $files
-     * @return array{code: string, campaign: string, field: string, file: string}
+     * @return array{code: string, campaign: string, field: string, file: string, refiltered: bool}
      */
     protected function saveDraft(Setup $setup, string $campaign, array $post, array $files): array
     {

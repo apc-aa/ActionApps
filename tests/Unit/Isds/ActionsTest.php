@@ -1161,7 +1161,7 @@ final class ActionsTest extends TestCase
 
     // ------------------------------------------------------------ Save
 
-    /** @param array{code: string, campaign: string, field: string, file: string} $told what the core says */
+    /** @param array{code: string, campaign: string, field: string, file: string, refiltered: bool} $told what the core says */
     private static function saves(array $told): void
     {
         FakeActions::$save = static fn(): array => $told;
@@ -1171,7 +1171,7 @@ final class ActionsTest extends TestCase
     public function test_save_formToTheCore(): void
     {
         $this->draftOfPage();
-        self::saves(['code' => Drafts::SAVED, 'campaign' => self::CAMPAIGN_ITEM, 'field' => '', 'file' => '']);
+        self::saves(['code' => Drafts::SAVED, 'campaign' => self::CAMPAIGN_ITEM, 'field' => '', 'file' => '', 'refiltered' => false]);
         self::post('save', over: ['isds_subject' => 'Výzva', 'isds_uid' => Sending::READER]);
 
         self::assertEquals(new ActionResult('save', ActionResult::DONE, Actions::SAVED, self::CAMPAIGN_ITEM), $this->actions()->run(self::page(), true));
@@ -1182,17 +1182,31 @@ final class ActionsTest extends TestCase
     // the page learns the id of the new draft from the result: the browser is sent to it
     public function test_save_newDraftNamesItsId(): void
     {
-        self::saves(['code' => Drafts::SAVED, 'campaign' => self::OTHER_ITEM, 'field' => '', 'file' => '']);
+        self::saves(['code' => Drafts::SAVED, 'campaign' => self::OTHER_ITEM, 'field' => '', 'file' => '', 'refiltered' => false]);
         self::post('save', campaign: '', over: ['isds_nonce' => str_repeat('a', 32)]);
 
         self::assertEquals(new ActionResult('save', ActionResult::DONE, Actions::SAVED, self::OTHER_ITEM), $this->actions()->run(self::page(), true));
         self::assertSame('', FakeActions::$saved[0][0]);
     }
 
-    /** @return array<string, array{array{code: string, campaign: string, field: string, file: string}, ActionResult}> */
+    // the page after the save keeps the page of a list only while its recipients are the same
+    public function test_save_toldWhetherTheFilterChanged(): void
+    {
+        $this->draftOfPage();
+        foreach ([Drafts::SAVED, Drafts::FILTER_CHANGED] as $code) {
+            foreach ([false, true] as $refiltered) {
+                Actions::forget();
+                self::saves(['code' => $code, 'campaign' => self::CAMPAIGN_ITEM, 'field' => '', 'file' => '', 'refiltered' => $refiltered]);
+                self::post('save');
+                self::assertEquals(new ActionResult('save', ActionResult::DONE, $code, self::CAMPAIGN_ITEM, refiltered: $refiltered), $this->actions()->run(self::page(), true));
+            }
+        }
+    }
+
+    /** @return array<string, array{array{code: string, campaign: string, field: string, file: string, refiltered: bool}, ActionResult}> */
     public static function saveRefusals(): array
     {
-        $told = static fn(string $code, string $campaign = self::CAMPAIGN_ITEM, string $field = ''): array => ['code' => $code, 'campaign' => $campaign, 'field' => $field, 'file' => ''];
+        $told = static fn(string $code, string $campaign = self::CAMPAIGN_ITEM, string $field = ''): array => ['code' => $code, 'campaign' => $campaign, 'field' => $field, 'file' => '', 'refiltered' => false];
 
         return [
             'a field'          => [$told(Actions::INPUT, field: Drafts::SUBJECT), new ActionResult('save', ActionResult::REFUSED, Actions::INPUT, self::CAMPAIGN_ITEM, params: [Drafts::SUBJECT])],
@@ -1208,7 +1222,7 @@ final class ActionsTest extends TestCase
     public function test_save_filesToTheCoreRefusalNamesTheFile(): void
     {
         $this->draftOfPage();
-        self::saves(['code' => Actions::INPUT, 'campaign' => self::CAMPAIGN_ITEM, 'field' => Drafts::FILE_TYPE, 'file' => 'logo.svg']);
+        self::saves(['code' => Actions::INPUT, 'campaign' => self::CAMPAIGN_ITEM, 'field' => Drafts::FILE_TYPE, 'file' => 'logo.svg', 'refiltered' => false]);
         self::post('save');
         $_FILES = ['isds_files' => ['name' => ['logo.svg'], 'type' => ['image/svg+xml'], 'tmp_name' => ['/tmp/php1'], 'error' => [UPLOAD_ERR_OK], 'size' => [10]]];
 
@@ -1216,7 +1230,7 @@ final class ActionsTest extends TestCase
         self::assertSame($_FILES, FakeActions::$saved[0][2]);
     }
 
-    /** @param array{code: string, campaign: string, field: string, file: string} $told */
+    /** @param array{code: string, campaign: string, field: string, file: string, refiltered: bool} $told */
     #[DataProvider('saveRefusals')]
     public function test_save_refusal(array $told, ActionResult $expected): void
     {

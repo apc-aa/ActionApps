@@ -1273,12 +1273,13 @@ final class GateTest extends TestCase
     }
 
     /**
-     * Save of ITEM posted from the page at $uri by the form of the draft with $fields; the core says $code
+     * Save of ITEM posted from the page at $uri by the form of the draft with $fields; the core says $code,
+     * and $refiltered when it stored another filter
      * @param array<string, mixed> $fields
      */
-    private static function postSave(string $code, array $fields, string $uri = '/cz/rozesilka?tab=2'): void
+    private static function postSave(string $code, array $fields, string $uri = '/cz/rozesilka?tab=2', bool $refiltered = false): void
     {
-        FakeActions::$save = static fn(): array => ['code' => $code, 'campaign' => self::ITEM, 'field' => ($code === Actions::INPUT) ? Drafts::SUBJECT : '', 'file' => ''];
+        FakeActions::$save = static fn(): array => ['code' => $code, 'campaign' => self::ITEM, 'field' => ($code === Actions::INPUT) ? Drafts::SUBJECT : '', 'file' => '', 'refiltered' => $refiltered];
         self::postResume(uri: $uri);
         $_POST = ['isds_action' => 'save', 'isds_token' => FormToken::get(Gate::purpose('save', self::page(), self::ITEM))] + $fields + $_POST;
     }
@@ -1288,7 +1289,7 @@ final class GateTest extends TestCase
     {
         return [
             'saved'             => [Actions::SAVED, '&isds_step=search&isds_q=Brno'],
-            // the letter saved, the choice not: the page shows the choice stored, not the step
+            // the letter saved, the choice not: no other card opens, the page shows the choice stored
             'filter changed'    => [Actions::FILTER_CHANGED, ''],
             // the page stays at the form, with what to fix
             'refused'           => [Actions::INPUT, ''],
@@ -1391,13 +1392,15 @@ final class GateTest extends TestCase
                 self::postResume(uri: $uri);
             };
         };
-        $save = static fn(string $code): \Closure => static fn(string $uri) => self::postSave($code, [], $uri);
+        $save = static fn(string $code, bool $refiltered = false): \Closure => static fn(string $uri) => self::postSave($code, [], $uri, $refiltered);
 
         return [
-            // its form sets the step anew
+            // its form sets the step anew - none here: the card closes, and so does the page of its list
             'saved'                => [$save(Actions::SAVED), 'isds_tab=history&isds_Q=y&isds_show=ok'],
+            // the choice not saved: the card stays, the page of its list while the lists are those it showed
+            'an item gone'         => [$save(Actions::FILTER_CHANGED), 'isds_tab=history&isds_step=send&isds_q=x&isds_page=3&isds_Q=y&isds_show=ok'],
+            'a stale page'         => [$save(Actions::FILTER_CHANGED, true), 'isds_tab=history&isds_step=send&isds_q=x&isds_Q=y&isds_show=ok'],
             // done: the step goes, the page of the list stays - a row fixed on page 3 stays on page 3
-            'the choice not saved' => [$save(Actions::FILTER_CHANGED), 'isds_tab=history&isds_page=3&isds_Q=y&isds_show=ok'],
             'continued'            => [$resume(null), 'isds_tab=history&isds_page=3&isds_Q=y&isds_show=ok'],
             // not done: the card it failed on stays
             'not continued'        => [$resume(Actions::WRONG_STATE), 'isds_tab=history&isds_step=send&isds_q=x&isds_page=3&isds_Q=y&isds_show=ok'],
@@ -1414,10 +1417,64 @@ final class GateTest extends TestCase
         self::assertMatchesRegularExpression('~^/cz/rozesilka\?' . preg_quote($kept, '~') . '&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
     }
 
+    /**
+     * @return array<string, array{string, bool, array<string, string>, string}> what the core says of a save, whether the lists
+     *         are others than the form showed, the form, and the query after it - posted from a page at step search, page 3
+     */
+    public static function savesAndPages(): array
+    {
+        // an autosave posts the step of the URL
+        $search = ['isds_step' => 'search', 'isds_q' => 'Brno'];
+        $send   = ['isds_step' => 'send'];
+        $item   = 'isds_campaign=' . self::ITEM;
+
+        return [
+            // an autosave every few seconds must not send the user back to the first page of the recipients
+            'the filter the same'        => [Actions::SAVED, false, $search, "isds_page=3&$item&isds_step=search&isds_q=Brno"],
+            'another filter'             => [Actions::SAVED, true, $search, "$item&isds_step=search&isds_q=Brno"],
+            'a pick'                     => [Actions::SAVED, true, ['isds_pick' => 'include-' . self::ITEM] + $search, "$item&isds_step=search&isds_q=Brno"],
+            // the list of another card has pages of its own
+            'another step'               => [Actions::SAVED, false, $send, "$item&isds_step=send"],
+            // the letter saved, the choice not: the card stays, its page while the lists are those it showed
+            'an item gone'               => [Actions::FILTER_CHANGED, false, $search, "isds_page=3&$item&isds_step=search&isds_q=Brno"],
+            'a stale page'               => [Actions::FILTER_CHANGED, true, $search, "$item&isds_step=search&isds_q=Brno"],
+            // nor does a choice not stored open another card
+            'an item gone, another step' => [Actions::FILTER_CHANGED, false, $send, "isds_step=search&isds_q=x&isds_page=3&$item"],
+            'a stale page, another step' => [Actions::FILTER_CHANGED, true, $send, "isds_step=search&isds_q=x&$item"],
+        ];
+    }
+
+    /** @param array<string, string> $form */
+    #[DataProvider('savesAndPages')]
+    public function test_redirect_pageOfTheListOnlyWhileTheFilterStays(string $code, bool $refiltered, array $form, string $query): void
+    {
+        self::postSave($code, $form, '/cz/rozesilka?isds_step=search&isds_q=x&isds_page=3', $refiltered);
+
+        self::assertMatchesRegularExpression('~^/cz/rozesilka\?' . preg_quote($query, '~') . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
+    }
+
+    // a Save with files posted again is told the first result - with its filter stored, from the session
+    public function test_redirect_secondClickKnowsTheFilterChanged(): void
+    {
+        self::postSave(Actions::SAVED, [], '/cz/rozesilka?isds_page=3', true);
+        $form   = $_POST;
+        $_FILES = ['isds_files' => ['name' => ['a.pdf'], 'type' => ['application/pdf'], 'tmp_name' => ['/tmp/php1'], 'error' => [UPLOAD_ERR_OK], 'size' => [10]]];
+        $first  = $this->redirectOf(self::actionGate());
+        Actions::forget();
+        FakeActions::$save = null;
+        self::postResume(uri: '/cz/rozesilka?isds_page=3');
+        $_POST = $form;
+
+        $second = $this->redirectOf(self::actionGate());
+
+        self::assertCount(1, FakeActions::$saved);
+        self::assertStringNotContainsString('isds_page', $first . $second);
+    }
+
     // PHP reads "isds.step", "isds step", "isds+part" and "isds[page" as isds_step, isds_part, isds_page
     public function test_redirect_dropsNamesAsPhpReadsThem(): void
     {
-        self::postSave(Actions::SAVED, [], '/cz/rozesilka?isds.step=send&isds%20q=x&isds+part=progress&isds[page=3&isds.r=0123456789abcdef&isds.campaign=c&isds_page%5B%5D=2&keep=1');
+        self::postSave(Actions::SAVED, [], refiltered: true, uri: '/cz/rozesilka?isds.step=send&isds%20q=x&isds+part=progress&isds[page=3&isds.r=0123456789abcdef&isds.campaign=c&isds_page%5B%5D=2&keep=1');
 
         self::assertMatchesRegularExpression('~^/cz/rozesilka\?keep=1&isds_campaign=' . self::ITEM . '&isds_r=[0-9a-f]{16}\z~', $this->redirectOf(self::actionGate()));
     }
@@ -1543,7 +1600,7 @@ final class GateTest extends TestCase
     // a Save with files would attach them again: the same form posted again shows what the first post did
     public function test_result_saveWithFilesNotRepeated(): void
     {
-        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''];
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => false];
         self::postResume();
         $_POST  = ['isds_action' => 'save', 'isds_token' => FormToken::get(Gate::purpose('save', self::page(), self::ITEM))] + $_POST;
         $form   = $_POST;
@@ -1791,7 +1848,7 @@ final class GateTest extends TestCase
     // a new draft: the browser goes to the page of its id, which the template then reads
     public function test_save_newDraftRedirectsToIt(): void
     {
-        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''];
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => false];
         self::postResume();
         $_POST = ['isds_action' => 'save', 'isds_campaign' => '', 'isds_token' => FormToken::get(Gate::purpose('save', self::page(), '')), 'isds_nonce' => str_repeat('a', 32), 'isds_subject' => 'Výzva'];
 
@@ -1831,7 +1888,7 @@ final class GateTest extends TestCase
     public function test_result_autosavesKeepTheGuardOfATest(): void
     {
         FakeActions::$test = static fn(): TestResult => TestResult::of(Outcome::of(new SendResult('1835603', '0000', 'OK')), 'msg', 'dj7j6mk', '4711-T2', true, true);
-        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''];
+        FakeActions::$save = static fn(): array => ['code' => Actions::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => false];
         self::postAction('test', ['isds_box' => 'dj7j6mk']);
         $test = $_POST;
         $this->redirectOf(self::actionGate());

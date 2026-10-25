@@ -72,7 +72,7 @@ final class DraftsTest extends TestCase
     /**
      * The form as the page shows it: with the filter it read - the one stored now -, unless $post tells another
      * @param array<string, mixed> $post
-     * @return array{code: string, campaign: string, field: string, file: string}
+     * @return array{code: string, campaign: string, field: string, file: string, refiltered: bool}
      */
     private function save(array $post, string $campaign = '', ?Setup $page = null): array
     {
@@ -92,7 +92,7 @@ final class DraftsTest extends TestCase
         return Drafts::newId(Sending::page(), self::NONCE);
     }
 
-    /** @param array{code: string, campaign: string, field: string, file: string} $result */
+    /** @param array{code: string, campaign: string, field: string, file: string, refiltered: bool} $result */
     private function assertRefusedNothingWritten(string $code, string $field, array $result): void
     {
         self::assertSame([$code, $field], [$result['code'], $result['field']]);
@@ -112,7 +112,7 @@ final class DraftsTest extends TestCase
         $result = $this->saveNew(['isds_subject' => ' Výzva ', 'isds_body' => '<p>Dobrý den</p>']);
 
         $id = self::newId();
-        self::assertSame(['code' => Drafts::SAVED, 'campaign' => $id, 'field' => '', 'file' => ''], $result);
+        self::assertSame(['code' => Drafts::SAVED, 'campaign' => $id, 'field' => '', 'file' => '', 'refiltered' => true], $result);
         self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $id);
         self::assertSame([['insert_if_new', $id, Sending::CAMPAIGN, true]], array_map(static fn(array $w): array => [$w['mode'], $w['id'], $w['slice'], $w['open']], $this->drafts->writes));
         self::assertSame(['1', 'draft', 'Výzva', '<p>Dobrý den</p>'], [
@@ -130,7 +130,7 @@ final class DraftsTest extends TestCase
         $this->saveNew(['isds_subject' => 'Výzva']);
         $again = $this->saveNew(['isds_subject' => 'Výzva 2']);
 
-        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::newId(), 'field' => '', 'file' => ''], $again);
+        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::newId(), 'field' => '', 'file' => '', 'refiltered' => false], $again);
         self::assertCount(1, $this->drafts->items);
         self::assertSame(['insert_if_new', 'insert_if_new', 'update'], array_column($this->drafts->writes, 'mode'));
         self::assertSame([Schema::CAMPAIGN_SUBJECT], $this->lastWritten());
@@ -216,7 +216,7 @@ final class DraftsTest extends TestCase
 
         $result = $this->saveNew(['isds_subject' => 'Změněno']);
 
-        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'field' => '', 'file' => ''], $result);
+        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'field' => '', 'file' => '', 'refiltered' => false], $result);
         self::assertNotContains('update', array_column($this->drafts->writes, 'mode'));
         self::assertSame('3', $this->drafts->field(self::newId(), 'status_code.....'));
     }
@@ -228,7 +228,7 @@ final class DraftsTest extends TestCase
 
         $result = $this->saveNew(['isds_subject' => 'Výzva']);
 
-        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'field' => '', 'file' => ''], $result);
+        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'field' => '', 'file' => '', 'refiltered' => false], $result);
         self::assertSame(['insert_if_new'], array_column($this->drafts->writes, 'mode'));
         self::assertSame(Sending::OTHER, $this->drafts->items[self::newId()]['slice']);
     }
@@ -272,8 +272,8 @@ final class DraftsTest extends TestCase
         $refused = $this->saveNew(['isds_to_hands' => str_repeat('a', 31)]);
         $next    = $this->save(['isds_to_hands' => 'starosta'], $refused['campaign']);
 
-        self::assertSame(['code' => Actions::INPUT, 'campaign' => self::newId(), 'field' => Drafts::TO_HANDS, 'file' => ''], $refused);
-        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::newId(), 'field' => '', 'file' => ''], $next);
+        self::assertSame(['code' => Actions::INPUT, 'campaign' => self::newId(), 'field' => Drafts::TO_HANDS, 'file' => '', 'refiltered' => false], $refused);
+        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::newId(), 'field' => '', 'file' => '', 'refiltered' => false], $next);
         self::assertSame([self::newId()], array_keys($this->drafts->items));
     }
 
@@ -284,7 +284,7 @@ final class DraftsTest extends TestCase
         $this->drafts->runs = [self::newId()];
         $this->drafts->items = [];
 
-        self::assertSame(['code' => SendStart::ALREADY, 'campaign' => self::newId(), 'field' => '', 'file' => ''], $this->saveNew(['isds_subject' => 'Výzva 2']));
+        self::assertSame(['code' => SendStart::ALREADY, 'campaign' => self::newId(), 'field' => '', 'file' => '', 'refiltered' => false], $this->saveNew(['isds_subject' => 'Výzva 2']));
         self::assertSame([[], 1], [$this->drafts->items, count($this->drafts->writes)]);
     }
 
@@ -296,7 +296,7 @@ final class DraftsTest extends TestCase
 
         $result = $this->save(['isds_subject' => 'Výzva', 'isds_body' => '<p>x</p>'], self::ITEM);
 
-        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''], $result);
+        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => false], $result);
         self::assertSame(['update'], array_column($this->drafts->writes, 'mode'));
         self::assertSame([Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_BODY], $this->lastWritten());
     }
@@ -450,6 +450,67 @@ final class DraftsTest extends TestCase
         self::assertSame(Drafts::FILTER_CHANGED, $result['code']);
         self::assertSame('', $this->drafts->field(self::newId(), Schema::CAMPAIGN_FILTER));
         self::assertSame('draft', $this->drafts->field(self::newId(), Schema::CAMPAIGN_STATE), 'the draft made');
+    }
+
+    /** @return array<string, array{\Closure(self): array<string, mixed>, string, bool}> a save of ITEM as stored by draftWithChosen(), what it tells and whether the lists are others than the form showed */
+    public static function filterChanges(): array
+    {
+        $chosen = ['isds_membership' => 'all', 'isds_types' => [], 'isds_include' => self::ADAMOV . '-' . self::BENESOV, 'isds_exclude' => ''];
+        $pick   = static function (self $t, string $item) use ($chosen): array {
+            $t->drafts->source = self::source();
+            return $t->save(['isds_pick' => "include-$item"] + $chosen, self::ITEM);
+        };
+
+        return [
+            // an autosave of the letter: the lists of the recipients are the same
+            'the letter only' => [static fn(self $t): array => $t->save(['isds_subject' => 'Výzva'], self::ITEM), Drafts::SAVED, false],
+            'the same choice' => [static fn(self $t): array => $t->save(['isds_subject' => 'Výzva'] + $chosen, self::ITEM), Drafts::SAVED, false],
+            'another choice'  => [static fn(self $t): array => $t->save(['isds_types' => ['mesto']] + $chosen, self::ITEM), Drafts::SAVED, true],
+            'a pick'          => [static fn(self $t): array => $pick($t, self::CHEB), Drafts::SAVED, true],
+            // the choice is not stored, the lists the page showed stay
+            'an item gone'    => [static fn(self $t): array => $pick($t, self::TRASHED), Drafts::FILTER_CHANGED, false],
+            // the choice is not stored either, but the page showed the lists of another filter
+            'a stale page'    => [static fn(self $t): array => $t->save(['isds_types' => ['mesto'], 'isds_filter_seen' => Drafts::filterSeen('')] + $chosen, self::ITEM), Drafts::FILTER_CHANGED, true],
+        ];
+    }
+
+    // the page of a list stays only while the lists are those the form showed: an autosave must not send the user back to the first page
+    #[DataProvider('filterChanges')]
+    public function test_save_toldWhetherTheFilterChanged(\Closure $save, string $code, bool $refiltered): void
+    {
+        $this->draftWithChosen();
+
+        $result = $save($this);
+
+        self::assertSame([$code, $refiltered], [$result['code'], $result['refiltered']]);
+    }
+
+    // a double click, or a pick without JavaScript: the second post finds its choice stored by the first - not the lists the page showed
+    public function test_save_secondPostOfAChoiceTellsTheFilterChanged(): void
+    {
+        $stored = $this->draftWithChosen();
+        $post   = ['isds_membership' => 'all', 'isds_types' => ['mesto'], 'isds_include' => '', 'isds_exclude' => '', 'isds_filter_seen' => Drafts::filterSeen($stored)];
+
+        $first  = $this->save($post, self::ITEM);
+        $writes = count($this->drafts->writes);
+        $second = $this->save($post, self::ITEM);
+
+        self::assertSame([[Drafts::SAVED, true], [Drafts::SAVED, true]], [[$first['code'], $first['refiltered']], [$second['code'], $second['refiltered']]]);
+        self::assertCount($writes, $this->drafts->writes, 'the second writes nothing');
+    }
+
+    // a new draft has no lists of before - its choice stored or not -; the same form saved again has
+    public function test_save_newDraftTellsTheFilterChanged(): void
+    {
+        $this->drafts->source = self::source();
+        $other                = str_repeat('e', 32);
+
+        self::assertTrue($this->saveNew(['isds_subject' => 'Výzva'])['refiltered']);
+        $lost = $this->save(['isds_membership' => 'all', 'isds_types' => [], 'isds_include' => '', 'isds_pick' => 'include-' . self::TRASHED, 'isds_nonce' => $other]);
+        self::assertSame([Drafts::FILTER_CHANGED, true], [$lost['code'], $lost['refiltered']]);
+        self::assertSame(['insert_if_new', 'insert_if_new'], array_column($this->drafts->writes, 'mode'), 'each a new item');
+
+        self::assertFalse($this->saveNew(['isds_subject' => 'Výzva 2'])['refiltered'], 'saved by this form before');
     }
 
     // a second click before the page showed the first: the choice stored already, nothing lost
@@ -668,7 +729,7 @@ final class DraftsTest extends TestCase
     {
         $this->drafts->draft(self::ITEM, state: $state);
 
-        self::assertSame(['code' => SendStart::NOT_DRAFT, 'campaign' => self::ITEM, 'field' => '', 'file' => ''], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
+        self::assertSame(['code' => SendStart::NOT_DRAFT, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => false], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
         self::assertSame([], $this->drafts->writes);
     }
 
@@ -678,7 +739,7 @@ final class DraftsTest extends TestCase
         $this->drafts->draft(self::ITEM);
         $this->drafts->runs = [self::ITEM];
 
-        self::assertSame(['code' => SendStart::ALREADY, 'campaign' => self::ITEM, 'field' => '', 'file' => ''], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
+        self::assertSame(['code' => SendStart::ALREADY, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => false], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
         self::assertSame([], $this->drafts->writes);
     }
 
@@ -693,7 +754,7 @@ final class DraftsTest extends TestCase
     {
         $this->drafts->draft(self::ITEM, $slice, $status);
 
-        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'field' => '', 'file' => ''], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
+        self::assertSame(['code' => SendStart::UNKNOWN, 'campaign' => '', 'field' => '', 'file' => '', 'refiltered' => false], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
         self::assertSame([], $this->drafts->writes);
     }
 
@@ -703,7 +764,7 @@ final class DraftsTest extends TestCase
         $this->drafts->draft(self::ITEM);
         $this->drafts->lockedByOther = true;
 
-        self::assertSame(['code' => SendStart::BUSY, 'campaign' => self::ITEM, 'field' => '', 'file' => ''], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
+        self::assertSame(['code' => SendStart::BUSY, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => false], $this->save(['isds_subject' => 'Výzva'], self::ITEM));
         self::assertSame([], $this->drafts->writes);
         self::assertSame(['lock ' . SendRun::lockName(self::ITEM)], $this->drafts->lockLog);
     }
@@ -766,7 +827,7 @@ final class DraftsTest extends TestCase
         return MemoryDrafts::URL . "/$name";
     }
 
-    /** @param array{code: string, campaign: string, field: string, file: string} $result */
+    /** @param array{code: string, campaign: string, field: string, file: string, refiltered: bool} $result */
     private function assertFileRefused(string $field, string $file, array $result): void
     {
         self::assertSame([Actions::INPUT, $field, $file], [$result['code'], $result['field'], $result['file']]);
@@ -779,7 +840,8 @@ final class DraftsTest extends TestCase
 
         $result = $this->drafts->save(Sending::page(), self::ITEM, ['isds_subject' => 'Výzva'], $this->files([['Pozvanka.pdf', self::PDF], ['plan.png', base64_decode(self::PNG)]]));
 
-        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => ''], $result);
+        // the form tells no filter it showed
+        self::assertSame(['code' => Drafts::SAVED, 'campaign' => self::ITEM, 'field' => '', 'file' => '', 'refiltered' => true], $result);
         self::assertSame([self::url('mapa.png'), self::url('pozvanka.pdf'), self::url('plan.png')], $this->drafts->values(self::ITEM, Schema::CAMPAIGN_FILES));
         self::assertSame([Schema::CAMPAIGN_SUBJECT, Schema::CAMPAIGN_FILES], $this->lastWritten());
         self::assertSame([MemoryDrafts::DIR . '/pozvanka.pdf' => self::PDF, MemoryDrafts::DIR . '/plan.png' => base64_decode(self::PNG)], $this->drafts->disk);

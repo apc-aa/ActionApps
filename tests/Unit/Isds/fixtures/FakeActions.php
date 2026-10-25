@@ -48,7 +48,7 @@ final class FakeActions extends Actions
     /** @var list<array{string, string, string}> campaign, uid, box of each Test asked of the core */
     public static array $tested = [];
 
-    /** @var ?\Closure(Setup, string, array<array-key, mixed>, array<array-key, mixed>): array{code: string, campaign: string, field: string, file: string} what Save of a campaign with the form and its files says; null = the test asks none */
+    /** @var ?\Closure(Setup, string, array<array-key, mixed>, array<array-key, mixed>): array{code: string, campaign: string, field: string, file: string, refiltered: bool} what Save of a campaign with the form and its files says; null = the test asks none */
     public static ?\Closure $save = null;
 
     /** @var list<array{string, array<array-key, mixed>, array<array-key, mixed>}> campaign, form and files of each Save asked of the core */

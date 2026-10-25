@@ -102,11 +102,12 @@ class Drafts
      *                                            '' = a new draft
      * @param array<array-key, mixed> $post     the form as posted
      * @param array<array-key, mixed> $files    the files as posted ($_FILES)
-     * @return array{code: string, campaign: string, field: string, file: string} code: SAVED,
+     * @return array{code: string, campaign: string, field: string, file: string, refiltered: bool} code: SAVED,
      *         FILTER_CHANGED, Actions::INPUT (field: what cannot be taken; file: the name of the file refused, as it
      *         would be stored, '' for none), Actions::EXPIRED (no session), SendStart::UNKNOWN, NOT_DRAFT, ALREADY or
      *         BUSY; campaign: the draft - of a new one too, so that the page goes on with it -, '' for
-     *         UNKNOWN and with no id known
+     *         UNKNOWN and with no id known; refiltered: the filter stored now is another than the one the
+     *         form showed (isds_filter_seen) - a new draft too -, so the lists of its recipients are others
      * @throws \RuntimeException not stored; an upload the server could not take
      */
     public function save(Setup $setup, string $campaign, array $post, array $files = []): array
@@ -262,7 +263,7 @@ class Drafts
      * @param bool   $lost the form picked an item gone since: its filter is not in $fields
      * @param array{remove: list<string>, uploads: list<array{name: string, tmp: string}>, field: string, file: string} $attached
      * @param string $seen isds_filter_seen of the form
-     * @return array{code: string, campaign: string, field: string, file: string}
+     * @return array{code: string, campaign: string, field: string, file: string, refiltered: bool}
      */
     private function write(Setup $setup, string $id, bool $new, array $fields, bool $lost, array $attached, string $seen): array
     {
@@ -284,7 +285,7 @@ class Drafts
                 Schema::CAMPAIGN_STATE => new AA_Value(Schema::CAMPAIGN_STATE_DRAFT),
             ] + $written + (($moved === []) ? [] : [Schema::CAMPAIGN_FILES => new AA_Value(array_values($moved))]));
             if ($this->storeWith($content, 'insert_if_new', $moved)) {
-                return self::told($code, $id);
+                return self::told($code, $id, refiltered: true);
             }
             if ((ItemContent::lastErr() !== \ITEMCONTENT_ERROR_DUPLICATE) || ($moved !== [])) {
                 throw new \RuntimeException("Draft $id not stored, error " . ItemContent::lastErr());
@@ -323,7 +324,11 @@ class Drafts
             throw new \RuntimeException("Draft $id not stored, error " . ItemContent::lastErr());
         }
 
-        return self::told($code, $id);
+        // against the filter the page showed, not the one before this write: a second post of the same
+        // form - a double click, a pick without JavaScript - finds its choice stored by the first
+        $filter = $changed[Schema::CAMPAIGN_FILTER] ?? $item->getAaValue(Schema::CAMPAIGN_FILTER);
+
+        return self::told($code, $id, refiltered: !hash_equals(self::filterSeen((string) $filter->getValue()), $seen));
     }
 
     /**
@@ -697,10 +702,10 @@ class Drafts
         return ['code' => $code, 'campaign' => $campaign, 'made' => $made];
     }
 
-    /** @return array{code: string, campaign: string, field: string, file: string} */
-    private static function told(string $code, string $campaign, string $field = '', string $file = ''): array
+    /** @return array{code: string, campaign: string, field: string, file: string, refiltered: bool} */
+    private static function told(string $code, string $campaign, string $field = '', string $file = '', bool $refiltered = false): array
     {
-        return ['code' => $code, 'campaign' => $campaign, 'field' => $field, 'file' => $file];
+        return ['code' => $code, 'campaign' => $campaign, 'field' => $field, 'file' => $file, 'refiltered' => $refiltered];
     }
 
     // ------------------------------------------------------------ what tests replace

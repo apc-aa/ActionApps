@@ -37,6 +37,8 @@ final readonly class ActionResult
      *                                   (UploadPolicy::safeName()), never stored text
      * @param string           $charge   what a test message cost (TestResult::charge()), a second code
      *                                   Advice tells beside the first; '' = nothing
+     * @param bool             $refiltered after a save the filter of the recipients stored is another than
+     *                                   the one its form showed (Drafts::save()): their lists are others
      */
     public function __construct(
         public string $action,
@@ -46,6 +48,7 @@ final readonly class ActionResult
         string $detail = '',
         public array $params = [],
         public string $charge = '',
+        public bool $refiltered = false,
     ) {
         $this->detail = mb_strcut($detail, 0, self::DETAIL_MAX, 'UTF-8');
     }
@@ -56,10 +59,10 @@ final readonly class ActionResult
         return $this->action !== '';
     }
 
-    /** @return array{action: string, status: string, code: string, campaign: string, detail: string, params: list<int|string>, charge: string} */
+    /** @return array{action: string, status: string, code: string, campaign: string, detail: string, params: list<int|string>, charge: string, refiltered: bool} */
     public function toArray(): array
     {
-        return ['action' => $this->action, 'status' => $this->status, 'code' => $this->code, 'campaign' => $this->campaign, 'detail' => $this->detail, 'params' => $this->params, 'charge' => $this->charge];
+        return ['action' => $this->action, 'status' => $this->status, 'code' => $this->code, 'campaign' => $this->campaign, 'detail' => $this->detail, 'params' => $this->params, 'charge' => $this->charge, 'refiltered' => $this->refiltered];
     }
 
     /** what toArray() gave; null for anything else */
@@ -77,9 +80,10 @@ final readonly class ActionResult
         if (!is_array($params) || !array_is_list($params) || array_filter($params, static fn(mixed $p): bool => !is_int($p) && !is_string($p))) {
             return null;
         }
-        // a result an older AA kept in the session has none
-        $charge = $values['charge'] ?? '';
+        // a result an older AA kept in the session has neither
+        $charge     = $values['charge'] ?? '';
+        $refiltered = $values['refiltered'] ?? false;
 
-        return is_string($charge) ? new self($values['action'], $values['status'], $values['code'], $values['campaign'], $values['detail'], $params, $charge) : null;
+        return (is_string($charge) && is_bool($refiltered)) ? new self($values['action'], $values['status'], $values['code'], $values['campaign'], $values['detail'], $params, $charge, $refiltered) : null;
     }
 }

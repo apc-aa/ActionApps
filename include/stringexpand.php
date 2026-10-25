@@ -10917,11 +10917,12 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        since. An autosave must take from the answer both the hidden fields and the controls of the
  *        filter. A button isds_pick (include-<id>, exclude-<id>, unpick-<id>) picks one item of the source
  *        slice into the lists posted. A button isds_step (test, send, search, files) goes into the URL of
- *        the page after the save, for param:step - and with search isds_q, for search -, only once the
- *        draft is SAVED. Enter in a text field posts the first button of its form: put Save first, before
- *        any isds_pick or isds_step button. Every save of the form of a new campaign - autosaves too -
- *        writes the one new draft, whose id the page gets in {datovkabulk:campaign} after the save. The body
- *        is stored as posted HTML: a template must escape it wherever it shows it, in a <textarea> too.
+ *        the page after the save, for param:step - and with search isds_q, for search -, only after SAVED;
+ *        after FILTER_CHANGED the page stays at the step of its URL. Enter in a text field posts the first
+ *        button of its form: put Save first, before any isds_pick or isds_step button. Every save of the
+ *        form of a new campaign - autosaves too - writes the one new draft, whose id the page gets in
+ *        {datovkabulk:campaign} after the save. The body is stored as posted HTML: a template must escape
+ *        it wherever it shows it, in a <textarea> too.
  *        Attachments: a form with enctype="multipart/form-data" adds files as isds_files[] and drops attachments by their URLs in
  *        isds_remove[]; at most 99, of the types both the editor uploads and a data message carries, and none
  *        is saved if one is refused. They go into the upload directory of the slice, public to whoever knows
@@ -10966,8 +10967,11 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        status (done, refused, busy, expired, failed), action, or charge - what a test message cost (CHARGED,
  *        MAY_BE_CHARGED, '' nothing). After the action the page is loaded again with isds_campaign
  *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes. isds_part
- *        goes from the URL; after a save SAVED isds_step, isds_q and isds_page are those of its form; after
- *        another action done isds_step and isds_q go, isds_page stays; after one refused or failed all stay
+ *        goes from the URL; after SAVED isds_step and isds_q are those of its form, after FILTER_CHANGED
+ *        the step stays that of the URL. After a save isds_page stays only while the list is the same: the
+ *        stored filter is the one the form showed and the step is that of the URL - so an autosave keeps
+ *        the page of a list. After another action done isds_step and isds_q go, isds_page stays; after one
+ *        refused or failed all stay
  *    {datovkabulk:recipients:<campaign id>:count|skipped|ids|skippedids} - of an active campaign by its stored
  *        filter, counted anew: how many get the letter, how many are skipped for their data box, the dash-separated
  *        ids of who gets it or who is skipped - of the page param:page shows, 50 a page, in the order they are sent

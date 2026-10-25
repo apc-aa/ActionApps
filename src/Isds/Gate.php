@@ -174,11 +174,13 @@ class Gate
      * as isds_box, regbox() of the row.
      * The form of a new campaign and of a copy carries a nonce of its own: every post of the form shown
      * makes the one draft (Drafts::newId(), copyId()) - of a copy to one recipient one for each message.
-     * The form of save tells the filter stored as the page read it (isds_filter_seen, filterSeenField()): Drafts writes the recipients only when that
-     * is the one stored then, else it saves the letter and tells FILTER_CHANGED. A form saved without
-     * loading the page again (autosave) must take from the answer both its hidden fields and the
-     * controls of the filter: a new isds_filter_seen beside the choice of before would let that choice
-     * overwrite the one stored.
+     * The form of save tells the filter stored as the page read it (isds_filter_seen, filterSeenField()):
+     * Drafts writes the recipients only when that is the one stored then, else it saves the letter and
+     * tells FILTER_CHANGED. The page goes on at the step the form asked for - after FILTER_CHANGED only at
+     * the step of its URL -, at the page of the list while the list is the same (afterAction()). A form
+     * saved without loading the page again (autosave) must take from the answer both its hidden fields
+     * and the controls of the filter: a new isds_filter_seen beside the choice of before would let that
+     * choice overwrite the one stored.
      * @param string $campaign long id; '' only to save a new campaign
      */
     public function fields(string $action, string $campaign = ''): string
@@ -822,9 +824,13 @@ class Gate
      * Where the browser goes after an action: the path of this page with its query, the campaign and
      * the key of the result in place of any it had, never a part of the page (isds_part). After the draft
      * is saved (SAVED) the step (isds_step) its form asked for - and for search what to look for (isds_q) -
-     * in place of the step, search and page of the list of before; after another action that ran (done)
-     * the step and search go, the page of the list stays; after one that did not, all stay, so the
-     * page shows the card it failed on. Names as PHP reads them: "isds.step" is isds_step to it.
+     * in place of the step and search of before; after FILTER_CHANGED only the step of the URL: a choice
+     * not stored opens no other card, the page shows the choice stored. The page of the list (isds_page)
+     * goes after a save only when the list is another - the filter stored is not the one the form showed,
+     * or the step is not that of the URL: an autosave every few seconds must not take the user back to
+     * the first page. After another action that ran (done) the step and search go, the page of the list
+     * stays; after one that did not, all stay, so the page shows the card it failed on. Names as PHP
+     * reads them: "isds.step" is isds_step to it.
      * Never another host: "//host/..." and "/\host/..." lead to the host they name (the router reads
      * "//host/cz/x" as "/cz/x"), so such a path, or one with a control character, leads to "/".
      */
@@ -835,9 +841,14 @@ class Gate
         if ((preg_match('~^/(?![/\\\\])~', $path) !== 1) || (preg_match('/[\x00-\x20\x7f]/', $uri) === 1)) {
             [$path, $query] = ['/', ''];
         }
-        $saved = ($result->action === 'save') && ($result->code === Actions::SAVED);
+        parse_str($query, $read);
+        $shown = self::stepOf($read['isds_step'] ?? null);
+        $asked = self::stepOf($_POST['isds_step'] ?? null);
+        $saved = ($result->action === 'save') && in_array($result->code, [Actions::SAVED, Actions::FILTER_CHANGED], true);
+        $goes  = $saved && (($result->code === Actions::SAVED) || ($asked === $shown));
         $gone  = ['isds_campaign', 'isds_r', 'isds_part', ...match (true) {
-            $saved                                 => ['isds_step', 'isds_q', 'isds_page'],
+            $goes                                  => ['isds_step', 'isds_q', ...(($result->refiltered || ($asked !== $shown)) ? ['isds_page'] : [])],
+            $saved                                 => $result->refiltered ? ['isds_page'] : [],
             $result->status === ActionResult::DONE => ['isds_step', 'isds_q'],
             default                                => [],
         }];
@@ -848,19 +859,27 @@ class Gate
         if ($result->campaign !== '') {
             $pairs[] = 'isds_campaign=' . $result->campaign;
         }
-        if ($saved) {
-            $pairs = [...$pairs, ...self::nextStep()];
+        if ($goes) {
+            $pairs = [...$pairs, ...self::nextStep($asked)];
         }
         $pairs[] = 'isds_r=' . $key;
 
         return $path . '?' . implode('&', $pairs);
     }
 
-    /** @return list<string> isds_step the form of the draft posts - only a step the page knows -, and for search isds_q, for the URL */
-    private static function nextStep(): array
+    /** $step when it is a step the page knows, else '' */
+    private static function stepOf(mixed $step): string
     {
-        $step = $_POST['isds_step'] ?? null;
-        if (!is_string($step) || !in_array($step, self::PARAMS['step'], true)) {
+        return (is_string($step) && in_array($step, self::PARAMS['step'], true)) ? $step : '';
+    }
+
+    /**
+     * @param string $step stepOf() of what the form of the draft posts
+     * @return list<string> isds_step, and for search isds_q the form posts, for the URL
+     */
+    private static function nextStep(string $step): array
+    {
+        if ($step === '') {
             return [];
         }
         $query = $_POST['isds_q'] ?? null;
