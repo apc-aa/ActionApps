@@ -28,6 +28,7 @@
  *
 */
 
+use AA\Security\RequestCharset;
 use AA\Security\UrlValue;
 use AA\Security\ViewSlices;
 use AA\Util\Hitcounter;
@@ -240,6 +241,15 @@ class AA_Showview
         $this->hits = is_array($view_param['hits'] ?? null) ? $view_param['hits'] : [];
         $this->from_request = ($view_param['from_request'] ?? false) === true;
         unset($view_param['hits'], $view_param['from_request']);
+        if ($this->from_request) {
+            // the URL gives them as parameters (view.php, jsview.php) or as set[<vid>]=convertfrom-...
+            $script = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+            foreach (['convertfrom', 'convertto'] as $param) {
+                if (isset($view_param[$param])) {
+                    $view_param[$param] = RequestCharset::fromRequest($view_param[$param], $param, $script);
+                }
+            }
+        }
         $this->_view_param = $view_param;
     }
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace AA\Optimize;
 
 use AA\IO\DB\DB_AA;
+use AA\Security\RequestCharset;
 use AA\Security\ViewSlices;
 use AA\Util\LogOnce;
 use AA_Log;
@@ -12,21 +13,30 @@ use AA_Views;
 
 /** Slices that views and slice.php left out in the last 30 days, as the page did not know their reading
  *  password: a view called from the URL over such a slice, or parameters that named such a slice, or items
- *  of it (AA\Security\ViewSlices) - logged once a day per view and slice. Index-only.
+ *  of it (AA\Security\ViewSlices) - logged once a day per view and slice. And the charsets a request named
+ *  for converting a view, discussion, poll or form that were ignored (AA\Security\RequestCharset) - logged
+ *  once a day per script and parameter. Index-only.
  */
 class CheckViewSliceRefusals extends AbstractOptimize
 {
     private const WINDOW_SECONDS = 30 * 86400;
     private const GROUPS = 50;
 
+    /** log rows of ignored charsets read for their latest names - a row a day per script and parameter */
+    private const CHARSET_LOG_MAX = 300;
+
+    /** distinct names a finding shows */
+    private const CHARSET_NAMES = 3;
+
     public static function name(): string
     {
-        return _m('Slices left out of views');
+        return _m('Slices left out of views, charsets ignored');
     }
 
     public static function description(): string
     {
-        return _m('Lists the views that left out a slice in the last 30 days because the page did not know the slice\'s reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it.');
+        return _m('Lists the views that left out a slice in the last 30 days because the page did not know the slice\'s reading password: a view called from the URL over that slice, or with parameters naming the slice or items of it.')
+            . ' ' . _m('Also lists the charsets that links and forms named in convertfrom or convertto and that were ignored.');
     }
 
     public static function types(): array
@@ -66,16 +76,48 @@ class CheckViewSliceRefusals extends AbstractOptimize
                 $view_urls[$vid] = $view->jumpUrl();
             }
         }
-        return self::findingsFor($rows, $slice_names, $view_urls);
+        $since        = now() - self::WINDOW_SECONDS;
+        $charset_rows = LogOnce::recent(RequestCharset::EVENT, $since, self::GROUPS);
+        $charset_log  = $charset_rows ? DB_AA::select([], 'SELECT `selector`, `params` FROM `log`', [['type', RequestCharset::EVENT], ['time', $since, '>=']], ['time-'], null, self::CHARSET_LOG_MAX) : [];
+        return self::findingsFor($rows, $slice_names, $view_urls, self::withLatestNames($charset_rows, $charset_log));
+    }
+
+    /**
+     * The rows of ignored charsets with the page of the newest log row and up to three latest distinct names
+     * ('names') - a row a day keeps only the first name of that day, and LogOnce::recent() the greatest params.
+     * @param list<array<string, ?string>> $charset_rows LogOnce::recent() rows
+     * @param list<array<string, ?string>> $log_rows     their log rows (selector, params), newest first
+     * @return list<array<string, mixed>>
+     */
+    public static function withLatestNames(array $charset_rows, array $log_rows): array
+    {
+        $latest = [];
+        foreach ($log_rows as $log_row) {
+            $selector = (string) $log_row['selector'];
+            $params   = (string) $log_row['params'];
+            $latest[$selector]['params'] ??= $params;
+            $name = (string) (ParamExplode($params)[0] ?? '');
+            if (count($latest[$selector]['names'] ?? []) < self::CHARSET_NAMES) {
+                $latest[$selector]['names'][$name] = $name;
+            }
+        }
+        foreach ($charset_rows as $i => $row) {
+            if (isset($latest[(string) $row['selector']])) {
+                $charset_rows[$i]['params'] = $latest[(string) $row['selector']]['params'];
+                $charset_rows[$i]['names']  = array_values($latest[(string) $row['selector']]['names']);
+            }
+        }
+        return $charset_rows;
     }
 
     /**
      * @param list<array<string, ?string>> $rows         LogOnce::recent() rows
      * @param array<string, string>        $slice_names  slice id => name
      * @param array<int|string, string>    $view_urls    view id => url of its settings
+     * @param list<array<string, mixed>>   $charset_rows withLatestNames() rows of the ignored charsets
      * @return Finding[]
      */
-    public static function findingsFor(array $rows, array $slice_names, array $view_urls): array
+    public static function findingsFor(array $rows, array $slice_names, array $view_urls, array $charset_rows): array
     {
         $findings = [];
         foreach ($rows as $row) {
@@ -106,8 +148,39 @@ class CheckViewSliceRefusals extends AbstractOptimize
                 links: $links + [_m('Log rows') => AA_Log::getAdminUrl(ViewSlices::EVENT, $selector)],
                 key: $selector,
                 last: (int) $row['last'],
+                kind: _m('Slice left out'),
             );
         }
-        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No slice was left out of a view in the last 30 days'))];
+        foreach ($charset_rows as $row) {
+            $findings[] = self::charsetFinding($row);
+        }
+        return $findings ? CheckRunner::sort($findings) : [new Finding(Finding::OK, _m('No slice was left out of a view and no charset was ignored in the last 30 days'))];
+    }
+
+    /** @param array<string, mixed> $row */
+    private static function charsetFinding(array $row): Finding
+    {
+        $selector = (string) $row['selector'];
+        [$script, $param]           = array_pad(ParamExplode($selector), 2, '');
+        [$charset, $page, $referer] = array_pad(ParamExplode((string) $row['params']), 3, '');
+        return new Finding(
+            Finding::WARNING,
+            _m('%1 ignored a charset in %2', [$script, $param]),
+            count: (int) $row['days'],
+            since: (int) $row['first'],
+            evidence: [[
+                _m('Parameter')        => safe($param),
+                _m('Latest charsets')  => safe(implode(', ', (array) ($row['names'] ?? [$charset]))),
+                _m('Page asked for')   => safe($page),
+                _m('Link on page')     => safe($referer),
+                _m('Days seen')        => (string) (int) $row['days'],
+                _m('Last')             => date('Y-m-d', (int) $row['last']),
+            ]],
+            advice: _m('A link or form named a charset for converting a view, discussion, poll or form (convertfrom or convertto of view.php, jsview.php, discussion.php, poll.php and filler.php, also set[...]=convertfrom-... of a view) that AA does not take from the URL; it was ignored as if it were not there. Allowed are %1, in any case. Correct the charset in the link or form of your page, or leave convertfrom out - a view then converts from the charset of its slice. If you do not know the page, the request did not come from your pages and nothing needs to change.', [implode(', ', RequestCharset::ALLOWED)]),
+            links: [_m('Log rows') => AA_Log::getAdminUrl(RequestCharset::EVENT, $selector)],
+            key: 'charset:' . $selector,
+            last: (int) $row['last'],
+            kind: _m('Charset ignored'),
+        );
     }
 }

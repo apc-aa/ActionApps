@@ -157,7 +157,7 @@ class AA_Poll
 
     /** Counts one vote for the $vote_id answer of this poll.
      *
-     *  Reachable unauthenticated through modules/polls/poll.php -> processPoll($_REQUEST),
+     *  Reachable unauthenticated through modules/polls/poll.php -> processPoll() with the request,
      *  so no request value may be interpolated into SQL (finding N2, 2026-09).
      *
      * @param $vote_id  unpacked 32-char id of the answer voted for
@@ -285,7 +285,8 @@ class AA_Poll
         return $set;
     }
 
-    /** called like: echo AA_Poll::processPoll($_REQUEST)
+    /** called like: echo AA_Poll::processPoll($request) - by modules/polls/poll.php with the request (its
+     *  charsets checked by AA\Security\RequestCharset) and by {polls} with the parameters of a template.
      *  It process all the options/vodes and displays the result for the poll
      */
     public static function processPoll($request): string

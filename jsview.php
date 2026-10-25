@@ -105,6 +105,7 @@ $view_param = AA_View::parseViewParameters();
 $_hits = $view_param['hits'];
 unset($view_param['hits']);
 
+// AA_Showview takes only the charsets of AA\Security\RequestCharset
 if ($convertfrom) {
     $view_param['convertfrom'] = $convertfrom;
 }

@@ -19,7 +19,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
 
     public function test_findingsFor_noRefusals_isOk(): void
     {
-        $findings = CheckViewSliceRefusals::findingsFor([], [], []);
+        $findings = CheckViewSliceRefusals::findingsFor([], [], [], []);
 
         $this->assertCount(1, $findings);
         $this->assertSame(Finding::OK, $findings[0]->severity);
@@ -29,7 +29,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '2', 'first' => '1790000000', 'last' => '1790086400', 'params' => 'example.org/news'];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members'], []);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members'], [], []);
 
         $this->assertSame(Finding::WARNING, $finding->severity);
         $this->assertStringContainsString('View 42', $finding->title);
@@ -44,7 +44,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], []);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], [], []);
 
         $this->assertStringStartsWith('The view was called from the URL (view.php, jsview.php, discussion.php), also as a banner of such a view or of slice.php (set[]=banner-..., slice.php?banner=...), over that slice, or its URL parameters', $finding->advice);
     }
@@ -53,7 +53,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], [42 => '/aa/admin/se_view.php?view_id=42']);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], [42 => '/aa/admin/se_view.php?view_id=42'], []);
 
         $this->assertSame([
             '/aa/admin/se_view.php?view_id=42',
@@ -65,7 +65,7 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['slice.php', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members'], []);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [self::SLICE => 'Members'], [], []);
 
         $this->assertStringStartsWith('slice.php ', $finding->title);
     }
@@ -74,8 +74,57 @@ final class CheckViewSliceRefusalsTest extends TestCase
     {
         $row = ['selector' => ParamImplode(['42', self::SLICE]), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ''];
 
-        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], []);
+        [$finding] = CheckViewSliceRefusals::findingsFor([$row], [], [], []);
 
         $this->assertStringContainsString(self::SLICE, $finding->title);
+    }
+
+    public function test_findingsFor_ignoredCharset_isAWarningNamingTheScriptLatestCharsetsAndLink(): void
+    {
+        $row = ['selector' => ParamImplode(['view.php', 'convertfrom']), 'days' => '3', 'first' => '1790000000', 'last' => '1790172800',
+            'params' => ParamImplode(['koi8-r', 'example.org/aa/view.php', 'example.org/akce/']), 'names' => ['koi8-r', 'utf8']];
+
+        [$finding] = CheckViewSliceRefusals::findingsFor([], [], [], [$row]);
+
+        $this->assertSame(Finding::WARNING, $finding->severity);
+        $this->assertSame('view.php ignored a charset in convertfrom', $finding->title);
+        $this->assertSame(3, $finding->count);
+        $this->assertSame('charset:view.php:convertfrom', $finding->key);
+        $this->assertSame('Charset ignored', $finding->kind);
+        $this->assertSame('koi8-r, utf8', $finding->evidence[0][_m('Latest charsets')]);
+        $this->assertSame('example.org/akce/', $finding->evidence[0][_m('Link on page')]);
+        $this->assertStringContainsString('utf-8, windows-1250, ', $finding->advice);
+        $this->assertStringNotContainsString('us-ascii', $finding->advice);
+    }
+
+    /** the names come from the request - evidence is HTML */
+    public function test_findingsFor_ignoredCharset_escapesTheNames(): void
+    {
+        $row = ['selector' => ParamImplode(['filler.php', 'convertto']), 'days' => '1', 'first' => '1790000000', 'last' => '1790000000', 'params' => ParamImplode(['<b>', '', ''])];
+
+        [$finding] = CheckViewSliceRefusals::findingsFor([], [], [], [$row]);
+
+        $this->assertSame('&lt;b&gt;', $finding->evidence[0][_m('Latest charsets')]);
+    }
+
+    /** a row a day keeps the first name of the day - the finding shows the newest ones and the newest page */
+    public function test_withLatestNames_takesTheNewestDistinctNamesAndPage(): void
+    {
+        $selector = ParamImplode(['view.php', 'convertfrom']);
+        $other    = ParamImplode(['poll.php', 'convertto']);
+        $recent   = [['selector' => $selector, 'days' => '5', 'first' => '1', 'last' => '5', 'params' => ParamImplode(['zzz', 'old', ''])], ['selector' => $other, 'days' => '1', 'first' => '1', 'last' => '1', 'params' => 'x']];
+        $log      = [
+            ['selector' => $selector, 'params' => ParamImplode(['utf8', 'example.org/new', 'example.org/akce/'])],
+            ['selector' => $selector, 'params' => ParamImplode(['zzz', 'example.org/b', ''])],
+            ['selector' => $selector, 'params' => ParamImplode(['utf8', 'example.org/c', ''])],
+            ['selector' => $selector, 'params' => ParamImplode(['cp1250', 'example.org/d', ''])],
+            ['selector' => $selector, 'params' => ParamImplode(['latin2', 'example.org/e', ''])],
+        ];
+
+        $rows = CheckViewSliceRefusals::withLatestNames($recent, $log);
+
+        $this->assertSame(['utf8', 'zzz', 'cp1250'], $rows[0]['names']);
+        $this->assertSame(ParamImplode(['utf8', 'example.org/new', 'example.org/akce/']), $rows[0]['params']);
+        $this->assertSame($recent[1], $rows[1], 'a row without log rows stays as it was');
     }
 }
