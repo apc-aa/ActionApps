@@ -3231,17 +3231,42 @@ class AA_Stringexpand_View extends AA_Stringexpand {
      */
     function expand($vid=null, $ids=null, $settings=null): string
     {
+        return self::output($vid, $ids, $settings);
+    }
+
+    /**
+     * What {view} shows - {datovkabulk:view} shows a view through it too
+     * @param int|string|null $vid      the id or the name of the view
+     * @param ?string         $ids      dash-separated item ids; none lists by the conditions of the view
+     * @param ?string         $settings as set[<vid>] of view.php: listlen-3,sort-headline........-
+     * @param bool            $only_ids a listing shows all of $ids and nothing else, in their order: none
+     *                                  for no ids, never the slice by its conditions; settings that would
+     *                                  page, group, sort or pick from them do not count
+     */
+    public static function output($vid, ?string $ids = null, ?string $settings = null, bool $only_ids = false): string
+    {
         if (!$vid) {
             return '';
         }
         $view_param = ['vid' => $vid];
-        if (strlen($ids)) {
+        if (!$only_ids && strlen((string) $ids)) {
             $zids = new zids();
-            $zids->addDirty(explode_ids($ids));
+            $zids->addDirty(explode_ids((string) $ids));
             $view_param['zids'] = $zids;
         }
         if (isset($settings)) {
             $view_param = array_merge($view_param, AA_View::parseSettings([$settings]));
+        }
+        if ($only_ids) {
+            $zids = (new zids())->addDirty(explode_ids((string) $ids));
+            // listlen of the view would cut the list, xpage of a scroller page it again, group_by1 reorder it
+            $view_param = array_merge(array_diff_key($view_param, array_flip(['from', 'to', 'random', 'group_limit'])), [
+                'zids'     => $zids,
+                'sort'     => 'AAnoSORT',
+                'group_by' => '',
+                'listlen'  => max(1, $zids->count()),
+                'page'     => '1',
+            ]);
         }
         // do not pagecache the view
         return (new AA_Showview($view_param))->getViewOutput();
@@ -10928,12 +10953,31 @@ class AA_Stringexpand_Datovka extends AA_Stringexpand_Nevercache {
  *        status (done, refused, busy, expired, failed), action, or charge - what a test message cost (CHARGED,
  *        MAY_BE_CHARGED, '' nothing). After the action the page is loaded again with isds_campaign
  *        and isds_r added to its URL; the result shows only with that isds_r, for 10 minutes
- *    {datovkabulk:recipients:<campaign id>:count|skipped|ids} - of an active campaign by its stored filter, counted
- *        anew: how many get the letter, how many are skipped for their data box, the dash-separated ids of who gets
- *        it (for {view}); a queued or sent campaign keeps its count from then in the campaign. '' on any error, and
- *        ids '' for no recipients - {view} with no ids lists the whole slice, so guard it (not with _#1 - AA
- *        expands the inner command first; so the inner {view} still runs once over the slice, the guard only
- *        hides it): {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
+ *    {datovkabulk:recipients:<campaign id>:count|skipped|ids|skippedids} - of an active campaign by its stored
+ *        filter, counted anew: how many get the letter, how many are skipped for their data box, the dash-separated
+ *        ids of who gets it or who is skipped - of the page param:page shows, 50 a page, in the order they are sent
+ *        in (for {datovkabulk:view}); a queued or sent campaign keeps its count from then in the campaign. '' on any
+ *        error
+ *    {datovkabulk:view:<name>[:<ids>[:<settings>]]} - the view of the two slices of the page with that name (field3),
+ *        as {view} shows it; a view of another slice of the site is never found, and a name two of their views
+ *        have shows nothing (State Check names them). A listing shows all of <ids> and nothing else - ids a
+ *        subcommand gives -, in their order: none for no ids, never the slice by its conditions. <settings> as
+ *        in {view}, written in the template, never taken from the URL; listlen, sort, group_by, from, to and
+ *        page in them do not count. Show every view of the page this way, not by {view}
+ *    {datovkabulk:campaigns[:count]} - the ids of the campaigns of the page in the active bin, the last edited
+ *        first, 30 a page (param:page); count - how many
+ *    {datovkabulk:messages:<group>[:count]} - the ids of the message items of a group of the campaign the page
+ *        shows ({datovkabulk:campaign}), 50 a page (param:page), by the name of the recipient; count - how many.
+ *        From the same reading of the sending as progress, so they match it: problem (failed, with verify
+ *        uncertain too - attention), checking (uncertain before verify), wait (queued, and while the delivery is
+ *        followed sent not delivered yet - queued + pending), sent (sent while the delivery is not followed),
+ *        ok (delivered), stopped, skip (skipped); recent (the last six the sending got to, the one in flight
+ *        too, the last first) and test (its test messages, the newest first) whole on every page. '' with no
+ *        sending (test aside)
+ *    {datovkabulk:param:tab|show|step|part|list|page} - isds_<name> of the URL when it is one the page knows
+ *        (tab: history, check; show: a group of messages; step: test, send, search, files; part: progress,
+ *        search; list: get, skip), else ''; page - the page of a list, 1 unless the URL names one. Branch on
+ *        these, never on the URL itself ({qs})
  *    {datovkabulk:progress:<campaign id>:<what>} - how far its sending got, from the record of the run; '' (state
  *        aside) with no run and for a record that cannot be read. <what>:
  *        state - of the campaign item while it has no run, then one of:
@@ -10986,6 +11030,10 @@ class AA_Stringexpand_Datovkabulk extends AA_Stringexpand_Nevercache {
             'regbox'     => $gate->regbox((string)$settings),
             'campaign'   => $gate->campaign(),
             'recipients' => $gate->recipients((string)$settings, (string)$ui),
+            'view'       => $gate->view((string)$settings, (string)$ui, (string)$refusal),
+            'campaigns'  => $gate->campaigns((string)$settings),
+            'messages'   => $gate->messages((string)$settings, (string)$ui),
+            'param'      => $gate->param((string)$settings),
             'progress'   => $gate->progress((string)$settings, (string)$ui),
             'advice'     => $gate->advice((string)$settings, (string)$ui),
             default      => '',

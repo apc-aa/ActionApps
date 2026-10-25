@@ -146,6 +146,15 @@ final class SendMapsTest extends TestCase
         self::assertSame($expected, (new SendMaps('{"0":"901"}', dmState: json_encode(['0' => $entry], JSON_FORCE_OBJECT)))->delivery());
     }
 
+    // which messages delivery() counts: each delivered one with whether it was accepted, none failed or not sent
+    public function test_reached_theDeliveredOnes(): void
+    {
+        $maps = new SendMaps('{"0":"901","1":"902","2":"903","4":"905"}', dmState: (string) json_encode(['0' => '4:1800:1800:0', '1' => '6:1850:1800:1850', '2' => '8:2000:1800:1900', '3' => '4:1800:1800:0', '4' => '2:0:0:0'], JSON_FORCE_OBJECT));
+
+        self::assertSame([0 => false, 1 => true], $maps->reached());
+        self::assertSame(['delivered' => 2, 'accepted' => 1], $maps->delivery());
+    }
+
     /** @return array<string, array{string, array{delivered: int, accepted: int}}> */
     public static function deliveries(): array
     {

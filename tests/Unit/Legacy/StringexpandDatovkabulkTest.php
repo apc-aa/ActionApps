@@ -88,7 +88,55 @@ namespace Tests\Unit\Legacy {
 
         public function test_subcommands_outsideTheUiGiveNothing(): void
         {
-            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:advice:ISDS_REFUSED:run}{datovkabulk:advice:isds:1233}{datovkabulk:delete}{datovkabulk}'));
+            self::assertSame('', AA::Un('{datovkabulk:env}{datovkabulk:sender}{datovkabulk:testboxes}{datovkabulk:campaign}{datovkabulk:result}{datovkabulk:fields:send}{datovkabulk:recipients:ca00000000000000000000000000000b:count}{datovkabulk:progress:ca00000000000000000000000000000b:state}{datovkabulk:advice:ISDS_REFUSED:run}{datovkabulk:advice:isds:1233}{datovkabulk:view:isds_history}{datovkabulk:view:isds_messages:ca00000000000000000000000000000b}{datovkabulk:campaigns}{datovkabulk:campaigns:count}{datovkabulk:messages:problem}{datovkabulk:messages:test:count}{datovkabulk:param:page}{datovkabulk:param:tab}{datovkabulk:delete}{datovkabulk}'));
+        }
+
+        // the name, the ids and the settings as written; no ids reach the gate as none
+        public function test_view_nameIdsAndSettingsToTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function view(string $name, string $ids = '', string $settings = ''): string
+                        {
+                            return "$name|$ids|$settings";
+                        }
+                    };
+                }
+            };
+
+            self::assertSame(['isds_messages|ca00000000000000000000000000000b|listlen-50', 'isds_history||'], [$command->expand('view', 'isds_messages', 'ca00000000000000000000000000000b', 'listlen-50'), $command->expand('view', 'isds_history')]);
+        }
+
+        public function test_lists_questionsToTheGate(): void
+        {
+            $command = new class ([]) extends AA_Stringexpand_Datovkabulk {
+                protected function gate(): Gate
+                {
+                    return new class extends Gate {
+                        public function campaigns(string $what = ''): string
+                        {
+                            return "campaigns|$what";
+                        }
+
+                        public function messages(string $group, string $what = ''): string
+                        {
+                            return "messages|$group|$what";
+                        }
+
+                        public function param(string $name): string
+                        {
+                            return "param|$name";
+                        }
+                    };
+                }
+            };
+
+            self::assertSame(
+                ['campaigns|', 'campaigns|count', 'messages|wait|', 'messages|ok|count', 'param|show'],
+                [$command->expand('campaigns'), $command->expand('campaigns', 'count'), $command->expand('messages', 'wait'), $command->expand('messages', 'ok', 'count'), $command->expand('param', 'show')],
+            );
         }
 
         public function test_recipients_campaignAndQuestionToTheGate(): void

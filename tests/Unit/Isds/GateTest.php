@@ -38,6 +38,7 @@ use Tests\Unit\Isds\Fixtures\FakeRecipients;
 use Tests\Unit\Isds\Fixtures\FakeSliceRules;
 use Tests\Unit\Isds\Fixtures\Redirected;
 use Tests\Unit\Isds\Fixtures\Sending;
+use Tests\Unit\Legacy\Fixtures\RecordingDb;
 
 // data providers read its ids before setUpBeforeClass()
 require_once __DIR__ . '/fixtures/Sending.php';
@@ -115,6 +116,8 @@ final class GateTest extends TestCase
         AA::Contentcache()->clear();
         FakeRecipients::forget();
         FakeActions::reset();
+        $GLOBALS['spareDBs'] = [];
+        RecordingDb::reset();
         AA::$headers = [];
         $_SERVER     = $this->server;
         $_POST       = [];
@@ -786,6 +789,182 @@ final class GateTest extends TestCase
         self::assertSame(['', '', ''], self::counts($gate, self::ITEM));
         self::assertSame([[self::SITE . ':' . self::CAMPAIGN . ':' . self::ITEM, $problem]], $gate->recipientsLogged);
         self::assertSame([], $gate->logged, 'not a problem of the settings');
+    }
+
+    /** 60 towns with a box each and 3 without: two pages of those who get the letter */
+    public function test_recipients_pagedIdsInResolveOrder(): void
+    {
+        $items = [];
+        foreach (range(1, 63) as $n) {
+            $items[sprintf('a%031d', $n)] = Sending::item(sprintf('Obec %02d', 64 - $n), 'mesto', '1', ($n % 21 === 0) ? '' : sprintf('b%02dx234', $n));
+        }
+        $gate            = self::gate();
+        $gate->campaigns = [self::ITEM => ['slice' => self::CAMPAIGN, 'active' => true, 'filter' => Sending::filter(), 'state' => 'draft']];
+        $gate->resolver  = new FakeRecipients($items);
+        // by name: the item of the last n first
+        $sendable = array_values(array_filter(array_reverse(array_keys($items)), static fn(string $id): bool => (int) substr($id, 1) % 21 !== 0));
+        $page     = static function (string $page) use ($gate): array {
+            $_GET = ['isds_page' => $page];
+
+            return self::inside($gate, static fn(): array => [$gate->recipients(self::ITEM, 'ids'), $gate->recipients(self::ITEM, 'skippedids'), $gate->recipients(self::ITEM, 'count')]);
+        };
+
+        self::assertSame([implode('-', array_slice($sendable, 0, 50)), sprintf('a%031d-a%031d-a%031d', 63, 42, 21), '60'], $page('1'));
+        self::assertSame([implode('-', array_slice($sendable, 50)), '', '60'], $page('2'));
+        self::assertSame(['', '', '60'], $page('3'));
+        self::assertCount(1, FakeRecipients::$read, 'the questions of a request resolve once');
+    }
+
+    // ------------------------------------------------------------ the views of the page and the ids they list
+
+    /** the database of the views, whose rows of view are $views */
+    private static function viewsAre(int ...$views): void
+    {
+        RecordingDb::reset();
+        RecordingDb::$answer = static fn(string $sql): array => array_map(static fn(int $id): array => ['id' => (string) $id], $views);
+        $GLOBALS['spareDBs'] = [new RecordingDb()];
+    }
+
+    public function test_view_onlyViewsOfTheBinding(): void
+    {
+        self::viewsAre(12);
+        $gate = self::gate();
+
+        self::assertSame('<view 12>', self::inside($gate, static fn(): string => $gate->view('isds_history', self::ITEM, 'listlen-50')));
+        self::assertSame(['SELECT id FROM view WHERE slice_id IN (0x' . self::CAMPAIGN . ',0x' . self::MESSAGE . ") AND field3 = 'isds_history'"], RecordingDb::$log);
+        self::assertSame([[12, self::ITEM, 'listlen-50']], $gate->shownViews);
+    }
+
+    // two: State Check names them (CheckIsdsViews); none: renamed or deleted, only the page meets it
+    public function test_view_twoOfOneNameNone(): void
+    {
+        $gate = self::gate();
+        self::viewsAre(12, 31);
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->view('isds_history')));
+        self::assertSame([], $gate->logged);
+        AA::Contentcache()->clear();
+        self::viewsAre();
+        self::assertSame('', self::inside($gate, static fn(): string => $gate->view('isds_history')), 'none of the name');
+
+        self::assertSame([], $gate->shownViews);
+        self::assertSame([[self::SITE . ':isds_history', 'No view of the slices of the page has this name']], $gate->logged);
+    }
+
+    // the page shows only names State Check can see: isdscampainer and isds_<part>
+    public function test_view_otherNamesRefusedWithoutAQuery(): void
+    {
+        self::viewsAre(12);
+        $gate = self::gate();
+
+        self::assertSame(['', '', '', '', ''], self::inside($gate, static fn(): array => [$gate->view('foo', self::ITEM), $gate->view('isds_', self::ITEM), $gate->view(''), $gate->view('isdscampainerx'), $gate->view('ISDS_history')]));
+        self::assertSame([[], [], []], [RecordingDb::$log, $gate->shownViews, $gate->logged]);
+        self::assertSame('<view 12>', self::inside($gate, static fn(): string => $gate->view('isdscampainer')), 'the entry view');
+    }
+
+    public function test_view_outsideGateEmpty(): void
+    {
+        self::viewsAre(12);
+        $gate = self::gate();
+
+        self::assertSame('', $gate->view('isds_history', self::ITEM));
+        self::assertSame(['', ''], [$gate->campaigns(), $gate->param('tab')]);
+        self::assertSame([[], []], [RecordingDb::$log, $gate->shownViews]);
+    }
+
+    // the ids as given, in their order; what is not an id never reaches the view
+    public function test_view_idsKeepGateOrder(): void
+    {
+        self::viewsAre(12);
+        $gate = self::gate();
+
+        self::inside($gate, static fn(): array => [
+            $gate->view('isds_messages', strtoupper(self::BRNO) . '-' . self::ADAMOV),
+            $gate->view('isds_messages', self::CHEB . '-123-x-' . self::ADAMOV . '-'),
+            $gate->view('isds_messages', " \n" . self::DECIN . ' - ' . self::CHEB . "\n"),
+            $gate->view('isds_messages'),
+        ]);
+
+        self::assertSame([[12, self::BRNO . '-' . self::ADAMOV, null], [12, self::CHEB . '-' . self::ADAMOV, null], [12, self::DECIN . '-' . self::CHEB, null], [12, '', null]], $gate->shownViews);
+        self::assertCount(1, RecordingDb::$log, 'the view is looked for once a request');
+    }
+
+    public function test_campaigns_pageOfThirtyLastEditedFirst(): void
+    {
+        $gate               = self::gate();
+        $gate->campaignList = array_map(static fn(int $n): string => sprintf('ca%030d', $n), range(1, 65));
+        $asked              = static function (string $page) use ($gate): array {
+            $_GET = ['isds_page' => $page];
+
+            return self::inside($gate, static fn(): array => [$gate->campaigns(), $gate->campaigns('count'), $gate->campaigns('all')]);
+        };
+
+        self::assertSame([implode('-', array_slice($gate->campaignList, 0, 30)), '65', ''], $asked('1'));
+        self::assertSame([implode('-', array_slice($gate->campaignList, 60)), '65', ''], $asked('3'));
+        self::assertSame(['', '65', ''], $asked('4'));
+        self::assertSame(1, $gate->campaignSearches, 'one search a request');
+    }
+
+    /** @return array<string, array{string, string, string}> name, the value of the URL, what the template gets */
+    public static function params(): array
+    {
+        return [
+            'tab'                => ['tab', 'history', 'history'],
+            'tab check'          => ['tab', 'check', 'check'],
+            'tab unknown'        => ['tab', 'compose', ''],
+            'tab in capitals'    => ['tab', 'History', ''],
+            'show a group'       => ['show', 'problem', 'problem'],
+            'show the tests'     => ['show', 'test', 'test'],
+            'show unknown'       => ['show', 'all', ''],
+            'step'               => ['step', 'files', 'files'],
+            'step with more'     => ['step', 'send ', ''],
+            'part'               => ['part', 'search', 'search'],
+            'list'               => ['list', 'skip', 'skip'],
+            'no such parameter'  => ['campaign', 'x', ''],
+            'a template'         => ['tab', '{datovkabulk:env}', ''],
+        ];
+    }
+
+    #[DataProvider('params')]
+    public function test_param_onlyFixedValues(string $name, string $value, string $got): void
+    {
+        $_GET = ["isds_$name" => $value];
+        $gate = self::gate();
+
+        self::assertSame($got, self::inside($gate, static fn(): string => $gate->param($name)));
+    }
+
+    public function test_param_arrayOrJunkEmpty(): void
+    {
+        $_GET = ['isds_tab' => ['history'], 'isds_show' => ['problem' => 'problem'], 'isds_step' => '', 'isds_page' => ['2']];
+        $gate = self::gate();
+
+        self::assertSame(['', '', '', '', '1'], self::inside($gate, static fn(): array => [$gate->param('tab'), $gate->param('show'), $gate->param('step'), $gate->param('part'), $gate->param('page')]));
+    }
+
+    /** @return array<string, array{mixed, string}> isds_page, page */
+    public static function pages(): array
+    {
+        return [
+            'none'           => [null, '1'],
+            'the second'     => ['2', '2'],
+            'four digits'    => ['9999', '9999'],
+            'leading zeros'  => ['0007', '7'],
+            'zero'           => ['0', '1'],
+            'five digits'    => ['10000', '1'],
+            'negative'       => ['-2', '1'],
+            'with more'      => ['2x', '1'],
+            'a new line'     => ["2\n", '1'],
+            'a plus'         => ['+2', '1'],
+        ];
+    }
+
+    #[DataProvider('pages')]
+    public function test_param_pageDigitsOnly(mixed $page, string $got): void
+    {
+        $_GET = is_null($page) ? [] : ['isds_page' => $page];
+        $gate = self::gate();
+
+        self::assertSame($got, self::inside($gate, static fn(): string => $gate->param('page')));
     }
 
     // ------------------------------------------------------------ actions

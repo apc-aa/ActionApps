@@ -424,7 +424,7 @@ class SliceRules
     }
 
     /** @return list<string> the modules the site uses, out of the trash */
-    protected function relatedModules(string $site): array
+    public function relatedModules(string $site): array
     {
         return array_values(AA_Module_Site::getRelatedModules([$site]));
     }

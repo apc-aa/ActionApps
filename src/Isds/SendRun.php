@@ -846,6 +846,12 @@ class SendRun extends BatchRun
         return $goesOn ? ['i' => $k + 1] + $at : $this->result($at);
     }
 
+    /** how many recipients, in their frozen order, the sending got to - tried, skipped or in flight */
+    public function tried(): int
+    {
+        return max((int) $this->cursor, ((string) $this->inflight === '') ? 0 : (int) $this->inflight + 1);
+    }
+
     /** what the record keeps of each recipient, as this instance read or wrote it */
     public function maps(): SendMaps
     {
@@ -894,8 +900,18 @@ class SendRun extends BatchRun
      */
     public function progressFigures(): array
     {
+        return $this->figuresOf($this->recipients());
+    }
+
+    /**
+     * progressFigures() of the frozen recipients read already: the page lists the messages of the same reading
+     * @param list<array<string, string>> $rows recipients()
+     * @return array{total: int, sent: int, failed: int, uncertain: int, skipped: int, stopped: int, queued: int, until: int, delivered: int, accepted: int}
+     * @throws \JsonException a record edited into no JSON
+     */
+    public function figuresOf(array $rows): array
+    {
         $now   = static::now();
-        $rows  = $this->recipients();
         // a position left by a run in error waits for nothing
         $until = (($this->state() === self::SENDING) && !$this->watching()) ? SendPace::pauseEnd($this->position(), $now) : 0;
         return array_merge($this->maps()->tally($rows, $this->isOver()), $this->maps()->delivery(), [

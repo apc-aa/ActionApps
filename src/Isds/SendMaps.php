@@ -120,15 +120,26 @@ final readonly class SendMaps
      */
     public function delivery(): array
     {
-        $counts = ['delivered' => 0, 'accepted' => 0];
-        foreach ($this->states() as $e) {
+        $reached = $this->reached();
+
+        return ['delivered' => count($reached), 'accepted' => count(array_filter($reached))];
+    }
+
+    /**
+     * The messages sent that reached the recipient's box, as delivery() counts them
+     * @return array<int, bool> index => accepted
+     * @throws \JsonException dm_ids edited into no JSON
+     */
+    public function reached(): array
+    {
+        $reached = [];
+        foreach ($this->states() as $k => $e) {
             // StatusSync::FAILED is none of DELIVERED; an acceptance counts only of a message delivered
             if (!is_null($e) && in_array($e['s'], self::DELIVERED, true)) {
-                ++$counts['delivered'];
-                $counts['accepted'] += (int) (($e['a'] > 0) || in_array($e['s'], self::ACCEPTED, true));
+                $reached[$k] = ($e['a'] > 0) || in_array($e['s'], self::ACCEPTED, true);
             }
         }
-        return $counts;
+        return $reached;
     }
 
     /**

@@ -74,6 +74,7 @@ final class GateProgressTest extends TestCase
         }, AA_Credentials::singleton(), AA_Credentials::class)();
         (new ReflectionProperty(AA::class, 'pagecache'))->setValue(null, null);
         AA::Contentcache()->clear();
+        $_GET = [];
     }
 
     /**
@@ -644,5 +645,209 @@ final class GateProgressTest extends TestCase
         $answers = self::answers(self::gate([self::ITEM => self::campaign('done')], [self::ITEM => $run]));
 
         self::assertSame($waits ? (string) $position['u'] : '', $answers['until']);
+    }
+
+    // ------------------------------------------------------------ messages
+
+    /**
+     * What the UI of the page of $campaign (isds_campaign of its URL) gets of each group
+     * @param list<string> $groups
+     * @return array<string, string> group => answer
+     */
+    private static function messagesOf(FakeGate $gate, array $groups = ['problem', 'checking', 'wait', 'sent', 'ok', 'stopped', 'skip'], string $what = '', string $campaign = self::ITEM): array
+    {
+        $_GET = ['isds_campaign' => $campaign];
+        $got  = null;
+        $gate->page(self::settings(), 'UI', 'refused', static function () use ($gate, $groups, $what, &$got): string {
+            $got = array_combine($groups, array_map(static fn(string $group): string => $gate->messages($group, $what), $groups));
+
+            return '';
+        });
+        self::assertIsArray($got, 'the gate opens');
+
+        return $got;
+    }
+
+    public function test_messages_campaignWithoutMessagesEmpty(): void
+    {
+        $gate        = self::gate([self::ITEM => self::campaign('draft')]);
+        $gate->tests = [self::ITEM => ['te00000000000000000000000000000b', 'te00000000000000000000000000000a']];
+        $groups      = ['problem', 'checking', 'wait', 'sent', 'ok', 'stopped', 'skip', 'recent'];
+
+        self::assertSame(array_fill_keys($groups, ''), self::messagesOf($gate, $groups));
+        self::assertSame(array_fill_keys($groups, ''), self::messagesOf($gate, $groups, 'count'), 'no count of 0 - as progress');
+        self::assertSame(['test' => 'te00000000000000000000000000000b-te00000000000000000000000000000a'], self::messagesOf($gate, ['test']), 'tests come before a sending');
+        self::assertSame('', $gate->messages('test'), 'outside the UI');
+    }
+
+    /** @param \Closure(): SendRun $run */
+    #[DataProvider('runs')]
+    public function test_messages_groupCountsEqualProgressFigures(\Closure $run): void
+    {
+        $gate     = self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run()]);
+        $answers  = self::answers($gate, questions: ['sent', 'skipped', 'stopped', 'queued', 'delivered', 'attention', 'checking', 'pending']);
+        $p        = array_map('intval', $answers);
+        $counts   = array_map('intval', self::messagesOf($gate, what: 'count'));
+        $followed = $answers['pending'] !== '';
+
+        self::assertSame([
+            'problem'  => $p['attention'],
+            'checking' => $p['checking'],
+            'wait'     => $p['queued'] + $p['pending'],
+            'sent'     => $followed ? 0 : $p['sent'] - $p['delivered'],
+            'ok'       => $p['delivered'],
+            'stopped'  => $p['stopped'],
+            'skip'     => $p['skipped'],
+        ], $counts);
+    }
+
+    /** @param \Closure(): SendRun $run */
+    #[DataProvider('runs')]
+    public function test_messages_groupsDisjointAndComplete(\Closure $run): void
+    {
+        $listed = array_merge(...array_map(static fn(string $ids): array => array_filter(explode('-', $ids)), array_values(self::messagesOf(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run()])))));
+
+        self::assertSame(['m0', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9'], array_values(array_unique(self::sorted($listed))));
+        self::assertCount(10, $listed, 'each once');
+    }
+
+    /**
+     * @param list<string> $ids
+     * @return list<string>
+     */
+    private static function sorted(array $ids): array
+    {
+        sort($ids);
+
+        return $ids;
+    }
+
+    // the frozen order - by the name of the recipient - in each group; the run asks for nothing else
+    public function test_messages_inTheFrozenOrder(): void
+    {
+        $gate = self::gate([self::ITEM => self::campaign('done')], [self::ITEM => self::watchedRun()]);
+
+        self::assertSame(
+            ['problem' => 'm2-m3-m6-m9', 'checking' => '', 'wait' => 'm4', 'sent' => '', 'ok' => 'm0-m1-m5', 'stopped' => 'm8', 'skip' => 'm7', 'recent' => 'm9-m8-m7-m6-m5-m4'],
+            self::messagesOf($gate, ['problem', 'checking', 'wait', 'sent', 'ok', 'stopped', 'skip', 'recent']),
+        );
+    }
+
+    // the cursor at 5, 5 in flight: the one being sent first - a person wants to see it
+    public function test_messages_recentLastFirst(): void
+    {
+        $gate = self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients()]);
+
+        self::assertSame(['recent' => 'm5-m4-m3-m2-m1-m0'], self::messagesOf($gate, ['recent']));
+    }
+
+    // the delivery not followed yet: the messages sent wait for nothing the page can tell - as pending ''
+    public function test_messages_sentWhileDeliveryNotFollowed(): void
+    {
+        $gate = self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients()]);
+
+        self::assertSame(['wait' => 'm8-m9', 'sent' => 'm0-m2', 'ok' => ''], self::messagesOf($gate, ['wait', 'sent', 'ok']));
+    }
+
+    // a page shows them beside the one list it pages
+    public function test_messages_recentAndTestsOnEveryPage(): void
+    {
+        $gate        = self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients()]);
+        $gate->tests = [self::ITEM => ['te00000000000000000000000000000b', 'te00000000000000000000000000000a']];
+        $_GET        = ['isds_campaign' => self::ITEM, 'isds_page' => '2'];
+        $got         = null;
+        $gate->page(self::settings(), 'UI', 'refused', static function () use ($gate, &$got): string {
+            $got = [$gate->messages('recent'), $gate->messages('test'), $gate->messages('problem'), $gate->messages('test', 'count')];
+
+            return '';
+        });
+
+        self::assertSame(['m5-m4-m3-m2-m1-m0', 'te00000000000000000000000000000b-te00000000000000000000000000000a', '', '2'], $got);
+    }
+
+    // the figures and the lists of a page come of one reading of the run, so they agree
+    public function test_messages_progressAndListsReadTheRunOnce(): void
+    {
+        $run  = self::watchedRun();
+        $gate = self::gate([self::ITEM => self::campaign('done')], [self::ITEM => $run]);
+        $_GET = ['isds_campaign' => self::ITEM];
+        $gate->page(self::settings(), 'UI', 'refused', static function () use ($gate): string {
+            return $gate->progress(self::ITEM, 'sent') . $gate->messages('ok') . $gate->messages('wait', 'count');
+        });
+
+        self::assertSame(1, $run->reads);
+    }
+
+    /**
+     * @param array<string, array{slice: string, active: bool, filter: string, state: string}> $campaigns
+     * @param ?array<string, string>                                                           $run
+     */
+    #[DataProvider('notACampaign')]
+    public function test_messages_onlyOfCampaignOfPage(array $campaigns, ?array $run, string $campaign): void
+    {
+        $gate        = self::gate($campaigns, is_null($run) ? [] : [self::ITEM => self::tenRecipients($run)]);
+        $gate->tests = [self::ITEM => ['te00000000000000000000000000000b']];
+        $groups      = ['problem', 'wait', 'skip', 'recent'];
+        // a run of another binding: its tests are searched for in the message slice of the page
+        $ofPage      = ($campaigns[$campaign]['slice'] ?? '') === Sending::CAMPAIGN;
+
+        self::assertSame(array_fill_keys($groups, '') + ['test' => $ofPage ? 'te00000000000000000000000000000b' : ''], self::messagesOf($gate, [...$groups, 'test'], campaign: $campaign));
+        self::assertSame(array_fill_keys($groups, '') + ['test' => $ofPage ? '1' : ''], self::messagesOf($gate, [...$groups, 'test'], 'count', $campaign));
+    }
+
+    public function test_messages_noCampaignInTheUrl(): void
+    {
+        $gate = self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients()]);
+        $_GET = [];
+        $got  = null;
+        $gate->page(self::settings(), 'UI', 'refused', static function () use ($gate, &$got): string {
+            $got = [$gate->messages('problem'), $gate->messages('skip', 'count')];
+
+            return '';
+        });
+
+        self::assertSame(['', ''], $got);
+    }
+
+    /** @param \Closure(): SendRun $run */
+    #[DataProvider('lookups')]
+    public function test_messages_uncertainIsProblemOnlyAfterLookup(\Closure $run, string $state, bool $verifiable): void
+    {
+        $run    = $run();
+        $groups = self::messagesOf(self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run]), ['problem', 'checking']);
+        // the one of unknown fate: 5 in flight, or 9
+        $uncertain = in_array('m5', explode('-', $groups['problem'] . '-' . $groups['checking']), true) ? 'm5' : 'm9';
+
+        self::assertSame($verifiable, in_array($uncertain, explode('-', $groups['problem']), true), "$state: $uncertain");
+        self::assertSame(!$verifiable, $groups['checking'] === $uncertain);
+    }
+
+    public function test_messages_pagesOfFifty(): void
+    {
+        $reasons = array_fill(0, 120, '');
+        $run     = self::sendRun(['cursor' => '0', 'stop_by' => Sending::READER], $reasons);
+        $gate    = self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => $run]);
+        $page    = static function (string $page) use ($gate): string {
+            $_GET = ['isds_campaign' => self::ITEM, 'isds_page' => $page];
+            $got  = '';
+            $gate->page(self::settings(), 'UI', 'refused', static function () use ($gate, &$got): string {
+                $got = $gate->messages('stopped') . '|' . $gate->messages('stopped', 'count');
+
+                return '';
+            });
+
+            return $got;
+        };
+
+        self::assertSame(implode('-', array_map(static fn(int $k): string => "m$k", range(100, 119))) . '|120', $page('3'));
+        self::assertSame(1, $run->reads, 'the frozen recipients read once');
+    }
+
+    public function test_messages_unknownGroupOrQuestion(): void
+    {
+        $gate = self::gate([self::ITEM => self::campaign('sending')], [self::ITEM => self::tenRecipients()]);
+
+        self::assertSame(['all' => '', 'Problem' => '', '' => ''], self::messagesOf($gate, ['all', 'Problem', '']));
+        self::assertSame(['problem' => ''], self::messagesOf($gate, ['problem'], 'ids'));
     }
 }

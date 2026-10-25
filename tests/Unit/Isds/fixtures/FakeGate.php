@@ -63,6 +63,18 @@ final class FakeGate extends Gate
     /** how many times the register was paired with the source slice */
     public int $offeredReads = 0;
 
+    /** @var list<array{int, string, ?string}> vid, ids and settings of each view shown */
+    public array $shownViews = [];
+
+    /** @var list<string> the campaigns of the page in the active bin, the last edited first */
+    public array $campaignList = [];
+
+    /** how many times the campaigns were searched for */
+    public int $campaignSearches = 0;
+
+    /** @var array<string, list<string>> campaign => its test messages, the newest first */
+    public array $tests = [];
+
     /**
      * @param ?string $site the site whose page is rendered; null = no site page (view.php, cron)
      */
@@ -132,6 +144,25 @@ final class FakeGate extends Gate
     protected function resolver(): Recipients
     {
         return $this->resolver ?? throw new \LogicException('The test gives no recipients');
+    }
+
+    protected function showView(int $vid, string $ids, ?string $settings): string
+    {
+        $this->shownViews[] = [$vid, $ids, $settings];
+
+        return "<view $vid>";
+    }
+
+    protected function campaignIds(Setup $setup): array
+    {
+        ++$this->campaignSearches;
+
+        return $this->campaignList;
+    }
+
+    protected function testMessages(Setup $setup, string $campaign): array
+    {
+        return $this->tests[$campaign] ?? [];
     }
 
     protected function actions(Access $access): Actions

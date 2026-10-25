@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace AA\Isds;
 
+use AA\IO\DB\DB_AA;
 use AA\Isds\Registry\Sync;
 use AA\Later\BatchFailed;
 use AA\Util\FormToken;
@@ -11,6 +12,7 @@ use AA\Util\LogOnce;
 use AA_Credentials;
 use AA_Items;
 use AA_Module_Site;
+use AA_Set;
 use zids;
 
 /**
@@ -44,6 +46,14 @@ class Gate
     /** log.type: a campaign whose recipients cannot be told - its stored filter or the source slice is broken, once a day */
     public const RECIPIENTS_EVENT = 'ISDS_RCPT';
 
+    /** log.type: a view name none of the views of the two slices has - the page shows nothing for it, once a day */
+    public const VIEW_EVENT = 'ISDS_VIEW';
+    /** the entry view of the page; the views it shows are named isds_... */
+    public const ENTRY_VIEW = 'isdscampainer';
+
+    /** the groups messages() sorts the messages of a campaign into */
+    public const GROUPS = ['problem', 'checking', 'wait', 'sent', 'ok', 'stopped', 'skip', 'recent', 'test'];
+
     /** the actions a form may name - its token binds the action, the binding of the page and the campaign */
     public const ACTIONS = ['save', 'clone', 'test', 'send', 'stop', 'abandon', 'resume', 'verify', 'fixbox'];
     /** of ACTIONS those whose shown form is posted again on purpose (autosave): each post acts - unless
@@ -64,6 +74,22 @@ class Gate
 
     /** states of progress() in which the code of the run still tells why it waits or stopped */
     private const ERROR_SHOWN = [SendRun::SENDING, SendRun::ERROR, 'watching', 'watch_error'];
+
+    /** items of a list the page shows at once; campaigns fewer, each a longer row */
+    private const PAGE_SIZE      = 50;
+    private const CAMPAIGNS_PAGE = 30;
+
+    /** messages of the group recent of messages(): those the sending got to last */
+    private const RECENT = 6;
+
+    /** param() of each name: the values of isds_<name> of the URL it gives; page is a number */
+    private const PARAMS = [
+        'tab'  => ['history', 'check'],
+        'show' => self::GROUPS,
+        'step' => ['test', 'send', 'search', 'files'],
+        'part' => ['progress', 'search'],
+        'list' => ['get', 'skip'],
+    ];
 
     /** the settings of the UI being expanded; null outside every gate */
     private static ?Setup $open = null;
@@ -158,9 +184,136 @@ class Gate
      */
     public function campaign(): string
     {
+        return safe($this->pageCampaign() ?? '');
+    }
+
+    /** campaign() unescaped, in small letters; null = none */
+    private function pageCampaign(): ?string
+    {
         $id = ModuleId::normalize(is_string($_GET['isds_campaign'] ?? null) ? $_GET['isds_campaign'] : '');
 
-        return (is_null(self::$open) || is_null($id) || is_null($this->campaignOfPage(self::$open, $id))) ? '' : safe($id);
+        return (is_null(self::$open) || is_null($id) || is_null($this->campaignOfPage(self::$open, $id))) ? null : $id;
+    }
+
+    /**
+     * View $name of the two slices of the page, as {view} shows it (AA_Stringexpand_View::output()). Found
+     * by its name among the views of the two slices only, so that a view of another slice of the site
+     * cannot pass for it; a name two of them have shows nothing (State Check names it - CheckIsdsViews),
+     * a name none has neither (logged, State Check lists it). A listing shows all the items $ids names and only them - the ids
+     * a subcommand of the gate gives -, in their order: none for no ids, never the slice by its
+     * conditions, which cannot tell the campaign of the page. A static view takes no ids. Only the names
+     * pageView() allows, so that State Check sees every name the page may show.
+     * @param string $ids      dash-separated long ids; anything else in it is left out
+     * @param string $settings as the third parameter of {view} - from the text of the template only,
+     *                         never from the URL; what would page, sort or group the ids does not count
+     */
+    public function view(string $name, string $ids = '', string $settings = ''): string
+    {
+        $setup = self::$open;
+        if (is_null($setup) || !self::pageView($name)) {
+            return '';
+        }
+        $vids = $this->once('views', fn(): array => $this->viewIds($setup, $name), $setup, $name);
+        if (!$vids) {
+            $this->log("$setup->site:$name", 'No view of the slices of the page has this name', self::VIEW_EVENT);
+        }
+        $ids = implode('-', array_filter(array_map(static fn(string $id): ?string => ModuleId::normalize($id), explode_ids($ids))));
+
+        return (count($vids) === 1) ? $this->showView((int) $vids[0], $ids, ($settings === '') ? null : $settings) : '';
+    }
+
+    public static function pageView(string $name): bool
+    {
+        return ($name === self::ENTRY_VIEW) || (str_starts_with($name, 'isds_') && ($name !== 'isds_'));
+    }
+
+    /**
+     * The campaigns of the page in the active bin, the last edited first: count - how many, else the
+     * dash-separated ids of the page of the list param:page shows, for {datovkabulk:view}
+     */
+    public function campaigns(string $what = ''): string
+    {
+        $setup = self::$open;
+        if (is_null($setup) || !in_array($what, ['', 'count'], true)) {
+            return '';
+        }
+        $ids = $this->once('campaigns', fn(): array => $this->campaignIds($setup), $setup);
+
+        return ($what === 'count') ? (string) count($ids) : self::pageOf($ids, self::CAMPAIGNS_PAGE);
+    }
+
+    /**
+     * The message items of a group of the campaign the page shows (campaign()) - count: how many, else
+     * their dash-separated ids for {datovkabulk:view}, of the page param:page shows. From the same reading
+     * of the run as progress(), so that a group holds what it counts (SendMaps::fatesOf()); each by its
+     * recipient's name, as the recipients were frozen:
+     * - problem: failed, and with progress verify uncertain too (attention);
+     * - checking: uncertain before verify;
+     * - wait: queued, and while the delivery is followed sent not delivered yet (queued + pending);
+     * - sent: sent while the delivery is not followed (sent; pending is '' then);
+     * - ok: delivered (delivered); stopped; skip: skipped for the box (skipped);
+     * - recent: the last six the sending got to, the one in flight too, the last first - never paged;
+     * - test: the test messages of the campaign in the active bin, the newest first - a run does not
+     *   know them; never paged, a page shows them beside a paged list.
+     * '' with no run, of a campaign that is not of the page, of an unknown group, and for a record that
+     * cannot be read; test without a run too.
+     */
+    public function messages(string $group, string $what = ''): string
+    {
+        $setup = self::$open;
+        $id    = $this->pageCampaign();
+        if (is_null($setup) || is_null($id) || !in_array($group, self::GROUPS, true) || !in_array($what, ['', 'count'], true)) {
+            return '';
+        }
+        if ($group === 'test') {
+            $ids = $this->once('tests', fn(): array => $this->testMessages($setup, $id), $setup, $id);
+        } else {
+            $ids = $this->once('messages', fn(): ?array => $this->campaignMessages($setup, $id), $setup, $id)[$group] ?? null;
+            if (is_null($ids)) {
+                // '' tells no count from 0, as progress()
+                return '';
+            }
+        }
+        if ($what === 'count') {
+            return (string) count($ids);
+        }
+
+        return in_array($group, ['recent', 'test'], true) ? safe(implode('-', $ids)) : self::pageOf($ids, self::PAGE_SIZE);
+    }
+
+    /**
+     * A value of the URL of the page the template may branch on: isds_<name> when it is one of PARAMS,
+     * else ''; page - the page of a list, a number of up to four digits, 1 for anything else. The
+     * template never reads the URL itself ({qs}): it could put anything there.
+     */
+    public function param(string $name): string
+    {
+        if (is_null(self::$open)) {
+            return '';
+        }
+        if ($name === 'page') {
+            return (string) self::pageNumber();
+        }
+        $value = $_GET["isds_$name"] ?? null;
+
+        return (is_string($value) && in_array($value, self::PARAMS[$name] ?? [], true)) ? $value : '';
+    }
+
+    /** the page of a list the URL asks for (isds_page), the first one unless it names one */
+    private static function pageNumber(): int
+    {
+        $page = $_GET['isds_page'] ?? null;
+
+        return (is_string($page) && (preg_match('/^\d{1,4}\z/', $page) === 1)) ? max(1, (int) $page) : 1;
+    }
+
+    /**
+     * @param list<string> $ids
+     * @return string the dash-separated ids of the page pageNumber() of $ids, $size a page, escaped
+     */
+    private static function pageOf(array $ids, int $size): string
+    {
+        return safe(implode('-', array_slice($ids, (self::pageNumber() - 1) * $size, $size)));
     }
 
     /**
@@ -246,34 +399,33 @@ class Gate
 
     /**
      * The recipients of an active campaign of the page by its stored filter, counted anew on each
-     * request: count - how many get the letter, skipped - how many are left out for their box, ids -
-     * the items that get it, dash-separated for {view} and {ids}. It counts a queued or sent campaign
-     * anew too; its count when it was queued is stored in the campaign (Schema::CAMPAIGN_RECIPIENTS).
-     * '' for another item or question, and on any error. ids is '' for no recipients too, and {view}
-     * with no ids lists the whole slice - guard it:
-     *     {ifset:{datovkabulk:recipients:<id>:ids}:{view:N:{datovkabulk:recipients:<id>:ids}}}
-     * (not _#1 - AA expands the inner command first). The guard hides the output only: the inner {view}
-     * still runs once over the whole slice.
+     * request: count - how many get the letter, skipped - how many are left out for their box; ids,
+     * skippedids - the items that get it, or are left out, of the page of the list param:page shows,
+     * in the order they are sent in, dash-separated for {datovkabulk:view}. It counts a queued or sent
+     * campaign anew too; its count when it was queued is stored in the campaign
+     * (Schema::CAMPAIGN_RECIPIENTS). '' for another item or question, and on any error.
      * @param string $campaign long id of an active item of the campaign slice
      */
     public function recipients(string $campaign, string $what): string
     {
         $setup = self::$open;
         $id    = ModuleId::normalize($campaign);
-        if (is_null($setup) || is_null($id) || !in_array($what, ['count', 'skipped', 'ids'], true)) {
+        if (is_null($setup) || is_null($id) || !in_array($what, ['count', 'skipped', 'ids', 'skippedids'], true)) {
             return '';
         }
-        // once a request for the three answers, a failure too; a closure cannot key the cache itself
-        $recipients = \AA::Contentcache()->_get_result(get_hash(self::class . '::recipients', $setup, $id), fn(): ?array => $this->campaignRecipients($setup, $id), [], self::class . '>recipients');
+        // once a request for all the answers, a failure too
+        $recipients = $this->once('recipients', fn(): ?array => $this->campaignRecipients($setup, $id), $setup, $id);
         if (is_null($recipients)) {
             return '';
         }
         $sendable = array_filter($recipients, static fn(Recipient $r): bool => $r->sendable());
+        $ids      = static fn(array $rs): array => array_values(array_map(static fn(Recipient $r): string => $r->itemId, $rs));
 
         return match ($what) {
-            'count'   => (string) count($sendable),
-            'skipped' => (string) (count($recipients) - count($sendable)),
-            default   => implode('-', array_map(static fn(Recipient $r): string => $r->itemId, $sendable)),
+            'count'      => (string) count($sendable),
+            'skipped'    => (string) (count($recipients) - count($sendable)),
+            'ids'        => self::pageOf($ids($sendable), self::PAGE_SIZE),
+            default      => self::pageOf($ids(array_diff_key($recipients, $sendable)), self::PAGE_SIZE),
         };
     }
 
@@ -328,8 +480,18 @@ class Gate
     /** @return array<string, string> campaignProgress(), once a request for all the answers and fields() */
     private function progressOf(Setup $setup, string $id): array
     {
-        // a closure cannot key the cache itself
-        return \AA::Contentcache()->_get_result(get_hash(self::class . '::progress', $setup, $id), fn(): array => $this->campaignProgress($setup, $id), [], self::class . '>progress');
+        return $this->once('progress', fn(): array => $this->campaignProgress($setup, $id), $setup, $id);
+    }
+
+    /**
+     * $fn once a request for the same $what and $key - a closure cannot key the cache itself
+     * @template T
+     * @param \Closure(): T $fn
+     * @return T
+     */
+    private function once(string $what, \Closure $fn, mixed ...$key): mixed
+    {
+        return \AA::Contentcache()->_get_result(get_hash(self::class . "::$what", ...$key), $fn, [], self::class . ">$what");
     }
 
     /**
@@ -347,15 +509,14 @@ class Gate
         if (is_null($setup) || !self::$guarded || is_null($id) || !$this->fixable($setup)) {
             return '';
         }
-        // a closure cannot key the cache itself
-        $offered = \AA::Contentcache()->_get_result(get_hash(self::class . '::regbox', $setup), function () use ($setup): array {
+        $offered = $this->once('regbox', function () use ($setup): array {
             try {
                 return $this->offered($setup);
             } catch (\RuntimeException) {
                 // the page of the register and the State Check tell what is wrong
                 return [];
             }
-        }, [], self::class . '>regbox');
+        }, $setup);
 
         return safe($offered[$id] ?? '');
     }
@@ -367,7 +528,7 @@ class Gate
      */
     private function fixable(Setup $setup): bool
     {
-        return \AA::Contentcache()->_get_result(get_hash(self::class . '::fixable', $setup), function () use ($setup): bool {
+        return $this->once('fixable', function () use ($setup): bool {
             if (($setup->environment !== Account::PRODUCTION) || is_null($this->rules()->registryConfig($setup->sourceSlice))) {
                 return false;
             }
@@ -377,7 +538,7 @@ class Gate
                 // no upload directory, or one PHP cannot look into: the page of the register says so
                 return false;
             }
-        }, [], self::class . '>fixable');
+        }, $setup);
     }
 
     /**
@@ -555,7 +716,7 @@ class Gate
         if (is_null($stored)) {
             return [];
         }
-        $run = $this->run($id);
+        ['run' => $run, 'rows' => $rows] = $this->sending($setup, $id);
         if (is_null($run)) {
             // never queued, or its record deleted: the item tells the state; '' tells no count from 0
             return ['state' => in_array($stored['state'], Schema::CAMPAIGN_STATES, true) ? $stored['state'] : ''];
@@ -587,10 +748,14 @@ class Gate
             // a run that ended keeps its last code, which no longer holds
             'error'   => (in_array($state, self::ERROR_SHOWN, true) && Advice::knowsRun($code)) ? $code : '',
         ];
+        if (is_null($rows)) {
+            // the frozen recipients changed outside AA: no figure can be trusted, the state still can
+            return $known;
+        }
         try {
-            $counts = $run->progressFigures();
-        } catch (\JsonException|BatchFailed) {
-            // edited outside AA: no figure can be trusted, the state still can
+            $counts = $run->figuresOf($rows);
+        } catch (\JsonException) {
+            // a map edited outside AA, likewise
             return $known;
         }
         $derived = [
@@ -605,6 +770,66 @@ class Gate
         $counts['until'] = ($counts['until'] > 0) ? $counts['until'] : '';
 
         return $known + array_map('strval', $counts + $derived);
+    }
+
+    /**
+     * The message items of each group of messages() but test, from the record of the run
+     * @return ?array<string, list<string>> group => long ids; null = no run of the page, or a record that cannot be read
+     */
+    private function campaignMessages(Setup $setup, string $id): ?array
+    {
+        ['run' => $run, 'rows' => $rows] = $this->sending($setup, $id);
+        if (is_null($run) || is_null($rows) || !$setup->ownsRun($run)) {
+            return null;
+        }
+        try {
+            $fates   = $run->maps()->fatesOf($rows, $run->isOver());
+            $reached = $run->maps()->reached();
+        } catch (\JsonException) {
+            return null;
+        }
+        $verifiable = $run->verifiable();
+        // as progress() tells pending: delivered is 0 while the delivery is not followed
+        $watching   = $run->watching();
+        $groups     = array_fill_keys(array_diff(self::GROUPS, ['test']), []);
+        // in the order frozen - by name, as the recipients were resolved
+        foreach (array_intersect_key($fates, $rows) as $k => $fate) {
+            $group = match ($fate) {
+                Schema::MESSAGE_STATE_FAILED    => 'problem',
+                Schema::MESSAGE_STATE_UNCERTAIN => $verifiable ? 'problem' : 'checking',
+                Schema::MESSAGE_STATE_SENT      => isset($reached[$k]) ? 'ok' : ($watching ? 'wait' : 'sent'),
+                Schema::MESSAGE_STATE_QUEUED    => 'wait',
+                Schema::MESSAGE_STATE_STOPPED   => 'stopped',
+                default                         => 'skip',
+            };
+            $groups[$group][] = $rows[$k]['msg'];
+        }
+        for ($k = min($run->tried(), count($rows)) - 1; ($k >= 0) && (count($groups['recent']) < self::RECENT); --$k) {
+            $groups['recent'][] = $rows[$k]['msg'];
+        }
+
+        return $groups;
+    }
+
+    /**
+     * The newest run of a campaign of the page and its frozen recipients, read once a request: progress()
+     * and messages() count of the same reading, so that the figures and the lists of a page agree
+     * @return array{run: ?SendRun, rows: ?list<array<string, string>>} run null = never queued; rows null =
+     *                                                                   a run of another binding, or its recipients not as frozen
+     */
+    private function sending(Setup $setup, string $id): array
+    {
+        return $this->once('sending', function () use ($setup, $id): array {
+            $run = $this->run($id);
+            if (is_null($run) || !$setup->ownsRun($run)) {
+                return ['run' => $run, 'rows' => null];
+            }
+            try {
+                return ['run' => $run, 'rows' => $run->recipients()];
+            } catch (BatchFailed) {
+                return ['run' => $run, 'rows' => null];
+            }
+        }, $setup, $id);
     }
 
     /** the name AA shows of a login; '' for none */
@@ -710,8 +935,33 @@ class Gate
         return new Recipients();
     }
 
+    /** @return list<int|string> ids of the views of the two slices of the page named $name */
+    protected function viewIds(Setup $setup, string $name): array
+    {
+        return array_values(DB_AA::select('id', 'SELECT id FROM view', [['slice_id', [$setup->campaignSlice, $setup->messageSlice], 'l'], ['field3', $name]]));
+    }
+
+    /** AA_Stringexpand_View::output() of a listing of $ids alone */
+    protected function showView(int $vid, string $ids, ?string $settings): string
+    {
+        return \AA_Stringexpand_View::output($vid, $ids, $settings, true);
+    }
+
+    /** @return list<string> long ids of the campaigns of the page in the active bin, the last edited first */
+    protected function campaignIds(Setup $setup): array
+    {
+        return array_map('strval', (new AA_Set([$setup->campaignSlice], null, [['last_edit.......' => 'd']], \AA_BIN_ACTIVE))->query()->longids());
+    }
+
+    /** @return list<string> long ids of the test messages of the campaign in the active bin, the newest first */
+    protected function testMessages(Setup $setup, string $campaign): array
+    {
+        return array_map('strval', SendItems::testsOf($setup->messageSlice, $campaign, \AA_BIN_ACTIVE, 'd')->query()->longids());
+    }
+
     /**
-     * @param string $selector site:campaign slice, '-' for none; of RECIPIENTS_EVENT site:campaign slice:campaign
+     * @param string $selector site:campaign slice, '-' for none; of RECIPIENTS_EVENT site:campaign slice:campaign;
+     *                         of VIEW_EVENT site:the name of the view
      * @param string $problem  the first one - the rest the page tells who may fix them; of RECIPIENTS_EVENT what failed
      */
     protected function log(string $selector, string $problem, string $event = self::LOG_EVENT): void

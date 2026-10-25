@@ -154,7 +154,7 @@ final class FakeSliceRules extends SliceRules
         return in_array($id, $this->trash, true);
     }
 
-    protected function relatedModules(string $site): array
+    public function relatedModules(string $site): array
     {
         return $this->related[$site] ?? [];
     }

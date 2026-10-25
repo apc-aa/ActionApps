@@ -371,11 +371,21 @@ class SendItems
     /** @return list<string> long ids of the test messages of the campaign, in every bin */
     private function testIds(): array
     {
+        return $this->search(self::testsOf($this->messageSlice, $this->campaign, \AA_BIN_ALL, 'a'));
+    }
+
+    /**
+     * AA's search for the test messages of a campaign - the page of a sending lists them too
+     * @param int    $bins  AA_BIN_*
+     * @param string $order of publish_date: a | d
+     */
+    public static function testsOf(string $messageSlice, string $campaign, int $bins, string $order): AA_Set
+    {
         $conds = [
-            [Schema::MESSAGE_CAMPAIGN => 1, 'operator' => '==', 'value' => $this->campaign],
+            [Schema::MESSAGE_CAMPAIGN => 1, 'operator' => '==', 'value' => $campaign],
             [Schema::MESSAGE_TEST => 1, 'operator' => '==', 'value' => '1'],
         ];
-        return $this->search(new AA_Set([$this->messageSlice], $conds, [['publish_date....' => 'a']], \AA_BIN_ALL));
+        return new AA_Set([$messageSlice], $conds, [['publish_date....' => $order]], $bins);
     }
 
     /** @return list<string> long ids of the items of $set, AA's search */
